@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "id": "figura",
+  "version": "${version}",
+
+  "name": "Figura",
+  "description": "Figura is a client-side mod that allows players to change their player model and customize it, extensivelly",
+  "authors": [
+    "Francy-Chan",
+    "0xf24",
+    "ENinja33",
+    "TheOneTrueZandra"
+  ],
+  "contact": {
+    "homepage": "https://discord.gg/ekHGHcH8Af",
+    "sources": "https://github.com/Kingdom-Of-The-Moon/FiguraRewriteRewrite/",
+    "issues": "https://github.com/Kingdom-Of-The-Moon/FiguraRewriteRewrite/issues"
+  },
+
+  "license": "LGPL-2.1",
+  "icon": "assets/figura/icon.png",
+
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "org.moon.figura.FiguraMod"
+    ],
+    "modmenu": [
+
+    ]
+  },
+  "mixins": [
+    "figura.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.13.3",
+    "fabric": "*",
+    "minecraft": ">=1.18.2",
+    "java": ">=17"
+  },
+  "suggests": {
+    "another-mod": "*"
+  },
+  "breaks": {
+    "optifine": "*",
+    "optifabric": "*"
+  },
+  "custom": {
+    "modmenu": {
+      "links": {
+        "modmenu.discord": "https://discord.gg/ekHGHcH8Af"
+      }
+    }
+  }
+}
