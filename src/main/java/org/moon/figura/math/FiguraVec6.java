@@ -21,6 +21,9 @@ public class FiguraVec6 extends LuaObject {
         this.h = h;
     }
 
+
+    //Methods needed for LuaObject implementation
+
     @Override
     protected String getRegistryKey() {
         return "figura_vector_6";
@@ -46,6 +49,9 @@ public class FiguraVec6 extends LuaObject {
         putDouble(state, "h", h);
     }
 
+    public static FiguraVec6 create() {
+        return new FiguraVec6();
+    }
 
     //Metamethods
 

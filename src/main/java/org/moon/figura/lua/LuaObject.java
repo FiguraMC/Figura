@@ -10,6 +10,8 @@ import java.lang.reflect.Modifier;
 /**
  * A LuaObject is a Java Object that can convert itself
  * to and from a table on the Lua stack.
+ * MUST implement a static method create(), which returns
+ * an instance of the class itself.
  */
 public abstract class LuaObject {
 
@@ -46,7 +48,7 @@ public abstract class LuaObject {
      * Should check if the value at the given index is convertible
      * to an instance of this class. Default implementation checks if
      * the metatables match to confirm this.
-     * If the value is not convertible to and instance of this
+     * If the value is not convertible to an instance of this
      * class, then throw a LuaRuntimeException.
      * @param state The LuaState we're operating on.
      * @param index The index of the item we're checking to see if it's convertible.

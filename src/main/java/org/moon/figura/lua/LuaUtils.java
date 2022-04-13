@@ -4,7 +4,20 @@ import org.moon.figura.FiguraMod;
 import org.terasology.jnlua.LuaRuntimeException;
 import org.terasology.jnlua.LuaState;
 
+import java.io.InvalidClassException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.HashMap;
+import java.util.function.Supplier;
+
 public class LuaUtils {
+
+    /**
+     * Keeps a map from classes to functions to provide a fresh instance of the class.
+     * For most classes, this should just be a call to a constructor, but some
+     * classes may have other methods of providing a fresh instance.
+     */
+    private static HashMap<Class<?>, Supplier<? extends LuaObject>> generatorCache = new HashMap<>();
 
     /**
      * Inspects the value at the given index of the stack, and returns a java
@@ -19,21 +32,55 @@ public class LuaUtils {
         if (!state.isNil(index)) {
             if (LuaObject.class.isAssignableFrom(clazz)) {
                 try {
-                    LuaObject result = (LuaObject) clazz.getDeclaredConstructor().newInstance();
+                    LuaObject result = getOrComputeGenerator(clazz).get();
                     result.checkValid(state, index);
                     result.read(state, index);
                     return result;
-                } catch (NoSuchMethodException e) {
-                    FiguraMod.LOGGER.error("No default constructor in LuaObject class " + clazz.getName() + "!");
+                } catch (LuaRuntimeException e) {
+                    throw e;
                 } catch (Exception e) {
-                    if (e instanceof LuaRuntimeException e1)
-                        throw e1;
-                    else
-                        e.printStackTrace();
+                    e.printStackTrace();
                 }
             }
         }
         return state.toJavaObject(index, clazz);
+    }
+
+    /**
+     * Locates the "create" method for the given class, and stores it in
+     * a map to cache it. This way we don't need to do reflection lookups
+     * every time we want to instantiate a class.
+     * @param clazzz The class to search for the create() method in.
+     * @return A supplier that wraps the create method call and deals
+     * with Exceptions that may result.
+     */
+    private static Supplier<? extends LuaObject> getOrComputeGenerator(Class<?> clazzz) {
+        return generatorCache.computeIfAbsent(clazzz, (clazz) -> {
+            try {
+                Method createMethod = clazz.getDeclaredMethod("create");
+                if ((createMethod.getModifiers() & Modifier.STATIC) == 0)
+                    throw new NoSuchMethodException();
+                if (!clazz.isAssignableFrom(createMethod.getReturnType())) //If the method doesn't return an object of type clazzz...
+                    throw new ClassCastException(createMethod.getReturnType().getName() + " instead of " + clazz.getName() + ".");
+                return () -> {
+                    try {
+                        return (LuaObject) createMethod.invoke(null);
+                    } catch (ClassCastException e) {
+                        //This should never happen.
+                        FiguraMod.LOGGER.error("Illegal return type for the create method in class " + clazz.getName() +
+                                "! Must return a LuaObject. NOTE: THIS ERROR SHOULD NEVER PRINT. IF IT DOES, SOMETHING IS VERY WRONG.");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                };
+            } catch (NoSuchMethodException e) {
+                FiguraMod.LOGGER.error("No static create() method in LuaObject class " + clazz.getName() + "!");
+            } catch (ClassCastException e) {
+                FiguraMod.LOGGER.error("Invalid return type for create method in class " + clazz.getName() + ", returns " + e.getMessage());
+            }
+            return () -> null;
+        });
     }
 
     /**
