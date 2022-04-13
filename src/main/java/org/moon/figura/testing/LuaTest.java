@@ -67,9 +67,9 @@ public class LuaTest {
         luaState.openLib(LuaState.Library.MATH);
         luaState.pop(4); //Pop the four libraries we just put on there
 
-        (new FiguraVec6(1, 2, 3, 4, 5, 6)).pushToStack(luaState);
+        FiguraVec6.create().pushToStack(luaState);
         luaState.setGlobal("vec1");
-        (new FiguraVec6(7, 5, 4, 2, 4, 1)).pushToStack(luaState);
+        FiguraVec6.create().pushToStack(luaState);
         luaState.setGlobal("vec2");
 
         luaState.pushJavaFunction(state -> {
