@@ -33,7 +33,7 @@ public class FiguraMod implements ClientModInitializer {
 
         //TODO
         //test
-        LuaTest.test();
+        LuaTest.vectorTest();
     }
 
     public static void tick(MinecraftClient client) {

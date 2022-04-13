@@ -1,12 +1,13 @@
 package org.moon.figura.lua;
 
+import org.moon.figura.FiguraMod;
 import org.terasology.jnlua.LuaRuntimeException;
 import org.terasology.jnlua.LuaState;
 
 public class LuaUtils {
 
     /**
-     * Inspects the value at the top of the stack, and returns a java
+     * Inspects the value at the given index of the stack, and returns a java
      * Object representing that value, if it can be converted to the
      * desired class.
      * @param state
@@ -21,9 +22,13 @@ public class LuaUtils {
                     result.checkValid(state, index);
                     result.read(state, index);
                     return result;
+                } catch (NoSuchMethodException e) {
+                    FiguraMod.LOGGER.error("No default constructor in LuaObject class " + clazz.getName() + "!");
                 } catch (Exception e) {
                     if (e instanceof LuaRuntimeException e1)
                         throw e1;
+                    else
+                        e.printStackTrace();
                 }
             }
         }

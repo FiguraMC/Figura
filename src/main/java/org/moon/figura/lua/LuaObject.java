@@ -1,5 +1,6 @@
 package org.moon.figura.lua;
 
+import org.moon.figura.FiguraMod;
 import org.terasology.jnlua.LuaRuntimeException;
 import org.terasology.jnlua.LuaState;
 
@@ -37,6 +38,7 @@ public abstract class LuaObject {
     //METHODS FOR OTHER CLASSES TO USE
     //--------------------------------
     public final void pushToStack(LuaState state) {
+        state.newTable();
         write(state);
         pushMetatable(state);
         state.setMetatable(-2);
@@ -62,8 +64,14 @@ public abstract class LuaObject {
     //HELPER METHODS FOR READING
     //--------------------------------
     final protected long readInteger(LuaState state, int index, String key) {
-        state.getField(index,key);
+        state.getField(index, key);
         long ret = state.checkInteger(-1);
+        state.pop(1);
+        return ret;
+    }
+    final protected double readDouble(LuaState state, int index, String key) {
+        state.getField(index, key);
+        double ret = state.checkNumber(-1);
         state.pop(1);
         return ret;
     }
@@ -79,21 +87,18 @@ public abstract class LuaObject {
         state.pushString(getRegistryKey());
         state.newTable(); //metatable
 
-        //Create __index!
+        //Create __index and other metamethods!
         state.newTable();
         Class<? extends LuaObject> clazz = this.getClass();
         for (Method method : clazz.getDeclaredMethods()) {
-            if (method.isAnnotationPresent(LuaWhitelist.class) && (method.getModifiers() & Modifier.STATIC) > 0)
-                generateFunction(state, method);
+            if (method.isAnnotationPresent(LuaWhitelist.class) && (method.getModifiers() & Modifier.STATIC) > 0) {
+                if (method.getName().startsWith("__"))
+                    generateMetamethod(state, method);
+                else
+                    generateFunction(state, method);
+            }
         }
         state.setField(-2, "__index");
-
-        //Disable getmetatable()
-//        state.pushBoolean(false);
-//        state.setField(-2, "__metatable");
-
-        //More metamethods to come!
-        //...
 
         //Store the metatable in the "registry", a special lua table that can't be accessed by users.
         state.setTable(state.REGISTRYINDEX);
@@ -101,23 +106,50 @@ public abstract class LuaObject {
 
     private void generateFunction(LuaState state, Method method) {
         Class<?>[] argTypes = method.getParameterTypes();
+        Class<?> returnType = method.getReturnType();
+        if (!returnType.isPrimitive())
+            if (!LuaObject.class.isAssignableFrom(returnType))
+                FiguraMod.LOGGER.warn("Releasing a raw java object, not a LuaObject, into the lua state. " + method.getName() + "() in " + method.getDeclaringClass() + ".");
         state.pushJavaFunction(luaState -> {
             try {
                 Object[] args = new Object[argTypes.length];
                 for (int i = 0; i < argTypes.length; i++) {
-                    args[i] = LuaUtils.readFromLua(state, i+1, argTypes[i]);
+                    args[i] = LuaUtils.readFromLua(luaState, i+1, argTypes[i]);
                 }
 
                 Object result = method.invoke(null, args);
-                LuaUtils.pushToLua(state, result);
+                LuaUtils.pushToLua(luaState, result);
 
-                return method.getReturnType() == void.class ? 0 : 1;
+                return returnType == void.class ? 0 : 1;
             } catch (Exception e) {
                 e.printStackTrace();
                 throw new LuaRuntimeException(e);
             }
         });
         state.setField(-2, method.getName());
+    }
+
+    private void generateMetamethod(LuaState state, Method method) {
+        Class<?>[] argTypes = method.getParameterTypes();
+        Class<?> returnType = method.getReturnType();
+        if (!returnType.isPrimitive())
+            if (!LuaObject.class.isAssignableFrom(returnType))
+                FiguraMod.LOGGER.warn("Releasing a raw java object, not a LuaObject, into the lua state. " + method.getName() + "() in " + method.getDeclaringClass() + ".");
+        state.pushJavaFunction(luaState -> {
+            try {
+                Object[] args = new Object[argTypes.length];
+                for (int i = 0; i < argTypes.length; i++) {
+                    args[i] = LuaUtils.readFromLua(luaState, i+1, argTypes[i]);
+                }
+                Object result = method.invoke(null, args);
+                LuaUtils.pushToLua(luaState, result);
+                return 1;
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new LuaRuntimeException(e);
+            }
+        });
+        state.setField(-3, method.getName());
     }
 
     private void pushMetatable(LuaState state) {

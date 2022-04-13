@@ -2,6 +2,7 @@ package org.moon.figura.testing;
 
 import net.fabricmc.loader.api.FabricLoader;
 import org.moon.figura.FiguraMod;
+import org.moon.figura.math.FiguraVec6;
 import org.terasology.jnlua.LuaState;
 import org.terasology.jnlua.LuaState53;
 import org.terasology.jnlua.NativeSupport;
@@ -11,6 +12,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.Map;
 
 public class LuaTest {
 
@@ -36,6 +38,8 @@ public class LuaTest {
                 System.out.println(state.toBoolean(1));
             } else if (state.isJavaObjectRaw(1)) {
                 System.out.println("userdata");
+            } else if (state.isTable(1)) {
+                System.out.println(state.toJavaObject(1, Map.class));
             }
             return 0;
         });
@@ -48,6 +52,44 @@ public class LuaTest {
                 "println(\"greetings\") " +
                 "println(globalTestVar:getFive()) " +
                 "globalTestVar:printHi() ";
+
+        luaState.load(testCode, "main");
+        luaState.call(0, 0);
+    }
+
+    public static void vectorTest() {
+        setupNativesForLua();
+
+        LuaState luaState = new LuaState53(999999);
+        luaState.openLib(LuaState.Library.BASE);
+        luaState.openLib(LuaState.Library.TABLE);
+        luaState.openLib(LuaState.Library.STRING);
+        luaState.openLib(LuaState.Library.MATH);
+        luaState.pop(4); //Pop the four libraries we just put on there
+
+        (new FiguraVec6(1, 2, 3, 4, 5, 6)).pushToStack(luaState);
+        luaState.setGlobal("vec1");
+        (new FiguraVec6(7, 5, 4, 2, 4, 1)).pushToStack(luaState);
+        luaState.setGlobal("vec2");
+
+        luaState.pushJavaFunction(state -> {
+            if (state.isString(1)) {
+                String v = state.toString(1);
+                System.out.println(v);
+            } else if (state.isNil(1)) {
+                System.out.println("nil");
+            } else if (state.isBoolean(1)) {
+                System.out.println(state.toBoolean(1));
+            } else if (state.isJavaObjectRaw(1)) {
+                System.out.println("userdata");
+            } else if (state.isTable(1)) {
+                System.out.println(state.toJavaObject(1, Map.class));
+            }
+            return 0;
+        });
+        luaState.setGlobal("println");
+
+        String testCode = "println(getmetatable(vec1)); local vec3 = vec1 + vec2; println(vec3); println(#vec3)";
 
         luaState.load(testCode, "main");
         luaState.call(0, 0);
