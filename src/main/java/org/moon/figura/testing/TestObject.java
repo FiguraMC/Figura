@@ -15,7 +15,6 @@ public class TestObject extends LuaObject {
 
     @Override
     protected void write(LuaState state) {
-        super.write(state);
         putInteger(state, "e", e);
     }
 

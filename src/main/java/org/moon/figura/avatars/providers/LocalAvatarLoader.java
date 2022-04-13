@@ -8,12 +8,22 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-//class that loads avatars from the file system
-//allows folders or .moon (nbt)
+/**
+ * Navigates through the file system, finding all folders
+ * containing avatar.json as well as all .moon files.
+ */
 public class LocalAvatarLoader {
 
+    /**
+     * After calling load(), this is an AvatarFolder that contains
+     * the whole filesystem of avatars.
+     */
     public static AvatarFolder allAvatars;
 
+    /**
+     * Clears out the root AvatarFolder, and regenerates it from the
+     * file system.
+     */
     public static void load() {
         //reset all avatars
         allAvatars = new AvatarFolder(FiguraMod.getLocalAvatarDirectory());
@@ -23,6 +33,11 @@ public class LocalAvatarLoader {
         allAvatars.fill(true);
     }
 
+    /**
+     * Represents a folder which (perhaps indirectly) contains an avatar.
+     * Either this AvatarFolder itself contains an avatar, in which case
+     * hasAvatar will be true, or one of its children contains an avatar.
+     */
     public static class AvatarFolder {
 
         private final boolean hasAvatar;
@@ -44,6 +59,16 @@ public class LocalAvatarLoader {
             return hasAvatar;
         }
 
+        /**
+         * Recursively traverses the filesystem looking for avatars under this folder.
+         * @param ignoreAvatars Whether the search should ignore avatar.json files
+         *                      inside itself. This is used on the root folder call, as we
+         *                      don't want "figura/avatars/avatar.json" to work, it needs to
+         *                      be in a subfolder.
+         * @return Whether we found an avatar in our recursive searching. If we didn't, then
+         * this folder can get ignored and not added as a child in another folder. We only want
+         * our AvatarFolder to contain sub-folders that actually have avatars.
+         */
         public boolean fill(boolean ignoreAvatars) {
             if (ignoreAvatars || !hasAvatar) {
                 boolean foundAvatar = false;
