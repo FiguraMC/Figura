@@ -1,28 +1,11 @@
 package org.moon.figura.avatars;
 
 //the avatar class
-//contains things related to a single avatar
+//contains all things related to the avatar
+//and also related to the owner, like trust settings
 public class Avatar {
 
-    private final String name;
-    private final String author;
-    private final String version;
+    private AvatarMetadata metadata;
 
-    public Avatar(String name, String author, String version) {
-        this.name = name;
-        this.author = author;
-        this.version = version;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public String getVersion() {
-        return version;
-    }
+    public record AvatarMetadata(String name, String author, String version) {}
 }

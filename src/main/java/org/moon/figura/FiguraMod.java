@@ -25,9 +25,6 @@ public class FiguraMod implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        //load avatars
-        LocalAvatarLoader.load();
-
         //register fabric events
         ClientTickEvents.END_CLIENT_TICK.register(FiguraMod::tick);
 

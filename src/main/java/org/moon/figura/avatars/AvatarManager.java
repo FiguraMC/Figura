@@ -17,17 +17,18 @@ public class AvatarManager {
 
     //player will also attempt to load from network, if possible
     public static Avatar getAvatarForPlayer(UUID player) {
-        //wip
-        return LOADED_AVATARS.computeIfAbsent(player, uuid -> new Avatar("name", "author", "version"));
+        return LOADED_AVATARS.get(player);
     }
 
     //tries to get data from an entity
-    public static Avatar getAvatarFor(Entity entity) {
+    public static Avatar getAvatar(Entity entity) {
+        UUID uuid = entity.getUuid();
+
         //load from player (fetch backend) if is a player
         if (entity instanceof PlayerEntity)
-            return getAvatarForPlayer(entity.getUuid());
+            return getAvatarForPlayer(uuid);
 
         //otherwise, just normally load it
-        return LOADED_AVATARS.computeIfAbsent(entity.getUuid(), uuid -> new Avatar("name", "author", "version"));
+        return LOADED_AVATARS.get(uuid);
     }
 }
