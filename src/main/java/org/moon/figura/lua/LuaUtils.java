@@ -4,11 +4,9 @@ import org.moon.figura.FiguraMod;
 import org.terasology.jnlua.LuaRuntimeException;
 import org.terasology.jnlua.LuaState;
 
-import java.io.InvalidClassException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Supplier;
 
 public class LuaUtils {

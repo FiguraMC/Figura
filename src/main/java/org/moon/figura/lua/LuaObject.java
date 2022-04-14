@@ -1,14 +1,11 @@
 package org.moon.figura.lua;
 
-import com.google.common.collect.ImmutableList;
 import org.moon.figura.FiguraMod;
-import org.terasology.jnlua.JavaFunction;
 import org.terasology.jnlua.LuaRuntimeException;
 import org.terasology.jnlua.LuaState;
 import org.terasology.jnlua.LuaType;
 import oshi.util.tuples.Pair;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
