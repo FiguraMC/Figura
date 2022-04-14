@@ -6,7 +6,6 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.moon.figura.avatars.providers.LocalAvatarLoader;
 import org.moon.figura.testing.LuaTest;
 
 import java.io.IOException;
@@ -28,9 +27,21 @@ public class FiguraMod implements ClientModInitializer {
         //register fabric events
         ClientTickEvents.END_CLIENT_TICK.register(FiguraMod::tick);
 
-        //TODO
-        //test
+        //TODO - test
         LuaTest.vectorTest();
+
+        /*
+        try {
+            File f = new File("C:/Users/Fran/Desktop/haha cu-be.bbmodel");
+            FileInputStream fs = new FileInputStream(f);
+            String json = new String(fs.readAllBytes());
+            NbtCompound nbt = BlockbenchModelParser.parseModel(json);
+
+            System.out.println(nbt);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        */
     }
 
     public static void tick(MinecraftClient client) {
