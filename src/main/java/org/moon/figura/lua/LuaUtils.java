@@ -8,6 +8,7 @@ import java.io.InvalidClassException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Supplier;
 
 public class LuaUtils {
@@ -31,16 +32,12 @@ public class LuaUtils {
     public static Object readFromLua(LuaState state, int index, Class<?> clazz) {
         if (!state.isNil(index)) {
             if (LuaObject.class.isAssignableFrom(clazz)) {
-                try {
-                    LuaObject result = getOrComputeGenerator(clazz).get();
-                    result.checkValid(state, index);
+                LuaObject result = getOrComputeGenerator(clazz).get();
+                if (result.checkValid(state, index)) {
                     result.read(state, index);
                     return result;
-                } catch (LuaRuntimeException e) {
-                    throw e;
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
+                throw new LuaRuntimeException("Invalid parameter");
             }
         }
         return state.toJavaObject(index, clazz);
@@ -54,7 +51,7 @@ public class LuaUtils {
      * @return A supplier that wraps the create method call and deals
      * with Exceptions that may result.
      */
-    private static Supplier<? extends LuaObject> getOrComputeGenerator(Class<?> clazzz) {
+    public static Supplier<? extends LuaObject> getOrComputeGenerator(Class<?> clazzz) {
         return generatorCache.computeIfAbsent(clazzz, (clazz) -> {
             try {
                 Method createMethod = clazz.getDeclaredMethod("create");
@@ -91,12 +88,26 @@ public class LuaUtils {
      * @param o The object we want to push.
      */
     public static void pushToLua(LuaState state, Object o) {
-        if (o instanceof LuaObject obj)
+        if (o instanceof LuaObject obj) {
             obj.pushToStack(state);
-        else
+        } else {
+            if (!(o instanceof String))
+                FiguraMod.LOGGER.warn("Sending regular java object of type " + o.getClass().getName() + " into the lua state. Is this correct?");
             state.pushJavaObject(o);
+        }
     }
 
+    public static void printStack(LuaState state) {
+        System.out.println("--Top of Stack--");
+        for (int i = state.getTop(); i > 0; i--) {
+            System.out.println(getString(state, i));
+        }
+        System.out.println("--Bottom of Stack--");
+    }
 
+    private static String getString(LuaState state, int index) {
+        Object o = state.toJavaObject(index, Object.class);
+        return o == null ? "null" : o.toString();
+    }
 
 }

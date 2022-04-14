@@ -41,6 +41,9 @@ public class FiguraVec3 extends LuaObject implements CachedType {
         result.z = z;
         return result;
     }
+    public double dot(FiguraVec3 o) {
+        return x*o.x+y*o.y+z*o.z;
+    }
     public boolean equals(FiguraVec3 o) {
         return x==o.x && y==o.y && z==o.z;
     }
@@ -304,5 +307,10 @@ public class FiguraVec3 extends LuaObject implements CachedType {
     @LuaWhitelist
     public static double lengthSquared(FiguraVec3 arg) {
         return arg.x*arg.x + arg.y*arg.y + arg.z*arg.z;
+    }
+
+    @LuaWhitelist
+    public static double dot(FiguraVec6 arg1, FiguraVec6 arg2) {
+        return arg1.dot(arg2);
     }
 }

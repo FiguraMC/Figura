@@ -16,47 +16,6 @@ import java.util.Map;
 
 public class LuaTest {
 
-    public static void test() {
-        setupNativesForLua();
-
-        LuaState luaState = new LuaState53(999999);
-        luaState.openLib(LuaState.Library.BASE);
-        luaState.openLib(LuaState.Library.TABLE);
-        luaState.openLib(LuaState.Library.STRING);
-        luaState.openLib(LuaState.Library.MATH);
-
-        (new TestObject()).pushToStack(luaState);
-        luaState.setGlobal("globalTestVar");
-
-        luaState.pushJavaFunction(state -> {
-            if (state.isString(1)) {
-                String v = state.toString(1);
-                System.out.println(v);
-            } else if (state.isNil(1)) {
-                System.out.println("nil");
-            } else if (state.isBoolean(1)) {
-                System.out.println(state.toBoolean(1));
-            } else if (state.isJavaObjectRaw(1)) {
-                System.out.println("userdata");
-            } else if (state.isTable(1)) {
-                System.out.println(state.toJavaObject(1, Map.class));
-            }
-            return 0;
-        });
-        luaState.setGlobal("println");
-
-        String testCode = "" +
-                "local x = 651 " +
-                "local y = 15 " +
-                "println(x + y) " +
-                "println(\"greetings\") " +
-                "println(globalTestVar:getFive()) " +
-                "globalTestVar:printHi() ";
-
-        luaState.load(testCode, "main");
-        luaState.call(0, 0);
-    }
-
     public static void vectorTest() {
         setupNativesForLua();
 
@@ -89,7 +48,15 @@ public class LuaTest {
         });
         luaState.setGlobal("println");
 
-        String testCode = "println(getmetatable(vec1)); local vec3 = vec1 + vec2; println(vec3); println(#vec3)";
+        String testCode = "" +
+                "println(getmetatable(vec1))" +
+                "vec1.x = 2; vec1.y = 3; " +
+                "println(tostring(vec1)); " +
+                "println(tostring(vec1 * vec1)); " +
+                "println(tostring(vec1 * 2)); " +
+                "println(tostring(5 * vec1));" +
+                "println(vec1.swizzle)" +
+                "println(vec1.nonExistentKey)";
 
         luaState.load(testCode, "main");
         luaState.call(0, 0);

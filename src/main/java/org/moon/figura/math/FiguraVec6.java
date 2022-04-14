@@ -44,6 +44,9 @@ public class FiguraVec6 extends LuaObject implements CachedType {
         result.h = h;
         return result;
     }
+    public double dot(FiguraVec6 o) {
+        return x*o.x+y*o.y+z*o.z+w*o.w+t*o.t+h*o.h;
+    }
     public boolean equals(FiguraVec6 o) {
         return x==o.x && y==o.y && z==o.z && w==o.w && t==o.t && h==o.h;
     }
@@ -284,6 +287,16 @@ public class FiguraVec6 extends LuaObject implements CachedType {
     }
 
     @LuaWhitelist
+    public static FiguraVec6 __mul(FiguraVec6 arg1, double arg2) {
+        return arg1.scaled(arg2);
+    }
+
+    @LuaWhitelist
+    public static FiguraVec6 __mul(double arg1, FiguraVec6 arg2) {
+        return arg2.scaled(arg1);
+    }
+
+    @LuaWhitelist
     public static FiguraVec6 __div(FiguraVec6 arg1, FiguraVec6 arg2) {
         if (arg2.x == 0 || arg2.y == 0 || arg2.z == 0 || arg2.w == 0 || arg2.t == 0 || arg2.h == 0)
             throw new LuaRuntimeException("Attempt to divide by 0");
@@ -324,6 +337,13 @@ public class FiguraVec6 extends LuaObject implements CachedType {
         return arg1.toString();
     }
 
+    //Fallback for fetching a key that isn't in the table
+    //TODO: make swizzle
+    @LuaWhitelist
+    public static String __index(FiguraVec6 arg1, String arg2) {
+        return "Sorry, that key isn't in here :)";
+    }
+
     //----------------------------------------------------------------
 
     // REGULAR LUA METHODS
@@ -336,6 +356,11 @@ public class FiguraVec6 extends LuaObject implements CachedType {
 
     @LuaWhitelist
     public static double lengthSquared(FiguraVec6 arg) {
-        return arg.x*arg.x + arg.y*arg.y + arg.z*arg.z + arg.w*arg.w + arg.t*arg.t + arg.h*arg.h;
+        return arg.dot(arg);
+    }
+
+    @LuaWhitelist
+    public static double dot(FiguraVec6 arg1, FiguraVec6 arg2) {
+        return arg1.dot(arg2);
     }
 }
