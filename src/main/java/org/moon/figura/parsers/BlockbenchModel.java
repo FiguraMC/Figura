@@ -12,6 +12,7 @@ public class BlockbenchModel {
     Resolution resolution;
     Texture[] textures;
     Element[] elements;
+    Animation[] animations;
 
     //do not reflection-parse the outliner
     //as it can be either an object or a string
@@ -25,6 +26,8 @@ public class BlockbenchModel {
         String name;
         String source;
     }
+
+    // -- elements -- //
 
     public static class Element {
         String name;
@@ -47,6 +50,7 @@ public class BlockbenchModel {
     //aka outliner object
     public static class GroupElement {
         String name;
+        String uuid;
         Boolean visibility;
         float[] origin;
 
@@ -69,5 +73,38 @@ public class BlockbenchModel {
         JsonObject uv;
         String[] vertices;
         Integer texture;
+    }
+
+    // -- animations -- //
+
+    public static class Animation {
+        String name;
+
+        String loop;
+        Boolean override;
+        float length;
+        float snapping;
+
+        String anim_time_update;
+        String blend_weight;
+        String start_delay;
+        String loop_delay;
+
+        //cannot parse animators
+        //as it keys are groups uuids or effects
+        JsonObject animators;
+    }
+
+    public static class KeyFrame {
+        String channel;
+        String interpolation;
+        float time;
+
+        //keyframe data can contain any type of object
+        JsonArray data_points;
+    }
+
+    public static class KeyFrameData {
+        String x, y, z;
     }
 }

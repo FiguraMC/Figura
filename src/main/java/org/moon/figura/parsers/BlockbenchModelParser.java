@@ -33,8 +33,13 @@ public class BlockbenchModelParser {
         //later when parsing the outliner, we fetch the elements from this map
         HashMap<String, NbtCompound> elements = parseElements(gson, model.elements);
 
+        //parse animations
+        //add the animation metadata to the nbt
+        //but return a map with the group animation, as we will store it on the groups themselves
+        HashMap<String, NbtList> animations = parseAnimations(nbt, gson, model.animations);
+
         //add and parse the outliner
-        nbt.put("mdl", parseOutliner(gson, model.outliner, elements));
+        nbt.put("model", parseOutliner(gson, model.outliner, elements, animations));
 
         //return the nbt
         return nbt;
@@ -76,14 +81,16 @@ public class BlockbenchModelParser {
             return map;
 
         for (BlockbenchModel.Element element : elements) {
+            if (!element.type.equalsIgnoreCase("cube") && !element.type.equalsIgnoreCase("mesh"))
+                continue;
+
             //temp variables
             String id = element.uuid;
-            String type = String.valueOf(element.type.charAt(0));
             NbtCompound nbt = new NbtCompound();
 
             //parse fields
             nbt.putString("name", element.name);
-            nbt.putString("type", type);
+            nbt.putString("type", element.type);
 
             //parse transform data
             if (element.from != null && notZero(element.from))
@@ -91,18 +98,18 @@ public class BlockbenchModelParser {
             if (element.to != null && notZero(element.to))
                 nbt.put("t", toNbtList(element.to));
             if (element.rotation != null && notZero(element.rotation))
-                nbt.put("r", toNbtList(element.rotation));
+                nbt.put("rot", toNbtList(element.rotation));
             if (element.origin != null && notZero(element.origin))
-                nbt.put("p", toNbtList(element.origin));
+                nbt.put("piv", toNbtList(element.origin));
             if (element.inflate != 0f)
-                nbt.putFloat("i", element.inflate);
+                nbt.putFloat("inf", element.inflate);
 
             if (element.visibility != null && !element.visibility)
-                nbt.putBoolean("v", false);
+                nbt.putBoolean("vsb", false);
 
             //parse faces
             NbtCompound data;
-            if (type.equalsIgnoreCase("c")) {
+            if (element.type.equalsIgnoreCase("cube")) {
                 data = parseCubeFaces(gson, element.faces);
             } else {
                 data = parseMesh(gson, element.faces, element.vertices);
@@ -131,7 +138,7 @@ public class BlockbenchModelParser {
             if (face.uv != null && notZero(face.uv))
                 faceNbt.put("uv", toNbtList(face.uv));
             if (face.rotation != 0f)
-                faceNbt.putFloat("r", face.rotation);
+                faceNbt.putFloat("rot", face.rotation);
             if (face.texture != null)
                 faceNbt.putInt("tex", face.texture);
 
@@ -175,7 +182,7 @@ public class BlockbenchModelParser {
                 NbtList faceVertices = new NbtList();
                 for (String vertex : face.vertices)
                     faceVertices.add(NbtInt.of(verticesMap.get(vertex)));
-                faceNbt.put("v", faceVertices);
+                faceNbt.put("vtx", faceVertices);
             }
 
             //parse face uv
@@ -189,12 +196,122 @@ public class BlockbenchModelParser {
             facesList.add(faceNbt);
         }
 
-        nbt.put("v", verticesList);
-        nbt.put("f", facesList);
+        nbt.put("vtx", verticesList);
+        nbt.put("fac", facesList);
         return nbt;
     }
 
-    private static NbtList parseOutliner(Gson gson, JsonArray outliner, HashMap<String, NbtCompound> elements) {
+    private static HashMap<String, NbtList> parseAnimations(NbtCompound nbt, Gson gson, BlockbenchModel.Animation[] animations) {
+        HashMap<String, NbtList> animationMap = new HashMap<>();
+
+        if (animations == null)
+            return animationMap;
+
+        int i = 0;
+        NbtList animationList = new NbtList();
+        for (BlockbenchModel.Animation animation : animations) {
+            NbtCompound animNbt = new NbtCompound();
+
+            //animation metadata
+            animNbt.putString("name", animation.name);
+            animNbt.putString("loop", animation.loop);
+            if (animation.override != null && animation.override)
+                animNbt.putBoolean("ovr", true);
+            if (animation.length != 0f)
+                animNbt.putFloat("len", animation.length);
+            if (animation.snapping != 24f)
+                animNbt.putFloat("snp", animation.snapping);
+
+            float offset = toFloat(animation.anim_time_update, 0f);
+            if (offset != 0f)
+                animNbt.putFloat("off", offset);
+
+            float blend = toFloat(animation.blend_weight, 1f);
+            if (blend != 1f)
+                animNbt.putFloat("bld", blend);
+
+            float startDelay = toFloat(animation.start_delay, 0f);
+            if (startDelay != 0f)
+                animNbt.putFloat("sdel", startDelay);
+
+            float loopDelay = toFloat(animation.loop_delay, 0f);
+            if (loopDelay != 0f)
+                animNbt.putFloat("ldel", loopDelay);
+
+            //animation group data
+            for (Map.Entry<String, JsonElement> entry : animation.animators.entrySet()) {
+                String id = entry.getKey();
+                boolean effect = id.equalsIgnoreCase("effects");
+                NbtList data = new NbtList();
+
+                //parse keyframes
+                for (JsonElement keyframeJson : entry.getValue().getAsJsonObject().get("keyframes").getAsJsonArray()) {
+                    BlockbenchModel.KeyFrame keyFrame = gson.fromJson(keyframeJson, BlockbenchModel.KeyFrame.class);
+
+                    if (effect && !keyFrame.channel.equalsIgnoreCase("timeline"))
+                        continue;
+
+                    NbtCompound keyframeNbt = new NbtCompound();
+                    keyframeNbt.putFloat("time", keyFrame.time);
+
+                    if (effect) {
+                        keyframeNbt.putString("src", keyFrame.data_points.get(0).getAsJsonObject().get("script").getAsString());
+                    } else {
+                        keyframeNbt.putString("ch", keyFrame.channel);
+                        keyframeNbt.putString("int", keyFrame.interpolation);
+
+                        //pre
+                        JsonObject dataPoints = keyFrame.data_points.get(0).getAsJsonObject();
+                        keyframeNbt.put("pre", parseKeyFrameData(gson, dataPoints));
+
+                        //end
+                        if (keyFrame.data_points.size() > 1) {
+                            JsonObject endDataPoints = keyFrame.data_points.get(1).getAsJsonObject();
+                            keyframeNbt.put("end", parseKeyFrameData(gson, endDataPoints));
+                        }
+                    }
+
+                    data.add(keyframeNbt);
+                }
+
+                //add to nbt
+                if (effect) {
+                    animNbt.put("code", data);
+                } else {
+                    NbtCompound compound = new NbtCompound();
+                    compound.putInt("id", i);
+                    compound.put("kf", data);
+
+                    if (animationMap.containsKey(id)) {
+                        animationMap.get(id).add(compound);
+                    } else {
+                        NbtList list = new NbtList();
+                        list.add(compound);
+                        animationMap.put(id, list);
+                    }
+                }
+            }
+
+            animationList.add(animNbt);
+            i++;
+        }
+
+        nbt.put("anim", animationList);
+        return animationMap;
+    }
+
+    private static NbtList parseKeyFrameData(Gson gson, JsonObject object) {
+        BlockbenchModel.KeyFrameData endFrameData = gson.fromJson(object, BlockbenchModel.KeyFrameData.class);
+
+        NbtList nbt = new NbtList();
+        nbt.add(NbtFloat.of(toFloat(endFrameData.x, 0f)));
+        nbt.add(NbtFloat.of(toFloat(endFrameData.y, 0f)));
+        nbt.add(NbtFloat.of(toFloat(endFrameData.z, 0f)));
+
+        return nbt;
+    }
+
+    private static NbtList parseOutliner(Gson gson, JsonArray outliner, HashMap<String, NbtCompound> elements, HashMap<String, NbtList> animations) {
         NbtList children = new NbtList();
 
         if (outliner == null)
@@ -203,7 +320,9 @@ public class BlockbenchModelParser {
         for (JsonElement element : outliner) {
             //check if it is an ID first
             if (element instanceof JsonPrimitive) {
-                children.add(elements.get(element.getAsString()));
+                if (elements.containsKey(element.getAsString()))
+                    children.add(elements.get(element.getAsString()));
+
                 continue;
             }
 
@@ -214,15 +333,19 @@ public class BlockbenchModelParser {
             //parse fields
             groupNbt.putString("name", group.name);
             if (group.visibility != null && !group.visibility)
-                groupNbt.putBoolean("v", false);
+                groupNbt.putBoolean("vsb", false);
 
             //parse transforms
             if (group.origin != null && notZero(group.origin))
-                groupNbt.put("p", toNbtList(group.origin));
+                groupNbt.put("piv", toNbtList(group.origin));
 
             //parse children
             if (group.children != null && group.children.size() > 0)
-                groupNbt.put("chd", parseOutliner(gson, group.children, elements));
+                groupNbt.put("chld", parseOutliner(gson, group.children, elements, animations));
+
+            //add animations
+            if (animations.containsKey(group.uuid))
+                groupNbt.put("anim", animations.get(group.uuid));
 
             children.add(groupNbt);
         }
@@ -268,5 +391,14 @@ public class BlockbenchModelParser {
         }
 
         return !zero;
+    }
+
+    //try converting a String to float, with a fallback
+    public static float toFloat(String input, float fallback) {
+        try {
+            return Float.parseFloat(input);
+        } catch (Exception ignored) {
+            return fallback;
+        }
     }
 }
