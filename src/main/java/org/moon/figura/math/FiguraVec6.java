@@ -5,7 +5,6 @@ import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.utils.caching.CacheUtils;
 import org.moon.figura.utils.caching.CachedType;
 import org.terasology.jnlua.LuaRuntimeException;
-import org.terasology.jnlua.LuaState;
 
 public class FiguraVec6 extends LuaObject implements CachedType {
 
@@ -21,6 +20,9 @@ public class FiguraVec6 extends LuaObject implements CachedType {
     }
     public void free() {
         CACHE.acceptOld(this);
+    }
+    public static FiguraVec6 create() {
+        return CACHE.getFresh();
     }
 
     //----------------------------------------------------------------
@@ -235,38 +237,6 @@ public class FiguraVec6 extends LuaObject implements CachedType {
     }
 
     //----------------------------------------------------------------
-
-    // LUA OBJECT METHODS
-    //----------------------------------------------------------------
-
-    @Override
-    protected String getRegistryKey() {
-        return "figura_vector_6";
-    }
-
-    @Override
-    protected void read(LuaState state, int index) {
-        x = readDouble(state, index, "x");
-        y = readDouble(state, index, "y");
-        z = readDouble(state, index, "z");
-        w = readDouble(state, index, "w");
-        t = readDouble(state, index, "t");
-        h = readDouble(state, index, "h");
-    }
-
-    @Override
-    protected void write(LuaState state) {
-        putDouble(state, "x", x);
-        putDouble(state, "y", y);
-        putDouble(state, "z", z);
-        putDouble(state, "w", w);
-        putDouble(state, "t", t);
-        putDouble(state, "h", h);
-    }
-
-    public static FiguraVec6 create() {
-        return CACHE.getFresh();
-    }
 
     // METAMETHODS
     //----------------------------------------------------------------

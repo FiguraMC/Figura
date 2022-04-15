@@ -28,7 +28,7 @@ public class FiguraMod implements ClientModInitializer {
         ClientTickEvents.END_CLIENT_TICK.register(FiguraMod::tick);
 
         //TODO - test
-        LuaTest.vectorTest();
+        LuaTest.test();
 
         /*
         try {

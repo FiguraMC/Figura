@@ -22,6 +22,9 @@ public class FiguraVec3 extends LuaObject implements CachedType {
     public void free() {
         CACHE.acceptOld(this);
     }
+    public static FiguraVec3 create() {
+        return CACHE.getFresh();
+    }
 
     //----------------------------------------------------------------
 
@@ -208,32 +211,6 @@ public class FiguraVec3 extends LuaObject implements CachedType {
     }
 
     //----------------------------------------------------------------
-
-    // LUA OBJECT METHODS
-    //----------------------------------------------------------------
-
-    @Override
-    protected String getRegistryKey() {
-        return "figura_vector_3";
-    }
-
-    @Override
-    protected void read(LuaState state, int index) {
-        x = readDouble(state, index, "x");
-        y = readDouble(state, index, "y");
-        z = readDouble(state, index, "z");
-    }
-
-    @Override
-    protected void write(LuaState state) {
-        putDouble(state, "x", x);
-        putDouble(state, "y", y);
-        putDouble(state, "z", z);
-    }
-
-    public static FiguraVec3 create() {
-        return CACHE.getFresh();
-    }
 
     // METAMETHODS
     //----------------------------------------------------------------

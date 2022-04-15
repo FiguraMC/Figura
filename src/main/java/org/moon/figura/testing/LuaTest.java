@@ -1,35 +1,25 @@
 package org.moon.figura.testing;
 
-import net.fabricmc.loader.api.FabricLoader;
-import org.moon.figura.FiguraMod;
-import org.moon.figura.math.FiguraVec6;
+import org.moon.figura.lua.FiguraLuaState;
+import org.moon.figura.lua.LuaUtils;
 import org.terasology.jnlua.LuaState;
-import org.terasology.jnlua.LuaState53;
-import org.terasology.jnlua.NativeSupport;
 
-import java.io.File;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.Map;
 
 public class LuaTest {
 
-    public static void vectorTest() {
-        setupNativesForLua();
+    public static void test() {
+        LuaUtils.setupNativesForLua();
 
-        LuaState luaState = new LuaState53(999999);
+        FiguraLuaState luaState = new FiguraLuaState();
         luaState.openLib(LuaState.Library.BASE);
         luaState.openLib(LuaState.Library.TABLE);
         luaState.openLib(LuaState.Library.STRING);
         luaState.openLib(LuaState.Library.MATH);
         luaState.pop(4); //Pop the four libraries we just put on there
 
-        FiguraVec6.create().pushToStack(luaState);
-        luaState.setGlobal("vec1");
-        FiguraVec6.create().pushToStack(luaState);
-        luaState.setGlobal("vec2");
+        luaState.pushJavaObject(new TestObject());
+        luaState.setGlobal("testObj");
 
         luaState.pushJavaFunction(state -> {
             if (state.isString(1)) {
@@ -40,7 +30,7 @@ public class LuaTest {
             } else if (state.isBoolean(1)) {
                 System.out.println(state.toBoolean(1));
             } else if (state.isJavaObjectRaw(1)) {
-                System.out.println("userdata");
+                System.out.println(state.toJavaObject(1, Object.class));
             } else if (state.isTable(1)) {
                 System.out.println(state.toJavaObject(1, Map.class));
             }
@@ -49,66 +39,15 @@ public class LuaTest {
         luaState.setGlobal("println");
 
         String testCode = "" +
-                "println(getmetatable(vec1))" +
-                "vec1.x = 2; vec1.y = 3; " +
-                "println(tostring(vec1)); " +
-                "println(tostring(vec1 * vec1)); " +
-                "println(tostring(vec1 * 2)); " +
-                "println(tostring(5 * vec1));" +
-                "println(vec1.swizzle)" +
-                "println(vec1.nonExistentKey)";
+                "local testObj2 = testObj:getNewObject()" +
+                "println(testObj2)" +
+                "testObj2:printX()" +
+                "println(testObj2:getHashMap())" +
+                "println(testObj2.x)" +
+                "println(testObj2.y)";
 
         luaState.load(testCode, "main");
         luaState.call(0, 0);
-    }
-
-    /**
-     * Figures out the OS and copies the appropriate lua native binaries into a path, then loads them up
-     * so that JNLua has access to them.
-     */
-    public static void setupNativesForLua() {
-        boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
-        boolean isMacOS = System.getProperty("os.name").toLowerCase().contains("mac");
-        StringBuilder builder = new StringBuilder(isWindows ? "libjnlua-" : "jnlua-");
-        builder.append("5.3-");
-        if (isWindows) {
-            builder.append("windows-");
-        } else if (isMacOS) {
-            builder.append("mac-");
-        } else {
-            builder.append("linux-");
-        }
-
-        if (System.getProperty("os.arch").endsWith("64")) {
-            builder.append("amd64");
-        } else {
-            builder.append("i686");
-        }
-
-        if (isWindows) {
-            builder.append(".dll");
-        } else if (isMacOS) {
-            builder.append(".dylib");
-        } else {
-            builder.append(".so");
-        }
-
-        Path nativesFolder = FabricLoader.getInstance().getGameDir().normalize().resolve("libraries/lua-natives/");
-
-        String targetLib = "/natives/" + builder;
-        InputStream libStream = FiguraMod.class.getResourceAsStream(targetLib);
-        File f = nativesFolder.resolve(builder.toString()).toFile();
-
-        try {
-            if (libStream == null) throw new Exception("Cannot read natives from resources");
-            Files.createDirectories(nativesFolder);
-            Files.copy(libStream, f.toPath().toAbsolutePath(), StandardCopyOption.REPLACE_EXISTING);
-        } catch (Exception e) {
-            FiguraMod.LOGGER.error("Failed to copy Lua natives");
-            FiguraMod.LOGGER.error(e);
-        }
-
-        NativeSupport.loadLocation = f.getAbsolutePath();
     }
 
 
