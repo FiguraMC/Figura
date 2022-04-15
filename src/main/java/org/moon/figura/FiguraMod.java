@@ -40,7 +40,9 @@ public class FiguraMod implements ClientModInitializer {
         //TODO - test
         try {
             LocalAvatarFetcher.load();
-            Avatar a = AvatarLoader.loadAvatar(LocalAvatarFetcher.ALL_AVATARS.get(0).getPath());
+            if (!LocalAvatarFetcher.ALL_AVATARS.isEmpty()) {
+                Avatar a = AvatarLoader.loadAvatar(LocalAvatarFetcher.ALL_AVATARS.get(0).getPath());
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

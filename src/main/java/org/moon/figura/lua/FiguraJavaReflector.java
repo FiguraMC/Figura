@@ -16,8 +16,8 @@ public class FiguraJavaReflector implements JavaReflector {
     private static final JavaFunction defaultIndexFunction = DefaultJavaReflector.getInstance().getMetamethod(Metamethod.INDEX);
 
     //Contains a cache of whitelisted methods and fields for every class.
-    public static final Map<Class<? extends LuaObject>, Map<String, List<MethodWrapper>>> functionCache = new HashMap<>();
-    public static final Map<Class<? extends LuaObject>, Map<String, Field>> fieldCache = new HashMap<>();
+    public static final Map<Class<?>, Map<String, List<MethodWrapper>>> functionCache = new HashMap<>();
+    public static final Map<Class<?>, Map<String, Field>> fieldCache = new HashMap<>();
 
     @Override
     public JavaFunction getMetamethod(Metamethod metamethod) {
@@ -33,8 +33,8 @@ public class FiguraJavaReflector implements JavaReflector {
             Class<?> objectClass = getObjectClass(object);
             String key = luaState.toString(-1);
 
-            if (LuaObject.class.isAssignableFrom(objectClass))
-                buildCachesIfNeeded(objectClass.asSubclass(LuaObject.class));
+            if (objectClass.isAnnotationPresent(LuaWhitelist.class))
+                buildCachesIfNeeded(objectClass);
             else
                 return defaultIndexFunction.invoke(luaState);
 
@@ -67,7 +67,7 @@ public class FiguraJavaReflector implements JavaReflector {
         return 1;
     };
 
-    private static void buildCachesIfNeeded(Class<? extends LuaObject> clazz) {
+    private static void buildCachesIfNeeded(Class<?> clazz) {
         if (functionCache.containsKey(clazz)) return;
 
         Map<String, List<MethodWrapper>> methodMap = new HashMap<>();

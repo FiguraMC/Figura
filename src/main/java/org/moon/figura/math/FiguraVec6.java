@@ -1,12 +1,12 @@
 package org.moon.figura.math;
 
-import org.moon.figura.lua.LuaObject;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.utils.caching.CacheUtils;
 import org.moon.figura.utils.caching.CachedType;
 import org.terasology.jnlua.LuaRuntimeException;
 
-public class FiguraVec6 extends LuaObject implements CachedType {
+@LuaWhitelist
+public class FiguraVec6 implements CachedType {
 
     public double x, y, z, w, t, h;
 

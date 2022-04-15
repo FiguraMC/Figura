@@ -47,7 +47,12 @@ public class LuaTest {
                 "println(testObj2.y)";
 
         luaState.load(testCode, "main");
-        luaState.call(0, 0);
+        try {
+            luaState.call(0, 0);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
 

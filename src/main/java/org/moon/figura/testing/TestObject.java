@@ -1,11 +1,11 @@
 package org.moon.figura.testing;
 
-import org.moon.figura.lua.LuaObject;
 import org.moon.figura.lua.LuaWhitelist;
 
 import java.util.HashMap;
 
-public class TestObject extends LuaObject {
+@LuaWhitelist
+public class TestObject {
 
     @LuaWhitelist
     public double x = 5;

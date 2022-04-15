@@ -27,10 +27,10 @@ public class FiguraConverter implements Converter {
     public void convertJavaObject(LuaState luaState, Object object) {
         //Whitelisted types (NOT Object!)
         if (object instanceof Double
-            || object instanceof LuaObject
+                || object == null
+            || object.getClass().isAnnotationPresent(LuaWhitelist.class)
             || object instanceof String
             || object instanceof Integer
-            || object == null
             || object instanceof Float
             || object instanceof Boolean
             || object instanceof Long
