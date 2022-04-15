@@ -25,6 +25,7 @@ public class BlockbenchModel {
     public static class Texture {
         String name;
         String source;
+        String render_mode;
     }
 
     // -- elements -- //
@@ -53,6 +54,7 @@ public class BlockbenchModel {
         String uuid;
         Boolean visibility;
         float[] origin;
+        float[] rotation;
 
         //cannot parse children
         //same reason as outliner
@@ -83,7 +85,6 @@ public class BlockbenchModel {
         String loop;
         Boolean override;
         float length;
-        float snapping;
 
         String anim_time_update;
         String blend_weight;
