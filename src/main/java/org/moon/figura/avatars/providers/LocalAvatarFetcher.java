@@ -12,7 +12,7 @@ import java.util.List;
  * Navigates through the file system, finding all folders
  * containing avatar.json as well as all .moon files.
  */
-public class LocalAvatarLoader {
+public class LocalAvatarFetcher {
 
     /**
      * After calling load(), this is an AvatarFolder that contains
@@ -30,11 +30,27 @@ public class LocalAvatarLoader {
 
         //load avatars, however we do not want to accept avatars in the root folder,
         //so we skip right into the children loading
-        AvatarFolder root = new AvatarFolder(FiguraMod.getLocalAvatarDirectory());
+        AvatarFolder root = new AvatarFolder(getLocalAvatarDirectory());
         root.fill(true);
 
         //add new avatars
         ALL_AVATARS.addAll(root.getChildren());
+    }
+
+    /**
+     * Returns the directory where all local avatars are stored.
+     * The directory is always under MOD_ID directory.
+     */
+    public static Path getLocalAvatarDirectory() {
+        Path p = FiguraMod.getFiguraDirectory().resolve("avatars");
+        try {
+            Files.createDirectories(p);
+        } catch (Exception e) {
+            FiguraMod.LOGGER.error("Failed to create avatar directory");
+            FiguraMod.LOGGER.error(e);
+        }
+
+        return p;
     }
 
     /**

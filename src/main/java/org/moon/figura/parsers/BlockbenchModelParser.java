@@ -6,80 +6,101 @@ import net.minecraft.nbt.NbtFloat;
 import net.minecraft.nbt.NbtInt;
 import net.minecraft.nbt.NbtList;
 
+import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 //main class to convert a blockbench model (json) into nbt
 //default fields are omitted from the nbt to save up space
+//note: use the same instance for parsing multiple models for the same avatar
 public class BlockbenchModelParser {
 
+    //texture offset for diverse models
+    private int textureOffset = 0;
+    //animation offset
+    private int animationOffset = 0;
+
+    //used during the parser
+    private final HashMap<String, NbtCompound> elementMap = new HashMap<>();
+    private final HashMap<String, NbtList> animationMap = new HashMap<>();
+    private final HashMap<String, TextureData> textureMap = new HashMap<>();
+    private final HashMap<Integer, String> textureIdMap = new HashMap<>();
+
     //parser
-    public static NbtCompound parseModel(String json) {
+    public ModelData parseModel(String json) {
         //parse json -> object
         Gson gson = new GsonBuilder().create();
         BlockbenchModel model = gson.fromJson(json, BlockbenchModel.class);
+
+        //return lists
+        List<NbtCompound> textureList = new ArrayList<>();
+        List<NbtCompound> animationList = new ArrayList<>();
 
         //object -> nbt
         NbtCompound nbt = new NbtCompound();
         nbt.putString("name", model.name);
 
-        //add texture size
-        parseResolution(nbt, model.resolution);
-
-        //add textures
-        parseTextures(nbt, model.textures);
+        //parse textures first
+        //we want to save the textures in a separated list
+        //we also want to fix the UV mismatch from the resolution and the texture
+        //emissive textures are not put into the texture map, so we need to fix parts texture ids
+        parseTextures(textureList, model.textures, model.resolution);
 
         //parse elements into a map of UUID (String) -> NbtCompound (the element)
         //later when parsing the outliner, we fetch the elements from this map
-        HashMap<String, NbtCompound> elements = parseElements(gson, model.elements);
+        parseElements(gson, model.elements);
 
         //parse animations
-        //add the animation metadata to the nbt
+        //add the animation metadata to the animation list
         //but return a map with the group animation, as we will store it on the groups themselves
-        HashMap<String, NbtList> animations = parseAnimations(nbt, gson, model.animations);
+        parseAnimations(animationList, gson, model.animations);
 
         //add and parse the outliner
-        nbt.put("model", parseOutliner(gson, model.outliner, elements, animations));
+        nbt.put("chld", parseOutliner(gson, model.outliner));
 
-        //return the nbt
-        return nbt;
+        //clear variables used by the parser
+        elementMap.clear();
+        animationMap.clear();
+        textureMap.clear();
+        textureIdMap.clear();
+
+        //return the parsed data
+        return new ModelData(textureList, animationList, nbt);
     }
 
     // -- internal functions -- //
 
-    private static void parseResolution(NbtCompound nbt, BlockbenchModel.Resolution res) {
-        if (res == null)
-            return;
-
-        NbtCompound resolution = new NbtCompound();
-        resolution.putInt("w", res.width);
-        resolution.putInt("h", res.height);
-
-        nbt.put("res", resolution);
-    }
-
-    private static void parseTextures(NbtCompound nbt, BlockbenchModel.Texture[] textures) {
+    private void parseTextures(List<NbtCompound> list, BlockbenchModel.Texture[] textures, BlockbenchModel.Resolution resolution) {
         if (textures == null)
             return;
 
-        NbtList list = new NbtList();
+        for (int i = 0; i < textures.length; i++) {
+            String name = textures[i].name.replace(".png", "");
+            String source = textures[i].source.replace("data:image/png;base64,", "");
+            String renderType = textures[i].render_mode;
 
-        for (BlockbenchModel.Texture texture : textures) {
+            //nbt
             NbtCompound compound = new NbtCompound();
-            compound.putString("name", texture.name.replace(".png", ""));
-            compound.putString("src", texture.source.replace("data:image/png;base64,", ""));
+            compound.putString("name", name);
+            compound.putByteArray("src", source.getBytes());
+            if (!renderType.equalsIgnoreCase("default"))
+                compound.putString("type", renderType);
             list.add(compound);
+
+            //lists
+            textureIdMap.put(i, name);
+            if (renderType.equalsIgnoreCase("default")) {
+                int[] imageSize = getTextureSize(Base64.getDecoder().decode(source));
+                textureMap.put(name, new TextureData(i + textureOffset, new float[]{(float) imageSize[0] / resolution.width, (float) imageSize[1] / resolution.height}));
+            }
         }
 
-        nbt.put("tex", list);
+        textureOffset += list.size();
     }
 
-    private static HashMap<String, NbtCompound> parseElements(Gson gson, BlockbenchModel.Element[] elements) {
-        HashMap<String, NbtCompound> map = new HashMap<>();
-
-        if (elements == null)
-            return map;
-
+    private void parseElements(Gson gson, BlockbenchModel.Element[] elements) {
         for (BlockbenchModel.Element element : elements) {
             if (!element.type.equalsIgnoreCase("cube") && !element.type.equalsIgnoreCase("mesh"))
                 continue;
@@ -116,13 +137,11 @@ public class BlockbenchModelParser {
             }
             nbt.put("data", data);
 
-            map.put(id, nbt);
+            elementMap.put(id, nbt);
         }
-
-        return map;
     }
 
-    private static NbtCompound parseCubeFaces(Gson gson, JsonObject faces) {
+    private NbtCompound parseCubeFaces(Gson gson, JsonObject faces) {
         NbtCompound nbt = new NbtCompound();
 
         for (String cubeFace : BlockbenchModel.CubeFace.FACES) {
@@ -132,15 +151,27 @@ public class BlockbenchModelParser {
             //convert face json to java object
             BlockbenchModel.CubeFace face = gson.fromJson(faces.getAsJsonObject(cubeFace), BlockbenchModel.CubeFace.class);
 
-            //parse face
-            NbtCompound faceNbt = new NbtCompound();
+            //dont add null faces
+            if (face.texture == null)
+                continue;
 
-            if (face.uv != null && notZero(face.uv))
-                faceNbt.put("uv", toNbtList(face.uv));
+            //parse texture
+            TextureData texture = textureMap.get(textureIdMap.get(face.texture));
+            if (texture == null)
+                continue;
+
+            NbtCompound faceNbt = new NbtCompound();
+            faceNbt.putInt("tex", texture.id);
+
+            //parse face
             if (face.rotation != 0f)
                 faceNbt.putFloat("rot", face.rotation);
-            if (face.texture != null)
-                faceNbt.putInt("tex", face.texture);
+
+            //parse uv
+            if (face.uv != null && notZero(face.uv)) {
+                float[] uv = {face.uv[0] * texture.fixedSize[0], face.uv[1] * texture.fixedSize[1], face.uv[2] * texture.fixedSize[0], face.uv[3] * texture.fixedSize[1]};
+                faceNbt.put("uv", toNbtList(uv));
+            }
 
             nbt.put(String.valueOf(cubeFace.charAt(0)), faceNbt);
         }
@@ -148,7 +179,7 @@ public class BlockbenchModelParser {
         return nbt;
     }
 
-    private static NbtCompound parseMesh(Gson gson, JsonObject faces, JsonObject vertices) {
+    private NbtCompound parseMesh(Gson gson, JsonObject faces, JsonObject vertices) {
         NbtCompound nbt = new NbtCompound();
 
         //parse vertices first, as the faces will reference it later
@@ -171,11 +202,17 @@ public class BlockbenchModelParser {
             //convert json to java object
             BlockbenchModel.MeshFace face = gson.fromJson(entry.getValue(), BlockbenchModel.MeshFace.class);
 
-            //parse face
-            NbtCompound faceNbt = new NbtCompound();
+            //dont parse empty faces
+            if (face.texture == null)
+                continue;
 
-            if (face.texture != null)
-                faceNbt.putInt("tex", face.texture);
+            //parse texture
+            TextureData texture = textureMap.get(textureIdMap.get(face.texture));
+            if (texture == null)
+                continue;
+
+            NbtCompound faceNbt = new NbtCompound();
+            faceNbt.putInt("tex", texture.id);
 
             //parse face vertices
             if (face.vertices != null) {
@@ -185,11 +222,14 @@ public class BlockbenchModelParser {
                 faceNbt.put("vtx", faceVertices);
             }
 
-            //parse face uv
+            //parse uv
             if (face.uv != null) {
                 NbtCompound faceUV = new NbtCompound();
-                for (Map.Entry<String, JsonElement> uvEntry : face.uv.entrySet())
-                    faceUV.put(String.valueOf(verticesMap.get(uvEntry.getKey())), toNbtList(toFloatArray(uvEntry.getValue())));
+                for (Map.Entry<String, JsonElement> uvEntry : face.uv.entrySet()) {
+                    float[] uv = toFloatArray(uvEntry.getValue());
+                    float[] fixedUV = {uv[0] * texture.fixedSize[0], uv[1] * texture.fixedSize[1]};
+                    faceUV.put(String.valueOf(verticesMap.get(uvEntry.getKey())), toNbtList(fixedUV));
+                }
                 faceNbt.put("uv", faceUV);
             }
 
@@ -201,14 +241,11 @@ public class BlockbenchModelParser {
         return nbt;
     }
 
-    private static HashMap<String, NbtList> parseAnimations(NbtCompound nbt, Gson gson, BlockbenchModel.Animation[] animations) {
-        HashMap<String, NbtList> animationMap = new HashMap<>();
-
+    private void parseAnimations(List<NbtCompound> list, Gson gson, BlockbenchModel.Animation[] animations) {
         if (animations == null)
-            return animationMap;
+            return;
 
         int i = 0;
-        NbtList animationList = new NbtList();
         for (BlockbenchModel.Animation animation : animations) {
             NbtCompound animNbt = new NbtCompound();
 
@@ -219,8 +256,6 @@ public class BlockbenchModelParser {
                 animNbt.putBoolean("ovr", true);
             if (animation.length != 0f)
                 animNbt.putFloat("len", animation.length);
-            if (animation.snapping != 24f)
-                animNbt.putFloat("snp", animation.snapping);
 
             float offset = toFloat(animation.anim_time_update, 0f);
             if (offset != 0f)
@@ -239,6 +274,11 @@ public class BlockbenchModelParser {
                 animNbt.putFloat("ldel", loopDelay);
 
             //animation group data
+
+            //hacky solution to skip the for loop
+            if (animation.animators == null)
+                animation.animators = new JsonObject();
+
             for (Map.Entry<String, JsonElement> entry : animation.animators.entrySet()) {
                 String id = entry.getKey();
                 boolean effect = id.equalsIgnoreCase("effects");
@@ -279,28 +319,27 @@ public class BlockbenchModelParser {
                     animNbt.put("code", data);
                 } else {
                     NbtCompound compound = new NbtCompound();
-                    compound.putInt("id", i);
+                    compound.putInt("id", i + animationOffset);
                     compound.put("kf", data);
 
                     if (animationMap.containsKey(id)) {
                         animationMap.get(id).add(compound);
                     } else {
-                        NbtList list = new NbtList();
-                        list.add(compound);
-                        animationMap.put(id, list);
+                        NbtList nbt = new NbtList();
+                        nbt.add(compound);
+                        animationMap.put(id, nbt);
                     }
                 }
             }
 
-            animationList.add(animNbt);
+            list.add(animNbt);
             i++;
         }
 
-        nbt.put("anim", animationList);
-        return animationMap;
+        animationOffset += list.size();
     }
 
-    private static NbtList parseKeyFrameData(Gson gson, JsonObject object) {
+    private NbtList parseKeyFrameData(Gson gson, JsonObject object) {
         BlockbenchModel.KeyFrameData endFrameData = gson.fromJson(object, BlockbenchModel.KeyFrameData.class);
 
         NbtList nbt = new NbtList();
@@ -311,7 +350,7 @@ public class BlockbenchModelParser {
         return nbt;
     }
 
-    private static NbtList parseOutliner(Gson gson, JsonArray outliner, HashMap<String, NbtCompound> elements, HashMap<String, NbtList> animations) {
+    private NbtList parseOutliner(Gson gson, JsonArray outliner) {
         NbtList children = new NbtList();
 
         if (outliner == null)
@@ -320,8 +359,8 @@ public class BlockbenchModelParser {
         for (JsonElement element : outliner) {
             //check if it is an ID first
             if (element instanceof JsonPrimitive) {
-                if (elements.containsKey(element.getAsString()))
-                    children.add(elements.get(element.getAsString()));
+                if (elementMap.containsKey(element.getAsString()))
+                    children.add(elementMap.get(element.getAsString()));
 
                 continue;
             }
@@ -338,14 +377,16 @@ public class BlockbenchModelParser {
             //parse transforms
             if (group.origin != null && notZero(group.origin))
                 groupNbt.put("piv", toNbtList(group.origin));
+            if (group.rotation != null && notZero(group.rotation))
+                groupNbt.put("rot", toNbtList(group.rotation));
 
             //parse children
             if (group.children != null && group.children.size() > 0)
-                groupNbt.put("chld", parseOutliner(gson, group.children, elements, animations));
+                groupNbt.put("chld", parseOutliner(gson, group.children));
 
             //add animations
-            if (animations.containsKey(group.uuid))
-                groupNbt.put("anim", animations.get(group.uuid));
+            if (animationMap.containsKey(group.uuid))
+                groupNbt.put("anim", animationMap.get(group.uuid));
 
             children.add(groupNbt);
         }
@@ -401,4 +442,25 @@ public class BlockbenchModelParser {
             return fallback;
         }
     }
+
+    //get texture size
+    public static int[] getTextureSize(byte[] texture) {
+        int w = (int) texture[16] & 0xFF;
+        w = (w << 8) + ((int) texture[17] & 0xFF);
+        w = (w << 8) + ((int) texture[18] & 0xFF);
+        w = (w << 8) + ((int) texture[19] & 0xFF);
+
+        int h = (int) texture[20] & 0xFF;
+        h = (h << 8) + ((int) texture[21] & 0xFF);
+        h = (h << 8) + ((int) texture[22] & 0xFF);
+        h = (h << 8) + ((int) texture[23] & 0xFF);
+
+        return new int[]{w, h};
+    }
+
+    //dummy texture data
+    private record TextureData(int id, float[] fixedSize) {}
+
+    //dummy class containing the return object of the parser
+    public record ModelData(List<NbtCompound> textureList, List<NbtCompound> animationList, NbtCompound modelNbt) {}
 }
