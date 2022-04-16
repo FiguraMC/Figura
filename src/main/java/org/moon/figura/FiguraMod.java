@@ -6,9 +6,9 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.moon.figura.avatars.Avatar;
-import org.moon.figura.avatars.providers.AvatarLoader;
+import org.moon.figura.avatars.LocalAvatar;
 import org.moon.figura.avatars.providers.LocalAvatarFetcher;
+import org.moon.figura.avatars.providers.LocalAvatarLoader;
 import org.moon.figura.testing.LuaTest;
 
 import java.nio.file.Files;
@@ -32,22 +32,23 @@ public class FiguraMod implements ClientModInitializer {
 
         //TODO - test
         LuaTest.test();
-    }
 
-
-    private static Avatar a;
-    public static void tick(MinecraftClient client) {
-        ticks++;
-
-        //TODO - test
         try {
             LocalAvatarFetcher.load();
-            if (a == null && !LocalAvatarFetcher.ALL_AVATARS.isEmpty()) {
-                a = AvatarLoader.loadAvatar(LocalAvatarFetcher.ALL_AVATARS.get(0).getPath());
+            if (!LocalAvatarFetcher.ALL_AVATARS.isEmpty()) {
+                LocalAvatar avatar = LocalAvatarLoader.loadAvatar(LocalAvatarFetcher.ALL_AVATARS.get(0).getPath());
+                if (avatar != null) {
+                    avatar.saveNbt();
+                    System.out.println("meow");
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static void tick(MinecraftClient client) {
+        ticks++;
     }
 
     // -- Helper Functions -- //

@@ -20,8 +20,7 @@ public class AvatarMetadataParser {
 
         nbt.putString("name", metadata.name == null ? filename : metadata.name);
         nbt.putString("ver", metadata.version == null ? FiguraMod.VERSION : metadata.version);
-        if (metadata.author != null)
-            nbt.putString("author", metadata.author);
+        nbt.putString("author", metadata.author == null ? "" : metadata.author);
 
         return nbt;
     }

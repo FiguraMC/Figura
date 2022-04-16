@@ -4,7 +4,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtList;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.avatars.Avatar;
+import org.moon.figura.avatars.LocalAvatar;
 import org.moon.figura.parsers.AvatarMetadataParser;
 import org.moon.figura.parsers.BlockbenchModelParser;
 import org.moon.figura.parsers.LuaScriptParser;
@@ -14,17 +14,17 @@ import java.io.FileInputStream;
 import java.nio.file.Path;
 
 //class used to load avatars from a file
-//returns an Avatar
-public class AvatarLoader {
+//returns a LocalAvatar
+public class LocalAvatarLoader {
 
     // -- loaders -- //
 
-    public static Avatar loadAvatar(Path path) {
+    public static LocalAvatar loadAvatar(Path path) {
         //load as nbt (.moon)
         if (path.toString().endsWith(".moon")) {
             try {
                 FileInputStream fis = new FileInputStream(path.toFile());
-                return new Avatar(NbtIo.readCompressed(fis));
+                return new LocalAvatar(NbtIo.readCompressed(fis));
             } catch (Exception e) {
                 FiguraMod.LOGGER.error("Failed to load Avatar: " + path.getFileName().toString());
                 FiguraMod.LOGGER.error(e);
@@ -69,7 +69,7 @@ public class AvatarLoader {
 
         //if no model is found we can return the avatar here
         if (models == null || models.length == 0)
-            return new Avatar(nbt);
+            return new LocalAvatar(nbt);
 
         NbtCompound modelRoot = new NbtCompound();
         modelRoot.putString("name", "models");
@@ -93,7 +93,7 @@ public class AvatarLoader {
         nbt.put("textures", textures);
         nbt.put("animations", animations);
 
-        return new Avatar(nbt);
+        return new LocalAvatar(nbt);
     }
 
     // -- helper functions -- //
@@ -104,8 +104,7 @@ public class AvatarLoader {
 
     public static String readFile(File f) {
         try {
-            FileInputStream fs = new FileInputStream(f);
-            return new String(fs.readAllBytes());
+            return new String(new FileInputStream(f).readAllBytes());
         } catch (Exception e) {
             FiguraMod.LOGGER.error("Failed to read File: " + f.toString());
             FiguraMod.LOGGER.error(e);
