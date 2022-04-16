@@ -110,7 +110,6 @@ public class BlockbenchModelParser {
 
             //parse fields
             nbt.putString("name", element.name);
-            nbt.putString("type", element.type);
 
             //parse transform data
             if (element.from != null && notZero(element.from))
@@ -131,10 +130,12 @@ public class BlockbenchModelParser {
             NbtCompound data;
             if (element.type.equalsIgnoreCase("cube")) {
                 data = parseCubeFaces(gson, element.faces);
+                nbt.put("cube_data", data);
             } else {
                 data = parseMesh(gson, element.faces, element.vertices);
+                nbt.put("mesh_data", data);
             }
-            nbt.put("data", data);
+
 
             elementMap.put(id, nbt);
         }
@@ -191,18 +192,27 @@ public class BlockbenchModelParser {
         int index = 0;
         for (Map.Entry<String, JsonElement> entry : vertices.entrySet()) {
             verticesMap.put(entry.getKey(), index);
-            verticesList.add(index, toNbtList(toFloatArray(entry.getValue())));
+            JsonArray arr = entry.getValue().getAsJsonArray();
+            verticesList.add(NbtFloat.of(arr.get(0).getAsFloat()));
+            verticesList.add(NbtFloat.of(arr.get(1).getAsFloat()));
+            verticesList.add(NbtFloat.of(arr.get(2).getAsFloat()));
             index++;
         }
 
         //parse faces
+        NbtList texesList = new NbtList();
+        NbtList uvsList = new NbtList();
         NbtList facesList = new NbtList();
+
+        int bestType = 0; //byte
+        if (index > 255) bestType = 1; //short
+        if (index > 32767) bestType = 2; //int
         for (Map.Entry<String, JsonElement> entry : faces.entrySet()) {
             //convert json to java object
             BlockbenchModel.MeshFace face = gson.fromJson(entry.getValue(), BlockbenchModel.MeshFace.class);
 
             //dont parse empty faces
-            if (face.texture == null)
+            if (face.texture == null || face.vertices == null || face.uv == null)
                 continue;
 
             //parse texture
@@ -210,33 +220,34 @@ public class BlockbenchModelParser {
             if (texture == null)
                 continue;
 
-            NbtCompound faceNbt = new NbtCompound();
-            faceNbt.putInt("tex", texture.id);
+            //To get the texture id, shift right 4, to get the vertex count, bitmask with 0xf
+            //This just stores both pieces of info in one number, to hopefully save some file size
+            short k = (short) ((texture.id << 4) + face.vertices.length);
+            texesList.add(NbtShort.of(k));
 
-            //parse face vertices
-            if (face.vertices != null) {
-                NbtList faceVertices = new NbtList();
-                for (String vertex : face.vertices)
-                    faceVertices.add(NbtInt.of(verticesMap.get(vertex)));
-                faceNbt.put("vtx", faceVertices);
+            for (String vertex : face.vertices) {
+                //Face indices
+                NbtElement bestVal = switch (bestType) {
+                    case 0 -> NbtByte.of(verticesMap.get(vertex).byteValue());
+                    case 1 -> NbtShort.of(verticesMap.get(vertex).shortValue());
+                    case 2 -> NbtInt.of(verticesMap.get(vertex));
+                    default -> throw new IllegalStateException("Unexpected value: " + bestType);
+                };
+                facesList.add(bestVal);
+
+                //UVs
+                JsonArray uv = face.uv.getAsJsonArray(vertex);
+                float u = uv.get(0).getAsFloat() * texture.fixedSize[0];
+                float v = uv.get(1).getAsFloat() * texture.fixedSize[1];
+                uvsList.add(NbtFloat.of(u));
+                uvsList.add(NbtFloat.of(v));
             }
-
-            //parse uv
-            if (face.uv != null) {
-                NbtCompound faceUV = new NbtCompound();
-                for (Map.Entry<String, JsonElement> uvEntry : face.uv.entrySet()) {
-                    float[] uv = toFloatArray(uvEntry.getValue());
-                    float[] fixedUV = {uv[0] * texture.fixedSize[0], uv[1] * texture.fixedSize[1]};
-                    faceUV.put(String.valueOf(verticesMap.get(uvEntry.getKey())), toNbtList(fixedUV));
-                }
-                faceNbt.put("uv", faceUV);
-            }
-
-            facesList.add(faceNbt);
         }
 
         nbt.put("vtx", verticesList);
+        nbt.put("tex", texesList);
         nbt.put("fac", facesList);
+        nbt.put("uvs", uvsList);
         return nbt;
     }
 
