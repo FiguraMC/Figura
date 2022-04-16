@@ -4,6 +4,7 @@ import org.moon.figura.FiguraMod;
 import org.terasology.jnlua.*;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
@@ -12,6 +13,7 @@ public class FiguraJavaReflector implements JavaReflector {
 
     public static final FiguraJavaReflector INSTANCE = new FiguraJavaReflector();
     private static final JavaFunction defaultIndexFunction = DefaultJavaReflector.getInstance().getMetamethod(Metamethod.INDEX);
+    private static final JavaFunction defaultToStringFunction = DefaultJavaReflector.getInstance().getMetamethod(Metamethod.TOSTRING);
 
     //Contains a cache of whitelisted methods and fields for every class.
     public static final Map<Class<?>, Map<String, MethodWrapper>> methodCache = new HashMap<>();
@@ -22,6 +24,7 @@ public class FiguraJavaReflector implements JavaReflector {
     public JavaFunction getMetamethod(Metamethod metamethod) {
         return switch (metamethod) {
             case INDEX -> FIGURA_INDEX;
+            case TOSTRING -> defaultToStringFunction;
             default -> null;
         };
     }
@@ -116,12 +119,10 @@ public class FiguraJavaReflector implements JavaReflector {
                 for (int i = 0; i < luaState.getTop() && i < args.length; i++)
                     args[i] = luaState.toJavaObject(i + 1, argumentTypes[i]);
                 luaState.pushJavaObject(method.invoke(null, args));
-            } catch (IllegalArgumentException e) {
+            } catch (IllegalArgumentException | IllegalAccessException e) {
                 e.printStackTrace();
-            } catch (RuntimeException e) {
+            } catch (RuntimeException | InvocationTargetException e) {
                 throw new LuaRuntimeException(e);
-            } catch (Exception e) {
-                e.printStackTrace();
             }
             return ret;
         }
