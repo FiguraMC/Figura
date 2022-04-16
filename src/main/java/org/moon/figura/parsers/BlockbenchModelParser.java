@@ -1,10 +1,7 @@
 package org.moon.figura.parsers;
 
 import com.google.gson.*;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtFloat;
-import net.minecraft.nbt.NbtInt;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.*;
 
 import java.util.ArrayList;
 import java.util.Base64;
@@ -102,6 +99,8 @@ public class BlockbenchModelParser {
 
     private void parseElements(Gson gson, BlockbenchModel.Element[] elements) {
         for (BlockbenchModel.Element element : elements) {
+            if (element.type == null)
+                element.type = "cube";
             if (!element.type.equalsIgnoreCase("cube") && !element.type.equalsIgnoreCase("mesh"))
                 continue;
 
@@ -400,8 +399,28 @@ public class BlockbenchModelParser {
     public static NbtList toNbtList(float[] floats) {
         NbtList list = new NbtList();
 
-        for (float f : floats)
-            list.add(NbtFloat.of(f));
+        int bestType = 0; //byte
+        for (float f : floats) {
+            if (Math.rint(f) - f == 0) {
+                if (f < -127 || f >= 128)
+                    bestType = 1; //short
+                if (f < -16383 || f >= 16384) {
+                    bestType = 2;
+                    break;
+                }
+            } else {
+                bestType = 2; //float
+                break;
+            }
+        }
+
+        for (float f : floats) {
+            switch (bestType) {
+                case 0 -> list.add(NbtByte.of((byte) f));
+                case 1 -> list.add(NbtShort.of((short) f));
+                case 2 -> list.add(NbtFloat.of(f));
+            }
+        }
 
         return list;
     }

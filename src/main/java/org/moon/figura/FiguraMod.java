@@ -33,15 +33,17 @@ public class FiguraMod implements ClientModInitializer {
         //TODO - test
         LuaTest.test();
     }
-    
+
+
+    private static Avatar a;
     public static void tick(MinecraftClient client) {
         ticks++;
 
         //TODO - test
         try {
             LocalAvatarFetcher.load();
-            if (!LocalAvatarFetcher.ALL_AVATARS.isEmpty()) {
-                Avatar a = AvatarLoader.loadAvatar(LocalAvatarFetcher.ALL_AVATARS.get(0).getPath());
+            if (a == null && !LocalAvatarFetcher.ALL_AVATARS.isEmpty()) {
+                a = AvatarLoader.loadAvatar(LocalAvatarFetcher.ALL_AVATARS.get(0).getPath());
             }
         } catch (Exception e) {
             e.printStackTrace();
