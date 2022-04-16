@@ -4,31 +4,44 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtList;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.avatars.LocalAvatar;
 import org.moon.figura.parsers.AvatarMetadataParser;
 import org.moon.figura.parsers.BlockbenchModelParser;
 import org.moon.figura.parsers.LuaScriptParser;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-//class used to load avatars from a file
-//returns a LocalAvatar
+/**
+ * class used to load avatars from a file
+ * and used for hotswapping
+ */
 public class LocalAvatarLoader {
 
-    // -- loaders -- //
+    private static NbtCompound LAST_LOADED_NBT;
+    private static Path LAST_LOADED_PATH;
 
-    public static LocalAvatar loadAvatar(Path path) {
+    /**
+     * Loads an NbtCompound from the specified path
+     * @param path - the file/folder for loading the avatar
+     * @return the NbtCompound from this path
+     */
+    public static NbtCompound loadAvatar(Path path) {
+        LAST_LOADED_PATH = path;
+
         //load as nbt (.moon)
         if (path.toString().endsWith(".moon")) {
             try {
-                FileInputStream fis = new FileInputStream(path.toFile());
-                return new LocalAvatar(NbtIo.readCompressed(fis));
+                //NbtIo already closes the file stream
+                return LAST_LOADED_NBT = NbtIo.readCompressed(new FileInputStream(path.toFile()));
             } catch (Exception e) {
                 FiguraMod.LOGGER.error("Failed to load Avatar: " + path.getFileName().toString());
                 FiguraMod.LOGGER.error(e);
-                return null;
+                return LAST_LOADED_NBT = null;
             }
         }
 
@@ -69,7 +82,7 @@ public class LocalAvatarLoader {
 
         //if no model is found we can return the avatar here
         if (models == null || models.length == 0)
-            return new LocalAvatar(nbt);
+            return LAST_LOADED_NBT = nbt;
 
         NbtCompound modelRoot = new NbtCompound();
         modelRoot.putString("name", "models");
@@ -93,7 +106,25 @@ public class LocalAvatarLoader {
         nbt.put("textures", textures);
         nbt.put("animations", animations);
 
-        return new LocalAvatar(nbt);
+        return LAST_LOADED_NBT = nbt;
+    }
+
+    /**
+     * Saves the loaded NBT into a folder inside the avatar list
+     */
+    public static void saveNbt() {
+        if (LAST_LOADED_NBT == null)
+            return;
+
+        Path directory = LocalAvatarFetcher.getLocalAvatarDirectory().resolve("[§9Figura§r] Cached Avatars");
+        Path file = directory.resolve("cache-" + new SimpleDateFormat("yyyy_MM_dd-HH_mm_ss").format(new Date()) + ".moon");
+        try {
+            Files.createDirectories(directory);
+            NbtIo.writeCompressed(LAST_LOADED_NBT, new FileOutputStream(file.toFile()));
+        } catch (Exception e) {
+            FiguraMod.LOGGER.error("Failed to save avatar: " + file.getFileName().toString());
+            FiguraMod.LOGGER.error(e);
+        }
     }
 
     // -- helper functions -- //
@@ -102,14 +133,20 @@ public class LocalAvatarLoader {
         return root.toFile().listFiles(name -> name.toString().toLowerCase().endsWith(extension.toLowerCase()));
     }
 
-    public static String readFile(File f) {
+    public static String readFile(File file) {
         try {
-            return new String(new FileInputStream(f).readAllBytes());
+            FileInputStream stream = new FileInputStream(file);
+            String fileContent = new String(stream.readAllBytes());
+            stream.close();
+            return fileContent;
         } catch (Exception e) {
-            FiguraMod.LOGGER.error("Failed to read File: " + f.toString());
+            FiguraMod.LOGGER.error("Failed to read File: " + file.toString());
             FiguraMod.LOGGER.error(e);
+            return "";
         }
+    }
 
-        return "";
+    public static NbtCompound getLastLoadedNbt() {
+        return LAST_LOADED_NBT;
     }
 }

@@ -4,9 +4,10 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.nbt.NbtCompound;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.moon.figura.avatars.LocalAvatar;
+import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.providers.LocalAvatarFetcher;
 import org.moon.figura.avatars.providers.LocalAvatarLoader;
 import org.moon.figura.testing.LuaTest;
@@ -36,10 +37,12 @@ public class FiguraMod implements ClientModInitializer {
         try {
             LocalAvatarFetcher.load();
             if (!LocalAvatarFetcher.ALL_AVATARS.isEmpty()) {
-                LocalAvatar avatar = LocalAvatarLoader.loadAvatar(LocalAvatarFetcher.ALL_AVATARS.get(0).getPath());
-                if (avatar != null) {
-                    avatar.saveNbt();
-                    System.out.println("meow");
+                NbtCompound nbt = LocalAvatarLoader.loadAvatar(LocalAvatarFetcher.ALL_AVATARS.get(0).getPath());
+                if (nbt != null) {
+                    Avatar a = new Avatar(nbt);
+                    LocalAvatarLoader.saveNbt();
+
+                    System.out.println(a);
                 }
             }
         } catch (Exception e) {
