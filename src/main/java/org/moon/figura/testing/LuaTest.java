@@ -39,12 +39,15 @@ public class LuaTest {
         luaState.setGlobal("println");
 
         String testCode = "" +
-                "local testObj2 = testObj:getNewObject()" +
-                "println(testObj2)" +
-                "testObj2:printX()" +
-                "println(testObj2:getHashMap())" +
-                "println(testObj2.x)" +
-                "println(testObj2.y)";
+                "testObj:testVarArgs()" +
+                "testObj:testVarArgs(1)" +
+                "testObj:testVarArgs(1, 1)" +
+                "testObj:testVarArgs(1, nil)" +
+                "testObj:testVarArgs(nil, nil)" +
+                "testObj:testVarArgs(nil)" +
+                "testObj:testVarArgs(1, 1, 1)" +
+                "testObj:testVarArgs(nil, 1, nil)" +
+                "testObj:testVarArgs(1, nil, nil, nil, nil, 1)";
 
         luaState.load(testCode, "main");
         try {

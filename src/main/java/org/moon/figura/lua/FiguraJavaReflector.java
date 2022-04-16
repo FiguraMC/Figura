@@ -1,14 +1,12 @@
 package org.moon.figura.lua;
 
+import org.moon.figura.FiguraMod;
 import org.terasology.jnlua.*;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class FiguraJavaReflector implements JavaReflector {
 
@@ -16,7 +14,8 @@ public class FiguraJavaReflector implements JavaReflector {
     private static final JavaFunction defaultIndexFunction = DefaultJavaReflector.getInstance().getMetamethod(Metamethod.INDEX);
 
     //Contains a cache of whitelisted methods and fields for every class.
-    public static final Map<Class<?>, Map<String, List<MethodWrapper>>> functionCache = new HashMap<>();
+    public static final Map<Class<?>, Map<String, MethodWrapper>> methodCache = new HashMap<>();
+    public static final Map<Class<?>, Map<String, List<MethodWrapper>>> metaMethodCache = new HashMap<>();
     public static final Map<Class<?>, Map<String, Field>> fieldCache = new HashMap<>();
 
     @Override
@@ -44,20 +43,10 @@ public class FiguraJavaReflector implements JavaReflector {
                 return 1;
             }
 
-            List<MethodWrapper> methods = functionCache.get(objectClass).get(key);
-            if (methods != null) {
-                int argCount = luaState.getTop() - 1;
-                outer:
-                for (MethodWrapper wrapper : methods) {
-                    if (wrapper.argumentTypes.length != argCount)
-                        continue;
-                    for (int i = 0; i < argCount; i++) {
-                        int dist = luaState.getConverter().getTypeDistance(luaState, i+1, wrapper.argumentTypes[i]);
-                        if (dist == Integer.MAX_VALUE) continue outer;
-                    }
-                    luaState.pushJavaFunction(wrapper);
-                    return 1;
-                }
+            MethodWrapper method = methodCache.get(objectClass).get(key);
+            if (method != null) {
+                luaState.pushJavaFunction(method);
+                return 1;
             }
         } catch (IllegalAccessException e) {
             e.printStackTrace();
@@ -68,17 +57,22 @@ public class FiguraJavaReflector implements JavaReflector {
     };
 
     private static void buildCachesIfNeeded(Class<?> clazz) {
-        if (functionCache.containsKey(clazz)) return;
+        if (methodCache.containsKey(clazz)) return;
 
-        Map<String, List<MethodWrapper>> methodMap = new HashMap<>();
+        //Build regular (non-meta) method cache
+        Map<String, MethodWrapper> methodMap = new HashMap<>();
         for (Method method : clazz.getDeclaredMethods()) {
-            if (!method.isAnnotationPresent(LuaWhitelist.class) || !Modifier.isStatic(method.getModifiers()))
+            if (!method.isAnnotationPresent(LuaWhitelist.class)
+                    || method.getName().startsWith("__")
+                    || !Modifier.isStatic(method.getModifiers()))
                 continue;
             if (!methodMap.containsKey(method.getName()))
-                methodMap.put(method.getName(), new ArrayList<>());
-            methodMap.get(method.getName()).add(new MethodWrapper(method));
+                methodMap.put(method.getName(), new MethodWrapper(method));
+            else
+                FiguraMod.LOGGER.error("Two whitelisted methods with the same name, " + method.getName() +
+                        ", in class " + clazz.getCanonicalName() + "!");
         }
-        functionCache.put(clazz, methodMap);
+        methodCache.put(clazz, methodMap);
 
         Map<String, Field> fieldMap = new HashMap<>();
         for (Field field : clazz.getDeclaredFields()) {
@@ -98,6 +92,20 @@ public class FiguraJavaReflector implements JavaReflector {
         public MethodWrapper(Method method) {
             this.method = method;
             this.argumentTypes = method.getParameterTypes();
+            for (int i = 0; i < argumentTypes.length; i++) {
+                if (argumentTypes[i].equals(int.class)
+                    || argumentTypes[i].equals(double.class)
+                    || argumentTypes[i].equals(float.class)
+                    || argumentTypes[i].equals(boolean.class)
+                    || argumentTypes[i].equals(char.class)
+                    || argumentTypes[i].equals(long.class)
+                    || argumentTypes[i].equals(short.class)
+                    || argumentTypes[i].equals(byte.class)
+                ) {
+                    FiguraMod.LOGGER.error("Method " + method.getName() + " in class " + method.getClass().getCanonicalName() + "has primitive parameters. This can cause errors if nil is passed in, so use the wrapper classes instead!");
+                    break;
+                }
+            }
             ret = method.getReturnType() == void.class ? 0 : 1;
         }
 
@@ -105,9 +113,11 @@ public class FiguraJavaReflector implements JavaReflector {
         public int invoke(LuaState luaState) {
             try {
                 Object[] args = new Object[argumentTypes.length];
-                for (int i = 0; i < args.length; i++)
-                    args[i] = luaState.toJavaObject(i+1, argumentTypes[i]);
+                for (int i = 0; i < luaState.getTop() && i < args.length; i++)
+                    args[i] = luaState.toJavaObject(i + 1, argumentTypes[i]);
                 luaState.pushJavaObject(method.invoke(null, args));
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
             } catch (RuntimeException e) {
                 throw new LuaRuntimeException(e);
             } catch (Exception e) {

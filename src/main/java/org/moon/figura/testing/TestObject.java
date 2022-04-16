@@ -35,4 +35,10 @@ public class TestObject {
         return new HashMap();
     }
 
+    @LuaWhitelist
+    public static void testVarArgs(TestObject object, Integer arg1, Integer arg2) {
+        String result = "("+(arg1 == null ? "null" : arg1) + ", " + (arg2 == null ? "null" : arg2) + ")";
+        System.out.println(result);
+    }
+
 }
