@@ -2,6 +2,7 @@ package org.moon.figura.testing;
 
 import org.moon.figura.lua.FiguraLuaState;
 import org.moon.figura.lua.LuaUtils;
+import org.moon.figura.math.FiguraVec3;
 import org.terasology.jnlua.LuaState;
 
 import java.util.Map;
@@ -18,8 +19,10 @@ public class LuaTest {
         luaState.openLib(LuaState.Library.MATH);
         luaState.pop(4); //Pop the four libraries we just put on there
 
-        luaState.pushJavaObject(new TestObject());
-        luaState.setGlobal("testObj");
+        luaState.pushJavaObject(FiguraVec3.create());
+        luaState.setGlobal("vec1");
+        luaState.pushJavaObject(FiguraVec3.create());
+        luaState.setGlobal("vec2");
 
         luaState.pushJavaFunction(state -> {
             if (state.isString(1)) {
@@ -39,15 +42,14 @@ public class LuaTest {
         luaState.setGlobal("println");
 
         String testCode = "" +
-                "testObj:testVarArgs()" +
-                "testObj:testVarArgs(1)" +
-                "testObj:testVarArgs(1, 1)" +
-                "testObj:testVarArgs(1, nil)" +
-                "testObj:testVarArgs(nil, nil)" +
-                "testObj:testVarArgs(nil)" +
-                "testObj:testVarArgs(1, 1, 1)" +
-                "testObj:testVarArgs(nil, 1, nil)" +
-                "testObj:testVarArgs(1, nil, nil, nil, nil, 1)";
+                "vec1.x = 2; vec1.y = 3; vec1.z = 5;" +
+                "vec2.x = 7; vec2.y = 11; vec2.z = 13;" +
+                "println(vec1);" +
+                "println(vec1 + vec2);" +
+                "println(vec1 / 10);" +
+                "println(vec1 * vec2);" +
+                "println(vec1 * 2);" +
+                "println(3 * vec1);";
 
         luaState.load(testCode, "main");
         try {

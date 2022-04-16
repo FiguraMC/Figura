@@ -8,6 +8,7 @@ import org.terasology.jnlua.LuaRuntimeException;
 @LuaWhitelist
 public class FiguraVec3 implements CachedType {
 
+    @LuaWhitelist
     public double x, y, z;
 
     private FiguraVec3() {}
@@ -230,10 +231,27 @@ public class FiguraVec3 implements CachedType {
     }
 
     @LuaWhitelist
+    public static FiguraVec3 __mul(FiguraVec3 arg1, Double arg2) {
+        return arg1.scaled(arg2);
+    }
+
+    @LuaWhitelist
+    public static FiguraVec3 __mul(Double arg1, FiguraVec3 arg2) {
+        return arg2.scaled(arg1);
+    }
+
+    @LuaWhitelist
     public static FiguraVec3 __div(FiguraVec3 arg1, FiguraVec3 arg2) {
         if (arg2.x == 0 || arg2.y == 0 || arg2.z == 0)
             throw new LuaRuntimeException("Attempt to divide by 0");
         return arg1.dividedBy(arg2);
+    }
+
+    @LuaWhitelist
+    public static FiguraVec3 __div(FiguraVec3 arg1, Double arg2) {
+        if (arg2 == 0)
+            throw new LuaRuntimeException("Attempt to divide by 0");
+        return arg1.scaled(1 / arg2);
     }
 
     @LuaWhitelist

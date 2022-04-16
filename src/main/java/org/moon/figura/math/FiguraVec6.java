@@ -274,6 +274,13 @@ public class FiguraVec6 implements CachedType {
     }
 
     @LuaWhitelist
+    public static FiguraVec6 __div(FiguraVec6 arg1, Double arg2) {
+        if (arg2 == 0)
+            throw new LuaRuntimeException("Attempt to divide by 0");
+        return arg1.scaled(1 / arg2);
+    }
+
+    @LuaWhitelist
     public static FiguraVec6 __mod(FiguraVec6 arg1, FiguraVec6 arg2) {
         if (arg2.x == 0 || arg2.y == 0 || arg2.z == 0 || arg2.w == 0 || arg2.t == 0 || arg2.h == 0)
             throw new LuaRuntimeException("Attempt to reduce mod 0");

@@ -2,6 +2,7 @@ package org.moon.figura.lua;
 
 import net.fabricmc.loader.api.FabricLoader;
 import org.moon.figura.FiguraMod;
+import org.terasology.jnlua.LuaRuntimeException;
 import org.terasology.jnlua.LuaState;
 import org.terasology.jnlua.NativeSupport;
 
@@ -25,6 +26,11 @@ public class LuaUtils {
     private static String getString(LuaState state, int index) {
         Object o = state.toJavaObject(index, Object.class);
         return o == null ? "null" : o.toString();
+    }
+
+    public static void nullCheck(String methodName, Object arg) throws LuaRuntimeException {
+        if (arg == null)
+            throw new LuaRuntimeException("Cannot call " + methodName + " with nil argument.");
     }
 
     /**

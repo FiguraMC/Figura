@@ -7,7 +7,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class FiguraJavaReflector implements JavaReflector {
 
@@ -17,19 +20,20 @@ public class FiguraJavaReflector implements JavaReflector {
 
     //Contains a cache of whitelisted methods and fields for every class.
     public static final Map<Class<?>, Map<String, MethodWrapper>> methodCache = new HashMap<>();
-    public static final Map<Class<?>, Map<String, List<MethodWrapper>>> metaMethodCache = new HashMap<>();
+    public static final Map<Class<?>, Map<String, List<MethodWrapper>>> metamethodCache = new HashMap<>();
     public static final Map<Class<?>, Map<String, Field>> fieldCache = new HashMap<>();
 
     @Override
     public JavaFunction getMetamethod(Metamethod metamethod) {
         return switch (metamethod) {
             case INDEX -> FIGURA_INDEX;
+            case NEWINDEX -> FIGURA_NEW_INDEX;
             case TOSTRING -> defaultToStringFunction;
-            default -> null;
+            default -> luaState -> callMetamethod(luaState, metamethod);
         };
     }
 
-    public static final JavaFunction FIGURA_INDEX = luaState -> {
+    private static final JavaFunction FIGURA_INDEX = luaState -> {
         try {
             Object object = luaState.toJavaObject(1, Object.class);
             Class<?> objectClass = getObjectClass(object);
@@ -59,6 +63,64 @@ public class FiguraJavaReflector implements JavaReflector {
         return 1;
     };
 
+    private static final JavaFunction FIGURA_NEW_INDEX = luaState -> {
+        try {
+            Object object = luaState.toJavaObject(1, Object.class);
+            Class<?> objectClass = getObjectClass(object);
+            String key = luaState.toString(2);
+
+            if (objectClass.isAnnotationPresent(LuaWhitelist.class))
+                buildCachesIfNeeded(objectClass);
+            else
+                return defaultIndexFunction.invoke(luaState);
+
+            Field f = fieldCache.get(objectClass).get(key);
+            if (f != null)
+                f.set(object, luaState.toJavaObject(3, f.getType()));
+
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    };
+
+    private static int callMetamethod(LuaState luaState, Metamethod metamethod) {
+        String name = metamethod.getMetamethodName();
+        Object object = luaState.toJavaObject(1, Object.class);
+        Class<?> objectClass = getObjectClass(object);
+
+        if (objectClass == Double.class || objectClass == Integer.class ||
+            objectClass == String.class || objectClass == Boolean.class ||
+            objectClass == Float.class || objectClass == Long.class ||
+            objectClass == Character.class || objectClass == Short.class
+            || objectClass == Byte.class) {
+            object = luaState.toJavaObject(2, Object.class);
+            objectClass = getObjectClass(object);
+        }
+
+        if (objectClass.isAnnotationPresent(LuaWhitelist.class))
+            buildCachesIfNeeded(objectClass);
+        else
+            return 0;
+
+
+        List<MethodWrapper> candidates = metamethodCache.get(objectClass).get(name);
+        //LuaUtils.printStack(luaState);
+
+        outer:
+        for (MethodWrapper method : candidates) {
+            for (int i = 0; i < method.argumentTypes.length; i++) {
+                Class<?> clazz = method.argumentTypes[i];
+                if (luaState.getConverter().getTypeDistance(luaState, i+1, clazz) == Integer.MAX_VALUE)
+                    continue outer;
+            }
+            //If we made it through that for loop, then we've found our correct overloaded method!
+            return method.invoke(luaState);
+        }
+
+        return 0;
+    }
+
     private static void buildCachesIfNeeded(Class<?> clazz) {
         if (methodCache.containsKey(clazz)) return;
 
@@ -77,6 +139,20 @@ public class FiguraJavaReflector implements JavaReflector {
         }
         methodCache.put(clazz, methodMap);
 
+        //Build metamethod cache
+        Map<String, List<MethodWrapper>> metamethodMap = new HashMap<>();
+        for (Method method : clazz.getDeclaredMethods()) {
+            if (!method.getName().startsWith("__")
+                    || !method.isAnnotationPresent(LuaWhitelist.class)
+                    || !Modifier.isStatic(method.getModifiers()))
+                continue;
+            if (!metamethodMap.containsKey(method.getName()))
+                metamethodMap.put(method.getName(), new ArrayList<>());
+            metamethodMap.get(method.getName()).add(new MethodWrapper(method));
+        }
+        metamethodCache.put(clazz, metamethodMap);
+
+        //Build field cache
         Map<String, Field> fieldMap = new HashMap<>();
         for (Field field : clazz.getDeclaredFields()) {
             if (!field.isAnnotationPresent(LuaWhitelist.class))
@@ -96,16 +172,8 @@ public class FiguraJavaReflector implements JavaReflector {
             this.method = method;
             this.argumentTypes = method.getParameterTypes();
             for (int i = 0; i < argumentTypes.length; i++) {
-                if (argumentTypes[i].equals(int.class)
-                    || argumentTypes[i].equals(double.class)
-                    || argumentTypes[i].equals(float.class)
-                    || argumentTypes[i].equals(boolean.class)
-                    || argumentTypes[i].equals(char.class)
-                    || argumentTypes[i].equals(long.class)
-                    || argumentTypes[i].equals(short.class)
-                    || argumentTypes[i].equals(byte.class)
-                ) {
-                    FiguraMod.LOGGER.error("Method " + method.getName() + " in class " + method.getClass().getCanonicalName() + "has primitive parameters. This can cause errors if nil is passed in, so use the wrapper classes instead!");
+                if (argumentTypes[i].isPrimitive()) {
+                    FiguraMod.LOGGER.error("Method " + method.getName() + " in class " + method.getDeclaringClass().getCanonicalName() + " has primitive parameters. This can cause errors if nil is passed in, so use the wrapper classes instead!");
                     break;
                 }
             }
