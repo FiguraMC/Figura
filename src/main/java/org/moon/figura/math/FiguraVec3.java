@@ -25,6 +25,11 @@ public class FiguraVec3 implements CachedType {
     public static FiguraVec3 create() {
         return CACHE.getFresh();
     }
+    public static FiguraVec3 create(double... vals) {
+        FiguraVec3 result = create();
+        result.set(vals[0], vals[1], vals[2]);
+        return result;
+    }
 
     //----------------------------------------------------------------
 
@@ -262,10 +267,24 @@ public class FiguraVec3 implements CachedType {
     }
 
     @LuaWhitelist
+    public static FiguraVec3 __mod(FiguraVec3 arg1, Double arg2) {
+        if (arg2== 0)
+            throw new LuaRuntimeException("Attempt to reduce mod 0");
+        return arg1.mod(arg2, arg2, arg2);
+    }
+
+    @LuaWhitelist
     public static FiguraVec3 __idiv(FiguraVec3 arg1, FiguraVec3 arg2) {
         if (arg2.x == 0 || arg2.y == 0 || arg2.z == 0)
             throw new LuaRuntimeException("Attempt to divide by 0");
         return arg1.iDividedBy(arg2);
+    }
+
+    @LuaWhitelist
+    public static FiguraVec3 __idiv(FiguraVec3 arg1, Double arg2) {
+        if (arg2 == 0)
+            throw new LuaRuntimeException("Attempt to divide by 0");
+        return arg1.iDividedBy(arg2, arg2, arg2);
     }
 
     @LuaWhitelist
@@ -288,6 +307,31 @@ public class FiguraVec3 implements CachedType {
         return arg1.toString();
     }
 
+    //Fallback for fetching a key that isn't in the table
+    @LuaWhitelist
+    public static Object __index(FiguraVec3 arg1, String arg2) {
+        int len = arg2.length();
+        if (len == 1) return switch(arg2) {
+            case "1", "r" -> arg1.x;
+            case "2", "g" -> arg1.y;
+            case "3", "b" -> arg1.z;
+            default -> null;
+        };
+
+        if (len > 6)
+            throw new IllegalArgumentException("Invalid swizzle: " + arg2);
+        double[] vals = new double[len];
+        for (int i = 0; i < len; i++)
+            vals[i] = switch (arg2.charAt(i)) {
+                case '1', 'x', 'r' -> arg1.x;
+                case '2', 'y', 'g' -> arg1.y;
+                case '3', 'z', 'b' -> arg1.z;
+                case '_' -> 0;
+                default -> throw new IllegalArgumentException("Invalid swizzle: " + arg2);
+            };
+        return MathUtils.sizedVector(vals);
+    }
+
     //----------------------------------------------------------------
 
     // REGULAR LUA METHODS
@@ -304,7 +348,7 @@ public class FiguraVec3 implements CachedType {
     }
 
     @LuaWhitelist
-    public static double dot(FiguraVec6 arg1, FiguraVec6 arg2) {
+    public static double dot(FiguraVec3 arg1, FiguraVec3 arg2) {
         return arg1.dot(arg2);
     }
 }

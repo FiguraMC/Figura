@@ -8,6 +8,7 @@ import org.terasology.jnlua.LuaRuntimeException;
 @LuaWhitelist
 public class FiguraVec6 implements CachedType {
 
+    @LuaWhitelist
     public double x, y, z, w, t, h;
 
     private FiguraVec6() {}
@@ -23,6 +24,11 @@ public class FiguraVec6 implements CachedType {
     }
     public static FiguraVec6 create() {
         return CACHE.getFresh();
+    }
+    public static FiguraVec6 create(double... vals) {
+        FiguraVec6 result = create();
+        result.set(vals[0], vals[1], vals[2], vals[3], vals[4], vals[5]);
+        return result;
     }
 
     //----------------------------------------------------------------
@@ -257,12 +263,12 @@ public class FiguraVec6 implements CachedType {
     }
 
     @LuaWhitelist
-    public static FiguraVec6 __mul(FiguraVec6 arg1, double arg2) {
+    public static FiguraVec6 __mul(FiguraVec6 arg1, Double arg2) {
         return arg1.scaled(arg2);
     }
 
     @LuaWhitelist
-    public static FiguraVec6 __mul(double arg1, FiguraVec6 arg2) {
+    public static FiguraVec6 __mul(Double arg1, FiguraVec6 arg2) {
         return arg2.scaled(arg1);
     }
 
@@ -288,10 +294,24 @@ public class FiguraVec6 implements CachedType {
     }
 
     @LuaWhitelist
+    public static FiguraVec6 __mod(FiguraVec6 arg1, Double arg2) {
+        if (arg2== 0)
+            throw new LuaRuntimeException("Attempt to reduce mod 0");
+        return arg1.mod(arg2, arg2, arg2, arg2, arg2, arg2);
+    }
+
+    @LuaWhitelist
     public static FiguraVec6 __idiv(FiguraVec6 arg1, FiguraVec6 arg2) {
         if (arg2.x == 0 || arg2.y == 0 || arg2.z == 0 || arg2.w == 0 || arg2.t == 0 || arg2.h == 0)
             throw new LuaRuntimeException("Attempt to divide by 0");
         return arg1.iDividedBy(arg2);
+    }
+
+    @LuaWhitelist
+    public static FiguraVec6 __idiv(FiguraVec6 arg1, Double arg2) {
+        if (arg2 == 0)
+            throw new LuaRuntimeException("Attempt to divide by 0");
+        return arg1.iDividedBy(arg2, arg2, arg2, arg2, arg2, arg2);
     }
 
     @LuaWhitelist
@@ -315,10 +335,34 @@ public class FiguraVec6 implements CachedType {
     }
 
     //Fallback for fetching a key that isn't in the table
-    //TODO: make swizzle
     @LuaWhitelist
-    public static String __index(FiguraVec6 arg1, String arg2) {
-        return "Sorry, that key isn't in here :)";
+    public static Object __index(FiguraVec6 arg1, String arg2) {
+        int len = arg2.length();
+        if (len == 1) return switch(arg2) {
+            case "1", "r" -> arg1.x;
+            case "2", "g" -> arg1.y;
+            case "3", "b" -> arg1.z;
+            case "4", "a" -> arg1.w;
+            case "5" -> arg1.t;
+            case "6" -> arg1.h;
+            default -> null;
+        };
+
+        if (len > 6)
+            throw new IllegalArgumentException("Invalid swizzle: " + arg2);
+        double[] vals = new double[len];
+        for (int i = 0; i < len; i++)
+            vals[i] = switch (arg2.charAt(i)) {
+                case '1', 'x', 'r' -> arg1.x;
+                case '2', 'y', 'g' -> arg1.y;
+                case '3', 'z', 'b' -> arg1.z;
+                case '4', 'w', 'a' -> arg1.w;
+                case '5', 't' -> arg1.t;
+                case '6', 'h' -> arg1.h;
+                case '_' -> 0;
+                default -> throw new IllegalArgumentException("Invalid swizzle: " + arg2);
+            };
+        return MathUtils.sizedVector(vals);
     }
 
     //----------------------------------------------------------------

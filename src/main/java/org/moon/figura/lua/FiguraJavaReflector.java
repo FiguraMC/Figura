@@ -7,10 +7,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class FiguraJavaReflector implements JavaReflector {
 
@@ -55,6 +52,9 @@ public class FiguraJavaReflector implements JavaReflector {
                 luaState.pushJavaFunction(method);
                 return 1;
             }
+
+            int i = callMetamethod(luaState, Metamethod.INDEX);
+            if (i != 0) return i;
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
@@ -107,19 +107,32 @@ public class FiguraJavaReflector implements JavaReflector {
         List<MethodWrapper> candidates = metamethodCache.get(objectClass).get(name);
         //LuaUtils.printStack(luaState);
 
-        outer:
-        for (MethodWrapper method : candidates) {
-            for (int i = 0; i < method.argumentTypes.length; i++) {
-                Class<?> clazz = method.argumentTypes[i];
-                if (luaState.getConverter().getTypeDistance(luaState, i+1, clazz) == Integer.MAX_VALUE)
-                    continue outer;
+        if (candidates != null) {
+            outer:
+            for (MethodWrapper method : candidates) {
+                for (int i = 0; i < method.argumentTypes.length; i++) {
+                    Class<?> clazz = method.argumentTypes[i];
+                    if (luaState.getConverter().getTypeDistance(luaState, i+1, clazz) == Integer.MAX_VALUE)
+                        continue outer;
+                }
+                //If we made it through that for loop, then we've found our correct overloaded method!
+                return method.invoke(luaState);
             }
-            //If we made it through that for loop, then we've found our correct overloaded method!
-            return method.invoke(luaState);
         }
 
         return 0;
     }
+
+    //If you try to overload any of these metamethods, building caches will
+    //log an error.
+    private static final Set<Metamethod> NON_OVERLOADABLE = new HashSet<>() {{
+        add(Metamethod.INDEX);
+        add(Metamethod.NEWINDEX);
+        add(Metamethod.TOSTRING);
+        add(Metamethod.IPAIRS);
+        add(Metamethod.LEN);
+        add(Metamethod.UNM);
+    }};
 
     private static void buildCachesIfNeeded(Class<?> clazz) {
         if (methodCache.containsKey(clazz)) return;
@@ -150,6 +163,13 @@ public class FiguraJavaReflector implements JavaReflector {
                 metamethodMap.put(method.getName(), new ArrayList<>());
             metamethodMap.get(method.getName()).add(new MethodWrapper(method));
         }
+        //Ensure non-overloadable methods aren't overloaded
+        for (Metamethod m : NON_OVERLOADABLE) {
+            String n = m.getMetamethodName();
+            if (metamethodMap.get(n) != null && metamethodMap.get(n).size() > 1)
+                FiguraMod.LOGGER.error("Metamethod " + n + " cannot be overloaded! In class " + clazz.getCanonicalName());
+        }
+
         metamethodCache.put(clazz, metamethodMap);
 
         //Build field cache

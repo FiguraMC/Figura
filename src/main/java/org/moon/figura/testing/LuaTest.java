@@ -44,12 +44,8 @@ public class LuaTest {
         String testCode = "" +
                 "vec1.x = 2; vec1.y = 3; vec1.z = 5;" +
                 "vec2.x = 7; vec2.y = 11; vec2.z = 13;" +
-                "println(vec1);" +
-                "println(vec1 + vec2);" +
-                "println(vec1 / 10);" +
-                "println(vec1 * vec2);" +
-                "println(vec1 * 2);" +
-                "println(3 * vec1);";
+                "println(vec1.xxyxzx);" +
+                "println(vec2.yyxzxz)";
 
         luaState.load(testCode, "main");
         try {
