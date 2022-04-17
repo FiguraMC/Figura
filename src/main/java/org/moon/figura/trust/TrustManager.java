@@ -51,7 +51,7 @@ public class TrustManager {
                     nbt.put(trust.getKey(), NbtInt.of(trust.getValue().getAsInt()));
                 }
 
-                //of container
+                //create container
                 Identifier parentID = new Identifier("default_group", name);
                 TrustContainer defaultGroup = new TrustContainer(name, null, nbt);
                 TrustContainer parent = new TrustContainer(name, parentID, new NbtCompound());
@@ -94,7 +94,7 @@ public class TrustManager {
             NbtCompound targetTag = new NbtCompound();
             writeNbt(targetTag);
 
-            //of file
+            //create file
             Path targetPath = FiguraMod.getFiguraDirectory();
             targetPath = targetPath.resolve("trust_settings.nbt");
 
@@ -112,7 +112,7 @@ public class TrustManager {
 
     //write trust to nbt
     public static void writeNbt(NbtCompound nbt) {
-        //of dummy lists for later
+        //create dummy lists for later
         NbtList groupList = new NbtList();
         NbtList playerList = new NbtList();
 
@@ -194,9 +194,9 @@ public class TrustManager {
         return get(new Identifier("player", uuid.toString()));
     }
 
-    //of player trust
+    //create player trust
     private static TrustContainer create(Identifier id) {
-        //of trust
+        //create trust
         boolean isLocal = isLocal(id.getPath());
         Identifier parentID = new Identifier("group", isLocal ? "local" : "untrusted");
         TrustContainer trust =  new TrustContainer(id.getPath(), parentID, new HashMap<>());
