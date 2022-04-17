@@ -19,9 +19,9 @@ public class LuaTest {
         luaState.openLib(LuaState.Library.MATH);
         luaState.pop(4); //Pop the four libraries we just put on there
 
-        luaState.pushJavaObject(FiguraVec3.create());
+        luaState.pushJavaObject(FiguraVec3.of());
         luaState.setGlobal("vec1");
-        luaState.pushJavaObject(FiguraVec3.create());
+        luaState.pushJavaObject(FiguraVec3.of());
         luaState.setGlobal("vec2");
 
         luaState.pushJavaFunction(state -> {

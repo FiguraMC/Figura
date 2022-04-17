@@ -62,7 +62,7 @@ public class FiguraMod implements ClientModInitializer {
         try {
             Files.createDirectories(p);
         } catch (Exception e) {
-            LOGGER.error("Failed to create the main Figura directory");
+            LOGGER.error("Failed to of the main Figura directory");
             LOGGER.error(e);
         }
 

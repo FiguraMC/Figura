@@ -22,11 +22,11 @@ public class FiguraVec3 implements CachedType {
     public void free() {
         CACHE.acceptOld(this);
     }
-    public static FiguraVec3 create() {
+    public static FiguraVec3 of() {
         return CACHE.getFresh();
     }
-    public static FiguraVec3 create(double... vals) {
-        FiguraVec3 result = create();
+    public static FiguraVec3 of(double... vals) {
+        FiguraVec3 result = of();
         result.set(vals[0], vals[1], vals[2]);
         return result;
     }
@@ -43,7 +43,7 @@ public class FiguraVec3 implements CachedType {
         return Math.sqrt(lengthSquared());
     }
     public FiguraVec3 copy() {
-        FiguraVec3 result = create();
+        FiguraVec3 result = of();
         result.x = x;
         result.y = y;
         result.z = z;
