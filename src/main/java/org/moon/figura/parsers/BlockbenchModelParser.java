@@ -260,7 +260,8 @@ public class BlockbenchModelParser {
             NbtCompound animNbt = new NbtCompound();
 
             //animation metadata
-            animNbt.putString("name", animation.name);
+            String[] splitName = animation.name.split(".");
+            animNbt.putString("name", splitName[splitName.length - 1]);
             animNbt.putString("loop", animation.loop);
             if (animation.override != null && animation.override)
                 animNbt.putBoolean("ovr", true);
