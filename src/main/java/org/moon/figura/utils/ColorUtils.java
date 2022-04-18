@@ -1,7 +1,7 @@
 package org.moon.figura.utils;
 
 import net.minecraft.text.Style;
-import org.moon.figura.math.FiguraVec3;
+import org.moon.figura.math.vector.FiguraVec3;
 
 import java.awt.Color;
 
