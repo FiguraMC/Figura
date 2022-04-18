@@ -63,8 +63,7 @@ public class TrustManager {
 
             FiguraMod.LOGGER.debug("Loaded trust presets from assets");
         } catch (Exception e) {
-            FiguraMod.LOGGER.error("Could not load presets from assets");
-            FiguraMod.LOGGER.error(e);
+            FiguraMod.LOGGER.error("Could not load presets from assets", e);
         }
     }
 

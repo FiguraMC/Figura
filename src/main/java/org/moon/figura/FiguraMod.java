@@ -5,12 +5,12 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.nbt.NbtCompound;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.providers.LocalAvatarFetcher;
 import org.moon.figura.avatars.providers.LocalAvatarLoader;
 import org.moon.figura.testing.LuaTest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -22,7 +22,7 @@ public class FiguraMod implements ClientModInitializer {
     public static final String VERSION = FabricLoader.getInstance().getModContainer(MOD_ID).get().getMetadata().getVersion().getFriendlyString();
     public static final boolean CHEESE_DAY = LocalDate.now().getDayOfMonth() == 1 && LocalDate.now().getMonthValue() == 4;
     public static final Path GAME_DIR = FabricLoader.getInstance().getGameDir();
-    public static final Logger LOGGER = LogManager.getLogger();
+    public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
     public static int ticks = 0;
 
@@ -41,12 +41,11 @@ public class FiguraMod implements ClientModInitializer {
                 if (nbt != null) {
                     Avatar a = new Avatar(nbt);
                     LocalAvatarLoader.saveNbt();
-
-                    System.out.println(a);
+                    FiguraMod.LOGGER.warn(a.toString());
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("", e);
         }
     }
 
@@ -62,8 +61,7 @@ public class FiguraMod implements ClientModInitializer {
         try {
             Files.createDirectories(p);
         } catch (Exception e) {
-            LOGGER.error("Failed to create the main Figura directory");
-            LOGGER.error(e);
+            LOGGER.error("Failed to create the main Figura directory", e);
         }
 
         return p;

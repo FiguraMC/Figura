@@ -46,8 +46,7 @@ public class LocalAvatarFetcher {
         try {
             Files.createDirectories(p);
         } catch (Exception e) {
-            FiguraMod.LOGGER.error("Failed to create avatar directory");
-            FiguraMod.LOGGER.error(e);
+            FiguraMod.LOGGER.error("Failed to create avatar directory", e);
         }
 
         return p;

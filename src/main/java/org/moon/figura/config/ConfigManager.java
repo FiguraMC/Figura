@@ -18,7 +18,7 @@ import java.util.Map;
 
 public final class ConfigManager {
 
-    private static final File FILE = new File(FabricLoader.getInstance().getConfigDir().resolve(Config.MOD_NAME + ".json").toString());
+    private static final File FILE = new File(FabricLoader.getInstance().getConfigDir().resolve(FiguraMod.MOD_ID + ".json").toString());
     private static final List<Config> CONFIG_ENTRIES = new ArrayList<>() {{
         for (Config value : Config.values()) {
             if (value.type != Config.ConfigType.CATEGORY)
@@ -55,9 +55,9 @@ public final class ConfigManager {
 
                 br.close();
             }
+            FiguraMod.LOGGER.debug("Successfully loaded config file");
         } catch (Exception e) {
-            FiguraMod.LOGGER.warn(e);
-            FiguraMod.LOGGER.warn("Failed to load config file! Generating a new one...");
+            FiguraMod.LOGGER.warn("Failed to load config file! Generating a new one...", e);
             setDefaults();
         }
     }
@@ -83,9 +83,9 @@ public final class ConfigManager {
             FileWriter fileWriter = new FileWriter(FILE);
             fileWriter.write(jsonString);
             fileWriter.close();
+            FiguraMod.LOGGER.debug("Successfully saved config file");
         } catch (Exception e) {
-            FiguraMod.LOGGER.error("Failed to save config file!");
-            FiguraMod.LOGGER.error(e);
+            FiguraMod.LOGGER.error("Failed to save config file!", e);
         }
     }
 
@@ -118,6 +118,8 @@ public final class ConfigManager {
             String jsonValue = object.getAsString();
             Config.valueOf(config.getKey().toString()).setValue(jsonValue);
         }
+
+        FiguraMod.LOGGER.debug("Config updated from version " + version);
     }
 
     /*

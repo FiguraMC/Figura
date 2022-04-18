@@ -45,8 +45,7 @@ public class Avatar {
             df.setRoundingMode(RoundingMode.HALF_UP);
             return Float.parseFloat(df.format(size / 1000f));
         } catch (Exception e) {
-            FiguraMod.LOGGER.error("Failed to generate file size for model " + this.name);
-            FiguraMod.LOGGER.error(e);
+            FiguraMod.LOGGER.error("Failed to generate file size for model " + this.name, e);
             return 0f;
         }
     }

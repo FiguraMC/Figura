@@ -75,8 +75,7 @@ public class LuaUtils {
             Files.createDirectories(nativesFolder);
             Files.copy(libStream, f.toPath().toAbsolutePath(), StandardCopyOption.REPLACE_EXISTING);
         } catch (Exception e) {
-            FiguraMod.LOGGER.error("Failed to copy Lua natives");
-            FiguraMod.LOGGER.error(e);
+            FiguraMod.LOGGER.error("Failed to copy Lua natives", e);
         }
 
         NativeSupport.loadLocation = f.getAbsolutePath();

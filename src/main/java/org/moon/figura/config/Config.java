@@ -90,9 +90,6 @@ public enum Config {
      */
 
 
-    //mod name
-    public static final String MOD_NAME = FiguraMod.MOD_ID;
-
     //mod config version
     //only change this if you rename old configs
     public static final int CONFIG_VERSION = 1;
@@ -150,7 +147,7 @@ public enum Config {
         this.inputType = inputType;
 
         //generate names
-        String name = MOD_NAME + ".config." + this.name().toLowerCase();
+        String name = FiguraMod.MOD_ID + ".config." + this.name().toLowerCase();
         this.name = new TranslatableText(name);
         this.tooltip = new TranslatableText(name + ".tooltip");
 
@@ -227,7 +224,7 @@ public enum Config {
         public final Text hint;
         InputType(Predicate<String> predicate) {
             this.validator = predicate;
-            this.hint = new TranslatableText(MOD_NAME + ".config.input." + this.name().toLowerCase());
+            this.hint = new TranslatableText(FiguraMod.MOD_ID + ".config.input." + this.name().toLowerCase());
         }
     }
 

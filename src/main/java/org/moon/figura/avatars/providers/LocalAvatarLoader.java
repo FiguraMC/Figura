@@ -22,8 +22,8 @@ import java.util.Date;
  */
 public class LocalAvatarLoader {
 
-    private static NbtCompound LAST_LOADED_NBT;
-    private static Path LAST_LOADED_PATH;
+    private static NbtCompound lastLoadedNbt;
+    private static Path lastLoadedPath;
 
     /**
      * Loads an NbtCompound from the specified path
@@ -31,17 +31,16 @@ public class LocalAvatarLoader {
      * @return the NbtCompound from this path
      */
     public static NbtCompound loadAvatar(Path path) {
-        LAST_LOADED_PATH = path;
+        lastLoadedPath = path;
 
         //load as nbt (.moon)
         if (path.toString().endsWith(".moon")) {
             try {
                 //NbtIo already closes the file stream
-                return LAST_LOADED_NBT = NbtIo.readCompressed(new FileInputStream(path.toFile()));
+                return lastLoadedNbt = NbtIo.readCompressed(new FileInputStream(path.toFile()));
             } catch (Exception e) {
-                FiguraMod.LOGGER.error("Failed to load Avatar: " + path.getFileName().toString());
-                FiguraMod.LOGGER.error(e);
-                return LAST_LOADED_NBT = null;
+                FiguraMod.LOGGER.error("Failed to load Avatar: " + path.getFileName().toString(), e);
+                return lastLoadedNbt = null;
             }
         }
 
@@ -82,7 +81,7 @@ public class LocalAvatarLoader {
 
         //if no model is found we can return the avatar here
         if (models == null || models.length == 0)
-            return LAST_LOADED_NBT = nbt;
+            return lastLoadedNbt = nbt;
 
         NbtCompound modelRoot = new NbtCompound();
         modelRoot.putString("name", "models");
@@ -106,24 +105,23 @@ public class LocalAvatarLoader {
         nbt.put("textures", textures);
         nbt.put("animations", animations);
 
-        return LAST_LOADED_NBT = nbt;
+        return lastLoadedNbt = nbt;
     }
 
     /**
      * Saves the loaded NBT into a folder inside the avatar list
      */
     public static void saveNbt() {
-        if (LAST_LOADED_NBT == null)
+        if (lastLoadedNbt == null)
             return;
 
         Path directory = LocalAvatarFetcher.getLocalAvatarDirectory().resolve("[§9Figura§r] Cached Avatars");
         Path file = directory.resolve("cache-" + new SimpleDateFormat("yyyy_MM_dd-HH_mm_ss").format(new Date()) + ".moon");
         try {
             Files.createDirectories(directory);
-            NbtIo.writeCompressed(LAST_LOADED_NBT, new FileOutputStream(file.toFile()));
+            NbtIo.writeCompressed(lastLoadedNbt, new FileOutputStream(file.toFile()));
         } catch (Exception e) {
-            FiguraMod.LOGGER.error("Failed to save avatar: " + file.getFileName().toString());
-            FiguraMod.LOGGER.error(e);
+            FiguraMod.LOGGER.error("Failed to save avatar: " + file.getFileName().toString(), e);
         }
     }
 
@@ -140,13 +138,12 @@ public class LocalAvatarLoader {
             stream.close();
             return fileContent;
         } catch (Exception e) {
-            FiguraMod.LOGGER.error("Failed to read File: " + file.toString());
-            FiguraMod.LOGGER.error(e);
+            FiguraMod.LOGGER.error("Failed to read File: " + file.toString(), e);
             return "";
         }
     }
 
     public static NbtCompound getLastLoadedNbt() {
-        return LAST_LOADED_NBT;
+        return lastLoadedNbt;
     }
 }
