@@ -23,12 +23,11 @@ public class CacheUtils {
             T result = cache.poll();
             if (result == null)
                 result = generator.get();
-            else
-                result.reset();
+            result.reset();
             return result;
         }
 
-        public void acceptOld(T old) {
+        public void offerOld(T old) {
             cache.offer(old);
         }
     }

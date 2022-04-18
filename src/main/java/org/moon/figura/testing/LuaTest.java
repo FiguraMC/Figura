@@ -2,7 +2,8 @@ package org.moon.figura.testing;
 
 import org.moon.figura.lua.FiguraLuaState;
 import org.moon.figura.lua.LuaUtils;
-import org.moon.figura.math.FiguraVec3;
+import org.moon.figura.math.matrix.FiguraMat4;
+import org.moon.figura.math.vector.FiguraVec4;
 import org.terasology.jnlua.LuaState;
 
 import java.util.Map;
@@ -19,10 +20,10 @@ public class LuaTest {
         luaState.openLib(LuaState.Library.MATH);
         luaState.pop(4); //Pop the four libraries we just put on there
 
-        luaState.pushJavaObject(FiguraVec3.create());
-        luaState.setGlobal("vec1");
-        luaState.pushJavaObject(FiguraVec3.create());
-        luaState.setGlobal("vec2");
+        luaState.pushJavaObject(FiguraVec4.of(1, 2, 3, 1));
+        luaState.setGlobal("vec");
+        luaState.pushJavaObject(FiguraMat4.of());
+        luaState.setGlobal("mat");
 
         luaState.pushJavaFunction(state -> {
             if (state.isString(1)) {
@@ -42,10 +43,12 @@ public class LuaTest {
         luaState.setGlobal("println");
 
         String testCode = "" +
-                "vec1.x = 2; vec1.y = 3; vec1.z = 5;" +
-                "vec2.x = 7; vec2.y = 11; vec2.z = 13;" +
-                "println(vec1.xxyxzx);" +
-                "println(vec2.yyxzxz)";
+                "println(mat);" +
+                "println(vec);" +
+                "println(mat * vec);" +
+                "mat.v11 = 2;" +
+                "mat.v24 = 3" +
+                "println(mat:getInverse())";
 
         luaState.load(testCode, "main");
         try {

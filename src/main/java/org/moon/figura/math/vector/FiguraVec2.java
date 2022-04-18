@@ -1,6 +1,7 @@
-package org.moon.figura.math;
+package org.moon.figura.math.vector;
 
 import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.math.MathUtils;
 import org.moon.figura.utils.caching.CacheUtils;
 import org.moon.figura.utils.caching.CachedType;
 import org.terasology.jnlua.LuaRuntimeException;
@@ -20,14 +21,14 @@ public class FiguraVec2 implements CachedType {
         x = y = 0;
     }
     public void free() {
-        CACHE.acceptOld(this);
+        CACHE.offerOld(this);
     }
-    public static FiguraVec2 create() {
+    public static FiguraVec2 of() {
         return CACHE.getFresh();
     }
-    public static FiguraVec2 create(double... vals) {
-        FiguraVec2 result = create();
-        result.set(vals[0], vals[1]);
+    public static FiguraVec2 of(double x, double y) {
+        FiguraVec2 result = of();
+        result.set(x, y);
         return result;
     }
 
@@ -43,9 +44,8 @@ public class FiguraVec2 implements CachedType {
         return Math.sqrt(lengthSquared());
     }
     public FiguraVec2 copy() {
-        FiguraVec2 result = create();
-        result.x = x;
-        result.y = y;
+        FiguraVec2 result = of();
+        result.set(this);
         return result;
     }
     public double dot(FiguraVec2 o) {
@@ -57,7 +57,7 @@ public class FiguraVec2 implements CachedType {
     @Override
     public boolean equals(Object other) {
         if (other instanceof FiguraVec2 o)
-            return x==o.x && y==o.y;
+            return equals(o);
         return false;
     }
     @Override

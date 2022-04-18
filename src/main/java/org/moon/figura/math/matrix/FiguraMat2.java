@@ -1,0 +1,371 @@
+package org.moon.figura.math.matrix;
+
+import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.math.vector.FiguraVec2;
+import org.moon.figura.utils.caching.CacheUtils;
+import org.moon.figura.utils.caching.CachedType;
+
+@LuaWhitelist
+public class FiguraMat2 implements CachedType {
+
+    //Values are named as v(ROW)(COLUMN), both 1-indexed like in actual math
+    @LuaWhitelist
+    public double v11, v12, v21, v22;
+
+    private FiguraMat2() {}
+
+    // CACHING METHODS
+    //----------------------------------------------------------------
+    private static final CacheUtils.Cache<FiguraMat2> CACHE = CacheUtils.getCache(FiguraMat2::new);
+    public void reset() {
+        v12=v21 = 0;
+        v11=v22 = 1;
+    }
+    public void free() {
+        CACHE.offerOld(this);
+    }
+    public static FiguraMat2 of() {
+        return CACHE.getFresh();
+    }
+    public static FiguraMat2 of(double n11, double n21,
+                                double n12, double n22) {
+        FiguraMat2 result = of();
+        result.set(n11, n21, n12, n22);
+        return result;
+    }
+
+    //----------------------------------------------------------------
+
+    // UTILITY METHODS
+    //----------------------------------------------------------------
+    public double det() {
+        return v11 * v22 - v12 * v21;
+    }
+    public FiguraMat2 copy() {
+        FiguraMat2 result = of();
+        result.set(this);
+        return result;
+    }
+    public boolean equals(FiguraMat2 o) {
+        return
+                v11 == o.v11 && v12 == o.v12
+                && v21 == o.v21 && v22 == o.v22;
+    }
+    @Override
+    public boolean equals(Object other) {
+        if (other instanceof FiguraMat2 o)
+            return equals(o);
+        return false;
+    }
+    @Override
+    public String toString() {
+        return "\n[  " + v11 + ", " + v12 +
+                "\n   " + v21 + ", " + v22 +
+                "  ]";
+    }
+    public FiguraVec2 getCol1() {
+        return FiguraVec2.of(v11, v21);
+    }
+    public FiguraVec2 getCol2() {
+        return FiguraVec2.of(v12, v22);
+    }
+    public FiguraVec2 getRow1() {
+        return FiguraVec2.of(v11, v12);
+    }
+    public FiguraVec2 getRow2() {
+        return FiguraVec2.of(v21, v22);
+    }
+
+    //----------------------------------------------------------------
+
+    // STATIC CREATOR METHODS
+    //----------------------------------------------------------------
+    public static FiguraMat2 createScaleMatrix(double x, double y) {
+        FiguraMat2 result = of();
+        result.v11 = x;
+        result.v22 = y;
+        return result;
+    }
+    public static FiguraMat2 createRotationMatrix(double degrees) {
+        degrees = Math.toRadians(degrees);
+        double s = Math.sin(degrees);
+        double c = Math.cos(degrees);
+        FiguraMat2 result = of();
+        result.v11 = result.v22 = c;
+        result.v12 = -s;
+        result.v21 = s;
+        return result;
+    }
+
+    //----------------------------------------------------------------
+
+    // MUTATOR METHODS
+    //----------------------------------------------------------------
+
+    public void set(FiguraMat2 o) {
+        set(o.v11, o.v21, o.v12, o.v22);
+    }
+    public void set(double n11, double n21,
+                    double n12, double n22) {
+        v11 = n11;
+        v12 = n12;
+        v21 = n21;
+        v22 = n22;
+    }
+
+    public void add(FiguraMat2 o) {
+        add(o.v11, o.v21, o.v12, o.v22);
+    }
+    public void add(double n11, double n21,
+                    double n12, double n22) {
+        v11 += n11;
+        v12 += n12;
+        v21 += n21;
+        v22 += n22;
+    }
+
+    public void subtract(FiguraMat2 o) {
+        subtract(o.v11, o.v21, o.v12, o.v22);
+    }
+    public void subtract(double n11, double n21,
+                    double n12, double n22) {
+        v11 -= n11;
+        v12 -= n12;
+        v21 -= n21;
+        v22 -= n22;
+    }
+
+    public void scale(double x, double y) {
+        v11 *= x;
+        v12 *= x;
+        v21 *= y;
+        v22 *= y;
+    }
+
+    public void rotate(double degrees) {
+        degrees = Math.toRadians(degrees);
+        double c = Math.cos(degrees);
+        double s = Math.sin(degrees);
+
+        double nv11 = c*v11 - s*v21;
+        double nv12 = c*v12 - s*v22;
+
+        v21 = c*v21 + s*v11;
+        v22 = c*v22 + s*v12;
+
+        v11 = nv11;
+        v12 = nv12;
+    }
+
+    public void multiply(FiguraMat2 o) {
+        double nv11 = o.v11*v11+o.v12*v21;
+        double nv12 = o.v11*v12+o.v12*v22;
+
+        double nv21 = o.v21*v11+o.v22*v21;
+        double nv22 = o.v21*v12+o.v22*v22;
+
+        v11 = nv11;
+        v12 = nv12;
+        v21 = nv21;
+        v22 = nv22;
+    }
+
+    //o is on the right.
+    public void rightMultiply(FiguraMat2 o) {
+        double nv11 = v11*o.v11+v12*o.v21;
+        double nv12 = v11*o.v12+v12*o.v22;
+
+        double nv21 = v21*o.v11+v22*o.v21;
+        double nv22 = v21*o.v12+v22*o.v22;
+
+        v11 = nv11;
+        v12 = nv12;
+        v21 = nv21;
+        v22 = nv22;
+    }
+
+    public void transpose() {
+        double temp = v12;
+        v12 = v21;
+        v21 = temp;
+    }
+
+    public void invert() {
+        double det = det();
+        set(
+                v22 / det,
+                v12 / det,
+                v21 / det,
+                v11 / det
+        );
+    }
+
+    //----------------------------------------------------------------
+
+    // GENERATOR METHODS
+    //----------------------------------------------------------------
+
+    public FiguraMat2 transposed() {
+        FiguraMat2 result = copy();
+        result.transpose();
+        return result;
+    }
+
+    public FiguraMat2 inverted() {
+        FiguraMat2 result = copy();
+        result.invert();
+        return result;
+    }
+
+    public FiguraMat2 plus(FiguraMat2 o) {
+        FiguraMat2 result = copy();
+        result.add(o);
+        return result;
+    }
+    public FiguraMat2 plus(double n11, double n21,
+                           double n12, double n22) {
+        FiguraMat2 result = copy();
+        result.add(n11, n21, n12, n22);
+        return result;
+    }
+
+    public FiguraMat2 minus(FiguraMat2 o) {
+        FiguraMat2 result = copy();
+        result.subtract(o);
+        return result;
+    }
+    public FiguraMat2 minus(double n11, double n21,
+                            double n12, double n22) {
+        FiguraMat2 result = copy();
+        result.subtract(n11, n21, n12, n22);
+        return result;
+    }
+
+    //Returns the product of the matrices, with "o" on the left.
+    public FiguraMat2 times(FiguraMat2 o) {
+        FiguraMat2 result = of();
+
+        result.v11 = o.v11*v11+o.v12*v21;
+        result.v12 = o.v11*v12+o.v12*v22;
+
+        result.v21 = o.v21*v11+o.v22*v21;
+        result.v22 = o.v21*v12+o.v22*v22;
+
+        return result;
+    }
+
+    public FiguraVec2 times(FiguraVec2 vec) {
+        FiguraVec2 result = FiguraVec2.of();
+        result.x = v11*vec.x+v12*vec.y;
+        result.y = v21*vec.x+v22*vec.y;
+        return result;
+    }
+
+    // METAMETHODS
+    //----------------------------------------------------------------
+    @LuaWhitelist
+    public static FiguraMat2 __add(FiguraMat2 arg1, FiguraMat2 arg2) {
+        return arg1.plus(arg2);
+    }
+    @LuaWhitelist
+    public static FiguraMat2 __sub(FiguraMat2 arg1, FiguraMat2 arg2) {
+        return arg1.minus(arg2);
+    }
+    @LuaWhitelist
+    public static FiguraMat2 __mul(FiguraMat2 arg1, FiguraMat2 arg2) {
+        return arg2.times(arg1);
+    }
+    @LuaWhitelist
+    public static FiguraVec2 __mul(FiguraMat2 arg1, FiguraVec2 arg2) {
+        return arg1.times(arg2);
+    }
+    @LuaWhitelist
+    public static boolean __eq(FiguraMat2 arg1, FiguraMat2 arg2) {
+        return arg1.equals(arg2);
+    }
+    @LuaWhitelist
+    public static int __len(FiguraMat2 arg1) {
+        return 2;
+    }
+    @LuaWhitelist
+    public static String __tostring(FiguraMat2 arg1) {
+        return arg1.toString();
+    }
+    @LuaWhitelist
+    public static Object __index(FiguraMat2 arg1, String arg2) {
+        return switch (arg2) {
+            case "1" -> arg1.getCol1();
+            case "2" -> arg1.getCol2();
+            default -> null;
+        };
+    }
+
+    //----------------------------------------------------------------
+
+    // REGULAR LUA METHODS
+    //----------------------------------------------------------------
+
+    @LuaWhitelist
+    public static double det(FiguraMat2 mat) {
+        return mat.det();
+    }
+    @LuaWhitelist
+    public static void invert(FiguraMat2 mat) {
+        mat.invert();
+    }
+    @LuaWhitelist
+    public static FiguraMat2 getInverse(FiguraMat2 mat) {
+        return mat.inverted();
+    }
+    @LuaWhitelist
+    public static void transpose(FiguraMat2 mat) {
+        mat.transpose();
+    }
+    @LuaWhitelist
+    public static FiguraMat2 getTranspose(FiguraMat2 mat) {
+        return mat.transposed();
+    }
+
+    @LuaWhitelist
+    public static void rotate(FiguraMat2 mat, Double degrees) {
+        if (degrees == null)
+            throw new IllegalArgumentException("Cannot rotate using nil!");
+        mat.rotate(degrees);
+    }
+
+    @LuaWhitelist
+    public static void scale(FiguraMat2 mat, Object arg1, Double y) {
+        if (arg1 instanceof Double x) {
+            if (y != null)
+                mat.scale(x, y);
+            else
+                throw new IllegalArgumentException("Cannot scale using nil!");
+        } else if (arg1 instanceof FiguraVec2 vec) {
+            mat.scale(vec.x, vec.y);
+        } else {
+            throw new IllegalArgumentException("Cannot scale with argument " + arg1 + ".");
+        }
+    }
+
+    @LuaWhitelist
+    public static FiguraVec2 getColumn(FiguraMat2 mat, Integer column) {
+        if (column == null) throw new IllegalArgumentException("Cannot access nil column!");
+        if (column <= 0 || column > 2) throw new IllegalArgumentException("Column " + column + " does not exist in a 2x2 matrix!");
+        return switch (column) {
+            case 1 -> mat.getCol1();
+            case 2 -> mat.getCol2();
+            default -> null;
+        };
+    }
+    @LuaWhitelist
+    public static FiguraVec2 getRow(FiguraMat2 mat, Integer row) {
+        if (row == null) throw new IllegalArgumentException("Cannot access nil row!");
+        if (row <= 0 || row > 2) throw new IllegalArgumentException("Row " + row + " does not exist in a 2x2 matrix!");
+        return switch (row) {
+            case 1 -> mat.getRow1();
+            case 2 -> mat.getRow2();
+            default -> null;
+        };
+    }
+
+}
