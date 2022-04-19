@@ -2,6 +2,7 @@ package org.moon.figura.math.vector;
 
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.math.MathUtils;
+import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.utils.caching.CacheUtils;
 import org.moon.figura.utils.caching.CachedType;
 import org.terasology.jnlua.LuaRuntimeException;
@@ -105,6 +106,13 @@ public class FiguraVec3 implements CachedType {
         this.y *= y;
         this.z *= z;
     }
+    public void multiply(FiguraMat3 mat) {
+        set(
+                mat.v11*x+mat.v12*y+mat.v13*z,
+                mat.v21*x+mat.v22*y+mat.v23*z,
+                mat.v31*x+mat.v32*y+mat.v33*z
+        );
+    }
 
     public void divide(FiguraVec3 o) {
         divide(o.x, o.y, o.z);
@@ -173,6 +181,11 @@ public class FiguraVec3 implements CachedType {
     public FiguraVec3 times(double x, double y, double z) {
         FiguraVec3 result = copy();
         result.multiply(x, y, z);
+        return result;
+    }
+    public FiguraVec3 times(FiguraMat3 mat) {
+        FiguraVec3 result = copy();
+        result.multiply(mat);
         return result;
     }
 
