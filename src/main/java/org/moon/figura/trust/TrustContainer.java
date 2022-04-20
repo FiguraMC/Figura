@@ -1,11 +1,11 @@
 package org.moon.figura.trust;
 
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtInt;
-import net.minecraft.nbt.NbtString;
-import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
+import net.minecraft.ChatFormatting;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.IntTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.utils.ColorUtils;
 
 import java.util.HashMap;
@@ -15,7 +15,7 @@ public class TrustContainer {
 
     //fields :p
     public String name;
-    private Identifier parentID;
+    private ResourceLocation parentID;
     public boolean visible = true; //used on UI
 
     //trust -> value map
@@ -70,7 +70,7 @@ public class TrustContainer {
 
     // constructors //
 
-    public TrustContainer(String name, Identifier parentID, NbtCompound nbt) {
+    public TrustContainer(String name, ResourceLocation parentID, CompoundTag nbt) {
         this.name = name;
         this.parentID = parentID;
 
@@ -78,7 +78,7 @@ public class TrustContainer {
         setTrustFromNbt(nbt);
     }
 
-    public TrustContainer(String name, Identifier parentID, Map<Trust, Integer> trust) {
+    public TrustContainer(String name, ResourceLocation parentID, Map<Trust, Integer> trust) {
         this.name = name;
         this.parentID = parentID;
         this.trustSettings = new HashMap<>(trust);
@@ -87,7 +87,7 @@ public class TrustContainer {
     // functions //
 
     //read nbt
-    private void setTrustFromNbt(NbtCompound nbt) {
+    private void setTrustFromNbt(CompoundTag nbt) {
         for (Trust setting : Trust.values()) {
             String trustName = setting.name();
 
@@ -97,16 +97,16 @@ public class TrustContainer {
     }
 
     //write nbt
-    public void writeNbt(NbtCompound nbt) {
+    public void writeNbt(CompoundTag nbt) {
         //container properties
-        nbt.put("name", NbtString.of(this.name));
+        nbt.put("name", StringTag.valueOf(this.name));
 
         if (this.parentID != null)
-            nbt.put("parent", NbtString.of(this.parentID.toString()));
+            nbt.put("parent", StringTag.valueOf(this.parentID.toString()));
 
         //trust values
-        NbtCompound trust = new NbtCompound();
-        this.trustSettings.forEach((key, value) -> trust.put(key.name(), NbtInt.of(value)));
+        CompoundTag trust = new CompoundTag();
+        this.trustSettings.forEach((key, value) -> trust.put(key.name(), IntTag.valueOf(value)));
 
         //add to nbt
         nbt.put("trust", trust);
@@ -127,11 +127,11 @@ public class TrustContainer {
         return -1;
     }
 
-    public TranslatableText getGroupName() {
+    public TranslatableComponent getGroupName() {
         if (parentID != null)
             return TrustManager.get(parentID).getGroupName();
 
-        return new TranslatableText("figura.trust.group." + name);
+        return new TranslatableComponent("figura.trust.group." + name);
     }
 
     public int getGroupColor() {
@@ -139,12 +139,12 @@ public class TrustContainer {
             return TrustManager.get(parentID).getGroupColor();
 
         return switch (name) {
-            case "blocked" -> Formatting.RED.getColorValue();
-            //case "untrusted" -> Formatting.YELLOW.getColorValue();
-            case "trusted" -> Formatting.GREEN.getColorValue();
+            case "blocked" -> ChatFormatting.RED.getColor();
+            //case "untrusted" -> ChatFormatting.YELLOW.getColorValue();
+            case "trusted" -> ChatFormatting.GREEN.getColor();
             case "friend" -> ColorUtils.Colors.FRAN_PINK.hex;
-            case "local" -> Formatting.AQUA.getColorValue();
-            default -> Formatting.WHITE.getColorValue();
+            case "local" -> ChatFormatting.AQUA.getColor();
+            default -> ChatFormatting.WHITE.getColor();
         };
     }
 
@@ -158,13 +158,13 @@ public class TrustContainer {
         return this.trustSettings;
     }
 
-    public Identifier getParentID() {
+    public ResourceLocation getParentID() {
         return this.parentID;
     }
 
     // setters //
 
-    public void setParent(Identifier parent) {
+    public void setParent(ResourceLocation parent) {
         this.parentID = parent;
     }
 }

@@ -2,7 +2,6 @@ package org.moon.figura.math.vector;
 
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.math.MathUtils;
-import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.utils.caching.CacheUtils;
 import org.moon.figura.utils.caching.CachedType;
 import org.terasology.jnlua.LuaRuntimeException;

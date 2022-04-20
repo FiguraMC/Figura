@@ -1,7 +1,7 @@
 package org.moon.figura.avatars;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -22,10 +22,10 @@ public class AvatarManager {
 
     //tries to get data from an entity
     public static Avatar getAvatar(Entity entity) {
-        UUID uuid = entity.getUuid();
+        UUID uuid = entity.getUUID();
 
         //load from player (fetch backend) if is a player
-        if (entity instanceof PlayerEntity)
+        if (entity instanceof Player)
             return getAvatarForPlayer(uuid);
 
         //otherwise, just normally load it

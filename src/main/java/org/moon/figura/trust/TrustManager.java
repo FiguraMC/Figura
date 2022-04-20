@@ -4,9 +4,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.*;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.FiguraMod;
 
 import java.io.FileInputStream;
@@ -22,9 +22,9 @@ import java.util.UUID;
 public class TrustManager {
 
     //trust maps
-    private static final Map<Identifier, TrustContainer> DEFAULT_GROUPS = new HashMap<>();
-    public static final Map<Identifier, TrustContainer> GROUPS = new LinkedHashMap<>();
-    public static final Map<Identifier, TrustContainer> PLAYERS = new HashMap<>();
+    private static final Map<ResourceLocation, TrustContainer> DEFAULT_GROUPS = new HashMap<>();
+    public static final Map<ResourceLocation, TrustContainer> GROUPS = new LinkedHashMap<>();
+    public static final Map<ResourceLocation, TrustContainer> PLAYERS = new HashMap<>();
 
     //main method for loading trust
     public static void init() {
@@ -46,19 +46,19 @@ public class TrustManager {
                 String name = entry.getKey();
 
                 //add values
-                NbtCompound nbt = new NbtCompound();
+                CompoundTag nbt = new CompoundTag();
                 for (Map.Entry<String, JsonElement> trust : entry.getValue().getAsJsonObject().entrySet()) {
-                    nbt.put(trust.getKey(), NbtInt.of(trust.getValue().getAsInt()));
+                    nbt.put(trust.getKey(), IntTag.valueOf(trust.getValue().getAsInt()));
                 }
 
                 //create container
-                Identifier parentID = new Identifier("default_group", name);
+                ResourceLocation parentID = new ResourceLocation("default_group", name);
                 TrustContainer defaultGroup = new TrustContainer(name, null, nbt);
-                TrustContainer parent = new TrustContainer(name, parentID, new NbtCompound());
+                TrustContainer parent = new TrustContainer(name, parentID, new CompoundTag());
 
                 //add container to map
                 DEFAULT_GROUPS.put(parentID, defaultGroup);
-                GROUPS.put(new Identifier("group", name), parent);
+                GROUPS.put(new ResourceLocation("group", name), parent);
             }
 
             FiguraMod.LOGGER.debug("Loaded trust presets from assets");
@@ -78,7 +78,7 @@ public class TrustManager {
 
             //read file
             FileInputStream fis = new FileInputStream(targetPath.toFile());
-            NbtCompound getTag = NbtIo.readCompressed(fis);
+            CompoundTag getTag = NbtIo.readCompressed(fis);
             readNbt(getTag);
             fis.close();
         } catch (Exception e) {
@@ -90,7 +90,7 @@ public class TrustManager {
     public static void saveToDisk() {
         try {
             //get nbt
-            NbtCompound targetTag = new NbtCompound();
+            CompoundTag targetTag = new CompoundTag();
             writeNbt(targetTag);
 
             //create file
@@ -110,23 +110,23 @@ public class TrustManager {
     }
 
     //write trust to nbt
-    public static void writeNbt(NbtCompound nbt) {
+    public static void writeNbt(CompoundTag nbt) {
         //create dummy lists for later
-        NbtList groupList = new NbtList();
-        NbtList playerList = new NbtList();
+        ListTag groupList = new ListTag();
+        ListTag playerList = new ListTag();
 
         //get groups nbt
-        for (Map.Entry<Identifier, TrustContainer> entry : GROUPS.entrySet()) {
-            NbtCompound container = new NbtCompound();
+        for (Map.Entry<ResourceLocation, TrustContainer> entry : GROUPS.entrySet()) {
+            CompoundTag container = new CompoundTag();
             entry.getValue().writeNbt(container);
             groupList.add(container);
         }
 
         //get players nbt
-        for (Map.Entry<Identifier, TrustContainer> entry : PLAYERS.entrySet()) {
+        for (Map.Entry<ResourceLocation, TrustContainer> entry : PLAYERS.entrySet()) {
             TrustContainer trust = entry.getValue();
             if (!isLocal(trust) && isTrustChanged(trust)) {
-                NbtCompound container = new NbtCompound();
+                CompoundTag container = new CompoundTag();
                 trust.writeNbt(container);
                 playerList.add(container);
             }
@@ -138,43 +138,43 @@ public class TrustManager {
     }
 
     //read trust from nbt, adding them into the hash maps
-    public static void readNbt(NbtCompound nbt) {
+    public static void readNbt(CompoundTag nbt) {
         //get nbt lists
-        NbtList groupList = nbt.getList("groups", NbtElement.COMPOUND_TYPE);
-        NbtList playerList = nbt.getList("players", NbtElement.COMPOUND_TYPE);
+        ListTag groupList = nbt.getList("groups", Tag.TAG_COMPOUND);
+        ListTag playerList = nbt.getList("players", Tag.TAG_COMPOUND);
 
         //groups
-        for (NbtElement nbtElement : groupList) {
-            NbtCompound compound = (NbtCompound) nbtElement;
+        for (Tag nbtElement : groupList) {
+            CompoundTag compound = (CompoundTag) nbtElement;
 
             //parse trust
             String name = compound.getString("name");
 
-            Identifier parentID = null;
+            ResourceLocation parentID = null;
             if (compound.contains("parent")) {
-                parentID = new Identifier(compound.getString("parent"));
+                parentID = new ResourceLocation(compound.getString("parent"));
             }
 
             //add to list
-            GROUPS.put(new Identifier("group", name), new TrustContainer(name, parentID, compound.getCompound("trust")));
+            GROUPS.put(new ResourceLocation("group", name), new TrustContainer(name, parentID, compound.getCompound("trust")));
         }
 
         //players
-        for (NbtElement value : playerList) {
-            NbtCompound compound = (NbtCompound) value;
+        for (Tag value : playerList) {
+            CompoundTag compound = (CompoundTag) value;
 
             //parse trust
             String name = compound.getString("name");
-            Identifier parentID = new Identifier(compound.getString("parent"));
+            ResourceLocation parentID = new ResourceLocation(compound.getString("parent"));
             TrustContainer container = new TrustContainer(name, parentID, compound.getCompound("trust"));
 
             //add to list
-            PLAYERS.put(new Identifier("player", name), container);
+            PLAYERS.put(new ResourceLocation("player", name), container);
         }
     }
 
     //get trust from id
-    public static TrustContainer get(Identifier id) {
+    public static TrustContainer get(ResourceLocation id) {
         if (PLAYERS.containsKey(id))
             return PLAYERS.get(id);
 
@@ -190,14 +190,14 @@ public class TrustManager {
 
     //get player trust
     public static TrustContainer get(UUID uuid) {
-        return get(new Identifier("player", uuid.toString()));
+        return get(new ResourceLocation("player", uuid.toString()));
     }
 
     //create player trust
-    private static TrustContainer create(Identifier id) {
+    private static TrustContainer create(ResourceLocation id) {
         //create trust
         boolean isLocal = isLocal(id.getPath());
-        Identifier parentID = new Identifier("group", isLocal ? "local" : "untrusted");
+        ResourceLocation parentID = new ResourceLocation("group", isLocal ? "local" : "untrusted");
         TrustContainer trust =  new TrustContainer(id.getPath(), parentID, new HashMap<>());
 
         //add and return
@@ -207,12 +207,12 @@ public class TrustManager {
 
     //increase a container trust
     public static boolean increaseTrust(TrustContainer tc) {
-        Identifier parentID = tc.getParentID();
+        ResourceLocation parentID = tc.getParentID();
 
         //get next group
         int i = 0;
-        Identifier nextID = null;
-        for (Map.Entry<Identifier, TrustContainer> entry : GROUPS.entrySet()) {
+        ResourceLocation nextID = null;
+        for (Map.Entry<ResourceLocation, TrustContainer> entry : GROUPS.entrySet()) {
             //if next ID is not null, "return" it
             if (nextID != null) {
                 nextID = entry.getKey();
@@ -238,12 +238,12 @@ public class TrustManager {
 
     //decrease a container trust
     public static boolean decreaseTrust(TrustContainer tc) {
-        Identifier parentID = tc.getParentID();
+        ResourceLocation parentID = tc.getParentID();
 
         //get previous group
         int i = 0;
-        Identifier prevID = null;
-        for (Map.Entry<Identifier, TrustContainer> entry : GROUPS.entrySet()) {
+        ResourceLocation prevID = null;
+        for (Map.Entry<ResourceLocation, TrustContainer> entry : GROUPS.entrySet()) {
             //if it is already the first group, exit
             if (entry.getKey().equals(parentID))
                 break;
@@ -265,7 +265,7 @@ public class TrustManager {
 
     //get local player ID
     private static String getClientPlayerID() {
-        return MinecraftClient.getInstance().getSession().getProfile().getId().toString();
+        return Minecraft.getInstance().getUser().getGameProfile().getId().toString();
     }
 
     //check if trust is from local player

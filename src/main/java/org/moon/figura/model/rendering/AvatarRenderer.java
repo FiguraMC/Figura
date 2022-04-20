@@ -1,14 +1,14 @@
 package org.moon.figura.model.rendering;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Matrix3f;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Matrix3f;
+import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
@@ -24,11 +24,11 @@ public abstract class AvatarRenderer {
 
     public Entity entity;
     public float yaw, tickDelta;
-    public MatrixStack matrices;
+    public PoseStack matrices;
     public int light;
-    public VertexConsumerProvider vcp;
+    public MultiBufferSource vcp;
 
-    public AvatarRenderer(Avatar avatar, NbtCompound avatarCompound) {
+    public AvatarRenderer(Avatar avatar, CompoundTag avatarCompound) {
         this.avatar = avatar;
     }
 
@@ -44,11 +44,11 @@ public abstract class AvatarRenderer {
     protected static FiguraMat4 entityToWorldMatrix(Entity e, float delta) {
         double yaw;
         if (e instanceof LivingEntity)
-            yaw = MathHelper.lerp(delta, ((LivingEntity) e).prevBodyYaw, ((LivingEntity) e).bodyYaw);
+            yaw = Mth.lerp(delta, ((LivingEntity) e).yBodyRotO, ((LivingEntity) e).yBodyRot);
         else
-            yaw = e.getYaw(MinecraftClient.getInstance().getTickDelta());
+            yaw = e.getViewYRot(Minecraft.getInstance().getFrameTime());
         FiguraMat4 result = FiguraMat4.createYRotationMatrix(180 - yaw);
-        result.translate(e.getLerpedPos(delta));
+        result.translate(e.getPosition(delta));
         return result;
     }
 
@@ -57,11 +57,11 @@ public abstract class AvatarRenderer {
      * @return That matrix.
      */
     public static FiguraMat4 worldToViewMatrix() {
-        MinecraftClient client = MinecraftClient.getInstance();
-        Camera camera = client.gameRenderer.getCamera();
-        Matrix3f cameraMat3f = new Matrix3f(camera.getRotation());
+        Minecraft client = Minecraft.getInstance();
+        Camera camera = client.gameRenderer.getMainCamera();
+        Matrix3f cameraMat3f = new Matrix3f(camera.rotation());
         cameraMat3f.invert();
-        FiguraMat4 result = FiguraMat4.createTranslationMatrix(camera.getPos().multiply(-1));
+        FiguraMat4 result = FiguraMat4.createTranslationMatrix(camera.getPosition().scale(-1));
         FiguraMat3 cameraMat = FiguraMat3.fromMatrix3f(cameraMat3f);
         result.multiply(cameraMat.augmented());
         cameraMat.free();

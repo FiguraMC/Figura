@@ -1,6 +1,6 @@
 package org.moon.figura.avatars;
 
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.model.rendering.AvatarRenderer;
@@ -25,9 +25,9 @@ public class Avatar {
     public final float fileSize;
     public final AvatarRenderer renderer;
 
-    public Avatar(NbtCompound nbt) {
+    public Avatar(CompoundTag nbt) {
         //read metadata
-        NbtCompound metadata = nbt.getCompound("metadata");
+        CompoundTag metadata = nbt.getCompound("metadata");
         name = metadata.getString("name");
         author = metadata.getString("author");
         version = metadata.getString("ver");
@@ -36,7 +36,7 @@ public class Avatar {
         //
     }
 
-    private float getFileSize(NbtCompound nbt) {
+    private float getFileSize(CompoundTag nbt) {
         try {
             //get size
             DataOutputStream dos = new DataOutputStream(new ByteArrayOutputStream());

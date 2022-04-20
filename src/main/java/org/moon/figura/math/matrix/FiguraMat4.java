@@ -1,7 +1,7 @@
 package org.moon.figura.math.matrix;
 
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vec3d;
+import com.mojang.math.Matrix4f;
+import net.minecraft.world.phys.Vec3;
 import org.lwjgl.BufferUtils;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.math.vector.FiguraVec3;
@@ -132,7 +132,7 @@ public class FiguraMat4 implements CachedType {
     private static final FloatBuffer copyingBuffer = BufferUtils.createFloatBuffer(4*4);
     public static FiguraMat4 fromMatrix4f(Matrix4f mat) {
         copyingBuffer.clear();
-        mat.writeColumnMajor(copyingBuffer);
+        mat.store(copyingBuffer);
         FiguraMat4 result = of();
         result.v11 = copyingBuffer.get();
         result.v21 = copyingBuffer.get();
@@ -160,7 +160,7 @@ public class FiguraMat4 implements CachedType {
                 .put((float) v13).put((float) v23).put((float) v33).put((float) v43)
                 .put((float) v14).put((float) v24).put((float) v34).put((float) v44);
         Matrix4f result = new Matrix4f();
-        result.readColumnMajor(copyingBuffer);
+        result.load(copyingBuffer);
         return result;
     }
 
@@ -239,7 +239,7 @@ public class FiguraMat4 implements CachedType {
     public static FiguraMat4 createTranslationMatrix(FiguraVec3 amount) {
         return createTranslationMatrix(amount.x, amount.y, amount.z);
     }
-    public static FiguraMat4 createTranslationMatrix(Vec3d amount) {
+    public static FiguraMat4 createTranslationMatrix(Vec3 amount) {
         return createTranslationMatrix(amount.x, amount.y, amount.z);
     }
 
@@ -346,7 +346,7 @@ public class FiguraMat4 implements CachedType {
     public void translate(FiguraVec3 amount) {
         translate(amount.x, amount.y, amount.z);
     }
-    public void translate(Vec3d amount) {
+    public void translate(Vec3 amount) {
         translate(amount.x, amount.y, amount.z);
     }
 

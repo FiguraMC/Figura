@@ -1,8 +1,8 @@
 package org.moon.figura.avatars.providers;
 
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.nbt.NbtList;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.parsers.AvatarMetadataParser;
 import org.moon.figura.parsers.BlockbenchModelParser;
@@ -22,7 +22,7 @@ import java.util.Date;
  */
 public class LocalAvatarLoader {
 
-    private static NbtCompound lastLoadedNbt;
+    private static CompoundTag lastLoadedNbt;
     private static Path lastLoadedPath;
 
     /**
@@ -30,7 +30,7 @@ public class LocalAvatarLoader {
      * @param path - the file/folder for loading the avatar
      * @return the NbtCompound from this path
      */
-    public static NbtCompound loadAvatar(Path path) {
+    public static CompoundTag loadAvatar(Path path) {
         lastLoadedPath = path;
 
         //load as nbt (.moon)
@@ -45,7 +45,7 @@ public class LocalAvatarLoader {
         }
 
         //load as folder
-        NbtCompound nbt = new NbtCompound();
+        CompoundTag nbt = new CompoundTag();
 
         //metadata
         File metadata = path.resolve("avatar.json").toFile();
@@ -54,7 +54,7 @@ public class LocalAvatarLoader {
         //scripts
         File[] scripts = getFilesByExtension(path, ".lua");
         if (scripts != null && scripts.length > 0) {
-            NbtCompound scriptsNbt = new NbtCompound();
+            CompoundTag scriptsNbt = new CompoundTag();
             for (File script : scripts) {
                 String name = script.getName();
                 scriptsNbt.put(name.substring(0, name.length() - 4), LuaScriptParser.parse(readFile(script)));
@@ -66,7 +66,7 @@ public class LocalAvatarLoader {
             //avatar needs a script to load custom sounds
             File[] sounds = getFilesByExtension(path.resolve("sounds"), ".ogg");
             if (sounds != null && sounds.length > 0) {
-                NbtCompound soundsNbt = new NbtCompound();
+                CompoundTag soundsNbt = new CompoundTag();
                 for (File sound : sounds) {
                     String name = sound.getName();
                     soundsNbt.putByteArray(name.substring(0, name.length() - 4), readFile(sound).getBytes());
@@ -83,12 +83,12 @@ public class LocalAvatarLoader {
         if (models == null || models.length == 0)
             return lastLoadedNbt = nbt;
 
-        NbtCompound modelRoot = new NbtCompound();
+        CompoundTag modelRoot = new CompoundTag();
         modelRoot.putString("name", "models");
 
-        NbtList children = new NbtList();
-        NbtList textures = new NbtList();
-        NbtList animations = new NbtList();
+        ListTag children = new ListTag();
+        ListTag textures = new ListTag();
+        ListTag animations = new ListTag();
 
         BlockbenchModelParser parser = new BlockbenchModelParser();
         for (File model : models) {
@@ -143,7 +143,7 @@ public class LocalAvatarLoader {
         }
     }
 
-    public static NbtCompound getLastLoadedNbt() {
+    public static CompoundTag getLastLoadedNbt() {
         return lastLoadedNbt;
     }
 }

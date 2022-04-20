@@ -1,13 +1,14 @@
 package org.moon.figura.model.rendering.texture;
 
+import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.texture.AbstractTexture;
-import net.minecraft.client.texture.NativeImage;
-import net.minecraft.resource.ResourceManager;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.AbstractTexture;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceManager;
 import org.lwjgl.BufferUtils;
+import org.moon.figura.FiguraMod;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -19,7 +20,7 @@ public class FiguraTexture extends AbstractTexture implements Closeable {
     /**
      * The ID of the texture, used to register to Minecraft.
      */
-    public final Identifier textureID = new Identifier("figura", "avatar_tex/" + UUID.randomUUID());
+    public final ResourceLocation textureID = new ResourceLocation(FiguraMod.MOD_ID, "avatar_tex/" + UUID.randomUUID());
     private boolean uploaded = false;
 
     /**
@@ -55,10 +56,10 @@ public class FiguraTexture extends AbstractTexture implements Closeable {
         if (uploaded) return;
 
         //Register texture under the ID, so Minecraft's rendering can use it.
-        MinecraftClient.getInstance().getTextureManager().registerTexture(textureID, this);
+        Minecraft.getInstance().getTextureManager().register(textureID, this);
 
         //Upload texture to GPU.
-        TextureUtil.prepareImage(this.getGlId(), nativeImage.getWidth(), nativeImage.getHeight());
+        TextureUtil.prepareImage(this.getId(), nativeImage.getWidth(), nativeImage.getHeight());
         nativeImage.upload(0, 0, 0, false);
 
         uploaded = true;
@@ -84,9 +85,8 @@ public class FiguraTexture extends AbstractTexture implements Closeable {
         nativeImage.close();
 
         //Cache GLID and then release it on GPU
-        final int id = glId;
         RenderSystem.recordRenderCall(() -> {
-            TextureUtil.releaseTextureId(id);
+            TextureUtil.releaseTextureId(this.id);
         });
     }
 }

@@ -1,9 +1,9 @@
 package org.moon.figura.utils;
 
-import net.minecraft.text.Style;
+import net.minecraft.network.chat.Style;
 import org.moon.figura.math.vector.FiguraVec3;
 
-import java.awt.Color;
+import java.awt.*;
 
 public class ColorUtils {
 

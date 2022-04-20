@@ -3,10 +3,10 @@ package org.moon.figura.utils.ui;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.*;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.Matrix4f;
+import com.mojang.blaze3d.vertex.*;
+import com.mojang.math.Matrix4f;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ShaderInstance;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 
@@ -74,39 +74,39 @@ public class CustomFramebuffer {
         return fbo;
     }
 
-    public void drawToScreen(MatrixStack stack, int viewWidth, int viewHeight) {
+    public void drawToScreen(PoseStack stack, int viewWidth, int viewHeight) {
         RenderSystem.assertOnRenderThread();
         GlStateManager._colorMask(true, true, true, true);
         GlStateManager._disableDepthTest();
         GlStateManager._depthMask(false);
         GlStateManager._viewport(0, 0, width, height);
 
-        MinecraftClient minecraftClient = MinecraftClient.getInstance();
-        Shader shader = minecraftClient.gameRenderer.blitScreenShader;
-        shader.addSampler("DiffuseSampler", colorAttachment);
+        Minecraft minecraftClient = Minecraft.getInstance();
+        ShaderInstance shader = minecraftClient.gameRenderer.blitShader;
+        shader.setSampler("DiffuseSampler", colorAttachment);
         //shader.addSampler("DiffuseSampler", MinecraftClient.getInstance().getFramebuffer().getColorAttachment());
         //shader.addSampler("DiffuseSampler", MinecraftClient.getInstance().getTextureManager().getTexture(ClickableWidget.WIDGETS_TEXTURE).getGlId());
-        Matrix4f matrix4f = Matrix4f.projectionMatrix((float) width, (float) (-height), 1000f, 3000f);
+        Matrix4f matrix4f = Matrix4f.orthographic((float) width, (float) (-height), 1000f, 3000f);
         RenderSystem.setProjectionMatrix(matrix4f);
-        if (shader.modelViewMat != null) {
-            shader.modelViewMat.set(Matrix4f.translate(0f, 0f, -2000f));
+        if (shader.MODEL_VIEW_MATRIX != null) {
+            shader.MODEL_VIEW_MATRIX.set(Matrix4f.createTranslateMatrix(0f, 0f, -2000f));
         }
 
-        if (shader.projectionMat != null) {
-            shader.projectionMat.set(matrix4f);
+        if (shader.PROJECTION_MATRIX != null) {
+            shader.PROJECTION_MATRIX.set(matrix4f);
         }
 
-        shader.bind();
-        Tessellator tessellator = RenderSystem.renderThreadTesselator();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
-        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
-        bufferBuilder.vertex(0d, height, 0d).texture(0f, 0f).color(0xFF, 0xFF, 0xFF, 0xFF).next();
-        bufferBuilder.vertex(width, height, 0d).texture(1f, 0f).color(0xFF, 0xFF, 0xFF, 0xFF).next();
-        bufferBuilder.vertex(width, 0d, 0d).texture(1f, 1f).color(0xFF, 0xFF, 0xFF, 0xFF).next();
-        bufferBuilder.vertex(0d, 0d, 0d).texture(0f, 1f).color(0xFF, 0xFF, 0xFF, 0xFF).next();
+        shader.apply();
+        Tesselator tessellator = RenderSystem.renderThreadTesselator();
+        BufferBuilder bufferBuilder = tessellator.getBuilder();
+        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+        bufferBuilder.vertex(0d, height, 0d).uv(0f, 0f).color(0xFF, 0xFF, 0xFF, 0xFF).endVertex();
+        bufferBuilder.vertex(width, height, 0d).uv(1f, 0f).color(0xFF, 0xFF, 0xFF, 0xFF).endVertex();
+        bufferBuilder.vertex(width, 0d, 0d).uv(1f, 1f).color(0xFF, 0xFF, 0xFF, 0xFF).endVertex();
+        bufferBuilder.vertex(0d, 0d, 0d).uv(0f, 1f).color(0xFF, 0xFF, 0xFF, 0xFF).endVertex();
         bufferBuilder.end();
-        BufferRenderer.postDraw(bufferBuilder);
-        shader.unbind();
+        BufferUploader._endInternal(bufferBuilder);
+        shader.clear();
         GlStateManager._depthMask(true);
         GlStateManager._colorMask(true, true, true, true);
     }

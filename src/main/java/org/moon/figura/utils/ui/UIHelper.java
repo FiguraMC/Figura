@@ -1,27 +1,30 @@
 package org.moon.figura.utils.ui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.render.*;
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Quaternion;
-import net.minecraft.util.math.Vec3f;
+import com.mojang.blaze3d.vertex.*;
+import com.mojang.math.Matrix4f;
+import com.mojang.math.Quaternion;
+import com.mojang.math.Vector3f;
+import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.LivingEntity;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import org.moon.figura.utils.TextUtils;
 
-public class UIHelper extends DrawableHelper {
+public class UIHelper extends GuiComponent {
 
     // -- Variables -- //
 
@@ -37,8 +40,8 @@ public class UIHelper extends DrawableHelper {
     public static void useFiguraGuiFramebuffer() {
         previousFBO = GL30.glGetInteger(GL30.GL_DRAW_FRAMEBUFFER_BINDING);
 
-        int windowWidth = MinecraftClient.getInstance().getWindow().getWidth();
-        int windowHeight = MinecraftClient.getInstance().getWindow().getHeight();
+        int windowWidth = Minecraft.getInstance().getWindow().getScreenWidth();
+        int windowHeight = Minecraft.getInstance().getWindow().getScreenHeight();
         FIGURA_FRAMEBUFFER.setSize(windowWidth, windowHeight);
 
         //Enable stencil buffer during this phase of rendering
@@ -54,11 +57,11 @@ public class UIHelper extends DrawableHelper {
         GlStateManager._clear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT | GL30.GL_STENCIL_BUFFER_BIT, false);
 
         Matrix4f mf = RenderSystem.getProjectionMatrix();
-        MinecraftClient.getInstance().getFramebuffer().draw(windowWidth, windowHeight, false);
+        Minecraft.getInstance().getMainRenderTarget().blitToScreen(windowWidth, windowHeight, false);
         RenderSystem.setProjectionMatrix(mf);
     }
 
-    public static void useVanillaFramebuffer(MatrixStack stack) {
+    public static void useVanillaFramebuffer(PoseStack stack) {
         //Reset state before we go back to normal rendering
         GlStateManager._enableDepthTest();
         //Set a sensible default for stencil buffer operations
@@ -70,8 +73,8 @@ public class UIHelper extends DrawableHelper {
 
         RenderSystem.disableBlend();
         //Draw GUI framebuffer -> vanilla framebuffer
-        int windowWidth = MinecraftClient.getInstance().getWindow().getScaledWidth();
-        int windowHeight = MinecraftClient.getInstance().getWindow().getScaledHeight();
+        int windowWidth = Minecraft.getInstance().getWindow().getGuiScaledWidth();
+        int windowHeight = Minecraft.getInstance().getWindow().getGuiScaledHeight();
 
         Matrix4f mf = RenderSystem.getProjectionMatrix();
         FIGURA_FRAMEBUFFER.drawToScreen(stack, windowWidth, windowHeight);
@@ -79,154 +82,154 @@ public class UIHelper extends DrawableHelper {
         RenderSystem.enableBlend();
     }
 
-    public static void drawEntity(int x, int y, float scale, float pitch, float yaw, LivingEntity entity, MatrixStack matrices) {
+    public static void drawEntity(int x, int y, float scale, float pitch, float yaw, LivingEntity entity, PoseStack matrices) {
         //apply matrix transformers
-        matrices.push();
+        matrices.pushPose();
         matrices.translate(x, y, 0d);
         matrices.scale(scale, scale, scale);
-        matrices.peek().getPositionMatrix().multiply(Matrix4f.scale(1f, 1f, -1f)); //Scale ONLY THE POSITIONS! Inverted normals don't work for whatever reason
+        matrices.last().pose().multiply(Matrix4f.createScaleMatrix(1f, 1f, -1f)); //Scale ONLY THE POSITIONS! Inverted normals don't work for whatever reason
 
-        Quaternion quaternion = Vec3f.POSITIVE_Z.getDegreesQuaternion(180f);
-        Quaternion quaternion2 = Vec3f.POSITIVE_X.getDegreesQuaternion(pitch);
-        quaternion.hamiltonProduct(quaternion2);
-        matrices.multiply(quaternion);
-        quaternion2.conjugate();
+        Quaternion quaternion = Vector3f.ZP.rotationDegrees(180f);
+        Quaternion quaternion2 = Vector3f.XP.rotationDegrees(pitch);
+        quaternion.mul(quaternion2);
+        matrices.mulPose(quaternion);
+        quaternion2.conj();
 
         //backup entity variables
-        float bodyYaw = entity.bodyYaw;
-        float entityYaw = entity.getYaw();
-        float entityPitch = entity.getPitch();
-        float prevHeadYaw = entity.prevHeadYaw;
-        float headYaw = entity.headYaw;
+        float bodyYaw = entity.yBodyRot;
+        float entityYaw = entity.getYRot();
+        float entityPitch = entity.getXRot();
+        float prevHeadYaw = entity.yHeadRotO;
+        float headYaw = entity.yHeadRot;
         boolean invisible = entity.isInvisible();
 
         //apply entity rotation
-        entity.bodyYaw = 180f - yaw;
-        entity.setYaw(180f - yaw);
-        entity.setPitch(0f);
-        entity.headYaw = entity.getYaw();
-        entity.prevHeadYaw = entity.getYaw();
+        entity.yBodyRot = 180f - yaw;
+        entity.setYRot(180f - yaw);
+        entity.setXRot(0f);
+        entity.yHeadRot = entity.getYRot();
+        entity.yHeadRotO = entity.getYRot();
         entity.setInvisible(false);
         UIHelper.forceNameplate = true;
         UIHelper.forceNoFire = true;
 
         //set up lighting
-        DiffuseLighting.disableGuiDepthLighting();
-        RenderSystem.setShaderLights(Util.make(new Vec3f(-0.2f, -1f, -1f), Vec3f::normalize), Util.make(new Vec3f(-0.2f, 0.4f, -0.3f), Vec3f::normalize));
+        Lighting.setupForFlatItems();
+        RenderSystem.setShaderLights(Util.make(new Vector3f(-0.2f, -1f, -1f), Vector3f::normalize), Util.make(new Vector3f(-0.2f, 0.4f, -0.3f), Vector3f::normalize));
 
         //setup entity renderer
-        EntityRenderDispatcher dispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
-        boolean renderHitboxes = dispatcher.shouldRenderHitboxes();
-        dispatcher.setRenderHitboxes(false);
-        dispatcher.setRenderShadows(false);
-        dispatcher.setRotation(quaternion2);
-        VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
+        EntityRenderDispatcher dispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
+        boolean renderHitboxes = dispatcher.shouldRenderHitBoxes();
+        dispatcher.setRenderHitBoxes(false);
+        dispatcher.setRenderShadow(false);
+        dispatcher.overrideCameraOrientation(quaternion2);
+        MultiBufferSource.BufferSource immediate = Minecraft.getInstance().renderBuffers().bufferSource();
 
         //render
-        RenderSystem.runAsFancy(() -> dispatcher.render(entity, 0d, -1d, 0d, 0f, 1f, matrices, immediate, LightmapTextureManager.MAX_LIGHT_COORDINATE));
-        immediate.draw();
+        RenderSystem.runAsFancy(() -> dispatcher.render(entity, 0d, -1d, 0d, 0f, 1f, matrices, immediate, LightTexture.FULL_BRIGHT));
+        immediate.endBatch();
 
         //restore entity rendering data
-        dispatcher.setRenderHitboxes(renderHitboxes);
-        dispatcher.setRenderShadows(true);
+        dispatcher.setRenderHitBoxes(renderHitboxes);
+        dispatcher.setRenderShadow(true);
 
         //restore entity data
-        entity.bodyYaw = bodyYaw;
-        entity.setYaw(entityYaw);
-        entity.setPitch(entityPitch);
-        entity.prevHeadYaw = prevHeadYaw;
-        entity.headYaw = headYaw;
+        entity.yBodyRot = bodyYaw;
+        entity.setYRot(entityYaw);
+        entity.setXRot(entityPitch);
+        entity.yHeadRotO = prevHeadYaw;
+        entity.yHeadRot = headYaw;
         entity.setInvisible(invisible);
         UIHelper.forceNameplate = false;
         UIHelper.forceNoFire = false;
 
         //pop matrix
-        matrices.pop();
-        DiffuseLighting.enableGuiDepthLighting();
+        matrices.popPose();
+        Lighting.setupFor3DItems();
     }
 
-    public static void renderBackgroundTexture(Identifier texture, int x, int y, int width, int height, float textureWidth, float textureHeight) {
+    public static void renderBackgroundTexture(ResourceLocation texture, int x, int y, int width, int height, float textureWidth, float textureHeight) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, texture);
 
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
-        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        Tesselator tessellator = Tesselator.getInstance();
+        BufferBuilder bufferBuilder = tessellator.getBuilder();
+        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
 
-        bufferBuilder.vertex(x, y + height, 0f).texture(0f, height / textureHeight).next();
-        bufferBuilder.vertex(x + width, y + height, 0f).texture(width / textureWidth, height / textureHeight).next();
-        bufferBuilder.vertex(x + width, y, 0f).texture(width / textureWidth, 0f).next();
-        bufferBuilder.vertex(x, y, 0f).texture(0f, 0f).next();
+        bufferBuilder.vertex(x, y + height, 0f).uv(0f, height / textureHeight).endVertex();
+        bufferBuilder.vertex(x + width, y + height, 0f).uv(width / textureWidth, height / textureHeight).endVertex();
+        bufferBuilder.vertex(x + width, y, 0f).uv(width / textureWidth, 0f).endVertex();
+        bufferBuilder.vertex(x, y, 0f).uv(0f, 0f).endVertex();
 
-        tessellator.draw();
+        tessellator.end();
     }
 
-    public static void fillRounded(MatrixStack matrixStack, int x, int y, int width, int height, int color) {
+    public static void fillRounded(PoseStack matrixStack, int x, int y, int width, int height, int color) {
         fill(matrixStack, x + 1, y, x + width - 1, y + 1, color);
         fill(matrixStack, x, y + 1, x + width, y + height - 1, color);
         fill(matrixStack, x + 1, y + height - 1, x + width - 1, y + height, color);
     }
 
-    public static void fillOutline(MatrixStack matrixStack, int x, int y, int width, int height, int color) {
+    public static void fillOutline(PoseStack matrixStack, int x, int y, int width, int height, int color) {
         fill(matrixStack, x + 1, y, x + width - 1, y + 1, color);
         fill(matrixStack, x, y + 1, x + 1, y + height - 1, color);
         fill(matrixStack, x + width - 1, y + 1, x + width, y + height - 1, color);
         fill(matrixStack, x + 1, y + height - 1, x + width - 1, y + height, color);
     }
 
-    public static void renderSliced(MatrixStack matrices, int x, int y, int width, int height, Identifier texture) {
+    public static void renderSliced(PoseStack matrices, int x, int y, int width, int height, ResourceLocation texture) {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShaderTexture(0, texture);
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
-        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        Tesselator tessellator = Tesselator.getInstance();
+        BufferBuilder bufferBuilder = tessellator.getBuilder();
+        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
 
         //top left
-        renderSlice(matrices.peek().getPositionMatrix(), bufferBuilder, x, y, 3, 3, 0f, 0f, 9, 9);
+        renderSlice(matrices.last().pose(), bufferBuilder, x, y, 3, 3, 0f, 0f, 9, 9);
         //top middle
-        renderSlice(matrices.peek().getPositionMatrix(), bufferBuilder, x + 3, y, width - 6, 3, 3f, 0f, 9, 9);
+        renderSlice(matrices.last().pose(), bufferBuilder, x + 3, y, width - 6, 3, 3f, 0f, 9, 9);
         //top right
-        renderSlice(matrices.peek().getPositionMatrix(), bufferBuilder, x + width - 3, y, 3, 3, 6f, 0f, 9, 9);
+        renderSlice(matrices.last().pose(), bufferBuilder, x + width - 3, y, 3, 3, 6f, 0f, 9, 9);
 
         //middle left
-        renderSlice(matrices.peek().getPositionMatrix(), bufferBuilder, x, y + 3, 3, height - 6, 0f, 3f, 9, 9);
+        renderSlice(matrices.last().pose(), bufferBuilder, x, y + 3, 3, height - 6, 0f, 3f, 9, 9);
         //middle middle
-        renderSlice(matrices.peek().getPositionMatrix(), bufferBuilder, x + 3, y + 3, width - 6, height - 6, 3f, 3f, 9, 9);
+        renderSlice(matrices.last().pose(), bufferBuilder, x + 3, y + 3, width - 6, height - 6, 3f, 3f, 9, 9);
         //middle right
-        renderSlice(matrices.peek().getPositionMatrix(), bufferBuilder, x + width - 3, y + 3, 3, height - 6, 6f, 3f, 9, 9);
+        renderSlice(matrices.last().pose(), bufferBuilder, x + width - 3, y + 3, 3, height - 6, 6f, 3f, 9, 9);
 
         //bottom left
-        renderSlice(matrices.peek().getPositionMatrix(), bufferBuilder, x, y + height - 3, 3, 3, 0f, 6f, 9, 9);
+        renderSlice(matrices.last().pose(), bufferBuilder, x, y + height - 3, 3, 3, 0f, 6f, 9, 9);
         //bottom middle
-        renderSlice(matrices.peek().getPositionMatrix(), bufferBuilder, x + 3, y + height - 3, width - 6, 3, 3f, 6f, 9, 9);
+        renderSlice(matrices.last().pose(), bufferBuilder, x + 3, y + height - 3, width - 6, 3, 3f, 6f, 9, 9);
         //bottom right
-        renderSlice(matrices.peek().getPositionMatrix(), bufferBuilder, x + width - 3, y + height - 3, 3, 3, 6f, 6f, 9, 9);
+        renderSlice(matrices.last().pose(), bufferBuilder, x + width - 3, y + height - 3, 3, 3, 6f, 6f, 9, 9);
 
-        tessellator.draw();
+        tessellator.end();
     }
 
     public static void renderSlice(Matrix4f matrix, BufferBuilder bufferBuilder, int x, int y, int width, int height, float u, float v, int texHeight, int texWidth) {
         bufferBuilder.vertex(matrix, x, y, 0f)
-                .texture(u / texWidth, v / texHeight)
-                .next();
+                .uv(u / texWidth, v / texHeight)
+                .endVertex();
         bufferBuilder.vertex(matrix, x, y + height, 0f)
-                .texture(u / texWidth, (v + 3) / texHeight)
-                .next();
+                .uv(u / texWidth, (v + 3) / texHeight)
+                .endVertex();
         bufferBuilder.vertex(matrix, x + width, y + height, 0f)
-                .texture((u + 3) / texWidth, (v + 3) / texHeight)
-                .next();
+                .uv((u + 3) / texWidth, (v + 3) / texHeight)
+                .endVertex();
         bufferBuilder.vertex(matrix, x + width, y, 0f)
-                .texture((u + 3) / texWidth, v / texHeight)
-                .next();
+                .uv((u + 3) / texWidth, v / texHeight)
+                .endVertex();
     }
 
     public static void setupScissor(int x, int y, int width, int height) {
-        double scale = MinecraftClient.getInstance().getWindow().getScaleFactor();
-        int screenY = MinecraftClient.getInstance().getWindow().getHeight();
+        double scale = Minecraft.getInstance().getWindow().getGuiScale();
+        int screenY = Minecraft.getInstance().getWindow().getScreenHeight();
 
         int scaledWidth = (int) Math.max(width * scale, 0);
         int scaledHeight = (int) Math.max(height * scale, 0);
@@ -238,23 +241,23 @@ public class UIHelper extends DrawableHelper {
         return mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height;
     }
 
-    public static void renderOutlineText(MatrixStack matrices, TextRenderer textRenderer, Text text, float x, float y, int color, int outline) {
-        Text outlineText = new LiteralText(text.getString().replaceAll("§.", "")).setStyle(text.getStyle().withColor(outline));
+    public static void renderOutlineText(PoseStack matrices, Font textRenderer, Component text, float x, float y, int color, int outline) {
+        Component outlineText = new TextComponent(text.getString().replaceAll("§.", "")).setStyle(text.getStyle().withColor(outline));
         for (int i = -1; i <= 1; ++i) {
             for (int j = -1; j <= 1; ++j) {
                 textRenderer.draw(matrices, outlineText, x + i, y + j, outline);
             }
         }
 
-        matrices.push();
+        matrices.pushPose();
         matrices.translate(0f, 0f, 0.1f);
         textRenderer.draw(matrices, text, x, y, color);
-        matrices.pop();
+        matrices.popPose();
     }
 
-    public static void renderTooltip(MatrixStack matrices, Text tooltip, int mouseX, int mouseY) {
-        Screen screen = MinecraftClient.getInstance().currentScreen;
-        if (screen != null) screen.renderTooltip(matrices, TextUtils.splitText(tooltip, "\n"), mouseX, Math.max(mouseY, 16));
+    public static void renderTooltip(PoseStack matrices, Component tooltip, int mouseX, int mouseY) {
+        Screen screen = Minecraft.getInstance().screen;
+        if (screen != null) screen.renderComponentTooltip(matrices, TextUtils.splitText(tooltip, "\n"), mouseX, Math.max(mouseY, 16));
     }
 
     /* TODO - WIP

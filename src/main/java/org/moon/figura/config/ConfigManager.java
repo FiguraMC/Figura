@@ -4,8 +4,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.util.InputUtil;
 import org.moon.figura.FiguraMod;
 
 import java.io.BufferedReader;
@@ -47,7 +47,7 @@ public final class ConfigManager {
                             continue;
 
                         if (config.type == Config.ConfigType.KEYBIND)
-                            config.keyBind.setBoundKey(InputUtil.fromTranslationKey((object.getAsString())));
+                            config.keyBind.setKey(InputConstants.getKey((object.getAsString())));
                         else
                             config.setValue(object.getAsString());
                     }

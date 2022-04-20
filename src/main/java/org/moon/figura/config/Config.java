@@ -1,14 +1,14 @@
 package org.moon.figura.config;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.fabric.impl.client.keybinding.KeyBindingRegistryImpl;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.option.GameOptions;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.Options;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TranslatableComponent;
 import org.moon.figura.FiguraMod;
 
 import java.nio.file.Path;
@@ -39,9 +39,9 @@ public enum Config {
     SCRIPT_LOG_LOCATION(0, 3) {{
         String path = "figura.config.log_location.";
         this.enumList = List.of(
-                new TranslatableText(path + "1"),
-                new TranslatableText(path + "2"),
-                new TranslatableText(path + "3")
+                new TranslatableComponent(path + "1"),
+                new TranslatableComponent(path + "2"),
+                new TranslatableComponent(path + "3")
         );
     }},
     PLAYER_POPUP_BUTTON("key.keyboard.r", "figura"),
@@ -59,16 +59,16 @@ public enum Config {
     ACTION_WHEEL_EXECUTE_ON_CLOSE(true),
     //NEW_ACTION_WHEEL(false),
 
-    Dev {{this.name = new TranslatableText("figura.config.dev").formatted(Formatting.RED);}},
+    Dev {{this.name = new TranslatableComponent("figura.config.dev").withStyle(ChatFormatting.RED);}},
 
     USE_LOCAL_SERVER(false),
     FORMAT_SCRIPT_ON_UPLOAD(true),
     LOG_OTHERS_SCRIPT(false),
     RENDER_DEBUG_PARTS_PIVOT(true) {{
         String tooltip = "figura.config.render_debug_parts_pivot.tooltip";
-        this.tooltip = new TranslatableText(tooltip,
-                new TranslatableText(tooltip + ".cubes").setStyle(Style.EMPTY.withColor(0xff72b7)),
-                new TranslatableText(tooltip + ".groups").setStyle(Style.EMPTY.withColor(0xaff2ff)));
+        this.tooltip = new TranslatableComponent(tooltip,
+                new TranslatableComponent(tooltip + ".cubes").setStyle(Style.EMPTY.withColor(0xff72b7)),
+                new TranslatableComponent(tooltip + ".groups").setStyle(Style.EMPTY.withColor(0xaff2ff)));
     }},
     RENDER_OWN_NAMEPLATE(false),
     MODEL_FOLDER_PATH("", InputType.FOLDER_PATH),
@@ -76,10 +76,10 @@ public enum Config {
     PINGS_LOG_LOCATION(3, 4) {{
         String path = "figura.config.log_location.";
         this.enumList = List.of(
-                new TranslatableText(path + "1"),
-                new TranslatableText(path + "2"),
-                new TranslatableText(path + "3"),
-                new TranslatableText(path + "4")
+                new TranslatableComponent(path + "1"),
+                new TranslatableComponent(path + "2"),
+                new TranslatableComponent(path + "3"),
+                new TranslatableComponent(path + "4")
         );
     }},
     BACKEND_PATH("figura.f24.im", InputType.ANY);
@@ -109,12 +109,12 @@ public enum Config {
     public final Object defaultValue;
 
     //metadata
-    public Text name;
-    public Text tooltip;
+    public Component name;
+    public Component tooltip;
     public final ConfigType type;
 
     //special properties
-    public List<Text> enumList;
+    public List<Component> enumList;
     public ConfigKeyBind keyBind;
     public final InputType inputType;
 
@@ -133,7 +133,7 @@ public enum Config {
     }
     Config(String key, String category) {
         this(ConfigType.KEYBIND, key, null, null, null);
-        this.keyBind = new ConfigKeyBind(this.name.getString(), InputUtil.fromTranslationKey(key), category, this);
+        this.keyBind = new ConfigKeyBind(this.name.getString(), InputConstants.getKey(key), category, this);
     }
 
     //global constructor
@@ -148,14 +148,14 @@ public enum Config {
 
         //generate names
         String name = FiguraMod.MOD_ID + ".config." + this.name().toLowerCase();
-        this.name = new TranslatableText(name);
-        this.tooltip = new TranslatableText(name + ".tooltip");
+        this.name = new TranslatableComponent(name);
+        this.tooltip = new TranslatableComponent(name + ".tooltip");
 
         //generate enum list
         if (length != null) {
-            ArrayList<Text> enumList = new ArrayList<>();
+            ArrayList<Component> enumList = new ArrayList<>();
             for (int i = 1; i <= length; i++)
-                enumList.add(new TranslatableText(name + "." + i));
+                enumList.add(new TranslatableComponent(name + "." + i));
             this.enumList = enumList;
         }
     }
@@ -221,32 +221,32 @@ public enum Config {
         });
 
         public final Predicate<String> validator;
-        public final Text hint;
+        public final Component hint;
         InputType(Predicate<String> predicate) {
             this.validator = predicate;
-            this.hint = new TranslatableText(FiguraMod.MOD_ID + ".config.input." + this.name().toLowerCase());
+            this.hint = new TranslatableComponent(FiguraMod.MOD_ID + ".config.input." + this.name().toLowerCase());
         }
     }
 
-    public static class ConfigKeyBind extends KeyBinding {
+    public static class ConfigKeyBind extends KeyMapping {
         private final Config config;
 
-        public ConfigKeyBind(String translationKey, InputUtil.Key key, String category, Config config) {
-            super(translationKey, key.getCategory(), key.getCode(), category);
+        public ConfigKeyBind(String translationKey, InputConstants.Key key, String category, Config config) {
+            super(translationKey, key.getType(), key.getValue(), category);
             this.config = config;
             KeyBindingRegistryImpl.registerKeyBinding(this);
         }
 
         @Override
-        public void setBoundKey(InputUtil.Key boundKey) {
-            super.setBoundKey(boundKey);
+        public void setKey(InputConstants.Key boundKey) {
+            super.setKey(boundKey);
 
-            config.setValue(this.getBoundKeyTranslationKey());
+            config.setValue(this.saveString());
             ConfigManager.saveConfig();
 
-            GameOptions options = MinecraftClient.getInstance().options;
-            if (options != null) options.write();
-            KeyBinding.updateKeysByCode();
+            Options options = Minecraft.getInstance().options;
+            if (options != null) options.save();
+            KeyMapping.resetMapping();
         }
     }
 }

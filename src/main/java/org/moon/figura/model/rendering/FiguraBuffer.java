@@ -1,7 +1,7 @@
 package org.moon.figura.model.rendering;
 
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import it.unimi.dsi.fastutil.floats.FloatArrayList;
-import net.minecraft.client.render.VertexConsumer;
 import org.lwjgl.BufferUtils;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;

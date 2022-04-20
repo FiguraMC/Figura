@@ -1,6 +1,6 @@
 package org.moon.figura.math.matrix;
 
-import net.minecraft.util.math.Matrix3f;
+import com.mojang.math.Matrix3f;
 import org.lwjgl.BufferUtils;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.math.vector.FiguraVec3;
@@ -114,7 +114,7 @@ public class FiguraMat3 implements CachedType {
     private static final FloatBuffer copyingBuffer = BufferUtils.createFloatBuffer(3*3);
     public static FiguraMat3 fromMatrix3f(Matrix3f mat) {
         copyingBuffer.clear();
-        mat.writeColumnMajor(copyingBuffer);
+        mat.store(copyingBuffer);
         FiguraMat3 result = of();
         result.v11 = copyingBuffer.get();
         result.v21 = copyingBuffer.get();
@@ -134,7 +134,7 @@ public class FiguraMat3 implements CachedType {
                 .put((float) v12).put((float) v22).put((float) v32)
                 .put((float) v13).put((float) v23).put((float) v33);
         Matrix3f result = new Matrix3f();
-        result.readColumnMajor(copyingBuffer);
+        result.load(copyingBuffer);
         return result;
     }
 

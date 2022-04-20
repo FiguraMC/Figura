@@ -3,8 +3,8 @@ package org.moon.figura;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.client.Minecraft;
+import net.minecraft.nbt.CompoundTag;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.providers.LocalAvatarFetcher;
 import org.moon.figura.avatars.providers.LocalAvatarLoader;
@@ -37,7 +37,7 @@ public class FiguraMod implements ClientModInitializer {
         try {
             LocalAvatarFetcher.load();
             if (!LocalAvatarFetcher.ALL_AVATARS.isEmpty()) {
-                NbtCompound nbt = LocalAvatarLoader.loadAvatar(LocalAvatarFetcher.ALL_AVATARS.get(0).getPath());
+                CompoundTag nbt = LocalAvatarLoader.loadAvatar(LocalAvatarFetcher.ALL_AVATARS.get(0).getPath());
                 if (nbt != null) {
                     Avatar a = new Avatar(nbt);
                     LocalAvatarLoader.saveNbt();
@@ -49,7 +49,7 @@ public class FiguraMod implements ClientModInitializer {
         }
     }
 
-    public static void tick(MinecraftClient client) {
+    public static void tick(Minecraft client) {
         ticks++;
     }
 
