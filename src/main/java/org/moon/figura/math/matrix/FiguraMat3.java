@@ -491,6 +491,12 @@ public class FiguraMat3 implements CachedType {
         return result;
     }
 
+    public FiguraMat4 augmented() {
+        FiguraMat4 result = FiguraMat4.of();
+        result.set(v11, v21, v31, 0, v12, v22, v32, 0, v13, v23, v33, 0, 0, 0, 0, 1);
+        return result;
+    }
+
     public FiguraMat3 plus(FiguraMat3 o) {
         FiguraMat3 result = copy();
         result.add(o);

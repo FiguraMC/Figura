@@ -1,6 +1,7 @@
 package org.moon.figura.math.matrix;
 
 import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Vec3d;
 import org.lwjgl.BufferUtils;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.math.vector.FiguraVec3;
@@ -235,6 +236,12 @@ public class FiguraMat4 implements CachedType {
         result.v34 = z;
         return result;
     }
+    public static FiguraMat4 createTranslationMatrix(FiguraVec3 amount) {
+        return createTranslationMatrix(amount.x, amount.y, amount.z);
+    }
+    public static FiguraMat4 createTranslationMatrix(Vec3d amount) {
+        return createTranslationMatrix(amount.x, amount.y, amount.z);
+    }
 
     //----------------------------------------------------------------
 
@@ -335,6 +342,12 @@ public class FiguraMat4 implements CachedType {
         v33 += z * v43;
         v34 += z * v44;
         invalidate();
+    }
+    public void translate(FiguraVec3 amount) {
+        translate(amount.x, amount.y, amount.z);
+    }
+    public void translate(Vec3d amount) {
+        translate(amount.x, amount.y, amount.z);
     }
 
     public void scale(double x, double y, double z) {
@@ -635,6 +648,12 @@ public class FiguraMat4 implements CachedType {
     public FiguraMat4 inverted() {
         FiguraMat4 result = copy();
         result.invert();
+        return result;
+    }
+
+    public FiguraMat3 deaugmented() {
+        FiguraMat3 result = FiguraMat3.of();
+        result.set(v11, v21, v31, v12, v22, v32, v13, v23, v33);
         return result;
     }
 

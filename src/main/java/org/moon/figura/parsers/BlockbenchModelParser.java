@@ -81,7 +81,8 @@ public class BlockbenchModelParser {
             //nbt
             NbtCompound compound = new NbtCompound();
             compound.putString("name", name);
-            compound.putByteArray("src", source.getBytes());
+            byte[] src = Base64.getDecoder().decode(source);
+            compound.putByteArray("src", src);
             if (!renderType.equalsIgnoreCase("default"))
                 compound.putString("type", renderType);
             list.add(compound);
@@ -89,7 +90,7 @@ public class BlockbenchModelParser {
             //lists
             textureIdMap.put(i, name);
             if (renderType.equalsIgnoreCase("default")) {
-                int[] imageSize = getTextureSize(Base64.getDecoder().decode(source));
+                int[] imageSize = getTextureSize(src);
                 textureMap.put(name, new TextureData(i + textureOffset, new float[]{(float) imageSize[0] / resolution.width, (float) imageSize[1] / resolution.height}));
             }
         }
