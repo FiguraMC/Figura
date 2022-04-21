@@ -2,7 +2,10 @@ package org.moon.figura.avatars;
 
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import org.moon.figura.FiguraMod;
+import org.moon.figura.avatars.providers.LocalAvatarLoader;
 
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -14,9 +17,13 @@ import java.util.UUID;
 public class AvatarManager {
 
     private static final HashMap<UUID, Avatar> LOADED_AVATARS = new HashMap<>();
+    public static boolean localUploaded = true; //init as true :3
 
     //player will also attempt to load from network, if possible
     public static Avatar getAvatarForPlayer(UUID player) {
+        if (!LOADED_AVATARS.containsKey(player))
+            fetchBackend(player);
+
         return LOADED_AVATARS.get(player);
     }
 
@@ -30,5 +37,29 @@ public class AvatarManager {
 
         //otherwise, just normally load it
         return LOADED_AVATARS.get(uuid);
+    }
+
+    //removes an loaded avatar
+    public static void clearAvatar(UUID id) {
+        LOADED_AVATARS.remove(id);
+    }
+
+    //load the local player avatar
+    public static void loadLocalAvatar(Path path) {
+        //clear
+        UUID id = FiguraMod.getLocalPlayerUUID();
+        clearAvatar(id);
+
+        //mark as not uploaded
+        localUploaded = false;
+
+        //load (or reload)
+        LOADED_AVATARS.put(id, new Avatar(LocalAvatarLoader.loadAvatar(path)));
+    }
+
+    //get avatar from the backend
+    //mark as uploaded if local
+    private static void fetchBackend(UUID id) {
+        //TODO
     }
 }

@@ -4,7 +4,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.*;
 import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.FiguraMod;
@@ -263,19 +262,14 @@ public class TrustManager {
         return true;
     }
 
-    //get local player ID
-    private static String getClientPlayerID() {
-        return Minecraft.getInstance().getUser().getGameProfile().getId().toString();
-    }
-
     //check if trust is from local player
     public static boolean isLocal(TrustContainer trust) {
-        return trust.name.equals(getClientPlayerID()) || trust.name.equals("local");
+        return isLocal(trust.name) || trust.name.equals("local");
     }
 
     //check if id is from local player
     public static boolean isLocal(String id) {
-        return id.equals(getClientPlayerID());
+        return id.equals(FiguraMod.getLocalPlayerUUID().toString());
     }
 
     //check if trust has been changed

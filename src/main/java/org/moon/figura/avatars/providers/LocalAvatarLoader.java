@@ -11,8 +11,10 @@ import org.moon.figura.parsers.LuaScriptParser;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.WatchService;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -25,6 +27,8 @@ public class LocalAvatarLoader {
     private static CompoundTag lastLoadedNbt;
     private static Path lastLoadedPath;
 
+    private static WatchService watcher;
+
     /**
      * Loads an NbtCompound from the specified path
      * @param path - the file/folder for loading the avatar
@@ -32,6 +36,9 @@ public class LocalAvatarLoader {
      */
     public static CompoundTag loadAvatar(Path path) {
         lastLoadedPath = path;
+
+        if (path == null)
+            return lastLoadedNbt = null;
 
         //load as nbt (.moon)
         if (path.toString().endsWith(".moon")) {
@@ -145,5 +152,9 @@ public class LocalAvatarLoader {
 
     public static CompoundTag getLastLoadedNbt() {
         return lastLoadedNbt;
+    }
+
+    public static Path getLastLoadedPath() {
+        return lastLoadedPath;
     }
 }

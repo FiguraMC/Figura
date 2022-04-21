@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.util.UUID;
 
 public class FiguraMod implements ClientModInitializer {
 
@@ -65,5 +66,10 @@ public class FiguraMod implements ClientModInitializer {
         }
 
         return p;
+    }
+
+    //get local player uuid
+    public static UUID getLocalPlayerUUID() {
+        return Minecraft.getInstance().getUser().getGameProfile().getId();
     }
 }
