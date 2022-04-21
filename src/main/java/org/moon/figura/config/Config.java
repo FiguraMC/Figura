@@ -44,7 +44,7 @@ public enum Config {
                 new TranslatableComponent(path + "3")
         );
     }},
-    PLAYER_POPUP_BUTTON("key.keyboard.r", "figura"),
+    PLAYER_POPUP_BUTTON("key.keyboard.r", FiguraMod.MOD_ID),
     ACCENT_COLOR(0x55FFFF, InputType.HEX_COLOR),
     RELEASE_CHANNEL(0, 3),
     CUSTOM_PLAYER_HEADS(true),
@@ -54,7 +54,7 @@ public enum Config {
 
     ActionWheel,
 
-    ACTION_WHEEL_BUTTON("key.keyboard.b", "figura"),
+    ACTION_WHEEL_BUTTON("key.keyboard.b", FiguraMod.MOD_ID),
     ACTION_WHEEL_TITLE_POS(0, 4),
     ACTION_WHEEL_EXECUTE_ON_CLOSE(true),
     //NEW_ACTION_WHEEL(false),
@@ -72,7 +72,7 @@ public enum Config {
     }},
     RENDER_OWN_NAMEPLATE(false),
     MODEL_FOLDER_PATH("", InputType.FOLDER_PATH),
-    PANIC_BUTTON("key.keyboard.unknown", "figura"),
+    PANIC_BUTTON("key.keyboard.unknown", FiguraMod.MOD_ID),
     PINGS_LOG_LOCATION(3, 4) {{
         String path = "figura.config.log_location.";
         this.enumList = List.of(

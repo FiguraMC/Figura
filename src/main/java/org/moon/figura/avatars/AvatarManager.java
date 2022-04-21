@@ -1,5 +1,6 @@
 package org.moon.figura.avatars;
 
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import org.moon.figura.FiguraMod;
@@ -53,8 +54,15 @@ public class AvatarManager {
         //mark as not uploaded
         localUploaded = false;
 
-        //load (or reload)
-        LOADED_AVATARS.put(id, new Avatar(LocalAvatarLoader.loadAvatar(path)));
+        //load
+        try {
+            CompoundTag nbt = LocalAvatarLoader.loadAvatar(path);
+            if (nbt != null) {
+                LOADED_AVATARS.put(id, new Avatar(nbt));
+            }
+        } catch (Exception e) {
+            FiguraMod.LOGGER.error("Failed to load avatar from " + path, e);
+        }
     }
 
     //get avatar from the backend

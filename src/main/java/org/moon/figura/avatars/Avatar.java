@@ -32,7 +32,7 @@ public class Avatar {
         author = metadata.getString("author");
         version = metadata.getString("ver");
         fileSize = getFileSize(nbt);
-        renderer = new TestAvatarRenderer(this, nbt);
+        renderer = null;//new TestAvatarRenderer(this, nbt);
         //
     }
 

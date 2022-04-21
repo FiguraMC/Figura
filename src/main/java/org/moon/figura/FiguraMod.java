@@ -4,8 +4,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
-import net.minecraft.nbt.CompoundTag;
-import org.moon.figura.avatars.Avatar;
+import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.avatars.providers.LocalAvatarFetcher;
 import org.moon.figura.avatars.providers.LocalAvatarLoader;
 import org.moon.figura.testing.LuaTest;
@@ -23,7 +22,7 @@ public class FiguraMod implements ClientModInitializer {
     public static final String VERSION = FabricLoader.getInstance().getModContainer(MOD_ID).get().getMetadata().getVersion().getFriendlyString();
     public static final boolean CHEESE_DAY = LocalDate.now().getDayOfMonth() == 1 && LocalDate.now().getMonthValue() == 4;
     public static final Path GAME_DIR = FabricLoader.getInstance().getGameDir();
-    public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+    public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID.substring(0, 1).toUpperCase() + MOD_ID.substring(1));
 
     public static int ticks = 0;
 
@@ -38,12 +37,8 @@ public class FiguraMod implements ClientModInitializer {
         try {
             LocalAvatarFetcher.load();
             if (!LocalAvatarFetcher.ALL_AVATARS.isEmpty()) {
-                CompoundTag nbt = LocalAvatarLoader.loadAvatar(LocalAvatarFetcher.ALL_AVATARS.get(0).getPath());
-                if (nbt != null) {
-                    Avatar a = new Avatar(nbt);
-                    LocalAvatarLoader.saveNbt();
-                    FiguraMod.LOGGER.warn(a.toString());
-                }
+                AvatarManager.loadLocalAvatar(LocalAvatarFetcher.ALL_AVATARS.get(0).getPath());
+                //LocalAvatarLoader.saveNbt();
             }
         } catch (Exception e) {
             LOGGER.error("", e);
@@ -51,6 +46,7 @@ public class FiguraMod implements ClientModInitializer {
     }
 
     public static void tick(Minecraft client) {
+        LocalAvatarLoader.tickWatchedKey();
         ticks++;
     }
 

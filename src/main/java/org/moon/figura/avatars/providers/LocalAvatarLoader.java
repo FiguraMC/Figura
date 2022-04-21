@@ -4,6 +4,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtIo;
 import org.moon.figura.FiguraMod;
+import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.parsers.AvatarMetadataParser;
 import org.moon.figura.parsers.BlockbenchModelParser;
 import org.moon.figura.parsers.LuaScriptParser;
@@ -11,10 +12,7 @@ import org.moon.figura.parsers.LuaScriptParser;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.WatchService;
+import java.nio.file.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -28,6 +26,14 @@ public class LocalAvatarLoader {
     private static Path lastLoadedPath;
 
     private static WatchService watcher;
+    private static WatchKey key;
+    static {
+        try {
+            watcher = FileSystems.getDefault().newWatchService();
+        } catch (Exception e) {
+            FiguraMod.LOGGER.error("Failed to initialize the watcher service", e);
+        }
+    }
 
     /**
      * Loads an NbtCompound from the specified path
@@ -36,6 +42,7 @@ public class LocalAvatarLoader {
      */
     public static CompoundTag loadAvatar(Path path) {
         lastLoadedPath = path;
+        updateWatchKey(path);
 
         if (path == null)
             return lastLoadedNbt = null;
@@ -132,6 +139,43 @@ public class LocalAvatarLoader {
         }
     }
 
+    /**
+     * Tick the watched key for hotswapping avatars
+     */
+    public static void tickWatchedKey() {
+        if (key == null || !key.isValid())
+            return;
+
+        for (WatchEvent<?> event : key.pollEvents()) {
+            if (event.kind() == StandardWatchEventKinds.OVERFLOW)
+                continue;
+
+            //reload avatar
+            FiguraMod.LOGGER.debug("Local avatar files changed - Reloading!");
+            FiguraMod.LOGGER.debug(event.context().toString());
+            AvatarManager.loadLocalAvatar(lastLoadedPath);
+            break;
+        }
+    }
+
+    /**
+     * Cancels previous watch key and register a new one
+     * @param path the path to register the watch key
+     */
+    private static void updateWatchKey(Path path) {
+        if (key != null)
+            key.cancel();
+
+        if (watcher == null)
+            return;
+
+        try {
+            key = path.register(watcher, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY);
+        } catch (Exception e) {
+            FiguraMod.LOGGER.error("Failed to register watcher for " + path, e);
+        }
+    }
+
     // -- helper functions -- //
 
     public static File[] getFilesByExtension(Path root, String extension) {
@@ -152,9 +196,5 @@ public class LocalAvatarLoader {
 
     public static CompoundTag getLastLoadedNbt() {
         return lastLoadedNbt;
-    }
-
-    public static Path getLastLoadedPath() {
-        return lastLoadedPath;
     }
 }
