@@ -3,6 +3,7 @@ package org.moon.figura.model;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.model.rendering.FiguraImmediateBuffer;
 
 public class ModelPartTransform {
 
@@ -39,6 +40,11 @@ public class ModelPartTransform {
 
             needsMatrixRecalculation = false;
         }
+    }
+
+    public void pushToBuffer(FiguraImmediateBuffer buffer) {
+        recalculate();
+        buffer.pushTransform(positionMatrix, normalMatrix);
     }
 
 }

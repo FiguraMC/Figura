@@ -1,7 +1,6 @@
 package org.moon.figura.model.rendering;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.nbt.CompoundTag;
@@ -13,13 +12,13 @@ import org.moon.figura.model.rendering.texture.FiguraTexture;
 
 public class TestAvatarRenderer extends AvatarRenderer {
 
-    private final FiguraBuffer buffer;
+    private final FiguraImmediateBuffer buffer;
     private final FiguraTexture texture;
     private final RenderType renderLayer;
 
     public TestAvatarRenderer(Avatar avatar, CompoundTag avatarCompound) {
         super(avatar, avatarCompound);
-        buffer = FiguraBuffer.builder()
+        buffer = FiguraImmediateBuffer.builder()
                 .vertex(1, 0, 0, 0, 1, 0, 0, -1)
                 .vertex(0, 0, 0, 1, 1, 0, 0, -1)
                 .vertex(0, 1, 0, 1, 0, 0, 0, -1)
@@ -52,7 +51,7 @@ public class TestAvatarRenderer extends AvatarRenderer {
 
                 .build();
 
-        texture = new FiguraTexture(((CompoundTag) avatarCompound.getList("textures", Tag.TAG_COMPOUND).get(0)).getByteArray("src"));
+        texture = new FiguraTexture(((CompoundTag) avatarCompound.getList("textures", Tag.TAG_COMPOUND).get(1)).getByteArray("default"));
 
         renderLayer = RenderType.entityCutout(texture.textureID);
     }
@@ -63,11 +62,10 @@ public class TestAvatarRenderer extends AvatarRenderer {
         FiguraMat4 matrix = entityToWorldMatrix(entity, tickDelta);
         FiguraMat4 worldToView = worldToViewMatrix();
         matrix.multiply(worldToView);
-        buffer.setTransform(matrix);
 
         //Normal matrix
         FiguraMat3 normalMat = matrix.deaugmented();
-        buffer.setNormalMat(normalMat);
+        buffer.pushTransform(matrix, normalMat);
 
         //Free matrices
         matrix.free();
@@ -78,7 +76,8 @@ public class TestAvatarRenderer extends AvatarRenderer {
         texture.registerAndUpload();
 
         //Push vertices
-        VertexConsumer consumer = vcp.getBuffer(renderLayer);
-        buffer.pushToConsumer(consumer, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
+        VertexConsumer consumer = bufferSource.getBuffer(renderLayer);
+        buffer.pushToConsumer(consumer, light, OverlayTexture.NO_OVERLAY, 6);
+        buffer.popTransform();
     }
 }

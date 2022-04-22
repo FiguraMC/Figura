@@ -33,3 +33,4 @@ bin/
 run/
 remappedSrc/
 *.cap
+*.rdc

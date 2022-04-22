@@ -8,18 +8,17 @@ import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec4;
+import org.moon.figura.utils.caching.CacheStack;
 
 import java.nio.FloatBuffer;
 
-public class FiguraBuffer {
+public class FiguraImmediateBuffer {
 
-    private final int vertexCount;
-    private final FiguraMat4 transform = FiguraMat4.of();
-    private final FiguraMat3 normalMat = FiguraMat3.of();
+    private final CacheStack<FiguraMat4, FiguraMat4> positionMatrixStack = new FiguraMat4.Stack();
+    private final CacheStack<FiguraMat3, FiguraMat3> normalMatrixStack = new FiguraMat3.Stack();
     public final FloatBuffer positions, uvs, normals;
 
-    private FiguraBuffer(FloatArrayList posList, FloatArrayList uvList, FloatArrayList normalList) {
-        vertexCount = posList.size() / 3;
+    private FiguraImmediateBuffer(FloatArrayList posList, FloatArrayList uvList, FloatArrayList normalList) {
         positions = BufferUtils.createFloatBuffer(posList.size());
         positions.put(posList.toArray(new float[0]));
         uvs = BufferUtils.createFloatBuffer(uvList.size());
@@ -28,27 +27,31 @@ public class FiguraBuffer {
         normals.put(normalList.toArray(new float[0]));
     }
 
-    public void setTransform(FiguraMat4 transform) {
-        this.transform.set(transform);
+    public void pushTransform(FiguraMat4 positionMat, FiguraMat3 normalMat) {
+        positionMatrixStack.push(positionMat);
+        normalMatrixStack.push(normalMat);
     }
 
-    public void setNormalMat(FiguraMat3 mat) {
-        this.normalMat.set(mat);
+    public void popTransform() {
+        positionMatrixStack.pop();
+        normalMatrixStack.pop();
     }
 
     private static final FiguraVec4 pos = FiguraVec4.of();
     private static final FiguraVec3 normal = FiguraVec3.of();
 
-    public void pushToConsumer(VertexConsumer consumer, int light, int overlay) {
+    public void pushToConsumer(VertexConsumer consumer, int light, int overlay, int faceCount) {
         positions.clear();
         uvs.clear();
         normals.clear();
 
-        for (int i = 0; i < vertexCount; i++) {
+        for (int i = 0; i < faceCount*4; i++) {
+
             pos.set(positions.get(), positions.get(), positions.get(), 1);
-            pos.multiply(transform);
+            pos.multiply(positionMatrixStack.peek());
             normal.set(normals.get(), normals.get(), normals.get());
-            normal.multiply(normalMat);
+            normal.multiply(normalMatrixStack.peek());
+
             consumer.vertex(
                     (float) pos.x,
                     (float) pos.y,
@@ -92,8 +95,8 @@ public class FiguraBuffer {
                     (float) normal.x, (float) normal.y, (float) normal.z);
         }
 
-        public FiguraBuffer build() {
-            return new FiguraBuffer(positions, uvs, normals);
+        public FiguraImmediateBuffer build() {
+            return new FiguraImmediateBuffer(positions, uvs, normals);
         }
     }
 

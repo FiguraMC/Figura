@@ -20,7 +20,7 @@ public class EntityRendererMixin {
     private static Avatar avatar = null;
 
     @Inject(at = @At("HEAD"), method = "render")
-    private void testDrawing(Entity e, float yaw, float delta, PoseStack m, MultiBufferSource vcp, int l, CallbackInfo ci) {
+    private void testDrawing(Entity e, float yaw, float delta, PoseStack m, MultiBufferSource bufferSource, int l, CallbackInfo ci) {
 
         //Create avatar if not done already
         if (avatar == null) {
@@ -41,7 +41,7 @@ public class EntityRendererMixin {
         avatar.renderer.tickDelta = delta;
         avatar.renderer.matrices = m;
         avatar.renderer.light = l;
-        avatar.renderer.vcp = vcp;
+        avatar.renderer.bufferSource = bufferSource;
 
         avatar.renderer.render();
     }

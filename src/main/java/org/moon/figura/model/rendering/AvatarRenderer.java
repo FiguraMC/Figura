@@ -12,6 +12,7 @@ import net.minecraft.world.entity.LivingEntity;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
+import org.moon.figura.model.FiguraModelPart;
 
 
 /**
@@ -21,12 +22,13 @@ import org.moon.figura.math.matrix.FiguraMat4;
 public abstract class AvatarRenderer {
 
     protected final Avatar avatar;
+    protected FiguraModelPart root;
 
     public Entity entity;
     public float yaw, tickDelta;
     public PoseStack matrices;
     public int light;
-    public MultiBufferSource vcp;
+    public MultiBufferSource bufferSource;
 
     public AvatarRenderer(Avatar avatar, CompoundTag avatarCompound) {
         this.avatar = avatar;
@@ -36,8 +38,6 @@ public abstract class AvatarRenderer {
 
     /**
      * Returns the matrix for an entity, used to transform from entity space to world space.
-     * This is inelegant, will rework later. Currently makes a distinction for LivingEntities to use body yaw,
-     * and non-living entities to just lerp their yaws.
      * @param e The entity to get the matrix for.
      * @return A matrix which represents the transformation from entity space to part space.
      */
@@ -53,7 +53,8 @@ public abstract class AvatarRenderer {
     }
 
     /**
-     * Gets a matrix to transform from world space to part space, based on the player's camera position.
+     * Gets a matrix to transform from world space to view space, based on the
+     * player's camera position and orientation.
      * @return That matrix.
      */
     public static FiguraMat4 worldToViewMatrix() {

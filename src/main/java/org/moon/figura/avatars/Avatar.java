@@ -4,6 +4,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.model.rendering.AvatarRenderer;
+import org.moon.figura.model.rendering.ImmediateAvatarRenderer;
 import org.moon.figura.model.rendering.TestAvatarRenderer;
 
 import java.io.ByteArrayOutputStream;
@@ -23,6 +24,8 @@ public class Avatar {
     public final String author;
     public final String version;
     public final float fileSize;
+
+    //Runtime data
     public final AvatarRenderer renderer;
 
     public Avatar(CompoundTag nbt) {
@@ -32,8 +35,7 @@ public class Avatar {
         author = metadata.getString("author");
         version = metadata.getString("ver");
         fileSize = getFileSize(nbt);
-        renderer = null;//new TestAvatarRenderer(this, nbt);
-        //
+        renderer = new ImmediateAvatarRenderer(this, nbt);
     }
 
     private float getFileSize(CompoundTag nbt) {

@@ -4,6 +4,7 @@ import com.mojang.math.Matrix3f;
 import org.lwjgl.BufferUtils;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.utils.caching.CacheStack;
 import org.moon.figura.utils.caching.CacheUtils;
 import org.moon.figura.utils.caching.CachedType;
 
@@ -43,6 +44,22 @@ public class FiguraMat3 implements CachedType {
         FiguraMat3 result = of();
         result.set(n11, n21, n31, n12, n22, n32, n13, n23, n33);
         return result;
+    }
+    public static class Stack extends CacheStack<FiguraMat3, FiguraMat3> {
+        public Stack() {
+            this(CACHE);
+        }
+        public Stack(CacheUtils.Cache<FiguraMat3> cache) {
+            super(cache);
+        }
+        @Override
+        protected void modify(FiguraMat3 valueToModify, FiguraMat3 modifierArg) {
+            valueToModify.multiply(modifierArg);
+        }
+        @Override
+        protected void copy(FiguraMat3 from, FiguraMat3 to) {
+            to.set(from);
+        }
     }
 
     //----------------------------------------------------------------
