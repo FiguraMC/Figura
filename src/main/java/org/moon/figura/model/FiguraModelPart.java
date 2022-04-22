@@ -40,11 +40,11 @@ public class FiguraModelPart {
         this.children = children;
     }
 
-    public static FiguraModelPart read(CompoundTag partCompound, FiguraImmediateBuffer.Builder vertexBuffer) {
-        return read(partCompound, vertexBuffer, new int[] {0});
+    public static FiguraModelPart read(CompoundTag partCompound, List<FiguraImmediateBuffer.Builder> bufferBuilders) {
+        return read(partCompound, bufferBuilders, new int[] {0});
     }
 
-    private static FiguraModelPart read(CompoundTag partCompound, FiguraImmediateBuffer.Builder vertexBuffer, int[] index) {
+    private static FiguraModelPart read(CompoundTag partCompound, List<FiguraImmediateBuffer.Builder> bufferBuilders, int[] index) {
         //Read name
         String name = partCompound.getString("name");
 
@@ -58,7 +58,7 @@ public class FiguraModelPart {
         int newIndex = -1;
         List<Integer> facesByTexture = new ArrayList<>(0);
         if (hasCubeData(partCompound)) {
-            readCuboid(facesByTexture, vertexBuffer, partCompound);
+            readCuboid(facesByTexture, bufferBuilders, partCompound);
             newIndex = index[0]++;
         } else if (hasMeshData(partCompound)) {
             //TODO: read mesh
@@ -70,7 +70,7 @@ public class FiguraModelPart {
         if (partCompound.contains("chld")) {
             ListTag listTag = partCompound.getList("chld", Tag.TAG_COMPOUND);
             for (Tag tag : listTag)
-                children.add(read((CompoundTag) tag, vertexBuffer, index));
+                children.add(read((CompoundTag) tag, bufferBuilders, index));
         }
 
         FiguraModelPart result = new FiguraModelPart(name, transform, newIndex, children);
@@ -186,7 +186,7 @@ public class FiguraModelPart {
     private static final FiguraVec3 to = FiguraVec3.of();
     private static final FiguraVec3 ftDiff = FiguraVec3.of();
 
-    private static void readCuboid(List<Integer> facesByTexture, FiguraImmediateBuffer.Builder builder, CompoundTag data) {
+    private static void readCuboid(List<Integer> facesByTexture, List<FiguraImmediateBuffer.Builder> builders, CompoundTag data) {
         //Read from and to
         readVec3(from, data, "f");
         readVec3(to, data, "t");
@@ -204,18 +204,20 @@ public class FiguraModelPart {
 
         //Iterate over faces, add them
         for (String direction : faceData.keySet())
-            readFace(data.getCompound("cube_data"), facesByTexture, builder, direction);
+            readFace(data.getCompound("cube_data"), facesByTexture, builders, direction);
     }
 
     private static final FiguraVec3 tempPos = FiguraVec3.of();
     private static final FiguraVec4 uv = FiguraVec4.of();
 
-    private static void readFace(CompoundTag faces, List<Integer> facesByTexture, FiguraImmediateBuffer.Builder builder, String direction) {
+    private static void readFace(CompoundTag faces, List<Integer> facesByTexture, List<FiguraImmediateBuffer.Builder> builders, String direction) {
         if (faces.contains(direction)) {
             CompoundTag face = faces.getCompound(direction);
             short texId = face.getShort("tex");
             while (texId >= facesByTexture.size())
                 facesByTexture.add(0);
+            while (texId >= builders.size())
+                builders.add(FiguraImmediateBuffer.builder());
             facesByTexture.set(texId, facesByTexture.get(texId) + 1);
 
             FiguraVec3 normal = faceData.get(direction)[4];
@@ -228,7 +230,7 @@ public class FiguraModelPart {
 
                 FiguraVec2 normalizedUv = uvValues[(i + rotation)%4];
 
-                builder.vertex(
+                builders.get(texId).vertex(
                         (float) tempPos.x, (float) tempPos.y, (float) tempPos.z,
                         (float) Mth.lerp(normalizedUv.x, uv.x, uv.z),
                         (float) Mth.lerp(normalizedUv.y, uv.y, uv.w),

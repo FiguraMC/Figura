@@ -39,6 +39,10 @@ public abstract class CacheStack<T extends CachedType, S> {
         index = -1;
     }
 
+    public boolean isEmpty() {
+        return index == -1;
+    }
+
     /**
      * Pushes a copy of the previous item on the top of the stack.
      * Then, modifies the item we just pushed according to modifierArg.

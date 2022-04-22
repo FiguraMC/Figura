@@ -54,7 +54,7 @@ public class FiguraMat3 implements CachedType {
         }
         @Override
         protected void modify(FiguraMat3 valueToModify, FiguraMat3 modifierArg) {
-            valueToModify.multiply(modifierArg);
+            valueToModify.rightMultiply(modifierArg);
         }
         @Override
         protected void copy(FiguraMat3 from, FiguraMat3 to) {

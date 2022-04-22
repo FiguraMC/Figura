@@ -72,7 +72,7 @@ public class BlockbenchModelParser {
         //temp lists
 
         //used for retrieving texture data by name, so we can expand the same data
-        HashMap<String, CompoundTag> texturesNbt = new HashMap<>();
+        LinkedHashMap<String, CompoundTag> texturesNbt = new LinkedHashMap<>();
 
         //used for storing the index of the specific texture name
         List<String> textureIndex = new ArrayList<>();
@@ -125,7 +125,8 @@ public class BlockbenchModelParser {
             }
         }
 
-        list.addAll(texturesNbt.values());
+        for (Map.Entry<String, CompoundTag> entry : texturesNbt.entrySet())
+            list.add(entry.getValue());
         textureOffset += list.size();
     }
 

@@ -1,7 +1,5 @@
 package org.moon.figura.model.rendering;
 
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -17,16 +15,17 @@ import java.util.List;
 
 public class ImmediateAvatarRenderer extends AvatarRenderer {
 
-    private FiguraImmediateBuffer buffer;
-    private List<FiguraTextureSet> textureSets = new ArrayList<>(0);;
+    private final List<FiguraImmediateBuffer> buffers = new ArrayList<>(0);
 
     public ImmediateAvatarRenderer(Avatar avatar, CompoundTag avatarCompound) {
         super(avatar, avatarCompound);
 
-        FiguraImmediateBuffer.Builder builder = FiguraImmediateBuffer.builder();
-        root = FiguraModelPart.read(avatarCompound.getCompound("models"), builder);
-        buffer = builder.build();
+        List<FiguraImmediateBuffer.Builder> builders = new ArrayList<>();
+        root = FiguraModelPart.read(avatarCompound.getCompound("models"), builders);
+        root.transform.scale.set(1d/16, 1d/16, 1d/16);
+        root.transform.needsMatrixRecalculation = true;
 
+        List<FiguraTextureSet> textureSets = new ArrayList<>();
         ListTag texturesList = avatarCompound.getList("textures", Tag.TAG_COMPOUND);
         for (int i = 0; i < texturesList.size(); i++) {
             CompoundTag tag = texturesList.getCompound(i);
@@ -36,6 +35,10 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
             byte[] emissiveData = tag.getByteArray("emissive");
             emissiveData = emissiveData.length == 0 ? null : emissiveData;
             textureSets.add(new FiguraTextureSet(name, mainData, emissiveData));
+        }
+
+        for (int i = 0; i < textureSets.size() && i < builders.size(); i++) {
+            buffers.add(builders.get(i).build(textureSets.get(i)));
         }
     }
 
@@ -47,7 +50,8 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         FiguraMat4 worldToView = worldToViewMatrix();
         posMat.multiply(worldToView);
         FiguraMat3 normalMat = posMat.deaugmented();
-        buffer.pushTransform(posMat, normalMat);
+        for (FiguraImmediateBuffer buffer : buffers)
+            buffer.pushTransform(posMat, normalMat);
 
         //Free matrices after use
         posMat.free();
@@ -55,35 +59,33 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         normalMat.free();
 
         //Textures
-        for (FiguraTextureSet textureSet : textureSets)
-            textureSet.uploadIfNeeded();
+        for (FiguraImmediateBuffer buffer : buffers)
+            buffer.uploadTexIfNeeded();
 
         //Render all model parts
         renderPart(root);
 
         //Pop position and normal matrices
-        buffer.popTransform();
+        for (FiguraImmediateBuffer buffer : buffers) {
+            buffer.popTransform();
+            buffer.checkTransformStackEmpty();
+        }
+
     }
 
     private void renderPart(FiguraModelPart part) {
-        part.transform.pushToBuffer(buffer);
+        for (FiguraImmediateBuffer buffer : buffers)
+            part.transform.pushToBuffer(buffer);
+
         part.pushVerticesImmediate(this);
         for (FiguraModelPart child : part.children)
             renderPart(child);
-        buffer.popTransform();
+
+        for (FiguraImmediateBuffer buffer : buffers)
+            buffer.popTransform();
     }
 
     public void pushFaces(int texIndex, int faceCount) {
-        RenderType mainType = textureSets.get(texIndex).mainType;
-        RenderType emissiveType = textureSets.get(texIndex).emissiveType;
-
-        if (mainType != null) {
-            VertexConsumer consumer = bufferSource.getBuffer(mainType);
-            buffer.pushToConsumer(consumer, light, OverlayTexture.NO_OVERLAY, faceCount);
-        }
-        if (emissiveType != null) {
-            VertexConsumer consumer = bufferSource.getBuffer(emissiveType);
-            buffer.pushToConsumer(consumer, light, OverlayTexture.NO_OVERLAY, faceCount);
-        }
+        buffers.get(texIndex).pushVertices(bufferSource, light, OverlayTexture.NO_OVERLAY, faceCount);
     }
 }

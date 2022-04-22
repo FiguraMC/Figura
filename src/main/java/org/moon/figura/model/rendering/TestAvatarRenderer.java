@@ -10,6 +10,7 @@ import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.model.rendering.texture.FiguraTexture;
 
+//Does not work anymore after refactor of FiguraImmediateBuffer to include a FiguraTextureSet
 public class TestAvatarRenderer extends AvatarRenderer {
 
     private final FiguraImmediateBuffer buffer;
@@ -49,7 +50,7 @@ public class TestAvatarRenderer extends AvatarRenderer {
                 .vertex(1, 0, 1, 1, 0, 0, -1, 0)
                 .vertex(0, 0, 1, 0, 0, 0, -1, 0)
 
-                .build();
+                .build(null);
 
         texture = new FiguraTexture(((CompoundTag) avatarCompound.getList("textures", Tag.TAG_COMPOUND).get(1)).getByteArray("default"));
 
@@ -76,8 +77,7 @@ public class TestAvatarRenderer extends AvatarRenderer {
         texture.registerAndUpload();
 
         //Push vertices
-        VertexConsumer consumer = bufferSource.getBuffer(renderLayer);
-        buffer.pushToConsumer(consumer, light, OverlayTexture.NO_OVERLAY, 6);
+        buffer.pushVertices(bufferSource, light, OverlayTexture.NO_OVERLAY, 6);
         buffer.popTransform();
     }
 }

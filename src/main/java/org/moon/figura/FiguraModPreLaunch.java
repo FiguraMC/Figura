@@ -9,6 +9,6 @@ import net.fabricmc.loader.api.entrypoint.PreLaunchEntrypoint;
 public class FiguraModPreLaunch implements PreLaunchEntrypoint {
     @Override
     public void onPreLaunch() {
-        System.load("C:\\Program Files\\RenderDoc\\renderdoc.dll");
+        //System.load("C:\\Program Files\\RenderDoc\\renderdoc.dll");
     }
 }
