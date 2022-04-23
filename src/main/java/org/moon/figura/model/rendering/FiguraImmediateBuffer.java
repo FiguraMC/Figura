@@ -54,56 +54,80 @@ public class FiguraImmediateBuffer {
     private static final FiguraVec3 normal = FiguraVec3.of();
     private static final FiguraVec2 uv = FiguraVec2.of();
 
-    public void pushVertices(MultiBufferSource bufferSource, int light, int overlay, int faceCount) {
-        VertexConsumer mainConsumer = null;
-        VertexConsumer emissiveConsumer = null;
-        if (textureSet.mainType != null)
-            mainConsumer = bufferSource.getBuffer(textureSet.mainType);
-        if (textureSet.emissiveType != null)
-            emissiveConsumer = bufferSource.getBuffer(textureSet.emissiveType);
+    private void markBuffers() {
+        positions.mark();
+        uvs.mark();
+        normals.mark();
+    }
 
+    private void resetBuffers() {
+        positions.reset();
+        uvs.reset();
+        normals.reset();
+    }
+
+    public void clearBuffers() {
         positions.clear();
         uvs.clear();
         normals.clear();
+    }
+
+    public void pushVertices(MultiBufferSource bufferSource, int light, int overlay, int faceCount) {
+        //Mark the buffers, as we may be using these vertices multiple times
+        markBuffers();
+
+        //Push to main consumer if it exists
+        VertexConsumer mainConsumer = null;
+        if (textureSet.mainType != null)
+            mainConsumer = bufferSource.getBuffer(textureSet.mainType);
+        if (mainConsumer != null) {
+            //resetBuffers(); //would normally have this on every texture,
+            // but not necessary since this is the first one and we just marked
+            pushToConsumer(mainConsumer, light, overlay, faceCount);
+        }
+
+        //Push to emissive consumer if it exists
+        VertexConsumer emissiveConsumer = null;
+        if (textureSet.emissiveType != null)
+            emissiveConsumer = bufferSource.getBuffer(textureSet.emissiveType);
+        if (emissiveConsumer != null) {
+            resetBuffers();
+            pushToConsumer(emissiveConsumer, light, overlay, faceCount);
+        }
+
+    }
+
+    private void pushToConsumer(VertexConsumer consumer, int light, int overlay, int faceCount) {
+        FiguraMat4 posMat = positionMatrixStack.peek();
+        FiguraMat3 normalMat = normalMatrixStack.peek();
 
         for (int i = 0; i < faceCount*4; i++) {
 
             pos.set(positions.get(), positions.get(), positions.get(), 1);
-            pos.multiply(positionMatrixStack.peek());
+            pos.multiply(posMat);
             normal.set(normals.get(), normals.get(), normals.get());
-            normal.multiply(normalMatrixStack.peek());
+            normal.multiply(normalMat);
             uv.set(uvs.get(), uvs.get());
-            uv.divide(textureSet.mainTex.getWidth(), textureSet.mainTex.getHeight());
+            if (textureSet.mainTex != null)
+                uv.divide(textureSet.mainTex.getWidth(), textureSet.mainTex.getHeight());
+            else if (textureSet.emissiveTex != null)
+                uv.divide(textureSet.emissiveTex.getWidth(), textureSet.emissiveTex.getHeight());
+            else
+                throw new IllegalStateException("Texture set has neither emissive or main texture!?");
 
-            if (mainConsumer != null)
-                mainConsumer.vertex(
-                        (float) pos.x,
-                        (float) pos.y,
-                        (float) pos.z,
-                        1, 1, 1, 1,
-                        (float) uv.x,
-                        (float) uv.y,
-                        overlay,
-                        light,
-                        (float) normal.x,
-                        (float) normal.y,
-                        (float) normal.z
-                );
-
-            if (emissiveConsumer != null)
-                emissiveConsumer.vertex(
-                        (float) pos.x,
-                        (float) pos.y,
-                        (float) pos.z,
-                        1, 1, 1, 1,
-                        (float) uv.x,
-                        (float) uv.y,
-                        overlay,
-                        light,
-                        (float) normal.x,
-                        (float) normal.y,
-                        (float) normal.z
-                );
+            consumer.vertex(
+                    (float) pos.x,
+                    (float) pos.y,
+                    (float) pos.z,
+                    1, 1, 1, 1,
+                    (float) uv.x,
+                    (float) uv.y,
+                    overlay,
+                    light,
+                    (float) normal.x,
+                    (float) normal.y,
+                    (float) normal.z
+            );
         }
     }
 

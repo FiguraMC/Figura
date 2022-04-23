@@ -50,17 +50,21 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         FiguraMat4 worldToView = worldToViewMatrix();
         posMat.multiply(worldToView);
         FiguraMat3 normalMat = posMat.deaugmented();
-        for (FiguraImmediateBuffer buffer : buffers)
+
+        //Iterate and setup each buffer
+        for (FiguraImmediateBuffer buffer : buffers) {
+            //Push transform
             buffer.pushTransform(posMat, normalMat);
+            //Reset buffers
+            buffer.clearBuffers();
+            //Upload texture if necessary
+            buffer.uploadTexIfNeeded();
+        }
 
         //Free matrices after use
         posMat.free();
         worldToView.free();
         normalMat.free();
-
-        //Textures
-        for (FiguraImmediateBuffer buffer : buffers)
-            buffer.uploadTexIfNeeded();
 
         //Render all model parts
         renderPart(root);
