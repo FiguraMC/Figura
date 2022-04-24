@@ -1,6 +1,7 @@
 package org.moon.figura.model;
 
 import com.google.common.collect.ImmutableMap;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.nbt.ByteTag;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -25,9 +26,18 @@ public class FiguraModelPart {
 
     private List<Integer> facesByTexture;
 
+    //By default, these are CUTOUT_NO_CULL and EMISSIVE.
+    //You can make one null in order to only have one render type.
+    private String primaryRenderType = "CUTOUT_NO_CULL";
+    private String secondaryRenderType = "EMISSIVE";
+
     public void pushVerticesImmediate(ImmediateAvatarRenderer avatarRenderer) {
-        for (int i = 0; i < facesByTexture.size(); i++)
-            avatarRenderer.pushFaces(i, facesByTexture.get(i));
+        for (int i = 0; i < facesByTexture.size(); i++) {
+            avatarRenderer.markBuffer(i);
+            avatarRenderer.pushFaces(i, facesByTexture.get(i), primaryRenderType);
+            avatarRenderer.resetBuffer(i);
+            avatarRenderer.pushFaces(i, facesByTexture.get(i), secondaryRenderType);
+        }
     }
 
 

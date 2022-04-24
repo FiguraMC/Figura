@@ -89,7 +89,15 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
             buffer.popTransform();
     }
 
-    public void pushFaces(int texIndex, int faceCount) {
-        buffers.get(texIndex).pushVertices(bufferSource, light, OverlayTexture.NO_OVERLAY, faceCount);
+    public void markBuffer(int i) {
+        buffers.get(i).markBuffers();
+    }
+
+    public void resetBuffer(int i) {
+        buffers.get(i).resetBuffers();
+    }
+
+    public void pushFaces(int texIndex, int faceCount, String renderTypeName) {
+        buffers.get(texIndex).pushVertices(bufferSource, light, OverlayTexture.NO_OVERLAY, faceCount, renderTypeName);
     }
 }

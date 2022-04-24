@@ -77,7 +77,7 @@ public class TestAvatarRenderer extends AvatarRenderer {
         texture.registerAndUpload();
 
         //Push vertices
-        buffer.pushVertices(bufferSource, light, OverlayTexture.NO_OVERLAY, 6);
+        buffer.pushVertices(bufferSource, light, OverlayTexture.NO_OVERLAY, 6, "CUTOUT_NO_CULL");
         buffer.popTransform();
     }
 }

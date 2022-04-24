@@ -3,6 +3,7 @@ package org.moon.figura.model.rendering;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import it.unimi.dsi.fastutil.floats.FloatArrayList;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import org.lwjgl.BufferUtils;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
@@ -54,13 +55,13 @@ public class FiguraImmediateBuffer {
     private static final FiguraVec3 normal = FiguraVec3.of();
     private static final FiguraVec2 uv = FiguraVec2.of();
 
-    private void markBuffers() {
+    public void markBuffers() {
         positions.mark();
         uvs.mark();
         normals.mark();
     }
 
-    private void resetBuffers() {
+    public void resetBuffers() {
         positions.reset();
         uvs.reset();
         normals.reset();
@@ -72,29 +73,18 @@ public class FiguraImmediateBuffer {
         normals.clear();
     }
 
-    public void pushVertices(MultiBufferSource bufferSource, int light, int overlay, int faceCount) {
-        //Mark the buffers, as we may be using these vertices multiple times
-        markBuffers();
+    private void advanceBuffers(int faceCount) {
+        positions.position(positions.position() + faceCount * 12);
+        uvs.position(uvs.position() + faceCount * 8);
+        normals.position(normals.position() + faceCount * 12);
+    }
 
-        //Push to main consumer if it exists
-        VertexConsumer mainConsumer = null;
-        if (textureSet.mainType != null)
-            mainConsumer = bufferSource.getBuffer(textureSet.mainType);
-        if (mainConsumer != null) {
-            //resetBuffers(); //would normally have this on every texture,
-            // but not necessary since this is the first one and we just marked
-            pushToConsumer(mainConsumer, light, overlay, faceCount);
-        }
-
-        //Push to emissive consumer if it exists
-        VertexConsumer emissiveConsumer = null;
-        if (textureSet.emissiveType != null)
-            emissiveConsumer = bufferSource.getBuffer(textureSet.emissiveType);
-        if (emissiveConsumer != null) {
-            resetBuffers();
-            pushToConsumer(emissiveConsumer, light, overlay, faceCount);
-        }
-
+    public void pushVertices(MultiBufferSource bufferSource, int light, int overlay, int faceCount, String renderTypeName) {
+        RenderType renderType = textureSet.getRenderType(renderTypeName);
+        if (renderType != null)
+            pushToConsumer(bufferSource.getBuffer(renderType), light, overlay, faceCount);
+        else
+            advanceBuffers(faceCount);
     }
 
     private void pushToConsumer(VertexConsumer consumer, int light, int overlay, int faceCount) {
