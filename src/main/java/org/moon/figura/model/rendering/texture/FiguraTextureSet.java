@@ -13,21 +13,8 @@ public class FiguraTextureSet {
 
     public FiguraTextureSet(String name, byte[] mainData, byte[] emissiveData) {
         this.name = name;
-
-        if (mainData != null) {
-            mainTex = new FiguraTexture(mainData);
-            renderTypes.put("CUTOUT_NO_CULL", RenderType.entityCutoutNoCull(mainTex.textureID));
-        } else {
-            mainTex = null;
-        }
-
-        if (emissiveData != null) {
-            emissiveTex = new FiguraTexture(emissiveData);
-            renderTypes.put("EMISSIVE", RenderType.eyes(emissiveTex.textureID));
-        } else {
-            emissiveTex = null;
-            renderTypes.put("EMISSIVE", null);
-        }
+        mainTex = mainData == null ? null : new FiguraTexture(mainData);
+        emissiveTex = emissiveData == null ? null : new FiguraTexture(emissiveData);
     }
 
     public void uploadIfNeeded() {
@@ -40,15 +27,21 @@ public class FiguraTextureSet {
     public RenderType getRenderType(String name) {
         if (name == null)
             return null;
-        if (!renderTypes.containsKey(name))
-            if (mainTex != null)
-                switch (name) {
-                    case "CUTOUT" -> renderTypes.put("CUTOUT", RenderType.entityCutout(mainTex.textureID));
-                    case "END_PORTAL" -> renderTypes.put("END_PORTAL", RenderType.endPortal());
-                    case "GLINT" -> renderTypes.put("GLINT", RenderType.glintDirect());
-                    case "GLINT2" -> renderTypes.put("GLINT2", RenderType.entityGlintDirect());
-                    default -> throw new IllegalArgumentException("Invalid render type name: \"" + name + "\".");
-                }
+        if (!renderTypes.containsKey(name)) {
+            switch (name) {
+                case "CUTOUT_NO_CULL" -> renderTypes.put("CUTOUT_NO_CULL", mainTex == null ? null : RenderType.entityCutoutNoCull(mainTex.textureID));
+                case "CUTOUT" -> renderTypes.put("CUTOUT", mainTex == null ? null : RenderType.entityCutout(mainTex.textureID));
+
+                case "EMISSIVE" -> renderTypes.put("EMISSIVE", emissiveTex == null ? null : RenderType.eyes(emissiveTex.textureID));
+                case "EMISSIVE_SOLID" -> renderTypes.put("EMISSIVE_SOLID", emissiveTex == null ? null : RenderType.beaconBeam(emissiveTex.textureID, false));
+
+                case "END_PORTAL" -> renderTypes.put("END_PORTAL", RenderType.endPortal());
+                case "GLINT" -> renderTypes.put("GLINT", RenderType.glintDirect());
+                case "GLINT2" -> renderTypes.put("GLINT2", RenderType.entityGlintDirect());
+
+                default -> throw new IllegalArgumentException("Illegal render type name \"" + name + "\".");
+            }
+        }
         return renderTypes.get(name);
     }
 

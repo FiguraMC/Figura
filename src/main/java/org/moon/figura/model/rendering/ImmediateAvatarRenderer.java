@@ -8,6 +8,7 @@ import org.moon.figura.avatars.Avatar;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.model.FiguraModelPart;
+import org.moon.figura.model.PartCustomization;
 import org.moon.figura.model.rendering.texture.FiguraTextureSet;
 
 import java.util.ArrayList;
@@ -20,11 +21,15 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
     public ImmediateAvatarRenderer(Avatar avatar, CompoundTag avatarCompound) {
         super(avatar, avatarCompound);
 
+        //Vertex data, read model parts
         List<FiguraImmediateBuffer.Builder> builders = new ArrayList<>();
         root = FiguraModelPart.read(avatarCompound.getCompound("models"), builders);
-        root.transform.scale.set(1d/16, 1d/16, 1d/16);
-        root.transform.needsMatrixRecalculation = true;
+        root.customization.setScale(1d/16, 1d/16, 1d/16);
+        root.customization.needsMatrixRecalculation = true;
+        root.customization.setPrimaryRenderType("CUTOUT_NO_CULL");
+        root.customization.setSecondaryRenderType("EMISSIVE");
 
+        //Textures
         List<FiguraTextureSet> textureSets = new ArrayList<>();
         ListTag texturesList = avatarCompound.getList("textures", Tag.TAG_COMPOUND);
         for (int i = 0; i < texturesList.size(); i++) {
@@ -46,58 +51,57 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
     @Override
     public void render() {
         //Push position and normal matrices
+        PartCustomization customization = PartCustomization.of();
         FiguraMat4 posMat = entityToWorldMatrix(entity, tickDelta);
         FiguraMat4 worldToView = worldToViewMatrix();
         posMat.multiply(worldToView);
         FiguraMat3 normalMat = posMat.deaugmented();
 
-        //Iterate and setup each buffer
-        for (FiguraImmediateBuffer buffer : buffers) {
-            //Push transform
-            buffer.pushTransform(posMat, normalMat);
-            //Reset buffers
-            buffer.clearBuffers();
-            //Upload texture if necessary
-            buffer.uploadTexIfNeeded();
-        }
+        customization.positionMatrix.set(posMat);
+        customization.normalMatrix.set(normalMat);
 
         //Free matrices after use
         posMat.free();
         worldToView.free();
         normalMat.free();
 
+        //Iterate and setup each buffer
+        for (FiguraImmediateBuffer buffer : buffers) {
+            //Push transform
+            buffer.pushCustomization(customization);
+            //Reset buffers
+            buffer.clearBuffers();
+            //Upload texture if necessary
+            buffer.uploadTexIfNeeded();
+        }
+
+        //Free customization after use
+        customization.free();
+
         //Render all model parts
         renderPart(root);
 
         //Pop position and normal matrices
         for (FiguraImmediateBuffer buffer : buffers) {
-            buffer.popTransform();
-            buffer.checkTransformStackEmpty();
+            buffer.popCustomization();
+            buffer.checkEmpty();
         }
 
     }
 
     private void renderPart(FiguraModelPart part) {
         for (FiguraImmediateBuffer buffer : buffers)
-            part.transform.pushToBuffer(buffer);
+            part.customization.pushToBuffer(buffer);
 
         part.pushVerticesImmediate(this);
         for (FiguraModelPart child : part.children)
             renderPart(child);
 
         for (FiguraImmediateBuffer buffer : buffers)
-            buffer.popTransform();
+            buffer.popCustomization();
     }
 
-    public void markBuffer(int i) {
-        buffers.get(i).markBuffers();
-    }
-
-    public void resetBuffer(int i) {
-        buffers.get(i).resetBuffers();
-    }
-
-    public void pushFaces(int texIndex, int faceCount, String renderTypeName) {
-        buffers.get(texIndex).pushVertices(bufferSource, light, OverlayTexture.NO_OVERLAY, faceCount, renderTypeName);
+    public void pushFaces(int texIndex, int faceCount) {
+        buffers.get(texIndex).pushVertices(bufferSource, light, OverlayTexture.NO_OVERLAY, faceCount);
     }
 }

@@ -1,7 +1,6 @@
 package org.moon.figura.model;
 
 import com.google.common.collect.ImmutableMap;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.nbt.ByteTag;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -20,32 +19,23 @@ import java.util.Map;
 public class FiguraModelPart {
 
     public final String name;
-    public final ModelPartTransform transform;
+    public final PartCustomization customization;
     public final int index;
     public final List<FiguraModelPart> children;
 
     private List<Integer> facesByTexture;
 
-    //By default, these are CUTOUT_NO_CULL and EMISSIVE.
-    //You can make one null in order to only have one render type.
-    private String primaryRenderType = "CUTOUT_NO_CULL";
-    private String secondaryRenderType = "EMISSIVE";
-
     public void pushVerticesImmediate(ImmediateAvatarRenderer avatarRenderer) {
-        for (int i = 0; i < facesByTexture.size(); i++) {
-            avatarRenderer.markBuffer(i);
-            avatarRenderer.pushFaces(i, facesByTexture.get(i), primaryRenderType);
-            avatarRenderer.resetBuffer(i);
-            avatarRenderer.pushFaces(i, facesByTexture.get(i), secondaryRenderType);
-        }
+        for (int i = 0; i < facesByTexture.size(); i++)
+            avatarRenderer.pushFaces(i, facesByTexture.get(i));
     }
 
 
     //-- READING METHODS FROM NBT --//
 
-    private FiguraModelPart(String name, ModelPartTransform transform, int index, List<FiguraModelPart> children) {
+    private FiguraModelPart(String name, PartCustomization customization, int index, List<FiguraModelPart> children) {
         this.name = name;
-        this.transform = transform;
+        this.customization = customization;
         this.index = index;
         this.children = children;
     }
@@ -59,10 +49,14 @@ public class FiguraModelPart {
         String name = partCompound.getString("name");
 
         //Read transformation
-        ModelPartTransform transform = new ModelPartTransform();
-        readVec3(transform.rotation, partCompound, "rot");
-        readVec3(transform.pivot, partCompound, "piv");
-        transform.needsMatrixRecalculation = true;
+        PartCustomization customization = PartCustomization.of();
+        FiguraVec3 target = FiguraVec3.of();
+        readVec3(target, partCompound, "rot");
+        customization.setRot(target);
+        readVec3(target, partCompound, "piv");
+        customization.setPivot(target);
+        target.free();
+        customization.needsMatrixRecalculation = true;
 
         //Read vertex data
         int newIndex = -1;
@@ -83,7 +77,7 @@ public class FiguraModelPart {
                 children.add(read((CompoundTag) tag, bufferBuilders, index));
         }
 
-        FiguraModelPart result = new FiguraModelPart(name, transform, newIndex, children);
+        FiguraModelPart result = new FiguraModelPart(name, customization, newIndex, children);
         result.facesByTexture = facesByTexture;
         return result;
     }
