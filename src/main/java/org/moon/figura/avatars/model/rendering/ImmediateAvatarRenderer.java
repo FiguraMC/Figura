@@ -1,4 +1,4 @@
-package org.moon.figura.model.rendering;
+package org.moon.figura.avatars.model.rendering;
 
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.nbt.CompoundTag;
@@ -7,9 +7,9 @@ import net.minecraft.nbt.Tag;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
-import org.moon.figura.model.FiguraModelPart;
-import org.moon.figura.model.PartCustomization;
-import org.moon.figura.model.rendering.texture.FiguraTextureSet;
+import org.moon.figura.avatars.model.FiguraModelPart;
+import org.moon.figura.avatars.model.PartCustomization;
+import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,9 +42,8 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
             textureSets.add(new FiguraTextureSet(name, mainData, emissiveData));
         }
 
-        for (int i = 0; i < textureSets.size() && i < builders.size(); i++) {
+        for (int i = 0; i < textureSets.size() && i < builders.size(); i++)
             buffers.add(builders.get(i).build(textureSets.get(i)));
-        }
     }
 
 

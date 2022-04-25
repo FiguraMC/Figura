@@ -1,9 +1,11 @@
-package org.moon.figura.model.rendering.texture;
+package org.moon.figura.avatars.model.rendering.texture;
 
 import net.minecraft.client.renderer.RenderType;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class FiguraTextureSet {
 
@@ -23,6 +25,16 @@ public class FiguraTextureSet {
         if (emissiveTex != null)
             emissiveTex.registerAndUpload();
     }
+
+    public static final Set<String> LEGAL_RENDER_TYPES = new HashSet<>() {{
+       add("CUTOUT_NO_CULL");
+       add("CUTOUT");
+       add("EMISSIVE");
+       add("EMISSIVE_SOLID");
+       add("END_PORTAL");
+       add("GLINT");
+       add("GLINT2");
+    }};
 
     public RenderType getRenderType(String name) {
         if (name == null)

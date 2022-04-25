@@ -1,4 +1,4 @@
-package org.moon.figura.model.rendering.vbos;
+package org.moon.figura.avatars.model.rendering.vbos;
 
 public class VBO {
 

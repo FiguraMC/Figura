@@ -1,4 +1,4 @@
-package org.moon.figura.model.rendering;
+package org.moon.figura.avatars.model.rendering;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Matrix3f;
@@ -12,7 +12,7 @@ import net.minecraft.world.entity.LivingEntity;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
-import org.moon.figura.model.FiguraModelPart;
+import org.moon.figura.avatars.model.FiguraModelPart;
 
 
 /**

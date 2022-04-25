@@ -3,8 +3,8 @@ package org.moon.figura.avatars;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.model.rendering.AvatarRenderer;
-import org.moon.figura.model.rendering.ImmediateAvatarRenderer;
+import org.moon.figura.avatars.model.rendering.AvatarRenderer;
+import org.moon.figura.avatars.model.rendering.ImmediateAvatarRenderer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;

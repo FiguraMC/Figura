@@ -1,9 +1,9 @@
-package org.moon.figura.model;
+package org.moon.figura.avatars.model;
 
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec3;
-import org.moon.figura.model.rendering.FiguraImmediateBuffer;
+import org.moon.figura.avatars.model.rendering.FiguraImmediateBuffer;
 import org.moon.figura.utils.caching.CacheStack;
 import org.moon.figura.utils.caching.CacheUtils;
 import org.moon.figura.utils.caching.CachedType;
@@ -12,15 +12,17 @@ public class PartCustomization implements CachedType {
 
     //-- Matrix thingies --//
 
-    public final FiguraMat4 positionMatrix = FiguraMat4.of();
-    public final FiguraMat3 normalMatrix = FiguraMat3.of();
+    public FiguraMat4 positionMatrix = FiguraMat4.of();
+    public FiguraMat3 normalMatrix = FiguraMat3.of();
 
     public boolean needsMatrixRecalculation = true;
+    public boolean visible = true;
 
-    private final FiguraVec3 position = FiguraVec3.of();
-    private final FiguraVec3 rotation = FiguraVec3.of();
-    private final FiguraVec3 scale = FiguraVec3.of(1, 1, 1);
-    private final FiguraVec3 pivot = FiguraVec3.of();
+    private FiguraVec3 position = FiguraVec3.of();
+    private FiguraVec3 rotation = FiguraVec3.of();
+    private FiguraVec3 scale = FiguraVec3.of(1, 1, 1);
+    private FiguraVec3 pivot = FiguraVec3.of();
+
 
     /**
      * Recalculates the matrix if necessary.
@@ -54,12 +56,18 @@ public class PartCustomization implements CachedType {
         position.set(x, y, z);
         needsMatrixRecalculation = true;
     }
+    public FiguraVec3 getPos() {
+        return FiguraVec3.of(position.x, position.y, position.z);
+    }
     public void setRot(FiguraVec3 rot) {
         setRot(rot.x, rot.y, rot.z);
     }
     public void setRot(double x, double y, double z) {
         rotation.set(x, y, z);
         needsMatrixRecalculation = true;
+    }
+    public FiguraVec3 getRot() {
+        return FiguraVec3.of(rotation.x, rotation.y, rotation.z);
     }
     public void setScale(FiguraVec3 scale) {
         setScale(scale.x, scale.y, scale.z);
@@ -68,12 +76,38 @@ public class PartCustomization implements CachedType {
         scale.set(x, y, z);
         needsMatrixRecalculation = true;
     }
+    public FiguraVec3 getScale() {
+        return FiguraVec3.of(scale.x, scale.y, scale.z);
+    }
     public void setPivot(FiguraVec3 pivot) {
         setPivot(pivot.x, pivot.y, pivot.z);
     }
     public void setPivot(double x, double y, double z) {
         pivot.set(x, y, z);
         needsMatrixRecalculation = true;
+    }
+    public FiguraVec3 getPivot() {
+        return FiguraVec3.of(pivot.x, pivot.y, pivot.z);
+    }
+
+    public void setMatrix(FiguraMat4 matrix) {
+        positionMatrix.set(matrix);
+        FiguraMat3 temp = matrix.deaugmented();
+        temp.invert();
+        temp.transpose();
+        normalMatrix.set(temp);
+        temp.free();
+        needsMatrixRecalculation = false;
+    }
+    public FiguraMat4 getPositionMatrix() {
+        FiguraMat4 result = FiguraMat4.of();
+        result.set(positionMatrix);
+        return result;
+    }
+    public FiguraMat3 getNormalMatrix() {
+        FiguraMat3 result = FiguraMat3.of();
+        result.set(normalMatrix);
+        return result;
     }
 
     //-- Render type thingies --//
@@ -100,13 +134,14 @@ public class PartCustomization implements CachedType {
     private static final CacheUtils.Cache<PartCustomization> CACHE = CacheUtils.getCache(PartCustomization::new);
     private PartCustomization() {}
     public void reset() {
-        positionMatrix.reset();
-        normalMatrix.reset();
-        position.reset();
-        rotation.reset();
-        scale.set(1, 1, 1);
-        pivot.reset();
+        positionMatrix = FiguraMat4.of();
+        normalMatrix = FiguraMat3.of();
+        position = FiguraVec3.of();
+        rotation = FiguraVec3.of();
+        scale = FiguraVec3.of(1, 1, 1);
+        pivot = FiguraVec3.of();
         needsMatrixRecalculation = false;
+        visible = true;
     }
     public void free() {
         positionMatrix.free();
@@ -115,7 +150,6 @@ public class PartCustomization implements CachedType {
         rotation.free();
         scale.free();
         pivot.free();
-        CACHE.offerOld(this);
     }
     public static PartCustomization of() {
         return CACHE.getFresh();
@@ -154,6 +188,9 @@ public class PartCustomization implements CachedType {
             setPrimaryRenderType(other.primaryRenderType);
         if (other.secondaryRenderType != null)
             setSecondaryRenderType(other.secondaryRenderType);
+
+        if (!other.visible)
+            visible = false; //Default state is assumed to be visible
     }
 
 

@@ -1,4 +1,4 @@
-package org.moon.figura.model;
+package org.moon.figura.avatars.model;
 
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.nbt.ByteTag;
@@ -6,21 +6,32 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.util.Mth;
+import org.moon.figura.avatars.model.rendering.FiguraImmediateBuffer;
+import org.moon.figura.avatars.model.rendering.ImmediateAvatarRenderer;
+import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
+import org.moon.figura.lua.LuaUtils;
+import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.math.matrix.FiguraMat3;
+import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec4;
-import org.moon.figura.model.rendering.FiguraImmediateBuffer;
-import org.moon.figura.model.rendering.ImmediateAvatarRenderer;
+import org.terasology.jnlua.LuaRuntimeException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@LuaWhitelist
 public class FiguraModelPart {
 
+    @LuaWhitelist
     public final String name;
     public final PartCustomization customization;
     public final int index;
+
+    private final Map<String, FiguraModelPart> childCache = new HashMap<>();
     public final List<FiguraModelPart> children;
 
     private List<Integer> facesByTexture;
@@ -30,6 +41,137 @@ public class FiguraModelPart {
             avatarRenderer.pushFaces(i, facesByTexture.get(i));
     }
 
+    //-- LUA BUSINESS --//
+
+    @LuaWhitelist
+    public static FiguraVec3 getPos(FiguraModelPart modelPart) {
+        LuaUtils.nullCheck("getPos", "modelPart", modelPart);
+        return modelPart.customization.getPos();
+    }
+    @LuaWhitelist
+    public static void setPos(FiguraModelPart modelPart, FiguraVec3 pos) {
+        LuaUtils.nullCheck("setPos", "modelPart", modelPart);
+        LuaUtils.nullCheck("setPos", "pos", pos);
+        modelPart.customization.setPos(pos);
+    }
+    @LuaWhitelist
+    public static FiguraVec3 getRot(FiguraModelPart modelPart) {
+        LuaUtils.nullCheck("getRot", "modelPart", modelPart);
+        return modelPart.customization.getRot();
+    }
+    @LuaWhitelist
+    public static void setRot(FiguraModelPart modelPart, FiguraVec3 rot) {
+        LuaUtils.nullCheck("setRot", "modelPart", modelPart);
+        LuaUtils.nullCheck("setRot", "rot", rot);
+        modelPart.customization.setRot(rot);
+    }
+    @LuaWhitelist
+    public static FiguraVec3 getScale(FiguraModelPart modelPart) {
+        LuaUtils.nullCheck("getScale", "modelPart", modelPart);
+        return modelPart.customization.getScale();
+    }
+    @LuaWhitelist
+    public static void setScale(FiguraModelPart modelPart, FiguraVec3 scale) {
+        LuaUtils.nullCheck("setScale", "modelPart", modelPart);
+        LuaUtils.nullCheck("setScale", "scale", scale);
+        modelPart.customization.setScale(scale);
+    }
+    @LuaWhitelist
+    public static FiguraVec3 getPivot(FiguraModelPart modelPart) {
+        LuaUtils.nullCheck("getPivot", "modelPart", modelPart);
+        return modelPart.customization.getPivot();
+    }
+    @LuaWhitelist
+    public static void setPivot(FiguraModelPart modelPart, FiguraVec3 pivot) {
+        LuaUtils.nullCheck("setPivot", "modelPart", modelPart);
+        LuaUtils.nullCheck("setPivot", "pivot", pivot);
+        modelPart.customization.setPivot(pivot);
+    }
+    @LuaWhitelist
+    public static FiguraMat4 getPositionMatrix(FiguraModelPart modelPart) {
+        LuaUtils.nullCheck("getMatrix", "modelPart", modelPart);
+        modelPart.customization.recalculate();
+        return modelPart.customization.getPositionMatrix();
+    }
+    @LuaWhitelist
+    public static FiguraMat4 getPositionMatrixRaw(FiguraModelPart modelPart) {
+        LuaUtils.nullCheck("getMatrixRaw", "modelPart", modelPart);
+        return modelPart.customization.getPositionMatrix();
+    }
+    @LuaWhitelist
+    public static FiguraMat3 getNormalMatrix(FiguraModelPart modelPart) {
+        LuaUtils.nullCheck("getMatrix", "modelPart", modelPart);
+        modelPart.customization.recalculate();
+        return modelPart.customization.getNormalMatrix();
+    }
+    @LuaWhitelist
+    public static FiguraMat3 getNormalMatrixRaw(FiguraModelPart modelPart) {
+        LuaUtils.nullCheck("getMatrixRaw", "modelPart", modelPart);
+        return modelPart.customization.getNormalMatrix();
+    }
+    @LuaWhitelist
+    public static void setMatrix(FiguraModelPart modelPart, FiguraMat4 matrix) {
+        LuaUtils.nullCheck("setMatrix", "modelPart", modelPart);
+        LuaUtils.nullCheck("setMatrix", "matrix", matrix);
+        modelPart.customization.setMatrix(matrix);
+    }
+    //GetColor
+    //SetColor
+    //GetUV
+    //SetUV
+    //SetUVPixels (will set uv in pixels, automatically dividing by texture size)
+    @LuaWhitelist
+    public static boolean getEnabled(FiguraModelPart modelPart) {
+        LuaUtils.nullCheck("getEnabled", "modelPart", modelPart);
+        return modelPart.customization.visible;
+    }
+    @LuaWhitelist
+    public static void setEnabled(FiguraModelPart modelPart, Boolean bool) {
+        LuaUtils.nullCheck("setEnabled", "modelPart", modelPart);
+        if (bool == null) bool = false;
+        modelPart.customization.visible = bool;
+    }
+    @LuaWhitelist
+    public static String getPrimaryRenderType(FiguraModelPart modelPart) {
+        LuaUtils.nullCheck("getPrimaryRenderType", "modelPart", modelPart);
+        return modelPart.customization.getPrimaryRenderType();
+    }
+    @LuaWhitelist
+    public static String getSecondaryRenderType(FiguraModelPart modelPart) {
+        LuaUtils.nullCheck("getSecondaryRenderType", "modelPart", modelPart);
+        return modelPart.customization.getSecondaryRenderType();
+    }
+    @LuaWhitelist
+    public static void setPrimaryRenderType(FiguraModelPart modelPart, String type) {
+        LuaUtils.nullCheck("setPrimaryRenderType", "modelPart", modelPart);
+        LuaUtils.nullCheck("setPrimaryRenderType", "type", type);
+        if (!FiguraTextureSet.LEGAL_RENDER_TYPES.contains(type))
+            throw new LuaRuntimeException("Illegal RenderType: \"" + type + "\".");
+        modelPart.customization.setPrimaryRenderType(type);
+    }
+    @LuaWhitelist
+    public static void setSecondaryRenderType(FiguraModelPart modelPart, String type) {
+        LuaUtils.nullCheck("setSecondaryRenderType", "modelPart", modelPart);
+        LuaUtils.nullCheck("setSecondaryRenderType", "type", type);
+        if (!FiguraTextureSet.LEGAL_RENDER_TYPES.contains(type))
+            throw new LuaRuntimeException("Illegal RenderType: \"" + type + "\".");
+        modelPart.customization.setSecondaryRenderType(type);
+    }
+
+    //-- METAMETHODS --//
+    @LuaWhitelist
+    public static Object __index(FiguraModelPart modelPart, String key) {
+        if (modelPart.childCache.containsKey(key))
+            return modelPart.childCache.get(key);
+        for (FiguraModelPart child : modelPart.children) {
+            if (child.name.equals(key)) {
+                modelPart.childCache.put(key, child);
+                return child;
+            }
+        }
+        modelPart.childCache.put(key, null);
+        return null;
+    }
 
     //-- READING METHODS FROM NBT --//
 

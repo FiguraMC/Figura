@@ -12,7 +12,6 @@ public class FiguraVec3 implements CachedType {
 
     @LuaWhitelist
     public double x, y, z;
-
     private FiguraVec3() {}
 
     // CACHING METHODS

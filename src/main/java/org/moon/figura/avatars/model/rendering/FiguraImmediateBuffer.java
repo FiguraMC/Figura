@@ -1,4 +1,4 @@
-package org.moon.figura.model.rendering;
+package org.moon.figura.avatars.model.rendering;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import it.unimi.dsi.fastutil.floats.FloatArrayList;
@@ -8,8 +8,8 @@ import org.lwjgl.BufferUtils;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec4;
-import org.moon.figura.model.PartCustomization;
-import org.moon.figura.model.rendering.texture.FiguraTextureSet;
+import org.moon.figura.avatars.model.PartCustomization;
+import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
 import org.moon.figura.utils.caching.CacheStack;
 
 import java.nio.FloatBuffer;

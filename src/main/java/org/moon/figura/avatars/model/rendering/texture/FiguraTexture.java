@@ -1,4 +1,4 @@
-package org.moon.figura.model.rendering.texture;
+package org.moon.figura.avatars.model.rendering.texture;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.TextureUtil;
