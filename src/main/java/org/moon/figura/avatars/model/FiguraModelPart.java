@@ -197,6 +197,10 @@ public class FiguraModelPart {
         customization.setRot(target);
         readVec3(target, partCompound, "piv");
         customization.setPivot(target);
+        if (partCompound.contains("primary"))
+            customization.setPrimaryRenderType(partCompound.getString("primary"));
+        if (partCompound.contains("secondary"))
+            customization.setPrimaryRenderType(partCompound.getString("secondary"));
         target.free();
         customization.needsMatrixRecalculation = true;
 

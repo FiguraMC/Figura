@@ -12,6 +12,7 @@ import org.moon.figura.parsers.LuaScriptParser;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.file.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -61,10 +62,6 @@ public class LocalAvatarLoader {
         //load as folder
         CompoundTag nbt = new CompoundTag();
 
-        //metadata
-        File metadata = path.resolve("avatar.json").toFile();
-        nbt.put("metadata", AvatarMetadataParser.parse(readFile(metadata), path.getFileName().toString()));
-
         //scripts
         File[] scripts = getFilesByExtension(path, ".lua");
         if (scripts != null && scripts.length > 0) {
@@ -113,6 +110,18 @@ public class LocalAvatarLoader {
         }
 
         modelRoot.put("chld", children);
+
+
+        //metadata
+        String metadata = readFile(path.resolve("avatar.json").toFile());
+        nbt.put("metadata", AvatarMetadataParser.parse(metadata, path.getFileName().toString()));
+
+        //TODO: Better error handling while converting to nbt
+        try {
+            AvatarMetadataParser.injectToModels(metadata, modelRoot);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         //return :3
         nbt.put("models", modelRoot);
