@@ -41,6 +41,12 @@ public class FiguraModelPart {
             avatarRenderer.pushFaces(i, facesByTexture.get(i));
     }
 
+    public void clean() {
+        customization.free();
+        for (FiguraModelPart child : children)
+            child.clean();
+    }
+
     //-- LUA BUSINESS --//
 
     @LuaWhitelist

@@ -37,6 +37,15 @@ public class Avatar {
         renderer = new ImmediateAvatarRenderer(this, nbt);
     }
 
+    /**
+     * We should call this whenever an avatar is no longer reachable!
+     * It free()s all the CachedType used inside of the avatar, and also
+     * closes the native texture resources.
+     */
+    public void clean() {
+        renderer.clean();
+    }
+
     private float getFileSize(CompoundTag nbt) {
         try {
             //get size

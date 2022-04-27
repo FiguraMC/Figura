@@ -30,6 +30,11 @@ public class FiguraImmediateBuffer {
         this.textureSet = textureSet;
     }
 
+    public void clean() {
+        customizationStack.fullClear();
+        textureSet.clean();
+    }
+
     public void pushCustomization(PartCustomization customization) {
         customizationStack.push(customization);
     }

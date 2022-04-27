@@ -24,7 +24,8 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         //Vertex data, read model parts
         List<FiguraImmediateBuffer.Builder> builders = new ArrayList<>();
         root = FiguraModelPart.read(avatarCompound.getCompound("models"), builders);
-        root.customization.setScale(1d/16, 1d/16, 1d/16);
+        double scale = 1.0 / 16 * 0.95;
+        root.customization.setScale(scale, scale, scale);
         root.customization.needsMatrixRecalculation = true;
         root.customization.setPrimaryRenderType("CUTOUT_NO_CULL");
         root.customization.setSecondaryRenderType("EMISSIVE");
@@ -46,6 +47,10 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
             buffers.add(builders.get(i).build(textureSets.get(i)));
     }
 
+    public void clean() {
+        for (FiguraImmediateBuffer buffer : buffers)
+            buffer.clean();
+    }
 
     @Override
     public void render() {

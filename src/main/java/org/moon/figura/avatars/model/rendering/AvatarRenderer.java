@@ -35,6 +35,9 @@ public abstract class AvatarRenderer {
     }
 
     public abstract void render();
+    public void clean() {
+        root.clean();
+    }
 
     /**
      * Returns the matrix for an entity, used to transform from entity space to world space.

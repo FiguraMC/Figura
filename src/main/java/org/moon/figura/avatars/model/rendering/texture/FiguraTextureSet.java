@@ -19,6 +19,13 @@ public class FiguraTextureSet {
         emissiveTex = emissiveData == null ? null : new FiguraTexture(emissiveData);
     }
 
+    public void clean() {
+        if (mainTex != null)
+            mainTex.close();
+        if (emissiveTex != null)
+            emissiveTex.close();
+    }
+
     public void uploadIfNeeded() {
         if (mainTex != null)
             mainTex.registerAndUpload();

@@ -42,7 +42,10 @@ public class AvatarManager {
 
     //removes an loaded avatar
     public static void clearAvatar(UUID id) {
-        LOADED_AVATARS.remove(id);
+        if (LOADED_AVATARS.containsKey(id)) {
+            LOADED_AVATARS.get(id).clean();
+            LOADED_AVATARS.remove(id);
+        }
     }
 
     //load the local player avatar
