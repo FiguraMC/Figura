@@ -1,17 +1,18 @@
 package org.moon.figura.avatars;
 
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtIo;
+import net.minecraft.nbt.*;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.model.rendering.AvatarRenderer;
 import org.moon.figura.avatars.model.rendering.ImmediateAvatarRenderer;
+import org.moon.figura.lua.FiguraLuaState;
+import org.terasology.jnlua.LuaState;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.Locale;
+import java.util.*;
 
 //the avatar class
 //contains all things related to the avatar
@@ -26,6 +27,7 @@ public class Avatar {
 
     //Runtime data
     public final AvatarRenderer renderer;
+    public final FiguraLuaState luaState;
 
     public Avatar(CompoundTag nbt) {
         //read metadata
@@ -35,6 +37,7 @@ public class Avatar {
         version = metadata.getString("ver");
         fileSize = getFileSize(nbt);
         renderer = new ImmediateAvatarRenderer(this, nbt);
+        luaState = createLuaState(nbt);
     }
 
     /**
@@ -61,5 +64,33 @@ public class Avatar {
             FiguraMod.LOGGER.error("Failed to generate file size for model " + this.name, e);
             return 0f;
         }
+    }
+
+    private static FiguraLuaState createLuaState(CompoundTag avatarNbt) {
+        if (!avatarNbt.contains("scripts"))
+            return null;
+        Map<String, String> scripts = parseScripts(avatarNbt.getCompound("scripts"));
+        String mainScriptName = avatarNbt.getString("script");
+        if (!avatarNbt.contains("script", Tag.TAG_STRING)) mainScriptName = "script";
+
+        FiguraLuaState luaState = new FiguraLuaState();
+        boolean success = luaState.init(scripts, mainScriptName);
+        if (success)
+            return luaState;
+        else
+            luaState.close();
+        return null;
+    }
+
+    private static Map<String, String> parseScripts(CompoundTag scripts) {
+        Map<String, String> result = new HashMap<>();
+        for (String s : scripts.getAllKeys()) {
+            StringBuilder builder = new StringBuilder();
+            ListTag list = scripts.getList(s, Tag.TAG_STRING);
+            for (Tag tag : list)
+                builder.append(tag.getAsString());
+            result.put(s, builder.toString());
+        }
+        return result;
     }
 }

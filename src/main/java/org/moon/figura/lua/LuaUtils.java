@@ -1,6 +1,5 @@
 package org.moon.figura.lua;
 
-import net.fabricmc.loader.api.FabricLoader;
 import org.moon.figura.FiguraMod;
 import org.terasology.jnlua.LuaRuntimeException;
 import org.terasology.jnlua.LuaState;
@@ -64,7 +63,7 @@ public class LuaUtils {
             builder.append(".so");
         }
 
-        Path nativesFolder = FabricLoader.getInstance().getGameDir().normalize().resolve("libraries/lua-natives/");
+        Path nativesFolder = FiguraMod.getFiguraDirectory().resolve("libraries/lua-natives");
 
         String targetLib = "/natives/" + builder;
         InputStream libStream = FiguraMod.class.getResourceAsStream(targetLib);

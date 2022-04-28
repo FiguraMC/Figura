@@ -7,6 +7,7 @@ import net.minecraft.client.Minecraft;
 import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.avatars.providers.LocalAvatarFetcher;
 import org.moon.figura.avatars.providers.LocalAvatarLoader;
+import org.moon.figura.lua.LuaUtils;
 import org.moon.figura.testing.LuaTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +33,8 @@ public class FiguraMod implements ClientModInitializer {
         ClientTickEvents.END_CLIENT_TICK.register(FiguraMod::tick);
 
         //TODO - test
-        LuaTest.test();
+        LuaUtils.setupNativesForLua();
+        //LuaTest.test();
 
         try {
             LocalAvatarFetcher.load();
