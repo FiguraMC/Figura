@@ -26,11 +26,8 @@ dependencies {
 	mappings loom.officialMojangMappings()
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-	// Fabric API. This is technically optional, but you probably want it anyway.
-	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-
-	// Actual Mod Dependencies
-	include(implementation('com.github.Blancworks:JNLua:-SNAPSHOT'))
+	// Mod Dependencies
+	include(implementation('com.github.Moonlight-MC:JNLua:-SNAPSHOT'))
 	include(implementation('org.java-websocket:Java-WebSocket:1.5.2'))
 }
 

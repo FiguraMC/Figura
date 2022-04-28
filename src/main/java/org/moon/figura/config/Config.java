@@ -1,13 +1,11 @@
 package org.moon.figura.config;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import net.fabricmc.fabric.impl.client.keybinding.KeyBindingRegistryImpl;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TranslatableComponent;
 import org.moon.figura.FiguraMod;
 
@@ -25,64 +23,14 @@ public enum Config {
      */
 
 
-    NameTag,
-
-    PREVIEW_NAMEPLATE(false),
-    NAMEPLATE_MODIFICATIONS(true),
-    CHAT_MODIFICATIONS(true),
-    PLAYERLIST_MODIFICATIONS(true),
-    BADGES(true),
-
-    Misc,
-
-    FIGURA_BUTTON_LOCATION(4, 5),
-    SCRIPT_LOG_LOCATION(0, 3) {{
-        String path = "figura.config.log_location.";
-        this.enumList = List.of(
-                new TranslatableComponent(path + "1"),
-                new TranslatableComponent(path + "2"),
-                new TranslatableComponent(path + "3")
-        );
-    }},
-    PLAYER_POPUP_BUTTON("key.keyboard.r", FiguraMod.MOD_ID),
-    ACCENT_COLOR(0x55FFFF, InputType.HEX_COLOR),
-    RELEASE_CHANNEL(0, 3),
-    CUSTOM_PLAYER_HEADS(true),
-    FIX_HANDS(true),
-    EASTER_EGGS(true),
-    MAX_UI_AVATARS(50, InputType.INT),
+    Script,
+    LOG_LOCATION(0, 2),
 
     ActionWheel,
-
     ACTION_WHEEL_BUTTON("key.keyboard.b", FiguraMod.MOD_ID),
-    ACTION_WHEEL_TITLE_POS(0, 4),
-    ACTION_WHEEL_EXECUTE_ON_CLOSE(true),
-    //NEW_ACTION_WHEEL(false),
 
     Dev {{this.name = new TranslatableComponent("figura.config.dev").withStyle(ChatFormatting.RED);}},
-
-    USE_LOCAL_SERVER(false),
-    FORMAT_SCRIPT_ON_UPLOAD(true),
-    LOG_OTHERS_SCRIPT(false),
-    RENDER_DEBUG_PARTS_PIVOT(true) {{
-        String tooltip = "figura.config.render_debug_parts_pivot.tooltip";
-        this.tooltip = new TranslatableComponent(tooltip,
-                new TranslatableComponent(tooltip + ".cubes").setStyle(Style.EMPTY.withColor(0xff72b7)),
-                new TranslatableComponent(tooltip + ".groups").setStyle(Style.EMPTY.withColor(0xaff2ff)));
-    }},
-    RENDER_OWN_NAMEPLATE(false),
-    MODEL_FOLDER_PATH("", InputType.FOLDER_PATH),
-    PANIC_BUTTON("key.keyboard.unknown", FiguraMod.MOD_ID),
-    PINGS_LOG_LOCATION(3, 4) {{
-        String path = "figura.config.log_location.";
-        this.enumList = List.of(
-                new TranslatableComponent(path + "1"),
-                new TranslatableComponent(path + "2"),
-                new TranslatableComponent(path + "3"),
-                new TranslatableComponent(path + "4")
-        );
-    }},
-    BACKEND_PATH("figura.f24.im", InputType.ANY);
+    PANIC_BUTTON("key.keyboard.unknown", FiguraMod.MOD_ID);
 
 
     /**
@@ -234,7 +182,7 @@ public enum Config {
         public ConfigKeyBind(String translationKey, InputConstants.Key key, String category, Config config) {
             super(translationKey, key.getType(), key.getValue(), category);
             this.config = config;
-            KeyBindingRegistryImpl.registerKeyBinding(this);
+            KeyMappingRegistry.registerKeyMapping(this);
         }
 
         @Override

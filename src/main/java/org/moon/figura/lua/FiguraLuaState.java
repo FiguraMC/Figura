@@ -6,6 +6,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.FiguraMod;
+import org.moon.figura.config.Config;
 import org.moon.figura.lua.api.VectorsAPI;
 import org.terasology.jnlua.JavaFunction;
 import org.terasology.jnlua.LuaRuntimeException;
@@ -19,12 +20,12 @@ public class FiguraLuaState extends LuaState53 {
 
     private static String sandboxerScript;
 
-    public FiguraLuaState() {
-        super(1000000); //1 MB
+    public FiguraLuaState(int memory) {
+        super(memory * 1_000_000); //memory is given in mb
         setJavaReflector(FiguraJavaReflector.INSTANCE);
         setConverter(FiguraConverter.INSTANCE);
 
-        //Load the built in figura libraries
+        //Load the built-in figura libraries
         loadLibraries();
 
         //Loads print(), log(), and logTable() into the env.
@@ -33,12 +34,8 @@ public class FiguraLuaState extends LuaState53 {
         //Run the figura sandboxer script
         try {
             runSandboxer();
-        } catch (IOException e) {
-            FiguraMod.LOGGER.error("Failed to load script sandboxer due to IOException! Stopping.");
-            e.printStackTrace();
         } catch (Exception e) {
-            FiguraMod.LOGGER.error("Failed to load script sandboxer due to Exception: ");
-            e.printStackTrace();
+            FiguraMod.LOGGER.error("Failed to load script sandboxer", e);
         }
 
         loadFiguraApis();
@@ -47,6 +44,7 @@ public class FiguraLuaState extends LuaState53 {
     public boolean init(Map<String, String> scripts, String mainScript) {
         if (scripts.size() == 0)
             return false;
+
         if (scripts.size() == 1) {
             Map.Entry<String, String> entry = scripts.entrySet().iterator().next();
             runScript(entry.getValue(), entry.getKey());
@@ -59,6 +57,7 @@ public class FiguraLuaState extends LuaState53 {
             setGlobal("require");
             runScript(scripts.get(mainScript), mainScript);
         }
+
         return true;
     }
 
@@ -106,10 +105,6 @@ public class FiguraLuaState extends LuaState53 {
             .withStyle(ChatFormatting.ITALIC, ChatFormatting.BLUE)
             .append("[lua] ");
 
-    private static void sendChatMessage(Component message) {
-        Minecraft.getInstance().gui.getChat().addMessage(message);
-    }
-
     private static JavaFunction requireFunc(Map<String, String> scripts) {
         return luaState -> {
             String scriptName = luaState.checkString(1);
@@ -135,16 +130,16 @@ public class FiguraLuaState extends LuaState53 {
         String v = luaState.toString(-1);
         luaState.pop(1);
 
-        //Print the value to chat
-        if (Minecraft.getInstance().gui != null) {
-            MutableComponent message = LUA_PREFIX.copy().append(new TextComponent(v));
-            sendChatMessage(message);
+        //prints the value, either on chat (which also prints on console) or only console
+        MutableComponent message = LUA_PREFIX.copy().append(new TextComponent(v));
+        if ((int) Config.LOG_LOCATION.value == 0) {
+            FiguraMod.sendChatMessage(message);
+        } else {
+            FiguraMod.LOGGER.info(message.getString());
         }
 
         FiguraMod.LOGGER.info(v);
 
         return 0;
     };
-
-
 }

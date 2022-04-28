@@ -1,14 +1,15 @@
 package org.moon.figura;
 
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.avatars.providers.LocalAvatarFetcher;
 import org.moon.figura.avatars.providers.LocalAvatarLoader;
+import org.moon.figura.config.ConfigManager;
 import org.moon.figura.lua.LuaUtils;
-import org.moon.figura.testing.LuaTest;
+import org.moon.figura.trust.TrustManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,8 +30,9 @@ public class FiguraMod implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        //register fabric events
-        ClientTickEvents.END_CLIENT_TICK.register(FiguraMod::tick);
+        //init config and trust
+        ConfigManager.init();
+        TrustManager.init();
 
         //TODO - test
         LuaUtils.setupNativesForLua();
@@ -69,5 +71,12 @@ public class FiguraMod implements ClientModInitializer {
     //get local player uuid
     public static UUID getLocalPlayerUUID() {
         return Minecraft.getInstance().getUser().getGameProfile().getId();
+    }
+
+    //add a chat message on the client
+    public static void sendChatMessage(Component message) {
+        if (Minecraft.getInstance().gui != null) {
+            Minecraft.getInstance().gui.getChat().addMessage(message);
+        }
     }
 }

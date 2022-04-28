@@ -13,7 +13,7 @@ public class LuaTest {
     public static void test() {
         LuaUtils.setupNativesForLua();
 
-        FiguraLuaState luaState = new FiguraLuaState();
+        FiguraLuaState luaState = new FiguraLuaState(1000000);
         luaState.openLib(LuaState.Library.BASE);
         luaState.openLib(LuaState.Library.TABLE);
         luaState.openLib(LuaState.Library.STRING);
@@ -48,7 +48,9 @@ public class LuaTest {
                 "println(mat * vec);" +
                 "mat.v11 = 2;" +
                 "mat.v24 = 3" +
-                "println(mat:getInverse())";
+                "println(mat:getInverse())" +
+                "print(\"the test\")" +
+                "print(mat)";
 
         luaState.load(testCode, "main");
         try {

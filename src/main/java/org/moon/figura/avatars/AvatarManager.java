@@ -61,7 +61,7 @@ public class AvatarManager {
         try {
             CompoundTag nbt = LocalAvatarLoader.loadAvatar(path);
             if (nbt != null) {
-                LOADED_AVATARS.put(id, new Avatar(nbt));
+                LOADED_AVATARS.put(id, new Avatar(nbt, id));
             }
         } catch (Exception e) {
             FiguraMod.LOGGER.error("Failed to load avatar from " + path, e);

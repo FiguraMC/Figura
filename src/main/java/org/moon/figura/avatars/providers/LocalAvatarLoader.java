@@ -54,7 +54,7 @@ public class LocalAvatarLoader {
                 //NbtIo already closes the file stream
                 return lastLoadedNbt = NbtIo.readCompressed(new FileInputStream(path.toFile()));
             } catch (Exception e) {
-                FiguraMod.LOGGER.error("Failed to load Avatar: " + path.getFileName().toString(), e);
+                FiguraMod.LOGGER.warn("Failed to load Avatar: " + path.getFileName().toString(), e);
                 return lastLoadedNbt = null;
             }
         }

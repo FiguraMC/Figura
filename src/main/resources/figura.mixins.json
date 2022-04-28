@@ -6,7 +6,10 @@
   "mixins": [
   ],
   "client": [
-    "EntityRendererMixin"
+    "access.KeyMappingAccess",
+    "EntityRendererMixin",
+    "MinecraftMixin",
+    "OptionsMixin"
   ],
   "server": [
   ],
