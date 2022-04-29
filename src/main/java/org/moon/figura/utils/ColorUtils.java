@@ -9,10 +9,15 @@ public class ColorUtils {
 
     public enum Colors {
         FRAN_PINK(0xFF72B7),
-        LILY_RED(0xFF2400),
+        CHLOE_PURPLE(0xA672EF),
         MAYA_BLUE(0x0CE0CE),
+        LILY_RED(0xFF2400),
+
         CHEESE(0xF8C53A),
-        CHLOE_PURPLE(0xA672EF);
+
+        LUA_LOG(0x5555FF),
+        LUA_ERROR(0xFF5555),
+        LUA_PING(0xAA55FF);
 
         public final int hex;
         public final FiguraVec3 vec;

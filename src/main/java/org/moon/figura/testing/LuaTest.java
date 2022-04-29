@@ -13,7 +13,7 @@ public class LuaTest {
     public static void test() {
         LuaUtils.setupNativesForLua();
 
-        FiguraLuaState luaState = new FiguraLuaState(1000000);
+        FiguraLuaState luaState = new FiguraLuaState("Test", 1000);
         luaState.openLib(LuaState.Library.BASE);
         luaState.openLib(LuaState.Library.TABLE);
         luaState.openLib(LuaState.Library.STRING);

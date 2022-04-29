@@ -30,7 +30,8 @@ public enum Config {
     ACTION_WHEEL_BUTTON("key.keyboard.b", FiguraMod.MOD_ID),
 
     Dev {{this.name = new TranslatableComponent("figura.config.dev").withStyle(ChatFormatting.RED);}},
-    PANIC_BUTTON("key.keyboard.unknown", FiguraMod.MOD_ID);
+    PANIC_BUTTON("key.keyboard.unknown", FiguraMod.MOD_ID),
+    LOG_PINGS(0, 3);
 
 
     /**

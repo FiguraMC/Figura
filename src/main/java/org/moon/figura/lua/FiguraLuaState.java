@@ -3,14 +3,13 @@ package org.moon.figura.lua;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.config.Config;
 import org.moon.figura.lua.api.EventsAPI;
 import org.moon.figura.lua.api.MatricesAPI;
 import org.moon.figura.lua.api.VectorsAPI;
+import org.moon.figura.utils.ColorUtils.Colors;
 import org.terasology.jnlua.JavaFunction;
 import org.terasology.jnlua.LuaRuntimeException;
 import org.terasology.jnlua.LuaState53;
@@ -23,12 +22,15 @@ public class FiguraLuaState extends LuaState53 {
 
     private static String sandboxerScript;
 
+    private final String owner;
     public EventsAPI events;
 
-    public FiguraLuaState(int memory) {
+    public FiguraLuaState(String owner, int memory) {
         super(memory * 1_000_000); //memory is given in mb
         setJavaReflector(FiguraJavaReflector.INSTANCE);
         setConverter(FiguraConverter.INSTANCE);
+
+        this.owner = owner;
 
         //Load the built-in figura libraries
         loadLibraries();
@@ -68,7 +70,11 @@ public class FiguraLuaState extends LuaState53 {
 
     public void runScript(String script, String name) {
         load(script, name);
-        call(0, 0);
+        try {
+            call(0, 0);
+        } catch (Exception e) {
+            sendLuaError(e.getCause().getMessage(), owner);
+        }
     }
 
     private void loadFiguraApis() {
@@ -109,14 +115,6 @@ public class FiguraLuaState extends LuaState53 {
         setGlobal("print");
     }
 
-    private static final Component LUA_INFO_PREFIX = new TextComponent("")
-            .withStyle(ChatFormatting.ITALIC, ChatFormatting.BLUE)
-            .append("[lua] ");
-
-    private static final Component LUA_ERROR_PREFIX = new TextComponent("")
-            .withStyle(ChatFormatting.BOLD, ChatFormatting.RED)
-            .append("[ERROR] ");
-
     private static JavaFunction requireFunc(Map<String, String> scripts) {
         return luaState -> {
             String scriptName = luaState.checkString(1);
@@ -136,26 +134,65 @@ public class FiguraLuaState extends LuaState53 {
     }
 
     //add a chat message on the client
-    public static void sendLuaMessage(String message) {
-        if ((int) Config.LOG_LOCATION.value == 0) {
-            MutableComponent component = LUA_INFO_PREFIX.copy().withStyle(ChatFormatting.RESET).append(message);
-            if (Minecraft.getInstance().gui != null)
-                Minecraft.getInstance().gui.getChat().addMessage(component);
-        } else {
-            FiguraMod.LOGGER.info("[LUA] " + message);
-        }
+    //param force means that it will be logged somewhere even if unable to send the chat message
+    public static void sendChatMessage(Component message) {
+        sendChatMessage(message, false);
     }
 
-    public static void sendLuaError(String error) {
-        if ((int) Config.LOG_LOCATION.value == 0) {
-            MutableComponent component = LUA_ERROR_PREFIX.copy().withStyle(ChatFormatting.RESET, ChatFormatting.RED).append(error);
-            if (Minecraft.getInstance().gui != null)
-                Minecraft.getInstance().gui.getChat().addMessage(component);
-        } else {
-            FiguraMod.LOGGER.error("[ERROR] " + error);
-        }
+    public static void sendChatMessage(Component message, boolean force) {
+        if (Minecraft.getInstance().gui != null)
+            Minecraft.getInstance().gui.getChat().addMessage(message);
+        else if (force)
+            FiguraMod.LOGGER.info(message.getString());
     }
 
+    //print a string either on chat or console
+    public static void sendLuaMessage(String message, String owner) {
+        Component component = TextComponent.EMPTY.copy().withStyle(ChatFormatting.ITALIC)
+                .append(new TextComponent("[lua] ").withStyle(Colors.LUA_LOG.style))
+                .append(owner)
+                .append(new TextComponent(" : ").withStyle(Colors.LUA_LOG.style))
+                .append(message);
+
+        if ((int) Config.LOG_LOCATION.value == 0)
+            sendChatMessage(component);
+        else
+            FiguraMod.LOGGER.info(component.getString());
+    }
+
+    //print an error, errors should always show up on chat
+    public static void sendLuaError(String error, String owner) {
+        Component component = TextComponent.EMPTY.copy().withStyle(ChatFormatting.ITALIC) 
+                .append(new TextComponent("[error] ").withStyle(Colors.LUA_ERROR.style))
+                .append(owner)
+                .append(new TextComponent(" : " + error).withStyle(Colors.LUA_ERROR.style));
+
+        sendChatMessage(component, true);
+    }
+
+    //print an ping!
+    public static void sendPingMessage(String ping, int size, String owner) {
+        int config = (int) Config.LOG_PINGS.value;
+
+        //no print? *megamind.png*
+        if (config == 0)
+            return;
+
+        Component component = TextComponent.EMPTY.copy().withStyle(ChatFormatting.ITALIC)
+                .append(new TextComponent("[ping] ").withStyle(Colors.LUA_PING.style))
+                .append(owner)
+                .append(new TextComponent(" : ").withStyle(Colors.LUA_PING.style))
+                .append(size + "b")
+                .append(new TextComponent(" : ").withStyle(Colors.LUA_PING.style))
+                .append(ping);
+
+        if (config == 1)
+            sendChatMessage(component);
+        else
+            FiguraMod.LOGGER.info(component.getString());
+    }
+
+    //TODO - needs support for VARARGS
     private static final JavaFunction PRINT_FUNCTION = luaState -> {
         luaState.getGlobal("tostring");
         luaState.pushValue(1);
@@ -163,8 +200,8 @@ public class FiguraLuaState extends LuaState53 {
         String v = luaState.toString(-1);
         luaState.pop(1);
 
-        //prints the value, either on chat (which also prints on console) or only console
-        sendLuaMessage(v);
+        //prints the value, either on chat or console
+        sendLuaMessage(v, ((FiguraLuaState) luaState).owner);
 
         return 0;
     };

@@ -3,7 +3,6 @@ package org.moon.figura;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
 import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.avatars.providers.LocalAvatarFetcher;
 import org.moon.figura.avatars.providers.LocalAvatarLoader;
@@ -47,6 +46,8 @@ public class FiguraMod implements ClientModInitializer {
         } catch (Exception e) {
             LOGGER.error("", e);
         }
+
+        //TODO - end test
     }
 
     public static void tick(Minecraft client) {
