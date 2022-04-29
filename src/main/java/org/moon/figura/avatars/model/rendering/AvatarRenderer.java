@@ -22,7 +22,7 @@ import org.moon.figura.avatars.model.FiguraModelPart;
 public abstract class AvatarRenderer {
 
     protected final Avatar avatar;
-    protected FiguraModelPart root;
+    public FiguraModelPart root;
 
     public Entity entity;
     public float yaw, tickDelta;

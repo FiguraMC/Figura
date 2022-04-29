@@ -1,9 +1,11 @@
 package org.moon.figura.lua;
 
 import org.moon.figura.FiguraMod;
+import org.moon.figura.lua.api.LuaFunction;
 import org.terasology.jnlua.Converter;
 import org.terasology.jnlua.DefaultConverter;
 import org.terasology.jnlua.LuaState;
+import org.terasology.jnlua.LuaType;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -20,6 +22,10 @@ public class FiguraConverter implements Converter {
 
     @Override
     public <T> T convertLuaValue(LuaState luaState, int index, Class<T> formalType) {
+        LuaType type = luaState.type(index);
+        if (type == LuaType.FUNCTION && ((formalType == Object.class || formalType == LuaFunction.class) && !luaState.isJavaFunction(index)))
+            return (T) new LuaFunction((FiguraLuaState) luaState, index);
+
         return DEFAULT.convertLuaValue(luaState, index, formalType);
     }
 
@@ -40,7 +46,10 @@ public class FiguraConverter implements Converter {
             || object instanceof Byte
             || object instanceof Short)
         {
-            DEFAULT.convertJavaObject(luaState, object);
+            if (object instanceof LuaTable table) //Special type LuaTable
+                table.push(luaState);
+            else
+                DEFAULT.convertJavaObject(luaState, object);
         } else {
             luaState.pushNil();
             FiguraMod.LOGGER.warn("Tried to push unsafe object of type " + object.getClass().getCanonicalName()

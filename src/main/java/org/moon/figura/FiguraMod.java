@@ -51,6 +51,7 @@ public class FiguraMod implements ClientModInitializer {
 
     public static void tick(Minecraft client) {
         LocalAvatarLoader.tickWatchedKey();
+        AvatarManager.tickLoadedAvatars();
         ticks++;
     }
 
@@ -71,12 +72,5 @@ public class FiguraMod implements ClientModInitializer {
     //get local player uuid
     public static UUID getLocalPlayerUUID() {
         return Minecraft.getInstance().getUser().getGameProfile().getId();
-    }
-
-    //add a chat message on the client
-    public static void sendChatMessage(Component message) {
-        if (Minecraft.getInstance().gui != null) {
-            Minecraft.getInstance().gui.getChat().addMessage(message);
-        }
     }
 }

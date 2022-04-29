@@ -16,20 +16,11 @@ public class EntityRendererMixin {
 
     @Inject(at = @At("HEAD"), method = "render")
     private void testDrawing(Entity entity, float yaw, float delta, PoseStack m, MultiBufferSource bufferSource, int l, CallbackInfo ci) {
-
         Avatar avatar = AvatarManager.getAvatar(entity);
         if (avatar == null)
             return;
-
         //Render avatar with params
-        avatar.renderer.entity = entity;
-        avatar.renderer.yaw = yaw;
-        avatar.renderer.tickDelta = delta;
-        avatar.renderer.matrices = m;
-        avatar.renderer.light = l;
-        avatar.renderer.bufferSource = bufferSource;
-
-        avatar.renderer.render();
+        avatar.onRender(entity, yaw, delta, m, bufferSource, l);
     }
 
 }

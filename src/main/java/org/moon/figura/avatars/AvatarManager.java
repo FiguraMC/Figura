@@ -48,6 +48,11 @@ public class AvatarManager {
         }
     }
 
+    public static void tickLoadedAvatars() {
+        for (Avatar avatar : LOADED_AVATARS.values())
+            avatar.onTick();
+    }
+
     //load the local player avatar
     public static void loadLocalAvatar(Path path) {
         //clear

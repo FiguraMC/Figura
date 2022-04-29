@@ -7,6 +7,11 @@ import org.terasology.jnlua.LuaRuntimeException;
 @LuaWhitelist
 public class VectorsAPI {
 
+    private static final VectorsAPI INSTANCE = new VectorsAPI();
+    public static VectorsAPI getInstance() {
+        return INSTANCE;
+    }
+
     @LuaWhitelist
     public static Object vec(Double x, Double y, Double z, Double w, Double t, Double h) {
         if (h != null)

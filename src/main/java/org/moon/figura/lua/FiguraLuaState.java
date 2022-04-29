@@ -4,9 +4,12 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.config.Config;
+import org.moon.figura.lua.api.EventsAPI;
+import org.moon.figura.lua.api.MatricesAPI;
 import org.moon.figura.lua.api.VectorsAPI;
 import org.terasology.jnlua.JavaFunction;
 import org.terasology.jnlua.LuaRuntimeException;
@@ -19,6 +22,8 @@ import java.util.Map;
 public class FiguraLuaState extends LuaState53 {
 
     private static String sandboxerScript;
+
+    public EventsAPI events;
 
     public FiguraLuaState(int memory) {
         super(memory * 1_000_000); //memory is given in mb
@@ -67,10 +72,13 @@ public class FiguraLuaState extends LuaState53 {
     }
 
     private void loadFiguraApis() {
-        loadApi(new VectorsAPI(), "vectors");
+        loadGlobal(VectorsAPI.getInstance(), "vectors");
+        loadGlobal(MatricesAPI.getInstance(), "matrices");
+        events = new EventsAPI();
+        loadGlobal(events, "events");
     }
 
-    public void loadApi(Object api, String name) {
+    public void loadGlobal(Object api, String name) {
         pushJavaObject(api);
         setGlobal(name);
     }
@@ -101,9 +109,13 @@ public class FiguraLuaState extends LuaState53 {
         setGlobal("print");
     }
 
-    private static final Component LUA_PREFIX = new TextComponent("")
+    private static final Component LUA_INFO_PREFIX = new TextComponent("")
             .withStyle(ChatFormatting.ITALIC, ChatFormatting.BLUE)
             .append("[lua] ");
+
+    private static final Component LUA_ERROR_PREFIX = new TextComponent("")
+            .withStyle(ChatFormatting.BOLD, ChatFormatting.RED)
+            .append("[ERROR] ");
 
     private static JavaFunction requireFunc(Map<String, String> scripts) {
         return luaState -> {
@@ -123,6 +135,27 @@ public class FiguraLuaState extends LuaState53 {
         };
     }
 
+    //add a chat message on the client
+    public static void sendLuaMessage(String message) {
+        if ((int) Config.LOG_LOCATION.value == 0) {
+            MutableComponent component = LUA_INFO_PREFIX.copy().withStyle(ChatFormatting.RESET).append(message);
+            if (Minecraft.getInstance().gui != null)
+                Minecraft.getInstance().gui.getChat().addMessage(component);
+        } else {
+            FiguraMod.LOGGER.info("[LUA] " + message);
+        }
+    }
+
+    public static void sendLuaError(String error) {
+        if ((int) Config.LOG_LOCATION.value == 0) {
+            MutableComponent component = LUA_ERROR_PREFIX.copy().withStyle(ChatFormatting.RESET, ChatFormatting.RED).append(error);
+            if (Minecraft.getInstance().gui != null)
+                Minecraft.getInstance().gui.getChat().addMessage(component);
+        } else {
+            FiguraMod.LOGGER.error("[ERROR] " + error);
+        }
+    }
+
     private static final JavaFunction PRINT_FUNCTION = luaState -> {
         luaState.getGlobal("tostring");
         luaState.pushValue(1);
@@ -131,14 +164,7 @@ public class FiguraLuaState extends LuaState53 {
         luaState.pop(1);
 
         //prints the value, either on chat (which also prints on console) or only console
-        MutableComponent message = LUA_PREFIX.copy().append(new TextComponent(v));
-        if ((int) Config.LOG_LOCATION.value == 0) {
-            FiguraMod.sendChatMessage(message);
-        } else {
-            FiguraMod.LOGGER.info(message.getString());
-        }
-
-        FiguraMod.LOGGER.info(v);
+        sendLuaMessage(v);
 
         return 0;
     };

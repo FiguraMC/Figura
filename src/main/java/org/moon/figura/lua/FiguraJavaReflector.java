@@ -202,13 +202,28 @@ public class FiguraJavaReflector implements JavaReflector {
 
         @Override
         public int invoke(LuaState luaState) {
+            int i;
             try {
                 Object[] args = new Object[argumentTypes.length];
-                for (int i = 0; i < luaState.getTop() && i < args.length; i++)
+                for (i = 0; i < luaState.getTop() && i < args.length; i++)
                     args[i] = luaState.toJavaObject(i + 1, argumentTypes[i]);
                 luaState.pushJavaObject(method.invoke(null, args));
             } catch (IllegalArgumentException | IllegalAccessException e) {
                 e.printStackTrace();
+            } catch (ClassCastException e) {
+                StringBuilder errorBuilder = new StringBuilder();
+                errorBuilder.append("Illegal argument types to ");
+                errorBuilder.append(method.getDeclaringClass().getName());
+                errorBuilder.append("$");
+                errorBuilder.append(method.getName());
+                errorBuilder.append(". Expected (");
+                for (int j = 0; j < argumentTypes.length; j++) {
+                    errorBuilder.append(argumentTypes[j].getName());
+                    if (j != argumentTypes.length - 1)
+                        errorBuilder.append(", ");
+                }
+                errorBuilder.append(").");
+                throw new LuaRuntimeException(errorBuilder.toString());
             } catch (RuntimeException | InvocationTargetException e) {
                 throw new LuaRuntimeException(e);
             }

@@ -1,15 +1,19 @@
 package org.moon.figura.avatars;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.Tag;
+import net.minecraft.world.entity.Entity;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.model.rendering.AvatarRenderer;
 import org.moon.figura.avatars.model.rendering.ImmediateAvatarRenderer;
 import org.moon.figura.lua.FiguraLuaState;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
+import org.terasology.jnlua.LuaRuntimeException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -34,8 +38,8 @@ public class Avatar {
 
     //Runtime data
     public final UUID owner;
-    public final AvatarRenderer renderer;
-    public final FiguraLuaState luaState;
+    private final AvatarRenderer renderer;
+    public FiguraLuaState luaState;
 
     public Avatar(CompoundTag nbt, UUID owner) {
         this.owner = owner;
@@ -47,8 +51,34 @@ public class Avatar {
         version = metadata.getString("ver");
         fileSize = getFileSize(nbt);
         renderer = new ImmediateAvatarRenderer(this, nbt);
-        luaState = createLuaState(nbt, owner);
+        luaState = createLuaState(nbt, owner, renderer);
     }
+
+    public void onTick() {
+        if (luaState != null)
+            try {
+                luaState.events.tick.call();
+            } catch (LuaRuntimeException ex) {
+                FiguraLuaState.sendLuaError(ex.getMessage());
+                luaState.close();
+                luaState = null;
+            }
+    }
+
+    public void onRender(Entity entity, float yaw, float delta, PoseStack matrices, MultiBufferSource bufferSource, int light) {
+        renderer.entity = entity;
+        renderer.yaw = yaw;
+        renderer.tickDelta = delta;
+        renderer.matrices = matrices;
+        renderer.bufferSource = bufferSource;
+        renderer.light = light;
+        if (luaState != null)
+            luaState.events.render.call(delta);
+
+        renderer.render();
+    }
+
+
 
     /**
      * We should call this whenever an avatar is no longer reachable!
@@ -76,7 +106,7 @@ public class Avatar {
         }
     }
 
-    private static FiguraLuaState createLuaState(CompoundTag avatarNbt, UUID owner) {
+    private static FiguraLuaState createLuaState(CompoundTag avatarNbt, UUID owner, AvatarRenderer renderer) {
         if (!avatarNbt.contains("scripts"))
             return null;
 
@@ -85,6 +115,10 @@ public class Avatar {
         if (!avatarNbt.contains("script", Tag.TAG_STRING)) mainScriptName = "script";
 
         FiguraLuaState luaState = new FiguraLuaState(TrustManager.get(owner).get(TrustContainer.Trust.MAX_MEM));
+
+        if (renderer != null && renderer.root != null)
+            luaState.loadGlobal(renderer.root, "models");
+
         boolean success = luaState.init(scripts, mainScriptName);
         if (success)
             return luaState;
