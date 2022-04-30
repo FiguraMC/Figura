@@ -1,5 +1,6 @@
 package org.moon.figura.lua.api;
 
+import org.moon.figura.lua.LuaFunction;
 import org.moon.figura.lua.LuaWhitelist;
 import org.terasology.jnlua.LuaRuntimeException;
 
@@ -13,7 +14,8 @@ public class EventsAPI {
     public LuaEvent tick = new LuaEvent("tick");
     @LuaWhitelist
     public LuaEvent render = new LuaEvent("render");
-
+    @LuaWhitelist
+    public LuaEvent postRender = new LuaEvent("postRender");
 
 
     @LuaWhitelist

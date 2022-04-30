@@ -1,4 +1,4 @@
-package org.moon.figura.lua.api;
+package org.moon.figura.lua.api.math;
 
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.math.vector.*;
@@ -7,10 +7,7 @@ import org.terasology.jnlua.LuaRuntimeException;
 @LuaWhitelist
 public class VectorsAPI {
 
-    private static final VectorsAPI INSTANCE = new VectorsAPI();
-    public static VectorsAPI getInstance() {
-        return INSTANCE;
-    }
+    public static final VectorsAPI INSTANCE = new VectorsAPI();
 
     @LuaWhitelist
     public static Object vec(Double x, Double y, Double z, Double w, Double t, Double h) {

@@ -4,11 +4,14 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.entity.player.Player;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.config.Config;
 import org.moon.figura.lua.api.EventsAPI;
-import org.moon.figura.lua.api.MatricesAPI;
-import org.moon.figura.lua.api.VectorsAPI;
+import org.moon.figura.lua.api.entity.PlayerEntityWrapper;
+import org.moon.figura.lua.api.math.MatricesAPI;
+import org.moon.figura.lua.api.math.VectorsAPI;
+import org.moon.figura.lua.api.world.WorldAPI;
 import org.moon.figura.utils.ColorUtils.Colors;
 import org.moon.figura.utils.TextUtils;
 import org.terasology.jnlua.JavaFunction;
@@ -79,10 +82,12 @@ public class FiguraLuaState extends LuaState53 {
     }
 
     private void loadFiguraApis() {
-        loadGlobal(VectorsAPI.getInstance(), "vectors");
-        loadGlobal(MatricesAPI.getInstance(), "matrices");
+        loadGlobal(VectorsAPI.INSTANCE, "vectors");
+        loadGlobal(MatricesAPI.INSTANCE, "matrices");
         events = new EventsAPI();
         loadGlobal(events, "events");
+        loadGlobal(WorldAPI.INSTANCE, "world");
+        loadGlobal(new PlayerEntityWrapper(Minecraft.getInstance().player), "player");
     }
 
     public void loadGlobal(Object api, String name) {

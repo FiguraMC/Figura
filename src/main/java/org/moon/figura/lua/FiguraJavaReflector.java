@@ -75,7 +75,7 @@ public class FiguraJavaReflector implements JavaReflector {
                 return defaultIndexFunction.invoke(luaState);
 
             Field f = fieldCache.get(objectClass).get(key);
-            if (f != null)
+            if (f != null && !Modifier.isFinal(f.getModifiers()))
                 f.set(object, luaState.toJavaObject(3, f.getType()));
 
         } catch (IllegalAccessException e) {
@@ -137,20 +137,32 @@ public class FiguraJavaReflector implements JavaReflector {
     private static void buildCachesIfNeeded(Class<?> clazz) {
         if (methodCache.containsKey(clazz)) return;
 
-        //Build regular (non-meta) method cache
+        //Build regular (non-meta) method cache, and field cache
         Map<String, MethodWrapper> methodMap = new HashMap<>();
-        for (Method method : clazz.getDeclaredMethods()) {
-            if (!method.isAnnotationPresent(LuaWhitelist.class)
-                    || method.getName().startsWith("__")
-                    || !Modifier.isStatic(method.getModifiers()))
-                continue;
-            if (!methodMap.containsKey(method.getName()))
-                methodMap.put(method.getName(), new MethodWrapper(method));
-            else
-                FiguraMod.LOGGER.error("Two whitelisted methods with the same name, " + method.getName() +
-                        ", in class " + clazz.getCanonicalName() + "!");
-        }
+        Map<String, Field> fieldMap = new HashMap<>();
+        Class<?> currentClazz = clazz;
+        do {
+            for (Method method : currentClazz.getDeclaredMethods()) {
+                if (!method.isAnnotationPresent(LuaWhitelist.class)
+                        || method.getName().startsWith("__")
+                        || !Modifier.isStatic(method.getModifiers()))
+                    continue;
+                if (!methodMap.containsKey(method.getName()))
+                    methodMap.put(method.getName(), new MethodWrapper(method));
+                else
+                    FiguraMod.LOGGER.error("Two whitelisted methods with the same name, " + method.getName() +
+                            ", in class " + clazz.getCanonicalName() + "!");
+            }
+            for (Field field : currentClazz.getDeclaredFields()) {
+                if (!field.isAnnotationPresent(LuaWhitelist.class))
+                    continue;
+                fieldMap.put(field.getName(), field);
+            }
+            currentClazz = currentClazz.getSuperclass();
+        } while (currentClazz.isAnnotationPresent(LuaWhitelist.class)); //Check whitelisted superclasses as well
+
         methodCache.put(clazz, methodMap);
+        fieldCache.put(clazz, fieldMap);
 
         //Build metamethod cache
         Map<String, List<MethodWrapper>> metamethodMap = new HashMap<>();
@@ -171,15 +183,6 @@ public class FiguraJavaReflector implements JavaReflector {
         }
 
         metamethodCache.put(clazz, metamethodMap);
-
-        //Build field cache
-        Map<String, Field> fieldMap = new HashMap<>();
-        for (Field field : clazz.getDeclaredFields()) {
-            if (!field.isAnnotationPresent(LuaWhitelist.class))
-                continue;
-            fieldMap.put(field.getName(), field);
-        }
-        fieldCache.put(clazz, fieldMap);
     }
 
     private static class MethodWrapper implements JavaFunction {

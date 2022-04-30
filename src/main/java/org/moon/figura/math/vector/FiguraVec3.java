@@ -1,5 +1,6 @@
 package org.moon.figura.math.vector;
 
+import net.minecraft.core.BlockPos;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.math.MathUtils;
 import org.moon.figura.math.matrix.FiguraMat3;
@@ -224,6 +225,10 @@ public class FiguraVec3 implements CachedType {
         FiguraVec3 result = copy();
         result.normalize();
         return result;
+    }
+
+    public BlockPos asBlockPos() {
+        return new BlockPos(x, y, z);
     }
 
     //----------------------------------------------------------------

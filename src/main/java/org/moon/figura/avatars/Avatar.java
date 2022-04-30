@@ -11,6 +11,7 @@ import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.model.rendering.AvatarRenderer;
 import org.moon.figura.avatars.model.rendering.ImmediateAvatarRenderer;
 import org.moon.figura.lua.FiguraLuaState;
+import org.moon.figura.lua.api.EventsAPI;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
 import org.terasology.jnlua.LuaRuntimeException;
@@ -54,15 +55,19 @@ public class Avatar {
         luaState = createLuaState(nbt);
     }
 
+    private void tryCall(EventsAPI.LuaEvent event, Object... args) {
+        try {
+            event.call(args);
+        } catch (LuaRuntimeException ex) {
+            FiguraLuaState.sendLuaError(ex.getMessage(), name);
+            luaState.close();
+            luaState = null;
+        }
+    }
+
     public void onTick() {
         if (luaState != null)
-            try {
-                luaState.events.tick.call();
-            } catch (LuaRuntimeException ex) {
-                FiguraLuaState.sendLuaError(ex.getMessage(), name);
-                luaState.close();
-                luaState = null;
-            }
+            tryCall(luaState.events.tick);
     }
 
     public void onRender(Entity entity, float yaw, float delta, PoseStack matrices, MultiBufferSource bufferSource, int light) {
@@ -73,9 +78,10 @@ public class Avatar {
         renderer.bufferSource = bufferSource;
         renderer.light = light;
         if (luaState != null)
-            luaState.events.render.call(delta);
-
+            tryCall(luaState.events.render, delta);
         renderer.render();
+        if (luaState != null)
+            tryCall(luaState.events.postRender, delta);
     }
 
 

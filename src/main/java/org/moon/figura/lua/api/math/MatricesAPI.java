@@ -1,4 +1,4 @@
-package org.moon.figura.lua.api;
+package org.moon.figura.lua.api.math;
 
 import org.moon.figura.lua.LuaUtils;
 import org.moon.figura.lua.LuaWhitelist;
@@ -13,10 +13,7 @@ import org.terasology.jnlua.LuaRuntimeException;
 @LuaWhitelist
 public class MatricesAPI {
 
-    private static final MatricesAPI INSTANCE = new MatricesAPI();
-    public static MatricesAPI getInstance() {
-        return INSTANCE;
-    }
+    public static final MatricesAPI INSTANCE = new MatricesAPI();
 
     @LuaWhitelist
     public static FiguraMat2 mat2(FiguraVec2 col1, FiguraVec2 col2) {
