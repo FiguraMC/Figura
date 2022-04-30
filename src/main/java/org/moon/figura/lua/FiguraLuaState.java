@@ -10,6 +10,7 @@ import org.moon.figura.lua.api.EventsAPI;
 import org.moon.figura.lua.api.MatricesAPI;
 import org.moon.figura.lua.api.VectorsAPI;
 import org.moon.figura.utils.ColorUtils.Colors;
+import org.moon.figura.utils.TextUtils;
 import org.terasology.jnlua.JavaFunction;
 import org.terasology.jnlua.LuaRuntimeException;
 import org.terasology.jnlua.LuaState53;
@@ -141,7 +142,7 @@ public class FiguraLuaState extends LuaState53 {
 
     public static void sendChatMessage(Component message, boolean force) {
         if (Minecraft.getInstance().gui != null)
-            Minecraft.getInstance().gui.getChat().addMessage(message);
+            Minecraft.getInstance().gui.getChat().addMessage(TextUtils.replaceInText(message, "\t", new TextComponent("  ")));
         else if (force)
             FiguraMod.LOGGER.info(message.getString());
     }
@@ -192,16 +193,30 @@ public class FiguraLuaState extends LuaState53 {
             FiguraMod.LOGGER.info(component.getString());
     }
 
-    //TODO - needs support for VARARGS
     private static final JavaFunction PRINT_FUNCTION = luaState -> {
-        luaState.getGlobal("tostring");
-        luaState.pushValue(1);
-        luaState.call(1, 1);
-        String v = luaState.toString(-1);
-        luaState.pop(1);
+        StringBuilder ret = new StringBuilder();
+
+        //execute stack has entries
+        while (luaState.getTop() > 0) {
+            //push lua "tostring" into the stack
+            luaState.getGlobal("tostring");
+
+            //copies a value from the stack and place it on top
+            luaState.pushValue(1);
+
+            //make a function call at the top of the stack
+            luaState.call(1, 1);
+
+            //gets a value from stack, as string
+            ret.append(luaState.toString(-1)).append("\t");
+
+            //remove the copied value and original
+            luaState.pop(1);
+            luaState.remove(1);
+        }
 
         //prints the value, either on chat or console
-        sendLuaMessage(v, ((FiguraLuaState) luaState).owner);
+        sendLuaMessage(ret.toString(), ((FiguraLuaState) luaState).owner);
 
         return 0;
     };
