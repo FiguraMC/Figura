@@ -3,6 +3,7 @@ package org.moon.figura.lua;
 import org.moon.figura.FiguraMod;
 import org.terasology.jnlua.LuaRuntimeException;
 import org.terasology.jnlua.LuaState;
+import org.terasology.jnlua.LuaType;
 import org.terasology.jnlua.NativeSupport;
 
 import java.io.File;
@@ -23,6 +24,8 @@ public class LuaUtils {
     }
 
     private static String getString(LuaState state, int index) {
+        if (state.type(index) == LuaType.TABLE)
+            return "(table)";
         Object o = state.toJavaObject(index, Object.class);
         return o == null ? "null" : o.toString();
     }

@@ -1,6 +1,7 @@
 package org.moon.figura.lua;
 
 import org.terasology.jnlua.LuaState;
+import org.terasology.jnlua.LuaType;
 
 import java.util.HashMap;
 import java.util.Map;

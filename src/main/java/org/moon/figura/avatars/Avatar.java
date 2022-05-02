@@ -15,6 +15,7 @@ import org.moon.figura.lua.api.EventsAPI;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
 import org.terasology.jnlua.LuaRuntimeException;
+import org.terasology.jnlua.LuaState;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -59,7 +60,7 @@ public class Avatar {
         try {
             event.call(args);
         } catch (LuaRuntimeException ex) {
-            FiguraLuaState.sendLuaError(ex.getMessage(), name);
+            FiguraLuaState.sendLuaError(ex, name);
             luaState.close();
             luaState = null;
         }

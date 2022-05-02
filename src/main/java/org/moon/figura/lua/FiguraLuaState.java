@@ -13,10 +13,7 @@ import org.moon.figura.lua.api.math.VectorsAPI;
 import org.moon.figura.lua.api.world.WorldAPI;
 import org.moon.figura.utils.ColorUtils.Colors;
 import org.moon.figura.utils.TextUtils;
-import org.terasology.jnlua.JavaFunction;
-import org.terasology.jnlua.LuaRuntimeException;
-import org.terasology.jnlua.LuaState;
-import org.terasology.jnlua.LuaState53;
+import org.terasology.jnlua.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -76,8 +73,10 @@ public class FiguraLuaState extends LuaState53 {
         load(script, name);
         try {
             call(0, 0);
+        } catch (LuaRuntimeException e) {
+            sendLuaError(e, owner);
         } catch (Exception e) {
-            sendLuaError(e.getCause().getMessage(), owner);
+            sendLuaError(new LuaRuntimeException(e), owner);
             FiguraMod.LOGGER.error("", e);
         }
     }
@@ -178,11 +177,14 @@ public class FiguraLuaState extends LuaState53 {
     }
 
     //print an error, errors should always show up on chat
-    public static void sendLuaError(String error, String owner) {
-        Component component = TextComponent.EMPTY.copy()
+    public static void sendLuaError(LuaRuntimeException error, String owner) {
+        //Jank as hell
+        String message = error.toString().replace("org.terasology.jnlua.LuaRuntimeException: ", "");
+
+        Component component = TextComponent.EMPTY.copy().withStyle(ChatFormatting.ITALIC) 
                 .append(new TextComponent("[error] ").withStyle(Colors.LUA_ERROR.style))
                 .append(new TextComponent(owner).withStyle(ChatFormatting.ITALIC))
-                .append(new TextComponent(" : " + error).withStyle(Colors.LUA_ERROR.style));
+                .append(new TextComponent(" : " + message).withStyle(Colors.LUA_ERROR.style));
 
         sendChatMessage(component, true);
     }
@@ -230,9 +232,51 @@ public class FiguraLuaState extends LuaState53 {
     };
 
     private static final JavaFunction PRINT_TABLE_FUNCTION = luaState -> {
-        LuaUtils.printStack(luaState);
+        int depth = (int) luaState.checkInteger(2);
+        String result = tableToString(luaState, 1, depth, 1);
+        sendLuaMessage(result, ((FiguraLuaState) luaState).owner);
         return 0;
     };
+
+    private static String tableToString(LuaState luaState, int index, int depth, int indent) {
+        StringBuilder builder = new StringBuilder();
+        if (depth <= 0) {
+            luaState.getGlobal("tostring");
+            luaState.pushValue(index);
+            luaState.call(1, 1);
+            builder.append(luaState.toString(-1));
+            luaState.pop(1);
+            return builder.toString();
+        }
+        String indentStr = "    ".repeat(indent-1);
+        builder.append("\n").append(indentStr).append("{\n");
+        luaState.pushNil();
+        while (luaState.next(index)) {
+            //Print indentation
+            builder.append(indentStr).append("    ");
+
+            //Print key
+            LuaType type = luaState.type(-2);
+            if (type == LuaType.TABLE)
+                builder.append(tableToString(luaState, luaState.getTop()-1, depth-1, indent+1));
+            else
+                builder.append(luaState.toJavaObject(-2, Object.class));
+            builder.append(": ");
+
+            //Print value
+            type = luaState.type(-1);
+            if (type == LuaType.TABLE)
+                builder.append(tableToString(luaState, luaState.getTop(), depth-1, indent+1));
+            else
+                builder.append(luaState.toJavaObject(-1, Object.class));
+            builder.append("\n");
+
+            //Pop value
+            luaState.pop(1);
+        }
+        builder.append(indentStr).append("}\n");
+        return builder.toString();
+    }
 
     private static String parsePrintArg(LuaState luaState) {
         //push lua "tostring" into the stack
