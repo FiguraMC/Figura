@@ -43,6 +43,9 @@ public class Avatar {
     private final AvatarRenderer renderer;
     public FiguraLuaState luaState;
 
+    private int tickLimit, renderLimit;
+
+
     public Avatar(CompoundTag nbt, UUID owner) {
         this.owner = owner;
 
@@ -56,8 +59,11 @@ public class Avatar {
         luaState = createLuaState(nbt);
     }
 
-    private void tryCall(EventsAPI.LuaEvent event, Object... args) {
+    //Calling with maxInstructions as -1 will not set the max instructions, and instead keep them as they are.
+    private void tryCall(EventsAPI.LuaEvent event, int maxInstructions, Object... args) {
         try {
+            if (maxInstructions != -1)
+                luaState.setInstructionLimit(maxInstructions);
             event.call(args);
         } catch (LuaRuntimeException ex) {
             FiguraLuaState.sendLuaError(ex, name);
@@ -68,7 +74,7 @@ public class Avatar {
 
     public void onTick() {
         if (luaState != null)
-            tryCall(luaState.events.tick);
+            tryCall(luaState.events.tick, tickLimit);
     }
 
     public void onRender(Entity entity, float yaw, float delta, PoseStack matrices, MultiBufferSource bufferSource, int light) {
@@ -79,10 +85,10 @@ public class Avatar {
         renderer.bufferSource = bufferSource;
         renderer.light = light;
         if (luaState != null)
-            tryCall(luaState.events.render, delta);
+            tryCall(luaState.events.render, renderLimit, delta);
         renderer.render();
         if (luaState != null)
-            tryCall(luaState.events.postRender, delta);
+            tryCall(luaState.events.postRender, -1, delta);
     }
 
 
@@ -126,8 +132,12 @@ public class Avatar {
         if (renderer != null && renderer.root != null)
             luaState.loadGlobal(renderer.root, "models");
 
-        boolean success = luaState.init(scripts, mainScriptName);
-        if (success)
+        int initLimit = TrustManager.get(owner).get(TrustContainer.Trust.INIT_INST);
+        tickLimit = TrustManager.get(owner).get(TrustContainer.Trust.TICK_INST);
+        renderLimit = TrustManager.get(owner).get(TrustContainer.Trust.RENDER_INST);
+
+        luaState.setInstructionLimit(initLimit);
+        if (luaState.init(scripts, mainScriptName))
             return luaState;
         else
             luaState.close();

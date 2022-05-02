@@ -46,6 +46,9 @@ public class FiguraLuaState extends LuaState53 {
             FiguraMod.LOGGER.error("Failed to load script sandboxer", e);
         }
 
+        //Load debug.setHook to registry, used later for instruction caps
+        loadSetHook();
+
         loadFiguraApis();
     }
 
@@ -53,9 +56,11 @@ public class FiguraLuaState extends LuaState53 {
         if (scripts.size() == 0)
             return false;
 
+        boolean failure;
+
         if (scripts.size() == 1) {
             Map.Entry<String, String> entry = scripts.entrySet().iterator().next();
-            runScript(entry.getValue(), entry.getKey());
+            failure = runScript(entry.getValue(), entry.getKey());
         } else {
             if (!scripts.containsKey(mainScript)) {
                 FiguraMod.LOGGER.error("Failed to load scripts, no script with name \"" + mainScript + ".lua\"");
@@ -63,22 +68,24 @@ public class FiguraLuaState extends LuaState53 {
             }
             pushJavaFunction(requireFunc(scripts));
             setGlobal("require");
-            runScript(scripts.get(mainScript), mainScript);
+            failure = runScript(scripts.get(mainScript), mainScript);
         }
 
-        return true;
+        return !failure;
     }
 
-    public void runScript(String script, String name) {
+    public boolean runScript(String script, String name) {
         load(script, name);
         try {
             call(0, 0);
+            return false;
         } catch (LuaRuntimeException e) {
             sendLuaError(e, owner);
         } catch (Exception e) {
             sendLuaError(new LuaRuntimeException(e), owner);
             FiguraMod.LOGGER.error("", e);
         }
+        return true;
     }
 
     private void loadFiguraApis() {
@@ -88,6 +95,27 @@ public class FiguraLuaState extends LuaState53 {
         loadGlobal(events, "events");
         loadGlobal(WorldAPI.INSTANCE, "world");
         loadGlobal(new PlayerEntityWrapper(Minecraft.getInstance().player), "player");
+    }
+
+    private void loadSetHook() {
+        //Open debug and push it
+        openLib(Library.DEBUG);
+        //Load sethook function
+        getField(-1, "sethook");
+        //Store the sethook function in the registry for safekeeping, and also pop the function
+        setField(REGISTRYINDEX, "sethook");
+        //Pop the debug table
+        pop(1);
+        //Remove debug from the environment
+        loadGlobal(null, "debug");
+    }
+
+    public void setInstructionLimit(int limit) {
+        getField(REGISTRYINDEX, "sethook");
+        pushJavaFunction(INSTRUCTION_LIMIT_FUNCTION);
+        pushString("");
+        pushInteger(limit);
+        call(3, 0);
     }
 
     public void loadGlobal(Object api, String name) {
@@ -210,6 +238,11 @@ public class FiguraLuaState extends LuaState53 {
         else
             FiguraMod.LOGGER.info(component.getString());
     }
+
+    private static final JavaFunction INSTRUCTION_LIMIT_FUNCTION = luaState -> {
+        String error = "Script overran resource limits!";
+        throw new LuaRuntimeException(error);
+    };
 
     //print functions
     private static final JavaFunction PRINT_FUNCTION = luaState -> {
