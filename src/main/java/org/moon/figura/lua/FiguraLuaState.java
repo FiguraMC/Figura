@@ -4,7 +4,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.world.entity.player.Player;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.config.Config;
 import org.moon.figura.lua.api.EventsAPI;
@@ -16,6 +15,7 @@ import org.moon.figura.utils.ColorUtils.Colors;
 import org.moon.figura.utils.TextUtils;
 import org.terasology.jnlua.JavaFunction;
 import org.terasology.jnlua.LuaRuntimeException;
+import org.terasology.jnlua.LuaState;
 import org.terasology.jnlua.LuaState53;
 
 import java.io.IOException;
@@ -78,6 +78,7 @@ public class FiguraLuaState extends LuaState53 {
             call(0, 0);
         } catch (Exception e) {
             sendLuaError(e.getCause().getMessage(), owner);
+            FiguraMod.LOGGER.error("", e);
         }
     }
 
@@ -117,8 +118,18 @@ public class FiguraLuaState extends LuaState53 {
     private void loadPrintFunctions() {
         pushJavaFunction(PRINT_FUNCTION);
         pushValue(-1);
-        setGlobal("log");
         setGlobal("print");
+        setGlobal("log");
+
+        pushJavaFunction(PRINT_JSON_FUNCTION);
+        pushValue(-1);
+        setGlobal("printJson");
+        setGlobal("logJson");
+
+        pushJavaFunction(PRINT_TABLE_FUNCTION);
+        pushValue(-1);
+        setGlobal("printTable");
+        setGlobal("logTable");
     }
 
     private static JavaFunction requireFunc(Map<String, String> scripts) {
@@ -153,12 +164,12 @@ public class FiguraLuaState extends LuaState53 {
     }
 
     //print a string either on chat or console
-    public static void sendLuaMessage(String message, String owner) {
-        Component component = TextComponent.EMPTY.copy().withStyle(ChatFormatting.ITALIC)
+    public static void sendLuaMessage(Object message, String owner) {
+        Component component = TextComponent.EMPTY.copy()
                 .append(new TextComponent("[lua] ").withStyle(Colors.LUA_LOG.style))
-                .append(owner)
+                .append(new TextComponent(owner).withStyle(ChatFormatting.ITALIC))
                 .append(new TextComponent(" : ").withStyle(Colors.LUA_LOG.style))
-                .append(message);
+                .append(message instanceof Component c ? c : new TextComponent(message.toString()));
 
         if ((int) Config.LOG_LOCATION.value == 0)
             sendChatMessage(component);
@@ -168,9 +179,9 @@ public class FiguraLuaState extends LuaState53 {
 
     //print an error, errors should always show up on chat
     public static void sendLuaError(String error, String owner) {
-        Component component = TextComponent.EMPTY.copy().withStyle(ChatFormatting.ITALIC) 
+        Component component = TextComponent.EMPTY.copy()
                 .append(new TextComponent("[error] ").withStyle(Colors.LUA_ERROR.style))
-                .append(owner)
+                .append(new TextComponent(owner).withStyle(ChatFormatting.ITALIC))
                 .append(new TextComponent(" : " + error).withStyle(Colors.LUA_ERROR.style));
 
         sendChatMessage(component, true);
@@ -184,9 +195,9 @@ public class FiguraLuaState extends LuaState53 {
         if (config == 0)
             return;
 
-        Component component = TextComponent.EMPTY.copy().withStyle(ChatFormatting.ITALIC)
+        Component component = TextComponent.EMPTY.copy()
                 .append(new TextComponent("[ping] ").withStyle(Colors.LUA_PING.style))
-                .append(owner)
+                .append(new TextComponent(owner).withStyle(ChatFormatting.ITALIC))
                 .append(new TextComponent(" : ").withStyle(Colors.LUA_PING.style))
                 .append(size + "b")
                 .append(new TextComponent(" : ").withStyle(Colors.LUA_PING.style))
@@ -198,26 +209,13 @@ public class FiguraLuaState extends LuaState53 {
             FiguraMod.LOGGER.info(component.getString());
     }
 
+    //print functions
     private static final JavaFunction PRINT_FUNCTION = luaState -> {
         StringBuilder ret = new StringBuilder();
 
-        //execute stack has entries
+        //execute if the stack has entries
         while (luaState.getTop() > 0) {
-            //push lua "tostring" into the stack
-            luaState.getGlobal("tostring");
-
-            //copies a value from the stack and place it on top
-            luaState.pushValue(1);
-
-            //make a function call at the top of the stack
-            luaState.call(1, 1);
-
-            //gets a value from stack, as string
-            ret.append(luaState.toString(-1)).append("\t");
-
-            //remove the copied value and original
-            luaState.pop(1);
-            luaState.remove(1);
+            ret.append(parsePrintArg(luaState));
         }
 
         //prints the value, either on chat or console
@@ -225,4 +223,34 @@ public class FiguraLuaState extends LuaState53 {
 
         return 0;
     };
+
+    private static final JavaFunction PRINT_JSON_FUNCTION = luaState -> {
+        sendLuaMessage(TextUtils.tryParseJson(parsePrintArg(luaState)), ((FiguraLuaState) luaState).owner);
+        return 0;
+    };
+
+    private static final JavaFunction PRINT_TABLE_FUNCTION = luaState -> {
+        LuaUtils.printStack(luaState);
+        return 0;
+    };
+
+    private static String parsePrintArg(LuaState luaState) {
+        //push lua "tostring" into the stack
+        luaState.getGlobal("tostring");
+
+        //copies a value from the stack and place it on top
+        luaState.pushValue(1);
+
+        //make a function call at the top of the stack
+        luaState.call(1, 1);
+
+        //gets a value from stack, as string
+        String ret = luaState.toString(-1) + "\t";
+
+        //remove the copied value and original
+        luaState.pop(1);
+        luaState.remove(1);
+
+        return ret;
+    }
 }
