@@ -7,6 +7,7 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.utils.ColorUtils;
+import org.moon.figura.utils.FiguraText;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -131,7 +132,7 @@ public class TrustContainer {
         if (parentID != null)
             return TrustManager.get(parentID).getGroupName();
 
-        return new TranslatableComponent("figura.trust.group." + name);
+        return new FiguraText("trust.group." + name);
     }
 
     public int getGroupColor() {

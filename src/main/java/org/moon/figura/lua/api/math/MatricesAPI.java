@@ -1,6 +1,5 @@
 package org.moon.figura.lua.api.math;
 
-import org.moon.figura.lua.LuaUtils;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.math.matrix.FiguraMat2;
 import org.moon.figura.math.matrix.FiguraMat3;
@@ -8,6 +7,7 @@ import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec4;
+import org.moon.figura.utils.LuaUtils;
 import org.terasology.jnlua.LuaRuntimeException;
 
 @LuaWhitelist

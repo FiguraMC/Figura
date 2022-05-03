@@ -6,14 +6,13 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
-import org.moon.figura.FiguraMod;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class TextUtils {
 
-    public static final ResourceLocation FIGURA_FONT = new ResourceLocation(FiguraMod.MOD_ID, "default");
+    public static final ResourceLocation FIGURA_FONT = new FiguraIdentifier("default");
 
     public static String noBadges4U(String string) {
         return string.replaceAll("([▲!❤☆✯★]|\\\\u(?i)(25B2|0021|2764|2606|272F|2605))", "\uFFFD");
@@ -113,17 +112,17 @@ public class TextUtils {
         return finalText;
     }
 
-    public static Component trimToWidthEllipsis(Font textRenderer, Component text, int width) {
+    public static Component trimToWidthEllipsis(Font font, Component text, int width) {
         //return text without changes if it is not larger than width
-        if (textRenderer.width(text.getVisualOrderText()) <= width)
+        if (font.width(text.getVisualOrderText()) <= width)
             return text;
 
         //get ellipsis size
         Component dots = Component.nullToEmpty("...");
-        int size = textRenderer.width(dots.getVisualOrderText());
+        int size = font.width(dots.getVisualOrderText());
 
         //trim and return modified text
-        String trimmed = textRenderer.substrByWidth(text, width - size).getString();
+        String trimmed = font.substrByWidth(text, width - size).getString();
         return new TextComponent(trimmed).setStyle(text.getStyle()).append(dots);
     }
 }

@@ -1,13 +1,14 @@
 package org.moon.figura.config;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import net.fabricmc.fabric.impl.client.keybinding.KeyBindingRegistryImpl;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import org.moon.figura.FiguraMod;
+import org.moon.figura.utils.FiguraText;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -27,11 +28,14 @@ public enum Config {
     LOG_LOCATION(0, 2),
 
     ActionWheel,
-    ACTION_WHEEL_BUTTON("key.keyboard.b", FiguraMod.MOD_ID),
+    //ACTION_WHEEL_BUTTON("key.keyboard.b"),
 
-    Dev {{this.name = new TranslatableComponent("figura.config.dev").withStyle(ChatFormatting.RED);}},
-    PANIC_BUTTON("key.keyboard.unknown", FiguraMod.MOD_ID),
-    LOG_PINGS(0, 3);
+    Misc,
+    BUTTON_LOCATION(0, 5),
+
+    Dev {{this.name = new FiguraText("config.dev").withStyle(ChatFormatting.RED);}};
+    //PANIC_BUTTON("key.keyboard.unknown"),
+    //LOG_PINGS(0, 3);
 
 
     /**
@@ -80,9 +84,9 @@ public enum Config {
     Config(Object defaultValue, InputType inputType) {
         this(ConfigType.INPUT, defaultValue, null, null, inputType);
     }
-    Config(String key, String category) {
+    Config(String key) {
         this(ConfigType.KEYBIND, key, null, null, null);
-        this.keyBind = new ConfigKeyBind(this.name.getString(), InputConstants.getKey(key), category, this);
+        this.keyBind = new ConfigKeyBind(this.name.getString(), InputConstants.getKey(key), this);
     }
 
     //global constructor
@@ -96,15 +100,15 @@ public enum Config {
         this.inputType = inputType;
 
         //generate names
-        String name = FiguraMod.MOD_ID + ".config." + this.name().toLowerCase();
-        this.name = new TranslatableComponent(name);
-        this.tooltip = new TranslatableComponent(name + ".tooltip");
+        String name = "config." + this.name().toLowerCase();
+        this.name = new FiguraText(name);
+        this.tooltip = new FiguraText(name + ".tooltip");
 
         //generate enum list
         if (length != null) {
             ArrayList<Component> enumList = new ArrayList<>();
             for (int i = 1; i <= length; i++)
-                enumList.add(new TranslatableComponent(name + "." + i));
+                enumList.add(new FiguraText(name + "." + i));
             this.enumList = enumList;
         }
     }
@@ -173,17 +177,17 @@ public enum Config {
         public final Component hint;
         InputType(Predicate<String> predicate) {
             this.validator = predicate;
-            this.hint = new TranslatableComponent(FiguraMod.MOD_ID + ".config.input." + this.name().toLowerCase());
+            this.hint = new FiguraText("config.input." + this.name().toLowerCase());
         }
     }
 
     public static class ConfigKeyBind extends KeyMapping {
         private final Config config;
 
-        public ConfigKeyBind(String translationKey, InputConstants.Key key, String category, Config config) {
-            super(translationKey, key.getType(), key.getValue(), category);
+        public ConfigKeyBind(String translationKey, InputConstants.Key key, Config config) {
+            super(translationKey, key.getType(), key.getValue(), FiguraMod.MOD_ID);
             this.config = config;
-            KeyMappingRegistry.registerKeyMapping(this);
+            KeyBindingRegistryImpl.registerKeyBinding(this);
         }
 
         @Override

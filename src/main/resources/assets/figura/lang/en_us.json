@@ -1,3 +1,121 @@
 {
-  "figura": "Figura"
+  "figura": "Figura",
+
+
+  "figura.trust.group.blocked": "Blocked",
+  "figura.trust.group.untrusted": "Untrusted",
+  "figura.trust.group.trusted": "Trusted",
+  "figura.trust.group.friend": "Friend",
+  "figura.trust.group.local": "Local",
+
+  "figura.trust.infinity": "INFINITY",
+  "figura.trust.enabled": "Enabled",
+  "figura.trust.disabled": "Disabled",
+
+  "figura.trust.init_inst": "Init Instructions",
+  "figura.trust.tick_inst": "Tick Instructions",
+  "figura.trust.render_inst": "Render Instructions",
+  "figura.trust.max_mem": "Max Script Memory",
+  "figura.trust.complexity": "Max Complexity",
+  "figura.trust.particles": "Max Particles",
+  "figura.trust.sounds": "Max Sounds",
+  "figura.trust.bb_animations": "Animation Complexity",
+  "figura.trust.vanilla_model_edit": "Vanilla Model Change",
+  "figura.trust.nameplate_edit": "Nameplate Change",
+  "figura.trust.offscreen_rendering": "Render Offscreen",
+  "figura.trust.custom_render_layer": "Custom Render Layers",
+  "figura.trust.custom_sounds": "Custom Sounds",
+
+
+  "figura.gui.on": "ON",
+  "figura.gui.off": "OFF",
+  "figura.gui.search": "Search...",
+  "figura.gui.set_trust": "Set Trust Level",
+  "figura.gui.name": "Name",
+  "figura.gui.author": "Author",
+  "figura.gui.size": "Size (kb)",
+  "figura.gui.complexity": "Complexity",
+
+  "figura.gui.back": "Back",
+  "figura.gui.cancel": "Cancel",
+  "figura.gui.help.tooltip": "Help",
+
+
+  "figura.gui.panels.title.profile": "Profile",
+  "figura.gui.panels.title.browser": "Browser",
+  "figura.gui.panels.title.wardrobe": "Wardrobe",
+  "figura.gui.panels.title.trust": "Trust",
+  "figura.gui.panels.title.settings": "Settings",
+
+  "figura.gui.panels.title.sound": "Avatar Sounds",
+  "figura.gui.panels.title.keybind": "Avatar Keybinds",
+
+
+  "figura.gui.wardrobe.expand_wardrobe.tooltip": "Expand wardrobe list",
+  "figura.gui.wardrobe.minimize_wardrobe.tooltip": "Minimize wardrobe list",
+  "figura.gui.wardrobe.upload.tooltip": "Upload avatar to Figura server",
+  "figura.gui.wardrobe.reload.tooltip": "Reload avatar",
+  "figura.gui.wardrobe.delete.tooltip": "Delete avatar from Figura server",
+  "figura.gui.wardrobe.sound.tooltip": "Avatar Sounds",
+  "figura.gui.wardrobe.keybind.tooltip": "Avatar Keybinds",
+
+
+  "figura.gui.trust.reset": "Reset All",
+  "figura.gui.trust.expand_trust.tooltip": "Expand advanced trust menu",
+  "figura.gui.trust.minimize_trust.tooltip": "Minimize advanced trust menu",
+
+
+  "figura.gui.status.model": "Model",
+  "figura.gui.status.model.0": "none",
+  "figura.gui.status.model.1": "100kb+",
+  "figura.gui.status.model.2": "75kb+",
+  "figura.gui.status.model.3": "ok",
+
+  "figura.gui.status.texture": "Texture",
+  "figura.gui.status.texture.0": "none",
+  "figura.gui.status.texture.3": "ok",
+
+  "figura.gui.status.script": "Script",
+  "figura.gui.status.script.0": "none",
+  "figura.gui.status.script.1": "error",
+  "figura.gui.status.script.3": "ok",
+
+  "figura.gui.status.backend": "Backend",
+  "figura.gui.status.backend.reason": "Reason",
+  "figura.gui.status.backend.1": "disconnected",
+  "figura.gui.status.backend.2": "connecting",
+  "figura.gui.status.backend.3": "connected",
+
+
+  "figura.config.input.any": "Text...",
+  "figura.config.input.int": "Integer...",
+  "figura.config.input.float": "Number...",
+  "figura.config.input.hex_color": "Color...",
+  "figura.config.input.folder_path": "Path...",
+
+
+  "figura.config.script": "Script",
+  "figura.config.script.tooltip": "Script settings",
+
+  "figura.config.log_location": "Print Output",
+  "figura.config.log_location.tooltip": "Location where is shown script prints",
+  "figura.config.log_location.1": "Chat",
+  "figura.config.log_location.2": "Logger",
+
+  "figura.config.actionwheel": "Action Wheel",
+  "figura.config.actionwheel.tooltip": "Action Wheel settings",
+
+  "figura.config.misc": "Misc",
+  "figura.config.misc.tooltip": "Unsorted/Unrelated settings",
+
+  "figura.config.button_location": "Menu Button Location",
+  "figura.config.button_location.tooltip": "Location of the figura button",
+  "figura.config.button_location.1": "Icon",
+  "figura.config.button_location.2": "Top Left",
+  "figura.config.button_location.3": "Top Right",
+  "figura.config.button_location.4": "Bottom Left",
+  "figura.config.button_location.5": "Bottom Right",
+
+  "figura.config.dev": "Dev",
+  "figura.config.dev.tooltip": "Developer/Experimental settings"
 }

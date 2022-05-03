@@ -133,9 +133,10 @@ public class FiguraLuaState extends LuaState53 {
 
     private void runSandboxer() throws IOException {
         if (sandboxerScript == null) {
-            InputStream stream = FiguraMod.class.getResourceAsStream("/assets/figura/scripts/sandbox.lua");
+            String path = "/assets/figura/lua/scripts/sandbox.lua";
+            InputStream stream = FiguraMod.class.getResourceAsStream(path);
             if (stream == null)
-                throw new IOException("Cannot locate sandbox.lua at /assets/figura/scripts/sandbox.lua");
+                throw new IOException("Cannot locate sandbox.lua at " + path);
             sandboxerScript = new String(stream.readAllBytes());
         }
         load(sandboxerScript, "sandboxer");
@@ -219,7 +220,7 @@ public class FiguraLuaState extends LuaState53 {
 
     //print an ping!
     public static void sendPingMessage(String ping, int size, String owner) {
-        int config = (int) Config.LOG_PINGS.value;
+        int config = 0; //(int) Config.LOG_PINGS.value;
 
         //no print? *megamind.png*
         if (config == 0)

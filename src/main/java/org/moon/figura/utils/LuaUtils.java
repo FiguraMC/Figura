@@ -1,4 +1,4 @@
-package org.moon.figura.lua;
+package org.moon.figura.utils;
 
 import org.moon.figura.FiguraMod;
 import org.terasology.jnlua.LuaRuntimeException;
@@ -13,7 +13,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
 public class LuaUtils {
-
 
     public static void printStack(LuaState state) {
         System.out.println("--Top of Stack--");
@@ -66,9 +65,9 @@ public class LuaUtils {
             builder.append(".so");
         }
 
-        Path nativesFolder = FiguraMod.getFiguraDirectory().resolve("libraries/lua-natives");
+        Path nativesFolder = FiguraMod.GAME_DIR.resolve("libraries/lua-natives/");
 
-        String targetLib = "/natives/" + builder;
+        String targetLib = "/assets/figura/lua/natives/" + builder;
         InputStream libStream = FiguraMod.class.getResourceAsStream(targetLib);
         File f = nativesFolder.resolve(builder.toString()).toFile();
 

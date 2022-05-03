@@ -1,9 +1,9 @@
 package org.moon.figura.testing;
 
 import org.moon.figura.lua.FiguraLuaState;
-import org.moon.figura.lua.LuaUtils;
 import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec4;
+import org.moon.figura.utils.LuaUtils;
 import org.terasology.jnlua.LuaState;
 
 import java.util.Map;

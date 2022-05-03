@@ -6,10 +6,8 @@
   "mixins": [
   ],
   "client": [
-    "access.KeyMappingAccess",
     "EntityRendererMixin",
-    "MinecraftMixin",
-    "OptionsMixin"
+    "PauseScreenMixin"
   ],
   "server": [
   ],

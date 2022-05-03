@@ -2,8 +2,8 @@ package org.moon.figura.lua.api.entity;
 
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
-import org.moon.figura.lua.LuaUtils;
 import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.utils.LuaUtils;
 import org.terasology.jnlua.LuaRuntimeException;
 
 @LuaWhitelist

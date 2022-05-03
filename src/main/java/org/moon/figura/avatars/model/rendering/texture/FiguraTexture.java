@@ -8,7 +8,7 @@ import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.lwjgl.BufferUtils;
-import org.moon.figura.FiguraMod;
+import org.moon.figura.utils.FiguraIdentifier;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -20,7 +20,7 @@ public class FiguraTexture extends AbstractTexture implements Closeable {
     /**
      * The ID of the texture, used to register to Minecraft.
      */
-    public final ResourceLocation textureID = new ResourceLocation(FiguraMod.MOD_ID, "avatar_tex/" + UUID.randomUUID());
+    public final ResourceLocation textureID = new FiguraIdentifier("avatar_tex/" + UUID.randomUUID());
     private boolean uploaded = false;
 
     /**

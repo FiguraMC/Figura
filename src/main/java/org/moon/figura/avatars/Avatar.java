@@ -15,7 +15,6 @@ import org.moon.figura.lua.api.EventsAPI;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
 import org.terasology.jnlua.LuaRuntimeException;
-import org.terasology.jnlua.LuaState;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;

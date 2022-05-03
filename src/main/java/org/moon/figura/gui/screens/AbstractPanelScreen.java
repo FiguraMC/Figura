@@ -1,0 +1,135 @@
+package org.moon.figura.gui.screens;
+
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import org.moon.figura.gui.widgets.ContextMenu;
+import org.moon.figura.gui.widgets.FiguraTickable;
+import org.moon.figura.gui.widgets.PanelSelectorWidget;
+import org.moon.figura.utils.FiguraIdentifier;
+import org.moon.figura.utils.ui.UIHelper;
+
+public abstract class AbstractPanelScreen extends Screen {
+
+    public static final ResourceLocation BACKGROUND = new FiguraIdentifier("textures/gui/background.png");
+
+    //variables
+    protected final Screen parentScreen;
+    private final int index;
+
+    //overlays
+    public ContextMenu contextMenu;
+    public Component tooltip;
+
+    protected AbstractPanelScreen(Screen parentScreen, Component title, int index) {
+        super(title);
+        this.parentScreen = parentScreen;
+        this.index = index;
+    }
+
+    @Override
+    protected void init() {
+        super.init();
+
+        //add panel selector
+        this.addRenderableWidget(new PanelSelectorWidget(parentScreen, 0, 0, width, index));
+    }
+
+    @Override
+    public void tick() {
+        for (GuiEventListener listener : this.children()) {
+            if (listener instanceof FiguraTickable tickable)
+                tickable.tick();
+        }
+
+        super.tick();
+    }
+
+    @Override
+    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
+        //setup figura framebuffer
+        UIHelper.useFiguraGuiFramebuffer();
+
+        //render background
+        this.renderBackground();
+
+        //render contents
+        super.render(stack, mouseX, mouseY, delta);
+
+        //render overlays
+        this.renderOverlays(stack, mouseX, mouseY, delta);
+
+        //restore vanilla framebuffer
+        UIHelper.useVanillaFramebuffer(stack);
+    }
+
+    public void renderBackground() {
+        //render
+        float textureSize = (float) (64f / this.minecraft.getWindow().getGuiScale());
+        UIHelper.renderBackgroundTexture(BACKGROUND, 0, 0, this.width, this.height, textureSize, textureSize);
+    }
+
+    public void renderOverlays(PoseStack stack, int mouseX, int mouseY, float delta) {
+        //render context
+        if (contextMenu != null && contextMenu.isVisible())
+            contextMenu.render(stack, mouseX, mouseY, delta);
+        //render tooltip
+        else if (tooltip != null)
+            UIHelper.renderTooltip(stack, tooltip, mouseX, mouseY);
+
+        tooltip = null;
+    }
+
+    @Override
+    public void onClose() {
+        this.minecraft.setScreen(parentScreen);
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        return this.contextMenuClick(mouseX, mouseY, button) || super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    public boolean contextMenuClick(double mouseX, double mouseY, int button) {
+        //attempt to run context first
+        if (contextMenu != null && contextMenu.isVisible()) {
+            //attempt to click on the context menu
+            boolean clicked = contextMenu.mouseClicked(mouseX, mouseY, button);
+
+            //then try to click on the parent container and suppress it
+            //let the parent handle the context menu visibility
+            if (!clicked && contextMenu.parent.mouseClicked(mouseX, mouseY, button))
+                return true;
+
+            //otherwise, remove visibility and suppress the click only if we clicked on the context
+            contextMenu.setVisible(false);
+            return clicked;
+        }
+
+        //no interaction was made
+        return false;
+    }
+
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        //yeet mouse 0 and isDragging check
+        return this.getFocused() != null && this.getFocused().mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        //better check for mouse released when outside element boundaries
+        return this.getFocused() != null && this.getFocused().mouseReleased(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+        //hide previous context
+        if (contextMenu != null)
+            contextMenu.setVisible(false);
+
+        return super.mouseScrolled(mouseX, mouseY, amount);
+    }
+}

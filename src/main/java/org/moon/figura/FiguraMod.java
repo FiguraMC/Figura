@@ -1,14 +1,15 @@
 package org.moon.figura;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.avatars.providers.LocalAvatarFetcher;
 import org.moon.figura.avatars.providers.LocalAvatarLoader;
 import org.moon.figura.config.ConfigManager;
-import org.moon.figura.lua.LuaUtils;
 import org.moon.figura.trust.TrustManager;
+import org.moon.figura.utils.LuaUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,8 +23,9 @@ public class FiguraMod implements ClientModInitializer {
     public static final String MOD_ID = "figura";
     public static final String VERSION = FabricLoader.getInstance().getModContainer(MOD_ID).get().getMetadata().getVersion().getFriendlyString();
     public static final boolean CHEESE_DAY = LocalDate.now().getDayOfMonth() == 1 && LocalDate.now().getMonthValue() == 4;
-    public static final Path GAME_DIR = FabricLoader.getInstance().getGameDir();
+    public static final Path GAME_DIR = FabricLoader.getInstance().getGameDir().normalize();
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID.substring(0, 1).toUpperCase() + MOD_ID.substring(1));
+    public static final String WIKI = "https://github.com/Kingdom-Of-The-Moon/FiguraRewriteRewrite/wiki/";
 
     public static int ticks = 0;
 
@@ -32,6 +34,9 @@ public class FiguraMod implements ClientModInitializer {
         //init config and trust
         ConfigManager.init();
         TrustManager.init();
+
+        //register events
+        ClientTickEvents.END_CLIENT_TICK.register(FiguraMod::tick);
 
         //TODO - test
         LuaUtils.setupNativesForLua();
@@ -60,7 +65,7 @@ public class FiguraMod implements ClientModInitializer {
 
     //mod root directory
     public static Path getFiguraDirectory() {
-        Path p = GAME_DIR.normalize().resolve(MOD_ID);
+        Path p = GAME_DIR.resolve(MOD_ID);
         try {
             Files.createDirectories(p);
         } catch (Exception e) {

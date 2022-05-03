@@ -22,11 +22,16 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
+import org.moon.figura.gui.screens.AbstractPanelScreen;
+import org.moon.figura.gui.widgets.ContextMenu;
+import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.TextUtils;
 
 public class UIHelper extends GuiComponent {
 
     // -- Variables -- //
+
+    public static final ResourceLocation OUTLINE = new FiguraIdentifier("textures/gui/outline.png");
 
     public static boolean forceNameplate = false;
     public static boolean forceNoFire = false;
@@ -82,17 +87,17 @@ public class UIHelper extends GuiComponent {
         RenderSystem.enableBlend();
     }
 
-    public static void drawEntity(int x, int y, float scale, float pitch, float yaw, LivingEntity entity, PoseStack matrices) {
+    public static void drawEntity(int x, int y, float scale, float pitch, float yaw, LivingEntity entity, PoseStack stack) {
         //apply matrix transformers
-        matrices.pushPose();
-        matrices.translate(x, y, 0d);
-        matrices.scale(scale, scale, scale);
-        matrices.last().pose().multiply(Matrix4f.createScaleMatrix(1f, 1f, -1f)); //Scale ONLY THE POSITIONS! Inverted normals don't work for whatever reason
+        stack.pushPose();
+        stack.translate(x, y, 0d);
+        stack.scale(scale, scale, scale);
+        stack.last().pose().multiply(Matrix4f.createScaleMatrix(1f, 1f, -1f)); //Scale ONLY THE POSITIONS! Inverted normals don't work for whatever reason
 
         Quaternion quaternion = Vector3f.ZP.rotationDegrees(180f);
         Quaternion quaternion2 = Vector3f.XP.rotationDegrees(pitch);
         quaternion.mul(quaternion2);
-        matrices.mulPose(quaternion);
+        stack.mulPose(quaternion);
         quaternion2.conj();
 
         //backup entity variables
@@ -126,7 +131,7 @@ public class UIHelper extends GuiComponent {
         MultiBufferSource.BufferSource immediate = Minecraft.getInstance().renderBuffers().bufferSource();
 
         //render
-        RenderSystem.runAsFancy(() -> dispatcher.render(entity, 0d, -1d, 0d, 0f, 1f, matrices, immediate, LightTexture.FULL_BRIGHT));
+        RenderSystem.runAsFancy(() -> dispatcher.render(entity, 0d, -1d, 0d, 0f, 1f, stack, immediate, LightTexture.FULL_BRIGHT));
         immediate.endBatch();
 
         //restore entity rendering data
@@ -144,7 +149,7 @@ public class UIHelper extends GuiComponent {
         UIHelper.forceNoFire = false;
 
         //pop matrix
-        matrices.popPose();
+        stack.popPose();
         Lighting.setupFor3DItems();
     }
 
@@ -164,20 +169,20 @@ public class UIHelper extends GuiComponent {
         tessellator.end();
     }
 
-    public static void fillRounded(PoseStack matrixStack, int x, int y, int width, int height, int color) {
-        fill(matrixStack, x + 1, y, x + width - 1, y + 1, color);
-        fill(matrixStack, x, y + 1, x + width, y + height - 1, color);
-        fill(matrixStack, x + 1, y + height - 1, x + width - 1, y + height, color);
+    public static void fillRounded(PoseStack stack, int x, int y, int width, int height, int color) {
+        fill(stack, x + 1, y, x + width - 1, y + 1, color);
+        fill(stack, x, y + 1, x + width, y + height - 1, color);
+        fill(stack, x + 1, y + height - 1, x + width - 1, y + height, color);
     }
 
-    public static void fillOutline(PoseStack matrixStack, int x, int y, int width, int height, int color) {
-        fill(matrixStack, x + 1, y, x + width - 1, y + 1, color);
-        fill(matrixStack, x, y + 1, x + 1, y + height - 1, color);
-        fill(matrixStack, x + width - 1, y + 1, x + width, y + height - 1, color);
-        fill(matrixStack, x + 1, y + height - 1, x + width - 1, y + height, color);
+    public static void fillOutline(PoseStack stack, int x, int y, int width, int height, int color) {
+        fill(stack, x + 1, y, x + width - 1, y + 1, color);
+        fill(stack, x, y + 1, x + 1, y + height - 1, color);
+        fill(stack, x + width - 1, y + 1, x + width, y + height - 1, color);
+        fill(stack, x + 1, y + height - 1, x + width - 1, y + height, color);
     }
 
-    public static void renderSliced(PoseStack matrices, int x, int y, int width, int height, ResourceLocation texture) {
+    public static void renderSliced(PoseStack stack, int x, int y, int width, int height, ResourceLocation texture) {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShaderTexture(0, texture);
@@ -189,25 +194,25 @@ public class UIHelper extends GuiComponent {
         bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
 
         //top left
-        renderSlice(matrices.last().pose(), bufferBuilder, x, y, 3, 3, 0f, 0f, 9, 9);
+        renderSlice(stack.last().pose(), bufferBuilder, x, y, 3, 3, 0f, 0f, 9, 9);
         //top middle
-        renderSlice(matrices.last().pose(), bufferBuilder, x + 3, y, width - 6, 3, 3f, 0f, 9, 9);
+        renderSlice(stack.last().pose(), bufferBuilder, x + 3, y, width - 6, 3, 3f, 0f, 9, 9);
         //top right
-        renderSlice(matrices.last().pose(), bufferBuilder, x + width - 3, y, 3, 3, 6f, 0f, 9, 9);
+        renderSlice(stack.last().pose(), bufferBuilder, x + width - 3, y, 3, 3, 6f, 0f, 9, 9);
 
         //middle left
-        renderSlice(matrices.last().pose(), bufferBuilder, x, y + 3, 3, height - 6, 0f, 3f, 9, 9);
+        renderSlice(stack.last().pose(), bufferBuilder, x, y + 3, 3, height - 6, 0f, 3f, 9, 9);
         //middle middle
-        renderSlice(matrices.last().pose(), bufferBuilder, x + 3, y + 3, width - 6, height - 6, 3f, 3f, 9, 9);
+        renderSlice(stack.last().pose(), bufferBuilder, x + 3, y + 3, width - 6, height - 6, 3f, 3f, 9, 9);
         //middle right
-        renderSlice(matrices.last().pose(), bufferBuilder, x + width - 3, y + 3, 3, height - 6, 6f, 3f, 9, 9);
+        renderSlice(stack.last().pose(), bufferBuilder, x + width - 3, y + 3, 3, height - 6, 6f, 3f, 9, 9);
 
         //bottom left
-        renderSlice(matrices.last().pose(), bufferBuilder, x, y + height - 3, 3, 3, 0f, 6f, 9, 9);
+        renderSlice(stack.last().pose(), bufferBuilder, x, y + height - 3, 3, 3, 0f, 6f, 9, 9);
         //bottom middle
-        renderSlice(matrices.last().pose(), bufferBuilder, x + 3, y + height - 3, width - 6, 3, 3f, 6f, 9, 9);
+        renderSlice(stack.last().pose(), bufferBuilder, x + 3, y + height - 3, width - 6, 3, 3f, 6f, 9, 9);
         //bottom right
-        renderSlice(matrices.last().pose(), bufferBuilder, x + width - 3, y + height - 3, 3, 3, 6f, 6f, 9, 9);
+        renderSlice(stack.last().pose(), bufferBuilder, x + width - 3, y + height - 3, 3, 3, 6f, 6f, 9, 9);
 
         tessellator.end();
     }
@@ -241,41 +246,39 @@ public class UIHelper extends GuiComponent {
         return mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height;
     }
 
-    public static void renderOutlineText(PoseStack matrices, Font textRenderer, Component text, float x, float y, int color, int outline) {
+    public static void renderOutlineText(PoseStack stack, Font textRenderer, Component text, float x, float y, int color, int outline) {
         Component outlineText = new TextComponent(text.getString().replaceAll("§.", "")).setStyle(text.getStyle().withColor(outline));
         for (int i = -1; i <= 1; ++i) {
             for (int j = -1; j <= 1; ++j) {
-                textRenderer.draw(matrices, outlineText, x + i, y + j, outline);
+                textRenderer.draw(stack, outlineText, x + i, y + j, outline);
             }
         }
 
-        matrices.pushPose();
-        matrices.translate(0f, 0f, 0.1f);
-        textRenderer.draw(matrices, text, x, y, color);
-        matrices.popPose();
+        stack.pushPose();
+        stack.translate(0f, 0f, 0.1f);
+        textRenderer.draw(stack, text, x, y, color);
+        stack.popPose();
     }
 
-    public static void renderTooltip(PoseStack matrices, Component tooltip, int mouseX, int mouseY) {
+    public static void renderTooltip(PoseStack stack, Component tooltip, int mouseX, int mouseY) {
         Screen screen = Minecraft.getInstance().screen;
-        if (screen != null) screen.renderComponentTooltip(matrices, TextUtils.splitText(tooltip, "\n"), mouseX, Math.max(mouseY, 16));
+        if (screen != null) screen.renderComponentTooltip(stack, TextUtils.splitText(tooltip, "\n"), mouseX, Math.max(mouseY, 16));
     }
 
-    /* TODO - WIP
     public static void setContext(ContextMenu context) {
-        if (MinecraftClient.getInstance().currentScreen instanceof AbstractPanelScreen panelScreen)
+        if (Minecraft.getInstance().screen instanceof AbstractPanelScreen panelScreen)
             panelScreen.contextMenu = context;
     }
 
     public static ContextMenu getContext() {
-        if (MinecraftClient.getInstance().currentScreen instanceof AbstractPanelScreen panelScreen)
+        if (Minecraft.getInstance().screen instanceof AbstractPanelScreen panelScreen)
             return panelScreen.contextMenu;
 
         return null;
     }
 
-    public static void setTooltip(Text text) {
-        if (MinecraftClient.getInstance().currentScreen instanceof AbstractPanelScreen panelScreen)
+    public static void setTooltip(Component text) {
+        if (Minecraft.getInstance().screen instanceof AbstractPanelScreen panelScreen)
             panelScreen.tooltip = text;
     }
-     */
 }
