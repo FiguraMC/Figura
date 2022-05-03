@@ -203,11 +203,12 @@ public class FiguraModelPart {
         customization.setRot(target);
         readVec3(target, partCompound, "piv");
         customization.setPivot(target);
+        target.free();
         if (partCompound.contains("primary"))
             customization.setPrimaryRenderType(partCompound.getString("primary"));
         if (partCompound.contains("secondary"))
             customization.setPrimaryRenderType(partCompound.getString("secondary"));
-        target.free();
+
         customization.needsMatrixRecalculation = true;
 
         //Read vertex data
@@ -218,6 +219,8 @@ public class FiguraModelPart {
             newIndex = index[0]++;
         } else if (hasMeshData(partCompound)) {
             //TODO: read mesh
+            readMesh(facesByTexture, bufferBuilders, partCompound);
+            customization.isMesh = true;
             newIndex = index[0]++;
         }
 
@@ -394,6 +397,99 @@ public class FiguraModelPart {
                 );
             }
         }
+    }
+
+    private static void readMesh(List<Integer> facesByTexture, List<FiguraImmediateBuffer.Builder> builders, CompoundTag data) {
+        boolean useSmoothShading = false;
+
+        CompoundTag meshData = data.getCompound("mesh_data");
+        //mesh_data:
+        //"vtx": List<Float>, xyz
+        //"tex": List<Short>, (texID << 4) + numVerticesInFace
+        //"fac": List<Byte, Short, or Int>, just the indices of various vertices
+        //"uvs": List<Float>, uv for each vertex
+
+        if (useSmoothShading)
+            readMeshSmooth(facesByTexture, builders, meshData);
+        else
+            readMeshRegular(facesByTexture, builders, meshData);
+    }
+
+    private static final FiguraVec3 p1 = FiguraVec3.of(), p2 = FiguraVec3.of(), p3 = FiguraVec3.of();
+
+    private static void readMeshRegular(List<Integer> facesByTexture, List<FiguraImmediateBuffer.Builder> builders, CompoundTag meshData) {
+        ListTag verts = meshData.getList("vtx", Tag.TAG_FLOAT);
+        ListTag uvs = meshData.getList("uvs", Tag.TAG_FLOAT);
+        ListTag tex = meshData.getList("tex", Tag.TAG_SHORT);
+
+        int bestType = 0; //byte
+        if (verts.size() > 255) bestType = 1; //short
+        if (verts.size() > 32767) bestType = 2; //int
+
+        ListTag fac = switch (bestType) {
+            case 0 -> meshData.getList("fac", Tag.TAG_BYTE);
+            case 1 -> meshData.getList("fac", Tag.TAG_SHORT);
+            default -> meshData.getList("fac", Tag.TAG_INT);
+        };
+
+        int vi = 0, uvi = 0;
+
+        float[] posArr = new float[12];
+        float[] uvArr = new float[8];
+
+        for (int ti = 0; ti < tex.size(); ti++) {
+            short packed = tex.getShort(ti);
+            int texId = packed >> 4;
+            int numVerts = packed & 0xf;
+            while (texId >= facesByTexture.size())
+                facesByTexture.add(0);
+            while (texId >= builders.size())
+                builders.add(FiguraImmediateBuffer.builder());
+            facesByTexture.set(texId, facesByTexture.get(texId) + 1);
+
+            for (int j = 0; j < numVerts; j++) {
+                int vid = switch (bestType) {
+                    case 0 -> ((ByteTag) fac.get(vi + j)).getAsByte() & 0xff;
+                    case 1 -> fac.getShort(vi + j) & 0xffff;
+                    default -> fac.getInt(vi + j);
+                };
+                posArr[3*j] = verts.getFloat(3*vid);
+                posArr[3*j+1] = verts.getFloat(3*vid+1);
+                posArr[3*j+2] = verts.getFloat(3*vid+2);
+
+                uvArr[2*j] = uvs.getFloat(uvi + 2*j);
+                uvArr[2*j+1] = uvs.getFloat(uvi + 2*j + 1);
+            }
+
+            p1.set(posArr[0], posArr[1], posArr[2]);
+            p2.set(posArr[3], posArr[4], posArr[5]);
+            p3.set(posArr[6], posArr[7], posArr[8]);
+            p3.subtract(p2);
+            p1.subtract(p2);
+            p3.cross(p1);
+            p3.normalize();
+            //p3 now contains the normal vector
+
+            for (int j = 0; j < numVerts; j++)
+                builders.get(texId).vertex(
+                        posArr[3*j], posArr[3*j+1], posArr[3*j+2],
+                        uvArr[2*j], uvArr[2*j+1],
+                        (float) p3.x, (float) p3.y, (float) p3.z
+                );
+            if (numVerts == 3)
+                builders.get(texId).vertex(
+                        posArr[6], posArr[7], posArr[8],
+                        uvArr[4], uvArr[5],
+                        (float) p3.x, (float) p3.y, (float) p3.z
+                );
+
+            vi += numVerts;
+            uvi += 2*numVerts;
+        }
+    }
+
+    private static void readMeshSmooth(List<Integer> facesByTexture, List<FiguraImmediateBuffer.Builder> builders, CompoundTag meshData) {
+
     }
 
 }

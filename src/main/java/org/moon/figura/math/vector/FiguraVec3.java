@@ -152,6 +152,13 @@ public class FiguraVec3 implements CachedType {
             scale(1 / l);
     }
 
+    public void cross(FiguraVec3 other) {
+        double nx = y * other.z - z * other.y;
+        double ny = z * other.x - x * other.z;
+        double nz = x * other.y - y * other.x;
+        set(nx, ny, nz);
+    }
+
     //----------------------------------------------------------------
 
     // GENERATOR METHODS
@@ -225,6 +232,13 @@ public class FiguraVec3 implements CachedType {
         FiguraVec3 result = copy();
         result.normalize();
         return result;
+    }
+
+    public FiguraVec3 crossed(FiguraVec3 other) {
+        double nx = y * other.z - z * other.y;
+        double ny = z * other.x - x * other.z;
+        double nz = x * other.y - y * other.x;
+        return FiguraVec3.of(nx, ny, nz);
     }
 
     public BlockPos asBlockPos() {

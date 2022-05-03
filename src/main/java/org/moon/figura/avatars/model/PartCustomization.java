@@ -11,6 +11,12 @@ import org.moon.figura.utils.caching.CachedType;
 public class PartCustomization implements CachedType {
 
     //-- Matrix thingies --//
+    /**
+     * Boolean exists because blockbench sucks and uses a different rotation
+     * formula for meshes than other types of items. Meshes rotate in XYZ order,
+     * while literally everything else is in ZYX order.
+     */
+    public boolean isMesh = false;
 
     public FiguraMat4 positionMatrix = FiguraMat4.of();
     public FiguraMat3 normalMatrix = FiguraMat3.of();
@@ -33,7 +39,14 @@ public class PartCustomization implements CachedType {
             positionMatrix.translate(-pivot.x, -pivot.y, -pivot.z);
             positionMatrix.scale(scale.x, scale.y, scale.z);
             positionMatrix.translate(position.x, position.y, position.z);
-            positionMatrix.rotateZYX(rotation.x, rotation.y, rotation.z);
+
+            if (isMesh) {
+                positionMatrix.rotateZ(rotation.z);
+                positionMatrix.rotateY(rotation.y);
+                positionMatrix.rotateX(rotation.x);
+            } else
+                positionMatrix.rotateZYX(rotation.x, rotation.y, rotation.z);
+
             positionMatrix.translate(pivot.x, pivot.y, pivot.z);
 
             normalMatrix.reset();
@@ -43,7 +56,13 @@ public class PartCustomization implements CachedType {
                     c == 0 && scale.y == 0 ? 1 : c / scale.y,
                     c == 0 && scale.z == 0 ? 1 : c / scale.z
             );
-            normalMatrix.rotateZYX(rotation.x, rotation.y, rotation.z);
+
+            if (isMesh) {
+                normalMatrix.rotateZ(rotation.z);
+                normalMatrix.rotateY(rotation.y);
+                normalMatrix.rotateX(rotation.x);
+            } else
+                normalMatrix.rotateZYX(rotation.x, rotation.y, rotation.z);
 
             needsMatrixRecalculation = false;
         }
@@ -136,6 +155,7 @@ public class PartCustomization implements CachedType {
     public void reset() {
         positionMatrix = FiguraMat4.of();
         normalMatrix = FiguraMat3.of();
+        isMesh = false;
         position = FiguraVec3.of();
         rotation = FiguraVec3.of();
         scale = FiguraVec3.of(1, 1, 1);
@@ -167,6 +187,7 @@ public class PartCustomization implements CachedType {
         }
         @Override
         protected void copy(PartCustomization from, PartCustomization to) {
+            to.isMesh = from.isMesh;
             to.positionMatrix.set(from.positionMatrix);
             to.normalMatrix.set(from.normalMatrix);
             to.setPos(from.position);

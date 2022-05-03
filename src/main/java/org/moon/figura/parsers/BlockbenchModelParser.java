@@ -2,6 +2,7 @@ package org.moon.figura.parsers;
 
 import com.google.gson.*;
 import net.minecraft.nbt.*;
+import org.moon.figura.math.vector.FiguraVec3;
 
 import java.util.*;
 
@@ -165,7 +166,7 @@ public class BlockbenchModelParser {
                 data = parseCubeFaces(gson, element.faces);
                 nbt.put("cube_data", data);
             } else {
-                data = parseMesh(gson, element.faces, element.vertices);
+                data = parseMesh(gson, element.faces, element.vertices, element.origin);
                 nbt.put("mesh_data", data);
             }
 
@@ -212,7 +213,7 @@ public class BlockbenchModelParser {
         return nbt;
     }
 
-    private CompoundTag parseMesh(Gson gson, JsonObject faces, JsonObject vertices) {
+    private CompoundTag parseMesh(Gson gson, JsonObject faces, JsonObject vertices, float[] offset) {
         CompoundTag nbt = new CompoundTag();
 
         //parse vertices first, as the faces will reference it later
@@ -226,9 +227,9 @@ public class BlockbenchModelParser {
         for (Map.Entry<String, JsonElement> entry : vertices.entrySet()) {
             verticesMap.put(entry.getKey(), index);
             JsonArray arr = entry.getValue().getAsJsonArray();
-            verticesList.add(FloatTag.valueOf(arr.get(0).getAsFloat()));
-            verticesList.add(FloatTag.valueOf(arr.get(1).getAsFloat()));
-            verticesList.add(FloatTag.valueOf(arr.get(2).getAsFloat()));
+            verticesList.add(FloatTag.valueOf(arr.get(0).getAsFloat()+offset[0]));
+            verticesList.add(FloatTag.valueOf(arr.get(1).getAsFloat()+offset[1]));
+            verticesList.add(FloatTag.valueOf(arr.get(2).getAsFloat()+offset[2]));
             index++;
         }
 
@@ -258,6 +259,9 @@ public class BlockbenchModelParser {
             short k = (short) ((texture.id << 4) + face.vertices.length);
             texesList.add(ShortTag.valueOf(k));
 
+            if (face.vertices.length > 3)
+                reorderVertices(face.vertices, verticesMap, verticesList);
+
             for (String vertex : face.vertices) {
                 //Face indices
                 Tag bestVal = switch (bestType) {
@@ -282,6 +286,65 @@ public class BlockbenchModelParser {
         nbt.put("fac", facesList);
         nbt.put("uvs", uvsList);
         return nbt;
+    }
+
+    private static final FiguraVec3
+            v1 = FiguraVec3.of(),
+            v2 = FiguraVec3.of(),
+            v3 = FiguraVec3.of(),
+            v4 = FiguraVec3.of();
+
+    private static void reorderVertices(String[] vertexNames, Map<String, Integer> nameToIndex, ListTag vertices) {
+        //Fill in v1, v2, v3, v4 from the given vertices
+        readVectors(vertexNames, nameToIndex, vertices);
+
+        if (testOppositeSides(v2, v3, v1, v4)) {
+            String temp = vertexNames[2];
+            vertexNames[2] = vertexNames[1];
+            vertexNames[1] = vertexNames[0];
+            vertexNames[0] = temp;
+        } else if (testOppositeSides(v1, v2, v3, v4)) {
+            String temp = vertexNames[2];
+            vertexNames[2] = vertexNames[1];
+            vertexNames[1] = temp;
+        }
+
+    }
+
+    private static void readVectors(String[] vertexNames, Map<String, Integer> nameToIndex, ListTag vertices) {
+        int i = nameToIndex.get(vertexNames[0]);
+        v1.set(vertices.getFloat(3*i), vertices.getFloat(3*i+1), vertices.getFloat(3*i+2));
+        i = nameToIndex.get(vertexNames[1]);
+        v2.set(vertices.getFloat(3*i), vertices.getFloat(3*i+1), vertices.getFloat(3*i+2));
+        i = nameToIndex.get(vertexNames[2]);
+        v3.set(vertices.getFloat(3*i), vertices.getFloat(3*i+1), vertices.getFloat(3*i+2));
+        i = nameToIndex.get(vertexNames[3]);
+        v4.set(vertices.getFloat(3 * i), vertices.getFloat(3 * i + 1), vertices.getFloat(3 * i + 2));
+    }
+
+    private static final FiguraVec3
+            t1 = FiguraVec3.of(),
+            t2 = FiguraVec3.of(),
+            t3 = FiguraVec3.of(),
+            t4 = FiguraVec3.of();
+
+    /**
+     * Checks whether the two points given are on opposite sides of the line given.
+     */
+    private static boolean testOppositeSides(FiguraVec3 linePoint1, FiguraVec3 linePoint2, FiguraVec3 point1, FiguraVec3 point2) {
+        t1.set(linePoint1);
+        t2.set(linePoint2);
+        t3.set(point1);
+        t4.set(point2);
+
+        t2.subtract(t1);
+        t3.subtract(t1);
+        t4.subtract(t1);
+
+        t1.set(t2);
+        t1.cross(t3);
+        t2.cross(t4);
+        return t1.dot(t2) < 0;
     }
 
     private void parseAnimations(List<CompoundTag> list, Gson gson, BlockbenchModel.Animation[] animations) {

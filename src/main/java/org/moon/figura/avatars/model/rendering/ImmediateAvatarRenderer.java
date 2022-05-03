@@ -36,8 +36,13 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         for (int i = 0; i < texturesList.size(); i++) {
             CompoundTag tag = texturesList.getCompound(i);
             String name = tag.getString("name");
-            byte[] mainData = tag.getByteArray("default");
-            mainData = mainData.length == 0 ? null : mainData;
+            byte[] mainData = tag.getByteArray("main");
+            if (mainData.length == 0)
+                mainData = tag.getByteArray("normal");
+            if (mainData.length == 0)
+                mainData = tag.getByteArray("default");
+            if (mainData.length == 0)
+                mainData = null;
             byte[] emissiveData = tag.getByteArray("emissive");
             emissiveData = emissiveData.length == 0 ? null : emissiveData;
             textureSets.add(new FiguraTextureSet(name, mainData, emissiveData));
