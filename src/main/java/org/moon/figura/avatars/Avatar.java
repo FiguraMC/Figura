@@ -39,7 +39,7 @@ public class Avatar {
 
     //Runtime data
     public final UUID owner;
-    private final AvatarRenderer renderer;
+    public final AvatarRenderer renderer;
     public FiguraLuaState luaState;
 
     private int tickLimit, renderLimit;

@@ -11,6 +11,8 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
+import org.moon.figura.avatars.Avatar;
+import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.ui.UIHelper;
 
@@ -63,10 +65,15 @@ public class InteractableEntity extends AbstractWidget {
 
         //render entity
         if (entity != null) {
+            Avatar avatar = AvatarManager.getAvatar(entity);
+            avatar.renderer.inWorld = false;
+
             stack.pushPose();
             stack.translate(0f, 0f, -400f);
             UIHelper.drawEntity(x + modelX, y + modelY, scale + scaledValue, angleX, angleY, entity, stack);
             stack.popPose();
+
+            avatar.renderer.inWorld = true;
         } else {
             stack.pushPose();
 

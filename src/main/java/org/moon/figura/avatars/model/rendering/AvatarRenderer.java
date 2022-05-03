@@ -30,6 +30,8 @@ public abstract class AvatarRenderer {
     public int light;
     public MultiBufferSource bufferSource;
 
+    public boolean inWorld = true;
+
     public AvatarRenderer(Avatar avatar, CompoundTag avatarCompound) {
         this.avatar = avatar;
     }

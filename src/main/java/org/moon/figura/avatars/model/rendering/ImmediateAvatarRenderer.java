@@ -60,19 +60,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
     @Override
     public void render() {
         //Push position and normal matrices
-        PartCustomization customization = PartCustomization.of();
-        FiguraMat4 posMat = entityToWorldMatrix(entity, tickDelta);
-        FiguraMat4 worldToView = worldToViewMatrix();
-        posMat.multiply(worldToView);
-        FiguraMat3 normalMat = posMat.deaugmented();
-
-        customization.positionMatrix.set(posMat);
-        customization.normalMatrix.set(normalMat);
-
-        //Free matrices after use
-        posMat.free();
-        worldToView.free();
-        normalMat.free();
+        PartCustomization customization = inWorld ? transformToWorld() : transformToUI();
 
         //Iterate and setup each buffer
         for (FiguraImmediateBuffer buffer : buffers) {
@@ -95,7 +83,41 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
             buffer.popCustomization();
             buffer.checkEmpty();
         }
+    }
 
+    private PartCustomization transformToWorld() {
+        PartCustomization customization = PartCustomization.of();
+        FiguraMat4 posMat = entityToWorldMatrix(entity, tickDelta);
+        FiguraMat4 worldToView = worldToViewMatrix();
+        posMat.multiply(worldToView);
+        FiguraMat3 normalMat = posMat.deaugmented();
+
+        customization.positionMatrix.set(posMat);
+        customization.normalMatrix.set(normalMat);
+
+        //Free matrices after use
+        posMat.free();
+        worldToView.free();
+        normalMat.free();
+
+        return customization;
+    }
+
+    private PartCustomization transformToUI() {
+        PartCustomization customization = PartCustomization.of();
+
+        customization.positionMatrix.rotateY(180 - entity.getYRot());
+        customization.normalMatrix.rotateY(180 - entity.getYRot());
+
+        FiguraMat4 posMat = FiguraMat4.fromMatrix4f(matrices.last().pose());
+        FiguraMat3 normalMat = FiguraMat3.fromMatrix3f(matrices.last().normal());
+
+        customization.positionMatrix.multiply(posMat);
+        customization.normalMatrix.multiply(normalMat);
+
+        posMat.free();
+        normalMat.free();
+        return customization;
     }
 
     private void renderPart(FiguraModelPart part) {
