@@ -48,6 +48,17 @@ public class AvatarManager {
         }
     }
 
+    //reloads an avatar
+    public static void reloadAvatar(UUID id) {
+        //first clear the avatar
+        clearAvatar(id);
+
+        //only non uploaded local needs to be manually reloaded
+        //other ones will be fetched from backend on further request
+        if (!localUploaded && id.compareTo(FiguraMod.getLocalPlayerUUID()) == 0)
+            loadLocalAvatar(LocalAvatarLoader.getLastLoadedPath());
+    }
+
     public static void tickLoadedAvatars() {
         for (Avatar avatar : LOADED_AVATARS.values())
             avatar.onTick();

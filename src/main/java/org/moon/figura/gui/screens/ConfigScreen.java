@@ -14,14 +14,21 @@ public class ConfigScreen extends AbstractPanelScreen {
     public static final Component TITLE = new FiguraText("gui.panels.title.settings");
 
     private ConfigList list;
+    private final boolean panelState;
 
     public ConfigScreen(Screen parentScreen) {
+        this(parentScreen, true);
+    }
+
+    public ConfigScreen(Screen parentScreen, boolean enablePanels) {
         super(parentScreen, TITLE, 4);
+        this.panelState = enablePanels;
     }
 
     @Override
     protected void init() {
         super.init();
+        super.panels.setActive(panelState);
 
         // -- bottom buttons -- //
 

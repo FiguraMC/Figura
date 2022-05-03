@@ -206,4 +206,8 @@ public class LocalAvatarLoader {
     public static CompoundTag getLastLoadedNbt() {
         return lastLoadedNbt;
     }
+
+    public static Path getLastLoadedPath() {
+        return lastLoadedPath;
+    }
 }

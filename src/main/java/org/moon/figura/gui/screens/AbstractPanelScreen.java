@@ -18,6 +18,7 @@ public abstract class AbstractPanelScreen extends Screen {
     //variables
     protected final Screen parentScreen;
     private final int index;
+    public PanelSelectorWidget panels;
 
     //overlays
     public ContextMenu contextMenu;
@@ -34,7 +35,8 @@ public abstract class AbstractPanelScreen extends Screen {
         super.init();
 
         //add panel selector
-        this.addRenderableWidget(new PanelSelectorWidget(parentScreen, 0, 0, width, index));
+        panels = new PanelSelectorWidget(parentScreen, 0, 0, width, index);
+        this.addRenderableWidget(panels);
     }
 
     @Override
@@ -73,8 +75,13 @@ public abstract class AbstractPanelScreen extends Screen {
 
     public void renderOverlays(PoseStack stack, int mouseX, int mouseY, float delta) {
         //render context
-        if (contextMenu != null && contextMenu.isVisible())
+        if (contextMenu != null && contextMenu.isVisible()) {
+            //translate the stack here because of nested contexts
+            stack.pushPose();
+            stack.translate(0f, 0f, 500f);
             contextMenu.render(stack, mouseX, mouseY, delta);
+            stack.popPose();
+        }
         //render tooltip
         else if (tooltip != null)
             UIHelper.renderTooltip(stack, tooltip, mouseX, mouseY);
@@ -100,7 +107,7 @@ public abstract class AbstractPanelScreen extends Screen {
 
             //then try to click on the parent container and suppress it
             //let the parent handle the context menu visibility
-            if (!clicked && contextMenu.parent.mouseClicked(mouseX, mouseY, button))
+            if (!clicked && contextMenu.parent != null && contextMenu.parent.mouseClicked(mouseX, mouseY, button))
                 return true;
 
             //otherwise, remove visibility and suppress the click only if we clicked on the context

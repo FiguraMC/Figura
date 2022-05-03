@@ -93,6 +93,7 @@ public class TrustList extends AbstractList {
 
         private static final Component INFINITY = new FiguraText("trust.infinity");
 
+        private final TrustContainer container;
         private final TrustContainer.Trust trust;
         private final TrustList parent;
         private Component value;
@@ -100,6 +101,7 @@ public class TrustList extends AbstractList {
 
         public TrustSlider(int x, int y, int width, int height, TrustContainer container, TrustContainer.Trust trust, TrustList parent) {
             super(x, y, width, height, Mth.clamp(container.get(trust) / (trust.max + 1f), 0f, 1f));
+            this.container = container;
             this.trust = trust;
             this.parent = parent;
             this.value = trust.checkInfinity(container.get(trust)) ? INFINITY : new TextComponent(String.valueOf(container.get(trust)));
@@ -134,6 +136,21 @@ public class TrustList extends AbstractList {
 
             font.draw(stack, name, x + 1, y + 1, 0xFFFFFF);
             font.draw(stack, value, x + width - font.width(value) - 1, y + 1, ChatFormatting.AQUA.getColor());
+        }
+
+        @Override
+        public boolean mouseClicked(double mouseX, double mouseY, int button) {
+            if (!this.active || !this.isHoveredOrFocused() || !this.isMouseOver(mouseX, mouseY))
+                return false;
+
+            if (button == 1) {
+                container.getSettings().remove(trust);
+                this.parent.updateList(container);
+                playDownSound(Minecraft.getInstance().getSoundManager());
+                return true;
+            }
+
+            return super.mouseClicked(mouseX, mouseY, button);
         }
 
         @Override
@@ -189,6 +206,21 @@ public class TrustList extends AbstractList {
 
             font.draw(stack, name, x + 1, y + 1, 0xFFFFFF);
             font.draw(stack, value, x + width - font.width(value) - 1, y + 1, ChatFormatting.AQUA.getColor());
+        }
+
+        @Override
+        public boolean mouseClicked(double mouseX, double mouseY, int button) {
+            if (!this.active || !this.isHoveredOrFocused() || !this.isMouseOver(mouseX, mouseY))
+                return false;
+
+            if (button == 1) {
+                container.getSettings().remove(trust);
+                this.parent.updateList(container);
+                playDownSound(Minecraft.getInstance().getSoundManager());
+                return true;
+            }
+
+            return super.mouseClicked(mouseX, mouseY, button);
         }
 
         @Override

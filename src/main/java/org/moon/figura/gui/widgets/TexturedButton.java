@@ -52,15 +52,15 @@ public class TexturedButton extends Button {
     @Override
     public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
         if (this.visible) {
-            //set hovered
-            this.isHovered = this.isMouseOver(mouseX, mouseY);
-
             //render hovered background
              if (this.active && this.isHoveredOrFocused())
                 UIHelper.fillRounded(stack, x, y, width, height, 0x60FFFFFF);
 
              //render button
             this.renderButton(stack, mouseX, mouseY, delta);
+
+            //update hovered
+            this.setHovered(this.isMouseOver(mouseX, mouseY));
         }
     }
 
@@ -130,5 +130,9 @@ public class TexturedButton extends Button {
 
     public void shouldHaveBackground(boolean bool) {
         this.hasBackground = bool;
+    }
+
+    public void setHovered(boolean hovered) {
+        this.isHovered = hovered;
     }
 }

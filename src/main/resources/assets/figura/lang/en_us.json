@@ -30,7 +30,6 @@
   "figura.gui.on": "ON",
   "figura.gui.off": "OFF",
   "figura.gui.search": "Search...",
-  "figura.gui.set_trust": "Set Trust Level",
   "figura.gui.name": "Name",
   "figura.gui.author": "Author",
   "figura.gui.size": "Size (kb)",
@@ -39,6 +38,10 @@
   "figura.gui.back": "Back",
   "figura.gui.cancel": "Cancel",
   "figura.gui.help.tooltip": "Help",
+
+
+  "figura.gui.context.set_trust": "Set Trust",
+  "figura.gui.context.reload": "Reload Avatar",
 
 
   "figura.gui.panels.title.profile": "Profile",

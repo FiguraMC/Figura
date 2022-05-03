@@ -145,7 +145,7 @@ public class PlayerList extends AbstractList {
             missingPlayers.remove(id);
 
             players.computeIfAbsent(id, uuid1 -> {
-                PlayerElement entry = new PlayerElement(name, TrustManager.get(id), skin, this);
+                PlayerElement entry = new PlayerElement(name, TrustManager.get(id), skin, id, this);
 
                 trustList.add(entry);
                 children.add(entry);

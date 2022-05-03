@@ -9,10 +9,11 @@ targetCompatibility = JavaVersion.VERSION_17
 archivesBaseName = project.archives_base_name
 version = project.mod_version + "+" + project.minecraft_version
 group = project.maven_group
-fabric_version = project.fabric_version + "+" + project.minecraft_version
+fabric_api = project.fabric_api + "+" + project.minecraft_version
 
 repositories {
 	maven { url 'https://jitpack.io' }
+	maven { url 'https://maven.terraformersmc.com/releases/' }
 }
 
 dependencies {
@@ -22,13 +23,12 @@ dependencies {
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
 	// Libraries
-	include(implementation('com.github.Moonlight-MC:JNLua:-SNAPSHOT'))
-	include(implementation('org.java-websocket:Java-WebSocket:1.5.2'))
+	include(implementation("com.github.Moonlight-MC:JNLua:${project.jnlua}"))
+	include(implementation("org.java-websocket:Java-WebSocket:${project.websocket}"))
 
-	// Fabric API modules
-	modImplementation(fabricApi.module("fabric-key-binding-api-v1", fabric_version))
-	modImplementation(fabricApi.module("fabric-resource-loader-v0", fabric_version))
-	modImplementation(fabricApi.module("fabric-lifecycle-events-v1", fabric_version))
+	// Mods
+	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api}"
+	modImplementation "com.terraformersmc:modmenu:${project.modmenu}"
 }
 
 processResources {

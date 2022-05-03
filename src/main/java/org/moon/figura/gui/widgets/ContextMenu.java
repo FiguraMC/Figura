@@ -9,8 +9,11 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.utils.FiguraIdentifier;
+import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.ui.UIHelper;
 
 import java.util.ArrayList;
@@ -21,7 +24,7 @@ public class ContextMenu extends AbstractContainerElement {
     public static final ResourceLocation BACKGROUND = new FiguraIdentifier("textures/gui/context.png");
 
     private final List<AbstractWidget> entries = new ArrayList<>();
-    public final GuiEventListener parent;
+    public GuiEventListener parent;
 
     public ContextMenu(GuiEventListener parent, int minWidth) {
         super(0, 0, minWidth, 2);
@@ -33,14 +36,15 @@ public class ContextMenu extends AbstractContainerElement {
         this(parent, 0);
     }
 
+    public ContextMenu() {
+        this(null);
+    }
+
     @Override
     public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
         if (!isVisible()) return;
 
         //render
-        stack.pushPose();
-        stack.translate(0f, 0f, 500f);
-
         UIHelper.renderSliced(stack, x, y, width, height, BACKGROUND);
 
         int y = this.y + 1;
@@ -54,20 +58,32 @@ public class ContextMenu extends AbstractContainerElement {
             stripe = !stripe;
 
             entry.render(stack, mouseX, mouseY, delta);
-        }
 
-        stack.popPose();
+            if (entry instanceof TabButton tab) {
+                tab.context.setVisible(tab.isHoveredOrFocused() || (tab.context.isVisible() && tab.context.isMouseOver(mouseX, mouseY)));
+                if (tab.context.isVisible()) {
+                    tab.setHovered(true);
+                    tab.context.render(stack, mouseX, mouseY, delta);
+                }
+            }
+        }
     }
 
     public void addAction(Component name, Button.OnPress action) {
-        ContextButton button = new ContextButton(x, y + this.height, name, action);
-        button.shouldHaveBackground(false);
-
-        addElement(button);
+        addElement(new ContextButton(x, y + this.height, name, action));
     }
 
-    public void addDivisor(Component name) {
-        addElement(new ContextDivisor(x, y + this.height, name));
+    public void addDivisor() {
+        addElement(new ContextDivisor(x, y + this.height));
+    }
+
+    public void addTab(Component name, ContextMenu context) {
+        //context
+        this.children.add(context);
+
+        //button
+        ContextButton button = new TabButton(x, y + this.height, name, context);
+        addElement(button);
     }
 
     private void addElement(AbstractWidget element) {
@@ -105,6 +121,9 @@ public class ContextMenu extends AbstractContainerElement {
             button.x = x + 1;
             button.y = heigth;
             heigth += button.getHeight();
+
+            if (button instanceof TabButton tab)
+                tab.context.setPos(tab.x + tab.getWidth(), tab.y);
         }
     }
 
@@ -116,6 +135,7 @@ public class ContextMenu extends AbstractContainerElement {
 
         public ContextButton(int x, int y, Component text, OnPress pressAction) {
             super(x, y, 0, 16, text, null, pressAction);
+            this.shouldHaveBackground(false);
         }
 
         @Override
@@ -132,33 +152,59 @@ public class ContextMenu extends AbstractContainerElement {
 
     public static class ContextDivisor extends AbstractWidget {
 
-        public ContextDivisor(int x, int y, Component message) {
-            super(x, y, 0, 24, message);
+        public ContextDivisor(int x, int y) {
+            super(x, y, 0, 9, TextComponent.EMPTY);
         }
 
         @Override
         public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
-            Font font = Minecraft.getInstance().font;
-
-            //draw lines
-            int y = this.y + this.height / 2 + font.lineHeight / 2 + 2;
-            fill(stack, this.x + 4, y, this.x + this.width - 8, y + 1, 0xFF000000 + ChatFormatting.DARK_GRAY.getColor());
-
-            //draw text
-            font.drawShadow(
-                    stack, getMessage(),
-                    this.x + this.width / 2f - font.width(getMessage()) / 2f, this.y + this.height / 2f - font.lineHeight / 2f - 1,
-                    0xFFFFFF
-            );
+            //draw line
+            fill(stack, this.x + 4, y + 4, this.x + this.width - 4, y + 5, 0xFF000000 + ChatFormatting.DARK_GRAY.getColor());
         }
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            return isMouseOver(mouseX, mouseY);
+            return false;
         }
 
         @Override
         public void updateNarration(NarrationElementOutput narrationElementOutput) {
+        }
+    }
+
+    public static class TabButton extends ContextButton {
+
+        private final ContextMenu context;
+
+        public TabButton(int x, int y, Component text, ContextMenu context) {
+            super(x, y, text, button -> {});
+            this.context = context;
+        }
+
+        @Override
+        public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
+            //super
+            super.renderButton(stack, mouseX, mouseY, delta);
+
+            //draw arrow
+            Font font = Minecraft.getInstance().font;
+            Component arrow = new TextComponent(">").setStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT));
+            font.drawShadow(
+                    stack, arrow,
+                    this.x + this.width - font.width(arrow) - 3, this.y + this.height / 2f - font.lineHeight / 2f,
+                    (!this.active ? ChatFormatting.DARK_GRAY : ChatFormatting.WHITE).getColor()
+            );
+        }
+
+        //suppress events
+        @Override
+        public boolean mouseClicked(double mouseX, double mouseY, int button) {
+            return false;
+        }
+
+        @Override
+        public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+            return false;
         }
     }
 }

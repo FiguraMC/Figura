@@ -7,6 +7,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
+import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.gui.widgets.ContextMenu;
 import org.moon.figura.gui.widgets.lists.PlayerList;
 import org.moon.figura.trust.TrustContainer;
@@ -16,39 +17,44 @@ import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.ui.UIHelper;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class PlayerElement extends AbstractTrustElement {
 
     private final String name;
     private final ResourceLocation skin;
+    private final UUID owner;
     private final ContextMenu context;
 
     private static final ResourceLocation BACKGROUND = new FiguraIdentifier("textures/gui/player_trust.png");
 
-    public PlayerElement(String name, TrustContainer trust, ResourceLocation skin, PlayerList parent) {
+    public PlayerElement(String name, TrustContainer trust, ResourceLocation skin, UUID owner, PlayerList parent) {
         super(40, trust, parent);
         this.name = name;
         this.skin = skin;
+        this.owner = owner;
         this.context = new ContextMenu(this);
 
         generateContext();
     }
 
     private void generateContext() {
-        //header
-        context.addDivisor(new FiguraText("gui.set_trust"));
+        //reload
+        context.addAction(new FiguraText("gui.context.reload"), button -> AvatarManager.reloadAvatar(owner));
 
-        //actions
+        //trust
+        ContextMenu trustContext = new ContextMenu();
         ArrayList<ResourceLocation> groupList = new ArrayList<>(TrustManager.GROUPS.keySet());
         for (int i = 0; i < (TrustManager.isLocal(trust) ? groupList.size() : groupList.size() - 1); i++) {
             ResourceLocation parentID = groupList.get(i);
             TrustContainer container = TrustManager.get(parentID);
-            context.addAction(container.getGroupName().copy().setStyle(Style.EMPTY.withColor(container.getGroupColor())), button -> {
+            trustContext.addAction(container.getGroupName().copy().setStyle(Style.EMPTY.withColor(container.getGroupColor())), button -> {
                 trust.setParent(parentID);
                 if (parent.getSelectedEntry() == this)
                     parent.parent.updateTrustData(trust);
             });
         }
+        context.addTab(new FiguraText("gui.context.set_trust"), trustContext);
     }
 
     @Override
