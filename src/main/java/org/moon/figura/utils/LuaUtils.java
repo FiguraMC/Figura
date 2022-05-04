@@ -31,7 +31,7 @@ public class LuaUtils {
 
     public static void nullCheck(String methodName, String parameterName, Object arg) throws LuaRuntimeException {
         if (arg == null)
-            throw new LuaRuntimeException("Cannot call " + methodName + " with nil value for parameter \"" + parameterName + "\".");
+            throw new LuaRuntimeException("Cannot call " + methodName + " with nil value for parameter \"" + parameterName + "\"!");
     }
 
     /**

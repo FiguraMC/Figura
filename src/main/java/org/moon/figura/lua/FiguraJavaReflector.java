@@ -13,6 +13,7 @@ public class FiguraJavaReflector implements JavaReflector {
 
     public static final FiguraJavaReflector INSTANCE = new FiguraJavaReflector();
     private static final JavaFunction defaultIndexFunction = DefaultJavaReflector.getInstance().getMetamethod(Metamethod.INDEX);
+    private static final JavaFunction defaultNewIndexFunction = DefaultJavaReflector.getInstance().getMetamethod(Metamethod.NEWINDEX);
     private static final JavaFunction defaultToStringFunction = DefaultJavaReflector.getInstance().getMetamethod(Metamethod.TOSTRING);
 
     //Contains a cache of whitelisted methods and fields for every class.

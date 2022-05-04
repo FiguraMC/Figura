@@ -1,6 +1,7 @@
 package org.moon.figura;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.command.v1.ClientCommandManager;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
@@ -8,6 +9,7 @@ import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.avatars.providers.LocalAvatarFetcher;
 import org.moon.figura.avatars.providers.LocalAvatarLoader;
 import org.moon.figura.config.ConfigManager;
+import org.moon.figura.lua.docs.FiguraDocsManager;
 import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.LuaUtils;
 import org.slf4j.Logger;
@@ -34,6 +36,7 @@ public class FiguraMod implements ClientModInitializer {
         //init config and trust
         ConfigManager.init();
         TrustManager.init();
+        FiguraDocsManager.initialize(ClientCommandManager.DISPATCHER);
 
         //register events
         ClientTickEvents.END_CLIENT_TICK.register(FiguraMod::tick);

@@ -1,6 +1,6 @@
 package org.moon.figura.lua.api;
 
-import org.moon.figura.lua.LuaFunction;
+import org.moon.figura.lua.types.LuaFunction;
 import org.moon.figura.lua.LuaWhitelist;
 import org.terasology.jnlua.LuaRuntimeException;
 

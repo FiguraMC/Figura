@@ -1,6 +1,8 @@
 package org.moon.figura.lua;
 
 import org.moon.figura.FiguraMod;
+import org.moon.figura.lua.types.LuaFunction;
+import org.moon.figura.lua.types.LuaTable;
 import org.terasology.jnlua.Converter;
 import org.terasology.jnlua.DefaultConverter;
 import org.terasology.jnlua.LuaState;

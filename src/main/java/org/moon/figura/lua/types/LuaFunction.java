@@ -1,5 +1,6 @@
-package org.moon.figura.lua;
+package org.moon.figura.lua.types;
 
+import org.moon.figura.lua.FiguraLuaState;
 import org.terasology.jnlua.LuaState;
 import org.terasology.jnlua.LuaValueProxy;
 
