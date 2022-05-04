@@ -1,6 +1,10 @@
 package org.moon.figura.avatars.model;
 
 import com.google.common.collect.ImmutableMap;
+import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.PlayerModel;
+import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.nbt.ByteTag;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -9,6 +13,7 @@ import net.minecraft.util.Mth;
 import org.moon.figura.avatars.model.rendering.FiguraImmediateBuffer;
 import org.moon.figura.avatars.model.rendering.ImmediateAvatarRenderer;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
+import org.moon.figura.avatars.vanilla.VanillaPartOffsetManager;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
@@ -29,6 +34,7 @@ public class FiguraModelPart {
     @LuaWhitelist
     public final String name;
     public final PartCustomization customization;
+    public ParentType parentType = ParentType.None;
     public final int index;
 
     private final Map<String, FiguraModelPart> childCache = new HashMap<>();
@@ -41,10 +47,84 @@ public class FiguraModelPart {
             avatarRenderer.pushFaces(i, facesByTexture.get(i));
     }
 
+    public void applyVanillaTransforms(EntityModel<?> vanillaModel) {
+        //TODO: REMOVE THIS IS FOR TEST
+        if (vanillaModel instanceof HumanoidModel<?> humanoid) {
+            applyVanillaTransform(vanillaModel,
+            switch (name) {
+                case "HEAD" -> ParentType.Head;
+                case "TORSO" -> ParentType.Torso;
+                case "LEFT_ARM" -> ParentType.LeftArm;
+                case "RIGHT_ARM" -> ParentType.RightArm;
+                case "LEFT_LEG" -> ParentType.LeftLeg;
+                case "RIGHT_LEG" -> ParentType.RightLeg;
+                default -> null;
+            },
+            switch (name) {
+                case "HEAD" -> humanoid.head;
+                case "TORSO" -> humanoid.body;
+                case "LEFT_ARM" -> humanoid.leftArm;
+                case "RIGHT_ARM" -> humanoid.rightArm;
+                case "LEFT_LEG" -> humanoid.leftLeg;
+                case "RIGHT_LEG" -> humanoid.rightLeg;
+                default -> null;
+            });
+        }
+
+        if (true) return;
+
+        if (vanillaModel instanceof HumanoidModel<?> humanoid) {
+            applyVanillaTransform(vanillaModel, parentType, switch (parentType) {
+                case Head -> humanoid.head;
+                case Torso -> humanoid.body;
+                case LeftArm -> humanoid.leftArm;
+                case RightArm -> humanoid.rightArm;
+                case LeftLeg -> humanoid.leftLeg;
+                case RightLeg -> humanoid.rightLeg;
+                default -> null;
+            });
+        }
+    }
+
+    public void applyVanillaTransform(EntityModel<?> vanillaModel, ParentType parentType, ModelPart part) {
+        if (part == null)
+            return;
+
+        FiguraVec3 defaultPivot = VanillaPartOffsetManager.getVanillaOffset(vanillaModel, parentType);
+        FiguraVec3 currentPivot = FiguraVec3.of(part.x, part.y, part.z);
+        defaultPivot.subtract(currentPivot);
+        defaultPivot.multiply(1, 1, -1);
+
+        customization.setBonusPivot(defaultPivot);
+        customization.setBonusPos(defaultPivot);
+
+        //customization.setBonusPivot(pivot);
+        customization.setBonusRot(Math.toDegrees(-part.xRot), Math.toDegrees(-part.yRot), Math.toDegrees(part.zRot));
+
+        currentPivot.free();
+        defaultPivot.free();
+    }
+
+    public void resetVanillaTransforms() {
+        customization.setBonusPivot(0, 0, 0);
+        customization.setBonusPos(0, 0, 0);
+        customization.setBonusRot(0, 0, 0);
+    }
+
     public void clean() {
         customization.free();
         for (FiguraModelPart child : children)
             child.clean();
+    }
+
+    public enum ParentType {
+        None,
+        Head,
+        LeftArm,
+        RightArm,
+        LeftLeg,
+        RightLeg,
+        Torso
     }
 
     //-- LUA BUSINESS --//

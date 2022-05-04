@@ -1,6 +1,7 @@
 package org.moon.figura.avatars;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -76,13 +77,14 @@ public class Avatar {
             tryCall(luaState.events.tick, tickLimit);
     }
 
-    public void onRender(Entity entity, float yaw, float delta, PoseStack matrices, MultiBufferSource bufferSource, int light) {
+    public void onRender(Entity entity, float yaw, float delta, PoseStack matrices, MultiBufferSource bufferSource, int light, EntityModel<?> model) {
         renderer.entity = entity;
         renderer.yaw = yaw;
         renderer.tickDelta = delta;
         renderer.matrices = matrices;
         renderer.bufferSource = bufferSource;
         renderer.light = light;
+        renderer.vanillaModel = model;
         if (luaState != null)
             tryCall(luaState.events.render, renderLimit, delta);
         renderer.render();

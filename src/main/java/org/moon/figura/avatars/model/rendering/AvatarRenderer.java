@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Matrix3f;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
@@ -29,6 +30,7 @@ public abstract class AvatarRenderer {
     public PoseStack matrices;
     public int light;
     public MultiBufferSource bufferSource;
+    public EntityModel<?> vanillaModel;
 
     public boolean inWorld = true;
 
@@ -55,6 +57,15 @@ public abstract class AvatarRenderer {
         FiguraMat4 result = FiguraMat4.createYRotationMatrix(180 - yaw);
         result.translate(e.getPosition(delta));
         return result;
+    }
+
+    protected static double getYawOffsetRot(Entity e, float delta) {
+        double yaw;
+        if (e instanceof LivingEntity)
+            yaw = Mth.lerp(delta, ((LivingEntity) e).yBodyRotO, ((LivingEntity) e).yBodyRot);
+        else
+            yaw = e.getViewYRot(Minecraft.getInstance().getFrameTime());
+        return 180 - yaw;
     }
 
     /**

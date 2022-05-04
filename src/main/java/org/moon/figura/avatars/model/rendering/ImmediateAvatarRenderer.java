@@ -24,7 +24,11 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         //Vertex data, read model parts
         List<FiguraImmediateBuffer.Builder> builders = new ArrayList<>();
         root = FiguraModelPart.read(avatarCompound.getCompound("models"), builders);
-        double scale = 1.0 / 16 * 0.95;
+
+        //TODO: THIS IS FOR TEST
+        //root.parentType = FiguraModelPart.ParentType.LeftArm;
+
+        double scale = 1.0 / 16;
         root.customization.setScale(scale, scale, scale);
         root.customization.needsMatrixRecalculation = true;
         root.customization.setPrimaryRenderType("CUTOUT_NO_CULL");
@@ -86,18 +90,36 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
     }
 
     private PartCustomization transformToWorld() {
+//        PartCustomization customization = PartCustomization.of();
+//        FiguraMat4 posMat = entityToWorldMatrix(entity, tickDelta);
+//        FiguraMat4 worldToView = worldToViewMatrix();
+//        posMat.multiply(worldToView);
+//        FiguraMat3 normalMat = posMat.deaugmented();
+//
+//        customization.positionMatrix.set(posMat);
+//        customization.normalMatrix.set(normalMat);
+//
+//        //Free matrices after use
+//        posMat.free();
+//        worldToView.free();
+//        normalMat.free();
+
         PartCustomization customization = PartCustomization.of();
-        FiguraMat4 posMat = entityToWorldMatrix(entity, tickDelta);
-        FiguraMat4 worldToView = worldToViewMatrix();
-        posMat.multiply(worldToView);
-        FiguraMat3 normalMat = posMat.deaugmented();
 
-        customization.positionMatrix.set(posMat);
-        customization.normalMatrix.set(normalMat);
+        double yawOffsetRot = getYawOffsetRot(entity, tickDelta);
+        //customization.positionMatrix.rotateY(yawOffsetRot);
+        //customization.normalMatrix.rotateY(yawOffsetRot);
+        customization.positionMatrix.rotateZ(180);
+        customization.positionMatrix.translate(0, 1.5, 0);
+        customization.normalMatrix.rotateZ(180);
 
-        //Free matrices after use
+        FiguraMat4 posMat = FiguraMat4.fromMatrix4f(matrices.last().pose());
+        FiguraMat3 normalMat = FiguraMat3.fromMatrix3f(matrices.last().normal());
+
+        customization.positionMatrix.multiply(posMat);
+        customization.normalMatrix.multiply(normalMat);
+
         posMat.free();
-        worldToView.free();
         normalMat.free();
 
         return customization;
@@ -121,6 +143,8 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
     }
 
     private void renderPart(FiguraModelPart part) {
+        part.applyVanillaTransforms(vanillaModel);
+
         for (FiguraImmediateBuffer buffer : buffers)
             part.customization.pushToBuffer(buffer);
 
@@ -130,6 +154,8 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
         for (FiguraImmediateBuffer buffer : buffers)
             buffer.popCustomization();
+
+        part.resetVanillaTransforms();
     }
 
     public void pushFaces(int texIndex, int faceCount) {

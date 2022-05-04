@@ -29,6 +29,10 @@ public class PartCustomization implements CachedType {
     private FiguraVec3 scale = FiguraVec3.of(1, 1, 1);
     private FiguraVec3 pivot = FiguraVec3.of();
 
+    //The "bonus" values are for vanilla part scaling.
+    private FiguraVec3 bonusPivot = FiguraVec3.of();
+    private FiguraVec3 bonusPos = FiguraVec3.of();
+    private FiguraVec3 bonusRot = FiguraVec3.of();
 
     /**
      * Recalculates the matrix if necessary.
@@ -36,18 +40,18 @@ public class PartCustomization implements CachedType {
     public void recalculate() {
         if (needsMatrixRecalculation) {
             positionMatrix.reset();
-            positionMatrix.translate(-pivot.x, -pivot.y, -pivot.z);
+            positionMatrix.translate(-pivot.x - bonusPivot.x, -pivot.y - bonusPivot.y, -pivot.z - bonusPivot.z);
             positionMatrix.scale(scale.x, scale.y, scale.z);
-            positionMatrix.translate(position.x, position.y, position.z);
+            positionMatrix.translate(position.x + bonusPos.x, position.y + bonusPos.y, position.z + bonusPos.z);
 
             if (isMesh) {
-                positionMatrix.rotateZ(rotation.z);
-                positionMatrix.rotateY(rotation.y);
-                positionMatrix.rotateX(rotation.x);
+                positionMatrix.rotateZ(rotation.z + bonusRot.z);
+                positionMatrix.rotateY(rotation.y + bonusRot.y);
+                positionMatrix.rotateX(rotation.x + bonusRot.x);
             } else
-                positionMatrix.rotateZYX(rotation.x, rotation.y, rotation.z);
+                positionMatrix.rotateZYX(rotation.x + bonusRot.x, rotation.y + bonusRot.y, rotation.z + bonusRot.z);
 
-            positionMatrix.translate(pivot.x, pivot.y, pivot.z);
+            positionMatrix.translate(pivot.x+bonusPivot.x, pivot.y+bonusPivot.y, pivot.z+bonusPivot.z);
 
             normalMatrix.reset();
             double c = Math.cbrt(scale.x * scale.y * scale.z);
@@ -58,11 +62,11 @@ public class PartCustomization implements CachedType {
             );
 
             if (isMesh) {
-                normalMatrix.rotateZ(rotation.z);
-                normalMatrix.rotateY(rotation.y);
-                normalMatrix.rotateX(rotation.x);
+                normalMatrix.rotateZ(rotation.z + bonusRot.z);
+                normalMatrix.rotateY(rotation.y + bonusRot.y);
+                normalMatrix.rotateX(rotation.x + bonusRot.x);
             } else
-                normalMatrix.rotateZYX(rotation.x, rotation.y, rotation.z);
+                normalMatrix.rotateZYX(rotation.x + bonusRot.x, rotation.y + bonusRot.y, rotation.z + bonusRot.z);
 
             needsMatrixRecalculation = false;
         }
@@ -108,6 +112,28 @@ public class PartCustomization implements CachedType {
     public FiguraVec3 getPivot() {
         return FiguraVec3.of(pivot.x, pivot.y, pivot.z);
     }
+    public void setBonusPivot(FiguraVec3 bonusPivot) {
+        setBonusPivot(bonusPivot.x, bonusPivot.y, bonusPivot.z);
+    }
+    public void setBonusPivot(double x, double y, double z) {
+        bonusPivot.set(x, y, z);
+        needsMatrixRecalculation = true;
+    }
+    public void setBonusPos(FiguraVec3 bonusPos) {
+        setBonusPos(bonusPos.x, bonusPos.y, bonusPos.z);
+    }
+    public void setBonusPos(double x, double y, double z) {
+        bonusPos.set(x, y, z);
+        needsMatrixRecalculation = true;
+    }
+    public void setBonusRot(FiguraVec3 bonusRot) {
+        setBonusRot(bonusRot.x, bonusRot.y, bonusRot.z);
+    }
+    public void setBonusRot(double x, double y, double z) {
+        bonusRot.set(x, y, z);
+        needsMatrixRecalculation = true;
+    }
+
 
     public void setMatrix(FiguraMat4 matrix) {
         positionMatrix.set(matrix);
@@ -160,6 +186,9 @@ public class PartCustomization implements CachedType {
         rotation = FiguraVec3.of();
         scale = FiguraVec3.of(1, 1, 1);
         pivot = FiguraVec3.of();
+        bonusPivot = FiguraVec3.of();
+        bonusPos = FiguraVec3.of();
+        bonusRot = FiguraVec3.of();
         needsMatrixRecalculation = false;
         visible = true;
     }
@@ -170,6 +199,9 @@ public class PartCustomization implements CachedType {
         rotation.free();
         scale.free();
         pivot.free();
+        bonusPivot.free();
+        bonusPos.free();
+        bonusRot.free();
     }
     public static PartCustomization of() {
         return CACHE.getFresh();
@@ -194,6 +226,9 @@ public class PartCustomization implements CachedType {
             to.setRot(from.rotation);
             to.setScale(from.scale);
             to.setPivot(from.pivot);
+            to.setBonusPivot(from.bonusPivot);
+            to.setBonusPos(from.bonusPos);
+            to.setBonusRot(from.bonusRot);
             to.needsMatrixRecalculation = from.needsMatrixRecalculation;
             to.setPrimaryRenderType(from.primaryRenderType);
             to.setSecondaryRenderType(from.secondaryRenderType);
