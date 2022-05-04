@@ -17,7 +17,7 @@ public abstract class AbstractPanelScreen extends Screen {
 
     //variables
     protected final Screen parentScreen;
-    private final int index;
+    protected final int index;
     public PanelSelectorWidget panels;
 
     //overlays
@@ -35,8 +35,7 @@ public abstract class AbstractPanelScreen extends Screen {
         super.init();
 
         //add panel selector
-        panels = new PanelSelectorWidget(parentScreen, 0, 0, width, index);
-        this.addRenderableWidget(panels);
+        this.addRenderableWidget(panels = new PanelSelectorWidget(parentScreen, 0, 0, width, index));
     }
 
     @Override
@@ -137,6 +136,12 @@ public abstract class AbstractPanelScreen extends Screen {
         if (contextMenu != null)
             contextMenu.setVisible(false);
 
-        return super.mouseScrolled(mouseX, mouseY, amount);
+        //fix scrolling targeting only one child
+        boolean ret = false;
+        for (GuiEventListener child : this.children()) {
+            if (child.isMouseOver(mouseX, mouseY))
+                ret = ret || child.mouseScrolled(mouseX, mouseY, amount);
+        }
+        return ret;
     }
 }

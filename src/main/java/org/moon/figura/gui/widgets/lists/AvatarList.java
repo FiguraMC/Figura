@@ -23,8 +23,7 @@ public class AvatarList extends AbstractList {
     public AvatarList(int x, int y, int width, int height) {
         super(x, y, width, height);
 
-        textField = new TextField(x + 4, y + 4, width - 8, 22, new FiguraText("gui.search"), s -> filter = s);
-        children.add(textField);
+        children.add(textField = new TextField(x + 4, y + 4, width - 8, 22, new FiguraText("gui.search"), s -> filter = s));
 
         //scrollbar
         this.scrollBar.y = y + 30;

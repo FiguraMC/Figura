@@ -1,15 +1,14 @@
 package org.moon.figura.gui.widgets;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.moon.figura.utils.FiguraIdentifier;
+import org.moon.figura.utils.ui.UIHelper;
 
 public class ScrollBarWidget extends AbstractWidget {
 
@@ -122,8 +121,7 @@ public class ScrollBarWidget extends AbstractWidget {
     //render the scroll
     @Override
     public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderTexture(0, SCROLLBAR_TEXTURE);
+        UIHelper.setupTexture(SCROLLBAR_TEXTURE);
 
         //render bar
         blit(stack, x, y, width, 1, 10f, isScrolling ? 20f : 0f, 10, 1, 20, 40);

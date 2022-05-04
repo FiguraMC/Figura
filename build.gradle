@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '0.10-SNAPSHOT'
+	id 'fabric-loom' version '0.12-SNAPSHOT'
 	id 'maven-publish'
 }
 
@@ -17,30 +17,37 @@ repositories {
 }
 
 dependencies {
-	// Minecraft
-	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	// Fabric
+	minecraft "com.mojang:minecraft:$minecraft_version"
 	mappings loom.officialMojangMappings()
-	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	modImplementation "net.fabricmc:fabric-loader:$loader_version"
 
 	// Libraries
-	include(implementation("com.github.Moonlight-MC:JNLua:${project.jnlua}"))
-	include(implementation("org.java-websocket:Java-WebSocket:${project.websocket}"))
+	include(implementation("com.github.Moonlight-MC:JNLua:$jnlua"))
+	include(implementation("org.java-websocket:Java-WebSocket:$websocket"))
 
 	// Mods
-	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api}"
-	modImplementation "com.terraformersmc:modmenu:${project.modmenu}"
+	modImplementation "net.fabricmc.fabric-api:fabric-api:$fabric_api"
+	modImplementation "com.terraformersmc:modmenu:$modmenu"
 }
 
 processResources {
-	inputs.property "version", project.version
+	Map<String, Object> properties = new HashMap<>()
 
+	properties.put("version", version)
+	properties.put("java_version", sourceCompatibility)
+	properties.put("minecraft_version", minecraft_version)
+	properties.put("loader_version", loader_version)
+	properties.put("fabric_api", fabric_api)
+
+	properties.forEach((k, v) -> inputs.property(k, v.toString()))
 	filesMatching("fabric.mod.json") {
-		expand "version": project.version
+		expand properties
 	}
 }
 
 tasks.withType(JavaCompile).configureEach {
-	it.options.release = Integer.parseInt(sourceCompatibility)
+	it.options.release = Integer.parseInt(sourceCompatibility.toString())
 }
 
 java {
@@ -49,7 +56,7 @@ java {
 
 jar {
 	from("LICENSE") {
-		rename { "${it}_${project.archivesBaseName}"}
+		rename { "${it}_$archivesBaseName"}
 	}
 }
 

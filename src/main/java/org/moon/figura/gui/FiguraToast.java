@@ -1,6 +1,5 @@
 package org.moon.figura.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -40,7 +39,7 @@ public class FiguraToast implements Toast {
             this.justUpdated = false;
         }
 
-        RenderSystem.setShaderTexture(0, type.texture);
+        UIHelper.setupTexture(type.texture);
         UIHelper.blit(stack, 0, 0, 0f, (int) (timeDiff / 208 % type.frames + 1) * 32f, width(), height(), 160, 32 * type.frames);
 
         Font font = component.getMinecraft().font;

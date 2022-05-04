@@ -30,7 +30,7 @@ public class EnumElement extends AbstractConfigElement {
         names = config.enumList;
 
         //toggle button
-        button = new ParentedButton(0, 0, 90, 20, names.get((int) this.config.configValue % this.names.size()), this, button -> {
+        children.add(0, button = new ParentedButton(0, 0, 90, 20, names.get((int) this.config.configValue % this.names.size()), this, button -> {
             this.context.setVisible(!this.context.isVisible());
 
             if (context.isVisible()) {
@@ -45,15 +45,14 @@ public class EnumElement extends AbstractConfigElement {
 
                 //draw arrow
                 Font font = Minecraft.getInstance().font;
-                Component arrow = new TextComponent(context.isVisible() ? "^" : "V").setStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT));
+                Component arrow = new TextComponent(context.isVisible() ? "V" : "^").setStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT));
                 font.drawShadow(
                         stack, arrow,
                         this.x + this.width - font.width(arrow) - 3, this.y + this.height / 2f - font.lineHeight / 2f,
                         (!this.active ? ChatFormatting.DARK_GRAY : ChatFormatting.WHITE).getColor()
                 );
             }
-        };
-        children.add(0, button);
+        });
 
         //context menu
         context = new ContextMenu(button, button.getWidth());

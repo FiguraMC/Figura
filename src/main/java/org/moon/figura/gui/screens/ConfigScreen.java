@@ -46,8 +46,7 @@ public class ConfigScreen extends AbstractPanelScreen {
         // -- config list -- //
 
         int width = Math.min(this.width - 8, 420);
-        list = new ConfigList((this.width - width) / 2, 28, width, height - 56);
-        this.addRenderableWidget(list);
+        this.addRenderableWidget(list = new ConfigList((this.width - width) / 2, 28, width, height - 56));
     }
 
     @Override

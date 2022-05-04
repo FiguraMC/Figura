@@ -36,11 +36,10 @@ public class InputElement extends AbstractConfigElement {
 
         //overwrite reset button to update the text field
         children.remove(resetButton);
-        resetButton = new ParentedButton(x + width - 60, y, 60, 20, new TranslatableComponent("controls.reset"), this, button -> {
+        children.add(resetButton = new ParentedButton(x + width - 60, y, 60, 20, new TranslatableComponent("controls.reset"), this, button -> {
             config.configValue = config.defaultValue;
             updateTextFieldText(formatText(config.configValue));
-        });
-        children.add(resetButton);
+        }));
     }
 
     @Override

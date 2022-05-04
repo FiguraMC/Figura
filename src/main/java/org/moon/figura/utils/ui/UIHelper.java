@@ -22,6 +22,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
+import org.moon.figura.avatars.Avatar;
+import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.gui.screens.AbstractPanelScreen;
 import org.moon.figura.gui.widgets.ContextMenu;
 import org.moon.figura.utils.FiguraIdentifier;
@@ -88,9 +90,11 @@ public class UIHelper extends GuiComponent {
     }
 
     public static void drawEntity(int x, int y, float scale, float pitch, float yaw, LivingEntity entity, PoseStack stack) {
+        Avatar avatar = AvatarManager.getAvatar(entity);
+
         //apply matrix transformers
         stack.pushPose();
-        stack.translate(x, y, 0d);
+        stack.translate(x, y, 0f);
         stack.scale(scale, scale, scale);
         stack.last().pose().multiply(Matrix4f.createScaleMatrix(1f, 1f, -1f)); //Scale ONLY THE POSITIONS! Inverted normals don't work for whatever reason
 
@@ -117,6 +121,7 @@ public class UIHelper extends GuiComponent {
         entity.setInvisible(false);
         UIHelper.forceNameplate = true;
         UIHelper.forceNoFire = true;
+        avatar.renderer.inWorld = false;
 
         //set up lighting
         Lighting.setupForFlatItems();
@@ -147,15 +152,28 @@ public class UIHelper extends GuiComponent {
         entity.setInvisible(invisible);
         UIHelper.forceNameplate = false;
         UIHelper.forceNoFire = false;
+        avatar.renderer.inWorld = true;
 
         //pop matrix
         stack.popPose();
         Lighting.setupFor3DItems();
     }
 
-    public static void renderBackgroundTexture(ResourceLocation texture, int x, int y, int width, int height, float textureWidth, float textureHeight) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+    public static void setupTexture(ResourceLocation texture) {
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
         RenderSystem.setShaderTexture(0, texture);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+    }
+
+    public static void renderTexture(PoseStack stack, int x, int y, int width, int height, ResourceLocation texture) {
+        setupTexture(texture);
+        blit(stack, x, y, width, height, 0f, 0f, 1, 1, 1, 1);
+    }
+
+    public static void renderBackgroundTexture(ResourceLocation texture, int x, int y, int width, int height, float textureWidth, float textureHeight) {
+        setupTexture(texture);
 
         Tesselator tessellator = Tesselator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuilder();
@@ -183,53 +201,41 @@ public class UIHelper extends GuiComponent {
     }
 
     public static void renderSliced(PoseStack stack, int x, int y, int width, int height, ResourceLocation texture) {
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.setShaderTexture(0, texture);
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+        setupTexture(texture);
 
         Tesselator tessellator = Tesselator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuilder();
         bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
 
         //top left
-        renderSlice(stack.last().pose(), bufferBuilder, x, y, 3, 3, 0f, 0f, 9, 9);
+        sliceVertex(stack.last().pose(), bufferBuilder, x, y, 3, 3, 0f, 0f, 9, 9);
         //top middle
-        renderSlice(stack.last().pose(), bufferBuilder, x + 3, y, width - 6, 3, 3f, 0f, 9, 9);
+        sliceVertex(stack.last().pose(), bufferBuilder, x + 3, y, width - 6, 3, 3f, 0f, 9, 9);
         //top right
-        renderSlice(stack.last().pose(), bufferBuilder, x + width - 3, y, 3, 3, 6f, 0f, 9, 9);
+        sliceVertex(stack.last().pose(), bufferBuilder, x + width - 3, y, 3, 3, 6f, 0f, 9, 9);
 
         //middle left
-        renderSlice(stack.last().pose(), bufferBuilder, x, y + 3, 3, height - 6, 0f, 3f, 9, 9);
+        sliceVertex(stack.last().pose(), bufferBuilder, x, y + 3, 3, height - 6, 0f, 3f, 9, 9);
         //middle middle
-        renderSlice(stack.last().pose(), bufferBuilder, x + 3, y + 3, width - 6, height - 6, 3f, 3f, 9, 9);
+        sliceVertex(stack.last().pose(), bufferBuilder, x + 3, y + 3, width - 6, height - 6, 3f, 3f, 9, 9);
         //middle right
-        renderSlice(stack.last().pose(), bufferBuilder, x + width - 3, y + 3, 3, height - 6, 6f, 3f, 9, 9);
+        sliceVertex(stack.last().pose(), bufferBuilder, x + width - 3, y + 3, 3, height - 6, 6f, 3f, 9, 9);
 
         //bottom left
-        renderSlice(stack.last().pose(), bufferBuilder, x, y + height - 3, 3, 3, 0f, 6f, 9, 9);
+        sliceVertex(stack.last().pose(), bufferBuilder, x, y + height - 3, 3, 3, 0f, 6f, 9, 9);
         //bottom middle
-        renderSlice(stack.last().pose(), bufferBuilder, x + 3, y + height - 3, width - 6, 3, 3f, 6f, 9, 9);
+        sliceVertex(stack.last().pose(), bufferBuilder, x + 3, y + height - 3, width - 6, 3, 3f, 6f, 9, 9);
         //bottom right
-        renderSlice(stack.last().pose(), bufferBuilder, x + width - 3, y + height - 3, 3, 3, 6f, 6f, 9, 9);
+        sliceVertex(stack.last().pose(), bufferBuilder, x + width - 3, y + height - 3, 3, 3, 6f, 6f, 9, 9);
 
         tessellator.end();
     }
 
-    public static void renderSlice(Matrix4f matrix, BufferBuilder bufferBuilder, int x, int y, int width, int height, float u, float v, int texHeight, int texWidth) {
-        bufferBuilder.vertex(matrix, x, y, 0f)
-                .uv(u / texWidth, v / texHeight)
-                .endVertex();
-        bufferBuilder.vertex(matrix, x, y + height, 0f)
-                .uv(u / texWidth, (v + 3) / texHeight)
-                .endVertex();
-        bufferBuilder.vertex(matrix, x + width, y + height, 0f)
-                .uv((u + 3) / texWidth, (v + 3) / texHeight)
-                .endVertex();
-        bufferBuilder.vertex(matrix, x + width, y, 0f)
-                .uv((u + 3) / texWidth, v / texHeight)
-                .endVertex();
+    public static void sliceVertex(Matrix4f matrix, BufferBuilder bufferBuilder, int x, int y, int width, int height, float u, float v, int texWidth, int texHeight) {
+        bufferBuilder.vertex(matrix, x, y, 0f).uv(u / texWidth, v / texHeight).endVertex();
+        bufferBuilder.vertex(matrix, x, y + height, 0f).uv(u / texWidth, (v + 3) / texHeight).endVertex();
+        bufferBuilder.vertex(matrix, x + width, y + height, 0f).uv((u + 3) / texWidth, (v + 3) / texHeight).endVertex();
+        bufferBuilder.vertex(matrix, x + width, y, 0f).uv((u + 3) / texWidth, v / texHeight).endVertex();
     }
 
     public static void setupScissor(int x, int y, int width, int height) {

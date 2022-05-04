@@ -38,7 +38,7 @@ public class TrustScreen extends AbstractPanelScreen {
 
     private TrustList trustList;
     private SwitchButton expandButton;
-
+    private TexturedButton back;
     private TexturedButton resetButton;
 
     // -- widget logic -- //
@@ -54,14 +54,22 @@ public class TrustScreen extends AbstractPanelScreen {
     protected void init() {
         super.init();
 
-        int listWidth = Math.min(this.width / 2 - 6, 208);
+        int middle = this.width / 2;
+        int listWidth = Math.min(middle - 6, 208);
         int lineHeight =  Minecraft.getInstance().font.lineHeight;
 
+        double guiScale = this.minecraft.getWindow().getGuiScale();
+        double screenScale = Math.min(this.width, this.height) / 1018d;
+        int modelSize = Math.min((int) ((192 / guiScale) * (screenScale * guiScale)), 96);
+
+        int entitySize = (int) Math.min(height - 95 - lineHeight * 1.5, listWidth);
+        int entityX = Math.max(middle + (listWidth - entitySize) / 2 + 1, middle + 2);
+
         //entity widget
-        entityWidget = new InteractableEntity(width / 2 + 2, 28, listWidth, (int) Math.min(height - 95 - lineHeight * 1.5, listWidth), (int) (height * 0.25f), -15f, 30f, Minecraft.getInstance().player);
+        entityWidget = new InteractableEntity(entityX, 28, entitySize, entitySize, modelSize, -15f, 30f, Minecraft.getInstance().player, this);
 
         //trust slider and list
-        slider = new SliderWidget(width / 2 + 2, (int) (entityWidget.y + entityWidget.getHeight() + lineHeight * 1.5 + 20), listWidth, 11, 1f, 5) {
+        slider = new SliderWidget(middle + 2, (int) (entityWidget.y + entityWidget.height + lineHeight * 1.5 + 20), listWidth, 11, 1f, 5) {
             @Override
             public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
                 super.renderButton(stack, mouseX, mouseY, delta);
@@ -77,13 +85,12 @@ public class TrustScreen extends AbstractPanelScreen {
                 stack.popPose();
             }
         };
-        trustList = new TrustList(width / 2 + 2, height, listWidth, height - 64);
+        trustList = new TrustList(middle + 2, height, listWidth, height - 64);
 
         // -- left -- //
 
         //player list
-        playerList = new PlayerList(width / 2 - listWidth - 2, 28, listWidth, height - 32, this);
-        addRenderableWidget(playerList);
+        addRenderableWidget(playerList = new PlayerList(middle - listWidth - 2, 28, listWidth, height - 32, this));
 
         // -- right -- //
 
@@ -95,13 +102,19 @@ public class TrustScreen extends AbstractPanelScreen {
         //add slider
         addRenderableWidget(slider);
 
+        //back button
+        addRenderableWidget(back = new TexturedButton(middle + 2, height - 24, listWidth - 24, 20, new FiguraText("gui.back"), null,
+                bx -> this.minecraft.setScreen(parentScreen)
+        ));
+
         //expand button
-        expandButton = new SwitchButton(slider.x + slider.getWidth() / 2 - 10, height - 32, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/expand.png"), 40, 40, new FiguraText("gui.trust.expand_trust.tooltip"), btn -> {
+        addRenderableWidget(expandButton = new SwitchButton( middle + listWidth - 18, height - 24, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/expand_up.png"), 40, 40, new FiguraText("gui.trust.expand_trust.tooltip"), btn -> {
             boolean expanded = expandButton.isToggled();
 
             //hide widgets
-            entityWidget.visible = !expanded;
+            entityWidget.setVisible(!expanded);
             slider.visible = !expanded;
+            back.visible = !expanded;
 
             //update expand button
             expandButton.setUV(expanded ? 20 : 0, 0);
@@ -109,11 +122,10 @@ public class TrustScreen extends AbstractPanelScreen {
 
             //set reset button activeness
             resetButton.active = expanded;
-        });
-        addRenderableWidget(expandButton);
+        }));
 
         //reset all button
-        resetButton = new TexturedButton(width / 2 + 2, height, 60, 20, new FiguraText("gui.trust.reset"), null, btn -> {
+        addRenderableWidget(resetButton = new TexturedButton(middle + 2, height, 60, 20, new FiguraText("gui.trust.reset"), null, btn -> {
             //clear trust
             TrustContainer trust = playerList.getSelectedEntry().getTrust();
             trust.getSettings().clear();
@@ -124,8 +136,7 @@ public class TrustScreen extends AbstractPanelScreen {
                 UIHelper.renderSliced(stack, x, y, width, height, UIHelper.OUTLINE);
                 super.renderButton(stack, mouseX, mouseY, delta);
             }
-        };
-        addRenderableWidget(resetButton);
+        });
 
         //add trust list
         addRenderableWidget(trustList);
@@ -148,13 +159,13 @@ public class TrustScreen extends AbstractPanelScreen {
         //expand animation
         float lerpDelta = (float) (1f - Math.pow(0.6f, delta));
 
-        listYPrecise = Mth.lerp(lerpDelta, listYPrecise, expandButton.isToggled() ? 60f : height);
+        listYPrecise = Mth.lerp(lerpDelta, listYPrecise, expandButton.isToggled() ? 50f : height);
         this.trustList.y = (int) listYPrecise;
 
-        expandYPrecise = Mth.lerp(lerpDelta, expandYPrecise, listYPrecise - 28f);
+        expandYPrecise = Mth.lerp(lerpDelta, expandYPrecise, listYPrecise - 24f);
         this.expandButton.y = (int) expandYPrecise;
 
-        resetYPrecise = Mth.lerp(lerpDelta, resetYPrecise, expandButton.isToggled() ? 38f : height);
+        resetYPrecise = Mth.lerp(lerpDelta, resetYPrecise, expandButton.isToggled() ? listYPrecise - 22f : height);
         this.resetButton.y = (int) resetYPrecise;
 
         //render

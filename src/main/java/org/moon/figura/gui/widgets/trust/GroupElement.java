@@ -1,6 +1,5 @@
 package org.moon.figura.gui.widgets.trust;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -39,7 +38,7 @@ public class GroupElement extends AbstractTrustElement {
         }
 
         //background
-        RenderSystem.setShaderTexture(0, BACKGROUND);
+        UIHelper.setupTexture(BACKGROUND);
         blit(stack, x, y, width, height, 0f, enabled ? 20f : 0f, 174, 20, 174, 40);
 
         //name

@@ -75,11 +75,10 @@ public class PlayerElement extends AbstractTrustElement {
         }
 
         //background
-        RenderSystem.setShaderTexture(0, BACKGROUND);
-        blit(stack, x, y, width, height, 0f, 0f, 174, 40, 174, 40);
+        UIHelper.renderTexture(stack, x, y, width, height, BACKGROUND);
 
         //head
-        RenderSystem.setShaderTexture(0, this.skin);
+        UIHelper.setupTexture(this.skin);
         blit(stack, x + 4, y + 4, 32, 32, 8f, 8f, 8, 8, 64, 64);
 
         //hat

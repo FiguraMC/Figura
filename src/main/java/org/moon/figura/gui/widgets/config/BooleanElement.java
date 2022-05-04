@@ -18,8 +18,7 @@ public class BooleanElement extends AbstractConfigElement {
         super(width, config, parent);
 
         //button
-        button = new ParentedButton(0, 0, 90, 20, (boolean) config.configValue ? ON : OFF, this, button -> config.configValue = !(boolean) config.configValue);
-        children.add(0, button);
+        children.add(0, button = new ParentedButton(0, 0, 90, 20, (boolean) config.configValue ? ON : OFF, this, button -> config.configValue = !(boolean) config.configValue));
     }
 
     @Override

@@ -73,6 +73,17 @@ public abstract class AbstractContainerElement extends AbstractContainerEventHan
     }
 
     @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+        //fix scrolling targeting only one child
+        boolean ret = false;
+        for (GuiEventListener child : this.children()) {
+            if (child.isMouseOver(mouseX, mouseY))
+                ret = ret || child.mouseScrolled(mouseX, mouseY, amount);
+        }
+        return ret;
+    }
+
+    @Override
     public void setVisible(boolean visible) {
         this.visible = visible;
 

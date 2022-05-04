@@ -34,9 +34,10 @@
   "figura.gui.author": "Author",
   "figura.gui.size": "Size (kb)",
   "figura.gui.complexity": "Complexity",
-
   "figura.gui.back": "Back",
   "figura.gui.cancel": "Cancel",
+  "figura.gui.expand": "Expand",
+  "figura.gui.minimise": "Minimise",
   "figura.gui.help.tooltip": "Help",
 
 
@@ -52,6 +53,7 @@
 
   "figura.gui.panels.title.sound": "Avatar Sounds",
   "figura.gui.panels.title.keybind": "Avatar Keybinds",
+  "figura.gui.panels.title.avatar": "Avatar Preview",
 
 
   "figura.gui.wardrobe.expand_wardrobe.tooltip": "Expand wardrobe list",

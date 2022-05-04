@@ -20,13 +20,11 @@ public class KeybindElement extends AbstractConfigElement {
         this.binding = config.keyBind;
 
         //toggle button
-        button = new ParentedButton(0, 0, 90, 20, this.binding.getTranslatedKeyMessage(), this, button -> parent.focusedBinding = binding);
-        children.add(0, button);
+        children.add(0, button = new ParentedButton(0, 0, 90, 20, this.binding.getTranslatedKeyMessage(), this, button -> parent.focusedBinding = binding));
 
         //overwrite reset button to update the keybind
         children.remove(resetButton);
-        resetButton = new ParentedButton(x + width - 60, y, 60, 20, new TranslatableComponent("controls.reset"), this, button -> binding.setKey(binding.getDefaultKey()));
-        children.add(resetButton);
+        children.add(resetButton = new ParentedButton(x + width - 60, y, 60, 20, new TranslatableComponent("controls.reset"), this, button -> binding.setKey(binding.getDefaultKey())));
     }
 
     @Override

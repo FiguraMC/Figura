@@ -1,8 +1,6 @@
 package org.moon.figura.gui.widgets;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.moon.figura.utils.FiguraIdentifier;
@@ -99,8 +97,7 @@ public class SliderWidget extends ScrollBarWidget {
 
     @Override
     public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderTexture(0, SLIDER_TEXTURE);
+        UIHelper.setupTexture(SLIDER_TEXTURE);
 
         //draw bar
         blit(stack, x, y + 3, width, 5, isScrolling ? 10f : 0f, 0f, 5, 5, 33, 16);

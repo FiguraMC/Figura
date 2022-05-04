@@ -47,11 +47,14 @@ public class WardrobeScreen extends AbstractPanelScreen {
 
         // -- middle -- //
 
-        InteractableEntity entity = new InteractableEntity(middle - modelBgSize / 2, this.height / 2 - modelBgSize / 2, modelBgSize, modelBgSize, modelSize, -15f, 30f, Minecraft.getInstance().player);
+        int entityX = middle - modelBgSize / 2;
+        int entityY = this.height / 2 - modelBgSize / 2;
+
+        InteractableEntity entity = new InteractableEntity(entityX, entityY, modelBgSize, modelBgSize, modelSize, -15f, 30f, Minecraft.getInstance().player, this);
         addRenderableWidget(entity);
 
-        int buttX = entity.x + entity.getWidth() / 2;
-        int buttY = entity.y + entity.getHeight() + 4;
+        int buttX = entity.x + entity.width / 2;
+        int buttY = entity.y + entity.height + 4;
 
         //upload
         addRenderableWidget(new TexturedButton(buttX - 48, buttY, 24, 24, 24, 0, 24, new FiguraIdentifier("textures/gui/upload.png"), 48, 48, new FiguraText("gui.wardrobe.upload.tooltip"), button -> {
@@ -68,7 +71,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
             FiguraToast.sendToast(new TextComponent("lol nope").setStyle(Style.EMPTY.withColor(0xFFADAD)), FiguraToast.ToastType.DEFAULT);
         }));
 
-        statusWidget = new StatusWidget(entity.x + entity.getWidth() - 64, 0, 64);
+        statusWidget = new StatusWidget(entity.x + entity.width - 64, 0, 64);
         statusWidget.y = entity.y - statusWidget.height - 4;
         addRenderableOnly(statusWidget);
 
@@ -117,8 +120,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
         addRenderableWidget(keybinds);
 
         //avatar metadata
-        avatarInfo = new AvatarInfoWidget(this.width - rightSide - 4, 64, rightSide);
-        addRenderableOnly(avatarInfo);
+        addRenderableOnly(avatarInfo = new AvatarInfoWidget(this.width - rightSide - 4, 64, rightSide));
     }
 
     @Override

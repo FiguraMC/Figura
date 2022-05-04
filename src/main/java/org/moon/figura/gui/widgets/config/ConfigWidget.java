@@ -112,7 +112,7 @@ public class ConfigWidget extends AbstractContainerElement {
             );
 
             //draw arrow
-            Component arrow = new TextComponent(this.toggled ? "^" : "V").setStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT));
+            Component arrow = new TextComponent(this.toggled ? "V" : "^").setStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT));
             font.drawShadow(
                     stack, arrow,
                     this.x + this.width - font.width(arrow) - 3, this.y + this.height / 2f - font.lineHeight / 2f,

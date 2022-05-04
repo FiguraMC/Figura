@@ -1,14 +1,13 @@
 package org.moon.figura.gui.widgets;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.moon.figura.utils.FiguraIdentifier;
+import org.moon.figura.utils.ui.UIHelper;
 
 public class SwitchButton extends TexturedButton {
 
@@ -64,8 +63,7 @@ public class SwitchButton extends TexturedButton {
 
     protected void renderDefaultTexture(PoseStack stack, float delta) {
         //set texture
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderTexture(0, SWITCH_TEXTURE);
+        UIHelper.setupTexture(SWITCH_TEXTURE);
 
         //render switch
         blit(stack, x + 5, y + 5, 20, 10, 0f, this.isHoveredOrFocused() ? 10f : 0f, 20, 10, 20, 40);

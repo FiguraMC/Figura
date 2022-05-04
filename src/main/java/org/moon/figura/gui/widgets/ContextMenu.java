@@ -26,6 +26,8 @@ public class ContextMenu extends AbstractContainerElement {
     private final List<AbstractWidget> entries = new ArrayList<>();
     public GuiEventListener parent;
 
+    private ContextMenu nestedContext;
+
     public ContextMenu(GuiEventListener parent, int minWidth) {
         super(0, 0, minWidth, 2);
         this.parent = parent;
@@ -47,30 +49,25 @@ public class ContextMenu extends AbstractContainerElement {
         //render
         UIHelper.renderSliced(stack, x, y, width, height, BACKGROUND);
 
-        int y = this.y + 1;
-        boolean stripe = false;
-        for (AbstractWidget entry : entries) {
-            if (entry instanceof ContextDivisor)
-                stripe = false;
+        for (int i = 0, y = this.y + 1; i < entries.size(); i++) {
+            int height = entries.get(i).getHeight();
 
-            if (stripe) UIHelper.fill(stack, x + 1, y, x + width - 1, y + entry.getHeight(), 0x22FFFFFF);
-            y += entry.getHeight();
-            stripe = !stripe;
+            if (i % 2 == 1)
+                UIHelper.fill(stack, x + 1, y, x + width - 1, y + height, 0x16FFFFFF);
+            entries.get(i).render(stack, mouseX, mouseY, delta);
 
-            entry.render(stack, mouseX, mouseY, delta);
+            y += height;
+        }
 
-            if (entry instanceof TabButton tab) {
-                tab.context.setVisible(tab.isHoveredOrFocused() || (tab.context.isVisible() && tab.context.isMouseOver(mouseX, mouseY)));
-                if (tab.context.isVisible()) {
-                    tab.setHovered(true);
-                    tab.context.render(stack, mouseX, mouseY, delta);
-                }
-            }
+        if (nestedContext != null) {
+            nestedContext.render(stack, mouseX, mouseY, delta);
+            if (nestedContext.parent instanceof TexturedButton button)
+                button.setHovered(true);
         }
     }
 
     public void addAction(Component name, Button.OnPress action) {
-        addElement(new ContextButton(x, y + this.height, name, action));
+        addElement(new ContextButton(x, y + this.height, name, this, action));
     }
 
     public void addDivisor() {
@@ -78,12 +75,13 @@ public class ContextMenu extends AbstractContainerElement {
     }
 
     public void addTab(Component name, ContextMenu context) {
-        //context
-        this.children.add(context);
-
         //button
-        ContextButton button = new TabButton(x, y + this.height, name, context);
+        ContextButton button = new TabButton(x, y + this.height, name, this, context);
         addElement(button);
+
+        //context
+        context.parent = button;
+        this.children.add(context);
     }
 
     private void addElement(AbstractWidget element) {
@@ -92,12 +90,25 @@ public class ContextMenu extends AbstractContainerElement {
         entries.add(element);
 
         //update sizes
-        this.width = Math.max(Minecraft.getInstance().font.width(element.getMessage()) + 8, width);
+        this.width = Math.max(element.getWidth(), width);
         this.height += element.getHeight();
 
         //fix buttons width
         for (AbstractWidget entry : entries)
             entry.setWidth(this.width - 2);
+    }
+
+    private void clearNest() {
+        if (this.nestedContext != null) {
+            this.nestedContext.clearNest();
+            this.nestedContext = null;
+        }
+    }
+
+    @Override
+    public void setVisible(boolean visible) {
+        super.setVisible(visible);
+        clearNest();
     }
 
     public void setPos(int x, int y) {
@@ -123,7 +134,7 @@ public class ContextMenu extends AbstractContainerElement {
             heigth += button.getHeight();
 
             if (button instanceof TabButton tab)
-                tab.context.setPos(tab.x + tab.getWidth(), tab.y);
+                tab.context.setPos(tab.x + tab.getWidth(), tab.y - 1);
         }
     }
 
@@ -131,11 +142,14 @@ public class ContextMenu extends AbstractContainerElement {
         return entries;
     }
 
-    public static class ContextButton extends TexturedButton {
+    private static class ContextButton extends TexturedButton {
 
-        public ContextButton(int x, int y, Component text, OnPress pressAction) {
-            super(x, y, 0, 16, text, null, pressAction);
+        protected final ContextMenu parent;
+
+        public ContextButton(int x, int y, Component text, ContextMenu parent, OnPress pressAction) {
+            super(x, y, Minecraft.getInstance().font.width(text) + 8, 16, text, null, pressAction);
             this.shouldHaveBackground(false);
+            this.parent = parent;
         }
 
         @Override
@@ -148,9 +162,16 @@ public class ContextMenu extends AbstractContainerElement {
                     (!this.active ? ChatFormatting.DARK_GRAY : ChatFormatting.WHITE).getColor()
             );
         }
+
+        @Override
+        public boolean isMouseOver(double mouseX, double mouseY) {
+            boolean ret = super.isMouseOver(mouseX, mouseY);
+            if (ret) parent.clearNest();
+            return ret;
+        }
     }
 
-    public static class ContextDivisor extends AbstractWidget {
+    private static class ContextDivisor extends AbstractWidget {
 
         public ContextDivisor(int x, int y) {
             super(x, y, 0, 9, TextComponent.EMPTY);
@@ -172,13 +193,16 @@ public class ContextMenu extends AbstractContainerElement {
         }
     }
 
-    public static class TabButton extends ContextButton {
+    private static class TabButton extends ContextButton {
 
+        private final static Component ARROW = new TextComponent(">").setStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT));
         private final ContextMenu context;
 
-        public TabButton(int x, int y, Component text, ContextMenu context) {
-            super(x, y, text, button -> {});
+        public TabButton(int x, int y, Component text, ContextMenu parent, ContextMenu context) {
+            super(x, y, text.copy().append(" ").append(ARROW), parent, button -> {});
+            this.setMessage(text);
             this.context = context;
+            this.context.setVisible(true);
         }
 
         @Override
@@ -188,23 +212,18 @@ public class ContextMenu extends AbstractContainerElement {
 
             //draw arrow
             Font font = Minecraft.getInstance().font;
-            Component arrow = new TextComponent(">").setStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT));
             font.drawShadow(
-                    stack, arrow,
-                    this.x + this.width - font.width(arrow) - 3, this.y + this.height / 2f - font.lineHeight / 2f,
+                    stack, ARROW,
+                    this.x + this.width - font.width(ARROW) - 3, this.y + this.height / 2f - font.lineHeight / 2f,
                     (!this.active ? ChatFormatting.DARK_GRAY : ChatFormatting.WHITE).getColor()
             );
         }
 
-        //suppress events
         @Override
-        public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            return false;
-        }
-
-        @Override
-        public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-            return false;
+        public boolean isMouseOver(double mouseX, double mouseY) {
+            boolean ret = super.isMouseOver(mouseX, mouseY);
+            if (ret) parent.nestedContext = context;
+            return ret;
         }
     }
 }

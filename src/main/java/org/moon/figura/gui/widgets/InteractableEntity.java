@@ -5,24 +5,23 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Quaternion;
 import com.mojang.math.Vector3f;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
-import org.moon.figura.avatars.Avatar;
-import org.moon.figura.avatars.AvatarManager;
+import org.moon.figura.gui.screens.AbstractPanelScreen;
+import org.moon.figura.gui.screens.AvatarScreen;
 import org.moon.figura.utils.FiguraIdentifier;
+import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.ui.UIHelper;
 
-public class InteractableEntity extends AbstractWidget {
+public class InteractableEntity extends AbstractContainerElement {
 
     public static final ResourceLocation UNKNOWN = new FiguraIdentifier("textures/gui/unknown.png");
+    public static final ResourceLocation BACKGROUND = new FiguraIdentifier("textures/gui/preview.png");
 
-    //fields
+    //properties
     private LivingEntity entity;
     private final float pitch, yaw, scale;
+    private SwitchButton button;
 
     //transformation data
 
@@ -42,8 +41,9 @@ public class InteractableEntity extends AbstractWidget {
     private float dragDeltaX, dragDeltaY;
     private float dragAnchorX, dragAnchorY;
 
-    public InteractableEntity(int x, int y, int width, int height, int scale, float pitch, float yaw, LivingEntity entity) {
-        super(x, y, width, height, TextComponent.EMPTY);
+    public InteractableEntity(int x, int y, int width, int height, int scale, float pitch, float yaw, LivingEntity entity, AbstractPanelScreen parentScreen) {
+        super(x, y, width, height);
+
         this.scale = scale;
         this.pitch = pitch;
         this.yaw = yaw;
@@ -53,27 +53,57 @@ public class InteractableEntity extends AbstractWidget {
         modelY = height / 2;
         angleX = pitch;
         angleY = yaw;
+
+        //button
+        children.add(button = new SwitchButton(
+                x + 4, y + 4, 16, 16,
+                0, 0, 16,
+                new FiguraIdentifier("textures/gui/expand.png"),
+                32, 32,
+                new FiguraText("gui.expand"),
+                bx -> {
+                    if (button.isToggled()) {
+                        //backup pos to fix model pos
+                        int oldX = this.x;
+                        int oldY = this.y;
+
+                        //set screen (also updates pos/size)
+                        Minecraft.getInstance().setScreen(new AvatarScreen(parentScreen, this));
+
+                        //update button
+                        button.x = this.x + 4;
+                        button.y = this.y + 28;
+                        button.setUV(16, 0);
+                        button.setTooltip(new FiguraText("gui.minimise"));
+
+                        //update entity
+                        this.modelX += oldX - this.x;
+                        this.modelY += oldY - this.y;
+                    } else {
+                        Minecraft.getInstance().setScreen(parentScreen);
+                        //no need to reset the widget since were not keeping this instance
+                    }
+                }));
     }
 
     @Override
-    public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
+    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
         //background
-        UIHelper.renderSliced(stack, x, y, width, height, UIHelper.OUTLINE);
+        if (!button.isToggled()) {
+            UIHelper.renderTexture(stack, x + 1, y + 1, width - 2, height - 2, BACKGROUND);
+            //border
+            UIHelper.fillOutline(stack, x, y, width, height, 0xFF404040);
+        }
 
         //scissors
         UIHelper.setupScissor(x + 1, y + 1, width - 2, height - 2);
 
         //render entity
         if (entity != null) {
-            Avatar avatar = AvatarManager.getAvatar(entity);
-            avatar.renderer.inWorld = false;
-
             stack.pushPose();
             stack.translate(0f, 0f, -400f);
             UIHelper.drawEntity(x + modelX, y + modelY, scale + scaledValue, angleX, angleY, entity, stack);
             stack.popPose();
-
-            avatar.renderer.inWorld = true;
         } else {
             stack.pushPose();
 
@@ -84,26 +114,29 @@ public class InteractableEntity extends AbstractWidget {
             stack.mulPose(Quaternion.fromXYZDegrees(new Vector3f(angleX - pitch, angleY - yaw, 0f)));
 
             //draw front
-            RenderSystem.setShaderTexture(0, UNKNOWN);
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
-            blit(stack, -24, -32, 48, 64, 0f, 0f, 48, 64, 48, 64);
+            UIHelper.renderTexture(stack, -24, -32, 48, 64, UNKNOWN);
 
             //draw back
             stack.pushPose();
             stack.mulPose(Vector3f.YP.rotationDegrees(180));
-            blit(stack, -24, -32, 48, 64, 0f, 0f, 48, 64, 48, 64);
+            UIHelper.renderTexture(stack, -24, -32, 48, 64, UNKNOWN);
             stack.popPose();
 
             stack.popPose();
         }
 
         RenderSystem.disableScissor();
+
+        super.render(stack, mouseX, mouseY, delta);
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (!this.isMouseOver(mouseX, mouseY))
+        if (!this.isVisible() || !this.isMouseOver(mouseX, mouseY))
             return false;
+
+        if (super.mouseClicked(mouseX, mouseY, button))
+            return true;
 
         switch (button) {
             //left click - rotate
@@ -217,11 +250,17 @@ public class InteractableEntity extends AbstractWidget {
             return true;
         }
 
-        return false;
+        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
     }
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+        if (!this.isVisible())
+            return false;
+
+        if (super.mouseScrolled(mouseX, mouseY, amount))
+            return true;
+
         //scroll - scale
 
         //set scale direction
@@ -239,14 +278,5 @@ public class InteractableEntity extends AbstractWidget {
 
     public void setEntity(LivingEntity entity) {
         this.entity = entity;
-    }
-
-    @Override
-    public void updateNarration(NarrationElementOutput output) {
-    }
-
-    @Override
-    public NarrationPriority narrationPriority() {
-        return NarrationPriority.NONE;
     }
 }
