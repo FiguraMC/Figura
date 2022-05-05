@@ -4,6 +4,9 @@ import com.mojang.math.Matrix4f;
 import net.minecraft.world.phys.Vec3;
 import org.lwjgl.BufferUtils;
 import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.lua.docs.LuaMethodDoc;
+import org.moon.figura.lua.docs.LuaFunctionOverload;
+import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec4;
 import org.moon.figura.utils.caching.CacheStack;
@@ -13,6 +16,10 @@ import org.moon.figura.utils.caching.CachedType;
 import java.nio.FloatBuffer;
 
 @LuaWhitelist
+@LuaTypeDoc(
+        name = "Matrix4",
+        description = "A matrix with 4 rows and 4 columns."
+)
 public class FiguraMat4 implements CachedType {
 
     //Values are named as v(ROW)(COLUMN), both 1-indexed like in actual math
@@ -785,27 +792,86 @@ public class FiguraMat4 implements CachedType {
     //----------------------------------------------------------------
 
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraMat4.class,
+                    argumentNames = "mat",
+                    returnType = Double.class
+            ),
+            description = "Calculates and returns the determinant of this matrix."
+    )
     public static double det(FiguraMat4 mat) {
         return mat.det();
     }
+
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraMat4.class,
+                    argumentNames = "mat",
+                    returnType = void.class
+            ),
+            description = "Inverts this matrix, changing the values inside."
+    )
     public static void invert(FiguraMat4 mat) {
         mat.invert();
     }
+
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraMat4.class,
+                    argumentNames = "mat",
+                    returnType = FiguraMat4.class
+            ),
+            description = "Calculates and returns the inverse of this matrix."
+    )
     public static FiguraMat4 getInverse(FiguraMat4 mat) {
         return mat.inverted();
     }
+
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraMat4.class,
+                    argumentNames = "mat",
+                    returnType = void.class
+            ),
+            description = "Transposes this matrix, changing the values inside."
+    )
     public static void transpose(FiguraMat4 mat) {
         mat.transpose();
     }
+
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraMat4.class,
+                    argumentNames = "mat",
+                    returnType = FiguraMat4.class
+            ),
+            description = "Calculates and returns the transpose of this matrix."
+    )
     public static FiguraMat4 getTranspose(FiguraMat4 mat) {
         return mat.transposed();
     }
 
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraMat4.class, FiguraVec3.class},
+                            argumentNames = {"mat", "vec"},
+                            returnType = void.class
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraMat4.class, Double.class, Double.class, Double.class},
+                            argumentNames = {"mat", "x", "y", "z"},
+                            returnType = void.class
+                    )
+            },
+            description = "Translates this matrix by the specified amount, changing the values inside."
+    )
     public static void translate(FiguraMat4 mat, Object arg1, Double y, Double z) {
         if (arg1 instanceof Double x) {
             if (y != null && z != null)
@@ -820,6 +886,22 @@ public class FiguraMat4 implements CachedType {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraMat4.class, FiguraVec3.class},
+                            argumentNames = {"mat", "vec"},
+                            returnType = void.class
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraMat4.class, Double.class, Double.class, Double.class},
+                            argumentNames = {"mat", "x", "y", "z"},
+                            returnType = void.class
+                    )
+            },
+            description = "Rotates this matrix by the specified amount, changing the values inside. " +
+                    "Angles are given in degrees, and the rotation order is ZYX."
+    )
     public static void rotate(FiguraMat4 mat, Object arg1, Double y, Double z) {
         if (arg1 instanceof Double x) {
             if (y != null && z != null)
@@ -834,6 +916,21 @@ public class FiguraMat4 implements CachedType {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraMat4.class, FiguraVec3.class},
+                            argumentNames = {"mat", "vec"},
+                            returnType = void.class
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraMat4.class, Double.class, Double.class, Double.class},
+                            argumentNames = {"mat", "x", "y", "z"},
+                            returnType = void.class
+                    )
+            },
+            description = "Scales this matrix by the specified amount, changing the values inside."
+    )
     public static void scale(FiguraMat4 mat, Object arg1, Double y, Double z) {
         if (arg1 instanceof Double x) {
             if (y != null && z != null)
@@ -848,6 +945,15 @@ public class FiguraMat4 implements CachedType {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = {FiguraMat4.class, Integer.class},
+                    argumentNames = {"mat", "col"},
+                    returnType = FiguraVec4.class
+            ),
+            description = "Gets a Vector4 representing the desired column of the matrix. 1-indexed, so " +
+                    "calling mat:getColumn(1) will return the first column of the matrix."
+    )
     public static FiguraVec4 getColumn(FiguraMat4 mat, Integer column) {
         if (column == null) throw new IllegalArgumentException("Cannot access nil column!");
         if (column <= 0 || column > 4) throw new IllegalArgumentException("Column " + column + " does not exist in a 4x4 matrix!");
@@ -859,7 +965,17 @@ public class FiguraMat4 implements CachedType {
             default -> null;
         };
     }
+
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = {FiguraMat4.class, Integer.class},
+                    argumentNames = {"mat", "row"},
+                    returnType = FiguraVec4.class
+            ),
+            description = "Gets a Vector4 representing the desired row of the matrix. 1-indexed, so " +
+                    "calling mat:getRow(1) will return the first row of the matrix."
+    )
     public static FiguraVec4 getRow(FiguraMat4 mat, Integer row) {
         if (row == null) throw new IllegalArgumentException("Cannot access nil row!");
         if (row <= 0 || row > 4) throw new IllegalArgumentException("Row " + row + " does not exist in a 4x4 matrix!");

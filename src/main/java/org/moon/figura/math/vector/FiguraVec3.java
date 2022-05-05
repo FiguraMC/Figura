@@ -3,7 +3,7 @@ package org.moon.figura.math.vector;
 import net.minecraft.core.BlockPos;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaMethodDoc;
-import org.moon.figura.lua.docs.LuaParameterList;
+import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.MathUtils;
 import org.moon.figura.math.matrix.FiguraMat3;
@@ -11,11 +11,11 @@ import org.moon.figura.utils.caching.CacheUtils;
 import org.moon.figura.utils.caching.CachedType;
 import org.terasology.jnlua.LuaRuntimeException;
 
+@LuaWhitelist
 @LuaTypeDoc(
         name = "Vector3",
         description = "A vector that holds 3 numbers."
 )
-@LuaWhitelist
 public class FiguraVec3 implements CachedType {
 
     @LuaWhitelist
@@ -374,56 +374,57 @@ public class FiguraVec3 implements CachedType {
     // REGULAR LUA METHODS
     //----------------------------------------------------------------
 
-    @LuaMethodDoc(
-            parameterTypeOptions = {
-                    @LuaParameterList(types = {FiguraVec3.class})
-            },
-            returnType = Double.class,
-            description =
-                    "Returns the length of this vector."
-    )
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraVec3.class,
+                    argumentNames = "vec",
+                    returnType = Double.class
+            ),
+            description = "Returns the length of this vector."
+    )
     public static double length(FiguraVec3 arg) {
         return Math.sqrt(lengthSquared(arg));
     }
 
-    @LuaMethodDoc(
-            parameterTypeOptions = {
-                    @LuaParameterList(types = {FiguraVec3.class})
-            },
-            returnType = Double.class,
-            description =
-                    "Returns the length of this vector squared. " +
-                    "Suitable when you only care about relative " +
-                    "lengths, because it avoids a square root."
-    )
+
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraVec3.class,
+                    argumentNames = "vec",
+                    returnType = Double.class
+            ),
+            description = "Returns the length of this vector squared. " +
+                            "Suitable when you only care about relative " +
+                            "lengths, because it avoids a square root."
+    )
     public static double lengthSquared(FiguraVec3 arg) {
         return arg.x*arg.x + arg.y*arg.y + arg.z*arg.z;
     }
 
-    @LuaMethodDoc(
-            parameterTypeOptions = {
-                    @LuaParameterList(types = {FiguraVec3.class, FiguraVec3.class})
-            },
-            returnType = Double.class,
-            description =
-                    "Returns the dot product of this vector and the other vector."
-    )
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = {FiguraVec3.class, FiguraVec3.class},
+                    argumentNames = {"vec1", "vec2"},
+                    returnType = Double.class
+            ),
+            description = "Returns the dot product of vec1 and vec2."
+    )
     public static double dot(FiguraVec3 arg1, FiguraVec3 arg2) {
         return arg1.dot(arg2);
     }
 
-    @LuaMethodDoc(
-            parameterTypeOptions = {
-                    @LuaParameterList(types = {FiguraVec3.class, FiguraVec3.class})
-            },
-            returnType = FiguraVec3.class,
-            description =
-                    "Returns the cross product of this vector and the other vector."
-    )
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = {FiguraVec3.class, FiguraVec3.class},
+                    argumentNames = {"vec1", "vec2"},
+                    returnType = FiguraVec3.class
+            ),
+            description = "Returns the cross product of vec1 and vec2."
+    )
     public static FiguraVec3 cross(FiguraVec3 arg1, FiguraVec3 arg2) {
         return arg1.crossed(arg2);
     }

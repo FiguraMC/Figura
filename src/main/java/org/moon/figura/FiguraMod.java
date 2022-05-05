@@ -36,7 +36,7 @@ public class FiguraMod implements ClientModInitializer {
         //init config and trust
         ConfigManager.init();
         TrustManager.init();
-        FiguraDocsManager.initialize(ClientCommandManager.DISPATCHER);
+        FiguraDocsManager.init(ClientCommandManager.DISPATCHER);
 
         //register events
         ClientTickEvents.END_CLIENT_TICK.register(FiguraMod::tick);

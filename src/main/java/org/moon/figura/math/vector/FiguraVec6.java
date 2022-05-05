@@ -1,12 +1,19 @@
 package org.moon.figura.math.vector;
 
 import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.lua.docs.LuaMethodDoc;
+import org.moon.figura.lua.docs.LuaFunctionOverload;
+import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.MathUtils;
 import org.moon.figura.utils.caching.CacheUtils;
 import org.moon.figura.utils.caching.CachedType;
 import org.terasology.jnlua.LuaRuntimeException;
 
 @LuaWhitelist
+@LuaTypeDoc(
+        name = "Vector6",
+        description = "A vector that holds 6 numbers."
+)
 public class FiguraVec6 implements CachedType {
 
     @LuaWhitelist
@@ -367,16 +374,42 @@ public class FiguraVec6 implements CachedType {
     //----------------------------------------------------------------
 
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraVec6.class,
+                    argumentNames = "vec",
+                    returnType = Double.class
+            ),
+            description = "Returns the length of this vector."
+    )
     public static double length(FiguraVec6 arg) {
         return Math.sqrt(lengthSquared(arg));
     }
 
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraVec6.class,
+                    argumentNames = "vec",
+                    returnType = Double.class
+            ),
+            description = "Returns the length of this vector squared. " +
+                            "Suitable when you only care about relative " +
+                            "lengths, because it avoids a square root."
+    )
     public static double lengthSquared(FiguraVec6 arg) {
         return arg.dot(arg);
     }
 
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = {FiguraVec6.class, FiguraVec6.class},
+                    argumentNames = {"vec1", "vec2"},
+                    returnType = Double.class
+            ),
+            description = "Returns the dot product of vec1 and vec2."
+    )
     public static double dot(FiguraVec6 arg1, FiguraVec6 arg2) {
         return arg1.dot(arg2);
     }

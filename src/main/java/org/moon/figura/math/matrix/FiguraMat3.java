@@ -3,7 +3,11 @@ package org.moon.figura.math.matrix;
 import com.mojang.math.Matrix3f;
 import org.lwjgl.BufferUtils;
 import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.lua.docs.LuaFunctionOverload;
+import org.moon.figura.lua.docs.LuaMethodDoc;
+import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.math.vector.FiguraVec4;
 import org.moon.figura.utils.caching.CacheStack;
 import org.moon.figura.utils.caching.CacheUtils;
 import org.moon.figura.utils.caching.CachedType;
@@ -11,6 +15,10 @@ import org.moon.figura.utils.caching.CachedType;
 import java.nio.FloatBuffer;
 
 @LuaWhitelist
+@LuaTypeDoc(
+        name = "Matrix3",
+        description = "A matrix with 3 rows and 3 columns."
+)
 public class FiguraMat3 implements CachedType {
 
     //Values are named as v(ROW)(COLUMN), both 1-indexed like in actual math
@@ -613,27 +621,87 @@ public class FiguraMat3 implements CachedType {
     //----------------------------------------------------------------
 
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraMat3.class,
+                    argumentNames = "mat",
+                    returnType = Double.class
+            ),
+            description = "Calculates and returns the determinant of this matrix."
+    )
     public static double det(FiguraMat3 mat) {
         return mat.det();
     }
+
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraMat3.class,
+                    argumentNames = "mat",
+                    returnType = void.class
+            ),
+            description = "Inverts this matrix, changing the values inside."
+    )
     public static void invert(FiguraMat3 mat) {
         mat.invert();
     }
+
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraMat3.class,
+                    argumentNames = "mat",
+                    returnType = FiguraMat3.class
+            ),
+            description = "Calculates and returns the inverse of this matrix."
+    )
     public static FiguraMat3 getInverse(FiguraMat3 mat) {
         return mat.inverted();
     }
+
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraMat3.class,
+                    argumentNames = "mat",
+                    returnType = void.class
+            ),
+            description = "Transposes this matrix, changing the values inside."
+    )
     public static void transpose(FiguraMat3 mat) {
         mat.transpose();
     }
+
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraMat3.class,
+                    argumentNames = "mat",
+                    returnType = FiguraMat3.class
+            ),
+            description = "Calculates and returns the transpose of this matrix."
+    )
     public static FiguraMat3 getTranspose(FiguraMat3 mat) {
         return mat.transposed();
     }
 
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraMat3.class, FiguraVec3.class},
+                            argumentNames = {"mat", "vec"},
+                            returnType = void.class
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraMat3.class, Double.class, Double.class, Double.class},
+                            argumentNames = {"mat", "x", "y", "z"},
+                            returnType = void.class
+                    )
+            },
+            description = "Rotates this matrix by the specified amount, changing the values inside. " +
+                    "Angles are given in degrees, and the rotation order is ZYX."
+    )
     public static void rotate(FiguraMat3 mat, Object arg1, Double y, Double z) {
         if (arg1 instanceof Double x) {
             if (y != null && z != null)
@@ -648,6 +716,21 @@ public class FiguraMat3 implements CachedType {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraMat3.class, FiguraVec3.class},
+                            argumentNames = {"mat", "vec"},
+                            returnType = void.class
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraMat3.class, Double.class, Double.class, Double.class},
+                            argumentNames = {"mat", "x", "y", "z"},
+                            returnType = void.class
+                    )
+            },
+            description = "Scales this matrix by the specified amount, changing the values inside."
+    )
     public static void scale(FiguraMat3 mat, Object arg1, Double y, Double z) {
         if (arg1 instanceof Double x) {
             if (y != null && z != null)
@@ -662,6 +745,15 @@ public class FiguraMat3 implements CachedType {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = {FiguraMat3.class, Integer.class},
+                    argumentNames = {"mat", "col"},
+                    returnType = FiguraVec3.class
+            ),
+            description = "Gets a Vector3 representing the desired column of the matrix. 1-indexed, so " +
+                    "calling mat:getColumn(1) will return the first column of the matrix."
+    )
     public static FiguraVec3 getColumn(FiguraMat3 mat, Integer column) {
         if (column == null) throw new IllegalArgumentException("Cannot access nil column!");
         if (column <= 0 || column > 3) throw new IllegalArgumentException("Column " + column + " does not exist in a 3x3 matrix!");
@@ -672,7 +764,17 @@ public class FiguraMat3 implements CachedType {
             default -> null;
         };
     }
+
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = {FiguraMat3.class, Integer.class},
+                    argumentNames = {"mat", "row"},
+                    returnType = FiguraVec3.class
+            ),
+            description = "Gets a Vector3 representing the desired row of the matrix. 1-indexed, so " +
+                    "calling mat:getRow(1) will return the first row of the matrix."
+    )
     public static FiguraVec3 getRow(FiguraMat3 mat, Integer row) {
         if (row == null) throw new IllegalArgumentException("Cannot access nil row!");
         if (row <= 0 || row > 3) throw new IllegalArgumentException("Row " + row + " does not exist in a 3x3 matrix!");

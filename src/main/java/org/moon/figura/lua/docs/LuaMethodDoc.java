@@ -11,21 +11,17 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface LuaMethodDoc {
+
     /**
      * Each ParameterList should indicate one set of variable types that can
      * be used to call this method in a valid way.
      */
-    LuaParameterList[] parameterTypeOptions();
+    LuaFunctionOverload[] overloads();
 
     /**
      * A description of what this method does with its parameters.
      */
     String description();
-
-    /**
-     * The return type of this method.
-     */
-    Class<?> returnType();
 
 }
 
