@@ -43,6 +43,8 @@
 
   "figura.gui.context.set_trust": "Set Trust",
   "figura.gui.context.reload": "Reload Avatar",
+  "figura.gui.context.copy_path": "Copy Path",
+  "figura.gui.context.open_folder": "Open Folder",
 
 
   "figura.gui.panels.title.profile": "Profile",
@@ -70,11 +72,11 @@
   "figura.gui.trust.minimize_trust.tooltip": "Minimize advanced trust menu",
 
 
-  "figura.gui.status.model": "Model",
-  "figura.gui.status.model.0": "none",
-  "figura.gui.status.model.1": "100kb+",
-  "figura.gui.status.model.2": "75kb+",
-  "figura.gui.status.model.3": "ok",
+  "figura.gui.status.size": "Size",
+  "figura.gui.status.size.0": "none",
+  "figura.gui.status.size.1": "100kb+",
+  "figura.gui.status.size.2": "75kb+",
+  "figura.gui.status.size.3": "ok",
 
   "figura.gui.status.texture": "Texture",
   "figura.gui.status.texture.0": "none",

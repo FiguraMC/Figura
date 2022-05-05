@@ -49,17 +49,18 @@ public class TexturedButton extends Button {
 
     @Override
     public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
-        if (this.visible) {
-            //render hovered background
-             if (this.active && this.isHoveredOrFocused())
-                UIHelper.fillRounded(stack, x, y, width, height, 0x60FFFFFF);
+        if (!this.visible)
+            return;
 
-             //render button
-            this.renderButton(stack, mouseX, mouseY, delta);
+        //render hovered background
+         if (this.active && this.isHoveredOrFocused())
+            UIHelper.fillRounded(stack, x, y, width, height, 0x60FFFFFF);
 
-            //update hovered
-            this.setHovered(this.isMouseOver(mouseX, mouseY));
-        }
+         //render button
+        this.renderButton(stack, mouseX, mouseY, delta);
+
+        //update hovered
+        this.setHovered(this.isMouseOver(mouseX, mouseY));
     }
 
     @Override
@@ -121,6 +122,10 @@ public class TexturedButton extends Button {
 
     public void setTooltip(Component tooltip) {
         this.tooltip = tooltip;
+    }
+
+    public Component getTooltip() {
+        return tooltip;
     }
 
     public void shouldHaveBackground(boolean bool) {

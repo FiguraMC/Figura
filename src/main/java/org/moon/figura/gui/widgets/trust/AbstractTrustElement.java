@@ -63,17 +63,17 @@ public class AbstractTrustElement extends AbstractButton implements Comparable<A
         ArrayList<TrustContainer> list = new ArrayList<>(TrustManager.GROUPS.values());
         int comp = Integer.compare(list.indexOf(this.trust.getParentGroup()), list.indexOf(other.trust.getParentGroup()));
 
-        //then compare types
         if (comp == 0) {
+            //then compare types
             if (this instanceof GroupElement && other instanceof PlayerElement)
                 return -1;
             else if (this instanceof PlayerElement && other instanceof GroupElement)
                 return 1;
-        }
 
-        //and then compare names
-        if (comp == 0 && this instanceof PlayerElement player1 && other instanceof PlayerElement player2)
-             return player1.getName().compareTo(player2.getName());
+            //and then compare names
+            else if (this instanceof PlayerElement player1 && other instanceof PlayerElement player2)
+                return player1.getName().compareTo(player2.getName());
+        }
 
         //return
         return comp;

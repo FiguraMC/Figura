@@ -18,7 +18,7 @@ public class LocalAvatarFetcher {
      * After calling load(), this is an AvatarFolder that contains
      * the whole filesystem of avatars.
      */
-    public static final List<AvatarFolder> ALL_AVATARS = new ArrayList<>();
+    public static final List<AvatarPath> ALL_AVATARS = new ArrayList<>();
 
     /**
      * Clears out the root AvatarFolder, and regenerates it from the
@@ -30,7 +30,7 @@ public class LocalAvatarFetcher {
 
         //load avatars, however we do not want to accept avatars in the root folder,
         //so we skip right into the children loading
-        AvatarFolder root = new AvatarFolder(getLocalAvatarDirectory());
+        AvatarPath root = new AvatarPath(getLocalAvatarDirectory());
         root.fill(true);
 
         //add new avatars
@@ -53,17 +53,17 @@ public class LocalAvatarFetcher {
     }
 
     /**
-     * Represents a folder which (perhaps indirectly) contains an avatar.
-     * Either this AvatarFolder itself contains an avatar, in which case
+     * Represents a path which (perhaps indirectly) contains an avatar.
+     * Either this AvatarPath itself contains an avatar, in which case
      * hasAvatar will be true, or one of its children contains an avatar.
      */
-    public static class AvatarFolder {
+    public static class AvatarPath {
 
         private final boolean hasAvatar;
-        private final List<AvatarFolder> children = new ArrayList<>();
+        private final List<AvatarPath> children = new ArrayList<>();
         private final Path path;
 
-        public AvatarFolder(Path path) {
+        public AvatarPath(Path path) {
             this.path = path;
             hasAvatar = Files.exists(path.resolve("avatar.json")) || path.toString().endsWith(".moon");
         }
@@ -95,7 +95,7 @@ public class LocalAvatarFetcher {
                     continue;
 
                 //attempt to load avatars from subfolder
-                AvatarFolder folder = new AvatarFolder(file.toPath());
+                AvatarPath folder = new AvatarPath(file.toPath());
                 boolean foundAvatarHere = folder.fill(false);
                 foundAvatar |= foundAvatarHere;
                 if (foundAvatarHere)
@@ -105,7 +105,7 @@ public class LocalAvatarFetcher {
             return foundAvatar;
         }
 
-        public List<AvatarFolder> getChildren() {
+        public List<AvatarPath> getChildren() {
             return children;
         }
 

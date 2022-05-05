@@ -88,6 +88,9 @@ public class InteractableEntity extends AbstractContainerElement {
 
     @Override
     public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
+        if (!this.isVisible())
+            return;
+
         //background
         if (!button.isToggled()) {
             UIHelper.renderTexture(stack, x + 1, y + 1, width - 2, height - 2, BACKGROUND);

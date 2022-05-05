@@ -74,7 +74,7 @@ public class TrustScreen extends AbstractPanelScreen {
             public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
                 super.renderButton(stack, mouseX, mouseY, delta);
 
-                TrustContainer selectedTrust = playerList.getSelectedEntry().getTrust();
+                TrustContainer selectedTrust = playerList.selectedEntry.getTrust();
                 Font font = Minecraft.getInstance().font;
                 MutableComponent text = selectedTrust.getGroupName();
 
@@ -127,7 +127,7 @@ public class TrustScreen extends AbstractPanelScreen {
         //reset all button
         addRenderableWidget(resetButton = new TexturedButton(middle + 2, height, 60, 20, new FiguraText("gui.trust.reset"), null, btn -> {
             //clear trust
-            TrustContainer trust = playerList.getSelectedEntry().getTrust();
+            TrustContainer trust = playerList.selectedEntry.getTrust();
             trust.getSettings().clear();
             updateTrustData(trust);
         }) {
@@ -149,7 +149,7 @@ public class TrustScreen extends AbstractPanelScreen {
     @Override
     public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
         //set entity to render
-        AbstractTrustElement entity = playerList.getSelectedEntry();
+        AbstractTrustElement entity = playerList.selectedEntry;
         Level world = Minecraft.getInstance().level;
         if (world != null && entity instanceof PlayerElement player)
             entityWidget.setEntity(world.getPlayerByUUID(UUID.fromString(player.getTrust().name)));

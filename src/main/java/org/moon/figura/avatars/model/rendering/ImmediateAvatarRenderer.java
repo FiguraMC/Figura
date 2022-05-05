@@ -54,6 +54,8 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
         for (int i = 0; i < textureSets.size() && i < builders.size(); i++)
             buffers.add(builders.get(i).build(textureSets.get(i)));
+
+        avatar.hasTexture = !texturesList.isEmpty();
     }
 
     public void clean() {

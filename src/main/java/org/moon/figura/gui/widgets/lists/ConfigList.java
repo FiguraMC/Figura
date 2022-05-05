@@ -36,7 +36,7 @@ public class ConfigList extends AbstractList {
         totalHeight = -4;
         for (ConfigWidget config : CONFIGS)
             totalHeight += config.getHeight() + 8;
-        int entryHeight = totalHeight / CONFIGS.size();
+        int entryHeight = CONFIGS.isEmpty() ? 0 : totalHeight / CONFIGS.size();
 
         scrollBar.visible = totalHeight > height;
         scrollBar.setScrollRatio(entryHeight, totalHeight - height);

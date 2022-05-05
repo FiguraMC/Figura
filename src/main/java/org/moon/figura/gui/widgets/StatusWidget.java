@@ -9,6 +9,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextComponent;
+import org.moon.figura.FiguraMod;
+import org.moon.figura.avatars.Avatar;
+import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.ui.UIHelper;
@@ -18,13 +21,15 @@ import java.util.List;
 public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListener {
 
     public static final String STATUS_INDICATORS = "-*/+";
-    public static final List<String> STATUS_NAMES = List.of("model", "texture", "script", "backend");
+    public static final List<String> STATUS_NAMES = List.of("size", "texture", "script", "backend");
     public static final List<Style> TEXT_COLORS = List.of(
             Style.EMPTY.withColor(ChatFormatting.WHITE),
             Style.EMPTY.withColor(ChatFormatting.RED),
             Style.EMPTY.withColor(ChatFormatting.YELLOW),
             Style.EMPTY.withColor(ChatFormatting.GREEN)
     );
+    public static final int SIZE_WARNING = 75;
+    public static final int SIZE_LARGE = 100;
 
     private final Font font;
     private byte status = 0;
@@ -47,18 +52,20 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
         if (!visible) return;
 
         //update status indicators
-        int model = 2;
-        status = (byte) model;
+        Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
 
-        int texture = 0;
+        int size = avatar == null ? 0 : avatar.fileSize > SIZE_LARGE ? 1 : avatar.fileSize > SIZE_WARNING ? 2 : 3;
+        status = (byte) size;
+
+        int texture = avatar == null || !avatar.hasTexture ? 0 : 3;
         status += (byte) (texture << 2);
 
-        int script = 3;
+        int script = avatar == null || avatar.scriptError ? 1 : avatar.luaState == null ? 0 : 3;
         status += (byte) (script << 4);
 
         int backend = 1;
         status += (byte) (backend << 6);
-        if (backend != 3) disconnectedReason = new TextComponent("your mom!");
+        if (backend == 1) disconnectedReason = new TextComponent("It doesnt exists");
     }
 
     @Override

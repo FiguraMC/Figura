@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.FiguraMod;
+import org.moon.figura.avatars.Avatar;
 import org.moon.figura.config.Config;
 import org.moon.figura.lua.api.EventsAPI;
 import org.moon.figura.lua.api.entity.PlayerEntityWrapper;
@@ -23,10 +24,10 @@ public class FiguraLuaState extends LuaState53 {
 
     private static String sandboxerScript;
 
-    private final String owner;
+    private final Avatar owner;
     public EventsAPI events;
 
-    public FiguraLuaState(String owner, int memory) {
+    public FiguraLuaState(Avatar owner, int memory) {
         super(memory * 1_000_000); //memory is given in mb
         setJavaReflector(FiguraJavaReflector.INSTANCE);
         setConverter(FiguraConverter.INSTANCE);
@@ -79,11 +80,9 @@ public class FiguraLuaState extends LuaState53 {
         try {
             call(0, 0);
             return false;
-        } catch (LuaRuntimeException e) {
-            sendLuaError(e, owner);
         } catch (Exception e) {
-            sendLuaError(new LuaRuntimeException(e), owner);
-            FiguraMod.LOGGER.error("", e);
+            sendLuaError(e, owner.name);
+            owner.scriptError = true;
         }
         return true;
     }
@@ -206,7 +205,7 @@ public class FiguraLuaState extends LuaState53 {
     }
 
     //print an error, errors should always show up on chat
-    public static void sendLuaError(LuaRuntimeException error, String owner) {
+    public static void sendLuaError(Exception error, String owner) {
         //Jank as hell
         String message = error.toString().replace("org.terasology.jnlua.LuaRuntimeException: ", "");
 
@@ -216,6 +215,9 @@ public class FiguraLuaState extends LuaState53 {
                 .append(new TextComponent(" : " + message).withStyle(Colors.LUA_ERROR.style));
 
         sendChatMessage(component, true);
+
+        if (!(error instanceof LuaRuntimeException))
+            FiguraMod.LOGGER.error("", error);
     }
 
     //print an ping!
@@ -255,20 +257,20 @@ public class FiguraLuaState extends LuaState53 {
         }
 
         //prints the value, either on chat or console
-        sendLuaMessage(ret.toString(), ((FiguraLuaState) luaState).owner);
+        sendLuaMessage(ret.toString(), ((FiguraLuaState) luaState).owner.name);
 
         return 0;
     };
 
     private static final JavaFunction PRINT_JSON_FUNCTION = luaState -> {
-        sendLuaMessage(TextUtils.tryParseJson(parsePrintArg(luaState)), ((FiguraLuaState) luaState).owner);
+        sendLuaMessage(TextUtils.tryParseJson(parsePrintArg(luaState)), ((FiguraLuaState) luaState).owner.name);
         return 0;
     };
 
     private static final JavaFunction PRINT_TABLE_FUNCTION = luaState -> {
         int depth = (int) luaState.checkInteger(2);
         String result = tableToString(luaState, 1, depth, 1);
-        sendLuaMessage(result, ((FiguraLuaState) luaState).owner);
+        sendLuaMessage(result, ((FiguraLuaState) luaState).owner.name);
         return 0;
     };
 

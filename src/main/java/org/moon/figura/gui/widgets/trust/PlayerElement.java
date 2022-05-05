@@ -50,7 +50,7 @@ public class PlayerElement extends AbstractTrustElement {
             TrustContainer container = TrustManager.get(parentID);
             trustContext.addAction(container.getGroupName().copy().setStyle(Style.EMPTY.withColor(container.getGroupColor())), button -> {
                 trust.setParent(parentID);
-                if (parent.getSelectedEntry() == this)
+                if (parent.selectedEntry == this)
                     parent.parent.updateTrustData(trust);
             });
         }
@@ -70,7 +70,7 @@ public class PlayerElement extends AbstractTrustElement {
         int y = -height / 2;
 
         //selected overlay
-        if (this.parent.getSelectedEntry() == this) {
+        if (this.parent.selectedEntry == this) {
             UIHelper.fillRounded(stack, x - 1, y - 1, width + 2, height + 2, 0xFFFFFFFF);
         }
 

@@ -6,7 +6,6 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import org.moon.figura.avatars.AvatarManager;
-import org.moon.figura.avatars.providers.LocalAvatarFetcher;
 import org.moon.figura.avatars.providers.LocalAvatarLoader;
 import org.moon.figura.config.ConfigManager;
 import org.moon.figura.lua.docs.FiguraDocsManager;
@@ -33,29 +32,14 @@ public class FiguraMod implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        //init config and trust
+        //init managers
         ConfigManager.init();
         TrustManager.init();
         FiguraDocsManager.init(ClientCommandManager.DISPATCHER);
+        LuaUtils.setupNativesForLua();
 
         //register events
         ClientTickEvents.END_CLIENT_TICK.register(FiguraMod::tick);
-
-        //TODO - test
-        LuaUtils.setupNativesForLua();
-        //LuaTest.test();
-
-        try {
-            LocalAvatarFetcher.load();
-            if (!LocalAvatarFetcher.ALL_AVATARS.isEmpty()) {
-                AvatarManager.loadLocalAvatar(LocalAvatarFetcher.ALL_AVATARS.get(0).getPath());
-                //LocalAvatarLoader.saveNbt();
-            }
-        } catch (Exception e) {
-            LOGGER.error("", e);
-        }
-
-        //TODO - end test
     }
 
     public static void tick(Minecraft client) {

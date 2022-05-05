@@ -28,16 +28,16 @@ public class TrustContainer {
         INIT_INST(0, 32767),
         TICK_INST(0, 16383),
         RENDER_INST(0, 16383),
-        MAX_MEM(0, 2047),
-        COMPLEXITY(0, 12287),
-        PARTICLES(0, 63),
-        SOUNDS(0, 63),
-        BB_ANIMATIONS(0, 255),
-        VANILLA_MODEL_EDIT,
-        NAMEPLATE_EDIT,
-        OFFSCREEN_RENDERING,
-        CUSTOM_RENDER_LAYER,
-        CUSTOM_SOUNDS;
+        MAX_MEM(0, 2047);
+        //COMPLEXITY(0, 12287),
+        //PARTICLES(0, 63),
+        //SOUNDS(0, 63),
+        //BB_ANIMATIONS(0, 255),
+        //VANILLA_MODEL_EDIT,
+        //NAMEPLATE_EDIT,
+        //OFFSCREEN_RENDERING,
+        //CUSTOM_RENDER_LAYER,
+        //CUSTOM_SOUNDS;
 
         //toggle check
         public final boolean isToggle;

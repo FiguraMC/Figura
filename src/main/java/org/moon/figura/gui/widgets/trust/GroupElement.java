@@ -33,7 +33,7 @@ public class GroupElement extends AbstractTrustElement {
         int y = -height / 2;
 
         //selected overlay
-        if (this.parent.getSelectedEntry() == this) {
+        if (this.parent.selectedEntry == this) {
             UIHelper.fillRounded(stack, x - 1, y - 1, width + 2, height + 2, 0xFFFFFFFF);
         }
 

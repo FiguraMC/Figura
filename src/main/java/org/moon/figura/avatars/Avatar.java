@@ -42,6 +42,8 @@ public class Avatar {
     public final UUID owner;
     public final AvatarRenderer renderer;
     public FiguraLuaState luaState;
+    public boolean hasTexture = false;
+    public boolean scriptError = false;
 
     private int tickLimit, renderLimit;
 
@@ -67,6 +69,7 @@ public class Avatar {
             event.call(args);
         } catch (LuaRuntimeException ex) {
             FiguraLuaState.sendLuaError(ex, name);
+            scriptError = true;
             luaState.close();
             luaState = null;
         }
@@ -128,7 +131,7 @@ public class Avatar {
         String mainScriptName = avatarNbt.getString("script");
         if (!avatarNbt.contains("script", Tag.TAG_STRING)) mainScriptName = "script";
 
-        FiguraLuaState luaState = new FiguraLuaState(name, TrustManager.get(owner).get(TrustContainer.Trust.MAX_MEM));
+        FiguraLuaState luaState = new FiguraLuaState(this, TrustManager.get(owner).get(TrustContainer.Trust.MAX_MEM));
 
         if (renderer != null && renderer.root != null)
             luaState.loadGlobal(renderer.root, "models");

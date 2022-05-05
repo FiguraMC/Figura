@@ -7,6 +7,9 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import org.moon.figura.FiguraMod;
+import org.moon.figura.avatars.Avatar;
+import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.TextUtils;
@@ -17,7 +20,7 @@ import java.util.List;
 
 public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventListener {
 
-    public static final Component UNKNOWN = new TextComponent("?");
+    public static final Component UNKNOWN = new TextComponent("?").setStyle(ColorUtils.Colors.FRAN_PINK.style);
     public static final List<Component> TITLES = List.of(
             new FiguraText("gui.name").withStyle(ChatFormatting.UNDERLINE),
             new FiguraText("gui.author").withStyle(ChatFormatting.UNDERLINE),
@@ -46,10 +49,17 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
         if (!visible) return;
 
         //update values
-        values.set(0, UNKNOWN.copy().setStyle(ColorUtils.Colors.FRAN_PINK.style)); //name
-        values.set(1, UNKNOWN.copy().setStyle(ColorUtils.Colors.FRAN_PINK.style)); //author
-        values.set(2, UNKNOWN.copy().setStyle(ColorUtils.Colors.FRAN_PINK.style)); //size
-        values.set(3, UNKNOWN.copy().setStyle(ColorUtils.Colors.FRAN_PINK.style)); //complexity
+        Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
+        if (avatar == null) {
+            for (int i = 0; i < TITLES.size(); i++) {
+                values.set(i, UNKNOWN);
+            }
+        } else {
+            values.set(0, new TextComponent(avatar.name).setStyle(ColorUtils.Colors.FRAN_PINK.style)); //name
+            values.set(1, new TextComponent(avatar.author).setStyle(ColorUtils.Colors.FRAN_PINK.style)); //author
+            values.set(2, new TextComponent(String.valueOf(avatar.fileSize)).setStyle(ColorUtils.Colors.FRAN_PINK.style)); //size
+            values.set(3, UNKNOWN); //complexity
+        }
     }
 
     @Override

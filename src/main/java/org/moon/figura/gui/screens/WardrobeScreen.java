@@ -57,19 +57,25 @@ public class WardrobeScreen extends AbstractPanelScreen {
         int buttY = entity.y + entity.height + 4;
 
         //upload
-        addRenderableWidget(new TexturedButton(buttX - 48, buttY, 24, 24, 24, 0, 24, new FiguraIdentifier("textures/gui/upload.png"), 48, 48, new FiguraText("gui.wardrobe.upload.tooltip"), button -> {
+        TexturedButton upload = new TexturedButton(buttX - 48, buttY, 24, 24, 24, 0, 24, new FiguraIdentifier("textures/gui/upload.png"), 48, 48, new FiguraText("gui.wardrobe.upload.tooltip"), button -> {
             FiguraToast.sendToast(new TextComponent("lol nope").setStyle(Style.EMPTY.withColor(0xFFADAD)), FiguraToast.ToastType.DEFAULT);
-        }));
+        });
+        upload.active = false; //TODO
+        addRenderableWidget(upload);
 
         //reload
-        addRenderableWidget(new TexturedButton(buttX - 12, buttY, 24, 24, 24, 0, 24, new FiguraIdentifier("textures/gui/reload.png"), 48, 48, new FiguraText("gui.wardrobe.reload.tooltip"), button -> {
+        TexturedButton reload = new TexturedButton(buttX - 12, buttY, 24, 24, 24, 0, 24, new FiguraIdentifier("textures/gui/reload.png"), 48, 48, new FiguraText("gui.wardrobe.reload.tooltip"), button -> {
             FiguraToast.sendToast(new TextComponent("lol nope").setStyle(Style.EMPTY.withColor(0xFFADAD)), FiguraToast.ToastType.DEFAULT);
-        }));
+        });
+        reload.active = false; //TODO
+        addRenderableWidget(reload);
 
         //delete
-        addRenderableWidget(new TexturedButton(buttX + 24, buttY, 24, 24, 24, 0, 24, new FiguraIdentifier("textures/gui/delete.png"), 48, 48, new FiguraText("gui.wardrobe.delete.tooltip"), button -> {
+        TexturedButton delete = new TexturedButton(buttX + 24, buttY, 24, 24, 24, 0, 24, new FiguraIdentifier("textures/gui/delete.png"), 48, 48, new FiguraText("gui.wardrobe.delete.tooltip"), button -> {
             FiguraToast.sendToast(new TextComponent("lol nope").setStyle(Style.EMPTY.withColor(0xFFADAD)), FiguraToast.ToastType.DEFAULT);
-        }));
+        });
+        delete.active = false; //TODO
+        addRenderableWidget(delete);
 
         statusWidget = new StatusWidget(entity.x + entity.width - 64, 0, 64);
         statusWidget.y = entity.y - statusWidget.height - 4;

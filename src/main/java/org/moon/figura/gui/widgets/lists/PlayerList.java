@@ -75,7 +75,7 @@ public class PlayerList extends AbstractList {
 
         //scrollbar visible
         scrollBar.visible = totalHeight > height - 34;
-        scrollBar.setScrollRatio((float) totalHeight / trustList.size(), totalHeight - (height - 34));
+        scrollBar.setScrollRatio(trustList.isEmpty() ? 0f : (float) totalHeight / trustList.size(), totalHeight - (height - 34));
 
         //render stuff
         int xOffset = width / 2 - 87 - (scrollBar.visible ? 7 : 0);
@@ -186,9 +186,5 @@ public class PlayerList extends AbstractList {
 
         //set new scroll percentage
         scrollBar.setScrollProgress(pastScroll / (totalHeight - height));
-    }
-
-    public AbstractTrustElement getSelectedEntry() {
-        return selectedEntry;
     }
 }

@@ -121,7 +121,7 @@ public class UIHelper extends GuiComponent {
         entity.setInvisible(false);
         UIHelper.forceNameplate = true;
         UIHelper.forceNoFire = true;
-        avatar.renderer.inWorld = false;
+        if (avatar != null) avatar.renderer.inWorld = false;
 
         //set up lighting
         Lighting.setupForFlatItems();
@@ -152,7 +152,7 @@ public class UIHelper extends GuiComponent {
         entity.setInvisible(invisible);
         UIHelper.forceNameplate = false;
         UIHelper.forceNoFire = false;
-        avatar.renderer.inWorld = true;
+        if (avatar != null) avatar.renderer.inWorld = true;
 
         //pop matrix
         stack.popPose();

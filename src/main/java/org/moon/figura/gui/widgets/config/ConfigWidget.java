@@ -1,17 +1,11 @@
 package org.moon.figura.gui.widgets.config;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.config.Config;
 import org.moon.figura.gui.widgets.AbstractContainerElement;
-import org.moon.figura.gui.widgets.SwitchButton;
+import org.moon.figura.gui.widgets.ContainerButton;
 import org.moon.figura.gui.widgets.lists.ConfigList;
-import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.ui.UIHelper;
 
 import java.util.ArrayList;
@@ -80,49 +74,13 @@ public class ConfigWidget extends AbstractContainerElement {
     }
 
     public void setShowChildren(boolean bool) {
-        this.parentConfig.setToggled(bool);
+        boolean toggle = bool && this.parentConfig.isToggled();
+
         for (AbstractConfigElement element : entries)
-            element.setVisible(bool);
+            element.setVisible(toggle);
     }
 
     public boolean isShowingChildren() {
         return parentConfig.isToggled();
-    }
-
-    public static class ContainerButton extends SwitchButton {
-
-        private final ConfigList parent;
-
-        public ContainerButton(ConfigList parent, int x, int y, int width, int height, Component text, Component tooltip, OnPress pressAction) {
-            super(x, y, width, height, text, tooltip, pressAction);
-            this.parent = parent;
-        }
-
-        @Override
-        protected void renderText(PoseStack stack) {
-            //get text color
-            int color = (!this.active || !this.isToggled() ? ChatFormatting.DARK_GRAY : ChatFormatting.WHITE).getColor();
-
-            //draw text
-            Font font = Minecraft.getInstance().font;
-            font.drawShadow(
-                    stack, getMessage(),
-                    this.x + 3, this.y + this.height / 2f - font.lineHeight / 2f,
-                    color
-            );
-
-            //draw arrow
-            Component arrow = new TextComponent(this.toggled ? "V" : "^").setStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT));
-            font.drawShadow(
-                    stack, arrow,
-                    this.x + this.width - font.width(arrow) - 3, this.y + this.height / 2f - font.lineHeight / 2f,
-                    color
-            );
-        }
-
-        @Override
-        public boolean isMouseOver(double mouseX, double mouseY) {
-            return this.parent.isInsideScissors(mouseX, mouseY) && super.isMouseOver(mouseX, mouseY);
-        }
     }
 }
