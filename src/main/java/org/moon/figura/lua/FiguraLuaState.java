@@ -2,8 +2,7 @@ package org.moon.figura.lua;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.*;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.config.Config;
@@ -39,6 +38,10 @@ public class FiguraLuaState extends LuaState53 {
 
         //Loads print(), log(), and logTable() into the env.
         loadPrintFunctions();
+
+        //GS easter egg :3
+        getGlobal("_G");
+        setGlobal("_GS");
 
         //Run the figura sandboxer script
         try {
@@ -268,50 +271,63 @@ public class FiguraLuaState extends LuaState53 {
     };
 
     private static final JavaFunction PRINT_TABLE_FUNCTION = luaState -> {
-        int depth = (int) luaState.checkInteger(2);
-        String result = tableToString(luaState, 1, depth, 1);
+        int depth = luaState.getTop() > 1 ? (int) luaState.checkInteger(2) : 1;
+        Component result = tableToText(luaState, 1, depth, 1);
         sendLuaMessage(result, ((FiguraLuaState) luaState).owner.name);
         return 0;
     };
 
-    private static String tableToString(LuaState luaState, int index, int depth, int indent) {
-        StringBuilder builder = new StringBuilder();
+    private static Component tableToText(LuaState luaState, int index, int depth, int indent) {
+        //normal print (value only)
         if (depth <= 0) {
             luaState.getGlobal("tostring");
             luaState.pushValue(index);
             luaState.call(1, 1);
-            builder.append(luaState.toString(-1));
+            String ret = luaState.toString(-1);
             luaState.pop(1);
-            return builder.toString();
+            return new TextComponent(ret).withStyle(getColorForType(LuaType.TABLE));
         }
-        String indentStr = "    ".repeat(indent-1);
-        builder.append("\n").append(indentStr).append("{\n");
+
+        String spacing = "\t".repeat(indent - 1);
+
+        //format text
+        MutableComponent text = TextComponent.EMPTY.copy();
+        text.append(new TextComponent("table:").withStyle(getColorForType(LuaType.TABLE)));
+        text.append(new TextComponent(" {\n").withStyle(ChatFormatting.DARK_GRAY));
+
         luaState.pushNil();
         while (luaState.next(index)) {
-            //Print indentation
-            builder.append(indentStr).append("    ");
+            //add indentation
+            text.append(spacing).append("\t");
 
-            //Print key
+            //add key
+            text.append(new TextComponent("[").withStyle(ChatFormatting.DARK_GRAY));
+
             LuaType type = luaState.type(-2);
-            if (type == LuaType.TABLE)
-                builder.append(tableToString(luaState, luaState.getTop()-1, depth-1, indent+1));
-            else
-                builder.append(luaState.toJavaObject(-2, Object.class));
-            builder.append(": ");
+            if (type == LuaType.TABLE) {
+                Component table = TextUtils.replaceInText(tableToText(luaState, luaState.getTop() - 1, depth - 1, 1), "\t", new TextComponent("  "));
+                text.append(tableToText(luaState, luaState.getTop() - 1, 0, indent + 1).copy()
+                        .withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, table)))
+                );
+            } else
+                text.append(new TextComponent(String.valueOf(luaState.toJavaObject(-2, Object.class))).withStyle(getColorForType(type)));
 
-            //Print value
+            text.append(new TextComponent("] = ").withStyle(ChatFormatting.DARK_GRAY));
+
+            //print value
             type = luaState.type(-1);
             if (type == LuaType.TABLE)
-                builder.append(tableToString(luaState, luaState.getTop(), depth-1, indent+1));
+                text.append(tableToText(luaState, luaState.getTop(), depth - 1, indent + 1));
             else
-                builder.append(luaState.toJavaObject(-1, Object.class));
-            builder.append("\n");
+                text.append(new TextComponent(String.valueOf(luaState.toJavaObject(-1, Object.class))).withStyle(getColorForType(type)));
 
-            //Pop value
+            //pop value
             luaState.pop(1);
+            text.append("\n");
         }
-        builder.append(indentStr).append("}\n");
-        return builder.toString();
+
+        text.append(new TextComponent(spacing + "}").withStyle(ChatFormatting.DARK_GRAY));
+        return text;
     }
 
     private static String parsePrintArg(LuaState luaState) {
@@ -332,5 +348,18 @@ public class FiguraLuaState extends LuaState53 {
         luaState.remove(1);
 
         return ret;
+    }
+
+    private static Style getColorForType(LuaType type) {
+        return switch (type) {
+            case TABLE -> Colors.FRAN_PINK.style;
+            case NUMBER -> Colors.LUA_LOG.style;
+            case STRING -> Colors.LUA_ERROR.style;
+            case BOOLEAN -> Colors.LUA_PING.style;
+            case FUNCTION -> Style.EMPTY.applyFormat(ChatFormatting.GREEN);
+            case USERDATA, LIGHTUSERDATA -> Style.EMPTY.applyFormat(ChatFormatting.YELLOW);
+            case THREAD -> Style.EMPTY.applyFormat(ChatFormatting.GOLD);
+            default -> Style.EMPTY;
+        };
     }
 }

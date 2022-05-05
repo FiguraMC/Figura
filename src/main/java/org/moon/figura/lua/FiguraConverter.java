@@ -27,7 +27,14 @@ public class FiguraConverter implements Converter {
         if (type == LuaType.FUNCTION && ((formalType == Object.class || formalType == LuaFunction.class) && !luaState.isJavaFunction(index)))
             return (T) new LuaFunction((FiguraLuaState) luaState, index);
 
-        return DEFAULT.convertLuaValue(luaState, index, formalType);
+        T obj = DEFAULT.convertLuaValue(luaState, index, formalType);
+
+        if (obj instanceof String s)
+            return (T) ("\"" + s + "\"");
+        else if (obj instanceof Double d)
+            return (T) (d == Math.rint(d) ? d.intValue() : obj);
+
+        return obj;
     }
 
     @Override
