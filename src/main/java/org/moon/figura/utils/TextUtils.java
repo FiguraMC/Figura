@@ -13,6 +13,7 @@ import java.util.List;
 public class TextUtils {
 
     public static final ResourceLocation FIGURA_FONT = new FiguraIdentifier("default");
+    public static final String TAB_STRING = "  ";
 
     public static String noBadges4U(String string) {
         return string.replaceAll("([▲!❤☆✯★]|\\\\u(?i)(25B2|0021|2764|2606|272F|2605))", "\uFFFD");
@@ -91,7 +92,9 @@ public class TextUtils {
         return finalText;
     }
 
-    public static Component replaceInText(Component text, String regex, Component replacement) {
+    public static Component replaceInText(Component text, String regex, Object replacement) {
+        Component replace = replacement instanceof Component c ? c : new TextComponent(String.valueOf(replacement));
+
         //split the text based on the regex pattern
         List<Component> list = splitText(text, regex);
 
@@ -105,7 +108,7 @@ public class TextUtils {
 
             //if it is not the last iteration, append the replacement text
             if (i < list.size() - 1)
-                finalText.append(replacement);
+                finalText.append(replace);
         }
 
         //return the text
@@ -124,5 +127,9 @@ public class TextUtils {
         //trim and return modified text
         String trimmed = font.substrByWidth(text, width - size).getString();
         return new TextComponent(trimmed).setStyle(text.getStyle()).append(dots);
+    }
+
+    public static Component replaceTabs(Component text) {
+        return TextUtils.replaceInText(text, "\t", TAB_STRING);
     }
 }
