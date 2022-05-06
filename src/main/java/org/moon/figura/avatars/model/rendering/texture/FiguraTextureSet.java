@@ -34,13 +34,14 @@ public class FiguraTextureSet {
     }
 
     public static final Set<String> LEGAL_RENDER_TYPES = new HashSet<>() {{
-       add("CUTOUT_NO_CULL");
-       add("CUTOUT");
-       add("EMISSIVE");
-       add("EMISSIVE_SOLID");
-       add("END_PORTAL");
-       add("GLINT");
-       add("GLINT2");
+        add(null);
+        add("CUTOUT_NO_CULL");
+        add("CUTOUT");
+        add("EMISSIVE");
+        add("EMISSIVE_SOLID");
+        add("END_PORTAL");
+        add("GLINT");
+        add("GLINT2");
     }};
 
     public RenderType getRenderType(String name) {

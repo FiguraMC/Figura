@@ -13,7 +13,7 @@ import org.terasology.jnlua.LuaRuntimeException;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "Vector2",
-        description = "A vector that holds 2 numbers."
+        description = "A vector that holds 2 numbers. Can be created using functions in the \"vectors\" api."
 )
 public class FiguraVec2 implements CachedType {
 

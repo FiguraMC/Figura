@@ -279,14 +279,6 @@ public class FiguraLuaState extends LuaState53 {
     };
 
     private static final JavaFunction PRINT_TABLE_FUNCTION = luaState -> {
-        //If we have a userdata item, get its table representation and print that instead
-        if (luaState.type(1) == LuaType.USERDATA) {
-            LuaTable table = FiguraJavaReflector.getTableRepresentation(luaState.toJavaObject(1, Object.class));
-            if (table != null) {
-                table.push(luaState);
-                luaState.replace(1);
-            }
-        }
         int depth = luaState.getTop() > 1 ? (int) luaState.checkInteger(2) : 1;
         Component result = tableToText(luaState, 1, depth, 1);
         sendLuaMessage(result, ((FiguraLuaState) luaState).owner.name);
@@ -297,6 +289,15 @@ public class FiguraLuaState extends LuaState53 {
         //normal print (value only)
         if (depth <= 0)
             return parsePrintArg(luaState, index);
+
+        //If we have a userdata item, get its table representation and print that instead
+        if (luaState.type(index) == LuaType.USERDATA) {
+            LuaTable table = FiguraJavaReflector.getTableRepresentation(luaState.toJavaObject(index, Object.class));
+            if (table != null) {
+                table.push(luaState);
+                luaState.replace(index);
+            }
+        }
 
         String spacing = "\t".repeat(indent - 1);
 
@@ -326,7 +327,7 @@ public class FiguraLuaState extends LuaState53 {
 
             //print value
             type = luaState.type(-1);
-            if (type == LuaType.TABLE)
+            if (type == LuaType.TABLE || type == LuaType.USERDATA)
                 text.append(tableToText(luaState, luaState.getTop(), depth - 1, indent + 1));
             else
                 text.append(new TextComponent(String.valueOf(getPrintObject(luaState, -1))).withStyle(getColorForType(type)));
@@ -356,7 +357,7 @@ public class FiguraLuaState extends LuaState53 {
         //remove the copied value
         luaState.pop(1);
 
-        return new TextComponent(ret).withStyle(getColorForType(LuaType.TABLE));
+        return new TextComponent(ret).withStyle(getColorForType(luaState.type(index)));
     }
 
     private static Style getColorForType(LuaType type) {
@@ -379,6 +380,8 @@ public class FiguraLuaState extends LuaState53 {
             return "\"" + s + "\"";
         if (obj instanceof Double d)
             return d == Math.rint(d) ? d.intValue() : obj;
+        if (obj == null)
+            return "nil";
 
         return obj;
     }

@@ -15,6 +15,10 @@ import org.moon.figura.avatars.model.rendering.ImmediateAvatarRenderer;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
 import org.moon.figura.avatars.vanilla.VanillaPartOffsetManager;
 import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.lua.docs.LuaFunctionOverload;
+import org.moon.figura.lua.docs.LuaMethodDoc;
+import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.lua.types.LuaTable;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec2;
@@ -29,10 +33,18 @@ import java.util.List;
 import java.util.Map;
 
 @LuaWhitelist
+@LuaTypeDoc(
+        name = "ModelPart",
+        description = "Represents a node in the model tree, basically a group/cube/mesh in Blockbench. Each " +
+                "bbmodel file is itself a ModelPart, and all of your models are contained in a global ModelPart " +
+                "called \"models\"."
+)
 public class FiguraModelPart {
 
     @LuaWhitelist
     public final String name;
+    public FiguraModelPart parent;
+
     public final PartCustomization customization;
     public ParentType parentType = ParentType.None;
     public final int index;
@@ -86,6 +98,11 @@ public class FiguraModelPart {
         }
     }
 
+    @Override
+    public String toString() {
+        return name + " (ModelPart)";
+    }
+
     public void applyVanillaTransform(EntityModel<?> vanillaModel, ParentType parentType, ModelPart part) {
         if (part == null)
             return;
@@ -106,9 +123,11 @@ public class FiguraModelPart {
     }
 
     public void resetVanillaTransforms() {
-        customization.setBonusPivot(0, 0, 0);
-        customization.setBonusPos(0, 0, 0);
-        customization.setBonusRot(0, 0, 0);
+        if (parentType != ParentType.None) {
+            customization.setBonusPivot(0, 0, 0);
+            customization.setBonusPos(0, 0, 0);
+            customization.setBonusRot(0, 0, 0);
+        }
     }
 
     public void clean() {
@@ -130,119 +149,512 @@ public class FiguraModelPart {
     //-- LUA BUSINESS --//
 
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraModelPart.class,
+                    argumentNames = "modelPart",
+                    returnType = FiguraModelPart.class
+            ),
+            description = "Gets the parent part of this part. If this part has no parent, returns nil."
+    )
+    public static FiguraModelPart getParent(FiguraModelPart modelPart) {
+        LuaUtils.nullCheck("getParent", "modelPart", modelPart);
+        return modelPart.parent;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraModelPart.class,
+                    argumentNames = "modelPart",
+                    returnType = LuaTable.class
+            ),
+            description = "Gets the children of this part, stored in a table."
+    )
+    public static LuaTable getChildren(FiguraModelPart modelPart) {
+        LuaUtils.nullCheck("getChildren", "modelPart", modelPart);
+        LuaTable table = new LuaTable();
+        int i = 1;
+        for (FiguraModelPart child : modelPart.children)
+            table.put(i++, child);
+        return table;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraModelPart.class,
+                    argumentNames = "modelPart",
+                    returnType = FiguraVec3.class
+            ),
+            description = "Gets the position of the model part, as an offset from its " +
+                    "position in blockbench. Only changes from {0,0,0} when you call setPos()."
+    )
     public static FiguraVec3 getPos(FiguraModelPart modelPart) {
         LuaUtils.nullCheck("getPos", "modelPart", modelPart);
         return modelPart.customization.getPos();
     }
+
     @LuaWhitelist
-    public static void setPos(FiguraModelPart modelPart, FiguraVec3 pos) {
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraModelPart.class, FiguraVec3.class},
+                            argumentNames = {"modelPart", "pos"},
+                            returnType = void.class
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraModelPart.class, Double.class, Double.class, Double.class},
+                            argumentNames = {"modelPart", "x", "y", "z"},
+                            returnType = void.class
+                    )
+            },
+            description = "Sets the position offset for this part from its blockbench position. Nil values " +
+                    "for position are assumed to be 0."
+    )
+    public static void setPos(FiguraModelPart modelPart, Object x, Double y, Double z) {
         LuaUtils.nullCheck("setPos", "modelPart", modelPart);
-        LuaUtils.nullCheck("setPos", "pos", pos);
-        modelPart.customization.setPos(pos);
+        if (x instanceof FiguraVec3 pos)
+            modelPart.customization.setPos(pos);
+        else if (x == null || x instanceof Double) {
+            if (x == null) x = 0d;
+            if (y == null) y = 0d;
+            if (z == null) z = 0d;
+            modelPart.customization.setPos((double) x, y, z);
+        } else {
+            throw new LuaRuntimeException("Illegal argument to setPos(): " + x);
+        }
     }
+
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraModelPart.class,
+                    argumentNames = "modelPart",
+                    returnType = FiguraVec3.class
+            ),
+            description = "Gets the rotation of the model part, including its rotation in blockbench. " +
+                    "For relative rotation values, check out the \"bonus\" rot functions."
+    )
     public static FiguraVec3 getRot(FiguraModelPart modelPart) {
         LuaUtils.nullCheck("getRot", "modelPart", modelPart);
         return modelPart.customization.getRot();
     }
+
     @LuaWhitelist
-    public static void setRot(FiguraModelPart modelPart, FiguraVec3 rot) {
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraModelPart.class, FiguraVec3.class},
+                            argumentNames = {"modelPart", "rot"},
+                            returnType = void.class
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraModelPart.class, Double.class, Double.class, Double.class},
+                            argumentNames = {"modelPart", "x", "y", "z"},
+                            returnType = void.class
+                    )
+            },
+            description = "Sets the absolute rotation for this part. Nil values " +
+                    "for rotation are assumed to be 0. Angles are given in degrees. " +
+                    "For relative rotation values, check out the \"bonus\" rot functions."
+    )
+    public static void setRot(FiguraModelPart modelPart, Object x, Double y, Double z) {
         LuaUtils.nullCheck("setRot", "modelPart", modelPart);
-        LuaUtils.nullCheck("setRot", "rot", rot);
-        modelPart.customization.setRot(rot);
+        if (x instanceof FiguraVec3 rot)
+            modelPart.customization.setRot(rot);
+        else if (x == null || x instanceof Double) {
+            if (x == null) x = 0d;
+            if (y == null) y = 0d;
+            if (z == null) z = 0d;
+            modelPart.customization.setRot((double) x, y, z);
+        } else {
+            throw new LuaRuntimeException("Illegal argument to setRot(): " + x);
+        }
     }
+
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraModelPart.class,
+                    argumentNames = "modelPart",
+                    returnType = FiguraVec3.class
+            ),
+            description = "Gets the bonus rotation of the model part, offset from its rotation in blockbench. " +
+                    "For absolute rotation values, check out the non-bonus rot functions."
+    )
+    public static FiguraVec3 getBonusRot(FiguraModelPart modelPart) {
+        LuaUtils.nullCheck("getBonusRot", "modelPart", modelPart);
+        return modelPart.customization.getBonusRot();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraModelPart.class, FiguraVec3.class},
+                            argumentNames = {"modelPart", "bonusRot"},
+                            returnType = void.class
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraModelPart.class, Double.class, Double.class, Double.class},
+                            argumentNames = {"modelPart", "x", "y", "z"},
+                            returnType = void.class
+                    )
+            },
+            description = "Sets the bonus rotation for this part. Nil values " +
+                    "for rotation are assumed to be 0. Angles are given in degrees. " +
+                    "For absolute rotation values, check out the non-bonus rot functions."
+    )
+    public static void setBonusRot(FiguraModelPart modelPart, Object x, Double y, Double z) {
+        LuaUtils.nullCheck("setBonusRot", "modelPart", modelPart);
+        if (x instanceof FiguraVec3 rot)
+            modelPart.customization.setBonusRot(rot);
+        else if (x == null || x instanceof Double) {
+            if (x == null) x = 0d;
+            if (y == null) y = 0d;
+            if (z == null) z = 0d;
+            modelPart.customization.setBonusRot((double) x, y, z);
+        } else {
+            throw new LuaRuntimeException("Illegal argument to setBonusRot(): " + x);
+        }
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraModelPart.class,
+                    argumentNames = "modelPart",
+                    returnType = FiguraVec3.class
+            ),
+            description = "Gets the scale of the model part, as a multiple of its " +
+                    "blockbench size. Only changes from {1,1,1} when you call setScale()."
+    )
     public static FiguraVec3 getScale(FiguraModelPart modelPart) {
         LuaUtils.nullCheck("getScale", "modelPart", modelPart);
         return modelPart.customization.getScale();
     }
+
     @LuaWhitelist
-    public static void setScale(FiguraModelPart modelPart, FiguraVec3 scale) {
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraModelPart.class, FiguraVec3.class},
+                            argumentNames = {"modelPart", "scale"},
+                            returnType = void.class
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraModelPart.class, Double.class, Double.class, Double.class},
+                            argumentNames = {"modelPart", "x", "y", "z"},
+                            returnType = void.class
+                    )
+            },
+            description = "Sets the scale factor for this part. Nil values for scale are assumed to be 1."
+    )
+    public static void setScale(FiguraModelPart modelPart, Object x, Double y, Double z) {
         LuaUtils.nullCheck("setScale", "modelPart", modelPart);
-        LuaUtils.nullCheck("setScale", "scale", scale);
-        modelPart.customization.setScale(scale);
+        if (x instanceof FiguraVec3 scale)
+            modelPart.customization.setScale(scale);
+        else if (x == null || x instanceof Double) {
+            if (x == null) x = 1d;
+            if (y == null) y = 1d;
+            if (z == null) z = 1d;
+            modelPart.customization.setScale((double) x, y, z);
+        } else {
+            throw new LuaRuntimeException("Illegal argument to setScale(): " + x);
+        }
     }
+
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraModelPart.class,
+                    argumentNames = "modelPart",
+                    returnType = FiguraVec3.class
+            ),
+            description = "Gets the pivot point of the model part, including its " +
+                    "pivot in blockbench. For relative values, check out the \"bonus\" pivot functions."
+    )
     public static FiguraVec3 getPivot(FiguraModelPart modelPart) {
         LuaUtils.nullCheck("getPivot", "modelPart", modelPart);
         return modelPart.customization.getPivot();
     }
+
     @LuaWhitelist
-    public static void setPivot(FiguraModelPart modelPart, FiguraVec3 pivot) {
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraModelPart.class, FiguraVec3.class},
+                            argumentNames = {"modelPart", "pivot"},
+                            returnType = void.class
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraModelPart.class, Double.class, Double.class, Double.class},
+                            argumentNames = {"modelPart", "x", "y", "z"},
+                            returnType = void.class
+                    )
+            },
+            description = "Sets the absolute pivot for this part. Nil values are assumed to be 0. " +
+                    "For relative pivot offsets, check out the \"bonus\" pivot functions."
+    )
+    public static void setPivot(FiguraModelPart modelPart, Object x, Double y, Double z) {
         LuaUtils.nullCheck("setPivot", "modelPart", modelPart);
-        LuaUtils.nullCheck("setPivot", "pivot", pivot);
-        modelPart.customization.setPivot(pivot);
+        if (x instanceof FiguraVec3 pivot)
+            modelPart.customization.setPivot(pivot);
+        else if (x == null || x instanceof Double) {
+            if (x == null) x = 0d;
+            if (y == null) y = 0d;
+            if (z == null) z = 0d;
+            modelPart.customization.setPivot((double) x, y, z);
+        } else {
+            throw new LuaRuntimeException("Illegal argument to setPivot(): " + x);
+        }
     }
+
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraModelPart.class,
+                    argumentNames = "modelPart",
+                    returnType = FiguraVec3.class
+            ),
+            description = "Gets the bonus pivot of the model part, offset from its pivot in blockbench. " +
+                    "For absolute pivot point values, check out the non-bonus pivot functions."
+    )
+    public static FiguraVec3 getBonusPivot(FiguraModelPart modelPart) {
+        LuaUtils.nullCheck("getBonusPivot", "modelPart", modelPart);
+        return modelPart.customization.getBonusPivot();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraModelPart.class, FiguraVec3.class},
+                            argumentNames = {"modelPart", "bonusPivot"},
+                            returnType = void.class
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraModelPart.class, Double.class, Double.class, Double.class},
+                            argumentNames = {"modelPart", "x", "y", "z"},
+                            returnType = void.class
+                    )
+            },
+            description = "Sets the bonus pivot point for this part. Nil values " +
+                    "are assumed to be 0. For absolute pivot point values, check " +
+                    "out the non-bonus pivot functions."
+    )
+    public static void setBonusPivot(FiguraModelPart modelPart, Object x, Double y, Double z) {
+        LuaUtils.nullCheck("setBonusPivot", "modelPart", modelPart);
+        if (x instanceof FiguraVec3 pivot)
+            modelPart.customization.setBonusPivot(pivot);
+        else if (x == null || x instanceof Double) {
+            if (x == null) x = 0d;
+            if (y == null) y = 0d;
+            if (z == null) z = 0d;
+            modelPart.customization.setBonusPivot((double) x, y, z);
+        } else {
+            throw new LuaRuntimeException("Illegal argument to setBonusPivot(): " + x);
+        }
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraModelPart.class,
+                    argumentNames = "modelPart",
+                    returnType = FiguraMat4.class
+            ),
+            description = "Recalculates the matrix for this model part, based on its current " +
+                    "position, rotation, scale, and pivot, then returns this matrix."
+    )
     public static FiguraMat4 getPositionMatrix(FiguraModelPart modelPart) {
         LuaUtils.nullCheck("getMatrix", "modelPart", modelPart);
         modelPart.customization.recalculate();
         return modelPart.customization.getPositionMatrix();
     }
+
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraModelPart.class,
+                    argumentNames = "modelPart",
+                    returnType = FiguraMat4.class
+            ),
+            description = "Returns the position matrix for this model part. The Raw version " +
+                    "of the function is different in that it doesn't recalculate the matrix before getting it."
+    )
     public static FiguraMat4 getPositionMatrixRaw(FiguraModelPart modelPart) {
         LuaUtils.nullCheck("getMatrixRaw", "modelPart", modelPart);
         return modelPart.customization.getPositionMatrix();
     }
+
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraModelPart.class,
+                    argumentNames = "modelPart",
+                    returnType = FiguraMat3.class
+            ),
+            description = "Recalculates the normal matrix for this model part, based on its current " +
+                    "position, rotation, scale, and pivot, then returns this matrix."
+    )
     public static FiguraMat3 getNormalMatrix(FiguraModelPart modelPart) {
         LuaUtils.nullCheck("getMatrix", "modelPart", modelPart);
         modelPart.customization.recalculate();
         return modelPart.customization.getNormalMatrix();
     }
+
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraModelPart.class,
+                    argumentNames = "modelPart",
+                    returnType = FiguraMat3.class
+            ),
+            description = "Returns the normal matrix for this model part. The Raw version " +
+                    "of the function is different in that it doesn't recalculate the matrix before returning it."
+    )
     public static FiguraMat3 getNormalMatrixRaw(FiguraModelPart modelPart) {
         LuaUtils.nullCheck("getMatrixRaw", "modelPart", modelPart);
         return modelPart.customization.getNormalMatrix();
     }
+
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = {FiguraModelPart.class, FiguraMat4.class},
+                    argumentNames = {"modelPart", "matrix"},
+                    returnType = void.class
+            ),
+            description = "Sets the given matrix as the position matrix for this model part. " +
+                    "The normal matrix is automatically calculated as the inverse transpose of this matrix. " +
+                    "Calling this DOES NOT CHANGE the values of position, rot, or scale in the model part. If you " +
+                    "call setPos() or a similar function, the effect of setMatrix() will be overwritten."
+    )
     public static void setMatrix(FiguraModelPart modelPart, FiguraMat4 matrix) {
         LuaUtils.nullCheck("setMatrix", "modelPart", modelPart);
         LuaUtils.nullCheck("setMatrix", "matrix", matrix);
         modelPart.customization.setMatrix(matrix);
     }
+
     //GetColor
     //SetColor
     //GetUV
     //SetUV
     //SetUVPixels (will set uv in pixels, automatically dividing by texture size)
     @LuaWhitelist
-    public static boolean getEnabled(FiguraModelPart modelPart) {
-        LuaUtils.nullCheck("getEnabled", "modelPart", modelPart);
-        return modelPart.customization.visible;
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraModelPart.class,
+                    argumentNames = "modelPart",
+                    returnType = boolean.class
+            ),
+            description = "Gets whether or not this model part is visible. The default value is nil, meaning " +
+                    "it copies the visibility of its parent part during rendering."
+    )
+    public static boolean getVisible(FiguraModelPart modelPart) {
+        LuaUtils.nullCheck("getVisible", "modelPart", modelPart);
+        while (modelPart != null && modelPart.customization.visible == null)
+            modelPart = modelPart.parent;
+        return modelPart == null || modelPart.customization.visible;
     }
+
     @LuaWhitelist
-    public static void setEnabled(FiguraModelPart modelPart, Boolean bool) {
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = {FiguraModelPart.class, Boolean.class},
+                    argumentNames = {"modelPart", "visible"},
+                    returnType = void.class
+            ),
+            description = "Sets this part to be visible or invisible. The default value is nil, " +
+                    "meaning the part copies its visibility from its parent part. If you want to set " +
+                    "the visibility back to the default value of nil, use resetVisible() instead."
+    )
+    public static void setVisible(FiguraModelPart modelPart, Boolean bool) {
         LuaUtils.nullCheck("setEnabled", "modelPart", modelPart);
-        if (bool == null) bool = false;
         modelPart.customization.visible = bool;
     }
+
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraModelPart.class,
+                    argumentNames = "modelPart",
+                    returnType = void.class
+            ),
+            description = "Resets the visibility status of the part to default. The default value is nil, " +
+                    "meaning the part copies the visibility from its parent part."
+    )
+    public static void resetVisible(FiguraModelPart modelPart) {
+        LuaUtils.nullCheck("setEnabled", "modelPart", modelPart);
+        modelPart.customization.visible = null;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraModelPart.class,
+                    argumentNames = "modelPart",
+                    returnType = String.class
+            ),
+            description = "Gets the current primary render type of this model part. Nil by default, " +
+                    "meaning the part copies the primary render type of its parent."
+    )
     public static String getPrimaryRenderType(FiguraModelPart modelPart) {
         LuaUtils.nullCheck("getPrimaryRenderType", "modelPart", modelPart);
         return modelPart.customization.getPrimaryRenderType();
     }
+
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraModelPart.class,
+                    argumentNames = "modelPart",
+                    returnType = String.class
+            ),
+            description = "Gets the current secondary render type of this model part. Nil by default, " +
+                    "meaning the part copies the secondary render type of its parent."
+    )
     public static String getSecondaryRenderType(FiguraModelPart modelPart) {
         LuaUtils.nullCheck("getSecondaryRenderType", "modelPart", modelPart);
         return modelPart.customization.getSecondaryRenderType();
     }
+
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = {FiguraModelPart.class, String.class},
+                    argumentNames = {"modelPart", "renderType"},
+                    returnType = void.class
+            ),
+            description = "Sets the current primary render type of this model part. Nil by default, " +
+                    "meaning the part copies the primary render type of its parent during rendering."
+    )
     public static void setPrimaryRenderType(FiguraModelPart modelPart, String type) {
         LuaUtils.nullCheck("setPrimaryRenderType", "modelPart", modelPart);
-        LuaUtils.nullCheck("setPrimaryRenderType", "type", type);
         if (!FiguraTextureSet.LEGAL_RENDER_TYPES.contains(type))
             throw new LuaRuntimeException("Illegal RenderType: \"" + type + "\".");
         modelPart.customization.setPrimaryRenderType(type);
     }
+
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = {FiguraModelPart.class, String.class},
+                    argumentNames = {"modelPart", "renderType"},
+                    returnType = void.class
+            ),
+            description = "Sets the current secondary render type of this model part. Nil by default, " +
+                    "meaning the part copies the secondary render type of its parent during rendering."
+    )
     public static void setSecondaryRenderType(FiguraModelPart modelPart, String type) {
         LuaUtils.nullCheck("setSecondaryRenderType", "modelPart", modelPart);
-        LuaUtils.nullCheck("setSecondaryRenderType", "type", type);
         if (!FiguraTextureSet.LEGAL_RENDER_TYPES.contains(type))
             throw new LuaRuntimeException("Illegal RenderType: \"" + type + "\".");
         modelPart.customization.setSecondaryRenderType(type);
     }
+
 
     //-- METAMETHODS --//
     @LuaWhitelist
@@ -266,6 +678,8 @@ public class FiguraModelPart {
         this.customization = customization;
         this.index = index;
         this.children = children;
+        for (FiguraModelPart child : children)
+            child.parent = this;
     }
 
     public static FiguraModelPart read(CompoundTag partCompound, List<FiguraImmediateBuffer.Builder> bufferBuilders) {

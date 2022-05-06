@@ -14,7 +14,7 @@ import java.util.Map;
 @LuaWhitelist
 public class LuaTable {
 
-    private final Map<String, Object> map;
+    private final Map<Object, Object> map;
 
     public LuaTable() {
         map = new HashMap<>();
@@ -25,19 +25,23 @@ public class LuaTable {
         return this;
     }
 
-    public LuaTable put(int key, Object value) {
-        map.put(String.valueOf(key), value);
+    public LuaTable put(Integer key, Object value) {
+        map.put(key, value);
         return this;
     }
 
     public void push(LuaState luaState) {
         luaState.newTable();
-        for (Map.Entry<String, Object> entry : map.entrySet()) {
+        for (Map.Entry<Object, Object> entry : map.entrySet()) {
             if (entry.getValue() instanceof JavaFunction func)
                 luaState.pushJavaFunction(func);
             else
                 luaState.pushJavaObject(entry.getValue());
-            luaState.setField(-2, entry.getKey());
+
+            if (entry.getKey() instanceof Integer val)
+                luaState.rawSet(-2, val);
+            else
+                luaState.setField(-2, String.valueOf(entry.getKey()));
         }
     }
 

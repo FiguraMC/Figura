@@ -3,6 +3,8 @@ package org.moon.figura.lua.docs;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
+import org.moon.figura.FiguraMod;
+import org.moon.figura.avatars.model.FiguraModelPart;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.EventsAPI;
 import org.moon.figura.lua.api.entity.EntityWrapper;
@@ -32,6 +34,10 @@ public class FiguraDocsManager {
      * many different APIs and autocomplete will get cluttered.
      */
     public static Map<String, List<Class<?>>> DOCUMENTED_CLASSES = new HashMap<>() {{
+
+        put("model", new ArrayList<>() {{
+            add(FiguraModelPart.class);
+        }});
 
         //Entity classes
         put("entity", new ArrayList<>() {{
@@ -87,6 +93,7 @@ public class FiguraDocsManager {
 
         //Lua things
         put(LuaFunction.class, "function");
+        put(LuaTable.class, "table");
     }};
 
     private static class ClassDoc {
@@ -102,9 +109,14 @@ public class FiguraDocsManager {
             NAME_MAP.put(clazz, name);
             documentedMethods = new ArrayList<>(clazz.getMethods().length);
             for (Method method : clazz.getMethods()) {
-                if (method.isAnnotationPresent(LuaWhitelist.class)
-                && method.isAnnotationPresent(LuaMethodDoc.class)) {
-                    documentedMethods.add(new MethodDoc(method));
+                if (method.isAnnotationPresent(LuaMethodDoc.class)) {
+                    if (method.isAnnotationPresent(LuaWhitelist.class)) {
+                        documentedMethods.add(new MethodDoc(method));
+                    } else {
+                        FiguraMod.LOGGER.warn("Docs manager found a method that " +
+                                "had documentation, but wasn't whitelisted: " + method.getName() +
+                                " in " + method.getDeclaringClass().getName());
+                    }
                 }
             }
         }

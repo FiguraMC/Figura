@@ -14,7 +14,7 @@ import org.terasology.jnlua.LuaRuntimeException;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "Vector3",
-        description = "A vector that holds 3 numbers."
+        description = "A vector that holds 3 numbers. Can be created using functions in the \"vectors\" api."
 )
 public class FiguraVec3 implements CachedType {
 

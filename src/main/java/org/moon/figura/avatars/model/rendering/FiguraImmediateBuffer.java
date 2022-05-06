@@ -75,6 +75,16 @@ public class FiguraImmediateBuffer {
     }
 
     public void pushVertices(MultiBufferSource bufferSource, int light, int overlay, int faceCount) {
+        //Handle cases that we can quickly
+        if (faceCount == 0)
+            return;
+        if (!customizationStack.peek().visible) {
+            positions.position(positions.position() + faceCount * 12);
+            uvs.position(uvs.position() + faceCount * 8);
+            normals.position(normals.position() + faceCount * 12);
+            return;
+        }
+
         RenderType primary = textureSet.getRenderType(customizationStack.peek().getPrimaryRenderType());
         RenderType secondary = textureSet.getRenderType(customizationStack.peek().getSecondaryRenderType());
         if (primary != null) {

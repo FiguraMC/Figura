@@ -64,6 +64,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
     public void render() {
         //Push position and normal matrices
         PartCustomization customization = transformRoot();
+        customization.visible = true;
 
         //Iterate and setup each buffer
         for (FiguraImmediateBuffer buffer : buffers) {

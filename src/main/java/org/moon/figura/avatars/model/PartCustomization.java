@@ -22,7 +22,7 @@ public class PartCustomization implements CachedType {
     public FiguraMat3 normalMatrix = FiguraMat3.of();
 
     public boolean needsMatrixRecalculation = true;
-    public boolean visible = true;
+    public Boolean visible = null;
 
     private FiguraVec3 position = FiguraVec3.of();
     private FiguraVec3 rotation = FiguraVec3.of();
@@ -82,6 +82,7 @@ public class PartCustomization implements CachedType {
     public FiguraVec3 getPos() {
         return FiguraVec3.of(position.x, position.y, position.z);
     }
+
     public void setRot(FiguraVec3 rot) {
         setRot(rot.x, rot.y, rot.z);
     }
@@ -92,6 +93,7 @@ public class PartCustomization implements CachedType {
     public FiguraVec3 getRot() {
         return FiguraVec3.of(rotation.x, rotation.y, rotation.z);
     }
+
     public void setScale(FiguraVec3 scale) {
         setScale(scale.x, scale.y, scale.z);
     }
@@ -102,6 +104,7 @@ public class PartCustomization implements CachedType {
     public FiguraVec3 getScale() {
         return FiguraVec3.of(scale.x, scale.y, scale.z);
     }
+
     public void setPivot(FiguraVec3 pivot) {
         setPivot(pivot.x, pivot.y, pivot.z);
     }
@@ -112,6 +115,7 @@ public class PartCustomization implements CachedType {
     public FiguraVec3 getPivot() {
         return FiguraVec3.of(pivot.x, pivot.y, pivot.z);
     }
+
     public void setBonusPivot(FiguraVec3 bonusPivot) {
         setBonusPivot(bonusPivot.x, bonusPivot.y, bonusPivot.z);
     }
@@ -119,6 +123,10 @@ public class PartCustomization implements CachedType {
         bonusPivot.set(x, y, z);
         needsMatrixRecalculation = true;
     }
+    public FiguraVec3 getBonusPivot() {
+        return FiguraVec3.of(bonusPivot.x, bonusPivot.y, bonusPivot.z);
+    }
+
     public void setBonusPos(FiguraVec3 bonusPos) {
         setBonusPos(bonusPos.x, bonusPos.y, bonusPos.z);
     }
@@ -126,6 +134,10 @@ public class PartCustomization implements CachedType {
         bonusPos.set(x, y, z);
         needsMatrixRecalculation = true;
     }
+    public FiguraVec3 getBonusPos() {
+        return FiguraVec3.of(bonusPos.x, bonusPos.y, bonusPos.z);
+    }
+
     public void setBonusRot(FiguraVec3 bonusRot) {
         setBonusRot(bonusRot.x, bonusRot.y, bonusRot.z);
     }
@@ -133,6 +145,10 @@ public class PartCustomization implements CachedType {
         bonusRot.set(x, y, z);
         needsMatrixRecalculation = true;
     }
+    public FiguraVec3 getBonusRot() {
+        return FiguraVec3.of(bonusRot.x, bonusRot.y, bonusRot.z);
+    }
+
 
 
     public void setMatrix(FiguraMat4 matrix) {
@@ -190,7 +206,7 @@ public class PartCustomization implements CachedType {
         bonusPos = FiguraVec3.of();
         bonusRot = FiguraVec3.of();
         needsMatrixRecalculation = false;
-        visible = true;
+        visible = null;
     }
     public void free() {
         positionMatrix.free();
@@ -230,6 +246,7 @@ public class PartCustomization implements CachedType {
             to.setBonusPos(from.bonusPos);
             to.setBonusRot(from.bonusRot);
             to.needsMatrixRecalculation = from.needsMatrixRecalculation;
+            to.visible = from.visible;
             to.setPrimaryRenderType(from.primaryRenderType);
             to.setSecondaryRenderType(from.secondaryRenderType);
         }
@@ -245,8 +262,8 @@ public class PartCustomization implements CachedType {
         if (other.secondaryRenderType != null)
             setSecondaryRenderType(other.secondaryRenderType);
 
-        if (!other.visible)
-            visible = false; //Default state is assumed to be visible
+        if (other.visible != null)
+            visible = other.visible;
     }
 
 

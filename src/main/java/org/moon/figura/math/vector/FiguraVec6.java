@@ -12,7 +12,7 @@ import org.terasology.jnlua.LuaRuntimeException;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "Vector6",
-        description = "A vector that holds 6 numbers."
+        description = "A vector that holds 6 numbers. Can be created using functions in the \"vectors\" api."
 )
 public class FiguraVec6 implements CachedType {
 
