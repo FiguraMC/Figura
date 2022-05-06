@@ -1,6 +1,7 @@
 package org.moon.figura.lua;
 
 import org.moon.figura.FiguraMod;
+import org.moon.figura.lua.types.LuaTable;
 import org.terasology.jnlua.*;
 
 import java.lang.reflect.Field;
@@ -78,7 +79,8 @@ public class FiguraJavaReflector implements JavaReflector {
             Field f = fieldCache.get(objectClass).get(key);
             if (f != null && !Modifier.isFinal(f.getModifiers()))
                 f.set(object, luaState.toJavaObject(3, f.getType()));
-
+            else
+                throw new LuaRuntimeException("Attempt to assign invalid value " + key + ".");
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
@@ -122,6 +124,23 @@ public class FiguraJavaReflector implements JavaReflector {
         }
 
         return 0;
+    }
+
+    public static LuaTable getTableRepresentation(Object o) {
+        Class<?> clazz = o.getClass();
+        buildCachesIfNeeded(clazz);
+        if (!o.getClass().isAnnotationPresent(LuaWhitelist.class))
+            return null;
+        LuaTable result = new LuaTable();
+        try {
+            for (Map.Entry<String, Field> fieldEntry : fieldCache.get(clazz).entrySet())
+                result.put(fieldEntry.getKey(), fieldEntry.getValue().get(o));
+            for (Map.Entry<String, MethodWrapper> methodsEntry : methodCache.get(clazz).entrySet())
+                result.put(methodsEntry.getKey(), methodsEntry.getValue());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
     //If you try to overload any of these metamethods, building caches will
@@ -232,6 +251,11 @@ public class FiguraJavaReflector implements JavaReflector {
                 throw new LuaRuntimeException(e.getTargetException().getMessage());
             }
             return ret;
+        }
+
+        @Override
+        public String toString() {
+            return "JavaFunction";
         }
     }
 

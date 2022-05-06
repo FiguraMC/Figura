@@ -11,6 +11,7 @@ import org.moon.figura.lua.api.entity.PlayerEntityWrapper;
 import org.moon.figura.lua.api.math.MatricesAPI;
 import org.moon.figura.lua.api.math.VectorsAPI;
 import org.moon.figura.lua.api.world.WorldAPI;
+import org.moon.figura.lua.types.LuaTable;
 import org.moon.figura.utils.ColorUtils.Colors;
 import org.moon.figura.utils.TextUtils;
 import org.terasology.jnlua.*;
@@ -278,6 +279,14 @@ public class FiguraLuaState extends LuaState53 {
     };
 
     private static final JavaFunction PRINT_TABLE_FUNCTION = luaState -> {
+        //If we have a userdata item, get its table representation and print that instead
+        if (luaState.type(1) == LuaType.USERDATA) {
+            LuaTable table = FiguraJavaReflector.getTableRepresentation(luaState.toJavaObject(1, Object.class));
+            if (table != null) {
+                table.push(luaState);
+                luaState.replace(1);
+            }
+        }
         int depth = luaState.getTop() > 1 ? (int) luaState.checkInteger(2) : 1;
         Component result = tableToText(luaState, 1, depth, 1);
         sendLuaMessage(result, ((FiguraLuaState) luaState).owner.name);

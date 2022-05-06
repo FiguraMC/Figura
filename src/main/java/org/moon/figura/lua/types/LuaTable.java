@@ -1,6 +1,7 @@
 package org.moon.figura.lua.types;
 
 import org.moon.figura.lua.LuaWhitelist;
+import org.terasology.jnlua.JavaFunction;
 import org.terasology.jnlua.LuaState;
 
 import java.util.HashMap;
@@ -19,12 +20,12 @@ public class LuaTable {
         map = new HashMap<>();
     }
 
-    public LuaTable add(String key, Object value) {
+    public LuaTable put(String key, Object value) {
         map.put(key, value);
         return this;
     }
 
-    public LuaTable add(int key, Object value) {
+    public LuaTable put(int key, Object value) {
         map.put(String.valueOf(key), value);
         return this;
     }
@@ -32,7 +33,10 @@ public class LuaTable {
     public void push(LuaState luaState) {
         luaState.newTable();
         for (Map.Entry<String, Object> entry : map.entrySet()) {
-            luaState.pushJavaObject(entry.getValue());
+            if (entry.getValue() instanceof JavaFunction func)
+                luaState.pushJavaFunction(func);
+            else
+                luaState.pushJavaObject(entry.getValue());
             luaState.setField(-2, entry.getKey());
         }
     }
