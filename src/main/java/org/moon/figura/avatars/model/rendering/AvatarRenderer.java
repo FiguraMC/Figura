@@ -32,8 +32,6 @@ public abstract class AvatarRenderer {
     public MultiBufferSource bufferSource;
     public EntityModel<?> vanillaModel;
 
-    public boolean inWorld = true;
-
     public AvatarRenderer(Avatar avatar, CompoundTag avatarCompound) {
         this.avatar = avatar;
     }

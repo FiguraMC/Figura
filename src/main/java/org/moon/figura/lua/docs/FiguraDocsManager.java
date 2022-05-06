@@ -4,8 +4,14 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.lua.api.EventsAPI;
+import org.moon.figura.lua.api.entity.EntityWrapper;
+import org.moon.figura.lua.api.entity.LivingEntityWrapper;
+import org.moon.figura.lua.api.entity.PlayerEntityWrapper;
 import org.moon.figura.lua.api.math.MatricesAPI;
 import org.moon.figura.lua.api.math.VectorsAPI;
+import org.moon.figura.lua.types.LuaFunction;
+import org.moon.figura.lua.types.LuaTable;
 import org.moon.figura.math.matrix.FiguraMat2;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
@@ -22,28 +28,46 @@ public class FiguraDocsManager {
      * Update this list of classes manually. The docs manager will scan through
      * all the classes in this static set, and generate documentation for
      * all of them, based on the annotations of members within.
+     * Entries of the map are group names, because otherwise there will be too
+     * many different APIs and autocomplete will get cluttered.
      */
-    public static List<Class<?>> DOCUMENTED_CLASSES = new ArrayList<>() {{
+    public static Map<String, List<Class<?>>> DOCUMENTED_CLASSES = new HashMap<>() {{
+
+        //Entity classes
+        put("entity", new ArrayList<>() {{
+            add(EntityWrapper.class);
+            add(LivingEntityWrapper.class);
+            add(PlayerEntityWrapper.class);
+        }});
+
+        //Events
+        put("event", new ArrayList<>() {{
+            add(EventsAPI.class);
+            add(EventsAPI.LuaEvent.class);
+        }});
+
+        //Math classes, including vectors and matrices
+        put("math", new ArrayList<>() {{
+            //Vectors
+            add(VectorsAPI.class);
+            add(FiguraVec2.class);
+            add(FiguraVec3.class);
+            add(FiguraVec4.class);
+            add(FiguraVec5.class);
+            add(FiguraVec6.class);
+            //Matrices
+            add(MatricesAPI.class);
+            add(FiguraMat2.class);
+            add(FiguraMat3.class);
+            add(FiguraMat4.class);
+        }});
 
 
-        //Vectors
-        add(VectorsAPI.class);
-        add(FiguraVec2.class);
-        add(FiguraVec3.class);
-        add(FiguraVec4.class);
-        add(FiguraVec5.class);
-        add(FiguraVec6.class);
-
-        //Matrices
-        add(MatricesAPI.class);
-        add(FiguraMat2.class);
-        add(FiguraMat3.class);
-        add(FiguraMat4.class);
     }};
 
-    private static final List<ClassDoc> GENERATED_CLASS_DOCS = new ArrayList<>();
+    private static final Map<String, List<ClassDoc>> GENERATED_CLASS_DOCS = new HashMap<>();
     private static final Map<Class<?>, String> NAME_MAP = new HashMap<>() {{
-        //Default java values
+        //Built in type names, even for things that don't have docs
         put(Double.class, "number");
         put(double.class, "number");
         put(Float.class, "number");
@@ -60,6 +84,9 @@ public class FiguraDocsManager {
 
         put(Boolean.class, "boolean");
         put(boolean.class, "boolean");
+
+        //Lua things
+        put(LuaFunction.class, "function");
     }};
 
     private static class ClassDoc {
@@ -136,10 +163,9 @@ public class FiguraDocsManager {
                     builder.append(typeName).append(" ").append(parameterNames[i][j]);
                     if (j != parameterTypes[i].length-1)
                         builder.append(", ");
-                    else
-                        builder.append("): ");
+
                 }
-                builder.append("Returns " + NAME_MAP.get(returnTypes[i])).append("\n");
+                builder.append("): Returns ").append(NAME_MAP.get(returnTypes[i])).append("\n");
             }
             builder.append("DESCRIPTION:\n\t");
             builder.append(description);
@@ -149,13 +175,13 @@ public class FiguraDocsManager {
 
     public static void init(CommandDispatcher<FabricClientCommandSource> dispatcher) {
         //Initialize all the ClassDoc instances
-        for (Class<?> documentedClass : DOCUMENTED_CLASSES) {
-            if (documentedClass.isAnnotationPresent(LuaWhitelist.class)
-                    && documentedClass.isAnnotationPresent(LuaTypeDoc.class)) {
-                ClassDoc doc = new ClassDoc(documentedClass);
-                GENERATED_CLASS_DOCS.add(doc);
-            }
-        }
+        for (Map.Entry<String, List<Class<?>>> packageEntry : DOCUMENTED_CLASSES.entrySet())
+            for (Class<?> documentedClass : packageEntry.getValue())
+                if (documentedClass.isAnnotationPresent(LuaWhitelist.class)
+                        && documentedClass.isAnnotationPresent(LuaTypeDoc.class))
+                    GENERATED_CLASS_DOCS.computeIfAbsent(
+                            packageEntry.getKey(), (key) -> new ArrayList<>()
+                    ).add(new ClassDoc(documentedClass));
 
         initCommand(dispatcher);
     }
@@ -165,15 +191,19 @@ public class FiguraDocsManager {
         LiteralArgumentBuilder<FabricClientCommandSource> root = LiteralArgumentBuilder.literal("figura");
 
         LiteralArgumentBuilder<FabricClientCommandSource> docs = LiteralArgumentBuilder.literal("docs");
-        for (ClassDoc classDoc : GENERATED_CLASS_DOCS) {
-            LiteralArgumentBuilder<FabricClientCommandSource> typeBranch = LiteralArgumentBuilder.literal(classDoc.name);
-            typeBranch.executes(context -> {classDoc.print(); return 0;});
-            for (MethodDoc methodDoc : classDoc.documentedMethods) {
-                LiteralArgumentBuilder<FabricClientCommandSource> methodBranch = LiteralArgumentBuilder.literal(methodDoc.name);
-                methodBranch.executes(context -> {methodDoc.print(); return 0;});
-                typeBranch.then(methodBranch);
+        for (Map.Entry<String, List<ClassDoc>> entry : GENERATED_CLASS_DOCS.entrySet()) {
+            LiteralArgumentBuilder<FabricClientCommandSource> group = LiteralArgumentBuilder.literal(entry.getKey());
+            for (ClassDoc classDoc : entry.getValue()) {
+                LiteralArgumentBuilder<FabricClientCommandSource> typeBranch = LiteralArgumentBuilder.literal(classDoc.name);
+                typeBranch.executes(context -> {classDoc.print(); return 0;});
+                for (MethodDoc methodDoc : classDoc.documentedMethods) {
+                    LiteralArgumentBuilder<FabricClientCommandSource> methodBranch = LiteralArgumentBuilder.literal(methodDoc.name);
+                    methodBranch.executes(context -> {methodDoc.print(); return 0;});
+                    typeBranch.then(methodBranch);
+                }
+                group.then(typeBranch);
             }
-            docs.then(typeBranch);
+            docs.then(group);
         }
         root.then(docs);
 

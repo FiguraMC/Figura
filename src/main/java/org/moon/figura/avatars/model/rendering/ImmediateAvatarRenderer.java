@@ -25,9 +25,6 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         List<FiguraImmediateBuffer.Builder> builders = new ArrayList<>();
         root = FiguraModelPart.read(avatarCompound.getCompound("models"), builders);
 
-        //TODO: THIS IS FOR TEST
-        //root.parentType = FiguraModelPart.ParentType.LeftArm;
-
         double scale = 1.0 / 16;
         root.customization.setScale(scale, scale, scale);
         root.customization.needsMatrixRecalculation = true;
@@ -66,7 +63,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
     @Override
     public void render() {
         //Push position and normal matrices
-        PartCustomization customization = inWorld ? transformToWorld() : transformToUI();
+        PartCustomization customization = transformRoot();
 
         //Iterate and setup each buffer
         for (FiguraImmediateBuffer buffer : buffers) {
@@ -91,26 +88,9 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         }
     }
 
-    private PartCustomization transformToWorld() {
-//        PartCustomization customization = PartCustomization.of();
-//        FiguraMat4 posMat = entityToWorldMatrix(entity, tickDelta);
-//        FiguraMat4 worldToView = worldToViewMatrix();
-//        posMat.multiply(worldToView);
-//        FiguraMat3 normalMat = posMat.deaugmented();
-//
-//        customization.positionMatrix.set(posMat);
-//        customization.normalMatrix.set(normalMat);
-//
-//        //Free matrices after use
-//        posMat.free();
-//        worldToView.free();
-//        normalMat.free();
-
+    private PartCustomization transformRoot() {
         PartCustomization customization = PartCustomization.of();
 
-        double yawOffsetRot = getYawOffsetRot(entity, tickDelta);
-        //customization.positionMatrix.rotateY(yawOffsetRot);
-        //customization.normalMatrix.rotateY(yawOffsetRot);
         customization.positionMatrix.rotateZ(180);
         customization.positionMatrix.translate(0, 1.5, 0);
         customization.normalMatrix.rotateZ(180);
@@ -124,23 +104,6 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         posMat.free();
         normalMat.free();
 
-        return customization;
-    }
-
-    private PartCustomization transformToUI() {
-        PartCustomization customization = PartCustomization.of();
-
-        customization.positionMatrix.rotateY(180 - entity.getYRot());
-        customization.normalMatrix.rotateY(180 - entity.getYRot());
-
-        FiguraMat4 posMat = FiguraMat4.fromMatrix4f(matrices.last().pose());
-        FiguraMat3 normalMat = FiguraMat3.fromMatrix3f(matrices.last().normal());
-
-        customization.positionMatrix.multiply(posMat);
-        customization.normalMatrix.multiply(normalMat);
-
-        posMat.free();
-        normalMat.free();
         return customization;
     }
 
