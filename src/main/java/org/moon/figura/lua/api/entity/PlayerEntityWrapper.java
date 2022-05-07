@@ -8,6 +8,8 @@ import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.utils.LuaUtils;
 import org.terasology.jnlua.LuaRuntimeException;
 
+import java.util.UUID;
+
 @LuaWhitelist
 @LuaTypeDoc(
         name = "Player",
@@ -15,8 +17,8 @@ import org.terasology.jnlua.LuaRuntimeException;
 )
 public class PlayerEntityWrapper extends LivingEntityWrapper<Player> {
 
-    public PlayerEntityWrapper(Player wrapped) {
-        super(wrapped);
+    public PlayerEntityWrapper(UUID uuid) {
+        super(uuid);
     }
 
     @LuaWhitelist

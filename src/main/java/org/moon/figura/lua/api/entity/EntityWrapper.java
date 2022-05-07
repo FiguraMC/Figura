@@ -30,8 +30,8 @@ public class EntityWrapper<T extends Entity> {
         return getEntityByUUID(savedUUID);
     }
 
-    public EntityWrapper(T wrapped) {
-        savedUUID = wrapped.getUUID();
+    public EntityWrapper(UUID uuid) {
+        savedUUID = uuid;
     }
 
     private T getEntityByUUID(UUID uuid) {

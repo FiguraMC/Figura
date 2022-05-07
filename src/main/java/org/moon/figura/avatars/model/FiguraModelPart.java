@@ -108,8 +108,7 @@ public class FiguraModelPart {
             return;
 
         FiguraVec3 defaultPivot = VanillaPartOffsetManager.getVanillaOffset(vanillaModel, parentType);
-        FiguraVec3 currentPivot = FiguraVec3.of(part.x, part.y, part.z);
-        defaultPivot.subtract(currentPivot);
+        defaultPivot.subtract(part.x, part.y, part.z);
         defaultPivot.multiply(1, 1, -1);
 
         customization.setBonusPivot(defaultPivot);
@@ -118,7 +117,6 @@ public class FiguraModelPart {
         //customization.setBonusPivot(pivot);
         customization.setBonusRot(Math.toDegrees(-part.xRot), Math.toDegrees(-part.yRot), Math.toDegrees(part.zRot));
 
-        currentPivot.free();
         defaultPivot.free();
     }
 

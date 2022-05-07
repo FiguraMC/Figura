@@ -10,6 +10,7 @@ import org.moon.figura.lua.api.EventsAPI;
 import org.moon.figura.lua.api.entity.PlayerEntityWrapper;
 import org.moon.figura.lua.api.math.MatricesAPI;
 import org.moon.figura.lua.api.math.VectorsAPI;
+import org.moon.figura.lua.api.model.VanillaModelAPI;
 import org.moon.figura.lua.api.world.WorldAPI;
 import org.moon.figura.lua.types.LuaTable;
 import org.moon.figura.utils.ColorUtils.Colors;
@@ -25,7 +26,10 @@ public class FiguraLuaState extends LuaState53 {
     private static String sandboxerScript;
 
     private final Avatar owner;
+
+    //API References
     public EventsAPI events;
+    public VanillaModelAPI vanillaModel;
 
     public FiguraLuaState(Avatar owner, int memory) {
         super(memory * 1_000_000); //memory is given in mb
@@ -96,8 +100,10 @@ public class FiguraLuaState extends LuaState53 {
         loadGlobal(MatricesAPI.INSTANCE, "matrices");
         events = new EventsAPI();
         loadGlobal(events, "events");
+        vanillaModel = new VanillaModelAPI();
+        loadGlobal(vanillaModel, "vanilla_model");
         loadGlobal(WorldAPI.INSTANCE, "world");
-        loadGlobal(new PlayerEntityWrapper(Minecraft.getInstance().player), "player");
+        loadGlobal(new PlayerEntityWrapper(owner.owner), "player");
     }
 
     private void loadSetHook() {

@@ -10,6 +10,8 @@ import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.utils.LuaUtils;
 import org.terasology.jnlua.LuaRuntimeException;
 
+import java.util.UUID;
+
 @LuaWhitelist
 @LuaTypeDoc(
         name = "LivingEntity",
@@ -17,8 +19,8 @@ import org.terasology.jnlua.LuaRuntimeException;
 )
 public class LivingEntityWrapper<T extends LivingEntity> extends EntityWrapper<T> {
 
-    public LivingEntityWrapper(T wrapped) {
-        super(wrapped);
+    public LivingEntityWrapper(UUID uuid) {
+        super(uuid);
     }
 
     @LuaWhitelist

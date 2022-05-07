@@ -8,7 +8,7 @@ import org.moon.figura.math.vector.FiguraVec3;
 public class VanillaPartOffsetManager {
 
     /**
-     * Returns a NEW vector, so you can modify it and free it at the end.
+     * Returns a NEW vector, so you can modify it and free it when you're done.
      * @param model
      * @param parentType
      * @return

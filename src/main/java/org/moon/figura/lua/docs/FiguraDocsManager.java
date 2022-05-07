@@ -12,6 +12,7 @@ import org.moon.figura.lua.api.entity.LivingEntityWrapper;
 import org.moon.figura.lua.api.entity.PlayerEntityWrapper;
 import org.moon.figura.lua.api.math.MatricesAPI;
 import org.moon.figura.lua.api.math.VectorsAPI;
+import org.moon.figura.lua.api.model.VanillaModelAPI;
 import org.moon.figura.lua.types.LuaFunction;
 import org.moon.figura.lua.types.LuaTable;
 import org.moon.figura.math.matrix.FiguraMat2;
@@ -35,8 +36,11 @@ public class FiguraDocsManager {
      */
     public static Map<String, List<Class<?>>> DOCUMENTED_CLASSES = new HashMap<>() {{
 
+        //Model classes
         put("model", new ArrayList<>() {{
             add(FiguraModelPart.class);
+            add(VanillaModelAPI.class);
+            add(VanillaModelAPI.VanillaModelPart.class);
         }});
 
         //Entity classes
