@@ -6,6 +6,8 @@ import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.config.Config;
 import org.moon.figura.lua.api.EventsAPI;
+import org.moon.figura.lua.api.ParticleAPI;
+import org.moon.figura.lua.api.SoundAPI;
 import org.moon.figura.lua.api.entity.PlayerEntityWrapper;
 import org.moon.figura.lua.api.math.MatricesAPI;
 import org.moon.figura.lua.api.math.VectorsAPI;
@@ -103,6 +105,8 @@ public class FiguraLuaState extends LuaState53 {
         loadGlobal(vanillaModel, "vanilla_model");
         loadGlobal(WorldAPI.INSTANCE, "world");
         loadGlobal(new PlayerEntityWrapper(owner.owner), "player");
+        loadGlobal(ParticleAPI.INSTANCE, "particle");
+        loadGlobal(SoundAPI.INSTANCE, "sound");
     }
 
     private void loadSetHook() {
