@@ -15,6 +15,9 @@ import org.moon.figura.lua.api.entity.PlayerEntityWrapper;
 import org.moon.figura.lua.api.math.MatricesAPI;
 import org.moon.figura.lua.api.math.VectorsAPI;
 import org.moon.figura.lua.api.model.VanillaModelAPI;
+import org.moon.figura.lua.api.world.BiomeWrapper;
+import org.moon.figura.lua.api.world.BlockStateWrapper;
+import org.moon.figura.lua.api.world.WorldAPI;
 import org.moon.figura.lua.types.LuaFunction;
 import org.moon.figura.lua.types.LuaTable;
 import org.moon.figura.math.matrix.FiguraMat2;
@@ -36,10 +39,17 @@ public class FiguraDocsManager {
      * Update this list of classes manually. The docs manager will scan through
      * all the classes in this static set, and generate documentation for
      * all of them, based on the annotations of members within.
-     * Entries of the map are group names, because otherwise there will be too
-     * many different APIs and autocomplete will get cluttered.
+     * Entries of the map are organized by group names, because otherwise there
+     * will be too many different APIs and autocomplete will get cluttered.
      */
     public static Map<String, List<Class<?>>> DOCUMENTED_CLASSES = new HashMap<>() {{
+
+        //World classes
+        put("world", new ArrayList<>() {{
+            add(WorldAPI.class);
+            add(BlockStateWrapper.class);
+            add(BiomeWrapper.class);
+        }});
 
         //Model classes
         put("model", new ArrayList<>() {{
@@ -81,7 +91,7 @@ public class FiguraDocsManager {
     }};
 
     private static final Map<String, List<ClassDoc>> GENERATED_CLASS_DOCS = new HashMap<>();
-    private static final Map<Class<?>, String> NAME_MAP = new HashMap<>() {{
+    public static final Map<Class<?>, String> NAME_MAP = new HashMap<>() {{
         //Built in type names, even for things that don't have docs
         put(Double.class, "Number");
         put(double.class, "Number");

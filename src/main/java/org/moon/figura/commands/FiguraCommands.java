@@ -25,6 +25,9 @@ public class FiguraCommands {
         //links
         root.then(FiguraLinks.generateLinks());
 
+        //run
+        root.then(FiguraRunCommand.generateRunCommand());
+
         //register
         ClientCommandManager.DISPATCHER.register(root);
     }

@@ -1,6 +1,8 @@
 package org.moon.figura.utils;
 
 import org.moon.figura.FiguraMod;
+import org.moon.figura.math.vector.FiguraVec2;
+import org.moon.figura.math.vector.FiguraVec3;
 import org.terasology.jnlua.LuaRuntimeException;
 import org.terasology.jnlua.LuaState;
 import org.terasology.jnlua.LuaType;
@@ -32,6 +34,44 @@ public class LuaUtils {
     public static void nullCheck(String methodName, String parameterName, Object arg) throws LuaRuntimeException {
         if (arg == null)
             throw new LuaRuntimeException("Cannot call " + methodName + " with nil value for parameter \"" + parameterName + "\"!");
+    }
+
+    /**
+     * This code gets repeated SO MUCH that I decided to put it in the utils class.
+     * @param x Either the x coordinate of a vector, or a vector itself.
+     * @param y The y coordinate of a vector, used if the first parameter was a number.
+     * @param z The z coordinate of a vector, used if the first parameter was a number.
+     * @return A FiguraVec3 representing the data passed in.
+     */
+    public static FiguraVec3 parseVec3(String methodName, Object x, Double y, Double z) {
+        return parseVec3(methodName, x, y, z, 0, 0, 0);
+    }
+
+    public static FiguraVec3 parseVec3(String methodName, Object x, Double y, Double z, double defaultX, double defaultY, double defaultZ) {
+        if (x instanceof FiguraVec3 vec)
+            return vec.copy();
+        if (x == null || x instanceof Double) {
+            if (x == null) x = defaultX;
+            if (y == null) y = defaultY;
+            if (z == null) z = defaultZ;
+            return FiguraVec3.of((double) x, y, z);
+        }
+        throw new LuaRuntimeException("Illegal argument to " + methodName + "(): " + x);
+    }
+
+    public static FiguraVec2 parseVec2(String methodName, Object x, Double y) {
+        return parseVec2(methodName, x, y, 0, 0);
+    }
+
+    public static FiguraVec2 parseVec2(String methodName, Object x, Double y, double defaultX, double defaultY) {
+        if (x instanceof FiguraVec2 vec)
+            return vec.copy();
+        if (x == null || x instanceof Double) {
+            if (x == null) x = defaultX;
+            if (y == null) y = defaultY;
+            return FiguraVec2.of((double) x, y);
+        }
+        throw new LuaRuntimeException("Illegal argument to " + methodName + "(): " + x);
     }
 
     /**

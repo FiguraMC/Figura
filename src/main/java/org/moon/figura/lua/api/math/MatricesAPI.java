@@ -144,16 +144,10 @@ public class MatricesAPI {
                     "Angles are given in degrees, and the rotation order is ZYX."
     )
     public static FiguraMat3 rotation3(Object x, Double y, Double z) {
-        if (x instanceof FiguraVec3 angles)
-            return FiguraMat3.createZYXRotationMatrix(angles.x, angles.y, angles.z);
-        else if (x == null || x instanceof Double) {
-            if (x == null) x = 0d;
-            if (y == null) y = 0d;
-            if (z == null) z = 0d;
-            return FiguraMat3.createZYXRotationMatrix((double) x, y, z);
-        } else {
-            throw new LuaRuntimeException("Illegal argument to rotation3(): " + x);
-        }
+        FiguraVec3 angles = LuaUtils.parseVec3("rotation3", x, y, z);
+        FiguraMat3 result = FiguraMat3.createZYXRotationMatrix(angles.x, angles.y, angles.z);
+        angles.free();
+        return result;
     }
 
     @LuaWhitelist
@@ -219,16 +213,10 @@ public class MatricesAPI {
                     "Angles are given in degrees, and the rotation order is ZYX."
     )
     public static FiguraMat4 rotation4(Object x, Double y, Double z) {
-        if (x instanceof FiguraVec3 angles)
-            return FiguraMat4.createZYXRotationMatrix(angles.x, angles.y, angles.z);
-        else if (x == null || x instanceof Double) {
-            if (x == null) x = 0d;
-            if (y == null) y = 0d;
-            if (z == null) z = 0d;
-            return FiguraMat4.createZYXRotationMatrix((double) x, y, z);
-        } else {
-            throw new LuaRuntimeException("Illegal argument to rotation4(): " + x);
-        }
+        FiguraVec3 angles = LuaUtils.parseVec3("rotation4", x, y, z);
+        FiguraMat4 result = FiguraMat4.createZYXRotationMatrix(angles.x, angles.y, angles.z);
+        angles.free();
+        return result;
     }
 
     @LuaWhitelist
@@ -294,15 +282,10 @@ public class MatricesAPI {
             description = "Creates a new Matrix2 that scales by the specified factors."
     )
     public static FiguraMat2 scale2(Object x, Double y) {
-        if (x instanceof FiguraVec2 vec)
-            return FiguraMat2.createScaleMatrix(vec.x, vec.y);
-        else if (x == null || x instanceof Double) {
-            if (x == null) x = 1d;
-            if (y == null) y = 1d;
-            return FiguraMat2.createScaleMatrix((double) x, y);
-        } else {
-            throw new LuaRuntimeException("Illegal argument to scale2(): " + x);
-        }
+        FiguraVec2 vec = LuaUtils.parseVec2("scale2", x, y, 1, 1);
+        FiguraMat2 result = FiguraMat2.createScaleMatrix(vec.x, vec.y);
+        vec.free();
+        return result;
     }
 
     @LuaWhitelist
@@ -322,16 +305,10 @@ public class MatricesAPI {
             description = "Creates a new Matrix3 that scales by the specified factors."
     )
     public static FiguraMat3 scale3(Object x, Double y, Double z) {
-        if (x instanceof FiguraVec3 vec)
-            return FiguraMat3.createScaleMatrix(vec.x, vec.y, vec.z);
-        else if (x == null || x instanceof Double) {
-            if (x == null) x = 1d;
-            if (y == null) y = 1d;
-            if (z == null) z = 1d;
-            return FiguraMat3.createScaleMatrix((double) x, y, z);
-        } else {
-            throw new LuaRuntimeException("Illegal argument to scale3(): " + x);
-        }
+        FiguraVec3 scale = LuaUtils.parseVec3("scale3", x, y, z, 1, 1, 1);
+        FiguraMat3 result = FiguraMat3.createScaleMatrix(scale.x, scale.y, scale.z);
+        scale.free();
+        return result;
     }
 
     @LuaWhitelist
@@ -351,16 +328,10 @@ public class MatricesAPI {
             description = "Creates a new Matrix4 that scales by the specified factors."
     )
     public static FiguraMat4 scale4(Object x, Double y, Double z) {
-        if (x instanceof FiguraVec3 vec)
-            return FiguraMat4.createScaleMatrix(vec.x, vec.y, vec.z);
-        else if (x == null || x instanceof Double) {
-            if (x == null) x = 1d;
-            if (y == null) y = 1d;
-            if (z == null) z = 1d;
-            return FiguraMat4.createScaleMatrix((double) x, y, z);
-        } else {
-            throw new LuaRuntimeException("Illegal argument to scale4(): " + x);
-        }
+        FiguraVec3 scale = LuaUtils.parseVec3("scale4", x, y, z, 1, 1, 1);
+        FiguraMat4 result = FiguraMat4.createScaleMatrix(scale.x, scale.y, scale.z);
+        scale.free();
+        return result;
     }
 
     //-- TRANSLATION MATRICES --//
@@ -381,16 +352,10 @@ public class MatricesAPI {
             description = "Creates a new Matrix4 that translates by the specified offset."
     )
     public static FiguraMat4 translate4(Object x, Double y, Double z) {
-        if (x instanceof FiguraVec3 vec)
-            return FiguraMat4.createTranslationMatrix(vec.x, vec.y, vec.z);
-        else if (x == null || x instanceof Double) {
-            if (x == null) x = 0d;
-            if (y == null) y = 0d;
-            if (z == null) z = 0d;
-            return FiguraMat4.createTranslationMatrix((double) x, y, z);
-        } else {
-            throw new LuaRuntimeException("Illegal argument to translate4(): " + x);
-        }
+        FiguraVec3 offset = LuaUtils.parseVec3("translate4", x, y, z);
+        FiguraMat4 result = FiguraMat4.createTranslationMatrix(offset.x, offset.y, offset.z);
+        offset.free();
+        return result;
     }
 
 }

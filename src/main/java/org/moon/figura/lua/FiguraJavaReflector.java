@@ -1,6 +1,8 @@
 package org.moon.figura.lua;
 
 import org.moon.figura.FiguraMod;
+import org.moon.figura.lua.docs.FiguraDocsManager;
+import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.lua.types.LuaTable;
 import org.terasology.jnlua.*;
 
@@ -122,8 +124,24 @@ public class FiguraJavaReflector implements JavaReflector {
                 return method.invoke(luaState);
             }
         }
+        //If we made it through the whole loop without returning anything, then none of the metamethods were correct.
+        //Hence, we should error.
+        StringBuilder errorBuilder = new StringBuilder();
+        errorBuilder.append("No applicable metamethod ")
+                .append(metamethod.getMetamethodName())
+                .append(" in type ")
+                .append(FiguraDocsManager.NAME_MAP.getOrDefault(objectClass, objectClass.getName()))
+                .append(" for arguments of type (");
 
-        return 0;
+        for (int i = 0; i < luaState.getTop(); i++) {
+            Class<?> argClass = luaState.toJavaObject(i+1, Object.class).getClass();
+            errorBuilder.append(FiguraDocsManager.NAME_MAP.getOrDefault(argClass, argClass.getName()));
+            if (i < luaState.getTop() - 1)
+                errorBuilder.append(", ");
+        }
+        errorBuilder.append(").");
+
+        throw new LuaRuntimeException(errorBuilder.toString());
     }
 
     public static LuaTable getTableRepresentation(Object o) {
@@ -169,9 +187,14 @@ public class FiguraJavaReflector implements JavaReflector {
         do {
             for (Method method : currentClazz.getDeclaredMethods()) {
                 if (!method.isAnnotationPresent(LuaWhitelist.class)
-                        || method.getName().startsWith("__")
-                        || !Modifier.isStatic(method.getModifiers()))
+                        || method.getName().startsWith("__")) {
                     continue;
+                }
+                if (!Modifier.isStatic(method.getModifiers())) {
+                    FiguraMod.LOGGER.warn("Found non-static whitelisted method " + method + "! Class " + clazz);
+                    continue;
+                }
+
                 if (!methodMap.containsKey(method.getName()))
                     methodMap.put(method.getName(), new MethodWrapper(method));
                 else
@@ -236,17 +259,19 @@ public class FiguraJavaReflector implements JavaReflector {
                 for (i = 0; i < luaState.getTop() && i < args.length; i++)
                     args[i] = luaState.toJavaObject(i + 1, argumentTypes[i]);
                 luaState.pushJavaObject(method.invoke(null, args));
-            } catch (IllegalArgumentException | IllegalAccessException e) {
+            } catch (IllegalAccessException e) {
                 e.printStackTrace();
-            } catch (ClassCastException e) {
+                throw new LuaRuntimeException(e);
+            } catch (IllegalArgumentException | ClassCastException e) {
+                e.printStackTrace();
                 StringBuilder errorBuilder = new StringBuilder();
                 errorBuilder.append("Illegal argument types to ");
-                errorBuilder.append(method.getDeclaringClass().getName());
-                errorBuilder.append("$");
+                errorBuilder.append(method.getDeclaringClass().getAnnotation(LuaTypeDoc.class).name());
+                errorBuilder.append(".");
                 errorBuilder.append(method.getName());
                 errorBuilder.append(". Expected (");
                 for (int j = 0; j < argumentTypes.length; j++) {
-                    errorBuilder.append(argumentTypes[j].getName());
+                    errorBuilder.append(FiguraDocsManager.NAME_MAP.getOrDefault(argumentTypes[j], argumentTypes[j].getName()));
                     if (j != argumentTypes.length - 1)
                         errorBuilder.append(", ");
                 }
