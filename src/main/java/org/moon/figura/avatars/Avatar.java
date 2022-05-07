@@ -77,7 +77,7 @@ public class Avatar {
 
     public void onTick() {
         if (luaState != null)
-            tryCall(luaState.events.tick, tickLimit);
+            tryCall(luaState.events.TICK, tickLimit);
     }
 
     public void onRender(Entity entity, float yaw, float delta, PoseStack matrices, MultiBufferSource bufferSource, int light, EntityModel<?> model) {
@@ -89,10 +89,10 @@ public class Avatar {
         renderer.light = light;
         renderer.vanillaModel = model;
         if (luaState != null)
-            tryCall(luaState.events.render, renderLimit, delta);
+            tryCall(luaState.events.RENDER, renderLimit, delta);
         renderer.render();
         if (luaState != null)
-            tryCall(luaState.events.postRender, -1, delta);
+            tryCall(luaState.events.POST_RENDER, -1, delta);
     }
 
 

@@ -1,5 +1,6 @@
 package org.moon.figura.lua.api;
 
+import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
@@ -12,17 +13,29 @@ import java.util.List;
 
 @LuaWhitelist
 @LuaTypeDoc(
-        name = "events",
-        description = "A global API that contains all of the figura events."
+        name = "EventsAPI",
+        description = "A global API that contains all of the figura Events. Accessed using the name \"events\"."
 )
 public class EventsAPI {
 
     @LuaWhitelist
-    public final LuaEvent tick = new LuaEvent("tick");
+    @LuaFieldDoc(
+            canEdit = false,
+            description = "The TICK event is run every in-game tick: 20 times per second."
+    )
+    public final LuaEvent TICK = new LuaEvent("TICK");
     @LuaWhitelist
-    public final LuaEvent render = new LuaEvent("render");
+    @LuaFieldDoc(
+            canEdit = false,
+            description = "The RENDER event is run every frame, before the avatar is rendered."
+    )
+    public final LuaEvent RENDER = new LuaEvent("RENDER");
     @LuaWhitelist
-    public final LuaEvent postRender = new LuaEvent("postRender");
+    @LuaFieldDoc(
+            canEdit = false,
+            description = "The POST_RENDER event runs every frame, after the avatar is rendered."
+    )
+    public final LuaEvent POST_RENDER = new LuaEvent("POST_RENDER");
 
 
     @LuaWhitelist

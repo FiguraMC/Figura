@@ -9,9 +9,9 @@ import org.terasology.jnlua.LuaRuntimeException;
 
 @LuaWhitelist
 @LuaTypeDoc(
-        name = "vectors",
+        name = "VectorsAPI",
         description = "A global API which provides functions dedicated " +
-                "to creating and otherwise manipulating vectors."
+                "to creating and otherwise manipulating vectors. Accessed using the name \"vectors\"."
 )
 public class VectorsAPI {
 

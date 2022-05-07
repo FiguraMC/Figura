@@ -24,6 +24,7 @@ import org.moon.figura.math.vector.*;
 import org.moon.figura.utils.ColorUtils.Colors;
 import org.moon.figura.utils.FiguraText;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -109,13 +110,16 @@ public class FiguraDocsManager {
         public final String name;
         public final String description;
         public final List<MethodDoc> documentedMethods;
+        public final List<FieldDoc> documentedFields;
 
         public ClassDoc(Class<?> clazz) {
             LuaTypeDoc typeDoc = clazz.getAnnotation(LuaTypeDoc.class);
             name = typeDoc.name();
             description = typeDoc.description();
             NAME_MAP.put(clazz, name);
-            documentedMethods = new ArrayList<>(clazz.getMethods().length);
+
+            //Find methods
+            documentedMethods = new ArrayList<>();
             for (Method method : clazz.getMethods()) {
                 if (method.isAnnotationPresent(LuaMethodDoc.class)) {
                     if (method.isAnnotationPresent(LuaWhitelist.class)) {
@@ -124,6 +128,20 @@ public class FiguraDocsManager {
                         FiguraMod.LOGGER.warn("Docs manager found a method that " +
                                 "had documentation, but wasn't whitelisted: " + method.getName() +
                                 " in " + method.getDeclaringClass().getName());
+                    }
+                }
+            }
+
+            //Find fields
+            documentedFields = new ArrayList<>();
+            for (Field field : clazz.getFields()) {
+                if (field.isAnnotationPresent(LuaFieldDoc.class)) {
+                    if (field.isAnnotationPresent(LuaWhitelist.class)) {
+                        documentedFields.add(new FieldDoc(field));
+                    } else {
+                        FiguraMod.LOGGER.warn("Docs manager found a method that " +
+                                "had documentation, but wasn't whitelisted: " + field.getName() +
+                                " in " + field.getDeclaringClass().getName());
                     }
                 }
             }
@@ -195,7 +213,7 @@ public class FiguraDocsManager {
 
             //type
                     .append("\n\n")
-                    .append(new TextComponent("• Method:").withStyle(Colors.CHLOE_PURPLE.style))
+                    .append(new TextComponent("• Function:").withStyle(Colors.CHLOE_PURPLE.style))
                     .append("\n\t")
                     .append(new TextComponent("• " + name).withStyle(Colors.MAYA_BLUE.style))
 
@@ -235,6 +253,50 @@ public class FiguraDocsManager {
         }
     }
 
+    private static class FieldDoc {
+
+        public final String name;
+        public final String description;
+
+        public final Class<?> type;
+        public final boolean editable;
+
+        public FieldDoc(Field field) {
+            name = field.getName();
+            type = field.getType();
+            LuaFieldDoc luaFieldDoc = field.getAnnotation(LuaFieldDoc.class);
+            description = luaFieldDoc.description();
+            editable = luaFieldDoc.canEdit();
+        }
+
+        public void print() {
+            //header
+            MutableComponent message = TextComponent.EMPTY.copy().withStyle(Colors.FRAN_PINK.style)
+            .append(new TextComponent("•*+•* ")
+                    .append(new FiguraText())
+                    .append(" Docs *•+*•").withStyle(ChatFormatting.UNDERLINE))
+
+            //type
+            .append("\n\n")
+            .append(new TextComponent("• Field:").withStyle(Colors.CHLOE_PURPLE.style))
+            .append("\n\t")
+                    .append(new TextComponent("• " + NAME_MAP.get(type)).withStyle(ChatFormatting.YELLOW))
+            .append(new TextComponent(" " + name).withStyle(Colors.MAYA_BLUE.style))
+            .append(editable ?
+                    new TextComponent(" (Editable)").withStyle(ChatFormatting.GREEN) :
+                    new TextComponent(" (Not Editable)").withStyle(ChatFormatting.DARK_RED))
+
+            //description
+            .append("\n\n")
+            .append(new TextComponent("• Description:").withStyle(Colors.CHLOE_PURPLE.style))
+            .append("\n\t")
+            .append(new TextComponent("• " + description).withStyle(Colors.MAYA_BLUE.style));
+
+            FiguraMod.sendChatMessage(message);
+        }
+
+    }
+
     public static void init() {
         //Initialize all the ClassDoc instances
         for (Map.Entry<String, List<Class<?>>> packageEntry : DOCUMENTED_CLASSES.entrySet())
@@ -257,6 +319,11 @@ public class FiguraDocsManager {
                     LiteralArgumentBuilder<FabricClientCommandSource> methodBranch = LiteralArgumentBuilder.literal(methodDoc.name);
                     methodBranch.executes(context -> {methodDoc.print(); return 1;});
                     typeBranch.then(methodBranch);
+                }
+                for (FieldDoc fieldDoc : classDoc.documentedFields) {
+                    LiteralArgumentBuilder<FabricClientCommandSource> fieldBranch = LiteralArgumentBuilder.literal(fieldDoc.name);
+                    fieldBranch.executes(context -> {fieldDoc.print(); return 1;});
+                    typeBranch.then(fieldBranch);
                 }
                 group.then(typeBranch);
             }

@@ -5,6 +5,7 @@ import net.minecraft.client.model.geom.ModelPart;
 import org.moon.figura.avatars.model.FiguraModelPart;
 import org.moon.figura.avatars.vanilla.VanillaPartOffsetManager;
 import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
@@ -17,15 +18,59 @@ import java.util.function.Function;
 
 @LuaWhitelist
 @LuaTypeDoc(
-        name = "VanillaModel",
-        description = "A global API that provides functions to interact with the vanilla player model and its parts."
+        name = "VanillaModelAPI",
+        description = "A global API that provides functions to interact with the vanilla player model and its parts. " +
+                "Accessed using the name \"vanilla_model\"."
 )
 public class VanillaModelAPI {
 
     @LuaWhitelist
-    public final VanillaModelPart HEAD, TORSO, LEFT_ARM, RIGHT_ARM, LEFT_LEG, RIGHT_LEG, HAT, JACKET, LEFT_SLEEVE, RIGHT_SLEEVE, LEFT_PANTS, RIGHT_PANTS;
+    @LuaFieldDoc(canEdit = false, description = "The head of the player, not including the hat.")
+    public final VanillaModelPart HEAD;
     @LuaWhitelist
-    public final VanillaModelPart ALL, OUTER_LAYER, INNER_LAYER;
+    @LuaFieldDoc(canEdit = false, description = "The body of the player, not including the outer layer.")
+    public final VanillaModelPart TORSO;
+    @LuaWhitelist
+    @LuaFieldDoc(canEdit = false, description = "The left arm of the player, not including the outer layer.")
+    public final VanillaModelPart LEFT_ARM;
+    @LuaWhitelist
+    @LuaFieldDoc(canEdit = false, description = "The right arm of the player, not including the outer layer.")
+    public final VanillaModelPart RIGHT_ARM;
+    @LuaWhitelist
+    @LuaFieldDoc(canEdit = false, description = "The left leg of the player, not including the outer layer.")
+    public final VanillaModelPart LEFT_LEG;
+    @LuaWhitelist
+    @LuaFieldDoc(canEdit = false, description = "The right leg of the player, not including the outer layer.")
+    public final VanillaModelPart RIGHT_LEG;
+
+    @LuaWhitelist
+    @LuaFieldDoc(canEdit = false, description = "The outer layer of the player's head.")
+    public final VanillaModelPart HAT;
+    @LuaWhitelist
+    @LuaFieldDoc(canEdit = false, description = "The outer layer of the player's body.")
+    public final VanillaModelPart JACKET;
+    @LuaWhitelist
+    @LuaFieldDoc(canEdit = false, description = "The outer layer of the player's left arm.")
+    public final VanillaModelPart LEFT_SLEEVE;
+    @LuaWhitelist
+    @LuaFieldDoc(canEdit = false, description = "The outer layer of the player's right arm.")
+    public final VanillaModelPart RIGHT_SLEEVE;
+    @LuaWhitelist
+    @LuaFieldDoc(canEdit = false, description = "The outer layer of the player's left leg.")
+    public final VanillaModelPart LEFT_PANTS;
+    @LuaWhitelist
+    @LuaFieldDoc(canEdit = false, description = "The outer layer of the player's right leg.")
+    public final VanillaModelPart RIGHT_PANTS;
+
+    @LuaWhitelist
+    @LuaFieldDoc(canEdit = false, description = "Multi-part: The entirety of the vanilla model.")
+    public final VanillaModelPart ALL;
+    @LuaWhitelist
+    @LuaFieldDoc(canEdit = false, description = "Multi-part: The outer layer of the player.")
+    public final VanillaModelPart OUTER_LAYER;
+    @LuaWhitelist
+    @LuaFieldDoc(canEdit = false, description = "Multi-part: The main body of the player, everything except the outer layer.")
+    public final VanillaModelPart INNER_LAYER;
 
     public void alterModel(PlayerModel<?> playerModel) {
         HEAD.alter(playerModel);
@@ -40,6 +85,7 @@ public class VanillaModelAPI {
         RIGHT_SLEEVE.alter(playerModel);
         LEFT_PANTS.alter(playerModel);
         RIGHT_PANTS.alter(playerModel);
+        //We don't call alter on multi-parts, since their individual parts are already altered.
     }
 
     public void restoreModel(PlayerModel<?> playerModel) {
@@ -55,21 +101,24 @@ public class VanillaModelAPI {
         RIGHT_SLEEVE_CONSUMER.restore(playerModel);
         LEFT_PANTS_CONSUMER.restore(playerModel);
         RIGHT_PANTS_CONSUMER.restore(playerModel);
+        //We don't call restore on multi-parts, since the individual parts are already restored.
     }
 
     //CONSUMERS
-    private final ModelConsumer HEAD_CONSUMER = new ModelConsumer(model -> model.head);
-    private final ModelConsumer TORSO_CONSUMER = new ModelConsumer(model -> model.body);
-    private final ModelConsumer LEFT_ARM_CONSUMER = new ModelConsumer(model -> model.leftArm);
-    private final ModelConsumer RIGHT_ARM_CONSUMER = new ModelConsumer(model -> model.rightArm);
-    private final ModelConsumer LEFT_LEG_CONSUMER = new ModelConsumer(model -> model.leftLeg);
-    private final ModelConsumer RIGHT_LEG_CONSUMER = new ModelConsumer(model -> model.rightLeg);
-    private final ModelConsumer HAT_CONSUMER = new ModelConsumer(model -> model.hat);
-    private final ModelConsumer JACKET_CONSUMER = new ModelConsumer(model -> model.jacket);
-    private final ModelConsumer LEFT_SLEEVE_CONSUMER = new ModelConsumer(model -> model.leftSleeve);
-    private final ModelConsumer RIGHT_SLEEVE_CONSUMER = new ModelConsumer(model -> model.rightSleeve);
-    private final ModelConsumer LEFT_PANTS_CONSUMER = new ModelConsumer(model -> model.leftPants);
-    private final ModelConsumer RIGHT_PANTS_CONSUMER = new ModelConsumer(model -> model.rightPants);
+    //TODO: Change default visibility depending on circumstances.
+    //TODO: For example, HAT_CONSUMER should be invisible by default if 3d Skin Layers is installed.
+    private final ModelConsumer HEAD_CONSUMER = new ModelConsumer(model -> model.head, true);
+    private final ModelConsumer TORSO_CONSUMER = new ModelConsumer(model -> model.body, true);
+    private final ModelConsumer LEFT_ARM_CONSUMER = new ModelConsumer(model -> model.leftArm, true);
+    private final ModelConsumer RIGHT_ARM_CONSUMER = new ModelConsumer(model -> model.rightArm, true);
+    private final ModelConsumer LEFT_LEG_CONSUMER = new ModelConsumer(model -> model.leftLeg, true);
+    private final ModelConsumer RIGHT_LEG_CONSUMER = new ModelConsumer(model -> model.rightLeg, true);
+    private final ModelConsumer HAT_CONSUMER = new ModelConsumer(model -> model.hat, true);
+    private final ModelConsumer JACKET_CONSUMER = new ModelConsumer(model -> model.jacket, true);
+    private final ModelConsumer LEFT_SLEEVE_CONSUMER = new ModelConsumer(model -> model.leftSleeve, true);
+    private final ModelConsumer RIGHT_SLEEVE_CONSUMER = new ModelConsumer(model -> model.rightSleeve, true);
+    private final ModelConsumer LEFT_PANTS_CONSUMER = new ModelConsumer(model -> model.leftPants, true);
+    private final ModelConsumer RIGHT_PANTS_CONSUMER = new ModelConsumer(model -> model.rightPants, true);
 
     public VanillaModelAPI() {
 
@@ -102,12 +151,13 @@ public class VanillaModelAPI {
     private static class ModelConsumer {
 
         private final Function<PlayerModel<?>, ModelPart> partProvider;
-        private boolean visible = true;
+        private boolean visible;
 
         private boolean storedVisibility;
 
-        public ModelConsumer(Function<PlayerModel<?>, ModelPart> partProvider) {
+        public ModelConsumer(Function<PlayerModel<?>, ModelPart> partProvider, boolean defaultVisibility) {
             this.partProvider = partProvider;
+            visible = defaultVisibility;
         }
 
         public void storeOriginData(VanillaModelPart vanillaModelPart, PlayerModel<?> playerModel) {

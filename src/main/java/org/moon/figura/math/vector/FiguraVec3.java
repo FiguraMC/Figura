@@ -2,6 +2,7 @@ package org.moon.figura.math.vector;
 
 import net.minecraft.core.BlockPos;
 import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
@@ -19,7 +20,24 @@ import org.terasology.jnlua.LuaRuntimeException;
 public class FiguraVec3 implements CachedType {
 
     @LuaWhitelist
-    public double x, y, z;
+    @LuaFieldDoc(
+            canEdit = true, description = "The first coordinate of this vector. Can also be gotten with " +
+            "the indices \"r\" and [1]."
+    )
+    public double x;
+    @LuaWhitelist
+    @LuaFieldDoc(
+            canEdit = true, description = "The second coordinate of this vector. Can also be gotten with " +
+            "the indices \"g\" and [2]."
+    )
+    public double y;
+    @LuaWhitelist
+    @LuaFieldDoc(
+            canEdit = true, description = "The third coordinate of this vector. Can also be gotten with " +
+            "the indices \"b\" and [3]."
+    )
+    public double z;
+
     private FiguraVec3() {}
 
     // CACHING METHODS

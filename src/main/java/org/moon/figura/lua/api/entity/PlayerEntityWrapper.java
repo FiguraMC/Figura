@@ -13,7 +13,8 @@ import java.util.UUID;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "Player",
-        description = "Acts as a proxy for a player entity in the Minecraft world."
+        description = "Acts as a proxy for a player entity in the Minecraft world. A global instance " +
+                "exists for the avatar's user, under the name \"player\"."
 )
 public class PlayerEntityWrapper extends LivingEntityWrapper<Player> {
 

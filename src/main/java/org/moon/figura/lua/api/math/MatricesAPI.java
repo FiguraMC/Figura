@@ -15,9 +15,9 @@ import org.terasology.jnlua.LuaRuntimeException;
 
 @LuaWhitelist
 @LuaTypeDoc(
-        name = "matrices",
+        name = "MatricesAPI",
         description = "A global API which provides functions dedicated " +
-                "to creating and otherwise manipulating matrices."
+                "to creating and otherwise manipulating matrices. Accessed using the name \"matrices\"."
 )
 public class MatricesAPI {
 

@@ -1,6 +1,7 @@
 package org.moon.figura.math.vector;
 
 import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
@@ -18,7 +19,17 @@ import org.terasology.jnlua.LuaRuntimeException;
 public class FiguraVec2 implements CachedType {
 
     @LuaWhitelist
-    public double x, y;
+    @LuaFieldDoc(
+            canEdit = true, description = "The first coordinate of this vector. Can also be gotten with " +
+            "the indices \"r\" and [1]."
+    )
+    public double x;
+    @LuaWhitelist
+    @LuaFieldDoc(
+            canEdit = true, description = "The second coordinate of this vector. Can also be gotten with " +
+            "the indices \"g\" and [2]."
+    )
+    public double y;
 
     private FiguraVec2() {}
 
