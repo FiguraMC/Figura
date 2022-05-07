@@ -129,8 +129,13 @@ public class FiguraJavaReflector implements JavaReflector {
     public static LuaTable getTableRepresentation(Object o) {
         Class<?> clazz = o.getClass();
         buildCachesIfNeeded(clazz);
-        if (!o.getClass().isAnnotationPresent(LuaWhitelist.class))
+        if (!clazz.isAnnotationPresent(LuaWhitelist.class))
             return null;
+        try {
+            if (clazz.getMethod("toString").getDeclaringClass() == clazz)
+                return null;
+        } catch (Exception ignored) {}
+
         LuaTable result = new LuaTable();
         try {
             for (Map.Entry<String, Field> fieldEntry : fieldCache.get(clazz).entrySet())

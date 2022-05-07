@@ -22,8 +22,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
-import org.moon.figura.avatars.Avatar;
-import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.gui.screens.AbstractPanelScreen;
 import org.moon.figura.gui.widgets.ContextMenu;
 import org.moon.figura.utils.FiguraIdentifier;
@@ -90,8 +88,6 @@ public class UIHelper extends GuiComponent {
     }
 
     public static void drawEntity(int x, int y, float scale, float pitch, float yaw, LivingEntity entity, PoseStack stack) {
-        Avatar avatar = AvatarManager.getAvatar(entity);
-
         //apply matrix transformers
         stack.pushPose();
         stack.translate(x, y, 0f);

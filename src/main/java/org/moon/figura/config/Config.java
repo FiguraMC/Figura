@@ -33,8 +33,9 @@ public enum Config {
     Misc,
     BUTTON_LOCATION(0, 5),
 
-    Dev {{this.name = new FiguraText("config.dev").withStyle(ChatFormatting.RED);}};
-    //PANIC_BUTTON("key.keyboard.unknown"),
+    Dev {{this.name = new FiguraText("config.dev").withStyle(ChatFormatting.RED);}},
+    RELOAD_BUTTON("key.keyboard.unknown"),
+    PANIC_BUTTON("key.keyboard.unknown");
     //LOG_PINGS(0, 3);
 
 

@@ -2,6 +2,11 @@
   "figura": "Figura",
 
 
+  "figura.toast.reload": "Avatar reloaded!",
+  "figura.toast.panic_enabled": "Panic mode enabled!",
+  "figura.toast.panic_disabled": "Panic mode disabled!",
+
+
   "figura.trust.group.blocked": "Blocked",
   "figura.trust.group.untrusted": "Untrusted",
   "figura.trust.group.trusted": "Trusted",
@@ -124,5 +129,11 @@
   "figura.config.button_location.5": "Bottom Right",
 
   "figura.config.dev": "Dev",
-  "figura.config.dev.tooltip": "Developer/Experimental settings"
+  "figura.config.dev.tooltip": "Developer/Experimental settings",
+
+  "figura.config.reload_button": "Reload Avatar",
+  "figura.config.reload_button.tooltip": "Reloads current equipped avatar on press",
+
+  "figura.config.panic_button": "Panic Button",
+  "figura.config.panic_button.tooltip": "Stop the rendering of all avatars"
 }

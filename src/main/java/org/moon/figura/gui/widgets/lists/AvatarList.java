@@ -41,6 +41,9 @@ public class AvatarList extends AbstractList {
 
         //scissors
         this.updateScissors(1, 26, -2, -27);
+
+        //initial load
+        LocalAvatarFetcher.load();
     }
 
     // -- Functions -- //

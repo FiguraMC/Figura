@@ -13,7 +13,7 @@ import java.util.List;
 public class TextUtils {
 
     public static final ResourceLocation FIGURA_FONT = new FiguraIdentifier("default");
-    public static final String TAB_STRING = "  ";
+    public static final int TAB_SPACING = 2;
 
     public static String noBadges4U(String string) {
         return string.replaceAll("([▲!❤☆✯★]|\\\\u(?i)(25B2|0021|2764|2606|272F|2605))", "\uFFFD");
@@ -24,30 +24,31 @@ public class TextUtils {
         ArrayList<Component> textList = new ArrayList<>();
 
         //current line variable
-        MutableComponent currentText = TextComponent.EMPTY.plainCopy();
+        MutableComponent currentText = TextComponent.EMPTY.copy();
 
         //iterate over the text
         for (Component entry : text.toFlatList(text.getStyle())) {
             //split text based on regex
             String entryString = entry.getString();
-            String[] lines = entryString.split(regex);
+            String[] lines = entryString.split("((?<=" + regex + ")|(?=" + regex + "))");
 
             //iterate over the split text
             for (int i = 0; i < lines.length; i++) {
                 //if it is not the first iteration, add to return list and reset the line variable
                 if (i != 0) {
                     textList.add(currentText.copy());
-                    currentText = TextComponent.EMPTY.plainCopy();
+                    currentText = TextComponent.EMPTY.copy();
                 }
 
                 //append text with the line text
-                currentText.append(new TextComponent(lines[i]).setStyle(entry.getStyle()));
+                if (!lines[i].matches(regex))
+                    currentText.append(new TextComponent(lines[i]).setStyle(entry.getStyle()));
             }
 
             //if the text ends with the split pattern, add to return list and reset the line variable
             if (entryString.matches(".*" + regex + "$")) {
                 textList.add(currentText.copy());
-                currentText = TextComponent.EMPTY.plainCopy();
+                currentText = TextComponent.EMPTY.copy();
             }
         }
         //add the last text iteration then return
@@ -57,7 +58,7 @@ public class TextUtils {
 
     public static Component removeClickableObjects(Component text) {
         //text to return
-        MutableComponent finalText = TextComponent.EMPTY.plainCopy();
+        MutableComponent finalText = TextComponent.EMPTY.copy();
 
         //iterate over the text
         for (Component entry : text.toFlatList(text.getStyle())) {
@@ -99,7 +100,7 @@ public class TextUtils {
         List<Component> list = splitText(text, regex);
 
         //text to return
-        MutableComponent finalText = TextComponent.EMPTY.plainCopy();
+        MutableComponent finalText = TextComponent.EMPTY.copy();
 
         //iterate over the split text
         for (int i = 0; i < list.size(); i++) {
@@ -130,6 +131,6 @@ public class TextUtils {
     }
 
     public static Component replaceTabs(Component text) {
-        return TextUtils.replaceInText(text, "\t", TAB_STRING);
+        return TextUtils.replaceInText(text, "\\t", " ".repeat(TAB_SPACING));
     }
 }

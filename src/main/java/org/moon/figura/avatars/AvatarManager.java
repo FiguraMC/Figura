@@ -5,6 +5,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.providers.LocalAvatarLoader;
+import org.moon.figura.gui.FiguraToast;
+import org.moon.figura.utils.FiguraText;
 
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -19,9 +21,12 @@ public class AvatarManager {
 
     private static final HashMap<UUID, Avatar> LOADED_AVATARS = new HashMap<>();
     public static boolean localUploaded = true; //init as true :3
+    public static boolean panic = false;
 
     //player will also attempt to load from network, if possible
     public static Avatar getAvatarForPlayer(UUID player) {
+        if (panic) return null;
+
         if (!LOADED_AVATARS.containsKey(player))
             fetchBackend(player);
 
@@ -30,6 +35,8 @@ public class AvatarManager {
 
     //tries to get data from an entity
     public static Avatar getAvatar(Entity entity) {
+        if (panic) return null;
+
         UUID uuid = entity.getUUID();
 
         //load from player (fetch backend) if is a player
@@ -57,6 +64,9 @@ public class AvatarManager {
         //other ones will be fetched from backend on further request
         if (!localUploaded && id.compareTo(FiguraMod.getLocalPlayerUUID()) == 0)
             loadLocalAvatar(LocalAvatarLoader.getLastLoadedPath());
+
+        //send client feedback
+        FiguraToast.sendToast(new FiguraText("toast.reload"));
     }
 
     public static void tickLoadedAvatars() {
