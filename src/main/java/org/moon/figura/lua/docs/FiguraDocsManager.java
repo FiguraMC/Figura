@@ -1,8 +1,10 @@
 package org.moon.figura.lua.docs;
 
-import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.model.FiguraModelPart;
 import org.moon.figura.lua.LuaWhitelist;
@@ -19,6 +21,8 @@ import org.moon.figura.math.matrix.FiguraMat2;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.*;
+import org.moon.figura.utils.ColorUtils.Colors;
+import org.moon.figura.utils.FiguraText;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -78,26 +82,26 @@ public class FiguraDocsManager {
     private static final Map<String, List<ClassDoc>> GENERATED_CLASS_DOCS = new HashMap<>();
     private static final Map<Class<?>, String> NAME_MAP = new HashMap<>() {{
         //Built in type names, even for things that don't have docs
-        put(Double.class, "number");
-        put(double.class, "number");
-        put(Float.class, "number");
-        put(float.class, "number");
+        put(Double.class, "Number");
+        put(double.class, "Number");
+        put(Float.class, "Number");
+        put(float.class, "Number");
 
-        put(Integer.class, "integer");
-        put(int.class, "integer");
-        put(Long.class, "integer");
-        put(long.class, "integer");
+        put(Integer.class, "Integer");
+        put(int.class, "Integer");
+        put(Long.class, "Integer");
+        put(long.class, "Integer");
 
-        put(void.class, "None");
+        put(void.class, "nil");
 
-        put(String.class, "string");
+        put(String.class, "String");
 
-        put(Boolean.class, "boolean");
-        put(boolean.class, "boolean");
+        put(Boolean.class, "Boolean");
+        put(boolean.class, "Boolean");
 
         //Lua things
-        put(LuaFunction.class, "function");
-        put(LuaTable.class, "table");
+        put(LuaFunction.class, "Function");
+        put(LuaTable.class, "Table");
     }};
 
     private static class ClassDoc {
@@ -127,14 +131,28 @@ public class FiguraDocsManager {
 
         /**
          * Over here Fran!
+         * <3
          */
         public void print() {
-            StringBuilder builder = new StringBuilder();
-            builder.append("\nTYPE DOC FOR TYPE: ");
-            builder.append(name);
-            builder.append("\nDESCRIPTION:\n\t");
-            builder.append(description);
-            System.out.println(builder);
+            //header
+            MutableComponent message = TextComponent.EMPTY.copy().withStyle(Colors.FRAN_PINK.style)
+                    .append(new TextComponent("•*+•* ")
+                            .append(new FiguraText())
+                            .append(" Docs *•+*•").withStyle(ChatFormatting.UNDERLINE))
+
+            //type
+                    .append("\n\n")
+                    .append(new TextComponent("• Type:").withStyle(Colors.CHLOE_PURPLE.style))
+                    .append("\n\t")
+                    .append(new TextComponent("• " + name).withStyle(Colors.MAYA_BLUE.style))
+
+            //description
+                    .append("\n\n")
+                    .append(new TextComponent("• Description:").withStyle(Colors.CHLOE_PURPLE.style))
+                    .append("\n\t")
+                    .append(new TextComponent("• " + description).withStyle(Colors.MAYA_BLUE.style));
+
+            FiguraMod.sendChatMessage(message);
         }
     }
 
@@ -166,30 +184,58 @@ public class FiguraDocsManager {
          * Over here Fran!
          * This format is just temporary, printing out to console.
          * Work your magic and get whatever colors or styles you want printed in chat :D
+         * ❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤
          */
         public void print() {
-            StringBuilder builder = new StringBuilder();
-            builder.append("\nMETHOD DOC FOR METHOD: ");
-            builder.append(name);
-            builder.append("\nSYNTAX:\n");
-            for (int i = 0; i < parameterTypes.length; i++) {
-                builder.append("\t").append(name).append("(");
-                for (int j = 0; j < parameterTypes[i].length; j++) {
-                    String typeName = NAME_MAP.get(parameterTypes[i][j]);
-                    builder.append(typeName).append(" ").append(parameterNames[i][j]);
-                    if (j != parameterTypes[i].length-1)
-                        builder.append(", ");
+            //header
+            MutableComponent message = TextComponent.EMPTY.copy().withStyle(Colors.FRAN_PINK.style)
+                    .append(new TextComponent("•*+•* ")
+                            .append(new FiguraText())
+                            .append(" Docs *•+*•").withStyle(ChatFormatting.UNDERLINE))
 
+            //type
+                    .append("\n\n")
+                    .append(new TextComponent("• Method:").withStyle(Colors.CHLOE_PURPLE.style))
+                    .append("\n\t")
+                    .append(new TextComponent("• " + name).withStyle(Colors.MAYA_BLUE.style))
+
+            //syntax
+                    .append("\n\n")
+                    .append(new TextComponent("• Syntax:").withStyle(Colors.CHLOE_PURPLE.style));
+
+            for (int i = 0; i < parameterTypes.length; i++) {
+                //name
+                message.append("\n\t").append(new TextComponent("• " + name).withStyle(Colors.MAYA_BLUE.style))
+                        .append("(");
+
+                for (int j = 0; j < parameterTypes[i].length; j++) {
+                    //type and arg
+                    String typeName = NAME_MAP.get(parameterTypes[i][j]);
+                    message.append(new TextComponent(typeName).withStyle(ChatFormatting.YELLOW))
+                            .append(" ")
+                            .append(new TextComponent(parameterNames[i][j]).withStyle(ChatFormatting.WHITE));
+
+                    if (j != parameterTypes[i].length - 1)
+                        message.append(", ");
                 }
-                builder.append("): Returns ").append(NAME_MAP.get(returnTypes[i])).append("\n");
+
+                //return
+                message.append("): ")
+                        .append(new TextComponent("Returns ").withStyle(Colors.MAYA_BLUE.style))
+                        .append(new TextComponent(NAME_MAP.get(returnTypes[i])).withStyle(ChatFormatting.YELLOW));
             }
-            builder.append("DESCRIPTION:\n\t");
-            builder.append(description);
-            System.out.println(builder);
+
+            //description
+            message.append("\n\n")
+                    .append(new TextComponent("• Description:").withStyle(Colors.CHLOE_PURPLE.style))
+                    .append("\n\t")
+                    .append(new TextComponent("• " + description).withStyle(Colors.MAYA_BLUE.style));
+
+            FiguraMod.sendChatMessage(message);
         }
     }
 
-    public static void init(CommandDispatcher<FabricClientCommandSource> dispatcher) {
+    public static void init() {
         //Initialize all the ClassDoc instances
         for (Map.Entry<String, List<Class<?>>> packageEntry : DOCUMENTED_CLASSES.entrySet())
             for (Class<?> documentedClass : packageEntry.getValue())
@@ -198,32 +244,25 @@ public class FiguraDocsManager {
                     GENERATED_CLASS_DOCS.computeIfAbsent(
                             packageEntry.getKey(), (key) -> new ArrayList<>()
                     ).add(new ClassDoc(documentedClass));
-
-        initCommand(dispatcher);
     }
 
-    private static void initCommand(CommandDispatcher<FabricClientCommandSource> dispatcher) {
-        //TODO: move "figura" to another class for easy registration of other sub-commands
-        LiteralArgumentBuilder<FabricClientCommandSource> root = LiteralArgumentBuilder.literal("figura");
-
+    public static LiteralArgumentBuilder<FabricClientCommandSource> generateCommand() {
         LiteralArgumentBuilder<FabricClientCommandSource> docs = LiteralArgumentBuilder.literal("docs");
         for (Map.Entry<String, List<ClassDoc>> entry : GENERATED_CLASS_DOCS.entrySet()) {
             LiteralArgumentBuilder<FabricClientCommandSource> group = LiteralArgumentBuilder.literal(entry.getKey());
             for (ClassDoc classDoc : entry.getValue()) {
                 LiteralArgumentBuilder<FabricClientCommandSource> typeBranch = LiteralArgumentBuilder.literal(classDoc.name);
-                typeBranch.executes(context -> {classDoc.print(); return 0;});
+                typeBranch.executes(context -> {classDoc.print(); return 1;});
                 for (MethodDoc methodDoc : classDoc.documentedMethods) {
                     LiteralArgumentBuilder<FabricClientCommandSource> methodBranch = LiteralArgumentBuilder.literal(methodDoc.name);
-                    methodBranch.executes(context -> {methodDoc.print(); return 0;});
+                    methodBranch.executes(context -> {methodDoc.print(); return 1;});
                     typeBranch.then(methodBranch);
                 }
                 group.then(typeBranch);
             }
             docs.then(group);
         }
-        root.then(docs);
 
-        //TODO: Same for this
-        dispatcher.register(root);
+        return docs;
     }
 }

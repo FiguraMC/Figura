@@ -9,6 +9,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.FiguraMod;
+import org.moon.figura.avatars.AvatarManager;
+import org.moon.figura.config.Config;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.widgets.*;
 import org.moon.figura.gui.widgets.lists.AvatarList;
@@ -21,6 +23,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
 
     private StatusWidget statusWidget;
     private AvatarInfoWidget avatarInfo;
+    private TextWidget panic1, panic2;
 
     public WardrobeScreen(Screen parentScreen) {
         super(parentScreen, TITLE, 2);
@@ -84,7 +87,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
         // -- bottom -- //
 
         //version
-        TextWidget version = new TextWidget(new TextComponent("Figura " + FiguraMod.VERSION).withStyle(ChatFormatting.ITALIC, ChatFormatting.DARK_GRAY), 0, 0);
+        TextWidget version = new TextWidget(new FiguraText().append(" " + FiguraMod.VERSION).withStyle(ChatFormatting.ITALIC, ChatFormatting.DARK_GRAY), 0, 0);
         version.x = middle - version.width / 2;
         version.y = this.height - version.height - 2;
         addRenderableOnly(version);
@@ -127,12 +130,29 @@ public class WardrobeScreen extends AbstractPanelScreen {
 
         //avatar metadata
         addRenderableOnly(avatarInfo = new AvatarInfoWidget(this.width - rightSide - 4, 64, rightSide));
+
+        //panic warning - always added last, on top
+        panic1 = new TextWidget(new FiguraText("gui.panic.1").withStyle(ChatFormatting.YELLOW), 0, 0, true, 0);
+        panic2 = new TextWidget(new FiguraText("gui.panic.2", Config.PANIC_BUTTON.keyBind.getTranslatedKeyMessage()).withStyle(ChatFormatting.YELLOW), 0, 0, true, 0);
+
+        panic2.x = middle - panic2.width / 2;
+        panic2.y = version.y - panic2.height;
+
+        panic1.x = middle - panic1.width / 2;
+        panic1.y = panic2.y - panic1.height;
+
+        addRenderableOnly(panic1);
+        addRenderableOnly(panic2);
     }
 
     @Override
     public void tick() {
+        super.tick();
+
         statusWidget.tick();
         avatarInfo.tick();
-        super.tick();
+
+        panic1.setVisible(AvatarManager.panic);
+        panic2.setVisible(AvatarManager.panic);
     }
 }

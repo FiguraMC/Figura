@@ -1,7 +1,6 @@
 package org.moon.figura.lua;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.*;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
@@ -194,13 +193,6 @@ public class FiguraLuaState extends LuaState53 {
 
     // -- logging -- //
 
-    //add a chat message on the client
-    //param force means that it will be logged somewhere even if unable to send the chat message
-    public static void sendChatMessage(Component message) {
-        if (Minecraft.getInstance().gui != null)
-            Minecraft.getInstance().gui.getChat().addMessage(TextUtils.replaceTabs(message));
-    }
-
     //print a string either on chat or console
     public static void sendLuaMessage(Object message, String owner) {
         Component component = TextComponent.EMPTY.copy()
@@ -210,7 +202,7 @@ public class FiguraLuaState extends LuaState53 {
                 .append(message instanceof Component c ? c : new TextComponent(message.toString()));
 
         if ((int) Config.LOG_LOCATION.value == 0)
-            sendChatMessage(component);
+            FiguraMod.sendChatMessage(component);
         else
             FiguraMod.LOGGER.info(component.getString());
     }
@@ -225,7 +217,7 @@ public class FiguraLuaState extends LuaState53 {
                 .append(new TextComponent(owner).withStyle(ChatFormatting.ITALIC))
                 .append(new TextComponent(" : " + message).withStyle(Colors.LUA_ERROR.style));
 
-        sendChatMessage(component);
+        FiguraMod.sendChatMessage(component);
         FiguraMod.LOGGER.error("", error);
     }
 
@@ -246,7 +238,7 @@ public class FiguraLuaState extends LuaState53 {
                 .append(ping);
 
         if (config == 1)
-            sendChatMessage(component);
+            FiguraMod.sendChatMessage(component);
         else
             FiguraMod.LOGGER.info(component.getString());
     }

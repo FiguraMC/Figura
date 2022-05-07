@@ -43,6 +43,8 @@
   "figura.gui.cancel": "Cancel",
   "figura.gui.expand": "Expand",
   "figura.gui.minimise": "Minimise",
+  "figura.gui.panic.1": "Panic mode active! Figura features are disabled!",
+  "figura.gui.panic.2": "toggle panic mode with [%s] key",
   "figura.gui.help.tooltip": "Help",
 
 

@@ -1,16 +1,18 @@
 package org.moon.figura;
 
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.command.v1.ClientCommandManager;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.avatars.providers.LocalAvatarLoader;
+import org.moon.figura.commands.FiguraCommands;
 import org.moon.figura.config.ConfigManager;
 import org.moon.figura.lua.docs.FiguraDocsManager;
 import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.LuaUtils;
+import org.moon.figura.utils.TextUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +37,8 @@ public class FiguraMod implements ClientModInitializer {
         //init managers
         ConfigManager.init();
         TrustManager.init();
-        FiguraDocsManager.init(ClientCommandManager.DISPATCHER);
+        FiguraDocsManager.init();
+        FiguraCommands.init();
         LuaUtils.setupNativesForLua();
 
         //register events
@@ -66,4 +69,13 @@ public class FiguraMod implements ClientModInitializer {
     public static UUID getLocalPlayerUUID() {
         return Minecraft.getInstance().getUser().getGameProfile().getId();
     }
+
+    //add a chat message on the client
+    public static void sendChatMessage(Component message) {
+        if (Minecraft.getInstance().gui != null)
+            Minecraft.getInstance().gui.getChat().addMessage(TextUtils.replaceTabs(message));
+        else
+            LOGGER.info(message.getString());
+    }
+
 }

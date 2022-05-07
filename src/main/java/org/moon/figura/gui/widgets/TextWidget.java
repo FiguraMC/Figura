@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.network.chat.Component;
+import org.moon.figura.utils.ui.UIHelper;
 
 public class TextWidget implements FiguraWidget, GuiEventListener {
 
@@ -15,18 +16,32 @@ public class TextWidget implements FiguraWidget, GuiEventListener {
     private boolean visible = true;
 
     private final Font font;
+    private final boolean outline;
+    private final int outlineColor;
 
     public TextWidget(Component text, int x, int y) {
+        this(text, x, y, false, 0);
+    }
+
+    public TextWidget(Component text, int x, int y, boolean outline, int outlineColor) {
         this.font = Minecraft.getInstance().font;
         this.text = text;
         this.x = x;
         this.y = y;
+        this.outline = outline;
+        this.outlineColor = outlineColor;
         calculateDimensions();
     }
 
     @Override
     public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
-        font.drawShadow(stack, text, x, y, 0xFFFFFF);
+        if (!isVisible())
+            return;
+
+        if (outline)
+            UIHelper.renderOutlineText(stack, font, text, x, y, 0xFFFFFF, outlineColor);
+        else
+            font.drawShadow(stack, text, x, y, 0xFFFFFF);
     }
 
     private void calculateDimensions() {
