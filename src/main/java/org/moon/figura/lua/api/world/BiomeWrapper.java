@@ -12,8 +12,7 @@ import java.lang.ref.WeakReference;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "Biome",
-        description = "A proxy for a Minecraft biome. Instances are obtained through the WorldAPI. " +
-                "(Not implemented yet, currently only has a \"name\" field)"
+        description = "biome"
 )
 public class BiomeWrapper {
 
@@ -27,7 +26,7 @@ public class BiomeWrapper {
     @LuaWhitelist
     @LuaFieldDoc(
             canEdit = false,
-            description = "The name of the biome, according to the registry."
+            description = "biome.name"
     )
     public final String name;
 

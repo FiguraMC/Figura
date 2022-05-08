@@ -15,7 +15,7 @@ import java.util.UUID;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "LivingEntity",
-        description = "Acts as a proxy for a living entity in the Minecraft world."
+        description = "living_entity"
 )
 public class LivingEntityWrapper<T extends LivingEntity> extends EntityWrapper<T> {
 
@@ -37,10 +37,7 @@ public class LivingEntityWrapper<T extends LivingEntity> extends EntityWrapper<T
                             returnType = Double.class
                     )
             },
-            description = "Gets the yaw of the proxied entity's body in degrees. " +
-                    "If delta is passed in, then it will be used to linearly interpolate " +
-                    "the rotation of the body between the previous tick and the current tick. " +
-                    "The default value of delta is 1."
+            description = "living_entity.get_body_yaw"
     )
     public static <T extends LivingEntity> Double getBodyYaw(LivingEntityWrapper<T> entity, Float delta) {
         LuaUtils.nullCheck("getBodyYaw", "entity", entity);

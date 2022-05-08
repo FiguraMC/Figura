@@ -19,26 +19,23 @@ import java.util.List;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "Vector3",
-        description = "A vector that holds 3 numbers. Can be created using functions in the \"vectors\" api."
+        description = "vector3"
 )
 public class FiguraVec3 implements CachedType {
 
     @LuaWhitelist
     @LuaFieldDoc(
-            canEdit = true, description = "The first coordinate of this vector. Can also be gotten with " +
-            "the indices \"r\" and [1]."
+            canEdit = true, description = "vector_n.x"
     )
     public double x;
     @LuaWhitelist
     @LuaFieldDoc(
-            canEdit = true, description = "The second coordinate of this vector. Can also be gotten with " +
-            "the indices \"g\" and [2]."
+            canEdit = true, description = "vector_n.y"
     )
     public double y;
     @LuaWhitelist
     @LuaFieldDoc(
-            canEdit = true, description = "The third coordinate of this vector. Can also be gotten with " +
-            "the indices \"b\" and [3]."
+            canEdit = true, description = "vector_n.z"
     )
     public double z;
 
@@ -422,7 +419,7 @@ public class FiguraVec3 implements CachedType {
                     argumentNames = "vec",
                     returnType = Double.class
             ),
-            description = "Returns the length of this vector."
+            description = "vector_n.length"
     )
     public static double length(FiguraVec3 arg) {
         return Math.sqrt(lengthSquared(arg));
@@ -436,9 +433,7 @@ public class FiguraVec3 implements CachedType {
                     argumentNames = "vec",
                     returnType = Double.class
             ),
-            description = "Returns the length of this vector squared. " +
-                            "Suitable when you only care about relative " +
-                            "lengths, because it avoids a square root."
+            description = "vector_n.length_squared"
     )
     public static double lengthSquared(FiguraVec3 arg) {
         return arg.x*arg.x + arg.y*arg.y + arg.z*arg.z;
@@ -451,7 +446,7 @@ public class FiguraVec3 implements CachedType {
                     argumentNames = {"vec1", "vec2"},
                     returnType = Double.class
             ),
-            description = "Returns the dot product of vec1 and vec2."
+            description = "vector_n.dot"
     )
     public static double dot(FiguraVec3 arg1, FiguraVec3 arg2) {
         return arg1.dot(arg2);
@@ -464,7 +459,7 @@ public class FiguraVec3 implements CachedType {
                     argumentNames = {"vec1", "vec2"},
                     returnType = FiguraVec3.class
             ),
-            description = "Returns the cross product of vec1 and vec2."
+            description = "vector3.cross"
     )
     public static FiguraVec3 cross(FiguraVec3 arg1, FiguraVec3 arg2) {
         return arg1.crossed(arg2);
@@ -477,8 +472,7 @@ public class FiguraVec3 implements CachedType {
                     argumentNames = "vec",
                     returnType = FiguraVec4.class
             ),
-            description = "Returns the augmented form of this vector. The augmented form is Vector4 with a 1 " +
-                    "in its W coordinate."
+            description = "vector3.augmented"
     )
     public static FiguraVec4 augmented(FiguraVec3 arg1) {
         return arg1.augmented();

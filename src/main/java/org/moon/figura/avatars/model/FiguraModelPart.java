@@ -3,7 +3,6 @@ package org.moon.figura.avatars.model;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HumanoidModel;
-import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.nbt.ByteTag;
 import net.minecraft.nbt.CompoundTag;
@@ -35,9 +34,7 @@ import java.util.Map;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "ModelPart",
-        description = "Represents a node in the model tree, basically a group/cube/mesh in Blockbench. Each " +
-                "bbmodel file is itself a ModelPart, and all of your models are contained in a global ModelPart " +
-                "called \"models\"."
+        description = "model_part"
 )
 public class FiguraModelPart {
 
@@ -153,7 +150,7 @@ public class FiguraModelPart {
                     argumentNames = "modelPart",
                     returnType = FiguraModelPart.class
             ),
-            description = "Gets the parent part of this part. If this part has no parent, returns nil."
+            description = "model_part.get_parent"
     )
     public static FiguraModelPart getParent(FiguraModelPart modelPart) {
         LuaUtils.nullCheck("getParent", "modelPart", modelPart);
@@ -167,7 +164,7 @@ public class FiguraModelPart {
                     argumentNames = "modelPart",
                     returnType = LuaTable.class
             ),
-            description = "Gets the children of this part, stored in a table."
+            description = "model_part.get_children"
     )
     public static LuaTable getChildren(FiguraModelPart modelPart) {
         LuaUtils.nullCheck("getChildren", "modelPart", modelPart);
@@ -185,8 +182,7 @@ public class FiguraModelPart {
                     argumentNames = "modelPart",
                     returnType = FiguraVec3.class
             ),
-            description = "Gets the position of the model part, as an offset from its " +
-                    "position in blockbench. Only changes from {0,0,0} when you call setPos()."
+            description = "model_part.get_pos"
     )
     public static FiguraVec3 getPos(FiguraModelPart modelPart) {
         LuaUtils.nullCheck("getPos", "modelPart", modelPart);
@@ -207,8 +203,7 @@ public class FiguraModelPart {
                             returnType = void.class
                     )
             },
-            description = "Sets the position offset for this part from its blockbench position. Nil values " +
-                    "for position are assumed to be 0."
+            description = "model_part.set_pos"
     )
     public static void setPos(FiguraModelPart modelPart, Object x, Double y, Double z) {
         LuaUtils.nullCheck("setPos", "modelPart", modelPart);
@@ -231,8 +226,7 @@ public class FiguraModelPart {
                     argumentNames = "modelPart",
                     returnType = FiguraVec3.class
             ),
-            description = "Gets the rotation of the model part, including its rotation in blockbench. " +
-                    "For relative rotation values, check out the \"bonus\" rot functions."
+            description = "model_part.get_rot"
     )
     public static FiguraVec3 getRot(FiguraModelPart modelPart) {
         LuaUtils.nullCheck("getRot", "modelPart", modelPart);
@@ -253,9 +247,7 @@ public class FiguraModelPart {
                             returnType = void.class
                     )
             },
-            description = "Sets the absolute rotation for this part. Nil values " +
-                    "for rotation are assumed to be 0. Angles are given in degrees. " +
-                    "For relative rotation values, check out the \"bonus\" rot functions."
+            description = "model_part.set_rot"
     )
     public static void setRot(FiguraModelPart modelPart, Object x, Double y, Double z) {
         LuaUtils.nullCheck("setRot", "modelPart", modelPart);
@@ -278,8 +270,7 @@ public class FiguraModelPart {
                     argumentNames = "modelPart",
                     returnType = FiguraVec3.class
             ),
-            description = "Gets the bonus rotation of the model part, offset from its rotation in blockbench. " +
-                    "For absolute rotation values, check out the non-bonus rot functions."
+            description = "model_part.get_bonus_rot"
     )
     public static FiguraVec3 getBonusRot(FiguraModelPart modelPart) {
         LuaUtils.nullCheck("getBonusRot", "modelPart", modelPart);
@@ -300,9 +291,7 @@ public class FiguraModelPart {
                             returnType = void.class
                     )
             },
-            description = "Sets the bonus rotation for this part. Nil values " +
-                    "for rotation are assumed to be 0. Angles are given in degrees. " +
-                    "For absolute rotation values, check out the non-bonus rot functions."
+            description = "model_part.set_bonus_rot"
     )
     public static void setBonusRot(FiguraModelPart modelPart, Object x, Double y, Double z) {
         LuaUtils.nullCheck("setBonusRot", "modelPart", modelPart);
@@ -325,8 +314,7 @@ public class FiguraModelPart {
                     argumentNames = "modelPart",
                     returnType = FiguraVec3.class
             ),
-            description = "Gets the scale of the model part, as a multiple of its " +
-                    "blockbench size. Only changes from {1,1,1} when you call setScale()."
+            description = "model_parts.get_scale"
     )
     public static FiguraVec3 getScale(FiguraModelPart modelPart) {
         LuaUtils.nullCheck("getScale", "modelPart", modelPart);
@@ -347,7 +335,7 @@ public class FiguraModelPart {
                             returnType = void.class
                     )
             },
-            description = "Sets the scale factor for this part. Nil values for scale are assumed to be 1."
+            description = "model_part.set_scale"
     )
     public static void setScale(FiguraModelPart modelPart, Object x, Double y, Double z) {
         LuaUtils.nullCheck("setScale", "modelPart", modelPart);
@@ -370,8 +358,7 @@ public class FiguraModelPart {
                     argumentNames = "modelPart",
                     returnType = FiguraVec3.class
             ),
-            description = "Gets the pivot point of the model part, including its " +
-                    "pivot in blockbench. For relative values, check out the \"bonus\" pivot functions."
+            description = "model_part.get_pivot"
     )
     public static FiguraVec3 getPivot(FiguraModelPart modelPart) {
         LuaUtils.nullCheck("getPivot", "modelPart", modelPart);
@@ -392,8 +379,7 @@ public class FiguraModelPart {
                             returnType = void.class
                     )
             },
-            description = "Sets the absolute pivot for this part. Nil values are assumed to be 0. " +
-                    "For relative pivot offsets, check out the \"bonus\" pivot functions."
+            description = "model_part.set_pivot"
     )
     public static void setPivot(FiguraModelPart modelPart, Object x, Double y, Double z) {
         LuaUtils.nullCheck("setPivot", "modelPart", modelPart);
@@ -416,8 +402,7 @@ public class FiguraModelPart {
                     argumentNames = "modelPart",
                     returnType = FiguraVec3.class
             ),
-            description = "Gets the bonus pivot of the model part, offset from its pivot in blockbench. " +
-                    "For absolute pivot point values, check out the non-bonus pivot functions."
+            description = "model_part.get_bonus_pivot"
     )
     public static FiguraVec3 getBonusPivot(FiguraModelPart modelPart) {
         LuaUtils.nullCheck("getBonusPivot", "modelPart", modelPart);
@@ -438,9 +423,7 @@ public class FiguraModelPart {
                             returnType = void.class
                     )
             },
-            description = "Sets the bonus pivot point for this part. Nil values " +
-                    "are assumed to be 0. For absolute pivot point values, check " +
-                    "out the non-bonus pivot functions."
+            description = "model_part.set_bonus_pivot"
     )
     public static void setBonusPivot(FiguraModelPart modelPart, Object x, Double y, Double z) {
         LuaUtils.nullCheck("setBonusPivot", "modelPart", modelPart);
@@ -463,8 +446,7 @@ public class FiguraModelPart {
                     argumentNames = "modelPart",
                     returnType = FiguraMat4.class
             ),
-            description = "Recalculates the matrix for this model part, based on its current " +
-                    "position, rotation, scale, and pivot, then returns this matrix."
+            description = "model_part.get_position_matrix"
     )
     public static FiguraMat4 getPositionMatrix(FiguraModelPart modelPart) {
         LuaUtils.nullCheck("getMatrix", "modelPart", modelPart);
@@ -479,8 +461,7 @@ public class FiguraModelPart {
                     argumentNames = "modelPart",
                     returnType = FiguraMat4.class
             ),
-            description = "Returns the position matrix for this model part. The Raw version " +
-                    "of the function is different in that it doesn't recalculate the matrix before getting it."
+            description = "model_part.get_position_matrix_raw"
     )
     public static FiguraMat4 getPositionMatrixRaw(FiguraModelPart modelPart) {
         LuaUtils.nullCheck("getMatrixRaw", "modelPart", modelPart);
@@ -494,8 +475,7 @@ public class FiguraModelPart {
                     argumentNames = "modelPart",
                     returnType = FiguraMat3.class
             ),
-            description = "Recalculates the normal matrix for this model part, based on its current " +
-                    "position, rotation, scale, and pivot, then returns this matrix."
+            description = "model_part.get_normal_matrix"
     )
     public static FiguraMat3 getNormalMatrix(FiguraModelPart modelPart) {
         LuaUtils.nullCheck("getMatrix", "modelPart", modelPart);
@@ -510,8 +490,7 @@ public class FiguraModelPart {
                     argumentNames = "modelPart",
                     returnType = FiguraMat3.class
             ),
-            description = "Returns the normal matrix for this model part. The Raw version " +
-                    "of the function is different in that it doesn't recalculate the matrix before returning it."
+            description = "model_part.get_normal_matrix_raw"
     )
     public static FiguraMat3 getNormalMatrixRaw(FiguraModelPart modelPart) {
         LuaUtils.nullCheck("getMatrixRaw", "modelPart", modelPart);
@@ -525,10 +504,7 @@ public class FiguraModelPart {
                     argumentNames = {"modelPart", "matrix"},
                     returnType = void.class
             ),
-            description = "Sets the given matrix as the position matrix for this model part. " +
-                    "The normal matrix is automatically calculated as the inverse transpose of this matrix. " +
-                    "Calling this DOES NOT CHANGE the values of position, rot, or scale in the model part. If you " +
-                    "call setPos() or a similar function, the effect of setMatrix() will be overwritten."
+            description = "model_part.set_matrix"
     )
     public static void setMatrix(FiguraModelPart modelPart, FiguraMat4 matrix) {
         LuaUtils.nullCheck("setMatrix", "modelPart", modelPart);
@@ -548,8 +524,7 @@ public class FiguraModelPart {
                     argumentNames = "modelPart",
                     returnType = boolean.class
             ),
-            description = "Gets whether or not this model part is visible. The default value is nil, meaning " +
-                    "it copies the visibility of its parent part during rendering."
+            description = "model_part.get_visible"
     )
     public static boolean getVisible(FiguraModelPart modelPart) {
         LuaUtils.nullCheck("getVisible", "modelPart", modelPart);
@@ -565,9 +540,7 @@ public class FiguraModelPart {
                     argumentNames = {"modelPart", "visible"},
                     returnType = void.class
             ),
-            description = "Sets this part to be visible or invisible. The default value is nil, " +
-                    "meaning the part copies its visibility from its parent part. If you want to set " +
-                    "the visibility back to the default value of nil, use resetVisible() instead."
+            description = "model_part.set_visible"
     )
     public static void setVisible(FiguraModelPart modelPart, Boolean bool) {
         LuaUtils.nullCheck("setEnabled", "modelPart", modelPart);
@@ -581,8 +554,7 @@ public class FiguraModelPart {
                     argumentNames = "modelPart",
                     returnType = void.class
             ),
-            description = "Resets the visibility status of the part to default. The default value is nil, " +
-                    "meaning the part copies the visibility from its parent part."
+            description = "model_part.reset_visible"
     )
     public static void resetVisible(FiguraModelPart modelPart) {
         LuaUtils.nullCheck("setEnabled", "modelPart", modelPart);
@@ -596,8 +568,7 @@ public class FiguraModelPart {
                     argumentNames = "modelPart",
                     returnType = String.class
             ),
-            description = "Gets the current primary render type of this model part. Nil by default, " +
-                    "meaning the part copies the primary render type of its parent."
+            description = "model_part.get_primary_render_type"
     )
     public static String getPrimaryRenderType(FiguraModelPart modelPart) {
         LuaUtils.nullCheck("getPrimaryRenderType", "modelPart", modelPart);
@@ -611,8 +582,7 @@ public class FiguraModelPart {
                     argumentNames = "modelPart",
                     returnType = String.class
             ),
-            description = "Gets the current secondary render type of this model part. Nil by default, " +
-                    "meaning the part copies the secondary render type of its parent."
+            description = "model_part.get_secondary_render_type"
     )
     public static String getSecondaryRenderType(FiguraModelPart modelPart) {
         LuaUtils.nullCheck("getSecondaryRenderType", "modelPart", modelPart);
@@ -626,8 +596,7 @@ public class FiguraModelPart {
                     argumentNames = {"modelPart", "renderType"},
                     returnType = void.class
             ),
-            description = "Sets the current primary render type of this model part. Nil by default, " +
-                    "meaning the part copies the primary render type of its parent during rendering."
+            description = "model_part.set_primary_render_type"
     )
     public static void setPrimaryRenderType(FiguraModelPart modelPart, String type) {
         LuaUtils.nullCheck("setPrimaryRenderType", "modelPart", modelPart);
@@ -643,8 +612,7 @@ public class FiguraModelPart {
                     argumentNames = {"modelPart", "renderType"},
                     returnType = void.class
             ),
-            description = "Sets the current secondary render type of this model part. Nil by default, " +
-                    "meaning the part copies the secondary render type of its parent during rendering."
+            description = "model_part.set_secondary_render_type"
     )
     public static void setSecondaryRenderType(FiguraModelPart modelPart, String type) {
         LuaUtils.nullCheck("setSecondaryRenderType", "modelPart", modelPart);

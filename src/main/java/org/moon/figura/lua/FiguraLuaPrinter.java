@@ -137,12 +137,18 @@ public class FiguraLuaPrinter {
             text.append(spacing).append("\t");
 
             //add key
-            if (luaState.type(top - 1) == LuaType.USERDATA)
-                tryParseUserdata(luaState, top - 1);
+            luaState.pushValue(top - 1);
+            top = luaState.getTop();
+
+            if (luaState.type(top) == LuaType.USERDATA)
+                tryParseUserdata(luaState, top);
 
             text.append(new TextComponent("[").withStyle(ChatFormatting.GRAY));
-            text.append(getPrintText(luaState, top - 1, tooltip));
+            text.append(getPrintText(luaState, top, tooltip));
             text.append(new TextComponent("] = ").withStyle(ChatFormatting.GRAY));
+
+            luaState.pop(1);
+            top = luaState.getTop();
 
             //add value
             LuaType type = luaState.type(top);

@@ -9,6 +9,7 @@ import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.lua.types.LuaPairsIterator;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.LuaUtils;
 import org.terasology.jnlua.LuaRuntimeException;
@@ -19,57 +20,56 @@ import java.util.function.Function;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "VanillaModelAPI",
-        description = "A global API that provides functions to interact with the vanilla player model and its parts. " +
-                "Accessed using the name \"vanilla_model\"."
+        description = "vanilla_model"
 )
 public class VanillaModelAPI {
 
     @LuaWhitelist
-    @LuaFieldDoc(canEdit = false, description = "The head of the player, not including the hat.")
+    @LuaFieldDoc(canEdit = false, description = "vanilla_model.head")
     public final VanillaModelPart HEAD;
     @LuaWhitelist
-    @LuaFieldDoc(canEdit = false, description = "The body of the player, not including the outer layer.")
+    @LuaFieldDoc(canEdit = false, description = "vanilla_model.torso")
     public final VanillaModelPart TORSO;
     @LuaWhitelist
-    @LuaFieldDoc(canEdit = false, description = "The left arm of the player, not including the outer layer.")
+    @LuaFieldDoc(canEdit = false, description = "vanilla_model.left_arm")
     public final VanillaModelPart LEFT_ARM;
     @LuaWhitelist
-    @LuaFieldDoc(canEdit = false, description = "The right arm of the player, not including the outer layer.")
+    @LuaFieldDoc(canEdit = false, description = "vanilla_model.right_arm")
     public final VanillaModelPart RIGHT_ARM;
     @LuaWhitelist
-    @LuaFieldDoc(canEdit = false, description = "The left leg of the player, not including the outer layer.")
+    @LuaFieldDoc(canEdit = false, description = "vanilla_model.left_leg")
     public final VanillaModelPart LEFT_LEG;
     @LuaWhitelist
-    @LuaFieldDoc(canEdit = false, description = "The right leg of the player, not including the outer layer.")
+    @LuaFieldDoc(canEdit = false, description = "vanilla_model.right_leg")
     public final VanillaModelPart RIGHT_LEG;
 
     @LuaWhitelist
-    @LuaFieldDoc(canEdit = false, description = "The outer layer of the player's head.")
+    @LuaFieldDoc(canEdit = false, description = "vanilla_model.hat")
     public final VanillaModelPart HAT;
     @LuaWhitelist
-    @LuaFieldDoc(canEdit = false, description = "The outer layer of the player's body.")
+    @LuaFieldDoc(canEdit = false, description = "vanilla_model.jacket")
     public final VanillaModelPart JACKET;
     @LuaWhitelist
-    @LuaFieldDoc(canEdit = false, description = "The outer layer of the player's left arm.")
+    @LuaFieldDoc(canEdit = false, description = "vanilla_model.left_sleeve")
     public final VanillaModelPart LEFT_SLEEVE;
     @LuaWhitelist
-    @LuaFieldDoc(canEdit = false, description = "The outer layer of the player's right arm.")
+    @LuaFieldDoc(canEdit = false, description = "vanilla_model.right_sleeve")
     public final VanillaModelPart RIGHT_SLEEVE;
     @LuaWhitelist
-    @LuaFieldDoc(canEdit = false, description = "The outer layer of the player's left leg.")
+    @LuaFieldDoc(canEdit = false, description = "vanilla_model.left_pants")
     public final VanillaModelPart LEFT_PANTS;
     @LuaWhitelist
-    @LuaFieldDoc(canEdit = false, description = "The outer layer of the player's right leg.")
+    @LuaFieldDoc(canEdit = false, description = "vanilla_model.right_pants")
     public final VanillaModelPart RIGHT_PANTS;
 
     @LuaWhitelist
-    @LuaFieldDoc(canEdit = false, description = "Multi-part: The entirety of the vanilla model.")
+    @LuaFieldDoc(canEdit = false, description = "vanilla_model.all")
     public final VanillaModelPart ALL;
     @LuaWhitelist
-    @LuaFieldDoc(canEdit = false, description = "Multi-part: The outer layer of the player.")
+    @LuaFieldDoc(canEdit = false, description = "vanilla_model.outer_layer")
     public final VanillaModelPart OUTER_LAYER;
     @LuaWhitelist
-    @LuaFieldDoc(canEdit = false, description = "Multi-part: The main body of the player, everything except the outer layer.")
+    @LuaFieldDoc(canEdit = false, description = "vanilla_model.inner_layer")
     public final VanillaModelPart INNER_LAYER;
 
     public void alterModel(PlayerModel<?> playerModel) {
@@ -148,6 +148,20 @@ public class VanillaModelAPI {
         ), FiguraModelPart.ParentType.None);
     }
 
+    @LuaWhitelist
+    public static LuaPairsIterator<VanillaModelAPI, String> __pairs(VanillaModelAPI arg) {
+        return PAIRS_ITERATOR;
+    }
+    private static final LuaPairsIterator<VanillaModelAPI, String> PAIRS_ITERATOR =
+            new LuaPairsIterator<>(List.of(
+                    "HEAD", "TORSO",
+                    "LEFT_ARM", "RIGHT_ARM",
+                    "LEFT_LEG", "RIGHT_LEG",
+                    "HAT", "JACKET",
+                    "LEFT_SLEEVE", "RIGHT_SLEEVE",
+                    "LEFT_PANTS", "RIGHT_PANTS",
+                    "ALL", "OUTER_LAYER", "INNER_LAYER"), VanillaModelAPI.class, String.class);
+
     private static class ModelConsumer {
 
         private final Function<PlayerModel<?>, ModelPart> partProvider;
@@ -186,8 +200,7 @@ public class VanillaModelAPI {
     @LuaWhitelist
     @LuaTypeDoc(
             name = "VanillaModelPart",
-            description = "Represents a model part in a vanilla model. Can be set visible and invisible, " +
-                    "and queried for rotation and position offsets."
+            description = "vanilla_part"
     )
     public static class VanillaModelPart {
 
@@ -216,7 +229,7 @@ public class VanillaModelAPI {
                         argumentNames = {"vanillaPart", "visible"},
                         returnType = void.class
                 ),
-                description = "Sets this part to be visible or invisible."
+                description = "vanilla_part.set_visible"
         )
         public static void setVisible(VanillaModelPart vanillaPart, Boolean visible) {
             LuaUtils.nullCheck("setVisible", "vanillaPart", vanillaPart);
@@ -231,8 +244,7 @@ public class VanillaModelAPI {
                         argumentNames = "vanillaPart",
                         returnType = Boolean.class
                 ),
-                description = "Gets whether you have set this part to be visible or invisible. Only responds to " +
-                        "your own changes in script, not anything done by Minecraft."
+                description = "vanilla_part.get_visible"
         )
         public static boolean getVisible(VanillaModelPart vanillaPart) {
             LuaUtils.nullCheck("getOriginRot", "vanillaPart", vanillaPart);
@@ -248,8 +260,7 @@ public class VanillaModelAPI {
                         argumentNames = "vanillaPart",
                         returnType = FiguraVec3.class
                 ),
-                description = "Gets the rotation to this vanilla model part currently " +
-                        "applied by Minecraft."
+                description = "vanilla_part.get_origin_rot"
         )
         public static FiguraVec3 getOriginRot(VanillaModelPart vanillaPart) {
             LuaUtils.nullCheck("getOriginRot", "vanillaPart", vanillaPart);
@@ -265,8 +276,7 @@ public class VanillaModelAPI {
                         argumentNames = "vanillaPart",
                         returnType = FiguraVec3.class
                 ),
-                description = "Gets the position offset to this vanilla model part currently " +
-                        "applied by Minecraft."
+                description = "vanilla_part.get_origin_pos"
         )
         public static FiguraVec3 getOriginPos(VanillaModelPart vanillaPart) {
             LuaUtils.nullCheck("getOriginPos", "vanillaPart", vanillaPart);

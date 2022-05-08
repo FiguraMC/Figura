@@ -10,7 +10,6 @@ import org.moon.figura.lua.api.world.WorldAPI;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
-import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.LuaUtils;
 import org.terasology.jnlua.LuaRuntimeException;
@@ -18,7 +17,7 @@ import org.terasology.jnlua.LuaRuntimeException;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "SoundAPI",
-        description = "A global API which is used to play Minecraft sounds."
+        description = "sound"
 )
 public class SoundAPI {
 
@@ -48,9 +47,7 @@ public class SoundAPI {
                             returnType = void.class
                     )
             },
-            description = "Plays the specified sound at the specified position with the given volume and pitch " +
-                    "multipliers. Volume in Minecraft refers to how far away people can hear the sound from, not the actual " +
-                    "loudness of it. If you don't give values for volume and pitch, the default values are 1."
+            description = "sound.play_sound"
     )
     public static void playSound(String id, Object x, Double y, Double z, Double w, Double t) {
         FiguraVec3 pos;

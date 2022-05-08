@@ -18,8 +18,7 @@ import java.lang.ref.WeakReference;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "BlockState",
-        description = "A proxy for a block state from Minecraft. " +
-                "Instances are obtained through the WorldAPI."
+        description = "blockstate"
 )
 public class BlockStateWrapper {
 
@@ -33,7 +32,7 @@ public class BlockStateWrapper {
     @LuaWhitelist
     @LuaFieldDoc(
             canEdit = false,
-            description = "The identifier of the block this BlockState comes from."
+            description = "blockstate.id"
     )
     public final String id;
 
@@ -44,9 +43,7 @@ public class BlockStateWrapper {
                     argumentNames = "blockState",
                     returnType = Boolean.class
             ),
-            description = "Checks whether or not this BlockState exists. I can't think of a " +
-                    "situation where it wouldn't exist, but this function is provided for you " +
-                    "to check just in case."
+            description = "blockstate.exists"
     )
     public static boolean exists(BlockStateWrapper blockState) {
         LuaUtils.nullCheck("exists", "blockState", blockState);
@@ -67,8 +64,7 @@ public class BlockStateWrapper {
                             returnType = Boolean.class
                     )
             },
-            description = "Gets whether or not the BlockState, at this position, would propagate sky light " +
-                    "downwards."
+            description = "blockstate.is_translucent"
     )
     public static boolean isTranslucent(BlockStateWrapper blockState, Object x, Double y, Double z) {
         if (!WorldAPI.exists()) throw new LuaRuntimeException("World does not exist!");
@@ -94,7 +90,7 @@ public class BlockStateWrapper {
                             returnType = Integer.class
                     )
             },
-            description = "Gets the opacity of the BlockState, in terms of how much it affects light levels."
+            description = "blockstate.get_opacity"
     )
     public static int getOpacity(BlockStateWrapper blockState, Object x, Double y, Double z) {
         if (!WorldAPI.exists()) throw new LuaRuntimeException("World does not exist!");
@@ -120,7 +116,7 @@ public class BlockStateWrapper {
                             returnType = Boolean.class
                     )
             },
-            description = "Gets the map color of this BlockState, as a Vector3 with R,G,B ranging 0 to 1."
+            description = "blockstate.get_map_color"
     )
     public static FiguraVec3 getMapColor(BlockStateWrapper blockState, Object x, Double y, Double z) {
         if (!WorldAPI.exists()) throw new LuaRuntimeException("World does not exist!");
@@ -146,7 +142,7 @@ public class BlockStateWrapper {
                             returnType = Boolean.class
                     )
             },
-            description = "Gets whether or not the BlockState, at this position, is a solid block."
+            description = "blockstate.is_solid_block"
     )
     public static boolean isSolidBlock(BlockStateWrapper blockState, Object x, Double y, Double z) {
         if (!WorldAPI.exists()) throw new LuaRuntimeException("World does not exist!");
@@ -172,8 +168,7 @@ public class BlockStateWrapper {
                             returnType = Boolean.class
                     )
             },
-            description = "Gets whether or not the BlockState, at this position, has a full cube as its " +
-                    "collision hitbox."
+            description = "blockstate.is_full_cube"
     )
     public static boolean isFullCube(BlockStateWrapper blockState, Object x, Double y, Double z) {
         if (!WorldAPI.exists()) throw new LuaRuntimeException("World does not exist!");
@@ -199,7 +194,7 @@ public class BlockStateWrapper {
                             returnType = Boolean.class
                     )
             },
-            description = "Gets whether or not the BlockState, at this position, uses emissive lighting."
+            description = "blockstate.has_emissive_lightning"
     )
     public static boolean hasEmissiveLighting(BlockStateWrapper blockState, Object x, Double y, Double z) {
         if (!WorldAPI.exists()) throw new LuaRuntimeException("World does not exist!");
@@ -225,7 +220,7 @@ public class BlockStateWrapper {
                             returnType = Float.class
                     )
             },
-            description = "Gets the hardness of the BlockState, when placed at this position."
+            description = "blockstate.get_hardness"
     )
     public static float getHardness(BlockStateWrapper blockState, Object x, Double y, Double z) {
         if (!WorldAPI.exists()) throw new LuaRuntimeException("World does not exist!");
@@ -251,7 +246,7 @@ public class BlockStateWrapper {
                             returnType = Integer.class
                     )
             },
-            description = "Gets the amount of signal strength a comparator would get from this BlockState."
+            description = "blockstate.get_comparator_output"
     )
     public static int getComparatorOutput(BlockStateWrapper blockState, Object x, Double y, Double z) {
         if (!WorldAPI.exists()) throw new LuaRuntimeException("World does not exist!");
@@ -270,7 +265,7 @@ public class BlockStateWrapper {
                     argumentNames = "blockState",
                     returnType = Boolean.class
             ),
-            description = "Gets whether or not this BlockState has an associated block entity."
+            description = "blockstate.has_block_entity"
     )
     public static boolean hasBlockEntity(BlockStateWrapper blockState) {
         if (!exists(blockState)) throw new LuaRuntimeException("BlockState does not exist!");
@@ -285,7 +280,7 @@ public class BlockStateWrapper {
                     argumentNames = "blockState",
                     returnType = Boolean.class
             ),
-            description = "Gets whether or not this BlockState is opaque."
+            description = "blockstate.is_opaque"
     )
     public static boolean isOpaque(BlockStateWrapper blockState) {
         if (!exists(blockState)) throw new LuaRuntimeException("BlockState does not exist!");
@@ -300,7 +295,7 @@ public class BlockStateWrapper {
                     argumentNames = "blockState",
                     returnType = Boolean.class
             ),
-            description = "Gets whether or not this BlockState emits redstone power."
+            description = "blockstate.emits_redstone_power"
     )
     public static boolean emitsRedstonePower(BlockStateWrapper blockState) {
         if (!exists(blockState)) throw new LuaRuntimeException("BlockState does not exist!");
@@ -315,7 +310,7 @@ public class BlockStateWrapper {
                     argumentNames = "blockState",
                     returnType = Integer.class
             ),
-            description = "Gets the emission light level of this BlockState."
+            description = "blockstate.get_luminance"
     )
     public static int getLuminance(BlockStateWrapper blockState) {
         if (!exists(blockState)) throw new LuaRuntimeException("BlockState does not exist!");
@@ -330,7 +325,7 @@ public class BlockStateWrapper {
                     argumentNames = "blockState",
                     returnType = Float.class
             ),
-            description = "Gets the slipperiness of this BlockState. (Slime blocks and ice in vanilla)"
+            description = "blockstate.get_slipperiness"
     )
     public static float getSlipperiness(BlockStateWrapper blockState) {
         if (!exists(blockState)) throw new LuaRuntimeException("BlockState does not exist!");
@@ -345,7 +340,7 @@ public class BlockStateWrapper {
                     argumentNames = "blockState",
                     returnType = Float.class
             ),
-            description = "Gets the velocity multiplier of this BlockState. (Only Soul sand, honey blocks in vanilla)"
+            description = "blockstate.get_velocity_multiplier"
     )
     public static float getVelocityMultiplier(BlockStateWrapper blockState) {
         if (!exists(blockState)) throw new LuaRuntimeException("BlockState does not exist!");
@@ -360,7 +355,7 @@ public class BlockStateWrapper {
                     argumentNames = "blockState",
                     returnType = Float.class
             ),
-            description = "Gets the JumpVelocityMultiplier of this BlockState. (Literally just honey blocks in vanilla)"
+            description = "blockstate.get_jump_velocity_multiplier"
     )
     public static float getJumpVelocityMultiplier(BlockStateWrapper blockState) {
         if (!exists(blockState)) throw new LuaRuntimeException("BlockState does not exist!");
@@ -375,7 +370,7 @@ public class BlockStateWrapper {
                     argumentNames = "blockState",
                     returnType = Float.class
             ),
-            description = "Gets whether or not this BlockState has an associated block entity."
+            description = "blockstate.get_blast_resistance"
     )
     public static float getBlastResistance(BlockStateWrapper blockState) {
         if (!exists(blockState)) throw new LuaRuntimeException("BlockState does not exist!");

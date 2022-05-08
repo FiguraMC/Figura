@@ -17,44 +17,38 @@ import java.util.List;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "Vector6",
-        description = "A vector that holds 6 numbers. Can be created using functions in the \"vectors\" api."
+        description = "vector6"
 )
 public class FiguraVec6 implements CachedType {
 
     @LuaWhitelist
     @LuaFieldDoc(
-            canEdit = true, description = "The first coordinate of this vector. Can also be gotten with " +
-            "the indices \"r\" and [1]."
+            canEdit = true, description = "vector_n.x"
     )
     public double x;
     @LuaWhitelist
     @LuaFieldDoc(
-            canEdit = true, description = "The second coordinate of this vector. Can also be gotten with " +
-            "the indices \"g\" and [2]."
+            canEdit = true, description = "vector_n.y"
     )
     public double y;
     @LuaWhitelist
     @LuaFieldDoc(
-            canEdit = true, description = "The third coordinate of this vector. Can also be gotten with " +
-            "the indices \"b\" and [3]."
+            canEdit = true, description = "vector_n.z"
     )
     public double z;
     @LuaWhitelist
     @LuaFieldDoc(
-            canEdit = true, description = "The fourth coordinate of this vector. Can also be gotten with " +
-            "the indices \"a\" and [4]."
+            canEdit = true, description = "vector_n.w"
     )
     public double w;
     @LuaWhitelist
     @LuaFieldDoc(
-            canEdit = true, description = "The fifth coordinate of this vector. Can also be gotten with " +
-            "the index [5]."
+            canEdit = true, description = "vector_n.t"
     )
     public double t;
     @LuaWhitelist
     @LuaFieldDoc(
-            canEdit = true, description = "The sixth coordinate of this vector. Can also be gotten with " +
-            "the index [6]."
+            canEdit = true, description = "vector_n.h"
     )
     public double h;
 
@@ -434,7 +428,7 @@ public class FiguraVec6 implements CachedType {
                     argumentNames = "vec",
                     returnType = Double.class
             ),
-            description = "Returns the length of this vector."
+            description = "vector_n.length"
     )
     public static double length(FiguraVec6 arg) {
         return Math.sqrt(lengthSquared(arg));
@@ -447,9 +441,7 @@ public class FiguraVec6 implements CachedType {
                     argumentNames = "vec",
                     returnType = Double.class
             ),
-            description = "Returns the length of this vector squared. " +
-                            "Suitable when you only care about relative " +
-                            "lengths, because it avoids a square root."
+            description = "vector_n.length_squared"
     )
     public static double lengthSquared(FiguraVec6 arg) {
         return arg.dot(arg);
@@ -462,7 +454,7 @@ public class FiguraVec6 implements CachedType {
                     argumentNames = {"vec1", "vec2"},
                     returnType = Double.class
             ),
-            description = "Returns the dot product of vec1 and vec2."
+            description = "vector_n.dot"
     )
     public static double dot(FiguraVec6 arg1, FiguraVec6 arg2) {
         return arg1.dot(arg2);

@@ -13,8 +13,7 @@ import java.util.UUID;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "Player",
-        description = "Acts as a proxy for a player entity in the Minecraft world. A global instance " +
-                "exists for the avatar's user, under the name \"player\"."
+        description = "player"
 )
 public class PlayerEntityWrapper extends LivingEntityWrapper<Player> {
 
@@ -29,7 +28,7 @@ public class PlayerEntityWrapper extends LivingEntityWrapper<Player> {
                     argumentNames = "entity",
                     returnType = Integer.class
             ),
-            description = "Gets the current food level of the player. Range is 0 to 20."
+            description = "player.get_food"
     )
     public static Integer getFood(PlayerEntityWrapper entity) {
         LuaUtils.nullCheck("getFood", "entity", entity);

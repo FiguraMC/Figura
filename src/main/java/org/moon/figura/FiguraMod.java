@@ -5,8 +5,6 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.avatars.providers.LocalAvatarLoader;
 import org.moon.figura.commands.FiguraCommands;
@@ -18,12 +16,11 @@ import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.TextUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.terasology.jnlua.LuaRuntimeException;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.UUID;
 
 public class FiguraMod implements ClientModInitializer {
 

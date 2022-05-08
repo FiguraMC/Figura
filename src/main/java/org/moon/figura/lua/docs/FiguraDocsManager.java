@@ -199,7 +199,7 @@ public class FiguraDocsManager {
                             .withStyle(Colors.CHLOE_PURPLE.style))
                     .append("\n\t")
                     .append(new TextComponent("• ")
-                            .append(new FiguraText(description))
+                            .append(new FiguraText("docs." + description + ".desc"))
                             .withStyle(Colors.MAYA_BLUE.style));
 
             FiguraMod.sendChatMessage(message);
@@ -286,7 +286,7 @@ public class FiguraDocsManager {
                             .withStyle(Colors.CHLOE_PURPLE.style))
                     .append("\n\t")
                     .append(new TextComponent("• ")
-                            .append(new FiguraText(description))
+                            .append(new FiguraText("docs." + description + ".desc"))
                             .withStyle(Colors.MAYA_BLUE.style));
 
             FiguraMod.sendChatMessage(message);
@@ -335,7 +335,7 @@ public class FiguraDocsManager {
                     .withStyle(Colors.CHLOE_PURPLE.style))
             .append("\n\t")
             .append(new TextComponent("• ")
-                    .append(new FiguraText(description))
+                    .append(new FiguraText("docs." + description + ".desc"))
                     .withStyle(Colors.MAYA_BLUE.style));
 
             FiguraMod.sendChatMessage(message);

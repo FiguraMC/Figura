@@ -16,8 +16,7 @@ import org.terasology.jnlua.LuaRuntimeException;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "MatricesAPI",
-        description = "A global API which provides functions dedicated " +
-                "to creating and otherwise manipulating matrices. Accessed using the name \"matrices\"."
+        description = "matrices"
 )
 public class MatricesAPI {
 
@@ -37,8 +36,7 @@ public class MatricesAPI {
                             returnType = FiguraMat2.class
                     )
             },
-            description = "Creates a Matrix2 using the given parameters as columns. " +
-                    "If you call the function with no parameters, returns the 2x2 identity matrix."
+            description = "matrices.mat2"
     )
     public static FiguraMat2 mat2(FiguraVec2 col1, FiguraVec2 col2) {
         if (col1 == null && col2 == null)
@@ -65,8 +63,7 @@ public class MatricesAPI {
                             returnType = FiguraMat3.class
                     )
             },
-            description = "Creates a Matrix3 using the given parameters as columns. " +
-                    "If you call the function with no parameters, returns the 3x3 identity matrix."
+            description = "matrices.mat3"
     )
     public static FiguraMat3 mat3(FiguraVec3 col1, FiguraVec3 col2, FiguraVec3 col3) {
         if (col1 == null && col2 == null && col3 == null)
@@ -94,8 +91,7 @@ public class MatricesAPI {
                             returnType = FiguraMat4.class
                     )
             },
-            description = "Creates a Matrix4 using the given parameters as columns. " +
-                    "If you call the function with no parameters, returns the 4x4 identity matrix."
+            description = "matrices.mat4"
     )
     public static FiguraMat4 mat4(FiguraVec4 col1, FiguraVec4 col2, FiguraVec4 col3, FiguraVec4 col4) {
         if (col1 == null && col2 == null && col3 == null && col4 == null)
@@ -118,8 +114,7 @@ public class MatricesAPI {
                     argumentNames = "angle",
                     returnType = FiguraMat2.class
             ),
-            description = "Creates a new Matrix2 that rotates by the specified angle. " +
-                    "Angle is given in degrees."
+            description = "matrices.rotation2"
     )
     public static FiguraMat2 rotation2(Double degrees) {
         LuaUtils.nullCheck("rotation2", "degrees", degrees);
@@ -140,8 +135,7 @@ public class MatricesAPI {
                             returnType = FiguraMat3.class
                     )
             },
-            description = "Creates a new Matrix3 that rotates by the specified angles. " +
-                    "Angles are given in degrees, and the rotation order is ZYX."
+            description = "matrices.rotation3"
     )
     public static FiguraMat3 rotation3(Object x, Double y, Double z) {
         FiguraVec3 angles = LuaUtils.parseVec3("rotation3", x, y, z);
@@ -157,8 +151,7 @@ public class MatricesAPI {
                     argumentNames = "angle",
                     returnType = FiguraMat3.class
             ),
-            description = "Creates a new Matrix3 that rotates by the specified angle around the X axis. " +
-                    "Angle is given in degrees."
+            description = "matrices.x_rotation3"
     )
     public static FiguraMat3 xRotation3(Double degrees) {
         LuaUtils.nullCheck("xRotation3", "degrees", degrees);
@@ -172,8 +165,7 @@ public class MatricesAPI {
                     argumentNames = "angle",
                     returnType = FiguraMat3.class
             ),
-            description = "Creates a new Matrix3 that rotates by the specified angle around the Y axis. " +
-                    "Angle is given in degrees."
+            description = "matrices.y_rotation3"
     )
     public static FiguraMat3 yRotation3(Double degrees) {
         LuaUtils.nullCheck("yRotation3", "degrees", degrees);
@@ -187,8 +179,7 @@ public class MatricesAPI {
                     argumentNames = "angle",
                     returnType = FiguraMat3.class
             ),
-            description = "Creates a new Matrix3 that rotates by the specified angle around the Z axis. " +
-                    "Angle is given in degrees."
+            description = "matrices.z_rotation3"
     )
     public static FiguraMat3 zRotation3(Double degrees) {
         LuaUtils.nullCheck("zRotation3", "degrees", degrees);
@@ -209,8 +200,7 @@ public class MatricesAPI {
                             returnType = FiguraMat4.class
                     )
             },
-            description = "Creates a new Matrix4 that rotates by the specified angles. " +
-                    "Angles are given in degrees, and the rotation order is ZYX."
+            description = "matrices.rotation4"
     )
     public static FiguraMat4 rotation4(Object x, Double y, Double z) {
         FiguraVec3 angles = LuaUtils.parseVec3("rotation4", x, y, z);
@@ -226,8 +216,7 @@ public class MatricesAPI {
                     argumentNames = "angle",
                     returnType = FiguraMat4.class
             ),
-            description = "Creates a new Matrix4 that rotates by the specified angle around the X axis. " +
-                    "Angle is given in degrees."
+            description = "matrices.x_rotation4"
     )
     public static FiguraMat4 xRotation4(Double degrees) {
         LuaUtils.nullCheck("xRotation4", "degrees", degrees);
@@ -241,8 +230,7 @@ public class MatricesAPI {
                     argumentNames = "angle",
                     returnType = FiguraMat4.class
             ),
-            description = "Creates a new Matrix4 that rotates by the specified angle around the Y axis. " +
-                    "Angle is given in degrees."
+            description = "matrices.y_rotation4"
     )
     public static FiguraMat4 yRotation4(Double degrees) {
         LuaUtils.nullCheck("yRotation4", "degrees", degrees);
@@ -256,8 +244,7 @@ public class MatricesAPI {
                     argumentNames = "angle",
                     returnType = FiguraMat4.class
             ),
-            description = "Creates a new Matrix4 that rotates by the specified angle around the Z axis. " +
-                    "Angle is given in degrees."
+            description = "matrices.z_rotation4"
     )
     public static FiguraMat4 zRotation4(Double degrees) {
         LuaUtils.nullCheck("zRotation4", "degrees", degrees);
@@ -279,7 +266,7 @@ public class MatricesAPI {
                             returnType = FiguraMat2.class
                     )
             },
-            description = "Creates a new Matrix2 that scales by the specified factors."
+            description = "matrices.scale2"
     )
     public static FiguraMat2 scale2(Object x, Double y) {
         FiguraVec2 vec = LuaUtils.parseVec2("scale2", x, y, 1, 1);
@@ -302,7 +289,7 @@ public class MatricesAPI {
                             returnType = FiguraMat3.class
                     )
             },
-            description = "Creates a new Matrix3 that scales by the specified factors."
+            description = "matrices.scale3"
     )
     public static FiguraMat3 scale3(Object x, Double y, Double z) {
         FiguraVec3 scale = LuaUtils.parseVec3("scale3", x, y, z, 1, 1, 1);
@@ -325,7 +312,7 @@ public class MatricesAPI {
                             returnType = FiguraMat4.class
                     )
             },
-            description = "Creates a new Matrix4 that scales by the specified factors."
+            description = "matrices.scale4"
     )
     public static FiguraMat4 scale4(Object x, Double y, Double z) {
         FiguraVec3 scale = LuaUtils.parseVec3("scale4", x, y, z, 1, 1, 1);
@@ -349,7 +336,7 @@ public class MatricesAPI {
                             returnType = FiguraMat4.class
                     )
             },
-            description = "Creates a new Matrix4 that translates by the specified offset."
+            description = "matrices.translate4"
     )
     public static FiguraMat4 translate4(Object x, Double y, Double z) {
         FiguraVec3 offset = LuaUtils.parseVec3("translate4", x, y, z);

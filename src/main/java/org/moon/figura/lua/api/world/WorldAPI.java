@@ -15,8 +15,7 @@ import org.terasology.jnlua.LuaRuntimeException;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "WorldAPI",
-        description = "A global API dedicated to reading information from the Minecraft world. " +
-                "Accessed using the name \"world\"."
+        description = "world"
 )
 public class WorldAPI {
 
@@ -40,7 +39,7 @@ public class WorldAPI {
                             returnType = BiomeWrapper.class
                     )
             },
-            description = "Gets the Biome located at the given position."
+            description = "world.get_biome"
     )
     public static BiomeWrapper getBiome(Object x, Double y, Double z) {
         if (!exists()) throw new LuaRuntimeException("World does not exist!");
@@ -64,7 +63,7 @@ public class WorldAPI {
                             returnType = BlockStateWrapper.class
                     )
             },
-            description = "Gets the BlockState of the block at the given position."
+            description = "world.get_blockstate"
     )
     public static BlockStateWrapper getBlockState(Object x, Double y, Double z) {
         if (!exists()) throw new LuaRuntimeException("World does not exist!");
@@ -91,7 +90,7 @@ public class WorldAPI {
                             returnType = Integer.class
                     )
             },
-            description = "Gets the redstone power level of the block at the given position."
+            description = "world.get_restone_power"
     )
     public static Integer getRedstonePower(Object x, Double y, Double z) {
         if (!exists()) throw new LuaRuntimeException("World does not exist!");
@@ -117,7 +116,7 @@ public class WorldAPI {
                             returnType = Integer.class
                     )
             },
-            description = "Gets the direct redstone power level of the block at the given position."
+            description = "world.get_strong_redstone_power"
     )
     public static Integer getStrongRedstonePower(Object x, Double y, Double z) {
         if (!exists()) throw new LuaRuntimeException("World does not exist!");
@@ -143,8 +142,7 @@ public class WorldAPI {
                             returnType = Double.class
                     )
             },
-            description = "Gets the current game time of the world. If delta is passed in, then it adds delta " +
-                    "to the time. The default value of delta is zero."
+            description = "world.get_time"
     )
     public static double getTime(Double delta) {
         if (!exists()) throw new LuaRuntimeException("World does not exist!");
@@ -166,8 +164,7 @@ public class WorldAPI {
                             returnType = Double.class
                     )
             },
-            description = "Gets the current day time of the world. If delta is passed in, then it adds delta " +
-                    "to the time. The default value of delta is zero."
+            description = "world.get_time_of_day"
     )
     public static double getTimeOfDay(Double delta) {
         if (!exists()) throw new LuaRuntimeException("World does not exist!");
@@ -182,7 +179,7 @@ public class WorldAPI {
                     argumentNames = {},
                     returnType = Integer.class
             ),
-            description = "Gets the current moon phase of the world, stored as an integer."
+            description = "world.get_moon_phase"
     )
     public static int getMoonPhase() {
         if (!exists()) throw new LuaRuntimeException("World does not exist!");
@@ -203,8 +200,7 @@ public class WorldAPI {
                             returnType = Double.class
                     )
             },
-            description = "Gets the current rain gradient in the world, interpolated from the previous " +
-                    "tick to the current one. The default value of delta is 1, which is the current tick."
+            description = "world.get_rain_gradient"
     )
     public static double getRainGradient(Float delta) {
         if (!exists()) throw new LuaRuntimeException("World does not exist!");
@@ -219,7 +215,7 @@ public class WorldAPI {
                     argumentNames = {},
                     returnType = Boolean.class
             ),
-            description = "Gets whether or not there is currently thunder/lightning happening in the world."
+            description = "world.is_thundering"
     )
     public static boolean isThundering() {
         if (!exists()) throw new LuaRuntimeException("World does not exist!");
@@ -240,7 +236,7 @@ public class WorldAPI {
                             returnType = Integer.class
                     )
             },
-            description = "Gets the overall light level of the block at the given position."
+            description = "world.get_light_level"
     )
     public static Integer getLightLevel(Object x, Double y, Double z) {
         if (!exists()) throw new LuaRuntimeException("World does not exist!");
@@ -268,7 +264,7 @@ public class WorldAPI {
                             returnType = Integer.class
                     )
             },
-            description = "Gets the sky light level of the block at the given position."
+            description = "world.get_sky_light_level"
     )
     public static Integer getSkyLightLevel(Object x, Double y, Double z) {
         if (!exists()) throw new LuaRuntimeException("World does not exist!");
@@ -295,7 +291,7 @@ public class WorldAPI {
                             returnType = Integer.class
                     )
             },
-            description = "Gets the block light level of the block at the given position."
+            description = "world.get_block_light_level"
     )
     public static Integer getBlockLightLevel(Object x, Double y, Double z) {
         if (!exists()) throw new LuaRuntimeException("World does not exist!");
@@ -322,7 +318,7 @@ public class WorldAPI {
                             returnType = Boolean.class
                     )
             },
-            description = "Gets whether or not the sky is open at the given position."
+            description = "world.is_open_sky"
     )
     public static Boolean isOpenSky(Object x, Double y, Double z) {
         if (!exists()) throw new LuaRuntimeException("World does not exist!");
@@ -342,8 +338,7 @@ public class WorldAPI {
                     argumentNames = {},
                     returnType = Boolean.class
             ),
-            description = "Checks whether or not a world currently exists. This will almost always " +
-                    "be true, but might be false on some occasions such as while travelling between dimensions."
+            description = "world.exists"
     )
     public static boolean exists() {
         return getCurrentWorld() != null;

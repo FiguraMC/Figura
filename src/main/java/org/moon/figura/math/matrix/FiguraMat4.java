@@ -4,8 +4,8 @@ import com.mojang.math.Matrix4f;
 import net.minecraft.world.phys.Vec3;
 import org.lwjgl.BufferUtils;
 import org.moon.figura.lua.LuaWhitelist;
-import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
+import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec4;
@@ -18,7 +18,7 @@ import java.nio.FloatBuffer;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "Matrix4",
-        description = "A matrix with 4 rows and 4 columns."
+        description = "matrix4"
 )
 public class FiguraMat4 implements CachedType {
 
@@ -798,7 +798,7 @@ public class FiguraMat4 implements CachedType {
                     argumentNames = "mat",
                     returnType = Double.class
             ),
-            description = "Calculates and returns the determinant of this matrix."
+            description = "matrix_n.det"
     )
     public static double det(FiguraMat4 mat) {
         return mat.det();
@@ -811,7 +811,7 @@ public class FiguraMat4 implements CachedType {
                     argumentNames = "mat",
                     returnType = void.class
             ),
-            description = "Inverts this matrix, changing the values inside."
+            description = "matrix_n.invert"
     )
     public static void invert(FiguraMat4 mat) {
         mat.invert();
@@ -824,7 +824,7 @@ public class FiguraMat4 implements CachedType {
                     argumentNames = "mat",
                     returnType = FiguraMat4.class
             ),
-            description = "Calculates and returns the inverse of this matrix."
+            description = "matrix_n.get_inverse"
     )
     public static FiguraMat4 getInverse(FiguraMat4 mat) {
         return mat.inverted();
@@ -837,7 +837,7 @@ public class FiguraMat4 implements CachedType {
                     argumentNames = "mat",
                     returnType = void.class
             ),
-            description = "Transposes this matrix, changing the values inside."
+            description = "matrix_n.transpose"
     )
     public static void transpose(FiguraMat4 mat) {
         mat.transpose();
@@ -850,7 +850,7 @@ public class FiguraMat4 implements CachedType {
                     argumentNames = "mat",
                     returnType = FiguraMat4.class
             ),
-            description = "Calculates and returns the transpose of this matrix."
+            description = "matrix_n.get_transpose"
     )
     public static FiguraMat4 getTranspose(FiguraMat4 mat) {
         return mat.transposed();
@@ -870,7 +870,7 @@ public class FiguraMat4 implements CachedType {
                             returnType = void.class
                     )
             },
-            description = "Translates this matrix by the specified amount, changing the values inside."
+            description = "matrix4.translate"
     )
     public static void translate(FiguraMat4 mat, Object arg1, Double y, Double z) {
         if (arg1 instanceof Double x) {
@@ -899,8 +899,7 @@ public class FiguraMat4 implements CachedType {
                             returnType = void.class
                     )
             },
-            description = "Rotates this matrix by the specified amount, changing the values inside. " +
-                    "Angles are given in degrees, and the rotation order is ZYX."
+            description = "matrix4.rotate"
     )
     public static void rotate(FiguraMat4 mat, Object arg1, Double y, Double z) {
         if (arg1 instanceof Double x) {
@@ -929,7 +928,7 @@ public class FiguraMat4 implements CachedType {
                             returnType = void.class
                     )
             },
-            description = "Scales this matrix by the specified amount, changing the values inside."
+            description = "matrix_n.scale"
     )
     public static void scale(FiguraMat4 mat, Object arg1, Double y, Double z) {
         if (arg1 instanceof Double x) {
@@ -951,8 +950,7 @@ public class FiguraMat4 implements CachedType {
                     argumentNames = {"mat", "col"},
                     returnType = FiguraVec4.class
             ),
-            description = "Gets a Vector4 representing the desired column of the matrix. 1-indexed, so " +
-                    "calling mat:getColumn(1) will return the first column of the matrix."
+            description = "matrix4.get_column"
     )
     public static FiguraVec4 getColumn(FiguraMat4 mat, Integer column) {
         if (column == null) throw new IllegalArgumentException("Cannot access nil column!");
@@ -973,8 +971,7 @@ public class FiguraMat4 implements CachedType {
                     argumentNames = {"mat", "row"},
                     returnType = FiguraVec4.class
             ),
-            description = "Gets a Vector4 representing the desired row of the matrix. 1-indexed, so " +
-                    "calling mat:getRow(1) will return the first row of the matrix."
+            description = "matrix4.get_row"
     )
     public static FiguraVec4 getRow(FiguraMat4 mat, Integer row) {
         if (row == null) throw new IllegalArgumentException("Cannot access nil row!");

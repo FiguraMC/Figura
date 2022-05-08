@@ -18,20 +18,18 @@ import java.util.List;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "Vector2",
-        description = "A vector that holds 2 numbers. Can be created using functions in the \"vectors\" api."
+        description = "vector2"
 )
 public class FiguraVec2 implements CachedType {
 
     @LuaWhitelist
     @LuaFieldDoc(
-            canEdit = true, description = "The first coordinate of this vector. Can also be gotten with " +
-            "the indices \"r\" and [1]."
+            canEdit = true, description = "vector_n.x"
     )
     public double x;
     @LuaWhitelist
     @LuaFieldDoc(
-            canEdit = true, description = "The second coordinate of this vector. Can also be gotten with " +
-            "the indices \"g\" and [2]."
+            canEdit = true, description = "vector_n.y"
     )
     public double y;
 
@@ -383,7 +381,7 @@ public class FiguraVec2 implements CachedType {
                     argumentNames = "vec",
                     returnType = Double.class
             ),
-            description = "Returns the length of this vector."
+            description = "vector_n.length"
     )
     public static double length(FiguraVec2 arg) {
         return Math.sqrt(lengthSquared(arg));
@@ -396,9 +394,7 @@ public class FiguraVec2 implements CachedType {
                     argumentNames = "vec",
                     returnType = Double.class
             ),
-            description = "Returns the length of this vector squared. " +
-                            "Suitable when you only care about relative " +
-                            "lengths, because it avoids a square root."
+            description = "vector_n.length_squared"
     )
     public static double lengthSquared(FiguraVec2 arg) {
         return arg.dot(arg);
@@ -411,7 +407,7 @@ public class FiguraVec2 implements CachedType {
                     argumentNames = {"vec1", "vec2"},
                     returnType = Double.class
             ),
-            description = "Returns the dot product of vec1 and vec2."
+            description = "vector_n.dot"
     )
     public static double dot(FiguraVec2 arg1, FiguraVec2 arg2) {
         return arg1.dot(arg2);

@@ -15,26 +15,26 @@ import java.util.List;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "EventsAPI",
-        description = "A global API that contains all of the figura Events. Accessed using the name \"events\"."
+        description = "events"
 )
 public class EventsAPI {
 
     @LuaWhitelist
     @LuaFieldDoc(
             canEdit = false,
-            description = "The TICK event is run every in-game tick: 20 times per second."
+            description = "events.tick"
     )
     public final LuaEvent TICK = new LuaEvent("TICK");
     @LuaWhitelist
     @LuaFieldDoc(
             canEdit = false,
-            description = "The RENDER event is run every frame, before the avatar is rendered."
+            description = "events.render"
     )
     public final LuaEvent RENDER = new LuaEvent("RENDER");
     @LuaWhitelist
     @LuaFieldDoc(
             canEdit = false,
-            description = "The POST_RENDER event runs every frame, after the avatar is rendered."
+            description = "events.post_render"
     )
     public final LuaEvent POST_RENDER = new LuaEvent("POST_RENDER");
 
@@ -52,9 +52,7 @@ public class EventsAPI {
     @LuaWhitelist
     @LuaTypeDoc(
             name = "Event",
-            description = "A hook for a certain event in Minecraft. " +
-                    "You may register functions to one, and those functions will be " +
-                    "called when the event occurs."
+            description = "event"
     )
     public static class LuaEvent {
 
@@ -79,9 +77,7 @@ public class EventsAPI {
                         argumentNames = {"event", "function"},
                         returnType = void.class
                 ),
-                description = "Registers the given function to the given event. When the event " +
-                        "occurs, the function will be run. Functions are run in the order they were " +
-                        "registered."
+                description = "event.register"
         )
         public static void register(LuaEvent event, LuaFunction function) {
             if (function == null)

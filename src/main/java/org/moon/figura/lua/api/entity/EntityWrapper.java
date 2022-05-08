@@ -20,7 +20,7 @@ import java.util.UUID;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "Entity",
-        description = "Acts as a proxy for an entity in the Minecraft world."
+        description = "entity"
 )
 public class EntityWrapper<T extends Entity> {
 
@@ -47,9 +47,7 @@ public class EntityWrapper<T extends Entity> {
                     argumentNames = "entity",
                     returnType = boolean.class
             ),
-            description = "Checks whether the proxied entity exists. This returns " +
-                    "false if the proxied entity leaves your loaded chunks, dies, " +
-                    "or goes away for some other reason."
+            description = "entity.exists"
     )
     public static <T extends Entity> boolean exists(EntityWrapper<T> entity) {
         return entity.getEntity() != null;
@@ -69,10 +67,7 @@ public class EntityWrapper<T extends Entity> {
                             returnType = FiguraVec3.class
                     )
             },
-            description = "Gets the position of the proxied entity in the world. " +
-                    "If delta is passed in, then it will be used to linearly interpolate " +
-                    "the position of the entity between the previous tick and the current tick. " +
-                    "The default value of delta is 1."
+            description = "entity.get_pos"
     )
     public static <T extends Entity> FiguraVec3 getPos(EntityWrapper<T> entity, Float delta) {
         LuaUtils.nullCheck("getPos", "entity", entity);
@@ -96,10 +91,7 @@ public class EntityWrapper<T extends Entity> {
                             returnType = FiguraVec2.class
                     )
             },
-            description = "Gets the rotation of the proxied entity in degrees. " +
-                    "If delta is passed in, then it will be used to linearly interpolate " +
-                    "the rotation of the entity between the previous tick and the current tick. " +
-                    "The default value of delta is 1."
+            description = "entity.get_rot"
     )
     public static <T extends Entity> FiguraVec2 getRot(EntityWrapper<T> entity, Float delta) {
         LuaUtils.nullCheck("getRot", "entity", entity);

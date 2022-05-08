@@ -18,8 +18,7 @@ import org.terasology.jnlua.LuaRuntimeException;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "ParticleAPI",
-        description = "A global API which is used for dealing with Minecraft's particles. " +
-                "Can currently only be used to summon a particle."
+        description = "particle"
 )
 public class ParticleAPI {
 
@@ -64,9 +63,7 @@ public class ParticleAPI {
                             returnType = void.class
                     )
             },
-            description = "Creates a particle with the given name at the specified position, with the given velocity. " +
-                    "Some particles have special properties, like the \"dust\" particle. For these particles, the special " +
-                    "properties can be put into the \"name\" parameter, the same way as it works for commands."
+            description = "particle.add_particle"
     )
     public static void addParticle(String id, Object x, Object y, Double z, Object w, Double t, Double h) {
         FiguraVec3 pos, vel;

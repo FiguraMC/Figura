@@ -70,6 +70,9 @@ public class AvatarManager {
     }
 
     public static void tickLoadedAvatars() {
+        if (panic)
+            return;
+
         for (Avatar avatar : LOADED_AVATARS.values())
             avatar.onTick();
     }
