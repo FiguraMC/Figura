@@ -9,6 +9,7 @@ import org.moon.figura.lua.api.entity.PlayerEntityWrapper;
 import org.moon.figura.lua.api.math.MatricesAPI;
 import org.moon.figura.lua.api.math.VectorsAPI;
 import org.moon.figura.lua.api.model.VanillaModelAPI;
+import org.moon.figura.lua.api.nameplate.NameplateAPI;
 import org.moon.figura.lua.api.world.WorldAPI;
 import org.terasology.jnlua.JavaFunction;
 import org.terasology.jnlua.LuaRuntimeException;
@@ -27,6 +28,7 @@ public class FiguraLuaState extends LuaState53 {
     //API References
     public EventsAPI events;
     public VanillaModelAPI vanillaModel;
+    public NameplateAPI nameplate;
 
     public FiguraLuaState(Avatar owner, int memory) {
         super(memory * 1_000_000); //memory is given in mb
@@ -103,6 +105,8 @@ public class FiguraLuaState extends LuaState53 {
         loadGlobal(new PlayerEntityWrapper(owner.owner), "player");
         loadGlobal(ParticleAPI.INSTANCE, "particle");
         loadGlobal(SoundAPI.INSTANCE, "sound");
+        nameplate = new NameplateAPI();
+        loadGlobal(nameplate, "nameplate");
     }
 
     private void loadSetHook() {
