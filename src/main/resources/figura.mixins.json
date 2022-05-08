@@ -6,10 +6,13 @@
   "mixins": [
   ],
   "client": [
-    "LivingEntityRendererMixin",
-    "PauseScreenMixin",
     "ClientLevelInvoker",
-    "MinecraftMixin"
+    "GuiMixin",
+    "LivingEntityRendererMixin",
+    "MinecraftMixin",
+    "PauseScreenMixin",
+    "PlayerRendererMixin",
+    "PlayerTabOverlayMixin"
   ],
   "server": [
   ],

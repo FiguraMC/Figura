@@ -35,6 +35,12 @@ import java.util.List;
 import java.util.Map;
 
 public class FiguraDocsManager {
+
+    //print header
+    private static final MutableComponent HEADER = TextComponent.EMPTY.copy().withStyle(Colors.FRAN_PINK.style)
+            .append(new TextComponent("•*+•* ").append(new FiguraText()).append(" Docs *•+*•")
+                    .withStyle(ChatFormatting.UNDERLINE));
+
     /**
      * Update this list of classes manually. The docs manager will scan through
      * all the classes in this static set, and generate documentation for
@@ -163,22 +169,27 @@ public class FiguraDocsManager {
          */
         public void print() {
             //header
-            MutableComponent message = TextComponent.EMPTY.copy().withStyle(Colors.FRAN_PINK.style)
-                    .append(new TextComponent("•*+•* ")
-                            .append(new FiguraText())
-                            .append(" Docs *•+*•").withStyle(ChatFormatting.UNDERLINE))
+            MutableComponent message = HEADER.copy()
 
             //type
                     .append("\n\n")
-                    .append(new TextComponent("• Type:").withStyle(Colors.CHLOE_PURPLE.style))
+                    .append(new TextComponent("• ")
+                            .append(new FiguraText("docs.type"))
+                            .append(":")
+                            .withStyle(Colors.CHLOE_PURPLE.style))
                     .append("\n\t")
                     .append(new TextComponent("• " + name).withStyle(Colors.MAYA_BLUE.style))
 
             //description
                     .append("\n\n")
-                    .append(new TextComponent("• Description:").withStyle(Colors.CHLOE_PURPLE.style))
+                    .append(new TextComponent("• ")
+                            .append(new FiguraText("docs.description"))
+                            .append(":")
+                            .withStyle(Colors.CHLOE_PURPLE.style))
                     .append("\n\t")
-                    .append(new TextComponent("• " + description).withStyle(Colors.MAYA_BLUE.style));
+                    .append(new TextComponent("• ")
+                            .append(new FiguraText(description))
+                            .withStyle(Colors.MAYA_BLUE.style));
 
             FiguraMod.sendChatMessage(message);
         }
@@ -216,20 +227,23 @@ public class FiguraDocsManager {
          */
         public void print() {
             //header
-            MutableComponent message = TextComponent.EMPTY.copy().withStyle(Colors.FRAN_PINK.style)
-                    .append(new TextComponent("•*+•* ")
-                            .append(new FiguraText())
-                            .append(" Docs *•+*•").withStyle(ChatFormatting.UNDERLINE))
+            MutableComponent message = HEADER.copy()
 
             //type
                     .append("\n\n")
-                    .append(new TextComponent("• Function:").withStyle(Colors.CHLOE_PURPLE.style))
+                    .append(new TextComponent("• ")
+                            .append(new FiguraText("docs.function"))
+                            .append(":")
+                            .withStyle(Colors.CHLOE_PURPLE.style))
                     .append("\n\t")
                     .append(new TextComponent("• " + name).withStyle(Colors.MAYA_BLUE.style))
 
             //syntax
                     .append("\n\n")
-                    .append(new TextComponent("• Syntax:").withStyle(Colors.CHLOE_PURPLE.style));
+                    .append(new TextComponent("• ")
+                            .append(new FiguraText("docs.syntax"))
+                            .append(":")
+                            .withStyle(Colors.CHLOE_PURPLE.style));
 
             for (int i = 0; i < parameterTypes.length; i++) {
                 //name
@@ -249,15 +263,20 @@ public class FiguraDocsManager {
 
                 //return
                 message.append("): ")
-                        .append(new TextComponent("Returns ").withStyle(Colors.MAYA_BLUE.style))
+                        .append(new FiguraText("docs.returns").append(" ").withStyle(Colors.MAYA_BLUE.style))
                         .append(new TextComponent(NAME_MAP.get(returnTypes[i])).withStyle(ChatFormatting.YELLOW));
             }
 
             //description
             message.append("\n\n")
-                    .append(new TextComponent("• Description:").withStyle(Colors.CHLOE_PURPLE.style))
+                    .append(new TextComponent("• ")
+                            .append(new FiguraText("docs.description"))
+                            .append(":")
+                            .withStyle(Colors.CHLOE_PURPLE.style))
                     .append("\n\t")
-                    .append(new TextComponent("• " + description).withStyle(Colors.MAYA_BLUE.style));
+                    .append(new TextComponent("• ")
+                            .append(new FiguraText(description))
+                            .withStyle(Colors.MAYA_BLUE.style));
 
             FiguraMod.sendChatMessage(message);
         }
@@ -281,26 +300,32 @@ public class FiguraDocsManager {
 
         public void print() {
             //header
-            MutableComponent message = TextComponent.EMPTY.copy().withStyle(Colors.FRAN_PINK.style)
-            .append(new TextComponent("•*+•* ")
-                    .append(new FiguraText())
-                    .append(" Docs *•+*•").withStyle(ChatFormatting.UNDERLINE))
+            MutableComponent message = HEADER.copy()
 
             //type
             .append("\n\n")
-            .append(new TextComponent("• Field:").withStyle(Colors.CHLOE_PURPLE.style))
+            .append(new TextComponent("• ")
+                    .append(new FiguraText("docs.field"))
+                    .append(":")
+                    .withStyle(Colors.CHLOE_PURPLE.style))
             .append("\n\t")
                     .append(new TextComponent("• " + NAME_MAP.get(type)).withStyle(ChatFormatting.YELLOW))
             .append(new TextComponent(" " + name).withStyle(Colors.MAYA_BLUE.style))
-            .append(editable ?
-                    new TextComponent(" (Editable)").withStyle(ChatFormatting.GREEN) :
-                    new TextComponent(" (Not Editable)").withStyle(ChatFormatting.DARK_RED))
+            .append(new TextComponent(" (")
+                    .append(new FiguraText(editable ? "docs.editable" : "docs.not_editable"))
+                    .append(")")
+                    .withStyle(editable ? ChatFormatting.GREEN : ChatFormatting.DARK_RED))
 
             //description
             .append("\n\n")
-            .append(new TextComponent("• Description:").withStyle(Colors.CHLOE_PURPLE.style))
+            .append(new TextComponent("• ")
+                    .append(new FiguraText("docs.description"))
+                    .append(":")
+                    .withStyle(Colors.CHLOE_PURPLE.style))
             .append("\n\t")
-            .append(new TextComponent("• " + description).withStyle(Colors.MAYA_BLUE.style));
+            .append(new TextComponent("• ")
+                    .append(new FiguraText(description))
+                    .withStyle(Colors.MAYA_BLUE.style));
 
             FiguraMod.sendChatMessage(message);
         }

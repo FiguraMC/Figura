@@ -23,6 +23,33 @@ public enum Config {
      * (order matters)
      */
 
+    Nameplate,
+    SELF_NAMEPLATE(false),
+    PREVIEW_NAMEPLATE(true),
+    CHAT_NAMEPLATE(2, 3) {{
+        String path = "config.nameplate_level";
+        this.enumList = List.of(
+                new FiguraText(path + ".1"),
+                new FiguraText(path + ".2"),
+                new FiguraText(path + ".3")
+        );
+    }},
+    ENTITY_NAMEPLATE(2, 3) {{
+        String path = "config.nameplate_level";
+        this.enumList = List.of(
+                new FiguraText(path + ".1"),
+                new FiguraText(path + ".2"),
+                new FiguraText(path + ".3")
+        );
+    }},
+    LIST_NAMEPLATE(2, 3) {{
+        String path = "config.nameplate_level";
+        this.enumList = List.of(
+                new FiguraText(path + ".1"),
+                new FiguraText(path + ".2"),
+                new FiguraText(path + ".3")
+        );
+    }},
 
     Script,
     LOG_LOCATION(0, 2),
@@ -32,6 +59,7 @@ public enum Config {
 
     Misc,
     BUTTON_LOCATION(0, 5),
+    EASTER_EGGS(true),
 
     Dev {{this.name = new FiguraText("config.dev").withStyle(ChatFormatting.RED);}},
     RELOAD_BUTTON("key.keyboard.unknown"),

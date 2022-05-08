@@ -1,24 +1,32 @@
 package org.moon.figura.mixin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
-import net.minecraft.client.renderer.entity.player.PlayerRenderer;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.world.entity.LivingEntity;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
+import org.moon.figura.config.Config;
+import org.moon.figura.utils.ui.UIHelper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntityRenderer.class)
-public class LivingEntityRendererMixin {
+public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extends EntityModel<T>> extends EntityRenderer<T> implements RenderLayerParent<T, M> {
+
+    protected LivingEntityRendererMixin(EntityRendererProvider.Context context) {
+        super(context);
+    }
 
     @Unique
     private Avatar currentAvatar;
@@ -47,4 +55,13 @@ public class LivingEntityRendererMixin {
         currentAvatar = null;
     }
 
+    @Inject(method = "shouldShowName(Lnet/minecraft/world/entity/LivingEntity;)Z", at = @At("HEAD"), cancellable = true)
+    public void shouldShowName(T livingEntity, CallbackInfoReturnable<Boolean> cir) {
+        if (UIHelper.forceNameplate)
+            cir.setReturnValue((boolean) Config.PREVIEW_NAMEPLATE.value);
+        else if (!Minecraft.renderNames())
+            cir.setReturnValue(false);
+        else if ((boolean) Config.SELF_NAMEPLATE.value && livingEntity == Minecraft.getInstance().player)
+            cir.setReturnValue(true);
+    }
 }

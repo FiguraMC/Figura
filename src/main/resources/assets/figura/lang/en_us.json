@@ -108,6 +108,25 @@
   "figura.config.input.folder_path": "Path...",
 
 
+  "figura.config.nameplate": "Nameplate",
+  "figura.config.nameplate.tooltip": "Nameplate settings",
+
+  "figura.config.self_nameplate": "Enable Self Nameplate",
+  "figura.config.self_nameplate.tooltip": "Toggles the rendering of your own nameplate",
+
+  "figura.config.preview_nameplate": "Nameplate in GUI",
+  "figura.config.preview_nameplate.tooltip": "Toggles the rendering of nameplates in the GUI",
+
+  "figura.config.chat_nameplate": "Chat customizations",
+  "figura.config.chat_nameplate.tooltip": "Set the level of nameplate customizations on the CHAT",
+  "figura.config.entity_nameplate": "Entity customizations",
+  "figura.config.entity_nameplate.tooltip": "Set the level of nameplate customizations on the ENTITY",
+  "figura.config.list_nameplate": "Tablist customizations",
+  "figura.config.list_nameplate.tooltip": "Set the level of nameplate customizations on the TABLIST",
+  "figura.config.nameplate_level.1": "None",
+  "figura.config.nameplate_level.2": "Script",
+  "figura.config.nameplate_level.3": "Script + Badges",
+
   "figura.config.script": "Script",
   "figura.config.script.tooltip": "Script settings",
 
@@ -130,6 +149,9 @@
   "figura.config.button_location.4": "Bottom Left",
   "figura.config.button_location.5": "Bottom Right",
 
+  "figura.config.easter_eggs": "Enable Easter eggs",
+  "figura.config.easter_eggs.tooltip": "Toggles fun and unexpected aspects of Figura (boring!)",
+
   "figura.config.dev": "Dev",
   "figura.config.dev.tooltip": "Developer/Experimental settings",
 
@@ -137,5 +159,15 @@
   "figura.config.reload_button.tooltip": "Reloads current equipped avatar on press",
 
   "figura.config.panic_button": "Panic Button",
-  "figura.config.panic_button.tooltip": "Stop the rendering of all avatars"
+  "figura.config.panic_button.tooltip": "Stop the rendering of all avatars",
+
+
+  "figura.docs.type": "Type",
+  "figura.docs.description": "Description",
+  "figura.docs.function": "Function",
+  "figura.docs.syntax": "Syntax",
+  "figura.docs.returns": "Returns",
+  "figura.docs.field": "Field",
+  "figura.docs.editable": "Editable",
+  "figura.docs.not_editable": "Not Editable"
 }

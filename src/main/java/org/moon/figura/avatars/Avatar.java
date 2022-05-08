@@ -37,6 +37,7 @@ public class Avatar {
     public final String name;
     public final String author;
     public final String version;
+    public final String pride;
     public final float fileSize;
 
     //Runtime data
@@ -57,6 +58,7 @@ public class Avatar {
         name = metadata.getString("name");
         author = metadata.getString("author");
         version = metadata.getString("ver");
+        pride = metadata.getString("pride");
         fileSize = getFileSize(nbt);
         renderer = new ImmediateAvatarRenderer(this, nbt);
         luaState = createLuaState(nbt);
