@@ -78,7 +78,7 @@ public class Avatar {
 
     public void onTick() {
         if (luaState != null)
-            tryCall(luaState.events.TICK, 100);
+            tryCall(luaState.events.TICK, tickLimit);
     }
 
     public void onRender(Entity entity, float yaw, float delta, PoseStack matrices, MultiBufferSource bufferSource, int light, EntityModel<?> model) {

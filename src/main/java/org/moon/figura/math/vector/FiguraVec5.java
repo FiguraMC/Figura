@@ -5,10 +5,14 @@ import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.lua.types.LuaIPairsIterator;
+import org.moon.figura.lua.types.LuaPairsIterator;
 import org.moon.figura.math.MathUtils;
 import org.moon.figura.utils.caching.CacheUtils;
 import org.moon.figura.utils.caching.CachedType;
 import org.terasology.jnlua.LuaRuntimeException;
+
+import java.util.List;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -361,6 +365,8 @@ public class FiguraVec5 implements CachedType {
     //Fallback for fetching a key that isn't in the table
     @LuaWhitelist
     public static Object __index(FiguraVec5 arg1, String arg2) {
+        if (arg2 == null)
+            return null;
         int len = arg2.length();
         if (len == 1) return switch(arg2) {
             case "1", "r" -> arg1.x;
@@ -386,6 +392,19 @@ public class FiguraVec5 implements CachedType {
             };
         return MathUtils.sizedVector(vals);
     }
+
+    @LuaWhitelist
+    public static LuaIPairsIterator<FiguraVec5> __ipairs(FiguraVec5 arg) {
+        return iPairsIterator;
+    }
+    private static final LuaIPairsIterator<FiguraVec5> iPairsIterator = new LuaIPairsIterator<>(FiguraVec5.class);
+
+    @LuaWhitelist
+    public static LuaPairsIterator<FiguraVec5, String> __pairs(FiguraVec5 arg) {
+        return pairsIterator;
+    }
+    private static final LuaPairsIterator<FiguraVec5, String> pairsIterator =
+            new LuaPairsIterator<>(List.of("x", "y", "z", "w", "t"), FiguraVec5.class, String.class);
 
     //----------------------------------------------------------------
 

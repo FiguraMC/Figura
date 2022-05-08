@@ -6,6 +6,7 @@ import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.lua.types.LuaFunction;
 import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.lua.types.LuaPairsIterator;
 import org.terasology.jnlua.LuaRuntimeException;
 
 import java.util.ArrayList;
@@ -36,6 +37,16 @@ public class EventsAPI {
             description = "The POST_RENDER event runs every frame, after the avatar is rendered."
     )
     public final LuaEvent POST_RENDER = new LuaEvent("POST_RENDER");
+
+    //Metamethods
+
+
+    @LuaWhitelist
+    public static LuaPairsIterator<EventsAPI, String> __pairs(EventsAPI api) {
+        return pairsIterator;
+    }
+    private static final LuaPairsIterator<EventsAPI, String> pairsIterator = new LuaPairsIterator<>(
+            List.of("TICK", "RENDER", "POST_RENDER"), EventsAPI.class, String.class);
 
 
     @LuaWhitelist

@@ -9,6 +9,8 @@ import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.model.FiguraModelPart;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.EventsAPI;
+import org.moon.figura.lua.api.ParticleAPI;
+import org.moon.figura.lua.api.SoundAPI;
 import org.moon.figura.lua.api.entity.EntityWrapper;
 import org.moon.figura.lua.api.entity.LivingEntityWrapper;
 import org.moon.figura.lua.api.entity.PlayerEntityWrapper;
@@ -43,6 +45,16 @@ public class FiguraDocsManager {
      * will be too many different APIs and autocomplete will get cluttered.
      */
     public static Map<String, List<Class<?>>> DOCUMENTED_CLASSES = new HashMap<>() {{
+
+        //sound
+        put("sound", new ArrayList<>() {{
+            add(SoundAPI.class);
+        }});
+
+        //particle
+        put("particle", new ArrayList<>() {{
+            add(ParticleAPI.class);
+        }});
 
         //World classes
         put("world", new ArrayList<>() {{
@@ -86,7 +98,6 @@ public class FiguraDocsManager {
             add(FiguraMat3.class);
             add(FiguraMat4.class);
         }});
-
 
     }};
 

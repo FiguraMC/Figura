@@ -4,6 +4,7 @@ import org.moon.figura.FiguraMod;
 import org.moon.figura.lua.docs.FiguraDocsManager;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.lua.types.LuaTable;
+import org.moon.figura.utils.LuaUtils;
 import org.terasology.jnlua.*;
 
 import java.lang.reflect.Field;
@@ -30,6 +31,8 @@ public class FiguraJavaReflector implements JavaReflector {
             case INDEX -> FIGURA_INDEX;
             case NEWINDEX -> FIGURA_NEW_INDEX;
             case TOSTRING -> defaultToStringFunction;
+            case IPAIRS -> FIGURA_IPAIRS;
+            case PAIRS -> FIGURA_PAIRS;
             default -> luaState -> callMetamethod(luaState, metamethod);
         };
     }
@@ -38,7 +41,9 @@ public class FiguraJavaReflector implements JavaReflector {
         try {
             Object object = luaState.toJavaObject(1, Object.class);
             Class<?> objectClass = getObjectClass(object);
-            String key = luaState.toString(-1);
+            String key = luaState.toString(2); //was -1
+            if (key == null)
+                return 0;
 
             if (objectClass.isAnnotationPresent(LuaWhitelist.class))
                 buildCachesIfNeeded(objectClass);
@@ -72,11 +77,13 @@ public class FiguraJavaReflector implements JavaReflector {
             Object object = luaState.toJavaObject(1, Object.class);
             Class<?> objectClass = getObjectClass(object);
             String key = luaState.toString(2);
+            if (key == null)
+                return 0;
 
             if (objectClass.isAnnotationPresent(LuaWhitelist.class))
                 buildCachesIfNeeded(objectClass);
             else
-                return defaultIndexFunction.invoke(luaState);
+                return defaultNewIndexFunction.invoke(luaState);
 
             Field f = fieldCache.get(objectClass).get(key);
             if (f != null && !Modifier.isFinal(f.getModifiers()))
@@ -87,6 +94,53 @@ public class FiguraJavaReflector implements JavaReflector {
             e.printStackTrace();
         }
         return 0;
+    };
+
+    private static final JavaFunction FIGURA_IPAIRS = luaState -> {
+        Object object = luaState.toJavaObject(1, Object.class);
+        if (object == null)
+            return 0;
+        Class<?> objectClass = getObjectClass(object);
+
+        if (objectClass.isAnnotationPresent(LuaWhitelist.class))
+            buildCachesIfNeeded(objectClass);
+        else
+            return 0;
+        if (!metamethodCache.get(objectClass).containsKey("__ipairs"))
+            return 0;
+
+        MethodWrapper methodWrapper = metamethodCache.get(objectClass).get("__ipairs").get(0);
+        methodWrapper.invoke(luaState);
+
+        luaState.pushValue(1);
+        luaState.remove(1);
+        luaState.pushInteger(0);
+        return 3;
+    };
+
+    private static final JavaFunction FIGURA_PAIRS = luaState -> {
+        Object object = luaState.toJavaObject(1, Object.class);
+        if (object == null)
+            return 0;
+        Class<?> objectClass = getObjectClass(object);
+
+        if (objectClass.isAnnotationPresent(LuaWhitelist.class))
+            buildCachesIfNeeded(objectClass);
+        else
+            return 0;
+        if (!metamethodCache.get(objectClass).containsKey("__pairs"))
+            return 0;
+
+        LuaUtils.printStack(luaState);
+        MethodWrapper methodWrapper = metamethodCache.get(objectClass).get("__pairs").get(0);
+        methodWrapper.invoke(luaState);
+
+        LuaUtils.printStack(luaState);
+
+        luaState.pushValue(1);
+        luaState.remove(1);
+        luaState.pushNil();
+        return 3;
     };
 
     private static int callMetamethod(LuaState luaState, Metamethod metamethod) {
@@ -172,6 +226,7 @@ public class FiguraJavaReflector implements JavaReflector {
         add(Metamethod.INDEX);
         add(Metamethod.NEWINDEX);
         add(Metamethod.TOSTRING);
+        add(Metamethod.PAIRS);
         add(Metamethod.IPAIRS);
         add(Metamethod.LEN);
         add(Metamethod.UNM);

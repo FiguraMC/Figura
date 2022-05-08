@@ -6,11 +6,15 @@ import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.lua.types.LuaIPairsIterator;
+import org.moon.figura.lua.types.LuaPairsIterator;
 import org.moon.figura.math.MathUtils;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.utils.caching.CacheUtils;
 import org.moon.figura.utils.caching.CachedType;
 import org.terasology.jnlua.LuaRuntimeException;
+
+import java.util.List;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -266,6 +270,10 @@ public class FiguraVec3 implements CachedType {
         return FiguraVec3.of(nx, ny, nz);
     }
 
+    public FiguraVec4 augmented() {
+        return FiguraVec4.of(x, y, z, 1);
+    }
+
     public BlockPos asBlockPos() {
         return new BlockPos(x, y, z);
     }
@@ -365,6 +373,8 @@ public class FiguraVec3 implements CachedType {
     //Fallback for fetching a key that isn't in the table
     @LuaWhitelist
     public static Object __index(FiguraVec3 arg1, String arg2) {
+        if (arg2 == null)
+            return null;
         int len = arg2.length();
         if (len == 1) return switch(arg2) {
             case "1", "r" -> arg1.x;
@@ -386,6 +396,19 @@ public class FiguraVec3 implements CachedType {
             };
         return MathUtils.sizedVector(vals);
     }
+
+    @LuaWhitelist
+    public static LuaIPairsIterator<FiguraVec3> __ipairs(FiguraVec3 arg) {
+        return iPairsIterator;
+    }
+    private static final LuaIPairsIterator<FiguraVec3> iPairsIterator = new LuaIPairsIterator<>(FiguraVec3.class);
+
+    @LuaWhitelist
+    public static LuaPairsIterator<FiguraVec3, String> __pairs(FiguraVec3 arg) {
+        return pairsIterator;
+    }
+    private static final LuaPairsIterator<FiguraVec3, String> pairsIterator =
+            new LuaPairsIterator<>(List.of("x", "y", "z"), FiguraVec3.class, String.class);
 
     //----------------------------------------------------------------
 
@@ -445,5 +468,19 @@ public class FiguraVec3 implements CachedType {
     )
     public static FiguraVec3 cross(FiguraVec3 arg1, FiguraVec3 arg2) {
         return arg1.crossed(arg2);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraVec3.class,
+                    argumentNames = "vec",
+                    returnType = FiguraVec4.class
+            ),
+            description = "Returns the augmented form of this vector. The augmented form is Vector4 with a 1 " +
+                    "in its W coordinate."
+    )
+    public static FiguraVec4 augmented(FiguraVec3 arg1) {
+        return arg1.augmented();
     }
 }
