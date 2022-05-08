@@ -253,10 +253,11 @@ public class FiguraJavaReflector implements JavaReflector {
 
         @Override
         public int invoke(LuaState luaState) {
-            int i;
             try {
                 Object[] args = new Object[argumentTypes.length];
-                for (i = 0; i < luaState.getTop() && i < args.length; i++)
+                for (int i = luaState.getTop(); i < args.length; i++)
+                    luaState.pushNil();
+                for (int i = 0; i < luaState.getTop() && i < args.length; i++)
                     args[i] = luaState.toJavaObject(i + 1, argumentTypes[i]);
                 luaState.pushJavaObject(method.invoke(null, args));
             } catch (IllegalAccessException e) {

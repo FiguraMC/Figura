@@ -11,6 +11,7 @@ import net.minecraft.world.entity.Entity;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.model.rendering.AvatarRenderer;
 import org.moon.figura.avatars.model.rendering.ImmediateAvatarRenderer;
+import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.lua.FiguraLuaState;
 import org.moon.figura.lua.api.EventsAPI;
 import org.moon.figura.trust.TrustContainer;
@@ -68,7 +69,7 @@ public class Avatar {
                 luaState.setInstructionLimit(maxInstructions);
             event.call(args);
         } catch (LuaRuntimeException ex) {
-            FiguraLuaState.sendLuaError(ex, name);
+            FiguraLuaPrinter.sendLuaError(ex, name);
             scriptError = true;
             luaState.close();
             luaState = null;
@@ -77,7 +78,7 @@ public class Avatar {
 
     public void onTick() {
         if (luaState != null)
-            tryCall(luaState.events.TICK, tickLimit);
+            tryCall(luaState.events.TICK, 100);
     }
 
     public void onRender(Entity entity, float yaw, float delta, PoseStack matrices, MultiBufferSource bufferSource, int light, EntityModel<?> model) {
@@ -145,6 +146,7 @@ public class Avatar {
             return luaState;
         else
             luaState.close();
+
         return null;
     }
 

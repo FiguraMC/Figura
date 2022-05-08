@@ -1,10 +1,7 @@
 package org.moon.figura.lua;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.*;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
-import org.moon.figura.config.Config;
 import org.moon.figura.lua.api.EventsAPI;
 import org.moon.figura.lua.api.ParticleAPI;
 import org.moon.figura.lua.api.SoundAPI;
@@ -13,10 +10,9 @@ import org.moon.figura.lua.api.math.MatricesAPI;
 import org.moon.figura.lua.api.math.VectorsAPI;
 import org.moon.figura.lua.api.model.VanillaModelAPI;
 import org.moon.figura.lua.api.world.WorldAPI;
-import org.moon.figura.lua.types.LuaTable;
-import org.moon.figura.utils.ColorUtils.Colors;
-import org.moon.figura.utils.TextUtils;
-import org.terasology.jnlua.*;
+import org.terasology.jnlua.JavaFunction;
+import org.terasology.jnlua.LuaRuntimeException;
+import org.terasology.jnlua.LuaState53;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,7 +39,7 @@ public class FiguraLuaState extends LuaState53 {
         loadLibraries();
 
         //Loads print(), log(), and logTable() into the env.
-        loadPrintFunctions();
+        FiguraLuaPrinter.loadPrintFunctions(this);
 
         //GS easter egg :3
         getGlobal("_G");
@@ -90,7 +86,7 @@ public class FiguraLuaState extends LuaState53 {
             call(0, 0);
             return false;
         } catch (Exception e) {
-            sendLuaError(e, owner.name);
+            FiguraLuaPrinter.sendLuaError(e, owner.name);
             owner.scriptError = true;
         }
         return true;
@@ -155,22 +151,7 @@ public class FiguraLuaState extends LuaState53 {
         call(0, 0);
     }
 
-    private void loadPrintFunctions() {
-        pushJavaFunction(PRINT_FUNCTION);
-        pushValue(-1);
-        setGlobal("print");
-        setGlobal("log");
 
-        pushJavaFunction(PRINT_JSON_FUNCTION);
-        pushValue(-1);
-        setGlobal("printJson");
-        setGlobal("logJson");
-
-        pushJavaFunction(PRINT_TABLE_FUNCTION);
-        pushValue(-1);
-        setGlobal("printTable");
-        setGlobal("logTable");
-    }
 
     private static JavaFunction requireFunc(Map<String, String> scripts) {
         return luaState -> {
@@ -192,201 +173,11 @@ public class FiguraLuaState extends LuaState53 {
 
     private static final JavaFunction INSTRUCTION_LIMIT_FUNCTION = luaState -> {
         String error = "Script overran resource limits!";
+        ((FiguraLuaState) luaState).setInstructionLimit(1);
         throw new LuaRuntimeException(error);
     };
 
-    // -- logging -- //
-
-    //print a string either on chat or console
-    public static void sendLuaMessage(Object message, String owner) {
-        Component component = TextComponent.EMPTY.copy()
-                .append(new TextComponent("[lua] ").withStyle(Colors.LUA_LOG.style))
-                .append(new TextComponent(owner).withStyle(ChatFormatting.ITALIC))
-                .append(new TextComponent(" : ").withStyle(Colors.LUA_LOG.style))
-                .append(message instanceof Component c ? c : new TextComponent(message.toString()));
-
-        if ((int) Config.LOG_LOCATION.value == 0)
-            FiguraMod.sendChatMessage(component);
-        else
-            FiguraMod.LOGGER.info(component.getString());
-    }
-
-    //print an error, errors should always show up on chat
-    public static void sendLuaError(Exception error, String owner) {
-        //Jank as hell
-        String message = error.toString().replace("org.terasology.jnlua.LuaRuntimeException: ", "");
-
-        Component component = TextComponent.EMPTY.copy()
-                .append(new TextComponent("[error] ").withStyle(Colors.LUA_ERROR.style))
-                .append(new TextComponent(owner).withStyle(ChatFormatting.ITALIC))
-                .append(new TextComponent(" : " + message).withStyle(Colors.LUA_ERROR.style));
-
-        FiguraMod.sendChatMessage(component);
-        FiguraMod.LOGGER.error("", error);
-    }
-
-    //print an ping!
-    public static void sendPingMessage(String ping, int size, String owner) {
-        int config = 0; //(int) Config.LOG_PINGS.value;
-
-        //no ping? *megamind.png*
-        if (config == 0)
-            return;
-
-        Component component = TextComponent.EMPTY.copy()
-                .append(new TextComponent("[ping] ").withStyle(Colors.LUA_PING.style))
-                .append(new TextComponent(owner).withStyle(ChatFormatting.ITALIC))
-                .append(new TextComponent(" : ").withStyle(Colors.LUA_PING.style))
-                .append(size + "b")
-                .append(new TextComponent(" : ").withStyle(Colors.LUA_PING.style))
-                .append(ping);
-
-        if (config == 1)
-            FiguraMod.sendChatMessage(component);
-        else
-            FiguraMod.LOGGER.info(component.getString());
-    }
-
-    //print functions
-    private static final JavaFunction PRINT_FUNCTION = luaState -> {
-        MutableComponent text = TextComponent.EMPTY.copy();
-
-        //execute if the stack has entries
-        while (luaState.getTop() > 0) {
-            if (luaState.type(1) == LuaType.USERDATA)
-                tryParseUserdata(luaState, 1);
-
-            text.append(getPrintText(luaState, 1, true)).append("\t");
-            luaState.remove(1);
-        }
-
-        //prints the value, either on chat or console
-        sendLuaMessage(text, ((FiguraLuaState) luaState).owner.name);
-
-        return 0;
-    };
-
-    private static final JavaFunction PRINT_JSON_FUNCTION = luaState -> {
-        sendLuaMessage(TextUtils.tryParseJson(luaToString(luaState, 1)), ((FiguraLuaState) luaState).owner.name);
-        return 0;
-    };
-
-    private static final JavaFunction PRINT_TABLE_FUNCTION = luaState -> {
-        int depth = luaState.getTop() > 1 ? (int) luaState.checkInteger(2) : 1;
-        Component result = tableToText(luaState, 1, depth, 1, true);
-        sendLuaMessage(result, ((FiguraLuaState) luaState).owner.name);
-        return 0;
-    };
-
-    private static Component tableToText(LuaState luaState, int index, int depth, int indent, boolean tooltip) {
-        //normal print (value only) or when failed to parse the userdata (userdata first, so we always parse it)
-        if ((luaState.type(index) == LuaType.USERDATA && !tryParseUserdata(luaState, index)) || depth <= 0)
-            return getPrintText(luaState, index, tooltip);
-
-        String spacing = "\t".repeat(indent - 1);
-
-        //format text
-        MutableComponent text = TextComponent.EMPTY.copy();
-        text.append(new TextComponent("table:").withStyle(getTypeColor(LuaType.TABLE)));
-        text.append(new TextComponent(" {\n").withStyle(ChatFormatting.GRAY));
-
-        luaState.pushNil();
-        while (luaState.next(index)) {
-            int top = luaState.getTop();
-
-            //add indentation
-            text.append(spacing).append("\t");
-
-            //add key
-            //if (luaState.type(top - 1) == LuaType.USERDATA)
-            //    tryParseUserdata(luaState, top - 1);
-
-            text.append(new TextComponent("[").withStyle(ChatFormatting.GRAY));
-            text.append(getPrintText(luaState, top - 1, tooltip));
-            text.append(new TextComponent("] = ").withStyle(ChatFormatting.GRAY));
-
-            //add value
-            LuaType type = luaState.type(top);
-            if (type == LuaType.TABLE || type == LuaType.USERDATA)
-                text.append(tableToText(luaState, top, depth - 1, indent + 1, tooltip));
-            else
-                text.append(getPrintText(luaState, top, tooltip));
-
-            //pop value
-            luaState.pop(1);
-            text.append("\n");
-        }
-
-        text.append(spacing).append(new TextComponent("}").withStyle(ChatFormatting.GRAY));
-        return text;
-    }
-
-    private static boolean tryParseUserdata(LuaState luaState, int index) {
-        //if we have an userdata item, get its table representation
-        LuaTable table = FiguraJavaReflector.getTableRepresentation(luaState.toJavaObject(index, Object.class));
-        if (table != null) {
-            table.push(luaState);
-            luaState.replace(index);
-            return true;
-        }
-
-        return false;
-    }
-
-    private static String luaToString(LuaState luaState, int index) {
-        //push lua "tostring" into the stack
-        luaState.getGlobal("tostring");
-
-        //copies a value from the stack and place it on top
-        luaState.pushValue(index);
-
-        //make a function call at the top of the stack
-        luaState.call(1, 1);
-
-        //gets a value from stack, as string
-        String ret = luaState.toString(-1);
-
-        //remove the copied value
-        luaState.pop(1);
-
-        return ret;
-    }
-
-    private static MutableComponent getPrintText(LuaState luaState, int index, boolean tooltip) {
-        LuaType type = luaState.type(index);
-        String ret;
-
-        //format value
-        switch (type) {
-            case STRING -> ret = "\"" + luaToString(luaState, index) + "\"";
-            case NUMBER -> {
-                Double d = luaState.toJavaObject(index, Double.class);
-                ret = d == Math.rint(d) ? String.valueOf(d.intValue()) : String.valueOf(d);
-            }
-            default -> ret = luaToString(luaState, index);
-        }
-
-        MutableComponent text = new TextComponent(ret).withStyle(getTypeColor(type));
-
-        //table tooltip
-        if (tooltip && type == LuaType.TABLE) {
-            Component table = TextUtils.replaceTabs(tableToText(luaState, index, 1, 1, false));
-            text.withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, table)));
-        }
-
-        return text;
-    }
-
-    private static Style getTypeColor(LuaType type) {
-        return switch (type) {
-            case TABLE -> Colors.FRAN_PINK.style;
-            case NUMBER -> Colors.MAYA_BLUE.style;
-            case NIL -> Colors.LUA_ERROR.style;
-            case BOOLEAN -> Colors.LUA_PING.style;
-            case FUNCTION -> Style.EMPTY.withColor(ChatFormatting.GREEN);
-            case USERDATA, LIGHTUSERDATA -> Style.EMPTY.withColor(ChatFormatting.YELLOW);
-            case THREAD -> Style.EMPTY.withColor(ChatFormatting.GOLD);
-            default -> Style.EMPTY;
-        };
+    public Avatar getOwner() {
+        return owner;
     }
 }
