@@ -23,14 +23,10 @@ import java.util.List;
 public class FiguraVec2 implements CachedType {
 
     @LuaWhitelist
-    @LuaFieldDoc(
-            canEdit = true, description = "vector_n.x"
-    )
+    @LuaFieldDoc(description = "vector_n.x")
     public double x;
     @LuaWhitelist
-    @LuaFieldDoc(
-            canEdit = true, description = "vector_n.y"
-    )
+    @LuaFieldDoc(description = "vector_n.y")
     public double y;
 
     private FiguraVec2() {}
@@ -83,7 +79,7 @@ public class FiguraVec2 implements CachedType {
     }
     @Override
     public String toString() {
-        return "{" + x + ", " + y + "}";
+        return "{" + (float) x + ", " + (float) y + "}";
     }
 
     //----------------------------------------------------------------

@@ -3,6 +3,7 @@ package org.moon.figura.math.matrix;
 import com.mojang.math.Matrix3f;
 import org.lwjgl.BufferUtils;
 import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
@@ -23,6 +24,9 @@ public class FiguraMat3 implements CachedType {
     //Values are named as v(ROW)(COLUMN), both 1-indexed like in actual math
     @LuaWhitelist
     public double v11, v12, v13, v21, v22, v23, v31, v32, v33;
+
+    @LuaFieldDoc(description = "matrix_n.vxy")
+    private double vxy;
 
     private FiguraMat3 cachedInverse = null;
     private double cachedDeterminant = Double.MAX_VALUE;
@@ -112,9 +116,9 @@ public class FiguraMat3 implements CachedType {
     }
     @Override
     public String toString() {
-        return "\n[  " + v11 + ", " + v12 + ", " + v13 + ", " +
-                "\n   " + v21 + ", " + v22 + ", " + v23 +
-                "\n   " + v31 + ", " + v32 + ", " + v33 +
+        return "\n[  " + (float) v11 + ", " + (float) v12 + ", " + (float) v13 + ", " +
+                "\n   " + (float) v21 + ", " + (float) v22 + ", " + (float) v23 +
+                "\n   " + (float) v31 + ", " + (float) v32 + ", " + (float) v33 +
                 "  ]";
     }
     public FiguraVec3 getCol1() {

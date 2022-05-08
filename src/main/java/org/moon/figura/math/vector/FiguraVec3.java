@@ -24,19 +24,13 @@ import java.util.List;
 public class FiguraVec3 implements CachedType {
 
     @LuaWhitelist
-    @LuaFieldDoc(
-            canEdit = true, description = "vector_n.x"
-    )
+    @LuaFieldDoc(description = "vector_n.x")
     public double x;
     @LuaWhitelist
-    @LuaFieldDoc(
-            canEdit = true, description = "vector_n.y"
-    )
+    @LuaFieldDoc(description = "vector_n.y")
     public double y;
     @LuaWhitelist
-    @LuaFieldDoc(
-            canEdit = true, description = "vector_n.z"
-    )
+    @LuaFieldDoc(description = "vector_n.z")
     public double z;
 
     private FiguraVec3() {}
@@ -89,7 +83,7 @@ public class FiguraVec3 implements CachedType {
     }
     @Override
     public String toString() {
-        return "{" + x + ", " + y + ", " + z + "}";
+        return "{" + (float) x + ", " + (float) y + ", " + (float) z + "}";
     }
 
     //----------------------------------------------------------------

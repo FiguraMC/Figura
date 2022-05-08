@@ -1,6 +1,7 @@
 package org.moon.figura.math.matrix;
 
 import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
@@ -18,6 +19,9 @@ public class FiguraMat2 implements CachedType {
     //Values are named as v(ROW)(COLUMN), both 1-indexed like in actual math
     @LuaWhitelist
     public double v11, v12, v21, v22;
+
+    @LuaFieldDoc(description = "matrix_n.vxy")
+    private double vxy;
 
     private FiguraMat2() {}
 
@@ -66,8 +70,8 @@ public class FiguraMat2 implements CachedType {
     }
     @Override
     public String toString() {
-        return "\n[  " + v11 + ", " + v12 +
-                "\n   " + v21 + ", " + v22 +
+        return "\n[  " + (float) v11 + ", " + (float) v12 +
+                "\n   " + (float) v21 + ", " + (float) v22 +
                 "  ]";
     }
     public FiguraVec2 getCol1() {

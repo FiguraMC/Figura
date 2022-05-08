@@ -22,29 +22,19 @@ import java.util.List;
 public class FiguraVec5 implements CachedType {
 
     @LuaWhitelist
-    @LuaFieldDoc(
-            canEdit = true, description = "vector_n.x"
-    )
+    @LuaFieldDoc(description = "vector_n.x")
     public double x;
     @LuaWhitelist
-    @LuaFieldDoc(
-            canEdit = true, description = "vector_n.y"
-    )
+    @LuaFieldDoc(description = "vector_n.y")
     public double y;
     @LuaWhitelist
-    @LuaFieldDoc(
-            canEdit = true, description = "vector_n.z"
-    )
+    @LuaFieldDoc(description = "vector_n.z")
     public double z;
     @LuaWhitelist
-    @LuaFieldDoc(
-            canEdit = true, description = "vector_n.w"
-    )
+    @LuaFieldDoc(description = "vector_n.w")
     public double w;
     @LuaWhitelist
-    @LuaFieldDoc(
-            canEdit = true, description = "vector_n.t"
-    )
+    @LuaFieldDoc(description = "vector_n.t")
     public double t;
 
     private FiguraVec5() {}
@@ -97,7 +87,7 @@ public class FiguraVec5 implements CachedType {
     }
     @Override
     public String toString() {
-        return "{" + x + ", " + y + ", " + z + ", " + w + ", " + t + "}";
+        return "{" + (float) x + ", " + (float) y + ", " + (float) z + ", " + (float) w + ", " + (float) t + "}";
     }
 
     //----------------------------------------------------------------

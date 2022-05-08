@@ -25,51 +25,51 @@ import java.util.function.Function;
 public class VanillaModelAPI {
 
     @LuaWhitelist
-    @LuaFieldDoc(canEdit = false, description = "vanilla_model.head")
+    @LuaFieldDoc(description = "vanilla_model.head")
     public final VanillaModelPart HEAD;
     @LuaWhitelist
-    @LuaFieldDoc(canEdit = false, description = "vanilla_model.torso")
+    @LuaFieldDoc(description = "vanilla_model.torso")
     public final VanillaModelPart TORSO;
     @LuaWhitelist
-    @LuaFieldDoc(canEdit = false, description = "vanilla_model.left_arm")
+    @LuaFieldDoc(description = "vanilla_model.left_arm")
     public final VanillaModelPart LEFT_ARM;
     @LuaWhitelist
-    @LuaFieldDoc(canEdit = false, description = "vanilla_model.right_arm")
+    @LuaFieldDoc(description = "vanilla_model.right_arm")
     public final VanillaModelPart RIGHT_ARM;
     @LuaWhitelist
-    @LuaFieldDoc(canEdit = false, description = "vanilla_model.left_leg")
+    @LuaFieldDoc(description = "vanilla_model.left_leg")
     public final VanillaModelPart LEFT_LEG;
     @LuaWhitelist
-    @LuaFieldDoc(canEdit = false, description = "vanilla_model.right_leg")
+    @LuaFieldDoc(description = "vanilla_model.right_leg")
     public final VanillaModelPart RIGHT_LEG;
 
     @LuaWhitelist
-    @LuaFieldDoc(canEdit = false, description = "vanilla_model.hat")
+    @LuaFieldDoc(description = "vanilla_model.hat")
     public final VanillaModelPart HAT;
     @LuaWhitelist
-    @LuaFieldDoc(canEdit = false, description = "vanilla_model.jacket")
+    @LuaFieldDoc(description = "vanilla_model.jacket")
     public final VanillaModelPart JACKET;
     @LuaWhitelist
-    @LuaFieldDoc(canEdit = false, description = "vanilla_model.left_sleeve")
+    @LuaFieldDoc(description = "vanilla_model.left_sleeve")
     public final VanillaModelPart LEFT_SLEEVE;
     @LuaWhitelist
-    @LuaFieldDoc(canEdit = false, description = "vanilla_model.right_sleeve")
+    @LuaFieldDoc(description = "vanilla_model.right_sleeve")
     public final VanillaModelPart RIGHT_SLEEVE;
     @LuaWhitelist
-    @LuaFieldDoc(canEdit = false, description = "vanilla_model.left_pants")
+    @LuaFieldDoc(description = "vanilla_model.left_pants")
     public final VanillaModelPart LEFT_PANTS;
     @LuaWhitelist
-    @LuaFieldDoc(canEdit = false, description = "vanilla_model.right_pants")
+    @LuaFieldDoc(description = "vanilla_model.right_pants")
     public final VanillaModelPart RIGHT_PANTS;
 
     @LuaWhitelist
-    @LuaFieldDoc(canEdit = false, description = "vanilla_model.all")
+    @LuaFieldDoc(description = "vanilla_model.all")
     public final VanillaModelPart ALL;
     @LuaWhitelist
-    @LuaFieldDoc(canEdit = false, description = "vanilla_model.outer_layer")
+    @LuaFieldDoc(description = "vanilla_model.outer_layer")
     public final VanillaModelPart OUTER_LAYER;
     @LuaWhitelist
-    @LuaFieldDoc(canEdit = false, description = "vanilla_model.inner_layer")
+    @LuaFieldDoc(description = "vanilla_model.inner_layer")
     public final VanillaModelPart INNER_LAYER;
 
     public void alterModel(PlayerModel<?> playerModel) {
@@ -176,12 +176,12 @@ public class VanillaModelAPI {
 
         public void storeOriginData(VanillaModelPart vanillaModelPart, PlayerModel<?> playerModel) {
             ModelPart part = partProvider.apply(playerModel);
-            vanillaModelPart.savedOriginRot.set(part.xRot, part.yRot, part.zRot);
+            vanillaModelPart.savedOriginRot.set(-part.xRot, -part.yRot, part.zRot);
             vanillaModelPart.savedOriginRot.scale(180 / Math.PI);
 
             FiguraVec3 pivot = VanillaPartOffsetManager.getVanillaOffset(playerModel, vanillaModelPart.parentType);
             pivot.subtract(part.x, part.y, part.z);
-            pivot.multiply(1, 1, -1);
+            pivot.multiply(1, -1, -1);
             vanillaModelPart.savedOriginPos.set(pivot);
             pivot.free();
         }

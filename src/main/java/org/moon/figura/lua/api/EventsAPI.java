@@ -20,26 +20,16 @@ import java.util.List;
 public class EventsAPI {
 
     @LuaWhitelist
-    @LuaFieldDoc(
-            canEdit = false,
-            description = "events.tick"
-    )
+    @LuaFieldDoc(description = "events.tick")
     public final LuaEvent TICK = new LuaEvent("TICK");
     @LuaWhitelist
-    @LuaFieldDoc(
-            canEdit = false,
-            description = "events.render"
-    )
+    @LuaFieldDoc(description = "events.render")
     public final LuaEvent RENDER = new LuaEvent("RENDER");
     @LuaWhitelist
-    @LuaFieldDoc(
-            canEdit = false,
-            description = "events.post_render"
-    )
+    @LuaFieldDoc(description = "events.post_render")
     public final LuaEvent POST_RENDER = new LuaEvent("POST_RENDER");
 
     //Metamethods
-
 
     @LuaWhitelist
     public static LuaPairsIterator<EventsAPI, String> __pairs(EventsAPI api) {

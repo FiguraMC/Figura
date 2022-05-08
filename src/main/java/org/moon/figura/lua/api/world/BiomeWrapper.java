@@ -24,10 +24,7 @@ public class BiomeWrapper {
     }
 
     @LuaWhitelist
-    @LuaFieldDoc(
-            canEdit = false,
-            description = "biome.name"
-    )
+    @LuaFieldDoc(description = "biome.name")
     public final String name;
 
 }

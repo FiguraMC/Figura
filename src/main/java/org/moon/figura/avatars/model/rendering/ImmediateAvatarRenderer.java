@@ -10,6 +10,7 @@ import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.avatars.model.FiguraModelPart;
 import org.moon.figura.avatars.model.PartCustomization;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
+import org.moon.figura.math.vector.FiguraVec3;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,11 +26,6 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         List<FiguraImmediateBuffer.Builder> builders = new ArrayList<>();
         root = FiguraModelPart.read(avatarCompound.getCompound("models"), builders);
 
-        double scale = 1.0 / 16;
-        root.customization.setScale(scale, scale, scale);
-        root.customization.needsMatrixRecalculation = true;
-        root.customization.setPrimaryRenderType("CUTOUT_NO_CULL");
-        root.customization.setSecondaryRenderType("EMISSIVE");
 
         //Textures
         List<FiguraTextureSet> textureSets = new ArrayList<>();
@@ -92,6 +88,11 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
     private PartCustomization transformRoot() {
         PartCustomization customization = PartCustomization.of();
 
+        customization.setPrimaryRenderType("CUTOUT_NO_CULL");
+        customization.setSecondaryRenderType("EMISSIVE");
+
+        double s = 1.0 / 16;
+        customization.positionMatrix.scale(s, s, s);
         customization.positionMatrix.rotateZ(180);
         customization.positionMatrix.translate(0, 1.5, 0);
         customization.normalMatrix.rotateZ(180);

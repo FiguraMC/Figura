@@ -4,6 +4,7 @@ import com.mojang.math.Matrix4f;
 import net.minecraft.world.phys.Vec3;
 import org.lwjgl.BufferUtils;
 import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
@@ -25,6 +26,9 @@ public class FiguraMat4 implements CachedType {
     //Values are named as v(ROW)(COLUMN), both 1-indexed like in actual math
     @LuaWhitelist
     public double v11, v12, v13, v14, v21, v22, v23, v24, v31, v32, v33, v34, v41, v42, v43, v44;
+
+    @LuaFieldDoc(description = "matrix_n.vxy")
+    private double vxy;
 
     private FiguraMat4 cachedInverse = null;
     private double cachedDeterminant = Double.MAX_VALUE;
@@ -123,10 +127,10 @@ public class FiguraMat4 implements CachedType {
     @Override
     public String toString() {
         return "\n[  " +
-                v11 + ", " + v12 + ", " + v13 + ", " + v14 +
-                "\n   " + v21 + ", " + v22 + ", " + v23 + ", " + v24 +
-                "\n   " + v31 + ", " + v32 + ", " + v33 + ", " + v34 +
-                "\n   " + v41 + ", " + v42 + ", " + v43 + ", " + v44 +
+                (float) v11 + ", " + (float) v12 + ", " + (float) v13 + ", " + (float) v14 +
+                "\n   " + (float) v21 + ", " + v22 + ", " + (float) v23 + ", " + (float) v24 +
+                "\n   " + (float) v31 + ", " + (float) v32 + ", " + (float) v33 + ", " + (float) v34 +
+                "\n   " + (float) v41 + ", " + (float) v42 + ", " + (float) v43 + ", " + (float) v44 +
                 "  ]";
     }
     public FiguraVec4 getCol1() {

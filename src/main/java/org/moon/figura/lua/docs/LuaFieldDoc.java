@@ -9,7 +9,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface LuaFieldDoc {
 
-    boolean canEdit();
     String description();
 
 }

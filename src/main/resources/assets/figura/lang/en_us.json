@@ -161,10 +161,8 @@
   "figura.config.panic_button": "Panic Button",
   "figura.config.panic_button.tooltip": "Stop the rendering of all avatars",
 
-
   "figura.command.run.not_local_error" : "No local avatar equipped!",
   "figura.command.run.no_script_error" : "No active script to run code in!",
-
 
   "figura.docs.type": "Type",
   "figura.docs.description": "Description",
@@ -175,11 +173,41 @@
   "figura.docs.editable": "Editable",
   "figura.docs.not_editable": "Not Editable",
 
-  "figura.docs.sound.desc": "A global API which is used to play Minecraft sounds.",
+  "figura.docs.globals.desc": "Documentation for the various things Figura adds to the global lua state.",
+  "figura.docs.globals.vectors.desc": "The global instance of VectorsAPI.",
+  "figura.docs.globals.vec.desc": "An alias for \"vectors.vec\", since it's used so often.",
+  "figura.docs.globals.matrices.desc": "The global instance of MatricesAPI.",
+  "figura.docs.globals.events.desc": "The global instance of EventsAPI.",
+  "figura.docs.globals.vanilla_model.desc": "The global instance of VanillaModelAPI.",
+  "figura.docs.globals.world.desc": "The global instance of WorldAPI.",
+  "figura.docs.globals.player.desc": "The global instance of Player, representing the user of the avatar.",
+  "figura.docs.globals.particle.desc": "The global instance of ParticleAPI.",
+  "figura.docs.globals.sound.desc": "The global instance of SoundAPI.",
+  "figura.docs.globals.nameplate.desc": "The global instance of NameplateAPI.",
+  "figura.docs.globals.models.desc": "A global instance of ModelPart. This is the root node of all your blockbench models. Each bbmodel file is a child of this part.",
+  "figura.docs.globals.print.desc": "A function that writes its arguments to chat. Even though the syntax says only one argument, you can put as many as you want. All of them will print, and they'll be separated by some spaces.",
+  "figura.docs.globals.log.desc": "An alias for print().",
+  "figura.docs.globals.printTable.desc": "The first argument is either a Table, or it's a Userdata, which refers to any of the added Figura types. Prints the table out to chat, specially formatted. If userdata is passed in, it is automatically converted to a table or string, and displayed. In the case of tables inside of tables, the \"maxDepth\" parameter will be used to determine how far to go. BE CAREFUL WITH RECURSIVE TABLES! If you try to print a table too deeply, then your game may freeze while it calculates everything to print, and you may have to restart your client if you go too crazy with it. Default value for maxDepth is 1.",
+  "figura.docs.globals.logTable.desc": "An alias for printTable().",
+  "figura.docs.globals.printJson.desc": "Takes a Minecraft json string as an argument, and prints it to the chat formatted.",
+  "figura.docs.globals.logJson.desc": "An alias for printJson().",
+
+  "figura.docs.sound.desc": "A global API which is used to play Minecraft sounds. Accessed using the name \"sound\".",
   "figura.docs.sound.play_sound.desc": "Plays the specified sound at the specified position with the given volume and pitch multipliers. Volume in Minecraft refers to how far away people can hear the sound from, not the actual loudness of it. If you don't give values for volume and pitch, the default values are 1.",
 
-  "figura.docs.particle.desc": "A global API which is used for dealing with Minecraft's particles. Can currently only be used to summon a particle.",
+  "figura.docs.particle.desc": "A global API which is used for dealing with Minecraft's particles. Can currently only be used to summon a particle. Accessed using the name \"particle\".",
   "figura.docs.particle.add_particle.desc": "Creates a particle with the given name at the specified position, with the given velocity. Some particles have special properties, like the \"dust\" particle. For these particles, the special properties can be put into the \"name\" parameter, the same way as it works for commands.",
+
+  "figura.docs.nameplate.desc": "A global API which is used for customizing your player's nameplate in chat, above your head, and in the tab list.",
+  "figura.docs.nameplate.chat.desc": "A customization for your nameplate in the chat.",
+  "figura.docs.nameplate.entity.desc": "A customization for your nameplate above your head.",
+  "figura.docs.nameplate.list.desc": "A customization for your nameplate in the tab list.",
+
+  "figura.docs.nameplate.customization.desc": "A customization that can be applied to a nameplate.",
+  "figura.docs.nameplate.customization.text.desc": "The text to use in this nameplate.",
+  "figura.docs.nameplate.customization.position.desc": "The position offset of the nameplate, in world coordinates. Only usable on the ENTITY nameplate.",
+  "figura.docs.nameplate.customization.scale.desc": "The scale factor of the nameplate. Only usable on the ENTITY nameplate.",
+  "figura.docs.nameplate.customization.visible.desc": "Whether or not the nameplate should be visible. Only usable on the ENTITY nameplate.",
 
   "figura.docs.world.desc": "A global API dedicated to reading information from the Minecraft world. Accessed using the name \"world\".",
   "figura.docs.world.get_biome.desc": "Gets the Biome located at the given position.",
@@ -214,7 +242,7 @@
   "figura.docs.blockstate.get_luminance.desc": "Gets the emission light level of this BlockState.",
   "figura.docs.blockstate.get_slipperiness.desc": "Gets the slipperiness of this BlockState. (Slime blocks and ice in vanilla)",
   "figura.docs.blockstate.get_velocity_multiplier.desc": "Gets the velocity multiplier of this BlockState. (Only Soul sand, honey blocks in vanilla)",
-  "figura.docs.blockstate.get_jump_velocity_multiplier.desc": "Gets the JumpVelocityMultiplier of this BlockState. (Literally just honey blocks in vanilla)",
+  "figura.docs.blockstate.get_jump_velocity_multiplier.desc": "Gets the jump velocity multiplier of this BlockState. (Literally just honey blocks in vanilla)",
   "figura.docs.blockstate.get_blast_resistance.desc": "Gets the blast resistance of this BlockState.",
 
   "figura.docs.biome.desc": "A proxy for a Minecraft biome. Instances are obtained through the WorldAPI. (Not implemented yet, currently only has a \"name\" field)",
@@ -239,7 +267,7 @@
   "figura.docs.model_part.get_position_matrix_raw.desc": "Returns the position matrix for this model part. The Raw version of the function is different in that it doesn't recalculate the matrix before getting it.",
   "figura.docs.model_part.get_normal_matrix.desc": "Recalculates the normal matrix for this model part, based on its current position, rotation, scale, and pivot, then returns this matrix.",
   "figura.docs.model_part.get_normal_matrix_raw.desc": "Returns the normal matrix for this model part. The Raw version of the function is different in that it doesn't recalculate the matrix before returning it.",
-  "figura.docs.model_part.set_matrix.desc": "Sets the given matrix as the position matrix for this model part. The normal matrix is automatically calculated as the inverse transpose of this matrix. Calling this DOES NOT CHANGE the values of position, rot, or scale in the model part. If you call setPos() or a similar function, the effect of setMatrix() will be overwritten.",
+  "figura.docs.model_part.set_matrix.desc": "Sets the given matrix as the position matrix for this model part. The normal matrix is automatically calculated as the inverse transpose of this matrix. Calling this DOES NOT CHANGE the values of position, rot, or scale in the model part. If you call setPos() or a similar function, the effects of setMatrix() will be overwritten.",
   "figura.docs.model_part.get_visible.desc": "Gets whether or not this model part is visible. The default value is nil, meaning it copies the visibility of its parent part during rendering.",
   "figura.docs.model_part.set_visible.desc": "Sets this part to be visible or invisible. The default value is nil, meaning the part copies its visibility from its parent part. If you want to set the visibility back to the default value of nil, use resetVisible() instead.",
   "figura.docs.model_part.reset_visible.desc": "Resets the visibility status of the part to default. The default value is nil, meaning the part copies the visibility from its parent part.",
@@ -291,7 +319,7 @@
   "figura.docs.event.register.desc": "Registers the given function to the given event. When the event occurs, the function will be run. Functions are run in the order they were registered.",
 
   "figura.docs.vectors.desc": "A global API which provides functions dedicated to creating and otherwise manipulating vectors. Accessed using the name \"vectors\".",
-  "figura.docs.vectors.vec.desc": "Creates and returns a vector of the appropriate size to hold the arguments passed in. For example, if you call vec(3, 4, 0, 2), then the function will return a Vector4 containing those values.",
+  "figura.docs.vectors.vec.desc": "Creates and returns a vector of the appropriate size to hold the arguments passed in. For example, if you call vec(3, 4, 0, 2), then the function will return a Vector4 containing those values. There is a global alias \"vec\" for this function, meaning the \"vectors.\" can be omitted.",
   "figura.docs.vectors.vec2.desc": "Creates and returns a Vector2 with the given values. Nil values become zero.",
   "figura.docs.vectors.vec3.desc": "Creates and returns a Vector3 with the given values. Nil values become zero.",
   "figura.docs.vectors.vec4.desc": "Creates and returns a Vector4 with the given values. Nil values become zero.",
@@ -339,6 +367,7 @@
   "figura.docs.matrix3.desc": "A matrix with 3 rows and 3 columns.",
   "figura.docs.matrix4.desc": "A matrix with 4 rows and 4 columns.",
 
+  "figura.docs.matrix_n.vxy.desc": "There is 1 such field for each element of the matrix. You can index these fields with v[x][y], for example \"mat.v12\" will return the value in the first row, second column of \"mat\".",
   "figura.docs.matrix_n.det.desc": "Calculates and returns the determinant of this matrix.",
   "figura.docs.matrix_n.invert.desc": "Inverts this matrix, changing the values inside.",
   "figura.docs.matrix_n.get_inverse.desc": "Calculates and returns the inverse of this matrix.",

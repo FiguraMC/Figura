@@ -11,7 +11,9 @@ import org.moon.figura.lua.api.math.VectorsAPI;
 import org.moon.figura.lua.api.model.VanillaModelAPI;
 import org.moon.figura.lua.api.nameplate.NameplateAPI;
 import org.moon.figura.lua.api.world.WorldAPI;
+import org.moon.figura.utils.LuaUtils;
 import org.terasology.jnlua.JavaFunction;
+import org.terasology.jnlua.JavaReflector;
 import org.terasology.jnlua.LuaRuntimeException;
 import org.terasology.jnlua.LuaState53;
 
@@ -107,6 +109,13 @@ public class FiguraLuaState extends LuaState53 {
         loadGlobal(SoundAPI.INSTANCE, "sound");
         nameplate = new NameplateAPI();
         loadGlobal(nameplate, "nameplate");
+
+        //Load "vec" as global alias for "vectors.vec"
+        pushJavaFunction(getJavaReflector().getMetamethod(JavaReflector.Metamethod.INDEX));
+        getGlobal("vectors");
+        pushString("vec");
+        call(2, 1);
+        setGlobal("vec");
     }
 
     private void loadSetHook() {

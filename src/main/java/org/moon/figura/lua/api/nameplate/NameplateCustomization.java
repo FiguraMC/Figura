@@ -7,24 +7,34 @@ import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.config.Config;
 import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.lua.docs.LuaFieldDoc;
+import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.TextUtils;
 
 @LuaWhitelist
+@LuaTypeDoc(
+        name = "NameplateCustomization",
+        description = "nameplate.customization"
+)
 public class NameplateCustomization {
 
     @LuaWhitelist
+    @LuaFieldDoc(description = "nameplate.customization.text")
     public String text;
 
     //those are only used on the ENTITY nameplate
     @LuaWhitelist
+    @LuaFieldDoc(description = "nameplate.customization.position")
     public FiguraVec3 position;
 
     @LuaWhitelist
+    @LuaFieldDoc(description = "nameplate.customization.scale")
     public FiguraVec3 scale;
 
     @LuaWhitelist
-    public Boolean enabled;
+    @LuaFieldDoc(description = "nameplate.customization.visible")
+    public Boolean visible;
 
     public static Component applyCustomization(String text) {
         text = TextUtils.noBadges4U(text);

@@ -30,10 +30,7 @@ public class BlockStateWrapper {
     }
 
     @LuaWhitelist
-    @LuaFieldDoc(
-            canEdit = false,
-            description = "blockstate.id"
-    )
+    @LuaFieldDoc(description = "blockstate.id")
     public final String id;
 
     @LuaWhitelist

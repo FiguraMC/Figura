@@ -7,7 +7,6 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.model.FiguraModelPart;
-import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.EventsAPI;
 import org.moon.figura.lua.api.ParticleAPI;
 import org.moon.figura.lua.api.SoundAPI;
@@ -17,6 +16,8 @@ import org.moon.figura.lua.api.entity.PlayerEntityWrapper;
 import org.moon.figura.lua.api.math.MatricesAPI;
 import org.moon.figura.lua.api.math.VectorsAPI;
 import org.moon.figura.lua.api.model.VanillaModelAPI;
+import org.moon.figura.lua.api.nameplate.NameplateAPI;
+import org.moon.figura.lua.api.nameplate.NameplateCustomization;
 import org.moon.figura.lua.api.world.BiomeWrapper;
 import org.moon.figura.lua.api.world.BlockStateWrapper;
 import org.moon.figura.lua.api.world.WorldAPI;
@@ -28,9 +29,12 @@ import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.*;
 import org.moon.figura.utils.ColorUtils.Colors;
 import org.moon.figura.utils.FiguraText;
+import org.terasology.jnlua.JavaFunction;
+import org.terasology.jnlua.TypedJavaObject;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,6 +56,11 @@ public class FiguraDocsManager {
      */
     public static Map<String, List<Class<?>>> DOCUMENTED_CLASSES = new HashMap<>() {{
 
+        //Globals. Group name is an empty string, meaning they're not in any group at all.
+        put("", new ArrayList<>() {{
+            add(FiguraGlobalsDocs.class);
+        }});
+
         //sound
         put("sound", new ArrayList<>() {{
             add(SoundAPI.class);
@@ -60,6 +69,11 @@ public class FiguraDocsManager {
         //particle
         put("particle", new ArrayList<>() {{
             add(ParticleAPI.class);
+        }});
+
+        put("nameplate", new ArrayList<>() {{
+            add(NameplateAPI.class);
+            add(NameplateCustomization.class);
         }});
 
         //World classes
@@ -124,11 +138,15 @@ public class FiguraDocsManager {
 
         put(String.class, "String");
 
+        put(Object.class, "AnyType"); //not sure if best name
+        put(TypedJavaObject.class, "Userdata");
+
         put(Boolean.class, "Boolean");
         put(boolean.class, "Boolean");
 
         //Lua things
         put(LuaFunction.class, "Function");
+        put(JavaFunction.class, "Function");
         put(LuaTable.class, "Table");
     }};
 
@@ -147,31 +165,15 @@ public class FiguraDocsManager {
 
             //Find methods
             documentedMethods = new ArrayList<>();
-            for (Method method : clazz.getMethods()) {
-                if (method.isAnnotationPresent(LuaMethodDoc.class)) {
-                    if (method.isAnnotationPresent(LuaWhitelist.class)) {
+            for (Method method : clazz.getMethods())
+                if (method.isAnnotationPresent(LuaMethodDoc.class))
                         documentedMethods.add(new MethodDoc(method));
-                    } else {
-                        FiguraMod.LOGGER.warn("Docs manager found a method that " +
-                                "had documentation, but wasn't whitelisted: " + method.getName() +
-                                " in " + method.getDeclaringClass().getName());
-                    }
-                }
-            }
 
             //Find fields
             documentedFields = new ArrayList<>();
-            for (Field field : clazz.getFields()) {
-                if (field.isAnnotationPresent(LuaFieldDoc.class)) {
-                    if (field.isAnnotationPresent(LuaWhitelist.class)) {
-                        documentedFields.add(new FieldDoc(field));
-                    } else {
-                        FiguraMod.LOGGER.warn("Docs manager found a method that " +
-                                "had documentation, but wasn't whitelisted: " + field.getName() +
-                                " in " + field.getDeclaringClass().getName());
-                    }
-                }
-            }
+            for (Field field : clazz.getFields())
+                if (field.isAnnotationPresent(LuaFieldDoc.class))
+                    documentedFields.add(new FieldDoc(field));
         }
 
         /**
@@ -306,7 +308,7 @@ public class FiguraDocsManager {
             type = field.getType();
             LuaFieldDoc luaFieldDoc = field.getAnnotation(LuaFieldDoc.class);
             description = luaFieldDoc.description();
-            editable = luaFieldDoc.canEdit();
+            editable = !Modifier.isFinal(field.getModifiers());
         }
 
         public void print() {
@@ -347,8 +349,7 @@ public class FiguraDocsManager {
         //Initialize all the ClassDoc instances
         for (Map.Entry<String, List<Class<?>>> packageEntry : DOCUMENTED_CLASSES.entrySet())
             for (Class<?> documentedClass : packageEntry.getValue())
-                if (documentedClass.isAnnotationPresent(LuaWhitelist.class)
-                        && documentedClass.isAnnotationPresent(LuaTypeDoc.class))
+                if (documentedClass.isAnnotationPresent(LuaTypeDoc.class))
                     GENERATED_CLASS_DOCS.computeIfAbsent(
                             packageEntry.getKey(), (key) -> new ArrayList<>()
                     ).add(new ClassDoc(documentedClass));
@@ -357,7 +358,11 @@ public class FiguraDocsManager {
     public static LiteralArgumentBuilder<FabricClientCommandSource> generateCommand() {
         LiteralArgumentBuilder<FabricClientCommandSource> docs = LiteralArgumentBuilder.literal("docs");
         for (Map.Entry<String, List<ClassDoc>> entry : GENERATED_CLASS_DOCS.entrySet()) {
-            LiteralArgumentBuilder<FabricClientCommandSource> group = LiteralArgumentBuilder.literal(entry.getKey());
+            LiteralArgumentBuilder<FabricClientCommandSource> group;
+            if (entry.getKey().length() > 0)
+                group = LiteralArgumentBuilder.literal(entry.getKey());
+            else
+                group = docs;
             for (ClassDoc classDoc : entry.getValue()) {
                 LiteralArgumentBuilder<FabricClientCommandSource> typeBranch = LiteralArgumentBuilder.literal(classDoc.name);
                 typeBranch.executes(context -> {classDoc.print(); return 1;});
@@ -373,7 +378,8 @@ public class FiguraDocsManager {
                 }
                 group.then(typeBranch);
             }
-            docs.then(group);
+            if (docs != group)
+                docs.then(group);
         }
 
         return docs;

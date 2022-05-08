@@ -37,110 +37,139 @@ public class FiguraJavaReflector implements JavaReflector {
         };
     }
 
-    private static final JavaFunction FIGURA_INDEX = luaState -> {
-        try {
+    private static final JavaFunction FIGURA_INDEX = new JavaFunction() {
+        @Override
+        public int invoke(LuaState luaState) {
+            try {
+                Object object = luaState.toJavaObject(1, Object.class);
+                Class<?> objectClass = getObjectClass(object);
+                String key = luaState.toString(2); //was -1
+                if (key == null)
+                    return 0;
+
+                if (objectClass.isAnnotationPresent(LuaWhitelist.class))
+                    buildCachesIfNeeded(objectClass);
+                else
+                    return defaultIndexFunction.invoke(luaState);
+
+                Field field = fieldCache.get(objectClass).get(key);
+                if (field != null) {
+                    luaState.pushJavaObject(field.get(object));
+                    return 1;
+                }
+
+                MethodWrapper method = methodCache.get(objectClass).get(key);
+                if (method != null) {
+                    luaState.pushJavaFunction(method);
+                    return 1;
+                }
+
+                int i = callMetamethod(luaState, Metamethod.INDEX);
+                if (i != 0) return i;
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+
+            luaState.pushNil();
+            return 1;
+        }
+
+        @Override
+        public String toString() {
+            return "(Figura Index Function)";
+        }
+    };
+
+    private static final JavaFunction FIGURA_NEW_INDEX = new JavaFunction() {
+        @Override
+        public int invoke(LuaState luaState) {
+            try {
+                Object object = luaState.toJavaObject(1, Object.class);
+                Class<?> objectClass = getObjectClass(object);
+                String key = luaState.toString(2);
+                if (key == null)
+                    return 0;
+
+                if (objectClass.isAnnotationPresent(LuaWhitelist.class))
+                    buildCachesIfNeeded(objectClass);
+                else
+                    return defaultNewIndexFunction.invoke(luaState);
+
+                Field f = fieldCache.get(objectClass).get(key);
+                if (f != null && !Modifier.isFinal(f.getModifiers()))
+                    f.set(object, luaState.toJavaObject(3, f.getType()));
+                else
+                    throw new LuaRuntimeException("Attempt to assign invalid value " + key + ".");
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+            return 0;
+        }
+
+        @Override
+        public String toString() {
+            return "(Figura NewIndex Function)";
+        }
+    };
+
+    private static final JavaFunction FIGURA_IPAIRS = new JavaFunction() {
+        @Override
+        public int invoke(LuaState luaState) {
             Object object = luaState.toJavaObject(1, Object.class);
-            Class<?> objectClass = getObjectClass(object);
-            String key = luaState.toString(2); //was -1
-            if (key == null)
+            if (object == null)
                 return 0;
+            Class<?> objectClass = getObjectClass(object);
 
             if (objectClass.isAnnotationPresent(LuaWhitelist.class))
                 buildCachesIfNeeded(objectClass);
             else
-                return defaultIndexFunction.invoke(luaState);
+                return 0;
+            if (!metamethodCache.get(objectClass).containsKey("__ipairs"))
+                return 0;
 
-            Field field = fieldCache.get(objectClass).get(key);
-            if (field != null) {
-                luaState.pushJavaObject(field.get(object));
-                return 1;
-            }
+            MethodWrapper methodWrapper = metamethodCache.get(objectClass).get("__ipairs").get(0);
+            methodWrapper.invoke(luaState);
 
-            MethodWrapper method = methodCache.get(objectClass).get(key);
-            if (method != null) {
-                luaState.pushJavaFunction(method);
-                return 1;
-            }
-
-            int i = callMetamethod(luaState, Metamethod.INDEX);
-            if (i != 0) return i;
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            luaState.pushValue(1);
+            luaState.remove(1);
+            luaState.pushInteger(0);
+            return 3;
         }
 
-        luaState.pushNil();
-        return 1;
+        @Override
+        public String toString() {
+            return "(Figura IPairs Function)";
+        }
     };
 
-    private static final JavaFunction FIGURA_NEW_INDEX = luaState -> {
-        try {
+    private static final JavaFunction FIGURA_PAIRS = new JavaFunction() {
+        @Override
+        public int invoke(LuaState luaState) {
             Object object = luaState.toJavaObject(1, Object.class);
-            Class<?> objectClass = getObjectClass(object);
-            String key = luaState.toString(2);
-            if (key == null)
+            if (object == null)
                 return 0;
+            Class<?> objectClass = getObjectClass(object);
 
             if (objectClass.isAnnotationPresent(LuaWhitelist.class))
                 buildCachesIfNeeded(objectClass);
             else
-                return defaultNewIndexFunction.invoke(luaState);
+                return 0;
+            if (!metamethodCache.get(objectClass).containsKey("__pairs"))
+                return 0;
 
-            Field f = fieldCache.get(objectClass).get(key);
-            if (f != null && !Modifier.isFinal(f.getModifiers()))
-                f.set(object, luaState.toJavaObject(3, f.getType()));
-            else
-                throw new LuaRuntimeException("Attempt to assign invalid value " + key + ".");
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            MethodWrapper methodWrapper = metamethodCache.get(objectClass).get("__pairs").get(0);
+            methodWrapper.invoke(luaState);
+
+            luaState.pushValue(1);
+            luaState.remove(1);
+            luaState.pushNil();
+            return 3;
         }
-        return 0;
-    };
 
-    private static final JavaFunction FIGURA_IPAIRS = luaState -> {
-        Object object = luaState.toJavaObject(1, Object.class);
-        if (object == null)
-            return 0;
-        Class<?> objectClass = getObjectClass(object);
-
-        if (objectClass.isAnnotationPresent(LuaWhitelist.class))
-            buildCachesIfNeeded(objectClass);
-        else
-            return 0;
-        if (!metamethodCache.get(objectClass).containsKey("__ipairs"))
-            return 0;
-
-        MethodWrapper methodWrapper = metamethodCache.get(objectClass).get("__ipairs").get(0);
-        methodWrapper.invoke(luaState);
-
-        luaState.pushValue(1);
-        luaState.remove(1);
-        luaState.pushInteger(0);
-        return 3;
-    };
-
-    private static final JavaFunction FIGURA_PAIRS = luaState -> {
-        Object object = luaState.toJavaObject(1, Object.class);
-        if (object == null)
-            return 0;
-        Class<?> objectClass = getObjectClass(object);
-
-        if (objectClass.isAnnotationPresent(LuaWhitelist.class))
-            buildCachesIfNeeded(objectClass);
-        else
-            return 0;
-        if (!metamethodCache.get(objectClass).containsKey("__pairs"))
-            return 0;
-
-        LuaUtils.printStack(luaState);
-        MethodWrapper methodWrapper = metamethodCache.get(objectClass).get("__pairs").get(0);
-        methodWrapper.invoke(luaState);
-
-        LuaUtils.printStack(luaState);
-
-        luaState.pushValue(1);
-        luaState.remove(1);
-        luaState.pushNil();
-        return 3;
+        @Override
+        public String toString() {
+            return "(Figura Pairs Function)";
+        }
     };
 
     private static int callMetamethod(LuaState luaState, Metamethod metamethod) {
