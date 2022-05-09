@@ -158,7 +158,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         double boxSize = part.index == -1 ? 1.0/24 : 1.0/48;
         debugPoseStack.setIdentity();
         FiguraMat4 posMat = customizationStack.peek().getPositionMatrix();
-        boxSize /= posMat.det() * 128;
+        boxSize /= Math.cbrt(posMat.det());
 
         debugPoseStack.mulPoseMatrix(posMat.toMatrix4f());
         FiguraVec3 piv = part.customization.getPivot();

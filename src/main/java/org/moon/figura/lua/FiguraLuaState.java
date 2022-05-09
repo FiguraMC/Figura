@@ -192,15 +192,12 @@ public class FiguraLuaState extends LuaState53 {
                 if (!previouslyRun.contains(scriptName))
                     throw new LuaRuntimeException("Tried to require nonexistent script \"" + scriptName + "\"!");
 
-                LuaUtils.printStack(luaState);
                 luaState.getField(luaState.REGISTRYINDEX, "registryResults");
                 luaState.getField(-1, scriptName);
                 luaState.remove(1);
-                LuaUtils.printStack(luaState);
                 return 1;
             }
 
-            LuaUtils.printStack(luaState);
             String src = scripts.get(scriptName);
             scripts.remove(scriptName);
             previouslyRun.add(scriptName);
@@ -208,7 +205,6 @@ public class FiguraLuaState extends LuaState53 {
             luaState.call(0, 1);
             luaState.pushValue(1);
             luaState.setField(luaState.REGISTRYINDEX, scriptName);
-            LuaUtils.printStack(luaState);
             return 1;
         };
     }
