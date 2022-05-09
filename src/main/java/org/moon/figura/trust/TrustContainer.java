@@ -29,7 +29,7 @@ public class TrustContainer {
         TICK_INST(0, 16383),
         RENDER_INST(0, 16383),
         MAX_MEM(0, 2047),
-        //COMPLEXITY(0, 12287),
+        COMPLEXITY(0, 12287),
         //PARTICLES(0, 63),
         //SOUNDS(0, 63),
         //BB_ANIMATIONS(0, 255),

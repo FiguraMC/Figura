@@ -11,6 +11,8 @@ import org.moon.figura.avatars.model.FiguraModelPart;
 import org.moon.figura.avatars.model.PartCustomization;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
 import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.trust.TrustContainer;
+import org.moon.figura.trust.TrustManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,14 +20,17 @@ import java.util.List;
 public class ImmediateAvatarRenderer extends AvatarRenderer {
 
     private final List<FiguraImmediateBuffer> buffers = new ArrayList<>(0);
+    private final int complexityLimit; //In faces
 
     public ImmediateAvatarRenderer(Avatar avatar, CompoundTag avatarCompound) {
         super(avatar, avatarCompound);
 
+        //Get complexity limit from trust
+        complexityLimit = TrustManager.get(avatar.owner).get(TrustContainer.Trust.COMPLEXITY);
+
         //Vertex data, read model parts
         List<FiguraImmediateBuffer.Builder> builders = new ArrayList<>();
         root = FiguraModelPart.read(avatarCompound.getCompound("models"), builders);
-
 
         //Textures
         List<FiguraTextureSet> textureSets = new ArrayList<>();
@@ -76,7 +81,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         customization.free();
 
         //Render all model parts
-        renderPart(root);
+        renderPart(root, new int[] {complexityLimit});
 
         //Pop position and normal matrices
         for (FiguraImmediateBuffer buffer : buffers) {
@@ -109,15 +114,15 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         return customization;
     }
 
-    private void renderPart(FiguraModelPart part) {
+    private void renderPart(FiguraModelPart part, int[] remainingComplexity) {
         part.applyVanillaTransforms(vanillaModel);
 
         for (FiguraImmediateBuffer buffer : buffers)
             part.customization.pushToBuffer(buffer);
 
-        part.pushVerticesImmediate(this);
+        part.pushVerticesImmediate(this, remainingComplexity);
         for (FiguraModelPart child : part.children)
-            renderPart(child);
+            renderPart(child, remainingComplexity);
 
         for (FiguraImmediateBuffer buffer : buffers)
             buffer.popCustomization();
@@ -125,7 +130,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         part.resetVanillaTransforms();
     }
 
-    public void pushFaces(int texIndex, int faceCount) {
-        buffers.get(texIndex).pushVertices(bufferSource, light, OverlayTexture.NO_OVERLAY, faceCount);
+    public void pushFaces(int texIndex, int faceCount, int[] remainingComplexity) {
+        buffers.get(texIndex).pushVertices(bufferSource, light, OverlayTexture.NO_OVERLAY, faceCount, remainingComplexity);
     }
 }

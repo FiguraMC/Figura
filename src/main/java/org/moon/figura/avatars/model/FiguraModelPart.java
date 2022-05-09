@@ -51,9 +51,13 @@ public class FiguraModelPart {
 
     private List<Integer> facesByTexture;
 
-    public void pushVerticesImmediate(ImmediateAvatarRenderer avatarRenderer) {
-        for (int i = 0; i < facesByTexture.size(); i++)
-            avatarRenderer.pushFaces(i, facesByTexture.get(i));
+    public void pushVerticesImmediate(ImmediateAvatarRenderer avatarRenderer, int[] remainingComplexity) {
+        for (int i = 0; i < facesByTexture.size(); i++) {
+            if (remainingComplexity[0] <= 0)
+                return;
+            remainingComplexity[0] -= facesByTexture.get(i);
+            avatarRenderer.pushFaces(i, facesByTexture.get(i) + Math.min(remainingComplexity[0], 0), remainingComplexity);
+        }
     }
 
     public void applyVanillaTransforms(EntityModel<?> vanillaModel) {
