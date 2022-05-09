@@ -28,8 +28,8 @@ public class VanillaModelAPI {
     @LuaFieldDoc(description = "vanilla_model.head")
     public final VanillaModelPart HEAD;
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.torso")
-    public final VanillaModelPart TORSO;
+    @LuaFieldDoc(description = "vanilla_model.body")
+    public final VanillaModelPart BODY;
     @LuaWhitelist
     @LuaFieldDoc(description = "vanilla_model.left_arm")
     public final VanillaModelPart LEFT_ARM;
@@ -74,7 +74,7 @@ public class VanillaModelAPI {
 
     public void alterModel(PlayerModel<?> playerModel) {
         HEAD.alter(playerModel);
-        TORSO.alter(playerModel);
+        BODY.alter(playerModel);
         LEFT_ARM.alter(playerModel);
         RIGHT_ARM.alter(playerModel);
         LEFT_LEG.alter(playerModel);
@@ -90,7 +90,7 @@ public class VanillaModelAPI {
 
     public void restoreModel(PlayerModel<?> playerModel) {
         HEAD_CONSUMER.restore(playerModel);
-        TORSO_CONSUMER.restore(playerModel);
+        BODY_CONSUMER.restore(playerModel);
         LEFT_ARM_CONSUMER.restore(playerModel);
         RIGHT_ARM_CONSUMER.restore(playerModel);
         LEFT_LEG_CONSUMER.restore(playerModel);
@@ -108,7 +108,7 @@ public class VanillaModelAPI {
     //TODO: Change default visibility depending on circumstances.
     //TODO: For example, HAT_CONSUMER should be invisible by default if 3d Skin Layers is installed.
     private final ModelConsumer HEAD_CONSUMER = new ModelConsumer(model -> model.head, true);
-    private final ModelConsumer TORSO_CONSUMER = new ModelConsumer(model -> model.body, true);
+    private final ModelConsumer BODY_CONSUMER = new ModelConsumer(model -> model.body, true);
     private final ModelConsumer LEFT_ARM_CONSUMER = new ModelConsumer(model -> model.leftArm, true);
     private final ModelConsumer RIGHT_ARM_CONSUMER = new ModelConsumer(model -> model.rightArm, true);
     private final ModelConsumer LEFT_LEG_CONSUMER = new ModelConsumer(model -> model.leftLeg, true);
@@ -123,7 +123,7 @@ public class VanillaModelAPI {
     public VanillaModelAPI() {
 
         HEAD = new VanillaModelPart(List.of(HEAD_CONSUMER), FiguraModelPart.ParentType.Head);
-        TORSO = new VanillaModelPart(List.of(TORSO_CONSUMER), FiguraModelPart.ParentType.Body);
+        BODY = new VanillaModelPart(List.of(BODY_CONSUMER), FiguraModelPart.ParentType.Body);
         LEFT_ARM = new VanillaModelPart(List.of(LEFT_ARM_CONSUMER), FiguraModelPart.ParentType.LeftArm);
         RIGHT_ARM = new VanillaModelPart(List.of(RIGHT_ARM_CONSUMER), FiguraModelPart.ParentType.RightArm);
         LEFT_LEG = new VanillaModelPart(List.of(LEFT_LEG_CONSUMER), FiguraModelPart.ParentType.LeftLeg);
@@ -137,14 +137,14 @@ public class VanillaModelAPI {
         RIGHT_PANTS = new VanillaModelPart(List.of(RIGHT_PANTS_CONSUMER), FiguraModelPart.ParentType.RightLeg);
 
         ALL = new VanillaModelPart(List.of(
-                HEAD_CONSUMER, TORSO_CONSUMER, LEFT_ARM_CONSUMER, RIGHT_ARM_CONSUMER, LEFT_LEG_CONSUMER, RIGHT_LEG_CONSUMER,
+                HEAD_CONSUMER, BODY_CONSUMER, LEFT_ARM_CONSUMER, RIGHT_ARM_CONSUMER, LEFT_LEG_CONSUMER, RIGHT_LEG_CONSUMER,
                 HAT_CONSUMER, JACKET_CONSUMER, LEFT_SLEEVE_CONSUMER, RIGHT_SLEEVE_CONSUMER, LEFT_PANTS_CONSUMER, RIGHT_PANTS_CONSUMER
         ), FiguraModelPart.ParentType.None);
         OUTER_LAYER = new VanillaModelPart(List.of(
                 HAT_CONSUMER, JACKET_CONSUMER, LEFT_SLEEVE_CONSUMER, RIGHT_SLEEVE_CONSUMER, LEFT_PANTS_CONSUMER, RIGHT_PANTS_CONSUMER
         ), FiguraModelPart.ParentType.None);
         INNER_LAYER = new VanillaModelPart(List.of(
-                HEAD_CONSUMER, TORSO_CONSUMER, LEFT_ARM_CONSUMER, RIGHT_ARM_CONSUMER, LEFT_LEG_CONSUMER, RIGHT_LEG_CONSUMER
+                HEAD_CONSUMER, BODY_CONSUMER, LEFT_ARM_CONSUMER, RIGHT_ARM_CONSUMER, LEFT_LEG_CONSUMER, RIGHT_LEG_CONSUMER
         ), FiguraModelPart.ParentType.None);
     }
 
@@ -154,7 +154,7 @@ public class VanillaModelAPI {
     }
     private static final LuaPairsIterator<VanillaModelAPI, String> PAIRS_ITERATOR =
             new LuaPairsIterator<>(List.of(
-                    "HEAD", "TORSO",
+                    "HEAD", "BODY",
                     "LEFT_ARM", "RIGHT_ARM",
                     "LEFT_LEG", "RIGHT_LEG",
                     "HAT", "JACKET",

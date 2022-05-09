@@ -279,7 +279,7 @@
 
   "figura.docs.vanilla_model.desc": "A global API that provides functions to interact with the vanilla player model and its parts. Accessed using the name \"vanilla_model\".",
   "figura.docs.vanilla_model.head.desc": "The head of the player, not including the hat.",
-  "figura.docs.vanilla_model.torso.desc": "The body of the player, not including the outer layer.",
+  "figura.docs.vanilla_model.body.desc": "The body of the player, not including the outer layer.",
   "figura.docs.vanilla_model.left_arm.desc": "The left arm of the player, not including the outer layer.",
   "figura.docs.vanilla_model.right_arm.desc": "The right arm of the player, not including the outer layer.",
   "figura.docs.vanilla_model.left_leg.desc": "The left leg of the player, not including the outer layer.",
