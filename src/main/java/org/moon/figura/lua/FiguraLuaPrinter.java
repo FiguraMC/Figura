@@ -119,7 +119,7 @@ public class FiguraLuaPrinter {
 
     private static Component tableToText(LuaState luaState, int index, int depth, int indent, boolean tooltip) {
         //normal print (value only) or when failed to parse the userdata (userdata first, so we always parse it)
-        if ((luaState.type(index) == LuaType.USERDATA && !tryParseUserdata(luaState, index)) || depth <= 0)
+        if (luaState.type(index) == LuaType.NIL || (luaState.type(index) == LuaType.USERDATA && !tryParseUserdata(luaState, index)) || depth <= 0)
             return getPrintText(luaState, index, tooltip);
 
         String spacing = "\t".repeat(indent - 1);

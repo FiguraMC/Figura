@@ -84,6 +84,11 @@ public class FiguraLuaState extends LuaState53 {
 
         pushJavaFunction(requireFunc(scripts));
         setGlobal("require");
+
+        //Registry require() result cache table
+        newTable();
+        setField(REGISTRYINDEX, "requireResults");
+
         StringBuilder rootFunction = new StringBuilder();
         if (autoScripts == null) {
             for (String name : scripts.keySet())
@@ -180,20 +185,31 @@ public class FiguraLuaState extends LuaState53 {
         final Set<String> previouslyRun = new HashSet<>();
         return luaState -> {
             String scriptName = luaState.checkString(1);
+            luaState.pop(1);
             if (scriptName.endsWith(".lua")) scriptName = scriptName.substring(0, scriptName.length() - 4);
 
             if (!scripts.containsKey(scriptName)) {
                 if (!previouslyRun.contains(scriptName))
                     throw new LuaRuntimeException("Tried to require nonexistent script \"" + scriptName + "\"!");
-                return 0;
+
+                LuaUtils.printStack(luaState);
+                luaState.getField(luaState.REGISTRYINDEX, "registryResults");
+                luaState.getField(-1, scriptName);
+                luaState.remove(1);
+                LuaUtils.printStack(luaState);
+                return 1;
             }
 
+            LuaUtils.printStack(luaState);
             String src = scripts.get(scriptName);
             scripts.remove(scriptName);
             previouslyRun.add(scriptName);
             luaState.load(src, scriptName);
-            luaState.call(0, MULTRET);
-            return Math.min(luaState.getTop(), 1); //not sure if correct
+            luaState.call(0, 1);
+            luaState.pushValue(1);
+            luaState.setField(luaState.REGISTRYINDEX, scriptName);
+            LuaUtils.printStack(luaState);
+            return 1;
         };
     }
 
