@@ -22,6 +22,7 @@ public class WorldAPI {
     public static final WorldAPI INSTANCE = new WorldAPI();
 
     public static Level getCurrentWorld() {
+        if (!WorldAPI.exists()) throw new LuaRuntimeException("World does not exist!");
         return Minecraft.getInstance().level;
     }
 
@@ -30,19 +31,16 @@ public class WorldAPI {
             overloads = {
                     @LuaFunctionOverload(
                             argumentTypes = FiguraVec3.class,
-                            argumentNames = "pos",
-                            returnType = BiomeWrapper.class
+                            argumentNames = "pos"
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
-                            argumentNames = {"x", "y", "z"},
-                            returnType = BiomeWrapper.class
+                            argumentNames = {"x", "y", "z"}
                     )
             },
             description = "world.get_biome"
     )
     public static BiomeWrapper getBiome(Object x, Double y, Double z) {
-        if (!exists()) throw new LuaRuntimeException("World does not exist!");
         FiguraVec3 pos = LuaUtils.parseVec3("getBiome", x, y, z);
         BiomeWrapper result = new BiomeWrapper(getCurrentWorld().getBiome(pos.asBlockPos()).value());
         pos.free();
@@ -54,19 +52,16 @@ public class WorldAPI {
             overloads = {
                     @LuaFunctionOverload(
                             argumentTypes = FiguraVec3.class,
-                            argumentNames = "pos",
-                            returnType = BlockStateWrapper.class
+                            argumentNames = "pos"
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
-                            argumentNames = {"x", "y", "z"},
-                            returnType = BlockStateWrapper.class
+                            argumentNames = {"x", "y", "z"}
                     )
             },
             description = "world.get_blockstate"
     )
     public static BlockStateWrapper getBlockState(Object x, Double y, Double z) {
-        if (!exists()) throw new LuaRuntimeException("World does not exist!");
         FiguraVec3 pos = LuaUtils.parseVec3("getBlockState", x, y, z);
         BlockPos blockPos = pos.asBlockPos();
         pos.free();
@@ -81,19 +76,16 @@ public class WorldAPI {
             overloads = {
                     @LuaFunctionOverload(
                             argumentTypes = FiguraVec3.class,
-                            argumentNames = "pos",
-                            returnType = Integer.class
+                            argumentNames = "pos"
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
-                            argumentNames = {"x", "y", "z"},
-                            returnType = Integer.class
+                            argumentNames = {"x", "y", "z"}
                     )
             },
             description = "world.get_restone_power"
     )
     public static Integer getRedstonePower(Object x, Double y, Double z) {
-        if (!exists()) throw new LuaRuntimeException("World does not exist!");
         FiguraVec3 pos = LuaUtils.parseVec3("getRedstonePower", x, y, z);
         BlockPos blockPos = pos.asBlockPos();
         pos.free();
@@ -107,19 +99,16 @@ public class WorldAPI {
             overloads = {
                     @LuaFunctionOverload(
                             argumentTypes = FiguraVec3.class,
-                            argumentNames = "pos",
-                            returnType = Integer.class
+                            argumentNames = "pos"
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
-                            argumentNames = {"x", "y", "z"},
-                            returnType = Integer.class
+                            argumentNames = {"x", "y", "z"}
                     )
             },
             description = "world.get_strong_redstone_power"
     )
     public static Integer getStrongRedstonePower(Object x, Double y, Double z) {
-        if (!exists()) throw new LuaRuntimeException("World does not exist!");
         FiguraVec3 pos = LuaUtils.parseVec3("getStrongRedstonePower", x, y, z);
         BlockPos blockPos = pos.asBlockPos();
         pos.free();
@@ -131,21 +120,15 @@ public class WorldAPI {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
-                            argumentTypes = {},
-                            argumentNames = {},
-                            returnType = Double.class
-                    ),
+                    @LuaFunctionOverload(),
                     @LuaFunctionOverload(
                             argumentTypes = Double.class,
-                            argumentNames = "delta",
-                            returnType = Double.class
+                            argumentNames = "delta"
                     )
             },
             description = "world.get_time"
     )
     public static double getTime(Double delta) {
-        if (!exists()) throw new LuaRuntimeException("World does not exist!");
         if (delta == null) delta = 0d;
         return getCurrentWorld().getGameTime() + delta;
     }
@@ -153,72 +136,50 @@ public class WorldAPI {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
-                            argumentTypes = {},
-                            argumentNames = {},
-                            returnType = Double.class
-                    ),
+                    @LuaFunctionOverload(),
                     @LuaFunctionOverload(
                             argumentTypes = Double.class,
-                            argumentNames = "delta",
-                            returnType = Double.class
+                            argumentNames = "delta"
                     )
             },
             description = "world.get_time_of_day"
     )
     public static double getTimeOfDay(Double delta) {
-        if (!exists()) throw new LuaRuntimeException("World does not exist!");
         if (delta == null) delta = 0d;
         return getCurrentWorld().getDayTime() + delta;
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = {},
-                    argumentNames = {},
-                    returnType = Integer.class
-            ),
+            overloads = @LuaFunctionOverload(),
             description = "world.get_moon_phase"
     )
     public static int getMoonPhase() {
-        if (!exists()) throw new LuaRuntimeException("World does not exist!");
         return getCurrentWorld().getMoonPhase();
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
-                            argumentTypes = {},
-                            argumentNames = {},
-                            returnType = Double.class
-                    ),
+                    @LuaFunctionOverload(),
                     @LuaFunctionOverload(
                             argumentTypes = Double.class,
-                            argumentNames = "delta",
-                            returnType = Double.class
+                            argumentNames = "delta"
                     )
             },
             description = "world.get_rain_gradient"
     )
     public static double getRainGradient(Float delta) {
-        if (!exists()) throw new LuaRuntimeException("World does not exist!");
         if (delta == null) delta = 1f;
         return getCurrentWorld().getRainLevel(delta);
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = {},
-                    argumentNames = {},
-                    returnType = Boolean.class
-            ),
+            overloads = @LuaFunctionOverload(),
             description = "world.is_thundering"
     )
     public static boolean isThundering() {
-        if (!exists()) throw new LuaRuntimeException("World does not exist!");
         return getCurrentWorld().isThundering();
     }
 
@@ -227,19 +188,16 @@ public class WorldAPI {
             overloads = {
                     @LuaFunctionOverload(
                             argumentTypes = FiguraVec3.class,
-                            argumentNames = "pos",
-                            returnType = Integer.class
+                            argumentNames = "pos"
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
-                            argumentNames = {"x", "y", "z"},
-                            returnType = Integer.class
+                            argumentNames = {"x", "y", "z"}
                     )
             },
             description = "world.get_light_level"
     )
     public static Integer getLightLevel(Object x, Double y, Double z) {
-        if (!exists()) throw new LuaRuntimeException("World does not exist!");
         FiguraVec3 pos = LuaUtils.parseVec3("getLightLevel", x, y, z);
         BlockPos blockPos = pos.asBlockPos();
         pos.free();
@@ -255,19 +213,16 @@ public class WorldAPI {
             overloads = {
                     @LuaFunctionOverload(
                             argumentTypes = FiguraVec3.class,
-                            argumentNames = "pos",
-                            returnType = Integer.class
+                            argumentNames = "pos"
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
-                            argumentNames = {"x", "y", "z"},
-                            returnType = Integer.class
+                            argumentNames = {"x", "y", "z"}
                     )
             },
             description = "world.get_sky_light_level"
     )
     public static Integer getSkyLightLevel(Object x, Double y, Double z) {
-        if (!exists()) throw new LuaRuntimeException("World does not exist!");
         FiguraVec3 pos = LuaUtils.parseVec3("getSkyLightLevel", x, y, z);
         BlockPos blockPos = pos.asBlockPos();
         pos.free();
@@ -282,19 +237,16 @@ public class WorldAPI {
             overloads = {
                     @LuaFunctionOverload(
                             argumentTypes = FiguraVec3.class,
-                            argumentNames = "pos",
-                            returnType = Integer.class
+                            argumentNames = "pos"
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
-                            argumentNames = {"x", "y", "z"},
-                            returnType = Integer.class
+                            argumentNames = {"x", "y", "z"}
                     )
             },
             description = "world.get_block_light_level"
     )
     public static Integer getBlockLightLevel(Object x, Double y, Double z) {
-        if (!exists()) throw new LuaRuntimeException("World does not exist!");
         FiguraVec3 pos = LuaUtils.parseVec3("getBlockLightLevel", x, y, z);
         BlockPos blockPos = pos.asBlockPos();
         pos.free();
@@ -309,19 +261,16 @@ public class WorldAPI {
             overloads = {
                     @LuaFunctionOverload(
                             argumentTypes = FiguraVec3.class,
-                            argumentNames = "pos",
-                            returnType = Boolean.class
+                            argumentNames = "pos"
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
-                            argumentNames = {"x", "y", "z"},
-                            returnType = Boolean.class
+                            argumentNames = {"x", "y", "z"}
                     )
             },
             description = "world.is_open_sky"
     )
     public static Boolean isOpenSky(Object x, Double y, Double z) {
-        if (!exists()) throw new LuaRuntimeException("World does not exist!");
         FiguraVec3 pos = LuaUtils.parseVec3("isOpenSky", x, y, z);
         BlockPos blockPos = pos.asBlockPos();
         pos.free();
@@ -333,11 +282,7 @@ public class WorldAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = {},
-                    argumentNames = {},
-                    returnType = Boolean.class
-            ),
+            overloads = @LuaFunctionOverload(),
             description = "world.exists"
     )
     public static boolean exists() {

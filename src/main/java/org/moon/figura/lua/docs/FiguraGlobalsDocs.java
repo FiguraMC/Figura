@@ -51,8 +51,7 @@ public class FiguraGlobalsDocs {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = String.class,
-                    argumentNames = "scriptName",
-                    returnType = void.class
+                    argumentNames = "scriptName"
             ),
             description = "globals.require"
     )
@@ -61,8 +60,7 @@ public class FiguraGlobalsDocs {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = Object.class,
-                    argumentNames = "arg",
-                    returnType = void.class
+                    argumentNames = "arg"
             ),
             description = "globals.print"
     )
@@ -71,8 +69,7 @@ public class FiguraGlobalsDocs {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = Object.class,
-                    argumentNames = "arg",
-                    returnType = void.class
+                    argumentNames = "arg"
             ),
             description = "globals.log"
     )
@@ -82,23 +79,19 @@ public class FiguraGlobalsDocs {
             overloads = {
                     @LuaFunctionOverload(
                             argumentTypes = LuaTable.class,
-                            argumentNames = "table",
-                            returnType = void.class
+                            argumentNames = "table"
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = TypedJavaObject.class,
-                            argumentNames = "javaObject",
-                            returnType = void.class
+                            argumentNames = "javaObject"
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {LuaTable.class, Integer.class},
-                            argumentNames = {"table", "maxDepth"},
-                            returnType = void.class
+                            argumentNames = {"table", "maxDepth"}
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {TypedJavaObject.class, Integer.class},
-                            argumentNames = {"javaObject", "maxDepth"},
-                            returnType = void.class
+                            argumentNames = {"javaObject", "maxDepth"}
                     )
             },
             description = "globals.printTable"
@@ -109,23 +102,19 @@ public class FiguraGlobalsDocs {
             overloads = {
                     @LuaFunctionOverload(
                             argumentTypes = LuaTable.class,
-                            argumentNames = "table",
-                            returnType = void.class
+                            argumentNames = "table"
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = TypedJavaObject.class,
-                            argumentNames = "javaObject",
-                            returnType = void.class
+                            argumentNames = "javaObject"
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {LuaTable.class, Integer.class},
-                            argumentNames = {"table", "maxDepth"},
-                            returnType = void.class
+                            argumentNames = {"table", "maxDepth"}
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {TypedJavaObject.class, Integer.class},
-                            argumentNames = {"javaObject", "maxDepth"},
-                            returnType = void.class
+                            argumentNames = {"javaObject", "maxDepth"}
                     )
             },
             description = "globals.logTable"
@@ -135,8 +124,7 @@ public class FiguraGlobalsDocs {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = String.class,
-                    argumentNames = "json",
-                    returnType = void.class
+                    argumentNames = "json"
             ),
             description = "globals.printJson"
     )
@@ -145,8 +133,7 @@ public class FiguraGlobalsDocs {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = String.class,
-                    argumentNames = "json",
-                    returnType = void.class
+                    argumentNames = "json"
             ),
             description = "globals.logJson"
     )

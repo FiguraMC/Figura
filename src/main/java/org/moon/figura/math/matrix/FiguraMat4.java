@@ -799,8 +799,7 @@ public class FiguraMat4 implements CachedType {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = FiguraMat4.class,
-                    argumentNames = "mat",
-                    returnType = Double.class
+                    argumentNames = "mat"
             ),
             description = "matrix_n.det"
     )
@@ -812,8 +811,7 @@ public class FiguraMat4 implements CachedType {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = FiguraMat4.class,
-                    argumentNames = "mat",
-                    returnType = void.class
+                    argumentNames = "mat"
             ),
             description = "matrix_n.invert"
     )
@@ -825,8 +823,7 @@ public class FiguraMat4 implements CachedType {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = FiguraMat4.class,
-                    argumentNames = "mat",
-                    returnType = FiguraMat4.class
+                    argumentNames = "mat"
             ),
             description = "matrix_n.get_inverse"
     )
@@ -838,8 +835,7 @@ public class FiguraMat4 implements CachedType {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = FiguraMat4.class,
-                    argumentNames = "mat",
-                    returnType = void.class
+                    argumentNames = "mat"
             ),
             description = "matrix_n.transpose"
     )
@@ -851,8 +847,7 @@ public class FiguraMat4 implements CachedType {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = FiguraMat4.class,
-                    argumentNames = "mat",
-                    returnType = FiguraMat4.class
+                    argumentNames = "mat"
             ),
             description = "matrix_n.get_transpose"
     )
@@ -865,13 +860,11 @@ public class FiguraMat4 implements CachedType {
             overloads = {
                     @LuaFunctionOverload(
                             argumentTypes = {FiguraMat4.class, FiguraVec3.class},
-                            argumentNames = {"mat", "vec"},
-                            returnType = void.class
+                            argumentNames = {"mat", "vec"}
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {FiguraMat4.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"mat", "x", "y", "z"},
-                            returnType = void.class
+                            argumentNames = {"mat", "x", "y", "z"}
                     )
             },
             description = "matrix4.translate"
@@ -894,13 +887,11 @@ public class FiguraMat4 implements CachedType {
             overloads = {
                     @LuaFunctionOverload(
                             argumentTypes = {FiguraMat4.class, FiguraVec3.class},
-                            argumentNames = {"mat", "vec"},
-                            returnType = void.class
+                            argumentNames = {"mat", "vec"}
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {FiguraMat4.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"mat", "x", "y", "z"},
-                            returnType = void.class
+                            argumentNames = {"mat", "x", "y", "z"}
                     )
             },
             description = "matrix4.rotate"
@@ -923,13 +914,11 @@ public class FiguraMat4 implements CachedType {
             overloads = {
                     @LuaFunctionOverload(
                             argumentTypes = {FiguraMat4.class, FiguraVec3.class},
-                            argumentNames = {"mat", "vec"},
-                            returnType = void.class
+                            argumentNames = {"mat", "vec"}
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {FiguraMat4.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"mat", "x", "y", "z"},
-                            returnType = void.class
+                            argumentNames = {"mat", "x", "y", "z"}
                     )
             },
             description = "matrix_n.scale"
@@ -951,8 +940,7 @@ public class FiguraMat4 implements CachedType {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = {FiguraMat4.class, Integer.class},
-                    argumentNames = {"mat", "col"},
-                    returnType = FiguraVec4.class
+                    argumentNames = {"mat", "col"}
             ),
             description = "matrix4.get_column"
     )
@@ -972,8 +960,7 @@ public class FiguraMat4 implements CachedType {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = {FiguraMat4.class, Integer.class},
-                    argumentNames = {"mat", "row"},
-                    returnType = FiguraVec4.class
+                    argumentNames = {"mat", "row"}
             ),
             description = "matrix4.get_row"
     )

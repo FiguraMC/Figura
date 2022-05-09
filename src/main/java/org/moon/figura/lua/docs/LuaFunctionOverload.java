@@ -12,15 +12,10 @@ public @interface LuaFunctionOverload {
     /**
      * The types of the arguments in this overload.
      */
-    Class<?>[] argumentTypes();
+    Class<?>[] argumentTypes() default {};
 
     /**
      * The names to give to the arguments in this overload.
      */
-    String[] argumentNames();
-
-    /**
-     * The return type for this overload.
-     */
-    Class<?> returnType();
+    String[] argumentNames() default {};
 }

@@ -374,8 +374,7 @@ public class FiguraVec2 implements CachedType {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = FiguraVec2.class,
-                    argumentNames = "vec",
-                    returnType = Double.class
+                    argumentNames = "vec"
             ),
             description = "vector_n.length"
     )
@@ -387,8 +386,7 @@ public class FiguraVec2 implements CachedType {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = FiguraVec2.class,
-                    argumentNames = "vec",
-                    returnType = Double.class
+                    argumentNames = "vec"
             ),
             description = "vector_n.length_squared"
     )
@@ -400,8 +398,7 @@ public class FiguraVec2 implements CachedType {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = {FiguraVec2.class, FiguraVec2.class},
-                    argumentNames = {"vec1", "vec2"},
-                    returnType = Double.class
+                    argumentNames = {"vec1", "vec2"}
             ),
             description = "vector_n.dot"
     )

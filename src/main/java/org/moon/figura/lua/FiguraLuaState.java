@@ -4,6 +4,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
+import org.moon.figura.lua.api.ClientAPI;
 import org.moon.figura.lua.api.EventsAPI;
 import org.moon.figura.lua.api.ParticleAPI;
 import org.moon.figura.lua.api.SoundAPI;
@@ -125,6 +126,7 @@ public class FiguraLuaState extends LuaState53 {
         loadGlobal(SoundAPI.INSTANCE, "sound");
         nameplate = new NameplateAPI();
         loadGlobal(nameplate, "nameplate");
+        loadGlobal(ClientAPI.INSTANCE, "client");
 
         //Load "vec" as global alias for "vectors.vec"
         pushJavaFunction(getJavaReflector().getMetamethod(JavaReflector.Metamethod.INDEX));

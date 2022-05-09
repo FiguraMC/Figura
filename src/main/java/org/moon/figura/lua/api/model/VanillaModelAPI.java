@@ -230,8 +230,7 @@ public class VanillaModelAPI {
         @LuaMethodDoc(
                 overloads = @LuaFunctionOverload(
                         argumentTypes = {VanillaModelPart.class, Boolean.class},
-                        argumentNames = {"vanillaPart", "visible"},
-                        returnType = void.class
+                        argumentNames = {"vanillaPart", "visible"}
                 ),
                 description = "vanilla_part.set_visible"
         )
@@ -245,8 +244,7 @@ public class VanillaModelAPI {
         @LuaMethodDoc(
                 overloads = @LuaFunctionOverload(
                         argumentTypes = VanillaModelPart.class,
-                        argumentNames = "vanillaPart",
-                        returnType = Boolean.class
+                        argumentNames = "vanillaPart"
                 ),
                 description = "vanilla_part.get_visible"
         )
@@ -261,8 +259,7 @@ public class VanillaModelAPI {
         @LuaMethodDoc(
                 overloads = @LuaFunctionOverload(
                         argumentTypes = VanillaModelPart.class,
-                        argumentNames = "vanillaPart",
-                        returnType = FiguraVec3.class
+                        argumentNames = "vanillaPart"
                 ),
                 description = "vanilla_part.get_origin_rot"
         )
@@ -277,8 +274,7 @@ public class VanillaModelAPI {
         @LuaMethodDoc(
                 overloads = @LuaFunctionOverload(
                         argumentTypes = VanillaModelPart.class,
-                        argumentNames = "vanillaPart",
-                        returnType = FiguraVec3.class
+                        argumentNames = "vanillaPart"
                 ),
                 description = "vanilla_part.get_origin_pos"
         )

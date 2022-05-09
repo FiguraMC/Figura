@@ -142,8 +142,7 @@ public class FiguraModelPart {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = FiguraModelPart.class,
-                    argumentNames = "modelPart",
-                    returnType = FiguraModelPart.class
+                    argumentNames = "modelPart"
             ),
             description = "model_part.get_parent"
     )
@@ -156,8 +155,7 @@ public class FiguraModelPart {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = FiguraModelPart.class,
-                    argumentNames = "modelPart",
-                    returnType = LuaTable.class
+                    argumentNames = "modelPart"
             ),
             description = "model_part.get_children"
     )
@@ -174,8 +172,7 @@ public class FiguraModelPart {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = FiguraModelPart.class,
-                    argumentNames = "modelPart",
-                    returnType = FiguraVec3.class
+                    argumentNames = "modelPart"
             ),
             description = "model_part.get_pos"
     )
@@ -189,13 +186,11 @@ public class FiguraModelPart {
             overloads = {
                     @LuaFunctionOverload(
                             argumentTypes = {FiguraModelPart.class, FiguraVec3.class},
-                            argumentNames = {"modelPart", "pos"},
-                            returnType = void.class
+                            argumentNames = {"modelPart", "pos"}
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {FiguraModelPart.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"modelPart", "x", "y", "z"},
-                            returnType = void.class
+                            argumentNames = {"modelPart", "x", "y", "z"}
                     )
             },
             description = "model_part.set_pos"
@@ -218,8 +213,7 @@ public class FiguraModelPart {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = FiguraModelPart.class,
-                    argumentNames = "modelPart",
-                    returnType = FiguraVec3.class
+                    argumentNames = "modelPart"
             ),
             description = "model_part.get_rot"
     )
@@ -233,13 +227,11 @@ public class FiguraModelPart {
             overloads = {
                     @LuaFunctionOverload(
                             argumentTypes = {FiguraModelPart.class, FiguraVec3.class},
-                            argumentNames = {"modelPart", "rot"},
-                            returnType = void.class
+                            argumentNames = {"modelPart", "rot"}
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {FiguraModelPart.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"modelPart", "x", "y", "z"},
-                            returnType = void.class
+                            argumentNames = {"modelPart", "x", "y", "z"}
                     )
             },
             description = "model_part.set_rot"
@@ -262,8 +254,7 @@ public class FiguraModelPart {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = FiguraModelPart.class,
-                    argumentNames = "modelPart",
-                    returnType = FiguraVec3.class
+                    argumentNames = "modelPart"
             ),
             description = "model_part.get_bonus_rot"
     )
@@ -277,13 +268,11 @@ public class FiguraModelPart {
             overloads = {
                     @LuaFunctionOverload(
                             argumentTypes = {FiguraModelPart.class, FiguraVec3.class},
-                            argumentNames = {"modelPart", "bonusRot"},
-                            returnType = void.class
+                            argumentNames = {"modelPart", "bonusRot"}
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {FiguraModelPart.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"modelPart", "x", "y", "z"},
-                            returnType = void.class
+                            argumentNames = {"modelPart", "x", "y", "z"}
                     )
             },
             description = "model_part.set_bonus_rot"
@@ -306,8 +295,7 @@ public class FiguraModelPart {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = FiguraModelPart.class,
-                    argumentNames = "modelPart",
-                    returnType = FiguraVec3.class
+                    argumentNames = "modelPart"
             ),
             description = "model_parts.get_scale"
     )
@@ -321,13 +309,11 @@ public class FiguraModelPart {
             overloads = {
                     @LuaFunctionOverload(
                             argumentTypes = {FiguraModelPart.class, FiguraVec3.class},
-                            argumentNames = {"modelPart", "scale"},
-                            returnType = void.class
+                            argumentNames = {"modelPart", "scale"}
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {FiguraModelPart.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"modelPart", "x", "y", "z"},
-                            returnType = void.class
+                            argumentNames = {"modelPart", "x", "y", "z"}
                     )
             },
             description = "model_part.set_scale"
@@ -350,8 +336,7 @@ public class FiguraModelPart {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = FiguraModelPart.class,
-                    argumentNames = "modelPart",
-                    returnType = FiguraVec3.class
+                    argumentNames = "modelPart"
             ),
             description = "model_part.get_pivot"
     )
@@ -365,13 +350,11 @@ public class FiguraModelPart {
             overloads = {
                     @LuaFunctionOverload(
                             argumentTypes = {FiguraModelPart.class, FiguraVec3.class},
-                            argumentNames = {"modelPart", "pivot"},
-                            returnType = void.class
+                            argumentNames = {"modelPart", "pivot"}
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {FiguraModelPart.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"modelPart", "x", "y", "z"},
-                            returnType = void.class
+                            argumentNames = {"modelPart", "x", "y", "z"}
                     )
             },
             description = "model_part.set_pivot"
@@ -394,8 +377,7 @@ public class FiguraModelPart {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = FiguraModelPart.class,
-                    argumentNames = "modelPart",
-                    returnType = FiguraVec3.class
+                    argumentNames = "modelPart"
             ),
             description = "model_part.get_bonus_pivot"
     )
@@ -409,13 +391,11 @@ public class FiguraModelPart {
             overloads = {
                     @LuaFunctionOverload(
                             argumentTypes = {FiguraModelPart.class, FiguraVec3.class},
-                            argumentNames = {"modelPart", "bonusPivot"},
-                            returnType = void.class
+                            argumentNames = {"modelPart", "bonusPivot"}
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {FiguraModelPart.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"modelPart", "x", "y", "z"},
-                            returnType = void.class
+                            argumentNames = {"modelPart", "x", "y", "z"}
                     )
             },
             description = "model_part.set_bonus_pivot"
@@ -438,8 +418,7 @@ public class FiguraModelPart {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = FiguraModelPart.class,
-                    argumentNames = "modelPart",
-                    returnType = FiguraMat4.class
+                    argumentNames = "modelPart"
             ),
             description = "model_part.get_position_matrix"
     )
@@ -453,8 +432,7 @@ public class FiguraModelPart {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = FiguraModelPart.class,
-                    argumentNames = "modelPart",
-                    returnType = FiguraMat4.class
+                    argumentNames = "modelPart"
             ),
             description = "model_part.get_position_matrix_raw"
     )
@@ -467,8 +445,7 @@ public class FiguraModelPart {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = FiguraModelPart.class,
-                    argumentNames = "modelPart",
-                    returnType = FiguraMat3.class
+                    argumentNames = "modelPart"
             ),
             description = "model_part.get_normal_matrix"
     )
@@ -482,8 +459,7 @@ public class FiguraModelPart {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = FiguraModelPart.class,
-                    argumentNames = "modelPart",
-                    returnType = FiguraMat3.class
+                    argumentNames = "modelPart"
             ),
             description = "model_part.get_normal_matrix_raw"
     )
@@ -496,8 +472,7 @@ public class FiguraModelPart {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = {FiguraModelPart.class, FiguraMat4.class},
-                    argumentNames = {"modelPart", "matrix"},
-                    returnType = void.class
+                    argumentNames = {"modelPart", "matrix"}
             ),
             description = "model_part.set_matrix"
     )
@@ -516,8 +491,7 @@ public class FiguraModelPart {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = FiguraModelPart.class,
-                    argumentNames = "modelPart",
-                    returnType = boolean.class
+                    argumentNames = "modelPart"
             ),
             description = "model_part.get_visible"
     )
@@ -532,8 +506,7 @@ public class FiguraModelPart {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = {FiguraModelPart.class, Boolean.class},
-                    argumentNames = {"modelPart", "visible"},
-                    returnType = void.class
+                    argumentNames = {"modelPart", "visible"}
             ),
             description = "model_part.set_visible"
     )
@@ -546,8 +519,7 @@ public class FiguraModelPart {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = FiguraModelPart.class,
-                    argumentNames = "modelPart",
-                    returnType = void.class
+                    argumentNames = "modelPart"
             ),
             description = "model_part.reset_visible"
     )
@@ -560,8 +532,7 @@ public class FiguraModelPart {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = FiguraModelPart.class,
-                    argumentNames = "modelPart",
-                    returnType = String.class
+                    argumentNames = "modelPart"
             ),
             description = "model_part.get_primary_render_type"
     )
@@ -574,8 +545,7 @@ public class FiguraModelPart {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = FiguraModelPart.class,
-                    argumentNames = "modelPart",
-                    returnType = String.class
+                    argumentNames = "modelPart"
             ),
             description = "model_part.get_secondary_render_type"
     )
@@ -588,8 +558,7 @@ public class FiguraModelPart {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = {FiguraModelPart.class, String.class},
-                    argumentNames = {"modelPart", "renderType"},
-                    returnType = void.class
+                    argumentNames = {"modelPart", "renderType"}
             ),
             description = "model_part.set_primary_render_type"
     )
@@ -604,8 +573,7 @@ public class FiguraModelPart {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = {FiguraModelPart.class, String.class},
-                    argumentNames = {"modelPart", "renderType"},
-                    returnType = void.class
+                    argumentNames = {"modelPart", "renderType"}
             ),
             description = "model_part.set_secondary_render_type"
     )

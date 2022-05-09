@@ -410,8 +410,7 @@ public class FiguraVec3 implements CachedType {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = FiguraVec3.class,
-                    argumentNames = "vec",
-                    returnType = Double.class
+                    argumentNames = "vec"
             ),
             description = "vector_n.length"
     )
@@ -424,8 +423,7 @@ public class FiguraVec3 implements CachedType {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = FiguraVec3.class,
-                    argumentNames = "vec",
-                    returnType = Double.class
+                    argumentNames = "vec"
             ),
             description = "vector_n.length_squared"
     )
@@ -437,8 +435,7 @@ public class FiguraVec3 implements CachedType {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = {FiguraVec3.class, FiguraVec3.class},
-                    argumentNames = {"vec1", "vec2"},
-                    returnType = Double.class
+                    argumentNames = {"vec1", "vec2"}
             ),
             description = "vector_n.dot"
     )
@@ -450,8 +447,7 @@ public class FiguraVec3 implements CachedType {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = {FiguraVec3.class, FiguraVec3.class},
-                    argumentNames = {"vec1", "vec2"},
-                    returnType = FiguraVec3.class
+                    argumentNames = {"vec1", "vec2"}
             ),
             description = "vector3.cross"
     )
@@ -463,8 +459,7 @@ public class FiguraVec3 implements CachedType {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = FiguraVec3.class,
-                    argumentNames = "vec",
-                    returnType = FiguraVec4.class
+                    argumentNames = "vec"
             ),
             description = "vector3.augmented"
     )

@@ -29,38 +29,31 @@ public class ParticleAPI {
             overloads = {
                     @LuaFunctionOverload(
                             argumentTypes = {String.class, FiguraVec6.class},
-                            argumentNames = {"name", "posVel"},
-                            returnType = void.class
+                            argumentNames = {"name", "posVel"}
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {String.class, FiguraVec3.class},
-                            argumentNames = {"name", "pos"},
-                            returnType = void.class
+                            argumentNames = {"name", "pos"}
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {String.class, FiguraVec3.class, FiguraVec3.class},
-                            argumentNames = {"name", "pos", "vel"},
-                            returnType = void.class
+                            argumentNames = {"name", "pos", "vel"}
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {String.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"name", "posX", "posY", "posZ"},
-                            returnType = void.class
+                            argumentNames = {"name", "posX", "posY", "posZ"}
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {String.class, FiguraVec3.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"name", "pos", "velX", "velY", "velZ"},
-                            returnType = void.class
+                            argumentNames = {"name", "pos", "velX", "velY", "velZ"}
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {String.class, Double.class, Double.class, Double.class, FiguraVec3.class},
-                            argumentNames = {"name", "posX", "posY", "posZ", "vel"},
-                            returnType = void.class
+                            argumentNames = {"name", "posX", "posY", "posZ", "vel"}
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {String.class, Double.class, Double.class, Double.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"name", "posX", "posY", "posZ", "velX", "velY", "velZ"},
-                            returnType = void.class
+                            argumentNames = {"name", "posX", "posY", "posZ", "velX", "velY", "velZ"}
                     )
             },
             description = "particle.add_particle"

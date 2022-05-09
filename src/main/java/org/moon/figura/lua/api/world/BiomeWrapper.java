@@ -18,14 +18,14 @@ public class BiomeWrapper {
 
     private final WeakReference<Biome> wrappedBiome;
 
+    @LuaWhitelist
+    @LuaFieldDoc(description = "biome.name")
+    public final String name;
+
     public BiomeWrapper(Biome biome) {
         this.wrappedBiome = new WeakReference<>(biome);
         name = Minecraft.getInstance().level.registryAccess().registry(Registry.BIOME_REGISTRY).get().getKey(biome).toString();
     }
-
-    @LuaWhitelist
-    @LuaFieldDoc(description = "biome.name")
-    public final String name;
 
     @Override
     public String toString() {

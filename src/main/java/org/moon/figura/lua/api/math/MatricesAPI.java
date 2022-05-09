@@ -25,15 +25,10 @@ public class MatricesAPI {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
-                            argumentTypes = {},
-                            argumentNames = {},
-                            returnType = FiguraMat2.class
-                    ),
+                    @LuaFunctionOverload(),
                     @LuaFunctionOverload(
                             argumentTypes = {FiguraVec2.class, FiguraVec2.class},
-                            argumentNames = {"col1", "col2"},
-                            returnType = FiguraMat2.class
+                            argumentNames = {"col1", "col2"}
                     )
             },
             description = "matrices.mat2"
@@ -52,15 +47,10 @@ public class MatricesAPI {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
-                            argumentTypes = {},
-                            argumentNames = {},
-                            returnType = FiguraMat3.class
-                    ),
+                    @LuaFunctionOverload(),
                     @LuaFunctionOverload(
                             argumentTypes = {FiguraVec3.class, FiguraVec3.class, FiguraVec3.class},
-                            argumentNames = {"col1", "col2", "col3"},
-                            returnType = FiguraMat3.class
+                            argumentNames = {"col1", "col2", "col3"}
                     )
             },
             description = "matrices.mat3"
@@ -80,15 +70,10 @@ public class MatricesAPI {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
-                            argumentTypes = {},
-                            argumentNames = {},
-                            returnType = FiguraMat4.class
-                    ),
+                    @LuaFunctionOverload(),
                     @LuaFunctionOverload(
                             argumentTypes = {FiguraVec4.class, FiguraVec4.class, FiguraVec4.class, FiguraVec4.class},
-                            argumentNames = {"col1", "col2", "col3", "col4"},
-                            returnType = FiguraMat4.class
+                            argumentNames = {"col1", "col2", "col3", "col4"}
                     )
             },
             description = "matrices.mat4"
@@ -111,8 +96,7 @@ public class MatricesAPI {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = Double.class,
-                    argumentNames = "angle",
-                    returnType = FiguraMat2.class
+                    argumentNames = "angle"
             ),
             description = "matrices.rotation2"
     )
@@ -126,13 +110,11 @@ public class MatricesAPI {
             overloads = {
                     @LuaFunctionOverload(
                             argumentTypes = FiguraVec3.class,
-                            argumentNames = "vec",
-                            returnType = FiguraMat3.class
+                            argumentNames = "vec"
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
-                            argumentNames = {"x", "y", "z"},
-                            returnType = FiguraMat3.class
+                            argumentNames = {"x", "y", "z"}
                     )
             },
             description = "matrices.rotation3"
@@ -148,8 +130,7 @@ public class MatricesAPI {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = Double.class,
-                    argumentNames = "angle",
-                    returnType = FiguraMat3.class
+                    argumentNames = "angle"
             ),
             description = "matrices.x_rotation3"
     )
@@ -162,8 +143,7 @@ public class MatricesAPI {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = Double.class,
-                    argumentNames = "angle",
-                    returnType = FiguraMat3.class
+                    argumentNames = "angle"
             ),
             description = "matrices.y_rotation3"
     )
@@ -176,8 +156,7 @@ public class MatricesAPI {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = Double.class,
-                    argumentNames = "angle",
-                    returnType = FiguraMat3.class
+                    argumentNames = "angle"
             ),
             description = "matrices.z_rotation3"
     )
@@ -191,13 +170,11 @@ public class MatricesAPI {
             overloads = {
                     @LuaFunctionOverload(
                             argumentTypes = FiguraVec3.class,
-                            argumentNames = "vec",
-                            returnType = FiguraMat4.class
+                            argumentNames = "vec"
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
-                            argumentNames = {"x", "y", "z"},
-                            returnType = FiguraMat4.class
+                            argumentNames = {"x", "y", "z"}
                     )
             },
             description = "matrices.rotation4"
@@ -213,8 +190,7 @@ public class MatricesAPI {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = Double.class,
-                    argumentNames = "angle",
-                    returnType = FiguraMat4.class
+                    argumentNames = "angle"
             ),
             description = "matrices.x_rotation4"
     )
@@ -227,8 +203,7 @@ public class MatricesAPI {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = Double.class,
-                    argumentNames = "angle",
-                    returnType = FiguraMat4.class
+                    argumentNames = "angle"
             ),
             description = "matrices.y_rotation4"
     )
@@ -241,8 +216,7 @@ public class MatricesAPI {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = Double.class,
-                    argumentNames = "angle",
-                    returnType = FiguraMat4.class
+                    argumentNames = "angle"
             ),
             description = "matrices.z_rotation4"
     )
@@ -257,13 +231,11 @@ public class MatricesAPI {
             overloads = {
                     @LuaFunctionOverload(
                             argumentTypes = FiguraVec2.class,
-                            argumentNames = "vec",
-                            returnType = FiguraMat2.class
+                            argumentNames = "vec"
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {Double.class, Double.class},
-                            argumentNames = {"x", "y"},
-                            returnType = FiguraMat2.class
+                            argumentNames = {"x", "y"}
                     )
             },
             description = "matrices.scale2"
@@ -280,13 +252,11 @@ public class MatricesAPI {
             overloads = {
                     @LuaFunctionOverload(
                             argumentTypes = FiguraVec3.class,
-                            argumentNames = "vec",
-                            returnType = FiguraMat3.class
+                            argumentNames = "vec"
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
-                            argumentNames = {"x", "y", "z"},
-                            returnType = FiguraMat3.class
+                            argumentNames = {"x", "y", "z"}
                     )
             },
             description = "matrices.scale3"
@@ -303,13 +273,11 @@ public class MatricesAPI {
             overloads = {
                     @LuaFunctionOverload(
                             argumentTypes = FiguraVec3.class,
-                            argumentNames = "vec",
-                            returnType = FiguraMat4.class
+                            argumentNames = "vec"
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
-                            argumentNames = {"x", "y", "z"},
-                            returnType = FiguraMat4.class
+                            argumentNames = {"x", "y", "z"}
                     )
             },
             description = "matrices.scale4"
@@ -327,13 +295,11 @@ public class MatricesAPI {
             overloads = {
                     @LuaFunctionOverload(
                             argumentTypes = FiguraVec3.class,
-                            argumentNames = "vec",
-                            returnType = FiguraMat4.class
+                            argumentNames = "vec"
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
-                            argumentNames = {"x", "y", "z"},
-                            returnType = FiguraMat4.class
+                            argumentNames = {"x", "y", "z"}
                     )
             },
             description = "matrices.translate4"

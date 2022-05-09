@@ -58,7 +58,7 @@ public class NameplateCustomization {
         else {
             ret += switch (avatar.pride.toLowerCase()) {
                 case "lgbt", "pride", "gay" -> "\uD83D\uDFE5";
-                case "transgender", "transsexual", "trans" -> "\uD83D\uDFE6";
+                case "transgender", "trans" -> "\uD83D\uDFE6";
                 case "pansexual", "pan" -> "\uD83D\uDFE8";
                 case "non binary", "non-binary", "nb" -> "⬛";
                 case "bisexual", "bi" -> "\uD83D\uDFEA";

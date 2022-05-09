@@ -64,8 +64,7 @@ public class EventsAPI {
         @LuaMethodDoc(
                 overloads = @LuaFunctionOverload(
                         argumentTypes = {LuaEvent.class, LuaFunction.class},
-                        argumentNames = {"event", "function"},
-                        returnType = void.class
+                        argumentNames = {"event", "function"}
                 ),
                 description = "event.register"
         )

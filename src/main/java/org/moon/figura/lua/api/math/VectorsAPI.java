@@ -21,28 +21,23 @@ public class VectorsAPI {
             overloads = {
                     @LuaFunctionOverload(
                             argumentTypes = {Double.class, Double.class},
-                            argumentNames = {"x", "y"},
-                            returnType = FiguraVec2.class
+                            argumentNames = {"x", "y"}
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
-                            argumentNames = {"x", "y", "z"},
-                            returnType = FiguraVec3.class
+                            argumentNames = {"x", "y", "z"}
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {Double.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"x", "y", "z", "w"},
-                            returnType = FiguraVec4.class
+                            argumentNames = {"x", "y", "z", "w"}
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {Double.class, Double.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"x", "y", "z", "w", "t"},
-                            returnType = FiguraVec5.class
+                            argumentNames = {"x", "y", "z", "w", "t"}
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {Double.class, Double.class, Double.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"x", "y", "z", "w", "t", "h"},
-                            returnType = FiguraVec6.class
+                            argumentNames = {"x", "y", "z", "w", "t", "h"}
                     )
             },
             description = "vectors.vec"
@@ -65,8 +60,7 @@ public class VectorsAPI {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = {Double.class, Double.class},
-                    argumentNames = {"x", "y"},
-                    returnType = FiguraVec2.class
+                    argumentNames = {"x", "y"}
             ),
             description = "vectors.vec2"
     )
@@ -80,8 +74,7 @@ public class VectorsAPI {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = {Double.class, Double.class, Double.class},
-                    argumentNames = {"x", "y", "z"},
-                    returnType = FiguraVec3.class
+                    argumentNames = {"x", "y", "z"}
             ),
             description = "vectors.vec3"
     )
@@ -96,8 +89,7 @@ public class VectorsAPI {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = {Double.class, Double.class, Double.class, Double.class},
-                    argumentNames = {"x", "y", "z", "w"},
-                    returnType = FiguraVec4.class
+                    argumentNames = {"x", "y", "z", "w"}
             ),
             description = "vectors.vec4"
     )
@@ -113,8 +105,7 @@ public class VectorsAPI {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = {Double.class, Double.class, Double.class, Double.class, Double.class},
-                    argumentNames = {"x", "y", "z", "w", "t"},
-                    returnType = FiguraVec5.class
+                    argumentNames = {"x", "y", "z", "w", "t"}
             ),
             description = "vectors.vec5"
     )
@@ -131,8 +122,7 @@ public class VectorsAPI {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = {Double.class, Double.class, Double.class, Double.class, Double.class, Double.class},
-                    argumentNames = {"x", "y", "z", "w", "t", "h"},
-                    returnType = FiguraVec6.class
+                    argumentNames = {"x", "y", "z", "w", "t", "h"}
             ),
             description = "vectors.vec6"
     )

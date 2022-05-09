@@ -7,6 +7,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.model.FiguraModelPart;
+import org.moon.figura.lua.api.ClientAPI;
 import org.moon.figura.lua.api.EventsAPI;
 import org.moon.figura.lua.api.ParticleAPI;
 import org.moon.figura.lua.api.SoundAPI;
@@ -20,6 +21,7 @@ import org.moon.figura.lua.api.nameplate.NameplateAPI;
 import org.moon.figura.lua.api.nameplate.NameplateCustomization;
 import org.moon.figura.lua.api.world.BiomeWrapper;
 import org.moon.figura.lua.api.world.BlockStateWrapper;
+import org.moon.figura.lua.api.world.ItemStackWrapper;
 import org.moon.figura.lua.api.world.WorldAPI;
 import org.moon.figura.lua.types.LuaFunction;
 import org.moon.figura.lua.types.LuaTable;
@@ -57,67 +59,74 @@ public class FiguraDocsManager {
     public static Map<String, List<Class<?>>> DOCUMENTED_CLASSES = new HashMap<>() {{
 
         //Globals. Group name is an empty string, meaning they're not in any group at all.
-        put("", new ArrayList<>() {{
-            add(FiguraGlobalsDocs.class);
-        }});
+        put("", List.of(
+                FiguraGlobalsDocs.class
+        ));
+
+        //client
+        put("client", List.of(
+                ClientAPI.class
+        ));
 
         //sound
-        put("sound", new ArrayList<>() {{
-            add(SoundAPI.class);
-        }});
+        put("sound", List.of(
+                SoundAPI.class
+        ));
 
         //particle
-        put("particle", new ArrayList<>() {{
-            add(ParticleAPI.class);
-        }});
+        put("particle", List.of(
+                ParticleAPI.class
+        ));
 
-        put("nameplate", new ArrayList<>() {{
-            add(NameplateAPI.class);
-            add(NameplateCustomization.class);
-        }});
+        //nameplate
+        put("nameplate", List.of(
+                NameplateAPI.class,
+                NameplateCustomization.class
+        ));
 
         //World classes
-        put("world", new ArrayList<>() {{
-            add(WorldAPI.class);
-            add(BlockStateWrapper.class);
-            add(BiomeWrapper.class);
-        }});
+        put("world", List.of(
+                WorldAPI.class,
+                BlockStateWrapper.class,
+                ItemStackWrapper.class,
+                BiomeWrapper.class
+        ));
 
         //Model classes
-        put("model", new ArrayList<>() {{
-            add(FiguraModelPart.class);
-            add(VanillaModelAPI.class);
-            add(VanillaModelAPI.VanillaModelPart.class);
-        }});
+        put("model", List.of(
+                FiguraModelPart.class,
+                VanillaModelAPI.class,
+                VanillaModelAPI.VanillaModelPart.class
+        ));
 
         //Entity classes
-        put("entity", new ArrayList<>() {{
-            add(EntityWrapper.class);
-            add(LivingEntityWrapper.class);
-            add(PlayerEntityWrapper.class);
-        }});
+        put("entity", List.of(
+                EntityWrapper.class,
+                LivingEntityWrapper.class,
+                PlayerEntityWrapper.class
+        ));
 
         //Events
-        put("event", new ArrayList<>() {{
-            add(EventsAPI.class);
-            add(EventsAPI.LuaEvent.class);
-        }});
+        put("event", List.of(
+                EventsAPI.class,
+                EventsAPI.LuaEvent.class
+        ));
 
         //Math classes, including vectors and matrices
-        put("math", new ArrayList<>() {{
-            //Vectors
-            add(VectorsAPI.class);
-            add(FiguraVec2.class);
-            add(FiguraVec3.class);
-            add(FiguraVec4.class);
-            add(FiguraVec5.class);
-            add(FiguraVec6.class);
-            //Matrices
-            add(MatricesAPI.class);
-            add(FiguraMat2.class);
-            add(FiguraMat3.class);
-            add(FiguraMat4.class);
-        }});
+        put("math", List.of(
+                //Vectors
+                VectorsAPI.class,
+                FiguraVec2.class,
+                FiguraVec3.class,
+                FiguraVec4.class,
+                FiguraVec5.class,
+                FiguraVec6.class,
+                //Matrices
+                MatricesAPI.class,
+                FiguraMat2.class,
+                FiguraMat3.class,
+                FiguraMat4.class
+        ));
 
     }};
 
@@ -215,7 +224,7 @@ public class FiguraDocsManager {
 
         public final Class<?>[][] parameterTypes;
         public final String[][] parameterNames;
-        public final Class<?>[] returnTypes;
+        public final Class<?> returnType;
 
         public MethodDoc(Method method) {
             name = method.getName();
@@ -224,11 +233,10 @@ public class FiguraDocsManager {
             LuaFunctionOverload[] overloads = methodDoc.overloads();
             parameterTypes = new Class[overloads.length][];
             parameterNames = new String[overloads.length][];
-            returnTypes = new Class[overloads.length];
+            returnType = method.getReturnType();
             for (int i = 0; i < overloads.length; i++) {
                 parameterTypes[i] = overloads[i].argumentTypes();
                 parameterNames[i] = overloads[i].argumentNames();
-                returnTypes[i] = overloads[i].returnType();
             }
         }
 
@@ -277,7 +285,7 @@ public class FiguraDocsManager {
                 //return
                 message.append("): ")
                         .append(new FiguraText("docs.returns").append(" ").withStyle(Colors.MAYA_BLUE.style))
-                        .append(new TextComponent(NAME_MAP.get(returnTypes[i])).withStyle(ChatFormatting.YELLOW));
+                        .append(new TextComponent(NAME_MAP.get(returnType)).withStyle(ChatFormatting.YELLOW));
             }
 
             //description

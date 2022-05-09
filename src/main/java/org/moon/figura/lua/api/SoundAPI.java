@@ -28,23 +28,19 @@ public class SoundAPI {
             overloads = {
                     @LuaFunctionOverload(
                             argumentTypes = {String.class, FiguraVec3.class},
-                            argumentNames = {"sound", "pos"},
-                            returnType = void.class
+                            argumentNames = {"sound", "pos"}
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {String.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"sound", "posX", "posY", "posZ"},
-                            returnType = void.class
+                            argumentNames = {"sound", "posX", "posY", "posZ"}
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {String.class, FiguraVec3.class, Double.class, Double.class},
-                            argumentNames = {"sound", "pos", "volume", "pitch"},
-                            returnType = void.class
+                            argumentNames = {"sound", "pos", "volume", "pitch"}
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {String.class, Double.class, Double.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"sound", "posX", "posY", "posZ", "volume", "pitch"},
-                            returnType = void.class
+                            argumentNames = {"sound", "posX", "posY", "posZ", "volume", "pitch"}
                     )
             },
             description = "sound.play_sound"
