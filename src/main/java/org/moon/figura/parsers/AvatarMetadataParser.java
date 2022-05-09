@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
@@ -31,6 +32,13 @@ public class AvatarMetadataParser {
         nbt.putString("ver", metadata.version == null ? FiguraMod.VERSION : metadata.version);
         nbt.putString("author", metadata.author == null ? "" : metadata.author);
         nbt.putString("pride", metadata.pride == null ? "" : metadata.pride);
+
+        ListTag autoScripts = new ListTag();
+        if (metadata.autoScripts != null) {
+            for (String scriptName : metadata.autoScripts)
+                autoScripts.add(StringTag.valueOf(scriptName.replace(".lua", "")));
+            nbt.put("autoScripts", autoScripts);
+        }
 
         return nbt;
     }
@@ -84,6 +92,7 @@ public class AvatarMetadataParser {
     //json object class
     private static class Metadata {
         String name, author, version, pride;
+        String[] autoScripts;
         HashMap<String, Customization> customizations;
     }
 

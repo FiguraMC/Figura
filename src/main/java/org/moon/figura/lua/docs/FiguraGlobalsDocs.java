@@ -50,6 +50,16 @@ public class FiguraGlobalsDocs {
 
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
+                    argumentTypes = String.class,
+                    argumentNames = "scriptName",
+                    returnType = void.class
+            ),
+            description = "globals.require"
+    )
+    public static void require() {}
+
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
                     argumentTypes = Object.class,
                     argumentNames = "arg",
                     returnType = void.class

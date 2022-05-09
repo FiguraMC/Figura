@@ -129,10 +129,12 @@ public class Avatar {
     private FiguraLuaState createLuaState(CompoundTag avatarNbt) {
         if (!avatarNbt.contains("scripts"))
             return null;
-
         Map<String, String> scripts = parseScripts(avatarNbt.getCompound("scripts"));
-        String mainScriptName = avatarNbt.getString("script");
-        if (!avatarNbt.contains("script", Tag.TAG_STRING)) mainScriptName = "script";
+
+        CompoundTag metadata = avatarNbt.getCompound("metadata");
+        ListTag autoScripts = null;
+        if (metadata.contains("autoScripts"))
+            autoScripts = metadata.getList("autoScripts", Tag.TAG_STRING);
 
         FiguraLuaState luaState = new FiguraLuaState(this, TrustManager.get(owner).get(TrustContainer.Trust.MAX_MEM));
 
@@ -144,7 +146,7 @@ public class Avatar {
         renderLimit = TrustManager.get(owner).get(TrustContainer.Trust.RENDER_INST);
 
         luaState.setInstructionLimit(initLimit);
-        if (luaState.init(scripts, mainScriptName))
+        if (luaState.init(scripts, autoScripts))
             return luaState;
         else
             luaState.close();

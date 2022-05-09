@@ -1,5 +1,7 @@
 package org.moon.figura.lua;
 
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.lua.api.EventsAPI;
@@ -19,7 +21,9 @@ import org.terasology.jnlua.LuaState53;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class FiguraLuaState extends LuaState53 {
 
@@ -62,38 +66,45 @@ public class FiguraLuaState extends LuaState53 {
         loadFiguraApis();
     }
 
-    public boolean init(Map<String, String> scripts, String mainScript) {
+
+    /**
+     * Extensive documentation of this function, just because I don't
+     * want to go insane debugging this I'm going to take it slowly.
+     *
+     * If there are no scripts: stop, return false to indicate failure.
+     * If autoScripts is null: Run ALL scripts.
+     * If autoScripts is non-null: Run only the scripts inside of autoScripts.
+     * This means if autoScripts is empty, then no scripts will be run. You can run them
+     * via the command /figura run, however, so this isn't a useless situation.
+     * require() is thrown into the mix as well, just to make it extra spicy.
+     */
+    public boolean init(Map<String, String> scripts, ListTag autoScripts) {
         if (scripts.size() == 0)
             return false;
 
-        boolean failure;
-
-        if (scripts.size() == 1) {
-            Map.Entry<String, String> entry = scripts.entrySet().iterator().next();
-            failure = runScript(entry.getValue(), entry.getKey());
+        pushJavaFunction(requireFunc(scripts));
+        setGlobal("require");
+        StringBuilder rootFunction = new StringBuilder();
+        if (autoScripts == null) {
+            for (String name : scripts.keySet())
+                rootFunction.append("require(\"").append(name).append("\") ");
         } else {
-            if (!scripts.containsKey(mainScript)) {
-                FiguraMod.LOGGER.error("Failed to load scripts, no script with name \"" + mainScript + ".lua\"");
-                return false;
-            }
-            pushJavaFunction(requireFunc(scripts));
-            setGlobal("require");
-            failure = runScript(scripts.get(mainScript), mainScript);
+            for (Tag scriptName : autoScripts)
+                rootFunction.append("require(\"").append(scriptName.getAsString()).append("\") ");
         }
-
-        return !failure;
+        return runScript(rootFunction.toString(), "autoScripts");
     }
 
     public boolean runScript(String script, String name) {
         load(script, name);
         try {
             call(0, 0);
-            return false;
+            return true;
         } catch (Exception e) {
             FiguraLuaPrinter.sendLuaError(e, owner.name);
             owner.scriptError = true;
         }
-        return true;
+        return false;
     }
 
     private void loadFiguraApis() {
@@ -165,22 +176,24 @@ public class FiguraLuaState extends LuaState53 {
     }
 
 
-
     private static JavaFunction requireFunc(Map<String, String> scripts) {
+        final Set<String> previouslyRun = new HashSet<>();
         return luaState -> {
             String scriptName = luaState.checkString(1);
             if (scriptName.endsWith(".lua")) scriptName = scriptName.substring(0, scriptName.length() - 4);
 
-            if (scripts.containsKey(scriptName)) {
-                String src = scripts.get(scriptName);
-                scripts.remove(scriptName);
-                luaState.load(src, scriptName);
-                luaState.call(0, MULTRET);
-                return Math.min(luaState.getTop(), 1); //not sure if correct
-            } else {
-                throw new LuaRuntimeException("Failed to require " + scriptName + ". " +
-                        "Either this file doesn't exist, or you've already required it before.");
+            if (!scripts.containsKey(scriptName)) {
+                if (!previouslyRun.contains(scriptName))
+                    throw new LuaRuntimeException("Tried to require nonexistent script \"" + scriptName + "\"!");
+                return 0;
             }
+
+            String src = scripts.get(scriptName);
+            scripts.remove(scriptName);
+            previouslyRun.add(scriptName);
+            luaState.load(src, scriptName);
+            luaState.call(0, MULTRET);
+            return Math.min(luaState.getTop(), 1); //not sure if correct
         };
     }
 

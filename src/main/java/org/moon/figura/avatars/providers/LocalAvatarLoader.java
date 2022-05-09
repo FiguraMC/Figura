@@ -62,6 +62,10 @@ public class LocalAvatarLoader {
         //load as folder
         CompoundTag nbt = new CompoundTag();
 
+        //Load metadata first!
+        String metadata = readFile(path.resolve("avatar.json").toFile());
+        nbt.put("metadata", AvatarMetadataParser.parse(metadata, path.getFileName().toString()));
+
         //scripts
         File[] scripts = getFilesByExtension(path, ".lua");
         if (scripts != null && scripts.length > 0) {
@@ -111,12 +115,7 @@ public class LocalAvatarLoader {
 
         modelRoot.put("chld", children);
 
-
-        //metadata
-        String metadata = readFile(path.resolve("avatar.json").toFile());
-        nbt.put("metadata", AvatarMetadataParser.parse(metadata, path.getFileName().toString()));
-
-        //TODO: Better error handling while converting to nbt
+        //TODO: Better error handling while parsing, errors should show up to user
         try {
             AvatarMetadataParser.injectToModels(metadata, modelRoot);
         } catch (IOException e) {
