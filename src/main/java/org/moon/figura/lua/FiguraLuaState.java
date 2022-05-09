@@ -15,10 +15,7 @@ import org.moon.figura.lua.api.model.VanillaModelAPI;
 import org.moon.figura.lua.api.nameplate.NameplateAPI;
 import org.moon.figura.lua.api.world.WorldAPI;
 import org.moon.figura.utils.LuaUtils;
-import org.terasology.jnlua.JavaFunction;
-import org.terasology.jnlua.JavaReflector;
-import org.terasology.jnlua.LuaRuntimeException;
-import org.terasology.jnlua.LuaState53;
+import org.terasology.jnlua.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -194,7 +191,7 @@ public class FiguraLuaState extends LuaState53 {
                 if (!previouslyRun.contains(scriptName))
                     throw new LuaRuntimeException("Tried to require nonexistent script \"" + scriptName + "\"!");
 
-                luaState.getField(luaState.REGISTRYINDEX, "registryResults");
+                luaState.getField(luaState.REGISTRYINDEX, "requireResults");
                 luaState.getField(-1, scriptName);
                 luaState.remove(1);
                 return 1;
@@ -204,9 +201,20 @@ public class FiguraLuaState extends LuaState53 {
             scripts.remove(scriptName);
             previouslyRun.add(scriptName);
             luaState.load(src, scriptName);
-            luaState.call(0, 1);
-            luaState.pushValue(1);
-            luaState.setField(luaState.REGISTRYINDEX, scriptName);
+            luaState.call(0, 1); //Stack has return value on it right now
+
+            //If luaState didn't return anything, we want require() to return true
+            if (luaState.type(1) == LuaType.NIL) {
+                luaState.pop(1);
+                luaState.pushBoolean(true);
+            }
+
+            //Stack labeled bottom to top
+            luaState.getField(luaState.REGISTRYINDEX, "requireResults"); //Stack has return value, then requireResults
+            luaState.pushValue(1); //Stack now has return value, requireResults, then return value again
+            luaState.setField(-2, scriptName); //Stack now has return value, then requireResults
+            luaState.pop(1); //Stack now has return value.
+
             return 1;
         };
     }

@@ -55,7 +55,7 @@ public class FiguraGlobalsDocs {
             ),
             description = "globals.require"
     )
-    public static void require() {}
+    public static Object require() {return null;}
 
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(

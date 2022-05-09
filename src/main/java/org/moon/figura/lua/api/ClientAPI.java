@@ -25,7 +25,19 @@ public class ClientAPI {
             overloads = @LuaFunctionOverload(),
             description = "client.get_fps"
     )
-    public static String getFPS() {
+    public static int getFPS() {
+        String s = getFPSString();
+        if (s.length() == 0)
+            return 0;
+        return Integer.parseInt(s.split(" ")[0]);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(),
+            description = "client.get_fps_string"
+    )
+    public static String getFPSString() {
         return Minecraft.getInstance().fpsString;
     }
 
@@ -206,7 +218,7 @@ public class ClientAPI {
             overloads = @LuaFunctionOverload(),
             description = "client.get_fov"
     )
-    public static double getFov() {
+    public static double getFOV() {
         return Minecraft.getInstance().options.fov;
     }
 

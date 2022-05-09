@@ -323,7 +323,7 @@ public class BlockStateWrapper {
             description = "blockstate.as_item"
     )
     public static ItemStackWrapper asItem(BlockStateWrapper blockState) {
-        return new ItemStackWrapper(getState(blockState).getBlock().asItem().getDefaultInstance());
+        return ItemStackWrapper.verify(getState(blockState).getBlock().asItem().getDefaultInstance());
     }
 
     @Override

@@ -9,6 +9,7 @@ import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 
+import java.util.Locale;
 import java.util.UUID;
 
 @LuaWhitelist
@@ -86,7 +87,7 @@ public class PlayerEntityWrapper extends LivingEntityWrapper<Player> {
         if (info == null)
             return null;
 
-        return info.getModelName();
+        return info.getModelName().toUpperCase();
     }
 
     @LuaWhitelist
@@ -105,7 +106,7 @@ public class PlayerEntityWrapper extends LivingEntityWrapper<Player> {
         if (info == null)
             return null;
 
-        return info.getGameMode() == null ? null : info.getGameMode().getName();
+        return info.getGameMode() == null ? null : info.getGameMode().getName().toUpperCase();
     }
 
     @LuaWhitelist

@@ -362,7 +362,7 @@ public class FiguraJavaReflector implements JavaReflector {
                 errorBuilder.append(").");
                 throw new LuaRuntimeException(errorBuilder.toString());
             } catch (InvocationTargetException e) {
-                throw new LuaRuntimeException(e.getTargetException().getMessage());
+                throw new LuaRuntimeException(e.getTargetException());
             }
             return ret;
         }

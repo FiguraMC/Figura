@@ -22,7 +22,6 @@ public class WorldAPI {
     public static final WorldAPI INSTANCE = new WorldAPI();
 
     public static Level getCurrentWorld() {
-        if (!WorldAPI.exists()) throw new LuaRuntimeException("World does not exist!");
         return Minecraft.getInstance().level;
     }
 

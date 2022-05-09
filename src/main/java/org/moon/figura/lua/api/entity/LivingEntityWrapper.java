@@ -63,7 +63,7 @@ public class LivingEntityWrapper<T extends LivingEntity> extends EntityWrapper<T
         if (offhand == null) offhand = false;
         LivingEntity e = getEntity(entity);
         ItemStack stack = offhand ? e.getOffhandItem() : e.getMainHandItem();
-        return new ItemStackWrapper(stack);
+        return ItemStackWrapper.verify(stack);
     }
 
     @LuaWhitelist
@@ -231,7 +231,8 @@ public class LivingEntityWrapper<T extends LivingEntity> extends EntityWrapper<T
             description = "living_entity.get_active_item"
     )
     public static <T extends LivingEntity> ItemStackWrapper getActiveItem(LivingEntityWrapper<T> entity) {
-        return new ItemStackWrapper(getEntity(entity).getUseItem());
+        ItemStack useItem = getEntity(entity).getUseItem();
+        return ItemStackWrapper.verify(useItem);
     }
 
     @LuaWhitelist

@@ -35,6 +35,9 @@ public class EntityWrapper<T extends Entity> {
     }
 
     public static EntityWrapper<?> fromEntity(Entity entity) {
+        if (entity == null)
+            return null;
+
         if (entity instanceof Player)
             return new PlayerEntityWrapper(entity.getUUID());
 
