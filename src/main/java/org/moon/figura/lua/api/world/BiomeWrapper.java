@@ -27,4 +27,8 @@ public class BiomeWrapper {
     @LuaFieldDoc(description = "biome.name")
     public final String name;
 
+    @Override
+    public String toString() {
+        return name + " (Biome)";
+    }
 }

@@ -77,4 +77,8 @@ public class EventsAPI {
 
     }
 
+    @Override
+    public String toString() {
+        return "EventsAPI";
+    }
 }

@@ -30,12 +30,12 @@ public class TrustContainer {
         RENDER_INST(0, 16383),
         MAX_MEM(0, 2047),
         COMPLEXITY(0, 12287),
-        //PARTICLES(0, 63),
-        //SOUNDS(0, 63),
+        PARTICLES(0, 63),
+        SOUNDS(0, 63),
         //BB_ANIMATIONS(0, 255),
         //VANILLA_MODEL_EDIT,
-        NAMEPLATE_EDIT;
-        //OFFSCREEN_RENDERING,
+        NAMEPLATE_EDIT,
+        OFFSCREEN_RENDERING;
         //CUSTOM_RENDER_LAYER,
         //CUSTOM_SOUNDS;
 
@@ -43,17 +43,17 @@ public class TrustContainer {
         public final boolean isToggle;
 
         //used only for sliders
-        public Integer min;
-        public Integer max;
+        public final Integer min;
+        public final Integer max;
 
         //toggle constructor
         Trust() {
-            this.isToggle = true;
+            this(null, null);
         }
 
         //slider constructor
-        Trust(int min, int max) {
-            this.isToggle = false;
+        Trust(Integer min, Integer max) {
+            this.isToggle = min != null && max != null;
             this.min = min;
             this.max = max;
         }

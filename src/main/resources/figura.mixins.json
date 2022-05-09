@@ -7,12 +7,15 @@
   ],
   "client": [
     "ClientLevelInvoker",
+    "DebugScreenOverlayMixin",
+    "EntityRendererMixin",
     "GuiMixin",
     "LivingEntityRendererMixin",
     "MinecraftMixin",
     "PauseScreenMixin",
     "PlayerRendererMixin",
-    "PlayerTabOverlayMixin"
+    "PlayerTabOverlayMixin",
+    "SplashManagerMixin"
   ],
   "server": [
   ],

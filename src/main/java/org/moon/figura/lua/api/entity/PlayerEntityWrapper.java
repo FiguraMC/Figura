@@ -36,4 +36,8 @@ public class PlayerEntityWrapper extends LivingEntityWrapper<Player> {
         return entity.getEntity().getFoodData().getFoodLevel();
     }
 
+    @Override
+    public String toString() {
+        return savedUUID + " (Player)";
+    }
 }

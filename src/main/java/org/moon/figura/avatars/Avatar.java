@@ -44,11 +44,16 @@ public class Avatar {
     public final UUID owner;
     public final AvatarRenderer renderer;
     public FiguraLuaState luaState;
-    public boolean hasTexture = false;
-    public boolean scriptError = false;
 
     private int tickLimit, renderLimit;
 
+    //runtime status
+    public boolean hasTexture = false;
+    public boolean scriptError = false;
+    public int complexity = 0;
+    public int initInstructions = 0;
+    public int tickInstructions = 0;
+    public int renderInstructions = 0;
 
     public Avatar(CompoundTag nbt, UUID owner) {
         this.owner = owner;

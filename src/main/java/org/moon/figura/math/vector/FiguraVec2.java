@@ -7,7 +7,7 @@ import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.lua.types.LuaIPairsIterator;
 import org.moon.figura.lua.types.LuaPairsIterator;
-import org.moon.figura.math.MathUtils;
+import org.moon.figura.utils.MathUtils;
 import org.moon.figura.math.matrix.FiguraMat2;
 import org.moon.figura.utils.caching.CacheUtils;
 import org.moon.figura.utils.caching.CachedType;

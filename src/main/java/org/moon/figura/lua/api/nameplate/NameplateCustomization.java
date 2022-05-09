@@ -15,25 +15,25 @@ import org.moon.figura.utils.TextUtils;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "NameplateCustomization",
-        description = "nameplate.customization"
+        description = "nameplate_customization"
 )
 public class NameplateCustomization {
 
     @LuaWhitelist
-    @LuaFieldDoc(description = "nameplate.customization.text")
+    @LuaFieldDoc(description = "nameplate_customization.text")
     public String text;
 
     //those are only used on the ENTITY nameplate
     @LuaWhitelist
-    @LuaFieldDoc(description = "nameplate.customization.position")
+    @LuaFieldDoc(description = "nameplate_customization.position")
     public FiguraVec3 position;
 
     @LuaWhitelist
-    @LuaFieldDoc(description = "nameplate.customization.scale")
+    @LuaFieldDoc(description = "nameplate_customization.scale")
     public FiguraVec3 scale;
 
     @LuaWhitelist
-    @LuaFieldDoc(description = "nameplate.customization.visible")
+    @LuaFieldDoc(description = "nameplate_customization.visible")
     public Boolean visible;
 
     public static Component applyCustomization(String text) {
@@ -56,9 +56,15 @@ public class NameplateCustomization {
 
         //pride
         else {
-            ret += switch (avatar.pride) {
-                case "trans" -> "⚧";
-                case "gay" -> "\uD83C\uDF08";
+            ret += switch (avatar.pride.toLowerCase()) {
+                case "lgbt", "pride", "gay" -> "\uD83D\uDFE5";
+                case "transgender", "transsexual", "trans" -> "\uD83D\uDFE6";
+                case "pansexual", "pan" -> "\uD83D\uDFE8";
+                case "non binary", "non-binary", "nb" -> "⬛";
+                case "bisexual", "bi" -> "\uD83D\uDFEA";
+                case "asexual", "ace" -> "⬜";
+                case "lesbian" -> "\uD83D\uDFE7";
+                case "gender fluid", "genderfluid", "fluid" -> "\uD83D\uDFE9";
                 default -> "△";
             };
         }
@@ -67,5 +73,10 @@ public class NameplateCustomization {
         //....
 
         return new TextComponent(ret).withStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT));
+    }
+
+    @Override
+    public String toString() {
+        return "NameplateCustomization";
     }
 }

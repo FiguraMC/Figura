@@ -344,4 +344,8 @@ public class WorldAPI {
         return getCurrentWorld() != null;
     }
 
+    @Override
+    public String toString() {
+        return "WorldAPI";
+    }
 }

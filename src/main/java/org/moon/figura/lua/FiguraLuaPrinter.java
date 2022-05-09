@@ -92,9 +92,6 @@ public class FiguraLuaPrinter {
 
         //execute if the stack has entries
         while (luaState.getTop() > 0) {
-            if (luaState.type(1) == LuaType.USERDATA)
-                tryParseUserdata(luaState, 1);
-
             text.append(getPrintText(luaState, 1, true)).append("\t");
             luaState.remove(1);
         }
@@ -117,50 +114,56 @@ public class FiguraLuaPrinter {
         return 0;
     };
 
-    private static Component tableToText(LuaState luaState, int index, int depth, int indent, boolean tooltip) {
-        //normal print (value only) or when failed to parse the userdata (userdata first, so we always parse it)
-        if (luaState.type(index) == LuaType.NIL || (luaState.type(index) == LuaType.USERDATA && !tryParseUserdata(luaState, index)) || depth <= 0)
-            return getPrintText(luaState, index, tooltip);
+    private static Component tableToText(LuaState luaState, int index, int depth, int indent, boolean hasTooltip) {
+        //copy the value to top
+        luaState.pushValue(index);
+        int top = luaState.getTop();
 
-        String spacing = "\t".repeat(indent - 1);
+        //attempt to parse top
+        LuaType type = luaState.type(index);
+        if (type == LuaType.USERDATA)
+            tryParseUserdata(luaState, top);
+
+        //normal print when failed to parse userdata or depth limit
+        if (luaState.type(top) != LuaType.TABLE || depth <= 0) {
+            Component text = getPrintText(luaState, index, hasTooltip);
+            luaState.pop(1);
+            return text;
+        }
 
         //format text
         MutableComponent text = TextComponent.EMPTY.copy();
-        text.append(new TextComponent("table:").withStyle(getTypeColor(LuaType.TABLE)));
+        text.append(new TextComponent(type == LuaType.USERDATA ? "userdata:" : "table:").withStyle(getTypeColor(type)));
         text.append(new TextComponent(" {\n").withStyle(ChatFormatting.GRAY));
 
+        String spacing = "\t".repeat(indent - 1);
+
         luaState.pushNil();
-        while (luaState.next(index)) {
-            int top = luaState.getTop();
+        while (luaState.next(top)) {
+            int tableTop = luaState.getTop();
 
             //add indentation
             text.append(spacing).append("\t");
 
             //add key
-            luaState.pushValue(top - 1);
-            top = luaState.getTop();
-
-            if (luaState.type(top) == LuaType.USERDATA)
-                tryParseUserdata(luaState, top);
-
             text.append(new TextComponent("[").withStyle(ChatFormatting.GRAY));
-            text.append(getPrintText(luaState, top, tooltip));
+            text.append(getPrintText(luaState, tableTop - 1, hasTooltip));
             text.append(new TextComponent("] = ").withStyle(ChatFormatting.GRAY));
 
-            luaState.pop(1);
-            top = luaState.getTop();
-
             //add value
-            LuaType type = luaState.type(top);
+            type = luaState.type(tableTop);
             if (type == LuaType.TABLE || type == LuaType.USERDATA)
-                text.append(tableToText(luaState, top, depth - 1, indent + 1, tooltip));
+                text.append(tableToText(luaState, tableTop, depth - 1, indent + 1, hasTooltip));
             else
-                text.append(getPrintText(luaState, top, tooltip));
+                text.append(getPrintText(luaState, tableTop, hasTooltip));
 
             //pop value
             luaState.pop(1);
             text.append("\n");
         }
+
+        //pop copied value
+        luaState.pop(1);
 
         text.append(spacing).append(new TextComponent("}").withStyle(ChatFormatting.GRAY));
         return text;
@@ -197,7 +200,7 @@ public class FiguraLuaPrinter {
         return ret;
     }
 
-    private static MutableComponent getPrintText(LuaState luaState, int index, boolean tooltip) {
+    private static MutableComponent getPrintText(LuaState luaState, int index, boolean hasTooltip) {
         LuaType type = luaState.type(index);
         String ret;
 
@@ -214,7 +217,7 @@ public class FiguraLuaPrinter {
         MutableComponent text = new TextComponent(ret).withStyle(getTypeColor(type));
 
         //table tooltip
-        if (tooltip && type == LuaType.TABLE) {
+        if (hasTooltip && (type == LuaType.TABLE || type == LuaType.USERDATA)) {
             Component table = TextUtils.replaceTabs(tableToText(luaState, index, 1, 1, false));
             text.withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, table)));
         }

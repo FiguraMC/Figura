@@ -123,14 +123,14 @@ public class VanillaModelAPI {
     public VanillaModelAPI() {
 
         HEAD = new VanillaModelPart(List.of(HEAD_CONSUMER), FiguraModelPart.ParentType.Head);
-        TORSO = new VanillaModelPart(List.of(TORSO_CONSUMER), FiguraModelPart.ParentType.Torso);
+        TORSO = new VanillaModelPart(List.of(TORSO_CONSUMER), FiguraModelPart.ParentType.Body);
         LEFT_ARM = new VanillaModelPart(List.of(LEFT_ARM_CONSUMER), FiguraModelPart.ParentType.LeftArm);
         RIGHT_ARM = new VanillaModelPart(List.of(RIGHT_ARM_CONSUMER), FiguraModelPart.ParentType.RightArm);
         LEFT_LEG = new VanillaModelPart(List.of(LEFT_LEG_CONSUMER), FiguraModelPart.ParentType.LeftLeg);
         RIGHT_LEG = new VanillaModelPart(List.of(RIGHT_LEG_CONSUMER), FiguraModelPart.ParentType.RightLeg);
 
         HAT = new VanillaModelPart(List.of(HAT_CONSUMER), FiguraModelPart.ParentType.Head);
-        JACKET = new VanillaModelPart(List.of(JACKET_CONSUMER), FiguraModelPart.ParentType.Torso);
+        JACKET = new VanillaModelPart(List.of(JACKET_CONSUMER), FiguraModelPart.ParentType.Body);
         LEFT_SLEEVE = new VanillaModelPart(List.of(LEFT_SLEEVE_CONSUMER), FiguraModelPart.ParentType.LeftArm);
         RIGHT_SLEEVE = new VanillaModelPart(List.of(RIGHT_SLEEVE_CONSUMER), FiguraModelPart.ParentType.RightArm);
         LEFT_PANTS = new VanillaModelPart(List.of(LEFT_PANTS_CONSUMER), FiguraModelPart.ParentType.LeftLeg);
@@ -159,8 +159,7 @@ public class VanillaModelAPI {
                     "LEFT_LEG", "RIGHT_LEG",
                     "HAT", "JACKET",
                     "LEFT_SLEEVE", "RIGHT_SLEEVE",
-                    "LEFT_PANTS", "RIGHT_PANTS",
-                    "ALL", "OUTER_LAYER", "INNER_LAYER"), VanillaModelAPI.class, String.class);
+                    "LEFT_PANTS", "RIGHT_PANTS"), VanillaModelAPI.class, String.class);
 
     private static class ModelConsumer {
 
@@ -195,6 +194,11 @@ public class VanillaModelAPI {
         public void restore(PlayerModel<?> playerModel) {
             partProvider.apply(playerModel).visible = storedVisibility;
         }
+    }
+
+    @Override
+    public String toString() {
+        return "VanillaModelAPI";
     }
 
     @LuaWhitelist
@@ -284,6 +288,10 @@ public class VanillaModelAPI {
                 throw new LuaRuntimeException("Cannot get origin position of vanilla multi-part!");
             return vanillaPart.savedOriginPos.copy();
         }
-    }
 
+        @Override
+        public String toString() {
+            return "VanillaModelPart";
+        }
+    }
 }

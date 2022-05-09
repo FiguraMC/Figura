@@ -375,4 +375,8 @@ public class BlockStateWrapper {
         return blockState.blockState.get().getBlock().getExplosionResistance();
     }
 
+    @Override
+    public String toString() {
+        return id + " (BlockState)";
+    }
 }

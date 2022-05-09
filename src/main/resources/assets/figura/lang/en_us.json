@@ -204,11 +204,11 @@
   "figura.docs.nameplate.entity.desc": "A customization for your nameplate above your head.",
   "figura.docs.nameplate.list.desc": "A customization for your nameplate in the tab list.",
 
-  "figura.docs.nameplate.customization.desc": "A customization that can be applied to a nameplate.",
-  "figura.docs.nameplate.customization.text.desc": "The text to use in this nameplate.",
-  "figura.docs.nameplate.customization.position.desc": "The position offset of the nameplate, in world coordinates. Only usable on the ENTITY nameplate.",
-  "figura.docs.nameplate.customization.scale.desc": "The scale factor of the nameplate. Only usable on the ENTITY nameplate.",
-  "figura.docs.nameplate.customization.visible.desc": "Whether or not the nameplate should be visible. Only usable on the ENTITY nameplate.",
+  "figura.docs.nameplate_customization.desc": "A customization that can be applied to a nameplate.",
+  "figura.docs.nameplate_customization.text.desc": "The text to use in this nameplate.",
+  "figura.docs.nameplate_customization.position.desc": "The position offset of the nameplate, in world coordinates. Only usable on the ENTITY nameplate.",
+  "figura.docs.nameplate_customization.scale.desc": "The scale factor of the nameplate. Only usable on the ENTITY nameplate.",
+  "figura.docs.nameplate_customization.visible.desc": "Whether or not the nameplate should be visible. Only usable on the ENTITY nameplate.",
 
   "figura.docs.world.desc": "A global API dedicated to reading information from the Minecraft world. Accessed using the name \"world\".",
   "figura.docs.world.get_biome.desc": "Gets the Biome located at the given position.",

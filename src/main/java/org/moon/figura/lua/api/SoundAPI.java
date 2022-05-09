@@ -78,4 +78,9 @@ public class SoundAPI {
         );
         pos.free();
     }
+
+    @Override
+    public String toString() {
+        return "SoundAPI";
+    }
 }

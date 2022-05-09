@@ -38,4 +38,9 @@ public class NameplateAPI {
     }
     private static final LuaPairsIterator<NameplateAPI, String> PAIRS_ITERATOR =
             new LuaPairsIterator<>(List.of("CHAT", "ENTITY", "LIST"), NameplateAPI.class, String.class);
+
+    @Override
+    public String toString() {
+        return "NameplateAPI";
+    }
 }

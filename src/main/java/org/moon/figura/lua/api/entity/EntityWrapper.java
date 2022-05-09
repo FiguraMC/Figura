@@ -14,7 +14,6 @@ import org.moon.figura.mixin.ClientLevelInvoker;
 import org.moon.figura.utils.LuaUtils;
 import org.terasology.jnlua.LuaRuntimeException;
 
-import java.lang.ref.WeakReference;
 import java.util.UUID;
 
 @LuaWhitelist
@@ -24,7 +23,7 @@ import java.util.UUID;
 )
 public class EntityWrapper<T extends Entity> {
 
-    private final UUID savedUUID;
+    protected final UUID savedUUID;
 
     protected T getEntity() {
         return getEntityByUUID(savedUUID);
@@ -103,4 +102,8 @@ public class EntityWrapper<T extends Entity> {
 
     //TODO: add more of course :p
 
+    @Override
+    public String toString() {
+        return savedUUID + " (Entity)";
+    }
 }

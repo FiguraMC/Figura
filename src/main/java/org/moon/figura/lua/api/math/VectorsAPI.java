@@ -146,4 +146,8 @@ public class VectorsAPI {
         return FiguraVec6.of(x, y, z, w, t, h);
     }
 
+    @Override
+    public String toString() {
+        return "VectorsAPI";
+    }
 }

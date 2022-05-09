@@ -4,7 +4,6 @@ import org.moon.figura.FiguraMod;
 import org.moon.figura.lua.docs.FiguraDocsManager;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.lua.types.LuaTable;
-import org.moon.figura.utils.LuaUtils;
 import org.terasology.jnlua.*;
 
 import java.lang.reflect.Field;
@@ -232,10 +231,6 @@ public class FiguraJavaReflector implements JavaReflector {
         buildCachesIfNeeded(clazz);
         if (!clazz.isAnnotationPresent(LuaWhitelist.class))
             return null;
-        try {
-            if (clazz.getMethod("toString").getDeclaringClass() == clazz)
-                return null;
-        } catch (Exception ignored) {}
 
         LuaTable result = new LuaTable();
         try {

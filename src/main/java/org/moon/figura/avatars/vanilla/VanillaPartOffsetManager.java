@@ -16,7 +16,7 @@ public class VanillaPartOffsetManager {
     public static FiguraVec3 getVanillaOffset(EntityModel<?> model, FiguraModelPart.ParentType parentType) {
         if (model instanceof PlayerModel<?>)
             return switch (parentType) {
-                case Head, Torso -> FiguraVec3.of(0, 0, 0);
+                case Head, Body -> FiguraVec3.of(0, 0, 0);
                 case LeftArm -> FiguraVec3.of(5, 2, 0);
                 case RightArm -> FiguraVec3.of(-5, 2, 0);
                 case LeftLeg -> FiguraVec3.of(1.9, 12, 0);

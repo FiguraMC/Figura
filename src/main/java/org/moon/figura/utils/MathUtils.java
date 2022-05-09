@@ -1,4 +1,4 @@
-package org.moon.figura.math;
+package org.moon.figura.utils;
 
 import org.moon.figura.math.vector.*;
 

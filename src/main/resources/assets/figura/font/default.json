@@ -12,8 +12,8 @@
       "file": "figura:font/badges.png",
       "ascent": 8,
       "chars": [
-        "△▲!⚧\uD83C\uDF08",
-        "❤☆✯★\uD83E\uDDC0"
+        "△▲!\uD83E\uDDC0",
+        "❤☆✯★"
       ]
     },
     {
@@ -39,6 +39,15 @@
       "ascent": 8,
       "height": 10,
       "chars": ["-*/+="]
+    },
+    {
+      "type": "bitmap",
+      "file": "figura:font/pride.png",
+      "ascent": 8,
+      "chars": [
+        "\uD83D\uDFE5\uD83D\uDFE6\uD83D\uDFE8⬛",
+        "\uD83D\uDFEA⬜\uD83D\uDFE7\uD83D\uDFE9"
+      ]
     }
   ]
 }

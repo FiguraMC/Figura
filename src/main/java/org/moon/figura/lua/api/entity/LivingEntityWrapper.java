@@ -6,7 +6,6 @@ import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
-import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.utils.LuaUtils;
 import org.terasology.jnlua.LuaRuntimeException;
 
@@ -46,4 +45,8 @@ public class LivingEntityWrapper<T extends LivingEntity> extends EntityWrapper<T
         return (double) Mth.lerp(delta, entity.getEntity().yBodyRotO, entity.getEntity().yBodyRot);
     }
 
+    @Override
+    public String toString() {
+        return savedUUID + " (LivingEntity)";
+    }
 }

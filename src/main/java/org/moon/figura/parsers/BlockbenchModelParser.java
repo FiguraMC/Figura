@@ -2,6 +2,7 @@ package org.moon.figura.parsers;
 
 import com.google.gson.*;
 import net.minecraft.nbt.*;
+import org.moon.figura.avatars.model.FiguraModelPart;
 import org.moon.figura.math.vector.FiguraVec3;
 
 import java.util.*;
@@ -485,6 +486,15 @@ public class BlockbenchModelParser {
                 groupNbt.put("piv", toNbtList(group.origin));
             if (group.rotation != null && notZero(group.rotation))
                 groupNbt.put("rot", toNbtList(group.rotation));
+
+            //parent
+            for (FiguraModelPart.ParentType parent : FiguraModelPart.ParentType.values()) {
+                if (group.name.startsWith(parent.name())) {
+                    if (parent != FiguraModelPart.ParentType.None)
+                        groupNbt.putString("pt", parent.name());
+                    break;
+                }
+            }
 
             //parse children
             if (group.children != null && group.children.size() > 0)

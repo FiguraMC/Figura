@@ -137,9 +137,11 @@ public class WardrobeScreen extends AbstractPanelScreen {
 
         panic2.x = middle - panic2.width / 2;
         panic2.y = version.y - panic2.height;
+        panic2.setVisible(false);
 
         panic1.x = middle - panic1.width / 2;
         panic1.y = panic2.y - panic1.height;
+        panic1.setVisible(false);
 
         addRenderableOnly(panic1);
         addRenderableOnly(panic2);

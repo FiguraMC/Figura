@@ -345,4 +345,8 @@ public class MatricesAPI {
         return result;
     }
 
+    @Override
+    public String toString() {
+        return "MatricesAPI";
+    }
 }

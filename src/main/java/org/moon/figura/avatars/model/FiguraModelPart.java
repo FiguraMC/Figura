@@ -61,35 +61,10 @@ public class FiguraModelPart {
     }
 
     public void applyVanillaTransforms(EntityModel<?> vanillaModel) {
-        //TODO: REMOVE THIS IS FOR TEST
-        if (vanillaModel instanceof HumanoidModel<?> humanoid) {
-            applyVanillaTransform(vanillaModel,
-            switch (name) {
-                case "HEAD" -> ParentType.Head;
-                case "TORSO" -> ParentType.Torso;
-                case "LEFT_ARM" -> ParentType.LeftArm;
-                case "RIGHT_ARM" -> ParentType.RightArm;
-                case "LEFT_LEG" -> ParentType.LeftLeg;
-                case "RIGHT_LEG" -> ParentType.RightLeg;
-                default -> null;
-            },
-            switch (name) {
-                case "HEAD" -> humanoid.head;
-                case "TORSO" -> humanoid.body;
-                case "LEFT_ARM" -> humanoid.leftArm;
-                case "RIGHT_ARM" -> humanoid.rightArm;
-                case "LEFT_LEG" -> humanoid.leftLeg;
-                case "RIGHT_LEG" -> humanoid.rightLeg;
-                default -> null;
-            });
-        }
-
-        if (true) return;
-
         if (vanillaModel instanceof HumanoidModel<?> humanoid) {
             applyVanillaTransform(vanillaModel, parentType, switch (parentType) {
                 case Head -> humanoid.head;
-                case Torso -> humanoid.body;
+                case Body -> humanoid.body;
                 case LeftArm -> humanoid.leftArm;
                 case RightArm -> humanoid.rightArm;
                 case LeftLeg -> humanoid.leftLeg;
@@ -138,11 +113,11 @@ public class FiguraModelPart {
     public enum ParentType {
         None,
         Head,
+        Body,
         LeftArm,
         RightArm,
         LeftLeg,
-        RightLeg,
-        Torso
+        RightLeg
     }
 
     //-- LUA BUSINESS --//
@@ -682,7 +657,7 @@ public class FiguraModelPart {
             readCuboid(facesByTexture, bufferBuilders, partCompound);
             newIndex = index[0]++;
         } else if (hasMeshData(partCompound)) {
-            //TODO: read mesh
+            //TODO: smooth normals
             readMesh(facesByTexture, bufferBuilders, partCompound);
             customization.isMesh = true;
             newIndex = index[0]++;
@@ -698,6 +673,9 @@ public class FiguraModelPart {
 
         FiguraModelPart result = new FiguraModelPart(name, customization, newIndex, children);
         result.facesByTexture = facesByTexture;
+        if (partCompound.contains("pt"))
+            result.parentType = ParentType.valueOf(partCompound.getString("pt"));
+
         return result;
     }
 
