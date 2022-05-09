@@ -487,14 +487,11 @@ public class BlockbenchModelParser {
             if (group.rotation != null && notZero(group.rotation))
                 groupNbt.put("rot", toNbtList(group.rotation));
 
-            //parent
-            for (FiguraModelPart.ParentType parent : FiguraModelPart.ParentType.values()) {
-                if (group.name.startsWith(parent.name())) {
-                    if (parent != FiguraModelPart.ParentType.None)
-                        groupNbt.putString("pt", parent.name());
-                    break;
-                }
-            }
+            //parent type
+            FiguraModelPart.ParentType parentType = FiguraModelPart.ParentType.getForString(group.name);
+            if (parentType != FiguraModelPart.ParentType.None)
+                groupNbt.putString("pt", parentType.name());
+
 
             //parse children
             if (group.children != null && group.children.size() > 0)

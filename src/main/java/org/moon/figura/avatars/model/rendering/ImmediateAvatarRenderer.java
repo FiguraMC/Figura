@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.world.entity.Entity;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.config.Config;
 import org.moon.figura.math.matrix.FiguraMat3;
@@ -23,6 +24,7 @@ import org.moon.figura.utils.ColorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class ImmediateAvatarRenderer extends AvatarRenderer {
 
@@ -102,7 +104,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
                 && Minecraft.getInstance().getEntityRenderDispatcher().shouldRenderHitBoxes();
 
         //Render all model parts
-        renderPart(root, new int[] {complexityLimit});
+        renderPart(root, new int[] {complexityLimit}, false);
 
 
         customizationStack.pop();
@@ -133,21 +135,37 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         return customization;
     }
 
+    public static final Predicate<FiguraModelPart> RENDER_ALL = part -> true;
+    public static final Predicate<FiguraModelPart> RENDER_LEFT_ARM = part -> part.parentType == FiguraModelPart.ParentType.LeftArm;
+    public static final Predicate<FiguraModelPart> RENDER_RIGHT_ARM = part -> part.parentType == FiguraModelPart.ParentType.RightArm;
+    public static final Predicate<FiguraModelPart> RENDER_HEAD = part -> part.parentType == FiguraModelPart.ParentType.Head;
+
+    public Predicate<FiguraModelPart> partRenderPredicate = RENDER_ALL;
+
     private static boolean shouldRenderPivots;
-    private void renderPart(FiguraModelPart part, int[] remainingComplexity) {
+    private void renderPart(FiguraModelPart part, int[] remainingComplexity, boolean parentPassedPredicate) {
         part.applyVanillaTransforms(vanillaModel);
 
         part.customization.recalculate();
+
+        //Store old visibility, but overwrite it in case we only want to render certain parts
+        Boolean storedVisiblity = part.customization.visible;
+        parentPassedPredicate |= partRenderPredicate.test(part);
+        part.customization.visible = parentPassedPredicate;
+
         customizationStack.push(part.customization);
 
         part.pushVerticesImmediate(this, remainingComplexity);
         for (FiguraModelPart child : part.children)
-            renderPart(child, remainingComplexity);
+            renderPart(child, remainingComplexity, parentPassedPredicate);
 
         if (shouldRenderPivots)
             renderPivot(part);
 
         customizationStack.pop();
+
+        //Reset to stored visibility
+        part.customization.visible = storedVisiblity;
 
         part.resetVanillaTransforms();
     }

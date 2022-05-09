@@ -7,9 +7,11 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import org.moon.figura.FiguraMod;
+import org.moon.figura.avatars.model.FiguraModelPart;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -66,6 +68,14 @@ public class AvatarMetadataParser {
             else
                 throw new IOException("Invalid render type \"" + customization.secondaryRenderType + "\"!");
         }
+        if (customization.parentType != null) {
+            FiguraModelPart.ParentType type = FiguraModelPart.ParentType.getForString(customization.parentType);
+
+            if (type == FiguraModelPart.ParentType.None)
+                modelPart.remove("pt");
+            else
+                modelPart.putString("pt", type.name());
+        }
     }
 
     private static CompoundTag getTag(CompoundTag models, String path) throws IOException {
@@ -103,6 +113,7 @@ public class AvatarMetadataParser {
      */
     private static class Customization {
         String primaryRenderType, secondaryRenderType;
+        String parentType;
     }
 
 }

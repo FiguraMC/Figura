@@ -27,10 +27,7 @@ import org.moon.figura.math.vector.FiguraVec4;
 import org.moon.figura.utils.LuaUtils;
 import org.terasology.jnlua.LuaRuntimeException;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -113,13 +110,30 @@ public class FiguraModelPart {
     }
 
     public enum ParentType {
-        None,
-        Head,
-        Body,
-        LeftArm,
-        RightArm,
-        LeftLeg,
-        RightLeg
+        None("NONE"),
+        Head("HEAD"),
+        Body("BODY"),
+        LeftArm("LEFT_ARM"),
+        RightArm("RIGHT_ARM"),
+        LeftLeg("LEFT_LEG"),
+        RightLeg("RIGHT_LEG");
+
+        public ArrayList<String> aliases;
+
+        ParentType(String... aliases) {
+            this.aliases = new ArrayList<>(aliases.length+1);
+            this.aliases.add(name());
+            this.aliases.addAll(Arrays.asList(aliases));
+        }
+
+        public static ParentType getForString(String str) {
+            if (str != null)
+                for (ParentType type : values())
+                    for (String s : type.aliases)
+                        if (str.startsWith(s))
+                            return type;
+            return None;
+        }
     }
 
     //-- LUA BUSINESS --//

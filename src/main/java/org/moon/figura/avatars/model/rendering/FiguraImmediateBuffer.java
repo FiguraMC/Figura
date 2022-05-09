@@ -61,17 +61,27 @@ public class FiguraImmediateBuffer {
         normals.clear();
     }
 
+    /**
+     * Advances the buffers without drawing those vertices. Also refunds complexity for those faces.
+     * @param faceCount The number of faces to skip
+     * @param remainingComplexity The complexity holder, so the value can update
+     */
+    public void advanceBuffers(int faceCount, int[] remainingComplexity) {
+        positions.position(positions.position() + faceCount * 12);
+        uvs.position(uvs.position() + faceCount * 8);
+        normals.position(normals.position() + faceCount * 12);
+
+        //Refund complexity for invisible parts
+        remainingComplexity[0] += faceCount;
+    }
+
+
     public void pushVertices(MultiBufferSource bufferSource, int light, int overlay, int faceCount, int[] remainingComplexity) {
         //Handle cases that we can quickly
         if (faceCount == 0)
             return;
         if (!customizationStack.peek().visible) {
-            positions.position(positions.position() + faceCount * 12);
-            uvs.position(uvs.position() + faceCount * 8);
-            normals.position(normals.position() + faceCount * 12);
-
-            //Refund complexity for invisible parts
-            remainingComplexity[0] += faceCount;
+            advanceBuffers(faceCount, remainingComplexity);
             return;
         }
 

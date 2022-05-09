@@ -63,8 +63,12 @@ public class FiguraJavaReflector implements JavaReflector {
                     return 1;
                 }
 
-                int i = callMetamethod(luaState, Metamethod.INDEX);
-                if (i != 0) return i;
+                if (metamethodCache.get(objectClass).containsKey("__index")) {
+                    int i = callMetamethod(luaState, Metamethod.INDEX);
+                    if (i != 0)
+                        return i;
+                }
+
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
