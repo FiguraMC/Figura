@@ -21,23 +21,28 @@ public class VectorsAPI {
             overloads = {
                     @LuaFunctionOverload(
                             argumentTypes = {Double.class, Double.class},
-                            argumentNames = {"x", "y"}
+                            argumentNames = {"x", "y"},
+                            returnType = FiguraVec2.class
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
-                            argumentNames = {"x", "y", "z"}
+                            argumentNames = {"x", "y", "z"},
+                            returnType = FiguraVec3.class
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {Double.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"x", "y", "z", "w"}
+                            argumentNames = {"x", "y", "z", "w"},
+                            returnType = FiguraVec4.class
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {Double.class, Double.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"x", "y", "z", "w", "t"}
+                            argumentNames = {"x", "y", "z", "w", "t"},
+                            returnType = FiguraVec5.class
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {Double.class, Double.class, Double.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"x", "y", "z", "w", "t", "h"}
+                            argumentNames = {"x", "y", "z", "w", "t", "h"},
+                            returnType = FiguraVec6.class
                     )
             },
             description = "vectors.vec"

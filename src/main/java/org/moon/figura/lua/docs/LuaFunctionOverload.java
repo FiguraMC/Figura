@@ -18,4 +18,8 @@ public @interface LuaFunctionOverload {
      * The names to give to the arguments in this overload.
      */
     String[] argumentNames() default {};
+
+    Class<?> returnType() default DEFAULT.class;
+
+    static final class DEFAULT {}
 }

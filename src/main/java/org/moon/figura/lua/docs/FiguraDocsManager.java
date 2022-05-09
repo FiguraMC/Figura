@@ -224,7 +224,7 @@ public class FiguraDocsManager {
 
         public final Class<?>[][] parameterTypes;
         public final String[][] parameterNames;
-        public final Class<?> returnType;
+        public final Class<?>[] returnTypes;
 
         public MethodDoc(Method method) {
             name = method.getName();
@@ -233,10 +233,14 @@ public class FiguraDocsManager {
             LuaFunctionOverload[] overloads = methodDoc.overloads();
             parameterTypes = new Class[overloads.length][];
             parameterNames = new String[overloads.length][];
-            returnType = method.getReturnType();
+            returnTypes = new Class[overloads.length];
             for (int i = 0; i < overloads.length; i++) {
                 parameterTypes[i] = overloads[i].argumentTypes();
                 parameterNames[i] = overloads[i].argumentNames();
+                if (overloads[i].returnType() == LuaFunctionOverload.DEFAULT.class)
+                    returnTypes[i] = method.getReturnType();
+                else
+                    returnTypes[i] = overloads[i].returnType();
             }
         }
 
@@ -285,7 +289,7 @@ public class FiguraDocsManager {
                 //return
                 message.append("): ")
                         .append(new FiguraText("docs.returns").append(" ").withStyle(Colors.MAYA_BLUE.style))
-                        .append(new TextComponent(NAME_MAP.get(returnType)).withStyle(ChatFormatting.YELLOW));
+                        .append(new TextComponent(NAME_MAP.get(returnTypes[i])).withStyle(ChatFormatting.YELLOW));
             }
 
             //description

@@ -307,7 +307,7 @@
   "figura.docs.vanilla_part.get_origin_pos.desc": "Gets the position offset to this vanilla model part currently applied by Minecraft.",
 
   "figura.docs.entity.desc": "Acts as a proxy for an entity in the Minecraft world.",
-  "figura.docs.entity.exists.desc": "Checks whether the proxied entity exists. This returns false if the proxied entity leaves your loaded chunks, dies, or goes away for some other reason.",
+  "figura.docs.entity.exists.desc": "Checks whether the proxied entity exists. This may return false if the proxied entity leaves your loaded chunks, dies, or goes away for some other reason.",
   "figura.docs.entity.get_pos.desc": "Gets the position of the proxied entity in the world. If delta is passed in, then it will be used to linearly interpolate the position of the entity between the previous tick and the current tick. The default value of delta is 1.",
   "figura.docs.entity.get_rot.desc": "Gets the rotation of the proxied entity in degrees. If delta is passed in, then it will be used to linearly interpolate the rotation of the entity between the previous tick and the current tick. The default value of delta is 1.",
   "figura.docs.entity.get_uuid.desc": "",
