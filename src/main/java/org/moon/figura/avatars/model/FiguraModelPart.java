@@ -14,6 +14,7 @@ import org.moon.figura.avatars.model.rendering.ImmediateAvatarRenderer;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
 import org.moon.figura.avatars.vanilla.VanillaPartOffsetManager;
 import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
@@ -39,6 +40,7 @@ import java.util.Map;
 public class FiguraModelPart {
 
     @LuaWhitelist
+    @LuaFieldDoc(description = "model_part.name")
     public final String name;
     public FiguraModelPart parent;
 

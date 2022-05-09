@@ -266,12 +266,4 @@ public class PartCustomization implements CachedType {
             visible = other.visible;
     }
 
-
-    //-- Push function --//
-
-    public void pushToBuffer(FiguraImmediateBuffer buffer) {
-        recalculate();
-        buffer.pushCustomization(this);
-    }
-
 }

@@ -17,10 +17,10 @@ import java.nio.FloatBuffer;
 public class FiguraImmediateBuffer {
 
     private final FiguraTextureSet textureSet;
-    private final CacheStack<PartCustomization, PartCustomization> customizationStack = new PartCustomization.Stack();
+    private final CacheStack<PartCustomization, PartCustomization> customizationStack;
     public final FloatBuffer positions, uvs, normals;
 
-    private FiguraImmediateBuffer(FloatArrayList posList, FloatArrayList uvList, FloatArrayList normalList, FiguraTextureSet textureSet) {
+    private FiguraImmediateBuffer(FloatArrayList posList, FloatArrayList uvList, FloatArrayList normalList, FiguraTextureSet textureSet, PartCustomization.Stack customizationStack) {
         positions = BufferUtils.createFloatBuffer(posList.size());
         positions.put(posList.toArray(new float[0]));
         uvs = BufferUtils.createFloatBuffer(uvList.size());
@@ -28,24 +28,11 @@ public class FiguraImmediateBuffer {
         normals = BufferUtils.createFloatBuffer(normalList.size());
         normals.put(normalList.toArray(new float[0]));
         this.textureSet = textureSet;
+        this.customizationStack = customizationStack;
     }
 
     public void clean() {
-        customizationStack.fullClear();
         textureSet.clean();
-    }
-
-    public void pushCustomization(PartCustomization customization) {
-        customizationStack.push(customization);
-    }
-
-    public void popCustomization() {
-        customizationStack.pop();
-    }
-
-    public void checkEmpty() {
-        if (!customizationStack.isEmpty())
-            throw new IllegalStateException("Pushed matrices without popping them!");
     }
 
     public void uploadTexIfNeeded() {
@@ -173,8 +160,8 @@ public class FiguraImmediateBuffer {
             return size;
         }
 
-        public FiguraImmediateBuffer build(FiguraTextureSet textureSet) {
-            return new FiguraImmediateBuffer(positions, uvs, normals, textureSet);
+        public FiguraImmediateBuffer build(FiguraTextureSet textureSet, PartCustomization.Stack customizationStack) {
+            return new FiguraImmediateBuffer(positions, uvs, normals, textureSet, customizationStack);
         }
     }
 

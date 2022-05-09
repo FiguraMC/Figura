@@ -63,8 +63,9 @@ public enum Config {
 
     Dev {{this.name = new FiguraText("config.dev").withStyle(ChatFormatting.RED);}},
     RELOAD_BUTTON("key.keyboard.unknown"),
-    PANIC_BUTTON("key.keyboard.unknown");
+    PANIC_BUTTON("key.keyboard.unknown"),
     //LOG_PINGS(0, 3);
+    RENDER_DEBUG_PARTS_PIVOT(true);
 
 
     /**
