@@ -10,7 +10,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
-import org.moon.figura.avatars.model.rendering.AvatarRenderer;
 import org.moon.figura.avatars.providers.LocalAvatarLoader;
 import org.moon.figura.commands.FiguraCommands;
 import org.moon.figura.config.ConfigManager;
@@ -31,6 +30,7 @@ public class FiguraMod implements ClientModInitializer {
 
     public static final String MOD_ID = "figura";
     public static final String VERSION = FabricLoader.getInstance().getModContainer(MOD_ID).get().getMetadata().getVersion().getFriendlyString();
+    public static final boolean DEBUG_MODE = false;
     public static final boolean CHEESE_DAY = LocalDate.now().getDayOfMonth() == 1 && LocalDate.now().getMonthValue() == 4;
     public static final Path GAME_DIR = FabricLoader.getInstance().getGameDir().normalize();
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID.substring(0, 1).toUpperCase() + MOD_ID.substring(1));

@@ -17,7 +17,6 @@ import org.moon.figura.avatars.model.rendering.ImmediateAvatarRenderer;
 import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.lua.FiguraLuaState;
 import org.moon.figura.lua.api.EventsAPI;
-import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
 import org.terasology.jnlua.LuaRuntimeException;
@@ -41,10 +40,11 @@ public class Avatar {
     public final String name;
     public final String author;
     public final String version;
-    public final String pride;
     public final float fileSize;
+    public String pride;
 
     //Runtime data
+    public final CompoundTag nbt;
     public final UUID owner;
     public final AvatarRenderer renderer;
     public FiguraLuaState luaState;
@@ -60,6 +60,7 @@ public class Avatar {
     public int renderInstructions = 0;
 
     public Avatar(CompoundTag nbt, UUID owner) {
+        this.nbt = nbt;
         this.owner = owner;
 
         //read metadata
@@ -68,9 +69,13 @@ public class Avatar {
         author = metadata.getString("author");
         version = metadata.getString("ver");
         pride = metadata.getString("pride");
-        fileSize = getFileSize(nbt);
-        renderer = new ImmediateAvatarRenderer(this, nbt);
-        luaState = createLuaState(nbt);
+        fileSize = getFileSize();
+
+        //read model
+        renderer = new ImmediateAvatarRenderer(this);
+
+        //read script
+        luaState = createLuaState();
     }
 
     //Calling with maxInstructions as -1 will not set the max instructions, and instead keep them as they are.
@@ -149,7 +154,7 @@ public class Avatar {
         renderer.clean();
     }
 
-    private float getFileSize(CompoundTag nbt) {
+    private float getFileSize() {
         try {
             //get size
             DataOutputStream dos = new DataOutputStream(new ByteArrayOutputStream());
@@ -166,12 +171,12 @@ public class Avatar {
         }
     }
 
-    private FiguraLuaState createLuaState(CompoundTag avatarNbt) {
-        if (!avatarNbt.contains("scripts"))
+    private FiguraLuaState createLuaState() {
+        if (!nbt.contains("scripts"))
             return null;
-        Map<String, String> scripts = parseScripts(avatarNbt.getCompound("scripts"));
+        Map<String, String> scripts = parseScripts(nbt.getCompound("scripts"));
 
-        CompoundTag metadata = avatarNbt.getCompound("metadata");
+        CompoundTag metadata = nbt.getCompound("metadata");
         ListTag autoScripts = null;
         if (metadata.contains("autoScripts"))
             autoScripts = metadata.getList("autoScripts", Tag.TAG_STRING);

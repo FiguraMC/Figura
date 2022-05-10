@@ -1,18 +1,22 @@
 package org.moon.figura.gui.screens;
 
+import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
-import org.moon.figura.gui.widgets.InteractableEntity;
-import org.moon.figura.gui.widgets.SliderWidget;
-import org.moon.figura.gui.widgets.SwitchButton;
-import org.moon.figura.gui.widgets.TexturedButton;
+import net.minecraft.world.level.block.entity.SkullBlockEntity;
+import org.moon.figura.FiguraMod;
+import org.moon.figura.avatars.Avatar;
+import org.moon.figura.avatars.AvatarManager;
+import org.moon.figura.gui.FiguraToast;
+import org.moon.figura.gui.widgets.*;
 import org.moon.figura.gui.widgets.lists.PlayerList;
 import org.moon.figura.gui.widgets.lists.TrustList;
 import org.moon.figura.gui.widgets.trust.AbstractTrustElement;
@@ -41,6 +45,10 @@ public class TrustScreen extends AbstractPanelScreen {
     private TexturedButton back;
     private TexturedButton resetButton;
 
+    // -- debug -- //
+    private TextField uuid;
+    private TexturedButton yoink;
+
     // -- widget logic -- //
     private float listYPrecise;
     private float expandYPrecise;
@@ -62,7 +70,7 @@ public class TrustScreen extends AbstractPanelScreen {
         double screenScale = Math.min(this.width, this.height) / 1018d;
         int modelSize = Math.min((int) ((192 / guiScale) * (screenScale * guiScale)), 96);
 
-        int entitySize = (int) Math.min(height - 95 - lineHeight * 1.5, listWidth);
+        int entitySize = (int) Math.min(height - 95 - lineHeight * 1.5 - (FiguraMod.DEBUG_MODE ? 24 : 0), listWidth);
         int entityX = Math.max(middle + (listWidth - entitySize) / 2 + 1, middle + 2);
 
         //entity widget
@@ -85,7 +93,7 @@ public class TrustScreen extends AbstractPanelScreen {
                 stack.popPose();
             }
         };
-        trustList = new TrustList(middle + 2, height, listWidth, height - 64);
+        trustList = new TrustList(middle + 2, height, listWidth, height - 54);
 
         // -- left -- //
 
@@ -107,6 +115,38 @@ public class TrustScreen extends AbstractPanelScreen {
                 bx -> this.minecraft.setScreen(parentScreen)
         ));
 
+        //debug buttons
+        uuid = new TextField(middle + 2, back.y - 24, listWidth - 24, 20, new TextComponent("Name/UUID"), null);
+        yoink = new TexturedButton(middle + listWidth - 18, back.y - 24, 20, 20, new TextComponent("yoink"), new TextComponent("Set the selected player's avatar"), button -> {
+            try {
+                GameProfile gameProfile;
+                try {
+                    gameProfile = new GameProfile(UUID.fromString(uuid.getField().getValue()), "");
+                } catch (Exception ignored) {
+                    gameProfile = new GameProfile(null, uuid.getField().getValue());
+                }
+
+                SkullBlockEntity.updateGameprofile(gameProfile, profile -> {
+                    Avatar avatar = AvatarManager.getAvatarForPlayer(profile.getId());
+                    if (avatar == null)
+                        return;
+
+                    if (playerList.selectedEntry instanceof PlayerElement player) {
+                        AvatarManager.setAvatar(player.getOwner(), avatar.nbt);
+                        FiguraToast.sendToast("yoinked");
+                    }
+                });
+            } catch (Exception e) {
+                FiguraToast.sendToast("oopsie", FiguraToast.ToastType.ERROR);
+                FiguraMod.LOGGER.error("", e);
+            }
+        });
+
+        if (FiguraMod.DEBUG_MODE) {
+            addRenderableWidget(uuid);
+            addRenderableWidget(yoink);
+        }
+
         //expand button
         addRenderableWidget(expandButton = new SwitchButton( middle + listWidth - 18, height - 24, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/expand_up.png"), 40, 40, new FiguraText("gui.trust.expand_trust.tooltip"), btn -> {
             boolean expanded = expandButton.isToggled();
@@ -115,6 +155,8 @@ public class TrustScreen extends AbstractPanelScreen {
             entityWidget.setVisible(!expanded);
             slider.visible = !expanded;
             back.visible = !expanded;
+            uuid.setVisible(!expanded);
+            yoink.visible = !expanded;
 
             //update expand button
             expandButton.setUV(expanded ? 20 : 0, 0);

@@ -7,10 +7,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.model.FiguraModelPart;
-import org.moon.figura.lua.api.ClientAPI;
-import org.moon.figura.lua.api.EventsAPI;
-import org.moon.figura.lua.api.ParticleAPI;
-import org.moon.figura.lua.api.SoundAPI;
+import org.moon.figura.lua.api.*;
 import org.moon.figura.lua.api.entity.EntityWrapper;
 import org.moon.figura.lua.api.entity.LivingEntityWrapper;
 import org.moon.figura.lua.api.entity.PlayerEntityWrapper;
@@ -66,6 +63,16 @@ public class FiguraDocsManager {
         //client
         put("client", List.of(
                 ClientAPI.class
+        ));
+
+        //host
+        put("host", List.of(
+                HostAPI.class
+        ));
+
+        //meta
+        put("meta", List.of(
+                MetaAPI.class
         ));
 
         //sound

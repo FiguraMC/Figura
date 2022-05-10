@@ -4,6 +4,8 @@ import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.Mth;
+import org.moon.figura.avatars.Avatar;
+import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.gui.widgets.lists.PlayerList;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
@@ -67,12 +69,22 @@ public class AbstractTrustElement extends AbstractButton implements Comparable<A
             //then compare types
             if (this instanceof GroupElement && other instanceof PlayerElement)
                 return -1;
-            else if (this instanceof PlayerElement && other instanceof GroupElement)
+            if (this instanceof PlayerElement && other instanceof GroupElement)
                 return 1;
 
-            //and then compare names
-            else if (this instanceof PlayerElement player1 && other instanceof PlayerElement player2)
+            if (this instanceof PlayerElement player1 && other instanceof PlayerElement player2) {
+                Avatar avatar1 = AvatarManager.getAvatarForPlayer(player1.getOwner());
+                Avatar avatar2 = AvatarManager.getAvatarForPlayer(player2.getOwner());
+
+                //compare avatar
+                if (avatar1 != null && avatar2 == null)
+                    return -1;
+                if (avatar1 == null && avatar2 != null)
+                    return  1;
+
+                //and then compare names
                 return player1.getName().compareTo(player2.getName());
+            }
         }
 
         //return

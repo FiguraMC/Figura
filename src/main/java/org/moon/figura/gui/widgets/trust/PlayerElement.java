@@ -8,8 +8,10 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.avatars.AvatarManager;
+import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.widgets.ContextMenu;
 import org.moon.figura.gui.widgets.lists.PlayerList;
+import org.moon.figura.lua.api.nameplate.NameplateCustomization;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.FiguraIdentifier;
@@ -39,6 +41,16 @@ public class PlayerElement extends AbstractTrustElement {
     }
 
     private void generateContext() {
+        //name uuid
+        context.addAction(new FiguraText("gui.context.copy_name"), button -> {
+            Minecraft.getInstance().keyboardHandler.setClipboard(this.getName());
+            FiguraToast.sendToast(new FiguraText("toast.clipboard"));
+        });
+        context.addAction(new FiguraText("gui.context.copy_uuid"), button -> {
+            Minecraft.getInstance().keyboardHandler.setClipboard(this.getOwner().toString());
+            FiguraToast.sendToast(new FiguraText("toast.clipboard"));
+        });
+
         //reload
         context.addAction(new FiguraText("gui.context.reload"), button -> AvatarManager.reloadAvatar(owner));
 
@@ -88,7 +100,7 @@ public class PlayerElement extends AbstractTrustElement {
 
         //name
         Font font = Minecraft.getInstance().font;
-        UIHelper.renderOutlineText(stack, font, new TextComponent(this.name), x + 40, y + 4, 0xFFFFFF, 0);
+        UIHelper.renderOutlineText(stack, font, new TextComponent(this.name).append(NameplateCustomization.fetchBadges(AvatarManager.getAvatarForPlayer(owner))), x + 40, y + 4, 0xFFFFFF, 0);
 
         //uuid
         stack.pushPose();
@@ -125,5 +137,9 @@ public class PlayerElement extends AbstractTrustElement {
 
     public String getName() {
         return name;
+    }
+
+    public UUID getOwner() {
+        return owner;
     }
 }

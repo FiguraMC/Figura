@@ -165,7 +165,7 @@ public class PlayerList extends AbstractList {
     }
 
     private void sortList() {
-        trustList.sort(Comparator.naturalOrder());
+        trustList.sort(AbstractTrustElement::compareTo);
         children.sort((element1, element2) -> {
             if (element1 instanceof AbstractTrustElement container1 && element2 instanceof AbstractTrustElement container2)
                 return container1.compareTo(container2);

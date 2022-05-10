@@ -44,6 +44,9 @@ public class NameplateCustomization {
 
     //TODO - fetch special badges from backend
     public static Component fetchBadges(Avatar avatar) {
+        if (avatar == null)
+            return TextComponent.EMPTY.copy();
+
         String ret = " ";
 
         //error

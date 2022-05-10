@@ -30,19 +30,19 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
     private final PartCustomization.Stack customizationStack = new PartCustomization.Stack();
 
-    public ImmediateAvatarRenderer(Avatar avatar, CompoundTag avatarCompound) {
-        super(avatar, avatarCompound);
+    public ImmediateAvatarRenderer(Avatar avatar) {
+        super(avatar);
 
         //Get complexity limit from trust
         complexityLimit = TrustManager.get(avatar.owner).get(TrustContainer.Trust.COMPLEXITY);
 
         //Vertex data, read model parts
         List<FiguraImmediateBuffer.Builder> builders = new ArrayList<>();
-        root = FiguraModelPart.read(avatarCompound.getCompound("models"), builders);
+        root = FiguraModelPart.read(avatar.nbt.getCompound("models"), builders);
 
         //Textures
         List<FiguraTextureSet> textureSets = new ArrayList<>();
-        ListTag texturesList = avatarCompound.getList("textures", Tag.TAG_COMPOUND);
+        ListTag texturesList = avatar.nbt.getList("textures", Tag.TAG_COMPOUND);
         for (int i = 0; i < texturesList.size(); i++) {
             CompoundTag tag = texturesList.getCompound(i);
             String name = tag.getString("name");

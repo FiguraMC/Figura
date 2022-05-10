@@ -3,9 +3,7 @@ package org.moon.figura.lua.api;
 import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
-import net.minecraft.world.entity.Entity;
 import org.moon.figura.lua.LuaWhitelist;
-import org.moon.figura.lua.api.entity.EntityWrapper;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
@@ -258,20 +256,6 @@ public class ClientAPI {
     )
     public static double getGuiScale() {
         return Minecraft.getInstance().getWindow().getGuiScale();
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(),
-            description = "client.get_targeted_entity"
-    )
-    public static EntityWrapper<?> getTargetedEntity() {
-        Entity entity = Minecraft.getInstance().crosshairPickEntity;
-
-        if (entity != null && Minecraft.getInstance().player != null && !entity.isInvisibleTo(Minecraft.getInstance().player))
-            return EntityWrapper.fromEntity(entity);
-
-        return null;
     }
 
     @Override

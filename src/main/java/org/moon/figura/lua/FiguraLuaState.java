@@ -4,10 +4,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
-import org.moon.figura.lua.api.ClientAPI;
-import org.moon.figura.lua.api.EventsAPI;
-import org.moon.figura.lua.api.ParticleAPI;
-import org.moon.figura.lua.api.SoundAPI;
+import org.moon.figura.lua.api.*;
 import org.moon.figura.lua.api.entity.PlayerEntityWrapper;
 import org.moon.figura.lua.api.math.MatricesAPI;
 import org.moon.figura.lua.api.math.VectorsAPI;
@@ -32,6 +29,7 @@ public class FiguraLuaState extends LuaState53 {
     public EventsAPI events;
     public VanillaModelAPI vanillaModel;
     public NameplateAPI nameplate;
+    public MetaAPI meta;
 
     public FiguraLuaState(Avatar owner, int memory) {
         super(memory * 1_000_000); //memory is given in mb
@@ -123,6 +121,9 @@ public class FiguraLuaState extends LuaState53 {
         nameplate = new NameplateAPI();
         loadGlobal(nameplate, "nameplate");
         loadGlobal(ClientAPI.INSTANCE, "client");
+        loadGlobal(new HostAPI(owner.owner), "host");
+        meta = new MetaAPI(owner);
+        loadGlobal(meta, "meta");
 
         //Load "vec" as global alias for "vectors.vec"
         pushJavaFunction(getJavaReflector().getMetamethod(JavaReflector.Metamethod.INDEX));

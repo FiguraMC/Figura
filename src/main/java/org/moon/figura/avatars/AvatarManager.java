@@ -9,6 +9,7 @@ import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.utils.FiguraText;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -20,6 +21,7 @@ import java.util.UUID;
 public class AvatarManager {
 
     private static final HashMap<UUID, Avatar> LOADED_AVATARS = new HashMap<>();
+    private static final ArrayList<UUID> FETCHED_AVATARS = new ArrayList<>();
     public static boolean localUploaded = true; //init as true :3
     public static boolean panic = false;
 
@@ -49,6 +51,8 @@ public class AvatarManager {
 
     //removes an loaded avatar
     public static void clearAvatar(UUID id) {
+        FETCHED_AVATARS.remove(id);
+
         if (LOADED_AVATARS.containsKey(id)) {
             LOADED_AVATARS.get(id).clean();
             LOADED_AVATARS.remove(id);
@@ -97,9 +101,21 @@ public class AvatarManager {
         }
     }
 
+    //set an user's avatar
+    public static void setAvatar(UUID id, CompoundTag nbt) {
+        if (id.compareTo(FiguraMod.getLocalPlayerUUID()) == 0)
+            loadLocalAvatar(null);
+
+        LOADED_AVATARS.put(id, new Avatar(nbt, id));
+    }
+
     //get avatar from the backend
     //mark as uploaded if local
     private static void fetchBackend(UUID id) {
+        if (id == null || FETCHED_AVATARS.contains(id))
+            return;
+
         //TODO
+        //really fetch backend then
     }
 }

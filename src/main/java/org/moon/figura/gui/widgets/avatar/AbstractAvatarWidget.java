@@ -3,6 +3,7 @@ package org.moon.figura.gui.widgets.avatar;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import org.moon.figura.avatars.providers.LocalAvatarFetcher;
+import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.widgets.AbstractContainerElement;
 import org.moon.figura.gui.widgets.ContextMenu;
 import org.moon.figura.gui.widgets.lists.AvatarList;
@@ -29,7 +30,10 @@ public class AbstractAvatarWidget extends AbstractContainerElement implements Co
             File f = avatar.getPath().toFile();
             Util.getPlatform().openFile(f.isDirectory() ? f : f.getParentFile());
         });
-        context.addAction(new FiguraText("gui.context.copy_path"), button -> Minecraft.getInstance().keyboardHandler.setClipboard(avatar.getPath().toString()));
+        context.addAction(new FiguraText("gui.context.copy_path"), button -> {
+            Minecraft.getInstance().keyboardHandler.setClipboard(avatar.getPath().toString());
+            FiguraToast.sendToast(new FiguraText("toast.clipboard"));
+        });
     }
 
     @Override

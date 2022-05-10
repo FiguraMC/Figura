@@ -6,7 +6,6 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -15,10 +14,7 @@ import org.moon.figura.avatars.model.FiguraModelPart;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 
-import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
-import java.util.function.Function;
-import java.util.function.Predicate;
 
 
 /**
@@ -58,7 +54,7 @@ public abstract class AvatarRenderer {
 
     public record PartFilterScheme(boolean initialValue, BiPredicate<FiguraModelPart, Boolean> predicate) {}
 
-    public AvatarRenderer(Avatar avatar, CompoundTag avatarCompound) {
+    public AvatarRenderer(Avatar avatar) {
         this.avatar = avatar;
     }
 

@@ -3,6 +3,8 @@ package org.moon.figura.lua.api.entity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.world.entity.player.Player;
+import org.moon.figura.avatars.Avatar;
+import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
@@ -117,6 +119,22 @@ public class PlayerEntityWrapper extends LivingEntityWrapper<Player> {
     )
     public static boolean isFlying(PlayerEntityWrapper entity) {
         return getEntity(entity).getAbilities().flying;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = {PlayerEntityWrapper.class, String.class},
+                    argumentNames = {"entity", "key"}
+            ),
+            description = "player.get_variable"
+    )
+    public static Object getVariable(PlayerEntityWrapper entity, String key) {
+        Avatar a = AvatarManager.getAvatarForPlayer(entity.savedUUID);
+        if (a == null || a.luaState == null)
+            return null;
+
+        return a.luaState.meta.get(key);
     }
 
     @Override
