@@ -53,7 +53,7 @@ public class TrustContainer {
 
         //slider constructor
         Trust(Integer min, Integer max) {
-            this.isToggle = min != null && max != null;
+            this.isToggle = min == null || max == null;
             this.min = min;
             this.max = max;
         }
