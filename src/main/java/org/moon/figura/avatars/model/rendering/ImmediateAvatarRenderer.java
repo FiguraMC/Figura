@@ -22,7 +22,6 @@ import org.moon.figura.utils.ColorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 
 public class ImmediateAvatarRenderer extends AvatarRenderer {
 
@@ -78,9 +77,17 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
     @Override
     public void render() {
+        commonRender(1.5);
+    }
+
+    @Override
+    public void renderWorldParts() {
+        commonRender(0);
+    }
+
+    private void commonRender(double vertOffset) {
         //Push position and normal matrices
-        PartCustomization customization = transformRoot();
-        customization.visible = true;
+        PartCustomization customization = setupRootCustomization(vertOffset);
 
         //Push transform
         customizationStack.push(customization);
@@ -102,14 +109,13 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
                 && Minecraft.getInstance().getEntityRenderDispatcher().shouldRenderHitBoxes();
 
         //Render all model parts
-        renderPart(root, new int[] {complexityLimit}, false);
-
+        renderPart(root, new int[] {complexityLimit}, currentFilterScheme.initialValue());
 
         customizationStack.pop();
         checkEmpty();
     }
 
-    private PartCustomization transformRoot() {
+    private PartCustomization setupRootCustomization(double vertOffset) {
         PartCustomization customization = PartCustomization.of();
 
         customization.setPrimaryRenderType("CUTOUT_NO_CULL");
@@ -118,7 +124,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         double s = 1.0 / 16;
         customization.positionMatrix.scale(s, s, s);
         customization.positionMatrix.rotateZ(180);
-        customization.positionMatrix.translate(0, 1.5, 0);
+        customization.positionMatrix.translate(0, vertOffset, 0); //vertOffset is 1.5 or 0, depending on regular or world rendering
         customization.normalMatrix.rotateZ(180);
 
         FiguraMat4 posMat = FiguraMat4.fromMatrix4f(matrices.last().pose());
@@ -130,15 +136,10 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         posMat.free();
         normalMat.free();
 
+        customization.visible = true;
         return customization;
     }
 
-    public static final Predicate<FiguraModelPart> RENDER_ALL = part -> true;
-    public static final Predicate<FiguraModelPart> RENDER_LEFT_ARM = part -> part.parentType == FiguraModelPart.ParentType.LeftArm;
-    public static final Predicate<FiguraModelPart> RENDER_RIGHT_ARM = part -> part.parentType == FiguraModelPart.ParentType.RightArm;
-    public static final Predicate<FiguraModelPart> RENDER_HEAD = part -> part.parentType == FiguraModelPart.ParentType.Head;
-
-    public Predicate<FiguraModelPart> partRenderPredicate = RENDER_ALL;
 
     private static boolean shouldRenderPivots;
     private void renderPart(FiguraModelPart part, int[] remainingComplexity, boolean parentPassedPredicate) {
@@ -147,23 +148,21 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         part.customization.recalculate();
 
         //Store old visibility, but overwrite it in case we only want to render certain parts
-        Boolean storedVisiblity = part.customization.visible;
-        parentPassedPredicate |= partRenderPredicate.test(part);
-        part.customization.visible = parentPassedPredicate;
+        Boolean storedVisibility = part.customization.visible;
+        boolean thisPassedPredicate = currentFilterScheme.predicate().test(part, parentPassedPredicate);
 
+        part.customization.visible = FiguraModelPart.getVisible(part) && thisPassedPredicate;
         customizationStack.push(part.customization);
+        part.customization.visible = storedVisibility;
 
         part.pushVerticesImmediate(this, remainingComplexity);
         for (FiguraModelPart child : part.children)
-            renderPart(child, remainingComplexity, parentPassedPredicate);
+            renderPart(child, remainingComplexity, thisPassedPredicate);
 
         if (shouldRenderPivots)
             renderPivot(part);
 
         customizationStack.pop();
-
-        //Reset to stored visibility
-        part.customization.visible = storedVisiblity;
 
         part.resetVanillaTransforms();
     }

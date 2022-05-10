@@ -1,4 +1,4 @@
-package org.moon.figura.mixin;
+package org.moon.figura.mixin.gui;
 
 import net.minecraft.client.resources.SplashManager;
 import org.moon.figura.FiguraMod;

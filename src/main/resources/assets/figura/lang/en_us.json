@@ -368,6 +368,8 @@
   "figura.docs.events.tick.desc": "The TICK event is run every in-game tick: 20 times per second.",
   "figura.docs.events.render.desc": "The RENDER event is run every frame, before the avatar is rendered.",
   "figura.docs.events.post_render.desc": "The POST_RENDER event runs every frame, after the avatar is rendered.",
+  "figura.docs.events.world_render.desc": "The WORLD_RENDER event is run every frame, before the world is rendered. Always runs when a world is visible, even when the avatar itself is not, so this runs even in first person.",
+  "figura.docs.events.post_world_render.desc": "The POST_WORLD_RENDER event runs every frame, after the world is rendered. Always runs when a world is visible, even when the avatar itself is not, so this runs even in first person.",
 
   "figura.docs.event.desc": "A hook for a certain event in Minecraft. You may register functions to one, and those functions will be called when the event occurs.",
   "figura.docs.event.register.desc": "Registers the given function to the given event. When the event occurs, the function will be run. Functions are run in the order they were registered.",

@@ -15,6 +15,11 @@ import org.moon.figura.avatars.model.FiguraModelPart;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 
+import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
+import java.util.function.Function;
+import java.util.function.Predicate;
+
 
 /**
  * Mainly exists as an abstract superclass for VAO-based and
@@ -31,12 +36,34 @@ public abstract class AvatarRenderer {
     public int light;
     public MultiBufferSource bufferSource;
     public EntityModel<?> vanillaModel;
+    public PartFilterScheme currentFilterScheme;
+
+    /**
+     * FiguraModelPart: The current model part.
+     * Boolean input: The result of the predicate from the previous part.
+     * Boolean output: The result for the current part.
+     */
+    public static final PartFilterScheme RENDER_REGULAR = new PartFilterScheme(true, (part, previousPassed) -> {
+        //Allow everything except descendants of WORLD parts.
+        if (part.parentType == FiguraModelPart.ParentType.World)
+            return false;
+        return previousPassed;
+    });
+    public static final PartFilterScheme RENDER_WORLD = new PartFilterScheme(false, (part, previousPassed) -> {
+        //Allow nothing except descendants of WORLD parts.
+        if (part.parentType == FiguraModelPart.ParentType.World)
+            return true;
+        return previousPassed;
+    });
+
+    public record PartFilterScheme(boolean initialValue, BiPredicate<FiguraModelPart, Boolean> predicate) {}
 
     public AvatarRenderer(Avatar avatar, CompoundTag avatarCompound) {
         this.avatar = avatar;
     }
 
     public abstract void render();
+    public abstract void renderWorldParts();
     public void clean() {
         root.clean();
     }

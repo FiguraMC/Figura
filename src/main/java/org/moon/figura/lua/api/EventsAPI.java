@@ -29,6 +29,13 @@ public class EventsAPI {
     @LuaWhitelist
     @LuaFieldDoc(description = "events.post_render")
     public final LuaEvent POST_RENDER = new LuaEvent("POST_RENDER");
+    @LuaWhitelist
+    @LuaFieldDoc(description = "events.world_render")
+    public final LuaEvent WORLD_RENDER = new LuaEvent("WORLD_RENDER");
+    @LuaWhitelist
+    @LuaFieldDoc(description = "events.post_world_render")
+    public final LuaEvent POST_WORLD_RENDER = new LuaEvent("POST_WORLD_RENDER");
+
 
     //Metamethods
 

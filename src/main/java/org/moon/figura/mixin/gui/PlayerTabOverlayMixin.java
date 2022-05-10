@@ -1,4 +1,4 @@
-package org.moon.figura.mixin;
+package org.moon.figura.mixin.gui;
 
 import net.minecraft.client.gui.components.PlayerTabOverlay;
 import net.minecraft.client.multiplayer.PlayerInfo;

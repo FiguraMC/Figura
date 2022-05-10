@@ -1,4 +1,4 @@
-package org.moon.figura.mixin;
+package org.moon.figura.mixin.gui;
 
 import net.minecraft.client.gui.components.DebugScreenOverlay;
 import org.moon.figura.FiguraMod;

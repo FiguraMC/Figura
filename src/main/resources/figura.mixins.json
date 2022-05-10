@@ -7,15 +7,19 @@
   ],
   "client": [
     "ClientLevelInvoker",
-    "DebugScreenOverlayMixin",
-    "EntityRendererMixin",
-    "GuiMixin",
-    "LivingEntityRendererMixin",
     "MinecraftMixin",
-    "PauseScreenMixin",
-    "PlayerRendererMixin",
-    "PlayerTabOverlayMixin",
-    "SplashManagerMixin"
+
+    "gui.DebugScreenOverlayMixin",
+    "gui.GuiMixin",
+    "gui.PauseScreenMixin",
+    "gui.PlayerTabOverlayMixin",
+    "gui.SplashManagerMixin",
+
+    "render.EntityRendererMixin",
+    "render.LivingEntityRendererMixin",
+    "render.PlayerRendererMixin",
+    "render.LevelRendererMixin",
+    "render.EntityRenderDispatcherMixin"
   ],
   "server": [
   ],

@@ -1,4 +1,4 @@
-package org.moon.figura.mixin;
+package org.moon.figura.mixin.gui;
 
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageButton;

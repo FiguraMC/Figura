@@ -1,6 +1,8 @@
 package org.moon.figura.avatars;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.nbt.CompoundTag;
@@ -8,12 +10,14 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.Vec3;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.model.rendering.AvatarRenderer;
 import org.moon.figura.avatars.model.rendering.ImmediateAvatarRenderer;
 import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.lua.FiguraLuaState;
 import org.moon.figura.lua.api.EventsAPI;
+import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
 import org.terasology.jnlua.LuaRuntimeException;
@@ -97,10 +101,41 @@ public class Avatar {
         renderer.light = light;
         renderer.vanillaModel = model;
         if (luaState != null)
-            tryCall(luaState.events.RENDER, renderLimit, delta);
+            tryCall(luaState.events.RENDER, -1, delta);
         renderer.render();
         if (luaState != null)
             tryCall(luaState.events.POST_RENDER, -1, delta);
+    }
+
+    public void worldRenderEvent(float tickDelta) {
+        renderer.tickDelta = tickDelta;
+        if (luaState != null)
+            tryCall(luaState.events.WORLD_RENDER, renderLimit, tickDelta);
+    }
+
+    public void endWorldRenderEvent() {
+        if (luaState != null)
+            tryCall(luaState.events.POST_WORLD_RENDER, -1, renderer.tickDelta);
+    }
+
+    public void onWorldRender(double camX, double camY, double camZ, PoseStack matrices, MultiBufferSource bufferSource, int light, float tickDelta) {
+        renderer.currentFilterScheme = AvatarRenderer.RENDER_WORLD;
+        renderer.bufferSource = bufferSource;
+        renderer.matrices = matrices;
+        renderer.tickDelta = tickDelta;
+        renderer.light = light;
+        matrices.pushPose();
+        matrices.translate(-camX, -camY, -camZ);
+        matrices.scale(-1, -1, 1);
+
+        renderer.renderWorldParts();
+        matrices.popPose();
+    }
+
+    public void onFirstPersonWorldRender(Entity watcher, MultiBufferSource bufferSource, PoseStack matrices, Camera camera, float tickDelta) {
+        int light = Minecraft.getInstance().getEntityRenderDispatcher().getPackedLightCoords(watcher, tickDelta);
+        Vec3 camPos = camera.getPosition();
+        onWorldRender(camPos.x, camPos.y, camPos.z, matrices, bufferSource, light, tickDelta);
     }
 
 

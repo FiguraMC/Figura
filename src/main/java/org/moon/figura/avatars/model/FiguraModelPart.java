@@ -60,6 +60,7 @@ public class FiguraModelPart {
     }
 
     public void applyVanillaTransforms(EntityModel<?> vanillaModel) {
+        if (!parentType.vanilla) return;
         if (vanillaModel instanceof HumanoidModel<?> humanoid) {
             applyVanillaTransform(vanillaModel, parentType, switch (parentType) {
                 case Head -> humanoid.head;
@@ -96,7 +97,7 @@ public class FiguraModelPart {
     }
 
     public void resetVanillaTransforms() {
-        if (parentType != ParentType.None) {
+        if (parentType.vanilla) {
             customization.setBonusPivot(0, 0, 0);
             customization.setBonusPos(0, 0, 0);
             customization.setBonusRot(0, 0, 0);
@@ -110,17 +111,22 @@ public class FiguraModelPart {
     }
 
     public enum ParentType {
-        None("NONE"),
-        Head("HEAD"),
-        Body("BODY"),
-        LeftArm("LEFT_ARM"),
-        RightArm("RIGHT_ARM"),
-        LeftLeg("LEFT_LEG"),
-        RightLeg("RIGHT_LEG");
+        None(false, "NONE"),
+
+        Head(true, "HEAD"),
+        Body(true, "BODY"),
+        LeftArm(true, "LEFT_ARM"),
+        RightArm(true, "RIGHT_ARM"),
+        LeftLeg(true,"LEFT_LEG"),
+        RightLeg(true,"RIGHT_LEG"),
+
+        World(false, "WORLD");
 
         public ArrayList<String> aliases;
+        public boolean vanilla;
 
-        ParentType(String... aliases) {
+        ParentType(Boolean vanilla, String... aliases) {
+            this.vanilla = vanilla;
             this.aliases = new ArrayList<>(aliases.length+1);
             this.aliases.add(name());
             this.aliases.addAll(Arrays.asList(aliases));

@@ -2,10 +2,15 @@ package org.moon.figura;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Entity;
+import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
+import org.moon.figura.avatars.model.rendering.AvatarRenderer;
 import org.moon.figura.avatars.providers.LocalAvatarLoader;
 import org.moon.figura.commands.FiguraCommands;
 import org.moon.figura.config.ConfigManager;
@@ -44,13 +49,24 @@ public class FiguraMod implements ClientModInitializer {
 
         //register events
         ClientTickEvents.END_CLIENT_TICK.register(FiguraMod::tick);
+        WorldRenderEvents.AFTER_ENTITIES.register(FiguraMod::renderFirstPersonWorldParts);
     }
 
-    public static void tick(Minecraft client) {
+    private static void tick(Minecraft client) {
         LocalAvatarLoader.tickWatchedKey();
         AvatarManager.tickLoadedAvatars();
         FiguraLuaPrinter.printChatFromQueue();
         ticks++;
+    }
+
+    private static void renderFirstPersonWorldParts(WorldRenderContext context) {
+        if (!context.camera().isDetached()) {
+            Entity watcher = context.camera().getEntity();
+            Avatar avatar = AvatarManager.getAvatar(watcher);
+            if (avatar != null) {
+                avatar.onFirstPersonWorldRender(watcher, context.consumers(), context.matrixStack(), context.camera(), context.tickDelta());
+            }
+        }
     }
 
     // -- Helper Functions -- //

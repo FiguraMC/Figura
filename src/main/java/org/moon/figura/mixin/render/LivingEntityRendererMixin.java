@@ -1,4 +1,4 @@
-package org.moon.figura.mixin;
+package org.moon.figura.mixin.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.world.entity.LivingEntity;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
+import org.moon.figura.avatars.model.rendering.AvatarRenderer;
 import org.moon.figura.config.Config;
 import org.moon.figura.utils.ui.UIHelper;
 import org.spongepowered.asm.mixin.Mixin;
@@ -48,10 +49,15 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
             return;
         //Render avatar with params
         EntityModel<?> model = ((LivingEntityRenderer<?, ?>) (Object) this).getModel();
-        currentAvatar.onRender(entity, yaw, delta, matrices, bufferSource, l, model);
+
+        //When viewed 3rd person, render all non-world parts.
+        //No camera/hud or whatever in yet. when they are, they won't be included here either.
+        currentAvatar.renderer.currentFilterScheme = AvatarRenderer.RENDER_REGULAR;
         if (model instanceof PlayerModel<?> playerModel)
             if (currentAvatar.luaState != null)
                 currentAvatar.luaState.vanillaModel.alterModel(playerModel);
+
+        currentAvatar.onRender(entity, yaw, delta, matrices, bufferSource, l, model);
         currentAvatar = null;
     }
 
