@@ -2,11 +2,12 @@ package org.moon.figura.math.vector;
 
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
-import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
+import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.lua.types.LuaIPairsIterator;
 import org.moon.figura.lua.types.LuaPairsIterator;
+import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.MathUtils;
 import org.moon.figura.utils.caching.CacheUtils;
 import org.moon.figura.utils.caching.CachedType;
@@ -406,6 +407,28 @@ public class FiguraVec6 implements CachedType {
 
     // REGULAR LUA METHODS
     //----------------------------------------------------------------
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = {FiguraVec6.class, Double.class, Double.class},
+                    argumentNames = {"vec", "minLength", "maxLength"}
+            ),
+            description = "vector_n.clamp_length"
+    )
+    public static void clampLength(FiguraVec6 arg, Double minLength, Double maxLength) {
+        LuaUtils.nullCheck("clampLength", "vec", arg);
+        if (minLength == null) minLength = 0d;
+        if (maxLength == null) maxLength = Double.POSITIVE_INFINITY;
+        double len = arg.length();
+        if (len < minLength) {
+            if (len == 0) throw new LuaRuntimeException("Attempt to divide by 0");
+            arg.scale(minLength / len);
+        } else if (len > maxLength) {
+            if (len == 0) throw new LuaRuntimeException("Attempt to divide by 0");
+            arg.scale(maxLength / len);
+        }
+    }
 
     @LuaWhitelist
     @LuaMethodDoc(

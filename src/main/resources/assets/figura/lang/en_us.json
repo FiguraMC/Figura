@@ -371,6 +371,9 @@
 
   "figura.docs.event.desc": "A hook for a certain event in Minecraft. You may register functions to one, and those functions will be called when the event occurs.",
   "figura.docs.event.register.desc": "Registers the given function to the given event. When the event occurs, the function will be run. Functions are run in the order they were registered.",
+  "figura.docs.event.clear.desc": "Clears the given event of all its functions.",
+  "figura.docs.event.remove.desc": "Removes the function at the given index from the event. The default index is 1, which is the first one you registered.",
+  "figura.docs.event.get_count.desc": "Returns the number of functions registered to this event.",
 
   "figura.docs.client.desc": "A global API used to interact with the current Minecraft client. Most of its functions return things that can be found in the F3 menu.",
   "figura.docs.client.get_fps.desc": "Gets the FPS of the client. Returns 0 if the fps counter isn't ready yet (or if your pc is just that bad).",
@@ -420,6 +423,7 @@
   "figura.docs.vector_n.w.desc": "The fourth coordinate of this vector. Can also be gotten with the indices \"a\" and [4].",
   "figura.docs.vector_n.t.desc": "The fifth coordinate of this vector. Can also be gotten with the index [5].",
   "figura.docs.vector_n.h.desc": "The sixth coordinate of this vector. Can also be gotten with the index [6].",
+  "figura.docs.vector_n.clamp_length.desc": "Modifies this vector so that its length is between minLength and maxLength.",
   "figura.docs.vector_n.length.desc": "Returns the length of this vector.",
   "figura.docs.vector_n.length_squared.desc": "Returns the length of this vector squared. Suitable when you only care about relative lengths, because it avoids a square root.",
   "figura.docs.vector_n.dot.desc": "Returns the dot product of vec1 and vec2.",

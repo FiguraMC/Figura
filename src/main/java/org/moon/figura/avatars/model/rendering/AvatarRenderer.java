@@ -11,9 +11,9 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import org.moon.figura.avatars.Avatar;
+import org.moon.figura.avatars.model.FiguraModelPart;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
-import org.moon.figura.avatars.model.FiguraModelPart;
 
 
 /**

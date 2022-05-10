@@ -3,13 +3,11 @@ package org.moon.figura.lua.api.entity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.world.entity.player.Player;
-import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 
-import java.util.Locale;
 import java.util.UUID;
 
 @LuaWhitelist

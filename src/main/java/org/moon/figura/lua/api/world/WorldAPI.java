@@ -10,7 +10,6 @@ import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.LuaUtils;
-import org.terasology.jnlua.LuaRuntimeException;
 
 @LuaWhitelist
 @LuaTypeDoc(

@@ -14,7 +14,6 @@ import org.moon.figura.lua.api.math.VectorsAPI;
 import org.moon.figura.lua.api.model.VanillaModelAPI;
 import org.moon.figura.lua.api.nameplate.NameplateAPI;
 import org.moon.figura.lua.api.world.WorldAPI;
-import org.moon.figura.utils.LuaUtils;
 import org.terasology.jnlua.*;
 
 import java.io.IOException;

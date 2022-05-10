@@ -11,7 +11,6 @@ import org.moon.figura.avatars.model.FiguraModelPart;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 

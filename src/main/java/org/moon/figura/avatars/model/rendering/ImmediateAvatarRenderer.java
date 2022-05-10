@@ -1,7 +1,6 @@
 package org.moon.figura.avatars.model.rendering;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderType;
@@ -9,14 +8,13 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.world.entity.Entity;
 import org.moon.figura.avatars.Avatar;
-import org.moon.figura.config.Config;
-import org.moon.figura.math.matrix.FiguraMat3;
-import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.avatars.model.FiguraModelPart;
 import org.moon.figura.avatars.model.PartCustomization;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
+import org.moon.figura.config.Config;
+import org.moon.figura.math.matrix.FiguraMat3;
+import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;

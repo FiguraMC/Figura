@@ -14,7 +14,10 @@ import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.ui.UIHelper;
 
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 
 public class AvatarList extends AbstractList {
 

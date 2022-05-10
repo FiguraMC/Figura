@@ -3,7 +3,6 @@ package org.moon.figura.avatars.model;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec3;
-import org.moon.figura.avatars.model.rendering.FiguraImmediateBuffer;
 import org.moon.figura.utils.caching.CacheStack;
 import org.moon.figura.utils.caching.CacheUtils;
 import org.moon.figura.utils.caching.CachedType;
