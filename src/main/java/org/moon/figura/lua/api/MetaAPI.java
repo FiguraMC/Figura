@@ -243,8 +243,8 @@ public class MetaAPI {
             ),
             description = "meta.get_max_script_memory"
     )
-    public static int getMaxScriptMemory(MetaAPI api) {
-        return api.trust.get(TrustContainer.Trust.MAX_MEM);
+    public static long getMaxScriptMemory(MetaAPI api) {
+        return Math.min(Integer.MAX_VALUE,  api.trust.get(TrustContainer.Trust.MAX_MEM) * 1_000_000L);
     }
 
     @LuaWhitelist
