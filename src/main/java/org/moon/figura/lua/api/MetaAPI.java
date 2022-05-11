@@ -308,4 +308,9 @@ public class MetaAPI {
         TrustContainer.Trust trust = TrustContainer.Trust.OFFSCREEN_RENDERING;
         return trust.asBoolean(api.trust.get(trust));
     }
+
+    @Override
+    public String toString() {
+        return "MetaAPI";
+    }
 }

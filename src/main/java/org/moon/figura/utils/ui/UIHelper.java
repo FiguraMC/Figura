@@ -19,6 +19,7 @@ import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
@@ -87,7 +88,7 @@ public class UIHelper extends GuiComponent {
         RenderSystem.enableBlend();
     }
 
-    public static void drawEntity(int x, int y, float scale, float pitch, float yaw, LivingEntity entity, PoseStack stack) {
+    public static void drawEntity(int x, int y, float scale, float pitch, float yaw, LivingEntity entity, PoseStack stack, boolean paperdoll) {
         //apply matrix transformers
         stack.pushPose();
         stack.translate(x, y, 0f);
@@ -110,17 +111,37 @@ public class UIHelper extends GuiComponent {
 
         //apply entity rotation
         entity.yBodyRot = 180f - yaw;
-        entity.setYRot(180f - yaw);
-        entity.setXRot(0f);
-        entity.yHeadRot = entity.getYRot();
-        entity.yHeadRotO = entity.getYRot();
         entity.setInvisible(false);
-        UIHelper.forceNameplate = true;
+        UIHelper.forceNameplate = !paperdoll;
         UIHelper.forceNoFire = true;
 
-        //set up lighting
-        Lighting.setupForFlatItems();
-        RenderSystem.setShaderLights(Util.make(new Vector3f(-0.2f, -1f, -1f), Vector3f::normalize), Util.make(new Vector3f(-0.2f, 0.4f, -0.3f), Vector3f::normalize));
+        if (paperdoll) {
+            //offset
+            if (entity.isFallFlying())
+                stack.translate(Mth.triangleWave((float) Math.toRadians(yaw + 270), Mth.TWO_PI), 0d, 0d);
+
+            if (entity.isAutoSpinAttack() || entity.isVisuallySwimming() || entity.isFallFlying()) {
+                stack.translate(0d, 1d, 0d);
+                entity.setXRot(0f);
+            }
+
+            //head rot
+            float rot = entity.yHeadRot - bodyYaw - yaw + 180f;
+            entity.yHeadRot = rot;
+            entity.yHeadRotO = rot;
+
+            //lightning
+            Lighting.setupForEntityInInventory();
+        } else {
+            entity.setXRot(0f);
+            entity.setYRot(180f - yaw);
+            entity.yHeadRot = entity.getYRot();
+            entity.yHeadRotO = entity.getYRot();
+
+            //set up lighting
+            Lighting.setupForFlatItems();
+            RenderSystem.setShaderLights(Util.make(new Vector3f(-0.2f, -1f, -1f), Vector3f::normalize), Util.make(new Vector3f(-0.2f, 0.4f, -0.3f), Vector3f::normalize));
+        }
 
         //setup entity renderer
         EntityRenderDispatcher dispatcher = Minecraft.getInstance().getEntityRenderDispatcher();

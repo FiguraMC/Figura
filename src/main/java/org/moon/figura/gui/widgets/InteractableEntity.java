@@ -105,7 +105,7 @@ public class InteractableEntity extends AbstractContainerElement {
         if (entity != null) {
             stack.pushPose();
             stack.translate(0f, 0f, -400f);
-            UIHelper.drawEntity(x + modelX, y + modelY, scale + scaledValue, angleX, angleY, entity, stack);
+            UIHelper.drawEntity(x + modelX, y + modelY, scale + scaledValue, angleX, angleY, entity, stack, false);
             stack.popPose();
         } else {
             stack.pushPose();

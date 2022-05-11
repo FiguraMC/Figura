@@ -137,4 +137,9 @@ public class HostAPI {
         if (animated == null) animated = false;
         api.minecraft.gui.setOverlayMessage(TextUtils.tryParseJson(text), animated);
     }
+
+    @Override
+    public String toString() {
+        return "HostAPI";
+    }
 }

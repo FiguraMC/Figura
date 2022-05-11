@@ -57,6 +57,12 @@ public enum Config {
     ActionWheel,
     //ACTION_WHEEL_BUTTON("key.keyboard.b"),
 
+    Paperdoll,
+    HAS_PAPERDOLL(true),
+    PAPERDOLL_ALWAYS_ON(false),
+    FIRST_PERSON_PAPERDOLL(true),
+    PAPERDOLL_SCALE(1f, InputType.FLOAT),
+
     Misc,
     BUTTON_LOCATION(0, 5),
     EASTER_EGGS(true),

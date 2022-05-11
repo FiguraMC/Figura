@@ -141,6 +141,21 @@
   "figura.config.actionwheel": "Action Wheel",
   "figura.config.actionwheel.tooltip": "Action Wheel settings",
 
+  "figura.config.paperdoll": "Paperdoll",
+  "figura.config.paperdoll.tooltip": "Paperdoll settings",
+
+  "figura.config.has_paperdoll": "Enable paperdoll",
+  "figura.config.has_paperdoll.tooltip": "Toggle the paperdoll rendering",
+
+  "figura.config.paperdoll_always_on": "Always on",
+  "figura.config.paperdoll_always_on.tooltip": "Toggle if the paperdoll should render always or only during poses",
+
+  "figura.config.first_person_paperdoll": "First Person only",
+  "figura.config.first_person_paperdoll.tooltip": "Toggles if the paperdoll should render only when in first person",
+
+  "figura.config.paperdoll_scale": "Scale",
+  "figura.config.paperdoll_scale.tooltip": "Changes the paperdoll scale",
+
   "figura.config.misc": "Misc",
   "figura.config.misc.tooltip": "Unsorted/Unrelated settings",
 

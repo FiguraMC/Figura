@@ -33,22 +33,22 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
     private Avatar currentAvatar;
 
     @Inject(method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", at = @At("HEAD"))
-    private void preRender(LivingEntity entity, float yaw, float delta, PoseStack matrices, MultiBufferSource bufferSource, int l, CallbackInfo ci) {
+    private void preRender(LivingEntity entity, float yaw, float delta, PoseStack matrices, MultiBufferSource bufferSource, int light, CallbackInfo ci) {
         currentAvatar = AvatarManager.getAvatar(entity);
         if (currentAvatar == null)
             return;
-        EntityModel<?> model = ((LivingEntityRenderer<?, ?>) (Object) this).getModel();
+        EntityModel<?> model = this.getModel();
         if (model instanceof PlayerModel<?> playerModel)
             if (currentAvatar.luaState != null)
                 currentAvatar.luaState.vanillaModel.alterModel(playerModel);
     }
 
     @Inject(at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;popPose()V"), method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V")
-    private void endRender(LivingEntity entity, float yaw, float delta, PoseStack matrices, MultiBufferSource bufferSource, int l, CallbackInfo ci) {
+    private void endRender(LivingEntity entity, float yaw, float delta, PoseStack matrices, MultiBufferSource bufferSource, int light, CallbackInfo ci) {
         if (currentAvatar == null)
             return;
         //Render avatar with params
-        EntityModel<?> model = ((LivingEntityRenderer<?, ?>) (Object) this).getModel();
+        EntityModel<?> model = this.getModel();
 
         //When viewed 3rd person, render all non-world parts.
         //No camera/hud or whatever in yet. when they are, they won't be included here either.
@@ -57,7 +57,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
             if (currentAvatar.luaState != null)
                 currentAvatar.luaState.vanillaModel.alterModel(playerModel);
 
-        currentAvatar.onRender(entity, yaw, delta, matrices, bufferSource, l, model);
+        currentAvatar.onRender(entity, yaw, delta, matrices, bufferSource, light, model);
         currentAvatar = null;
     }
 
