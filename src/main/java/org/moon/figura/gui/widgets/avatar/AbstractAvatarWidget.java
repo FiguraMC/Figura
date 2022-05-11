@@ -86,6 +86,6 @@ public class AbstractAvatarWidget extends AbstractContainerElement implements Co
             return 1;
 
         //then compare names
-        else return this.getName().compareTo(other.getName());
+        else return this.getName().toLowerCase().compareTo(other.getName().toLowerCase());
     }
 }

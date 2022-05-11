@@ -2,14 +2,17 @@ package org.moon.figura.gui.widgets.lists;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.Util;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.util.Mth;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.providers.LocalAvatarFetcher;
 import org.moon.figura.gui.widgets.TextField;
+import org.moon.figura.gui.widgets.TexturedButton;
 import org.moon.figura.gui.widgets.avatar.AbstractAvatarWidget;
 import org.moon.figura.gui.widgets.avatar.AvatarFolderWidget;
 import org.moon.figura.gui.widgets.avatar.AvatarWidget;
+import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.ui.UIHelper;
 
@@ -36,14 +39,22 @@ public class AvatarList extends AbstractList {
     public AvatarList(int x, int y, int width, int height) {
         super(x, y, width, height);
 
-        children.add(new TextField(x + 4, y + 4, width - 8, 22, new FiguraText("gui.search"), s -> filter = s));
+        children.add(new TextField(x + 4, y + 4, width - 32, 20, new FiguraText("gui.search"), s -> filter = s));
+        children.add(new TexturedButton(
+                x + width - 24, y + 4,
+                20, 20, 20, 0, 20,
+                new FiguraIdentifier("textures/gui/folder.png"),
+                40, 40,
+                new FiguraText("gui.wardrobe.folder.tooltip"),
+                button -> Util.getPlatform().openFile(LocalAvatarFetcher.getLocalAvatarDirectory().toFile()))
+        );
 
         //scrollbar
-        this.scrollBar.y = y + 30;
-        this.scrollBar.setHeight(height - 34);
+        this.scrollBar.y = y + 28;
+        this.scrollBar.setHeight(height - 32);
 
         //scissors
-        this.updateScissors(1, 26, -2, -27);
+        this.updateScissors(1, 24, -2, -27);
 
         //initial load
         LocalAvatarFetcher.load();
@@ -71,12 +82,12 @@ public class AvatarList extends AbstractList {
             totalHeight += avatar.getHeight() + 2;
         int entryHeight = avatarList.isEmpty() ? 0 : totalHeight / avatarList.size();
 
-        scrollBar.visible = totalHeight > height - 34;
+        scrollBar.visible = totalHeight > height - 32;
         scrollBar.setScrollRatio(entryHeight, totalHeight - (height - 34));
 
         //render list
         int xOffset = scrollBar.visible ? 4 : 11;
-        int yOffset = scrollBar.visible ? (int) -(Mth.lerp(scrollBar.getScrollProgress(), -34, totalHeight - height)) : 34;
+        int yOffset = scrollBar.visible ? (int) -(Mth.lerp(scrollBar.getScrollProgress(), -32, totalHeight - height)) : 32;
         boolean hidden = false;
 
         for (AbstractAvatarWidget avatar : avatarList) {

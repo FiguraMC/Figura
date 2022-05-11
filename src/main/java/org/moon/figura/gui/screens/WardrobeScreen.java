@@ -40,8 +40,8 @@ public class WardrobeScreen extends AbstractPanelScreen {
         double screenScale = Math.min(this.width, this.height) / 1018d;
 
         //model
-        int modelBgSize = Math.min((int) ((512 / guiScale) * (screenScale * guiScale)), 258);
-        int modelSize = Math.min((int) ((192 / guiScale) * (screenScale * guiScale)), 96);
+        int modelBgSize = Math.min((int) ((512 / guiScale) * (screenScale * guiScale)), third);
+        int entitySize = (int) ((192 / guiScale) * (screenScale * guiScale));
 
         // -- left -- //
 
@@ -53,7 +53,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
         int entityX = middle - modelBgSize / 2;
         int entityY = this.height / 2 - modelBgSize / 2;
 
-        InteractableEntity entity = new InteractableEntity(entityX, entityY, modelBgSize, modelBgSize, modelSize, -15f, 30f, Minecraft.getInstance().player, this);
+        InteractableEntity entity = new InteractableEntity(entityX, entityY, modelBgSize, modelBgSize, entitySize, -15f, 30f, Minecraft.getInstance().player, this);
         addRenderableWidget(entity);
 
         int buttX = entity.x + entity.width / 2;

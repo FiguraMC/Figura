@@ -151,7 +151,6 @@ public class Avatar {
 
     public void onFirstPersonRender(PoseStack stack, MultiBufferSource bufferSource, Player player, PlayerModel<?> model, ModelPart arm, int light, float tickDelta) {
         arm.xRot = 0;
-        arm.translateAndRotate(stack);
         renderer.currentFilterScheme = arm == model.leftArm ? AvatarRenderer.RENDER_LEFT_ARM : AvatarRenderer.RENDER_RIGHT_ARM;
         onRender(player, 0f, tickDelta, stack, bufferSource, light, model);
     }

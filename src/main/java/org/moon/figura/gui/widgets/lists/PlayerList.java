@@ -34,16 +34,16 @@ public class PlayerList extends AbstractList {
 
     public PlayerList(int x, int y, int width, int height, TrustScreen parent) {
         super(x, y, width, height);
-        updateScissors(1, 26, -2, -27);
+        updateScissors(1, 24, -2, -27);
 
         this.parent = parent;
 
         //fix scrollbar y and height
-        scrollBar.y = y + 30;
-        scrollBar.setHeight(height - 34);
+        scrollBar.y = y + 28;
+        scrollBar.setHeight(height - 32);
 
         //search bar
-        children.add(new TextField(x + 4, y + 4, width - 8, 22, new FiguraText("gui.search"), s -> filter = s));
+        children.add(new TextField(x + 4, y + 4, width - 8, 20, new FiguraText("gui.search"), s -> filter = s));
 
         //initial load
         loadGroups();
@@ -74,12 +74,12 @@ public class PlayerList extends AbstractList {
         }
 
         //scrollbar visible
-        scrollBar.visible = totalHeight > height - 34;
-        scrollBar.setScrollRatio(trustList.isEmpty() ? 0f : (float) totalHeight / trustList.size(), totalHeight - (height - 34));
+        scrollBar.visible = totalHeight > height - 32;
+        scrollBar.setScrollRatio(trustList.isEmpty() ? 0f : (float) totalHeight / trustList.size(), totalHeight - (height - 32));
 
         //render stuff
         int xOffset = width / 2 - 87 - (scrollBar.visible ? 7 : 0);
-        int playerY = scrollBar.visible ? (int) -(Mth.lerp(scrollBar.getScrollProgress(), -34, totalHeight - height)) : 34;
+        int playerY = scrollBar.visible ? (int) -(Mth.lerp(scrollBar.getScrollProgress(), -32, totalHeight - height)) : 32;
         boolean hidden = false;
 
         for (AbstractTrustElement trust : trustList) {

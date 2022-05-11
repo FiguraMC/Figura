@@ -26,6 +26,7 @@ import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.TextUtils;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -38,6 +39,9 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
     public PlayerRendererMixin(EntityRendererProvider.Context context, PlayerModel<AbstractClientPlayer> entityModel, float shadowRadius) {
         super(context, entityModel, shadowRadius);
     }
+
+    @Unique
+    private Avatar avatar;
 
     @Inject(method = "renderNameTag(Lnet/minecraft/client/player/AbstractClientPlayer;Lnet/minecraft/network/chat/Component;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", at = @At("HEAD"), cancellable = true)
     private void renderFiguraLabelIfPresent(AbstractClientPlayer player, Component text, PoseStack stack, MultiBufferSource multiBufferSource, int light, CallbackInfo ci) {
@@ -151,9 +155,17 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
         ci.cancel();
     }
 
+    @Inject(at = @At(value = "INVOKE", shift = At.Shift.AFTER, target = "Lnet/minecraft/client/renderer/entity/player/PlayerRenderer;setModelProperties(Lnet/minecraft/client/player/AbstractClientPlayer;)V"), method = "renderHand")
+    private void onRenderHand(PoseStack stack, MultiBufferSource multiBufferSource, int light, AbstractClientPlayer player, ModelPart arm, ModelPart sleeve, CallbackInfo ci) {
+        avatar = AvatarManager.getAvatarForPlayer(player.getUUID());
+        if (avatar == null || avatar.luaState == null)
+            return;
+
+        avatar.luaState.vanillaModel.alterModel(this.getModel());
+    }
+
     @Inject(at = @At("RETURN"), method = "renderHand")
-    private void postRenderArm(PoseStack stack, MultiBufferSource multiBufferSource, int light, AbstractClientPlayer player, ModelPart modelPart, ModelPart arm, CallbackInfo ci) {
-        Avatar avatar = AvatarManager.getAvatarForPlayer(player.getUUID());
+    private void postRenderHand(PoseStack stack, MultiBufferSource multiBufferSource, int light, AbstractClientPlayer player, ModelPart arm, ModelPart sleeve, CallbackInfo ci) {
         if (avatar == null)
             return;
 

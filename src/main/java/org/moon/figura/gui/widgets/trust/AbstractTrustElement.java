@@ -83,7 +83,7 @@ public class AbstractTrustElement extends AbstractButton implements Comparable<A
                     return  1;
 
                 //and then compare names
-                return player1.getName().compareTo(player2.getName());
+                return player1.getName().toLowerCase().compareTo(player2.getName().toLowerCase());
             }
         }
 
