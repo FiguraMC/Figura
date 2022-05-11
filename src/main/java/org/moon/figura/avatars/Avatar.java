@@ -4,12 +4,15 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.PlayerModel;
+import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.model.rendering.AvatarRenderer;
@@ -41,6 +44,7 @@ public class Avatar {
     public final String author;
     public final String version;
     public final float fileSize;
+    public String badges = ""; //TODO fetch from backend
     public String pride;
 
     //Runtime data
@@ -98,6 +102,8 @@ public class Avatar {
     }
 
     public void onRender(Entity entity, float yaw, float delta, PoseStack matrices, MultiBufferSource bufferSource, int light, EntityModel<?> model) {
+        if (entity.isSpectator())
+            renderer.currentFilterScheme = AvatarRenderer.RENDER_HEAD;
         renderer.entity = entity;
         renderer.yaw = yaw;
         renderer.tickDelta = delta;
@@ -143,7 +149,12 @@ public class Avatar {
         onWorldRender(camPos.x, camPos.y, camPos.z, matrices, bufferSource, light, tickDelta);
     }
 
-
+    public void onFirstPersonRender(PoseStack stack, MultiBufferSource bufferSource, Player player, PlayerModel<?> model, ModelPart arm, int light, float tickDelta) {
+        arm.xRot = 0;
+        arm.translateAndRotate(stack);
+        renderer.currentFilterScheme = arm == model.leftArm ? AvatarRenderer.RENDER_LEFT_ARM : AvatarRenderer.RENDER_RIGHT_ARM;
+        onRender(player, 0f, tickDelta, stack, bufferSource, light, model);
+    }
 
     /**
      * We should call this whenever an avatar is no longer reachable!

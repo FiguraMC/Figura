@@ -51,6 +51,24 @@ public abstract class AvatarRenderer {
             return true;
         return previousPassed;
     });
+    public static final PartFilterScheme RENDER_HEAD = new PartFilterScheme(false, (part, previousPassed) -> {
+        //Allow nothing except descendants of HEAD parts.
+        if (part.parentType == FiguraModelPart.ParentType.Head)
+            return true;
+        return previousPassed;
+    });
+    public static final PartFilterScheme RENDER_LEFT_ARM = new PartFilterScheme(false, (part, previousPassed) -> {
+        //Allow nothing except descendants of LEFT_ARM parts.
+        if (part.parentType == FiguraModelPart.ParentType.LeftArm)
+            return true;
+        return previousPassed;
+    });
+    public static final PartFilterScheme RENDER_RIGHT_ARM = new PartFilterScheme(false, (part, previousPassed) -> {
+        //Allow nothing except descendants of LEFT_ARM parts.
+        if (part.parentType == FiguraModelPart.ParentType.RightArm)
+            return true;
+        return previousPassed;
+    });
 
     public record PartFilterScheme(boolean initialValue, BiPredicate<FiguraModelPart, Boolean> predicate) {}
 

@@ -7,10 +7,13 @@ import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.config.Config;
 import org.moon.figura.lua.LuaWhitelist;
-import org.moon.figura.lua.docs.LuaFieldDoc;
+import org.moon.figura.lua.docs.LuaFunctionOverload;
+import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.TextUtils;
+import org.terasology.jnlua.LuaRuntimeException;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -19,22 +22,12 @@ import org.moon.figura.utils.TextUtils;
 )
 public class NameplateCustomization {
 
-    @LuaWhitelist
-    @LuaFieldDoc(description = "nameplate_customization.text")
-    public String text;
+    private String text;
 
     //those are only used on the ENTITY nameplate
-    @LuaWhitelist
-    @LuaFieldDoc(description = "nameplate_customization.position")
-    public FiguraVec3 position;
-
-    @LuaWhitelist
-    @LuaFieldDoc(description = "nameplate_customization.scale")
-    public FiguraVec3 scale;
-
-    @LuaWhitelist
-    @LuaFieldDoc(description = "nameplate_customization.visible")
-    public Boolean visible;
+    private FiguraVec3 position;
+    private FiguraVec3 scale;
+    private Boolean visible;
 
     public static Component applyCustomization(String text) {
         text = TextUtils.noBadges4U(text);
@@ -42,7 +35,6 @@ public class NameplateCustomization {
         return TextUtils.removeClickableObjects(ret);
     }
 
-    //TODO - fetch special badges from backend
     public static Component fetchBadges(Avatar avatar) {
         if (avatar == null)
             return TextComponent.EMPTY.copy();
@@ -73,9 +65,119 @@ public class NameplateCustomization {
         }
 
         //special
-        //....
+        ret += avatar.badges;
 
         return new TextComponent(ret).withStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT));
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = NameplateCustomization.class,
+                    argumentNames = "customization"
+            ),
+            description = "nameplate_customization.get_text"
+    )
+    public static String getText(NameplateCustomization custom) {
+        return custom.text;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = {NameplateCustomization.class, String.class},
+                    argumentNames = {"customization", "text"}
+            ),
+            description = "nameplate_customization.set_text"
+    )
+    public static void setText(NameplateCustomization custom, String text) {
+        if (TextUtils.tryParseJson(text).getString().length() > 256)
+            throw new LuaRuntimeException("Text length exceeded limit of 256 characters");
+        custom.text = text;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = NameplateCustomization.class,
+                    argumentNames = "customization"
+            ),
+            description = "nameplate_customization.get_pos"
+    )
+    public static FiguraVec3 getPos(NameplateCustomization custom) {
+        return custom.position;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = {NameplateCustomization.class, FiguraVec3.class},
+                            argumentNames = {"customization", "color"}
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {NameplateCustomization.class, Double.class, Double.class, Double.class},
+                            argumentNames = {"customization", "x", "y", "z"}
+                    )
+            },
+            description = "nameplate_customization.set_pos"
+    )
+    public static void setPos(NameplateCustomization custom, Object x, Double y, Double z) {
+        custom.position = LuaUtils.parseVec3("setPosition", x, y, z);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = NameplateCustomization.class,
+                    argumentNames = "customization"
+            ),
+            description = "nameplate_customization.get_scale"
+    )
+    public static FiguraVec3 getScale(NameplateCustomization custom) {
+        return custom.scale;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = {NameplateCustomization.class, FiguraVec3.class},
+                            argumentNames = {"customization", "color"}
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {NameplateCustomization.class, Double.class, Double.class, Double.class},
+                            argumentNames = {"customization", "x", "y", "z"}
+                    )
+            },
+            description = "nameplate_customization.set_scale"
+    )
+    public static void setScale(NameplateCustomization custom, Object x, Double y, Double z) {
+        custom.scale = LuaUtils.parseVec3("setScale", x, y, z, 1, 1, 1);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = NameplateCustomization.class,
+                    argumentNames = "customization"
+            ),
+            description = "nameplate_customization.is_visible"
+    )
+    public static Boolean isVisible(NameplateCustomization custom) {
+        return custom.visible;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = {NameplateCustomization.class, Boolean.class},
+                    argumentNames = {"customization", "visible"}
+            ),
+            description = "nameplate_customization.set_visible"
+    )
+    public static void setVisible(NameplateCustomization custom, Boolean visible) {
+        custom.visible = visible;
     }
 
     @Override

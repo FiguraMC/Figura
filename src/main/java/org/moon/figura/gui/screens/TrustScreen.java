@@ -116,7 +116,7 @@ public class TrustScreen extends AbstractPanelScreen {
         ));
 
         //debug buttons
-        uuid = new TextField(middle + 2, back.y - 24, listWidth - 24, 20, new TextComponent("Name/UUID"), null);
+        uuid = new TextField(middle + 2, back.y - 24, listWidth - 24, 20, new TextComponent("Name/UUID"), s -> yoink.active = !s.isBlank());
         yoink = new TexturedButton(middle + listWidth - 18, back.y - 24, 20, 20, new TextComponent("yoink"), new TextComponent("Set the selected player's avatar"), button -> {
             try {
                 GameProfile gameProfile;
@@ -141,6 +141,7 @@ public class TrustScreen extends AbstractPanelScreen {
                 FiguraMod.LOGGER.error("", e);
             }
         });
+        yoink.active = false;
 
         if (FiguraMod.DEBUG_MODE) {
             addRenderableWidget(uuid);

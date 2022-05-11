@@ -11,7 +11,6 @@ import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.TextUtils;
-import org.terasology.jnlua.LuaRuntimeException;
 
 import java.util.UUID;
 
@@ -74,22 +73,10 @@ public class HostAPI {
             },
             description = "host.set_title_times"
     )
-    public static void setTitleTimes(HostAPI api, Object x, Integer y, Integer z) {
+    public static void setTitleTimes(HostAPI api, Object x, Double y, Double z) {
         if (!isHost(api)) return;
-
-        if (x instanceof FiguraVec3 vec3) {
-            x = (int) vec3.x;
-            y = (int) vec3.y;
-            z = (int) vec3.z;
-        } else if (x == null || x instanceof Integer) {
-            if (x == null) x = 0;
-            if (y == null) y = 0;
-            if (z == null) z = 0;
-        } else {
-            throw new LuaRuntimeException("Illegal argument to setTitleTimes(): " + x);
-        }
-
-        api.minecraft.gui.setTimes((int) x, y, z);
+        FiguraVec3 times = LuaUtils.parseVec3("setTitleTimes", x, y, z);
+        api.minecraft.gui.setTimes((int) times.x, (int) times.y, (int) times.z);
     }
 
     @LuaWhitelist

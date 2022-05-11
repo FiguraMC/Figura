@@ -7,7 +7,10 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
+import org.moon.figura.FiguraMod;
+import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
+import org.moon.figura.avatars.providers.LocalAvatarLoader;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.widgets.ContextMenu;
 import org.moon.figura.gui.widgets.lists.PlayerList;
@@ -67,6 +70,16 @@ public class PlayerElement extends AbstractTrustElement {
             });
         }
         context.addTab(new FiguraText("gui.context.set_trust"), trustContext);
+
+        if (FiguraMod.DEBUG_MODE) {
+            context.addAction(new TextComponent("yoink to cache"), button -> {
+                Avatar a = AvatarManager.getAvatarForPlayer(owner);
+                if (a != null) {
+                    LocalAvatarLoader.saveNbt(a.nbt);
+                    FiguraToast.sendToast("yoinked");
+                }
+            });
+        }
     }
 
     @Override

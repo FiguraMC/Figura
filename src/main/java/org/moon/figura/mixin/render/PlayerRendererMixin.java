@@ -5,6 +5,7 @@ import com.mojang.math.Matrix4f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.model.PlayerModel;
+import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -56,7 +57,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
         NameplateCustomization custom = avatar.luaState == null ? null : avatar.luaState.nameplate.ENTITY;
 
         //enabled
-        if (custom != null && custom.visible != null && !custom.visible) {
+        if (custom != null && NameplateCustomization.isVisible(custom) != null && !NameplateCustomization.isVisible(custom)) {
             ci.cancel();
             return;
         }
@@ -68,8 +69,8 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
 
         //pos
         FiguraVec3 pos = FiguraVec3.of(0f, player.getBbHeight() + 0.5f, 0f);
-        if (custom != null && custom.position != null && trust)
-            pos.add(custom.position);
+        if (custom != null && NameplateCustomization.getPos(custom) != null && trust)
+            pos.add(NameplateCustomization.getPos(custom));
 
         stack.translate(pos.x, pos.y, pos.z);
 
@@ -79,15 +80,15 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
         //scale
         float scale = 0.025f;
         FiguraVec3 scaleVec = FiguraVec3.of(-scale, -scale, scale);
-        if (custom != null && custom.scale != null && trust)
-            scaleVec.multiply(custom.scale);
+        if (custom != null && NameplateCustomization.getScale(custom) != null && trust)
+            scaleVec.multiply(NameplateCustomization.getScale(custom));
 
         stack.scale((float) scaleVec.x, (float) scaleVec.y, (float) scaleVec.z);
 
         //text
         Component replacement;
-        if (custom != null && custom.text != null && trust) {
-            replacement = NameplateCustomization.applyCustomization(custom.text);
+        if (custom != null && NameplateCustomization.getText(custom) != null && trust) {
+            replacement = NameplateCustomization.applyCustomization(NameplateCustomization.getText(custom));
         } else {
             replacement = new TextComponent(player.getName().getString());
         }
@@ -148,5 +149,14 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
 
         stack.popPose();
         ci.cancel();
+    }
+
+    @Inject(at = @At("RETURN"), method = "renderHand")
+    private void postRenderArm(PoseStack stack, MultiBufferSource multiBufferSource, int light, AbstractClientPlayer player, ModelPart modelPart, ModelPart arm, CallbackInfo ci) {
+        Avatar avatar = AvatarManager.getAvatarForPlayer(player.getUUID());
+        if (avatar == null)
+            return;
+
+        avatar.onFirstPersonRender(stack, multiBufferSource, player, this.getModel(), arm, light, Minecraft.getInstance().getDeltaFrameTime());
     }
 }

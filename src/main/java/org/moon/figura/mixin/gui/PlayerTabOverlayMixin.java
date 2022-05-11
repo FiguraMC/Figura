@@ -40,8 +40,8 @@ public class PlayerTabOverlayMixin {
         Component replacement;
 
         NameplateCustomization custom = avatar.luaState == null ? null : avatar.luaState.nameplate.LIST;
-        if (custom != null && custom.text != null && TrustManager.get(uuid).get(TrustContainer.Trust.NAMEPLATE_EDIT) == 1) {
-            replacement = NameplateCustomization.applyCustomization(custom.text);
+        if (custom != null && NameplateCustomization.getText(custom) != null && TrustManager.get(uuid).get(TrustContainer.Trust.NAMEPLATE_EDIT) == 1) {
+            replacement = NameplateCustomization.applyCustomization(NameplateCustomization.getText(custom));
         } else {
             replacement = new TextComponent(playerInfo.getProfile().getName());
         }

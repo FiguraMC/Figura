@@ -33,6 +33,10 @@ public class PartCustomization implements CachedType {
     private FiguraVec3 bonusPos = FiguraVec3.of();
     private FiguraVec3 bonusRot = FiguraVec3.of();
 
+    public FiguraVec3 color = FiguraVec3.of(1, 1, 1);
+    public float alpha = 1f;
+    public Integer light = null;
+
     /**
      * Recalculates the matrix if necessary.
      */
@@ -79,7 +83,7 @@ public class PartCustomization implements CachedType {
         needsMatrixRecalculation = true;
     }
     public FiguraVec3 getPos() {
-        return FiguraVec3.of(position.x, position.y, position.z);
+        return position.copy();
     }
 
     public void setRot(FiguraVec3 rot) {
@@ -90,7 +94,7 @@ public class PartCustomization implements CachedType {
         needsMatrixRecalculation = true;
     }
     public FiguraVec3 getRot() {
-        return FiguraVec3.of(rotation.x, rotation.y, rotation.z);
+        return rotation.copy();
     }
 
     public void setScale(FiguraVec3 scale) {
@@ -101,7 +105,7 @@ public class PartCustomization implements CachedType {
         needsMatrixRecalculation = true;
     }
     public FiguraVec3 getScale() {
-        return FiguraVec3.of(scale.x, scale.y, scale.z);
+        return scale.copy();
     }
 
     public void setPivot(FiguraVec3 pivot) {
@@ -112,7 +116,7 @@ public class PartCustomization implements CachedType {
         needsMatrixRecalculation = true;
     }
     public FiguraVec3 getPivot() {
-        return FiguraVec3.of(pivot.x, pivot.y, pivot.z);
+        return pivot.copy();
     }
 
     public void setBonusPivot(FiguraVec3 bonusPivot) {
@@ -123,7 +127,7 @@ public class PartCustomization implements CachedType {
         needsMatrixRecalculation = true;
     }
     public FiguraVec3 getBonusPivot() {
-        return FiguraVec3.of(bonusPivot.x, bonusPivot.y, bonusPivot.z);
+        return bonusPivot.copy();
     }
 
     public void setBonusPos(FiguraVec3 bonusPos) {
@@ -134,7 +138,7 @@ public class PartCustomization implements CachedType {
         needsMatrixRecalculation = true;
     }
     public FiguraVec3 getBonusPos() {
-        return FiguraVec3.of(bonusPos.x, bonusPos.y, bonusPos.z);
+        return bonusPos.copy();
     }
 
     public void setBonusRot(FiguraVec3 bonusRot) {
@@ -145,10 +149,8 @@ public class PartCustomization implements CachedType {
         needsMatrixRecalculation = true;
     }
     public FiguraVec3 getBonusRot() {
-        return FiguraVec3.of(bonusRot.x, bonusRot.y, bonusRot.z);
+        return bonusRot.copy();
     }
-
-
 
     public void setMatrix(FiguraMat4 matrix) {
         positionMatrix.set(matrix);
@@ -204,6 +206,9 @@ public class PartCustomization implements CachedType {
         bonusPivot = FiguraVec3.of();
         bonusPos = FiguraVec3.of();
         bonusRot = FiguraVec3.of();
+        color = FiguraVec3.of(1, 1, 1);
+        alpha = 1f;
+        light = null;
         needsMatrixRecalculation = false;
         visible = null;
     }
@@ -217,6 +222,7 @@ public class PartCustomization implements CachedType {
         bonusPivot.free();
         bonusPos.free();
         bonusRot.free();
+        color.free();
     }
     public static PartCustomization of() {
         return CACHE.getFresh();

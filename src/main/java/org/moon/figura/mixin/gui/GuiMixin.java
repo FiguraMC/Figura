@@ -51,8 +51,8 @@ public class GuiMixin {
             Component replacement;
             Component message = args.get(1);
             NameplateCustomization custom = avatar.luaState == null ? null : avatar.luaState.nameplate.CHAT;
-            if (custom != null && custom.text != null && TrustManager.get(uuid).get(TrustContainer.Trust.NAMEPLATE_EDIT) == 1) {
-                replacement = NameplateCustomization.applyCustomization(custom.text.replaceAll("\n|\\\\n", ""));
+            if (custom != null && NameplateCustomization.getText(custom) != null && TrustManager.get(uuid).get(TrustContainer.Trust.NAMEPLATE_EDIT) == 1) {
+                replacement = NameplateCustomization.applyCustomization(NameplateCustomization.getText(custom).replaceAll("\n|\\\\n", ""));
             } else {
                 replacement = new TextComponent(player.getProfile().getName());
             }

@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.nbt.ByteTag;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -18,7 +19,6 @@ import org.moon.figura.avatars.model.rendering.ImmediateAvatarRenderer;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
 import org.moon.figura.avatars.vanilla.VanillaPartOffsetManager;
 import org.moon.figura.lua.LuaWhitelist;
-import org.moon.figura.lua.api.entity.EntityWrapper;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
@@ -496,11 +496,6 @@ public class FiguraModelPart {
         modelPart.customization.setMatrix(matrix);
     }
 
-    //GetColor
-    //SetColor
-    //GetUV
-    //SetUV
-    //SetUVPixels (will set uv in pixels, automatically dividing by texture size)
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
@@ -657,6 +652,97 @@ public class FiguraModelPart {
         return result;
     }
 
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraModelPart.class, FiguraVec3.class},
+                            argumentNames = {"modelPart", "color"}
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraModelPart.class, Double.class, Double.class, Double.class},
+                            argumentNames = {"modelPart", "r", "g", "b"}
+                    )
+            },
+            description = "model_part.set_color"
+    )
+    public static void setColor(FiguraModelPart modelPart, Object r, Double g, Double b) {
+        LuaUtils.nullCheck("setColor", "modelPart", modelPart);
+        modelPart.customization.color = LuaUtils.parseVec3("setColor", r, g, b, 1, 1, 1);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraModelPart.class,
+                    argumentNames = "modelPart"
+            ),
+            description = "model_part.get_color"
+    )
+    public static FiguraVec3 getColor(FiguraModelPart modelPart) {
+        LuaUtils.nullCheck("getColor", "modelPart", modelPart);
+        return modelPart.customization.color;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = {FiguraModelPart.class, Float.class},
+                    argumentNames = {"modelPart", "opacity"}
+            ),
+            description = "model_part.set_opacity"
+    )
+    public static void setOpacity(FiguraModelPart modelPart, Float opacity) {
+        LuaUtils.nullCheck("setOpacity", "modelPart", modelPart);
+        modelPart.customization.alpha = opacity;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraModelPart.class,
+                    argumentNames = "modelPart"
+            ),
+            description = "model_part.get_opacity"
+    )
+    public static Float getOpacity(FiguraModelPart modelPart) {
+        LuaUtils.nullCheck("getOpacity", "modelPart", modelPart);
+        return modelPart.customization.alpha;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraModelPart.class, FiguraVec2.class},
+                            argumentNames = {"modelPart", "light"}
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraModelPart.class, Integer.class, Integer.class},
+                            argumentNames = {"modelPart", "blockLight", "skyLight"}
+                    )
+            },
+            description = "model_part.set_light"
+    )
+    public static void setLight(FiguraModelPart modelPart, Object light, Double skyLight) {
+        LuaUtils.nullCheck("setLight", "modelPart", modelPart);
+        FiguraVec2 lightVec = LuaUtils.parseVec2("setLight", light, skyLight);
+        modelPart.customization.light = LightTexture.pack((int) lightVec.x, (int) lightVec.y);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraModelPart.class,
+                    argumentNames = "modelPart"
+            ),
+            description = "model_part.get_light"
+    )
+    public static FiguraVec2 getLight(FiguraModelPart modelPart) {
+        LuaUtils.nullCheck("getLight", "modelPart", modelPart);
+        int light = modelPart.customization.light;
+        return FiguraVec2.of(LightTexture.block(light), LightTexture.sky(light));
+    }
 
     //-- METAMETHODS --//
     @LuaWhitelist
