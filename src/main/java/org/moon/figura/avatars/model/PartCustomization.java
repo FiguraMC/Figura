@@ -250,6 +250,8 @@ public class PartCustomization implements CachedType {
             to.setBonusPivot(from.bonusPivot);
             to.setBonusPos(from.bonusPos);
             to.setBonusRot(from.bonusRot);
+            to.color.set(from.color);
+            to.alpha = from.alpha;
             to.needsMatrixRecalculation = from.needsMatrixRecalculation;
             to.visible = from.visible;
             to.setPrimaryRenderType(from.primaryRenderType);
@@ -269,6 +271,12 @@ public class PartCustomization implements CachedType {
 
         if (other.visible != null)
             visible = other.visible;
+
+        if (other.light != null)
+            light = other.light;
+
+        color.multiply(other.color);
+        alpha *= other.alpha;
     }
 
 }

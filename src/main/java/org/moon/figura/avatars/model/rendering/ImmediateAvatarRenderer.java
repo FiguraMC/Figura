@@ -78,7 +78,8 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
     @Override
     public void render() {
-        commonRender(1.5);
+        //Offset is NOT hard coded for one pose, this comes from LivingEntityRenderer.java.
+        commonRender(1.5010000467300415D);
     }
 
     @Override
@@ -125,7 +126,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         double s = 1.0 / 16;
         customization.positionMatrix.scale(s, s, s);
         customization.positionMatrix.rotateZ(180);
-        customization.positionMatrix.translate(0, vertOffset, 0); //vertOffset is 1.5 or 0, depending on regular or world rendering
+        customization.positionMatrix.translate(0, vertOffset, 0);
         customization.normalMatrix.rotateZ(180);
 
         FiguraMat4 posMat = FiguraMat4.fromMatrix4f(matrices.last().pose());
@@ -156,6 +157,25 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         customizationStack.push(part.customization);
         part.customization.visible = storedVisibility;
 
+        //Right now, part.customization.positionMatrix contains a transformation from part space to view space.
+        if (thisPassedPredicate) {
+            FiguraMat4 customizePeek = customizationStack.peek().positionMatrix.copy();
+            FiguraMat4 viewToWorld = AvatarRenderer.worldToViewMatrix().inverted();
+            customizePeek.multiply(viewToWorld);
+            FiguraVec3 piv = part.customization.getPivot();
+            FiguraVec3 pos = part.customization.getPos();
+            piv.subtract(pos);
+            FiguraMat4 translation = FiguraMat4.createTranslationMatrix(piv);
+            customizePeek.rightMultiply(translation);
+            part.savedPartToWorldMat.set(customizePeek);
+
+            customizePeek.free();
+            viewToWorld.free();
+            piv.free();
+            pos.free();
+            translation.free();
+        }
+
         part.pushVerticesImmediate(this, remainingComplexity);
         for (FiguraModelPart child : part.children)
             renderPart(child, remainingComplexity, thisPassedPredicate);
@@ -164,10 +184,6 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
             renderPivot(part);
 
         customizationStack.pop();
-
-        if (part.cachedPartToWorldMat != null)
-            part.cachedPartToWorldMat.free();
-        part.cachedPartToWorldMat = null;
 
         part.resetVanillaTransforms();
     }
@@ -178,7 +194,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         FiguraVec3 color = part.index == -1 ? ColorUtils.Colors.MAYA_BLUE.vec : ColorUtils.Colors.FRAN_PINK.vec;
         double boxSize = part.index == -1 ? 1.0/16 : 1.0/32;
         debugPoseStack.setIdentity();
-        FiguraMat4 posMat = FiguraModelPart.partToWorldMatrix(part, tickDelta);
+        FiguraMat4 posMat = part.savedPartToWorldMat.copy();
         boxSize /= Math.cbrt(posMat.det());
 
         FiguraMat4 worldToView = AvatarRenderer.worldToViewMatrix();

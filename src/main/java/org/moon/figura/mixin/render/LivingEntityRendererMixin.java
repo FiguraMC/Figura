@@ -53,11 +53,12 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
         //When viewed 3rd person, render all non-world parts.
         //No camera/hud or whatever in yet. when they are, they won't be included here either.
         currentAvatar.renderer.currentFilterScheme = AvatarRenderer.RENDER_REGULAR;
-        if (model instanceof PlayerModel<?> playerModel)
-            if (currentAvatar.luaState != null)
-                currentAvatar.luaState.vanillaModel.alterModel(playerModel);
 
         currentAvatar.onRender(entity, yaw, delta, matrices, bufferSource, light, model);
+        if (model instanceof PlayerModel<?> playerModel)
+            if (currentAvatar.luaState != null)
+                currentAvatar.luaState.vanillaModel.restoreModel(playerModel);
+
         currentAvatar = null;
     }
 

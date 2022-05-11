@@ -123,11 +123,18 @@ public class FiguraImmediateBuffer {
                     (float) pos.x,
                     (float) pos.y,
                     (float) pos.z,
-                    1, 1, 1, 1,
+
+                    (float) customization.color.x,
+                    (float) customization.color.y,
+                    (float) customization.color.z,
+                    customization.alpha,
+
                     (float) uv.x,
                     (float) uv.y,
+
                     overlay,
                     light,
+
                     (float) normal.x,
                     (float) normal.y,
                     (float) normal.z

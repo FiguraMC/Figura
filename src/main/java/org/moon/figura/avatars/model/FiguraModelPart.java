@@ -1,7 +1,6 @@
 package org.moon.figura.avatars.model;
 
 import com.google.common.collect.ImmutableMap;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
@@ -11,9 +10,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
 import org.moon.figura.avatars.Avatar;
-import org.moon.figura.avatars.model.rendering.AvatarRenderer;
 import org.moon.figura.avatars.model.rendering.FiguraImmediateBuffer;
 import org.moon.figura.avatars.model.rendering.ImmediateAvatarRenderer;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
@@ -29,7 +26,6 @@ import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec4;
-import org.moon.figura.mixin.ClientLevelInvoker;
 import org.moon.figura.utils.LuaUtils;
 import org.terasology.jnlua.LuaRuntimeException;
 
@@ -593,63 +589,17 @@ public class FiguraModelPart {
         modelPart.customization.setSecondaryRenderType(type);
     }
 
-    public FiguraMat4 cachedPartToWorldMat;
+    public final FiguraMat4 savedPartToWorldMat = FiguraMat4.of();
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = {
-                    @LuaFunctionOverload(
-                            argumentTypes = FiguraModelPart.class,
-                            argumentNames = "modelPart"
-                    ),
-                    @LuaFunctionOverload(
-                            argumentTypes = {FiguraModelPart.class, Float.class},
-                            argumentNames = {"modelPart", "delta"}
-                    )
-            },
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraModelPart.class,
+                    argumentNames = "modelPart"
+            ),
             description = "model_part.part_to_world_matrix"
     )
-    public static FiguraMat4 partToWorldMatrix(FiguraModelPart modelPart, Float tickDelta) {
-        if (modelPart.cachedPartToWorldMat != null)
-            return modelPart.cachedPartToWorldMat.copy();
-
-        FiguraVec3 piv = modelPart.customization.getPivot();
-        FiguraVec3 bonusPiv = modelPart.customization.getBonusPivot();
-
-        FiguraMat4 result = FiguraMat4.createTranslationMatrix(piv);
-        result.translate(bonusPiv);
-
-        FiguraMat4 helperResult = partToWorldMatrixHelper(modelPart, tickDelta);
-        result.multiply(helperResult);
-
-        helperResult.free();
-        piv.free();
-        bonusPiv.free();
-
-        modelPart.cachedPartToWorldMat = result.copy();
-        return result;
-    }
-
-    private static FiguraMat4 partToWorldMatrixHelper(FiguraModelPart modelPart, Float tickDelta) {
-        if (modelPart.parent == null) {
-            if (Minecraft.getInstance().level == null)
-                return FiguraMat4.of();
-            Entity e = ((ClientLevelInvoker) Minecraft.getInstance().level).getEntityGetter().get(modelPart.owner.owner);
-
-            final double factor = 0.9375 / 16;
-            FiguraMat4 result = FiguraMat4.createScaleMatrix(factor, factor, factor);
-            if (e != null) {
-                if (tickDelta == null) tickDelta = 1f;
-                FiguraMat4 rotPos = AvatarRenderer.entityToWorldMatrix(e, tickDelta);
-                result.multiply(rotPos);
-                rotPos.free();
-            }
-            return result;
-        }
-        FiguraMat4 result = modelPart.customization.getPositionMatrix();
-        FiguraMat4 parentMat = partToWorldMatrixHelper(modelPart.parent, tickDelta);
-        result.multiply(parentMat);
-        parentMat.free();
-        return result;
+    public static FiguraMat4 partToWorldMatrix(FiguraModelPart modelPart) {
+        return modelPart.savedPartToWorldMat.copy();
     }
 
     @LuaWhitelist
@@ -681,7 +631,7 @@ public class FiguraModelPart {
     )
     public static FiguraVec3 getColor(FiguraModelPart modelPart) {
         LuaUtils.nullCheck("getColor", "modelPart", modelPart);
-        return modelPart.customization.color;
+        return modelPart.customization.color.copy();
     }
 
     @LuaWhitelist

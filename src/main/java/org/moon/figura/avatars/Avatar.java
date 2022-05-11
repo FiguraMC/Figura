@@ -7,6 +7,8 @@ import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtIo;
@@ -129,7 +131,8 @@ public class Avatar {
             tryCall(luaState.events.POST_WORLD_RENDER, -1, renderer.tickDelta);
     }
 
-    public void onWorldRender(double camX, double camY, double camZ, PoseStack matrices, MultiBufferSource bufferSource, int light, float tickDelta) {
+    public void onWorldRender(Entity entity, double camX, double camY, double camZ, PoseStack matrices, MultiBufferSource bufferSource, int light, float tickDelta) {
+        renderer.entity = entity;
         renderer.currentFilterScheme = AvatarRenderer.RENDER_WORLD;
         renderer.bufferSource = bufferSource;
         renderer.matrices = matrices;
@@ -146,7 +149,7 @@ public class Avatar {
     public void onFirstPersonWorldRender(Entity watcher, MultiBufferSource bufferSource, PoseStack matrices, Camera camera, float tickDelta) {
         int light = Minecraft.getInstance().getEntityRenderDispatcher().getPackedLightCoords(watcher, tickDelta);
         Vec3 camPos = camera.getPosition();
-        onWorldRender(camPos.x, camPos.y, camPos.z, matrices, bufferSource, light, tickDelta);
+        onWorldRender(watcher, camPos.x, camPos.y, camPos.z, matrices, bufferSource, light, tickDelta);
     }
 
     public void onFirstPersonRender(PoseStack stack, MultiBufferSource bufferSource, Player player, PlayerModel<?> model, ModelPart arm, int light, float tickDelta) {
