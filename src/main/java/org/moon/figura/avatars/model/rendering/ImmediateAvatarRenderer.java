@@ -39,6 +39,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         //Vertex data, read model parts
         List<FiguraImmediateBuffer.Builder> builders = new ArrayList<>();
         root = FiguraModelPart.read(avatar.nbt.getCompound("models"), builders);
+        root.owner = avatar;
 
         //Textures
         List<FiguraTextureSet> textureSets = new ArrayList<>();
@@ -159,27 +160,32 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         for (FiguraModelPart child : part.children)
             renderPart(child, remainingComplexity, thisPassedPredicate);
 
-        if (shouldRenderPivots)
+        if (shouldRenderPivots && thisPassedPredicate)
             renderPivot(part);
 
         customizationStack.pop();
+
+        if (part.cachedPartToWorldMat != null)
+            part.cachedPartToWorldMat.free();
+        part.cachedPartToWorldMat = null;
 
         part.resetVanillaTransforms();
     }
 
     private static PoseStack debugPoseStack = new PoseStack();
     private void renderPivot(FiguraModelPart part) {
+        //Index == -1 means it's a group
         FiguraVec3 color = part.index == -1 ? ColorUtils.Colors.MAYA_BLUE.vec : ColorUtils.Colors.FRAN_PINK.vec;
-        double boxSize = part.index == -1 ? 1.0/24 : 1.0/48;
+        double boxSize = part.index == -1 ? 1.0/16 : 1.0/32;
         debugPoseStack.setIdentity();
-        FiguraMat4 posMat = customizationStack.peek().getPositionMatrix();
+        FiguraMat4 posMat = FiguraModelPart.partToWorldMatrix(part, tickDelta);
         boxSize /= Math.cbrt(posMat.det());
 
+        FiguraMat4 worldToView = AvatarRenderer.worldToViewMatrix();
+        debugPoseStack.mulPoseMatrix(worldToView.toMatrix4f());
         debugPoseStack.mulPoseMatrix(posMat.toMatrix4f());
-        FiguraVec3 piv = part.customization.getPivot();
-        debugPoseStack.translate(piv.x, piv.y, piv.z);
 
-        piv.free();
+        worldToView.free();
         posMat.free();
 
         LevelRenderer.renderLineBox(debugPoseStack, bufferSource.getBuffer(RenderType.LINES),

@@ -285,6 +285,7 @@
   "figura.docs.model_part.get_secondary_render_type.desc": "Gets the current secondary render type of this model part. Nil by default, meaning the part copies the secondary render type of its parent.",
   "figura.docs.model_part.set_primary_render_type.desc": "Sets the current primary render type of this model part. Nil by default, meaning the part copies the primary render type of its parent during rendering.",
   "figura.docs.model_part.set_secondary_render_type.desc": "Sets the current secondary render type of this model part. Nil by default, meaning the part copies the secondary render type of its parent during rendering.",
+  "figura.docs.model_part.part_to_world_matrix.desc": "Gets a matrix which transforms a point from this part's position to a world location. Delta can be passed in to interpolate entity position, the default value is 1.",
 
   "figura.docs.vanilla_model.desc": "A global API that provides functions to interact with the vanilla player model and its parts. Accessed using the name \"vanilla_model\".",
   "figura.docs.vanilla_model.head.desc": "The head of the player, not including the hat.",

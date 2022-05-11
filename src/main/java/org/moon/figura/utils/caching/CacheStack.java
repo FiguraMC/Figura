@@ -60,10 +60,6 @@ public abstract class CacheStack<T extends CachedType, S> {
     }
 
     public T peek() {
-        return peek(index);
-    }
-
-    public T peek(int index) {
         if (index >= 0)
             return values.get(index);
         return defaultVal;

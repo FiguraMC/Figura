@@ -69,7 +69,7 @@ public abstract class AvatarRenderer {
      * @param e The entity to get the matrix for.
      * @return A matrix which represents the transformation from entity space to part space.
      */
-    protected static FiguraMat4 entityToWorldMatrix(Entity e, float delta) {
+    public static FiguraMat4 entityToWorldMatrix(Entity e, float delta) {
         double yaw;
         if (e instanceof LivingEntity)
             yaw = Mth.lerp(delta, ((LivingEntity) e).yBodyRotO, ((LivingEntity) e).yBodyRot);
@@ -80,7 +80,7 @@ public abstract class AvatarRenderer {
         return result;
     }
 
-    protected static double getYawOffsetRot(Entity e, float delta) {
+    public static double getYawOffsetRot(Entity e, float delta) {
         double yaw;
         if (e instanceof LivingEntity)
             yaw = Mth.lerp(delta, ((LivingEntity) e).yBodyRotO, ((LivingEntity) e).yBodyRot);
