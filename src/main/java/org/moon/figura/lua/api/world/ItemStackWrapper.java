@@ -3,6 +3,7 @@ package org.moon.figura.lua.api.world;
 import net.minecraft.core.Registry;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
@@ -49,8 +50,8 @@ public class ItemStackWrapper {
             ),
             description = "itemstack.exists"
     )
-    public static boolean exists(ItemStackWrapper itemStack) {
-        return itemStack != null && itemStack.itemStack.get() != null;
+    public static boolean exists(@LuaNotNil ItemStackWrapper itemStack) {
+        return itemStack.itemStack.get() != null;
     }
 
     @Override

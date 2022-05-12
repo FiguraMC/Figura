@@ -3,6 +3,7 @@ package org.moon.figura.math.matrix;
 import com.mojang.math.Matrix4f;
 import net.minecraft.world.phys.Vec3;
 import org.lwjgl.BufferUtils;
+import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
@@ -10,6 +11,7 @@ import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec4;
+import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.caching.CacheStack;
 import org.moon.figura.utils.caching.CacheUtils;
 import org.moon.figura.utils.caching.CachedType;
@@ -803,7 +805,7 @@ public class FiguraMat4 implements CachedType {
             ),
             description = "matrix_n.det"
     )
-    public static double det(FiguraMat4 mat) {
+    public static double det(@LuaNotNil FiguraMat4 mat) {
         return mat.det();
     }
 
@@ -815,7 +817,7 @@ public class FiguraMat4 implements CachedType {
             ),
             description = "matrix_n.invert"
     )
-    public static void invert(FiguraMat4 mat) {
+    public static void invert(@LuaNotNil FiguraMat4 mat) {
         mat.invert();
     }
 
@@ -827,7 +829,7 @@ public class FiguraMat4 implements CachedType {
             ),
             description = "matrix_n.get_inverse"
     )
-    public static FiguraMat4 getInverse(FiguraMat4 mat) {
+    public static FiguraMat4 getInverse(@LuaNotNil FiguraMat4 mat) {
         return mat.inverted();
     }
 
@@ -839,7 +841,7 @@ public class FiguraMat4 implements CachedType {
             ),
             description = "matrix_n.transpose"
     )
-    public static void transpose(FiguraMat4 mat) {
+    public static void transpose(@LuaNotNil FiguraMat4 mat) {
         mat.transpose();
     }
 
@@ -851,7 +853,7 @@ public class FiguraMat4 implements CachedType {
             ),
             description = "matrix_n.get_transpose"
     )
-    public static FiguraMat4 getTranspose(FiguraMat4 mat) {
+    public static FiguraMat4 getTranspose(@LuaNotNil FiguraMat4 mat) {
         return mat.transposed();
     }
 
@@ -869,17 +871,9 @@ public class FiguraMat4 implements CachedType {
             },
             description = "matrix4.translate"
     )
-    public static void translate(FiguraMat4 mat, Object arg1, Double y, Double z) {
-        if (arg1 instanceof Double x) {
-            if (y != null && z != null)
-                mat.translate(x, y, z);
-            else
-                throw new IllegalArgumentException("Cannot translate using nil.");
-        } else if (arg1 instanceof FiguraVec3 vec) {
-            mat.translate(vec.x, vec.y, vec.z);
-        } else {
-            throw new IllegalArgumentException("Cannot translate with argument " + arg1 + ".");
-        }
+    public static void translate(@LuaNotNil FiguraMat4 mat, Object x, Double y, Double z) {
+        FiguraVec3 vec = LuaUtils.parseVec3("translate", x, y, z);
+        mat.translate(vec.x, vec.y, vec.z);
     }
 
     @LuaWhitelist
@@ -896,17 +890,9 @@ public class FiguraMat4 implements CachedType {
             },
             description = "matrix4.rotate"
     )
-    public static void rotate(FiguraMat4 mat, Object arg1, Double y, Double z) {
-        if (arg1 instanceof Double x) {
-            if (y != null && z != null)
-                mat.rotateZYX(x, y, z);
-            else
-                throw new IllegalArgumentException("Cannot rotate using nil!");
-        } else if (arg1 instanceof FiguraVec3 vec) {
-            mat.rotateZYX(vec.x, vec.y, vec.z);
-        } else {
-            throw new IllegalArgumentException("Cannot rotate with argument " + arg1 + ".");
-        }
+    public static void rotate(@LuaNotNil FiguraMat4 mat, Object x, Double y, Double z) {
+        FiguraVec3 vec = LuaUtils.parseVec3("rotate", x, y, z);
+        mat.rotateZYX(vec.x, vec.y, vec.z);
     }
 
     @LuaWhitelist
@@ -923,17 +909,9 @@ public class FiguraMat4 implements CachedType {
             },
             description = "matrix_n.scale"
     )
-    public static void scale(FiguraMat4 mat, Object arg1, Double y, Double z) {
-        if (arg1 instanceof Double x) {
-            if (y != null && z != null)
-                mat.scale(x, y, z);
-            else
-                throw new IllegalArgumentException("Cannot scale using nil!");
-        } else if (arg1 instanceof FiguraVec3 vec) {
-            mat.scale(vec.x, vec.y, vec.z);
-        } else {
-            throw new IllegalArgumentException("Cannot scale with argument " + arg1 + ".");
-        }
+    public static void scale(@LuaNotNil FiguraMat4 mat, Object x, Double y, Double z) {
+        FiguraVec3 vec = LuaUtils.parseVec3("scale", x, y, z, 1, 1, 1);
+        mat.scale(vec.x, vec.y, vec.z);
     }
 
     @LuaWhitelist
@@ -944,8 +922,7 @@ public class FiguraMat4 implements CachedType {
             ),
             description = "matrix4.get_column"
     )
-    public static FiguraVec4 getColumn(FiguraMat4 mat, Integer column) {
-        if (column == null) throw new IllegalArgumentException("Cannot access nil column!");
+    public static FiguraVec4 getColumn(@LuaNotNil FiguraMat4 mat, @LuaNotNil Integer column) {
         if (column <= 0 || column > 4) throw new IllegalArgumentException("Column " + column + " does not exist in a 4x4 matrix!");
         return switch (column) {
             case 1 -> mat.getCol1();
@@ -964,8 +941,7 @@ public class FiguraMat4 implements CachedType {
             ),
             description = "matrix4.get_row"
     )
-    public static FiguraVec4 getRow(FiguraMat4 mat, Integer row) {
-        if (row == null) throw new IllegalArgumentException("Cannot access nil row!");
+    public static FiguraVec4 getRow(@LuaNotNil FiguraMat4 mat, @LuaNotNil Integer row) {
         if (row <= 0 || row > 4) throw new IllegalArgumentException("Row " + row + " does not exist in a 4x4 matrix!");
         return switch (row) {
             case 1 -> mat.getRow1();
@@ -975,5 +951,4 @@ public class FiguraMat4 implements CachedType {
             default -> null;
         };
     }
-
 }

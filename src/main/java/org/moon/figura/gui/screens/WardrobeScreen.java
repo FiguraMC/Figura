@@ -25,6 +25,8 @@ public class WardrobeScreen extends AbstractPanelScreen {
     private AvatarInfoWidget avatarInfo;
     private TextWidget panic1, panic2;
 
+    private TexturedButton upload, reload, delete;
+
     public WardrobeScreen(Screen parentScreen) {
         super(parentScreen, TITLE, 2);
     }
@@ -60,25 +62,22 @@ public class WardrobeScreen extends AbstractPanelScreen {
         int buttY = entity.y + entity.height + 4;
 
         //upload
-        TexturedButton upload = new TexturedButton(buttX - 48, buttY, 24, 24, 24, 0, 24, new FiguraIdentifier("textures/gui/upload.png"), 48, 48, new FiguraText("gui.wardrobe.upload.tooltip"), button -> {
+        addRenderableWidget(upload = new TexturedButton(buttX - 48, buttY, 24, 24, 24, 0, 24, new FiguraIdentifier("textures/gui/upload.png"), 48, 48, new FiguraText("gui.wardrobe.upload.tooltip"), button -> {
             FiguraToast.sendToast(new TextComponent("lol nope").setStyle(Style.EMPTY.withColor(0xFFADAD)), FiguraToast.ToastType.DEFAULT);
-        });
-        upload.active = false; //TODO
-        addRenderableWidget(upload);
+        }));
+        upload.active = false;
 
         //reload
-        TexturedButton reload = new TexturedButton(buttX - 12, buttY, 24, 24, 24, 0, 24, new FiguraIdentifier("textures/gui/reload.png"), 48, 48, new FiguraText("gui.wardrobe.reload.tooltip"), button -> {
+        addRenderableWidget(reload = new TexturedButton(buttX - 12, buttY, 24, 24, 24, 0, 24, new FiguraIdentifier("textures/gui/reload.png"), 48, 48, new FiguraText("gui.wardrobe.reload.tooltip"), button -> {
             FiguraToast.sendToast(new TextComponent("lol nope").setStyle(Style.EMPTY.withColor(0xFFADAD)), FiguraToast.ToastType.DEFAULT);
-        });
-        reload.active = false; //TODO
-        addRenderableWidget(reload);
+        }));
+        reload.active = false;
 
         //delete
-        TexturedButton delete = new TexturedButton(buttX + 24, buttY, 24, 24, 24, 0, 24, new FiguraIdentifier("textures/gui/delete.png"), 48, 48, new FiguraText("gui.wardrobe.delete.tooltip"), button -> {
+        addRenderableWidget(delete = new TexturedButton(buttX + 24, buttY, 24, 24, 24, 0, 24, new FiguraIdentifier("textures/gui/delete.png"), 48, 48, new FiguraText("gui.wardrobe.delete.tooltip"), button -> {
             FiguraToast.sendToast(new TextComponent("lol nope").setStyle(Style.EMPTY.withColor(0xFFADAD)), FiguraToast.ToastType.DEFAULT);
-        });
-        delete.active = false; //TODO
-        addRenderableWidget(delete);
+        }));
+        delete.active = false;
 
         statusWidget = new StatusWidget(entity.x + entity.width - 64, 0, 64);
         statusWidget.y = entity.y - statusWidget.height - 4;
@@ -149,12 +148,19 @@ public class WardrobeScreen extends AbstractPanelScreen {
 
     @Override
     public void tick() {
+        //children tick
         super.tick();
-
         statusWidget.tick();
         avatarInfo.tick();
 
+        //panic visible
         panic1.setVisible(AvatarManager.panic);
         panic2.setVisible(AvatarManager.panic);
+
+        //backend buttons
+        boolean backend = false; //TODO - fetch backend status
+        upload.active = backend;
+        reload.active = backend;
+        delete.active = backend;
     }
 }

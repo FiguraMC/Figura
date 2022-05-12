@@ -2,12 +2,14 @@ package org.moon.figura.math.matrix;
 
 import com.mojang.math.Matrix3f;
 import org.lwjgl.BufferUtils;
+import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.caching.CacheStack;
 import org.moon.figura.utils.caching.CacheUtils;
 import org.moon.figura.utils.caching.CachedType;
@@ -631,7 +633,7 @@ public class FiguraMat3 implements CachedType {
             ),
             description = "matrix_n.det"
     )
-    public static double det(FiguraMat3 mat) {
+    public static double det(@LuaNotNil FiguraMat3 mat) {
         return mat.det();
     }
 
@@ -643,7 +645,7 @@ public class FiguraMat3 implements CachedType {
             ),
             description = "matrix_n.invert"
     )
-    public static void invert(FiguraMat3 mat) {
+    public static void invert(@LuaNotNil FiguraMat3 mat) {
         mat.invert();
     }
 
@@ -655,7 +657,7 @@ public class FiguraMat3 implements CachedType {
             ),
             description = "matrix_n.get_inverse"
     )
-    public static FiguraMat3 getInverse(FiguraMat3 mat) {
+    public static FiguraMat3 getInverse(@LuaNotNil FiguraMat3 mat) {
         return mat.inverted();
     }
 
@@ -667,7 +669,7 @@ public class FiguraMat3 implements CachedType {
             ),
             description = "matrix_n.transpose"
     )
-    public static void transpose(FiguraMat3 mat) {
+    public static void transpose(@LuaNotNil FiguraMat3 mat) {
         mat.transpose();
     }
 
@@ -679,7 +681,7 @@ public class FiguraMat3 implements CachedType {
             ),
             description = "matrix_n.get_transpose"
     )
-    public static FiguraMat3 getTranspose(FiguraMat3 mat) {
+    public static FiguraMat3 getTranspose(@LuaNotNil FiguraMat3 mat) {
         return mat.transposed();
     }
 
@@ -697,17 +699,9 @@ public class FiguraMat3 implements CachedType {
             },
             description = "matrix3.rotate"
     )
-    public static void rotate(FiguraMat3 mat, Object arg1, Double y, Double z) {
-        if (arg1 instanceof Double x) {
-            if (y != null && z != null)
-                mat.rotateZYX(x, y, z);
-            else
-                throw new IllegalArgumentException("Cannot rotate using nil!");
-        } else if (arg1 instanceof FiguraVec3 vec) {
-            mat.rotateZYX(vec.x, vec.y, vec.z);
-        } else {
-            throw new IllegalArgumentException("Cannot rotate with argument " + arg1 + ".");
-        }
+    public static void rotate(@LuaNotNil FiguraMat3 mat, Object x, Double y, Double z) {
+        FiguraVec3 vec = LuaUtils.parseVec3("rotate", x, y, z);
+        mat.rotateZYX(vec.x, vec.y, vec.z);
     }
 
     @LuaWhitelist
@@ -724,17 +718,9 @@ public class FiguraMat3 implements CachedType {
             },
             description = "matrix_n.scale"
     )
-    public static void scale(FiguraMat3 mat, Object arg1, Double y, Double z) {
-        if (arg1 instanceof Double x) {
-            if (y != null && z != null)
-                mat.scale(x, y, z);
-            else
-                throw new IllegalArgumentException("Cannot scale using nil!");
-        } else if (arg1 instanceof FiguraVec3 vec) {
-            mat.scale(vec.x, vec.y, vec.z);
-        } else {
-            throw new IllegalArgumentException("Cannot scale with argument " + arg1 + ".");
-        }
+    public static void scale(@LuaNotNil FiguraMat3 mat, Object x, Double y, Double z) {
+        FiguraVec3 vec = LuaUtils.parseVec3("scale", x, y, z, 1, 1, 1);
+        mat.rotateZYX(vec.x, vec.y, vec.z);
     }
 
     @LuaWhitelist
@@ -745,8 +731,7 @@ public class FiguraMat3 implements CachedType {
             ),
             description = "matrix3.get_column"
     )
-    public static FiguraVec3 getColumn(FiguraMat3 mat, Integer column) {
-        if (column == null) throw new IllegalArgumentException("Cannot access nil column!");
+    public static FiguraVec3 getColumn(@LuaNotNil FiguraMat3 mat, @LuaNotNil Integer column) {
         if (column <= 0 || column > 3) throw new IllegalArgumentException("Column " + column + " does not exist in a 3x3 matrix!");
         return switch (column) {
             case 1 -> mat.getCol1();
@@ -764,8 +749,7 @@ public class FiguraMat3 implements CachedType {
             ),
             description = "matrix3.get_row"
     )
-    public static FiguraVec3 getRow(FiguraMat3 mat, Integer row) {
-        if (row == null) throw new IllegalArgumentException("Cannot access nil row!");
+    public static FiguraVec3 getRow(@LuaNotNil FiguraMat3 mat, @LuaNotNil Integer row) {
         if (row <= 0 || row > 3) throw new IllegalArgumentException("Row " + row + " does not exist in a 3x3 matrix!");
         return switch (row) {
             case 1 -> mat.getRow1();
@@ -774,5 +758,4 @@ public class FiguraMat3 implements CachedType {
             default -> null;
         };
     }
-
 }

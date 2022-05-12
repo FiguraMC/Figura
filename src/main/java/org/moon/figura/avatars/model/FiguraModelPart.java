@@ -15,6 +15,7 @@ import org.moon.figura.avatars.model.rendering.FiguraImmediateBuffer;
 import org.moon.figura.avatars.model.rendering.ImmediateAvatarRenderer;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
 import org.moon.figura.avatars.vanilla.VanillaPartOffsetManager;
+import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
@@ -156,8 +157,7 @@ public class FiguraModelPart {
             ),
             description = "model_part.get_parent"
     )
-    public static FiguraModelPart getParent(FiguraModelPart modelPart) {
-        LuaUtils.nullCheck("getParent", "modelPart", modelPart);
+    public static FiguraModelPart getParent(@LuaNotNil FiguraModelPart modelPart) {
         return modelPart.parent;
     }
 
@@ -169,8 +169,7 @@ public class FiguraModelPart {
             ),
             description = "model_part.get_children"
     )
-    public static LuaTable getChildren(FiguraModelPart modelPart) {
-        LuaUtils.nullCheck("getChildren", "modelPart", modelPart);
+    public static LuaTable getChildren(@LuaNotNil FiguraModelPart modelPart) {
         LuaTable table = new LuaTable();
         int i = 1;
         for (FiguraModelPart child : modelPart.children)
@@ -186,8 +185,7 @@ public class FiguraModelPart {
             ),
             description = "model_part.get_pos"
     )
-    public static FiguraVec3 getPos(FiguraModelPart modelPart) {
-        LuaUtils.nullCheck("getPos", "modelPart", modelPart);
+    public static FiguraVec3 getPos(@LuaNotNil FiguraModelPart modelPart) {
         return modelPart.customization.getPos();
     }
 
@@ -205,18 +203,9 @@ public class FiguraModelPart {
             },
             description = "model_part.set_pos"
     )
-    public static void setPos(FiguraModelPart modelPart, Object x, Double y, Double z) {
-        LuaUtils.nullCheck("setPos", "modelPart", modelPart);
-        if (x instanceof FiguraVec3 pos)
-            modelPart.customization.setPos(pos);
-        else if (x == null || x instanceof Double) {
-            if (x == null) x = 0d;
-            if (y == null) y = 0d;
-            if (z == null) z = 0d;
-            modelPart.customization.setPos((double) x, y, z);
-        } else {
-            throw new LuaRuntimeException("Illegal argument to setPos(): " + x);
-        }
+    public static void setPos(@LuaNotNil FiguraModelPart modelPart, Object x, Double y, Double z) {
+        FiguraVec3 vec = LuaUtils.parseVec3("setPos", x, y, z);
+        modelPart.customization.setPos(vec);
     }
 
     @LuaWhitelist
@@ -227,8 +216,7 @@ public class FiguraModelPart {
             ),
             description = "model_part.get_rot"
     )
-    public static FiguraVec3 getRot(FiguraModelPart modelPart) {
-        LuaUtils.nullCheck("getRot", "modelPart", modelPart);
+    public static FiguraVec3 getRot(@LuaNotNil FiguraModelPart modelPart) {
         return modelPart.customization.getRot();
     }
 
@@ -246,18 +234,9 @@ public class FiguraModelPart {
             },
             description = "model_part.set_rot"
     )
-    public static void setRot(FiguraModelPart modelPart, Object x, Double y, Double z) {
-        LuaUtils.nullCheck("setRot", "modelPart", modelPart);
-        if (x instanceof FiguraVec3 rot)
-            modelPart.customization.setRot(rot);
-        else if (x == null || x instanceof Double) {
-            if (x == null) x = 0d;
-            if (y == null) y = 0d;
-            if (z == null) z = 0d;
-            modelPart.customization.setRot((double) x, y, z);
-        } else {
-            throw new LuaRuntimeException("Illegal argument to setRot(): " + x);
-        }
+    public static void setRot(@LuaNotNil FiguraModelPart modelPart, Object x, Double y, Double z) {
+        FiguraVec3 vec = LuaUtils.parseVec3("setRot", x, y, z);
+        modelPart.customization.setRot(vec);
     }
 
     @LuaWhitelist
@@ -268,8 +247,7 @@ public class FiguraModelPart {
             ),
             description = "model_part.get_bonus_rot"
     )
-    public static FiguraVec3 getBonusRot(FiguraModelPart modelPart) {
-        LuaUtils.nullCheck("getBonusRot", "modelPart", modelPart);
+    public static FiguraVec3 getBonusRot(@LuaNotNil FiguraModelPart modelPart) {
         return modelPart.customization.getBonusRot();
     }
 
@@ -287,18 +265,9 @@ public class FiguraModelPart {
             },
             description = "model_part.set_bonus_rot"
     )
-    public static void setBonusRot(FiguraModelPart modelPart, Object x, Double y, Double z) {
-        LuaUtils.nullCheck("setBonusRot", "modelPart", modelPart);
-        if (x instanceof FiguraVec3 rot)
-            modelPart.customization.setBonusRot(rot);
-        else if (x == null || x instanceof Double) {
-            if (x == null) x = 0d;
-            if (y == null) y = 0d;
-            if (z == null) z = 0d;
-            modelPart.customization.setBonusRot((double) x, y, z);
-        } else {
-            throw new LuaRuntimeException("Illegal argument to setBonusRot(): " + x);
-        }
+    public static void setBonusRot(@LuaNotNil FiguraModelPart modelPart, Object x, Double y, Double z) {
+        FiguraVec3 vec = LuaUtils.parseVec3("setBonusRot", x, y, z);
+        modelPart.customization.setBonusRot(vec);
     }
 
     @LuaWhitelist
@@ -309,8 +278,7 @@ public class FiguraModelPart {
             ),
             description = "model_parts.get_scale"
     )
-    public static FiguraVec3 getScale(FiguraModelPart modelPart) {
-        LuaUtils.nullCheck("getScale", "modelPart", modelPart);
+    public static FiguraVec3 getScale(@LuaNotNil FiguraModelPart modelPart) {
         return modelPart.customization.getScale();
     }
 
@@ -328,18 +296,9 @@ public class FiguraModelPart {
             },
             description = "model_part.set_scale"
     )
-    public static void setScale(FiguraModelPart modelPart, Object x, Double y, Double z) {
-        LuaUtils.nullCheck("setScale", "modelPart", modelPart);
-        if (x instanceof FiguraVec3 scale)
-            modelPart.customization.setScale(scale);
-        else if (x == null || x instanceof Double) {
-            if (x == null) x = 1d;
-            if (y == null) y = 1d;
-            if (z == null) z = 1d;
-            modelPart.customization.setScale((double) x, y, z);
-        } else {
-            throw new LuaRuntimeException("Illegal argument to setScale(): " + x);
-        }
+    public static void setScale(@LuaNotNil FiguraModelPart modelPart, Object x, Double y, Double z) {
+        FiguraVec3 vec = LuaUtils.parseVec3("setScale", x, y, z, 1, 1, 1);
+        modelPart.customization.setScale(vec);
     }
 
     @LuaWhitelist
@@ -350,8 +309,7 @@ public class FiguraModelPart {
             ),
             description = "model_part.get_pivot"
     )
-    public static FiguraVec3 getPivot(FiguraModelPart modelPart) {
-        LuaUtils.nullCheck("getPivot", "modelPart", modelPart);
+    public static FiguraVec3 getPivot(@LuaNotNil FiguraModelPart modelPart) {
         return modelPart.customization.getPivot();
     }
 
@@ -369,18 +327,9 @@ public class FiguraModelPart {
             },
             description = "model_part.set_pivot"
     )
-    public static void setPivot(FiguraModelPart modelPart, Object x, Double y, Double z) {
-        LuaUtils.nullCheck("setPivot", "modelPart", modelPart);
-        if (x instanceof FiguraVec3 pivot)
-            modelPart.customization.setPivot(pivot);
-        else if (x == null || x instanceof Double) {
-            if (x == null) x = 0d;
-            if (y == null) y = 0d;
-            if (z == null) z = 0d;
-            modelPart.customization.setPivot((double) x, y, z);
-        } else {
-            throw new LuaRuntimeException("Illegal argument to setPivot(): " + x);
-        }
+    public static void setPivot(@LuaNotNil FiguraModelPart modelPart, Object x, Double y, Double z) {
+        FiguraVec3 vec = LuaUtils.parseVec3("setPivot", x, y, z);
+        modelPart.customization.setPivot(vec);
     }
 
     @LuaWhitelist
@@ -391,8 +340,7 @@ public class FiguraModelPart {
             ),
             description = "model_part.get_bonus_pivot"
     )
-    public static FiguraVec3 getBonusPivot(FiguraModelPart modelPart) {
-        LuaUtils.nullCheck("getBonusPivot", "modelPart", modelPart);
+    public static FiguraVec3 getBonusPivot(@LuaNotNil FiguraModelPart modelPart) {
         return modelPart.customization.getBonusPivot();
     }
 
@@ -410,18 +358,9 @@ public class FiguraModelPart {
             },
             description = "model_part.set_bonus_pivot"
     )
-    public static void setBonusPivot(FiguraModelPart modelPart, Object x, Double y, Double z) {
-        LuaUtils.nullCheck("setBonusPivot", "modelPart", modelPart);
-        if (x instanceof FiguraVec3 pivot)
-            modelPart.customization.setBonusPivot(pivot);
-        else if (x == null || x instanceof Double) {
-            if (x == null) x = 0d;
-            if (y == null) y = 0d;
-            if (z == null) z = 0d;
-            modelPart.customization.setBonusPivot((double) x, y, z);
-        } else {
-            throw new LuaRuntimeException("Illegal argument to setBonusPivot(): " + x);
-        }
+    public static void setBonusPivot(@LuaNotNil FiguraModelPart modelPart, Object x, Double y, Double z) {
+        FiguraVec3 vec = LuaUtils.parseVec3("setBonusPivot", x, y, z);
+        modelPart.customization.setBonusPivot(vec);
     }
 
     @LuaWhitelist
@@ -432,8 +371,7 @@ public class FiguraModelPart {
             ),
             description = "model_part.get_position_matrix"
     )
-    public static FiguraMat4 getPositionMatrix(FiguraModelPart modelPart) {
-        LuaUtils.nullCheck("getMatrix", "modelPart", modelPart);
+    public static FiguraMat4 getPositionMatrix(@LuaNotNil FiguraModelPart modelPart) {
         modelPart.customization.recalculate();
         return modelPart.customization.getPositionMatrix();
     }
@@ -446,8 +384,7 @@ public class FiguraModelPart {
             ),
             description = "model_part.get_position_matrix_raw"
     )
-    public static FiguraMat4 getPositionMatrixRaw(FiguraModelPart modelPart) {
-        LuaUtils.nullCheck("getMatrixRaw", "modelPart", modelPart);
+    public static FiguraMat4 getPositionMatrixRaw(@LuaNotNil FiguraModelPart modelPart) {
         return modelPart.customization.getPositionMatrix();
     }
 
@@ -459,8 +396,7 @@ public class FiguraModelPart {
             ),
             description = "model_part.get_normal_matrix"
     )
-    public static FiguraMat3 getNormalMatrix(FiguraModelPart modelPart) {
-        LuaUtils.nullCheck("getMatrix", "modelPart", modelPart);
+    public static FiguraMat3 getNormalMatrix(@LuaNotNil FiguraModelPart modelPart) {
         modelPart.customization.recalculate();
         return modelPart.customization.getNormalMatrix();
     }
@@ -473,8 +409,7 @@ public class FiguraModelPart {
             ),
             description = "model_part.get_normal_matrix_raw"
     )
-    public static FiguraMat3 getNormalMatrixRaw(FiguraModelPart modelPart) {
-        LuaUtils.nullCheck("getMatrixRaw", "modelPart", modelPart);
+    public static FiguraMat3 getNormalMatrixRaw(@LuaNotNil FiguraModelPart modelPart) {
         return modelPart.customization.getNormalMatrix();
     }
 
@@ -486,9 +421,7 @@ public class FiguraModelPart {
             ),
             description = "model_part.set_matrix"
     )
-    public static void setMatrix(FiguraModelPart modelPart, FiguraMat4 matrix) {
-        LuaUtils.nullCheck("setMatrix", "modelPart", modelPart);
-        LuaUtils.nullCheck("setMatrix", "matrix", matrix);
+    public static void setMatrix(@LuaNotNil FiguraModelPart modelPart, @LuaNotNil FiguraMat4 matrix) {
         modelPart.customization.setMatrix(matrix);
     }
 
@@ -500,8 +433,7 @@ public class FiguraModelPart {
             ),
             description = "model_part.get_visible"
     )
-    public static boolean getVisible(FiguraModelPart modelPart) {
-        LuaUtils.nullCheck("getVisible", "modelPart", modelPart);
+    public static boolean getVisible(@LuaNotNil FiguraModelPart modelPart) {
         while (modelPart != null && modelPart.customization.visible == null)
             modelPart = modelPart.parent;
         return modelPart == null || modelPart.customization.visible;
@@ -515,8 +447,7 @@ public class FiguraModelPart {
             ),
             description = "model_part.set_visible"
     )
-    public static void setVisible(FiguraModelPart modelPart, Boolean bool) {
-        LuaUtils.nullCheck("setEnabled", "modelPart", modelPart);
+    public static void setVisible(@LuaNotNil FiguraModelPart modelPart, Boolean bool) {
         modelPart.customization.visible = bool;
     }
 
@@ -528,8 +459,7 @@ public class FiguraModelPart {
             ),
             description = "model_part.reset_visible"
     )
-    public static void resetVisible(FiguraModelPart modelPart) {
-        LuaUtils.nullCheck("setEnabled", "modelPart", modelPart);
+    public static void resetVisible(@LuaNotNil FiguraModelPart modelPart) {
         modelPart.customization.visible = null;
     }
 
@@ -541,8 +471,7 @@ public class FiguraModelPart {
             ),
             description = "model_part.get_primary_render_type"
     )
-    public static String getPrimaryRenderType(FiguraModelPart modelPart) {
-        LuaUtils.nullCheck("getPrimaryRenderType", "modelPart", modelPart);
+    public static String getPrimaryRenderType(@LuaNotNil FiguraModelPart modelPart) {
         return modelPart.customization.getPrimaryRenderType();
     }
 
@@ -554,8 +483,7 @@ public class FiguraModelPart {
             ),
             description = "model_part.get_secondary_render_type"
     )
-    public static String getSecondaryRenderType(FiguraModelPart modelPart) {
-        LuaUtils.nullCheck("getSecondaryRenderType", "modelPart", modelPart);
+    public static String getSecondaryRenderType(@LuaNotNil FiguraModelPart modelPart) {
         return modelPart.customization.getSecondaryRenderType();
     }
 
@@ -567,8 +495,7 @@ public class FiguraModelPart {
             ),
             description = "model_part.set_primary_render_type"
     )
-    public static void setPrimaryRenderType(FiguraModelPart modelPart, String type) {
-        LuaUtils.nullCheck("setPrimaryRenderType", "modelPart", modelPart);
+    public static void setPrimaryRenderType(@LuaNotNil FiguraModelPart modelPart, @LuaNotNil String type) {
         if (!FiguraTextureSet.LEGAL_RENDER_TYPES.contains(type))
             throw new LuaRuntimeException("Illegal RenderType: \"" + type + "\".");
         modelPart.customization.setPrimaryRenderType(type);
@@ -582,8 +509,7 @@ public class FiguraModelPart {
             ),
             description = "model_part.set_secondary_render_type"
     )
-    public static void setSecondaryRenderType(FiguraModelPart modelPart, String type) {
-        LuaUtils.nullCheck("setSecondaryRenderType", "modelPart", modelPart);
+    public static void setSecondaryRenderType(@LuaNotNil FiguraModelPart modelPart, @LuaNotNil String type) {
         if (!FiguraTextureSet.LEGAL_RENDER_TYPES.contains(type))
             throw new LuaRuntimeException("Illegal RenderType: \"" + type + "\".");
         modelPart.customization.setSecondaryRenderType(type);
@@ -598,7 +524,7 @@ public class FiguraModelPart {
             ),
             description = "model_part.part_to_world_matrix"
     )
-    public static FiguraMat4 partToWorldMatrix(FiguraModelPart modelPart) {
+    public static FiguraMat4 partToWorldMatrix(@LuaNotNil FiguraModelPart modelPart) {
         return modelPart.savedPartToWorldMat.copy();
     }
 
@@ -616,8 +542,7 @@ public class FiguraModelPart {
             },
             description = "model_part.set_color"
     )
-    public static void setColor(FiguraModelPart modelPart, Object r, Double g, Double b) {
-        LuaUtils.nullCheck("setColor", "modelPart", modelPart);
+    public static void setColor(@LuaNotNil FiguraModelPart modelPart, Object r, Double g, Double b) {
         modelPart.customization.color = LuaUtils.parseVec3("setColor", r, g, b, 1, 1, 1);
     }
 
@@ -629,8 +554,7 @@ public class FiguraModelPart {
             ),
             description = "model_part.get_color"
     )
-    public static FiguraVec3 getColor(FiguraModelPart modelPart) {
-        LuaUtils.nullCheck("getColor", "modelPart", modelPart);
+    public static FiguraVec3 getColor(@LuaNotNil FiguraModelPart modelPart) {
         return modelPart.customization.color.copy();
     }
 
@@ -642,8 +566,7 @@ public class FiguraModelPart {
             ),
             description = "model_part.set_opacity"
     )
-    public static void setOpacity(FiguraModelPart modelPart, Float opacity) {
-        LuaUtils.nullCheck("setOpacity", "modelPart", modelPart);
+    public static void setOpacity(@LuaNotNil FiguraModelPart modelPart, @LuaNotNil Float opacity) {
         modelPart.customization.alpha = opacity;
     }
 
@@ -655,8 +578,7 @@ public class FiguraModelPart {
             ),
             description = "model_part.get_opacity"
     )
-    public static Float getOpacity(FiguraModelPart modelPart) {
-        LuaUtils.nullCheck("getOpacity", "modelPart", modelPart);
+    public static Float getOpacity(@LuaNotNil FiguraModelPart modelPart) {
         return modelPart.customization.alpha;
     }
 
@@ -674,8 +596,7 @@ public class FiguraModelPart {
             },
             description = "model_part.set_light"
     )
-    public static void setLight(FiguraModelPart modelPart, Object light, Double skyLight) {
-        LuaUtils.nullCheck("setLight", "modelPart", modelPart);
+    public static void setLight(@LuaNotNil FiguraModelPart modelPart, Object light, Double skyLight) {
         FiguraVec2 lightVec = LuaUtils.parseVec2("setLight", light, skyLight);
         modelPart.customization.light = LightTexture.pack((int) lightVec.x, (int) lightVec.y);
     }
@@ -688,8 +609,7 @@ public class FiguraModelPart {
             ),
             description = "model_part.get_light"
     )
-    public static FiguraVec2 getLight(FiguraModelPart modelPart) {
-        LuaUtils.nullCheck("getLight", "modelPart", modelPart);
+    public static FiguraVec2 getLight(@LuaNotNil FiguraModelPart modelPart) {
         int light = modelPart.customization.light;
         return FiguraVec2.of(LightTexture.block(light), LightTexture.sky(light));
     }

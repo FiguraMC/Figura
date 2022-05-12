@@ -1,10 +1,13 @@
 package org.moon.figura.lua.api.math;
 
+import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.*;
+import org.moon.figura.utils.ColorUtils;
+import org.moon.figura.utils.LuaUtils;
 import org.terasology.jnlua.LuaRuntimeException;
 
 @LuaWhitelist
@@ -139,6 +142,131 @@ public class VectorsAPI {
         if (t == null) t = 0d;
         if (h == null) h = 0d;
         return FiguraVec6.of(x, y, z, w, t, h);
+    }
+
+    // -- colors -- //
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "rgb"
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"r", "g", "b"}
+                    )
+            },
+            description = "vectors.rgb_to_int"
+    )
+    public static Integer rgbToINT(Object r, Double g, Double b) {
+        FiguraVec3 rgb = LuaUtils.parseVec3("rgbToINT", r, g, b);
+        return ColorUtils.rgbToInt(rgb);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = Integer.class,
+                    argumentNames = "color"
+            ),
+            description = "vectors.int_to_rgb"
+    )
+    public static FiguraVec3 intToRGB(@LuaNotNil Integer color) {
+        return ColorUtils.intToRGB(color);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = String.class,
+                    argumentNames = "hex"
+            ),
+            description = "vectors.hex_to_rgb"
+    )
+    public static FiguraVec3 hexToRGB(@LuaNotNil String hex) {
+        return ColorUtils.hexStringToRGB(hex);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "hsv"
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"h", "s", "v"}
+                    )
+            },
+            description = "vectors.hsv_to_rgb"
+    )
+    public static FiguraVec3 hsvToRGB(Object h, Double s, Double v) {
+        FiguraVec3 hsv = LuaUtils.parseVec3("hsvToRGB", h, s, v);
+        return ColorUtils.hsvToRGB(hsv);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "rgb"
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"r", "g", "b"}
+                    )
+            },
+            description = "vectors.rgb_to_hsv"
+    )
+    public static FiguraVec3 rgbToHSV(Object r, Double g, Double b) {
+        FiguraVec3 rgb = LuaUtils.parseVec3("rgbToHSV", r, g, b);
+        return ColorUtils.rgbToHSV(rgb);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraVec2.class, FiguraVec2.class, Double.class},
+                            argumentNames = {"vec1", "vec2", "delta"},
+                            returnType = FiguraVec2.class
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraVec3.class, FiguraVec3.class, Double.class},
+                            argumentNames = {"vec1", "vec2", "delta"},
+                            returnType = FiguraVec3.class
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraVec4.class, FiguraVec4.class, Double.class},
+                            argumentNames = {"vec1", "vec2", "delta"},
+                            returnType = FiguraVec4.class
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraVec5.class, FiguraVec5.class, Double.class},
+                            argumentNames = {"vec1", "vec2", "delta"},
+                            returnType = FiguraVec5.class
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraVec6.class, FiguraVec6.class, Double.class},
+                            argumentNames = {"vec1", "vec2", "delta"},
+                            returnType = FiguraVec6.class
+                    )
+            },
+            description = "vectors.lerp"
+    )
+    public static <T extends FiguraVector<T>> T lerp(@LuaNotNil T a, @LuaNotNil T b, @LuaNotNil Double delta) {
+        if (!a.getClass().equals(b.getClass()))
+            throw new LuaRuntimeException("Cannot lerp two different vector types!");
+
+        T ret = b.copy();
+        ret.subtract(a);
+        ret.scale(delta);
+        ret.add(a);
+        return ret;
     }
 
     @Override

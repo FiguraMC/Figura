@@ -11,6 +11,8 @@ import org.moon.figura.lua.api.*;
 import org.moon.figura.lua.api.entity.EntityWrapper;
 import org.moon.figura.lua.api.entity.LivingEntityWrapper;
 import org.moon.figura.lua.api.entity.PlayerEntityWrapper;
+import org.moon.figura.lua.api.keybind.FiguraKeybind;
+import org.moon.figura.lua.api.keybind.KeybindAPI;
 import org.moon.figura.lua.api.math.MatricesAPI;
 import org.moon.figura.lua.api.math.VectorsAPI;
 import org.moon.figura.lua.api.model.VanillaModelAPI;
@@ -119,6 +121,11 @@ public class FiguraDocsManager {
                 EventsAPI.LuaEvent.class
         ));
 
+        put("keybind", List.of(
+                KeybindAPI.class,
+                FiguraKeybind.class
+        ));
+
         //Math classes, including vectors and matrices
         put("math", List.of(
                 //Vectors
@@ -203,7 +210,7 @@ public class FiguraDocsManager {
             //type
                     .append("\n\n")
                     .append(new TextComponent("• ")
-                            .append(new FiguraText("docs.type"))
+                            .append(new FiguraText("docs.text.type"))
                             .append(":")
                             .withStyle(Colors.CHLOE_PURPLE.style))
                     .append("\n\t")
@@ -212,12 +219,12 @@ public class FiguraDocsManager {
             //description
                     .append("\n\n")
                     .append(new TextComponent("• ")
-                            .append(new FiguraText("docs.description"))
+                            .append(new FiguraText("docs.text.description"))
                             .append(":")
                             .withStyle(Colors.CHLOE_PURPLE.style))
                     .append("\n\t")
                     .append(new TextComponent("• ")
-                            .append(new FiguraText("docs." + description + ".desc"))
+                            .append(new FiguraText("docs." + description))
                             .withStyle(Colors.MAYA_BLUE.style));
 
             FiguraMod.sendChatMessage(message);
@@ -264,7 +271,7 @@ public class FiguraDocsManager {
             //type
                     .append("\n\n")
                     .append(new TextComponent("• ")
-                            .append(new FiguraText("docs.function"))
+                            .append(new FiguraText("docs.text.function"))
                             .append(":")
                             .withStyle(Colors.CHLOE_PURPLE.style))
                     .append("\n\t")
@@ -273,7 +280,7 @@ public class FiguraDocsManager {
             //syntax
                     .append("\n\n")
                     .append(new TextComponent("• ")
-                            .append(new FiguraText("docs.syntax"))
+                            .append(new FiguraText("docs.text.syntax"))
                             .append(":")
                             .withStyle(Colors.CHLOE_PURPLE.style));
 
@@ -295,19 +302,19 @@ public class FiguraDocsManager {
 
                 //return
                 message.append("): ")
-                        .append(new FiguraText("docs.returns").append(" ").withStyle(Colors.MAYA_BLUE.style))
+                        .append(new FiguraText("docs.text.returns").append(" ").withStyle(Colors.MAYA_BLUE.style))
                         .append(new TextComponent(NAME_MAP.get(returnTypes[i])).withStyle(ChatFormatting.YELLOW));
             }
 
             //description
             message.append("\n\n")
                     .append(new TextComponent("• ")
-                            .append(new FiguraText("docs.description"))
+                            .append(new FiguraText("docs.text.description"))
                             .append(":")
                             .withStyle(Colors.CHLOE_PURPLE.style))
                     .append("\n\t")
                     .append(new TextComponent("• ")
-                            .append(new FiguraText("docs." + description + ".desc"))
+                            .append(new FiguraText("docs." + description))
                             .withStyle(Colors.MAYA_BLUE.style));
 
             FiguraMod.sendChatMessage(message);
@@ -337,26 +344,26 @@ public class FiguraDocsManager {
             //type
             .append("\n\n")
             .append(new TextComponent("• ")
-                    .append(new FiguraText("docs.field"))
+                    .append(new FiguraText("docs.text.field"))
                     .append(":")
                     .withStyle(Colors.CHLOE_PURPLE.style))
             .append("\n\t")
                     .append(new TextComponent("• " + NAME_MAP.get(type)).withStyle(ChatFormatting.YELLOW))
             .append(new TextComponent(" " + name).withStyle(Colors.MAYA_BLUE.style))
             .append(new TextComponent(" (")
-                    .append(new FiguraText(editable ? "docs.editable" : "docs.not_editable"))
+                    .append(new FiguraText(editable ? "docs.text.editable" : "docs.text.not_editable"))
                     .append(")")
                     .withStyle(editable ? ChatFormatting.GREEN : ChatFormatting.DARK_RED))
 
             //description
             .append("\n\n")
             .append(new TextComponent("• ")
-                    .append(new FiguraText("docs.description"))
+                    .append(new FiguraText("docs.text.description"))
                     .append(":")
                     .withStyle(Colors.CHLOE_PURPLE.style))
             .append("\n\t")
             .append(new TextComponent("• ")
-                    .append(new FiguraText("docs." + description + ".desc"))
+                    .append(new FiguraText("docs." + description))
                     .withStyle(Colors.MAYA_BLUE.style));
 
             FiguraMod.sendChatMessage(message);

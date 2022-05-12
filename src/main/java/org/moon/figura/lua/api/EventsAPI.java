@@ -1,5 +1,6 @@
 package org.moon.figura.lua.api;
 
+import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
@@ -7,7 +8,6 @@ import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.lua.types.LuaFunction;
 import org.moon.figura.lua.types.LuaPairsIterator;
-import org.moon.figura.utils.LuaUtils;
 import org.terasology.jnlua.LuaRuntimeException;
 
 import java.util.ArrayList;
@@ -76,10 +76,7 @@ public class EventsAPI {
                 ),
                 description = "event.register"
         )
-        public static void register(LuaEvent event, LuaFunction function) {
-            LuaUtils.nullCheck("register", "event", event);
-            if (function == null)
-                throw new LuaRuntimeException("Attempt to register nil in event \"" + event.name + "\".");
+        public static void register(@LuaNotNil LuaEvent event, @LuaNotNil LuaFunction function) {
             event.functions.add(function);
         }
 
@@ -91,8 +88,7 @@ public class EventsAPI {
                 ),
                 description = "event.clear"
         )
-        public static void clear(LuaEvent event) {
-            LuaUtils.nullCheck("clear", "event", event);
+        public static void clear(@LuaNotNil LuaEvent event) {
             event.functions.clear();
         }
 
@@ -110,8 +106,7 @@ public class EventsAPI {
                 },
                 description = "event.remove"
         )
-        public static void remove(LuaEvent event, Integer index) {
-            LuaUtils.nullCheck("remove", "event", event);
+        public static void remove(@LuaNotNil LuaEvent event, Integer index) {
             if (index == null) index = 1;
             if (index <= 0 || index > event.functions.size())
                 throw new LuaRuntimeException("Illegal index to remove(): " + index);
@@ -126,11 +121,14 @@ public class EventsAPI {
                 ),
                 description = "event.get_count"
         )
-        public static int getCount(LuaEvent event) {
-            LuaUtils.nullCheck("getCount", "event", event);
+        public static int getCount(@LuaNotNil LuaEvent event) {
             return event.functions.size();
         }
 
+        @Override
+        public String toString() {
+            return name + " (Event)";
+        }
     }
 
     @Override

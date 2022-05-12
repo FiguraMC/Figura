@@ -15,6 +15,9 @@
     "gui.PlayerTabOverlayMixin",
     "gui.SplashManagerMixin",
 
+    "input.KeyboardHandlerMixin",
+    "input.MouseHandlerMixin",
+
     "render.EntityRendererMixin",
     "render.LivingEntityRendererMixin",
     "render.PlayerRendererMixin",

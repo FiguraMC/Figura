@@ -1,11 +1,13 @@
 package org.moon.figura.math.matrix;
 
+import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec2;
+import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.caching.CacheUtils;
 import org.moon.figura.utils.caching.CachedType;
 
@@ -324,7 +326,7 @@ public class FiguraMat2 implements CachedType {
             ),
             description = "matrix_n.det"
     )
-    public static double det(FiguraMat2 mat) {
+    public static double det(@LuaNotNil FiguraMat2 mat) {
         return mat.det();
     }
 
@@ -336,7 +338,7 @@ public class FiguraMat2 implements CachedType {
             ),
             description = "matrix_n.invert"
     )
-    public static void invert(FiguraMat2 mat) {
+    public static void invert(@LuaNotNil FiguraMat2 mat) {
         mat.invert();
     }
 
@@ -348,7 +350,7 @@ public class FiguraMat2 implements CachedType {
             ),
             description = "matrix_n.get_inverse"
     )
-    public static FiguraMat2 getInverse(FiguraMat2 mat) {
+    public static FiguraMat2 getInverse(@LuaNotNil FiguraMat2 mat) {
         return mat.inverted();
     }
 
@@ -360,7 +362,7 @@ public class FiguraMat2 implements CachedType {
             ),
             description = "matrix_n.transpose"
     )
-    public static void transpose(FiguraMat2 mat) {
+    public static void transpose(@LuaNotNil FiguraMat2 mat) {
         mat.transpose();
     }
 
@@ -372,7 +374,7 @@ public class FiguraMat2 implements CachedType {
             ),
             description = "matrix_n.get_transpose"
     )
-    public static FiguraMat2 getTranspose(FiguraMat2 mat) {
+    public static FiguraMat2 getTranspose(@LuaNotNil FiguraMat2 mat) {
         return mat.transposed();
     }
 
@@ -384,9 +386,7 @@ public class FiguraMat2 implements CachedType {
             ),
             description = "matrix2.rotate"
     )
-    public static void rotate(FiguraMat2 mat, Double degrees) {
-        if (degrees == null)
-            throw new IllegalArgumentException("Cannot rotate using nil!");
+    public static void rotate(@LuaNotNil FiguraMat2 mat, @LuaNotNil Double degrees) {
         mat.rotate(degrees);
     }
 
@@ -404,17 +404,9 @@ public class FiguraMat2 implements CachedType {
             },
             description = "matrix_n.scale"
     )
-    public static void scale(FiguraMat2 mat, Object arg1, Double y) {
-        if (arg1 instanceof Double x) {
-            if (y != null)
-                mat.scale(x, y);
-            else
-                throw new IllegalArgumentException("Cannot scale using nil!");
-        } else if (arg1 instanceof FiguraVec2 vec) {
-            mat.scale(vec.x, vec.y);
-        } else {
-            throw new IllegalArgumentException("Cannot scale with argument " + arg1 + ".");
-        }
+    public static void scale(@LuaNotNil FiguraMat2 mat, Object x, Double y) {
+        FiguraVec2 vec = LuaUtils.parseVec2("scale", x, y, 1, 1);
+        mat.scale(vec.x, vec.y);
     }
 
     @LuaWhitelist
@@ -425,8 +417,7 @@ public class FiguraMat2 implements CachedType {
             ),
             description = "matrix2.get_column"
     )
-    public static FiguraVec2 getColumn(FiguraMat2 mat, Integer column) {
-        if (column == null) throw new IllegalArgumentException("Cannot access nil column!");
+    public static FiguraVec2 getColumn(@LuaNotNil FiguraMat2 mat, @LuaNotNil Integer column) {
         if (column <= 0 || column > 2) throw new IllegalArgumentException("Column " + column + " does not exist in a 2x2 matrix!");
         return switch (column) {
             case 1 -> mat.getCol1();
@@ -443,8 +434,7 @@ public class FiguraMat2 implements CachedType {
             ),
             description = "matrix2.get_row"
     )
-    public static FiguraVec2 getRow(FiguraMat2 mat, Integer row) {
-        if (row == null) throw new IllegalArgumentException("Cannot access nil row!");
+    public static FiguraVec2 getRow(@LuaNotNil FiguraMat2 mat, @LuaNotNil Integer row) {
         if (row <= 0 || row > 2) throw new IllegalArgumentException("Row " + row + " does not exist in a 2x2 matrix!");
         return switch (row) {
             case 1 -> mat.getRow1();
@@ -452,5 +442,4 @@ public class FiguraMat2 implements CachedType {
             default -> null;
         };
     }
-
 }

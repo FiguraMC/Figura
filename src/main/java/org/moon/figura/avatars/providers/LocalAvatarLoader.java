@@ -12,7 +12,6 @@ import org.moon.figura.parsers.LuaScriptParser;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.nio.file.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -106,7 +105,8 @@ public class LocalAvatarLoader {
 
         BlockbenchModelParser parser = new BlockbenchModelParser();
         for (File model : models) {
-            BlockbenchModelParser.ModelData data = parser.parseModel(readFile(model));
+            String name = model.getName();
+            BlockbenchModelParser.ModelData data = parser.parseModel(readFile(model), name.substring(0, name.length() - 8));
             children.add(data.modelNbt());
             textures.addAll(data.textureList());
             animations.addAll(data.animationList());
@@ -117,8 +117,8 @@ public class LocalAvatarLoader {
         //TODO: Better error handling while parsing, errors should show up to user
         try {
             AvatarMetadataParser.injectToModels(metadata, modelRoot);
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            FiguraMod.LOGGER.error("", e);
         }
 
         //return :3
@@ -170,7 +170,7 @@ public class LocalAvatarLoader {
         if (key != null)
             key.cancel();
 
-        if (watcher == null || !path.toFile().isDirectory())
+        if (watcher == null || path == null || !path.toFile().isDirectory())
             return;
 
         try {

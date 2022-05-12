@@ -5,6 +5,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.Level;
+import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.world.WorldAPI;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
@@ -45,7 +46,7 @@ public class SoundAPI {
             },
             description = "sound.play_sound"
     )
-    public static void playSound(String id, Object x, Double y, Double z, Double w, Double t) {
+    public static void playSound(@LuaNotNil String id, Object x, Double y, Double z, Double w, Double t) {
         FiguraVec3 pos;
         double volume = 1.0;
         double pitch = 1.0;

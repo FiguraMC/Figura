@@ -2,12 +2,15 @@ package org.moon.figura.lua.api.world;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.lua.api.entity.PlayerEntityWrapper;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.lua.types.LuaTable;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.LuaUtils;
 
@@ -276,6 +279,18 @@ public class WorldAPI {
         if (world.getChunkAt(blockPos) == null)
             return null;
         return world.canSeeSky(blockPos);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(),
+            description = "world.get_players"
+    )
+    public static LuaTable getPlayers() {
+        LuaTable playerList = new LuaTable();
+        for (Player player : getCurrentWorld().players())
+            playerList.put(player.getName().getString(), PlayerEntityWrapper.fromEntity(player));
+        return playerList;
     }
 
     @LuaWhitelist

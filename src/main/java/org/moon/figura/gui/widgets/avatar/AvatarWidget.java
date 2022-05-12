@@ -7,22 +7,23 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.avatars.AvatarManager;
-import org.moon.figura.avatars.providers.LocalAvatarFetcher;
 import org.moon.figura.gui.widgets.TexturedButton;
 import org.moon.figura.gui.widgets.lists.AvatarList;
 import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.ui.UIHelper;
 
+import java.nio.file.Path;
+
 public class AvatarWidget extends AbstractAvatarWidget {
 
     private final TexturedButton button;
 
-    public AvatarWidget(int depth, int width, LocalAvatarFetcher.AvatarPath avatar, AvatarList parent) {
-        super(depth, width, avatar, parent);
+    public AvatarWidget(int depth, int width, Path path, AvatarList parent) {
+        super(depth, width, path, parent);
 
         AvatarWidget instance = this;
-        this.button = new TexturedButton(x, y, width, 20, new TextComponent("  ".repeat(depth) + getName()), null, button -> {
-            AvatarManager.loadLocalAvatar(avatar.getPath());
+        this.button = new TexturedButton(x, y, width, 20, new TextComponent("  ".repeat(depth)).append(getName()), null, button -> {
+            AvatarManager.loadLocalAvatar(path);
             parent.selectedEntry = instance;
         }) {
             @Override
@@ -49,7 +50,7 @@ public class AvatarWidget extends AbstractAvatarWidget {
 
                 //tooltip
                 if (message != getMessage())
-                    setTooltip(new TextComponent(instance.getName()));
+                    setTooltip(instance.getName());
             }
 
             @Override

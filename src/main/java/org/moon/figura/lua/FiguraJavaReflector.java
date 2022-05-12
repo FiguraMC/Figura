@@ -6,10 +6,7 @@ import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.lua.types.LuaTable;
 import org.terasology.jnlua.*;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
+import java.lang.reflect.*;
 import java.util.*;
 
 public class FiguraJavaReflector implements JavaReflector {
@@ -320,13 +317,15 @@ public class FiguraJavaReflector implements JavaReflector {
 
         private final Method method;
         private final Class<?>[] argumentTypes;
+        private final Parameter[] params;
         private final int ret;
 
         public MethodWrapper(Method method) {
             this.method = method;
             this.argumentTypes = method.getParameterTypes();
-            for (int i = 0; i < argumentTypes.length; i++) {
-                if (argumentTypes[i].isPrimitive()) {
+            this.params = method.getParameters();
+            for (Class<?> argumentType : argumentTypes) {
+                if (argumentType.isPrimitive()) {
                     FiguraMod.LOGGER.error("Method " + method.getName() + " in class " + method.getDeclaringClass().getCanonicalName() + " has primitive parameters. This can cause errors if nil is passed in, so use the wrapper classes instead!");
                     break;
                 }
@@ -340,8 +339,11 @@ public class FiguraJavaReflector implements JavaReflector {
                 Object[] args = new Object[argumentTypes.length];
                 for (int i = luaState.getTop(); i < args.length; i++)
                     luaState.pushNil();
-                for (int i = 0; i < luaState.getTop() && i < args.length; i++)
+                for (int i = 0; i < luaState.getTop() && i < args.length; i++) {
+                    if (params[i].isAnnotationPresent(LuaNotNil.class) && luaState.type(i + 1) == LuaType.NIL)
+                        throw new LuaRuntimeException("bad argument #"+ (i + 1) + " to '" + method.getName() + "' (" + FiguraDocsManager.NAME_MAP.getOrDefault(argumentTypes[i], argumentTypes[i].getName()) + " expected, got nil)");
                     args[i] = luaState.toJavaObject(i + 1, argumentTypes[i]);
+                }
                 luaState.pushJavaObject(method.invoke(null, args));
             } catch (IllegalAccessException e) {
                 e.printStackTrace();

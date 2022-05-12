@@ -2,7 +2,8 @@ package org.moon.figura.gui.widgets.avatar;
 
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
-import org.moon.figura.avatars.providers.LocalAvatarFetcher;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.widgets.AbstractContainerElement;
 import org.moon.figura.gui.widgets.ContextMenu;
@@ -11,27 +12,28 @@ import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.ui.UIHelper;
 
 import java.io.File;
+import java.nio.file.Path;
 
 public class AbstractAvatarWidget extends AbstractContainerElement implements Comparable<AbstractAvatarWidget> {
 
     protected final AvatarList parent;
-    protected final LocalAvatarFetcher.AvatarPath avatar;
+    protected final Path path;
     protected final int depth;
     protected final ContextMenu context;
 
-    public AbstractAvatarWidget(int depth, int width, LocalAvatarFetcher.AvatarPath avatar, AvatarList parent) {
+    public AbstractAvatarWidget(int depth, int width, Path path, AvatarList parent) {
         super(0, 0, width, 20);
         this.parent = parent;
-        this.avatar = avatar;
+        this.path = path;
         this.depth = depth;
         this.context = new ContextMenu(this);
 
         context.addAction(new FiguraText("gui.context.open_folder"), button -> {
-            File f = avatar.getPath().toFile();
+            File f = path.toFile();
             Util.getPlatform().openFile(f.isDirectory() ? f : f.getParentFile());
         });
         context.addAction(new FiguraText("gui.context.copy_path"), button -> {
-            Minecraft.getInstance().keyboardHandler.setClipboard(avatar.getPath().toString());
+            Minecraft.getInstance().keyboardHandler.setClipboard(path.toString());
             FiguraToast.sendToast(new FiguraText("toast.clipboard"));
         });
     }
@@ -64,8 +66,8 @@ public class AbstractAvatarWidget extends AbstractContainerElement implements Co
         return this.parent.isInsideScissors(mouseX, mouseY) && super.isMouseOver(mouseX, mouseY);
     }
 
-    public String getName() {
-        return avatar.getPath().getFileName().toString();
+    public Component getName() {
+        return new TextComponent(path.getFileName().toString());
     }
 
     public int getHeight() {
@@ -86,6 +88,6 @@ public class AbstractAvatarWidget extends AbstractContainerElement implements Co
             return 1;
 
         //then compare names
-        else return this.getName().toLowerCase().compareTo(other.getName().toLowerCase());
+        else return this.getName().getString().toLowerCase().compareTo(other.getName().getString().toLowerCase());
     }
 }

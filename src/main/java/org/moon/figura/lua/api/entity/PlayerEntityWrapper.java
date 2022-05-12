@@ -5,6 +5,7 @@ import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.world.entity.player.Player;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
+import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
@@ -31,7 +32,7 @@ public class PlayerEntityWrapper extends LivingEntityWrapper<Player> {
             ),
             description = "player.get_food"
     )
-    public static int getFood(PlayerEntityWrapper entity) {
+    public static int getFood(@LuaNotNil PlayerEntityWrapper entity) {
         return getEntity(entity).getFoodData().getFoodLevel();
     }
 
@@ -43,7 +44,7 @@ public class PlayerEntityWrapper extends LivingEntityWrapper<Player> {
             ),
             description = "player.get_saturation"
     )
-    public static float getSaturation(PlayerEntityWrapper entity) {
+    public static float getSaturation(@LuaNotNil PlayerEntityWrapper entity) {
         return getEntity(entity).getFoodData().getSaturationLevel();
     }
 
@@ -55,7 +56,7 @@ public class PlayerEntityWrapper extends LivingEntityWrapper<Player> {
             ),
             description = "player.get_experience_progress"
     )
-    public static float getExperienceProgress(PlayerEntityWrapper entity) {
+    public static float getExperienceProgress(@LuaNotNil PlayerEntityWrapper entity) {
         return getEntity(entity).experienceProgress;
     }
 
@@ -67,7 +68,7 @@ public class PlayerEntityWrapper extends LivingEntityWrapper<Player> {
             ),
             description = "player.get_experience_level"
     )
-    public static int getExperienceLevel(PlayerEntityWrapper entity) {
+    public static int getExperienceLevel(@LuaNotNil PlayerEntityWrapper entity) {
         return getEntity(entity).experienceLevel;
     }
 
@@ -79,7 +80,7 @@ public class PlayerEntityWrapper extends LivingEntityWrapper<Player> {
             ),
             description = "player.get_model_type"
     )
-    public static String getModelType(PlayerEntityWrapper entity) {
+    public static String getModelType(@LuaNotNil PlayerEntityWrapper entity) {
         if (Minecraft.getInstance().player == null)
             return null;
 
@@ -98,7 +99,7 @@ public class PlayerEntityWrapper extends LivingEntityWrapper<Player> {
             ),
             description = "player.get_gamemode"
     )
-    public static String getGamemode(PlayerEntityWrapper entity) {
+    public static String getGamemode(@LuaNotNil PlayerEntityWrapper entity) {
         if (Minecraft.getInstance().player == null)
             return null;
 
@@ -117,7 +118,7 @@ public class PlayerEntityWrapper extends LivingEntityWrapper<Player> {
             ),
             description = "player.is_flying"
     )
-    public static boolean isFlying(PlayerEntityWrapper entity) {
+    public static boolean isFlying(@LuaNotNil PlayerEntityWrapper entity) {
         return getEntity(entity).getAbilities().flying;
     }
 
@@ -129,7 +130,7 @@ public class PlayerEntityWrapper extends LivingEntityWrapper<Player> {
             ),
             description = "player.get_variable"
     )
-    public static Object getVariable(PlayerEntityWrapper entity, String key) {
+    public static Object getVariable(@LuaNotNil PlayerEntityWrapper entity, @LuaNotNil String key) {
         Avatar a = AvatarManager.getAvatarForPlayer(entity.savedUUID);
         if (a == null || a.luaState == null)
             return null;

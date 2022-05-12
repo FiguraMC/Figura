@@ -3,6 +3,7 @@ package org.moon.figura.lua.api;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 import org.moon.figura.FiguraMod;
+import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.entity.EntityWrapper;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
@@ -37,8 +38,8 @@ public class HostAPI {
             ),
             description = "host.is_host"
     )
-    private static boolean isHost(HostAPI api) {
-        return api != null && api.owner.compareTo(FiguraMod.getLocalPlayerUUID()) == 0;
+    public static boolean isHost(@LuaNotNil HostAPI api) {
+        return api.owner.compareTo(FiguraMod.getLocalPlayerUUID()) == 0;
     }
 
     @LuaWhitelist
@@ -49,7 +50,7 @@ public class HostAPI {
             ),
             description = "host.get_targeted_entity"
     )
-    public static EntityWrapper<?> getTargetedEntity(HostAPI api) {
+    public static EntityWrapper<?> getTargetedEntity(@LuaNotNil HostAPI api) {
         if (!isHost(api)) return null;
         Entity entity = api.minecraft.crosshairPickEntity;
 
@@ -73,7 +74,7 @@ public class HostAPI {
             },
             description = "host.set_title_times"
     )
-    public static void setTitleTimes(HostAPI api, Object x, Double y, Double z) {
+    public static void setTitleTimes(@LuaNotNil HostAPI api, Object x, Double y, Double z) {
         if (!isHost(api)) return;
         FiguraVec3 times = LuaUtils.parseVec3("setTitleTimes", x, y, z);
         api.minecraft.gui.setTimes((int) times.x, (int) times.y, (int) times.z);
@@ -87,7 +88,7 @@ public class HostAPI {
             ),
             description = "host.clear_title"
     )
-    public static void clearTitle(HostAPI api) {
+    public static void clearTitle(@LuaNotNil HostAPI api) {
         if (!isHost(api)) return;
         api.minecraft.gui.clear();
     }
@@ -100,7 +101,7 @@ public class HostAPI {
             ),
             description = "host.set_title"
     )
-    public static void setTitle(HostAPI api, String text) {
+    public static void setTitle(@LuaNotNil HostAPI api, @LuaNotNil String text) {
         if (!isHost(api)) return;
         api.minecraft.gui.setTitle(TextUtils.tryParseJson(text));
     }
@@ -113,7 +114,7 @@ public class HostAPI {
             ),
             description = "host.set_subtitle"
     )
-    public static void setSubtitle(HostAPI api, String text) {
+    public static void setSubtitle(@LuaNotNil HostAPI api, @LuaNotNil String text) {
         if (!isHost(api)) return;
         api.minecraft.gui.setSubtitle(TextUtils.tryParseJson(text));
     }
@@ -132,7 +133,7 @@ public class HostAPI {
             },
             description = "host.set_actionbar"
     )
-    public static void setActionbar(HostAPI api, String text, Boolean animated) {
+    public static void setActionbar(@LuaNotNil HostAPI api, @LuaNotNil String text, Boolean animated) {
         if (!isHost(api)) return;
         if (animated == null) animated = false;
         api.minecraft.gui.setOverlayMessage(TextUtils.tryParseJson(text), animated);

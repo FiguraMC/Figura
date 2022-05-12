@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.commands.arguments.ParticleArgument;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.world.level.Level;
+import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.world.WorldAPI;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
@@ -58,7 +59,7 @@ public class ParticleAPI {
             },
             description = "particle.add_particle"
     )
-    public static void addParticle(String id, Object x, Object y, Double z, Object w, Double t, Double h) {
+    public static void addParticle(@LuaNotNil String id, Object x, Object y, Double z, Object w, Double t, Double h) {
         FiguraVec3 pos, vel;
 
         //Parse pos and vel
@@ -95,9 +96,10 @@ public class ParticleAPI {
                 level.addParticle(particle, pos.x, pos.y, pos.z, vel.x, vel.y, vel.z);
         } catch (Exception e) {
             throw new LuaRuntimeException(e.getMessage());
+        } finally {
+            pos.free();
+            vel.free();
         }
-        pos.free();
-        vel.free();
     }
 
     @Override

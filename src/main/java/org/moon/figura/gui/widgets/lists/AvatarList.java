@@ -2,8 +2,10 @@ package org.moon.figura.gui.widgets.lists;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.providers.LocalAvatarFetcher;
@@ -29,6 +31,8 @@ public class AvatarList extends AbstractList {
     private final HashSet<Path> missingPaths = new HashSet<>();
     private final ArrayList<AbstractAvatarWidget> avatarList = new ArrayList<>();
 
+    private final AvatarWidget unselect;
+
     private int totalHeight = 0;
     private String filter = "";
 
@@ -38,6 +42,20 @@ public class AvatarList extends AbstractList {
 
     public AvatarList(int x, int y, int width, int height) {
         super(x, y, width, height);
+
+        unselect = new AvatarWidget(0, this.width - 22, null, this) {
+            @Override
+            public boolean mouseClicked(double mouseX, double mouseY, int button) {
+                boolean bool = super.mouseClicked(mouseX, mouseY, button);
+                context.setVisible(false);
+                return bool;
+            }
+
+            @Override
+            public Component getName() {
+                return new FiguraText("gui.wardrobe.unselect").withStyle(ChatFormatting.GRAY);
+            }
+        };
 
         children.add(new TextField(x + 4, y + 4, width - 32, 20, new FiguraText("gui.search"), s -> filter = s));
         children.add(new TexturedButton(
@@ -128,7 +146,7 @@ public class AvatarList extends AbstractList {
             missingPaths.remove(path);
             avatars.computeIfAbsent(path, p -> {
                 int width = this.width - 22;
-                AbstractAvatarWidget entry = avatar.hasAvatar() ? new AvatarWidget(0, width, avatar, this) : new AvatarFolderWidget(0, width, avatar, this);
+                AbstractAvatarWidget entry = avatar.hasAvatar() ? new AvatarWidget(0, width, avatar.getPath(), this) : new AvatarFolderWidget(0, width, avatar, this);
 
                 avatarList.add(entry);
                 children.add(entry);
@@ -151,6 +169,14 @@ public class AvatarList extends AbstractList {
                 return avatar1.compareTo(avatar2);
             return 0;
         });
+
+        if (filter.isEmpty()) {
+            avatars.computeIfAbsent(Path.of(""), path -> {
+                avatarList.add(0, unselect);
+                children.add(2, unselect); //after field and scrollbar
+                return unselect;
+            });
+        }
     }
 
     public void updateScroll() {

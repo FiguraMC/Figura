@@ -1,6 +1,7 @@
 package org.moon.figura.lua.api;
 
 import org.moon.figura.avatars.Avatar;
+import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
@@ -38,7 +39,7 @@ public class MetaAPI {
             ),
             description = "meta.store"
     )
-    public static void store(MetaAPI api, String key, Object value) {
+    public static void store(@LuaNotNil MetaAPI api, @LuaNotNil String key, Object value) {
         api.storedStuff.put(key, value);
     }
 
@@ -50,7 +51,7 @@ public class MetaAPI {
             ),
             description = "meta.get_pride"
     )
-    public static String getPride(MetaAPI api) {
+    public static String getPride(@LuaNotNil MetaAPI api) {
         return api.avatar.pride;
     }
 
@@ -62,7 +63,7 @@ public class MetaAPI {
             ),
             description = "meta.set_pride"
     )
-    public static void setPride(MetaAPI api, String text) {
+    public static void setPride(@LuaNotNil MetaAPI api, @LuaNotNil String text) {
         api.avatar.pride = text;
     }
 
@@ -74,7 +75,7 @@ public class MetaAPI {
             ),
             description = "meta.get_version"
     )
-    public static String getVersion(MetaAPI api) {
+    public static String getVersion(@LuaNotNil MetaAPI api) {
         return api.avatar.version;
     }
 
@@ -86,7 +87,7 @@ public class MetaAPI {
             ),
             description = "meta.get_author"
     )
-    public static String getAuthor(MetaAPI api) {
+    public static String getAuthor(@LuaNotNil MetaAPI api) {
         return api.avatar.author;
     }
 
@@ -98,7 +99,7 @@ public class MetaAPI {
             ),
             description = "meta.get_name"
     )
-    public static String getName(MetaAPI api) {
+    public static String getName(@LuaNotNil MetaAPI api) {
         return api.avatar.name;
     }
 
@@ -110,7 +111,7 @@ public class MetaAPI {
             ),
             description = "meta.get_size"
     )
-    public static float getSize(MetaAPI api) {
+    public static float getSize(@LuaNotNil MetaAPI api) {
         return api.avatar.fileSize;
     }
 
@@ -122,7 +123,7 @@ public class MetaAPI {
             ),
             description = "meta.has_texture"
     )
-    public static Boolean hasTexture(MetaAPI api) {
+    public static Boolean hasTexture(@LuaNotNil MetaAPI api) {
         return api.avatar.hasTexture;
     }
 
@@ -134,7 +135,7 @@ public class MetaAPI {
             ),
             description = "meta.has_script_error"
     )
-    public static Boolean hasScriptError(MetaAPI api) {
+    public static Boolean hasScriptError(@LuaNotNil MetaAPI api) {
         //useless I know
         return api.avatar.scriptError;
     }
@@ -147,7 +148,7 @@ public class MetaAPI {
             ),
             description = "meta.get_complexity"
     )
-    public static int getComplexity(MetaAPI api) {
+    public static int getComplexity(@LuaNotNil MetaAPI api) {
         return api.avatar.complexity;
     }
 
@@ -159,7 +160,7 @@ public class MetaAPI {
             ),
             description = "meta.get_init_count"
     )
-    public static int getInitCount(MetaAPI api) {
+    public static int getInitCount(@LuaNotNil MetaAPI api) {
         return api.avatar.initInstructions;
     }
 
@@ -171,7 +172,7 @@ public class MetaAPI {
             ),
             description = "meta.get_tick_count"
     )
-    public static int getTickCount(MetaAPI api) {
+    public static int getTickCount(@LuaNotNil MetaAPI api) {
         return api.avatar.tickInstructions;
     }
 
@@ -183,7 +184,7 @@ public class MetaAPI {
             ),
             description = "meta.get_render_count"
     )
-    public static int getRenderCount(MetaAPI api) {
+    public static int getRenderCount(@LuaNotNil MetaAPI api) {
         return api.avatar.renderInstructions;
     }
 
@@ -195,7 +196,7 @@ public class MetaAPI {
             ),
             description = "meta.get_script_memory"
     )
-    public static int getScriptMemory(MetaAPI api) {
+    public static int getScriptMemory(@LuaNotNil MetaAPI api) {
         return api.avatar.luaState.getTotalMemory() - api.avatar.luaState.getFreeMemory();
     }
 
@@ -207,7 +208,7 @@ public class MetaAPI {
             ),
             description = "meta.get_max_init_count"
     )
-    public static int getMaxInitCount(MetaAPI api) {
+    public static int getMaxInitCount(@LuaNotNil MetaAPI api) {
         return api.trust.get(TrustContainer.Trust.INIT_INST);
     }
 
@@ -219,7 +220,7 @@ public class MetaAPI {
             ),
             description = "meta.get_max_tick_count"
     )
-    public static int getMaxTickCount(MetaAPI api) {
+    public static int getMaxTickCount(@LuaNotNil MetaAPI api) {
         return api.trust.get(TrustContainer.Trust.TICK_INST);
     }
 
@@ -231,7 +232,7 @@ public class MetaAPI {
             ),
             description = "meta.get_max_render_count"
     )
-    public static int getMaxRenderCount(MetaAPI api) {
+    public static int getMaxRenderCount(@LuaNotNil MetaAPI api) {
         return api.trust.get(TrustContainer.Trust.RENDER_INST);
     }
 
@@ -243,7 +244,7 @@ public class MetaAPI {
             ),
             description = "meta.get_max_script_memory"
     )
-    public static long getMaxScriptMemory(MetaAPI api) {
+    public static long getMaxScriptMemory(@LuaNotNil MetaAPI api) {
         return Math.min(Integer.MAX_VALUE,  api.trust.get(TrustContainer.Trust.MAX_MEM) * 1_000_000L);
     }
 
@@ -255,7 +256,7 @@ public class MetaAPI {
             ),
             description = "meta.get_max_complexity"
     )
-    public static int getMaxComplexity(MetaAPI api) {
+    public static int getMaxComplexity(@LuaNotNil MetaAPI api) {
         return api.trust.get(TrustContainer.Trust.COMPLEXITY);
     }
 
@@ -267,7 +268,7 @@ public class MetaAPI {
             ),
             description = "meta.get_max_particles"
     )
-    public static int getMaxParticles(MetaAPI api) {
+    public static int getMaxParticles(@LuaNotNil MetaAPI api) {
         return api.trust.get(TrustContainer.Trust.PARTICLES);
     }
 
@@ -279,7 +280,7 @@ public class MetaAPI {
             ),
             description = "meta.get_max_sounds"
     )
-    public static int getMaxSounds(MetaAPI api) {
+    public static int getMaxSounds(@LuaNotNil MetaAPI api) {
         return api.trust.get(TrustContainer.Trust.SOUNDS);
     }
 
@@ -291,7 +292,7 @@ public class MetaAPI {
             ),
             description = "meta.can_edit_nameplate"
     )
-    public static boolean canEditNameplate(MetaAPI api) {
+    public static boolean canEditNameplate(@LuaNotNil MetaAPI api) {
         TrustContainer.Trust trust = TrustContainer.Trust.NAMEPLATE_EDIT;
         return trust.asBoolean(api.trust.get(trust));
     }
@@ -304,7 +305,7 @@ public class MetaAPI {
             ),
             description = "meta.can_render_offscreen"
     )
-    public static boolean canRenderOffscreen(MetaAPI api) {
+    public static boolean canRenderOffscreen(@LuaNotNil MetaAPI api) {
         TrustContainer.Trust trust = TrustContainer.Trust.OFFSCREEN_RENDERING;
         return trust.asBoolean(api.trust.get(trust));
     }

@@ -6,6 +6,7 @@ import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.lua.api.*;
 import org.moon.figura.lua.api.entity.PlayerEntityWrapper;
+import org.moon.figura.lua.api.keybind.KeybindAPI;
 import org.moon.figura.lua.api.math.MatricesAPI;
 import org.moon.figura.lua.api.math.VectorsAPI;
 import org.moon.figura.lua.api.model.VanillaModelAPI;
@@ -30,6 +31,7 @@ public class FiguraLuaState extends LuaState53 {
     public VanillaModelAPI vanillaModel;
     public NameplateAPI nameplate;
     public MetaAPI meta;
+    public KeybindAPI keybind;
 
     public FiguraLuaState(Avatar owner, int memory) {
         super(memory * 1_000_000); //memory is given in mb
@@ -124,6 +126,8 @@ public class FiguraLuaState extends LuaState53 {
         loadGlobal(new HostAPI(owner.owner), "host");
         meta = new MetaAPI(owner);
         loadGlobal(meta, "meta");
+        keybind = new KeybindAPI(owner);
+        loadGlobal(keybind, "keybind");
 
         //Load "vec" as global alias for "vectors.vec"
         pushJavaFunction(getJavaReflector().getMetamethod(JavaReflector.Metamethod.INDEX));

@@ -60,7 +60,7 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
         int texture = avatar == null || !avatar.hasTexture ? 0 : 3;
         status += (byte) (texture << 2);
 
-        int script = avatar == null || avatar.scriptError ? 1 : avatar.luaState == null ? 0 : 3;
+        int script = avatar == null ? 0 : avatar.scriptError ? 1 : avatar.luaState == null ? 0 : 3;
         status += (byte) (script << 4);
 
         int backend = 1;

@@ -1,5 +1,6 @@
 package org.moon.figura.lua.api.math;
 
+import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
@@ -100,8 +101,7 @@ public class MatricesAPI {
             ),
             description = "matrices.rotation2"
     )
-    public static FiguraMat2 rotation2(Double degrees) {
-        LuaUtils.nullCheck("rotation2", "degrees", degrees);
+    public static FiguraMat2 rotation2(@LuaNotNil Double degrees) {
         return FiguraMat2.createRotationMatrix(degrees);
     }
 
@@ -134,8 +134,7 @@ public class MatricesAPI {
             ),
             description = "matrices.x_rotation3"
     )
-    public static FiguraMat3 xRotation3(Double degrees) {
-        LuaUtils.nullCheck("xRotation3", "degrees", degrees);
+    public static FiguraMat3 xRotation3(@LuaNotNil Double degrees) {
         return FiguraMat3.createXRotationMatrix(degrees);
     }
 
@@ -147,8 +146,7 @@ public class MatricesAPI {
             ),
             description = "matrices.y_rotation3"
     )
-    public static FiguraMat3 yRotation3(Double degrees) {
-        LuaUtils.nullCheck("yRotation3", "degrees", degrees);
+    public static FiguraMat3 yRotation3(@LuaNotNil Double degrees) {
         return FiguraMat3.createYRotationMatrix(degrees);
     }
 
@@ -160,8 +158,7 @@ public class MatricesAPI {
             ),
             description = "matrices.z_rotation3"
     )
-    public static FiguraMat3 zRotation3(Double degrees) {
-        LuaUtils.nullCheck("zRotation3", "degrees", degrees);
+    public static FiguraMat3 zRotation3(@LuaNotNil Double degrees) {
         return FiguraMat3.createZRotationMatrix(degrees);
     }
 
@@ -194,8 +191,7 @@ public class MatricesAPI {
             ),
             description = "matrices.x_rotation4"
     )
-    public static FiguraMat4 xRotation4(Double degrees) {
-        LuaUtils.nullCheck("xRotation4", "degrees", degrees);
+    public static FiguraMat4 xRotation4(@LuaNotNil Double degrees) {
         return FiguraMat4.createXRotationMatrix(degrees);
     }
 
@@ -207,8 +203,7 @@ public class MatricesAPI {
             ),
             description = "matrices.y_rotation4"
     )
-    public static FiguraMat4 yRotation4(Double degrees) {
-        LuaUtils.nullCheck("yRotation4", "degrees", degrees);
+    public static FiguraMat4 yRotation4(@LuaNotNil Double degrees) {
         return FiguraMat4.createYRotationMatrix(degrees);
     }
 
@@ -220,8 +215,7 @@ public class MatricesAPI {
             ),
             description = "matrices.z_rotation4"
     )
-    public static FiguraMat4 zRotation4(Double degrees) {
-        LuaUtils.nullCheck("zRotation4", "degrees", degrees);
+    public static FiguraMat4 zRotation4(@LuaNotNil Double degrees) {
         return FiguraMat4.createZRotationMatrix(degrees);
     }
 

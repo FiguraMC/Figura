@@ -24,7 +24,7 @@ public class BlockbenchModelParser {
     private final HashMap<Integer, String> textureIdMap = new HashMap<>();
 
     //parser
-    public ModelData parseModel(String json) {
+    public ModelData parseModel(String json, String fallbackName) {
         //parse json -> object
         Gson gson = new GsonBuilder().create();
         BlockbenchModel model = gson.fromJson(json, BlockbenchModel.class);
@@ -35,7 +35,7 @@ public class BlockbenchModelParser {
 
         //object -> nbt
         CompoundTag nbt = new CompoundTag();
-        nbt.putString("name", model.name);
+        nbt.putString("name", model.name.isEmpty() ? fallbackName : model.name);
 
         //parse textures first
         //we want to save the textures in a separated list

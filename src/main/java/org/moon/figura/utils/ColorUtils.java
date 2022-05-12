@@ -30,16 +30,27 @@ public class ColorUtils {
         }
     }
 
-    public static int[] split(int value, int len) {
+    /**
+     * splits a color integer into its channels
+     * @param color - integer to split
+     * @param len - channels length
+     * @return an int array of the split int
+     */
+    public static int[] split(int color, int len) {
         int[] array = new int[len];
         for (int i = 0; i < len; i++) {
             int shift = (len * 8) - ((i + 1) * 8);
-            array[i] = value >> shift & 0xFF;
+            array[i] = color >> shift & 0xFF;
         }
 
         return array;
     }
 
+    /**
+     * converts a rgb vector into an integer
+     * @param rgb - a vector of 0 to 1
+     * @return an int
+     */
     public static int rgbToInt(FiguraVec3 rgb) {
         int hex = (int) (rgb.x * 0xFF);
         hex = (hex << 8) + (int) (rgb.y * 0xFF);
@@ -47,11 +58,23 @@ public class ColorUtils {
         return hex;
     }
 
+    /**
+     * converts an integer into a rgb vector
+     * @param color - an integer
+     * @return a vector of 0 to 1
+     */
     public static FiguraVec3 intToRGB(int color) {
         int[] rgb = ColorUtils.split(color, 3);
         return FiguraVec3.of(rgb[0] / 255f, rgb[1] / 255f, rgb[2] / 255f);
     }
 
+    /**
+     * parses a hex string into a vector
+     * '#' is optional
+     * @param hex - a hex string
+     * @param fallback - fallback value
+     * @return a vector of 0 to 1 of the parsed string, or fallback if failed to parse
+     */
     public static FiguraVec3 hexStringToRGB(String hex, FiguraVec3 fallback) {
         //parse #
         if (hex.startsWith("#")) hex = hex.substring(1);
@@ -64,6 +87,15 @@ public class ColorUtils {
         }
     }
 
+    /**
+     * parses a hex string into a vector
+     * '#' is optional
+     * return value is based on string length
+     * len 3 uses a short hex string
+     * any other length fills the missing hex values to 0
+     * @param string - a hex string
+     * @return a vector of 0 to 1 or a vector of zeros if failed to parse the hex string
+     */
     public static FiguraVec3 hexStringToRGB(String string) {
         //parse hex color
         StringBuilder hex = new StringBuilder(string);
@@ -76,7 +108,7 @@ public class ColorUtils {
             if (hex.length() == 3)
                 hex = new StringBuilder("" + bgChar[0] + bgChar[0] + bgChar[1] + bgChar[1] + bgChar[2] + bgChar[2]);
             else
-                hex.append("0".repeat(Math.max(0, 6 - hex.toString().length())));
+                hex.append("0".repeat(6 - hex.toString().length()));
         }
 
         //return
@@ -87,8 +119,23 @@ public class ColorUtils {
         }
     }
 
+    /**
+     * converts a hsv vector into a rgb vector
+     * @param hsv - a vector of 0 to 1
+     * @return a vector of 0 to 1
+     */
     public static FiguraVec3 hsvToRGB(FiguraVec3 hsv) {
         int hex = Color.HSBtoRGB((float) hsv.x, (float) hsv.y, (float) hsv.z);
         return intToRGB(hex);
+    }
+
+    /**
+     * converts a rgb vector into a hsv vector
+     * @param rgb - a vector of 0 to 1
+     * @return a vector of 0 to 1
+     */
+    public static FiguraVec3 rgbToHSV(FiguraVec3 rgb) {
+        float[] hsv = Color.RGBtoHSB((int) (rgb.x * 255f), (int) (rgb.y * 255f), (int) (rgb.z * 255f), null);
+        return FiguraVec3.of(hsv[0], hsv[1], hsv[2]);
     }
 }

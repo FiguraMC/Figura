@@ -10,6 +10,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import org.moon.figura.avatars.AvatarManager;
+import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
@@ -70,8 +71,8 @@ public class EntityWrapper<T extends Entity> {
             ),
             description = "entity.exists"
     )
-    public static <T extends Entity> boolean exists(EntityWrapper<T> entity) {
-        return entity != null && entity.getEntity() != null;
+    public static <T extends Entity> boolean exists(@LuaNotNil EntityWrapper<T> entity) {
+        return entity.getEntity() != null;
     }
 
     @LuaWhitelist
@@ -88,7 +89,7 @@ public class EntityWrapper<T extends Entity> {
             },
             description = "entity.get_pos"
     )
-    public static <T extends Entity> FiguraVec3 getPos(EntityWrapper<T> entity, Float delta) {
+    public static <T extends Entity> FiguraVec3 getPos(@LuaNotNil EntityWrapper<T> entity, Float delta) {
         if (delta == null) delta = 1f;
         Vec3 pos = getEntity(entity).getPosition(delta);
         return FiguraVec3.of(pos.x, pos.y, pos.z);
@@ -108,7 +109,7 @@ public class EntityWrapper<T extends Entity> {
             },
             description = "entity.get_rot"
     )
-    public static <T extends Entity> FiguraVec2 getRot(EntityWrapper<T> entity, Float delta) {
+    public static <T extends Entity> FiguraVec2 getRot(@LuaNotNil EntityWrapper<T> entity, Float delta) {
         if (delta == null) delta = 1f;
         Entity e = getEntity(entity);
         return FiguraVec2.of(Mth.lerp(delta, e.xRotO, e.getXRot()), Mth.lerp(delta, e.yRotO, e.getYRot()));
@@ -122,7 +123,7 @@ public class EntityWrapper<T extends Entity> {
             ),
             description = "entity.get_uuid"
     )
-    public static <T extends Entity> String getUUID(EntityWrapper<T> entity) {
+    public static <T extends Entity> String getUUID(@LuaNotNil EntityWrapper<T> entity) {
         return entity.savedUUID.toString();
     }
 
@@ -134,7 +135,7 @@ public class EntityWrapper<T extends Entity> {
             ),
             description = "entity.get_type"
     )
-    public static <T extends Entity> String getType(EntityWrapper<T> entity) {
+    public static <T extends Entity> String getType(@LuaNotNil EntityWrapper<T> entity) {
         return Registry.ENTITY_TYPE.getKey(getEntity(entity).getType()).toString();
     }
 
@@ -146,7 +147,7 @@ public class EntityWrapper<T extends Entity> {
             ),
             description = "entity.is_hamburger"
     )
-    public static <T extends Entity> boolean isHamburger(EntityWrapper<T> entity) {
+    public static <T extends Entity> boolean isHamburger(@LuaNotNil EntityWrapper<T> entity) {
         return entity.savedUUID.compareTo(UUID.fromString("66a6c5c4-963b-4b73-a0d9-162faedd8b7f")) == 0;
     }
 
@@ -158,7 +159,7 @@ public class EntityWrapper<T extends Entity> {
             ),
             description = "entity.get_velocity"
     )
-    public static <T extends Entity> FiguraVec3 getVelocity(EntityWrapper<T> entity) {
+    public static <T extends Entity> FiguraVec3 getVelocity(@LuaNotNil EntityWrapper<T> entity) {
         Entity e = getEntity(entity);
         return FiguraVec3.of(e.getX() - e.xOld, e.getY() - e.yOld, e.getZ() - e.yOld);
     }
@@ -171,7 +172,7 @@ public class EntityWrapper<T extends Entity> {
             ),
             description = "entity.get_look_dir"
     )
-    public static <T extends Entity> FiguraVec3 getLookDir(EntityWrapper<T> entity) {
+    public static <T extends Entity> FiguraVec3 getLookDir(@LuaNotNil EntityWrapper<T> entity) {
         Vec3 vec = getEntity(entity).getLookAngle();
         return FiguraVec3.of(vec.x, vec.y, vec.z);
     }
@@ -184,7 +185,7 @@ public class EntityWrapper<T extends Entity> {
             ),
             description = "entity.get_fire_ticks"
     )
-    public static <T extends Entity> int getFireTicks(EntityWrapper<T> entity) {
+    public static <T extends Entity> int getFireTicks(@LuaNotNil EntityWrapper<T> entity) {
         return getEntity(entity).getRemainingFireTicks();
     }
 
@@ -196,7 +197,7 @@ public class EntityWrapper<T extends Entity> {
             ),
             description = "entity.get_frozen_ticks"
     )
-    public static <T extends Entity> int getFrozenTicks(EntityWrapper<T> entity) {
+    public static <T extends Entity> int getFrozenTicks(@LuaNotNil EntityWrapper<T> entity) {
         return getEntity(entity).getTicksFrozen();
     }
 
@@ -208,7 +209,7 @@ public class EntityWrapper<T extends Entity> {
             ),
             description = "entity.get_air"
     )
-    public static <T extends Entity> int getAir(EntityWrapper<T> entity) {
+    public static <T extends Entity> int getAir(@LuaNotNil EntityWrapper<T> entity) {
         return getEntity(entity).getAirSupply();
     }
 
@@ -220,7 +221,7 @@ public class EntityWrapper<T extends Entity> {
             ),
             description = "entity.get_max_air"
     )
-    public static <T extends Entity> int getMaxAir(EntityWrapper<T> entity) {
+    public static <T extends Entity> int getMaxAir(@LuaNotNil EntityWrapper<T> entity) {
         return getEntity(entity).getMaxAirSupply();
     }
 
@@ -232,7 +233,7 @@ public class EntityWrapper<T extends Entity> {
             ),
             description = "entity.get_dimension_name"
     )
-    public static <T extends Entity> String getDimensionName(EntityWrapper<T> entity) {
+    public static <T extends Entity> String getDimensionName(@LuaNotNil EntityWrapper<T> entity) {
         return getEntity(entity).level.dimension().location().toString();
     }
 
@@ -244,7 +245,7 @@ public class EntityWrapper<T extends Entity> {
             ),
             description = "entity.get_pose"
     )
-    public static <T extends Entity> String getPose(EntityWrapper<T> entity) {
+    public static <T extends Entity> String getPose(@LuaNotNil EntityWrapper<T> entity) {
         return getEntity(entity).getPose().toString();
     }
 
@@ -256,7 +257,7 @@ public class EntityWrapper<T extends Entity> {
             ),
             description = "entity.get_vehicle"
     )
-    public static <T extends Entity> EntityWrapper<?> getVehicle(EntityWrapper<T> entity) {
+    public static <T extends Entity> EntityWrapper<?> getVehicle(@LuaNotNil EntityWrapper<T> entity) {
         return fromEntity(getEntity(entity).getVehicle());
     }
 
@@ -268,7 +269,7 @@ public class EntityWrapper<T extends Entity> {
             ),
             description = "entity.is_on_ground"
     )
-    public static <T extends Entity> boolean isOnGround(EntityWrapper<T> entity) {
+    public static <T extends Entity> boolean isOnGround(@LuaNotNil EntityWrapper<T> entity) {
         return getEntity(entity).isOnGround();
     }
 
@@ -280,7 +281,7 @@ public class EntityWrapper<T extends Entity> {
             ),
             description = "entity.get_eye_height"
     )
-    public static <T extends Entity> float getEyeHeight(EntityWrapper<T> entity) {
+    public static <T extends Entity> float getEyeHeight(@LuaNotNil EntityWrapper<T> entity) {
         Entity e = getEntity(entity);
         return e.getEyeHeight(e.getPose());
     }
@@ -293,7 +294,7 @@ public class EntityWrapper<T extends Entity> {
             ),
             description = "entity.get_bounding_box"
     )
-    public static <T extends Entity> FiguraVec3 getBoundingBox(EntityWrapper<T> entity) {
+    public static <T extends Entity> FiguraVec3 getBoundingBox(@LuaNotNil EntityWrapper<T> entity) {
         Entity e = getEntity(entity);
         EntityDimensions dim = e.getDimensions(e.getPose());
         float x = dim.width;
@@ -311,7 +312,7 @@ public class EntityWrapper<T extends Entity> {
             ),
             description = "entity.get_name"
     )
-    public static <T extends Entity> String getName(EntityWrapper<T> entity) {
+    public static <T extends Entity> String getName(@LuaNotNil EntityWrapper<T> entity) {
         return getEntity(entity).getName().getString();
     }
 
@@ -323,7 +324,7 @@ public class EntityWrapper<T extends Entity> {
             ),
             description = "entity.is_wet"
     )
-    public static <T extends Entity> boolean isWet(EntityWrapper<T> entity) {
+    public static <T extends Entity> boolean isWet(@LuaNotNil EntityWrapper<T> entity) {
         return getEntity(entity).isInWaterRainOrBubble();
     }
 
@@ -333,9 +334,9 @@ public class EntityWrapper<T extends Entity> {
                     argumentTypes = EntityWrapper.class,
                     argumentNames = "entity"
             ),
-            description = "entity.is_touching_water"
+            description = "entity.is_in_water"
     )
-    public static <T extends Entity> boolean isTouchingWater(EntityWrapper<T> entity) {
+    public static <T extends Entity> boolean isInWater(@LuaNotNil EntityWrapper<T> entity) {
         return getEntity(entity).isInWater();
     }
 
@@ -347,7 +348,7 @@ public class EntityWrapper<T extends Entity> {
             ),
             description = "entity.is_underwater"
     )
-    public static <T extends Entity> boolean isUnderwater(EntityWrapper<T> entity) {
+    public static <T extends Entity> boolean isUnderwater(@LuaNotNil EntityWrapper<T> entity) {
         return getEntity(entity).isUnderWater();
     }
 
@@ -359,7 +360,7 @@ public class EntityWrapper<T extends Entity> {
             ),
             description = "entity.is_in_lava"
     )
-    public static <T extends Entity> boolean isInLava(EntityWrapper<T> entity) {
+    public static <T extends Entity> boolean isInLava(@LuaNotNil EntityWrapper<T> entity) {
         return getEntity(entity).isInLava();
     }
 
@@ -371,7 +372,7 @@ public class EntityWrapper<T extends Entity> {
             ),
             description = "entity.is_in_rain"
     )
-    public static <T extends Entity> boolean isInRain(EntityWrapper<T> entity) {
+    public static <T extends Entity> boolean isInRain(@LuaNotNil EntityWrapper<T> entity) {
         Entity e = getEntity(entity);
         BlockPos blockPos = e.blockPosition();
         return e.level.isRainingAt(blockPos) || e.level.isRainingAt(new BlockPos(blockPos.getX(), e.getBoundingBox().maxY, e.getZ()));
@@ -385,7 +386,7 @@ public class EntityWrapper<T extends Entity> {
             ),
             description = "entity.has_avatar"
     )
-    public static <T extends Entity> boolean hasAvatar(EntityWrapper<T> entity) {
+    public static <T extends Entity> boolean hasAvatar(@LuaNotNil EntityWrapper<T> entity) {
         return AvatarManager.getAvatar(getEntity(entity)) != null;
     }
 
@@ -397,7 +398,7 @@ public class EntityWrapper<T extends Entity> {
             ),
             description = "entity.is_sprinting"
     )
-    public static <T extends Entity> boolean isSprinting(EntityWrapper<T> entity) {
+    public static <T extends Entity> boolean isSprinting(@LuaNotNil EntityWrapper<T> entity) {
         return getEntity(entity).isSprinting();
     }
 
@@ -409,7 +410,7 @@ public class EntityWrapper<T extends Entity> {
             ),
             description = "entity.get_eye_y"
     )
-    public static <T extends Entity> double getEyeY(EntityWrapper<T> entity) {
+    public static <T extends Entity> double getEyeY(@LuaNotNil EntityWrapper<T> entity) {
         return getEntity(entity).getEyeY();
     }
 
@@ -421,7 +422,7 @@ public class EntityWrapper<T extends Entity> {
             ),
             description = "entity.is_glowing"
     )
-    public static <T extends Entity> boolean isGlowing(EntityWrapper<T> entity) {
+    public static <T extends Entity> boolean isGlowing(@LuaNotNil EntityWrapper<T> entity) {
         return getEntity(entity).isCurrentlyGlowing();
     }
 
@@ -433,7 +434,7 @@ public class EntityWrapper<T extends Entity> {
             ),
             description = "entity.is_invisible"
     )
-    public static <T extends Entity> boolean isInvisible(EntityWrapper<T> entity) {
+    public static <T extends Entity> boolean isInvisible(@LuaNotNil EntityWrapper<T> entity) {
         return getEntity(entity).isInvisible();
     }
 
@@ -445,7 +446,7 @@ public class EntityWrapper<T extends Entity> {
             ),
             description = "entity.is_silent"
     )
-    public static <T extends Entity> boolean isSilent(EntityWrapper<T> entity) {
+    public static <T extends Entity> boolean isSilent(@LuaNotNil EntityWrapper<T> entity) {
         return getEntity(entity).isSilent();
     }
 
@@ -457,7 +458,7 @@ public class EntityWrapper<T extends Entity> {
             ),
             description = "entity.is_sneaking"
     )
-    public static <T extends Entity> boolean isSneaking(EntityWrapper<T> entity) {
+    public static <T extends Entity> boolean isSneaking(@LuaNotNil EntityWrapper<T> entity) {
         return getEntity(entity).isDiscrete();
     }
 

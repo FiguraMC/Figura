@@ -3,6 +3,7 @@ package org.moon.figura.lua.api.world;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.world.level.block.state.BlockState;
+import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
@@ -46,8 +47,8 @@ public class BlockStateWrapper {
             ),
             description = "blockstate.exists"
     )
-    public static boolean exists(BlockStateWrapper blockState) {
-        return blockState != null && blockState.blockState.get() != null;
+    public static boolean exists(@LuaNotNil BlockStateWrapper blockState) {
+        return blockState.blockState.get() != null;
     }
 
     @LuaWhitelist
@@ -64,7 +65,7 @@ public class BlockStateWrapper {
             },
             description = "blockstate.is_translucent"
     )
-    public static boolean isTranslucent(BlockStateWrapper blockState, Object x, Double y, Double z) {
+    public static boolean isTranslucent(@LuaNotNil BlockStateWrapper blockState, Object x, Double y, Double z) {
         FiguraVec3 pos = LuaUtils.parseVec3("isTranslucent", x, y, z);
         BlockPos blockPos = pos.asBlockPos();
         pos.free();
@@ -85,7 +86,7 @@ public class BlockStateWrapper {
             },
             description = "blockstate.get_opacity"
     )
-    public static int getOpacity(BlockStateWrapper blockState, Object x, Double y, Double z) {
+    public static int getOpacity(@LuaNotNil BlockStateWrapper blockState, Object x, Double y, Double z) {
         FiguraVec3 pos = LuaUtils.parseVec3("getOpacity", x, y, z);
         BlockPos blockPos = pos.asBlockPos();
         pos.free();
@@ -106,7 +107,7 @@ public class BlockStateWrapper {
             },
             description = "blockstate.get_map_color"
     )
-    public static FiguraVec3 getMapColor(BlockStateWrapper blockState, Object x, Double y, Double z) {
+    public static FiguraVec3 getMapColor(@LuaNotNil BlockStateWrapper blockState, Object x, Double y, Double z) {
         FiguraVec3 pos = LuaUtils.parseVec3("getMapColor", x, y, z);
         BlockPos blockPos = pos.asBlockPos();
         pos.free();
@@ -127,7 +128,7 @@ public class BlockStateWrapper {
             },
             description = "blockstate.is_solid_block"
     )
-    public static boolean isSolidBlock(BlockStateWrapper blockState, Object x, Double y, Double z) {
+    public static boolean isSolidBlock(@LuaNotNil BlockStateWrapper blockState, Object x, Double y, Double z) {
         FiguraVec3 pos = LuaUtils.parseVec3("isSolidBlock", x, y, z);
         BlockPos blockPos = pos.asBlockPos();
         pos.free();
@@ -148,7 +149,7 @@ public class BlockStateWrapper {
             },
             description = "blockstate.is_full_cube"
     )
-    public static boolean isFullCube(BlockStateWrapper blockState, Object x, Double y, Double z) {
+    public static boolean isFullCube(@LuaNotNil BlockStateWrapper blockState, Object x, Double y, Double z) {
         FiguraVec3 pos = LuaUtils.parseVec3("isFullCube", x, y, z);
         BlockPos blockPos = pos.asBlockPos();
         pos.free();
@@ -169,7 +170,7 @@ public class BlockStateWrapper {
             },
             description = "blockstate.has_emissive_lightning"
     )
-    public static boolean hasEmissiveLighting(BlockStateWrapper blockState, Object x, Double y, Double z) {
+    public static boolean hasEmissiveLighting(@LuaNotNil BlockStateWrapper blockState, Object x, Double y, Double z) {
         FiguraVec3 pos = LuaUtils.parseVec3("hasEmissiveLighting", x, y, z);
         BlockPos blockPos = pos.asBlockPos();
         pos.free();
@@ -190,7 +191,7 @@ public class BlockStateWrapper {
             },
             description = "blockstate.get_hardness"
     )
-    public static float getHardness(BlockStateWrapper blockState, Object x, Double y, Double z) {
+    public static float getHardness(@LuaNotNil BlockStateWrapper blockState, Object x, Double y, Double z) {
         FiguraVec3 pos = LuaUtils.parseVec3("getHardness", x, y, z);
         BlockPos blockPos = pos.asBlockPos();
         pos.free();
@@ -211,7 +212,7 @@ public class BlockStateWrapper {
             },
             description = "blockstate.get_comparator_output"
     )
-    public static int getComparatorOutput(BlockStateWrapper blockState, Object x, Double y, Double z) {
+    public static int getComparatorOutput(@LuaNotNil BlockStateWrapper blockState, Object x, Double y, Double z) {
         FiguraVec3 pos = LuaUtils.parseVec3("getComparatorOutput", x, y, z);
         BlockPos blockPos = pos.asBlockPos();
         pos.free();
@@ -226,7 +227,7 @@ public class BlockStateWrapper {
             ),
             description = "blockstate.has_block_entity"
     )
-    public static boolean hasBlockEntity(BlockStateWrapper blockState) {
+    public static boolean hasBlockEntity(@LuaNotNil BlockStateWrapper blockState) {
         return getState(blockState).hasBlockEntity();
     }
 
@@ -238,7 +239,7 @@ public class BlockStateWrapper {
             ),
             description = "blockstate.is_opaque"
     )
-    public static boolean isOpaque(BlockStateWrapper blockState) {
+    public static boolean isOpaque(@LuaNotNil BlockStateWrapper blockState) {
         return getState(blockState).canOcclude();
     }
 
@@ -250,7 +251,7 @@ public class BlockStateWrapper {
             ),
             description = "blockstate.emits_redstone_power"
     )
-    public static boolean emitsRedstonePower(BlockStateWrapper blockState) {
+    public static boolean emitsRedstonePower(@LuaNotNil BlockStateWrapper blockState) {
         return getState(blockState).isSignalSource();
     }
 
@@ -262,7 +263,7 @@ public class BlockStateWrapper {
             ),
             description = "blockstate.get_luminance"
     )
-    public static int getLuminance(BlockStateWrapper blockState) {
+    public static int getLuminance(@LuaNotNil BlockStateWrapper blockState) {
         return getState(blockState).getLightEmission();
     }
 
@@ -274,7 +275,7 @@ public class BlockStateWrapper {
             ),
             description = "blockstate.get_friction"
     )
-    public static float getFriction(BlockStateWrapper blockState) {
+    public static float getFriction(@LuaNotNil BlockStateWrapper blockState) {
         return getState(blockState).getBlock().getFriction();
     }
 
@@ -286,7 +287,7 @@ public class BlockStateWrapper {
             ),
             description = "blockstate.get_velocity_multiplier"
     )
-    public static float getVelocityMultiplier(BlockStateWrapper blockState) {
+    public static float getVelocityMultiplier(@LuaNotNil BlockStateWrapper blockState) {
         return getState(blockState).getBlock().getSpeedFactor();
     }
 
@@ -298,7 +299,7 @@ public class BlockStateWrapper {
             ),
             description = "blockstate.get_jump_velocity_multiplier"
     )
-    public static float getJumpVelocityMultiplier(BlockStateWrapper blockState) {
+    public static float getJumpVelocityMultiplier(@LuaNotNil BlockStateWrapper blockState) {
         return getState(blockState).getBlock().getJumpFactor();
     }
 
@@ -310,7 +311,7 @@ public class BlockStateWrapper {
             ),
             description = "blockstate.get_blast_resistance"
     )
-    public static float getBlastResistance(BlockStateWrapper blockState) {
+    public static float getBlastResistance(@LuaNotNil BlockStateWrapper blockState) {
         return getState(blockState).getBlock().getExplosionResistance();
     }
 
@@ -322,7 +323,7 @@ public class BlockStateWrapper {
             ),
             description = "blockstate.as_item"
     )
-    public static ItemStackWrapper asItem(BlockStateWrapper blockState) {
+    public static ItemStackWrapper asItem(@LuaNotNil BlockStateWrapper blockState) {
         return ItemStackWrapper.verify(getState(blockState).getBlock().asItem().getDefaultInstance());
     }
 

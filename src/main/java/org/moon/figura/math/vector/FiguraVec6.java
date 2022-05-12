@@ -1,5 +1,6 @@
 package org.moon.figura.math.vector;
 
+import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
@@ -7,7 +8,6 @@ import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.lua.types.LuaIPairsIterator;
 import org.moon.figura.lua.types.LuaPairsIterator;
-import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.MathUtils;
 import org.moon.figura.utils.caching.CacheUtils;
 import org.moon.figura.utils.caching.CachedType;
@@ -20,7 +20,7 @@ import java.util.List;
         name = "Vector6",
         description = "vector6"
 )
-public class FiguraVec6 implements CachedType {
+public class FiguraVec6 implements CachedType, FiguraVector<FiguraVec6> {
 
     @LuaWhitelist
     @LuaFieldDoc(description = "vector_n.x")
@@ -45,16 +45,23 @@ public class FiguraVec6 implements CachedType {
 
     // CACHING METHODS
     //----------------------------------------------------------------
+
     private static final CacheUtils.Cache<FiguraVec6> CACHE = CacheUtils.getCache(FiguraVec6::new);
+
+    @Override
     public void reset() {
         x = y = z = w = t = h = 0;
     }
+
+    @Override
     public void free() {
         CACHE.offerOld(this);
     }
+
     public static FiguraVec6 of() {
         return CACHE.getFresh();
     }
+
     public static FiguraVec6 of(double x, double y, double z, double w, double t, double h) {
         FiguraVec6 result = of();
         result.set(x, y, z, w, t, h);
@@ -66,29 +73,40 @@ public class FiguraVec6 implements CachedType {
     // UTILITY METHODS
     //----------------------------------------------------------------
 
+    @Override
     public double lengthSquared() {
         return x*x+y*y+z*z+w*w+t*t+h*h;
     }
+
+    @Override
     public double length() {
         return Math.sqrt(lengthSquared());
     }
+
+    @Override
     public FiguraVec6 copy() {
         FiguraVec6 result = of();
         result.set(this);
         return result;
     }
+
+    @Override
     public double dot(FiguraVec6 o) {
         return x*o.x+y*o.y+z*o.z+w*o.w+t*o.t+h*o.h;
     }
+
+    @Override
     public boolean equals(FiguraVec6 o) {
         return x==o.x && y==o.y && z==o.z && w==o.w && t==o.t && h==o.h;
     }
+
     @Override
     public boolean equals(Object other) {
         if (other instanceof FiguraVec6 o)
             return equals(o);
         return false;
     }
+
     @Override
     public String toString() {
         return "{" + (float) x + ", " + (float) y + ", " + (float) z + ", " + (float) w + ", " + (float) t + ", " + (float) h + "}";
@@ -97,6 +115,7 @@ public class FiguraVec6 implements CachedType {
     // MUTATOR METHODS
     //----------------------------------------------------------------
 
+    @Override
     public void set(FiguraVec6 o) {
         set(o.x, o.y, o.z, o.w, o.t, o.h);
     }
@@ -109,6 +128,7 @@ public class FiguraVec6 implements CachedType {
         this.h = h;
     }
 
+    @Override
     public void add(FiguraVec6 o) {
         add(o.x, o.y, o.z, o.w, o.t, o.h);
     }
@@ -121,6 +141,7 @@ public class FiguraVec6 implements CachedType {
         this.h += h;
     }
 
+    @Override
     public void subtract(FiguraVec6 o) {
         subtract(o.x, o.y, o.z, o.w, o.t, o.h);
     }
@@ -133,6 +154,7 @@ public class FiguraVec6 implements CachedType {
         this.h -= h;
     }
 
+    @Override
     public void multiply(FiguraVec6 o) {
         multiply(o.x, o.y, o.z, o.w, o.t, o.h);
     }
@@ -145,6 +167,7 @@ public class FiguraVec6 implements CachedType {
         this.h *= h;
     }
 
+    @Override
     public void divide(FiguraVec6 o) {
         divide(o.x, o.y, o.z, o.w, o.t, o.h);
     }
@@ -157,6 +180,7 @@ public class FiguraVec6 implements CachedType {
         this.h /= h;
     }
 
+    @Override
     public void reduce(FiguraVec6 o) {
         reduce(o.x, o.y, o.z, o.w, o.t, o.h);
     } //modulo
@@ -169,6 +193,7 @@ public class FiguraVec6 implements CachedType {
         this.h %= h;
     }
 
+    @Override
     public void iDivide(FiguraVec6 o) {
         iDivide(o.x, o.y, o.z, o.w, o.t, o.h);
     }
@@ -181,6 +206,7 @@ public class FiguraVec6 implements CachedType {
         this.h = Math.floor(this.h / h);
     }
 
+    @Override
     public void scale(double factor) {
         this.x *= factor;
         this.y *= factor;
@@ -189,6 +215,8 @@ public class FiguraVec6 implements CachedType {
         this.t *= factor;
         this.h *= factor;
     }
+
+    @Override
     public void normalize() {
         double l = length();
         if (l > 0)
@@ -200,6 +228,7 @@ public class FiguraVec6 implements CachedType {
     // GENERATOR METHODS
     //----------------------------------------------------------------
 
+    @Override
     public FiguraVec6 plus(FiguraVec6 o) {
         return plus(o.x, o.y, o.z, o.w, o.t, o.h);
     }
@@ -209,6 +238,7 @@ public class FiguraVec6 implements CachedType {
         return result;
     }
 
+    @Override
     public FiguraVec6 minus(FiguraVec6 o) {
         return minus(o.x, o.y, o.z, o.w, o.t, o.h);
     }
@@ -218,6 +248,7 @@ public class FiguraVec6 implements CachedType {
         return result;
     }
 
+    @Override
     public FiguraVec6 times(FiguraVec6 o) {
         return times(o.x, o.y, o.z, o.w, o.t, o.h);
     }
@@ -227,6 +258,7 @@ public class FiguraVec6 implements CachedType {
         return result;
     }
 
+    @Override
     public FiguraVec6 dividedBy(FiguraVec6 o) {
         return dividedBy(o.x, o.y, o.z, o.w, o.t, o.h);
     }
@@ -236,6 +268,7 @@ public class FiguraVec6 implements CachedType {
         return result;
     }
 
+    @Override
     public FiguraVec6 mod(FiguraVec6 o) {
         return mod(o.x, o.y, o.z, o.w, o.t, o.h);
     }
@@ -245,6 +278,7 @@ public class FiguraVec6 implements CachedType {
         return result;
     }
 
+    @Override
     public FiguraVec6 iDividedBy(FiguraVec6 o) {
         return iDividedBy(o.x, o.y, o.z, o.w, o.t, o.h);
     }
@@ -254,11 +288,14 @@ public class FiguraVec6 implements CachedType {
         return result;
     }
 
+    @Override
     public FiguraVec6 scaled(double factor) {
         FiguraVec6 result = copy();
         result.scale(factor);
         return result;
     }
+
+    @Override
     public FiguraVec6 normalized() {
         FiguraVec6 result = copy();
         result.normalize();
@@ -416,8 +453,7 @@ public class FiguraVec6 implements CachedType {
             ),
             description = "vector_n.clamp_length"
     )
-    public static void clampLength(FiguraVec6 arg, Double minLength, Double maxLength) {
-        LuaUtils.nullCheck("clampLength", "vec", arg);
+    public static void clampLength(@LuaNotNil FiguraVec6 arg, Double minLength, Double maxLength) {
         if (minLength == null) minLength = 0d;
         if (maxLength == null) maxLength = Double.POSITIVE_INFINITY;
         double len = arg.length();
@@ -438,7 +474,7 @@ public class FiguraVec6 implements CachedType {
             ),
             description = "vector_n.length"
     )
-    public static double length(FiguraVec6 arg) {
+    public static double length(@LuaNotNil FiguraVec6 arg) {
         return Math.sqrt(lengthSquared(arg));
     }
 
@@ -450,7 +486,7 @@ public class FiguraVec6 implements CachedType {
             ),
             description = "vector_n.length_squared"
     )
-    public static double lengthSquared(FiguraVec6 arg) {
+    public static double lengthSquared(@LuaNotNil FiguraVec6 arg) {
         return arg.dot(arg);
     }
 
@@ -462,7 +498,7 @@ public class FiguraVec6 implements CachedType {
             ),
             description = "vector_n.dot"
     )
-    public static double dot(FiguraVec6 arg1, FiguraVec6 arg2) {
+    public static double dot(@LuaNotNil FiguraVec6 arg1, @LuaNotNil FiguraVec6 arg2) {
         return arg1.dot(arg2);
     }
 }

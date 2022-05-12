@@ -6,6 +6,7 @@ import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.config.Config;
+import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
@@ -78,7 +79,7 @@ public class NameplateCustomization {
             ),
             description = "nameplate_customization.get_text"
     )
-    public static String getText(NameplateCustomization custom) {
+    public static String getText(@LuaNotNil NameplateCustomization custom) {
         return custom.text;
     }
 
@@ -90,7 +91,7 @@ public class NameplateCustomization {
             ),
             description = "nameplate_customization.set_text"
     )
-    public static void setText(NameplateCustomization custom, String text) {
+    public static void setText(@LuaNotNil NameplateCustomization custom, @LuaNotNil String text) {
         if (TextUtils.tryParseJson(text).getString().length() > 256)
             throw new LuaRuntimeException("Text length exceeded limit of 256 characters");
         custom.text = text;
@@ -104,7 +105,7 @@ public class NameplateCustomization {
             ),
             description = "nameplate_customization.get_pos"
     )
-    public static FiguraVec3 getPos(NameplateCustomization custom) {
+    public static FiguraVec3 getPos(@LuaNotNil NameplateCustomization custom) {
         return custom.position;
     }
 
@@ -122,7 +123,7 @@ public class NameplateCustomization {
             },
             description = "nameplate_customization.set_pos"
     )
-    public static void setPos(NameplateCustomization custom, Object x, Double y, Double z) {
+    public static void setPos(@LuaNotNil NameplateCustomization custom, Object x, Double y, Double z) {
         custom.position = LuaUtils.parseVec3("setPosition", x, y, z);
     }
 
@@ -134,7 +135,7 @@ public class NameplateCustomization {
             ),
             description = "nameplate_customization.get_scale"
     )
-    public static FiguraVec3 getScale(NameplateCustomization custom) {
+    public static FiguraVec3 getScale(@LuaNotNil NameplateCustomization custom) {
         return custom.scale;
     }
 
@@ -152,7 +153,7 @@ public class NameplateCustomization {
             },
             description = "nameplate_customization.set_scale"
     )
-    public static void setScale(NameplateCustomization custom, Object x, Double y, Double z) {
+    public static void setScale(@LuaNotNil NameplateCustomization custom, Object x, Double y, Double z) {
         custom.scale = LuaUtils.parseVec3("setScale", x, y, z, 1, 1, 1);
     }
 
@@ -164,7 +165,7 @@ public class NameplateCustomization {
             ),
             description = "nameplate_customization.is_visible"
     )
-    public static Boolean isVisible(NameplateCustomization custom) {
+    public static Boolean isVisible(@LuaNotNil NameplateCustomization custom) {
         return custom.visible;
     }
 
@@ -176,7 +177,7 @@ public class NameplateCustomization {
             ),
             description = "nameplate_customization.set_visible"
     )
-    public static void setVisible(NameplateCustomization custom, Boolean visible) {
+    public static void setVisible(@LuaNotNil NameplateCustomization custom, Boolean visible) {
         custom.visible = visible;
     }
 

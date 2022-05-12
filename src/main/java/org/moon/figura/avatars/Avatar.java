@@ -7,8 +7,6 @@ import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtIo;
@@ -22,6 +20,7 @@ import org.moon.figura.avatars.model.rendering.ImmediateAvatarRenderer;
 import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.lua.FiguraLuaState;
 import org.moon.figura.lua.api.EventsAPI;
+import org.moon.figura.lua.types.LuaFunction;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
 import org.terasology.jnlua.LuaRuntimeException;
@@ -85,11 +84,16 @@ public class Avatar {
     }
 
     //Calling with maxInstructions as -1 will not set the max instructions, and instead keep them as they are.
-    private void tryCall(EventsAPI.LuaEvent event, int maxInstructions, Object... args) {
+    public void tryCall(Object toRun, int maxInstructions, Object... args) {
         try {
             if (maxInstructions != -1)
                 luaState.setInstructionLimit(maxInstructions);
-            event.call(args);
+            if (toRun instanceof EventsAPI.LuaEvent event)
+                event.call(args);
+            else if (toRun instanceof LuaFunction func)
+                func.call(args);
+            else
+                throw new LuaRuntimeException("Invalid type to run!");
         } catch (LuaRuntimeException ex) {
             FiguraLuaPrinter.sendLuaError(ex, name);
             scriptError = true;

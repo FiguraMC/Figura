@@ -31,11 +31,6 @@ public class LuaUtils {
         return o == null ? "null" : o.toString();
     }
 
-    public static void nullCheck(String methodName, String parameterName, Object arg) throws LuaRuntimeException {
-        if (arg == null)
-            throw new LuaRuntimeException("Cannot call " + methodName + " with nil value for parameter \"" + parameterName + "\"!");
-    }
-
     /**
      * This code gets repeated SO MUCH that I decided to put it in the utils class.
      * @param x Either the x coordinate of a vector, or a vector itself.

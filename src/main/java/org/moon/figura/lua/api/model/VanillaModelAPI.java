@@ -4,6 +4,7 @@ import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
 import org.moon.figura.avatars.model.FiguraModelPart;
 import org.moon.figura.avatars.vanilla.VanillaPartOffsetManager;
+import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
@@ -234,8 +235,7 @@ public class VanillaModelAPI {
                 ),
                 description = "vanilla_part.set_visible"
         )
-        public static void setVisible(VanillaModelPart vanillaPart, Boolean visible) {
-            LuaUtils.nullCheck("setVisible", "vanillaPart", vanillaPart);
+        public static void setVisible(@LuaNotNil VanillaModelPart vanillaPart, @LuaNotNil Boolean visible) {
             for (ModelConsumer consumer : vanillaPart.partModifiers)
                 consumer.visible = visible;
         }
@@ -248,8 +248,7 @@ public class VanillaModelAPI {
                 ),
                 description = "vanilla_part.get_visible"
         )
-        public static boolean getVisible(VanillaModelPart vanillaPart) {
-            LuaUtils.nullCheck("getOriginRot", "vanillaPart", vanillaPart);
+        public static boolean getVisible(@LuaNotNil VanillaModelPart vanillaPart) {
             if (vanillaPart.partModifiers.size() > 1)
                 throw new LuaRuntimeException("Cannot get visibility of vanilla multi-part!");
             return vanillaPart.partModifiers.get(0).visible;
@@ -263,8 +262,7 @@ public class VanillaModelAPI {
                 ),
                 description = "vanilla_part.get_origin_rot"
         )
-        public static FiguraVec3 getOriginRot(VanillaModelPart vanillaPart) {
-            LuaUtils.nullCheck("getOriginRot", "vanillaPart", vanillaPart);
+        public static FiguraVec3 getOriginRot(@LuaNotNil VanillaModelPart vanillaPart) {
             if (vanillaPart.partModifiers.size() > 1)
                 throw new LuaRuntimeException("Cannot get origin rotation of vanilla multi-part!");
             return vanillaPart.savedOriginRot.copy();
@@ -278,8 +276,7 @@ public class VanillaModelAPI {
                 ),
                 description = "vanilla_part.get_origin_pos"
         )
-        public static FiguraVec3 getOriginPos(VanillaModelPart vanillaPart) {
-            LuaUtils.nullCheck("getOriginPos", "vanillaPart", vanillaPart);
+        public static FiguraVec3 getOriginPos(@LuaNotNil VanillaModelPart vanillaPart) {
             if (vanillaPart.partModifiers.size() > 1)
                 throw new LuaRuntimeException("Cannot get origin position of vanilla multi-part!");
             return vanillaPart.savedOriginPos.copy();
