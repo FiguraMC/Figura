@@ -16,6 +16,8 @@ public interface FiguraVector<T extends FiguraVector<T>> {
     void iDivide(T other);
     void scale(double factor);
     void normalize();
+    void toRad();
+    void toDeg();
 
     T plus(T other);
     T minus(T other);
@@ -25,4 +27,6 @@ public interface FiguraVector<T extends FiguraVector<T>> {
     T iDividedBy(T other);
     T scaled(double factor);
     T normalized();
+    T toRadians();
+    T toDegrees();
 }

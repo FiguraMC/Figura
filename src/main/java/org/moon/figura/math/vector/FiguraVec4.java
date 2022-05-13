@@ -210,6 +210,22 @@ public class FiguraVec4 implements CachedType, FiguraVector<FiguraVec4> {
             scale(1 / l);
     }
 
+    @Override
+    public void toRad() {
+        this.x = Math.toRadians(x);
+        this.y = Math.toRadians(y);
+        this.z = Math.toRadians(z);
+        this.w = Math.toRadians(w);
+    }
+
+    @Override
+    public void toDeg() {
+        this.x = Math.toDegrees(x);
+        this.y = Math.toDegrees(y);
+        this.z = Math.toDegrees(z);
+        this.w = Math.toDegrees(w);
+    }
+
     //----------------------------------------------------------------
 
     // GENERATOR METHODS
@@ -291,6 +307,18 @@ public class FiguraVec4 implements CachedType, FiguraVector<FiguraVec4> {
     public FiguraVec4 normalized() {
         FiguraVec4 result = copy();
         result.normalize();
+        return result;
+    }
+
+    public FiguraVec4 toRadians() {
+        FiguraVec4 result = copy();
+        result.toRad();
+        return result;
+    }
+
+    public FiguraVec4 toDegrees() {
+        FiguraVec4 result = copy();
+        result.toDeg();
         return result;
     }
 
@@ -488,5 +516,29 @@ public class FiguraVec4 implements CachedType, FiguraVector<FiguraVec4> {
     )
     public static double dot(@LuaNotNil FiguraVec4 arg1, @LuaNotNil FiguraVec4 arg2) {
         return arg1.dot(arg2);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraVec4.class,
+                    argumentNames = "vec"
+            ),
+            description = "vector_n.to_rad"
+    )
+    public static FiguraVec4 toRad(@LuaNotNil FiguraVec4 vec) {
+        return vec.toRadians();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraVec4.class,
+                    argumentNames = "vec"
+            ),
+            description = "vector_n.to_deg"
+    )
+    public static FiguraVec4 toDeg(@LuaNotNil FiguraVec4 vec) {
+        return vec.toDegrees();
     }
 }

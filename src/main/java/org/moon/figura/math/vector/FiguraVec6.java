@@ -223,6 +223,26 @@ public class FiguraVec6 implements CachedType, FiguraVector<FiguraVec6> {
             scale(1 / l);
     }
 
+    @Override
+    public void toRad() {
+        this.x = Math.toRadians(x);
+        this.y = Math.toRadians(y);
+        this.z = Math.toRadians(z);
+        this.w = Math.toRadians(w);
+        this.t = Math.toRadians(t);
+        this.h = Math.toRadians(h);
+    }
+
+    @Override
+    public void toDeg() {
+        this.x = Math.toDegrees(x);
+        this.y = Math.toDegrees(y);
+        this.z = Math.toDegrees(z);
+        this.w = Math.toDegrees(w);
+        this.t = Math.toDegrees(t);
+        this.h = Math.toDegrees(h);
+    }
+
     //----------------------------------------------------------------
 
     // GENERATOR METHODS
@@ -299,6 +319,18 @@ public class FiguraVec6 implements CachedType, FiguraVector<FiguraVec6> {
     public FiguraVec6 normalized() {
         FiguraVec6 result = copy();
         result.normalize();
+        return result;
+    }
+
+    public FiguraVec6 toRadians() {
+        FiguraVec6 result = copy();
+        result.toRad();
+        return result;
+    }
+
+    public FiguraVec6 toDegrees() {
+        FiguraVec6 result = copy();
+        result.toDeg();
         return result;
     }
 
@@ -500,5 +532,29 @@ public class FiguraVec6 implements CachedType, FiguraVector<FiguraVec6> {
     )
     public static double dot(@LuaNotNil FiguraVec6 arg1, @LuaNotNil FiguraVec6 arg2) {
         return arg1.dot(arg2);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraVec6.class,
+                    argumentNames = "vec"
+            ),
+            description = "vector_n.to_rad"
+    )
+    public static FiguraVec6 toRad(@LuaNotNil FiguraVec6 vec) {
+        return vec.toRadians();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraVec6.class,
+                    argumentNames = "vec"
+            ),
+            description = "vector_n.to_deg"
+    )
+    public static FiguraVec6 toDeg(@LuaNotNil FiguraVec6 vec) {
+        return vec.toDegrees();
     }
 }

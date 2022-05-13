@@ -214,6 +214,24 @@ public class FiguraVec5 implements CachedType, FiguraVector<FiguraVec5> {
             scale(1 / l);
     }
 
+    @Override
+    public void toRad() {
+        this.x = Math.toRadians(x);
+        this.y = Math.toRadians(y);
+        this.z = Math.toRadians(z);
+        this.w = Math.toRadians(w);
+        this.t = Math.toRadians(t);
+    }
+
+    @Override
+    public void toDeg() {
+        this.x = Math.toDegrees(x);
+        this.y = Math.toDegrees(y);
+        this.z = Math.toDegrees(z);
+        this.w = Math.toDegrees(w);
+        this.t = Math.toDegrees(t);
+    }
+
     //----------------------------------------------------------------
 
     // GENERATOR METHODS
@@ -290,6 +308,18 @@ public class FiguraVec5 implements CachedType, FiguraVector<FiguraVec5> {
     public FiguraVec5 normalized() {
         FiguraVec5 result = copy();
         result.normalize();
+        return result;
+    }
+
+    public FiguraVec5 toRadians() {
+        FiguraVec5 result = copy();
+        result.toRad();
+        return result;
+    }
+
+    public FiguraVec5 toDegrees() {
+        FiguraVec5 result = copy();
+        result.toDeg();
         return result;
     }
 
@@ -489,5 +519,29 @@ public class FiguraVec5 implements CachedType, FiguraVector<FiguraVec5> {
     )
     public static double dot(@LuaNotNil FiguraVec5 arg1, @LuaNotNil FiguraVec5 arg2) {
         return arg1.dot(arg2);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraVec5.class,
+                    argumentNames = "vec"
+            ),
+            description = "vector_n.to_rad"
+    )
+    public static FiguraVec5 toRad(@LuaNotNil FiguraVec5 vec) {
+        return vec.toRadians();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraVec5.class,
+                    argumentNames = "vec"
+            ),
+            description = "vector_n.to_deg"
+    )
+    public static FiguraVec5 toDeg(@LuaNotNil FiguraVec5 vec) {
+        return vec.toDegrees();
     }
 }

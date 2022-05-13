@@ -46,10 +46,6 @@ public class FiguraLuaState extends LuaState53 {
         //Loads print(), log(), and logTable() into the env.
         FiguraLuaPrinter.loadPrintFunctions(this);
 
-        //GS easter egg :3
-        getGlobal("_G");
-        setGlobal("_GS");
-
         //Run the figura sandboxer script
         try {
             runSandboxer();

@@ -6,6 +6,7 @@ import net.minecraft.network.chat.Component;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
@@ -28,7 +29,13 @@ public final class FiguraKeybind {
     private InputConstants.Key key;
     private boolean isDown = false;
 
-    private LuaFunction onPress, onRelease;
+    @LuaWhitelist
+    @LuaFieldDoc(description = "keybind.on_press")
+    public LuaFunction onPress;
+
+    @LuaWhitelist
+    @LuaFieldDoc(description = "keybind.on_release")
+    public LuaFunction onRelease;
 
     public FiguraKeybind(Avatar owner, String name, InputConstants.Key key, boolean ignoreScreen) {
         this.owner = owner;
@@ -163,9 +170,9 @@ public final class FiguraKeybind {
                     argumentTypes = {FiguraKeybind.class, LuaFunction.class},
                     argumentNames = {"keybind", "function"}
             ),
-            description = "keybind.on_press"
+            description = "keybind.set_on_press"
     )
-    public static void onPress(@LuaNotNil FiguraKeybind keybind, @LuaNotNil LuaFunction function) {
+    public static void setOnPress(@LuaNotNil FiguraKeybind keybind, @LuaNotNil LuaFunction function) {
         keybind.onPress = function;
     }
 
@@ -175,9 +182,9 @@ public final class FiguraKeybind {
                     argumentTypes = {FiguraKeybind.class, LuaFunction.class},
                     argumentNames = {"keybind", "function"}
             ),
-            description = "keybind.on_release"
+            description = "keybind.set_on_release"
     )
-    public static void onRelease(@LuaNotNil FiguraKeybind keybind, @LuaNotNil LuaFunction function) {
+    public static void setOnRelease(@LuaNotNil FiguraKeybind keybind, @LuaNotNil LuaFunction function) {
         keybind.onRelease = function;
     }
 
