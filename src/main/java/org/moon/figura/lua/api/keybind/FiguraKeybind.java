@@ -11,6 +11,7 @@ import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.lua.types.LuaFunction;
+import org.terasology.jnlua.LuaRuntimeException;
 
 import java.util.List;
 
@@ -87,8 +88,8 @@ public final class FiguraKeybind {
     public static InputConstants.Key parseStringKey(String key) {
         try {
             return InputConstants.getKey(key);
-        } catch (Exception ignored) {
-            return InputConstants.Type.KEYSYM.getOrCreate(-1);
+        } catch (Exception passed) {
+            throw new LuaRuntimeException("Invalid key: " + key);
         }
     }
 
@@ -164,29 +165,6 @@ public final class FiguraKeybind {
         return (keybind.ignoreScreen || Minecraft.getInstance().screen == null) && keybind.isDown;
     }
 
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = {FiguraKeybind.class, LuaFunction.class},
-                    argumentNames = {"keybind", "function"}
-            ),
-            description = "keybind.set_on_press"
-    )
-    public static void setOnPress(@LuaNotNil FiguraKeybind keybind, @LuaNotNil LuaFunction function) {
-        keybind.onPress = function;
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = {FiguraKeybind.class, LuaFunction.class},
-                    argumentNames = {"keybind", "function"}
-            ),
-            description = "keybind.set_on_release"
-    )
-    public static void setOnRelease(@LuaNotNil FiguraKeybind keybind, @LuaNotNil LuaFunction function) {
-        keybind.onRelease = function;
-    }
 
     @Override
     public String toString() {

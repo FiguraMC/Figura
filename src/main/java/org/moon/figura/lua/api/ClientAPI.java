@@ -258,6 +258,21 @@ public class ClientAPI {
         return Minecraft.getInstance().getWindow().getGuiScale();
     }
 
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(),
+            description = "client.get_screen"
+    )
+    public static String getScreen() {
+        if (Minecraft.getInstance().screen == null)
+            return null;
+
+        String screenTitle = Minecraft.getInstance().screen.getTitle().getString();
+        if (screenTitle.length() == 0)
+            screenTitle = Minecraft.getInstance().screen.getClass().getSimpleName();
+        return screenTitle;
+    }
+
     @Override
     public String toString() {
         return "ClientAPI";

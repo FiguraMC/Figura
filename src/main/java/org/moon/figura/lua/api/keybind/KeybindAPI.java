@@ -29,9 +29,9 @@ public class KeybindAPI {
                     argumentTypes = {KeybindAPI.class, String.class, String.class, Boolean.class},
                     argumentNames = {"api", "name", "key", "gui"}
             ),
-            description = "keybind_api.new_keybind"
+            description = "keybind_api.create"
     )
-    public static FiguraKeybind newKeybind(@LuaNotNil KeybindAPI api, @LuaNotNil String name, @LuaNotNil String key, Boolean gui) {
+    public static FiguraKeybind create(@LuaNotNil KeybindAPI api, @LuaNotNil String name, @LuaNotNil String key, Boolean gui) {
         api.keyBindings.removeIf(binding -> FiguraKeybind.getName(binding).equals(name));
 
         FiguraKeybind binding = new FiguraKeybind(api.owner, name, FiguraKeybind.parseStringKey(key), gui);
