@@ -138,4 +138,31 @@ public class FiguraGlobalsDocs {
             description = "globals.logJson"
     )
     public static void logJson() {}
+
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = {Object.class, Object.class, Double.class},
+                    argumentNames = {"a", "b", "t"}
+            ),
+            description = "globals.lerp"
+    )
+    public static Object lerp() {return null;}
+
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = {Double.class, Double.class, Double.class},
+                    argumentNames = {"value", "min", "max"}
+            ),
+            description = "globals.clamp"
+    )
+    public static Double clamp() {return null;}
+
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = Double.class,
+                    argumentNames = "value"
+            ),
+            description = "globals.round"
+    )
+    public static Double round() {return null;}
 }

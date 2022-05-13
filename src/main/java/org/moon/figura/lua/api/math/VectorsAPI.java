@@ -227,48 +227,6 @@ public class VectorsAPI {
         return ColorUtils.rgbToHSV(rgb);
     }
 
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = {
-                    @LuaFunctionOverload(
-                            argumentTypes = {FiguraVec2.class, FiguraVec2.class, Double.class},
-                            argumentNames = {"vec1", "vec2", "delta"},
-                            returnType = FiguraVec2.class
-                    ),
-                    @LuaFunctionOverload(
-                            argumentTypes = {FiguraVec3.class, FiguraVec3.class, Double.class},
-                            argumentNames = {"vec1", "vec2", "delta"},
-                            returnType = FiguraVec3.class
-                    ),
-                    @LuaFunctionOverload(
-                            argumentTypes = {FiguraVec4.class, FiguraVec4.class, Double.class},
-                            argumentNames = {"vec1", "vec2", "delta"},
-                            returnType = FiguraVec4.class
-                    ),
-                    @LuaFunctionOverload(
-                            argumentTypes = {FiguraVec5.class, FiguraVec5.class, Double.class},
-                            argumentNames = {"vec1", "vec2", "delta"},
-                            returnType = FiguraVec5.class
-                    ),
-                    @LuaFunctionOverload(
-                            argumentTypes = {FiguraVec6.class, FiguraVec6.class, Double.class},
-                            argumentNames = {"vec1", "vec2", "delta"},
-                            returnType = FiguraVec6.class
-                    )
-            },
-            description = "vectors.lerp"
-    )
-    public static <T extends FiguraVector<T>> T lerp(@LuaNotNil T a, @LuaNotNil T b, @LuaNotNil Double delta) {
-        if (!a.getClass().equals(b.getClass()))
-            throw new LuaRuntimeException("Cannot lerp two different vector types!");
-
-        T ret = b.copy();
-        ret.subtract(a);
-        ret.scale(delta);
-        ret.add(a);
-        return ret;
-    }
-
     @Override
     public String toString() {
         return "VectorsAPI";

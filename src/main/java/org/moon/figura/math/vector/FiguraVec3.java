@@ -22,7 +22,7 @@ import java.util.List;
         name = "Vector3",
         description = "vector3"
 )
-public class FiguraVec3 implements CachedType, FiguraVector<FiguraVec3> {
+public class FiguraVec3 extends FiguraVector<FiguraVec3> implements CachedType {
 
     @LuaWhitelist
     @LuaFieldDoc(description = "vector_n.x")
@@ -69,11 +69,6 @@ public class FiguraVec3 implements CachedType, FiguraVector<FiguraVec3> {
     @Override
     public double lengthSquared() {
         return x*x+y*y+z*z;
-    }
-
-    @Override
-    public double length() {
-        return Math.sqrt(lengthSquared());
     }
 
     @Override
@@ -194,13 +189,6 @@ public class FiguraVec3 implements CachedType, FiguraVector<FiguraVec3> {
         this.z *= factor;
     }
 
-    @Override
-    public void normalize() {
-        double l = length();
-        if (l > 0)
-            scale(1 / l);
-    }
-
     public void cross(FiguraVec3 other) {
         double nx = y * other.z - z * other.y;
         double ny = z * other.x - x * other.z;
@@ -208,103 +196,10 @@ public class FiguraVec3 implements CachedType, FiguraVector<FiguraVec3> {
         set(nx, ny, nz);
     }
 
-    @Override
-    public void toRad() {
-        this.x = Math.toRadians(x);
-        this.y = Math.toRadians(y);
-        this.z = Math.toRadians(z);
-    }
-
-    @Override
-    public void toDeg() {
-        this.x = Math.toDegrees(x);
-        this.y = Math.toDegrees(y);
-        this.z = Math.toDegrees(z);
-    }
-
     //----------------------------------------------------------------
 
     // GENERATOR METHODS
     //----------------------------------------------------------------
-
-    @Override
-    public FiguraVec3 plus(FiguraVec3 o) {
-        return plus(o.x, o.y, o.z);
-    }
-    public FiguraVec3 plus(double x, double y, double z) {
-        FiguraVec3 result = copy();
-        result.add(x, y, z);
-        return result;
-    }
-
-    @Override
-    public FiguraVec3 minus(FiguraVec3 o) {
-        return minus(o.x, o.y, o.z);
-    }
-    public FiguraVec3 minus(double x, double y, double z) {
-        FiguraVec3 result = copy();
-        result.subtract(x, y, z);
-        return result;
-    }
-
-    @Override
-    public FiguraVec3 times(FiguraVec3 o) {
-        return times(o.x, o.y, o.z);
-    }
-    public FiguraVec3 times(double x, double y, double z) {
-        FiguraVec3 result = copy();
-        result.multiply(x, y, z);
-        return result;
-    }
-    public FiguraVec3 times(FiguraMat3 mat) {
-        FiguraVec3 result = copy();
-        result.multiply(mat);
-        return result;
-    }
-
-    @Override
-    public FiguraVec3 dividedBy(FiguraVec3 o) {
-        return dividedBy(o.x, o.y, o.z);
-    }
-    public FiguraVec3 dividedBy(double x, double y, double z) {
-        FiguraVec3 result = copy();
-        result.divide(x, y, z);
-        return result;
-    }
-
-    @Override
-    public FiguraVec3 mod(FiguraVec3 o) {
-        return mod(o.x, o.y, o.z);
-    }
-    public FiguraVec3 mod(double x, double y, double z) {
-        FiguraVec3 result = copy();
-        result.reduce(x, y, z);
-        return result;
-    }
-
-    @Override
-    public FiguraVec3 iDividedBy(FiguraVec3 o) {
-        return iDividedBy(o.x, o.y, o.z);
-    }
-    public FiguraVec3 iDividedBy(double x, double y, double z) {
-        FiguraVec3 result = copy();
-        result.iDivide(x, y, z);
-        return result;
-    }
-
-    @Override
-    public FiguraVec3 scaled(double factor) {
-        FiguraVec3 result = copy();
-        result.scale(factor);
-        return result;
-    }
-
-    @Override
-    public FiguraVec3 normalized() {
-        FiguraVec3 result = copy();
-        result.normalize();
-        return result;
-    }
 
     public FiguraVec3 crossed(FiguraVec3 other) {
         double nx = y * other.z - z * other.y;
@@ -319,18 +214,6 @@ public class FiguraVec3 implements CachedType, FiguraVector<FiguraVec3> {
 
     public BlockPos asBlockPos() {
         return new BlockPos(x, y, z);
-    }
-
-    public FiguraVec3 toRadians() {
-        FiguraVec3 result = copy();
-        result.toRad();
-        return result;
-    }
-
-    public FiguraVec3 toDegrees() {
-        FiguraVec3 result = copy();
-        result.toDeg();
-        return result;
     }
 
     //----------------------------------------------------------------
@@ -386,9 +269,12 @@ public class FiguraVec3 implements CachedType, FiguraVector<FiguraVec3> {
 
     @LuaWhitelist
     public static FiguraVec3 __mod(FiguraVec3 arg1, Double arg2) {
-        if (arg2== 0)
+        if (arg2 == 0)
             throw new LuaRuntimeException("Attempt to reduce mod 0");
-        return arg1.mod(arg2, arg2, arg2);
+        FiguraVec3 modulus = FiguraVec3.of(arg2, arg2, arg2);
+        FiguraVec3 result = arg1.mod(modulus);
+        modulus.free();
+        return result;
     }
 
     @LuaWhitelist
@@ -402,7 +288,10 @@ public class FiguraVec3 implements CachedType, FiguraVector<FiguraVec3> {
     public static FiguraVec3 __idiv(FiguraVec3 arg1, Double arg2) {
         if (arg2 == 0)
             throw new LuaRuntimeException("Attempt to divide by 0");
-        return arg1.iDividedBy(arg2, arg2, arg2);
+        FiguraVec3 divisor = FiguraVec3.of(arg2, arg2, arg2);
+        FiguraVec3 result = arg1.iDividedBy(divisor);
+        divisor.free();
+        return result;
     }
 
     @LuaWhitelist
@@ -417,7 +306,7 @@ public class FiguraVec3 implements CachedType, FiguraVector<FiguraVec3> {
 
     @LuaWhitelist
     public static int __len(FiguraVec3 arg1) {
-        return 6;
+        return 3;
     }
 
     @LuaWhitelist
@@ -479,16 +368,7 @@ public class FiguraVec3 implements CachedType, FiguraVector<FiguraVec3> {
             description = "vector_n.clamp_length"
     )
     public static void clampLength(@LuaNotNil FiguraVec3 arg, Double minLength, Double maxLength) {
-        if (minLength == null) minLength = 0d;
-        if (maxLength == null) maxLength = Double.POSITIVE_INFINITY;
-        double len = arg.length();
-        if (len < minLength) {
-            if (len == 0) throw new LuaRuntimeException("Attempt to divide by 0");
-            arg.scale(minLength / len);
-        } else if (len > maxLength) {
-            if (len == 0) throw new LuaRuntimeException("Attempt to divide by 0");
-            arg.scale(maxLength / len);
-        }
+        arg.clampLength(minLength, maxLength);
     }
 
     @LuaWhitelist
@@ -500,7 +380,7 @@ public class FiguraVec3 implements CachedType, FiguraVector<FiguraVec3> {
             description = "vector_n.length"
     )
     public static double length(@LuaNotNil FiguraVec3 arg) {
-        return Math.sqrt(lengthSquared(arg));
+        return arg.length();
     }
 
 
@@ -513,7 +393,7 @@ public class FiguraVec3 implements CachedType, FiguraVector<FiguraVec3> {
             description = "vector_n.length_squared"
     )
     public static double lengthSquared(@LuaNotNil FiguraVec3 arg) {
-        return arg.x*arg.x + arg.y*arg.y + arg.z*arg.z;
+        return arg.lengthSquared();
     }
 
     @LuaWhitelist
@@ -561,7 +441,7 @@ public class FiguraVec3 implements CachedType, FiguraVector<FiguraVec3> {
             description = "vector_n.to_rad"
     )
     public static FiguraVec3 toRad(@LuaNotNil FiguraVec3 vec) {
-        return vec.toRadians();
+        return vec.toRad();
     }
 
     @LuaWhitelist
@@ -573,6 +453,6 @@ public class FiguraVec3 implements CachedType, FiguraVector<FiguraVec3> {
             description = "vector_n.to_deg"
     )
     public static FiguraVec3 toDeg(@LuaNotNil FiguraVec3 vec) {
-        return vec.toDegrees();
+        return vec.toRad();
     }
 }

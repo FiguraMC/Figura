@@ -21,7 +21,7 @@ import java.util.List;
         name = "Vector4",
         description = "vector4"
 )
-public class FiguraVec4 implements CachedType, FiguraVector<FiguraVec4> {
+public class FiguraVec4 extends FiguraVector<FiguraVec4> implements CachedType {
 
     @LuaWhitelist
     @LuaFieldDoc(description = "vector_n.x")
@@ -74,9 +74,6 @@ public class FiguraVec4 implements CachedType, FiguraVector<FiguraVec4> {
     }
 
     @Override
-    public double length() {
-        return Math.sqrt(lengthSquared());
-    }
     public FiguraVec4 copy() {
         FiguraVec4 result = of();
         result.set(this);
@@ -203,125 +200,6 @@ public class FiguraVec4 implements CachedType, FiguraVector<FiguraVec4> {
         this.w *= factor;
     }
 
-    @Override
-    public void normalize() {
-        double l = length();
-        if (l > 0)
-            scale(1 / l);
-    }
-
-    @Override
-    public void toRad() {
-        this.x = Math.toRadians(x);
-        this.y = Math.toRadians(y);
-        this.z = Math.toRadians(z);
-        this.w = Math.toRadians(w);
-    }
-
-    @Override
-    public void toDeg() {
-        this.x = Math.toDegrees(x);
-        this.y = Math.toDegrees(y);
-        this.z = Math.toDegrees(z);
-        this.w = Math.toDegrees(w);
-    }
-
-    //----------------------------------------------------------------
-
-    // GENERATOR METHODS
-    //----------------------------------------------------------------
-
-    @Override
-    public FiguraVec4 plus(FiguraVec4 o) {
-        return plus(o.x, o.y, o.z, o.w);
-    }
-    public FiguraVec4 plus(double x, double y, double z, double w) {
-        FiguraVec4 result = copy();
-        result.add(x, y, z, w);
-        return result;
-    }
-
-    @Override
-    public FiguraVec4 minus(FiguraVec4 o) {
-        return minus(o.x, o.y, o.z, o.w);
-    }
-    public FiguraVec4 minus(double x, double y, double z, double w) {
-        FiguraVec4 result = copy();
-        result.subtract(x, y, z, w);
-        return result;
-    }
-
-    @Override
-    public FiguraVec4 times(FiguraVec4 o) {
-        return times(o.x, o.y, o.z, o.w);
-    }
-    public FiguraVec4 times(double x, double y, double z, double w) {
-        FiguraVec4 result = copy();
-        result.multiply(x, y, z, w);
-        return result;
-    }
-    public FiguraVec4 times(FiguraMat4 mat) {
-        FiguraVec4 result = copy();
-        result.multiply(mat);
-        return result;
-    }
-
-    @Override
-    public FiguraVec4 dividedBy(FiguraVec4 o) {
-        return dividedBy(o.x, o.y, o.z, o.w);
-    }
-    public FiguraVec4 dividedBy(double x, double y, double z, double w) {
-        FiguraVec4 result = copy();
-        result.divide(x, y, z, w);
-        return result;
-    }
-
-    @Override
-    public FiguraVec4 mod(FiguraVec4 o) {
-        return mod(o.x, o.y, o.z, o.w);
-    }
-    public FiguraVec4 mod(double x, double y, double z, double w) {
-        FiguraVec4 result = copy();
-        result.reduce(x, y, z, w);
-        return result;
-    }
-
-    @Override
-    public FiguraVec4 iDividedBy(FiguraVec4 o) {
-        return iDividedBy(o.x, o.y, o.z, o.w);
-    }
-    public FiguraVec4 iDividedBy(double x, double y, double z, double w) {
-        FiguraVec4 result = copy();
-        result.iDivide(x, y, z, w);
-        return result;
-    }
-
-    @Override
-    public FiguraVec4 scaled(double factor) {
-        FiguraVec4 result = copy();
-        result.scale(factor);
-        return result;
-    }
-
-    @Override
-    public FiguraVec4 normalized() {
-        FiguraVec4 result = copy();
-        result.normalize();
-        return result;
-    }
-
-    public FiguraVec4 toRadians() {
-        FiguraVec4 result = copy();
-        result.toRad();
-        return result;
-    }
-
-    public FiguraVec4 toDegrees() {
-        FiguraVec4 result = copy();
-        result.toDeg();
-        return result;
-    }
-
     //----------------------------------------------------------------
 
     // METAMETHODS
@@ -375,9 +253,12 @@ public class FiguraVec4 implements CachedType, FiguraVector<FiguraVec4> {
 
     @LuaWhitelist
     public static FiguraVec4 __mod(FiguraVec4 arg1, Double arg2) {
-        if (arg2== 0)
+        if (arg2 == 0)
             throw new LuaRuntimeException("Attempt to reduce mod 0");
-        return arg1.mod(arg2, arg2, arg2, arg2);
+        FiguraVec4 modulus = FiguraVec4.of(arg2, arg2, arg2, arg2);
+        FiguraVec4 result = arg1.mod(modulus);
+        modulus.free();
+        return result;
     }
 
     @LuaWhitelist
@@ -391,7 +272,10 @@ public class FiguraVec4 implements CachedType, FiguraVector<FiguraVec4> {
     public static FiguraVec4 __idiv(FiguraVec4 arg1, Double arg2) {
         if (arg2 == 0)
             throw new LuaRuntimeException("Attempt to divide by 0");
-        return arg1.iDividedBy(arg2, arg2, arg2, arg2);
+        FiguraVec4 divisor = FiguraVec4.of(arg2, arg2, arg2, arg2);
+        FiguraVec4 result = arg1.iDividedBy(divisor);
+        divisor.free();
+        return result;
     }
 
     @LuaWhitelist
@@ -406,7 +290,7 @@ public class FiguraVec4 implements CachedType, FiguraVector<FiguraVec4> {
 
     @LuaWhitelist
     public static int __len(FiguraVec4 arg1) {
-        return 6;
+        return 4;
     }
 
     @LuaWhitelist
@@ -470,16 +354,7 @@ public class FiguraVec4 implements CachedType, FiguraVector<FiguraVec4> {
             description = "vector_n.clamp_length"
     )
     public static void clampLength(@LuaNotNil FiguraVec4 arg, Double minLength, Double maxLength) {
-        if (minLength == null) minLength = 0d;
-        if (maxLength == null) maxLength = Double.POSITIVE_INFINITY;
-        double len = arg.length();
-        if (len < minLength) {
-            if (len == 0) throw new LuaRuntimeException("Attempt to divide by 0");
-            arg.scale(minLength / len);
-        } else if (len > maxLength) {
-            if (len == 0) throw new LuaRuntimeException("Attempt to divide by 0");
-            arg.scale(maxLength / len);
-        }
+        arg.clampLength(minLength, maxLength);
     }
 
     @LuaWhitelist
@@ -491,7 +366,7 @@ public class FiguraVec4 implements CachedType, FiguraVector<FiguraVec4> {
             description = "vector_n.length"
     )
     public static double length(@LuaNotNil FiguraVec4 arg) {
-        return Math.sqrt(lengthSquared(arg));
+        return arg.length();
     }
 
     @LuaWhitelist
@@ -503,7 +378,7 @@ public class FiguraVec4 implements CachedType, FiguraVector<FiguraVec4> {
             description = "vector_n.length_squared"
     )
     public static double lengthSquared(@LuaNotNil FiguraVec4 arg) {
-        return arg.dot(arg);
+        return arg.lengthSquared();
     }
 
     @LuaWhitelist
@@ -527,7 +402,7 @@ public class FiguraVec4 implements CachedType, FiguraVector<FiguraVec4> {
             description = "vector_n.to_rad"
     )
     public static FiguraVec4 toRad(@LuaNotNil FiguraVec4 vec) {
-        return vec.toRadians();
+        return vec.toRad();
     }
 
     @LuaWhitelist
@@ -539,6 +414,6 @@ public class FiguraVec4 implements CachedType, FiguraVector<FiguraVec4> {
             description = "vector_n.to_deg"
     )
     public static FiguraVec4 toDeg(@LuaNotNil FiguraVec4 vec) {
-        return vec.toDegrees();
+        return vec.toDeg();
     }
 }

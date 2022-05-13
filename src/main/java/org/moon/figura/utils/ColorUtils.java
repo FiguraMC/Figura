@@ -10,7 +10,7 @@ public class ColorUtils {
     public enum Colors {
         FRAN_PINK(0xFF72B7),
         CHLOE_PURPLE(0xA672EF),
-        MAYA_BLUE(0x0CE0CE),
+        MAYA_BLUE(0x00F0FF),
         LILY_RED(0xFF2400),
 
         CHEESE(0xF8C53A),

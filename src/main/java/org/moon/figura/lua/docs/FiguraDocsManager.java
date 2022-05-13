@@ -36,16 +36,13 @@ import org.terasology.jnlua.TypedJavaObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class FiguraDocsManager {
 
     //print header
     private static final MutableComponent HEADER = TextComponent.EMPTY.copy().withStyle(Colors.FRAN_PINK.style)
-            .append(new TextComponent("•*+•* ").append(new FiguraText()).append(" Docs *•+*•")
+            .append(new TextComponent("\n•*+•* ").append(new FiguraText()).append(" Docs *•+*•")
                     .withStyle(ChatFormatting.UNDERLINE));
 
     /**
@@ -371,6 +368,40 @@ public class FiguraDocsManager {
 
     }
 
+    private static void printGroup(String groupName) {
+        String capitalized = groupName.substring(0,1).toUpperCase(Locale.ROOT) + groupName.substring(1).toLowerCase(Locale.ROOT);
+
+        MutableComponent message = HEADER.copy()
+
+        .append("\n\n")
+        .append(new TextComponent("• ")
+                .append(new FiguraText("docs.text.group"))
+                .append(":")
+                .withStyle(Colors.CHLOE_PURPLE.style))
+        .append("\n\t")
+            .append(new TextComponent(capitalized).withStyle(Colors.MAYA_BLUE.style))
+
+        .append("\n\n")
+        .append(new TextComponent("• ")
+                .append(new FiguraText("docs.text.description"))
+                .append(":")
+                .withStyle(Colors.CHLOE_PURPLE.style))
+        .append("\n\t")
+        .append(new TextComponent("• ")
+                .append(new FiguraText("docs.group." + groupName))
+                .withStyle(Colors.MAYA_BLUE.style));
+
+        FiguraMod.sendChatMessage(message);
+    }
+
+    private static void printDocs() {
+        MutableComponent message = HEADER.copy().append("\n\n")
+        .append(new FiguraText("docs").withStyle(Colors.MAYA_BLUE.style));
+
+        FiguraMod.sendChatMessage(message);
+    }
+
+
     public static void init() {
         //Initialize all the ClassDoc instances
         for (Map.Entry<String, List<Class<?>>> packageEntry : DOCUMENTED_CLASSES.entrySet())
@@ -404,10 +435,12 @@ public class FiguraDocsManager {
                 }
                 group.then(typeBranch);
             }
-            if (docs != group)
+            if (docs != group) {
+                group.executes(context -> {printGroup(entry.getKey()); return 1;});
                 docs.then(group);
+            }
         }
-
+        docs.executes(context -> {printDocs(); return 1;});
         return docs;
     }
 }
