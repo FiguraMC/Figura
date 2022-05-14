@@ -82,7 +82,8 @@ public class AvatarManager {
     }
 
     //load the local player avatar
-    public static void loadLocalAvatar(Path path) {
+    //returns true if an avatar was actually loaded
+    public static boolean loadLocalAvatar(Path path) {
         //clear
         UUID id = FiguraMod.getLocalPlayerUUID();
         clearAvatar(id);
@@ -95,10 +96,13 @@ public class AvatarManager {
             CompoundTag nbt = LocalAvatarLoader.loadAvatar(path);
             if (nbt != null) {
                 LOADED_AVATARS.put(id, new Avatar(nbt, id));
+                return true;
             }
         } catch (Exception e) {
             FiguraMod.LOGGER.error("Failed to load avatar from " + path, e);
+            FiguraToast.sendToast(new FiguraText("toast.load_error"), FiguraToast.ToastType.ERROR);
         }
+        return false;
     }
 
     //set an user's avatar

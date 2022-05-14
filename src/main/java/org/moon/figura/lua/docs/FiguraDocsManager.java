@@ -168,6 +168,9 @@ public class FiguraDocsManager {
         put(LuaFunction.class, "Function");
         put(JavaFunction.class, "Function");
         put(LuaTable.class, "Table");
+
+        //Figura types
+        put(FiguraVector.class, "Vector");
     }};
 
     private static class ClassDoc {
@@ -288,7 +291,7 @@ public class FiguraDocsManager {
 
                 for (int j = 0; j < parameterTypes[i].length; j++) {
                     //type and arg
-                    String typeName = NAME_MAP.get(parameterTypes[i][j]);
+                    String typeName = NAME_MAP.getOrDefault(parameterTypes[i][j], parameterTypes[i][j].getName());
                     message.append(new TextComponent(typeName).withStyle(ChatFormatting.YELLOW))
                             .append(" ")
                             .append(new TextComponent(parameterNames[i][j]).withStyle(ChatFormatting.WHITE));
@@ -300,7 +303,7 @@ public class FiguraDocsManager {
                 //return
                 message.append("): ")
                         .append(new FiguraText("docs.text.returns").append(" ").withStyle(Colors.MAYA_BLUE.style))
-                        .append(new TextComponent(NAME_MAP.get(returnTypes[i])).withStyle(ChatFormatting.YELLOW));
+                        .append(new TextComponent(NAME_MAP.getOrDefault(returnTypes[i], returnTypes[i].getName())).withStyle(ChatFormatting.YELLOW));
             }
 
             //description
@@ -345,7 +348,7 @@ public class FiguraDocsManager {
                     .append(":")
                     .withStyle(Colors.CHLOE_PURPLE.style))
             .append("\n\t")
-                    .append(new TextComponent("• " + NAME_MAP.get(type)).withStyle(ChatFormatting.YELLOW))
+                    .append(new TextComponent("• " + NAME_MAP.getOrDefault(type, type.getName())).withStyle(ChatFormatting.YELLOW))
             .append(new TextComponent(" " + name).withStyle(Colors.MAYA_BLUE.style))
             .append(new TextComponent(" (")
                     .append(new FiguraText(editable ? "docs.text.editable" : "docs.text.not_editable"))
@@ -412,7 +415,7 @@ public class FiguraDocsManager {
                     ).add(new ClassDoc(documentedClass));
     }
 
-    public static LiteralArgumentBuilder<FabricClientCommandSource> generateCommand() {
+    public static LiteralArgumentBuilder<FabricClientCommandSource> get() {
         LiteralArgumentBuilder<FabricClientCommandSource> docs = LiteralArgumentBuilder.literal("docs");
         for (Map.Entry<String, List<ClassDoc>> entry : GENERATED_CLASS_DOCS.entrySet()) {
             LiteralArgumentBuilder<FabricClientCommandSource> group;

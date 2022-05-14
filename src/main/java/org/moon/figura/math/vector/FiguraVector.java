@@ -25,6 +25,18 @@ public abstract class FiguraVector<T extends FiguraVector<T>> {
         if (len > 0)
             scale(1 / len);
     }
+    public void clampLength(Double minLength, Double maxLength) {
+        if (minLength == null) minLength = 0d;
+        if (maxLength == null) maxLength = Double.POSITIVE_INFINITY;
+        double len = length();
+        if (len < minLength) {
+            if (len == 0) throw new LuaRuntimeException("Attempt to divide by 0");
+            scale(minLength / len);
+        } else if (len > maxLength) {
+            if (len == 0) throw new LuaRuntimeException("Attempt to divide by 0");
+            scale(maxLength / len);
+        }
+    }
 
     public T plus(T other) {
         T result = copy();
@@ -68,25 +80,12 @@ public abstract class FiguraVector<T extends FiguraVector<T>> {
     }
     public T toRad() {
         T result = copy();
-        scale(Math.PI / 180);
+        result.scale(Math.PI / 180);
         return result;
     }
     public T toDeg() {
         T result = copy();
-        scale( 180 / Math.PI);
+        result.scale( 180 / Math.PI);
         return result;
-    }
-
-    public void clampLength(Double minLength, Double maxLength) {
-        if (minLength == null) minLength = 0d;
-        if (maxLength == null) maxLength = Double.POSITIVE_INFINITY;
-        double len = length();
-        if (len < minLength) {
-            if (len == 0) throw new LuaRuntimeException("Attempt to divide by 0");
-            scale(minLength / len);
-        } else if (len > maxLength) {
-            if (len == 0) throw new LuaRuntimeException("Attempt to divide by 0");
-            scale(maxLength / len);
-        }
     }
 }

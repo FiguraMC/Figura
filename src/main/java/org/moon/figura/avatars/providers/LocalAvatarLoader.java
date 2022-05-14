@@ -12,6 +12,7 @@ import org.moon.figura.parsers.LuaScriptParser;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.file.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -39,7 +40,7 @@ public class LocalAvatarLoader {
      * @param path - the file/folder for loading the avatar
      * @return the NbtCompound from this path
      */
-    public static CompoundTag loadAvatar(Path path) {
+    public static CompoundTag loadAvatar(Path path) throws IOException {
         lastLoadedPath = path;
         updateWatchKey(path);
 
@@ -48,13 +49,8 @@ public class LocalAvatarLoader {
 
         //load as nbt (.moon)
         if (path.toString().endsWith(".moon")) {
-            try {
-                //NbtIo already closes the file stream
-                return NbtIo.readCompressed(new FileInputStream(path.toFile()));
-            } catch (Exception e) {
-                FiguraMod.LOGGER.warn("Failed to load Avatar: " + path.getFileName().toString(), e);
-                return null;
-            }
+            //NbtIo already closes the file stream
+            return NbtIo.readCompressed(new FileInputStream(path.toFile()));
         }
 
         //load as folder
@@ -114,12 +110,7 @@ public class LocalAvatarLoader {
 
         modelRoot.put("chld", children);
 
-        //TODO: Better error handling while parsing, errors should show up to user
-        try {
-            AvatarMetadataParser.injectToModels(metadata, modelRoot);
-        } catch (Exception e) {
-            FiguraMod.LOGGER.error("", e);
-        }
+        AvatarMetadataParser.injectToModels(metadata, modelRoot);
 
         //return :3
         nbt.put("models", modelRoot);
@@ -186,15 +177,15 @@ public class LocalAvatarLoader {
         return root.toFile().listFiles(name -> name.toString().toLowerCase().endsWith(extension.toLowerCase()));
     }
 
-    public static String readFile(File file) {
+    public static String readFile(File file) throws IOException {
         try {
             FileInputStream stream = new FileInputStream(file);
             String fileContent = new String(stream.readAllBytes());
             stream.close();
             return fileContent;
-        } catch (Exception e) {
-            FiguraMod.LOGGER.error("Failed to read File: " + file.toString(), e);
-            return "";
+        } catch (IOException e) {
+            FiguraMod.LOGGER.error("Failed to read File: " + file);
+            throw e;
         }
     }
 

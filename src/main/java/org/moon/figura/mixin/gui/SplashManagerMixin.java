@@ -39,6 +39,9 @@ public class SplashManagerMixin {
                         case 26 -> cir.setReturnValue(bday + "Figura!");
                     }
                 }
+                case 7 -> {
+                    if (day == 4) cir.setReturnValue(bday + "Skylar!");
+                }
                 case 9 -> {
                     if (day == 21) cir.setReturnValue(bday + "Fran!");
                 }

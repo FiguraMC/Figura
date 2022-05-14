@@ -46,44 +46,33 @@ public final class FiguraKeybind {
         this.ignoreScreen = ignoreScreen;
     }
 
-    public static void set(List<FiguraKeybind> bindings, InputConstants.Key key, boolean pressed) {
-        FiguraKeybind keyBinding = null;
-        for (FiguraKeybind keybind : bindings)
-            if (keybind.key == key) {
-                keyBinding = keybind;
-                break;
-            }
-
-        if (keyBinding != null)
-            setDown(keyBinding, pressed);
+    public void resetDefaultKey() {
+        this.key = this.defaultKey;
     }
 
-    public static void releaseAll(List<FiguraKeybind> bindings) {
-        for (FiguraKeybind keybind : bindings)
-            setDown(keybind, false);
-    }
-
-    public static InputConstants.Key getDefaultKey(FiguraKeybind keybind) {
-        return keybind.defaultKey;
-    }
-
-    public static void setDown(FiguraKeybind keybind, boolean bl) {
+    public void setDown(boolean bl) {
         //events
-        if (keybind.isDown != bl) {
+        if (isDown != bl) {
             if (bl) {
-                if (keybind.onPress != null)
-                    keybind.owner.tryCall(keybind.onPress, -1, keybind);
-            } else if (keybind.onRelease != null) {
-                keybind.owner.tryCall(keybind.onRelease, -1, keybind);
+                if (onPress != null)
+                    owner.tryCall(onPress, -1, this);
+            } else if (onRelease != null) {
+                owner.tryCall(onRelease, -1, this);
             }
         }
 
-        keybind.isDown = bl;
+        this.isDown = bl;
     }
 
-    public static Component getTranslatedKeyMessage(FiguraKeybind keybind) {
-        return keybind.key.getDisplayName();
+    public void setKey(InputConstants.Key key) {
+        this.key = key;
     }
+
+    public Component getTranslatedKeyMessage() {
+        return this.key.getDisplayName();
+    }
+
+    // -- static -- //
 
     public static InputConstants.Key parseStringKey(String key) {
         try {
@@ -91,6 +80,17 @@ public final class FiguraKeybind {
         } catch (Exception passed) {
             throw new LuaRuntimeException("Invalid key: " + key);
         }
+    }
+
+    public static void set(List<FiguraKeybind> bindings, InputConstants.Key key, boolean pressed) {
+        for (FiguraKeybind keybind : bindings)
+            if (keybind.key == key)
+                keybind.setDown(pressed);
+    }
+
+    public static void releaseAll(List<FiguraKeybind> bindings) {
+        for (FiguraKeybind keybind : bindings)
+            keybind.setDown(false);
     }
 
     @LuaWhitelist
@@ -164,7 +164,6 @@ public final class FiguraKeybind {
     public static boolean isPressed(@LuaNotNil FiguraKeybind keybind) {
         return (keybind.ignoreScreen || Minecraft.getInstance().screen == null) && keybind.isDown;
     }
-
 
     @Override
     public String toString() {

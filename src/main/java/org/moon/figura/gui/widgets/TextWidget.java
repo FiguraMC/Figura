@@ -16,19 +16,19 @@ public class TextWidget implements FiguraWidget, GuiEventListener {
     private boolean visible = true;
 
     private final Font font;
-    private final boolean outline;
-    private final int outlineColor;
+    private final boolean centred;
+    private final Integer outlineColor;
 
-    public TextWidget(Component text, int x, int y) {
-        this(text, x, y, false, 0);
+    public TextWidget(Component text, int x, int y, boolean centred) {
+        this(text, x, y, centred, null);
     }
 
-    public TextWidget(Component text, int x, int y, boolean outline, int outlineColor) {
+    public TextWidget(Component text, int x, int y, boolean centred, Integer outlineColor) {
         this.font = Minecraft.getInstance().font;
         this.text = text;
         this.x = x;
         this.y = y;
-        this.outline = outline;
+        this.centred = centred;
         this.outlineColor = outlineColor;
         calculateDimensions();
     }
@@ -38,7 +38,14 @@ public class TextWidget implements FiguraWidget, GuiEventListener {
         if (!isVisible())
             return;
 
-        if (outline)
+        int x = this.x;
+        int y = this.y;
+        if (centred) {
+            x -= font.width(text) / 2;
+            y -= font.lineHeight / 2;
+        }
+
+        if (outlineColor != null)
             UIHelper.renderOutlineText(stack, font, text, x, y, 0xFFFFFF, outlineColor);
         else
             font.drawShadow(stack, text, x, y, 0xFFFFFF);

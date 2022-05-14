@@ -5,6 +5,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import org.moon.figura.config.ConfigManager;
+import org.moon.figura.gui.widgets.TextWidget;
 import org.moon.figura.gui.widgets.TexturedButton;
 import org.moon.figura.gui.widgets.lists.ConfigList;
 import org.moon.figura.utils.FiguraText;
@@ -14,7 +15,7 @@ public class ConfigScreen extends AbstractPanelScreen {
     public static final Component TITLE = new FiguraText("gui.panels.title.settings");
 
     private ConfigList list;
-    private final boolean panelState;
+    private final boolean hasPanels;
 
     public ConfigScreen(Screen parentScreen) {
         this(parentScreen, true);
@@ -22,13 +23,17 @@ public class ConfigScreen extends AbstractPanelScreen {
 
     public ConfigScreen(Screen parentScreen, boolean enablePanels) {
         super(parentScreen, TITLE, 4);
-        this.panelState = enablePanels;
+        this.hasPanels = enablePanels;
     }
 
     @Override
     protected void init() {
         super.init();
-        super.panels.setActive(panelState);
+
+        if (!hasPanels) {
+            this.removeWidget(panels);
+            this.addRenderableOnly(new TextWidget(TITLE, this.width / 2, 14, true));
+        }
 
         // -- bottom buttons -- //
 

@@ -383,6 +383,17 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3> implements CachedType {
         return arg.length();
     }
 
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraVec3.class,
+                    argumentNames = "vec"
+            ),
+            description = "vector_n.to_rad"
+    )
+    public static FiguraVec3 toRad(@LuaNotNil FiguraVec3 vec) {
+        return vec.toRad();
+    }
 
     @LuaWhitelist
     @LuaMethodDoc(
@@ -390,22 +401,10 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3> implements CachedType {
                     argumentTypes = FiguraVec3.class,
                     argumentNames = "vec"
             ),
-            description = "vector_n.length_squared"
+            description = "vector_n.to_deg"
     )
-    public static double lengthSquared(@LuaNotNil FiguraVec3 arg) {
-        return arg.lengthSquared();
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = {FiguraVec3.class, FiguraVec3.class},
-                    argumentNames = {"vec1", "vec2"}
-            ),
-            description = "vector_n.dot"
-    )
-    public static double dot(@LuaNotNil FiguraVec3 arg1, @LuaNotNil FiguraVec3 arg2) {
-        return arg1.dot(arg2);
+    public static FiguraVec3 toDeg(@LuaNotNil FiguraVec3 vec) {
+        return vec.toRad();
     }
 
     @LuaWhitelist
@@ -430,29 +429,5 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3> implements CachedType {
     )
     public static FiguraVec4 augmented(@LuaNotNil FiguraVec3 arg1) {
         return arg1.augmented();
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = FiguraVec3.class,
-                    argumentNames = "vec"
-            ),
-            description = "vector_n.to_rad"
-    )
-    public static FiguraVec3 toRad(@LuaNotNil FiguraVec3 vec) {
-        return vec.toRad();
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = FiguraVec3.class,
-                    argumentNames = "vec"
-            ),
-            description = "vector_n.to_deg"
-    )
-    public static FiguraVec3 toDeg(@LuaNotNil FiguraVec3 vec) {
-        return vec.toRad();
     }
 }

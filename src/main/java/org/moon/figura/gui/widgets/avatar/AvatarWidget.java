@@ -24,14 +24,14 @@ public class AvatarWidget extends AbstractAvatarWidget {
         AvatarWidget instance = this;
         this.button = new TexturedButton(x, y, width, 20, new TextComponent("  ".repeat(depth)).append(getName()), null, button -> {
             AvatarManager.loadLocalAvatar(path);
-            parent.selectedEntry = instance;
+            AvatarList.selectedEntry = instance;
         }) {
             @Override
             public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
                 super.renderButton(stack, mouseX, mouseY, delta);
 
                 //selected border
-                if (parent.selectedEntry == instance)
+                if (AvatarList.selectedEntry != null && AvatarList.selectedEntry.path != null && AvatarList.selectedEntry.path.equals(instance.path))
                     UIHelper.fillOutline(stack, x - 1, y - 1, width + 2, height + 2, 0xFFFFFFFF);
             }
 

@@ -86,9 +86,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
         // -- bottom -- //
 
         //version
-        TextWidget version = new TextWidget(new FiguraText().append(" " + FiguraMod.VERSION).withStyle(ChatFormatting.ITALIC, ChatFormatting.DARK_GRAY), 0, 0);
-        version.x = middle - version.width / 2;
-        version.y = this.height - version.height - 2;
+        TextWidget version = new TextWidget(new FiguraText().append(" " + FiguraMod.VERSION).withStyle(ChatFormatting.ITALIC, ChatFormatting.DARK_GRAY), middle, this.height - 5, true);
         addRenderableOnly(version);
 
         int rightSide = Math.min(third, 134);
@@ -124,26 +122,16 @@ public class WardrobeScreen extends AbstractPanelScreen {
         TexturedButton keybinds = new TexturedButton(this.width - 28, 32, 24, 24, 24, 0, 24, new FiguraIdentifier("textures/gui/keybind.png"), 48, 48, new FiguraText("gui.wardrobe.keybind.tooltip"), button -> {
             Minecraft.getInstance().setScreen(new KeybindScreen(this));
         });
-        keybinds.active = false; //TODO
         addRenderableWidget(keybinds);
 
         //avatar metadata
         addRenderableOnly(avatarInfo = new AvatarInfoWidget(this.width - rightSide - 4, 64, rightSide));
 
         //panic warning - always added last, on top
-        panic1 = new TextWidget(new FiguraText("gui.panic.1").withStyle(ChatFormatting.YELLOW), 0, 0, true, 0);
-        panic2 = new TextWidget(new FiguraText("gui.panic.2", Config.PANIC_BUTTON.keyBind.getTranslatedKeyMessage()).withStyle(ChatFormatting.YELLOW), 0, 0, true, 0);
-
-        panic2.x = middle - panic2.width / 2;
-        panic2.y = version.y - panic2.height;
-        panic2.setVisible(false);
-
-        panic1.x = middle - panic1.width / 2;
-        panic1.y = panic2.y - panic1.height;
+        addRenderableOnly(panic1 = new TextWidget(new FiguraText("gui.panic.1").withStyle(ChatFormatting.YELLOW), middle, this.height - 23, true, 0));
+        addRenderableOnly(panic2 = new TextWidget(new FiguraText("gui.panic.2", Config.PANIC_BUTTON.keyBind.getTranslatedKeyMessage()).withStyle(ChatFormatting.YELLOW), middle, this.height - 14, true, 0));
         panic1.setVisible(false);
-
-        addRenderableOnly(panic1);
-        addRenderableOnly(panic2);
+        panic2.setVisible(false);
     }
 
     @Override

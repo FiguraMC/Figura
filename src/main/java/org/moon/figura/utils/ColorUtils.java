@@ -113,7 +113,7 @@ public class ColorUtils {
 
         //return
         try {
-            return intToRGB(Integer.parseInt(hex.toString(), 16));
+            return intToRGB(Integer.parseInt(hex.substring(0, 6), 16));
         } catch (Exception ignored) {
             return FiguraVec3.of();
         }

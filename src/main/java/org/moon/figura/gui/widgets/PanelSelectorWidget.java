@@ -22,10 +22,16 @@ public class PanelSelectorWidget extends AbstractContainerElement {
         createPanelButton(() -> new WardrobeScreen(parentScreen), WardrobeScreen.TITLE);
         createPanelButton(() -> new TrustScreen(parentScreen), TrustScreen.TITLE);
         createPanelButton(() -> new ConfigScreen(parentScreen), ConfigScreen.TITLE);
-        setActive(true);
 
         //selected button
         buttons.get(selected).setToggled(true);
+
+        //TODO - remove this when we actually implement those panels
+        for (int i = 0; i < 2; i++) {
+            SwitchButton button = buttons.get(i);
+            button.setTooltip(new TextComponent("Not yet ❤"));
+            button.active = false;
+        }
     }
 
     private void createPanelButton(Supplier<AbstractPanelScreen> screenSupplier, Component title) {
@@ -36,18 +42,5 @@ public class PanelSelectorWidget extends AbstractContainerElement {
         //add button
         buttons.add(button);
         children.add(button);
-    }
-
-    public void setActive(boolean active) {
-        for (SwitchButton butt : buttons)
-            butt.active = active;
-
-        //TODO - remove this when we actually implement those panels
-        if (!active) return;
-        for (int i = 0; i < 2; i++) {
-            SwitchButton button = buttons.get(i);
-            button.setTooltip(new TextComponent("Not yet ❤"));
-            button.active = false;
-        }
     }
 }

@@ -36,7 +36,7 @@ public class AvatarList extends AbstractList {
     private int totalHeight = 0;
     private String filter = "";
 
-    public AvatarWidget selectedEntry;
+    public static AvatarWidget selectedEntry;
 
     // -- Constructors -- //
 

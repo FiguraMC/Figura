@@ -6,6 +6,7 @@
   "figura.toast.panic_enabled": "Panic mode enabled!",
   "figura.toast.panic_disabled": "Panic mode disabled!",
   "figura.toast.clipboard": "Copied to clipboard!",
+  "figura.toast.load_error": "Failed to load avatar!",
 
 
   "figura.trust.group.blocked": "Blocked",
@@ -44,6 +45,7 @@
   "figura.gui.cancel": "Cancel",
   "figura.gui.expand": "Expand",
   "figura.gui.minimise": "Minimise",
+  "figura.gui.reset_all": "Reset All",
   "figura.gui.panic.1": "Panic mode active! Figura features are disabled!",
   "figura.gui.panic.2": "toggle panic mode with [%s] key",
   "figura.gui.help.tooltip": "Help",
@@ -77,6 +79,9 @@
   "figura.gui.wardrobe.keybind.tooltip": "Avatar Keybinds",
   "figura.gui.wardrobe.folder.tooltip": "Open avatars root folder",
   "figura.gui.wardrobe.unselect": "Unselect",
+
+  "figura.gui.keybinds.no_avatar": "No Avatar selected!",
+  "figura.gui.keybinds.no_keybinds": "Avatar does not have keybinds!",
 
 
   "figura.gui.trust.reset": "Reset All",
@@ -183,6 +188,9 @@
 
   "figura.command.run.not_local_error" : "No local avatar equipped!",
   "figura.command.run.no_script_error" : "No active script to run code in!",
+  "figura.command.load.success" : "Avatar loaded!",
+  "figura.command.load.error" : "Failed to load avatar from path \"%s\"",
+  "figura.command.load.invalid" : "Invalid path \"%s\"",
 
   "figura.docs": "The \"/figura docs\" command allows you to access documentation for all types and functions Figura adds to its Lua scripting environment.",
 
@@ -528,7 +536,7 @@
   "figura.docs.vectors.vec6": "Creates and returns a Vector6 with the given values. Nil values become zero.",
   "figura.docs.vectors.rgb_to_int": "Converts the given color from RGB format to integer format.",
   "figura.docs.vectors.int_to_rgb": "Converts the given color from integer format to RGB format.",
-  "figura.docs.vectors.hex_to_rgb": "Converts the given color from RGB format to hex format.",
+  "figura.docs.vectors.hex_to_rgb": "Parses a hex string color into a RGB format vector. The hex \"#\" is optional, and it can have any length, however only the first 6 hex digits are evaluated, short hex (length 3) is also supported. For example, \"#42\" is the same as \"420000\", and \"F0B\" is the same as \"FF00BB\"",
   "figura.docs.vectors.hsv_to_rgb": "Converts the given color from HSV format to RGB format.",
   "figura.docs.vectors.rgb_to_hsv": "Converts the given color from RGB format to HSV format.",
 

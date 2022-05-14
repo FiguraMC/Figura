@@ -1,16 +1,21 @@
 package org.moon.figura.gui.screens;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextComponent;
-import org.moon.figura.gui.FiguraToast;
+import org.moon.figura.FiguraMod;
+import org.moon.figura.avatars.Avatar;
+import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.gui.widgets.TexturedButton;
+import org.moon.figura.gui.widgets.lists.KeybindList;
+import org.moon.figura.lua.api.keybind.FiguraKeybind;
 import org.moon.figura.utils.FiguraText;
 
 public class KeybindScreen extends AbstractPanelScreen {
 
     public static final Component TITLE = new FiguraText("gui.panels.title.keybind");
+
+    private KeybindList list;
 
     public KeybindScreen(Screen parentScreen) {
         super(parentScreen, TITLE, 2);
@@ -20,10 +25,52 @@ public class KeybindScreen extends AbstractPanelScreen {
     protected void init() {
         super.init();
 
-        FiguraToast.sendToast(new TextComponent("lol nope").setStyle(Style.EMPTY.withColor(0xFFADAD)), FiguraToast.ToastType.DEFAULT);
+        Avatar owner = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
 
-        this.addRenderableWidget(new TexturedButton(width / 2 - 30, height / 2 + 10, 60, 20, new TextComponent("test"), new TextComponent("test"), button -> {
-            FiguraToast.sendToast("test", "test", FiguraToast.ToastType.DEFAULT);
+        //list
+        int width = Math.min(this.width - 8, 420);
+        this.addRenderableWidget(list = new KeybindList((this.width - width) / 2, 28, width, height - 56, owner));
+
+        // -- bottom buttons -- //
+
+        //discard
+        this.addRenderableWidget(new TexturedButton(width / 2 - 122, height - 24, 120, 20, new FiguraText("gui.reset_all"), null, button -> {
+            if (owner == null || owner.luaState == null)
+                return;
+
+            for (FiguraKeybind keybind : owner.luaState.keybind.keyBindings)
+                keybind.resetDefaultKey();
         }));
+
+        //back
+        addRenderableWidget(new TexturedButton(width / 2 + 4, height - 24, 120, 20, new FiguraText("gui.back"), null,
+                bx -> this.minecraft.setScreen(parentScreen)
+        ));
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        FiguraKeybind bind = list.focusedKeybind;
+        //attempt to set keybind
+        if (bind != null) {
+            bind.setKey(InputConstants.Type.MOUSE.getOrCreate(button));
+            list.focusedKeybind = null;
+            return true;
+        } else {
+            return super.mouseClicked(mouseX, mouseY, button);
+        }
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        FiguraKeybind bind = list.focusedKeybind;
+        //attempt to set keybind
+        if (bind != null) {
+            bind.setKey(keyCode == 256 ? InputConstants.UNKNOWN: InputConstants.getKey(keyCode, scanCode));
+            list.focusedKeybind = null;
+            return true;
+        } else {
+            return super.keyPressed(keyCode, scanCode, modifiers);
+        }
     }
 }

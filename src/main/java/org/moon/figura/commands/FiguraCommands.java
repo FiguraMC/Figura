@@ -13,17 +13,18 @@ public class FiguraCommands {
         LiteralArgumentBuilder<FabricClientCommandSource> root = LiteralArgumentBuilder.literal(FiguraMod.MOD_ID);
 
         //docs
-        root.then(FiguraDocsManager.generateCommand());
+        root.then(FiguraDocsManager.get());
 
         //links
-        root.then(FiguraLinks.generateLinks());
+        root.then(FiguraLinks.get());
 
         //run
-        root.then(FiguraRunCommand.generateRunCommand());
+        root.then(FiguraRunCommand.get());
+
+        //load
+        root.then(FiguraLoadCommand.get());
 
         //register
         ClientCommandManager.DISPATCHER.register(root);
     }
-
-
 }

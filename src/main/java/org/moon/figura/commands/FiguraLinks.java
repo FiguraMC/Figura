@@ -39,7 +39,7 @@ public class FiguraLinks {
         }
     }
 
-    public static LiteralArgumentBuilder<FabricClientCommandSource> generateLinks() {
+    public static LiteralArgumentBuilder<FabricClientCommandSource> get() {
         //get links
         LiteralArgumentBuilder<FabricClientCommandSource> links = LiteralArgumentBuilder.literal("links");
         links.executes(context -> {
@@ -69,7 +69,4 @@ public class FiguraLinks {
 
         return links;
     }
-
-
-
 }
