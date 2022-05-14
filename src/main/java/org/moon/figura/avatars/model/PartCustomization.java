@@ -2,6 +2,7 @@ package org.moon.figura.avatars.model;
 
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
+import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.caching.CacheStack;
 import org.moon.figura.utils.caching.CacheUtils;
@@ -18,6 +19,7 @@ public class PartCustomization implements CachedType {
     public boolean isMesh = false;
 
     public FiguraMat4 positionMatrix = FiguraMat4.of();
+    public FiguraMat3 uvMatrix = FiguraMat3.of();
     public FiguraMat3 normalMatrix = FiguraMat3.of();
 
     public boolean needsMatrixRecalculation = true;
@@ -197,6 +199,7 @@ public class PartCustomization implements CachedType {
     private PartCustomization() {}
     public void reset() {
         positionMatrix = FiguraMat4.of();
+        uvMatrix = FiguraMat3.of();
         normalMatrix = FiguraMat3.of();
         isMesh = false;
         position = FiguraVec3.of();
@@ -214,6 +217,7 @@ public class PartCustomization implements CachedType {
     }
     public void free() {
         positionMatrix.free();
+        uvMatrix.free();
         normalMatrix.free();
         position.free();
         rotation.free();
@@ -242,6 +246,7 @@ public class PartCustomization implements CachedType {
         protected void copy(PartCustomization from, PartCustomization to) {
             to.isMesh = from.isMesh;
             to.positionMatrix.set(from.positionMatrix);
+            to.uvMatrix.set(from.uvMatrix);
             to.normalMatrix.set(from.normalMatrix);
             to.setPos(from.position);
             to.setRot(from.rotation);
@@ -252,6 +257,7 @@ public class PartCustomization implements CachedType {
             to.setBonusRot(from.bonusRot);
             to.color.set(from.color);
             to.alpha = from.alpha;
+            to.light = from.light;
             to.needsMatrixRecalculation = from.needsMatrixRecalculation;
             to.visible = from.visible;
             to.setPrimaryRenderType(from.primaryRenderType);
@@ -262,6 +268,7 @@ public class PartCustomization implements CachedType {
     //Modify this object using the information contained in the other object
     private void modify(PartCustomization other) {
         positionMatrix.rightMultiply(other.positionMatrix);
+        uvMatrix.rightMultiply(other.uvMatrix);
         normalMatrix.rightMultiply(other.normalMatrix);
 
         if (other.primaryRenderType != null)

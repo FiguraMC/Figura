@@ -324,6 +324,18 @@ public class FiguraMat2 implements CachedType {
                     argumentTypes = FiguraMat2.class,
                     argumentNames = "mat"
             ),
+            description = "matrix_n.reset"
+    )
+    public static void reset(@LuaNotNil FiguraMat2 mat) {
+        mat.reset();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraMat2.class,
+                    argumentNames = "mat"
+            ),
             description = "matrix_n.det"
     )
     public static double det(@LuaNotNil FiguraMat2 mat) {

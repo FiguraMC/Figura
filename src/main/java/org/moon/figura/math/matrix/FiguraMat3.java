@@ -8,6 +8,7 @@ import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.caching.CacheStack;
@@ -233,6 +234,12 @@ public class FiguraMat3 implements CachedType {
         result.v33 = a*c;
         return result;
     }
+    public static FiguraMat3 createTranslationMatrix(double x, double y) {
+        FiguraMat3 result = of();
+        result.v13 = x;
+        result.v23 = y;
+        return result;
+    }
 
     //----------------------------------------------------------------
 
@@ -406,6 +413,17 @@ public class FiguraMat3 implements CachedType {
         v13 = nv13;
         v23 = nv23;
         v33 = nv33;
+        invalidate();
+    }
+
+    public void translate(double x, double y) {
+        v11 += x * v31;
+        v12 += x * v32;
+        v13 += x * v33;
+
+        v21 += y * v31;
+        v22 += y * v32;
+        v23 += y * v33;
         invalidate();
     }
 
@@ -631,6 +649,18 @@ public class FiguraMat3 implements CachedType {
                     argumentTypes = FiguraMat3.class,
                     argumentNames = "mat"
             ),
+            description = "matrix_n.reset"
+    )
+    public static void reset(@LuaNotNil FiguraMat3 mat) {
+        mat.reset();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraMat3.class,
+                    argumentNames = "mat"
+            ),
             description = "matrix_n.det"
     )
     public static double det(@LuaNotNil FiguraMat3 mat) {
@@ -720,7 +750,27 @@ public class FiguraMat3 implements CachedType {
     )
     public static void scale(@LuaNotNil FiguraMat3 mat, Object x, Double y, Double z) {
         FiguraVec3 vec = LuaUtils.parseVec3("scale", x, y, z, 1, 1, 1);
-        mat.rotateZYX(vec.x, vec.y, vec.z);
+        mat.scale(vec.x, vec.y, vec.z);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraMat3.class, FiguraVec2.class},
+                            argumentNames = {"mat", "vec"}
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraMat3.class, Double.class, Double.class},
+                            argumentNames = {"mat", "x", "y"}
+                    )
+            },
+            description = "matrix_3.translate"
+    )
+    public static void translate(@LuaNotNil FiguraMat3 mat, Object x, Double y) {
+        FiguraVec2 vec = LuaUtils.parseVec2("translate", x, y);
+        mat.translate(vec.x, vec.y);
+        vec.free();
     }
 
     @LuaWhitelist

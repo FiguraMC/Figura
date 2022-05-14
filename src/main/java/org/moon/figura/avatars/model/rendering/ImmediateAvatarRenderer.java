@@ -36,11 +36,6 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         //Get complexity limit from trust
         complexityLimit = TrustManager.get(avatar.owner).get(TrustContainer.Trust.COMPLEXITY);
 
-        //Vertex data, read model parts
-        List<FiguraImmediateBuffer.Builder> builders = new ArrayList<>();
-        root = FiguraModelPart.read(avatar.nbt.getCompound("models"), builders);
-        root.owner = avatar;
-
         //Textures
         List<FiguraTextureSet> textureSets = new ArrayList<>();
         ListTag texturesList = avatar.nbt.getList("textures", Tag.TAG_COMPOUND);
@@ -58,6 +53,10 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
             emissiveData = emissiveData.length == 0 ? null : emissiveData;
             textureSets.add(new FiguraTextureSet(name, mainData, emissiveData));
         }
+
+        //Vertex data, read model parts
+        List<FiguraImmediateBuffer.Builder> builders = new ArrayList<>();
+        root = FiguraModelPart.read(avatar.nbt.getCompound("models"), builders, textureSets);
 
         for (int i = 0; i < textureSets.size() && i < builders.size(); i++)
             buffers.add(builders.get(i).build(textureSets.get(i), customizationStack));
@@ -139,6 +138,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         normalMat.free();
 
         customization.visible = true;
+        customization.light = light;
         return customization;
     }
 
@@ -211,6 +211,6 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
     }
 
     public void pushFaces(int texIndex, int faceCount, int[] remainingComplexity) {
-        buffers.get(texIndex).pushVertices(bufferSource, light, OverlayTexture.NO_OVERLAY, faceCount, remainingComplexity);
+        buffers.get(texIndex).pushVertices(bufferSource, OverlayTexture.NO_OVERLAY, faceCount, remainingComplexity);
     }
 }

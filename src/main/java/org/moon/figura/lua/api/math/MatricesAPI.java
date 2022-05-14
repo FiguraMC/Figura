@@ -288,6 +288,26 @@ public class MatricesAPI {
     @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload(
+                            argumentTypes = FiguraVec2.class,
+                            argumentNames = "vec"
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {Double.class, Double.class},
+                            argumentNames = {"x", "y"}
+                    )
+            },
+            description = "matrices.translate3"
+    )
+    public static FiguraMat3 translate3(Object x, Double y) {
+        FiguraVec2 offset = LuaUtils.parseVec2("translate3", x, y);
+        FiguraMat3 result = FiguraMat3.createTranslationMatrix(offset.x, offset.y);
+        offset.free();
+        return result;
+    }
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
                             argumentTypes = FiguraVec3.class,
                             argumentNames = "vec"
                     ),

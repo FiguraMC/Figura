@@ -11,7 +11,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.util.Mth;
-import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.model.rendering.FiguraImmediateBuffer;
 import org.moon.figura.avatars.model.rendering.ImmediateAvatarRenderer;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
@@ -46,8 +45,6 @@ public class FiguraModelPart {
     public final String name;
     public FiguraModelPart parent;
 
-    public Avatar owner; //Only set on "models", the root. Other model parts don't have an owner, they must reference up the chain of parents.
-
     public final PartCustomization customization;
     public ParentType parentType = ParentType.None;
     public final int index;
@@ -56,6 +53,8 @@ public class FiguraModelPart {
     public final List<FiguraModelPart> children;
 
     private List<Integer> facesByTexture;
+
+    private int textureWidth, textureHeight; //If the part has multiple textures, then these are -1.
 
     public void pushVerticesImmediate(ImmediateAvatarRenderer avatarRenderer, int[] remainingComplexity) {
         for (int i = 0; i < facesByTexture.size(); i++) {
@@ -542,6 +541,78 @@ public class FiguraModelPart {
 
     @LuaWhitelist
     @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraModelPart.class,
+                    argumentNames = "modelPart"
+            ),
+            description = "model_part.get_texture_size"
+    )
+    public static FiguraVec2 getTextureSize(@LuaNotNil FiguraModelPart modelPart) {
+        if (modelPart.textureWidth == -1 || modelPart.textureHeight == -1)
+            throw new LuaRuntimeException("Cannot get texture size of part, it has multiple different-sized textures!");
+        return FiguraVec2.of(modelPart.textureWidth, modelPart.textureHeight);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraModelPart.class, FiguraVec2.class},
+                            argumentNames = {"modelPart", "uv"}
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraModelPart.class, Double.class, Double.class},
+                            argumentNames = {"modelPart", "u", "v"}
+                    )
+            },
+            description = "model_part.set_uv"
+    )
+    public static void setUV(@LuaNotNil FiguraModelPart modelPart, Object x, Double y) {
+        modelPart.customization.uvMatrix.reset();
+        FiguraVec2 uv = LuaUtils.parseVec2("setUV", x, y);
+        modelPart.customization.uvMatrix.translate(uv.x, uv.y);
+        uv.free();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraModelPart.class, FiguraVec2.class},
+                            argumentNames = {"modelPart", "uv"}
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraModelPart.class, Double.class, Double.class},
+                            argumentNames = {"modelPart", "u", "v"}
+                    )
+            },
+            description = "model_part.set_uv_pixels"
+    )
+    public static void setUVPixels(@LuaNotNil FiguraModelPart modelPart, Object x, Double y) {
+        if (modelPart.textureWidth == -1 || modelPart.textureHeight == -1)
+            throw new LuaRuntimeException("Cannot call setUVPixels on a part with multiple texture sizes!");
+
+        modelPart.customization.uvMatrix.reset();
+        FiguraVec2 uv = LuaUtils.parseVec2("setUVPixels", x, y);
+        uv.divide(modelPart.textureWidth, modelPart.textureHeight);
+        modelPart.customization.uvMatrix.translate(uv.x, uv.y);
+        uv.free();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = {FiguraModelPart.class, FiguraMat3.class},
+                    argumentNames = {"modelPart", "matrix"}
+            ),
+            description = "model_part.set_uv_matrix"
+    )
+    public static void setUVMatrix(@LuaNotNil FiguraModelPart modelPart, @LuaNotNil FiguraMat3 matrix) {
+        modelPart.customization.uvMatrix.set(matrix);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload(
                             argumentTypes = {FiguraModelPart.class, FiguraVec3.class},
@@ -652,11 +723,11 @@ public class FiguraModelPart {
             child.parent = this;
     }
 
-    public static FiguraModelPart read(CompoundTag partCompound, List<FiguraImmediateBuffer.Builder> bufferBuilders) {
-        return read(partCompound, bufferBuilders, new int[] {0});
+    public static FiguraModelPart read(CompoundTag partCompound, List<FiguraImmediateBuffer.Builder> bufferBuilders, List<FiguraTextureSet> textureSets) {
+        return read(partCompound, bufferBuilders, new int[] {0}, textureSets);
     }
 
-    private static FiguraModelPart read(CompoundTag partCompound, List<FiguraImmediateBuffer.Builder> bufferBuilders, int[] index) {
+    private static FiguraModelPart read(CompoundTag partCompound, List<FiguraImmediateBuffer.Builder> bufferBuilders, int[] index, List<FiguraTextureSet> textureSets) {
         //Read name
         String name = partCompound.getString("name");
 
@@ -693,15 +764,66 @@ public class FiguraModelPart {
         if (partCompound.contains("chld")) {
             ListTag listTag = partCompound.getList("chld", Tag.TAG_COMPOUND);
             for (Tag tag : listTag)
-                children.add(read((CompoundTag) tag, bufferBuilders, index));
+                children.add(read((CompoundTag) tag, bufferBuilders, index, textureSets));
         }
 
         FiguraModelPart result = new FiguraModelPart(name, customization, newIndex, children);
         result.facesByTexture = facesByTexture;
+        storeTexSize(result, textureSets);
         if (partCompound.contains("pt"))
             result.parentType = ParentType.valueOf(partCompound.getString("pt"));
 
         return result;
+    }
+
+    /**
+     * There's a lot of obscure cases to test this on, so... something might go wrong with it, and I can't test everything.
+     * Obviously I *think* it should work, and it has so far, but I still might be missing something.
+     */
+    private static void storeTexSize(FiguraModelPart modelPart, List<FiguraTextureSet> textureSets) {
+        int w = -1, h = -1;
+        for (FiguraModelPart child : modelPart.children) {
+            //If any child has multiple textures, then we know this parent must as well.
+            if (child.textureWidth == -1) {
+                modelPart.textureWidth = -1;
+                modelPart.textureHeight = -1;
+                return;
+            }
+            //If any child has a texture different than one we've already seen, this parent must have multiple textures.
+            if (child.textureWidth != w || child.textureHeight != h) {
+                if (w != -1) {
+                    modelPart.textureWidth = -1;
+                    modelPart.textureHeight = -1;
+                    return;
+                }
+                w = child.textureWidth;
+                h = child.textureHeight;
+            }
+        }
+        if (modelPart.index != -1) {
+            int i = -1;
+            for (int j = 0; j < modelPart.facesByTexture.size(); j++) {
+                if (modelPart.facesByTexture.get(j) > 0) {
+                    int realTexWidth = textureSets.get(j).getWidth();
+                    int realTexHeight = textureSets.get(j).getHeight();
+                    if ((w != -1 && w != realTexWidth) || (h != -1 && h != realTexHeight)) {
+                        modelPart.textureWidth = -1;
+                        modelPart.textureHeight = -1;
+                        return;
+                    }
+                    if (i != -1) {
+                        modelPart.textureWidth = -1;
+                        modelPart.textureHeight = -1;
+                        return;
+                    }
+                    i = j;
+                    w = realTexWidth;
+                    h = realTexHeight;
+                }
+            }
+        }
+        modelPart.textureWidth = w;
+        modelPart.textureHeight = h;
     }
 
     private static void readVec3(FiguraVec3 target, CompoundTag tag, String name) {

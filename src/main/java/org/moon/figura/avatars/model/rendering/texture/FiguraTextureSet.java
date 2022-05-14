@@ -33,6 +33,18 @@ public class FiguraTextureSet {
             emissiveTex.registerAndUpload();
     }
 
+    public int getWidth() {
+        if (mainTex != null)
+            return mainTex.getWidth();
+        return emissiveTex.getWidth();
+    }
+
+    public int getHeight() {
+        if (mainTex != null)
+            return mainTex.getHeight();
+        return emissiveTex.getHeight();
+    }
+
     public static final Set<String> LEGAL_RENDER_TYPES = new HashSet<>() {{
         add(null);
         add("CUTOUT_NO_CULL");

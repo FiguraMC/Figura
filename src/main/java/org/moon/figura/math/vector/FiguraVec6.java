@@ -364,6 +364,48 @@ public class FiguraVec6 extends FiguraVector<FiguraVec6> implements CachedType {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraVec6.class,
+                    argumentNames = "vec"
+            ),
+            description = "vector_n.reset"
+    )
+    public static void reset(FiguraVec6 vec) {
+        vec.reset();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = {FiguraVec6.class, Double.class, Double.class, Double.class, Double.class, Double.class, Double.class},
+                    argumentNames = {"vec", "x", "y", "z", "w", "t", "h"}
+            ),
+            description = "vector_n.set"
+    )
+    public static void set(FiguraVec6 vec, Double x, Double y, Double z, Double w, Double t, Double h) {
+        if (x == null) x = 0d;
+        if (y == null) y = 0d;
+        if (z == null) z = 0d;
+        if (w == null) w = 0d;
+        if (t == null) t = 0d;
+        if (h == null) h = 0d;
+        vec.set(x, y, z, w, t, h);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraVec6.class,
+                    argumentNames = "vec"
+            ),
+            description = "vector_n.copy"
+    )
+    public static FiguraVec6 copy(FiguraVec6 vec) {
+        return vec.copy();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
                     argumentTypes = {FiguraVec6.class, Double.class, Double.class},
                     argumentNames = {"vec", "minLength", "maxLength"}
             ),

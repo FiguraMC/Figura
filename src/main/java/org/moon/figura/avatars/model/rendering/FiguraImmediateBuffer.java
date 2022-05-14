@@ -41,7 +41,7 @@ public class FiguraImmediateBuffer {
 
     private static final FiguraVec4 pos = FiguraVec4.of();
     private static final FiguraVec3 normal = FiguraVec3.of();
-    private static final FiguraVec2 uv = FiguraVec2.of();
+    private static final FiguraVec3 uv = FiguraVec3.of(0, 0, 1);
 
     public void markBuffers() {
         positions.mark();
@@ -76,7 +76,7 @@ public class FiguraImmediateBuffer {
     }
 
 
-    public void pushVertices(MultiBufferSource bufferSource, int light, int overlay, int faceCount, int[] remainingComplexity) {
+    public void pushVertices(MultiBufferSource bufferSource, int overlay, int faceCount, int[] remainingComplexity) {
         //Handle cases that we can quickly
         if (faceCount == 0)
             return;
@@ -90,25 +90,20 @@ public class FiguraImmediateBuffer {
         if (primary != null) {
             if (secondary != null)
                 markBuffers();
-            pushToConsumer(bufferSource.getBuffer(primary), light, overlay, faceCount);
+            pushToConsumer(bufferSource.getBuffer(primary), overlay, faceCount);
         }
         if (secondary != null) {
             if (primary != null)
                 resetBuffers();
-            pushToConsumer(bufferSource.getBuffer(secondary), light, overlay, faceCount);
+            pushToConsumer(bufferSource.getBuffer(secondary), overlay, faceCount);
         }
     }
 
-    private void pushToConsumer(VertexConsumer consumer, int light, int overlay, int faceCount) {
+    private void pushToConsumer(VertexConsumer consumer, int overlay, int faceCount) {
         PartCustomization customization = customizationStack.peek();
 
-        FiguraVec2 uvFixer = FiguraVec2.of();
-        if (textureSet.mainTex != null)
-            uvFixer.set(textureSet.mainTex.getWidth(), textureSet.mainTex.getHeight());
-        else if (textureSet.emissiveTex != null)
-            uvFixer.set(textureSet.emissiveTex.getWidth(), textureSet.emissiveTex.getHeight());
-        else
-            throw new IllegalStateException("Texture set has neither emissive or main texture!?");
+        FiguraVec3 uvFixer = FiguraVec3.of();
+        uvFixer.set(textureSet.getWidth(), textureSet.getHeight(), 1); //Dividing by this makes uv 0 to 1
 
         for (int i = 0; i < faceCount*4; i++) {
 
@@ -116,8 +111,9 @@ public class FiguraImmediateBuffer {
             pos.multiply(customization.positionMatrix);
             normal.set(normals.get(), normals.get(), normals.get());
             normal.multiply(customization.normalMatrix);
-            uv.set(uvs.get(), uvs.get());
+            uv.set(uvs.get(), uvs.get(), 1);
             uv.divide(uvFixer);
+            uv.multiply(customization.uvMatrix);
 
             consumer.vertex(
                     (float) pos.x,
@@ -133,7 +129,7 @@ public class FiguraImmediateBuffer {
                     (float) uv.y,
 
                     overlay,
-                    light,
+                    customization.light,
 
                     (float) normal.x,
                     (float) normal.y,

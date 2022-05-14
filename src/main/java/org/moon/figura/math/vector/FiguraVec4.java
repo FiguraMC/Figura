@@ -348,6 +348,46 @@ public class FiguraVec4 extends FiguraVector<FiguraVec4> implements CachedType {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraVec4.class,
+                    argumentNames = "vec"
+            ),
+            description = "vector_n.reset"
+    )
+    public static void reset(FiguraVec4 vec) {
+        vec.reset();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = {FiguraVec4.class, Double.class, Double.class, Double.class, Double.class},
+                    argumentNames = {"vec", "x", "y", "z", "w"}
+            ),
+            description = "vector_n.set"
+    )
+    public static void set(FiguraVec4 vec, Double x, Double y, Double z, Double w) {
+        if (x == null) x = 0d;
+        if (y == null) y = 0d;
+        if (z == null) z = 0d;
+        if (w == null) w = 0d;
+        vec.set(x, y, z, w);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraVec4.class,
+                    argumentNames = "vec"
+            ),
+            description = "vector_n.copy"
+    )
+    public static FiguraVec4 copy(FiguraVec4 vec) {
+        return vec.copy();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
                     argumentTypes = {FiguraVec4.class, Double.class, Double.class},
                     argumentNames = {"vec", "minLength", "maxLength"}
             ),
