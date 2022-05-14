@@ -9,6 +9,8 @@
     "ClientLevelInvoker",
     "MinecraftMixin",
 
+    "gui.ChatComponentMixin",
+    "gui.ChatScreenMixin",
     "gui.DebugScreenOverlayMixin",
     "gui.GuiMixin",
     "gui.PauseScreenMixin",

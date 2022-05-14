@@ -16,7 +16,7 @@ public class FiguraCommands {
         root.then(FiguraDocsManager.get());
 
         //links
-        root.then(FiguraLinks.get());
+        root.then(FiguraLinkCommand.get());
 
         //run
         root.then(FiguraRunCommand.get());

@@ -8,7 +8,7 @@ import org.moon.figura.FiguraMod;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.FiguraText;
 
-public class FiguraLinks {
+public class FiguraLinkCommand {
 
     public enum LINK {
         WIKI("[Wiki]", FiguraMod.WIKI, ColorUtils.Colors.FRAN_PINK.style),

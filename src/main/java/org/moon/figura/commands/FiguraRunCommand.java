@@ -35,5 +35,4 @@ public class FiguraRunCommand {
         localAvatar.luaState.runScript(lua, "runCommand");
         return 1;
     }
-
 }

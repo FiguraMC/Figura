@@ -137,6 +137,16 @@ public class Avatar {
             tryCall(luaState.events.POST_WORLD_RENDER, -1, renderer.tickDelta);
     }
 
+    public void chatSendMessageEvent(String message) {
+        if (luaState != null)
+            tryCall(luaState.events.CHAT_SEND_MESSAGE, -1, message);
+    }
+
+    public void chatReceivedMessageEvent(String message) {
+        if (luaState != null)
+            tryCall(luaState.events.CHAT_RECEIVED_MESSAGE, -1, message);
+    }
+
     public void onWorldRender(Entity entity, double camX, double camY, double camZ, PoseStack matrices, MultiBufferSource bufferSource, int light, float tickDelta) {
         renderer.entity = entity;
         renderer.currentFilterScheme = AvatarRenderer.RENDER_WORLD;

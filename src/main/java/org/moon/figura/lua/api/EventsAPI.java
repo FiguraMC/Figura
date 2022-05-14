@@ -35,7 +35,12 @@ public class EventsAPI {
     @LuaWhitelist
     @LuaFieldDoc(description = "events.post_world_render")
     public final LuaEvent POST_WORLD_RENDER = new LuaEvent("POST_WORLD_RENDER");
-
+    @LuaWhitelist
+    @LuaFieldDoc(description = "events.chat_send_message")
+    public final LuaEvent CHAT_SEND_MESSAGE = new LuaEvent("CHAT_SEND_MESSAGE");
+    @LuaWhitelist
+    @LuaFieldDoc(description = "events.chat_received_message")
+    public final LuaEvent CHAT_RECEIVED_MESSAGE = new LuaEvent("CHAT_RECEIVED_MESSAGE");
 
     //Metamethods
 
