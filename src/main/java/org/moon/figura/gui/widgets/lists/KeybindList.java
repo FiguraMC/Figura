@@ -133,10 +133,21 @@ public class KeybindList extends AbstractList {
             }
             //conflict check
             else {
+                boolean found = false;
                 for (KeyMapping key : Minecraft.getInstance().options.keyMappings) {
                     if (key.saveString().equals(FiguraKeybind.getKey(this.keybind))) {
+                        found = true;
                         keybindButton.setMessage(keybindButton.getMessage().copy().withStyle(ChatFormatting.RED));
                         break;
+                    }
+                }
+
+                if (!found) {
+                    for (KeybindElement keybindElement : this.parent.keybinds) {
+                        if (keybindElement.keybind != this.keybind && FiguraKeybind.getKey(keybindElement.keybind).equals(FiguraKeybind.getKey(this.keybind))) {
+                            keybindButton.setMessage(keybindButton.getMessage().copy().withStyle(ChatFormatting.YELLOW));
+                            break;
+                        }
                     }
                 }
             }

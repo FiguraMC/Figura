@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.commands.arguments.ParticleArgument;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.world.level.Level;
+import org.moon.figura.avatars.Avatar;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.world.WorldAPI;
@@ -23,7 +24,11 @@ import org.terasology.jnlua.LuaRuntimeException;
 )
 public class ParticleAPI {
 
-    public static final ParticleAPI INSTANCE = new ParticleAPI();
+    private final Avatar owner;
+
+    public ParticleAPI(Avatar owner) {
+        this.owner = owner;
+    }
 
     @LuaWhitelist
     @LuaMethodDoc(
@@ -37,29 +42,33 @@ public class ParticleAPI {
                             argumentNames = {"name", "pos"}
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {String.class, FiguraVec3.class, FiguraVec3.class},
-                            argumentNames = {"name", "pos", "vel"}
+                            argumentTypes = {ParticleAPI.class, String.class, FiguraVec3.class, FiguraVec3.class},
+                            argumentNames = {"api", "name", "pos", "vel"}
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {String.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"name", "posX", "posY", "posZ"}
+                            argumentTypes = {ParticleAPI.class, String.class, Double.class, Double.class, Double.class},
+                            argumentNames = {"api", "name", "posX", "posY", "posZ"}
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {String.class, FiguraVec3.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"name", "pos", "velX", "velY", "velZ"}
+                            argumentTypes = {ParticleAPI.class, String.class, FiguraVec3.class, Double.class, Double.class, Double.class},
+                            argumentNames = {"api", "name", "pos", "velX", "velY", "velZ"}
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {String.class, Double.class, Double.class, Double.class, FiguraVec3.class},
-                            argumentNames = {"name", "posX", "posY", "posZ", "vel"}
+                            argumentTypes = {ParticleAPI.class, String.class, Double.class, Double.class, Double.class, FiguraVec3.class},
+                            argumentNames = {"api", "name", "posX", "posY", "posZ", "vel"}
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {String.class, Double.class, Double.class, Double.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"name", "posX", "posY", "posZ", "velX", "velY", "velZ"}
+                            argumentTypes = {ParticleAPI.class, String.class, Double.class, Double.class, Double.class, Double.class, Double.class, Double.class},
+                            argumentNames = {"api", "name", "posX", "posY", "posZ", "velX", "velY", "velZ"}
                     )
             },
             description = "particle.add_particle"
     )
-    public static void addParticle(@LuaNotNil String id, Object x, Object y, Double z, Object w, Double t, Double h) {
+    public static void addParticle(@LuaNotNil ParticleAPI api, @LuaNotNil String id, Object x, Object y, Double z, Object w, Double t, Double h) {
+        if (api.owner.particlesRemaining < 1)
+            return;
+        api.owner.particlesRemaining--;
+
         FiguraVec3 pos, vel;
 
         //Parse pos and vel

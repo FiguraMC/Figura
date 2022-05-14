@@ -1,6 +1,7 @@
 package org.moon.figura.avatars;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.SharedConstants;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ElytraModel;
@@ -64,6 +65,8 @@ public class Avatar {
     public int initInstructions = 0;
     public int tickInstructions = 0;
     public int renderInstructions = 0;
+    public float particlesRemaining = 0f;
+    public float soundsRemaining = 0f;
 
     public Avatar(CompoundTag nbt, UUID owner) {
         this.nbt = nbt;
@@ -104,8 +107,15 @@ public class Avatar {
     }
 
     public void onTick() {
-        if (luaState != null)
+        if (luaState != null) {
+            float maxParticles = TrustManager.get(this.owner).get(TrustContainer.Trust.PARTICLES);
+            this.particlesRemaining = Math.min(particlesRemaining + (maxParticles / SharedConstants.TICKS_PER_SECOND), maxParticles);
+
+            float maxSounds = TrustManager.get(this.owner).get(TrustContainer.Trust.SOUNDS);
+            this.soundsRemaining = Math.min(soundsRemaining + (maxSounds / SharedConstants.TICKS_PER_SECOND), maxSounds);
+
             tryCall(luaState.events.TICK, tickLimit);
+        }
     }
 
     public void onRender(Entity entity, float yaw, float delta, PoseStack matrices, MultiBufferSource bufferSource, int light, LivingEntityRenderer<?, ?> entityRenderer, ElytraModel<?> elytraModel) {

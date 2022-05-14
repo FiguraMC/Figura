@@ -114,8 +114,8 @@ public class FiguraLuaState extends LuaState53 {
         loadGlobal(vanillaModel, "vanilla_model");
         loadGlobal(WorldAPI.INSTANCE, "world");
         loadGlobal(new PlayerEntityWrapper(owner.owner), "player");
-        loadGlobal(ParticleAPI.INSTANCE, "particle");
-        loadGlobal(SoundAPI.INSTANCE, "sound");
+        loadGlobal(new ParticleAPI(owner), "particle");
+        loadGlobal(new SoundAPI(owner), "sound");
         nameplate = new NameplateAPI();
         loadGlobal(nameplate, "nameplate");
         loadGlobal(ClientAPI.INSTANCE, "client");

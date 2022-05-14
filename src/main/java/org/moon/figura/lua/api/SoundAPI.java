@@ -5,6 +5,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.Level;
+import org.moon.figura.avatars.Avatar;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.world.WorldAPI;
@@ -22,31 +23,39 @@ import org.terasology.jnlua.LuaRuntimeException;
 )
 public class SoundAPI {
 
-    public static final SoundAPI INSTANCE = new SoundAPI();
+    private final Avatar owner;
+
+    public SoundAPI(Avatar owner) {
+        this.owner = owner;
+    }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload(
-                            argumentTypes = {String.class, FiguraVec3.class},
-                            argumentNames = {"sound", "pos"}
+                            argumentTypes = {SoundAPI.class, String.class, FiguraVec3.class},
+                            argumentNames = {"api", "sound", "pos"}
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {String.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"sound", "posX", "posY", "posZ"}
+                            argumentTypes = {SoundAPI.class, String.class, Double.class, Double.class, Double.class},
+                            argumentNames = {"api", "sound", "posX", "posY", "posZ"}
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {String.class, FiguraVec3.class, Double.class, Double.class},
-                            argumentNames = {"sound", "pos", "volume", "pitch"}
+                            argumentTypes = {SoundAPI.class, String.class, FiguraVec3.class, Double.class, Double.class},
+                            argumentNames = {"api", "sound", "pos", "volume", "pitch"}
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {String.class, Double.class, Double.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"sound", "posX", "posY", "posZ", "volume", "pitch"}
+                            argumentTypes = {SoundAPI.class, String.class, Double.class, Double.class, Double.class, Double.class, Double.class},
+                            argumentNames = {"api", "sound", "posX", "posY", "posZ", "volume", "pitch"}
                     )
             },
             description = "sound.play_sound"
     )
-    public static void playSound(@LuaNotNil String id, Object x, Double y, Double z, Double w, Double t) {
+    public static void playSound(@LuaNotNil SoundAPI api, @LuaNotNil String id, Object x, Double y, Double z, Double w, Double t) {
+        if (api.owner.soundsRemaining < 1)
+            return;
+        api.owner.soundsRemaining--;
+
         FiguraVec3 pos;
         double volume = 1.0;
         double pitch = 1.0;
