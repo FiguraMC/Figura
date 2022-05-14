@@ -22,8 +22,8 @@ public class FiguraMat2 implements CachedType {
     @LuaWhitelist
     public double v11, v12, v21, v22;
 
-    @LuaFieldDoc(description = "matrix_n.vxy")
-    private double vxy;
+    @LuaFieldDoc(description = "matrix_n.vrc")
+    public double vRC;
 
     private FiguraMat2() {}
 

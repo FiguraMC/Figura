@@ -594,7 +594,7 @@
   "figura.docs.matrix3": "A matrix with 3 rows and 3 columns.",
   "figura.docs.matrix4": "A matrix with 4 rows and 4 columns.",
 
-  "figura.docs.matrix_n.vxy": "There is 1 such field for each element of the matrix. You can index these fields with v[x][y], for example \"mat.v12\" will return the value in the first row, second column of \"mat\".",
+  "figura.docs.matrix_n.vrc": "There is 1 such field for each element of the matrix. You can index these fields with the names v{row}{column}, for example \"mat.v12\" will return the value in the first row, second column of \"mat\".",
   "figura.docs.matrix_n.reset": "Resets this matrix back to the identity matrix.",
   "figura.docs.matrix_n.det": "Calculates and returns the determinant of this matrix.",
   "figura.docs.matrix_n.invert": "Inverts this matrix, changing the values inside.",

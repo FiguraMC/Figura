@@ -28,8 +28,8 @@ public class FiguraMat3 implements CachedType {
     @LuaWhitelist
     public double v11, v12, v13, v21, v22, v23, v31, v32, v33;
 
-    @LuaFieldDoc(description = "matrix_n.vxy")
-    private double vxy;
+    @LuaFieldDoc(description = "matrix_n.vrc")
+    public double vRC;
 
     private FiguraMat3 cachedInverse = null;
     private double cachedDeterminant = Double.MAX_VALUE;
