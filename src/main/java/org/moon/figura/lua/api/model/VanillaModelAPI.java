@@ -150,9 +150,30 @@ public class VanillaModelAPI {
         alterByPart(playerModel, RIGHT_PANTS);
     }
 
+    public void copyPlayerModel(PlayerModel<?> playerModel) {
+        copyByPart(playerModel, HEAD);
+        copyByPart(playerModel, BODY);
+        copyByPart(playerModel, LEFT_ARM);
+        copyByPart(playerModel, RIGHT_ARM);
+        copyByPart(playerModel, LEFT_LEG);
+        copyByPart(playerModel, RIGHT_LEG);
+        copyByPart(playerModel, HAT);
+        copyByPart(playerModel, JACKET);
+        copyByPart(playerModel, LEFT_SLEEVE);
+        copyByPart(playerModel, RIGHT_SLEEVE);
+        copyByPart(playerModel, LEFT_PANTS);
+        copyByPart(playerModel, RIGHT_PANTS);
+    }
+
     public void restorePlayerModel(PlayerModel<?> playerModel) {
         restoreByPart(playerModel, PLAYER);
         //We don't need to call restore on individual parts, as restoring does not need to set origin rot and pos.
+    }
+
+
+    public <T extends EntityModel<?>> void copyByPart(T model, VanillaModelPart<T> vanillaModelPart) {
+        if (vanillaModelPart != null)
+            vanillaModelPart.copyInfo(model);
     }
 
     public <T extends EntityModel<?>> void alterByPart(T model, VanillaModelPart<T> vanillaModelPart) {
@@ -356,9 +377,12 @@ public class VanillaModelAPI {
             this.parentType = parentType;
         }
 
+        public void copyInfo(T model) {
+            if (partModifiers.size() > 1) return;
+            partModifiers.get(0).storeOriginData(this, model);
+        }
+
         public void alter(T model) {
-            if (partModifiers.size() == 1)
-                partModifiers.get(0).storeOriginData(this, model);
             for (PartTracker<T> tracker : partModifiers)
                 tracker.alter(model);
         }

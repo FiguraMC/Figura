@@ -27,14 +27,18 @@ public abstract class ElytraLayerMixin<T extends LivingEntity, M extends EntityM
     @Inject(at = @At("HEAD"), method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V")
     public void onRender(PoseStack poseStack, MultiBufferSource multiBufferSource, int i, T livingEntity, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
         Avatar avatar = AvatarManager.getAvatar(livingEntity);
-        if (avatar != null && avatar.luaState != null && TrustManager.get(livingEntity.getUUID()).get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 1)
+        if (avatar != null && avatar.luaState != null)
             vanillaModelAPI = avatar.luaState.vanillaModel;
         else
             vanillaModelAPI = null;
 
         if (vanillaModelAPI != null) {
-            vanillaModelAPI.alterByPart(elytraModel, vanillaModelAPI.LEFT_ELYTRON);
-            vanillaModelAPI.alterByPart(elytraModel, vanillaModelAPI.RIGHT_ELYTRON);
+            vanillaModelAPI.copyByPart(elytraModel, vanillaModelAPI.LEFT_ELYTRON);
+            vanillaModelAPI.copyByPart(elytraModel, vanillaModelAPI.RIGHT_ELYTRON);
+            if (TrustManager.get(livingEntity.getUUID()).get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 1) {
+                vanillaModelAPI.alterByPart(elytraModel, vanillaModelAPI.LEFT_ELYTRON);
+                vanillaModelAPI.alterByPart(elytraModel, vanillaModelAPI.RIGHT_ELYTRON);
+            }
         }
     }
 

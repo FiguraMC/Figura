@@ -65,11 +65,12 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
         if (currentAvatar == null)
             return;
 
-        EntityModel<?> model = this.getModel();
-        if (model instanceof PlayerModel<?> playerModel && entity instanceof Player)
-            if (TrustManager.get(entity.getUUID()).get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 1)
-                if (currentAvatar.luaState != null)
+        if (currentAvatar.luaState != null)
+            if (getModel() instanceof PlayerModel<?> playerModel && entity instanceof Player) {
+                currentAvatar.luaState.vanillaModel.copyPlayerModel(playerModel);
+                if (TrustManager.get(entity.getUUID()).get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 1)
                     currentAvatar.luaState.vanillaModel.alterPlayerModel(playerModel);
+            }
     }
 
     @Inject(at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;popPose()V"), method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V")
