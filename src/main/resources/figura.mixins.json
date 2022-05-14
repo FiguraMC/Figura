@@ -18,11 +18,17 @@
     "input.KeyboardHandlerMixin",
     "input.MouseHandlerMixin",
 
-    "render.EntityRendererMixin",
-    "render.LivingEntityRendererMixin",
-    "render.PlayerRendererMixin",
-    "render.LevelRendererMixin",
-    "render.EntityRenderDispatcherMixin"
+    "render.EntityRenderDispatcherMixin",
+    "render.HumanoidArmorLayerMixin",
+
+    "render.renderers.EntityRendererMixin",
+    "render.renderers.LivingEntityRendererMixin",
+    "render.renderers.PlayerRendererMixin",
+    "render.renderers.LevelRendererMixin",
+
+    "render.elytra.ElytraLayerAccessor",
+    "render.elytra.ElytraModelAccessor",
+    "render.elytra.ElytraLayerMixin"
   ],
   "server": [
   ],

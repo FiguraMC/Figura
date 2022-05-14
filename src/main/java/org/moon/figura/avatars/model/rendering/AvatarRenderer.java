@@ -4,8 +4,11 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Matrix3f;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.ElytraModel;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -31,7 +34,8 @@ public abstract class AvatarRenderer {
     public PoseStack matrices;
     public int light;
     public MultiBufferSource bufferSource;
-    public EntityModel<?> vanillaModel;
+    public LivingEntityRenderer<?, ?> entityRenderer;
+    public ElytraModel<?> elytraModel;
     public PartFilterScheme currentFilterScheme;
 
     /**

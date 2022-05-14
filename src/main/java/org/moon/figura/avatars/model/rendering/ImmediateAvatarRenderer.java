@@ -145,7 +145,9 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
     private static boolean shouldRenderPivots;
     private void renderPart(FiguraModelPart part, int[] remainingComplexity, boolean parentPassedPredicate) {
-        part.applyVanillaTransforms(vanillaModel);
+        if (entityRenderer != null)
+            part.applyVanillaTransforms(entityRenderer.getModel());
+        part.applyVanillaTransforms(elytraModel);
 
         part.customization.recalculate();
 
@@ -163,8 +165,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
             FiguraMat4 viewToWorld = AvatarRenderer.worldToViewMatrix().inverted();
             customizePeek.multiply(viewToWorld);
             FiguraVec3 piv = part.customization.getPivot();
-            FiguraVec3 pos = part.customization.getPos();
-            piv.subtract(pos);
+
             FiguraMat4 translation = FiguraMat4.createTranslationMatrix(piv);
             customizePeek.rightMultiply(translation);
             part.savedPartToWorldMat.set(customizePeek);
@@ -172,7 +173,6 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
             customizePeek.free();
             viewToWorld.free();
             piv.free();
-            pos.free();
             translation.free();
         }
 

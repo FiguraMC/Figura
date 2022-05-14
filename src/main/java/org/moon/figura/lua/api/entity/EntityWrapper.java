@@ -161,7 +161,7 @@ public class EntityWrapper<T extends Entity> {
     )
     public static <T extends Entity> FiguraVec3 getVelocity(@LuaNotNil EntityWrapper<T> entity) {
         Entity e = getEntity(entity);
-        return FiguraVec3.of(e.getX() - e.xOld, e.getY() - e.yOld, e.getZ() - e.yOld);
+        return FiguraVec3.of(e.getX() - e.xOld, e.getY() - e.yOld, e.getZ() - e.zOld);
     }
 
     @LuaWhitelist

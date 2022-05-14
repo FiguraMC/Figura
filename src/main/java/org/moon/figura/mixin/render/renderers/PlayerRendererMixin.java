@@ -1,15 +1,17 @@
-package org.moon.figura.mixin.render;
+package org.moon.figura.mixin.render.renderers;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Matrix4f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.model.ElytraModel;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.entity.layers.ElytraLayer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -22,6 +24,7 @@ import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.config.Config;
 import org.moon.figura.lua.api.nameplate.NameplateCustomization;
 import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.mixin.render.elytra.ElytraLayerAccessor;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.TextUtils;
@@ -161,14 +164,18 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
         if (avatar == null || avatar.luaState == null)
             return;
 
-        avatar.luaState.vanillaModel.alterModel(this.getModel());
+        avatar.luaState.vanillaModel.alterPlayerModel(this.getModel());
+    }
+
+    public ElytraModel<AbstractClientPlayer> getElytraModel() {
+        ElytraLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> elytraLayer = ((ElytraLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>>) layers.get(6));
+        return ((ElytraLayerAccessor) elytraLayer).getElytraModel();
     }
 
     @Inject(at = @At("RETURN"), method = "renderHand")
     private void postRenderHand(PoseStack stack, MultiBufferSource multiBufferSource, int light, AbstractClientPlayer player, ModelPart arm, ModelPart sleeve, CallbackInfo ci) {
         if (avatar == null)
             return;
-
-        avatar.onFirstPersonRender(stack, multiBufferSource, player, this.getModel(), arm, light, Minecraft.getInstance().getDeltaFrameTime());
+        avatar.onFirstPersonRender(stack, multiBufferSource, player, (PlayerRenderer) (Object) this, getElytraModel(), arm, light, Minecraft.getInstance().getDeltaFrameTime());
     }
 }

@@ -1,4 +1,4 @@
-package org.moon.figura.mixin.render;
+package org.moon.figura.mixin.render.renderers;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Matrix4f;

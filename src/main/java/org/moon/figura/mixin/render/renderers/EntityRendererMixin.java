@@ -1,4 +1,4 @@
-package org.moon.figura.mixin.render;
+package org.moon.figura.mixin.render.renderers;
 
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRenderer;

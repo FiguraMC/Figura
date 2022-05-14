@@ -1,6 +1,7 @@
 package org.moon.figura.avatars.model;
 
 import com.google.common.collect.ImmutableMap;
+import net.minecraft.client.model.ElytraModel;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
@@ -27,6 +28,7 @@ import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec4;
+import org.moon.figura.mixin.render.elytra.ElytraModelAccessor;
 import org.moon.figura.utils.LuaUtils;
 import org.terasology.jnlua.LuaRuntimeException;
 
@@ -77,6 +79,13 @@ public class FiguraModelPart {
                 default -> null;
             });
         }
+        else if (vanillaModel instanceof ElytraModel<?> elytra) {
+            applyVanillaTransform(vanillaModel, parentType, switch (parentType) {
+                case LeftElytron -> ((ElytraModelAccessor) elytra).getLeftWing();
+                case RightElytron -> ((ElytraModelAccessor) elytra).getRightWing();
+                default -> null;
+            });
+        }
     }
 
     @Override
@@ -124,6 +133,9 @@ public class FiguraModelPart {
         RightArm(true, "RIGHT_ARM"),
         LeftLeg(true,"LEFT_LEG"),
         RightLeg(true,"RIGHT_LEG"),
+
+        LeftElytron(true, "LEFT_ELYTRA"),
+        RightElytron(true, "RIGHT_ELYTRA"),
 
         World(false, "WORLD");
 

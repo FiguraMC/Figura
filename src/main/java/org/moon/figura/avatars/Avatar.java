@@ -3,10 +3,11 @@ package org.moon.figura.avatars;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.PlayerModel;
+import net.minecraft.client.model.ElytraModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtIo;
@@ -107,7 +108,7 @@ public class Avatar {
             tryCall(luaState.events.TICK, tickLimit);
     }
 
-    public void onRender(Entity entity, float yaw, float delta, PoseStack matrices, MultiBufferSource bufferSource, int light, EntityModel<?> model) {
+    public void onRender(Entity entity, float yaw, float delta, PoseStack matrices, MultiBufferSource bufferSource, int light, LivingEntityRenderer<?, ?> entityRenderer, ElytraModel<?> elytraModel) {
         if (entity.isSpectator())
             renderer.currentFilterScheme = AvatarRenderer.RENDER_HEAD;
         renderer.entity = entity;
@@ -116,7 +117,8 @@ public class Avatar {
         renderer.matrices = matrices;
         renderer.bufferSource = bufferSource;
         renderer.light = light;
-        renderer.vanillaModel = model;
+        renderer.entityRenderer = entityRenderer;
+        renderer.elytraModel = elytraModel;
         if (luaState != null)
             tryCall(luaState.events.RENDER, -1, delta);
         renderer.render();
@@ -156,10 +158,10 @@ public class Avatar {
         onWorldRender(watcher, camPos.x, camPos.y, camPos.z, matrices, bufferSource, light, tickDelta);
     }
 
-    public void onFirstPersonRender(PoseStack stack, MultiBufferSource bufferSource, Player player, PlayerModel<?> model, ModelPart arm, int light, float tickDelta) {
+    public void onFirstPersonRender(PoseStack stack, MultiBufferSource bufferSource, Player player, PlayerRenderer playerRenderer, ElytraModel<?> elytraModel, ModelPart arm, int light, float tickDelta) {
         arm.xRot = 0;
-        renderer.currentFilterScheme = arm == model.leftArm ? AvatarRenderer.RENDER_LEFT_ARM : AvatarRenderer.RENDER_RIGHT_ARM;
-        onRender(player, 0f, tickDelta, stack, bufferSource, light, model);
+        renderer.currentFilterScheme = arm == playerRenderer.getModel().leftArm ? AvatarRenderer.RENDER_LEFT_ARM : AvatarRenderer.RENDER_RIGHT_ARM;
+        onRender(player, 0f, tickDelta, stack, bufferSource, light, playerRenderer, elytraModel);
     }
 
     /**
