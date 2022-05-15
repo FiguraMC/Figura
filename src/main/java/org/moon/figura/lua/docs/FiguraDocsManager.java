@@ -69,37 +69,6 @@ public class FiguraDocsManager {
                 ParticleAPI.class
         ));
 
-        //Put all of these into 1 group, misc, because they're just the one type.
-//        //client
-//        put("client", List.of(
-//                ClientAPI.class
-//        ));
-//
-//        //host
-//        put("host", List.of(
-//                HostAPI.class
-//        ));
-//
-//        //meta
-//        put("meta", List.of(
-//                MetaAPI.class
-//        ));
-//
-//        //renderer
-//        put("renderer", List.of(
-//                RendererAPI.class
-//        ));
-//
-//        //sound
-//        put("sound", List.of(
-//                SoundAPI.class
-//        ));
-//
-//        //particle
-//        put("particle", List.of(
-//                ParticleAPI.class
-//        ));
-
         //nameplate
         put("nameplate", List.of(
                 NameplateAPI.class,
