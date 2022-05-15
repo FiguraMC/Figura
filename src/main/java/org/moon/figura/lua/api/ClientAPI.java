@@ -292,8 +292,8 @@ public class ClientAPI {
             description = "client.get_camera_rot"
     )
     public static FiguraVec3 getCameraRot() {
-        Vector3f pos = Minecraft.getInstance().gameRenderer.getMainCamera().rotation().toXYZDegrees();
-        return FiguraVec3.of(pos.x(), pos.y(), pos.z());
+        Vector3f rot = Minecraft.getInstance().gameRenderer.getMainCamera().rotation().toXYZDegrees();
+        return FiguraVec3.of(rot.x(), rot.y(), rot.z());
     }
 
     @Override
