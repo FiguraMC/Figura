@@ -186,11 +186,24 @@
   "figura.config.panic_button": "Panic Button",
   "figura.config.panic_button.tooltip": "Stop the rendering of all avatars",
 
+  "figura.config.render_debug_parts_pivot": "Render Parts Pivot",
+  "figura.config.render_debug_parts_pivot.tooltip": "Render the Pivots from %d and %d when the hitbox debug rendering is enabled",
+  "figura.config.render_debug_parts_pivot.tooltip.cubes": "cubes",
+  "figura.config.render_debug_parts_pivot.tooltip.groups": "groups",
+  "figura.config.render_debug_parts_pivot.1": "Off",
+  "figura.config.render_debug_parts_pivot.2": "Only Visible",
+  "figura.config.render_debug_parts_pivot.3": "Everything",
+
+
   "figura.command.run.not_local_error" : "No local avatar equipped!",
   "figura.command.run.no_script_error" : "No active script to run code in!",
   "figura.command.load.success" : "Avatar loaded!",
   "figura.command.load.error" : "Failed to load avatar from path \"%s\"",
   "figura.command.load.invalid" : "Invalid path \"%s\"",
+
+  "figura.config.log_others": "Log non-host scripts",
+  "figura.config.log_others.tooltip": "Allows debug logging and errors of non-host scripts",
+
 
   "figura.docs": "The \"/figura docs\" command allows you to access documentation for all types and functions Figura adds to its Lua scripting environment.",
 

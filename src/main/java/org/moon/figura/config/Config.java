@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import net.minecraft.network.chat.Component;
 import org.moon.figura.FiguraMod;
+import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.FiguraText;
 
 import java.nio.file.Path;
@@ -71,7 +72,13 @@ public enum Config {
     RELOAD_BUTTON("key.keyboard.unknown"),
     PANIC_BUTTON("key.keyboard.unknown"),
     //LOG_PINGS(0, 3);
-    RENDER_DEBUG_PARTS_PIVOT(true);
+    RENDER_DEBUG_PARTS_PIVOT(2, 3) {{
+        String tooltip = "config.render_debug_parts_pivot.tooltip";
+        this.tooltip = new FiguraText(tooltip,
+                new FiguraText(tooltip + ".cubes").setStyle(ColorUtils.Colors.FRAN_PINK.style),
+                new FiguraText(tooltip + ".groups").setStyle(ColorUtils.Colors.MAYA_BLUE.style));
+    }},
+    LOG_OTHERS(false);
 
 
     /**

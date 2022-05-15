@@ -65,6 +65,7 @@ public class FiguraTextureSet {
                 case "CUTOUT_NO_CULL" -> renderTypes.put("CUTOUT_NO_CULL", mainTex == null ? null : RenderType.entityCutoutNoCull(mainTex.textureID));
                 case "CUTOUT" -> renderTypes.put("CUTOUT", mainTex == null ? null : RenderType.entityCutout(mainTex.textureID));
                 case "TRANSLUCENT" -> renderTypes.put("TRANSLUCENT", mainTex == null ? null : RenderType.entityTranslucent(mainTex.textureID));
+                case "TRANSLUCENT_CULL" -> renderTypes.put("TRANSLUCENT_CULL", mainTex == null ? null : RenderType.entityTranslucentCull(mainTex.textureID));
 
                 case "EMISSIVE" -> renderTypes.put("EMISSIVE", emissiveTex == null ? null : RenderType.eyes(emissiveTex.textureID));
                 case "EMISSIVE_SOLID" -> renderTypes.put("EMISSIVE_SOLID", emissiveTex == null ? null : RenderType.beaconBeam(emissiveTex.textureID, false));

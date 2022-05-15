@@ -13,6 +13,7 @@ import org.terasology.jnlua.LuaState;
 import org.terasology.jnlua.LuaType;
 
 import java.util.LinkedList;
+import java.util.UUID;
 
 public class FiguraLuaPrinter {
 
@@ -49,13 +50,16 @@ public class FiguraLuaPrinter {
     }
 
     //print an error, errors should always show up on chat
-    public static void sendLuaError(Exception error, String owner) {
+    public static void sendLuaError(Exception error, String name, UUID owner) {
+        if (!(boolean) Config.LOG_OTHERS.value && owner.compareTo(FiguraMod.getLocalPlayerUUID()) != 0)
+            return;
+
         //Jank as hell
         String message = error.toString().replace("org.terasology.jnlua.LuaRuntimeException: ", "");
 
         MutableComponent component = TextComponent.EMPTY.copy()
                 .append(new TextComponent("[error] ").withStyle(ColorUtils.Colors.LUA_ERROR.style))
-                .append(new TextComponent(owner).withStyle(ChatFormatting.ITALIC))
+                .append(new TextComponent(name).withStyle(ChatFormatting.ITALIC))
                 .append(new TextComponent(" : " + message).withStyle(ColorUtils.Colors.LUA_ERROR.style))
                 .append(new TextComponent("\n"));
 
@@ -88,6 +92,9 @@ public class FiguraLuaPrinter {
 
     //print functions
     private static final JavaFunction PRINT_FUNCTION = luaState -> {
+        if (!(boolean) Config.LOG_OTHERS.value && ((FiguraLuaState) luaState).getOwner().owner.compareTo(FiguraMod.getLocalPlayerUUID()) != 0)
+            return 0;
+
         MutableComponent text = TextComponent.EMPTY.copy();
 
         //execute if the stack has entries
@@ -103,11 +110,17 @@ public class FiguraLuaPrinter {
     };
 
     private static final JavaFunction PRINT_JSON_FUNCTION = luaState -> {
+        if (!(boolean) Config.LOG_OTHERS.value && ((FiguraLuaState) luaState).getOwner().owner.compareTo(FiguraMod.getLocalPlayerUUID()) != 0)
+            return 0;
+
         sendLuaMessage(TextUtils.tryParseJson(luaToString(luaState, 1)), ((FiguraLuaState) luaState).getOwner().name);
         return 0;
     };
 
     private static final JavaFunction PRINT_TABLE_FUNCTION = luaState -> {
+        if (!(boolean) Config.LOG_OTHERS.value && ((FiguraLuaState) luaState).getOwner().owner.compareTo(FiguraMod.getLocalPlayerUUID()) != 0)
+            return 0;
+
         int depth = luaState.getTop() > 1 ? (int) luaState.checkInteger(2) : 1;
         Component result = tableToText(luaState, 1, depth, 1, true);
         sendLuaMessage(result, ((FiguraLuaState) luaState).getOwner().name);

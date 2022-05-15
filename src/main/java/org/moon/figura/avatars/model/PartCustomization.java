@@ -2,7 +2,6 @@ package org.moon.figura.avatars.model;
 
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
-import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.caching.CacheStack;
 import org.moon.figura.utils.caching.CacheUtils;
@@ -36,7 +35,7 @@ public class PartCustomization implements CachedType {
     private FiguraVec3 bonusRot = FiguraVec3.of();
 
     public FiguraVec3 color = FiguraVec3.of(1, 1, 1);
-    public float alpha = 1f;
+    public Float alpha = null;
     public Integer light = null;
 
     /**
@@ -210,7 +209,7 @@ public class PartCustomization implements CachedType {
         bonusPos = FiguraVec3.of();
         bonusRot = FiguraVec3.of();
         color = FiguraVec3.of(1, 1, 1);
-        alpha = 1f;
+        alpha = null;
         light = null;
         needsMatrixRecalculation = false;
         visible = null;
@@ -282,8 +281,13 @@ public class PartCustomization implements CachedType {
         if (other.light != null)
             light = other.light;
 
-        color.multiply(other.color);
-        alpha *= other.alpha;
-    }
+        if (other.alpha != null) {
+            if (alpha != null)
+                alpha *= other.alpha;
+            else
+                alpha = other.alpha;
+        }
 
+        color.multiply(other.color);
+    }
 }

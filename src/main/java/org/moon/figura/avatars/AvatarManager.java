@@ -59,6 +59,14 @@ public class AvatarManager {
         }
     }
 
+    //clears ALL loaded avatars, including local
+    public static void clearAllAvatars() {
+        FETCHED_AVATARS.clear();
+        LOADED_AVATARS.clear();
+        localUploaded = true;
+        FiguraMod.LOGGER.debug("Cleared all avatars");
+    }
+
     //reloads an avatar
     public static void reloadAvatar(UUID id) {
         //first clear the avatar
@@ -79,6 +87,22 @@ public class AvatarManager {
 
         for (Avatar avatar : LOADED_AVATARS.values())
             avatar.onTick();
+    }
+
+    public static void onWorldRender(float tickDelta) {
+        if (panic)
+            return;
+
+        for (Avatar avatar : LOADED_AVATARS.values())
+            avatar.worldRenderEvent(tickDelta);
+    }
+
+    public static void afterWorldRender() {
+        if (panic)
+            return;
+
+        for (Avatar avatar : LOADED_AVATARS.values())
+            avatar.endWorldRenderEvent();
     }
 
     //load the local player avatar

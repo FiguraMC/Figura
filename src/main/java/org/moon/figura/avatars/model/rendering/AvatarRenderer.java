@@ -5,9 +5,7 @@ import com.mojang.math.Matrix3f;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ElytraModel;
-import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -30,7 +28,7 @@ public abstract class AvatarRenderer {
     public FiguraModelPart root;
 
     public Entity entity;
-    public float yaw, tickDelta;
+    public float yaw, tickDelta, alpha;
     public PoseStack matrices;
     public int light;
     public MultiBufferSource bufferSource;

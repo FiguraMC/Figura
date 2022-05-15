@@ -101,13 +101,12 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
             buffer.uploadTexIfNeeded();
         }
 
+        //Set shouldRenderPivots
+        int config = (int) Config.RENDER_DEBUG_PARTS_PIVOT.value;
+        shouldRenderPivots = config < 1 || !Minecraft.getInstance().getEntityRenderDispatcher().shouldRenderHitBoxes() ? 0 : config;
+
         //Free customization after use
         customization.free();
-
-        //Set shouldRenderPivots
-        //Idk if this is the intended way to get a boolean config value
-        shouldRenderPivots = (Boolean) Config.RENDER_DEBUG_PARTS_PIVOT.value
-                && Minecraft.getInstance().getEntityRenderDispatcher().shouldRenderHitBoxes();
 
         //Render all model parts
         renderPart(root, new int[] {complexityLimit}, currentFilterScheme.initialValue());
@@ -119,7 +118,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
     private PartCustomization setupRootCustomization(double vertOffset) {
         PartCustomization customization = PartCustomization.of();
 
-        customization.setPrimaryRenderType("CUTOUT_NO_CULL");
+        customization.setPrimaryRenderType("TRANSLUCENT");
         customization.setSecondaryRenderType("EMISSIVE");
 
         double s = 1.0 / 16;
@@ -139,11 +138,12 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
         customization.visible = true;
         customization.light = light;
+        customization.alpha = alpha;
         return customization;
     }
 
 
-    private static boolean shouldRenderPivots;
+    private static int shouldRenderPivots;
     private void renderPart(FiguraModelPart part, int[] remainingComplexity, boolean parentPassedPredicate) {
         if (entityRenderer != null)
             part.applyVanillaTransforms(entityRenderer.getModel());
@@ -180,7 +180,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         for (FiguraModelPart child : part.children)
             renderPart(child, remainingComplexity, thisPassedPredicate);
 
-        if (shouldRenderPivots && thisPassedPredicate)
+        if (thisPassedPredicate && (shouldRenderPivots > 1 || shouldRenderPivots == 1 && customizationStack.peek().visible))
             renderPivot(part);
 
         customizationStack.pop();
@@ -188,23 +188,23 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         part.resetVanillaTransforms();
     }
 
-    private static PoseStack debugPoseStack = new PoseStack();
+    private static final PoseStack DEBUG_POSE_STACK = new PoseStack();
     private void renderPivot(FiguraModelPart part) {
         //Index == -1 means it's a group
         FiguraVec3 color = part.index == -1 ? ColorUtils.Colors.MAYA_BLUE.vec : ColorUtils.Colors.FRAN_PINK.vec;
         double boxSize = part.index == -1 ? 1.0/16 : 1.0/32;
-        debugPoseStack.setIdentity();
+        DEBUG_POSE_STACK.setIdentity();
         FiguraMat4 posMat = part.savedPartToWorldMat.copy();
         boxSize /= Math.cbrt(posMat.det());
 
         FiguraMat4 worldToView = AvatarRenderer.worldToViewMatrix();
-        debugPoseStack.mulPoseMatrix(worldToView.toMatrix4f());
-        debugPoseStack.mulPoseMatrix(posMat.toMatrix4f());
+        DEBUG_POSE_STACK.mulPoseMatrix(worldToView.toMatrix4f());
+        DEBUG_POSE_STACK.mulPoseMatrix(posMat.toMatrix4f());
 
         worldToView.free();
         posMat.free();
 
-        LevelRenderer.renderLineBox(debugPoseStack, bufferSource.getBuffer(RenderType.LINES),
+        LevelRenderer.renderLineBox(DEBUG_POSE_STACK, bufferSource.getBuffer(RenderType.LINES),
                 -boxSize, -boxSize, -boxSize,
                 boxSize, boxSize, boxSize,
                 (float) color.x, (float) color.y, (float) color.z, 1f);

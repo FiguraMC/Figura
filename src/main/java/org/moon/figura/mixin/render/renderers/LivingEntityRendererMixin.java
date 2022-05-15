@@ -6,6 +6,7 @@ import net.minecraft.client.model.ElytraModel;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
@@ -49,6 +50,9 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
     @Shadow
     protected List<RenderLayer<T, M>> layers;
 
+    @Shadow protected abstract boolean isBodyVisible(T livingEntity);
+    @Shadow protected abstract RenderType getRenderType(T livingEntity, boolean bl, boolean bl2, boolean bl3);
+
     public ElytraModel<T> getElytraModel() {
         if (!((Object) this instanceof PlayerRenderer)) return null;
         RenderLayer<T, M> layerCandidate = layers.get(6);
@@ -74,17 +78,23 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
     }
 
     @Inject(at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;popPose()V"), method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V")
-    private void endRender(LivingEntity entity, float yaw, float delta, PoseStack matrices, MultiBufferSource bufferSource, int light, CallbackInfo ci) {
+    private void endRender(T entity, float yaw, float delta, PoseStack matrices, MultiBufferSource bufferSource, int light, CallbackInfo ci) {
         if (currentAvatar == null)
             return;
+
+        boolean bodyVisible = this.isBodyVisible(entity);
+        boolean translucent = !bodyVisible && Minecraft.getInstance().player != null && !entity.isInvisibleTo(Minecraft.getInstance().player);
+        boolean visible = this.getRenderType(entity, bodyVisible, translucent, Minecraft.getInstance().shouldEntityAppearGlowing(entity)) != null;
+
         //Render avatar with params
         EntityModel<?> model = this.getModel();
 
         //When viewed 3rd person, render all non-world parts.
         //No camera/hud or whatever in yet. when they are, they won't be included here either.
-        currentAvatar.renderer.currentFilterScheme = AvatarRenderer.RENDER_REGULAR;
-
-        currentAvatar.onRender(entity, yaw, delta, matrices, bufferSource, light, (LivingEntityRenderer<?, ?>) (Object) this, getElytraModel());
+        if (visible) {
+            currentAvatar.renderer.currentFilterScheme = AvatarRenderer.RENDER_REGULAR;
+            currentAvatar.onRender(entity, yaw, delta, translucent ? 0.15f : 1f, matrices, bufferSource, light, (LivingEntityRenderer<?, ?>) (Object) this, getElytraModel());
+        }
 
         if (model instanceof PlayerModel<?> playerModel && entity instanceof Player)
             if (TrustManager.get(entity.getUUID()).get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 1)

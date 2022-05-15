@@ -51,7 +51,9 @@ public class FiguraMod implements ClientModInitializer {
         LuaUtils.setupNativesForLua();
 
         //register events
-        ClientTickEvents.END_CLIENT_TICK.register(FiguraMod::tick);
+        ClientTickEvents.START_CLIENT_TICK.register(FiguraMod::tick);
+        WorldRenderEvents.START.register(context -> AvatarManager.onWorldRender(context.tickDelta()));
+        WorldRenderEvents.END.register(context -> AvatarManager.afterWorldRender());
         WorldRenderEvents.AFTER_ENTITIES.register(FiguraMod::renderFirstPersonWorldParts);
         HudRenderCallback.EVENT.register(FiguraMod::hudRender);
     }

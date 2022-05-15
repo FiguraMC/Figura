@@ -99,7 +99,7 @@ public class Avatar {
             else
                 throw new LuaRuntimeException("Invalid type to run!");
         } catch (LuaRuntimeException ex) {
-            FiguraLuaPrinter.sendLuaError(ex, name);
+            FiguraLuaPrinter.sendLuaError(ex, name, owner);
             scriptError = true;
             luaState.close();
             luaState = null;
@@ -107,7 +107,7 @@ public class Avatar {
     }
 
     public void onTick() {
-        if (luaState != null) {
+        if (!scriptError && luaState != null) {
             float maxParticles = TrustManager.get(this.owner).get(TrustContainer.Trust.PARTICLES);
             this.particlesRemaining = Math.min(particlesRemaining + (maxParticles / SharedConstants.TICKS_PER_SECOND), maxParticles);
 
@@ -118,42 +118,43 @@ public class Avatar {
         }
     }
 
-    public void onRender(Entity entity, float yaw, float delta, PoseStack matrices, MultiBufferSource bufferSource, int light, LivingEntityRenderer<?, ?> entityRenderer, ElytraModel<?> elytraModel) {
+    public void onRender(Entity entity, float yaw, float delta, float alpha, PoseStack matrices, MultiBufferSource bufferSource, int light, LivingEntityRenderer<?, ?> entityRenderer, ElytraModel<?> elytraModel) {
         if (entity.isSpectator())
             renderer.currentFilterScheme = AvatarRenderer.RENDER_HEAD;
         renderer.entity = entity;
         renderer.yaw = yaw;
         renderer.tickDelta = delta;
+        renderer.alpha = alpha;
         renderer.matrices = matrices;
         renderer.bufferSource = bufferSource;
         renderer.light = light;
         renderer.entityRenderer = entityRenderer;
         renderer.elytraModel = elytraModel;
-        if (luaState != null)
+        if (!scriptError && luaState != null)
             tryCall(luaState.events.RENDER, -1, delta);
         renderer.render();
-        if (luaState != null)
+        if (!scriptError && luaState != null)
             tryCall(luaState.events.POST_RENDER, -1, delta);
     }
 
     public void worldRenderEvent(float tickDelta) {
         renderer.tickDelta = tickDelta;
-        if (luaState != null)
+        if (!scriptError && luaState != null)
             tryCall(luaState.events.WORLD_RENDER, renderLimit, tickDelta);
     }
 
     public void endWorldRenderEvent() {
-        if (luaState != null)
+        if (!scriptError && luaState != null)
             tryCall(luaState.events.POST_WORLD_RENDER, -1, renderer.tickDelta);
     }
 
     public void chatSendMessageEvent(String message) {
-        if (luaState != null)
+        if (!scriptError && luaState != null)
             tryCall(luaState.events.CHAT_SEND_MESSAGE, -1, message);
     }
 
     public void chatReceivedMessageEvent(String message) {
-        if (luaState != null)
+        if (!scriptError && luaState != null)
             tryCall(luaState.events.CHAT_RECEIVED_MESSAGE, -1, message);
     }
 
@@ -164,6 +165,7 @@ public class Avatar {
         renderer.matrices = matrices;
         renderer.tickDelta = tickDelta;
         renderer.light = light;
+        renderer.alpha = 1f;
         matrices.pushPose();
         matrices.translate(-camX, -camY, -camZ);
         matrices.scale(-1, -1, 1);
@@ -181,7 +183,7 @@ public class Avatar {
     public void onFirstPersonRender(PoseStack stack, MultiBufferSource bufferSource, Player player, PlayerRenderer playerRenderer, ElytraModel<?> elytraModel, ModelPart arm, int light, float tickDelta) {
         arm.xRot = 0;
         renderer.currentFilterScheme = arm == playerRenderer.getModel().leftArm ? AvatarRenderer.RENDER_LEFT_ARM : AvatarRenderer.RENDER_RIGHT_ARM;
-        onRender(player, 0f, tickDelta, stack, bufferSource, light, playerRenderer, elytraModel);
+        onRender(player, 0f, tickDelta, 1f, stack, bufferSource, light, playerRenderer, elytraModel);
     }
 
     /**

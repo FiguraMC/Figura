@@ -99,7 +99,7 @@ public class FiguraLuaState extends LuaState53 {
             call(0, 0);
             return true;
         } catch (Exception e) {
-            FiguraLuaPrinter.sendLuaError(e, owner.name);
+            FiguraLuaPrinter.sendLuaError(e, owner.name, owner.owner);
             owner.scriptError = true;
         }
         return false;

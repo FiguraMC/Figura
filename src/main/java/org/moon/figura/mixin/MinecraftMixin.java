@@ -39,4 +39,9 @@ public class MinecraftMixin {
         if (avatar != null && avatar.luaState != null)
             FiguraKeybind.releaseAll(avatar.luaState.keybind.keyBindings);
     }
+
+    @Inject(at = @At("HEAD"), method = "clearLevel(Lnet/minecraft/client/gui/screens/Screen;)V")
+    private void clearLevel(Screen screen, CallbackInfo ci) {
+        AvatarManager.clearAllAvatars();
+    }
 }
