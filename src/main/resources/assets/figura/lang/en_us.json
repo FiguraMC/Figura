@@ -417,7 +417,7 @@
   "figura.docs.entity.is_on_ground": "Returns whether or not this entity is currently on the ground.",
   "figura.docs.entity.get_eye_height": "Returns the current eye height of this entity.",
   "figura.docs.entity.get_bounding_box": "Returns the size of this entity's bounding box as a Vector3. {x, y, z} are the width, height, and width. Minecraft entity hitboxes always have square bases.",
-  "figura.docs.entity.get_name": "Gets the name of this entity, if it has a custom name. If it doesn't, returns the same as getType().",
+  "figura.docs.entity.get_name": "Gets the name of this entity, if it has a custom name. If it doesn't, returns a translated form of getType().",
   "figura.docs.entity.is_wet": "Returns true in any of three conditions: if the entity is in water, if the entity is in rain, or if the entity is in a bubble column. Otherwise, returns false.",
   "figura.docs.entity.is_in_water": "Returns true if this entity is currently in a water block, including waterlogging.",
   "figura.docs.entity.is_underwater": "Returns true if this entity's eyes are touching water.",
@@ -430,6 +430,7 @@
   "figura.docs.entity.is_invisible": "Returns true if this entity is invisible, for one reason or another.",
   "figura.docs.entity.is_silent": "Returns true if this entity is silent.",
   "figura.docs.entity.is_sneaking": "Returns true if this entity is sneaking.",
+  "figura.docs.entity.get_variable": "Gets the value of a variable this entity stored in themselves using the Meta api's store() function.",
 
   "figura.docs.living_entity": "Acts as a proxy for a living entity in the Minecraft world.",
   "figura.docs.living_entity.get_body_yaw": "Gets the yaw of this entity's body in degrees. If delta is passed in, then it will be used to linearly interpolate the rotation of the body between the previous tick and the current tick. The default value of delta is 1.",
@@ -455,7 +456,6 @@
   "figura.docs.player.get_model_type": "Returns \"SLIM\" or \"DEFAULT\", depending on the player's model type.",
   "figura.docs.player.get_gamemode": "Returns \"SURVIVAL\", \"CREATIVE\", \"ADVENTURE\", or \"SPECTATOR\" depending on the player's gamemode. If the gamemode is unknown, returns nil.",
   "figura.docs.player.is_flying": "Returns whether the player is currently flying.",
-  "figura.docs.player.get_variable": "Gets the value of a variable this player stored in themselves using the Meta api's store() function.",
 
   "figura.docs.events": "A global API that contains all of the figura Events. Accessed using the name \"events\".",
   "figura.docs.events.tick": "The TICK event is run every in-game tick: 20 times per second.",
@@ -498,6 +498,8 @@
   "figura.docs.client.get_mouse_pos": "Returns the position of the mouse in pixels, relative to the top-left corner.",
   "figura.docs.client.get_scaled_window_size": "Returns the size of the window in Minecraft's interal GUI units.",
   "figura.docs.client.get_gui_scale": "Returns the current value of your Gui Scale setting. If you use auto, then it gets the actual current scale.",
+  "figura.docs.client.client.get_camera_pos": "",
+  "figura.docs.client.client.get_camera_rot": "",
 
   "figura.docs.host": "A global API dedicated to specifically the host of the avatar. For other viewers, these do nothing.",
   "figura.docs.host.is_host": "Returns true if this instance of the script is running on host.",
@@ -507,6 +509,8 @@
   "figura.docs.host.set_title": "Sets the current title to the given text. The text is given as json.",
   "figura.docs.host.set_subtitle": "Sets the current subtitle to the given text. The text is given as json.",
   "figura.docs.host.set_actionbar": "Sets the action bar message to the given text. The boolean parameter defaults to false.",
+  "figura.docs.host.send_chat_message": "",
+  "figura.docs.host.swing_arm": "",
 
   "figura.docs.meta": "A global API containing functions to interact with your avatar's metadata, and also to get meta-information about the current script environment.",
   "figura.docs.meta.store": "Store the given key-value pair inside your current avatar's metadata. Someone else can get this information from a different script with the getVariable() function in Player. The key must be a string.",
@@ -545,6 +549,14 @@
   "figura.docs.keybind.is_pressed": "Gets whether this keybind is currently pressed down.",
   "figura.docs.keybind.on_press": "A function that runs when the key is pressed down.",
   "figura.docs.keybind.on_release": "A function that runs when the key is released.",
+
+  "figura.docs.renderer": "",
+  "figura.docs.renderer.set_shadow_radius": "",
+  "figura.docs.renderer.get_shadow_radius": "",
+  "figura.docs.renderer.set_render_fire_overlay": "",
+  "figura.docs.renderer.can_render_fire_overlay": "",
+  "figura.docs.renderer.is_first_person": "",
+  "figura.docs.renderer.is_camera_backwards": "",
 
   "figura.docs.vectors": "A global API which provides functions dedicated to creating and otherwise manipulating vectors. Accessed using the name \"vectors\".",
   "figura.docs.vectors.vec": "Creates and returns a vector of the appropriate size to hold the arguments passed in. For example, if you call vec(3, 4, 0, 2), then the function will return a Vector4 containing those values. There is a global alias \"vec\" for this function, meaning the \"vectors.\" can be omitted.",

@@ -13,6 +13,7 @@ import net.minecraft.world.entity.Entity;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.avatars.providers.LocalAvatarLoader;
+import org.moon.figura.backend.NetworkManager;
 import org.moon.figura.commands.FiguraCommands;
 import org.moon.figura.config.ConfigManager;
 import org.moon.figura.gui.PaperDoll;
@@ -33,7 +34,7 @@ public class FiguraMod implements ClientModInitializer {
 
     public static final String MOD_ID = "figura";
     public static final String VERSION = FabricLoader.getInstance().getModContainer(MOD_ID).get().getMetadata().getVersion().getFriendlyString();
-    public static final boolean DEBUG_MODE = false;
+    public static final boolean DEBUG_MODE = true;
     public static final boolean CHEESE_DAY = LocalDate.now().getDayOfMonth() == 1 && LocalDate.now().getMonthValue() == 4;
     public static final Path GAME_DIR = FabricLoader.getInstance().getGameDir().normalize();
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID.substring(0, 1).toUpperCase() + MOD_ID.substring(1));
@@ -59,14 +60,7 @@ public class FiguraMod implements ClientModInitializer {
     }
 
     private static void tick(Minecraft client) {
-        if (FiguraCommands.authConnection != null) {
-            if (FiguraCommands.authConnection.isConnected())
-                FiguraCommands.authConnection.tick();
-            else {
-                FiguraCommands.authConnection.handleDisconnection();
-                FiguraCommands.authConnection = null;
-            }
-        }
+        NetworkManager.tick();
         LocalAvatarLoader.tickWatchedKey();
         AvatarManager.tickLoadedAvatars();
         FiguraLuaPrinter.printChatFromQueue();

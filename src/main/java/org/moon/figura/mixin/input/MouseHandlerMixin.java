@@ -24,6 +24,6 @@ public class MouseHandlerMixin {
         if (avatar == null || avatar.luaState == null)
             return;
 
-        FiguraKeybind.set(avatar.luaState.keybind.keyBindings, InputConstants.Type.MOUSE.getOrCreate(button), action == 1);
+        FiguraKeybind.set(avatar.luaState.keybind.keyBindings, InputConstants.Type.MOUSE.getOrCreate(button), action != 0);
     }
 }

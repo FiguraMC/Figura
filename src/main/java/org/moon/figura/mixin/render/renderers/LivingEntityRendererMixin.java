@@ -46,6 +46,9 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
     @Unique
     private Avatar currentAvatar;
 
+    @Unique
+    private Float shadowRadiusBackup;
+
     @Final
     @Shadow
     protected List<RenderLayer<T, M>> layers;
@@ -69,12 +72,18 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
         if (currentAvatar == null)
             return;
 
-        if (currentAvatar.luaState != null)
+        if (currentAvatar.luaState != null) {
+            shadowRadiusBackup = shadowRadius;
+            Float shadow = currentAvatar.luaState.renderer.shadowRadius;
+            if (shadow != null)
+                shadowRadius = shadow;
+
             if (getModel() instanceof PlayerModel<?> playerModel && entity instanceof Player) {
                 currentAvatar.luaState.vanillaModel.copyPlayerModel(playerModel);
                 if (TrustManager.get(entity.getUUID()).get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 1)
                     currentAvatar.luaState.vanillaModel.alterPlayerModel(playerModel);
             }
+        }
     }
 
     @Inject(at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;popPose()V"), method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V")
@@ -96,12 +105,16 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
             currentAvatar.onRender(entity, yaw, delta, translucent ? 0.15f : 1f, matrices, bufferSource, light, (LivingEntityRenderer<?, ?>) (Object) this, getElytraModel());
         }
 
+        if (shadowRadiusBackup != null)
+            shadowRadius = shadowRadiusBackup;
+
         if (model instanceof PlayerModel<?> playerModel && entity instanceof Player)
             if (TrustManager.get(entity.getUUID()).get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 1)
                 if (currentAvatar.luaState != null)
                     currentAvatar.luaState.vanillaModel.restorePlayerModel(playerModel);
 
         currentAvatar = null;
+        shadowRadiusBackup = null;
     }
 
     @Inject(method = "shouldShowName(Lnet/minecraft/world/entity/LivingEntity;)Z", at = @At("HEAD"), cancellable = true)

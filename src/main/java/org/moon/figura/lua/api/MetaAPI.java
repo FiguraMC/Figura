@@ -9,8 +9,6 @@ import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
 
-import java.util.HashMap;
-
 @LuaWhitelist
 @LuaTypeDoc(
         name = "MetaAPI",
@@ -20,15 +18,10 @@ public class MetaAPI {
 
     private final Avatar avatar;
     private final TrustContainer trust;
-    private final HashMap<String, Object> storedStuff = new HashMap<>();
 
     public MetaAPI(Avatar avatar) {
         this.avatar = avatar;
         this.trust = TrustManager.get(avatar.owner);
-    }
-
-    public Object get(String key) {
-        return storedStuff.get(key);
     }
 
     @LuaWhitelist
@@ -40,7 +33,7 @@ public class MetaAPI {
             description = "meta.store"
     )
     public static void store(@LuaNotNil MetaAPI api, @LuaNotNil String key, Object value) {
-        api.storedStuff.put(key, value);
+        api.avatar.luaState.storedStuff.put(key, value);
     }
 
     @LuaWhitelist

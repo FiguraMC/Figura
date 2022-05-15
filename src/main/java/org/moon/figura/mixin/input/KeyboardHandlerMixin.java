@@ -28,6 +28,6 @@ public class KeyboardHandlerMixin {
         if (avatar == null || avatar.luaState == null)
             return;
 
-        FiguraKeybind.set(avatar.luaState.keybind.keyBindings, InputConstants.getKey(key, scancode), action == 1);
+        FiguraKeybind.set(avatar.luaState.keybind.keyBindings, InputConstants.getKey(key, scancode), action != 0);
     }
 }

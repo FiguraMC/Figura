@@ -1,6 +1,7 @@
 package org.moon.figura.lua.api;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.lua.LuaNotNil;
@@ -137,6 +138,60 @@ public class HostAPI {
         if (!isHost(api)) return;
         if (animated == null) animated = false;
         api.minecraft.gui.setOverlayMessage(TextUtils.tryParseJson(text), animated);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = {HostAPI.class, String.class},
+                    argumentNames = {"host", "text"}
+            ),
+            description = "host.send_chat_message"
+    )
+    public static void sendChatMessage(@LuaNotNil HostAPI api, @LuaNotNil String text) {
+        if (!isHost(api)) return;
+        if (Minecraft.getInstance().player != null)
+            Minecraft.getInstance().player.chat(text);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = {HostAPI.class, Boolean.class},
+                    argumentNames = {"host", "offhand"}
+            ),
+            description = "host.swing_arm"
+    )
+    public static void swingArm(@LuaNotNil HostAPI api, Boolean offhand) {
+        if (!isHost(api)) return;
+        if (Minecraft.getInstance().player != null)
+            Minecraft.getInstance().player.swing(offhand == null || !offhand ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = HostAPI.class,
+                    argumentNames = "host"
+            ),
+            description = "host.is_first_person"
+    )
+    public static Boolean isFirstPerson(@LuaNotNil HostAPI api) {
+        if (!isHost(api)) return false;
+        return Minecraft.getInstance().options.getCameraType().isFirstPerson();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = HostAPI.class,
+                    argumentNames = "host"
+            ),
+            description = "host.is_camera_backwards"
+    )
+    public static Boolean isCameraBackwards(@LuaNotNil HostAPI api) {
+        if (!isHost(api)) return false;
+        return Minecraft.getInstance().options.getCameraType().isMirrored();
     }
 
     @Override

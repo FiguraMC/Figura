@@ -92,7 +92,7 @@ public class Avatar {
         renderer = new ImmediateAvatarRenderer(this);
 
         //read script
-        luaState = createLuaState();
+        createLuaState();
     }
 
     //Calling with maxInstructions as -1 will not set the max instructions, and instead keep them as they are.
@@ -251,13 +251,14 @@ public class Avatar {
         }
     }
 
-    private FiguraLuaState createLuaState() {
+    private void createLuaState() {
         if (!nbt.contains("scripts"))
-            return null;
-        Map<String, String> scripts = parseScripts(nbt.getCompound("scripts"));
+            return;
 
+        Map<String, String> scripts = parseScripts(nbt.getCompound("scripts"));
         CompoundTag metadata = nbt.getCompound("metadata");
         ListTag autoScripts = null;
+
         if (metadata.contains("autoScripts"))
             autoScripts = metadata.getList("autoScripts", Tag.TAG_STRING);
 
@@ -271,14 +272,14 @@ public class Avatar {
         renderLimit = TrustManager.get(owner).get(TrustContainer.Trust.RENDER_INST);
 
         luaState.setInstructionLimit(initLimit);
-        if (luaState.init(scripts, autoScripts)) {
-            initInstructions = initLimit - luaState.getInstructions();
-            return luaState;
-        }
-        else
-            luaState.close();
+        this.luaState = luaState;
 
-        return null;
+        if (!luaState.init(scripts, autoScripts)) {
+            luaState.close();
+            this.luaState = null;
+        } else {
+            initInstructions = initLimit - luaState.getInstructions();
+        }
     }
 
     private static Map<String, String> parseScripts(CompoundTag scripts) {

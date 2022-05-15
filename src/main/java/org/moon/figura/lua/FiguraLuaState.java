@@ -12,6 +12,7 @@ import org.moon.figura.lua.api.math.VectorsAPI;
 import org.moon.figura.lua.api.model.VanillaModelAPI;
 import org.moon.figura.lua.api.nameplate.NameplateAPI;
 import org.moon.figura.lua.api.world.WorldAPI;
+import org.moon.figura.lua.types.LuaTable;
 import org.terasology.jnlua.*;
 
 import java.io.IOException;
@@ -32,6 +33,9 @@ public class FiguraLuaState extends LuaState53 {
     public NameplateAPI nameplate;
     public MetaAPI meta;
     public KeybindAPI keybind;
+    public RendererAPI renderer;
+
+    public LuaTable storedStuff = new LuaTable();
 
     public FiguraLuaState(Avatar owner, int memory) {
         super(memory * 1_000_000); //memory is given in mb
@@ -108,22 +112,18 @@ public class FiguraLuaState extends LuaState53 {
     private void loadFiguraApis() {
         loadGlobal(VectorsAPI.INSTANCE, "vectors");
         loadGlobal(MatricesAPI.INSTANCE, "matrices");
-        events = new EventsAPI();
-        loadGlobal(events, "events");
-        vanillaModel = new VanillaModelAPI();
-        loadGlobal(vanillaModel, "vanilla_model");
+        loadGlobal(events = new EventsAPI(), "events");
+        loadGlobal(vanillaModel = new VanillaModelAPI(), "vanilla_model");
         loadGlobal(WorldAPI.INSTANCE, "world");
         loadGlobal(new PlayerEntityWrapper(owner.owner), "player");
         loadGlobal(new ParticleAPI(owner), "particle");
         loadGlobal(new SoundAPI(owner), "sound");
-        nameplate = new NameplateAPI();
-        loadGlobal(nameplate, "nameplate");
+        loadGlobal(nameplate = new NameplateAPI(), "nameplate");
         loadGlobal(ClientAPI.INSTANCE, "client");
         loadGlobal(new HostAPI(owner.owner), "host");
-        meta = new MetaAPI(owner);
-        loadGlobal(meta, "meta");
-        keybind = new KeybindAPI(owner);
-        loadGlobal(keybind, "keybind");
+        loadGlobal(meta = new MetaAPI(owner), "meta");
+        loadGlobal(keybind = new KeybindAPI(owner), "keybind");
+        loadGlobal(renderer = new RendererAPI(), "renderer");
 
         //Load "vec" as global alias for "vectors.vec"
         pushJavaFunction(getJavaReflector().getMetamethod(JavaReflector.Metamethod.INDEX));

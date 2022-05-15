@@ -9,6 +9,7 @@ import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
+import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
@@ -460,6 +461,22 @@ public class EntityWrapper<T extends Entity> {
     )
     public static <T extends Entity> boolean isSneaking(@LuaNotNil EntityWrapper<T> entity) {
         return getEntity(entity).isDiscrete();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = {EntityWrapper.class, String.class},
+                    argumentNames = {"entity", "key"}
+            ),
+            description = "entity.get_variable"
+    )
+    public static <T extends Entity> Object getVariable(@LuaNotNil EntityWrapper<T> entity, @LuaNotNil String key) {
+        Avatar a = AvatarManager.getAvatarForPlayer(entity.savedUUID);
+        if (a == null || a.luaState == null)
+            return null;
+
+        return a.luaState.storedStuff.get(key);
     }
 
     @Override

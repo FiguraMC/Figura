@@ -30,6 +30,10 @@ public class LuaTable {
         return this;
     }
 
+    public Object get(Object key) {
+        return map.get(key);
+    }
+
     public void push(LuaState luaState) {
         luaState.newTable();
         for (Map.Entry<Object, Object> entry : map.entrySet()) {
@@ -44,5 +48,4 @@ public class LuaTable {
                 luaState.setField(-2, String.valueOf(entry.getKey()));
         }
     }
-
 }

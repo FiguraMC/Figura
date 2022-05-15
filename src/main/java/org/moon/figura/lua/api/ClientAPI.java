@@ -1,13 +1,16 @@
 package org.moon.figura.lua.api;
 
 import com.mojang.blaze3d.platform.Window;
+import com.mojang.math.Vector3f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
+import net.minecraft.world.phys.Vec3;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec2;
+import org.moon.figura.math.vector.FiguraVec3;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -271,6 +274,26 @@ public class ClientAPI {
         if (screenTitle.length() == 0)
             screenTitle = Minecraft.getInstance().screen.getClass().getSimpleName();
         return screenTitle;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(),
+            description = "client.get_camera_pos"
+    )
+    public static FiguraVec3 getCameraPos() {
+        Vec3 pos = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+        return FiguraVec3.of(pos.x, pos.y, pos.z);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(),
+            description = "client.get_camera_rot"
+    )
+    public static FiguraVec3 getCameraRot() {
+        Vector3f pos = Minecraft.getInstance().gameRenderer.getMainCamera().rotation().toXYZDegrees();
+        return FiguraVec3.of(pos.x(), pos.y(), pos.z());
     }
 
     @Override
