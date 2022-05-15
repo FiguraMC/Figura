@@ -176,6 +176,8 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
     private void postRenderHand(PoseStack stack, MultiBufferSource multiBufferSource, int light, AbstractClientPlayer player, ModelPart arm, ModelPart sleeve, CallbackInfo ci) {
         if (avatar == null)
             return;
+        avatar.renderer.allowMatrixUpdate = true;
         avatar.onFirstPersonRender(stack, multiBufferSource, player, (PlayerRenderer) (Object) this, getElytraModel(), arm, light, Minecraft.getInstance().getDeltaFrameTime());
+        avatar.renderer.allowMatrixUpdate = false;
     }
 }

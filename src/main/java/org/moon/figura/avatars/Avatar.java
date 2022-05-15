@@ -162,6 +162,8 @@ public class Avatar {
 
     public void worldRenderEvent(float tickDelta) {
         renderer.tickDelta = tickDelta;
+        renderer.allowMatrixUpdate = true;
+
         if (!scriptError && luaState != null) {
             tryCall(luaState.events.WORLD_RENDER, renderLimit, tickDelta);
             if (!Minecraft.ON_OSX) {
@@ -174,6 +176,7 @@ public class Avatar {
     }
 
     public void endWorldRenderEvent() {
+        renderer.allowMatrixUpdate = false;
         if (!scriptError && luaState != null) {
             tryCall(luaState.events.POST_WORLD_RENDER, -1, renderer.tickDelta);
             if (!Minecraft.ON_OSX) {

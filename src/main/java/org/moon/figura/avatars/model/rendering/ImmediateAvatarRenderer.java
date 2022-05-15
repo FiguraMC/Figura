@@ -109,6 +109,9 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         customization.free();
 
         //Render all model parts
+        if (allowMatrixUpdate)
+            viewToWorldMatrix = AvatarRenderer.worldToViewMatrix().inverted();
+
         renderPart(root, new int[] {complexityLimit}, currentFilterScheme.initialValue());
 
         customizationStack.pop();
@@ -144,6 +147,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
 
     private static int shouldRenderPivots;
+    private static FiguraMat4 viewToWorldMatrix = FiguraMat4.of();
     private void renderPart(FiguraModelPart part, int[] remainingComplexity, boolean parentPassedPredicate) {
         if (entityRenderer != null)
             part.applyVanillaTransforms(entityRenderer.getModel());
@@ -160,10 +164,9 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         part.customization.visible = storedVisibility;
 
         //Right now, part.customization.positionMatrix contains a transformation from part space to view space.
-        if (thisPassedPredicate) {
+        if (thisPassedPredicate && allowMatrixUpdate) {
             FiguraMat4 customizePeek = customizationStack.peek().positionMatrix.copy();
-            FiguraMat4 viewToWorld = AvatarRenderer.worldToViewMatrix().inverted();
-            customizePeek.multiply(viewToWorld);
+            customizePeek.multiply(viewToWorldMatrix);
             FiguraVec3 piv = part.customization.getPivot();
 
             FiguraMat4 translation = FiguraMat4.createTranslationMatrix(piv);
@@ -171,7 +174,6 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
             part.savedPartToWorldMat.set(customizePeek);
 
             customizePeek.free();
-            viewToWorld.free();
             piv.free();
             translation.free();
         }

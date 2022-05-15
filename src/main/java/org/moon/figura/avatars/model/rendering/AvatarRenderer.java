@@ -36,6 +36,8 @@ public abstract class AvatarRenderer {
     public ElytraModel<?> elytraModel;
     public PartFilterScheme currentFilterScheme;
 
+    public boolean allowMatrixUpdate = false;
+
     /**
      * FiguraModelPart: The current model part.
      * Boolean input: The result of the predicate from the previous part.
