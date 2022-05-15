@@ -1,17 +1,14 @@
 package org.moon.figura.avatars.model.rendering.texture;
 
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.resources.ResourceLocation;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.function.Function;
 
 public class FiguraTextureSet {
 
     public final String name;
     public final FiguraTexture mainTex, emissiveTex;
-    private final Map<String, RenderType> renderTypes = new HashMap<>();
 
     public FiguraTextureSet(String name, byte[] mainData, byte[] emissiveData) {
         this.name = name;
@@ -45,39 +42,36 @@ public class FiguraTextureSet {
         return emissiveTex.getHeight();
     }
 
-    public static final Set<String> LEGAL_RENDER_TYPES = new HashSet<>() {{
-        add(null);
-        add("CUTOUT_NO_CULL");
-        add("CUTOUT");
-        add("TRANSLUCENT");
-        add("EMISSIVE");
-        add("EMISSIVE_SOLID");
-        add("END_PORTAL");
-        add("GLINT");
-        add("GLINT2");
-    }};
+    public enum RenderTypes {
+        CUTOUT_NO_CULL(RenderType::entityCutoutNoCull),
+        CUTOUT(RenderType::entityCutout),
+        TRANSLUCENT(RenderType::entityTranslucent),
+        TRANSLUCENT_CULL(RenderType::entityTranslucentCull),
 
-    public RenderType getRenderType(String name) {
-        if (name == null)
-            return null;
-        if (!renderTypes.containsKey(name)) {
-            switch (name) {
-                case "CUTOUT_NO_CULL" -> renderTypes.put("CUTOUT_NO_CULL", mainTex == null ? null : RenderType.entityCutoutNoCull(mainTex.textureID));
-                case "CUTOUT" -> renderTypes.put("CUTOUT", mainTex == null ? null : RenderType.entityCutout(mainTex.textureID));
-                case "TRANSLUCENT" -> renderTypes.put("TRANSLUCENT", mainTex == null ? null : RenderType.entityTranslucent(mainTex.textureID));
-                case "TRANSLUCENT_CULL" -> renderTypes.put("TRANSLUCENT_CULL", mainTex == null ? null : RenderType.entityTranslucentCull(mainTex.textureID));
+        EMISSIVE(RenderType::eyes),
+        EMISSIVE_SOLID(resourceLocation -> RenderType.beaconBeam(resourceLocation, false)),
 
-                case "EMISSIVE" -> renderTypes.put("EMISSIVE", emissiveTex == null ? null : RenderType.eyes(emissiveTex.textureID));
-                case "EMISSIVE_SOLID" -> renderTypes.put("EMISSIVE_SOLID", emissiveTex == null ? null : RenderType.beaconBeam(emissiveTex.textureID, false));
+        END_PORTAL(t -> RenderType.endPortal(), true),
+        GLINT(t ->  RenderType.entityGlintDirect(), true),
+        GLINT2(t ->  RenderType.glintDirect(), true);
 
-                case "END_PORTAL" -> renderTypes.put("END_PORTAL", RenderType.endPortal());
-                case "GLINT" -> renderTypes.put("GLINT", RenderType.glintDirect());
-                case "GLINT2" -> renderTypes.put("GLINT2", RenderType.entityGlintDirect());
+        private final Function<ResourceLocation, RenderType> func;
+        private final boolean force;
 
-                default -> throw new IllegalArgumentException("Illegal render type name \"" + name + "\".");
-            }
+        RenderTypes(Function<ResourceLocation, RenderType> func) {
+            this(func, false);
         }
-        return renderTypes.get(name);
-    }
 
+        RenderTypes(Function<ResourceLocation, RenderType> func, boolean force) {
+            this.func = func;
+            this.force = force;
+        }
+
+        public RenderType get(FiguraTexture texture) {
+            if (force)
+                return func.apply(null);
+
+            return texture == null ? null : func.apply(texture.textureID);
+        }
+    }
 }

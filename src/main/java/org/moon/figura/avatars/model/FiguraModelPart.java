@@ -483,7 +483,7 @@ public class FiguraModelPart {
             description = "model_part.get_primary_render_type"
     )
     public static String getPrimaryRenderType(@LuaNotNil FiguraModelPart modelPart) {
-        return modelPart.customization.getPrimaryRenderType();
+        return modelPart.customization.getPrimaryRenderType().name();
     }
 
     @LuaWhitelist
@@ -495,7 +495,7 @@ public class FiguraModelPart {
             description = "model_part.get_secondary_render_type"
     )
     public static String getSecondaryRenderType(@LuaNotNil FiguraModelPart modelPart) {
-        return modelPart.customization.getSecondaryRenderType();
+        return modelPart.customization.getSecondaryRenderType().name();
     }
 
     @LuaWhitelist
@@ -507,9 +507,11 @@ public class FiguraModelPart {
             description = "model_part.set_primary_render_type"
     )
     public static void setPrimaryRenderType(@LuaNotNil FiguraModelPart modelPart, @LuaNotNil String type) {
-        if (!FiguraTextureSet.LEGAL_RENDER_TYPES.contains(type))
+        try {
+            modelPart.customization.setPrimaryRenderType(FiguraTextureSet.RenderTypes.valueOf(type));
+        } catch (Exception ignored) {
             throw new LuaRuntimeException("Illegal RenderType: \"" + type + "\".");
-        modelPart.customization.setPrimaryRenderType(type);
+        }
     }
 
     @LuaWhitelist
@@ -521,9 +523,11 @@ public class FiguraModelPart {
             description = "model_part.set_secondary_render_type"
     )
     public static void setSecondaryRenderType(@LuaNotNil FiguraModelPart modelPart, @LuaNotNil String type) {
-        if (!FiguraTextureSet.LEGAL_RENDER_TYPES.contains(type))
+        try {
+            modelPart.customization.setSecondaryRenderType(FiguraTextureSet.RenderTypes.valueOf(type));
+        } catch (Exception ignored) {
             throw new LuaRuntimeException("Illegal RenderType: \"" + type + "\".");
-        modelPart.customization.setSecondaryRenderType(type);
+        }
     }
 
     public final FiguraMat4 savedPartToWorldMat = FiguraMat4.of();
@@ -739,10 +743,16 @@ public class FiguraModelPart {
         readVec3(target, partCompound, "piv");
         customization.setPivot(target);
         target.free();
-        if (partCompound.contains("primary"))
-            customization.setPrimaryRenderType(partCompound.getString("primary"));
-        if (partCompound.contains("secondary"))
-            customization.setPrimaryRenderType(partCompound.getString("secondary"));
+        if (partCompound.contains("primary")) {
+            try {
+                customization.setPrimaryRenderType(FiguraTextureSet.RenderTypes.valueOf(partCompound.getString("primary")));
+            } catch (Exception ignored) {}
+        }
+        if (partCompound.contains("secondary")) {
+            try {
+                customization.setSecondaryRenderType(FiguraTextureSet.RenderTypes.valueOf(partCompound.getString("secondary")));
+            } catch (Exception ignored) {}
+        }
 
         customization.needsMatrixRecalculation = true;
 

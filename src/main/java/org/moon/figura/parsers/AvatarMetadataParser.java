@@ -56,16 +56,18 @@ public class AvatarMetadataParser {
 
         //Add more of these later
         if (customization.primaryRenderType != null) {
-            if (FiguraTextureSet.LEGAL_RENDER_TYPES.contains(customization.primaryRenderType))
-                modelPart.putString("primary", customization.primaryRenderType);
-            else
+            try {
+                modelPart.putString("primary", FiguraTextureSet.RenderTypes.valueOf(customization.primaryRenderType).name());
+            } catch (Exception ignored) {
                 throw new IOException("Invalid render type \"" + customization.primaryRenderType + "\"!");
+            }
         }
         if (customization.secondaryRenderType != null) {
-            if (FiguraTextureSet.LEGAL_RENDER_TYPES.contains(customization.secondaryRenderType))
-                modelPart.putString("primary", customization.secondaryRenderType);
-            else
+            try {
+                modelPart.putString("secondary", FiguraTextureSet.RenderTypes.valueOf(customization.secondaryRenderType).name());
+            } catch (Exception ignored) {
                 throw new IOException("Invalid render type \"" + customization.secondaryRenderType + "\"!");
+            }
         }
         if (customization.parentType != null) {
             FiguraModelPart.ParentType type = FiguraModelPart.ParentType.getForString(customization.parentType);

@@ -123,8 +123,8 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
     private PartCustomization setupRootCustomization(double vertOffset) {
         PartCustomization customization = PartCustomization.of();
 
-        customization.setPrimaryRenderType("TRANSLUCENT");
-        customization.setSecondaryRenderType("EMISSIVE");
+        customization.setPrimaryRenderType(FiguraTextureSet.RenderTypes.TRANSLUCENT);
+        customization.setSecondaryRenderType(FiguraTextureSet.RenderTypes.EMISSIVE);
 
         double s = 1.0 / 16;
         customization.positionMatrix.scale(s, s, s);

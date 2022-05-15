@@ -1,5 +1,6 @@
 package org.moon.figura.avatars.model;
 
+import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec3;
@@ -175,19 +176,19 @@ public class PartCustomization implements CachedType {
 
     //-- Render type thingies --//
 
-    private String primaryRenderType;
-    private String secondaryRenderType;
+    private FiguraTextureSet.RenderTypes primaryRenderType;
+    private FiguraTextureSet.RenderTypes secondaryRenderType;
 
-    public void setPrimaryRenderType(String type) {
+    public void setPrimaryRenderType(FiguraTextureSet.RenderTypes type) {
         primaryRenderType = type;
     }
-    public String getPrimaryRenderType() {
+    public FiguraTextureSet.RenderTypes getPrimaryRenderType() {
         return primaryRenderType;
     }
-    public void setSecondaryRenderType(String type) {
+    public void setSecondaryRenderType(FiguraTextureSet.RenderTypes type) {
         secondaryRenderType = type;
     }
-    public String getSecondaryRenderType() {
+    public FiguraTextureSet.RenderTypes getSecondaryRenderType() {
         return secondaryRenderType;
     }
 

@@ -26,7 +26,7 @@ public class RendererAPI {
             description = "renderer.set_shadow_radius"
     )
     public static void setShadowRadius(@LuaNotNil RendererAPI api, Float shadowRadius) {
-        api.shadowRadius = shadowRadius == null ? null : Mth.clamp(shadowRadius, 0f, 24f);
+        api.shadowRadius = shadowRadius == null ? null : Mth.clamp(shadowRadius, 0f, 12f);
     }
 
     @LuaWhitelist

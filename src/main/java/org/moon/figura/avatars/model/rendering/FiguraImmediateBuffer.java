@@ -85,8 +85,8 @@ public class FiguraImmediateBuffer {
             return;
         }
 
-        RenderType primary = textureSet.getRenderType(customizationStack.peek().getPrimaryRenderType());
-        RenderType secondary = textureSet.getRenderType(customizationStack.peek().getSecondaryRenderType());
+        RenderType primary = customizationStack.peek().getPrimaryRenderType().get(textureSet.mainTex);
+        RenderType secondary = customizationStack.peek().getSecondaryRenderType().get(textureSet.emissiveTex);
         if (primary != null) {
             if (secondary != null)
                 markBuffers();
