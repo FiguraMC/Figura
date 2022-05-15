@@ -20,7 +20,7 @@ import java.util.function.BiPredicate;
 
 /**
  * Mainly exists as an abstract superclass for VAO-based and
- * immediate mode avatar renderers.
+ * immediate mode avatar renderers. (VAO-based don't exist yet)
  */
 public abstract class AvatarRenderer {
 

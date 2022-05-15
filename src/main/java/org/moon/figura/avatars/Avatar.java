@@ -25,6 +25,7 @@ import org.moon.figura.lua.api.EventsAPI;
 import org.moon.figura.lua.types.LuaFunction;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
+import org.terasology.jnlua.LuaMemoryAllocationException;
 import org.terasology.jnlua.LuaRuntimeException;
 
 import java.io.ByteArrayOutputStream;
@@ -106,7 +107,7 @@ public class Avatar {
                 func.call(args);
             else
                 throw new LuaRuntimeException("Invalid type to run!");
-        } catch (LuaRuntimeException ex) {
+        } catch (LuaRuntimeException | LuaMemoryAllocationException ex) {
             FiguraLuaPrinter.sendLuaError(ex, name, owner);
             scriptError = true;
             luaState.close();
@@ -123,7 +124,7 @@ public class Avatar {
             this.soundsRemaining = Math.min(soundsRemaining + (maxSounds / SharedConstants.TICKS_PER_SECOND), maxSounds);
 
             tryCall(luaState.events.TICK, tickLimit);
-            if (!Minecraft.ON_OSX)
+            if (!Minecraft.ON_OSX && luaState != null)
                 tickInstructions = tickLimit - luaState.getInstructions();
         }
     }
@@ -142,7 +143,7 @@ public class Avatar {
         renderer.elytraModel = elytraModel;
         if (!scriptError && luaState != null) {
             tryCall(luaState.events.RENDER, -1, delta);
-            if (!Minecraft.ON_OSX) {
+            if (!Minecraft.ON_OSX && luaState != null) {
                 renderInstructions = renderLimit - accumulatedRenderInstructions - luaState.getInstructions();
                 accumulatedRenderInstructions += renderInstructions;
             }
@@ -153,7 +154,7 @@ public class Avatar {
         renderer.render();
         if (!scriptError && luaState != null) {
             tryCall(luaState.events.POST_RENDER, -1, delta);
-            if (!Minecraft.ON_OSX) {
+            if (!Minecraft.ON_OSX && luaState != null) {
                 postRenderInstructions = renderLimit - accumulatedRenderInstructions - luaState.getInstructions();
                 accumulatedRenderInstructions += postRenderInstructions;
             }
@@ -166,7 +167,7 @@ public class Avatar {
 
         if (!scriptError && luaState != null) {
             tryCall(luaState.events.WORLD_RENDER, renderLimit, tickDelta);
-            if (!Minecraft.ON_OSX) {
+            if (!Minecraft.ON_OSX && luaState != null) {
                 worldRenderInstructions = renderLimit - luaState.getInstructions();
                 accumulatedRenderInstructions = worldRenderInstructions;
             }
@@ -179,7 +180,7 @@ public class Avatar {
         renderer.allowMatrixUpdate = false;
         if (!scriptError && luaState != null) {
             tryCall(luaState.events.POST_WORLD_RENDER, -1, renderer.tickDelta);
-            if (!Minecraft.ON_OSX) {
+            if (!Minecraft.ON_OSX && luaState != null) {
                 postWorldRenderInstructions = renderLimit - accumulatedRenderInstructions - luaState.getInstructions();
                 accumulatedRenderInstructions += postWorldRenderInstructions;
             }

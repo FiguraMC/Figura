@@ -12,6 +12,7 @@ import org.moon.figura.lua.api.math.VectorsAPI;
 import org.moon.figura.lua.api.model.VanillaModelAPI;
 import org.moon.figura.lua.api.nameplate.NameplateAPI;
 import org.moon.figura.lua.api.world.WorldAPI;
+import org.moon.figura.lua.types.LuaOwnedTable;
 import org.moon.figura.lua.types.LuaTable;
 import org.terasology.jnlua.*;
 
@@ -35,7 +36,8 @@ public class FiguraLuaState extends LuaState53 {
     public KeybindAPI keybind;
     public RendererAPI renderer;
 
-    public LuaTable storedStuff = new LuaTable();
+    public static final String STORAGE_KEY = "STORAGE";
+    public LuaOwnedTable storedStuff = new LuaOwnedTable(this, STORAGE_KEY);
 
     public FiguraLuaState(Avatar owner, int memory) {
         super(memory * 1_000_000); //memory is given in mb
@@ -112,7 +114,7 @@ public class FiguraLuaState extends LuaState53 {
     private void loadFiguraApis() {
         loadGlobal(VectorsAPI.INSTANCE, "vectors");
         loadGlobal(MatricesAPI.INSTANCE, "matrices");
-        loadGlobal(events = new EventsAPI(), "events");
+        loadGlobal(events = new EventsAPI(this), "events");
         loadGlobal(vanillaModel = new VanillaModelAPI(), "vanilla_model");
         loadGlobal(WorldAPI.INSTANCE, "world");
         loadGlobal(new PlayerEntityWrapper(owner.owner), "player");

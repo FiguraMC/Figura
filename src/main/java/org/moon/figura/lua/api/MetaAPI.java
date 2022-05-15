@@ -33,7 +33,7 @@ public class MetaAPI {
             description = "meta.store"
     )
     public static void store(@LuaNotNil MetaAPI api, @LuaNotNil String key, Object value) {
-        api.avatar.luaState.storedStuff.put(key, value);
+        api.avatar.luaState.storedStuff.putValue(key, value);
     }
 
     @LuaWhitelist

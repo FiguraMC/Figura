@@ -476,7 +476,7 @@ public class EntityWrapper<T extends Entity> {
         if (a == null || a.luaState == null)
             return null;
 
-        return a.luaState.storedStuff.get(key);
+        return a.luaState.storedStuff.getValue(key, Object.class);
     }
 
     @Override

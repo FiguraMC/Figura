@@ -112,7 +112,9 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         if (allowMatrixUpdate)
             viewToWorldMatrix = AvatarRenderer.worldToViewMatrix().inverted();
 
-        renderPart(root, new int[] {complexityLimit}, currentFilterScheme.initialValue());
+        int[] remainingComplexity = new int[] {complexityLimit};
+        renderPart(root, remainingComplexity, currentFilterScheme.initialValue());
+        avatar.complexity = complexityLimit - remainingComplexity[0];
 
         customizationStack.pop();
         checkEmpty();
