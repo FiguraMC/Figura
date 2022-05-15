@@ -62,9 +62,17 @@ public class Avatar {
     public boolean hasTexture = false;
     public boolean scriptError = false;
     public int complexity = 0;
+
     public int initInstructions = 0;
+
     public int tickInstructions = 0;
+
     public int renderInstructions = 0;
+    public int postRenderInstructions = 0;
+    public int worldRenderInstructions = 0;
+    public int postWorldRenderInstructions = 0;
+    public int accumulatedRenderInstructions = 0;
+
     public float particlesRemaining = 0f;
     public float soundsRemaining = 0f;
 
@@ -115,6 +123,8 @@ public class Avatar {
             this.soundsRemaining = Math.min(soundsRemaining + (maxSounds / SharedConstants.TICKS_PER_SECOND), maxSounds);
 
             tryCall(luaState.events.TICK, tickLimit);
+            if (!Minecraft.ON_OSX)
+                tickInstructions = tickLimit - luaState.getInstructions();
         }
     }
 
@@ -130,22 +140,48 @@ public class Avatar {
         renderer.light = light;
         renderer.entityRenderer = entityRenderer;
         renderer.elytraModel = elytraModel;
-        if (!scriptError && luaState != null)
+        if (!scriptError && luaState != null) {
             tryCall(luaState.events.RENDER, -1, delta);
+            if (!Minecraft.ON_OSX) {
+                renderInstructions = renderLimit - accumulatedRenderInstructions - luaState.getInstructions();
+                accumulatedRenderInstructions += renderInstructions;
+            }
+
+
+        }
+
         renderer.render();
-        if (!scriptError && luaState != null)
+        if (!scriptError && luaState != null) {
             tryCall(luaState.events.POST_RENDER, -1, delta);
+            if (!Minecraft.ON_OSX) {
+                postRenderInstructions = renderLimit - accumulatedRenderInstructions - luaState.getInstructions();
+                accumulatedRenderInstructions += postRenderInstructions;
+            }
+        }
     }
 
     public void worldRenderEvent(float tickDelta) {
         renderer.tickDelta = tickDelta;
-        if (!scriptError && luaState != null)
+        if (!scriptError && luaState != null) {
             tryCall(luaState.events.WORLD_RENDER, renderLimit, tickDelta);
+            if (!Minecraft.ON_OSX) {
+                worldRenderInstructions = renderLimit - luaState.getInstructions();
+                accumulatedRenderInstructions = worldRenderInstructions;
+            }
+
+        }
+
     }
 
     public void endWorldRenderEvent() {
-        if (!scriptError && luaState != null)
+        if (!scriptError && luaState != null) {
             tryCall(luaState.events.POST_WORLD_RENDER, -1, renderer.tickDelta);
+            if (!Minecraft.ON_OSX) {
+                postWorldRenderInstructions = renderLimit - accumulatedRenderInstructions - luaState.getInstructions();
+                accumulatedRenderInstructions += postWorldRenderInstructions;
+            }
+        }
+
     }
 
     public void chatSendMessageEvent(String message) {
@@ -232,8 +268,10 @@ public class Avatar {
         renderLimit = TrustManager.get(owner).get(TrustContainer.Trust.RENDER_INST);
 
         luaState.setInstructionLimit(initLimit);
-        if (luaState.init(scripts, autoScripts))
+        if (luaState.init(scripts, autoScripts)) {
+            initInstructions = initLimit - luaState.getInstructions();
             return luaState;
+        }
         else
             luaState.close();
 

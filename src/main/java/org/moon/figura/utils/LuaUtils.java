@@ -81,7 +81,7 @@ public class LuaUtils {
         if (isWindows) {
             builder.append("windows-");
         } else if (isMacOS) {
-            builder.append("mac-");
+            builder.append("OUTDATEDmac-"); //Mark mac as outdated, it doesn't have the getter and setter natives yet
         } else {
             builder.append("linux-");
         }

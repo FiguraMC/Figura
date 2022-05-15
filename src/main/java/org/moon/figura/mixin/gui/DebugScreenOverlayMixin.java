@@ -1,5 +1,6 @@
 package org.moon.figura.mixin.gui;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.DebugScreenOverlay;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
@@ -38,9 +39,22 @@ public class DebugScreenOverlayMixin {
 
             //has script
             if (avatar.luaState != null) {
-                lines.add(++i, String.format("Init instructions: %d", avatar.initInstructions));
-                lines.add(++i, String.format("Tick instructions: %d", avatar.tickInstructions));
-                lines.add(++i, String.format("Render instructions: %d",avatar.renderInstructions));
+                if (Minecraft.ON_OSX) {
+                    lines.add(++i, "Sorry, but instruction counts are ");
+                    lines.add(++i, "not currently supported on Mac :(");
+                    lines.add(++i, "We're working on it!");
+                } else {
+
+                    lines.add(++i, String.format("Init instructions: %d", avatar.initInstructions));
+                    lines.add(++i, String.format("Tick instructions: %d", avatar.tickInstructions));
+                    lines.add(++i, "Render instructions (W, R, PR, PW):");
+                    lines.add(++i, String.format("%d (%d, %d, %d, %d)", avatar.accumulatedRenderInstructions,
+                            avatar.worldRenderInstructions,
+                            avatar.renderInstructions,
+                            avatar.postRenderInstructions,
+                            avatar.postWorldRenderInstructions));
+                }
+
             }
         }
         //lines.add(++i, String.format("Pings per second: ↑%d, ↓%d", pingSent, pingReceived));

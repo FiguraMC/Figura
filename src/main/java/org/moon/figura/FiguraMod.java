@@ -59,6 +59,14 @@ public class FiguraMod implements ClientModInitializer {
     }
 
     private static void tick(Minecraft client) {
+        if (FiguraCommands.authConnection != null) {
+            if (FiguraCommands.authConnection.isConnected())
+                FiguraCommands.authConnection.tick();
+            else {
+                FiguraCommands.authConnection.handleDisconnection();
+                FiguraCommands.authConnection = null;
+            }
+        }
         LocalAvatarLoader.tickWatchedKey();
         AvatarManager.tickLoadedAvatars();
         FiguraLuaPrinter.printChatFromQueue();
