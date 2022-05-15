@@ -7,7 +7,7 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.network.chat.Component;
 import org.moon.figura.utils.ui.UIHelper;
 
-public class TextWidget implements FiguraWidget, GuiEventListener {
+public class Label implements FiguraWidget, GuiEventListener {
 
     private Component text;
 
@@ -19,11 +19,11 @@ public class TextWidget implements FiguraWidget, GuiEventListener {
     private final boolean centred;
     private final Integer outlineColor;
 
-    public TextWidget(Component text, int x, int y, boolean centred) {
+    public Label(Component text, int x, int y, boolean centred) {
         this(text, x, y, centred, null);
     }
 
-    public TextWidget(Component text, int x, int y, boolean centred, Integer outlineColor) {
+    public Label(Component text, int x, int y, boolean centred, Integer outlineColor) {
         this.font = Minecraft.getInstance().font;
         this.text = text;
         this.x = x;

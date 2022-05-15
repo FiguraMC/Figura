@@ -5,7 +5,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import org.moon.figura.config.ConfigManager;
-import org.moon.figura.gui.widgets.TextWidget;
+import org.moon.figura.gui.widgets.Label;
 import org.moon.figura.gui.widgets.TexturedButton;
 import org.moon.figura.gui.widgets.lists.ConfigList;
 import org.moon.figura.utils.FiguraText;
@@ -32,7 +32,7 @@ public class ConfigScreen extends AbstractPanelScreen {
 
         if (!hasPanels) {
             this.removeWidget(panels);
-            this.addRenderableOnly(new TextWidget(TITLE, this.width / 2, 14, true));
+            this.addRenderableOnly(new Label(TITLE, this.width / 2, 14, true));
         }
 
         // -- bottom buttons -- //

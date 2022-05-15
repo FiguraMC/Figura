@@ -511,6 +511,8 @@
   "figura.docs.host.set_actionbar": "Sets the action bar message to the given text. The boolean parameter defaults to false.",
   "figura.docs.host.send_chat_message": "",
   "figura.docs.host.swing_arm": "",
+  "figura.docs.host.is_first_person": "",
+  "figura.docs.host.is_camera_backwards": "",
 
   "figura.docs.meta": "A global API containing functions to interact with your avatar's metadata, and also to get meta-information about the current script environment.",
   "figura.docs.meta.store": "Store the given key-value pair inside your current avatar's metadata. Someone else can get this information from a different script with the getVariable() function in Player. The key must be a string.",
@@ -555,8 +557,6 @@
   "figura.docs.renderer.get_shadow_radius": "",
   "figura.docs.renderer.set_render_fire_overlay": "",
   "figura.docs.renderer.can_render_fire_overlay": "",
-  "figura.docs.renderer.is_first_person": "",
-  "figura.docs.renderer.is_camera_backwards": "",
 
   "figura.docs.vectors": "A global API which provides functions dedicated to creating and otherwise manipulating vectors. Accessed using the name \"vectors\".",
   "figura.docs.vectors.vec": "Creates and returns a vector of the appropriate size to hold the arguments passed in. For example, if you call vec(3, 4, 0, 2), then the function will return a Vector4 containing those values. There is a global alias \"vec\" for this function, meaning the \"vectors.\" can be omitted.",

@@ -23,7 +23,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
 
     private StatusWidget statusWidget;
     private AvatarInfoWidget avatarInfo;
-    private TextWidget panic1, panic2;
+    private Label panic1, panic2;
 
     private TexturedButton upload, reload, delete;
 
@@ -86,7 +86,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
         // -- bottom -- //
 
         //version
-        TextWidget version = new TextWidget(new FiguraText().append(" " + FiguraMod.VERSION).withStyle(ChatFormatting.ITALIC, ChatFormatting.DARK_GRAY), middle, this.height - 5, true);
+        Label version = new Label(new FiguraText().append(" " + FiguraMod.VERSION).withStyle(ChatFormatting.ITALIC, ChatFormatting.DARK_GRAY), middle, this.height - 5, true);
         addRenderableOnly(version);
 
         int rightSide = Math.min(third, 134);
@@ -128,8 +128,8 @@ public class WardrobeScreen extends AbstractPanelScreen {
         addRenderableOnly(avatarInfo = new AvatarInfoWidget(this.width - rightSide - 4, 64, rightSide));
 
         //panic warning - always added last, on top
-        addRenderableOnly(panic1 = new TextWidget(new FiguraText("gui.panic.1").withStyle(ChatFormatting.YELLOW), middle, this.height - 23, true, 0));
-        addRenderableOnly(panic2 = new TextWidget(new FiguraText("gui.panic.2", Config.PANIC_BUTTON.keyBind.getTranslatedKeyMessage()).withStyle(ChatFormatting.YELLOW), middle, this.height - 14, true, 0));
+        addRenderableOnly(panic1 = new Label(new FiguraText("gui.panic.1").withStyle(ChatFormatting.YELLOW), middle, this.height - 23, true, 0));
+        addRenderableOnly(panic2 = new Label(new FiguraText("gui.panic.2", Config.PANIC_BUTTON.keyBind.getTranslatedKeyMessage()).withStyle(ChatFormatting.YELLOW), middle, this.height - 14, true, 0));
         panic1.setVisible(false);
         panic2.setVisible(false);
     }

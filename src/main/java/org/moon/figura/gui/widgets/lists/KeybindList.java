@@ -13,7 +13,7 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.Mth;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.gui.widgets.AbstractContainerElement;
-import org.moon.figura.gui.widgets.TextWidget;
+import org.moon.figura.gui.widgets.Label;
 import org.moon.figura.gui.widgets.TexturedButton;
 import org.moon.figura.lua.api.keybind.FiguraKeybind;
 import org.moon.figura.utils.ColorUtils;
@@ -36,9 +36,9 @@ public class KeybindList extends AbstractList {
         this.owner = owner;
         updateList();
 
-        TextWidget noOwner, noKeys;
-        this.children.add(noOwner = new TextWidget(new FiguraText("gui.keybinds.no_avatar").withStyle(ChatFormatting.YELLOW), x + width / 2, y + height / 2, true, 0));
-        this.children.add(noKeys = new TextWidget(new FiguraText("gui.keybinds.no_keybinds").withStyle(ChatFormatting.YELLOW), x + width / 2, y + height / 2, true, 0));
+        Label noOwner, noKeys;
+        this.children.add(noOwner = new Label(new FiguraText("gui.keybinds.no_avatar").withStyle(ChatFormatting.YELLOW), x + width / 2, y + height / 2, true, 0));
+        this.children.add(noKeys = new Label(new FiguraText("gui.keybinds.no_keybinds").withStyle(ChatFormatting.YELLOW), x + width / 2, y + height / 2, true, 0));
 
         noOwner.setVisible(owner == null);
         noKeys.setVisible(!noOwner.isVisible() && keybinds.isEmpty());

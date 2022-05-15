@@ -74,6 +74,11 @@ public class FiguraDocsManager {
                 MetaAPI.class
         ));
 
+        //renderer
+        put("renderer", List.of(
+                RendererAPI.class
+        ));
+
         //sound
         put("sound", List.of(
                 SoundAPI.class
