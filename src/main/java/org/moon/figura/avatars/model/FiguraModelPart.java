@@ -703,6 +703,46 @@ public class FiguraModelPart {
         return FiguraVec2.of(LightTexture.block(light), LightTexture.sky(light));
     }
 
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = {FiguraModelPart.class, String.class},
+                    argumentNames = {"modelPart", "parentType"}
+            ),
+            description = "model_part.set_parent_type"
+    )
+    public static void setParentType(@LuaNotNil FiguraModelPart modelPart, @LuaNotNil String parent) {
+        try {
+            modelPart.parentType = ParentType.valueOf(parent);
+        } catch (Exception ignored) {
+            throw new LuaRuntimeException("Illegal ParentType: \"" + parent + "\".");
+        }
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraModelPart.class,
+                    argumentNames = "modelPart"
+            ),
+            description = "model_part.get_parent_type"
+    )
+    public static String getParentType(@LuaNotNil FiguraModelPart modelPart) {
+        return modelPart.parentType == null ? null : modelPart.parentType.name();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraModelPart.class,
+                    argumentNames = "modelPart"
+            ),
+            description = "model_part.get_type"
+    )
+    public static String getType(@LuaNotNil FiguraModelPart modelPart) {
+        return modelPart.customization.partType.name();
+    }
+
     //-- METAMETHODS --//
     @LuaWhitelist
     public static Object __index(@LuaNotNil FiguraModelPart modelPart, @LuaNotNil String key) {
@@ -765,11 +805,12 @@ public class FiguraModelPart {
         List<Integer> facesByTexture = new ArrayList<>(0);
         if (hasCubeData(partCompound)) {
             readCuboid(facesByTexture, bufferBuilders, partCompound);
+            customization.partType = PartCustomization.PartType.CUBE;
             newIndex = index[0]++;
         } else if (hasMeshData(partCompound)) {
             //TODO: smooth normals
             readMesh(facesByTexture, bufferBuilders, partCompound);
-            customization.isMesh = true;
+            customization.partType = PartCustomization.PartType.MESH;
             newIndex = index[0]++;
         }
 

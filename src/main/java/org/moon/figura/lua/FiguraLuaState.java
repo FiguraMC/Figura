@@ -13,7 +13,6 @@ import org.moon.figura.lua.api.model.VanillaModelAPI;
 import org.moon.figura.lua.api.nameplate.NameplateAPI;
 import org.moon.figura.lua.api.world.WorldAPI;
 import org.moon.figura.lua.types.LuaOwnedTable;
-import org.moon.figura.lua.types.LuaTable;
 import org.terasology.jnlua.*;
 
 import java.io.IOException;
@@ -31,6 +30,7 @@ public class FiguraLuaState extends LuaState53 {
     //API References
     public EventsAPI events;
     public VanillaModelAPI vanillaModel;
+    public PlayerEntityWrapper entity;
     public NameplateAPI nameplate;
     public MetaAPI meta;
     public KeybindAPI keybind;
@@ -117,12 +117,12 @@ public class FiguraLuaState extends LuaState53 {
         loadGlobal(events = new EventsAPI(this), "events");
         loadGlobal(vanillaModel = new VanillaModelAPI(), "vanilla_model");
         loadGlobal(WorldAPI.INSTANCE, "world");
-        loadGlobal(new PlayerEntityWrapper(owner.owner), "player");
+        loadGlobal(entity = new PlayerEntityWrapper(owner.owner), "player");
         loadGlobal(new ParticleAPI(owner), "particle");
         loadGlobal(new SoundAPI(owner), "sound");
         loadGlobal(nameplate = new NameplateAPI(), "nameplate");
         loadGlobal(ClientAPI.INSTANCE, "client");
-        loadGlobal(new HostAPI(owner.owner), "host");
+        loadGlobal(new HostAPI(owner), "host");
         loadGlobal(meta = new MetaAPI(owner), "meta");
         loadGlobal(keybind = new KeybindAPI(owner), "keybind");
         loadGlobal(renderer = new RendererAPI(), "renderer");

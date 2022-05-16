@@ -16,7 +16,7 @@ public class PartCustomization implements CachedType {
      * formula for meshes than other types of items. Meshes rotate in XYZ order,
      * while literally everything else is in ZYX order.
      */
-    public boolean isMesh = false;
+    public PartType partType = PartType.GROUP;
 
     public FiguraMat4 positionMatrix = FiguraMat4.of();
     public FiguraMat3 uvMatrix = FiguraMat3.of();
@@ -49,7 +49,7 @@ public class PartCustomization implements CachedType {
             positionMatrix.scale(scale.x, scale.y, scale.z);
             positionMatrix.translate(position.x + bonusPos.x, position.y + bonusPos.y, position.z + bonusPos.z);
 
-            if (isMesh) {
+            if (partType == PartType.MESH) {
                 positionMatrix.rotateZ(rotation.z + bonusRot.z);
                 positionMatrix.rotateY(rotation.y + bonusRot.y);
                 positionMatrix.rotateX(rotation.x + bonusRot.x);
@@ -66,7 +66,7 @@ public class PartCustomization implements CachedType {
                     c == 0 && scale.z == 0 ? 1 : c / scale.z
             );
 
-            if (isMesh) {
+            if (partType == PartType.MESH) {
                 normalMatrix.rotateZ(rotation.z + bonusRot.z);
                 normalMatrix.rotateY(rotation.y + bonusRot.y);
                 normalMatrix.rotateX(rotation.x + bonusRot.x);
@@ -201,7 +201,7 @@ public class PartCustomization implements CachedType {
         positionMatrix = FiguraMat4.of();
         uvMatrix = FiguraMat3.of();
         normalMatrix = FiguraMat3.of();
-        isMesh = false;
+        partType = PartType.GROUP;
         position = FiguraVec3.of();
         rotation = FiguraVec3.of();
         scale = FiguraVec3.of(1, 1, 1);
@@ -244,7 +244,7 @@ public class PartCustomization implements CachedType {
         }
         @Override
         protected void copy(PartCustomization from, PartCustomization to) {
-            to.isMesh = from.isMesh;
+            to.partType = from.partType;
             to.positionMatrix.set(from.positionMatrix);
             to.uvMatrix.set(from.uvMatrix);
             to.normalMatrix.set(from.normalMatrix);
@@ -290,5 +290,11 @@ public class PartCustomization implements CachedType {
         }
 
         color.multiply(other.color);
+    }
+
+    public enum PartType {
+        MESH,
+        CUBE,
+        GROUP
     }
 }

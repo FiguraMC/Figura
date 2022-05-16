@@ -613,23 +613,23 @@ public class FiguraMat3 implements CachedType {
         return arg2.times(arg1);
     }
     @LuaWhitelist
-    public static FiguraVec3 __mul(FiguraMat3 arg1, FiguraVec3 arg2) {
+    public static FiguraVec3 __mul(@LuaNotNil FiguraMat3 arg1, @LuaNotNil FiguraVec3 arg2) {
         return arg1.times(arg2);
     }
     @LuaWhitelist
-    public static boolean __eq(FiguraMat3 arg1, FiguraMat3 arg2) {
+    public static boolean __eq(@LuaNotNil FiguraMat3 arg1, @LuaNotNil FiguraMat3 arg2) {
         return arg1.equals(arg2);
     }
     @LuaWhitelist
-    public static int __len(FiguraMat3 arg1) {
+    public static int __len(@LuaNotNil FiguraMat3 arg1) {
         return 4;
     }
     @LuaWhitelist
-    public static String __tostring(FiguraMat3 arg1) {
+    public static String __tostring(@LuaNotNil FiguraMat3 arg1) {
         return arg1.toString();
     }
     @LuaWhitelist
-    public static Object __index(FiguraMat3 arg1, String arg2) {
+    public static Object __index(@LuaNotNil FiguraMat3 arg1, @LuaNotNil String arg2) {
         return switch (arg2) {
             case "1" -> arg1.getCol1();
             case "2" -> arg1.getCol2();

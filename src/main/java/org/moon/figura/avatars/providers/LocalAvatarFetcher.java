@@ -1,6 +1,7 @@
 package org.moon.figura.avatars.providers;
 
 import org.moon.figura.FiguraMod;
+import org.moon.figura.config.Config;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -39,10 +40,11 @@ public class LocalAvatarFetcher {
 
     /**
      * Returns the directory where all local avatars are stored.
-     * The directory is always under MOD_ID directory.
+     * The directory is either the one set in the configs, or MOD_ID directory.
      */
     public static Path getLocalAvatarDirectory() {
-        Path p = FiguraMod.getFiguraDirectory().resolve("avatars");
+        String config = (String) Config.AVATARS_PATH.value;
+        Path p = (config.isBlank() ? FiguraMod.getFiguraDirectory() : Path.of(config)).resolve("avatars");
         try {
             Files.createDirectories(p);
         } catch (Exception e) {

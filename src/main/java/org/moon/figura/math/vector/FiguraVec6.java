@@ -312,7 +312,7 @@ public class FiguraVec6 extends FiguraVector<FiguraVec6> implements CachedType {
 
     //Fallback for fetching a key that isn't in the table
     @LuaWhitelist
-    public static Object __index(@LuaNotNil FiguraVec6 arg1, String arg2) {
+    public static Object __index(@LuaNotNil FiguraVec6 arg1, @LuaNotNil String arg2) {
         if (arg2 == null)
             return null;
         int len = arg2.length();
@@ -344,13 +344,13 @@ public class FiguraVec6 extends FiguraVector<FiguraVec6> implements CachedType {
     }
 
     @LuaWhitelist
-    public static LuaIPairsIterator<FiguraVec6> __ipairs(FiguraVec6 arg) {
+    public static LuaIPairsIterator<FiguraVec6> __ipairs(@LuaNotNil FiguraVec6 arg) {
         return iPairsIterator;
     }
     private static final LuaIPairsIterator<FiguraVec6> iPairsIterator = new LuaIPairsIterator<>(FiguraVec6.class);
 
     @LuaWhitelist
-    public static LuaPairsIterator<FiguraVec6, String> __pairs(FiguraVec6 arg) {
+    public static LuaPairsIterator<FiguraVec6, String> __pairs(@LuaNotNil FiguraVec6 arg) {
         return pairsIterator;
     }
     private static final LuaPairsIterator<FiguraVec6, String> pairsIterator =

@@ -59,7 +59,7 @@ public enum Config {
     //ACTION_WHEEL_BUTTON("key.keyboard.b"),
 
     Paperdoll,
-    HAS_PAPERDOLL(true),
+    HAS_PAPERDOLL(false),
     PAPERDOLL_ALWAYS_ON(false),
     FIRST_PERSON_PAPERDOLL(true),
     PAPERDOLL_SCALE(1f, InputType.FLOAT),
@@ -78,7 +78,8 @@ public enum Config {
                 new FiguraText(tooltip + ".cubes").setStyle(ColorUtils.Colors.FRAN_PINK.style),
                 new FiguraText(tooltip + ".groups").setStyle(ColorUtils.Colors.MAYA_BLUE.style));
     }},
-    LOG_OTHERS(false);
+    LOG_OTHERS(false),
+    AVATARS_PATH("", InputType.FOLDER_PATH);
 
 
     /**

@@ -10,6 +10,7 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.AvatarManager;
+import org.moon.figura.commands.FiguraLinkCommand;
 import org.moon.figura.config.Config;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.widgets.*;
@@ -106,9 +107,9 @@ public class WardrobeScreen extends AbstractPanelScreen {
                 48, 48,
                 new FiguraText("gui.help.tooltip"),
                 bx -> this.minecraft.setScreen(new ConfirmLinkScreen((bl) -> {
-                    if (bl) Util.getPlatform().openUri(FiguraMod.WIKI);
+                    if (bl) Util.getPlatform().openUri(FiguraLinkCommand.LINK.WIKI.url);
                     this.minecraft.setScreen(this);
-                }, FiguraMod.WIKI, true))
+                }, FiguraLinkCommand.LINK.WIKI.url, true))
         ));
 
         //sounds

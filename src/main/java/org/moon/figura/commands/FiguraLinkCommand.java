@@ -11,7 +11,7 @@ import org.moon.figura.utils.FiguraText;
 public class FiguraLinkCommand {
 
     public enum LINK {
-        WIKI("[Wiki]", FiguraMod.WIKI, ColorUtils.Colors.FRAN_PINK.style),
+        WIKI("[Wiki]", "https://github.com/Kingdom-Of-The-Moon/FiguraRewriteRewrite/wiki/", ColorUtils.Colors.FRAN_PINK.style),
         KOFI("[Ko-fi]", "https://ko-fi.com/francy_chan", 0x27AAE0),
         Space1,
         DISCORD("[Discord]", "https://discord.gg/ekHGHcH8Af", 0x5865F2),

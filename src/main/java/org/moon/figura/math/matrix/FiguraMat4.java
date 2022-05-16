@@ -778,11 +778,11 @@ public class FiguraMat4 implements CachedType {
         return 4;
     }
     @LuaWhitelist
-    public static String __tostring(FiguraMat4 arg1) {
+    public static String __tostring(@LuaNotNil FiguraMat4 arg1) {
         return arg1.toString();
     }
     @LuaWhitelist
-    public static Object __index(FiguraMat4 arg1, String arg2) {
+    public static Object __index(@LuaNotNil FiguraMat4 arg1, @LuaNotNil String arg2) {
         return switch (arg2) {
             case "1" -> arg1.getCol1();
             case "2" -> arg1.getCol2();

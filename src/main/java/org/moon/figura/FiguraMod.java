@@ -38,7 +38,6 @@ public class FiguraMod implements ClientModInitializer {
     public static final boolean CHEESE_DAY = LocalDate.now().getDayOfMonth() == 1 && LocalDate.now().getMonthValue() == 4;
     public static final Path GAME_DIR = FabricLoader.getInstance().getGameDir().normalize();
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID.substring(0, 1).toUpperCase() + MOD_ID.substring(1));
-    public static final String WIKI = "https://github.com/Kingdom-Of-The-Moon/FiguraRewriteRewrite/wiki/";
 
     public static boolean DO_OUR_NATIVES_WORK = false;
 

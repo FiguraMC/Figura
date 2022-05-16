@@ -1,20 +1,23 @@
 package org.moon.figura.lua.api;
 
+import com.mojang.brigadier.StringReader;
 import net.minecraft.client.Minecraft;
+import net.minecraft.commands.arguments.SlotArgument;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import org.moon.figura.FiguraMod;
+import org.moon.figura.avatars.Avatar;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.entity.EntityWrapper;
+import org.moon.figura.lua.api.world.ItemStackWrapper;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.TextUtils;
-
-import java.util.UUID;
+import org.terasology.jnlua.LuaRuntimeException;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -23,10 +26,10 @@ import java.util.UUID;
 )
 public class HostAPI {
 
-    private final UUID owner;
+    private final Avatar owner;
     private final Minecraft minecraft;
 
-    public HostAPI(UUID owner) {
+    public HostAPI(Avatar owner) {
         this.owner = owner;
         this.minecraft = Minecraft.getInstance();
     }
@@ -40,7 +43,7 @@ public class HostAPI {
             description = "host.is_host"
     )
     public static boolean isHost(@LuaNotNil HostAPI api) {
-        return api.owner.compareTo(FiguraMod.getLocalPlayerUUID()) == 0;
+        return api.owner.owner.compareTo(FiguraMod.getLocalPlayerUUID()) == 0;
     }
 
     @LuaWhitelist
@@ -192,6 +195,25 @@ public class HostAPI {
     public static Boolean isCameraBackwards(@LuaNotNil HostAPI api) {
         if (!isHost(api)) return false;
         return Minecraft.getInstance().options.getCameraType().isMirrored();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = {HostAPI.class, String.class},
+                    argumentNames = {"host", "slot"}
+            ),
+            description = "host.get_slot"
+    )
+    public static ItemStackWrapper getSlot(@LuaNotNil HostAPI api, @LuaNotNil String slot) {
+        if (!isHost(api)) return null;
+        try {
+            Entity e = EntityWrapper.getEntity(api.owner.luaState.entity);
+            Integer index = SlotArgument.slot().parse(new StringReader(slot));
+            return ItemStackWrapper.verify(e.getSlot(index).get());
+        } catch (Exception e) {
+            throw new LuaRuntimeException("Unable to get slot \"" + slot + "\"");
+        }
     }
 
     @Override

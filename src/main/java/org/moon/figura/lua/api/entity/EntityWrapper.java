@@ -8,11 +8,13 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.lua.api.world.ItemStackWrapper;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
@@ -59,7 +61,7 @@ public class EntityWrapper<T extends Entity> {
         return (T) ((ClientLevelInvoker) Minecraft.getInstance().level).getEntityGetter().get(uuid);
     }
 
-    protected static <T extends Entity> T getEntity(EntityWrapper<T> entity) {
+    public static <T extends Entity> T getEntity(EntityWrapper<T> entity) {
         if (!exists(entity)) throw new LuaRuntimeException("Entity does not exist!");
         return entity.getEntity();
     }
@@ -477,6 +479,28 @@ public class EntityWrapper<T extends Entity> {
             return null;
 
         return a.luaState.storedStuff.getValue(key, Object.class);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = {EntityWrapper.class, Integer.class},
+                    argumentNames = {"entity", "index"}
+            ),
+            description = "entity.get_item"
+    )
+    public static <T extends Entity> ItemStackWrapper getItem(@LuaNotNil EntityWrapper<T> entity, @LuaNotNil Integer index) {
+        if (--index < 0)
+            return null;
+
+        int i = 0;
+        for (ItemStack item : getEntity(entity).getAllSlots()) {
+            if (i == index)
+                return ItemStackWrapper.verify(item);
+            i++;
+        }
+
+        return null;
     }
 
     @Override
