@@ -34,12 +34,12 @@ public class ParticleAPI {
     @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload(
-                            argumentTypes = {String.class, FiguraVec6.class},
-                            argumentNames = {"name", "posVel"}
+                            argumentTypes = {ParticleAPI.class, String.class, FiguraVec6.class},
+                            argumentNames = {"api", "name", "posVel"}
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {String.class, FiguraVec3.class},
-                            argumentNames = {"name", "pos"}
+                            argumentTypes = {ParticleAPI.class, String.class, FiguraVec3.class},
+                            argumentNames = {"api", "name", "pos"}
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {ParticleAPI.class, String.class, FiguraVec3.class, FiguraVec3.class},
@@ -77,6 +77,8 @@ public class ParticleAPI {
             if (y instanceof FiguraVec3) {
                 vel = ((FiguraVec3) y).copy();
             } else if (y == null || y instanceof Double) {
+                //Intellij says: y should probably not be passed as parameter x
+                //It really doesn't like the kind of programming that happens in this function lol
                 vel = LuaUtils.parseVec3("addParticle", y, z, (Double) w);
             } else {
                 throw new LuaRuntimeException("Illegal argument to addParticle(): " + y);
