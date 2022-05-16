@@ -601,15 +601,15 @@ public class FiguraMat3 implements CachedType {
     // METAMETHODS
     //----------------------------------------------------------------
     @LuaWhitelist
-    public static FiguraMat3 __add(FiguraMat3 arg1, FiguraMat3 arg2) {
+    public static FiguraMat3 __add(@LuaNotNil FiguraMat3 arg1, @LuaNotNil FiguraMat3 arg2) {
         return arg1.plus(arg2);
     }
     @LuaWhitelist
-    public static FiguraMat3 __sub(FiguraMat3 arg1, FiguraMat3 arg2) {
+    public static FiguraMat3 __sub(@LuaNotNil FiguraMat3 arg1, @LuaNotNil FiguraMat3 arg2) {
         return arg1.minus(arg2);
     }
     @LuaWhitelist
-    public static FiguraMat3 __mul(FiguraMat3 arg1, FiguraMat3 arg2) {
+    public static FiguraMat3 __mul(@LuaNotNil FiguraMat3 arg1, @LuaNotNil FiguraMat3 arg2) {
         return arg2.times(arg1);
     }
     @LuaWhitelist

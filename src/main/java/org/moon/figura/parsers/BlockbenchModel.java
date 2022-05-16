@@ -8,7 +8,6 @@ import java.util.List;
 //dummy class for gson reflection
 //allows reading the model json way easier
 public class BlockbenchModel {
-    String name;
     Resolution resolution;
     Texture[] textures;
     Element[] elements;

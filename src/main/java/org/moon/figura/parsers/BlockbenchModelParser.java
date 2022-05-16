@@ -24,7 +24,7 @@ public class BlockbenchModelParser {
     private final HashMap<Integer, String> textureIdMap = new HashMap<>();
 
     //parser
-    public ModelData parseModel(String json, String fallbackName) {
+    public ModelData parseModel(String json, String modelName) {
         //parse json -> object
         Gson gson = new GsonBuilder().create();
         BlockbenchModel model = gson.fromJson(json, BlockbenchModel.class);
@@ -35,7 +35,7 @@ public class BlockbenchModelParser {
 
         //object -> nbt
         CompoundTag nbt = new CompoundTag();
-        nbt.putString("name", model.name.isEmpty() ? fallbackName : model.name);
+        nbt.putString("name", modelName);
 
         //parse textures first
         //we want to save the textures in a separated list
@@ -53,7 +53,7 @@ public class BlockbenchModelParser {
         parseAnimations(animationList, gson, model.animations);
 
         //add and parse the outliner
-        nbt.put("chld", parseOutliner(gson, model.outliner));
+        nbt.put("chld", parseOutliner(gson, model.outliner, null));
 
         //clear variables used by the parser
         elementMap.clear();
@@ -457,7 +457,7 @@ public class BlockbenchModelParser {
         return nbt;
     }
 
-    private ListTag parseOutliner(Gson gson, JsonArray outliner) {
+    private ListTag parseOutliner(Gson gson, JsonArray outliner, Boolean parentVsb) {
         ListTag children = new ListTag();
 
         if (outliner == null)
@@ -466,8 +466,15 @@ public class BlockbenchModelParser {
         for (JsonElement element : outliner) {
             //check if it is an ID first
             if (element instanceof JsonPrimitive) {
-                if (elementMap.containsKey(element.getAsString()))
-                    children.add(elementMap.get(element.getAsString()));
+                if (elementMap.containsKey(element.getAsString())) {
+                    CompoundTag elementNbt = elementMap.get(element.getAsString());
+
+                    //fix children visibility (very jank)
+                    if (parentVsb != null && elementNbt.contains("vsb") && elementNbt.getBoolean("vsb") == parentVsb)
+                        elementNbt.remove("vsb");
+
+                    children.add(elementNbt);
+                }
 
                 continue;
             }
@@ -478,7 +485,9 @@ public class BlockbenchModelParser {
 
             //parse fields
             groupNbt.putString("name", group.name);
-            if (group.visibility != null && !group.visibility)
+
+            //visibility
+            if (group.visibility != null && !group.visibility && (parentVsb == null || parentVsb))
                 groupNbt.putBoolean("vsb", false);
 
             //parse transforms
@@ -495,7 +504,7 @@ public class BlockbenchModelParser {
 
             //parse children
             if (group.children != null && group.children.size() > 0)
-                groupNbt.put("chld", parseOutliner(gson, group.children));
+                groupNbt.put("chld", parseOutliner(gson, group.children, group.visibility));
 
             //add animations
             if (animationMap.containsKey(group.uuid))

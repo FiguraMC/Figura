@@ -56,7 +56,7 @@ public class EventsAPI {
     //Metamethods
 
     @LuaWhitelist
-    public static LuaPairsIterator<EventsAPI, String> __pairs(EventsAPI api) {
+    public static LuaPairsIterator<EventsAPI, String> __pairs(@LuaNotNil EventsAPI api) {
         return pairsIterator;
     }
     private static final LuaPairsIterator<EventsAPI, String> pairsIterator = new LuaPairsIterator<>(

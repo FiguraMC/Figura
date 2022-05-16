@@ -218,53 +218,53 @@ public class FiguraVec6 extends FiguraVector<FiguraVec6> implements CachedType {
     //----------------------------------------------------------------
 
     @LuaWhitelist
-    public static FiguraVec6 __add(FiguraVec6 arg1, FiguraVec6 arg2) {
+    public static FiguraVec6 __add(@LuaNotNil FiguraVec6 arg1, @LuaNotNil FiguraVec6 arg2) {
         return arg1.plus(arg2);
     }
 
     @LuaWhitelist
-    public static FiguraVec6 __sub(FiguraVec6 arg1, FiguraVec6 arg2) {
+    public static FiguraVec6 __sub(@LuaNotNil FiguraVec6 arg1, @LuaNotNil FiguraVec6 arg2) {
         return arg1.minus(arg2);
     }
 
     @LuaWhitelist
-    public static FiguraVec6 __mul(FiguraVec6 arg1, FiguraVec6 arg2) {
+    public static FiguraVec6 __mul(@LuaNotNil FiguraVec6 arg1, @LuaNotNil FiguraVec6 arg2) {
         return arg1.times(arg2);
     }
 
     @LuaWhitelist
-    public static FiguraVec6 __mul(FiguraVec6 arg1, Double arg2) {
+    public static FiguraVec6 __mul(@LuaNotNil FiguraVec6 arg1, @LuaNotNil Double arg2) {
         return arg1.scaled(arg2);
     }
 
     @LuaWhitelist
-    public static FiguraVec6 __mul(Double arg1, FiguraVec6 arg2) {
+    public static FiguraVec6 __mul(@LuaNotNil Double arg1, @LuaNotNil FiguraVec6 arg2) {
         return arg2.scaled(arg1);
     }
 
     @LuaWhitelist
-    public static FiguraVec6 __div(FiguraVec6 arg1, FiguraVec6 arg2) {
+    public static FiguraVec6 __div(@LuaNotNil FiguraVec6 arg1, @LuaNotNil FiguraVec6 arg2) {
         if (arg2.x == 0 || arg2.y == 0 || arg2.z == 0 || arg2.w == 0 || arg2.t == 0 || arg2.h == 0)
             throw new LuaRuntimeException("Attempt to divide by 0");
         return arg1.dividedBy(arg2);
     }
 
     @LuaWhitelist
-    public static FiguraVec6 __div(FiguraVec6 arg1, Double arg2) {
+    public static FiguraVec6 __div(@LuaNotNil FiguraVec6 arg1, @LuaNotNil Double arg2) {
         if (arg2 == 0)
             throw new LuaRuntimeException("Attempt to divide by 0");
         return arg1.scaled(1 / arg2);
     }
 
     @LuaWhitelist
-    public static FiguraVec6 __mod(FiguraVec6 arg1, FiguraVec6 arg2) {
+    public static FiguraVec6 __mod(@LuaNotNil FiguraVec6 arg1, @LuaNotNil FiguraVec6 arg2) {
         if (arg2.x == 0 || arg2.y == 0 || arg2.z == 0 || arg2.w == 0 || arg2.t == 0 || arg2.h == 0)
             throw new LuaRuntimeException("Attempt to reduce mod 0");
         return arg1.mod(arg2);
     }
 
     @LuaWhitelist
-    public static FiguraVec6 __mod(FiguraVec6 arg1, Double arg2) {
+    public static FiguraVec6 __mod(@LuaNotNil FiguraVec6 arg1, @LuaNotNil Double arg2) {
         if (arg2 == 0)
             throw new LuaRuntimeException("Attempt to reduce mod 0");
         FiguraVec6 modulus = FiguraVec6.of(arg2, arg2, arg2, arg2, arg2, arg2);
@@ -274,14 +274,14 @@ public class FiguraVec6 extends FiguraVector<FiguraVec6> implements CachedType {
     }
 
     @LuaWhitelist
-    public static FiguraVec6 __idiv(FiguraVec6 arg1, FiguraVec6 arg2) {
+    public static FiguraVec6 __idiv(@LuaNotNil FiguraVec6 arg1, @LuaNotNil FiguraVec6 arg2) {
         if (arg2.x == 0 || arg2.y == 0 || arg2.z == 0 || arg2.w == 0 || arg2.t == 0 || arg2.h == 0)
             throw new LuaRuntimeException("Attempt to divide by 0");
         return arg1.iDividedBy(arg2);
     }
 
     @LuaWhitelist
-    public static FiguraVec6 __idiv(FiguraVec6 arg1, Double arg2) {
+    public static FiguraVec6 __idiv(@LuaNotNil FiguraVec6 arg1, @LuaNotNil Double arg2) {
         if (arg2 == 0)
             throw new LuaRuntimeException("Attempt to divide by 0");
         FiguraVec6 divisor = FiguraVec6.of(arg2, arg2, arg2, arg2, arg2, arg2);
@@ -291,28 +291,28 @@ public class FiguraVec6 extends FiguraVector<FiguraVec6> implements CachedType {
     }
 
     @LuaWhitelist
-    public static boolean __eq(FiguraVec6 arg1, FiguraVec6 arg2) {
+    public static boolean __eq(@LuaNotNil FiguraVec6 arg1, @LuaNotNil FiguraVec6 arg2) {
         return arg1.equals(arg2);
     }
 
     @LuaWhitelist
-    public static FiguraVec6 __unm(FiguraVec6 arg1) {
+    public static FiguraVec6 __unm(@LuaNotNil FiguraVec6 arg1) {
         return arg1.scaled(-1);
     }
 
     @LuaWhitelist
-    public static int __len(FiguraVec6 arg1) {
+    public static int __len(@LuaNotNil FiguraVec6 arg1) {
         return 6;
     }
 
     @LuaWhitelist
-    public static String __tostring(FiguraVec6 arg1) {
+    public static String __tostring(@LuaNotNil FiguraVec6 arg1) {
         return arg1.toString();
     }
 
     //Fallback for fetching a key that isn't in the table
     @LuaWhitelist
-    public static Object __index(FiguraVec6 arg1, String arg2) {
+    public static Object __index(@LuaNotNil FiguraVec6 arg1, String arg2) {
         if (arg2 == null)
             return null;
         int len = arg2.length();

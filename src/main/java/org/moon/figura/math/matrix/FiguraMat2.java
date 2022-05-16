@@ -277,35 +277,35 @@ public class FiguraMat2 implements CachedType {
     // METAMETHODS
     //----------------------------------------------------------------
     @LuaWhitelist
-    public static FiguraMat2 __add(FiguraMat2 arg1, FiguraMat2 arg2) {
+    public static FiguraMat2 __add(@LuaNotNil FiguraMat2 arg1, @LuaNotNil FiguraMat2 arg2) {
         return arg1.plus(arg2);
     }
     @LuaWhitelist
-    public static FiguraMat2 __sub(FiguraMat2 arg1, FiguraMat2 arg2) {
+    public static FiguraMat2 __sub(@LuaNotNil FiguraMat2 arg1, @LuaNotNil FiguraMat2 arg2) {
         return arg1.minus(arg2);
     }
     @LuaWhitelist
-    public static FiguraMat2 __mul(FiguraMat2 arg1, FiguraMat2 arg2) {
+    public static FiguraMat2 __mul(@LuaNotNil FiguraMat2 arg1, @LuaNotNil FiguraMat2 arg2) {
         return arg2.times(arg1);
     }
     @LuaWhitelist
-    public static FiguraVec2 __mul(FiguraMat2 arg1, FiguraVec2 arg2) {
+    public static FiguraVec2 __mul(@LuaNotNil FiguraMat2 arg1, @LuaNotNil FiguraVec2 arg2) {
         return arg1.times(arg2);
     }
     @LuaWhitelist
-    public static boolean __eq(FiguraMat2 arg1, FiguraMat2 arg2) {
+    public static boolean __eq(@LuaNotNil FiguraMat2 arg1, @LuaNotNil FiguraMat2 arg2) {
         return arg1.equals(arg2);
     }
     @LuaWhitelist
-    public static int __len(FiguraMat2 arg1) {
+    public static int __len(@LuaNotNil FiguraMat2 arg1) {
         return 2;
     }
     @LuaWhitelist
-    public static String __tostring(FiguraMat2 arg1) {
+    public static String __tostring(@LuaNotNil FiguraMat2 arg1) {
         return arg1.toString();
     }
     @LuaWhitelist
-    public static Object __index(FiguraMat2 arg1, String arg2) {
+    public static Object __index(@LuaNotNil FiguraMat2 arg1, @LuaNotNil String arg2) {
         return switch (arg2) {
             case "1" -> arg1.getCol1();
             case "2" -> arg1.getCol2();

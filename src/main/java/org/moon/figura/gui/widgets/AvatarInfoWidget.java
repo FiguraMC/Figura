@@ -58,7 +58,7 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
             values.set(0, new TextComponent(avatar.name).setStyle(ColorUtils.Colors.FRAN_PINK.style)); //name
             values.set(1, new TextComponent(avatar.author).setStyle(ColorUtils.Colors.FRAN_PINK.style)); //author
             values.set(2, new TextComponent(String.valueOf(avatar.fileSize)).setStyle(ColorUtils.Colors.FRAN_PINK.style)); //size
-            values.set(3, UNKNOWN); //complexity
+            values.set(3, new TextComponent(String.valueOf(avatar.complexity)).setStyle(ColorUtils.Colors.FRAN_PINK.style)); //complexity
         }
     }
 

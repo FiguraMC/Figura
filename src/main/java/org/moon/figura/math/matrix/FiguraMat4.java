@@ -754,27 +754,27 @@ public class FiguraMat4 implements CachedType {
     // METAMETHODS
     //----------------------------------------------------------------
     @LuaWhitelist
-    public static FiguraMat4 __add(FiguraMat4 arg1, FiguraMat4 arg2) {
+    public static FiguraMat4 __add(@LuaNotNil FiguraMat4 arg1, @LuaNotNil FiguraMat4 arg2) {
         return arg1.plus(arg2);
     }
     @LuaWhitelist
-    public static FiguraMat4 __sub(FiguraMat4 arg1, FiguraMat4 arg2) {
+    public static FiguraMat4 __sub(@LuaNotNil FiguraMat4 arg1, @LuaNotNil FiguraMat4 arg2) {
         return arg1.minus(arg2);
     }
     @LuaWhitelist
-    public static FiguraMat4 __mul(FiguraMat4 arg1, FiguraMat4 arg2) {
+    public static FiguraMat4 __mul(@LuaNotNil FiguraMat4 arg1, @LuaNotNil FiguraMat4 arg2) {
         return arg2.times(arg1);
     }
     @LuaWhitelist
-    public static FiguraVec4 __mul(FiguraMat4 arg1, FiguraVec4 arg2) {
+    public static FiguraVec4 __mul(@LuaNotNil FiguraMat4 arg1, @LuaNotNil FiguraVec4 arg2) {
         return arg1.times(arg2);
     }
     @LuaWhitelist
-    public static boolean __eq(FiguraMat4 arg1, FiguraMat4 arg2) {
+    public static boolean __eq(@LuaNotNil FiguraMat4 arg1, @LuaNotNil FiguraMat4 arg2) {
         return arg1.equals(arg2);
     }
     @LuaWhitelist
-    public static int __len(FiguraMat4 arg1) {
+    public static int __len(@LuaNotNil FiguraMat4 arg1) {
         return 4;
     }
     @LuaWhitelist

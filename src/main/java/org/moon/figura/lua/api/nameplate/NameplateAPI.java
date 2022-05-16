@@ -1,5 +1,6 @@
 package org.moon.figura.lua.api.nameplate;
 
+import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
@@ -33,7 +34,7 @@ public class NameplateAPI {
     }
 
     @LuaWhitelist
-    public static LuaPairsIterator<NameplateAPI, String> __pairs(NameplateAPI arg) {
+    public static LuaPairsIterator<NameplateAPI, String> __pairs(@LuaNotNil NameplateAPI arg) {
         return PAIRS_ITERATOR;
     }
     private static final LuaPairsIterator<NameplateAPI, String> PAIRS_ITERATOR =

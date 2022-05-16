@@ -483,7 +483,8 @@ public class FiguraModelPart {
             description = "model_part.get_primary_render_type"
     )
     public static String getPrimaryRenderType(@LuaNotNil FiguraModelPart modelPart) {
-        return modelPart.customization.getPrimaryRenderType().name();
+        FiguraTextureSet.RenderTypes renderType = modelPart.customization.getPrimaryRenderType();
+        return renderType == null ? null : renderType.name();
     }
 
     @LuaWhitelist
@@ -495,7 +496,8 @@ public class FiguraModelPart {
             description = "model_part.get_secondary_render_type"
     )
     public static String getSecondaryRenderType(@LuaNotNil FiguraModelPart modelPart) {
-        return modelPart.customization.getSecondaryRenderType().name();
+        FiguraTextureSet.RenderTypes renderType = modelPart.customization.getSecondaryRenderType();
+        return renderType == null ? null : renderType.name();
     }
 
     @LuaWhitelist
@@ -703,7 +705,7 @@ public class FiguraModelPart {
 
     //-- METAMETHODS --//
     @LuaWhitelist
-    public static Object __index(FiguraModelPart modelPart, String key) {
+    public static Object __index(@LuaNotNil FiguraModelPart modelPart, @LuaNotNil String key) {
         if (modelPart.childCache.containsKey(key))
             return modelPart.childCache.get(key);
         for (FiguraModelPart child : modelPart.children) {
@@ -753,6 +755,8 @@ public class FiguraModelPart {
                 customization.setSecondaryRenderType(FiguraTextureSet.RenderTypes.valueOf(partCompound.getString("secondary")));
             } catch (Exception ignored) {}
         }
+        if (partCompound.contains("vsb"))
+            customization.visible = partCompound.getBoolean("vsb");
 
         customization.needsMatrixRecalculation = true;
 

@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -180,7 +181,7 @@ public class LocalAvatarLoader {
     public static String readFile(File file) throws IOException {
         try {
             FileInputStream stream = new FileInputStream(file);
-            String fileContent = new String(stream.readAllBytes());
+            String fileContent = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
             stream.close();
             return fileContent;
         } catch (IOException e) {

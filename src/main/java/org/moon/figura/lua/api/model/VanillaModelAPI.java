@@ -301,7 +301,7 @@ public class VanillaModelAPI {
     }
 
     @LuaWhitelist
-    public static LuaPairsIterator<VanillaModelAPI, String> __pairs(VanillaModelAPI arg) {
+    public static LuaPairsIterator<VanillaModelAPI, String> __pairs(@LuaNotNil VanillaModelAPI arg) {
         return PAIRS_ITERATOR;
     }
     private static final LuaPairsIterator<VanillaModelAPI, String> PAIRS_ITERATOR =
