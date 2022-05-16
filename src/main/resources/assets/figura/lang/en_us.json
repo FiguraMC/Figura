@@ -465,7 +465,7 @@
   "figura.docs.events.world_render": "The WORLD_RENDER event is run every frame, before the world is rendered. Always runs when a world is visible, even when the avatar itself is not, so this runs even in first person. Takes a parameter delta, which is a number from 0 to 1 indicating the proportion of the way the game is between ticks.",
   "figura.docs.events.post_world_render": "The POST_WORLD_RENDER event runs every frame, after the world is rendered. Always runs when a world is visible, even when the avatar itself is not, so this runs even in first person. Takes a parameter delta, which is a number from 0 to 1 indicating the proportion of the way the game is between ticks.",
   "figura.docs.events.chat_send_message": "The CHAT_SEND_MESSAGE event is run every time you send a message in chat. A string parameter is passed in, which contains the message that was sent.",
-  "figura.docs.events.chat_received_message": "The CHAT_RECEIVED_MESSAGE event is run every time a message is received in chat. A string parameter is passed in, which contains the message you received.",
+  "figura.docs.events.chat_receive_message": "The CHAT_RECEIVE_MESSAGE event is run every time a message is received in chat. A string parameter is passed in, which contains the message you received.",
 
   "figura.docs.event": "A hook for a certain event in Minecraft. You may register functions to one, and those functions will be called when the event occurs.",
   "figura.docs.event.register": "Registers the given function to the given event. When the event occurs, the function will be run. Functions are run in the order they were registered.",

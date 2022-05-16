@@ -28,7 +28,7 @@ public class EventsAPI {
         WORLD_RENDER = new LuaEvent(state, "WORLD_RENDER");
         POST_WORLD_RENDER = new LuaEvent(state, "POST_WORLD_RENDER");
         CHAT_SEND_MESSAGE = new LuaEvent(state, "CHAT_SEND_MESSAGE");
-        CHAT_RECEIVED_MESSAGE = new LuaEvent(state, "CHAT_RECEIVED_MESSAGE");
+        CHAT_RECEIVE_MESSAGE = new LuaEvent(state, "CHAT_RECEIVE_MESSAGE");
     }
 
     @LuaWhitelist
@@ -50,8 +50,8 @@ public class EventsAPI {
     @LuaFieldDoc(description = "events.chat_send_message")
     public final LuaEvent CHAT_SEND_MESSAGE;
     @LuaWhitelist
-    @LuaFieldDoc(description = "events.chat_received_message")
-    public final LuaEvent CHAT_RECEIVED_MESSAGE;
+    @LuaFieldDoc(description = "events.chat_receive_message")
+    public final LuaEvent CHAT_RECEIVE_MESSAGE;
 
     //Metamethods
 
@@ -71,7 +71,7 @@ public class EventsAPI {
     public static class LuaEvent {
 
         @LuaWhitelist
-        public String name;
+        public final String name;
 
         private static final int MAX_FUNCTIONS = 3000;
 

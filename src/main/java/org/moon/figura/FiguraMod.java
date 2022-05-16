@@ -40,6 +40,8 @@ public class FiguraMod implements ClientModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID.substring(0, 1).toUpperCase() + MOD_ID.substring(1));
     public static final String WIKI = "https://github.com/Kingdom-Of-The-Moon/FiguraRewriteRewrite/wiki/";
 
+    public static boolean DO_OUR_NATIVES_WORK = false;
+
     public static int ticks = 0;
 
     @Override

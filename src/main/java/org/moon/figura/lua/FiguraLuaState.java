@@ -37,7 +37,7 @@ public class FiguraLuaState extends LuaState53 {
     public RendererAPI renderer;
 
     public static final String STORAGE_KEY = "STORAGE";
-    public LuaOwnedTable storedStuff = new LuaOwnedTable(this, STORAGE_KEY);
+    public LuaOwnedTable<Object> storedStuff = new LuaOwnedTable<>(this, STORAGE_KEY);
 
     public FiguraLuaState(Avatar owner, int memory) {
         super(memory * 1_000_000); //memory is given in mb

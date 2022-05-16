@@ -247,7 +247,8 @@ public class BlockbenchModelParser {
             BlockbenchModel.MeshFace face = gson.fromJson(entry.getValue(), BlockbenchModel.MeshFace.class);
 
             //dont parse empty faces
-            if (face.texture == null || face.vertices == null || face.uv == null)
+            //Also skip faces that have less than 3 or more than 4 vertices, since blockbench is jank as hell
+            if (face.texture == null || face.vertices == null || face.uv == null || face.vertices.length < 3 || face.vertices.length > 4)
                 continue;
 
             //parse texture

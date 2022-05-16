@@ -39,12 +39,11 @@ public class DebugScreenOverlayMixin {
 
             //has script
             if (avatar.luaState != null) {
-                if (Minecraft.ON_OSX) {
+                if (!FiguraMod.DO_OUR_NATIVES_WORK) {
                     lines.add(++i, "Sorry, but instruction counts are ");
-                    lines.add(++i, "not currently supported on Mac :(");
+                    lines.add(++i, "only supported on Windows right now :(");
                     lines.add(++i, "We're working on it!");
                 } else {
-
                     lines.add(++i, String.format("Init instructions: %d", avatar.initInstructions));
                     lines.add(++i, String.format("Tick instructions: %d", avatar.tickInstructions));
                     lines.add(++i, "Render instructions (W, R, PR, PW):");
@@ -54,7 +53,6 @@ public class DebugScreenOverlayMixin {
                             avatar.postRenderInstructions,
                             avatar.postWorldRenderInstructions));
                 }
-
             }
         }
         //lines.add(++i, String.format("Pings per second: ↑%d, ↓%d", pingSent, pingReceived));

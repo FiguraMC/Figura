@@ -78,7 +78,10 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
     @Override
     public void render() {
         //Offset is NOT hard coded for one pose, this comes from LivingEntityRenderer.java.
-        commonRender(1.5010000467300415D);
+//        commonRender(1.5010000467300415D);
+
+        //Edit: apparently that number was bad, and it is actually correct to just use 1.5d
+        commonRender(1.5d);
     }
 
     @Override

@@ -100,7 +100,7 @@ public class FiguraLuaPrinter {
 
         //execute if the stack has entries
         while (luaState.getTop() > 0) {
-            text.append(getPrintText(luaState, 1, true)).append("\t");
+            text.append(getPrintText(luaState, 1, true, false)).append("\t");
             luaState.remove(1);
         }
 
@@ -140,7 +140,7 @@ public class FiguraLuaPrinter {
 
         //normal print when failed to parse userdata or depth limit
         if (luaState.type(top) != LuaType.TABLE || depth <= 0) {
-            Component text = getPrintText(luaState, index, hasTooltip);
+            Component text = getPrintText(luaState, index, hasTooltip, true);
             luaState.pop(1);
             return text;
         }
@@ -161,7 +161,7 @@ public class FiguraLuaPrinter {
 
             //add key
             text.append(new TextComponent("[").withStyle(ChatFormatting.GRAY));
-            text.append(getPrintText(luaState, tableTop - 1, hasTooltip));
+            text.append(getPrintText(luaState, tableTop - 1, hasTooltip, true));
             text.append(new TextComponent("] = ").withStyle(ChatFormatting.GRAY));
 
             //add value
@@ -169,7 +169,7 @@ public class FiguraLuaPrinter {
             if (type == LuaType.TABLE || type == LuaType.USERDATA)
                 text.append(tableToText(luaState, tableTop, depth - 1, indent + 1, hasTooltip));
             else
-                text.append(getPrintText(luaState, tableTop, hasTooltip));
+                text.append(getPrintText(luaState, tableTop, hasTooltip, true));
 
             //pop value
             luaState.pop(1);
@@ -214,13 +214,19 @@ public class FiguraLuaPrinter {
         return ret;
     }
 
-    private static MutableComponent getPrintText(LuaState luaState, int index, boolean hasTooltip) {
+    //fancyString just means to add quotation marks around strings.
+    private static MutableComponent getPrintText(LuaState luaState, int index, boolean hasTooltip, boolean quoteStrings) {
         LuaType type = luaState.type(index);
         String ret;
 
         //format value
         switch (type) {
-            case STRING -> ret = "\"" + luaToString(luaState, index) + "\"";
+            case STRING -> {
+                if (!quoteStrings)
+                    ret = luaToString(luaState, index);
+                else
+                    ret = "\"" + luaToString(luaState, index) + "\"";
+            }
             case NUMBER -> {
                 Double d = luaState.toJavaObject(index, Double.class);
                 ret = d == Math.rint(d) ? String.valueOf(d.intValue()) : String.valueOf(d);
