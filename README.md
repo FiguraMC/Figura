@@ -1,5 +1,5 @@
 # Figura
 
-[Discord](discord.gg/ekHGHcH8Af)  
-[Modrinth](modrinth.com/mod/figura)  
-[Curseforge](curseforge.com/minecraft/mc-mods/figura)  
+[Discord](https://discord.gg/ekHGHcH8Af)  
+[Modrinth](https://modrinth.com/mod/figura)  
+[Curseforge](https://curseforge.com/minecraft/mc-mods/figura)  
