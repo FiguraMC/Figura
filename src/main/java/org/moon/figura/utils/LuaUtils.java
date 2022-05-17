@@ -1,5 +1,7 @@
 package org.moon.figura.utils;
 
+import net.minecraft.CrashReport;
+import net.minecraft.client.Minecraft;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
@@ -8,7 +10,6 @@ import org.terasology.jnlua.LuaState;
 import org.terasology.jnlua.LuaType;
 import org.terasology.jnlua.NativeSupport;
 
-import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -77,7 +78,7 @@ public class LuaUtils {
         boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
         boolean isMacOS = System.getProperty("os.name").toLowerCase().contains("mac");
         FiguraMod.DO_OUR_NATIVES_WORK = isWindows;
-        StringBuilder builder = new StringBuilder(isWindows ? "libjnlua-" : "jnlua-");
+        StringBuilder builder = new StringBuilder("libjnlua-");
         builder.append("5.3-");
         if (isWindows) {
             builder.append("windows-");
@@ -105,16 +106,17 @@ public class LuaUtils {
 
         String targetLib = "/assets/figura/lua/natives/" + builder;
         InputStream libStream = FiguraMod.class.getResourceAsStream(targetLib);
-        File f = nativesFolder.resolve(builder.toString()).toFile();
+        Path dest = nativesFolder.resolve(builder.toString()).toAbsolutePath();
 
         try {
             if (libStream == null) throw new Exception("Cannot read natives from resources");
             Files.createDirectories(nativesFolder);
-            Files.copy(libStream, f.toPath().toAbsolutePath(), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(libStream, dest, StandardCopyOption.REPLACE_EXISTING);
+            FiguraMod.LOGGER.debug("Successfully copied lua natives!");
         } catch (Exception e) {
-            FiguraMod.LOGGER.error("Failed to copy Lua natives", e);
+            Minecraft.crash(new CrashReport("Failed to copy Lua natives with from: \"" + targetLib + "\" to \"" + dest + "\"", e));
         }
 
-        NativeSupport.loadLocation = f.getAbsolutePath();
+        NativeSupport.loadLocation = dest.toString();
     }
 }
