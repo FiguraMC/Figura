@@ -32,7 +32,7 @@ public class AvatarMetadataParser {
         nbt.putString("name", metadata.name == null ? filename : metadata.name);
         nbt.putString("ver", metadata.version == null ? FiguraMod.VERSION : metadata.version);
         nbt.putString("author", metadata.author == null ? "" : metadata.author);
-        nbt.putString("pride", metadata.pride == null ? "" : metadata.pride);
+        nbt.putString("badge", metadata.badge == null ? "" : metadata.badge);
 
         ListTag autoScripts = new ListTag();
         if (metadata.autoScripts != null) {
@@ -102,7 +102,7 @@ public class AvatarMetadataParser {
 
     //json object class
     private static class Metadata {
-        String name, author, version, pride;
+        String name, author, version, badge;
         String[] autoScripts;
         HashMap<String, Customization> customizations;
     }

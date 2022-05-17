@@ -42,10 +42,10 @@ public class MetaAPI {
                     argumentTypes = MetaAPI.class,
                     argumentNames = "meta"
             ),
-            description = "meta.get_pride"
+            description = "meta.get_badge"
     )
-    public static String getPride(@LuaNotNil MetaAPI api) {
-        return api.avatar.pride;
+    public static String getBadge(@LuaNotNil MetaAPI api) {
+        return api.avatar.badge;
     }
 
     @LuaWhitelist
@@ -54,10 +54,10 @@ public class MetaAPI {
                     argumentTypes = {MetaAPI.class, String.class},
                     argumentNames = {"meta", "text"}
             ),
-            description = "meta.set_pride"
+            description = "meta.set_badge"
     )
-    public static void setPride(@LuaNotNil MetaAPI api, @LuaNotNil String text) {
-        api.avatar.pride = text;
+    public static void setBadge(@LuaNotNil MetaAPI api, @LuaNotNil String text) {
+        api.avatar.badge = text;
     }
 
     @LuaWhitelist

@@ -15,5 +15,8 @@ public class MathUtils {
         };
     }
 
-
+    public static boolean getBool(long number, int byteAt) {
+        int byteVal = (int) Math.pow(2, byteAt);
+        return (number & byteVal) == byteVal;
+    }
 }

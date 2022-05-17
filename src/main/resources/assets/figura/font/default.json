@@ -4,7 +4,7 @@
       "type": "space",
       "advances": {
         " ": 4,
-        "\u200c": 0
+        "\u200C": 0
       }
     },
     {
@@ -12,8 +12,10 @@
       "file": "figura:font/badges.png",
       "ascent": 8,
       "chars": [
-        "△▲!\uD83E\uDDC0",
-        "❤☆✯★"
+        "△\uD83D\uDFE5\uD83D\uDFE7\uD83D\uDFE8\uD83D\uDFE9",
+        "\uD83D\uDFE6\uD83D\uDFEA\uD83D\uDFEB⬜⬛",
+        "❗❌\uD83D\uDEAB\uD83C\uDF54\uD83E\uDDC0",
+        "❤☆✯\uD83C\uDF19★"
       ]
     },
     {
@@ -39,15 +41,6 @@
       "ascent": 8,
       "height": 10,
       "chars": ["-*/+="]
-    },
-    {
-      "type": "bitmap",
-      "file": "figura:font/pride.png",
-      "ascent": 8,
-      "chars": [
-        "\uD83D\uDFE5\uD83D\uDFE6\uD83D\uDFE8⬛",
-        "\uD83D\uDFEA⬜\uD83D\uDFE7\uD83D\uDFE9"
-      ]
     }
   ]
 }

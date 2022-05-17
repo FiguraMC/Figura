@@ -227,6 +227,18 @@ public class VectorsAPI {
         return ColorUtils.rgbToHSV(rgb);
     }
 
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = Double.class,
+                    argumentNames = "speed"
+            ),
+            description = "vectors.rainbow"
+    )
+    public static FiguraVec3 rainbow(Double speed) {
+        return ColorUtils.intToRGB(ColorUtils.rainbow(speed));
+    }
+
     @Override
     public String toString() {
         return "VectorsAPI";

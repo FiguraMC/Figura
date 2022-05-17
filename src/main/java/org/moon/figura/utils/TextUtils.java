@@ -15,8 +15,8 @@ public class TextUtils {
     public static final ResourceLocation FIGURA_FONT = new FiguraIdentifier("default");
     public static final int TAB_SPACING = 2;
 
-    public static String noBadges4U(String string) {
-        return string.replaceAll("([▲!❤☆✯★]|\\\\u(?i)(25B2|0021|2764|2606|272F|2605))", "\uFFFD");
+    public static Component noBadges4U(Component text) {
+        return replaceInText(text, "[❗❌\uD83D\uDEAB\uD83C\uDF54❤☆✯\uD83C\uDF19★]", "\uFFFD");
     }
 
     public static List<Component> splitText(Component text, String regex) {

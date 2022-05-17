@@ -522,8 +522,8 @@
 
   "figura.docs.meta": "A global API containing functions to interact with your avatar's metadata, and also to get meta-information about the current script environment.",
   "figura.docs.meta.store": "Store the given key-value pair inside your current avatar's metadata. Someone else can get this information from a different script with the getVariable() function in Player. The key must be a string.",
-  "figura.docs.meta.get_pride": "Gets the current pride string of your avatar, used to customize the triangle in your nameplate.",
-  "figura.docs.meta.set_pride": "Sets the current pride string of your avatar, used to customize the triangle in your nameplate.",
+  "figura.docs.meta.get_badge": "Gets the current badge string of your avatar, used to customize the triangle in your nameplate.",
+  "figura.docs.meta.set_badge": "Sets the current badge string of your avatar, used to customize the triangle in your nameplate.",
   "figura.docs.meta.get_version": "Gets the version string of this avatar.",
   "figura.docs.meta.get_author": "Gets the author string of this avatar.",
   "figura.docs.meta.get_name": "Gets the name string of this avatar.",
@@ -576,6 +576,7 @@
   "figura.docs.vectors.hex_to_rgb": "Parses a hex string color into a RGB format vector. The hex \"#\" is optional, and it can have any length, however only the first 6 hex digits are evaluated, short hex (length 3) is also supported. For example, \"#42\" is the same as \"420000\", and \"F0B\" is the same as \"FF00BB\"",
   "figura.docs.vectors.hsv_to_rgb": "Converts the given color from HSV format to RGB format.",
   "figura.docs.vectors.rgb_to_hsv": "Converts the given color from RGB format to HSV format.",
+  "figura.docs.vectors.rainbow": "",
 
   "figura.docs.vector2": "A vector that holds 2 numbers. Can be created using functions in the \"vectors\" api.",
   "figura.docs.vector3": "A vector that holds 3 numbers. Can be created using functions in the \"vectors\" api.",

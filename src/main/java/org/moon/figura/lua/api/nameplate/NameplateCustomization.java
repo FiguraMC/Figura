@@ -1,6 +1,7 @@
 package org.moon.figura.lua.api.nameplate;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.FiguraMod;
@@ -12,7 +13,9 @@ import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.LuaUtils;
+import org.moon.figura.utils.MathUtils;
 import org.moon.figura.utils.TextUtils;
 import org.terasology.jnlua.LuaRuntimeException;
 
@@ -23,6 +26,8 @@ import org.terasology.jnlua.LuaRuntimeException;
 )
 public class NameplateCustomization {
 
+    private static final String[] SPECIAL_BADGES = {"\uD83D\uDEAB", "\uD83C\uDF54", "❤", "☆", "✯", "\uD83C\uDF19", "★"};
+
     private String text;
 
     //those are only used on the ENTITY nameplate
@@ -31,44 +36,55 @@ public class NameplateCustomization {
     private Boolean visible;
 
     public static Component applyCustomization(String text) {
-        text = TextUtils.noBadges4U(text);
-        Component ret = TextUtils.tryParseJson(text);
-        return TextUtils.removeClickableObjects(ret);
+        return TextUtils.removeClickableObjects(TextUtils.noBadges4U(TextUtils.tryParseJson(text)));
     }
 
     public static Component fetchBadges(Avatar avatar) {
         if (avatar == null)
             return TextComponent.EMPTY.copy();
 
-        String ret = " ";
+        MutableComponent badges = new TextComponent(" ").withStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT));
 
         //error
         if (avatar.scriptError)
-            ret += "▲";
+            badges.append("❌");
 
         //easter egg
         else if (FiguraMod.CHEESE_DAY && (boolean) Config.EASTER_EGGS.value)
-            ret += "\uD83E\uDDC0";
+            badges.append("\uD83E\uDDC0");
 
         //pride
         else {
-            ret += switch (avatar.pride.toLowerCase()) {
+            int color = 0xFFFFFF;
+            badges.append(new TextComponent(switch (avatar.badge.toLowerCase()) {
                 case "lgbt", "pride", "gay" -> "\uD83D\uDFE5";
-                case "transgender", "trans" -> "\uD83D\uDFE6";
+                case "transgender", "trans" -> "\uD83D\uDFE7";
                 case "pansexual", "pan" -> "\uD83D\uDFE8";
-                case "non binary", "non-binary", "nb", "enby" -> "⬛";
+                case "non binary", "non-binary", "nb", "enby" -> "\uD83D\uDFE9";
+                case "plural", "plurality", "system" -> "\uD83D\uDFE6";
                 case "bisexual", "bi" -> "\uD83D\uDFEA";
-                case "asexual", "ace" -> "⬜";
-                case "lesbian" -> "\uD83D\uDFE7";
-                case "gender fluid", "genderfluid", "fluid" -> "\uD83D\uDFE9";
-                default -> "△";
-            };
+                case "asexual", "ace" -> "\uD83D\uDFEB";
+                case "lesbian" -> "⬜";
+                case "gender fluid", "genderfluid", "fluid" -> "⬛";
+                default -> {
+                    color = ColorUtils.userInputHex(avatar.badge);
+                    yield "△";
+                }
+            }).withStyle(Style.EMPTY.withColor(color)));
         }
 
-        //special
-        ret += avatar.badges;
+        //special badges
+        long s = avatar.specialBadges;
+        if (s > 0L) {
+            for (int i = 0; i < 6; i++) {
+                if (MathUtils.getBool(s, i))
+                    badges.append(SPECIAL_BADGES[i]);
+            }
+            if (MathUtils.getBool(s, 6))
+                badges.append(new TextComponent(SPECIAL_BADGES[6]).withStyle(Style.EMPTY.withColor(ColorUtils.rainbow(2))));
+        }
 
-        return new TextComponent(ret).withStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT));
+        return badges;
     }
 
     @LuaWhitelist

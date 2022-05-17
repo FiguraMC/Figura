@@ -48,8 +48,8 @@ public class Avatar {
     public final String author;
     public final String version;
     public final float fileSize;
-    public String badges = ""; //TODO fetch from backend
-    public String pride;
+    public long specialBadges = 0; //TODO fetch from backend
+    public String badge;
 
     //Runtime data
     public final CompoundTag nbt;
@@ -86,7 +86,7 @@ public class Avatar {
         name = metadata.getString("name");
         author = metadata.getString("author");
         version = metadata.getString("ver");
-        pride = metadata.getString("pride");
+        badge = metadata.getString("badge");
         fileSize = getFileSize();
 
         //read model
