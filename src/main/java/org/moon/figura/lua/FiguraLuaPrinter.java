@@ -57,6 +57,8 @@ public class FiguraLuaPrinter {
         //Jank as hell
         String message = error.toString().replace("org.terasology.jnlua.LuaRuntimeException: ", "");
         message = message.replace("org.terasology.jnlua.LuaMemoryAllocationException: ", "Memory error: ");
+        //Might do something unexpected in the extremely niche circumstance that someone has their own script named "autoScripts" and has an error on line 1.
+        message = message.replace("[string \"autoScripts\"]:1: ", "");
 
         MutableComponent component = TextComponent.EMPTY.copy()
                 .append(new TextComponent("[error] ").withStyle(ColorUtils.Colors.LUA_ERROR.style))

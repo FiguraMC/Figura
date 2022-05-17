@@ -1,7 +1,5 @@
 package org.moon.figura.math.vector;
 
-import org.terasology.jnlua.LuaRuntimeException;
-
 public abstract class FiguraVector<T extends FiguraVector<T>> {
 
     public abstract double lengthSquared();
@@ -20,22 +18,30 @@ public abstract class FiguraVector<T extends FiguraVector<T>> {
     public abstract void reduce(T other);
     public abstract void iDivide(T other);
     public abstract void scale(double factor);
+
     public void normalize() {
         double len = length();
         if (len > 0)
             scale(1 / len);
     }
+
     public void clampLength(Double minLength, Double maxLength) {
         if (minLength == null) minLength = 0d;
         if (maxLength == null) maxLength = Double.POSITIVE_INFINITY;
         double len = length();
+        if (len == 0)
+            return;
         if (len < minLength) {
-            if (len == 0) throw new LuaRuntimeException("Attempt to divide by 0");
             scale(minLength / len);
         } else if (len > maxLength) {
-            if (len == 0) throw new LuaRuntimeException("Attempt to divide by 0");
             scale(maxLength / len);
         }
+    }
+
+    public T clamped(Double minLength, Double maxLength) {
+        T result = copy();
+        result.clampLength(minLength, maxLength);
+        return result;
     }
 
     public T plus(T other) {

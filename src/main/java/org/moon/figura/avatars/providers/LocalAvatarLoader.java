@@ -16,7 +16,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * class used to load avatars from a file
@@ -62,11 +63,14 @@ public class LocalAvatarLoader {
         nbt.put("metadata", AvatarMetadataParser.parse(metadata, path.getFileName().toString()));
 
         //scripts
-        File[] scripts = getFilesByExtension(path, ".lua");
-        if (scripts != null && scripts.length > 0) {
+        List<File> scripts = getFilesByExtension(path, ".lua", true);
+        if (scripts.size() > 0) {
             CompoundTag scriptsNbt = new CompoundTag();
+            String pathRegex = Pattern.quote(path + File.separator);
             for (File script : scripts) {
-                String name = script.getName();
+                String pathStr = script.toPath().toString();
+                String name = pathStr.replaceFirst(pathRegex, "");
+                name = name.replace(File.separatorChar, '/');
                 scriptsNbt.put(name.substring(0, name.length() - 4), LuaScriptParser.parse(readFile(script)));
             }
 
@@ -74,8 +78,8 @@ public class LocalAvatarLoader {
 
             //sounds
             //avatar needs a script to load custom sounds
-            File[] sounds = getFilesByExtension(path.resolve("sounds"), ".ogg");
-            if (sounds != null && sounds.length > 0) {
+            List<File> sounds = getFilesByExtension(path, ".ogg", false);
+            if (sounds.size() > 0) {
                 CompoundTag soundsNbt = new CompoundTag();
                 for (File sound : sounds) {
                     String name = sound.getName();
@@ -87,10 +91,11 @@ public class LocalAvatarLoader {
         }
 
         //models
-        File[] models = getFilesByExtension(path, ".bbmodel");
+        //Recursion not yet implemented
+        List<File> models = getFilesByExtension(path, ".bbmodel", false);
 
         //if no model is found we can return the avatar here
-        if (models == null || models.length == 0)
+        if (models.size() == 0)
             return nbt;
 
         CompoundTag modelRoot = new CompoundTag();
@@ -174,8 +179,18 @@ public class LocalAvatarLoader {
 
     // -- helper functions -- //
 
-    public static File[] getFilesByExtension(Path root, String extension) {
-        return root.toFile().listFiles(name -> name.toString().toLowerCase().endsWith(extension.toLowerCase()));
+    public static List<File> getFilesByExtension(Path root, String extension, boolean recurse) {
+        List<File> result = new ArrayList<>();
+        File rf = root.toFile();
+        File[] children = rf.listFiles();
+        if (children == null) return result;
+        for (File child : children) {
+            if (recurse && child.isDirectory())
+                result.addAll(getFilesByExtension(child.toPath(), extension, true));
+            else if (child.toString().toLowerCase().endsWith(extension.toLowerCase()))
+                result.add(child);
+        }
+        return result;
     }
 
     public static String readFile(File file) throws IOException {

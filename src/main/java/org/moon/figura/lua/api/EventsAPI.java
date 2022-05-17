@@ -144,7 +144,7 @@ public class EventsAPI {
             if (index == null) index = 1;
             if (index <= 0 || index > event.functionList.size())
                 throw new LuaRuntimeException("Illegal index to remove(): " + index);
-            event.functionList.remove(index - 1);
+            event.functionList.remove(index.intValue());
         }
 
         @LuaWhitelist

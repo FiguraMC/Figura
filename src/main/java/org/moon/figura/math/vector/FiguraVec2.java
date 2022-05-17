@@ -287,14 +287,14 @@ public class FiguraVec2 extends FiguraVector<FiguraVec2> implements CachedType {
         };
 
         if (len > 6)
-            throw new IllegalArgumentException("Invalid swizzle: " + arg2);
+            throw new LuaRuntimeException("Invalid swizzle: " + arg2);
         double[] vals = new double[len];
         for (int i = 0; i < len; i++)
             vals[i] = switch (arg2.charAt(i)) {
                 case '1', 'x', 'r' -> arg1.x;
                 case '2', 'y', 'g' -> arg1.y;
                 case '_' -> 0;
-                default -> throw new IllegalArgumentException("Invalid swizzle: " + arg2);
+                default -> throw new LuaRuntimeException("Invalid swizzle: " + arg2);
             };
         return MathUtils.sizedVector(vals);
     }
@@ -358,6 +358,30 @@ public class FiguraVec2 extends FiguraVector<FiguraVec2> implements CachedType {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraVec2.class,
+                    argumentNames = "vec"
+            ),
+            description = "vector_n.normalize"
+    )
+    public static void normalize(FiguraVec2 vec) {
+        vec.normalize();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraVec2.class,
+                    argumentNames = "vec"
+            ),
+            description = "vector_n.normalized"
+    )
+    public static FiguraVec2 normalized(FiguraVec2 vec) {
+        return vec.normalized();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
                     argumentTypes = {FiguraVec2.class, Double.class, Double.class},
                     argumentNames = {"vec", "minLength", "maxLength"}
             ),
@@ -365,6 +389,18 @@ public class FiguraVec2 extends FiguraVector<FiguraVec2> implements CachedType {
     )
     public static void clampLength(@LuaNotNil FiguraVec2 arg, Double minLength, Double maxLength) {
         arg.clampLength(minLength, maxLength);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = {FiguraVec2.class, Double.class, Double.class},
+                    argumentNames = {"vec", "minLength", "maxLength"}
+            ),
+            description = "vector_n.clamped"
+    )
+    public static FiguraVec2 clamped(@LuaNotNil FiguraVec2 arg, Double minLength, Double maxLength) {
+        return arg.clamped(minLength, maxLength);
     }
 
     @LuaWhitelist
