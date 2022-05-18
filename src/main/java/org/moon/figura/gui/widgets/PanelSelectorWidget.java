@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import org.moon.figura.FiguraMod;
 import org.moon.figura.gui.screens.*;
 
 import java.util.ArrayList;
@@ -26,12 +27,16 @@ public class PanelSelectorWidget extends AbstractContainerElement {
         //selected button
         buttons.get(selected).setToggled(true);
 
-        //TODO - remove this when we actually implement those panels
+        //TODO - remove this when we actually implement those panels {
+        if (FiguraMod.DEBUG_MODE)
+            return;
+
         for (int i = 0; i < 2; i++) {
             SwitchButton button = buttons.get(i);
             button.setTooltip(new TextComponent("Not yet ❤"));
             button.active = false;
         }
+        //TODO }
     }
 
     private void createPanelButton(Supplier<AbstractPanelScreen> screenSupplier, Component title) {

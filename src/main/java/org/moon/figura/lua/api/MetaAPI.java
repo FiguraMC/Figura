@@ -19,6 +19,8 @@ public class MetaAPI {
     private final Avatar avatar;
     private final TrustContainer trust;
 
+    private String color = "";
+
     public MetaAPI(Avatar avatar) {
         this.avatar = avatar;
         this.trust = TrustManager.get(avatar.owner);
@@ -42,22 +44,22 @@ public class MetaAPI {
                     argumentTypes = MetaAPI.class,
                     argumentNames = "meta"
             ),
-            description = "meta.get_badge"
+            description = "meta.get_color"
     )
-    public static String getBadge(@LuaNotNil MetaAPI api) {
-        return api.avatar.badge;
+    public static String getColor(@LuaNotNil MetaAPI api) {
+        return api.color;
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = {MetaAPI.class, String.class},
-                    argumentNames = {"meta", "text"}
+                    argumentNames = {"meta", "color"}
             ),
-            description = "meta.set_badge"
+            description = "meta.set_color"
     )
-    public static void setBadge(@LuaNotNil MetaAPI api, @LuaNotNil String text) {
-        api.avatar.badge = text;
+    public static void setColor(@LuaNotNil MetaAPI api, @LuaNotNil String text) {
+        api.color = text;
     }
 
     @LuaWhitelist

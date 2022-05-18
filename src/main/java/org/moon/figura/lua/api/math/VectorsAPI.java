@@ -236,6 +236,7 @@ public class VectorsAPI {
             description = "vectors.rainbow"
     )
     public static FiguraVec3 rainbow(Double speed) {
+        if (speed == null) speed = 1d;
         return ColorUtils.intToRGB(ColorUtils.rainbow(speed));
     }
 

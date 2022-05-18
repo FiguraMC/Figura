@@ -522,8 +522,8 @@
 
   "figura.docs.meta": "A global API containing functions to interact with your avatar's metadata, and also to get meta-information about the current script environment.",
   "figura.docs.meta.store": "Store the given key-value pair inside your current avatar's metadata. Someone else can get this information from a different script with the getVariable() function in Player. The key must be a string.",
-  "figura.docs.meta.get_badge": "Gets the current badge string of your avatar, used to customize the triangle in your nameplate.",
-  "figura.docs.meta.set_badge": "Sets the current badge string of your avatar, used to customize the triangle in your nameplate.",
+  "figura.docs.meta.get_color": "Gets the current color string of your avatar, used as your avatar theme.",
+  "figura.docs.meta.set_color": "Sets the current color string of your avatar, used as your avatar theme.",
   "figura.docs.meta.get_version": "Gets the version string of this avatar.",
   "figura.docs.meta.get_author": "Gets the author string of this avatar.",
   "figura.docs.meta.get_name": "Gets the name string of this avatar.",

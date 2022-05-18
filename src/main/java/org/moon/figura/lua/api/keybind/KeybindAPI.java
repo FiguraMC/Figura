@@ -34,7 +34,7 @@ public class KeybindAPI {
     public static FiguraKeybind create(@LuaNotNil KeybindAPI api, @LuaNotNil String name, @LuaNotNil String key, Boolean gui) {
         api.keyBindings.removeIf(binding -> FiguraKeybind.getName(binding).equals(name));
 
-        FiguraKeybind binding = new FiguraKeybind(api.owner, name, FiguraKeybind.parseStringKey(key), gui);
+        FiguraKeybind binding = new FiguraKeybind(api.owner, name, FiguraKeybind.parseStringKey(key), gui != null && gui);
         api.keyBindings.add(binding);
         return binding;
     }

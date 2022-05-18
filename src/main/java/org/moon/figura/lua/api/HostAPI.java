@@ -216,6 +216,14 @@ public class HostAPI {
         }
     }
 
+    @LuaWhitelist
+    public static void setBadge(@LuaNotNil HostAPI api, @LuaNotNil Integer index, @LuaNotNil Boolean value) {
+        if (!isHost(api)) return;
+        if (!FiguraMod.DEBUG_MODE)
+            throw new LuaRuntimeException("Congrats, you found this debug easter egg!");
+        api.owner.badges.set(index, value);
+    }
+
     @Override
     public String toString() {
         return "HostAPI";

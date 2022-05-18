@@ -22,6 +22,7 @@ import org.moon.figura.avatars.model.rendering.ImmediateAvatarRenderer;
 import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.lua.FiguraLuaState;
 import org.moon.figura.lua.api.EventsAPI;
+import org.moon.figura.lua.api.nameplate.NameplateCustomization;
 import org.moon.figura.lua.types.LuaFunction;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
@@ -33,10 +34,7 @@ import java.io.DataOutputStream;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 //the avatar class
 //contains all things related to the avatar
@@ -48,8 +46,9 @@ public class Avatar {
     public final String author;
     public final String version;
     public final float fileSize;
-    public long specialBadges = 0; //TODO fetch from backend
-    public String badge;
+    public final String color;
+
+    public BitSet badges = new BitSet(NameplateCustomization.badgesLen());
 
     //Runtime data
     public final CompoundTag nbt;
@@ -86,7 +85,7 @@ public class Avatar {
         name = metadata.getString("name");
         author = metadata.getString("author");
         version = metadata.getString("ver");
-        badge = metadata.getString("badge");
+        color = metadata.getString("color");
         fileSize = getFileSize();
 
         //read model

@@ -105,7 +105,7 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
 
                 //get backend disconnect reason
                 if (i == 3 && disconnectedReason != null)
-                    text.append("\n").append("\n").append(new FiguraText(part + ".reason")).append("\n• ").append(disconnectedReason);
+                    text.append("\n\n").append(new FiguraText(part + ".reason")).append("\n• ").append(disconnectedReason);
 
                 break;
             }

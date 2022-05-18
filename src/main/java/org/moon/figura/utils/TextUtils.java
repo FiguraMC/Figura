@@ -16,7 +16,7 @@ public class TextUtils {
     public static final int TAB_SPACING = 2;
 
     public static Component noBadges4U(Component text) {
-        return replaceInText(text, "[❗❌\uD83D\uDEAB\uD83C\uDF54❤☆✯\uD83C\uDF19★]", "\uFFFD");
+        return replaceInText(text, "[❗❌\uD83C\uDF54\uD83E\uDD90\uD83C\uDF19\uD83C\uDF00\uD83D\uDEAB❤★]", "\uFFFD");
     }
 
     public static List<Component> splitText(Component text, String regex) {
@@ -30,7 +30,7 @@ public class TextUtils {
         for (Component entry : text.toFlatList(text.getStyle())) {
             //split text based on regex
             String entryString = entry.getString();
-            String[] lines = entryString.split("((?<=" + regex + ")|(?=" + regex + "))");
+            String[] lines = entryString.split(regex, -1);
 
             //iterate over the split text
             for (int i = 0; i < lines.length; i++) {
@@ -41,12 +41,11 @@ public class TextUtils {
                 }
 
                 //append text with the line text
-                if (!lines[i].matches(regex))
-                    currentText.append(new TextComponent(lines[i]).setStyle(entry.getStyle()));
+                currentText.append(new TextComponent(lines[i]).setStyle(entry.getStyle()));
             }
 
             //if the text ends with the split pattern, add to return list and reset the line variable
-            if (entryString.matches(".*" + regex + "$")) {
+            if (entryString.matches(regex + "$")) {
                 textList.add(currentText.copy());
                 currentText = TextComponent.EMPTY.copy();
             }
@@ -96,24 +95,22 @@ public class TextUtils {
     public static Component replaceInText(Component text, String regex, Object replacement) {
         Component replace = replacement instanceof Component c ? c : new TextComponent(String.valueOf(replacement));
 
-        //split the text based on the regex pattern
-        List<Component> list = splitText(text, regex);
+        MutableComponent ret = TextComponent.EMPTY.copy();
 
-        //text to return
-        MutableComponent finalText = TextComponent.EMPTY.copy();
+        List<Component> list = text.toFlatList(text.getStyle());
+        for (Component component : list) {
+            String textString = component.getString();
 
-        //iterate over the split text
-        for (int i = 0; i < list.size(); i++) {
-            //append the split text on the return text
-            finalText.append(list.get(i));
-
-            //if it is not the last iteration, append the replacement text
-            if (i < list.size() - 1)
-                finalText.append(replace);
+            String[] split = textString.split("((?<=" + regex + ")|(?=" + regex + "))");
+            for (String s : split) {
+                if (!s.matches(regex))
+                    ret.append(new TextComponent(s).withStyle(component.getStyle()));
+                else
+                    ret.append(replace);
+            }
         }
 
-        //return the text
-        return finalText;
+        return ret;
     }
 
     public static Component trimToWidthEllipsis(Font font, Component text, int width) {

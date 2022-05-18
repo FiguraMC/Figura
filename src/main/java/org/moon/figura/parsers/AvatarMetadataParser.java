@@ -32,7 +32,7 @@ public class AvatarMetadataParser {
         nbt.putString("name", metadata.name == null ? filename : metadata.name);
         nbt.putString("ver", metadata.version == null ? FiguraMod.VERSION : metadata.version);
         nbt.putString("author", metadata.author == null ? "" : metadata.author);
-        nbt.putString("badge", metadata.badge == null ? "" : metadata.badge);
+        nbt.putString("color", metadata.color == null ? "default" : metadata.color);
 
         ListTag autoScripts = new ListTag();
         if (metadata.autoScripts != null) {
@@ -82,12 +82,12 @@ public class AvatarMetadataParser {
     private static CompoundTag getTag(CompoundTag models, String path) throws IOException {
         String[] keys = path.split(SEPARATOR_REGEX);
         CompoundTag current = models;
-        for (int i = 0; i < keys.length; i++) {
+        for (String key : keys) {
             if (current.contains("chld")) {
                 ListTag children = current.getList("chld", Tag.TAG_COMPOUND);
                 for (int j = 0; j < children.size(); j++) {
                     CompoundTag child = children.getCompound(j);
-                    if (child.getString("name").equals(keys[i])) {
+                    if (child.getString("name").equals(key)) {
                         current = child;
                         break;
                     }
@@ -102,7 +102,7 @@ public class AvatarMetadataParser {
 
     //json object class
     private static class Metadata {
-        String name, author, version, badge;
+        String name, author, version, color;
         String[] autoScripts;
         HashMap<String, Customization> customizations;
     }

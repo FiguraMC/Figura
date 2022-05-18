@@ -15,7 +15,6 @@ import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.LuaUtils;
-import org.moon.figura.utils.MathUtils;
 import org.moon.figura.utils.TextUtils;
 import org.terasology.jnlua.LuaRuntimeException;
 
@@ -25,8 +24,6 @@ import org.terasology.jnlua.LuaRuntimeException;
         description = "nameplate_customization"
 )
 public class NameplateCustomization {
-
-    private static final String[] SPECIAL_BADGES = {"\uD83D\uDEAB", "\uD83C\uDF54", "❤", "☆", "✯", "\uD83C\uDF19", "★"};
 
     private String text;
 
@@ -44,47 +41,107 @@ public class NameplateCustomization {
             return TextComponent.EMPTY.copy();
 
         MutableComponent badges = new TextComponent(" ").withStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT));
+        Pride[] pride = Pride.values();
+        Special[] special = Special.values();
+
+        // -- mark -- //
 
         //error
         if (avatar.scriptError)
-            badges.append("❌");
+            badges.append(Default.ERROR.badge);
 
         //easter egg
         else if (FiguraMod.CHEESE_DAY && (boolean) Config.EASTER_EGGS.value)
-            badges.append("\uD83E\uDDC0");
+            badges.append(Default.CHEESE.badge);
 
-        //pride
+        //mark
         else {
-            int color = 0xFFFFFF;
-            badges.append(new TextComponent(switch (avatar.badge.toLowerCase()) {
-                case "lgbt", "pride", "gay" -> "\uD83D\uDFE5";
-                case "transgender", "trans" -> "\uD83D\uDFE7";
-                case "pansexual", "pan" -> "\uD83D\uDFE8";
-                case "non binary", "non-binary", "nb", "enby" -> "\uD83D\uDFE9";
-                case "plural", "plurality", "system" -> "\uD83D\uDFE6";
-                case "bisexual", "bi" -> "\uD83D\uDFEA";
-                case "asexual", "ace" -> "\uD83D\uDFEB";
-                case "lesbian" -> "⬜";
-                case "gender fluid", "genderfluid", "fluid" -> "⬛";
-                default -> {
-                    color = ColorUtils.userInputHex(avatar.badge);
-                    yield "△";
+            mark: {
+                //pride (mark skins)
+                for (int i = 0; i < pride.length; i++) {
+                    if (avatar.badges.get(i)) {
+                        badges.append(pride[i].badge);
+                        break mark;
+                    }
                 }
-            }).withStyle(Style.EMPTY.withColor(color)));
+
+                //mark fallback
+                badges.append(new TextComponent(Default.DEFAULT.badge).withStyle(Style.EMPTY.withColor(ColorUtils.userInputHex(avatar.color))));
+            }
         }
 
+        // -- special -- //
+
         //special badges
-        long s = avatar.specialBadges;
-        if (s > 0L) {
-            for (int i = 0; i < 6; i++) {
-                if (MathUtils.getBool(s, i))
-                    badges.append(SPECIAL_BADGES[i]);
-            }
-            if (MathUtils.getBool(s, 6))
-                badges.append(new TextComponent(SPECIAL_BADGES[6]).withStyle(Style.EMPTY.withColor(ColorUtils.rainbow(2))));
+        for (int i = 0; i < special.length; i++) {
+            if (avatar.badges.get(i + pride.length))
+                badges.append(new TextComponent(special[i].badge).withStyle(Style.EMPTY.withColor(special[i].color())));
         }
 
         return badges;
+    }
+
+    private enum Default {
+        DEFAULT("△"),
+        CHEESE("\uD83E\uDDC0"),
+        WARNING("❗"),
+        ERROR("❌");
+
+        public final String badge;
+
+        Default(String unicode) {
+            this.badge = unicode;
+        }
+    }
+
+    private enum Pride {
+        PRIDE("\uD83D\uDFE5"),
+        TRANS("\uD83D\uDFE7"),
+        PAN("\uD83D\uDFE8"),
+        ENBY("\uD83D\uDFE9"),
+        PLURAL("\uD83D\uDFE6"),
+        BI("\uD83D\uDFEA"),
+        ACE("\uD83D\uDFEB"),
+        LESBIAN("⬜"),
+        FLUID("⬛");
+
+        public final String badge;
+
+        Pride(String unicode) {
+            this.badge = unicode;
+        }
+    }
+
+    private enum Special {
+        BURGER("\uD83C\uDF54"),
+        SHRIMP("\uD83E\uDD90"),
+        MOON("\uD83C\uDF19"),
+        SHADOW("\uD83C\uDF00"),
+        BANNED("\uD83D\uDEAB"),
+        DONATOR("❤", ColorUtils.Colors.FRAN_PINK.hex),
+        CONTEST("★", ColorUtils.Colors.FRAN_PINK.hex),
+        DISCORD("★", 0x7289DA),
+        DEV("★", -1);
+
+        public final String badge;
+        private final Integer color;
+
+        Special(String unicode) {
+            this(unicode, null);
+        }
+
+        Special(String unicode, Integer color) {
+            this.badge = unicode;
+            this.color = color;
+        }
+
+        public int color() {
+            return this.color == null ? 0xFFFFFF : this.color == -1 ? ColorUtils.rainbow(2) : this.color;
+        }
+    }
+
+    public static int badgesLen() {
+        return Pride.values().length + Special.values().length;
     }
 
     @LuaWhitelist

@@ -144,6 +144,10 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
 
         for (int i = 0; i < textList.size(); i++) {
             Component text1 = textList.get(i);
+
+            if (text1.getString().isEmpty())
+                continue;
+
             int line = i - textList.size() + (hasScore ? 0 : 1);
 
             float x = -font.width(text1) / 2f;

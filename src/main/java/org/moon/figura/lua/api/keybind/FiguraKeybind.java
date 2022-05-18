@@ -84,7 +84,7 @@ public final class FiguraKeybind {
 
     public static void set(List<FiguraKeybind> bindings, InputConstants.Key key, boolean pressed) {
         for (FiguraKeybind keybind : bindings)
-            if (keybind.key == key)
+            if (keybind.key == key && (keybind.ignoreScreen || Minecraft.getInstance().screen == null))
                 keybind.setDown(pressed);
     }
 

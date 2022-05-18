@@ -8,6 +8,7 @@ import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.widgets.TexturedButton;
 import org.moon.figura.utils.FiguraText;
+import org.moon.figura.utils.TextUtils;
 
 public class ProfileScreen extends AbstractPanelScreen {
 
@@ -23,7 +24,12 @@ public class ProfileScreen extends AbstractPanelScreen {
 
         FiguraToast.sendToast("not yet!", "<3");
 
-        this.addRenderableWidget(new TexturedButton(width / 2 - 30, height / 2 - 10, 60, 20, new TextComponent("meow"), null, button -> {
+        this.addRenderableWidget(new TexturedButton(width / 2 - 30, height / 2 - 30, 60, 20, new TextComponent("meow"), null, button -> {
+            FiguraToast.sendToast(new TextComponent("Backend restarting").setStyle(Style.EMPTY.withColor(0x99BBEE)), "in 10 minutes!", FiguraToast.ToastType.DEFAULT);
+        }));
+
+        this.addRenderableWidget(new TexturedButton(width / 2 - 30, height / 2 + 10, 60, 20, new TextComponent("meow"), TextUtils.tryParseJson(
+                "{\"text\": \"△🟥🟧🟨🟩\n🟦🟪🟫⬜⬛\n\n❗❌🧀🍔🦐\n🌙🌀🚫❤★\",\"font\": \"figura:default\"}"), button -> {
             FiguraToast.sendToast(new TextComponent("Backend restarting").setStyle(Style.EMPTY.withColor(0x99BBEE)), "in 10 minutes!", FiguraToast.ToastType.DEFAULT);
         }));
     }
