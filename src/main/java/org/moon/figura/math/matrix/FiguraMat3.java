@@ -765,7 +765,7 @@ public class FiguraMat3 implements CachedType {
                             argumentNames = {"mat", "x", "y"}
                     )
             },
-            description = "matrix_3.translate"
+            description = "matrix3.translate"
     )
     public static void translate(@LuaNotNil FiguraMat3 mat, Object x, Double y) {
         FiguraVec2 vec = LuaUtils.parseVec2("translate", x, y);

@@ -287,7 +287,7 @@ public class FiguraModelPart {
                     argumentTypes = FiguraModelPart.class,
                     argumentNames = "modelPart"
             ),
-            description = "model_parts.get_scale"
+            description = "model_part.get_scale"
     )
     public static FiguraVec3 getScale(@LuaNotNil FiguraModelPart modelPart) {
         return modelPart.customization.getScale();
