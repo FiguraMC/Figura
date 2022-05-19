@@ -31,11 +31,26 @@ public class AvatarMetadataParser {
 
         nbt.putString("name", metadata.name == null ? filename : metadata.name);
         nbt.putString("ver", metadata.version == null ? FiguraMod.VERSION : metadata.version);
-        nbt.putString("author", metadata.author == null ? "" : metadata.author);
         nbt.putString("color", metadata.color == null ? "default" : metadata.color);
 
-        ListTag autoScripts = new ListTag();
+        if (metadata.authors != null) {
+            StringBuilder authors = new StringBuilder();
+
+            for (int i = 0; i < metadata.authors.length; i++) {
+                String name = metadata.authors[i];
+                authors.append(name);
+
+                if (i < metadata.authors.length - 1)
+                    authors.append(", ");
+            }
+
+            nbt.putString("authors", authors.toString());
+        } else {
+            nbt.putString("authors", "?");
+        }
+
         if (metadata.autoScripts != null) {
+            ListTag autoScripts = new ListTag();
             for (String scriptName : metadata.autoScripts)
                 autoScripts.add(StringTag.valueOf(scriptName.replace(".lua", "")));
             nbt.put("autoScripts", autoScripts);
@@ -102,8 +117,8 @@ public class AvatarMetadataParser {
 
     //json object class
     private static class Metadata {
-        String name, author, version, color;
-        String[] autoScripts;
+        String name, version, color;
+        String[] authors, autoScripts;
         HashMap<String, Customization> customizations;
     }
 

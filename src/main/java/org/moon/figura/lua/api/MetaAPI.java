@@ -80,10 +80,10 @@ public class MetaAPI {
                     argumentTypes = MetaAPI.class,
                     argumentNames = "meta"
             ),
-            description = "meta.get_author"
+            description = "meta.get_authors"
     )
-    public static String getAuthor(@LuaNotNil MetaAPI api) {
-        return api.avatar.author;
+    public static String getAuthors(@LuaNotNil MetaAPI api) {
+        return api.avatar.authors;
     }
 
     @LuaWhitelist

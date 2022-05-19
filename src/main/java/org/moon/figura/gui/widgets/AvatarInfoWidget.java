@@ -23,7 +23,7 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
     public static final Component UNKNOWN = new TextComponent("?").setStyle(ColorUtils.Colors.FRAN_PINK.style);
     public static final List<Component> TITLES = List.of(
             new FiguraText("gui.name").withStyle(ChatFormatting.UNDERLINE),
-            new FiguraText("gui.author").withStyle(ChatFormatting.UNDERLINE),
+            new FiguraText("gui.authors").withStyle(ChatFormatting.UNDERLINE),
             new FiguraText("gui.size").withStyle(ChatFormatting.UNDERLINE),
             new FiguraText("gui.complexity").withStyle(ChatFormatting.UNDERLINE)
     );
@@ -56,7 +56,7 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
             }
         } else {
             values.set(0, new TextComponent(avatar.name).setStyle(ColorUtils.Colors.FRAN_PINK.style)); //name
-            values.set(1, new TextComponent(avatar.author).setStyle(ColorUtils.Colors.FRAN_PINK.style)); //author
+            values.set(1, new TextComponent(avatar.authors).setStyle(ColorUtils.Colors.FRAN_PINK.style)); //authors
             values.set(2, new TextComponent(String.valueOf(avatar.fileSize)).setStyle(ColorUtils.Colors.FRAN_PINK.style)); //size
             values.set(3, new TextComponent(String.valueOf(avatar.complexity)).setStyle(ColorUtils.Colors.FRAN_PINK.style)); //complexity
         }

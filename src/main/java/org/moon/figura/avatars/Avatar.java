@@ -43,7 +43,7 @@ public class Avatar {
 
     //metadata
     public final String name;
-    public final String author;
+    public final String authors;
     public final String version;
     public final float fileSize;
     public final String color;
@@ -83,7 +83,7 @@ public class Avatar {
         //read metadata
         CompoundTag metadata = nbt.getCompound("metadata");
         name = metadata.getString("name");
-        author = metadata.getString("author");
+        authors = metadata.getString("authors");
         version = metadata.getString("ver");
         color = metadata.getString("color");
         fileSize = getFileSize();
