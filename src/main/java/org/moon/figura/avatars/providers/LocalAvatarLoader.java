@@ -64,6 +64,26 @@ public class LocalAvatarLoader {
         nbt.put("metadata", AvatarMetadataParser.parse(metadata, path.getFileName().toString()));
 
         //scripts
+        loadScripts(path, nbt);
+
+        ListTag textures = new ListTag();
+        ListTag animations = new ListTag();
+        BlockbenchModelParser parser = new BlockbenchModelParser();
+
+        CompoundTag models = loadModels(path, parser, textures, animations);
+        models.putString("name", "models");
+
+        AvatarMetadataParser.injectToModels(metadata, models);
+
+        //return :3
+        nbt.put("models", models);
+        nbt.put("textures", textures);
+        nbt.put("animations", animations);
+
+        return nbt;
+    }
+
+    private static void loadScripts(Path path, CompoundTag nbt) throws IOException {
         List<File> scripts = getFilesByExtension(path, ".lua", true);
         if (scripts.size() > 0) {
             CompoundTag scriptsNbt = new CompoundTag();
@@ -79,53 +99,47 @@ public class LocalAvatarLoader {
 
             //sounds
             //avatar needs a script to load custom sounds
-            List<File> sounds = getFilesByExtension(path, ".ogg", false);
-            if (sounds.size() > 0) {
-                CompoundTag soundsNbt = new CompoundTag();
-                for (File sound : sounds) {
-                    String name = sound.getName();
-                    soundsNbt.putByteArray(name.substring(0, name.length() - 4), readFile(sound).getBytes());
-                }
-
-                nbt.put("sounds", soundsNbt);
-            }
+            loadSounds(path, nbt);
         }
-
-        //models
-        //Recursion not yet implemented
-        List<File> models = getFilesByExtension(path, ".bbmodel", false);
-
-        //if no model is found we can return the avatar here
-        if (models.size() == 0)
-            return nbt;
-
-        CompoundTag modelRoot = new CompoundTag();
-        modelRoot.putString("name", "models");
-
-        ListTag children = new ListTag();
-        ListTag textures = new ListTag();
-        ListTag animations = new ListTag();
-
-        BlockbenchModelParser parser = new BlockbenchModelParser();
-        for (File model : models) {
-            String name = model.getName();
-            BlockbenchModelParser.ModelData data = parser.parseModel(readFile(model), name.substring(0, name.length() - 8));
-            children.add(data.modelNbt());
-            textures.addAll(data.textureList());
-            animations.addAll(data.animationList());
-        }
-
-        modelRoot.put("chld", children);
-
-        AvatarMetadataParser.injectToModels(metadata, modelRoot);
-
-        //return :3
-        nbt.put("models", modelRoot);
-        nbt.put("textures", textures);
-        nbt.put("animations", animations);
-
-        return nbt;
     }
+
+    private static void loadSounds(Path path, CompoundTag nbt) throws IOException {
+        List<File> sounds = getFilesByExtension(path, ".ogg", false);
+        if (sounds.size() > 0) {
+            CompoundTag soundsNbt = new CompoundTag();
+            for (File sound : sounds) {
+                String name = sound.getName();
+                soundsNbt.putByteArray(name.substring(0, name.length() - 4), readFile(sound).getBytes());
+            }
+            nbt.put("sounds", soundsNbt);
+        }
+    }
+
+    private static CompoundTag loadModels(Path path, BlockbenchModelParser parser, ListTag textures, ListTag animations) throws IOException {
+        CompoundTag result = new CompoundTag();
+        File[] subFiles = path.toFile().listFiles(f -> !f.isHidden() && !f.getName().startsWith("."));
+        ListTag children = new ListTag();
+        if (subFiles != null)
+            for (File file : subFiles) {
+                if (file.isDirectory()) {
+                    CompoundTag subfolder = loadModels(file.toPath(), parser, textures, animations);
+                    subfolder.putString("name", file.getName());
+                    children.add(subfolder);
+                } else if (file.toString().toLowerCase().endsWith(".bbmodel")) {
+                    BlockbenchModelParser.ModelData data = parser.parseModel(readFile(file), file.getName().substring(0, file.getName().length() - 8));
+                    children.add(data.modelNbt());
+                    textures.addAll(data.textureList());
+                    animations.addAll(data.animationList());
+                }
+            }
+
+        if (children.size() > 0)
+            result.put("chld", children);
+
+        return result;
+    }
+
+
 
     /**
      * Saves the loaded NBT into a folder inside the avatar list
