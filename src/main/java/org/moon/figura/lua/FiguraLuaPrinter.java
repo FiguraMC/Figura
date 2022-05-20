@@ -231,7 +231,7 @@ public class FiguraLuaPrinter {
             }
             case NUMBER -> {
                 Double d = luaState.toJavaObject(index, Double.class);
-                ret = d == Math.rint(d) ? String.valueOf(d.intValue()) : String.valueOf(d);
+                ret = d == Math.rint(d) ? String.valueOf(d.longValue()) : String.valueOf(d);
             }
             default -> ret = luaToString(luaState, index);
         }

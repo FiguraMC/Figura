@@ -16,6 +16,7 @@ public class RendererAPI {
 
     public Float shadowRadius;
     public Boolean renderFireOverlay;
+    public Boolean renderVehicle;
 
     @LuaWhitelist
     @LuaMethodDoc(
@@ -63,6 +64,30 @@ public class RendererAPI {
     )
     public static Boolean canRenderFireOverlay(@LuaNotNil RendererAPI api) {
         return api.renderFireOverlay;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = {RendererAPI.class, Boolean.class},
+                    argumentNames = {"api", "bool"}
+            ),
+            description = "renderer.set_render_vehicle"
+    )
+    public static void setRenderVehicle(@LuaNotNil RendererAPI api, Boolean bool) {
+        api.renderVehicle = bool;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = RendererAPI.class,
+                    argumentNames = "api"
+            ),
+            description = "renderer.can_render_vehicle"
+    )
+    public static Boolean canRenderVehicle(@LuaNotNil RendererAPI api) {
+        return api.renderVehicle;
     }
 
     @Override

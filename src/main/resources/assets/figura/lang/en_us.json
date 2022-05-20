@@ -289,7 +289,7 @@
   "figura.docs.world.get_sky_light_level": "Gets the sky light level of the block at the given position.",
   "figura.docs.world.get_block_light_level": "Gets the block light level of the block at the given position.",
   "figura.docs.world.is_open_sky": "Gets whether or not the sky is open at the given position.",
-  "figura.docs.world.get_players": " ",
+  "figura.docs.world.get_players": "",
   "figura.docs.world.exists": "Checks whether or not a world currently exists. This will almost always be true, but might be false on some occasions such as while travelling between dimensions.",
 
   "figura.docs.blockstate": "A proxy for a block state from Minecraft. Instances are obtained through the WorldAPI.",
@@ -565,6 +565,8 @@
   "figura.docs.renderer.get_shadow_radius": "Gets the radius of your shadow. The default value is nil, which means to use the vanilla default of 0.5 for players.",
   "figura.docs.renderer.set_render_fire_overlay": "Sets whether or not fire should render on you when you're on fire.",
   "figura.docs.renderer.can_render_fire_overlay": "Gets whether or not fire should render on you when you're on fire. The default value is nil, meaning to use the vanilla default, which is true for players.",
+  "figura.docs.renderer.set_render_vehicle": "",
+  "figura.docs.renderer.can_render_vehicle": "",
 
   "figura.docs.vectors": "A global API which provides functions dedicated to creating and otherwise manipulating vectors. Accessed using the name \"vectors\".",
   "figura.docs.vectors.vec": "Creates and returns a vector of the appropriate size to hold the arguments passed in. For example, if you call vec(3, 4, 0, 2), then the function will return a Vector4 containing those values. There is a global alias \"vec\" for this function, meaning the \"vectors.\" can be omitted.",

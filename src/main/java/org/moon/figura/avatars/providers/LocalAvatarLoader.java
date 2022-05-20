@@ -28,7 +28,7 @@ public class LocalAvatarLoader {
     private static Path lastLoadedPath;
 
     private static WatchService watcher;
-    private static WatchKey key;
+    private final static HashMap<Path, WatchKey> keys = new HashMap<>();
     static {
         try {
             watcher = FileSystems.getDefault().newWatchService();
@@ -44,7 +44,8 @@ public class LocalAvatarLoader {
      */
     public static CompoundTag loadAvatar(Path path) throws IOException {
         lastLoadedPath = path;
-        updateWatchKey(path);
+        resetWatchKeys();
+        addWatchKey(path);
 
         if (path == null)
             return null;
@@ -144,34 +145,68 @@ public class LocalAvatarLoader {
      * Tick the watched key for hotswapping avatars
      */
     public static void tickWatchedKey() {
-        if (key == null || !key.isValid())
-            return;
+        WatchEvent<?> event = null;
+        boolean reload = false;
 
-        for (WatchEvent<?> event : key.pollEvents()) {
-            if (event.kind() == StandardWatchEventKinds.OVERFLOW)
+        for (Map.Entry<Path, WatchKey> entry : keys.entrySet()) {
+            WatchKey key = entry.getValue();
+            if (!key.isValid())
                 continue;
 
-            //reload avatar
+            for (WatchEvent<?> watchEvent : key.pollEvents()) {
+                if (watchEvent.kind() == StandardWatchEventKinds.OVERFLOW)
+                    continue;
+
+                event = watchEvent;
+                File file = entry.getKey().resolve(((WatchEvent<Path>) event).context()).toFile();
+
+                if (file.isDirectory() && (file.isHidden() || file.getName().startsWith(".")))
+                    continue;
+
+                reload = true;
+                break;
+            }
+
+            if (reload)
+                break;
+        }
+
+        //reload avatar
+        if (reload) {
             FiguraMod.LOGGER.debug("Local avatar files changed - Reloading!");
             FiguraMod.LOGGER.debug(event.context().toString());
             AvatarManager.loadLocalAvatar(lastLoadedPath);
-            break;
         }
     }
 
+    private static void resetWatchKeys() {
+        for (WatchKey key : keys.values())
+            key.cancel();
+        keys.clear();
+    }
+
     /**
-     * Cancels previous watch key and register a new one
+     * register new watch keys
      * @param path the path to register the watch key
      */
-    private static void updateWatchKey(Path path) {
-        if (key != null)
-            key.cancel();
+    private static void addWatchKey(Path path) {
+        if (watcher == null || path == null)
+            return;
 
-        if (watcher == null || path == null || !path.toFile().isDirectory())
+        File file = path.toFile();
+        if (!file.isDirectory() || file.isHidden() || file.getName().startsWith("."))
             return;
 
         try {
-            key = path.register(watcher, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY);
+            WatchKey key = path.register(watcher, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY);
+            keys.put(path, key);
+
+            File[] children = file.listFiles();
+            if (children == null)
+                return;
+
+            for (File child : children)
+                addWatchKey(child.toPath());
         } catch (Exception e) {
             FiguraMod.LOGGER.error("Failed to register watcher for " + path, e);
         }
@@ -185,7 +220,7 @@ public class LocalAvatarLoader {
         File[] children = rf.listFiles();
         if (children == null) return result;
         for (File child : children) {
-            if (recurse && child.isDirectory())
+            if (recurse && child.isDirectory() && !child.isHidden() && !child.getName().startsWith("."))
                 result.addAll(getFilesByExtension(child.toPath(), extension, true));
             else if (child.toString().toLowerCase().endsWith(extension.toLowerCase()))
                 result.add(child);

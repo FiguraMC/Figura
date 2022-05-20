@@ -61,12 +61,10 @@ public class Avatar {
     //runtime status
     public boolean hasTexture = false;
     public boolean scriptError = false;
+
     public int complexity = 0;
-
     public int initInstructions = 0;
-
     public int tickInstructions = 0;
-
     public int renderInstructions = 0;
     public int postRenderInstructions = 0;
     public int worldRenderInstructions = 0;
