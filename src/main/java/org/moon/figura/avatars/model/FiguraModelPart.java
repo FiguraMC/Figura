@@ -1067,8 +1067,8 @@ public class FiguraModelPart {
         ListTag tex = meshData.getList("tex", Tag.TAG_SHORT);
 
         int bestType = 0; //byte
-        if (verts.size() > 255) bestType = 1; //short
-        if (verts.size() > 32767) bestType = 2; //int
+        if (verts.size() > 255 * 3) bestType = 1; //short
+        if (verts.size() > 32767 * 3) bestType = 2; //int
 
         ListTag fac = switch (bestType) {
             case 0 -> meshData.getList("fac", Tag.TAG_BYTE);
