@@ -80,8 +80,8 @@ public class FiguraModelPart {
         }
         else if (vanillaModel instanceof ElytraModel<?> elytra) {
             applyVanillaTransform(vanillaModel, parentType, switch (parentType) {
-                case LeftElytron -> ((ElytraModelAccessor) elytra).getLeftWing();
-                case RightElytron -> ((ElytraModelAccessor) elytra).getRightWing();
+                case LeftElytra -> ((ElytraModelAccessor) elytra).getLeftWing();
+                case RightElytra -> ((ElytraModelAccessor) elytra).getRightWing();
                 default -> null;
             });
         }
@@ -133,8 +133,8 @@ public class FiguraModelPart {
         LeftLeg(true,"LEFT_LEG"),
         RightLeg(true,"RIGHT_LEG"),
 
-        LeftElytron(true, "LEFT_ELYTRA"),
-        RightElytron(true, "RIGHT_ELYTRA"),
+        LeftElytra(true, "LeftElytron, LEFT_ELYTRON, LEFT_ELYTRA"),
+        RightElytra(true, "RightElytron, RIGHT_ELYTRON, RIGHT_ELYTRA"),
 
         World(false, "WORLD");
 

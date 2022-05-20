@@ -25,8 +25,8 @@ public class VanillaPartOffsetManager {
             };
         if (model instanceof ElytraModel<?>)
             return switch (parentType) {
-                case LeftElytron -> FiguraVec3.of(5, 0, 0);
-                case RightElytron -> FiguraVec3.of(-5, 0, 0);
+                case LeftElytra -> FiguraVec3.of(5, 0, 0);
+                case RightElytra -> FiguraVec3.of(-5, 0, 0);
                 default -> FiguraVec3.of();
             };
         return FiguraVec3.of();

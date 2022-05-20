@@ -503,7 +503,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3> implements CachedType {
             description = "vector_n.to_deg"
     )
     public static FiguraVec3 toDeg(@LuaNotNil FiguraVec3 vec) {
-        return vec.toRad();
+        return vec.toDeg();
     }
 
     @LuaWhitelist
