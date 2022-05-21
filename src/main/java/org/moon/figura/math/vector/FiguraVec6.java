@@ -180,12 +180,19 @@ public class FiguraVec6 extends FiguraVector<FiguraVec6> implements CachedType {
         reduce(o.x, o.y, o.z, o.w, o.t, o.h);
     } //modulo
     public void reduce(double x, double y, double z, double w, double t, double h) {
-        this.x %= x;
-        this.y %= y;
-        this.z %= z;
-        this.w %= w;
-        this.t %= t;
-        this.h %= h;
+        this.x = ((this.x % x) + x) % x;
+        this.y = ((this.y % y) + y) % y;
+        this.z = ((this.z % z) + z) % z;
+        this.w = ((this.w % w) + w) % w;
+        this.t = ((this.t % t) + t) % t;
+        this.h = ((this.h % h) + h) % h;
+
+        if (x < 0) this.x -= x;
+        if (y < 0) this.y -= y;
+        if (z < 0) this.z -= z;
+        if (w < 0) this.w -= w;
+        if (t < 0) this.t -= t;
+        if (h < 0) this.h -= h;
     }
 
     @Override

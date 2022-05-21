@@ -228,37 +228,6 @@ public class FiguraModelPart {
                     argumentTypes = FiguraModelPart.class,
                     argumentNames = "modelPart"
             ),
-            description = "model_part.get_bonus_pos"
-    )
-    public static FiguraVec3 getBonusPos(@LuaNotNil FiguraModelPart modelPart) {
-        return modelPart.customization.getBonusPos();
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = {
-                    @LuaFunctionOverload(
-                            argumentTypes = {FiguraModelPart.class, FiguraVec3.class},
-                            argumentNames = {"modelPart", "bonusPos"}
-                    ),
-                    @LuaFunctionOverload(
-                            argumentTypes = {FiguraModelPart.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"modelPart", "x", "y", "z"}
-                    )
-            },
-            description = "model_part.set_bonus_pos"
-    )
-    public static void setBonusPos(@LuaNotNil FiguraModelPart modelPart, Object x, Double y, Double z) {
-        FiguraVec3 vec = LuaUtils.parseVec3("setBonusPos", x, y, z);
-        modelPart.customization.setBonusPos(vec);
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = FiguraModelPart.class,
-                    argumentNames = "modelPart"
-            ),
             description = "model_part.get_rot"
     )
     public static FiguraVec3 getRot(@LuaNotNil FiguraModelPart modelPart) {

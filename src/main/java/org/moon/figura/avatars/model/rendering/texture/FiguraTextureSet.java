@@ -6,6 +6,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.avatars.Avatar;
+import org.terasology.jnlua.LuaRuntimeException;
 
 import java.util.function.Function;
 
@@ -84,7 +85,7 @@ public class FiguraTextureSet {
             return null;
 
         type = type.toLowerCase();
-        if (type.equals("skin") || type.equals("cape") || type.equals("texture")) {
+        if (type.equals("skin") || type.equals("cape") || type.equals("elytra")) {
             if (Minecraft.getInstance().player == null)
                 return null;
 
@@ -107,7 +108,6 @@ public class FiguraTextureSet {
                 return Minecraft.getInstance().getResourceManager().hasResource(resource) ? resource : MissingTextureAtlasSprite.getLocation();
             } catch (Exception ignored) {}
         }
-
-        return null;
+        throw new LuaRuntimeException("Invalid texture override type: " + type);
     }
 }

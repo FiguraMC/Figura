@@ -174,11 +174,17 @@ public class FiguraVec5 extends FiguraVector<FiguraVec5> implements CachedType {
         reduce(o.x, o.y, o.z, o.w, o.t);
     } //modulo
     public void reduce(double x, double y, double z, double w, double t) {
-        this.x %= x;
-        this.y %= y;
-        this.z %= z;
-        this.w %= w;
-        this.t %= t;
+        this.x = ((this.x % x) + x) % x;
+        this.y = ((this.y % y) + y) % y;
+        this.z = ((this.z % z) + z) % z;
+        this.w = ((this.w % w) + w) % w;
+        this.t = ((this.t % t) + t) % t;
+
+        if (x < 0) this.x -= x;
+        if (y < 0) this.y -= y;
+        if (z < 0) this.z -= z;
+        if (w < 0) this.w -= w;
+        if (t < 0) this.t -= t;
     }
 
     @Override

@@ -173,6 +173,8 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
             FiguraMat4 customizePeek = customizationStack.peek().positionMatrix.copy();
             customizePeek.multiply(viewToWorldMatrix);
             FiguraVec3 piv = part.customization.getPivot();
+            FiguraVec3 pos = part.customization.getPos();
+            piv.subtract(pos);
 
             FiguraMat4 translation = FiguraMat4.createTranslationMatrix(piv);
             customizePeek.rightMultiply(translation);
@@ -180,6 +182,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
             customizePeek.free();
             piv.free();
+            pos.free();
             translation.free();
         }
 

@@ -46,9 +46,12 @@ public class PartCustomization implements CachedType {
     public void recalculate() {
         if (needsMatrixRecalculation) {
             positionMatrix.reset();
-            positionMatrix.translate(-pivot.x - bonusPivot.x, -pivot.y - bonusPivot.y, -pivot.z - bonusPivot.z);
+            positionMatrix.translate(
+                    position.x + bonusPos.x - pivot.x - bonusPivot.x,
+                    position.y + bonusPos.y - pivot.y - bonusPivot.y,
+                    position.z + bonusPos.z - pivot.z - bonusPivot.z
+            );
             positionMatrix.scale(scale.x, scale.y, scale.z);
-            positionMatrix.translate(position.x + bonusPos.x, position.y + bonusPos.y, position.z + bonusPos.z);
 
             if (partType == PartType.MESH) {
                 positionMatrix.rotateZ(rotation.z + bonusRot.z);

@@ -87,8 +87,8 @@ public class FiguraImmediateBuffer {
             return;
         }
 
-        RenderType primary = customization.getPrimaryRenderType().get(customization.primaryTextureOverride == null ? textureSet.mainTex == null ? null : textureSet.mainTex.textureID : customization.primaryTextureOverride);
-        RenderType secondary = customization.getSecondaryRenderType().get(customization.secondaryTextureOverride == null ? textureSet.emissiveTex == null ? null : textureSet.emissiveTex.textureID : customization.secondaryTextureOverride);
+        RenderType primary = customization.getPrimaryRenderType().get(customization.primaryTexture == null ? textureSet.mainTex == null ? null : textureSet.mainTex.textureID : customization.primaryTexture);
+        RenderType secondary = customization.getSecondaryRenderType().get(customization.secondaryTexture == null ? textureSet.emissiveTex == null ? null : textureSet.emissiveTex.textureID : customization.secondaryTexture);
         if (primary != null) {
             if (secondary != null)
                 markBuffers();
