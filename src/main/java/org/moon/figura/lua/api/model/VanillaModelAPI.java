@@ -129,11 +129,11 @@ public class VanillaModelAPI {
     @LuaFieldDoc(description = "vanilla_model.elytra")
     public final VanillaModelPart<ElytraModel<?>> ELYTRA;
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.left_elytron")
-    public final VanillaModelPart<ElytraModel<?>> LEFT_ELYTRON;
+    @LuaFieldDoc(description = "vanilla_model.left_elytra")
+    public final VanillaModelPart<ElytraModel<?>> LEFT_ELYTRA;
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.right_elytron")
-    public final VanillaModelPart<ElytraModel<?>> RIGHT_ELYTRON;
+    @LuaFieldDoc(description = "vanilla_model.right_elytra")
+    public final VanillaModelPart<ElytraModel<?>> RIGHT_ELYTRA;
 
     public void alterPlayerModel(PlayerModel<?> playerModel) {
         alterByPart(playerModel, HEAD);
@@ -265,8 +265,8 @@ public class VanillaModelAPI {
         BOOTS_RIGHT_LEG = new VanillaModelPart<>(List.of(BOOTS_RIGHT_LEG_TRACKER), FiguraModelPart.ParentType.RightLeg);
 
         ELYTRA = new VanillaModelPart<>(List.of(LEFT_ELYTRON_TRACKER, RIGHT_ELYTRON_TRACKER), null);
-        LEFT_ELYTRON = new VanillaModelPart<>(List.of(LEFT_ELYTRON_TRACKER), FiguraModelPart.ParentType.LeftElytra);
-        RIGHT_ELYTRON = new VanillaModelPart<>(List.of(RIGHT_ELYTRON_TRACKER), FiguraModelPart.ParentType.RightElytra);
+        LEFT_ELYTRA = new VanillaModelPart<>(List.of(LEFT_ELYTRON_TRACKER), FiguraModelPart.ParentType.LeftElytra);
+        RIGHT_ELYTRA = new VanillaModelPart<>(List.of(RIGHT_ELYTRON_TRACKER), FiguraModelPart.ParentType.RightElytra);
 
         ALL = new VanillaModelPart<>(List.of(
                 HEAD_TRACKER, BODY_TRACKER, LEFT_ARM_TRACKER, RIGHT_ARM_TRACKER, LEFT_LEG_TRACKER, RIGHT_LEG_TRACKER,

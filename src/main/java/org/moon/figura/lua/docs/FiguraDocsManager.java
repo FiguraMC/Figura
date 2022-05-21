@@ -121,7 +121,9 @@ public class FiguraDocsManager {
                 MatricesAPI.class,
                 FiguraMat2.class,
                 FiguraMat3.class,
-                FiguraMat4.class
+                FiguraMat4.class,
+                //General math functions
+                FiguraMathDocs.class
         ));
 
     }};

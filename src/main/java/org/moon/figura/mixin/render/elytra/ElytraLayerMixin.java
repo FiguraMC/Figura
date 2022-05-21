@@ -33,11 +33,11 @@ public abstract class ElytraLayerMixin<T extends LivingEntity, M extends EntityM
             vanillaModelAPI = null;
 
         if (vanillaModelAPI != null) {
-            vanillaModelAPI.copyByPart(elytraModel, vanillaModelAPI.LEFT_ELYTRON);
-            vanillaModelAPI.copyByPart(elytraModel, vanillaModelAPI.RIGHT_ELYTRON);
+            vanillaModelAPI.copyByPart(elytraModel, vanillaModelAPI.LEFT_ELYTRA);
+            vanillaModelAPI.copyByPart(elytraModel, vanillaModelAPI.RIGHT_ELYTRA);
             if (TrustManager.get(livingEntity.getUUID()).get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 1) {
-                vanillaModelAPI.alterByPart(elytraModel, vanillaModelAPI.LEFT_ELYTRON);
-                vanillaModelAPI.alterByPart(elytraModel, vanillaModelAPI.RIGHT_ELYTRON);
+                vanillaModelAPI.alterByPart(elytraModel, vanillaModelAPI.LEFT_ELYTRA);
+                vanillaModelAPI.alterByPart(elytraModel, vanillaModelAPI.RIGHT_ELYTRA);
             }
         }
     }

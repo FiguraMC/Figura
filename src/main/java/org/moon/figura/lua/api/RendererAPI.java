@@ -3,6 +3,7 @@ package org.moon.figura.lua.api;
 import net.minecraft.util.Mth;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
@@ -15,8 +16,18 @@ import org.moon.figura.lua.docs.LuaTypeDoc;
 public class RendererAPI {
 
     public Float shadowRadius;
-    public Boolean renderFireOverlay;
-    public Boolean renderVehicle;
+
+    @LuaWhitelist
+    @LuaFieldDoc(
+            description = "renderer.renderFire"
+    )
+    public boolean renderFire = true;
+
+    @LuaWhitelist
+    @LuaFieldDoc(
+            description = "renderer.renderVehicle"
+    )
+    public boolean renderVehicle = true;
 
     @LuaWhitelist
     @LuaMethodDoc(
@@ -40,54 +51,6 @@ public class RendererAPI {
     )
     public static Float getShadowRadius(@LuaNotNil RendererAPI api) {
         return api.shadowRadius;
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = {RendererAPI.class, Boolean.class},
-                    argumentNames = {"api", "bool"}
-            ),
-            description = "renderer.set_render_fire_overlay"
-    )
-    public static void setRenderFireOverlay(@LuaNotNil RendererAPI api, Boolean bool) {
-        api.renderFireOverlay = bool;
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = RendererAPI.class,
-                    argumentNames = "api"
-            ),
-            description = "renderer.can_render_fire_overlay"
-    )
-    public static Boolean canRenderFireOverlay(@LuaNotNil RendererAPI api) {
-        return api.renderFireOverlay;
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = {RendererAPI.class, Boolean.class},
-                    argumentNames = {"api", "bool"}
-            ),
-            description = "renderer.set_render_vehicle"
-    )
-    public static void setRenderVehicle(@LuaNotNil RendererAPI api, Boolean bool) {
-        api.renderVehicle = bool;
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = RendererAPI.class,
-                    argumentNames = "api"
-            ),
-            description = "renderer.can_render_vehicle"
-    )
-    public static Boolean canRenderVehicle(@LuaNotNil RendererAPI api) {
-        return api.renderVehicle;
     }
 
     @Override

@@ -27,8 +27,7 @@ public class EntityRenderDispatcherMixin {
         if (avatar == null || avatar.luaState == null || TrustManager.get(entity.getUUID()).get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 0)
             return;
 
-        Boolean fire = avatar.luaState.renderer.renderFireOverlay;
-        if (fire != null && !fire)
+        if (!avatar.luaState.renderer.renderFire)
             ci.cancel();
     }
 
@@ -50,8 +49,7 @@ public class EntityRenderDispatcherMixin {
         if (avatar == null || avatar.luaState == null || TrustManager.get(owner.getUUID()).get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 0)
             return;
 
-        Boolean render = avatar.luaState.renderer.renderVehicle;
-        if (render != null && !render)
+        if (!avatar.luaState.renderer.renderVehicle)
             ci.cancel();
     }
 }

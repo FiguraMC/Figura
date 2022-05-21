@@ -204,7 +204,6 @@
   "figura.config.log_others": "Log non-host scripts",
   "figura.config.log_others.tooltip": "Allows debug logging and errors of non-host scripts",
 
-
   "figura.docs": "The \"/figura docs\" command allows you to access documentation for all types and functions Figura adds to its Lua scripting environment.",
 
   "figura.docs.text.type": "Type",
@@ -250,9 +249,11 @@
   "figura.docs.globals.logTable": "An alias for printTable().",
   "figura.docs.globals.printJson": "Takes a Minecraft json string as an argument, and prints it to the chat formatted.",
   "figura.docs.globals.logJson": "An alias for printJson().",
-  "figura.docs.globals.lerp": "Linearly interpolates from its first argument to its second argument, with the third argument as the parameter. Works on both regular numbers and vectors. Not actually global, but stored inside the \"math\" library table.",
-  "figura.docs.globals.clamp": "Clamps the given value between min and max. Not actually global, but stored inside the \"math\" library table.",
-  "figura.docs.globals.round": "Rounds the given number to the nearest whole integer. Not actually global, but stored inside the \"math\" library table.",
+
+  "figura.docs.math": "Contains functions which Figura adds to the default Lua \"math\" library table.",
+  "figura.docs.math.lerp": "Linearly interpolates from its first argument to its second argument, with the third argument as the parameter. Works on both regular numbers and vectors.",
+  "figura.docs.math.clamp": "Clamps the given value between min and max.",
+  "figura.docs.math.round": "Rounds the given number to the nearest whole integer.",
 
   "figura.docs.sound": "A global API which is used to play Minecraft sounds. Accessed using the name \"sound\".",
   "figura.docs.sound.play_sound": "Plays the specified sound at the specified position with the given volume and pitch multipliers. Volume in Minecraft refers to how far away people can hear the sound from, not the actual loudness of it. If you don't give values for volume and pitch, the default values are 1.",
@@ -289,7 +290,7 @@
   "figura.docs.world.get_sky_light_level": "Gets the sky light level of the block at the given position.",
   "figura.docs.world.get_block_light_level": "Gets the block light level of the block at the given position.",
   "figura.docs.world.is_open_sky": "Gets whether or not the sky is open at the given position.",
-  "figura.docs.world.get_players": "",
+  "figura.docs.world.get_players": "Returns a table containing instances of Player for all players in the world. The players are indexed by their names.",
   "figura.docs.world.exists": "Checks whether or not a world currently exists. This will almost always be true, but might be false on some occasions such as while travelling between dimensions.",
 
   "figura.docs.blockstate": "A proxy for a block state from Minecraft. Instances are obtained through the WorldAPI.",
@@ -389,13 +390,13 @@
   "figura.docs.vanilla_model.boots_left_leg": "The left boot of the boots model.",
   "figura.docs.vanilla_model.boots_right_leg": "The right boot of the boots model.",
   "figura.docs.vanilla_model.elytra": "Multi-part: The elytra model.",
-  "figura.docs.vanilla_model.left_elytron": "The left wing of the elytra model.",
-  "figura.docs.vanilla_model.right_elytron": "The right wing of the elytra model.",
+  "figura.docs.vanilla_model.left_elytra": "The left wing of the elytra model.",
+  "figura.docs.vanilla_model.right_elytra": "The right wing of the elytra model.",
   "figura.docs.vanilla_model.all": "Multi-part: The entirety of the vanilla model.",
   "figura.docs.vanilla_model.outer_layer": "Multi-part: The outer layer of the player.",
   "figura.docs.vanilla_model.inner_layer": "Multi-part: The main body of the player, everything except the outer layer.",
   "figura.docs.vanilla_model.armor": "Multi-part: All armor on the model.",
-  "figura.docs.vanilla_model.player": "",
+  "figura.docs.vanilla_model.player": "Multi-part: Both the outer and inner layers of the player's skin.",
 
   "figura.docs.vanilla_part": "Represents a model part in a vanilla model. Can be set visible and invisible, and queried for rotation and position offsets.",
   "figura.docs.vanilla_part.set_visible": "Sets this part to be visible or invisible.",
@@ -506,7 +507,7 @@
   "figura.docs.client.get_gui_scale": "Returns the current value of your Gui Scale setting. If you use auto, then it gets the actual current scale.",
   "figura.docs.client.get_camera_pos": "Returns the position of the viewer's camera.",
   "figura.docs.client.get_camera_rot": "Returns the rotation of the viewer's camera.",
-  "figura.docs.client.get_screen": "",
+  "figura.docs.client.get_screen": "Gets the name of the screen the player is currently on. If the player is not currently in a screen, returns nil.",
 
   "figura.docs.host": "A global API dedicated to specifically the host of the avatar. For other viewers, these do nothing.",
   "figura.docs.host.is_host": "Returns true if this instance of the script is running on host.",
@@ -563,10 +564,8 @@
   "figura.docs.renderer": "A global API providing functions that change the way Minecraft renders your player.",
   "figura.docs.renderer.set_shadow_radius": "Sets the radius of your shadow. The default value is nil, which means to use the vanilla default of 0.5 for players. The maximum value is 12.",
   "figura.docs.renderer.get_shadow_radius": "Gets the radius of your shadow. The default value is nil, which means to use the vanilla default of 0.5 for players.",
-  "figura.docs.renderer.set_render_fire_overlay": "Sets whether or not fire should render on you when you're on fire.",
-  "figura.docs.renderer.can_render_fire_overlay": "Gets whether or not fire should render on you when you're on fire. The default value is nil, meaning to use the vanilla default, which is true for players.",
-  "figura.docs.renderer.set_render_vehicle": "",
-  "figura.docs.renderer.can_render_vehicle": "",
+  "figura.docs.renderer.renderVehicle": "Whether or not your vehicle (boat, minecart, horse, whatever) will be rendered. True by default.",
+  "figura.docs.renderer.renderFire": "Whether or not you should visually have the fire effect while on fire. True by default.",
 
   "figura.docs.vectors": "A global API which provides functions dedicated to creating and otherwise manipulating vectors. Accessed using the name \"vectors\".",
   "figura.docs.vectors.vec": "Creates and returns a vector of the appropriate size to hold the arguments passed in. For example, if you call vec(3, 4, 0, 2), then the function will return a Vector4 containing those values. There is a global alias \"vec\" for this function, meaning the \"vectors.\" can be omitted.",
@@ -580,7 +579,7 @@
   "figura.docs.vectors.hex_to_rgb": "Parses a hex string color into a RGB format vector. The hex \"#\" is optional, and it can have any length, however only the first 6 hex digits are evaluated, short hex (length 3) is also supported. For example, \"#42\" is the same as \"420000\", and \"F0B\" is the same as \"FF00BB\"",
   "figura.docs.vectors.hsv_to_rgb": "Converts the given color from HSV format to RGB format.",
   "figura.docs.vectors.rgb_to_hsv": "Converts the given color from RGB format to HSV format.",
-  "figura.docs.vectors.rainbow": "",
+  "figura.docs.vectors.rainbow": "Gets an rgb vector with a shifting hue based on the given speed value and the current in-game time.",
 
   "figura.docs.vector2": "A vector that holds 2 numbers. Can be created using functions in the \"vectors\" api.",
   "figura.docs.vector3": "A vector that holds 3 numbers. Can be created using functions in the \"vectors\" api.",

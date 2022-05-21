@@ -21,7 +21,7 @@ public class FiguraConverter implements Converter {
     @Override
     public <T> T convertLuaValue(LuaState luaState, int index, Class<T> formalType) {
         LuaType type = luaState.type(index);
-        if (type == LuaType.NIL && formalType == Boolean.class)
+        if (type == LuaType.NIL && (formalType == Boolean.class || formalType == boolean.class))
             return (T) Boolean.valueOf(false);
         if (type == LuaType.FUNCTION && ((formalType == Object.class || formalType == LuaFunction.class) && !luaState.isJavaFunction(index)))
             return (T) new LuaFunction((FiguraLuaState) luaState, index);
