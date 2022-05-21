@@ -1,7 +1,11 @@
 package org.moon.figura.avatars.model.rendering.texture;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
+import org.moon.figura.avatars.Avatar;
 
 import java.util.function.Function;
 
@@ -67,11 +71,43 @@ public class FiguraTextureSet {
             this.force = force;
         }
 
-        public RenderType get(FiguraTexture texture) {
+        public RenderType get(ResourceLocation id) {
             if (force)
                 return func.apply(null);
 
-            return texture == null ? null : func.apply(texture.textureID);
+            return id == null ? null : func.apply(id);
         }
+    }
+
+    public static ResourceLocation getOverrideTexture(Avatar owner, String type, String path) {
+        if (type == null)
+            return null;
+
+        type = type.toLowerCase();
+        if (type.equals("skin") || type.equals("cape") || type.equals("texture")) {
+            if (Minecraft.getInstance().player == null)
+                return null;
+
+            PlayerInfo info = Minecraft.getInstance().player.connection.getPlayerInfo(owner.owner);
+            if (info == null)
+                return null;
+
+            if (type.equals("skin"))
+                return info.getSkinLocation();
+            else if (type.equals("cape"))
+                return info.getCapeLocation();
+            else
+                return info.getElytraLocation();
+        } else if (type.equals("resource")) {
+            try {
+                if (path == null)
+                    return null;
+
+                ResourceLocation resource = new ResourceLocation(path);
+                return Minecraft.getInstance().getResourceManager().hasResource(resource) ? resource : MissingTextureAtlasSprite.getLocation();
+            } catch (Exception ignored) {}
+        }
+
+        return null;
     }
 }

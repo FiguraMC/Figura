@@ -80,13 +80,15 @@ public class FiguraImmediateBuffer {
         //Handle cases that we can quickly
         if (faceCount == 0)
             return;
-        if (!customizationStack.peek().visible) {
+
+        PartCustomization customization = customizationStack.peek();
+        if (!customization.visible) {
             advanceBuffers(faceCount, remainingComplexity);
             return;
         }
 
-        RenderType primary = customizationStack.peek().getPrimaryRenderType().get(textureSet.mainTex);
-        RenderType secondary = customizationStack.peek().getSecondaryRenderType().get(textureSet.emissiveTex);
+        RenderType primary = customization.getPrimaryRenderType().get(customization.primaryTextureOverride == null ? textureSet.mainTex == null ? null : textureSet.mainTex.textureID : customization.primaryTextureOverride);
+        RenderType secondary = customization.getSecondaryRenderType().get(customization.secondaryTextureOverride == null ? textureSet.emissiveTex == null ? null : textureSet.emissiveTex.textureID : customization.secondaryTextureOverride);
         if (primary != null) {
             if (secondary != null)
                 markBuffers();

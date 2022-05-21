@@ -11,6 +11,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.util.Mth;
+import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.model.rendering.FiguraImmediateBuffer;
 import org.moon.figura.avatars.model.rendering.ImmediateAvatarRenderer;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
@@ -39,6 +40,8 @@ import java.util.*;
         description = "model_part"
 )
 public class FiguraModelPart {
+
+    private final Avatar owner;
 
     @LuaWhitelist
     @LuaFieldDoc(description = "model_part.name")
@@ -217,6 +220,37 @@ public class FiguraModelPart {
     public static void setPos(@LuaNotNil FiguraModelPart modelPart, Object x, Double y, Double z) {
         FiguraVec3 vec = LuaUtils.parseVec3("setPos", x, y, z);
         modelPart.customization.setPos(vec);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraModelPart.class,
+                    argumentNames = "modelPart"
+            ),
+            description = "model_part.get_bonus_pos"
+    )
+    public static FiguraVec3 getBonusPos(@LuaNotNil FiguraModelPart modelPart) {
+        return modelPart.customization.getBonusPos();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraModelPart.class, FiguraVec3.class},
+                            argumentNames = {"modelPart", "bonusPos"}
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraModelPart.class, Double.class, Double.class, Double.class},
+                            argumentNames = {"modelPart", "x", "y", "z"}
+                    )
+            },
+            description = "model_part.set_bonus_pos"
+    )
+    public static void setBonusPos(@LuaNotNil FiguraModelPart modelPart, Object x, Double y, Double z) {
+        FiguraVec3 vec = LuaUtils.parseVec3("setBonusPos", x, y, z);
+        modelPart.customization.setBonusPos(vec);
     }
 
     @LuaWhitelist
@@ -532,6 +566,42 @@ public class FiguraModelPart {
         }
     }
 
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraModelPart.class, String.class},
+                            argumentNames = {"modelPart", "textureType"}
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraModelPart.class, String.class, String.class},
+                            argumentNames = {"modelPart", "textureType", "path"}
+                    )
+            },
+            description = "model_part.set_primary_texture"
+    )
+    public static void setPrimaryTexture(@LuaNotNil FiguraModelPart modelPart, String type, String path) {
+        modelPart.customization.primaryTexture = FiguraTextureSet.getOverrideTexture(modelPart.owner, type, path);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraModelPart.class, String.class},
+                            argumentNames = {"modelPart", "textureType"}
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraModelPart.class, String.class, String.class},
+                            argumentNames = {"modelPart", "textureType", "path"}
+                    )
+            },
+            description = "model_part.set_secondary_texture"
+    )
+    public static void setSecondaryTexture(@LuaNotNil FiguraModelPart modelPart, String type, String path) {
+        modelPart.customization.secondaryTexture = FiguraTextureSet.getOverrideTexture(modelPart.owner, type, path);
+    }
+
     public final FiguraMat4 savedPartToWorldMat = FiguraMat4.of();
     @LuaWhitelist
     @LuaMethodDoc(
@@ -760,7 +830,8 @@ public class FiguraModelPart {
 
     //-- READING METHODS FROM NBT --//
 
-    private FiguraModelPart(String name, PartCustomization customization, int index, List<FiguraModelPart> children) {
+    private FiguraModelPart(Avatar owner, String name, PartCustomization customization, int index, List<FiguraModelPart> children) {
+        this.owner = owner;
         this.name = name;
         this.customization = customization;
         this.index = index;
@@ -769,11 +840,11 @@ public class FiguraModelPart {
             child.parent = this;
     }
 
-    public static FiguraModelPart read(CompoundTag partCompound, List<FiguraImmediateBuffer.Builder> bufferBuilders, List<FiguraTextureSet> textureSets) {
-        return read(partCompound, bufferBuilders, new int[] {0}, textureSets);
+    public static FiguraModelPart read(Avatar owner, CompoundTag partCompound, List<FiguraImmediateBuffer.Builder> bufferBuilders, List<FiguraTextureSet> textureSets) {
+        return read(owner, partCompound, bufferBuilders, new int[] {0}, textureSets);
     }
 
-    private static FiguraModelPart read(CompoundTag partCompound, List<FiguraImmediateBuffer.Builder> bufferBuilders, int[] index, List<FiguraTextureSet> textureSets) {
+    private static FiguraModelPart read(Avatar owner, CompoundTag partCompound, List<FiguraImmediateBuffer.Builder> bufferBuilders, int[] index, List<FiguraTextureSet> textureSets) {
         //Read name
         String name = partCompound.getString("name");
 
@@ -819,10 +890,10 @@ public class FiguraModelPart {
         if (partCompound.contains("chld")) {
             ListTag listTag = partCompound.getList("chld", Tag.TAG_COMPOUND);
             for (Tag tag : listTag)
-                children.add(read((CompoundTag) tag, bufferBuilders, index, textureSets));
+                children.add(read(owner, (CompoundTag) tag, bufferBuilders, index, textureSets));
         }
 
-        FiguraModelPart result = new FiguraModelPart(name, customization, newIndex, children);
+        FiguraModelPart result = new FiguraModelPart(owner, name, customization, newIndex, children);
         result.facesByTexture = facesByTexture;
         storeTexSize(result, textureSets);
         if (partCompound.contains("pt"))

@@ -1,5 +1,6 @@
 package org.moon.figura.avatars.model;
 
+import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
@@ -178,6 +179,8 @@ public class PartCustomization implements CachedType {
 
     private FiguraTextureSet.RenderTypes primaryRenderType;
     private FiguraTextureSet.RenderTypes secondaryRenderType;
+    public ResourceLocation primaryTexture = null;
+    public ResourceLocation secondaryTexture = null;
 
     public void setPrimaryRenderType(FiguraTextureSet.RenderTypes type) {
         primaryRenderType = type;
@@ -214,6 +217,8 @@ public class PartCustomization implements CachedType {
         light = null;
         needsMatrixRecalculation = false;
         visible = null;
+        primaryTexture = null;
+        secondaryTexture = null;
     }
     public void free() {
         positionMatrix.free();
@@ -262,6 +267,8 @@ public class PartCustomization implements CachedType {
             to.visible = from.visible;
             to.setPrimaryRenderType(from.primaryRenderType);
             to.setSecondaryRenderType(from.secondaryRenderType);
+            to.primaryTexture = from.primaryTexture;
+            to.secondaryTexture = from.secondaryTexture;
         }
     }
 
@@ -290,6 +297,11 @@ public class PartCustomization implements CachedType {
         }
 
         color.multiply(other.color);
+
+        if (other.primaryTexture != null)
+            primaryTexture = other.primaryTexture;
+        if (other.secondaryTexture != null)
+            secondaryTexture = other.secondaryTexture;
     }
 
     public enum PartType {

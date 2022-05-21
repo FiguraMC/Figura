@@ -56,7 +56,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
         //Vertex data, read model parts
         List<FiguraImmediateBuffer.Builder> builders = new ArrayList<>();
-        root = FiguraModelPart.read(avatar.nbt.getCompound("models"), builders, textureSets);
+        root = FiguraModelPart.read(avatar, avatar.nbt.getCompound("models"), builders, textureSets);
 
         for (int i = 0; i < textureSets.size() && i < builders.size(); i++)
             buffers.add(builders.get(i).build(textureSets.get(i), customizationStack));
