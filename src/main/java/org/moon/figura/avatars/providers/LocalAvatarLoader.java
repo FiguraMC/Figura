@@ -173,8 +173,9 @@ public class LocalAvatarLoader {
 
                 event = watchEvent;
                 File file = entry.getKey().resolve(((WatchEvent<Path>) event).context()).toFile();
+                String name = file.getName();
 
-                if (file.isDirectory() && (file.isHidden() || file.getName().startsWith(".")))
+                if (file.isHidden() || name.startsWith(".") || (!file.isDirectory() && !name.matches(".*?(\\.lua|\\.bbmodel|\\.ogg|\\.png)$") && !name.equals("avatar.json")))
                     continue;
 
                 reload = true;
