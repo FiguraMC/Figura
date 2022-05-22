@@ -363,7 +363,7 @@
   "figura.docs.model_part.get_opacity": "Gets the opacity multiplier of this part. Note that opacity settings will only take effect if the part has a suitable Render Type for them, mainly TRANSLUCENT. Check out modelPart.setPrimaryRenderType() for how to do this.",
   "figura.docs.model_part.set_light": "Sets the light level to be used when rendering this part. Values you give are 0 to 15, indicating the block light and sky light levels you want to use.",
   "figura.docs.model_part.get_light": "Gets the light level you set earlier to this part. Does not interact with Minecraft's lighting system, only retrieving values you set earlier with setLight().",
-  "figura.docs.model_part.set_parent_type": "Sets the parent type of the part. Currently implemented parent types are None, Head, Body, LeftArm, RightArm, LeftLeg, RightLeg, LeftElytron, RightElytron, and World.",
+  "figura.docs.model_part.set_parent_type": "Sets the parent type of the part. Currently implemented parent types are None, Head, Body, LeftArm, RightArm, LeftLeg, RightLeg, LeftElytra, RightElytra, and World.",
   "figura.docs.model_part.get_parent_type": "Returns the current parent type of the part.",
   "figura.docs.model_part.get_type": "Returns whether this part is a \"GROUP\", a \"CUBE\", or a \"MESH\".",
 
