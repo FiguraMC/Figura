@@ -47,6 +47,8 @@ public class FiguraGlobalsDocs {
     public SoundAPI sound;
     @LuaFieldDoc(description = "globals.nameplate")
     public NameplateAPI nameplate;
+    @LuaFieldDoc(description = "globals.client")
+    public NameplateAPI client;
 
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(

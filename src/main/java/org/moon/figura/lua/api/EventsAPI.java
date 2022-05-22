@@ -8,11 +8,13 @@ import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.lua.types.LuaFunction;
 import org.moon.figura.lua.types.LuaOwnedList;
+import org.moon.figura.lua.types.LuaOwnedTable;
 import org.moon.figura.lua.types.LuaPairsIterator;
 import org.terasology.jnlua.LuaRuntimeException;
 import org.terasology.jnlua.LuaState;
 
 import java.util.List;
+import java.util.Objects;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -60,7 +62,9 @@ public class EventsAPI {
         return pairsIterator;
     }
     private static final LuaPairsIterator<EventsAPI, String> pairsIterator = new LuaPairsIterator<>(
-            List.of("TICK", "RENDER", "POST_RENDER"), EventsAPI.class, String.class);
+            List.of("TICK", "WORLD_RENDER", "RENDER",
+                    "POST_RENDER", "POST_WORLD_RENDER",
+                    "CHAT_SEND_MESSAGE", "CHAT_RECEIVE_MESSAGE"), EventsAPI.class, String.class);
 
 
     @LuaWhitelist
@@ -78,16 +82,24 @@ public class EventsAPI {
         private final LuaOwnedList<LuaFunction> functionList;
         private final LuaOwnedList<LuaFunction> functionQueue; //To avoid concurrent modification issues
 
+        private final LuaOwnedList<String> nameList;
+        private final LuaOwnedList<String> nameQueue; //To avoid concurrent modification issues
+
         public LuaEvent(LuaState state, String name) {
             this.name = name;
             functionList = new LuaOwnedList<>(state, "EVENT_" + name, LuaFunction.class);
             functionQueue = new LuaOwnedList<>(state, "QUEUE_EVENT_" + name, LuaFunction.class);
+
+            nameList = new LuaOwnedList<>(state, "NAMES_EVENT_" + name, String.class);
+            nameQueue = new LuaOwnedList<>(state, "NAMES_QUEUE_EVENT_" + name, String.class);
         }
 
         private void flushQueue() {
             //Add all waiting functions from queue
             while (functionQueue.size() > 0)
                 functionList.add(functionQueue.remove(1));
+            while (nameQueue.size() > 0)
+                nameList.add(nameQueue.remove(1));
         }
 
         public void call(Object... args) {
@@ -100,16 +112,23 @@ public class EventsAPI {
 
         @LuaWhitelist
         @LuaMethodDoc(
-                overloads = @LuaFunctionOverload(
-                        argumentTypes = {LuaEvent.class, LuaFunction.class},
-                        argumentNames = {"event", "function"}
-                ),
+                overloads = {
+                        @LuaFunctionOverload(
+                                argumentTypes = {LuaEvent.class, LuaFunction.class},
+                                argumentNames = {"event", "function"}
+                        ),
+                        @LuaFunctionOverload(
+                                argumentTypes = {LuaEvent.class, LuaFunction.class, String.class},
+                                argumentNames = {"event", "function", "name"}
+                        )
+                },
                 description = "event.register"
         )
-        public static void register(@LuaNotNil LuaEvent event, @LuaNotNil LuaFunction function) {
+        public static void register(@LuaNotNil LuaEvent event, @LuaNotNil LuaFunction function, String name) {
             if (event.functionQueue.size() + event.functionList.size() >= MAX_FUNCTIONS)
                 throw new LuaRuntimeException("Reached maximum limit of " + MAX_FUNCTIONS + " functions in an event!");
             event.functionQueue.add(function);
+            event.nameQueue.add(name);
         }
 
         @LuaWhitelist
@@ -123,6 +142,8 @@ public class EventsAPI {
         public static void clear(@LuaNotNil LuaEvent event) {
             event.functionQueue.clear();
             event.functionList.clear();
+            event.nameQueue.clear();
+            event.nameList.clear();
         }
 
         @LuaWhitelist
@@ -135,16 +156,37 @@ public class EventsAPI {
                         @LuaFunctionOverload(
                                 argumentTypes = {LuaEvent.class, Integer.class},
                                 argumentNames = {"event", "index"}
+                        ),
+                        @LuaFunctionOverload(
+                                argumentTypes = {LuaEvent.class, String.class},
+                                argumentNames = {"event", "name"}
                         )
                 },
                 description = "event.remove"
         )
-        public static void remove(@LuaNotNil LuaEvent event, Integer index) {
+        public static boolean remove(@LuaNotNil LuaEvent event, Object which) {
             event.flushQueue();
-            if (index == null) index = 1;
-            if (index <= 0 || index > event.functionList.size())
-                throw new LuaRuntimeException("Illegal index to remove(): " + index);
-            event.functionList.remove(index.intValue());
+            boolean ret = false;
+            if (which == null) which = 1;
+            if (which instanceof Number n) {
+                int index = n.intValue();
+                if (index <= 0 || index > event.functionList.size())
+                    throw new LuaRuntimeException("Illegal index to remove(): " + index);
+                event.nameList.remove(index);
+                event.functionList.remove(index);
+                ret = true;
+            } else if (which instanceof String name) {
+                for (int i = event.nameList.size(); i >= 1; i--) {
+                    if (name.equals(event.nameList.get(i))) {
+                        event.nameList.remove(i);
+                        event.functionList.remove(i);
+                        ret = true;
+                    }
+                }
+            } else {
+                throw new LuaRuntimeException("Illegal type argument to remove(): must be integer or string!");
+            }
+            return ret;
         }
 
         @LuaWhitelist

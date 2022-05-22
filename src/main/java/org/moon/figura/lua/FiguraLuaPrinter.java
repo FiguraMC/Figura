@@ -38,7 +38,7 @@ public class FiguraLuaPrinter {
     public static void sendLuaMessage(Object message, String owner) {
         MutableComponent component = TextComponent.EMPTY.copy()
                 .append(new TextComponent("[lua] ").withStyle(ColorUtils.Colors.LUA_LOG.style))
-                .append(new TextComponent(owner).withStyle(ChatFormatting.ITALIC).withStyle(ChatFormatting.WHITE))
+                .append(new TextComponent(owner).withStyle(ChatFormatting.ITALIC))
                 .append(new TextComponent(" : ").withStyle(ColorUtils.Colors.LUA_LOG.style))
                 .append(message instanceof Component c ? c : new TextComponent(message.toString()))
                 .append(new TextComponent("\n"));
@@ -285,8 +285,11 @@ public class FiguraLuaPrinter {
         } else {
             MutableComponent withoutSiblings = message.plainCopy().withStyle(message.getStyle());
             sendLuaChatMessage(withoutSiblings);
-            for (Component sibling : message.getSiblings())
+            for (Component sibling : message.getSiblings()) {
+                ((MutableComponent) sibling).setStyle(sibling.getStyle().applyTo(message.getStyle()));
                 sendLuaChatMessage((MutableComponent) sibling);
+            }
+
         }
     }
 
@@ -295,7 +298,7 @@ public class FiguraLuaPrinter {
         int totalLen = 0;
         MutableComponent bigComponent = chatQueue.poll();
         while (chatQueue.size() > 1) {
-            MutableComponent smallComponent = chatQueue.poll();
+            MutableComponent smallComponent = TextComponent.EMPTY.copy();
 
             int len = smallComponent.getContents().length();
             MutableComponent smallerComponent = chatQueue.poll();

@@ -1,6 +1,5 @@
 package org.moon.figura.lua.types;
 
-import org.moon.figura.utils.LuaUtils;
 import org.terasology.jnlua.LuaState;
 
 /**

@@ -4,6 +4,12 @@ import org.terasology.jnlua.LuaState;
 
 import java.util.AbstractList;
 
+/**
+ * 1-Indexed, lua-owned implementation of a list. Has implementations for basic methods
+ * that are used by the Events API. Works based off of a LuaOwnedTable
+ * implementation in the back.
+ * @param <T>
+ */
 public class LuaOwnedList<T> extends AbstractList<T> {
 
     private final LuaOwnedTable<Integer> impl;
