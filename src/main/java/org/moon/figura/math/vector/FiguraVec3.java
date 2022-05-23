@@ -170,10 +170,6 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3> implements CachedType {
         this.x = ((this.x % x) + x) % x;
         this.y = ((this.y % y) + y) % y;
         this.z = ((this.z % z) + z) % z;
-
-        if (x < 0) this.x -= x;
-        if (y < 0) this.y -= y;
-        if (z < 0) this.z -= z;
     }
 
     @Override

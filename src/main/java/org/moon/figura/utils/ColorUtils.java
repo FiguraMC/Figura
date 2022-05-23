@@ -9,13 +9,13 @@ import java.awt.*;
 public class ColorUtils {
 
     public enum Colors {
-        FRAN_PINK(0xFF72B7),
-        CHLOE_PURPLE(0xA672EF),
-        MAYA_BLUE(0x00F0FF),
-        SKYE_BLUE(0x99BBEE),
-        LILY_RED(0xFF2400),
+        FRAN_PINK(0xFF72B7, "fran", "francielly", "bunny"),
+        CHLOE_PURPLE(0xA672EF, "chloe", "space"),
+        MAYA_BLUE(0x00F0FF, "maya", "devnull"),
+        SKYE_BLUE(0x99BBEE, "sky", "skye", "skylar"),
+        LILY_RED(0xFF2400, "lily", "foxes", "fox"),
 
-        CHEESE(0xF8C53A),
+        CHEESE(0xF8C53A, "cheese", "largecheese", "large cheese"),
 
         LUA_LOG(0x5555FF),
         LUA_ERROR(0xFF5555),
@@ -26,11 +26,23 @@ public class ColorUtils {
         public final int hex;
         public final FiguraVec3 vec;
         public final Style style;
+        private final String[] alias;
 
-        Colors(int hex) {
+        Colors(int hex, String... alias) {
             this.hex = hex;
             this.vec = intToRGB(hex);
             this.style = Style.EMPTY.withColor(hex);
+            this.alias = alias;
+        }
+
+        public static Colors getColor(String s) {
+            for (Colors value : Colors.values()) {
+                for (String alias : value.alias) {
+                    if (s.equalsIgnoreCase(alias))
+                        return value;
+                }
+            }
+            return null;
         }
     }
 
@@ -78,16 +90,17 @@ public class ColorUtils {
      * @param hex - the hex string
      * @return an integer
      */
+    public static int userInputHex(String hex, FiguraVec3 vec) {
+        Colors color = Colors.getColor(hex);
+        return color != null ? color.hex : rgbToInt(hexStringToRGB(hex, vec));
+    }
+
+    /**
+     * overload for {@link #userInputHex(String, FiguraVec3)}
+     * fallback is the default color
+     */
     public static int userInputHex(String hex) {
-        return switch (hex.toLowerCase()) {
-            case "fran", "francielly", "bunny" -> Colors.FRAN_PINK.hex;
-            case "chloe", "space" -> Colors.CHLOE_PURPLE.hex;
-            case "maya", "devnull" -> Colors.MAYA_BLUE.hex;
-            case "sky", "skye", "skylar" -> Colors.SKYE_BLUE.hex;
-            case "lily", "foxes", "fox" -> Colors.LILY_RED.hex;
-            case "cheese", "largecheese", "large cheese" -> Colors.CHEESE.hex;
-            default -> rgbToInt(hexStringToRGB(hex, Colors.DEFAULT.vec));
-        };
+        return userInputHex(hex, Colors.DEFAULT.vec);
     }
 
     /**
@@ -110,7 +123,7 @@ public class ColorUtils {
 
             //special catch for 3
             if (hex.length() == 3)
-                hex = new StringBuilder("" + bgChar[0] + bgChar[0] + bgChar[1] + bgChar[1] + bgChar[2] + bgChar[2]);
+                hex = new StringBuilder(String.valueOf(bgChar[0] + bgChar[0] + bgChar[1] + bgChar[1] + bgChar[2] + bgChar[2]));
             else
                 hex.append("0".repeat(6 - hex.toString().length()));
         }

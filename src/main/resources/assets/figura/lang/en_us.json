@@ -553,6 +553,7 @@
 
   "figura.docs.keybind_api": "A global API containing a function to create new Keybind instances.",
   "figura.docs.keybind_api.create": "Creates and returns a new Keybind. The name is used in the keybind menu. The key parameter is an identifier for a key, such as \"key.keyboard.r\". The boolean gui indicates whether the keybind should always work, or if it should only work when you don't have a screen open.",
+  "figura.docs.keybind_api.get_vanilla_key": "",
 
   "figura.docs.keybind": "Represents a key binding for your script. Instances are obtained using the KeybindAPI's create() function.",
   "figura.docs.keybind.set_key": "Sets the key for this keybind.",

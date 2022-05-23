@@ -6,6 +6,7 @@ import net.minecraft.network.chat.TranslatableComponent;
 import org.moon.figura.config.Config;
 import org.moon.figura.gui.widgets.TextField;
 import org.moon.figura.gui.widgets.lists.ConfigList;
+import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.ui.UIHelper;
 
@@ -27,7 +28,7 @@ public class InputElement extends AbstractConfigElement {
         textField = new InputField(0, 0, 90, 20, inputType.hint, this, text -> {
             //only write config value if it's valid
             if (inputType.validator.test(text))
-                config.configValue = isHex ? ColorUtils.rgbToInt(ColorUtils.hexStringToRGB(text)) : text;
+                config.configValue = isHex ? ColorUtils.userInputHex(text, FiguraVec3.of()) : text;
         });
         updateTextFieldText(formatText(config.configValue));
         textField.getField().moveCursorToStart();
@@ -94,7 +95,7 @@ public class InputElement extends AbstractConfigElement {
     }
 
     private String formatText(Object configValue) {
-        return config.inputType == Config.InputType.HEX_COLOR ? String.format("#%06X", (int) configValue) : configValue + "";
+        return config.inputType == Config.InputType.HEX_COLOR ? String.format("#%06X", (int) configValue) : configValue.toString();
     }
 
     private static class InputField extends TextField {

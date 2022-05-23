@@ -179,11 +179,6 @@ public class FiguraVec4 extends FiguraVector<FiguraVec4> implements CachedType {
         this.y = ((this.y % y) + y) % y;
         this.z = ((this.z % z) + z) % z;
         this.w = ((this.w % w) + w) % w;
-
-        if (x < 0) this.x -= x;
-        if (y < 0) this.y -= y;
-        if (z < 0) this.z -= z;
-        if (w < 0) this.w -= w;
     }
 
     @Override

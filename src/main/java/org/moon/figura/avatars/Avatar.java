@@ -114,12 +114,15 @@ public class Avatar {
 
     public void onTick() {
         if (!scriptError && luaState != null) {
+            //sound
             float maxParticles = TrustManager.get(this.owner).get(TrustContainer.Trust.PARTICLES);
             this.particlesRemaining = Math.min(particlesRemaining + (maxParticles / SharedConstants.TICKS_PER_SECOND), maxParticles);
 
+            //particles
             float maxSounds = TrustManager.get(this.owner).get(TrustContainer.Trust.SOUNDS);
             this.soundsRemaining = Math.min(soundsRemaining + (maxSounds / SharedConstants.TICKS_PER_SECOND), maxSounds);
 
+            //event
             tryCall(luaState.events.TICK, tickLimit);
             if (FiguraMod.DO_OUR_NATIVES_WORK && luaState != null)
                 tickInstructions = tickLimit - luaState.getInstructions();
@@ -185,9 +188,12 @@ public class Avatar {
 
     }
 
-    public void chatSendMessageEvent(String message) {
-        if (!scriptError && luaState != null)
+    public String chatSendMessageEvent(String message) {
+        if (!scriptError && luaState != null) {
             tryCall(luaState.events.CHAT_SEND_MESSAGE, -1, message);
+            return message; //TODO
+        }
+        return message;
     }
 
     public void chatReceivedMessageEvent(String message) {

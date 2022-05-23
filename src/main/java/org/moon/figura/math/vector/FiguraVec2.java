@@ -159,9 +159,6 @@ public class FiguraVec2 extends FiguraVector<FiguraVec2> implements CachedType {
     public void reduce(double x, double y) {
         this.x = ((this.x % x) + x) % x;
         this.y = ((this.y % y) + y) % y;
-
-        if (x < 0) this.x -= x;
-        if (y < 0) this.y -= y;
     }
 
     @Override

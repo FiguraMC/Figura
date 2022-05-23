@@ -179,12 +179,6 @@ public class FiguraVec5 extends FiguraVector<FiguraVec5> implements CachedType {
         this.z = ((this.z % z) + z) % z;
         this.w = ((this.w % w) + w) % w;
         this.t = ((this.t % t) + t) % t;
-
-        if (x < 0) this.x -= x;
-        if (y < 0) this.y -= y;
-        if (z < 0) this.z -= z;
-        if (w < 0) this.w -= w;
-        if (t < 0) this.t -= t;
     }
 
     @Override

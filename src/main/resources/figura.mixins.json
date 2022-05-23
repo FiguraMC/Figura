@@ -17,6 +17,7 @@
     "gui.PlayerTabOverlayMixin",
     "gui.SplashManagerMixin",
 
+    "input.KeyMappingAccessor",
     "input.KeyboardHandlerMixin",
     "input.MouseHandlerMixin",
 

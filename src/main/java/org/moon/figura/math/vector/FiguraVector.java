@@ -1,5 +1,7 @@
 package org.moon.figura.math.vector;
 
+import net.minecraft.util.Mth;
+
 public abstract class FiguraVector<T extends FiguraVector<T>> {
 
     public abstract double lengthSquared();
@@ -86,12 +88,12 @@ public abstract class FiguraVector<T extends FiguraVector<T>> {
     }
     public T toRad() {
         T result = copy();
-        result.scale(Math.PI / 180);
+        result.scale(Mth.DEG_TO_RAD);
         return result;
     }
     public T toDeg() {
         T result = copy();
-        result.scale( 180 / Math.PI);
+        result.scale(Mth.RAD_TO_DEG);
         return result;
     }
 }

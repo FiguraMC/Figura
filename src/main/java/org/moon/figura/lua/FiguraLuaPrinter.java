@@ -116,7 +116,13 @@ public class FiguraLuaPrinter {
         if (!(boolean) Config.LOG_OTHERS.value && ((FiguraLuaState) luaState).getOwner().owner.compareTo(FiguraMod.getLocalPlayerUUID()) != 0)
             return 0;
 
-        sendLuaMessage(TextUtils.tryParseJson(luaToString(luaState, 1)), ((FiguraLuaState) luaState).getOwner().name);
+        MutableComponent text = TextComponent.EMPTY.copy();
+
+        if (luaState.getTop() > 0)
+            text.append(TextUtils.tryParseJson(luaToString(luaState, 1)));
+
+        sendLuaMessage(text, ((FiguraLuaState) luaState).getOwner().name);
+
         return 0;
     };
 
@@ -124,9 +130,15 @@ public class FiguraLuaPrinter {
         if (!(boolean) Config.LOG_OTHERS.value && ((FiguraLuaState) luaState).getOwner().owner.compareTo(FiguraMod.getLocalPlayerUUID()) != 0)
             return 0;
 
-        int depth = luaState.getTop() > 1 ? (int) luaState.checkInteger(2) : 1;
-        Component result = tableToText(luaState, 1, depth, 1, true);
-        sendLuaMessage(result, ((FiguraLuaState) luaState).getOwner().name);
+        MutableComponent text = TextComponent.EMPTY.copy();
+
+        if (luaState.getTop() > 0) {
+            int depth = luaState.getTop() > 1 ? (int) luaState.checkInteger(2) : 1;
+            text.append(tableToText(luaState, 1, depth, 1, true));
+        }
+
+        sendLuaMessage(text, ((FiguraLuaState) luaState).getOwner().name);
+
         return 0;
     };
 
@@ -300,7 +312,7 @@ public class FiguraLuaPrinter {
         while (chatQueue.size() > 1) {
             MutableComponent smallComponent = TextComponent.EMPTY.copy();
 
-            int len = smallComponent.getContents().length();
+            int len = 0;
             MutableComponent smallerComponent = chatQueue.poll();
             while (chatQueue.size() > 1 && !smallerComponent.getContents().equals("\n")) {
                 smallComponent.append(smallerComponent);

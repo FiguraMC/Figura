@@ -161,8 +161,8 @@ public enum Config {
         boolean change = value.equals(configValue);
 
         try {
-            if (value instanceof String)
-                value = text;
+            if (enumList != null)
+                value = Math.floorMod(Integer.parseInt(text), enumList.size());
             else if (value instanceof Boolean)
                 value = Boolean.valueOf(text);
             else if (value instanceof Integer)
@@ -177,12 +177,10 @@ public enum Config {
                 value = Byte.valueOf(text);
             else if (value instanceof Short)
                 value = Short.valueOf(text);
-
-            if (enumList != null) {
-                int length = enumList.size();
-                value = ((Integer.parseInt(text) % length) + length) % length;
-            }
+            else
+                value = text;
         } catch (Exception e) {
+            FiguraMod.LOGGER.warn("Failed to set this config (" + this.name() + ") value \"" + value + "\", restoring it to default", e);
             value = defaultValue;
         }
 
@@ -202,9 +200,9 @@ public enum Config {
 
     public enum InputType {
         ANY(s -> true),
-        INT(s -> s.matches("^[\\-+]?[0-9]*$")),
-        FLOAT(s -> s.matches("[\\-+]?[0-9]*(\\.[0-9]+)?") || s.endsWith(".") || s.isEmpty()),
-        HEX_COLOR(s -> s.matches("^[#]?[0-9A-Fa-f]{0,6}$")),
+        INT(s -> s.matches("^[-+]?\\d*$")),
+        FLOAT(s -> s.matches("^[-+]?\\d*(\\.(\\d*)?)?$")),
+        HEX_COLOR(s -> s.matches("^#?(?i)[\\da-f]{0,6}$") || ColorUtils.Colors.getColor(s) != null),
         FOLDER_PATH(s -> {
             if (!s.isBlank()) {
                 try {

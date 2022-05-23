@@ -19,4 +19,8 @@ public class MathUtils {
         int byteVal = (int) Math.pow(2, byteAt);
         return (number & byteVal) == byteVal;
     }
+
+    public static double modulus(double number, double mod) {
+        return ((number % mod) + mod) % mod;
+    }
 }
