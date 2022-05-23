@@ -69,7 +69,7 @@ public class WorldAPI {
         Level world = getCurrentWorld();
         if (world.getChunkAt(blockPos) == null)
             return null;
-        return new BlockStateWrapper(world.getBlockState(blockPos));
+        return new BlockStateWrapper(world.getBlockState(blockPos), blockPos);
     }
 
     @LuaWhitelist
