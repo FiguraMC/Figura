@@ -63,7 +63,7 @@ public abstract class AbstractPanelScreen extends Screen {
         this.renderOverlays(stack, mouseX, mouseY, delta);
 
         //restore vanilla framebuffer
-        UIHelper.useVanillaFramebuffer(stack);
+        UIHelper.useVanillaFramebuffer();
     }
 
     public void renderBackground() {

@@ -74,19 +74,19 @@ public class CustomFramebuffer {
         return fbo;
     }
 
-    public void drawToScreen(PoseStack stack, int viewWidth, int viewHeight) {
+    public void drawToScreen(int viewWidth, int viewHeight) {
         RenderSystem.assertOnRenderThread();
         GlStateManager._colorMask(true, true, true, true);
         GlStateManager._disableDepthTest();
         GlStateManager._depthMask(false);
-        GlStateManager._viewport(0, 0, width, height);
+        GlStateManager._viewport(0, 0, viewWidth, viewHeight);
 
         Minecraft minecraftClient = Minecraft.getInstance();
         ShaderInstance shader = minecraftClient.gameRenderer.blitShader;
         shader.setSampler("DiffuseSampler", colorAttachment);
         //shader.addSampler("DiffuseSampler", MinecraftClient.getInstance().getFramebuffer().getColorAttachment());
         //shader.addSampler("DiffuseSampler", MinecraftClient.getInstance().getTextureManager().getTexture(ClickableWidget.WIDGETS_TEXTURE).getGlId());
-        Matrix4f matrix4f = Matrix4f.orthographic((float) width, (float) (-height), 1000f, 3000f);
+        Matrix4f matrix4f = Matrix4f.orthographic((float) viewWidth, (float) (-viewHeight), 1000f, 3000f);
         RenderSystem.setProjectionMatrix(matrix4f);
         if (shader.MODEL_VIEW_MATRIX != null) {
             shader.MODEL_VIEW_MATRIX.set(Matrix4f.createTranslateMatrix(0f, 0f, -2000f));
@@ -100,9 +100,9 @@ public class CustomFramebuffer {
         Tesselator tessellator = RenderSystem.renderThreadTesselator();
         BufferBuilder bufferBuilder = tessellator.getBuilder();
         bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-        bufferBuilder.vertex(0d, height, 0d).uv(0f, 0f).color(0xFF, 0xFF, 0xFF, 0xFF).endVertex();
-        bufferBuilder.vertex(width, height, 0d).uv(1f, 0f).color(0xFF, 0xFF, 0xFF, 0xFF).endVertex();
-        bufferBuilder.vertex(width, 0d, 0d).uv(1f, 1f).color(0xFF, 0xFF, 0xFF, 0xFF).endVertex();
+        bufferBuilder.vertex(0d, viewHeight, 0d).uv(0f, 0f).color(0xFF, 0xFF, 0xFF, 0xFF).endVertex();
+        bufferBuilder.vertex(viewWidth, viewHeight, 0d).uv(1f, 0f).color(0xFF, 0xFF, 0xFF, 0xFF).endVertex();
+        bufferBuilder.vertex(viewWidth, 0d, 0d).uv(1f, 1f).color(0xFF, 0xFF, 0xFF, 0xFF).endVertex();
         bufferBuilder.vertex(0d, 0d, 0d).uv(0f, 1f).color(0xFF, 0xFF, 0xFF, 0xFF).endVertex();
         bufferBuilder.end();
         BufferUploader._endInternal(bufferBuilder);

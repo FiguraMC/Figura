@@ -67,7 +67,7 @@ public class UIHelper extends GuiComponent {
         RenderSystem.setProjectionMatrix(mf);
     }
 
-    public static void useVanillaFramebuffer(PoseStack stack) {
+    public static void useVanillaFramebuffer() {
         //Reset state before we go back to normal rendering
         GlStateManager._enableDepthTest();
         //Set a sensible default for stencil buffer operations
@@ -79,11 +79,11 @@ public class UIHelper extends GuiComponent {
 
         RenderSystem.disableBlend();
         //Draw GUI framebuffer -> vanilla framebuffer
-        int windowWidth = Minecraft.getInstance().getWindow().getGuiScaledWidth();
-        int windowHeight = Minecraft.getInstance().getWindow().getGuiScaledHeight();
+        int windowWidth = Minecraft.getInstance().getWindow().getScreenWidth();
+        int windowHeight = Minecraft.getInstance().getWindow().getScreenHeight();
 
         Matrix4f mf = RenderSystem.getProjectionMatrix();
-        FIGURA_FRAMEBUFFER.drawToScreen(stack, windowWidth, windowHeight);
+        FIGURA_FRAMEBUFFER.drawToScreen(windowWidth, windowHeight);
         RenderSystem.setProjectionMatrix(mf);
         RenderSystem.enableBlend();
     }
