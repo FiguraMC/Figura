@@ -202,7 +202,7 @@
   "figura.command.load.success" : "Avatar loaded!",
   "figura.command.load.error" : "Failed to load avatar from path \"%s\"",
   "figura.command.load.invalid" : "Invalid path \"%s\"",
-  
+
   "figura.docs": "The \"/figura docs\" command allows you to access documentation for all types and functions Figura adds to its Lua scripting environment.",
 
   "figura.docs.text.type": "Type",
@@ -582,7 +582,7 @@
 
   "figura.docs.keybind_api": "A global API containing a function to create new Keybind instances.",
   "figura.docs.keybind_api.create": "Creates and returns a new Keybind. The name is used in the keybind menu. The key parameter is an identifier for a key, such as \"key.keyboard.r\". The boolean gui indicates whether the keybind should always work, or if it should only work when you don't have a screen open.",
-  "figura.docs.keybind_api.get_vanilla_key": "Gets a Keybind with the same key bound in Minecraft for the given action id.",
+  "figura.docs.keybind_api.get_vanilla_key": "Gets the id of the key bound to the given action, as a string.",
 
   "figura.docs.keybind": "Represents a key binding for your script. Instances are obtained using the KeybindAPI's create() function.",
   "figura.docs.keybind.set_key": "Sets the key for this keybind.",

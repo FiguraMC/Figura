@@ -46,7 +46,7 @@ public class KeybindAPI {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = {KeybindAPI.class, String.class},
-                    argumentNames = {"api", "id"}
+                    argumentNames = {"api", "actionId"}
             ),
             description = "keybind_api.get_vanilla_key"
     )
