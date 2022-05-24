@@ -3,6 +3,7 @@ package org.moon.figura.lua.api.entity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
@@ -14,10 +15,12 @@ import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.lua.NbtToLua;
 import org.moon.figura.lua.api.world.ItemStackWrapper;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.lua.types.LuaTable;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.mixin.ClientLevelInvoker;
@@ -35,7 +38,7 @@ public class EntityWrapper<T extends Entity> {
     protected final UUID savedUUID;
 
     public EntityWrapper(UUID uuid) {
-        savedUUID = uuid;
+        this.savedUUID = uuid;
     }
 
     public static EntityWrapper<?> fromEntity(Entity entity) {
@@ -501,6 +504,20 @@ public class EntityWrapper<T extends Entity> {
         }
 
         return null;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = EntityWrapper.class,
+                    argumentNames = "entity"
+            ),
+            description = "entity.get_nbt"
+    )
+    public static <T extends Entity> LuaTable getNbt(@LuaNotNil EntityWrapper<T> entity) {
+        CompoundTag tag = new CompoundTag();
+        getEntity(entity).saveWithoutId(tag);
+        return (LuaTable) NbtToLua.convert(tag);
     }
 
     @Override

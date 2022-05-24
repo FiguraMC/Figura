@@ -4,6 +4,7 @@ import net.minecraft.commands.arguments.blocks.BlockStateParser;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
@@ -15,6 +16,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.lua.NbtToLua;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
@@ -44,12 +46,17 @@ public class BlockStateWrapper {
     @LuaWhitelist
     @LuaFieldDoc(description = "blockstate.id")
     public final String id;
+    @LuaWhitelist
+    @LuaFieldDoc(description = "blockstate.properties")
+    public final LuaTable properties;
 
     public BlockStateWrapper(BlockState wrapped, BlockPos pos) {
         this.blockState = new WeakReference<>(wrapped);
         this.pos = pos;
         this.id = Registry.BLOCK.getKey(wrapped.getBlock()).toString();
-        //TODO - properties
+
+        CompoundTag tag = NbtUtils.writeBlockState(wrapped);
+        this.properties = (LuaTable) NbtToLua.convert(tag.contains("Properties") ? tag.get("Properties") : null);
     }
 
     protected static BlockState getState(BlockStateWrapper blockState) {
@@ -434,10 +441,9 @@ public class BlockStateWrapper {
             ),
             description = "blockstate.get_entity_data"
     )
-    public static void getEntityData(@LuaNotNil BlockStateWrapper blockState) {
+    public static LuaTable getEntityData(@LuaNotNil BlockStateWrapper blockState) {
         BlockEntity entity = WorldAPI.getCurrentWorld().getBlockEntity(getBlockPos(blockState));
-        CompoundTag tag = entity != null ? entity.saveWithoutMetadata() : new CompoundTag();
-        //TODO - NBT of "tag"
+        return (LuaTable) NbtToLua.convert(entity != null ? entity.saveWithoutMetadata() : null);
     }
 
     @LuaWhitelist

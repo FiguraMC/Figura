@@ -10,6 +10,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.lua.NbtToLua;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
@@ -44,11 +45,14 @@ public class ItemStackWrapper {
     @LuaWhitelist
     @LuaFieldDoc(description = "itemstack.id")
     public final String id;
+    @LuaWhitelist
+    @LuaFieldDoc(description = "itemstack.tag")
+    public final LuaTable tag;
 
     private ItemStackWrapper(ItemStack wrapped) {
-        itemStack = new WeakReference<>(wrapped);
-        id = Registry.ITEM.getKey(wrapped.getItem()).toString();
-        //TODO - item tags
+        this.itemStack = new WeakReference<>(wrapped);
+        this.id = Registry.ITEM.getKey(wrapped.getItem()).toString();
+        this.tag = (LuaTable) NbtToLua.convert(wrapped.getTag() != null ? wrapped.getTag() : null);
     }
 
     protected static ItemStack getStack(ItemStackWrapper itemStack) {

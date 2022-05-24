@@ -295,6 +295,7 @@
 
   "figura.docs.blockstate": "A proxy for a block state from Minecraft. Instances are obtained through the WorldAPI. This proxy also contains a saved position for the BlockState.",
   "figura.docs.blockstate.id": "The identifier of the block this BlockState comes from.",
+  "figura.docs.blockstate.properties": "",
   "figura.docs.blockstate.get_pos": "Returns the saved position for this BlockState proxy. The saved position is used in BlockState functions that require a position.",
   "figura.docs.blockstate.set_pos": "Sets the saved position for this BlockState proxy. The saved position is used in BlockState functions that require a position.",
   "figura.docs.blockstate.exists": "Checks whether or not this BlockState currently exists. I can't think of a situation where it wouldn't exist, but this function is provided for you to check just in case.",
@@ -321,11 +322,12 @@
   "figura.docs.blockstate.get_collision_shape": "Returns a table representing the bounding boxes of the collision shape. The table a list of Vector6, where the first 3 coordinates are one corner of the box and the last 3 are the other corner.",
   "figura.docs.blockstate.get_outline_shape": "Returns a table representing the bounding boxes of the outline shape. The table a list of Vector6, where the first 3 coordinates are one corner of the box and the last 3 are the other corner.",
   "figura.docs.blockstate.get_sounds": "Gets the names of all the sounds which can play from this BlockState, as well as their pitch and volume. Stored in a table.",
-  "figura.docs.blockstate.get_entity_data": "NOT IMPLEMENTED YET - Returns the nbt of the Block Entity associated with this BlockState, at its position, as a table. Since the mod is only on client side, this NBT might not actually contain the real nbt, which is stored server-side.",
+  "figura.docs.blockstate.get_entity_data": "Returns the nbt of the Block Entity associated with this BlockState, at its position, as a table. Since the mod is only on client side, this NBT might not actually contain the real nbt, which is stored server-side.",
   "figura.docs.blockstate.to_state_string": "Converts this BlockState into a string, like you'd see in a Minecraft command.",
 
   "figura.docs.itemstack": "A proxy for an item stack from Minecraft.",
   "figura.docs.itemstack.id": "Contains the id of the item this ItemStack refers to.",
+  "figura.docs.itemstack.tag": "",
   "figura.docs.itemstack.exists": "Checks whether or not this ItemStack currently exists. Minecraft may delete ItemStack instances on occasion. I don't think it will delete them while they're in someone's inventory or on the ground, but testing is required to know for sure. Contact devs once someone has an answer to when these stop existing!",
   "figura.docs.itemstack.get_count": "Gets the number of items in this stack.",
   "figura.docs.itemstack.get_damage": "Gets the damage value of the item in this stack. Works on things like tools, or other things with a durability bar.",
@@ -468,6 +470,7 @@
   "figura.docs.entity.is_sneaking": "Returns true if this entity is sneaking.",
   "figura.docs.entity.get_variable": "Gets the value of a variable this entity stored in themselves using the Meta api's store() function.",
   "figura.docs.entity.get_item": "Gets an ItemStack for the item in the given slot. For the player, slots are indexed with 1 as the main hand, 2 as the off hand, and 3,4,5,6 as the 4 armor slots from the boots to the helmet. If an invalid slot number is given, or if the entity has no item in that slot, this will return nil.",
+  "figura.docs.entity.get_nbt": "",
 
   "figura.docs.living_entity": "Acts as a proxy for a living entity in the Minecraft world.",
   "figura.docs.living_entity.get_body_yaw": "Gets the yaw of this entity's body in degrees. If delta is passed in, then it will be used to linearly interpolate the rotation of the body between the previous tick and the current tick. The default value of delta is 1.",
