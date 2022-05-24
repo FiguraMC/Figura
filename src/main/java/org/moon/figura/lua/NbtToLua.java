@@ -54,7 +54,7 @@ public class NbtToLua {
         Class<?> getClass = tag.getClass();
         Function<Tag, Object> builder = CONVERTERS.get(getClass);
         if (builder == null)
-            return tag.toString();
+            return tag.getAsString();
 
         return builder.apply(tag);
     }
