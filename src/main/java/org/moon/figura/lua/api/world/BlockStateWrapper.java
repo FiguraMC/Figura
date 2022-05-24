@@ -24,6 +24,7 @@ import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec6;
 import org.moon.figura.mixin.BlockBehaviourAccessor;
 import org.moon.figura.utils.ColorUtils;
+import org.moon.figura.utils.LuaUtils;
 import org.terasology.jnlua.LuaRuntimeException;
 
 import java.lang.ref.WeakReference;
@@ -38,7 +39,7 @@ import java.util.Optional;
 public class BlockStateWrapper {
 
     private final WeakReference<BlockState> blockState;
-    private final WeakReference<BlockPos> pos;
+    private BlockPos pos;
 
     @LuaWhitelist
     @LuaFieldDoc(description = "blockstate.id")
@@ -46,7 +47,7 @@ public class BlockStateWrapper {
 
     public BlockStateWrapper(BlockState wrapped, BlockPos pos) {
         this.blockState = new WeakReference<>(wrapped);
-        this.pos = new WeakReference<>(pos);
+        this.pos = pos;
         this.id = Registry.BLOCK.getKey(wrapped.getBlock()).toString();
         //TODO - properties
     }
@@ -56,9 +57,8 @@ public class BlockStateWrapper {
         return blockState.blockState.get();
     }
 
-    protected static BlockPos getPos(BlockStateWrapper blockState) {
-        BlockPos pos = blockState.pos.get();
-        return pos == null ? BlockPos.ZERO : pos;
+    protected static BlockPos getBlockPos(BlockStateWrapper blockState) {
+        return blockState.pos == null ? BlockPos.ZERO : blockState.pos;
     }
 
     protected static LuaTable voxelShapeToTable(VoxelShape shape) {
@@ -69,6 +69,39 @@ public class BlockStateWrapper {
             i++;
         }
         return shapes;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = BlockStateWrapper.class,
+                    argumentNames = "blockState"
+            ),
+            description = "blockstate.get_pos"
+    )
+    public static FiguraVec3 getPos(@LuaNotNil BlockStateWrapper blockState) {
+        BlockPos pos = getBlockPos(blockState);
+        return FiguraVec3.of(pos.getX(), pos.getY(), pos.getZ());
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = {BlockStateWrapper.class, FiguraVec3.class},
+                            argumentNames = {"blockState", "pos"}
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {BlockStateWrapper.class, Double.class, Double.class, Double.class},
+                            argumentNames = {"blockState", "x", "y", "z"}
+                    )
+            },
+            description = "blockstate.set_pos"
+    )
+    public static void setPos(@LuaNotNil BlockStateWrapper blockState, Object x, Double y, Double z) {
+        FiguraVec3 newPos = LuaUtils.parseVec3("setPos", x, y, z);
+        blockState.pos = newPos.asBlockPos();
+        newPos.free();
     }
 
     @LuaWhitelist
@@ -92,7 +125,7 @@ public class BlockStateWrapper {
             description = "blockstate.is_translucent"
     )
     public static boolean isTranslucent(@LuaNotNil BlockStateWrapper blockState) {
-        return getState(blockState).propagatesSkylightDown(WorldAPI.getCurrentWorld(), getPos(blockState));
+        return getState(blockState).propagatesSkylightDown(WorldAPI.getCurrentWorld(), getBlockPos(blockState));
     }
 
     @LuaWhitelist
@@ -104,7 +137,7 @@ public class BlockStateWrapper {
             description = "blockstate.get_opacity"
     )
     public static int getOpacity(@LuaNotNil BlockStateWrapper blockState) {
-        return getState(blockState).getLightBlock(WorldAPI.getCurrentWorld(), getPos(blockState));
+        return getState(blockState).getLightBlock(WorldAPI.getCurrentWorld(), getBlockPos(blockState));
     }
 
     @LuaWhitelist
@@ -116,7 +149,7 @@ public class BlockStateWrapper {
             description = "blockstate.get_map_color"
     )
     public static FiguraVec3 getMapColor(@LuaNotNil BlockStateWrapper blockState) {
-        return ColorUtils.intToRGB(getState(blockState).getMapColor(WorldAPI.getCurrentWorld(), getPos(blockState)).col);
+        return ColorUtils.intToRGB(getState(blockState).getMapColor(WorldAPI.getCurrentWorld(), getBlockPos(blockState)).col);
     }
 
     @LuaWhitelist
@@ -128,7 +161,7 @@ public class BlockStateWrapper {
             description = "blockstate.is_solid_block"
     )
     public static boolean isSolidBlock(@LuaNotNil BlockStateWrapper blockState) {
-        return getState(blockState).isRedstoneConductor(WorldAPI.getCurrentWorld(), getPos(blockState));
+        return getState(blockState).isRedstoneConductor(WorldAPI.getCurrentWorld(), getBlockPos(blockState));
     }
 
     @LuaWhitelist
@@ -140,7 +173,7 @@ public class BlockStateWrapper {
             description = "blockstate.is_full_cube"
     )
     public static boolean isFullCube(@LuaNotNil BlockStateWrapper blockState) {
-        return getState(blockState).isCollisionShapeFullBlock(WorldAPI.getCurrentWorld(), getPos(blockState));
+        return getState(blockState).isCollisionShapeFullBlock(WorldAPI.getCurrentWorld(), getBlockPos(blockState));
     }
 
     @LuaWhitelist
@@ -152,7 +185,7 @@ public class BlockStateWrapper {
             description = "blockstate.has_emissive_lightning"
     )
     public static boolean hasEmissiveLighting(@LuaNotNil BlockStateWrapper blockState) {
-        return getState(blockState).emissiveRendering(WorldAPI.getCurrentWorld(), getPos(blockState));
+        return getState(blockState).emissiveRendering(WorldAPI.getCurrentWorld(), getBlockPos(blockState));
     }
 
     @LuaWhitelist
@@ -164,7 +197,7 @@ public class BlockStateWrapper {
             description = "blockstate.get_hardness"
     )
     public static float getHardness(@LuaNotNil BlockStateWrapper blockState) {
-        return getState(blockState).getDestroySpeed(WorldAPI.getCurrentWorld(), getPos(blockState));
+        return getState(blockState).getDestroySpeed(WorldAPI.getCurrentWorld(), getBlockPos(blockState));
     }
 
     @LuaWhitelist
@@ -176,7 +209,7 @@ public class BlockStateWrapper {
             description = "blockstate.get_comparator_output"
     )
     public static int getComparatorOutput(@LuaNotNil BlockStateWrapper blockState) {
-        return getState(blockState).getAnalogOutputSignal(WorldAPI.getCurrentWorld(), getPos(blockState));
+        return getState(blockState).getAnalogOutputSignal(WorldAPI.getCurrentWorld(), getBlockPos(blockState));
     }
 
     @LuaWhitelist
@@ -355,7 +388,7 @@ public class BlockStateWrapper {
             description = "blockstate.get_collision_shape"
     )
     public static LuaTable getCollisionShape(@LuaNotNil BlockStateWrapper blockState) {
-        return voxelShapeToTable(getState(blockState).getCollisionShape(WorldAPI.getCurrentWorld(), getPos(blockState)));
+        return voxelShapeToTable(getState(blockState).getCollisionShape(WorldAPI.getCurrentWorld(), getBlockPos(blockState)));
     }
 
     @LuaWhitelist
@@ -367,7 +400,7 @@ public class BlockStateWrapper {
             description = "blockstate.get_outline_shape"
     )
     public static LuaTable getOutlineShape(@LuaNotNil BlockStateWrapper blockState) {
-        return voxelShapeToTable(getState(blockState).getShape(WorldAPI.getCurrentWorld(), getPos(blockState)));
+        return voxelShapeToTable(getState(blockState).getShape(WorldAPI.getCurrentWorld(), getBlockPos(blockState)));
     }
 
     @LuaWhitelist
@@ -402,7 +435,7 @@ public class BlockStateWrapper {
             description = "blockstate.get_entity_data"
     )
     public static void getEntityData(@LuaNotNil BlockStateWrapper blockState) {
-        BlockEntity entity = WorldAPI.getCurrentWorld().getBlockEntity(getPos(blockState));
+        BlockEntity entity = WorldAPI.getCurrentWorld().getBlockEntity(getBlockPos(blockState));
         CompoundTag tag = entity != null ? entity.saveWithoutMetadata() : new CompoundTag();
         //TODO - NBT of "tag"
     }
@@ -416,7 +449,7 @@ public class BlockStateWrapper {
             description = "blockstate.to_state_string"
     )
     public static String toStateString(@LuaNotNil BlockStateWrapper blockState) {
-        BlockEntity entity = WorldAPI.getCurrentWorld().getBlockEntity(getPos(blockState));
+        BlockEntity entity = WorldAPI.getCurrentWorld().getBlockEntity(getBlockPos(blockState));
         CompoundTag tag = entity != null ? entity.saveWithoutMetadata() : new CompoundTag();
 
         return BlockStateParser.serialize(getState(blockState)) + tag;

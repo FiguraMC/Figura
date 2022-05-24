@@ -32,6 +32,14 @@ public class LuaUtils {
         return o == null ? "null" : o.toString();
     }
 
+    public static Object[] getStack(LuaState state) {
+        int size = state.getTop();
+        Object[] result = new Object[size];
+        for (int i = 0; i < size; i++)
+            result[i] = state.toJavaObject(i+1, Object.class);
+        return result;
+    }
+
     /**
      * This code gets repeated SO MUCH that I decided to put it in the utils class.
      * @param x Either the x coordinate of a vector, or a vector itself.

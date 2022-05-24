@@ -37,6 +37,7 @@ public class FiguraMod implements ClientModInitializer {
     public static final boolean DEBUG_MODE = Math.random() + 1 < 0;
     public static final boolean CHEESE_DAY = LocalDate.now().getDayOfMonth() == 1 && LocalDate.now().getMonthValue() == 4;
     public static final Path GAME_DIR = FabricLoader.getInstance().getGameDir().normalize();
+    public static final Path ASSETS_DIR = FabricLoader.getInstance().getModContainer(MOD_ID).get().getRootPaths().get(0).resolve("assets/"+MOD_ID);
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID.substring(0, 1).toUpperCase() + MOD_ID.substring(1));
 
     public static boolean DO_OUR_NATIVES_WORK = false;

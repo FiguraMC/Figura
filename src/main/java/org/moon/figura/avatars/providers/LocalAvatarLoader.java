@@ -8,6 +8,7 @@ import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.parsers.AvatarMetadataParser;
 import org.moon.figura.parsers.BlockbenchModelParser;
 import org.moon.figura.parsers.LuaScriptParser;
+import org.moon.figura.utils.IOUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -60,7 +61,7 @@ public class LocalAvatarLoader {
         CompoundTag nbt = new CompoundTag();
 
         //Load metadata first!
-        String metadata = readFile(path.resolve("avatar.json").toFile());
+        String metadata = IOUtils.readFile(path.resolve("avatar.json").toFile());
         nbt.put("metadata", AvatarMetadataParser.parse(metadata, path.getFileName().toString()));
 
         //scripts
@@ -84,7 +85,7 @@ public class LocalAvatarLoader {
     }
 
     private static void loadScripts(Path path, CompoundTag nbt) throws IOException {
-        List<File> scripts = getFilesByExtension(path, ".lua", true);
+        List<File> scripts = IOUtils.getFilesByExtension(path, ".lua", true);
         if (scripts.size() > 0) {
             CompoundTag scriptsNbt = new CompoundTag();
             String pathRegex = Pattern.quote(path + File.separator);
@@ -92,7 +93,7 @@ public class LocalAvatarLoader {
                 String pathStr = script.toPath().toString();
                 String name = pathStr.replaceFirst(pathRegex, "");
                 name = name.replace(File.separatorChar, '/');
-                scriptsNbt.put(name.substring(0, name.length() - 4), LuaScriptParser.parse(readFile(script)));
+                scriptsNbt.put(name.substring(0, name.length() - 4), LuaScriptParser.parse(IOUtils.readFile(script)));
             }
 
             nbt.put("scripts", scriptsNbt);
@@ -104,12 +105,12 @@ public class LocalAvatarLoader {
     }
 
     private static void loadSounds(Path path, CompoundTag nbt) throws IOException {
-        List<File> sounds = getFilesByExtension(path, ".ogg", false);
+        List<File> sounds = IOUtils.getFilesByExtension(path, ".ogg", false);
         if (sounds.size() > 0) {
             CompoundTag soundsNbt = new CompoundTag();
             for (File sound : sounds) {
                 String name = sound.getName();
-                soundsNbt.putByteArray(name.substring(0, name.length() - 4), readFile(sound).getBytes());
+                soundsNbt.putByteArray(name.substring(0, name.length() - 4), IOUtils.readFile(sound).getBytes());
             }
             nbt.put("sounds", soundsNbt);
         }
@@ -126,7 +127,7 @@ public class LocalAvatarLoader {
                     subfolder.putString("name", file.getName());
                     children.add(subfolder);
                 } else if (file.toString().toLowerCase().endsWith(".bbmodel")) {
-                    BlockbenchModelParser.ModelData data = parser.parseModel(readFile(file), file.getName().substring(0, file.getName().length() - 8));
+                    BlockbenchModelParser.ModelData data = parser.parseModel(IOUtils.readFile(file), file.getName().substring(0, file.getName().length() - 8));
                     children.add(data.modelNbt());
                     textures.addAll(data.textureList());
                     animations.addAll(data.animationList());
@@ -224,34 +225,6 @@ public class LocalAvatarLoader {
                 addWatchKey(child.toPath());
         } catch (Exception e) {
             FiguraMod.LOGGER.error("Failed to register watcher for " + path, e);
-        }
-    }
-
-    // -- helper functions -- //
-
-    public static List<File> getFilesByExtension(Path root, String extension, boolean recurse) {
-        List<File> result = new ArrayList<>();
-        File rf = root.toFile();
-        File[] children = rf.listFiles();
-        if (children == null) return result;
-        for (File child : children) {
-            if (recurse && child.isDirectory() && !child.isHidden() && !child.getName().startsWith("."))
-                result.addAll(getFilesByExtension(child.toPath(), extension, true));
-            else if (child.toString().toLowerCase().endsWith(extension.toLowerCase()))
-                result.add(child);
-        }
-        return result;
-    }
-
-    public static String readFile(File file) throws IOException {
-        try {
-            FileInputStream stream = new FileInputStream(file);
-            String fileContent = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
-            stream.close();
-            return fileContent;
-        } catch (IOException e) {
-            FiguraMod.LOGGER.error("Failed to read File: " + file);
-            throw e;
         }
     }
 

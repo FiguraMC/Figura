@@ -10,11 +10,14 @@ import org.moon.figura.lua.types.LuaFunction;
 import org.moon.figura.lua.types.LuaOwnedList;
 import org.moon.figura.lua.types.LuaOwnedTable;
 import org.moon.figura.lua.types.LuaPairsIterator;
+import org.moon.figura.utils.LuaUtils;
+import org.terasology.jnlua.JavaFunction;
 import org.terasology.jnlua.LuaRuntimeException;
 import org.terasology.jnlua.LuaState;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -55,6 +58,39 @@ public class EventsAPI {
     @LuaFieldDoc(description = "events.chat_receive_message")
     public final LuaEvent CHAT_RECEIVE_MESSAGE;
 
+    //Functions
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = {EventsAPI.class, LuaFunction.class, LuaFunction.class},
+                            argumentNames = {"api", "predicate", "toRun"}
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {EventsAPI.class, LuaFunction.class, LuaFunction.class, LuaEvent.class},
+                            argumentNames = {"api", "predicate", "toRun", "event"}
+                    )
+            },
+            description = "events.run_once"
+    )
+    public static void runOnce(@LuaNotNil EventsAPI api, @LuaNotNil LuaFunction predicate, @LuaNotNil LuaFunction toRun, LuaEvent event) {
+        //Lambdas
+        final LuaEvent finalEvent = event == null ? api.TICK : event;
+        //Random name to remove this function later specifically
+        final String name = UUID.randomUUID().toString();
+        JavaFunction poller = luaState -> {
+            Object[] stack = LuaUtils.getStack(luaState);
+            Boolean success = predicate.callAndConvert(Boolean.class, stack);
+            if (success) {
+                toRun.call(stack);
+                LuaEvent.remove(finalEvent, name);
+            }
+            return 0;
+        };
+        LuaEvent.register(finalEvent, new LuaFunction(finalEvent.state, poller), name);
+    }
+
+
     //Metamethods
 
     @LuaWhitelist
@@ -77,6 +113,8 @@ public class EventsAPI {
         @LuaWhitelist
         public final String name;
 
+        public final LuaState state;
+
         private static final int MAX_FUNCTIONS = 3000;
 
         private final LuaOwnedList<LuaFunction> functionList;
@@ -86,6 +124,7 @@ public class EventsAPI {
         private final LuaOwnedList<String> nameQueue; //To avoid concurrent modification issues
 
         public LuaEvent(LuaState state, String name) {
+            this.state = state;
             this.name = name;
             functionList = new LuaOwnedList<>(state, "EVENT_" + name, LuaFunction.class);
             functionQueue = new LuaOwnedList<>(state, "QUEUE_EVENT_" + name, LuaFunction.class);

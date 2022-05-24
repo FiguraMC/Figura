@@ -1,6 +1,7 @@
 package org.moon.figura.lua.types;
 
 import org.moon.figura.lua.FiguraLuaState;
+import org.terasology.jnlua.JavaFunction;
 import org.terasology.jnlua.LuaState;
 import org.terasology.jnlua.LuaValueProxy;
 
@@ -9,17 +10,25 @@ import org.terasology.jnlua.LuaValueProxy;
  */
 public class LuaFunction implements LuaValueProxy {
     // -- Variables -- //
-    private final FiguraLuaState state;
+    private final LuaState state;
     private final LuaValueProxy actualProxy;
 
     // -- Constructors -- //
 
     //Constructs a LuaFunction from a given FiguraLuaState, creating a reference at the index
-    public LuaFunction(FiguraLuaState state, int index){
+    public LuaFunction(LuaState state, int index){
         this.state = state;
 
         //Get a proxy for top of stack
         actualProxy = state.getProxy(index);
+    }
+
+    //Constructs a LuaFunction from a JavaFunction, pushing the function on the stack and using it as the reference.
+    public LuaFunction(LuaState state, JavaFunction func) {
+        this.state = state;
+        state.pushJavaFunction(func);
+        actualProxy = state.getProxy(-1);
+        state.pop(1);
     }
 
     // -- Functions -- //

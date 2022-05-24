@@ -23,8 +23,9 @@ public class FiguraConverter implements Converter {
         LuaType type = luaState.type(index);
         if (type == LuaType.NIL && (formalType == Boolean.class || formalType == boolean.class))
             return (T) Boolean.valueOf(false);
-        if (type == LuaType.FUNCTION && ((formalType == Object.class || formalType == LuaFunction.class) && !luaState.isJavaFunction(index)))
-            return (T) new LuaFunction((FiguraLuaState) luaState, index);
+        if (type == LuaType.FUNCTION && ((formalType == Object.class || formalType == LuaFunction.class))) {
+            return (T) new LuaFunction(luaState, index);
+        }
 
         return DEFAULT.convertLuaValue(luaState, index, formalType);
     }
