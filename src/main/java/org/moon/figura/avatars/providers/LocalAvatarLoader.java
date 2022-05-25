@@ -10,14 +10,13 @@ import org.moon.figura.parsers.BlockbenchModelParser;
 import org.moon.figura.parsers.LuaScriptParser;
 import org.moon.figura.utils.IOUtils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.io.*;
 import java.nio.file.*;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -29,13 +28,22 @@ public class LocalAvatarLoader {
     private static Path lastLoadedPath;
 
     private static WatchService watcher;
-    private final static HashMap<Path, WatchKey> keys = new HashMap<>();
+    private static final HashMap<Path, WatchKey> KEYS = new HashMap<>();
+    public static final CompoundTag CHEESE;
     static {
         try {
             watcher = FileSystems.getDefault().newWatchService();
         } catch (Exception e) {
             FiguraMod.LOGGER.error("Failed to initialize the watcher service", e);
         }
+
+        CompoundTag temp = null;
+        try {
+            InputStream inputStream = FiguraMod.class.getResourceAsStream("/assets/" + FiguraMod.MOD_ID + "/avatars/cheese.moon");
+            if (inputStream == null) throw new Exception("How the cheese is null...?");
+            temp = NbtIo.readCompressed(inputStream);
+        } catch (Exception ignored) {}
+        CHEESE = temp;
     }
 
     /**
@@ -146,7 +154,7 @@ public class LocalAvatarLoader {
      * Saves the loaded NBT into a folder inside the avatar list
      */
     public static void saveNbt(CompoundTag nbt) {
-        Path directory = LocalAvatarFetcher.getLocalAvatarDirectory().resolve("[§9Figura§r] Cached Avatars");
+        Path directory = LocalAvatarFetcher.getLocalAvatarDirectory().resolve("[§9" + FiguraMod.MOD_ID + "§r] Cached Avatars");
         Path file = directory.resolve("cache-" + new SimpleDateFormat("yyyy_MM_dd-HH_mm_ss").format(new Date()) + ".moon");
         try {
             Files.createDirectories(directory);
@@ -163,7 +171,7 @@ public class LocalAvatarLoader {
         WatchEvent<?> event = null;
         boolean reload = false;
 
-        for (Map.Entry<Path, WatchKey> entry : keys.entrySet()) {
+        for (Map.Entry<Path, WatchKey> entry : KEYS.entrySet()) {
             WatchKey key = entry.getValue();
             if (!key.isValid())
                 continue;
@@ -196,9 +204,9 @@ public class LocalAvatarLoader {
     }
 
     private static void resetWatchKeys() {
-        for (WatchKey key : keys.values())
+        for (WatchKey key : KEYS.values())
             key.cancel();
-        keys.clear();
+        KEYS.clear();
     }
 
     /**
@@ -215,7 +223,7 @@ public class LocalAvatarLoader {
 
         try {
             WatchKey key = path.register(watcher, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY);
-            keys.put(path, key);
+            KEYS.put(path, key);
 
             File[] children = file.listFiles();
             if (children == null)

@@ -96,7 +96,7 @@ public class KeybindList extends AbstractList {
 
     private static class KeybindElement extends AbstractContainerElement {
 
-        private final static Component HOVERED_ARROW = new TextComponent(">").setStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT));
+        private static final Component HOVERED_ARROW = new TextComponent(">").setStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT));
 
         private final FiguraKeybind keybind;
         private final KeybindList parent;

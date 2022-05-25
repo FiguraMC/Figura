@@ -17,6 +17,7 @@ import org.moon.figura.backend.NetworkManager;
 import org.moon.figura.commands.FiguraCommands;
 import org.moon.figura.config.ConfigManager;
 import org.moon.figura.gui.PaperDoll;
+import org.moon.figura.gui.actionwheel.ActionWheel;
 import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.lua.docs.FiguraDocsManager;
 import org.moon.figura.trust.TrustManager;
@@ -37,7 +38,6 @@ public class FiguraMod implements ClientModInitializer {
     public static final boolean DEBUG_MODE = Math.random() + 1 < 0;
     public static final boolean CHEESE_DAY = LocalDate.now().getDayOfMonth() == 1 && LocalDate.now().getMonthValue() == 4;
     public static final Path GAME_DIR = FabricLoader.getInstance().getGameDir().normalize();
-    public static final Path ASSETS_DIR = FabricLoader.getInstance().getModContainer(MOD_ID).get().getRootPaths().get(0).resolve("assets/"+MOD_ID);
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID.substring(0, 1).toUpperCase() + MOD_ID.substring(1));
 
     public static boolean DO_OUR_NATIVES_WORK = false;
@@ -81,7 +81,8 @@ public class FiguraMod implements ClientModInitializer {
 
     private static void hudRender(PoseStack stack, float delta) {
         PaperDoll.render(stack);
-        //TODO popup menu, action wheel
+        ActionWheel.render(stack);
+        //TODO popup menu
     }
 
     // -- Helper Functions -- //
@@ -92,7 +93,19 @@ public class FiguraMod implements ClientModInitializer {
         try {
             Files.createDirectories(p);
         } catch (Exception e) {
-            LOGGER.error("Failed to create the main Figura directory", e);
+            LOGGER.error("Failed to create the main " + MOD_ID + " directory", e);
+        }
+
+        return p;
+    }
+
+    //mod cache directory
+    public static Path getCacheDirectory() {
+        Path p = getFiguraDirectory().resolve("cache");
+        try {
+            Files.createDirectories(p);
+        } catch (Exception e) {
+            LOGGER.error("Failed to create cache directory", e);
         }
 
         return p;

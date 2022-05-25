@@ -19,13 +19,13 @@ public class RendererAPI {
 
     @LuaWhitelist
     @LuaFieldDoc(
-            description = "renderer.renderFire"
+            description = "renderer.render_fire"
     )
     public boolean renderFire = true;
 
     @LuaWhitelist
     @LuaFieldDoc(
-            description = "renderer.renderVehicle"
+            description = "renderer.render_vehicle"
     )
     public boolean renderVehicle = true;
 

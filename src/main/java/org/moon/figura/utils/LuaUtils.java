@@ -110,15 +110,12 @@ public class LuaUtils {
             builder.append(".so");
         }
 
-        Path nativesFolder = FiguraMod.GAME_DIR.resolve("libraries/lua-natives/");
-
-        String targetLib = "/assets/figura/lua/natives/" + builder;
+        String targetLib = "/assets/" + FiguraMod.MOD_ID + "/lua/natives/" + builder;
         InputStream libStream = FiguraMod.class.getResourceAsStream(targetLib);
-        Path dest = nativesFolder.resolve(builder.toString()).toAbsolutePath();
+        Path dest = FiguraMod.getCacheDirectory().resolve(builder.toString()).toAbsolutePath();
 
         try {
             if (libStream == null) throw new Exception("Cannot read natives from resources");
-            Files.createDirectories(nativesFolder);
             Files.copy(libStream, dest, StandardCopyOption.REPLACE_EXISTING);
             FiguraMod.LOGGER.debug("Successfully copied lua natives!");
         } catch (Exception e) {

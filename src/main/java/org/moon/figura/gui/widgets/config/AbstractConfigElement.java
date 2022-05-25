@@ -16,7 +16,7 @@ import org.moon.figura.utils.ui.UIHelper;
 
 public abstract class AbstractConfigElement extends AbstractContainerElement {
 
-    public final static Component HOVERED_ARROW = new TextComponent(">").setStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT));
+    public static final Component HOVERED_ARROW = new TextComponent(">").setStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT));
 
     protected final Config config;
     protected final ConfigList parent;

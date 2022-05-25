@@ -2,7 +2,6 @@ package org.moon.figura.lua;
 
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.lua.api.*;
 import org.moon.figura.lua.api.entity.PlayerEntityWrapper;
@@ -13,21 +12,17 @@ import org.moon.figura.lua.api.model.VanillaModelAPI;
 import org.moon.figura.lua.api.nameplate.NameplateAPI;
 import org.moon.figura.lua.api.world.WorldAPI;
 import org.moon.figura.lua.types.LuaOwnedTable;
-import org.moon.figura.utils.IOUtils;
-import org.spongepowered.asm.util.Files;
-import org.terasology.jnlua.*;
+import org.terasology.jnlua.JavaFunction;
+import org.terasology.jnlua.LuaRuntimeException;
+import org.terasology.jnlua.LuaState53;
+import org.terasology.jnlua.LuaType;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 public class FiguraLuaState extends LuaState53 {
-
-    private static String sandboxerScript;
 
     private final Avatar owner;
 
@@ -36,6 +31,7 @@ public class FiguraLuaState extends LuaState53 {
     public VanillaModelAPI vanillaModel;
     public PlayerEntityWrapper entity;
     public NameplateAPI nameplate;
+    public HostAPI host;
     public MetaAPI meta;
     public KeybindAPI keybind;
     public RendererAPI renderer;
@@ -135,7 +131,7 @@ public class FiguraLuaState extends LuaState53 {
         loadGlobal(new SoundAPI(owner), "sound");
         loadGlobal(nameplate = new NameplateAPI(), "nameplate");
         loadGlobal(ClientAPI.INSTANCE, "client");
-        loadGlobal(new HostAPI(owner), "host");
+        loadGlobal(host = new HostAPI(owner), "host");
         loadGlobal(meta = new MetaAPI(owner), "meta");
         loadGlobal(keybind = new KeybindAPI(owner), "keybind");
         loadGlobal(renderer = new RendererAPI(), "renderer");

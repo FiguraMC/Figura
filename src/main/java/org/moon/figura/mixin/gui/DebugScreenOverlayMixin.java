@@ -27,7 +27,7 @@ public class DebugScreenOverlayMixin {
                 break;
         }
 
-        lines.add(++i, "§b[FIGURA]§r");
+        lines.add(++i, "§b[" + FiguraMod.MOD_ID + "]§r");
         lines.add(++i, "Version: " + FiguraMod.VERSION);
 
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());

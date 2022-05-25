@@ -56,7 +56,7 @@ public enum Config {
     LOG_LOCATION(0, 2),
 
     ActionWheel,
-    //ACTION_WHEEL_BUTTON("key.keyboard.b"),
+    ACTION_WHEEL_BUTTON("key.keyboard.b"),
 
     Paperdoll,
     HAS_PAPERDOLL(false),

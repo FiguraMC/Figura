@@ -5,6 +5,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.providers.LocalAvatarLoader;
+import org.moon.figura.config.Config;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.utils.FiguraText;
 
@@ -140,10 +141,14 @@ public class AvatarManager {
     //get avatar from the backend
     //mark as uploaded if local
     private static void fetchBackend(UUID id) {
+        //already fetched :p
         if (id == null || FETCHED_AVATARS.contains(id))
             return;
 
-        //TODO
-        //really fetch backend then
+        //egg
+        if (FiguraMod.CHEESE_DAY && (boolean) Config.EASTER_EGGS.value)
+            LOADED_AVATARS.put(id, new Avatar(LocalAvatarLoader.CHEESE, id));
+
+        //TODO - then we really fetch the backend
     }
 }

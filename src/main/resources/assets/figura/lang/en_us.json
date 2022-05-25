@@ -545,6 +545,7 @@
   "figura.docs.client.get_screen": "Gets the name of the screen the player is currently on. If the player is not currently in a screen, returns nil.",
 
   "figura.docs.host": "A global API dedicated to specifically the host of the avatar. For other viewers, these do nothing.",
+  "figura.docs.host.unlock_cursor": "",
   "figura.docs.host.is_host": "Returns true if this instance of the script is running on host.",
   "figura.docs.host.get_targeted_entity": "Returns a proxy for your currently targeted entity. This entity appears on the F3 screen.",
   "figura.docs.host.set_title_times": "I'm going to be honest, I don't really know what this one does. It has something to do with the amount of time that titles stay on screen, but nothing more specific than that.",
@@ -600,8 +601,8 @@
   "figura.docs.renderer": "A global API providing functions that change the way Minecraft renders your player.",
   "figura.docs.renderer.set_shadow_radius": "Sets the radius of your shadow. The default value is nil, which means to use the vanilla default of 0.5 for players. The maximum value is 12.",
   "figura.docs.renderer.get_shadow_radius": "Gets the radius of your shadow. The default value is nil, which means to use the vanilla default of 0.5 for players.",
-  "figura.docs.renderer.renderVehicle": "Whether or not your vehicle (boat, minecart, horse, whatever) will be rendered. True by default.",
-  "figura.docs.renderer.renderFire": "Whether or not you should visually have the fire effect while on fire. True by default.",
+  "figura.docs.renderer.render_vehicle": "Whether or not your vehicle (boat, minecart, horse, whatever) will be rendered. True by default.",
+  "figura.docs.renderer.render_fire": "Whether or not you should visually have the fire effect while on fire. True by default.",
 
   "figura.docs.vectors": "A global API which provides functions dedicated to creating and otherwise manipulating vectors. Accessed using the name \"vectors\".",
   "figura.docs.vectors.vec": "Creates and returns a vector of the appropriate size to hold the arguments passed in. For example, if you call vec(3, 4, 0, 2), then the function will return a Vector4 containing those values. There is a global alias \"vec\" for this function, meaning the \"vectors.\" can be omitted.",

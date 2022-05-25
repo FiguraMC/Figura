@@ -195,7 +195,7 @@ public class ContextMenu extends AbstractContainerElement {
 
     private static class TabButton extends ContextButton {
 
-        private final static Component ARROW = new TextComponent(">").setStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT));
+        private static final Component ARROW = new TextComponent(">").setStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT));
         private final ContextMenu context;
 
         public TabButton(int x, int y, Component text, ContextMenu parent, ContextMenu context) {

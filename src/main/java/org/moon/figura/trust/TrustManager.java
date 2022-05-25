@@ -3,14 +3,15 @@ package org.moon.figura.trust;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.nbt.*;
 import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.FiguraMod;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -36,9 +37,10 @@ public class TrustManager {
     public static void loadDefaultGroups() {
         try {
             //load presets file from resources
-            Path presets = FabricLoader.getInstance().getModContainer(FiguraMod.MOD_ID).get().getRootPath().resolve("assets/figura/trust/presets.json");
-            InputStreamReader fileReader = new InputStreamReader(Files.newInputStream(presets));
-            JsonObject rootObject = (JsonObject) JsonParser.parseReader(fileReader);
+            InputStream inputStream = FiguraMod.class.getResourceAsStream("/assets/" + FiguraMod.MOD_ID + "/trust/presets.json");
+            if (inputStream == null) throw new Exception("Resource not found!");
+
+            JsonObject rootObject = (JsonObject) JsonParser.parseReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
 
             //load trust values
             for (Map.Entry<String, JsonElement> entry : rootObject.entrySet()) {
@@ -46,9 +48,8 @@ public class TrustManager {
 
                 //add values
                 CompoundTag nbt = new CompoundTag();
-                for (Map.Entry<String, JsonElement> trust : entry.getValue().getAsJsonObject().entrySet()) {
+                for (Map.Entry<String, JsonElement> trust : entry.getValue().getAsJsonObject().entrySet())
                     nbt.put(trust.getKey(), IntTag.valueOf(trust.getValue().getAsInt()));
-                }
 
                 //create container
                 ResourceLocation parentID = new ResourceLocation("default_group", name);
@@ -70,7 +71,7 @@ public class TrustManager {
     public static void loadFromDisk() {
         try {
             //get file
-            Path targetPath = FiguraMod.getFiguraDirectory().resolve("trust_settings.nbt");
+            Path targetPath = FiguraMod.getCacheDirectory().resolve("trust_settings.nbt");
 
             if (!Files.exists(targetPath))
                 return;
@@ -93,8 +94,7 @@ public class TrustManager {
             writeNbt(targetTag);
 
             //create file
-            Path targetPath = FiguraMod.getFiguraDirectory();
-            targetPath = targetPath.resolve("trust_settings.nbt");
+            Path targetPath = FiguraMod.getCacheDirectory().resolve("trust_settings.nbt");
 
             if (!Files.exists(targetPath))
                 Files.createFile(targetPath);
