@@ -77,7 +77,7 @@ public class TrustScreen extends AbstractPanelScreen {
         entityWidget = new InteractableEntity(entityX, 28, entitySize, entitySize, modelSize, -15f, 30f, Minecraft.getInstance().player, this);
 
         //trust slider and list
-        slider = new SliderWidget(middle + 2, (int) (entityWidget.y + entityWidget.height + lineHeight * 1.5 + 20), listWidth, 11, 1f, 5) {
+        slider = new SliderWidget(middle + 2, (int) (entityWidget.y + entityWidget.height + lineHeight * 1.5 + 20), listWidth, 11, 1d, 5, true) {
             @Override
             public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
                 super.renderButton(stack, mouseX, mouseY, delta);
@@ -248,15 +248,15 @@ public class TrustScreen extends AbstractPanelScreen {
         ArrayList<ResourceLocation> groupList = new ArrayList<>(TrustManager.GROUPS.keySet());
 
         //set step sizes
-        slider.setSteps(TrustManager.isLocal(trust) ? groupList.size() : groupList.size() - 1);
+        slider.setMax(TrustManager.isLocal(trust) ? groupList.size() : groupList.size() - 1);
 
         //set slider progress
-        slider.setScrollProgress(groupList.indexOf(group ? new ResourceLocation("group", trust.name) : trust.getParentID()) / (slider.getSteps() - 1f));
+        slider.setScrollProgress(groupList.indexOf(group ? new ResourceLocation("group", trust.name) : trust.getParentID()) / (slider.getMax() - 1d));
 
         //set new slider action
         slider.setAction(scroll -> {
             //set new trust parent
-            ResourceLocation newTrust = groupList.get(((SliderWidget) scroll).getStepValue());
+            ResourceLocation newTrust = groupList.get(((SliderWidget) scroll).getIntValue());
             trust.setParent(newTrust);
 
             //and update the advanced trust

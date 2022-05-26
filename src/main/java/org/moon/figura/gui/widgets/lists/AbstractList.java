@@ -22,7 +22,7 @@ public abstract class AbstractList extends AbstractContainerElement {
 
         updateScissors(1, 1, -2, -2);
 
-        children.add(scrollBar = new ScrollBarWidget(x + width - 14, y + 4, 10, height - 8, 0f));
+        children.add(scrollBar = new ScrollBarWidget(x + width - 14, y + 4, 10, height - 8, 0d));
         scrollBar.visible = false;
     }
 

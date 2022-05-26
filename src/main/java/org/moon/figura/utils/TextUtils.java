@@ -2,10 +2,12 @@ package org.moon.figura.utils;
 
 import com.mojang.brigadier.StringReader;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.components.ComponentRenderUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FormattedCharSequence;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -93,16 +95,22 @@ public class TextUtils {
     }
 
     public static Component replaceInText(Component text, String regex, Object replacement) {
-        Component replace = replacement instanceof Component c ? c : new TextComponent(String.valueOf(replacement));
+        //fix replacement object
+        Component replace = replacement instanceof Component c ? c : new TextComponent(replacement.toString());
 
+        //text to return
         MutableComponent ret = TextComponent.EMPTY.copy();
 
+        //iterate over the initial text
         List<Component> list = text.toFlatList(text.getStyle());
         for (Component component : list) {
+            //get the text raw string
             String textString = component.getString();
 
+            //split the string keeping the split text
             String[] split = textString.split("((?<=" + regex + ")|(?=" + regex + "))");
             for (String s : split) {
+                //append the text if it does not match the split, otherwise append the replacement instead
                 if (!s.matches(regex))
                     ret.append(new TextComponent(s).withStyle(component.getStyle()));
                 else
@@ -110,6 +118,7 @@ public class TextUtils {
             }
         }
 
+        //return
         return ret;
     }
 
@@ -119,7 +128,7 @@ public class TextUtils {
             return text;
 
         //get ellipsis size
-        Component dots = Component.nullToEmpty("...");
+        Component dots = new TextComponent("...");
         int size = font.width(dots.getVisualOrderText());
 
         //trim and return modified text
@@ -129,5 +138,33 @@ public class TextUtils {
 
     public static Component replaceTabs(Component text) {
         return TextUtils.replaceInText(text, "\\t", " ".repeat(TAB_SPACING));
+    }
+
+    public static List<FormattedCharSequence> splitTooltip(Component text, Font font, int mousePos, int screenWidth) {
+        //first split the new line text
+        List<Component> splitText = TextUtils.splitText(text, "\n");
+
+        //list to return
+        List<FormattedCharSequence> ret = new ArrayList<>();
+
+        //get the possible tooltip width
+        int left = mousePos - 16;
+        int right = screenWidth - mousePos - 12;
+
+        //get largest text size
+        int largest = 0;
+        for (Component component : splitText) {
+            int size = font.width(component);
+            if (size > largest)
+                largest = size;
+        }
+
+        //wrap text
+        int warpSize = largest <= right ? right : largest <= left ? left : Math.max(left, right);
+        for (Component component : splitText)
+            ret.addAll(ComponentRenderUtils.wrapComponents(component, warpSize, font));
+
+        //return
+        return ret;
     }
 }

@@ -100,7 +100,7 @@ public class TrustList extends AbstractList {
         private boolean changed;
 
         public TrustSlider(int x, int y, int width, int height, TrustContainer container, TrustContainer.Trust trust, TrustList parent) {
-            super(x, y, width, height, Mth.clamp(container.get(trust) / (trust.max + 1f), 0f, 1f));
+            super(x, y, width, height, Mth.clamp(container.get(trust) / (trust.max + 1d), 0d, 1d), trust.max, false);
             this.container = container;
             this.trust = trust;
             this.parent = parent;
@@ -109,10 +109,10 @@ public class TrustList extends AbstractList {
 
             setAction(slider -> {
                 //update trust
-                int value = (int) ((trust.max + 1f) * slider.getScrollProgress());
+                int value = (int) ((trust.max + 1d) * slider.getScrollProgress());
                 boolean infinity = trust.checkInfinity(value);
 
-                container.getSettings().put(trust, infinity ? Integer.MAX_VALUE - 100 : value);
+                container.getSettings().put(trust, infinity ? Integer.MAX_VALUE : value);
                 changed = true;
 
                 //update text

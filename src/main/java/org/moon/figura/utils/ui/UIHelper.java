@@ -283,7 +283,7 @@ public class UIHelper extends GuiComponent {
 
     public static void renderTooltip(PoseStack stack, Component tooltip, int mouseX, int mouseY) {
         Screen screen = Minecraft.getInstance().screen;
-        if (screen != null) screen.renderComponentTooltip(stack, TextUtils.splitText(tooltip, "\n"), mouseX, Math.max(mouseY, 16));
+        if (screen != null) screen.renderTooltip(stack, TextUtils.splitTooltip(tooltip, Minecraft.getInstance().font, mouseX, screen.width), mouseX, Math.max(mouseY, 16));
     }
 
     public static void setContext(ContextMenu context) {
@@ -294,7 +294,6 @@ public class UIHelper extends GuiComponent {
     public static ContextMenu getContext() {
         if (Minecraft.getInstance().screen instanceof AbstractPanelScreen panelScreen)
             return panelScreen.contextMenu;
-
         return null;
     }
 

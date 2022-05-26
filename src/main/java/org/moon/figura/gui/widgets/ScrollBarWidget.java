@@ -22,15 +22,15 @@ public class ScrollBarWidget extends AbstractWidget {
     protected boolean isScrolling = false;
     protected boolean vertical = true;
 
-    protected float scrollPos;
-    protected float scrollPrecise;
-    protected float scrollRatio = 1f;
+    protected double scrollPos;
+    protected double scrollPrecise;
+    protected double scrollRatio = 1d;
 
     protected OnPress onPress;
 
     // -- constructors -- //
 
-    public ScrollBarWidget(int x, int y, int width, int height, float initialValue) {
+    public ScrollBarWidget(int x, int y, int width, int height, double initialValue) {
         super(x, y, width, height, TextComponent.EMPTY);
         scrollPrecise = initialValue;
         scrollPos = initialValue;
@@ -45,12 +45,12 @@ public class ScrollBarWidget extends AbstractWidget {
 
         if (button == 0) {
             //jump to pos when not clicking on head
-            float scrollPos = Mth.lerp(scrollPrecise, 0f, (vertical ? height - headHeight : width - headWidth) + 2f);
+            double scrollPos = Mth.lerp(scrollPrecise, 0d, (vertical ? height - headHeight : width - headWidth) + 2d);
 
             if (vertical && mouseY < y + scrollPos || mouseY > y + scrollPos + headHeight)
-                scroll(-(y + scrollPos + headHeight / 2f - mouseY));
+                scroll(-(y + scrollPos + headHeight / 2d - mouseY));
             else if (!vertical && mouseX < x + scrollPos || mouseX > x + scrollPos + headWidth)
-                scroll(-(x + scrollPos + headWidth / 2f - mouseX));
+                scroll(-(x + scrollPos + headWidth / 2d - mouseX));
 
             isScrolling = true;
             playDownSound(Minecraft.getInstance().getSoundManager());
@@ -91,7 +91,7 @@ public class ScrollBarWidget extends AbstractWidget {
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
         if (!this.active) return false;
-        scroll(-amount * (vertical ? height : width) * 0.05f * scrollRatio);
+        scroll(-amount * (vertical ? height : width) * 0.05d * scrollRatio);
         return true;
     }
 
@@ -100,7 +100,7 @@ public class ScrollBarWidget extends AbstractWidget {
         if (!this.active) return false;
 
         if (keyCode > 261 && keyCode < 266) {
-            scroll((keyCode % 2 == 0 ? 1 : -1) * (vertical ? height : width) * 0.05f * scrollRatio);
+            scroll((keyCode % 2 == 0 ? 1 : -1) * (vertical ? height : width) * 0.05d * scrollRatio);
             return true;
         }
 
@@ -109,13 +109,13 @@ public class ScrollBarWidget extends AbstractWidget {
 
     //apply scroll value
     protected void scroll(double amount) {
-        scrollPrecise += amount / ((vertical ? height - headHeight : width - headWidth) + 2f);
+        scrollPrecise += amount / ((vertical ? height - headHeight : width - headWidth) + 2d);
         setScrollProgress(scrollPrecise);
     }
 
     //animate scroll head
-    protected void lerpPos(float delta) {
-        scrollPos = (float) Mth.lerp(1 - Math.pow(0.2f, delta), scrollPos, getScrollProgress());
+    protected void lerpPos(double delta) {
+        scrollPos = Mth.lerp(1 - Math.pow(0.2d, delta), scrollPos, getScrollProgress());
     }
 
     //render the scroll
@@ -130,7 +130,7 @@ public class ScrollBarWidget extends AbstractWidget {
 
         //render head
         lerpPos(delta);
-        blit(stack, x, y + Math.round(Mth.lerp(scrollPos, 0, height - headHeight)), 0f, isHoveredOrFocused() || isScrolling ? headHeight : 0f, headWidth, headHeight, 20, 40);
+        blit(stack, x, (int) (y + Math.round(Mth.lerp(scrollPos, 0, height - headHeight))), 0f, isHoveredOrFocused() || isScrolling ? headHeight : 0f, headWidth, headHeight, 20, 40);
     }
 
     @Override
@@ -145,18 +145,18 @@ public class ScrollBarWidget extends AbstractWidget {
     }
 
     //get scroll value
-    public float getScrollProgress() {
+    public double getScrollProgress() {
         return scrollPrecise;
     }
 
     //manually set scroll
-    public void setScrollProgress(float amount) {
+    public void setScrollProgress(double amount) {
         setScrollProgress(amount, false);
     }
 
     //manually set scroll with optional clamping
-    public void setScrollProgress(float amount, boolean force) {
-        scrollPrecise = force ? amount : Mth.clamp(amount, 0f, 1f);
+    public void setScrollProgress(double amount, boolean force) {
+        scrollPrecise = force ? amount : Mth.clamp(amount, 0d, 1d);
 
         if (onPress != null)
             onPress.onPress(this);
@@ -168,8 +168,8 @@ public class ScrollBarWidget extends AbstractWidget {
     }
 
     //set scroll ratio
-    public void setScrollRatio(float entryHeight, float heightDiff) {
-        scrollRatio = (height + entryHeight) / (heightDiff / 2f);
+    public void setScrollRatio(double entryHeight, double heightDiff) {
+        scrollRatio = (height + entryHeight) / (heightDiff / 2d);
     }
 
     //press action

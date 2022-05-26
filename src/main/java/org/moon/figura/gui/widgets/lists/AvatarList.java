@@ -181,7 +181,7 @@ public class AvatarList extends AbstractList {
 
     public void updateScroll() {
         //store old scroll pos
-        float pastScroll = (totalHeight - height) * scrollBar.getScrollProgress();
+        double pastScroll = (totalHeight - height) * scrollBar.getScrollProgress();
 
         //get new height
         totalHeight = -1;

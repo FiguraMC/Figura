@@ -14,24 +14,20 @@ public class SliderWidget extends ScrollBarWidget {
 
     protected final int headHeight = 11;
     protected final int headWidth = 11;
+    protected final boolean showSteps;
 
-    private boolean isStepped = false;
-    private float stepSize = 0f;
-    private int steps = 0;
-
-    private float steppedPos;
+    private int max;
+    private double stepSize;
+    private double steppedPos;
 
     // -- constructors -- //
 
-    public SliderWidget(int x, int y, int width, int height, float initialValue) {
+    public SliderWidget(int x, int y, int width, int height, double initialValue, int maxValue, boolean showSteps) {
         super(x, y, width, height, initialValue);
-        vertical = false;
-        steppedPos = initialValue;
-    }
-
-    public SliderWidget(int x, int y, int width, int height, float initialValue, int steps) {
-        this(x, y, width, height, initialValue);
-        setSteps(steps);
+        this.vertical = false;
+        this.showSteps = showSteps;
+        this.steppedPos = initialValue;
+        setMax(maxValue);
     }
 
     // -- methods -- //
@@ -39,9 +35,7 @@ public class SliderWidget extends ScrollBarWidget {
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
         if (!this.active) return false;
-        if (!isStepped) return super.mouseScrolled(mouseX, mouseY, amount);
-
-        scroll(stepSize * Math.signum(-amount) * (width - headWidth + 2f));
+        scroll(stepSize * Math.signum(-amount) * (width - headWidth + 2d));
         return true;
     }
 
@@ -49,8 +43,8 @@ public class SliderWidget extends ScrollBarWidget {
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (!this.active) return false;
 
-        if (isStepped && keyCode > 261 && keyCode < 266) {
-            scroll(stepSize * (keyCode % 2 == 0 ? 1 : -1) * (width - headWidth + 2f));
+        if (keyCode > 261 && keyCode < 266) {
+            scroll(stepSize * (keyCode % 2 == 0 ? 1 : -1) * Math.max(modifiers * 10, 1) * (width - headWidth + 2d));
             return true;
         }
 
@@ -61,20 +55,19 @@ public class SliderWidget extends ScrollBarWidget {
     protected void scroll(double amount) {
         //normal scroll
         super.scroll(amount);
-        if (!isStepped) return;
 
         //get the closest step
         steppedPos = getClosestStep();
     }
 
-    private float getClosestStep() {
+    private double getClosestStep() {
         //get closer steps
-        float lowest = scrollPrecise - scrollPrecise % stepSize;
-        float highest = lowest + stepSize;
+        double lowest = scrollPrecise - scrollPrecise % stepSize;
+        double highest = lowest + stepSize;
 
         //get distance
-        float distanceLow = Math.abs(lowest - scrollPrecise);
-        float distanceHigh = Math.abs(highest - scrollPrecise);
+        double distanceLow = Math.abs(lowest - scrollPrecise);
+        double distanceHigh = Math.abs(highest - scrollPrecise);
 
         //return closest
         return distanceLow < distanceHigh ? lowest : highest;
@@ -103,48 +96,44 @@ public class SliderWidget extends ScrollBarWidget {
         blit(stack, x, y + 3, width, 5, isScrolling ? 10f : 0f, 0f, 5, 5, 33, 16);
 
         //draw steps
-        if (isStepped) {
-            for (int i = 0; i < steps; i++) {
+        if (showSteps) {
+            for (int i = 0; i < max; i++) {
                 blit(stack, (int) Math.floor(x + 3 + stepSize * i * (width - 11)), y + 3, 5, 5, isScrolling ? 15f : 5f, 0f, 5, 5, 33, 16);
             }
         }
 
         //draw header
         lerpPos(delta);
-        blit(stack, x + Math.round(Mth.lerp(scrollPos, 0, width - headWidth)), y, active ? (isHoveredOrFocused() || isScrolling ? headWidth * 2 : headWidth) : 0f, 5f, headWidth, headHeight, 33, 16);
+        blit(stack, (int) (x + Math.round(Mth.lerp(scrollPos, 0, width - headWidth))), y, active ? (isHoveredOrFocused() || isScrolling ? headWidth * 2 : headWidth) : 0f, 5f, headWidth, headHeight, 33, 16);
     }
 
     // -- getters and setters -- //
 
     @Override
-    public float getScrollProgress() {
-        return isStepped ? steppedPos : super.getScrollProgress();
+    public double getScrollProgress() {
+        return steppedPos;
     }
 
     @Override
-    public void setScrollProgress(float amount, boolean force) {
-        if (isStepped) {
-            steppedPos = force ? amount : Mth.clamp(amount, 0f, 1f);
-        }
-
+    public void setScrollProgress(double amount, boolean force) {
+        steppedPos = force ? amount : Mth.clamp(amount, 0d, 1d);
         super.setScrollProgress(amount, force);
     }
 
-    public int getSteps() {
-        return steps;
+    public int getMax() {
+        return max;
     }
 
-    public void setSteps(int steps) {
+    public void setMax(int maxValue) {
         //set steps data
-        this.isStepped = steps > 1;
-        this.steps = steps;
-        this.stepSize = 1f / (steps - 1);
+        this.max = maxValue;
+        this.stepSize = 1d / (maxValue - 1);
 
         //update scroll
-        scroll(0f);
+        scroll(0d);
     }
 
-    public int getStepValue() {
-        return Math.round(getScrollProgress() * (getSteps() - 1));
+    public int getIntValue() {
+        return (int) Math.round(getScrollProgress() * (getMax() - 1));
     }
 }
