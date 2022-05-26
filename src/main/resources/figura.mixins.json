@@ -11,6 +11,7 @@
     "MinecraftMixin",
 
     "gui.ChatComponentMixin",
+    "gui.ChatScreenAccessor",
     "gui.ChatScreenMixin",
     "gui.DebugScreenOverlayMixin",
     "gui.GuiMixin",

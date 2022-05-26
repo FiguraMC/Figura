@@ -2,6 +2,7 @@ package org.moon.figura.lua.api;
 
 import com.mojang.brigadier.StringReader;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.commands.arguments.SlotArgument;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
@@ -16,6 +17,8 @@ import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.mixin.gui.ChatScreenAccessor;
+import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.TextUtils;
 import org.terasology.jnlua.LuaRuntimeException;
@@ -35,6 +38,7 @@ public class HostAPI {
             description = "host.unlock_cursor"
     )
     public boolean unlockCursor = false;
+    public Integer chatColor;
 
     public HostAPI(Avatar owner) {
         this.owner = owner;
@@ -229,6 +233,61 @@ public class HostAPI {
         if (!FiguraMod.DEBUG_MODE)
             throw new LuaRuntimeException("Congrats, you found this debug easter egg!");
         api.owner.badges.set(index, value);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = {HostAPI.class, FiguraVec3.class},
+                            argumentNames = {"host", "color"}
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {HostAPI.class, Double.class, Double.class, Double.class},
+                            argumentNames = {"host", "r", "g", "b"}
+                    )
+            },
+            description = "host.set_chat_color"
+    )
+    public static void setChatColor(@LuaNotNil HostAPI api, Object x, Double y, Double z) {
+        if (!isHost(api)) return;
+
+        if (x != null)
+            api.chatColor = ColorUtils.rgbToInt(LuaUtils.parseVec3("setChatColor", x, y, z));
+        else
+            api.chatColor = null;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = HostAPI.class,
+                    argumentNames = "host"
+            ),
+            description = "host.get_chat_text"
+    )
+    public static String getChatText(@LuaNotNil HostAPI api) {
+        if (!isHost(api)) return null;
+
+        if (Minecraft.getInstance().screen instanceof ChatScreen chat)
+            return ((ChatScreenAccessor) chat).getInput().getValue();
+
+        return null;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = {HostAPI.class, String.class},
+                    argumentNames = {"host", "text"}
+            ),
+            description = "host.set_chat_text"
+    )
+    public static void setChatText(@LuaNotNil HostAPI api, @LuaNotNil String text) {
+        if (!isHost(api)) return;
+
+        if (Minecraft.getInstance().screen instanceof ChatScreen chat)
+            ((ChatScreenAccessor) chat).getInput().setValue(text);
     }
 
     @Override

@@ -187,7 +187,7 @@ public class NameplateCustomization {
             overloads = {
                     @LuaFunctionOverload(
                             argumentTypes = {NameplateCustomization.class, FiguraVec3.class},
-                            argumentNames = {"customization", "color"}
+                            argumentNames = {"customization", "pos"}
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {NameplateCustomization.class, Double.class, Double.class, Double.class},
@@ -217,7 +217,7 @@ public class NameplateCustomization {
             overloads = {
                     @LuaFunctionOverload(
                             argumentTypes = {NameplateCustomization.class, FiguraVec3.class},
-                            argumentNames = {"customization", "color"}
+                            argumentNames = {"customization", "scale"}
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {NameplateCustomization.class, Double.class, Double.class, Double.class},

@@ -43,6 +43,7 @@ public class MinecraftMixin {
             AvatarManager.reloadAvatar(FiguraMod.getLocalPlayerUUID());
 
         if (Config.ACTION_WHEEL_BUTTON.keyBind.isDown()) {
+            ActionWheel.setEnabled(true);
             this.mouseHandler.releaseMouse();
         } else if (ActionWheel.isEnabled()) {
             ActionWheel.setEnabled(false);

@@ -558,6 +558,9 @@
   "figura.docs.host.is_first_person": "Returns true if the camera is in first person mode.",
   "figura.docs.host.is_camera_backwards": "Returns true if the camera is facing backwards.",
   "figura.docs.host.get_slot": "Gets an ItemStack for the item in the given slot. Should use the same syntax for slots as the /item command.",
+  "figura.docs.host.set_chat_color": "",
+  "figura.docs.host.get_chat_text": "",
+  "figura.docs.host.set_chat_text": "",
 
   "figura.docs.meta": "A global API containing functions to interact with your avatar's metadata, and also to get meta-information about the current script environment.",
   "figura.docs.meta.store": "Store the given key-value pair inside your current avatar's metadata. Someone else can get this information from a different script with the getVariable() function in Player. The key must be a string.",
