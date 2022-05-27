@@ -298,7 +298,7 @@
 
   "figura.docs.blockstate": "A proxy for a block state from Minecraft. Instances are obtained through the WorldAPI. This proxy also contains a saved position for the BlockState.",
   "figura.docs.blockstate.id": "The identifier of the block this BlockState comes from.",
-  "figura.docs.blockstate.properties": "",
+  "figura.docs.blockstate.properties": "A table containing the properties of this BlockState. If this BlockState has no properties, it is nil.",
   "figura.docs.blockstate.get_pos": "Returns the saved position for this BlockState proxy. The saved position is used in BlockState functions that require a position.",
   "figura.docs.blockstate.set_pos": "Sets the saved position for this BlockState proxy. The saved position is used in BlockState functions that require a position.",
   "figura.docs.blockstate.exists": "Checks whether or not this BlockState currently exists. I can't think of a situation where it wouldn't exist, but this function is provided for you to check just in case.",
@@ -330,7 +330,7 @@
 
   "figura.docs.itemstack": "A proxy for an item stack from Minecraft.",
   "figura.docs.itemstack.id": "Contains the id of the item this ItemStack refers to.",
-  "figura.docs.itemstack.tag": "",
+  "figura.docs.itemstack.tag": "A table containing the NBT tag of this ItemStack. If this ItemStack has nothing in its tag, it is nil.",
   "figura.docs.itemstack.exists": "Checks whether or not this ItemStack currently exists. Minecraft may delete ItemStack instances on occasion. I don't think it will delete them while they're in someone's inventory or on the ground, but testing is required to know for sure. Contact devs once someone has an answer to when these stop existing!",
   "figura.docs.itemstack.get_count": "Gets the number of items in this stack.",
   "figura.docs.itemstack.get_damage": "Gets the damage value of the item in this stack. Works on things like tools, or other things with a durability bar.",
@@ -477,8 +477,8 @@
   "figura.docs.entity.is_sneaking": "Returns true if this entity is sneaking.",
   "figura.docs.entity.get_variable": "Gets the value of a variable this entity stored in themselves using the Meta api's store() function.",
   "figura.docs.entity.get_item": "Gets an ItemStack for the item in the given slot. For the player, slots are indexed with 1 as the main hand, 2 as the off hand, and 3,4,5,6 as the 4 armor slots from the boots to the helmet. If an invalid slot number is given, or if the entity has no item in that slot, this will return nil.",
-  "figura.docs.entity.get_nbt": "",
-  "figura.docs.entity.is_on_fire": "",
+  "figura.docs.entity.get_nbt": "Gets a table containing the NBT of this entity. Please note that not all values in the entity's NBT may be synced, as some are handled only on server side.",
+  "figura.docs.entity.is_on_fire": "Returns true if this entity is currently on fire.",
 
   "figura.docs.living_entity": "Acts as a proxy for a living entity in the Minecraft world.",
   "figura.docs.living_entity.get_body_yaw": "Gets the yaw of this entity's body in degrees. If delta is passed in, then it will be used to linearly interpolate the rotation of the body between the previous tick and the current tick. The default value of delta is 1.",
@@ -553,7 +553,7 @@
   "figura.docs.client.get_screen": "Gets the name of the screen the player is currently on. If the player is not currently in a screen, returns nil.",
 
   "figura.docs.host": "A global API dedicated to specifically the host of the avatar. For other viewers, these do nothing.",
-  "figura.docs.host.unlock_cursor": "",
+  "figura.docs.host.unlock_cursor": "Setting this value to true will unlock your cursor, letting you move it freely on the screen instead of it controlling your player's rotation.",
   "figura.docs.host.is_host": "Returns true if this instance of the script is running on host.",
   "figura.docs.host.get_targeted_entity": "Returns a proxy for your currently targeted entity. This entity appears on the F3 screen.",
   "figura.docs.host.set_title_times": "I'm going to be honest, I don't really know what this one does. It has something to do with the amount of time that titles stay on screen, but nothing more specific than that.",
@@ -566,9 +566,9 @@
   "figura.docs.host.is_first_person": "Returns true if the camera is in first person mode.",
   "figura.docs.host.is_camera_backwards": "Returns true if the camera is facing backwards.",
   "figura.docs.host.get_slot": "Gets an ItemStack for the item in the given slot. Should use the same syntax for slots as the /item command.",
-  "figura.docs.host.set_chat_color": "",
-  "figura.docs.host.get_chat_text": "",
-  "figura.docs.host.set_chat_text": "",
+  "figura.docs.host.set_chat_color": "Sets the color of the text that is currently being typed into the chat window.",
+  "figura.docs.host.get_chat_text": "Gets the text that is currently being typed into the chat window.",
+  "figura.docs.host.set_chat_text": "Sets the text currently being typed in the chat window to the given string.",
 
   "figura.docs.meta": "A global API containing functions to interact with your avatar's metadata, and also to get meta-information about the current script environment.",
   "figura.docs.meta.store": "Store the given key-value pair inside your current avatar's metadata. Someone else can get this information from a different script with the getVariable() function in Player. The key must be a string.",
