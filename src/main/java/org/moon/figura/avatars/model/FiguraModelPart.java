@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import net.minecraft.client.model.ElytraModel;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.nbt.ByteTag;
@@ -28,7 +29,8 @@ import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec4;
-import org.moon.figura.mixin.render.elytra.ElytraModelAccessor;
+import org.moon.figura.ducks.PlayerModelAccessor;
+import org.moon.figura.mixin.render.layers.elytra.ElytraModelAccessor;
 import org.moon.figura.utils.LuaUtils;
 import org.terasology.jnlua.LuaRuntimeException;
 
@@ -70,6 +72,12 @@ public class FiguraModelPart {
 
     public void applyVanillaTransforms(EntityModel<?> vanillaModel) {
         if (!parentType.vanilla) return;
+        if (vanillaModel instanceof PlayerModel<?> player) {
+            applyVanillaTransform(vanillaModel, parentType, switch (parentType) {
+                case Cape -> ((PlayerModelAccessor) player).figura$getFakeCloak();
+                default -> null;
+            });
+        }
         if (vanillaModel instanceof HumanoidModel<?> humanoid) {
             applyVanillaTransform(vanillaModel, parentType, switch (parentType) {
                 case Head -> humanoid.head;
@@ -81,7 +89,7 @@ public class FiguraModelPart {
                 default -> null;
             });
         }
-        else if (vanillaModel instanceof ElytraModel<?> elytra) {
+        if (vanillaModel instanceof ElytraModel<?> elytra) {
             applyVanillaTransform(vanillaModel, parentType, switch (parentType) {
                 case LeftElytra -> ((ElytraModelAccessor) elytra).getLeftWing();
                 case RightElytra -> ((ElytraModelAccessor) elytra).getRightWing();
@@ -138,6 +146,8 @@ public class FiguraModelPart {
 
         LeftElytra(true, "LeftElytron, LEFT_ELYTRON, LEFT_ELYTRA"),
         RightElytra(true, "RightElytron, RIGHT_ELYTRON, RIGHT_ELYTRA"),
+
+        Cape(true, "CAPE"),
 
         World(false, "WORLD");
 

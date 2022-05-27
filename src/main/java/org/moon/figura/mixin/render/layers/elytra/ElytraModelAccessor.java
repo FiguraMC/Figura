@@ -1,4 +1,4 @@
-package org.moon.figura.mixin.render.elytra;
+package org.moon.figura.mixin.render.layers.elytra;
 
 import net.minecraft.client.model.ElytraModel;
 import net.minecraft.client.model.geom.ModelPart;

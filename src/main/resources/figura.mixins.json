@@ -24,16 +24,23 @@
     "input.MouseHandlerMixin",
 
     "render.EntityRenderDispatcherMixin",
-    "render.HumanoidArmorLayerMixin",
+    "render.layers.HumanoidArmorLayerMixin",
+
+    "render.PlayerModelMixin",
+    "render.layers.CapeLayerMixin",
+
+    "render.layers.elytra.ElytraLayerAccessor",
+    "render.layers.elytra.ElytraModelAccessor",
+    "render.layers.elytra.ElytraLayerMixin",
+
+    "render.layers.items.ItemInHandLayerMixin",
+    "render.layers.items.PlayerItemInHandLayerMixin",
 
     "render.renderers.EntityRendererMixin",
     "render.renderers.LivingEntityRendererMixin",
     "render.renderers.PlayerRendererMixin",
-    "render.renderers.LevelRendererMixin",
+    "render.renderers.LevelRendererMixin"
 
-    "render.elytra.ElytraLayerAccessor",
-    "render.elytra.ElytraModelAccessor",
-    "render.elytra.ElytraLayerMixin"
   ],
   "server": [
   ],

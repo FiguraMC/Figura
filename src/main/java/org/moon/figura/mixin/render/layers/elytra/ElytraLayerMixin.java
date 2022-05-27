@@ -1,4 +1,4 @@
-package org.moon.figura.mixin.render.elytra;
+package org.moon.figura.mixin.render.layers.elytra;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.model.ElytraModel;

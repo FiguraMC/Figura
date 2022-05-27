@@ -24,7 +24,7 @@ import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.config.Config;
 import org.moon.figura.lua.api.nameplate.NameplateCustomization;
 import org.moon.figura.math.vector.FiguraVec3;
-import org.moon.figura.mixin.render.elytra.ElytraLayerAccessor;
+import org.moon.figura.mixin.render.layers.elytra.ElytraLayerAccessor;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.TextUtils;

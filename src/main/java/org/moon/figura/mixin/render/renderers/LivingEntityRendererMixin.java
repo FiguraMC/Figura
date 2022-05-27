@@ -21,7 +21,7 @@ import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.avatars.model.rendering.AvatarRenderer;
 import org.moon.figura.config.Config;
-import org.moon.figura.mixin.render.elytra.ElytraLayerAccessor;
+import org.moon.figura.mixin.render.layers.elytra.ElytraLayerAccessor;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.ui.UIHelper;
@@ -41,20 +41,22 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
 
     protected LivingEntityRendererMixin(EntityRendererProvider.Context context) {
         super(context);
+        elytraModel = getElytraModel();
     }
 
     @Unique
     private Avatar currentAvatar;
 
-
     @Final
     @Shadow
     protected List<RenderLayer<T, M>> layers;
 
+    public ElytraModel<T> elytraModel;
+
     @Shadow protected abstract boolean isBodyVisible(T livingEntity);
     @Shadow protected abstract RenderType getRenderType(T livingEntity, boolean bl, boolean bl2, boolean bl3);
 
-    public ElytraModel<T> getElytraModel() {
+    private ElytraModel<T> getElytraModel() {
         if (!((Object) this instanceof PlayerRenderer)) return null;
         RenderLayer<T, M> layerCandidate = layers.get(6);
         if (!(layerCandidate instanceof ElytraLayer<T, M> elytraLayer)) { //a bit jank but it should get the elytra layer, look at PlayerRenderer.class
@@ -71,7 +73,6 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
             return;
 
         if (currentAvatar.luaState != null) {
-
             if (getModel() instanceof PlayerModel<?> playerModel && entity instanceof Player) {
                 currentAvatar.luaState.vanillaModel.copyPlayerModel(playerModel);
                 if (TrustManager.get(entity.getUUID()).get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 1)
@@ -96,7 +97,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
         //No camera/hud or whatever in yet. when they are, they won't be included here either.
         if (visible) {
             currentAvatar.renderer.currentFilterScheme = AvatarRenderer.RENDER_REGULAR;
-            currentAvatar.onRender(entity, yaw, delta, translucent ? 0.15f : 1f, matrices, bufferSource, light, (LivingEntityRenderer<?, ?>) (Object) this, getElytraModel());
+            currentAvatar.onRender(entity, yaw, delta, translucent ? 0.15f : 1f, matrices, bufferSource, light, (LivingEntityRenderer<?, ?>) (Object) this, elytraModel);
         }
 
 

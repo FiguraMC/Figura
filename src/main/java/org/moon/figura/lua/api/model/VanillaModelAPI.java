@@ -12,7 +12,8 @@ import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.lua.types.LuaPairsIterator;
 import org.moon.figura.math.vector.FiguraVec3;
-import org.moon.figura.mixin.render.elytra.ElytraModelAccessor;
+import org.moon.figura.ducks.PlayerModelAccessor;
+import org.moon.figura.mixin.render.layers.elytra.ElytraModelAccessor;
 import org.terasology.jnlua.LuaRuntimeException;
 
 import java.util.List;
@@ -66,6 +67,9 @@ public class VanillaModelAPI {
     @LuaWhitelist
     @LuaFieldDoc(description = "vanilla_model.right_pants")
     public final VanillaModelPart<PlayerModel<?>> RIGHT_PANTS;
+    @LuaWhitelist
+    @LuaFieldDoc(description = "vanilla_model.cape")
+    public final VanillaModelPart<PlayerModel<?>> CAPE;
 
     @LuaWhitelist
     @LuaFieldDoc(description = "vanilla_model.helmet")
@@ -135,6 +139,17 @@ public class VanillaModelAPI {
     @LuaFieldDoc(description = "vanilla_model.right_elytra")
     public final VanillaModelPart<ElytraModel<?>> RIGHT_ELYTRA;
 
+    @LuaWhitelist
+    @LuaFieldDoc(description = "vanilla_model.held_items")
+    public final VanillaModelPart<EntityModel<?>> HELD_ITEMS;
+    @LuaWhitelist
+    @LuaFieldDoc(description = "vanilla_model.left_item")
+    public final VanillaModelPart<EntityModel<?>> LEFT_ITEM;
+    @LuaWhitelist
+    @LuaFieldDoc(description = "vanilla_model.left_item")
+    public final VanillaModelPart<EntityModel<?>> RIGHT_ITEM;
+
+
     public void alterPlayerModel(PlayerModel<?> playerModel) {
         alterByPart(playerModel, HEAD);
         alterByPart(playerModel, BODY);
@@ -201,9 +216,13 @@ public class VanillaModelAPI {
         Function<PlayerModel<?>, ModelPart> RIGHT_SLEEVE_FUNC = model -> model.rightSleeve;
         Function<PlayerModel<?>, ModelPart> LEFT_PANTS_FUNC = model -> model.leftPants;
         Function<PlayerModel<?>, ModelPart> RIGHT_PANTS_FUNC = model -> model.rightPants;
+        Function<PlayerModel<?>, ModelPart> CAPE_FUNC = model -> ((PlayerModelAccessor) model).figura$getCloak();
+        Function<PlayerModel<?>, ModelPart> FAKE_CAPE_FUNC = model -> ((PlayerModelAccessor) model).figura$getFakeCloak();
 
         Function<ElytraModel<?>, ModelPart> LEFT_ELYTRON_FUNC = model -> ((ElytraModelAccessor) model).getLeftWing();
         Function<ElytraModel<?>, ModelPart> RIGHT_ELYTRON_FUNC = model -> ((ElytraModelAccessor) model).getRightWing();
+
+        Function<EntityModel<?>, ModelPart> NULL_FUNC = model -> null;
 
         //TRACKERS
         PartTracker<HumanoidModel<?>> HEAD_TRACKER = new PartTracker<>(HEAD_FUNC, true);
@@ -218,6 +237,7 @@ public class VanillaModelAPI {
         PartTracker<PlayerModel<?>> RIGHT_SLEEVE_TRACKER = new PartTracker<>(RIGHT_SLEEVE_FUNC, true);
         PartTracker<PlayerModel<?>> LEFT_PANTS_TRACKER = new PartTracker<>(LEFT_PANTS_FUNC, true);
         PartTracker<PlayerModel<?>> RIGHT_PANTS_TRACKER = new PartTracker<>(RIGHT_PANTS_FUNC, true);
+        PartTracker<PlayerModel<?>> CAPE_TRACKER = new PartTracker<>(CAPE_FUNC, FAKE_CAPE_FUNC, true);
 
         PartTracker<HumanoidModel<?>> HELMET_TRACKER = new PartTracker<>(HEAD_FUNC, true);
         PartTracker<HumanoidModel<?>> HELMET_HAT_TRACKER = new PartTracker<>(HAT_FUNC, true);
@@ -233,6 +253,9 @@ public class VanillaModelAPI {
         PartTracker<ElytraModel<?>> LEFT_ELYTRON_TRACKER = new PartTracker<>(LEFT_ELYTRON_FUNC, true);
         PartTracker<ElytraModel<?>> RIGHT_ELYTRON_TRACKER = new PartTracker<>(RIGHT_ELYTRON_FUNC, true);
 
+        PartTracker<EntityModel<?>> LEFT_ITEM_TRACKER = new PartTracker<>(NULL_FUNC, true);
+        PartTracker<EntityModel<?>> RIGHT_ITEM_TRACKER = new PartTracker<>(NULL_FUNC, true);
+
         //INIT VanillaModelPart FIELDS
         HEAD = new VanillaModelPart<>(List.of(HEAD_TRACKER), FiguraModelPart.ParentType.Head);
         BODY = new VanillaModelPart<>(List.of(BODY_TRACKER), FiguraModelPart.ParentType.Body);
@@ -247,6 +270,7 @@ public class VanillaModelAPI {
         RIGHT_SLEEVE = new VanillaModelPart<>(List.of(RIGHT_SLEEVE_TRACKER), FiguraModelPart.ParentType.RightArm);
         LEFT_PANTS = new VanillaModelPart<>(List.of(LEFT_PANTS_TRACKER), FiguraModelPart.ParentType.LeftLeg);
         RIGHT_PANTS = new VanillaModelPart<>(List.of(RIGHT_PANTS_TRACKER), FiguraModelPart.ParentType.RightLeg);
+        CAPE = new VanillaModelPart<>(List.of(CAPE_TRACKER), FiguraModelPart.ParentType.Cape);
 
         HELMET = new VanillaModelPart<>(List.of(HELMET_TRACKER, HELMET_HAT_TRACKER), null);
 
@@ -268,21 +292,29 @@ public class VanillaModelAPI {
         LEFT_ELYTRA = new VanillaModelPart<>(List.of(LEFT_ELYTRON_TRACKER), FiguraModelPart.ParentType.LeftElytra);
         RIGHT_ELYTRA = new VanillaModelPart<>(List.of(RIGHT_ELYTRON_TRACKER), FiguraModelPart.ParentType.RightElytra);
 
+        HELD_ITEMS = new VanillaModelPart<>(List.of(LEFT_ITEM_TRACKER, RIGHT_ITEM_TRACKER), null);
+        LEFT_ITEM = new VanillaModelPart<>(List.of(LEFT_ITEM_TRACKER), FiguraModelPart.ParentType.LeftArm);
+        RIGHT_ITEM = new VanillaModelPart<>(List.of(RIGHT_ITEM_TRACKER), FiguraModelPart.ParentType.RightArm);
+
         ALL = new VanillaModelPart<>(List.of(
                 HEAD_TRACKER, BODY_TRACKER, LEFT_ARM_TRACKER, RIGHT_ARM_TRACKER, LEFT_LEG_TRACKER, RIGHT_LEG_TRACKER,
                 HAT_TRACKER, JACKET_TRACKER, LEFT_SLEEVE_TRACKER, RIGHT_SLEEVE_TRACKER, LEFT_PANTS_TRACKER, RIGHT_PANTS_TRACKER,
+                CAPE_TRACKER,
 
                 HELMET_TRACKER, HELMET_HAT_TRACKER,
                 CHESTPLATE_BODY_TRACKER, CHESTPLATE_LEFT_ARM_TRACKER, CHESTPLATE_RIGHT_ARM_TRACKER,
                 LEGGINGS_BODY_TRACKER, LEGGINGS_LEFT_LEG_TRACKER, LEGGINGS_RIGHT_LEG_TRACKER,
                 BOOTS_LEFT_LEG_TRACKER, BOOTS_RIGHT_LEG_TRACKER,
 
-                LEFT_ELYTRON_TRACKER, RIGHT_ELYTRON_TRACKER
+                LEFT_ELYTRON_TRACKER, RIGHT_ELYTRON_TRACKER,
+
+                LEFT_ITEM_TRACKER, RIGHT_ITEM_TRACKER
         ), null);
 
         PLAYER = new VanillaModelPart<>(List.of(
                 HEAD_TRACKER, BODY_TRACKER, LEFT_ARM_TRACKER, RIGHT_ARM_TRACKER, LEFT_LEG_TRACKER, RIGHT_LEG_TRACKER,
-                HAT_TRACKER, JACKET_TRACKER, LEFT_SLEEVE_TRACKER, RIGHT_SLEEVE_TRACKER, LEFT_PANTS_TRACKER, RIGHT_PANTS_TRACKER
+                HAT_TRACKER, JACKET_TRACKER, LEFT_SLEEVE_TRACKER, RIGHT_SLEEVE_TRACKER, LEFT_PANTS_TRACKER, RIGHT_PANTS_TRACKER,
+                CAPE_TRACKER
         ), null);
         OUTER_LAYER = new VanillaModelPart<>(List.of(
                 HAT_TRACKER, JACKET_TRACKER, LEFT_SLEEVE_TRACKER, RIGHT_SLEEVE_TRACKER, LEFT_PANTS_TRACKER, RIGHT_PANTS_TRACKER
@@ -309,26 +341,36 @@ public class VanillaModelAPI {
 
                     "HEAD", "BODY", "LEFT_ARM", "RIGHT_ARM", "LEFT_LEG", "RIGHT_LEG",
                     "HAT", "JACKET", "LEFT_SLEEVE", "RIGHT_SLEEVE", "LEFT_PANTS", "RIGHT_PANTS",
+                    "CAPE",
 
                     "HELMET",
                     "CHESTPLATE_BODY", "CHESTPLATE_LEFT_ARM", "CHESTPLATE_RIGHT_ARM",
                     "LEGGINGS", "LEGGINGS_BODY", "LEGGINGS_LEFT_LEG", "LEGGINGS_RIGHT_LEG",
-                    "BOOTS", "BOOTS_LEFT_LEG", "BOOTS_RIGHT_LEG"
+                    "BOOTS", "BOOTS_LEFT_LEG", "BOOTS_RIGHT_LEG",
+
+                    "LEFT_ELYTRA", "RIGHT_ELYTRA",
+
+                    "LEFT_ITEM", "RIGHT_ITEM"
 
             ), VanillaModelAPI.class, String.class);
 
     private static class PartTracker<T extends EntityModel<?>> {
-        private final Function<T, ModelPart> partProvider;
+        private final Function<T, ModelPart> partProvider, fakePartProvider;
 
         private boolean visible, storedVisibility;
 
         public PartTracker(Function<T, ModelPart> partProvider, boolean defaultVisibility) {
-            this.partProvider = partProvider;
+            this(partProvider, partProvider, defaultVisibility);
+        }
+
+        public PartTracker(Function<T, ModelPart> realPartProvider, Function<T, ModelPart> fakePartProvider, boolean defaultVisibility) {
+            this.partProvider = realPartProvider;
+            this.fakePartProvider = fakePartProvider;
             visible = defaultVisibility;
         }
 
         public void storeOriginData(VanillaModelPart<? extends T> vanillaModelPart, T model) {
-            ModelPart part = partProvider.apply(model);
+            ModelPart part = fakePartProvider.apply(model);
             if (part == null) return;
             vanillaModelPart.savedOriginRot.set(-part.xRot, -part.yRot, part.zRot);
             vanillaModelPart.savedOriginRot.scale(180 / Math.PI);
@@ -390,6 +432,12 @@ public class VanillaModelAPI {
         public void restore(T model) {
             for (PartTracker<T> tracker : partModifiers)
                 tracker.restore(model);
+        }
+
+        public boolean isVisible() {
+            if (partModifiers.size() > 1)
+                throw new IllegalArgumentException("Tried to call isVisible on multi-part!");
+            return partModifiers.get(0).visible;
         }
 
         @LuaWhitelist
