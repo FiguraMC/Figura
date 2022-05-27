@@ -60,7 +60,7 @@ public abstract class AbstractConfigElement extends AbstractContainerElement {
     public boolean isMouseOver(double mouseX, double mouseY) {
         boolean over = this.parent.isInsideScissors(mouseX, mouseY) && super.isMouseOver(mouseX, mouseY);
 
-        if (over && mouseX < this.x + this.width - 180)
+        if (over && mouseX < this.x + this.width - 158)
             UIHelper.setTooltip(config.tooltip);
 
         return over;

@@ -223,34 +223,34 @@ public class UIHelper extends GuiComponent {
         bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
 
         //top left
-        sliceVertex(stack.last().pose(), bufferBuilder, x, y, 3, 3, 0f, 0f, 9, 9);
+        sliceVertex(stack.last().pose(), bufferBuilder, x, y, 5, 5, 0f, 0f);
         //top middle
-        sliceVertex(stack.last().pose(), bufferBuilder, x + 3, y, width - 6, 3, 3f, 0f, 9, 9);
+        sliceVertex(stack.last().pose(), bufferBuilder, x + 5, y, width - 10, 5, 5f, 0f);
         //top right
-        sliceVertex(stack.last().pose(), bufferBuilder, x + width - 3, y, 3, 3, 6f, 0f, 9, 9);
+        sliceVertex(stack.last().pose(), bufferBuilder, x + width - 5, y, 5, 5, 10f, 0f);
 
         //middle left
-        sliceVertex(stack.last().pose(), bufferBuilder, x, y + 3, 3, height - 6, 0f, 3f, 9, 9);
+        sliceVertex(stack.last().pose(), bufferBuilder, x, y + 5, 5, height - 10, 0f, 5f);
         //middle middle
-        sliceVertex(stack.last().pose(), bufferBuilder, x + 3, y + 3, width - 6, height - 6, 3f, 3f, 9, 9);
+        sliceVertex(stack.last().pose(), bufferBuilder, x + 5, y + 5, width - 10, height - 10, 5f, 5f);
         //middle right
-        sliceVertex(stack.last().pose(), bufferBuilder, x + width - 3, y + 3, 3, height - 6, 6f, 3f, 9, 9);
+        sliceVertex(stack.last().pose(), bufferBuilder, x + width - 5, y + 5, 5, height - 10, 10f, 5f);
 
         //bottom left
-        sliceVertex(stack.last().pose(), bufferBuilder, x, y + height - 3, 3, 3, 0f, 6f, 9, 9);
+        sliceVertex(stack.last().pose(), bufferBuilder, x, y + height - 5, 5, 5, 0f, 10f);
         //bottom middle
-        sliceVertex(stack.last().pose(), bufferBuilder, x + 3, y + height - 3, width - 6, 3, 3f, 6f, 9, 9);
+        sliceVertex(stack.last().pose(), bufferBuilder, x + 5, y + height - 5, width - 10, 5, 5f, 10f);
         //bottom right
-        sliceVertex(stack.last().pose(), bufferBuilder, x + width - 3, y + height - 3, 3, 3, 6f, 6f, 9, 9);
+        sliceVertex(stack.last().pose(), bufferBuilder, x + width - 5, y + height - 5, 5, 5, 10f, 10f);
 
         tessellator.end();
     }
 
-    public static void sliceVertex(Matrix4f matrix, BufferBuilder bufferBuilder, int x, int y, int width, int height, float u, float v, int texWidth, int texHeight) {
-        bufferBuilder.vertex(matrix, x, y, 0f).uv(u / texWidth, v / texHeight).endVertex();
-        bufferBuilder.vertex(matrix, x, y + height, 0f).uv(u / texWidth, (v + 3) / texHeight).endVertex();
-        bufferBuilder.vertex(matrix, x + width, y + height, 0f).uv((u + 3) / texWidth, (v + 3) / texHeight).endVertex();
-        bufferBuilder.vertex(matrix, x + width, y, 0f).uv((u + 3) / texWidth, v / texHeight).endVertex();
+    private static void sliceVertex(Matrix4f matrix, BufferBuilder bufferBuilder, int x, int y, int width, int height, float u, float v) {
+        bufferBuilder.vertex(matrix, x, y, 0f).uv(u / 15, v / 15).endVertex();
+        bufferBuilder.vertex(matrix, x, y + height, 0f).uv(u / 15, (v + 5) / 15).endVertex();
+        bufferBuilder.vertex(matrix, x + width, y + height, 0f).uv((u + 5) / 15, (v + 5) / 15).endVertex();
+        bufferBuilder.vertex(matrix, x + width, y, 0f).uv((u + 5) / 15, v / 15).endVertex();
     }
 
     public static void setupScissor(int x, int y, int width, int height) {
@@ -283,7 +283,7 @@ public class UIHelper extends GuiComponent {
 
     public static void renderTooltip(PoseStack stack, Component tooltip, int mouseX, int mouseY) {
         Screen screen = Minecraft.getInstance().screen;
-        if (screen != null) screen.renderTooltip(stack, TextUtils.splitTooltip(tooltip, Minecraft.getInstance().font, mouseX, screen.width), mouseX, Math.max(mouseY, 16));
+        if (screen != null) screen.renderTooltip(stack, TextUtils.warpTooltip(tooltip, Minecraft.getInstance().font, mouseX, screen.width), mouseX, Math.max(mouseY, 16));
     }
 
     public static void setContext(ContextMenu context) {

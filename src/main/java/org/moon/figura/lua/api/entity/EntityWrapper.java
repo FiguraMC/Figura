@@ -520,6 +520,18 @@ public class EntityWrapper<T extends Entity> {
         return (LuaTable) NbtToLua.convert(tag);
     }
 
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = EntityWrapper.class,
+                    argumentNames = "entity"
+            ),
+            description = "entity.is_on_fire"
+    )
+    public static <T extends Entity> boolean isOnFire(@LuaNotNil EntityWrapper<T> entity) {
+        return getEntity(entity).displayFireAnimation();
+    }
+
     @Override
     public String toString() {
         return savedUUID + " (Entity)";

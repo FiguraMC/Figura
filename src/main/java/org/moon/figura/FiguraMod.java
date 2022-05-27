@@ -15,6 +15,7 @@ import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.avatars.providers.LocalAvatarLoader;
 import org.moon.figura.backend.NetworkManager;
 import org.moon.figura.commands.FiguraCommands;
+import org.moon.figura.config.Config;
 import org.moon.figura.config.ConfigManager;
 import org.moon.figura.gui.PaperDoll;
 import org.moon.figura.gui.actionwheel.ActionWheel;
@@ -89,7 +90,8 @@ public class FiguraMod implements ClientModInitializer {
 
     //mod root directory
     public static Path getFiguraDirectory() {
-        Path p = GAME_DIR.resolve(MOD_ID);
+        String config = (String) Config.MAIN_DIR.value;
+        Path p = (config.isBlank() ? GAME_DIR : Path.of(config)).resolve(MOD_ID);
         try {
             Files.createDirectories(p);
         } catch (Exception e) {

@@ -8,6 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.gui.widgets.ContextMenu;
 import org.moon.figura.gui.widgets.FiguraTickable;
 import org.moon.figura.gui.widgets.PanelSelectorWidget;
+import org.moon.figura.gui.widgets.TextField;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.ui.UIHelper;
 
@@ -95,6 +96,12 @@ public abstract class AbstractPanelScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        //fix mojang focusing for text fields
+        for (GuiEventListener listener : this.children()) {
+            if (listener instanceof TextField field)
+                field.getField().setFocus(field.isMouseOver(mouseX, mouseY));
+        }
+
         return this.contextMenuClick(mouseX, mouseY, button) || super.mouseClicked(mouseX, mouseY, button);
     }
 

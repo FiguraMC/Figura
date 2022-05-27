@@ -7,12 +7,16 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.ui.UIHelper;
 
 import java.util.function.Consumer;
 
 public class TextField extends AbstractContainerElement {
+
+    private static final ResourceLocation BACKGROUND = new FiguraIdentifier("textures/gui/text_field.png");
 
     private final Component hint;
     private final EditBox field;
@@ -40,8 +44,15 @@ public class TextField extends AbstractContainerElement {
         if (!isVisible()) return;
 
         //render background
-        UIHelper.fillRounded(stack, x, y, width, height, this.isMouseOver(mouseX, mouseY) ? 0x60FFFFFF : 0xFF000000);
-        UIHelper.fillOutline(stack, x, y, width, height, field.isFocused() ? borderColour : 0xFF404040);
+        UIHelper.renderSliced(stack, x, y, width, height, BACKGROUND);
+
+        //render hovered background
+        if (this.isMouseOver(mouseX, mouseY))
+            UIHelper.fillRounded(stack, x, y, width, height, 0x60FFFFFF);
+
+        //render outline
+        if (field.isFocused())
+            UIHelper.fillOutline(stack, x, y, width, height, borderColour);
 
         //hint text
         if (hint != null && field.getValue().isEmpty() && !field.isFocused()) {

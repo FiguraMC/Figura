@@ -8,7 +8,6 @@ import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.lua.types.LuaFunction;
 import org.moon.figura.lua.types.LuaOwnedList;
-import org.moon.figura.lua.types.LuaOwnedTable;
 import org.moon.figura.lua.types.LuaPairsIterator;
 import org.moon.figura.utils.LuaUtils;
 import org.terasology.jnlua.JavaFunction;
@@ -16,7 +15,6 @@ import org.terasology.jnlua.LuaRuntimeException;
 import org.terasology.jnlua.LuaState;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 @LuaWhitelist

@@ -7,9 +7,15 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.ui.UIHelper;
 
 public class TexturedButton extends Button {
+
+    //default textures
+    private static final ResourceLocation ENABLED = new FiguraIdentifier("textures/gui/button/enabled.png");
+    private static final ResourceLocation DISABLED = new FiguraIdentifier("textures/gui/button/disabled.png");
+    private static final ResourceLocation HOVERED = new FiguraIdentifier("textures/gui/button/hovered.png");
 
     //texture data
     protected Integer u;
@@ -52,10 +58,6 @@ public class TexturedButton extends Button {
         if (!this.visible)
             return;
 
-        //render hovered background
-         if (this.active && this.isHoveredOrFocused())
-            UIHelper.fillRounded(stack, x, y, width, height, 0x60FFFFFF);
-
          //render button
         this.renderButton(stack, mouseX, mouseY, delta);
 
@@ -68,8 +70,21 @@ public class TexturedButton extends Button {
         //render texture
         if (this.texture != null)
             renderTexture(stack, delta);
-        else if (this.hasBackground)
-            UIHelper.renderSliced(stack, x, y, width, height, UIHelper.OUTLINE);
+        else if (this.hasBackground) {
+            ResourceLocation texture;
+
+            if (!this.active)
+                texture = DISABLED;
+            else if (this.isHoveredOrFocused())
+                texture = HOVERED;
+            else
+                texture = ENABLED;
+
+            UIHelper.renderSliced(stack, x, y, width, height, texture);
+        } else if (this.active && this.isHoveredOrFocused()) {
+            //render hovered background
+            UIHelper.fillRounded(stack, x, y, width, height, 0x60FFFFFF);
+        }
 
         //render text
         if (this.getMessage() != null)

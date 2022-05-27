@@ -173,13 +173,7 @@ public class TrustScreen extends AbstractPanelScreen {
             TrustContainer trust = playerList.selectedEntry.getTrust();
             trust.getSettings().clear();
             updateTrustData(trust);
-        }) {
-            @Override
-            public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
-                UIHelper.renderSliced(stack, x, y, width, height, UIHelper.OUTLINE);
-                super.renderButton(stack, mouseX, mouseY, delta);
-            }
-        });
+        }));
 
         //add trust list
         addRenderableWidget(trustList);

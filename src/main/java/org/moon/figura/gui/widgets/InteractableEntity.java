@@ -16,7 +16,7 @@ import org.moon.figura.utils.ui.UIHelper;
 public class InteractableEntity extends AbstractContainerElement {
 
     public static final ResourceLocation UNKNOWN = new FiguraIdentifier("textures/gui/unknown.png");
-    public static final ResourceLocation BACKGROUND = new FiguraIdentifier("textures/gui/preview.png");
+    public static final ResourceLocation BACKGROUND = new FiguraIdentifier("textures/gui/entity_preview.png");
 
     //properties
     private LivingEntity entity;

@@ -79,7 +79,7 @@ public enum Config {
                 new FiguraText(tooltip + ".groups").setStyle(ColorUtils.Colors.MAYA_BLUE.style));
     }},
     LOG_OTHERS(false),
-    AVATARS_PATH("", InputType.FOLDER_PATH);
+    MAIN_DIR("", InputType.FOLDER_PATH);
 
 
     /**

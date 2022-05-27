@@ -2,9 +2,10 @@ package org.moon.figura.utils;
 
 import com.mojang.brigadier.StringReader;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.components.ComponentRenderUtils;
+import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
@@ -140,7 +141,7 @@ public class TextUtils {
         return TextUtils.replaceInText(text, "\\t", " ".repeat(TAB_SPACING));
     }
 
-    public static List<FormattedCharSequence> splitTooltip(Component text, Font font, int mousePos, int screenWidth) {
+    public static List<FormattedCharSequence> warpTooltip(Component text, Font font, int mousePos, int screenWidth) {
         //first split the new line text
         List<Component> splitText = TextUtils.splitText(text, "\n");
 
@@ -153,16 +154,13 @@ public class TextUtils {
 
         //get largest text size
         int largest = 0;
-        for (Component component : splitText) {
-            int size = font.width(component);
-            if (size > largest)
-                largest = size;
-        }
+        for (Component component : splitText)
+            largest = Math.max(largest, font.width(component));
 
         //wrap text
         int warpSize = largest <= right ? right : largest <= left ? left : Math.max(left, right);
         for (Component component : splitText)
-            ret.addAll(ComponentRenderUtils.wrapComponents(component, warpSize, font));
+            font.getSplitter().splitLines(component, warpSize, Style.EMPTY, (formattedText, aBoolean) -> ret.add(Language.getInstance().getVisualOrder(formattedText)));
 
         //return
         return ret;

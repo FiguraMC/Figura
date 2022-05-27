@@ -26,7 +26,6 @@ import org.moon.figura.lua.api.nameplate.NameplateCustomization;
 import org.moon.figura.lua.types.LuaFunction;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
-import org.terasology.jnlua.LuaMemoryAllocationException;
 import org.terasology.jnlua.LuaRuntimeException;
 
 import java.io.ByteArrayOutputStream;
@@ -104,7 +103,7 @@ public class Avatar {
                 func.call(args);
             else
                 throw new LuaRuntimeException("Invalid type to run!");
-        } catch (LuaRuntimeException | LuaMemoryAllocationException ex) {
+        } catch (Exception ex) {
             FiguraLuaPrinter.sendLuaError(ex, name, owner);
             scriptError = true;
             luaState.close();

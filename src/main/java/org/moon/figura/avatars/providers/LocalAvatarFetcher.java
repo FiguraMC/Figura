@@ -40,11 +40,10 @@ public class LocalAvatarFetcher {
 
     /**
      * Returns the directory where all local avatars are stored.
-     * The directory is either the one set in the configs, or MOD_ID directory.
+     * The directory is always under main directory.
      */
     public static Path getLocalAvatarDirectory() {
-        String config = (String) Config.AVATARS_PATH.value;
-        Path p = (config.isBlank() ? FiguraMod.getFiguraDirectory() : Path.of(config)).resolve("avatars");
+        Path p = FiguraMod.getFiguraDirectory().resolve("avatars");
         try {
             Files.createDirectories(p);
         } catch (Exception e) {
