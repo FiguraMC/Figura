@@ -91,7 +91,7 @@ public class FiguraMod implements ClientModInitializer {
     //mod root directory
     public static Path getFiguraDirectory() {
         String config = (String) Config.MAIN_DIR.value;
-        Path p = (config.isBlank() ? GAME_DIR : Path.of(config)).resolve(MOD_ID);
+        Path p = config.isBlank() ? GAME_DIR.resolve(MOD_ID) : Path.of(config);
         try {
             Files.createDirectories(p);
         } catch (Exception e) {

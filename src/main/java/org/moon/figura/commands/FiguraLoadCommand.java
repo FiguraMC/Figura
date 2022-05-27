@@ -13,7 +13,7 @@ import java.nio.file.Path;
 
 public class FiguraLoadCommand {
 
-    public static LiteralArgumentBuilder<FabricClientCommandSource> get() {
+    public static LiteralArgumentBuilder<FabricClientCommandSource> getCommand() {
         LiteralArgumentBuilder<FabricClientCommandSource> load = LiteralArgumentBuilder.literal("load");
 
         RequiredArgumentBuilder<FabricClientCommandSource, String> path = RequiredArgumentBuilder.argument("path", StringArgumentType.greedyString());

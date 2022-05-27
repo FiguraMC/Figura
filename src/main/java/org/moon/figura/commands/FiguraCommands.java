@@ -14,20 +14,24 @@ public class FiguraCommands {
         LiteralArgumentBuilder<FabricClientCommandSource> root = LiteralArgumentBuilder.literal(FiguraMod.MOD_ID);
 
         //docs
-        root.then(FiguraDocsManager.get());
+        root.then(FiguraDocsManager.getCommand());
 
         //links
-        root.then(FiguraLinkCommand.get());
+        root.then(FiguraLinkCommand.getCommand());
 
         //run
-        root.then(FiguraRunCommand.get());
+        root.then(FiguraRunCommand.getCommand());
 
         //load
-        root.then(FiguraLoadCommand.get());
+        root.then(FiguraLoadCommand.getCommand());
 
-        //force backend auth
-        if (FiguraMod.DEBUG_MODE)
+        if (FiguraMod.DEBUG_MODE) {
+            //force backend auth
             root.then(NetworkManager.getCommand());
+
+            //export docs
+            root.then(FiguraDocsManager.getExportCommand());
+        }
 
         //register
         ClientCommandManager.DISPATCHER.register(root);

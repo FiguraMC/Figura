@@ -12,7 +12,7 @@ import org.moon.figura.utils.FiguraText;
 
 public class FiguraRunCommand {
 
-    public static LiteralArgumentBuilder<FabricClientCommandSource> get() {
+    public static LiteralArgumentBuilder<FabricClientCommandSource> getCommand() {
         LiteralArgumentBuilder<FabricClientCommandSource> run = LiteralArgumentBuilder.literal("run");
         RequiredArgumentBuilder<FabricClientCommandSource, String> arg =
                 RequiredArgumentBuilder.argument("code", StringArgumentType.greedyString());

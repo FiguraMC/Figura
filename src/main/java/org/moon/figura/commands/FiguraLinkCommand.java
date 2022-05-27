@@ -39,7 +39,7 @@ public class FiguraLinkCommand {
         }
     }
 
-    public static LiteralArgumentBuilder<FabricClientCommandSource> get() {
+    public static LiteralArgumentBuilder<FabricClientCommandSource> getCommand() {
         //get links
         LiteralArgumentBuilder<FabricClientCommandSource> links = LiteralArgumentBuilder.literal("links");
         links.executes(context -> {

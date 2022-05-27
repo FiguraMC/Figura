@@ -197,11 +197,14 @@
   "figura.config.log_others": "Log non-host scripts",
   "figura.config.log_others.tooltip": "Allows debug logging and errors of non-host scripts",
 
+  "figura.command.click_to_open": "Click here to open",
   "figura.command.run.not_local_error" : "No local avatar equipped!",
   "figura.command.run.no_script_error" : "No active script to run code in!",
   "figura.command.load.success" : "Avatar loaded!",
   "figura.command.load.error" : "Failed to load avatar from path \"%s\"",
   "figura.command.load.invalid" : "Invalid path \"%s\"",
+  "figura.command.docs_export.success": "Exported Figura docs into the cache directory.",
+  "figura.command.docs_export.error": "Failed to export Figura docs!",
 
   "figura.docs": "The \"/figura docs\" command allows you to access documentation for all types and functions Figura adds to its Lua scripting environment.",
 
