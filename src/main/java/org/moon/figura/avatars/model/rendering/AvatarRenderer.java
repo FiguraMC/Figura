@@ -33,7 +33,6 @@ public abstract class AvatarRenderer {
     public int light;
     public MultiBufferSource bufferSource;
     public LivingEntityRenderer<?, ?> entityRenderer;
-    public ElytraModel<?> elytraModel;
     public PartFilterScheme currentFilterScheme;
 
     public boolean allowMatrixUpdate = false;

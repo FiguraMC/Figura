@@ -41,8 +41,8 @@ public class DebugScreenOverlayMixin {
             if (avatar.luaState != null) {
                 if (!FiguraMod.DO_OUR_NATIVES_WORK) {
                     lines.add(++i, "Sorry, but instruction counts are ");
-                    lines.add(++i, "only supported on Windows right now :(");
-                    lines.add(++i, "We're working on it!");
+                    lines.add(++i, "only supported on Windows (Maybe Linux?)");
+                    lines.add(++i, "right now :( We're working on it!");
                 } else {
                     lines.add(++i, String.format("Init instructions: %d", avatar.initInstructions));
                     lines.add(++i, String.format("Tick instructions: %d", avatar.tickInstructions));

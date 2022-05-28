@@ -13,6 +13,7 @@ import org.moon.figura.avatars.model.FiguraModelPart;
 import org.moon.figura.avatars.model.PartCustomization;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
 import org.moon.figura.config.Config;
+import org.moon.figura.ducks.LivingEntityRendererAccessor;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec3;
@@ -154,9 +155,10 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
     private static int shouldRenderPivots;
     private static FiguraMat4 viewToWorldMatrix = FiguraMat4.of();
     private void renderPart(FiguraModelPart part, int[] remainingComplexity, boolean parentPassedPredicate) {
-        if (entityRenderer != null)
+        if (entityRenderer != null) {
             part.applyVanillaTransforms(entityRenderer.getModel());
-        part.applyVanillaTransforms(elytraModel);
+            part.applyVanillaTransforms(((LivingEntityRendererAccessor<?>) entityRenderer).figura$getElytraModel());
+        }
 
         part.customization.recalculate();
 

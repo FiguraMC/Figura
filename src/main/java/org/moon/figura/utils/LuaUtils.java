@@ -85,7 +85,7 @@ public class LuaUtils {
     public static void setupNativesForLua() {
         boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
         boolean isMacOS = System.getProperty("os.name").toLowerCase().contains("mac");
-        FiguraMod.DO_OUR_NATIVES_WORK = isWindows;
+        FiguraMod.DO_OUR_NATIVES_WORK = !isMacOS;
         StringBuilder builder = new StringBuilder("libjnlua-");
         builder.append("5.3-");
         if (isWindows) {

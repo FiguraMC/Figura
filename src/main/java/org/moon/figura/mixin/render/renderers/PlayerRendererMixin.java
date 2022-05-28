@@ -171,17 +171,12 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
         avatar.luaState.vanillaModel.alterPlayerModel(this.getModel());
     }
 
-    public ElytraModel<AbstractClientPlayer> getElytraModel() {
-        ElytraLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> elytraLayer = ((ElytraLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>>) layers.get(6));
-        return ((ElytraLayerAccessor) elytraLayer).getElytraModel();
-    }
-
     @Inject(at = @At("RETURN"), method = "renderHand")
     private void postRenderHand(PoseStack stack, MultiBufferSource multiBufferSource, int light, AbstractClientPlayer player, ModelPart arm, ModelPart sleeve, CallbackInfo ci) {
         if (avatar == null)
             return;
         avatar.renderer.allowMatrixUpdate = true;
-        avatar.onFirstPersonRender(stack, multiBufferSource, player, (PlayerRenderer) (Object) this, getElytraModel(), arm, light, Minecraft.getInstance().getDeltaFrameTime());
+        avatar.onFirstPersonRender(stack, multiBufferSource, player, (PlayerRenderer) (Object) this, arm, light, Minecraft.getInstance().getDeltaFrameTime());
         avatar.renderer.allowMatrixUpdate = false;
     }
 }

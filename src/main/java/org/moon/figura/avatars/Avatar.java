@@ -128,7 +128,7 @@ public class Avatar {
         }
     }
 
-    public void onRender(Entity entity, float yaw, float delta, float alpha, PoseStack matrices, MultiBufferSource bufferSource, int light, LivingEntityRenderer<?, ?> entityRenderer, ElytraModel<?> elytraModel) {
+    public void onRender(Entity entity, float yaw, float delta, float alpha, PoseStack matrices, MultiBufferSource bufferSource, int light, LivingEntityRenderer<?, ?> entityRenderer) {
         if (entity.isSpectator())
             renderer.currentFilterScheme = AvatarRenderer.RENDER_HEAD;
         renderer.entity = entity;
@@ -139,7 +139,6 @@ public class Avatar {
         renderer.bufferSource = bufferSource;
         renderer.light = light;
         renderer.entityRenderer = entityRenderer;
-        renderer.elytraModel = elytraModel;
         if (!scriptError && luaState != null) {
             tryCall(luaState.events.RENDER, -1, delta);
             if (FiguraMod.DO_OUR_NATIVES_WORK && luaState != null) {
@@ -222,10 +221,10 @@ public class Avatar {
         onWorldRender(watcher, camPos.x, camPos.y, camPos.z, matrices, bufferSource, light, tickDelta);
     }
 
-    public void onFirstPersonRender(PoseStack stack, MultiBufferSource bufferSource, Player player, PlayerRenderer playerRenderer, ElytraModel<?> elytraModel, ModelPart arm, int light, float tickDelta) {
+    public void onFirstPersonRender(PoseStack stack, MultiBufferSource bufferSource, Player player, PlayerRenderer playerRenderer, ModelPart arm, int light, float tickDelta) {
         arm.xRot = 0;
         renderer.currentFilterScheme = arm == playerRenderer.getModel().leftArm ? AvatarRenderer.RENDER_LEFT_ARM : AvatarRenderer.RENDER_RIGHT_ARM;
-        onRender(player, 0f, tickDelta, 1f, stack, bufferSource, light, playerRenderer, elytraModel);
+        onRender(player, 0f, tickDelta, 1f, stack, bufferSource, light, playerRenderer);
     }
 
     /**

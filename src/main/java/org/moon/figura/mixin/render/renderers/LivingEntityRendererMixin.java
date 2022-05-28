@@ -21,6 +21,7 @@ import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.avatars.model.rendering.AvatarRenderer;
 import org.moon.figura.config.Config;
+import org.moon.figura.ducks.LivingEntityRendererAccessor;
 import org.moon.figura.mixin.render.layers.elytra.ElytraLayerAccessor;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
@@ -37,11 +38,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.List;
 
 @Mixin(LivingEntityRenderer.class)
-public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extends EntityModel<T>> extends EntityRenderer<T> implements RenderLayerParent<T, M> {
+public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extends EntityModel<T>> extends EntityRenderer<T> implements RenderLayerParent<T, M>, LivingEntityRendererAccessor<T> {
 
     protected LivingEntityRendererMixin(EntityRendererProvider.Context context) {
         super(context);
-        elytraModel = getElytraModel();
     }
 
     @Unique
@@ -51,19 +51,28 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
     @Shadow
     protected List<RenderLayer<T, M>> layers;
 
-    public ElytraModel<T> elytraModel;
+    private ElytraModel<T> elytraModel;
+    private boolean triedFetchElytraModel = false;
 
     @Shadow protected abstract boolean isBodyVisible(T livingEntity);
     @Shadow protected abstract RenderType getRenderType(T livingEntity, boolean bl, boolean bl2, boolean bl3);
 
-    private ElytraModel<T> getElytraModel() {
-        if (!((Object) this instanceof PlayerRenderer)) return null;
+    private void fetchElytraModel() {
+        triedFetchElytraModel = true;
+        if (!((Object) this instanceof PlayerRenderer)) return;
         RenderLayer<T, M> layerCandidate = layers.get(6);
         if (!(layerCandidate instanceof ElytraLayer<T, M> elytraLayer)) { //a bit jank but it should get the elytra layer, look at PlayerRenderer.class
             FiguraMod.LOGGER.warn("Unable to find elytra layer... Seems some other mod is messing with the layers, or " + FiguraMod.MOD_ID + " version is weird.");
-            return null;
+            return;
         }
-        return ((ElytraLayerAccessor<T, M>) elytraLayer).getElytraModel();
+        elytraModel = ((ElytraLayerAccessor<T, M>) elytraLayer).getElytraModel();
+    }
+
+    @Override
+    public ElytraModel<T> figura$getElytraModel() {
+        if (!triedFetchElytraModel)
+            fetchElytraModel();
+        return elytraModel;
     }
 
     @Inject(method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", at = @At("HEAD"))
@@ -97,7 +106,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
         //No camera/hud or whatever in yet. when they are, they won't be included here either.
         if (visible) {
             currentAvatar.renderer.currentFilterScheme = AvatarRenderer.RENDER_REGULAR;
-            currentAvatar.onRender(entity, yaw, delta, translucent ? 0.15f : 1f, matrices, bufferSource, light, (LivingEntityRenderer<?, ?>) (Object) this, elytraModel);
+            currentAvatar.onRender(entity, yaw, delta, translucent ? 0.15f : 1f, matrices, bufferSource, light, (LivingEntityRenderer<?, ?>) (Object) this);
         }
 
 
