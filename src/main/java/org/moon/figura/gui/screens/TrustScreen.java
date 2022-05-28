@@ -149,7 +149,7 @@ public class TrustScreen extends AbstractPanelScreen {
         }
 
         //expand button
-        addRenderableWidget(expandButton = new SwitchButton( middle + listWidth - 18, height - 24, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/expand_up.png"), 40, 40, new FiguraText("gui.trust.expand_trust.tooltip"), btn -> {
+        addRenderableWidget(expandButton = new SwitchButton( middle + listWidth - 18, height - 24, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/expand_v.png"), 40, 40, new FiguraText("gui.trust.expand_trust.tooltip"), btn -> {
             boolean expanded = expandButton.isToggled();
 
             //hide widgets

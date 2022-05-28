@@ -1,6 +1,5 @@
 package org.moon.figura.mixin.gui;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.DebugScreenOverlay;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
@@ -27,7 +26,7 @@ public class DebugScreenOverlayMixin {
                 break;
         }
 
-        lines.add(++i, "§b[" + FiguraMod.MOD_ID + "]§r");
+        lines.add(++i, "§b[" + FiguraMod.MOD_NAME + "]§r");
         lines.add(++i, "Version: " + FiguraMod.VERSION);
 
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());

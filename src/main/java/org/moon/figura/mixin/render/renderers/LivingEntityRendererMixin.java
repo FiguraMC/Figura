@@ -62,7 +62,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
         if (!((Object) this instanceof PlayerRenderer)) return;
         RenderLayer<T, M> layerCandidate = layers.get(6);
         if (!(layerCandidate instanceof ElytraLayer<T, M> elytraLayer)) { //a bit jank but it should get the elytra layer, look at PlayerRenderer.class
-            FiguraMod.LOGGER.warn("Unable to find elytra layer... Seems some other mod is messing with the layers, or " + FiguraMod.MOD_ID + " version is weird.");
+            FiguraMod.LOGGER.warn("Unable to find elytra layer... Seems some other mod is messing with the layers, or " + FiguraMod.MOD_NAME + " version is weird.");
             return;
         }
         elytraModel = ((ElytraLayerAccessor<T, M>) elytraLayer).getElytraModel();

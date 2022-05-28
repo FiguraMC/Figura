@@ -36,7 +36,7 @@ public class SplashManagerMixin {
                 case 3 -> {
                     switch (day) {
                         case 5 -> cir.setReturnValue(bday + "Maya!");
-                        case 24 -> cir.setReturnValue(bday + FiguraMod.MOD_ID + "!");
+                        case 24 -> cir.setReturnValue(bday + FiguraMod.MOD_NAME + "!");
                     }
                 }
                 case 7 -> {

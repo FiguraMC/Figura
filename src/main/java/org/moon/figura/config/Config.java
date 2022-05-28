@@ -57,6 +57,7 @@ public enum Config {
 
     ActionWheel,
     ACTION_WHEEL_BUTTON("key.keyboard.b"),
+    ACTION_WHEEL_SCALE(1f, InputType.FLOAT),
 
     Paperdoll,
     HAS_PAPERDOLL(false),

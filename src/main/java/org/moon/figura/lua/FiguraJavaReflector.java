@@ -76,7 +76,7 @@ public class FiguraJavaReflector implements JavaReflector {
 
         @Override
         public String toString() {
-            return "(" + FiguraMod.MOD_ID + " Index Function)";
+            return "(" + FiguraMod.MOD_NAME + " Index Function)";
         }
     };
 
@@ -108,7 +108,7 @@ public class FiguraJavaReflector implements JavaReflector {
 
         @Override
         public String toString() {
-            return "(" + FiguraMod.MOD_ID + " NewIndex Function)";
+            return "(" + FiguraMod.MOD_NAME + " NewIndex Function)";
         }
     };
 
@@ -138,7 +138,7 @@ public class FiguraJavaReflector implements JavaReflector {
 
         @Override
         public String toString() {
-            return "(" + FiguraMod.MOD_ID + " IPairs Function)";
+            return "(" + FiguraMod.MOD_NAME + " IPairs Function)";
         }
     };
 
@@ -168,7 +168,7 @@ public class FiguraJavaReflector implements JavaReflector {
 
         @Override
         public String toString() {
-            return "(" + FiguraMod.MOD_ID + " Pairs Function)";
+            return "(" + FiguraMod.MOD_NAME + " Pairs Function)";
         }
     };
 

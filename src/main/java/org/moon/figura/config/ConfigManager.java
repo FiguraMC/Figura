@@ -78,7 +78,7 @@ public final class ConfigManager {
             }
             configJson.addProperty("CONFIG_VERSION", Config.CONFIG_VERSION);
 
-            String jsonString = new GsonBuilder().setPrettyPrinting().create().toJson(configJson);
+            String jsonString = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create().toJson(configJson);
 
             FileWriter fileWriter = new FileWriter(FILE);
             fileWriter.write(jsonString);
