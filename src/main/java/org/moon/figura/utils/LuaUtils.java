@@ -85,32 +85,36 @@ public class LuaUtils {
     public static void setupNativesForLua() {
         boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
         boolean isMacOS = System.getProperty("os.name").toLowerCase().contains("mac");
-        FiguraMod.DO_OUR_NATIVES_WORK = !isMacOS;
-        StringBuilder builder = new StringBuilder("libjnlua-");
-        builder.append("5.3-");
+        FiguraMod.DO_OUR_NATIVES_WORK = true; //Here's hoping!
+        StringBuilder builder = new StringBuilder("libjnlua-5.3-");
         if (isWindows) {
             builder.append("windows-");
         } else if (isMacOS) {
-            builder.append("OUTDATEDmac-"); //Mark mac as outdated, it doesn't have the getter and setter natives yet
+            builder.append("mac-");
         } else {
             builder.append("linux-");
         }
 
-        if (System.getProperty("os.arch").endsWith("64")) {
-            builder.append("amd64");
+        String arch = System.getProperty("os.arch");
+        if (arch.endsWith("64")) {
+            if (arch.equals("aarch64"))
+                builder.append("arm64");
+            else
+                builder.append("amd64");
         } else {
             builder.append("i686");
         }
 
         if (isWindows) {
             builder.append(".dll");
-        } else if (isMacOS) {
-            builder.append(".dylib");
         } else {
             builder.append(".so");
         }
 
         String targetLib = "/assets/" + FiguraMod.MOD_ID + "/lua/natives/" + builder;
+        String os = isWindows ? "windows" : (isMacOS ? "mac" : "linux");
+        FiguraMod.LOGGER.info(String.format("Detecting: OS=\"%s\", ARCH=\"%s\", Attempting search for native file at %s", os, arch, targetLib));
+
         InputStream libStream = FiguraMod.class.getResourceAsStream(targetLib);
         Path dest = FiguraMod.getCacheDirectory().resolve(builder.toString()).toAbsolutePath();
 
