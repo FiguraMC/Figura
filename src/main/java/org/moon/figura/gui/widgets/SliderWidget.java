@@ -79,10 +79,6 @@ public class SliderWidget extends ScrollBarWidget {
             //set hovered
             this.isHovered = this.isMouseOver(mouseX, mouseY);
 
-            //render hovered background
-            if (this.active && this.isHoveredOrFocused())
-                UIHelper.fillRounded(stack, x, y, width, height, 0x60FFFFFF);
-
             //render button
             this.renderButton(stack, mouseX, mouseY, delta);
         }

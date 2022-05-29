@@ -216,41 +216,57 @@ public class UIHelper extends GuiComponent {
     }
 
     public static void renderSliced(PoseStack stack, int x, int y, int width, int height, ResourceLocation texture) {
+        renderSliced(stack, x, y, width, height, 0f, 0f, 15, 15, 15, 15, texture);
+    }
+
+    public static void renderSliced(PoseStack stack, int x, int y, int width, int height, float u, float v, int regionWidth, int regionHeight, int textureWidth, int textureHeight, ResourceLocation texture) {
         setupTexture(texture);
 
+        Matrix4f pose = stack.last().pose();
         Tesselator tessellator = Tesselator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuilder();
-        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        BufferBuilder buffer = tessellator.getBuilder();
+        buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+
+        float rWidthThird = regionWidth / 3f;
+        float rHeightThird = regionHeight / 3f;
 
         //top left
-        sliceVertex(stack.last().pose(), bufferBuilder, x, y, 5, 5, 0f, 0f);
+        sliceVertex(pose, buffer, x, y, rWidthThird, rHeightThird, u, v, rWidthThird, rHeightThird, textureWidth, textureHeight);
         //top middle
-        sliceVertex(stack.last().pose(), bufferBuilder, x + 5, y, width - 10, 5, 5f, 0f);
+        sliceVertex(pose, buffer, x + rWidthThird, y, width - rWidthThird * 2, rHeightThird, u + rWidthThird, v, rWidthThird, rHeightThird, textureWidth, textureHeight);
         //top right
-        sliceVertex(stack.last().pose(), bufferBuilder, x + width - 5, y, 5, 5, 10f, 0f);
+        sliceVertex(pose, buffer, x + width - rWidthThird, y, rWidthThird, rHeightThird, u + rWidthThird * 2, v, rWidthThird, rHeightThird, textureWidth, textureHeight);
 
         //middle left
-        sliceVertex(stack.last().pose(), bufferBuilder, x, y + 5, 5, height - 10, 0f, 5f);
+        sliceVertex(pose, buffer, x, y + rHeightThird, rWidthThird, height - rHeightThird * 2, u, v + rHeightThird, rWidthThird, rHeightThird, textureWidth, textureHeight);
         //middle middle
-        sliceVertex(stack.last().pose(), bufferBuilder, x + 5, y + 5, width - 10, height - 10, 5f, 5f);
+        sliceVertex(pose, buffer, x + rWidthThird, y + rHeightThird, width - rWidthThird * 2, height - rHeightThird * 2, u + rWidthThird, v + rHeightThird, rWidthThird, rHeightThird, textureWidth, textureHeight);
         //middle right
-        sliceVertex(stack.last().pose(), bufferBuilder, x + width - 5, y + 5, 5, height - 10, 10f, 5f);
+        sliceVertex(pose, buffer, x + width - rWidthThird, y + rHeightThird, rWidthThird, height - rHeightThird * 2, u + rWidthThird * 2, v + rHeightThird, rWidthThird, rHeightThird, textureWidth, textureHeight);
 
         //bottom left
-        sliceVertex(stack.last().pose(), bufferBuilder, x, y + height - 5, 5, 5, 0f, 10f);
+        sliceVertex(pose, buffer, x, y + height - rHeightThird, rWidthThird, rHeightThird, u, v + rHeightThird * 2, rWidthThird, rHeightThird, textureWidth, textureHeight);
         //bottom middle
-        sliceVertex(stack.last().pose(), bufferBuilder, x + 5, y + height - 5, width - 10, 5, 5f, 10f);
+        sliceVertex(pose, buffer, x + rWidthThird, y + height - rHeightThird, width - rWidthThird * 2, rHeightThird, u + rWidthThird, v + rHeightThird * 2, rWidthThird, rHeightThird, textureWidth, textureHeight);
         //bottom right
-        sliceVertex(stack.last().pose(), bufferBuilder, x + width - 5, y + height - 5, 5, 5, 10f, 10f);
+        sliceVertex(pose, buffer, x + width - rWidthThird, y + height - rHeightThird, rWidthThird, rHeightThird, u + rWidthThird * 2, v + rHeightThird * 2, rWidthThird, rHeightThird, textureWidth, textureHeight);
 
         tessellator.end();
     }
 
-    private static void sliceVertex(Matrix4f matrix, BufferBuilder bufferBuilder, int x, int y, int width, int height, float u, float v) {
-        bufferBuilder.vertex(matrix, x, y, 0f).uv(u / 15, v / 15).endVertex();
-        bufferBuilder.vertex(matrix, x, y + height, 0f).uv(u / 15, (v + 5) / 15).endVertex();
-        bufferBuilder.vertex(matrix, x + width, y + height, 0f).uv((u + 5) / 15, (v + 5) / 15).endVertex();
-        bufferBuilder.vertex(matrix, x + width, y, 0f).uv((u + 5) / 15, v / 15).endVertex();
+    private static void sliceVertex(Matrix4f matrix, BufferBuilder bufferBuilder, float x, float y, float width, float height, float u, float v, float regionWidth, float regionHeight, int textureWidth, int textureHeight) {
+        float x1 = x + width;
+        float y1 = y + height;
+
+        float u0 = u / textureWidth;
+        float v0 = v / textureHeight;
+        float u1 = (u + regionWidth) / textureWidth;
+        float v1 = (v + regionHeight) / textureHeight;
+
+        bufferBuilder.vertex(matrix, x, y1, 0f).uv(u0, v1).endVertex();
+        bufferBuilder.vertex(matrix, x1, y1, 0f).uv(u1, v1).endVertex();
+        bufferBuilder.vertex(matrix, x1, y, 0f).uv(u1, v0).endVertex();
+        bufferBuilder.vertex(matrix, x, y, 0f).uv(u0, v0).endVertex();
     }
 
     public static void setupScissor(int x, int y, int width, int height) {

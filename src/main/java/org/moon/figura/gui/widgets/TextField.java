@@ -44,11 +44,7 @@ public class TextField extends AbstractContainerElement {
         if (!isVisible()) return;
 
         //render background
-        UIHelper.renderSliced(stack, x, y, width, height, BACKGROUND);
-
-        //render hovered background
-        if (this.isMouseOver(mouseX, mouseY))
-            UIHelper.fillRounded(stack, x, y, width, height, 0x60FFFFFF);
+        UIHelper.renderSliced(stack, x, y, width, height, this.isMouseOver(mouseX, mouseY) ? 16f : 0f, 0f, 16, 16, 32, 16, BACKGROUND);
 
         //render outline
         if (field.isFocused())
@@ -89,6 +85,10 @@ public class TextField extends AbstractContainerElement {
 
     public void setBorderColour(int borderColour) {
         this.borderColour = borderColour;
+    }
+
+    public int getBorderColour() {
+        return borderColour;
     }
 
     public EditBox getField() {

@@ -16,7 +16,7 @@ import org.moon.figura.utils.ui.UIHelper;
 public class InteractableEntity extends AbstractContainerElement {
 
     public static final ResourceLocation UNKNOWN = new FiguraIdentifier("textures/gui/unknown.png");
-    public static final ResourceLocation BACKGROUND = new FiguraIdentifier("textures/gui/entity_preview.png");
+    public static final ResourceLocation OVERLAY = new FiguraIdentifier("textures/gui/entity_overlay.png");
 
     //properties
     private LivingEntity entity;
@@ -91,11 +91,11 @@ public class InteractableEntity extends AbstractContainerElement {
         if (!this.isVisible())
             return;
 
-        //background
         if (!button.isToggled()) {
-            UIHelper.renderTexture(stack, x + 1, y + 1, width - 2, height - 2, BACKGROUND);
             //border
-            UIHelper.fillOutline(stack, x, y, width, height, 0xFF404040);
+            UIHelper.renderSliced(stack, x, y, width, height, UIHelper.OUTLINE);
+            //overlay
+            UIHelper.renderTexture(stack, x + 1, y + 1, width - 2, height - 2, OVERLAY);
         }
 
         //scissors

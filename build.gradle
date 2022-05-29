@@ -1,11 +1,10 @@
 plugins {
 	id 'fabric-loom' version '0.12-SNAPSHOT'
 	id 'maven-publish'
+	id 'org.quiltmc.quilt-mappings-on-loom' version '4.2.0'
 }
 
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
-
+java_version = project.java_version
 archivesBaseName = project.archives_base_name
 version = project.mod_version + "+" + project.minecraft_version
 group = project.maven_group
@@ -19,7 +18,10 @@ repositories {
 dependencies {
 	// Fabric
 	minecraft "com.mojang:minecraft:$minecraft_version"
-	mappings loom.officialMojangMappings()
+	mappings loom.layered {
+		addLayer(quiltMappings.mappings("org.quiltmc:quilt-mappings:$minecraft_version+build.+:v2"))
+		officialMojangMappings()
+	}
 	modImplementation "net.fabricmc:fabric-loader:$loader_version"
 
 	// Libraries
@@ -35,7 +37,7 @@ processResources {
 	Map<String, Object> properties = new HashMap<>()
 
 	properties.put("version", version)
-	properties.put("java_version", sourceCompatibility)
+	properties.put("java_version", java_version)
 	properties.put("minecraft_version", minecraft_version)
 	properties.put("loader_version", loader_version)
 	properties.put("fabric_api", fabric_api)
@@ -46,8 +48,8 @@ processResources {
 	}
 }
 
-tasks.withType(JavaCompile).configureEach {
-	it.options.release = Integer.parseInt(sourceCompatibility.toString())
+tasks.withType(JavaCompile) {
+	options.encoding = "UTF-8"
 }
 
 java {
@@ -56,14 +58,6 @@ java {
 
 jar {
 	from("LICENSE") {
-		rename { "${it}_$archivesBaseName"}
-	}
-}
-
-publishing {
-	publications {
-		mavenJava(MavenPublication) {
-			from components.java
-		}
+		rename { String.valueOf("$archivesBaseName").toUpperCase() + "_${it}"}
 	}
 }

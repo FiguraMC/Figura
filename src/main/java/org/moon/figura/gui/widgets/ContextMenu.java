@@ -46,14 +46,16 @@ public class ContextMenu extends AbstractContainerElement {
     public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
         if (!isVisible()) return;
 
-        //render
-        UIHelper.renderSliced(stack, x, y, width, height, BACKGROUND);
+        //outline
+        UIHelper.renderSliced(stack, x, y, width, height, 0f, 0f, 16, 16, 48, 16, BACKGROUND);
 
         for (int i = 0, y = this.y + 1; i < entries.size(); i++) {
             int height = entries.get(i).getHeight();
 
-            if (i % 2 == 1)
-                UIHelper.fill(stack, x + 1, y, x + width - 1, y + height, 0x16FFFFFF);
+            //background
+            UIHelper.renderSliced(stack, x + 1, y, width - 2, height, i % 2 == 1 ? 32f : 16f, 0f, 16, 16, 48, 16, BACKGROUND);
+
+            //button
             entries.get(i).render(stack, mouseX, mouseY, delta);
 
             y += height;

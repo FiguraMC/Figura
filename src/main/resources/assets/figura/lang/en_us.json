@@ -148,6 +148,12 @@
   "figura.config.actionwheel": "Action Wheel",
   "figura.config.actionwheel.tooltip": "Action Wheel settings",
 
+  "figura.config.action_wheel_button": "Action Wheel Button",
+  "figura.config.action_wheel_button.tooltip": "Button to open the Action Wheel",
+
+  "figura.config.action_wheel_scale": "Action Wheel Size",
+  "figura.config.action_wheel_scale.tooltip": "Changes the Action Wheel size",
+
   "figura.config.paperdoll": "Paperdoll",
   "figura.config.paperdoll.tooltip": "Paperdoll settings",
 
@@ -196,6 +202,9 @@
 
   "figura.config.log_others": "Log non-host scripts",
   "figura.config.log_others.tooltip": "Allows debug logging and errors of non-host scripts",
+
+  "figura.config.main_dir": "Figura Folder Location",
+  "figura.config.main_dir.tooltip": "Changes the location of the Figura folder",
 
   "figura.command.click_to_open": "Click here to open",
   "figura.command.run.not_local_error" : "No local avatar equipped!",

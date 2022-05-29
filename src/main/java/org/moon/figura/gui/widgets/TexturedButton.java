@@ -13,9 +13,7 @@ import org.moon.figura.utils.ui.UIHelper;
 public class TexturedButton extends Button {
 
     //default textures
-    private static final ResourceLocation ENABLED = new FiguraIdentifier("textures/gui/button/enabled.png");
-    private static final ResourceLocation DISABLED = new FiguraIdentifier("textures/gui/button/disabled.png");
-    private static final ResourceLocation HOVERED = new FiguraIdentifier("textures/gui/button/hovered.png");
+    private static final ResourceLocation TEXTURE = new FiguraIdentifier("textures/gui/button.png");
 
     //texture data
     protected Integer u;
@@ -68,22 +66,19 @@ public class TexturedButton extends Button {
     @Override
     public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
         //render texture
-        if (this.texture != null)
+        if (this.texture != null) {
             renderTexture(stack, delta);
-        else if (this.hasBackground) {
-            ResourceLocation texture;
+        } else {
+            float u;
 
             if (!this.active)
-                texture = DISABLED;
+                u = 0f;
             else if (this.isHoveredOrFocused())
-                texture = HOVERED;
+                u = 32f;
             else
-                texture = ENABLED;
+                u = 16f;
 
-            UIHelper.renderSliced(stack, x, y, width, height, texture);
-        } else if (this.active && this.isHoveredOrFocused()) {
-            //render hovered background
-            UIHelper.fillRounded(stack, x, y, width, height, 0x60FFFFFF);
+            UIHelper.renderSliced(stack, x, y, width, height, u, this.hasBackground ? 0f : 16f, 16, 16, 48, 32, TEXTURE);
         }
 
         //render text
