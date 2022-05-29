@@ -1,6 +1,7 @@
 package org.moon.figura.lua.docs;
 
 import org.moon.figura.avatars.model.FiguraModelPart;
+import org.moon.figura.lua.api.ClientAPI;
 import org.moon.figura.lua.api.EventsAPI;
 import org.moon.figura.lua.api.ParticleAPI;
 import org.moon.figura.lua.api.SoundAPI;
@@ -48,7 +49,7 @@ public class FiguraGlobalsDocs {
     @LuaFieldDoc(description = "globals.nameplate")
     public NameplateAPI nameplate;
     @LuaFieldDoc(description = "globals.client")
-    public NameplateAPI client;
+    public ClientAPI client;
 
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
