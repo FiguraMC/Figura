@@ -10,6 +10,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.model.FiguraModelPart;
+import org.moon.figura.avatars.model.FiguraModelPartReader;
 import org.moon.figura.avatars.model.PartCustomization;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
 import org.moon.figura.config.Config;
@@ -57,7 +58,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
         //Vertex data, read model parts
         List<FiguraImmediateBuffer.Builder> builders = new ArrayList<>();
-        root = FiguraModelPart.read(avatar, avatar.nbt.getCompound("models"), builders, textureSets);
+        root = FiguraModelPartReader.read(avatar, avatar.nbt.getCompound("models"), builders, textureSets);
 
         for (int i = 0; i < textureSets.size() && i < builders.size(); i++)
             buffers.add(builders.get(i).build(textureSets.get(i), customizationStack));
