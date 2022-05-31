@@ -229,15 +229,27 @@ public class VectorsAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = Double.class,
-                    argumentNames = "speed"
-            ),
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = Double.class,
+                            argumentNames = "speed"
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {Double.class, Double.class},
+                            argumentNames = {"speed", "saturation"}
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"speed", "saturation", "light"}
+                    )
+            },
             description = "vectors.rainbow"
     )
-    public static FiguraVec3 rainbow(Double speed) {
+    public static FiguraVec3 rainbow(Double speed, Double saturation, Double light) {
         if (speed == null) speed = 1d;
-        return ColorUtils.intToRGB(ColorUtils.rainbow(speed));
+        if (saturation == null) saturation = 1d;
+        if (light == null) light = 1d;
+        return ColorUtils.rainbow(speed, saturation, light);
     }
 
     @Override

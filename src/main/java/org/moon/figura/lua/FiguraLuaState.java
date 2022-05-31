@@ -134,7 +134,7 @@ public class FiguraLuaState extends LuaState53 {
         loadGlobal(host = new HostAPI(owner), "host");
         loadGlobal(meta = new MetaAPI(owner), "meta");
         loadGlobal(keybind = new KeybindAPI(owner), "keybind");
-        loadGlobal(renderer = new RendererAPI(), "renderer");
+        loadGlobal(renderer = new RendererAPI(owner.owner), "renderer");
     }
 
     private void loadSetHook() {

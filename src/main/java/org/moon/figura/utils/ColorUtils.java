@@ -164,7 +164,7 @@ public class ColorUtils {
         return FiguraVec3.of(hsv[0], hsv[1], hsv[2]);
     }
 
-    public static int rainbow(double speed) {
-        return rgbToInt(hsvToRGB(FiguraVec3.of((FiguraMod.ticks * speed) % 255 / 255f, 0.7f, 1f)));
+    public static FiguraVec3 rainbow(double speed, double saturation, double light) {
+        return hsvToRGB(FiguraVec3.of((FiguraMod.ticks * speed) % 255 / 255f, saturation, light));
     }
 }

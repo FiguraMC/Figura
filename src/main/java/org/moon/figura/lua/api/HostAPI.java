@@ -185,32 +185,6 @@ public class HostAPI {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
-                    argumentTypes = HostAPI.class,
-                    argumentNames = "host"
-            ),
-            description = "host.is_first_person"
-    )
-    public static Boolean isFirstPerson(@LuaNotNil HostAPI api) {
-        if (!isHost(api)) return false;
-        return Minecraft.getInstance().options.getCameraType().isFirstPerson();
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = HostAPI.class,
-                    argumentNames = "host"
-            ),
-            description = "host.is_camera_backwards"
-    )
-    public static Boolean isCameraBackwards(@LuaNotNil HostAPI api) {
-        if (!isHost(api)) return false;
-        return Minecraft.getInstance().options.getCameraType().isMirrored();
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
                     argumentTypes = {HostAPI.class, String.class},
                     argumentNames = {"host", "slot"}
             ),

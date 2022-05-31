@@ -2,6 +2,7 @@ package org.moon.figura;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
@@ -57,10 +58,11 @@ public class FiguraMod implements ClientModInitializer {
 
         //register events
         ClientTickEvents.START_CLIENT_TICK.register(FiguraMod::tick);
-        WorldRenderEvents.START.register(context -> AvatarManager.onWorldRender(context.tickDelta()));
-        WorldRenderEvents.END.register(context -> AvatarManager.afterWorldRender());
+        WorldRenderEvents.START.register(levelRenderer -> AvatarManager.onWorldRender(levelRenderer.tickDelta()));
+        WorldRenderEvents.END.register(levelRenderer -> AvatarManager.afterWorldRender());
         WorldRenderEvents.AFTER_ENTITIES.register(FiguraMod::renderFirstPersonWorldParts);
         HudRenderCallback.EVENT.register(FiguraMod::hudRender);
+        ClientEntityEvents.ENTITY_UNLOAD.register((entity, level) -> AvatarManager.entityUnload(entity));
     }
 
     private static void tick(Minecraft client) {

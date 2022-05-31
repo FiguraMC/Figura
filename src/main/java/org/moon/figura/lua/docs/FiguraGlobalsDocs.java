@@ -24,7 +24,7 @@ import org.terasology.jnlua.TypedJavaObject;
         name = "globals",
         description = "globals"
 )
-public class FiguraGlobalsDocs {
+public abstract class FiguraGlobalsDocs {
 
     @LuaFieldDoc(description = "globals.vectors")
     public VectorsAPI vectors;
@@ -97,7 +97,7 @@ public class FiguraGlobalsDocs {
                             argumentNames = {"javaObject", "maxDepth"}
                     )
             },
-            description = "globals.printTable"
+            description = "globals.print_table"
     )
     public static void printTable() {}
 
@@ -120,7 +120,7 @@ public class FiguraGlobalsDocs {
                             argumentNames = {"javaObject", "maxDepth"}
                     )
             },
-            description = "globals.logTable"
+            description = "globals.log_table"
     )
     public static void logTable() {}
 
@@ -129,7 +129,7 @@ public class FiguraGlobalsDocs {
                     argumentTypes = String.class,
                     argumentNames = "json"
             ),
-            description = "globals.printJson"
+            description = "globals.print_json"
     )
     public static void printJson() {}
 
@@ -138,7 +138,7 @@ public class FiguraGlobalsDocs {
                     argumentTypes = String.class,
                     argumentNames = "json"
             ),
-            description = "globals.logJson"
+            description = "globals.log_json"
     )
     public static void logJson() {}
 

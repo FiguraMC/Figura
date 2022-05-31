@@ -26,7 +26,6 @@ public class MouseHandlerMixin {
             return;
 
         boolean pressed = action != 0;
-        FiguraKeybind.set(avatar.luaState.keybind.keyBindings, InputConstants.Type.MOUSE.getOrCreate(button), pressed);
 
         if (pressed) {
             if (ActionWheel.isEnabled())
@@ -35,6 +34,9 @@ public class MouseHandlerMixin {
             if (avatar.luaState.host.unlockCursor)
                 ci.cancel();
         }
+
+        //this needs to be last because it executes functions and can cause lua errors, making luaState null
+        FiguraKeybind.set(avatar.luaState.keybind.keyBindings, InputConstants.Type.MOUSE.getOrCreate(button), pressed);
     }
 
     @Inject(method = "grabMouse", at = @At("HEAD"), cancellable = true)

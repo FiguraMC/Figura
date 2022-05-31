@@ -136,7 +136,7 @@ public class NameplateCustomization {
         }
 
         public int color() {
-            return this.color == null ? 0xFFFFFF : this.color == -1 ? ColorUtils.rainbow(2) : this.color;
+            return this.color == null ? 0xFFFFFF : this.color == -1 ? ColorUtils.rgbToInt(ColorUtils.rainbow(2d, 0.7d, 1d)) : this.color;
         }
     }
 

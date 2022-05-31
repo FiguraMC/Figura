@@ -1,12 +1,16 @@
 package org.moon.figura.lua.api;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
+
+import java.util.UUID;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -15,6 +19,7 @@ import org.moon.figura.lua.docs.LuaTypeDoc;
 )
 public class RendererAPI {
 
+    private final UUID owner;
     public Float shadowRadius;
 
     @LuaWhitelist
@@ -28,6 +33,15 @@ public class RendererAPI {
             description = "renderer.render_vehicle"
     )
     public boolean renderVehicle = true;
+
+    public RendererAPI(UUID owner) {
+        this.owner = owner;
+    }
+
+    private static boolean checkCameraOwner(UUID entity) {
+        Entity e = Minecraft.getInstance().getCameraEntity();
+        return e != null && e.getUUID().compareTo(entity) == 0;
+    }
 
     @LuaWhitelist
     @LuaMethodDoc(
@@ -51,6 +65,30 @@ public class RendererAPI {
     )
     public static Float getShadowRadius(@LuaNotNil RendererAPI api) {
         return api.shadowRadius;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = RendererAPI.class,
+                    argumentNames = "api"
+            ),
+            description = "renderer.is_first_person"
+    )
+    public static Boolean isFirstPerson(@LuaNotNil RendererAPI api) {
+        return checkCameraOwner(api.owner) && Minecraft.getInstance().options.getCameraType().isFirstPerson();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = RendererAPI.class,
+                    argumentNames = "api"
+            ),
+            description = "renderer.is_camera_backwards"
+    )
+    public static Boolean isCameraBackwards(@LuaNotNil RendererAPI api) {
+        return checkCameraOwner(api.owner) && Minecraft.getInstance().options.getCameraType().isMirrored();
     }
 
     @Override

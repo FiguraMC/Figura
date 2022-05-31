@@ -1,5 +1,7 @@
 package org.moon.figura.avatars;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -10,9 +12,7 @@ import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.utils.FiguraText;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Manages all the avatars that are currently loaded in memory, and also
@@ -22,9 +22,50 @@ import java.util.UUID;
 public class AvatarManager {
 
     private static final HashMap<UUID, Avatar> LOADED_AVATARS = new HashMap<>();
-    private static final ArrayList<UUID> FETCHED_AVATARS = new ArrayList<>();
+    private static final Set<UUID> PLAYER_AVATARS = new HashSet<>();
+    private static final Set<UUID> FETCHED_AVATARS = new HashSet<>();
+
     public static boolean localUploaded = true; //init as true :3
     public static boolean panic = false;
+
+    // -- avatar events -- //
+
+    public static void tickLoadedAvatars() {
+        ClientPacketListener connection = Minecraft.getInstance().getConnection();
+        if (panic || connection == null)
+            return;
+
+        //remove disconnected player avatars
+        PLAYER_AVATARS.removeIf(id -> {
+            if (connection.getPlayerInfo(id) != null)
+                return false;
+
+            LOADED_AVATARS.remove(id).clean(); //if loaded avatar is null, something is very wrong
+            FiguraMod.LOGGER.debug("Removed avatar for " + id);
+            return true;
+        });
+
+        for (Avatar avatar : LOADED_AVATARS.values())
+            avatar.onTick();
+    }
+
+    public static void onWorldRender(float tickDelta) {
+        if (panic)
+            return;
+
+        for (Avatar avatar : LOADED_AVATARS.values())
+            avatar.worldRenderEvent(tickDelta);
+    }
+
+    public static void afterWorldRender() {
+        if (panic)
+            return;
+
+        for (Avatar avatar : LOADED_AVATARS.values())
+            avatar.endWorldRenderEvent();
+    }
+
+    // -- avatar management -- //
 
     //player will also attempt to load from network, if possible
     public static Avatar getAvatarForPlayer(UUID player) {
@@ -50,20 +91,29 @@ public class AvatarManager {
         return LOADED_AVATARS.get(uuid);
     }
 
+    //clear entity data when unloaded
+    public static void entityUnload(Entity entity) {
+        //player avatars are kept until the player disconnects
+        if (!(entity instanceof Player))
+            clearAvatar(entity.getUUID());
+    }
+
     //removes an loaded avatar
     public static void clearAvatar(UUID id) {
+        if (LOADED_AVATARS.containsKey(id))
+            LOADED_AVATARS.remove(id).clean();
+        PLAYER_AVATARS.remove(id);
         FETCHED_AVATARS.remove(id);
-
-        if (LOADED_AVATARS.containsKey(id)) {
-            LOADED_AVATARS.get(id).clean();
-            LOADED_AVATARS.remove(id);
-        }
     }
 
     //clears ALL loaded avatars, including local
     public static void clearAllAvatars() {
-        FETCHED_AVATARS.clear();
+        for (Avatar avatar : LOADED_AVATARS.values())
+            avatar.clean();
+
         LOADED_AVATARS.clear();
+        PLAYER_AVATARS.clear();
+        FETCHED_AVATARS.clear();
         localUploaded = true;
         FiguraMod.LOGGER.debug("Cleared all avatars");
     }
@@ -82,30 +132,6 @@ public class AvatarManager {
         FiguraToast.sendToast(new FiguraText("toast.reload"));
     }
 
-    public static void tickLoadedAvatars() {
-        if (panic)
-            return;
-
-        for (Avatar avatar : LOADED_AVATARS.values())
-            avatar.onTick();
-    }
-
-    public static void onWorldRender(float tickDelta) {
-        if (panic)
-            return;
-
-        for (Avatar avatar : LOADED_AVATARS.values())
-            avatar.worldRenderEvent(tickDelta);
-    }
-
-    public static void afterWorldRender() {
-        if (panic)
-            return;
-
-        for (Avatar avatar : LOADED_AVATARS.values())
-            avatar.endWorldRenderEvent();
-    }
-
     //load the local player avatar
     //returns true if an avatar was actually loaded
     public static boolean loadLocalAvatar(Path path) {
@@ -121,6 +147,7 @@ public class AvatarManager {
             CompoundTag nbt = LocalAvatarLoader.loadAvatar(path);
             if (nbt != null) {
                 LOADED_AVATARS.put(id, new Avatar(nbt, id));
+                PLAYER_AVATARS.add(id);
                 return true;
             }
         } catch (Exception e) {
@@ -131,11 +158,13 @@ public class AvatarManager {
     }
 
     //set an user's avatar
-    public static void setAvatar(UUID id, CompoundTag nbt) {
+    public static void setAvatar(UUID id, CompoundTag nbt, boolean player) {
         if (id.compareTo(FiguraMod.getLocalPlayerUUID()) == 0)
+            //force local loading to remove watch keys and flag as not uploaded
             loadLocalAvatar(null);
 
         LOADED_AVATARS.put(id, new Avatar(nbt, id));
+        if (player) PLAYER_AVATARS.add(id);
     }
 
     //get avatar from the backend
@@ -145,9 +174,16 @@ public class AvatarManager {
         if (id == null || FETCHED_AVATARS.contains(id))
             return;
 
+        if (id.compareTo(FiguraMod.getLocalPlayerUUID()) == 0)
+            //force local loading to remove watch keys and flag as not uploaded
+            loadLocalAvatar(null);
+
         //egg
-        if (FiguraMod.CHEESE_DAY && (boolean) Config.EASTER_EGGS.value)
+        if (FiguraMod.CHEESE_DAY && (boolean) Config.EASTER_EGGS.value) {
             LOADED_AVATARS.put(id, new Avatar(LocalAvatarLoader.CHEESE, id));
+            PLAYER_AVATARS.add(id);
+            return;
+        }
 
         //TODO - then we really fetch the backend
     }
