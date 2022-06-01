@@ -95,15 +95,18 @@ public class AvatarManager {
     public static void entityUnload(Entity entity) {
         //player avatars are kept until the player disconnects
         if (!(entity instanceof Player))
-            clearAvatar(entity.getUUID());
+            clearAvatar(entity.getUUID(), false);
     }
 
     //removes an loaded avatar
-    public static void clearAvatar(UUID id) {
+    public static void clearAvatar(UUID id, boolean player) {
         if (LOADED_AVATARS.containsKey(id))
             LOADED_AVATARS.remove(id).clean();
-        PLAYER_AVATARS.remove(id);
-        FETCHED_AVATARS.remove(id);
+
+        if (player) {
+            PLAYER_AVATARS.remove(id);
+            FETCHED_AVATARS.remove(id);
+        }
     }
 
     //clears ALL loaded avatars, including local
@@ -121,7 +124,7 @@ public class AvatarManager {
     //reloads an avatar
     public static void reloadAvatar(UUID id) {
         //first clear the avatar
-        clearAvatar(id);
+        clearAvatar(id, true);
 
         //only non uploaded local needs to be manually reloaded
         //other ones will be fetched from backend on further request
@@ -137,7 +140,7 @@ public class AvatarManager {
     public static boolean loadLocalAvatar(Path path) {
         //clear
         UUID id = FiguraMod.getLocalPlayerUUID();
-        clearAvatar(id);
+        clearAvatar(id, true);
 
         //mark as not uploaded
         localUploaded = false;
@@ -174,9 +177,9 @@ public class AvatarManager {
         if (id == null || FETCHED_AVATARS.contains(id))
             return;
 
-        if (id.compareTo(FiguraMod.getLocalPlayerUUID()) == 0)
-            //force local loading to remove watch keys and flag as not uploaded
-            loadLocalAvatar(null);
+        //force local loading to remove watch keys and flag as not uploaded
+        boolean local = id.compareTo(FiguraMod.getLocalPlayerUUID()) == 0;
+        if (local) loadLocalAvatar(null);
 
         //egg
         if (FiguraMod.CHEESE_DAY && (boolean) Config.EASTER_EGGS.value) {
@@ -186,5 +189,6 @@ public class AvatarManager {
         }
 
         //TODO - then we really fetch the backend
+        if (local) localUploaded = true;
     }
 }
