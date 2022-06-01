@@ -8,9 +8,14 @@ import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.parsers.AvatarMetadataParser;
 import org.moon.figura.parsers.BlockbenchModelParser;
 import org.moon.figura.parsers.LuaScriptParser;
+import org.moon.figura.utils.FiguraIdentifier;
+import org.moon.figura.utils.FiguraResourceListener;
 import org.moon.figura.utils.IOUtils;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.file.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -25,25 +30,25 @@ import java.util.regex.Pattern;
  */
 public class LocalAvatarLoader {
 
-    private static Path lastLoadedPath;
-
     private static WatchService watcher;
     private static final HashMap<Path, WatchKey> KEYS = new HashMap<>();
-    public static final CompoundTag CHEESE;
+    private static Path lastLoadedPath;
+
+    public static CompoundTag cheese;
+    public static final FiguraResourceListener AVATAR_LISTENER = new FiguraResourceListener("avatars", manager -> {
+        try {
+            cheese = NbtIo.readCompressed(manager.getResource(new FiguraIdentifier("avatars/cheese.moon")).getInputStream());
+        } catch (Exception e) {
+            FiguraMod.LOGGER.error("Failed to load the cheese", e);
+        }
+    });
+
     static {
         try {
             watcher = FileSystems.getDefault().newWatchService();
         } catch (Exception e) {
             FiguraMod.LOGGER.error("Failed to initialize the watcher service", e);
         }
-
-        CompoundTag temp = null;
-        try {
-            InputStream inputStream = FiguraMod.class.getResourceAsStream("/assets/" + FiguraMod.MOD_ID + "/avatars/cheese.moon");
-            if (inputStream == null) throw new Exception("How the cheese is null...?");
-            temp = NbtIo.readCompressed(inputStream);
-        } catch (Exception ignored) {}
-        CHEESE = temp;
     }
 
     /**

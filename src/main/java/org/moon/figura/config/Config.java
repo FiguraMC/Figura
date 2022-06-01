@@ -54,6 +54,7 @@ public enum Config {
 
     Script,
     LOG_LOCATION(0, 2),
+    SERVER_SCRIPT(true),
 
     ActionWheel,
     ACTION_WHEEL_BUTTON("key.keyboard.b"),

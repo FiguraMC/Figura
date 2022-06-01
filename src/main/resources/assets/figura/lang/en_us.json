@@ -145,6 +145,9 @@
   "figura.config.log_location.1": "Chat",
   "figura.config.log_location.2": "Logger",
 
+  "figura.config.server_script": "Server Scripts",
+  "figura.config.server_script.tooltip": "Toggles if scripts can be loaded and run from resource packs (server), affects only the Host",
+
   "figura.config.actionwheel": "Action Wheel",
   "figura.config.actionwheel.tooltip": "Action Wheel settings",
 
@@ -266,6 +269,10 @@
   "figura.docs.math.lerp": "Linearly interpolates from its first argument to its second argument, with the third argument as the parameter. Works on both regular numbers and vectors.",
   "figura.docs.math.clamp": "Clamps the given value between min and max.",
   "figura.docs.math.round": "Rounds the given number to the nearest whole integer.",
+  "figura.docs.math.map": "",
+  "figura.docs.math.short_angle": "",
+  "figura.docs.math.lerp_angle": "",
+  "figura.docs.math.sign": "",
 
   "figura.docs.sound": "A global API which is used to play Minecraft sounds. Accessed using the name \"sound\".",
   "figura.docs.sound.play_sound": "Plays the specified sound at the specified position with the given volume and pitch multipliers. Volume in Minecraft refers to how far away people can hear the sound from, not the actual loudness of it. If you don't give values for volume and pitch, the default values are 1.",

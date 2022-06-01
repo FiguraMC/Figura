@@ -2,7 +2,10 @@ package org.moon.figura.lua;
 
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
+import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
+import org.moon.figura.config.Config;
 import org.moon.figura.lua.api.*;
 import org.moon.figura.lua.api.entity.PlayerEntityWrapper;
 import org.moon.figura.lua.api.keybind.KeybindAPI;
@@ -12,17 +15,36 @@ import org.moon.figura.lua.api.model.VanillaModelAPI;
 import org.moon.figura.lua.api.nameplate.NameplateAPI;
 import org.moon.figura.lua.api.world.WorldAPI;
 import org.moon.figura.lua.types.LuaOwnedTable;
+import org.moon.figura.utils.FiguraResourceListener;
 import org.terasology.jnlua.JavaFunction;
 import org.terasology.jnlua.LuaRuntimeException;
 import org.terasology.jnlua.LuaState53;
 import org.terasology.jnlua.LuaType;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 public class FiguraLuaState extends LuaState53 {
+
+    private static final ArrayList<String> RESOURCE_SCRIPTS = new ArrayList<>();
+    public static final FiguraResourceListener SCRIPT_LISTENER = new FiguraResourceListener("resource_script", manager -> {
+        RESOURCE_SCRIPTS.clear();
+
+        for (ResourceLocation location : manager.listResources("lua/scripts/server", s -> s.endsWith(".lua"))) {
+            try {
+                if (location.getNamespace().equals(FiguraMod.MOD_ID)) {
+                    RESOURCE_SCRIPTS.add(new String(manager.getResource(location).getInputStream().readAllBytes()));
+                    FiguraMod.LOGGER.debug("Loaded resource script \"" + location + "\"");
+                }
+            } catch (Exception e) {
+                FiguraMod.LOGGER.error("Failed to load resource pack script \"" + location.toString() + "\"", e);
+            }
+        }
+    });
 
     private final Avatar owner;
 
@@ -46,11 +68,17 @@ public class FiguraLuaState extends LuaState53 {
 
         this.owner = owner;
 
-        //Load the built-in figura libraries
-        loadLibraries();
+        //Load the standard lua libraries
+        loadStandardLibraries();
 
-        //Run the figura sandboxer script
-        runSandboxer();
+        //Run the sandboxer script
+        try {
+            runSandboxer();
+        } catch (Exception e) {
+            FiguraLuaPrinter.sendLuaError(e, owner.name, owner.owner);
+            owner.scriptError = true;
+            return;
+        }
 
         //Load debug.setHook to registry, used later for instruction caps
         loadSetHook();
@@ -60,18 +88,13 @@ public class FiguraLuaState extends LuaState53 {
 
         loadFiguraApis();
 
-        // Run figura libraries provided by resource pack (NOTE: THIS IS DISABLED CURRENTLY! The system for doing this
-        // isn't really finished, so for now it just has hardcoded Resource Scripts instead of using resource packs.
-        //TODO: Lock this behind an option, so people have to opt-in to allowing servers to run code on startup
-        //TODO: Also make this use trust settings for instruction limits
-        try {
-            // 2000 instructions is probably reasonable for server code on startup,
-            // this should mainly be used for providing helper functions to users like our math script does.
-            setInstructionLimit(2000);
-            runResourceScripts();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        loadExternalLibraries();
+
+        // Run libraries provided by resource packs
+        // 2048 instructions is probably reasonable for server code on startup,
+        // this should mainly be used for providing helper functions to users like our math script does.
+        setInstructionLimit(2048);
+        runResourceLibraries();
     }
 
 
@@ -163,7 +186,7 @@ public class FiguraLuaState extends LuaState53 {
         setGlobal(name);
     }
 
-    private void loadLibraries() {
+    private void loadStandardLibraries() {
         openLib(Library.BASE);
         openLib(Library.TABLE);
         openLib(Library.STRING);
@@ -171,52 +194,32 @@ public class FiguraLuaState extends LuaState53 {
         pop(4);
     }
 
-    private void runSandboxer() {
-        //Sandboxer is now hardcoded, don't want servers overriding it in resource packs
-        String sandboxer = """
-                -- yeet FileIO and gc globals
-                dofile = nil
-                loadfile = nil
-                collectgarbage = nil
-
-                -- GS easter egg
-                _GS = _G""";
-
-        load(sandboxer, "sandboxer");
+    private void runSandboxer() throws IOException {
+        InputStream inputStream = FiguraMod.class.getResourceAsStream("/assets/" + FiguraMod.MOD_ID + "/lua/scripts/sandbox.lua");
+        if (inputStream == null) throw new IOException("Failed to load sandbox.lua");
+        load(new String(inputStream.readAllBytes()), "sandboxer");
         call(0, 0);
     }
 
-    //Runs the lua files that add additional functions.
-    private void runResourceScripts() throws IOException {
-        String mathScript = """
-                function math.clamp(val, min, max)
-                    return math.min(math.max(val, min), max)
-                end
-                
-                function math.lerp(a, b, t)
-                    return a + (b - a) * t
-                end
-                
-                function math.round(arg)
-                    return math.floor(arg + 0.5)
-                end
-                
-                vec = vectors.vec
-                """;
-        load(mathScript, "math");
-        call(0, 0);
+    private void loadExternalLibraries() {
+        try {
+            InputStream inputStream = FiguraMod.class.getResourceAsStream("/assets/" + FiguraMod.MOD_ID + "/lua/scripts/math.lua");
+            if (inputStream == null) throw new Exception();
+            load(new String(inputStream.readAllBytes()), "math");
+            call(0, 0);
+        } catch (Exception e) {
+            FiguraMod.LOGGER.error("Failed to load " + FiguraMod.MOD_ID + " math library", e);
+        }
+    }
 
-        //Code below is potentially a vulnerability, since servers can provide resource packs,
-        //so if a server provides malicious code in a resource pack it would be run here. We're
-        //disallowing that for now until we figura out how to stop this from being bad.
-        //For now, the resource scripts (just math) are instead hardcoded.
+    private void runResourceLibraries() {
+        if (owner.owner.compareTo(FiguraMod.getLocalPlayerUUID()) == 0 && !(boolean) Config.SERVER_SCRIPT.value)
+            return;
 
-//        Path scripts = FiguraMod.ASSETS_DIR.resolve("lua/scripts/init");
-//        for (File file : IOUtils.getFilesByExtension(scripts, ".lua", false)) {
-//            String src = IOUtils.readFile(file);
-//            load(src, file.getName().substring(0, file.getName().length()-4));
-//            call(0, 0);
-//        }
+        for (int i = 0; i < RESOURCE_SCRIPTS.size(); i++) {
+            load(RESOURCE_SCRIPTS.get(i), "resources" + i);
+            call(0, 0);
+        }
     }
 
     private static JavaFunction requireFunc(Map<String, String> scripts) {

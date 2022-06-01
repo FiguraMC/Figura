@@ -7,9 +7,11 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.packs.PackType;
 import net.minecraft.world.entity.Entity;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
@@ -21,6 +23,7 @@ import org.moon.figura.config.ConfigManager;
 import org.moon.figura.gui.PaperDoll;
 import org.moon.figura.gui.actionwheel.ActionWheel;
 import org.moon.figura.lua.FiguraLuaPrinter;
+import org.moon.figura.lua.FiguraLuaState;
 import org.moon.figura.lua.docs.FiguraDocsManager;
 import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.LuaUtils;
@@ -63,6 +66,8 @@ public class FiguraMod implements ClientModInitializer {
         WorldRenderEvents.AFTER_ENTITIES.register(FiguraMod::renderFirstPersonWorldParts);
         HudRenderCallback.EVENT.register(FiguraMod::hudRender);
         ClientEntityEvents.ENTITY_UNLOAD.register((entity, level) -> AvatarManager.entityUnload(entity));
+        ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(FiguraLuaState.SCRIPT_LISTENER);
+        ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(LocalAvatarLoader.AVATAR_LISTENER);
     }
 
     private static void tick(Minecraft client) {

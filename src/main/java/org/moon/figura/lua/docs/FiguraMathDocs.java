@@ -34,4 +34,40 @@ public class FiguraMathDocs {
             description = "math.round"
     )
     public static Double round() {return null;}
+
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = {Double.class, Double.class, Double.class, Double.class, Double.class},
+                    argumentNames = {"value", "oldMin", "oldMax", "newMin", "newMax"}
+            ),
+            description = "math.map"
+    )
+    public static Double map() {return null;}
+
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = {Double.class, Double.class},
+                    argumentNames = {"from", "to"}
+            ),
+            description = "math.short_angle"
+    )
+    public static Double shortAngle() {return null;}
+
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = {Object.class, Object.class, Double.class},
+                    argumentNames = {"a", "b", "t"}
+            ),
+            description = "math.lerp_angle"
+    )
+    public static Object lerpAngle() {return null;}
+
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = Double.class,
+                    argumentNames = "value"
+            ),
+            description = "math.sign"
+    )
+    public static Double sign() {return null;}
 }
