@@ -137,36 +137,41 @@ public class FiguraModelPart {
     public enum ParentType {
         None(false, "NONE"),
 
-        Head(true, "HEAD"),
-        Body(true, "BODY"),
-        LeftArm(true, "LEFT_ARM"),
-        RightArm(true, "RIGHT_ARM"),
-        LeftLeg(true,"LEFT_LEG"),
-        RightLeg(true,"RIGHT_LEG"),
+        Head("HEAD"),
+        Body("BODY"),
+        LeftArm("LEFT_ARM"),
+        RightArm("RIGHT_ARM"),
+        LeftLeg("LEFT_LEG"),
+        RightLeg("RIGHT_LEG"),
 
-        LeftElytra(true, "LeftElytron, LEFT_ELYTRON, LEFT_ELYTRA"),
-        RightElytra(true, "RightElytron, RIGHT_ELYTRON, RIGHT_ELYTRA"),
+        LeftElytra("LeftElytron, LEFT_ELYTRON, LEFT_ELYTRA"),
+        RightElytra("RightElytron, RIGHT_ELYTRON, RIGHT_ELYTRA"),
 
-        Cape(true, "CAPE"),
+        Cape("CAPE"),
 
         World(false, "WORLD");
 
-        public ArrayList<String> aliases;
-        public boolean vanilla;
+        public final boolean vanilla;
+        public final String[] aliases;
+
+        ParentType(String... aliases) {
+            this(true, aliases);
+        }
 
         ParentType(Boolean vanilla, String... aliases) {
             this.vanilla = vanilla;
-            this.aliases = new ArrayList<>(aliases.length+1);
-            this.aliases.add(name());
-            this.aliases.addAll(Arrays.asList(aliases));
+            this.aliases = aliases;
         }
 
-        public static ParentType getForString(String str) {
-            if (str != null)
-                for (ParentType type : values())
-                    for (String s : type.aliases)
-                        if (str.startsWith(s))
-                            return type;
+        public static ParentType get(String name) {
+            for (ParentType parentType : values()) {
+                if (parentType.name().startsWith(name))
+                    return parentType;
+                for (String alias : parentType.aliases) {
+                    if (alias.startsWith(name))
+                        return parentType;
+                }
+            }
             return None;
         }
     }
@@ -761,11 +766,7 @@ public class FiguraModelPart {
             description = "model_part.set_parent_type"
     )
     public static void setParentType(@LuaNotNil FiguraModelPart modelPart, @LuaNotNil String parent) {
-        try {
-            modelPart.parentType = ParentType.valueOf(parent);
-        } catch (Exception ignored) {
-            throw new LuaRuntimeException("Illegal ParentType: \"" + parent + "\".");
-        }
+        modelPart.parentType = ParentType.get(parent);
     }
 
     @LuaWhitelist

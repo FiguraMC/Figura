@@ -498,7 +498,7 @@ public class BlockbenchModelParser {
                 groupNbt.put("rot", toNbtList(group.rotation));
 
             //parent type
-            FiguraModelPart.ParentType parentType = FiguraModelPart.ParentType.getForString(group.name);
+            FiguraModelPart.ParentType parentType = FiguraModelPart.ParentType.get(group.name);
             if (parentType != FiguraModelPart.ParentType.None)
                 groupNbt.putString("pt", parentType.name());
 

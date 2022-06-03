@@ -85,7 +85,7 @@ public class AvatarMetadataParser {
             }
         }
         if (customization.parentType != null) {
-            FiguraModelPart.ParentType type = FiguraModelPart.ParentType.getForString(customization.parentType);
+            FiguraModelPart.ParentType type = FiguraModelPart.ParentType.get(customization.parentType);
 
             if (type == FiguraModelPart.ParentType.None)
                 modelPart.remove("pt");
