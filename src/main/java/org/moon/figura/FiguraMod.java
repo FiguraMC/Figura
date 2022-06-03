@@ -12,6 +12,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.server.players.GameProfileCache;
 import net.minecraft.world.entity.Entity;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
@@ -25,6 +26,7 @@ import org.moon.figura.gui.actionwheel.ActionWheel;
 import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.lua.FiguraLuaState;
 import org.moon.figura.lua.docs.FiguraDocsManager;
+import org.moon.figura.mixin.SkullBlockEntityAccessor;
 import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.TextUtils;
@@ -136,5 +138,19 @@ public class FiguraMod implements ClientModInitializer {
             Minecraft.getInstance().gui.getChat().addMessage(TextUtils.replaceTabs(message));
         else
             LOGGER.info(message.getString());
+    }
+
+    /**
+     * Converts a player name to UUID using minecraft internal functions.
+     * @param playerName - the player name
+     * @return - the player's uuid or null
+     */
+    public static UUID playerNameToUUID(String playerName) {
+        GameProfileCache cache = SkullBlockEntityAccessor.getProfileCache();
+        if (cache == null)
+            return null;
+
+        var profile = cache.get(playerName);
+        return profile.isEmpty() ? null : profile.get().getId();
     }
 }

@@ -59,7 +59,7 @@ public class InteractableEntity extends AbstractContainerElement {
                 x + 4, y + 4, 16, 16,
                 0, 0, 16,
                 new FiguraIdentifier("textures/gui/expand.png"),
-                32, 32,
+                48, 32,
                 new FiguraText("gui.expand"),
                 bx -> {
                     if (button.isToggled()) {
@@ -73,7 +73,6 @@ public class InteractableEntity extends AbstractContainerElement {
                         //update button
                         button.x = this.x + 4;
                         button.y = this.y + 28;
-                        button.setUV(16, 0);
                         button.setTooltip(new FiguraText("gui.minimise"));
 
                         //update entity

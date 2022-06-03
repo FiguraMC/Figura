@@ -9,6 +9,7 @@
     "BlockBehaviourAccessor",
     "ClientLevelInvoker",
     "MinecraftMixin",
+    "SkullBlockEntityAccessor",
 
     "gui.ChatComponentMixin",
     "gui.ChatScreenAccessor",

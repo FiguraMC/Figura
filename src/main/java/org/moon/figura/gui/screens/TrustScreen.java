@@ -1,6 +1,5 @@
 package org.moon.figura.gui.screens;
 
-import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -11,7 +10,6 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.SkullBlockEntity;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
@@ -118,27 +116,27 @@ public class TrustScreen extends AbstractPanelScreen {
         //debug buttons
         uuid = new TextField(middle + 2, back.y - 24, listWidth - 24, 20, new TextComponent("Name/UUID"), s -> yoink.active = !s.isBlank());
         yoink = new TexturedButton(middle + listWidth - 18, back.y - 24, 20, 20, new TextComponent("yoink"), new TextComponent("Set the selected player's avatar"), button -> {
+            String text = uuid.getField().getValue();
+            UUID id;
+
             try {
-                GameProfile gameProfile;
-                try {
-                    gameProfile = new GameProfile(UUID.fromString(uuid.getField().getValue()), "");
-                } catch (Exception ignored) {
-                    gameProfile = new GameProfile(null, uuid.getField().getValue());
-                }
+                id = UUID.fromString(text);
+            } catch (Exception ignored) {
+                id = FiguraMod.playerNameToUUID(text);
+            }
 
-                SkullBlockEntity.updateGameprofile(gameProfile, profile -> {
-                    Avatar avatar = AvatarManager.getAvatarForPlayer(profile.getId());
-                    if (avatar == null)
-                        return;
-
-                    if (playerList.selectedEntry instanceof PlayerElement player) {
-                        AvatarManager.setAvatar(player.getOwner(), avatar.nbt, true);
-                        FiguraToast.sendToast("yoinked");
-                    }
-                });
-            } catch (Exception e) {
+            if (id == null) {
                 FiguraToast.sendToast("oopsie", FiguraToast.ToastType.ERROR);
-                FiguraMod.LOGGER.error("", e);
+                return;
+            }
+
+            Avatar avatar = AvatarManager.getAvatarForPlayer(id);
+            if (avatar == null)
+                return;
+
+            if (playerList.selectedEntry instanceof PlayerElement player) {
+                AvatarManager.setAvatar(player.getOwner(), avatar.nbt, true);
+                FiguraToast.sendToast("yoinked");
             }
         });
         yoink.active = false;
@@ -149,7 +147,7 @@ public class TrustScreen extends AbstractPanelScreen {
         }
 
         //expand button
-        addRenderableWidget(expandButton = new SwitchButton( middle + listWidth - 18, height - 24, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/expand_v.png"), 40, 40, new FiguraText("gui.trust.expand_trust.tooltip"), btn -> {
+        addRenderableWidget(expandButton = new SwitchButton( middle + listWidth - 18, height - 24, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/expand_v.png"), 60, 40, new FiguraText("gui.trust.expand_trust.tooltip"), btn -> {
             boolean expanded = expandButton.isToggled();
 
             //hide widgets
@@ -160,7 +158,6 @@ public class TrustScreen extends AbstractPanelScreen {
             yoink.visible = !expanded;
 
             //update expand button
-            expandButton.setUV(expanded ? 20 : 0, 0);
             expandButton.setTooltip(expanded ? new FiguraText("gui.trust.minimize_trust.tooltip") : new FiguraText("gui.trust.expand_trust.tooltip"));
 
             //set reset button activeness

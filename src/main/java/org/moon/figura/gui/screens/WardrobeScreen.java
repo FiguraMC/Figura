@@ -63,19 +63,19 @@ public class WardrobeScreen extends AbstractPanelScreen {
         int buttY = entity.y + entity.height + 4;
 
         //upload
-        addRenderableWidget(upload = new TexturedButton(buttX - 48, buttY, 24, 24, 24, 0, 24, new FiguraIdentifier("textures/gui/upload.png"), 48, 48, new FiguraText("gui.wardrobe.upload.tooltip"), button -> {
+        addRenderableWidget(upload = new TexturedButton(buttX - 48, buttY, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/upload.png"), 72, 24, new FiguraText("gui.wardrobe.upload.tooltip"), button -> {
             FiguraToast.sendToast(new TextComponent("lol nope").setStyle(Style.EMPTY.withColor(0xFFADAD)), FiguraToast.ToastType.DEFAULT);
         }));
         upload.active = false;
 
         //reload
-        addRenderableWidget(reload = new TexturedButton(buttX - 12, buttY, 24, 24, 24, 0, 24, new FiguraIdentifier("textures/gui/reload.png"), 48, 48, new FiguraText("gui.wardrobe.reload.tooltip"), button -> {
+        addRenderableWidget(reload = new TexturedButton(buttX - 12, buttY, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/reload.png"), 72, 24, new FiguraText("gui.wardrobe.reload.tooltip"), button -> {
             FiguraToast.sendToast(new TextComponent("lol nope").setStyle(Style.EMPTY.withColor(0xFFADAD)), FiguraToast.ToastType.DEFAULT);
         }));
         reload.active = false;
 
         //delete
-        addRenderableWidget(delete = new TexturedButton(buttX + 24, buttY, 24, 24, 24, 0, 24, new FiguraIdentifier("textures/gui/delete.png"), 48, 48, new FiguraText("gui.wardrobe.delete.tooltip"), button -> {
+        addRenderableWidget(delete = new TexturedButton(buttX + 24, buttY, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/delete.png"), 72, 24, new FiguraText("gui.wardrobe.delete.tooltip"), button -> {
             FiguraToast.sendToast(new TextComponent("lol nope").setStyle(Style.EMPTY.withColor(0xFFADAD)), FiguraToast.ToastType.DEFAULT);
         }));
         delete.active = false;
@@ -102,9 +102,9 @@ public class WardrobeScreen extends AbstractPanelScreen {
         //hellp
         addRenderableWidget(new TexturedButton(
                 this.width - rightSide - 4, 32, 24, 24,
-                24, 0, 24,
+                0, 0, 24,
                 new FiguraIdentifier("textures/gui/help.png"),
-                48, 48,
+                72, 24,
                 new FiguraText("gui.help.tooltip"),
                 bx -> this.minecraft.setScreen(new ConfirmLinkScreen((bl) -> {
                     if (bl) Util.getPlatform().openUri(FiguraLinkCommand.LINK.WIKI.url);
@@ -113,14 +113,14 @@ public class WardrobeScreen extends AbstractPanelScreen {
         ));
 
         //sounds
-        TexturedButton sounds = new TexturedButton(this.width - rightSide / 2 - 16, 32, 24, 24, 24, 0, 24, new FiguraIdentifier("textures/gui/sound.png"), 48, 48, new FiguraText("gui.wardrobe.sound.tooltip"), button -> {
+        TexturedButton sounds = new TexturedButton(this.width - rightSide / 2 - 16, 32, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/sound.png"), 72, 24, new FiguraText("gui.wardrobe.sound.tooltip"), button -> {
             Minecraft.getInstance().setScreen(new SoundScreen(this));
         });
         sounds.active = false; //TODO
         addRenderableWidget(sounds);
 
         //keybinds
-        TexturedButton keybinds = new TexturedButton(this.width - 28, 32, 24, 24, 24, 0, 24, new FiguraIdentifier("textures/gui/keybind.png"), 48, 48, new FiguraText("gui.wardrobe.keybind.tooltip"), button -> {
+        TexturedButton keybinds = new TexturedButton(this.width - 28, 32, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/keybind.png"), 72, 24, new FiguraText("gui.wardrobe.keybind.tooltip"), button -> {
             Minecraft.getInstance().setScreen(new KeybindScreen(this));
         });
         addRenderableWidget(keybinds);

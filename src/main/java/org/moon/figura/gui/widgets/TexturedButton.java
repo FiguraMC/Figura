@@ -21,7 +21,7 @@ public class TexturedButton extends Button {
 
     protected final Integer textureWidth;
     protected final Integer textureHeight;
-    protected final Integer interactionOffset;
+    protected final Integer regionSize;
     protected final ResourceLocation texture;
 
     //extra fields
@@ -29,12 +29,12 @@ public class TexturedButton extends Button {
     private boolean hasBackground = true;
 
     //texture and text constructor
-    public TexturedButton(int x, int y, int width, int height, Integer u, Integer v, Integer interactionOffset, ResourceLocation texture, Integer textureWidth, Integer textureHeight, Component text, Component tooltip, Button.OnPress pressAction) {
+    public TexturedButton(int x, int y, int width, int height, Integer u, Integer v, Integer regionSize, ResourceLocation texture, Integer textureWidth, Integer textureHeight, Component text, Component tooltip, Button.OnPress pressAction) {
         super(x, y, width, height, text, pressAction);
 
         this.u = u;
         this.v = v;
-        this.interactionOffset = interactionOffset;
+        this.regionSize = regionSize;
         this.texture = texture;
         this.textureWidth = textureWidth;
         this.textureHeight = textureHeight;
@@ -47,8 +47,8 @@ public class TexturedButton extends Button {
     }
 
     //texture constructor
-    public TexturedButton(int x, int y, int width, int height, int u, int v, int interactionOffset, ResourceLocation texture, int textureWidth, int textureHeight, Component tooltip, Button.OnPress pressAction) {
-        this(x, y, width, height, u, v, interactionOffset, texture, textureWidth, textureHeight, null, tooltip, pressAction);
+    public TexturedButton(int x, int y, int width, int height, int u, int v, int regionSize, ResourceLocation texture, int textureWidth, int textureHeight, Component tooltip, Button.OnPress pressAction) {
+        this(x, y, width, height, u, v, regionSize, texture, textureWidth, textureHeight, null, tooltip, pressAction);
     }
 
     @Override
@@ -69,16 +69,7 @@ public class TexturedButton extends Button {
         if (this.texture != null) {
             renderTexture(stack, delta);
         } else {
-            float u;
-
-            if (!this.active)
-                u = 0f;
-            else if (this.isHoveredOrFocused())
-                u = 32f;
-            else
-                u = 16f;
-
-            UIHelper.renderSliced(stack, x, y, width, height, u, this.hasBackground ? 0f : 16f, 16, 16, 48, 32, TEXTURE);
+            UIHelper.renderSliced(stack, x, y, width, height, getUVStatus() * 16f, this.hasBackground ? 0f : 16f, 16, 16, 48, 32, TEXTURE);
         }
 
         //render text
@@ -100,17 +91,13 @@ public class TexturedButton extends Button {
 
     protected void renderTexture(PoseStack stack, float delta) {
         //uv transforms
-        int u = this.u;
-        int v = this.v;
-        if (this.isHoveredOrFocused())
-            v += this.interactionOffset;
-        if (!this.active)
-            u -= this.interactionOffset;
+        int u = this.u + this.getUVStatus() * this.regionSize;
+        int v = this.v + (this instanceof SwitchButton sw && sw.isToggled() ? this.regionSize : 0);
 
         //draw texture
         UIHelper.setupTexture(this.texture);
 
-        int size = this.interactionOffset;
+        int size = this.regionSize;
         blit(stack, this.x + this.width / 2 - size / 2, this.y + this.height / 2 - size / 2, u, v, size, size, this.textureWidth, this.textureHeight);
     }
 
@@ -123,6 +110,15 @@ public class TexturedButton extends Button {
                 this.x + this.width / 2, this.y + this.height / 2 - font.lineHeight / 2,
                 (!this.active ? ChatFormatting.DARK_GRAY : ChatFormatting.WHITE).getColor()
         );
+    }
+
+    protected int getUVStatus() {
+        if (!this.active)
+            return 0;
+        else if (this.isHoveredOrFocused())
+            return 2;
+        else
+            return 1;
     }
 
     public void setUV(int x, int y) {

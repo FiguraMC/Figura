@@ -60,9 +60,9 @@ public class AvatarList extends AbstractList {
         children.add(new TextField(x + 4, y + 4, width - 32, 20, new FiguraText("gui.search"), s -> filter = s));
         children.add(new TexturedButton(
                 x + width - 24, y + 4,
-                20, 20, 20, 0, 20,
+                20, 20, 0, 0, 20,
                 new FiguraIdentifier("textures/gui/folder.png"),
-                40, 40,
+                60, 20,
                 new FiguraText("gui.wardrobe.folder.tooltip"),
                 button -> Util.getPlatform().openFile(LocalAvatarFetcher.getLocalAvatarDirectory().toFile()))
         );
