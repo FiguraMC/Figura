@@ -6,7 +6,6 @@ import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 
@@ -27,7 +26,7 @@ public class TextUtils {
         ArrayList<Component> textList = new ArrayList<>();
 
         //current line variable
-        MutableComponent currentText = TextComponent.EMPTY.copy();
+        MutableComponent currentText = Component.empty();
 
         //iterate over the text
         for (Component entry : text.toFlatList(text.getStyle())) {
@@ -40,17 +39,17 @@ public class TextUtils {
                 //if it is not the first iteration, add to return list and reset the line variable
                 if (i != 0) {
                     textList.add(currentText.copy());
-                    currentText = TextComponent.EMPTY.copy();
+                    currentText = Component.empty();
                 }
 
                 //append text with the line text
-                currentText.append(new TextComponent(lines[i]).setStyle(entry.getStyle()));
+                currentText.append(Component.literal(lines[i]).setStyle(entry.getStyle()));
             }
 
             //if the text ends with the split pattern, add to return list and reset the line variable
             if (entryString.matches(regex + "$")) {
                 textList.add(currentText.copy());
-                currentText = TextComponent.EMPTY.copy();
+                currentText = Component.empty();
             }
         }
         //add the last text iteration then return
@@ -60,12 +59,12 @@ public class TextUtils {
 
     public static Component removeClickableObjects(Component text) {
         //text to return
-        MutableComponent finalText = TextComponent.EMPTY.copy();
+        MutableComponent finalText = Component.empty();
 
         //iterate over the text
         for (Component entry : text.toFlatList(text.getStyle())) {
             //remove click events
-            Component removed = new TextComponent(entry.getString()).setStyle(entry.getStyle().withClickEvent(null));
+            Component removed = Component.literal(entry.getString()).setStyle(entry.getStyle().withClickEvent(null));
 
             //append text to return
             finalText.append(removed);
@@ -88,7 +87,7 @@ public class TextUtils {
                 throw new Exception("Error parsing JSON string");
         } catch (Exception ignored) {
             //on any exception, make the text as-is
-            finalText = new TextComponent(text);
+            finalText = Component.literal(text);
         }
 
         //return text
@@ -97,10 +96,10 @@ public class TextUtils {
 
     public static Component replaceInText(Component text, String regex, Object replacement) {
         //fix replacement object
-        Component replace = replacement instanceof Component c ? c : new TextComponent(replacement.toString());
+        Component replace = replacement instanceof Component c ? c : Component.literal(replacement.toString());
 
         //text to return
-        MutableComponent ret = TextComponent.EMPTY.copy();
+        MutableComponent ret = Component.empty();
 
         //iterate over the initial text
         List<Component> list = text.toFlatList(text.getStyle());
@@ -113,7 +112,7 @@ public class TextUtils {
             for (String s : split) {
                 //append the text if it does not match the split, otherwise append the replacement instead
                 if (!s.matches(regex))
-                    ret.append(new TextComponent(s).withStyle(component.getStyle()));
+                    ret.append(Component.literal(s).withStyle(component.getStyle()));
                 else
                     ret.append(replace);
             }
@@ -129,12 +128,12 @@ public class TextUtils {
             return text;
 
         //get ellipsis size
-        Component dots = new TextComponent("...");
+        Component dots = Component.literal("...");
         int size = font.width(dots.getVisualOrderText());
 
         //trim and return modified text
         String trimmed = font.substrByWidth(text, width - size).getString();
-        return new TextComponent(trimmed).setStyle(text.getStyle()).append(dots);
+        return Component.literal(trimmed).setStyle(text.getStyle()).append(dots);
     }
 
     public static Component replaceTabs(Component text) {

@@ -4,7 +4,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
@@ -25,11 +25,11 @@ public class FiguraRunCommand {
         String lua = StringArgumentType.getString(context, "code");
         Avatar localAvatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
         if (localAvatar == null) {
-            context.getSource().sendError(new FiguraText("command.run.not_local_error"));
+            context.getSource().sendError(FiguraText.of("command.run.not_local_error"));
             return 0;
         }
         if (localAvatar.luaState == null || localAvatar.scriptError) {
-            context.getSource().sendError(new FiguraText("command.run.no_script_error"));
+            context.getSource().sendError(FiguraText.of("command.run.no_script_error"));
             return 0;
         }
         localAvatar.luaState.runScript(lua, "runCommand");

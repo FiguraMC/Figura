@@ -13,7 +13,7 @@ import org.moon.figura.utils.FiguraText;
 
 public class KeybindScreen extends AbstractPanelScreen {
 
-    public static final Component TITLE = new FiguraText("gui.panels.title.keybind");
+    public static final Component TITLE = FiguraText.of("gui.panels.title.keybind");
 
     private KeybindList list;
 
@@ -34,7 +34,7 @@ public class KeybindScreen extends AbstractPanelScreen {
         // -- bottom buttons -- //
 
         //discard
-        this.addRenderableWidget(new TexturedButton(width / 2 - 122, height - 24, 120, 20, new FiguraText("gui.reset_all"), null, button -> {
+        this.addRenderableWidget(new TexturedButton(width / 2 - 122, height - 24, 120, 20, FiguraText.of("gui.reset_all"), null, button -> {
             if (owner == null || owner.luaState == null)
                 return;
 
@@ -43,7 +43,7 @@ public class KeybindScreen extends AbstractPanelScreen {
         }));
 
         //back
-        addRenderableWidget(new TexturedButton(width / 2 + 4, height - 24, 120, 20, new FiguraText("gui.back"), null,
+        addRenderableWidget(new TexturedButton(width / 2 + 4, height - 24, 120, 20, FiguraText.of("gui.back"), null,
                 bx -> this.minecraft.setScreen(parentScreen)
         ));
     }

@@ -2,7 +2,6 @@ package org.moon.figura.lua;
 
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.config.Config;
@@ -34,16 +33,15 @@ public class FiguraLuaState extends LuaState53 {
     public static final FiguraResourceListener SCRIPT_LISTENER = new FiguraResourceListener("resource_script", manager -> {
         RESOURCE_SCRIPTS.clear();
 
-        for (ResourceLocation location : manager.listResources("lua/scripts/server", s -> s.endsWith(".lua"))) {
+        manager.listResources("lua/scripts/server", resource -> resource.getNamespace().equals(FiguraMod.MOD_ID) && resource.getPath().endsWith(".lua")).forEach((location, resource) -> {
             try {
-                if (location.getNamespace().equals(FiguraMod.MOD_ID)) {
-                    RESOURCE_SCRIPTS.add(new String(manager.getResource(location).getInputStream().readAllBytes()));
-                    FiguraMod.LOGGER.debug("Loaded resource script \"" + location + "\"");
-                }
+                RESOURCE_SCRIPTS.add(new String(resource.open().readAllBytes()));
+                FiguraMod.LOGGER.debug("Loaded resource script \"" + location.toString() + "\"");
             } catch (Exception e) {
+                e.printStackTrace();
                 FiguraMod.LOGGER.error("Failed to load resource pack script \"" + location.toString() + "\"", e);
             }
-        }
+        });
     });
 
     private final Avatar owner;

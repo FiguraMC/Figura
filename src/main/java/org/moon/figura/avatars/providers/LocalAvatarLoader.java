@@ -37,7 +37,7 @@ public class LocalAvatarLoader {
     public static CompoundTag cheese;
     public static final FiguraResourceListener AVATAR_LISTENER = new FiguraResourceListener("avatars", manager -> {
         try {
-            cheese = NbtIo.readCompressed(manager.getResource(new FiguraIdentifier("avatars/cheese.moon")).getInputStream());
+            cheese = NbtIo.readCompressed(manager.getResource(new FiguraIdentifier("avatars/cheese.moon")).get().open());
         } catch (Exception e) {
             FiguraMod.LOGGER.error("Failed to load the cheese", e);
         }

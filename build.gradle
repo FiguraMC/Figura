@@ -8,7 +8,7 @@ java_version = project.java_version
 archivesBaseName = project.archives_base_name
 version = project.mod_version + "+" + project.minecraft_version
 group = project.maven_group
-fabric_api = project.fabric_api + "+" + project.minecraft_version
+fabric_api = project.fabric_api + "+" + String.valueOf(project.minecraft_version).split("-")[0]
 
 repositories {
 	maven { url 'https://jitpack.io' }
@@ -38,7 +38,7 @@ processResources {
 
 	properties.put("version", version)
 	properties.put("java_version", java_version)
-	properties.put("minecraft_version", minecraft_version)
+	properties.put("minecraft_version", String.valueOf(minecraft_version).split("-")[0] + "-")
 	properties.put("loader_version", loader_version)
 	properties.put("fabric_api", fabric_api)
 

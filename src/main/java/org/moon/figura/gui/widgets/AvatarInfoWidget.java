@@ -6,7 +6,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
@@ -20,12 +19,12 @@ import java.util.List;
 
 public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventListener {
 
-    public static final Component UNKNOWN = new TextComponent("?").setStyle(ColorUtils.Colors.FRAN_PINK.style);
+    public static final Component UNKNOWN = Component.literal("?").setStyle(ColorUtils.Colors.FRAN_PINK.style);
     public static final List<Component> TITLES = List.of(
-            new FiguraText("gui.name").withStyle(ChatFormatting.UNDERLINE),
-            new FiguraText("gui.authors").withStyle(ChatFormatting.UNDERLINE),
-            new FiguraText("gui.size").withStyle(ChatFormatting.UNDERLINE),
-            new FiguraText("gui.complexity").withStyle(ChatFormatting.UNDERLINE)
+            FiguraText.of("gui.name").withStyle(ChatFormatting.UNDERLINE),
+            FiguraText.of("gui.authors").withStyle(ChatFormatting.UNDERLINE),
+            FiguraText.of("gui.size").withStyle(ChatFormatting.UNDERLINE),
+            FiguraText.of("gui.complexity").withStyle(ChatFormatting.UNDERLINE)
     );
 
     public int x, y;
@@ -55,10 +54,10 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
                 values.set(i, UNKNOWN);
             }
         } else {
-            values.set(0, new TextComponent(avatar.name).setStyle(ColorUtils.Colors.FRAN_PINK.style)); //name
-            values.set(1, new TextComponent(avatar.authors).setStyle(ColorUtils.Colors.FRAN_PINK.style)); //authors
-            values.set(2, new TextComponent(String.valueOf(avatar.fileSize)).setStyle(ColorUtils.Colors.FRAN_PINK.style)); //size
-            values.set(3, new TextComponent(String.valueOf(avatar.complexity)).setStyle(ColorUtils.Colors.FRAN_PINK.style)); //complexity
+            values.set(0, Component.literal(avatar.name).setStyle(ColorUtils.Colors.FRAN_PINK.style)); //name
+            values.set(1, Component.literal(avatar.authors).setStyle(ColorUtils.Colors.FRAN_PINK.style)); //authors
+            values.set(2, Component.literal(String.valueOf(avatar.fileSize)).setStyle(ColorUtils.Colors.FRAN_PINK.style)); //size
+            values.set(3, Component.literal(String.valueOf(avatar.complexity)).setStyle(ColorUtils.Colors.FRAN_PINK.style)); //complexity
         }
     }
 

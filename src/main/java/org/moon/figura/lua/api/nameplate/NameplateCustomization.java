@@ -3,7 +3,6 @@ package org.moon.figura.lua.api.nameplate;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.config.Config;
@@ -38,9 +37,9 @@ public class NameplateCustomization {
 
     public static Component fetchBadges(Avatar avatar) {
         if (avatar == null)
-            return TextComponent.EMPTY.copy();
+            return Component.empty();
 
-        MutableComponent badges = new TextComponent(" ").withStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT));
+        MutableComponent badges = Component.literal(" ").withStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT));
         Pride[] pride = Pride.values();
         Special[] special = Special.values();
 
@@ -66,7 +65,7 @@ public class NameplateCustomization {
                 }
 
                 //mark fallback
-                badges.append(new TextComponent(Default.DEFAULT.badge).withStyle(Style.EMPTY.withColor(ColorUtils.userInputHex(avatar.color))));
+                badges.append(Component.literal(Default.DEFAULT.badge).withStyle(Style.EMPTY.withColor(ColorUtils.userInputHex(avatar.color))));
             }
         }
 
@@ -75,7 +74,7 @@ public class NameplateCustomization {
         //special badges
         for (int i = 0; i < special.length; i++) {
             if (avatar.badges.get(i + pride.length))
-                badges.append(new TextComponent(special[i].badge).withStyle(Style.EMPTY.withColor(special[i].color())));
+                badges.append(Component.literal(special[i].badge).withStyle(Style.EMPTY.withColor(special[i].color())));
         }
 
         return badges;

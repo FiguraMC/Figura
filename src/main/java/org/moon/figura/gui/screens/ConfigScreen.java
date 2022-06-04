@@ -12,7 +12,7 @@ import org.moon.figura.utils.FiguraText;
 
 public class ConfigScreen extends AbstractPanelScreen {
 
-    public static final Component TITLE = new FiguraText("gui.panels.title.settings");
+    public static final Component TITLE = FiguraText.of("gui.panels.title.settings");
 
     private ConfigList list;
     private final boolean hasPanels;
@@ -38,13 +38,13 @@ public class ConfigScreen extends AbstractPanelScreen {
         // -- bottom buttons -- //
 
         //discard
-        this.addRenderableWidget(new TexturedButton(width / 2 - 122, height - 24, 120, 20, new FiguraText("gui.cancel"), null, button -> {
+        this.addRenderableWidget(new TexturedButton(width / 2 - 122, height - 24, 120, 20, FiguraText.of("gui.cancel"), null, button -> {
             ConfigManager.discardConfig();
             list.updateList();
         }));
 
         //back
-        addRenderableWidget(new TexturedButton(width / 2 + 4, height - 24, 120, 20, new FiguraText("gui.back"), null,
+        addRenderableWidget(new TexturedButton(width / 2 + 4, height - 24, 120, 20, FiguraText.of("gui.back"), null,
                 bx -> this.minecraft.setScreen(parentScreen)
         ));
 

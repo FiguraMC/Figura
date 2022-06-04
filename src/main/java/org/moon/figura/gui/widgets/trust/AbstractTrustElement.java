@@ -2,7 +2,7 @@ package org.moon.figura.gui.widgets.trust;
 
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
@@ -20,7 +20,7 @@ public class AbstractTrustElement extends AbstractButton implements Comparable<A
     protected float scale = 1f;
 
     protected AbstractTrustElement(int height, TrustContainer container, PlayerList parent) {
-        super(0, 0, 174, height, TextComponent.EMPTY);
+        super(0, 0, 174, height, Component.empty());
         this.parent = parent;
         this.trust = container;
     }

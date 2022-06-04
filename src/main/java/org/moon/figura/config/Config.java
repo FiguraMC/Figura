@@ -30,25 +30,25 @@ public enum Config {
     CHAT_NAMEPLATE(2, 3) {{
         String path = "config.nameplate_level";
         this.enumList = List.of(
-                new FiguraText(path + ".1"),
-                new FiguraText(path + ".2"),
-                new FiguraText(path + ".3")
+                FiguraText.of(path + ".1"),
+                FiguraText.of(path + ".2"),
+                FiguraText.of(path + ".3")
         );
     }},
     ENTITY_NAMEPLATE(2, 3) {{
         String path = "config.nameplate_level";
         this.enumList = List.of(
-                new FiguraText(path + ".1"),
-                new FiguraText(path + ".2"),
-                new FiguraText(path + ".3")
+                FiguraText.of(path + ".1"),
+                FiguraText.of(path + ".2"),
+                FiguraText.of(path + ".3")
         );
     }},
     LIST_NAMEPLATE(2, 3) {{
         String path = "config.nameplate_level";
         this.enumList = List.of(
-                new FiguraText(path + ".1"),
-                new FiguraText(path + ".2"),
-                new FiguraText(path + ".3")
+                FiguraText.of(path + ".1"),
+                FiguraText.of(path + ".2"),
+                FiguraText.of(path + ".3")
         );
     }},
 
@@ -70,15 +70,15 @@ public enum Config {
     BUTTON_LOCATION(0, 5),
     EASTER_EGGS(true),
 
-    Dev {{this.name = new FiguraText("config.dev").withStyle(ChatFormatting.RED);}},
+    Dev {{this.name = FiguraText.of("config.dev").withStyle(ChatFormatting.RED);}},
     RELOAD_BUTTON("key.keyboard.unknown"),
     PANIC_BUTTON("key.keyboard.unknown"),
     //LOG_PINGS(0, 3);
     RENDER_DEBUG_PARTS_PIVOT(2, 3) {{
         String tooltip = "config.render_debug_parts_pivot.tooltip";
-        this.tooltip = new FiguraText(tooltip,
-                new FiguraText(tooltip + ".cubes").setStyle(ColorUtils.Colors.FRAN_PINK.style),
-                new FiguraText(tooltip + ".groups").setStyle(ColorUtils.Colors.MAYA_BLUE.style));
+        this.tooltip = FiguraText.of(tooltip,
+                FiguraText.of(tooltip + ".cubes").setStyle(ColorUtils.Colors.FRAN_PINK.style),
+                FiguraText.of(tooltip + ".groups").setStyle(ColorUtils.Colors.MAYA_BLUE.style));
     }},
     LOG_OTHERS(false),
     MAIN_DIR("", InputType.FOLDER_PATH);
@@ -147,14 +147,14 @@ public enum Config {
 
         //generate names
         String name = "config." + this.name().toLowerCase();
-        this.name = new FiguraText(name);
-        this.tooltip = new FiguraText(name + ".tooltip");
+        this.name = FiguraText.of(name);
+        this.tooltip = FiguraText.of(name + ".tooltip");
 
         //generate enum list
         if (length != null) {
             ArrayList<Component> enumList = new ArrayList<>();
             for (int i = 1; i <= length; i++)
-                enumList.add(new FiguraText(name + "." + i));
+                enumList.add(FiguraText.of(name + "." + i));
             this.enumList = enumList;
         }
     }
@@ -221,7 +221,7 @@ public enum Config {
         public final Component hint;
         InputType(Predicate<String> predicate) {
             this.validator = predicate;
-            this.hint = new FiguraText("config.input." + this.name().toLowerCase());
+            this.hint = FiguraText.of("config.input." + this.name().toLowerCase());
         }
     }
 

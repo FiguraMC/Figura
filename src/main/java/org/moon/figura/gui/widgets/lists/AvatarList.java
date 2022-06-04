@@ -53,17 +53,17 @@ public class AvatarList extends AbstractList {
 
             @Override
             public Component getName() {
-                return new FiguraText("gui.wardrobe.unselect").withStyle(ChatFormatting.GRAY);
+                return FiguraText.of("gui.wardrobe.unselect").withStyle(ChatFormatting.GRAY);
             }
         };
 
-        children.add(new TextField(x + 4, y + 4, width - 32, 20, new FiguraText("gui.search"), s -> filter = s));
+        children.add(new TextField(x + 4, y + 4, width - 32, 20, FiguraText.of("gui.search"), s -> filter = s));
         children.add(new TexturedButton(
                 x + width - 24, y + 4,
                 20, 20, 0, 0, 20,
                 new FiguraIdentifier("textures/gui/folder.png"),
                 60, 20,
-                new FiguraText("gui.wardrobe.folder.tooltip"),
+                FiguraText.of("gui.wardrobe.folder.tooltip"),
                 button -> Util.getPlatform().openFile(LocalAvatarFetcher.getLocalAvatarDirectory().toFile()))
         );
 

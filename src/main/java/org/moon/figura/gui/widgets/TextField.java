@@ -6,7 +6,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.moon.figura.utils.FiguraIdentifier;
@@ -26,7 +25,7 @@ public class TextField extends AbstractContainerElement {
         super(x, y, width, height);
         this.hint = hint;
 
-        field = new EditBox(Minecraft.getInstance().font, x + 4, y + (height - 8) / 2, width - 12, height - (height - 8) / 2, TextComponent.EMPTY.copy());
+        field = new EditBox(Minecraft.getInstance().font, x + 4, y + (height - 8) / 2, width - 12, height - (height - 8) / 2, Component.empty());
         field.setMaxLength(32767);
         field.setBordered(false);
         field.setResponder(changedListener);

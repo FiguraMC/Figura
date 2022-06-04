@@ -5,13 +5,12 @@ import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.PauseScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
-import org.moon.figura.FiguraMod;
 import org.moon.figura.config.Config;
 import org.moon.figura.config.ConfigManager;
 import org.moon.figura.gui.screens.WardrobeScreen;
 import org.moon.figura.utils.FiguraIdentifier;
+import org.moon.figura.utils.FiguraText;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -60,7 +59,7 @@ public class PauseScreenMixin extends Screen {
             if (ConfigManager.modmenuShift())
                 y -= 12;
 
-            addRenderableWidget(new Button(x, y, 64, 20, new TranslatableComponent(FiguraMod.MOD_ID),
+            addRenderableWidget(new Button(x, y, 64, 20, FiguraText.of(),
                     btn -> this.minecraft.setScreen(new WardrobeScreen(this))));
         } else { //icon
             addRenderableWidget(new ImageButton(x, y, 20, 20, 0, 0, 20, FIGURA_ICON, 20, 40, btn -> this.minecraft.setScreen(new WardrobeScreen(this))));

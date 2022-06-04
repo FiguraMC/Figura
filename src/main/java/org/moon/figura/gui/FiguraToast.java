@@ -7,8 +7,6 @@ import net.minecraft.client.gui.components.toasts.Toast;
 import net.minecraft.client.gui.components.toasts.ToastComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.utils.ColorUtils;
@@ -25,7 +23,7 @@ public class FiguraToast implements Toast {
     private boolean justUpdated;
 
     public FiguraToast(Component title, Component message, ToastType type) {
-        this.title = TextComponent.EMPTY.copy().setStyle(Style.EMPTY.withColor(type.color)).append(title);
+        this.title = Component.empty().setStyle(Style.EMPTY.withColor(type.color)).append(title);
         this.message = message;
         this.type = type;
     }
@@ -55,11 +53,11 @@ public class FiguraToast implements Toast {
 
     //new toast
     public static void sendToast(Object title) {
-        sendToast(title, TextComponent.EMPTY);
+        sendToast(title, Component.empty());
     }
 
     public static void sendToast(Object title, ToastType type) {
-        sendToast(title, TextComponent.EMPTY, type);
+        sendToast(title, Component.empty(), type);
     }
 
     public static void sendToast(Object title, Object message) {
@@ -67,8 +65,8 @@ public class FiguraToast implements Toast {
     }
 
     public static void sendToast(Object title, Object message, ToastType type) {
-        Component text = title instanceof Component t ? t : new TranslatableComponent(title.toString());
-        Component text2 = message instanceof Component m ? m : new TranslatableComponent(message.toString());
+        Component text = title instanceof Component t ? t : Component.translatable(title.toString());
+        Component text2 = message instanceof Component m ? m : Component.translatable(message.toString());
 
         if (type == ToastType.DEFAULT && (FiguraMod.CHEESE_DAY || Math.random() < 0.0001))
             type = ToastType.CHEESE;

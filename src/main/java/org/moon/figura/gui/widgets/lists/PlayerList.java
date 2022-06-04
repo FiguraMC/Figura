@@ -43,7 +43,7 @@ public class PlayerList extends AbstractList {
         scrollBar.setHeight(height - 32);
 
         //search bar
-        children.add(new TextField(x + 4, y + 4, width - 8, 20, new FiguraText("gui.search"), s -> filter = s));
+        children.add(new TextField(x + 4, y + 4, width - 8, 20, FiguraText.of("gui.search"), s -> filter = s));
 
         //initial load
         loadGroups();

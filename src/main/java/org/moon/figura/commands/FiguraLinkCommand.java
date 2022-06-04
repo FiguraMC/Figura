@@ -1,7 +1,7 @@
 package org.moon.figura.commands;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.*;
 import org.moon.figura.FiguraMod;
@@ -44,9 +44,9 @@ public class FiguraLinkCommand {
         LiteralArgumentBuilder<FabricClientCommandSource> links = LiteralArgumentBuilder.literal("links");
         links.executes(context -> {
             //header
-            MutableComponent message = TextComponent.EMPTY.plainCopy().withStyle(ColorUtils.Colors.FRAN_PINK.style)
-                    .append(new TextComponent("•*+•* ")
-                            .append(new FiguraText())
+            MutableComponent message = Component.empty().withStyle(ColorUtils.Colors.FRAN_PINK.style)
+                    .append(Component.literal("•*+•* ")
+                            .append(FiguraText.of())
                             .append(" Links *•+*•").withStyle(ChatFormatting.UNDERLINE))
                     .append("\n");
 
@@ -57,10 +57,10 @@ public class FiguraLinkCommand {
                 if (link.isSpace)
                     continue;
 
-                message.append(new TextComponent("• " + link.name)
+                message.append(Component.literal("• " + link.name)
                         .withStyle(link.style)
                         .withStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, link.url)))
-                        .withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent(link.url)))));
+                        .withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(link.url)))));
             }
 
             FiguraMod.sendChatMessage(message);

@@ -3,11 +3,11 @@ package org.moon.figura.lua.docs;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.ChatFormatting;
 import net.minecraft.locale.Language;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.FiguraText;
@@ -19,8 +19,8 @@ import java.util.ArrayList;
 
 public abstract class FiguraDoc {
 
-    public static final MutableComponent HEADER = TextComponent.EMPTY.copy().withStyle(ColorUtils.Colors.FRAN_PINK.style)
-                .append(new TextComponent("\n•*+•* ").append(new FiguraText()).append(" Docs *•+*•")
+    public static final MutableComponent HEADER = Component.empty().withStyle(ColorUtils.Colors.FRAN_PINK.style)
+                .append(Component.literal("\n•*+•* ").append(FiguraText.of()).append(" Docs *•+*•")
                         .withStyle(ChatFormatting.UNDERLINE));
 
     public final String name;
@@ -45,7 +45,7 @@ public abstract class FiguraDoc {
     public JsonObject toJson() {
         JsonObject json = new JsonObject();
         json.addProperty("name", name);
-        json.addProperty("description", Language.getInstance().getOrDefault(new FiguraText("docs." + description).getString()));
+        json.addProperty("description", Language.getInstance().getOrDefault(FiguraText.of("docs." + description).getString()));
         return json;
     }
 
@@ -56,21 +56,21 @@ public abstract class FiguraDoc {
 
         FiguraMod.sendChatMessage(HEADER.copy()
                 .append("\n\n")
-                .append(new TextComponent("• ")
-                        .append(new FiguraText("docs.text.group"))
+                .append(Component.literal("• ")
+                        .append(FiguraText.of("docs.text.group"))
                         .append(":")
                         .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
                 .append("\n\t")
-                .append(new TextComponent(capitalised).withStyle(ColorUtils.Colors.MAYA_BLUE.style))
+                .append(Component.literal(capitalised).withStyle(ColorUtils.Colors.MAYA_BLUE.style))
 
                 .append("\n\n")
-                .append(new TextComponent("• ")
-                        .append(new FiguraText("docs.text.description"))
+                .append(Component.literal("• ")
+                        .append(FiguraText.of("docs.text.description"))
                         .append(":")
                         .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
                 .append("\n\t")
-                .append(new TextComponent("• ")
-                        .append(new FiguraText("docs.group." + name))
+                .append(Component.literal("• ")
+                        .append(FiguraText.of("docs.group." + name))
                         .withStyle(ColorUtils.Colors.MAYA_BLUE.style)));
 
         return 1;
@@ -79,7 +79,7 @@ public abstract class FiguraDoc {
     public static int printRoot() {
         FiguraMod.sendChatMessage(HEADER.copy()
                 .append("\n\n")
-                .append(new FiguraText("docs").withStyle(ColorUtils.Colors.MAYA_BLUE.style)));
+                .append(FiguraText.of("docs").withStyle(ColorUtils.Colors.MAYA_BLUE.style)));
 
         return 1;
     }
@@ -116,22 +116,22 @@ public abstract class FiguraDoc {
 
                     //type
                     .append("\n\n")
-                    .append(new TextComponent("• ")
-                            .append(new FiguraText("docs.text.type"))
+                    .append(Component.literal("• ")
+                            .append(FiguraText.of("docs.text.type"))
                             .append(":")
                             .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
                     .append("\n\t")
-                    .append(new TextComponent("• " + name).withStyle(ColorUtils.Colors.MAYA_BLUE.style))
+                    .append(Component.literal("• " + name).withStyle(ColorUtils.Colors.MAYA_BLUE.style))
 
                     //description
                     .append("\n\n")
-                    .append(new TextComponent("• ")
-                            .append(new FiguraText("docs.text.description"))
+                    .append(Component.literal("• ")
+                            .append(FiguraText.of("docs.text.description"))
                             .append(":")
                             .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
                     .append("\n\t")
-                    .append(new TextComponent("• ")
-                            .append(new FiguraText("docs." + description))
+                    .append(Component.literal("• ")
+                            .append(FiguraText.of("docs." + description))
                             .withStyle(ColorUtils.Colors.MAYA_BLUE.style)));
 
             return 1;
@@ -206,31 +206,31 @@ public abstract class FiguraDoc {
 
                     //type
                     .append("\n\n")
-                    .append(new TextComponent("• ")
-                            .append(new FiguraText("docs.text.function"))
+                    .append(Component.literal("• ")
+                            .append(FiguraText.of("docs.text.function"))
                             .append(":")
                             .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
                     .append("\n\t")
-                    .append(new TextComponent("• " + name).withStyle(ColorUtils.Colors.MAYA_BLUE.style))
+                    .append(Component.literal("• " + name).withStyle(ColorUtils.Colors.MAYA_BLUE.style))
 
                     //syntax
                     .append("\n\n")
-                    .append(new TextComponent("• ")
-                            .append(new FiguraText("docs.text.syntax"))
+                    .append(Component.literal("• ")
+                            .append(FiguraText.of("docs.text.syntax"))
                             .append(":")
                             .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style));
 
             for (int i = 0; i < parameterTypes.length; i++) {
                 //name
-                message.append("\n\t").append(new TextComponent("• " + name).withStyle(ColorUtils.Colors.MAYA_BLUE.style))
+                message.append("\n\t").append(Component.literal("• " + name).withStyle(ColorUtils.Colors.MAYA_BLUE.style))
                         .append("(");
 
                 for (int j = 0; j < parameterTypes[i].length; j++) {
                     //type and arg
                     String typeName = FiguraDocsManager.NAME_MAP.getOrDefault(parameterTypes[i][j], parameterTypes[i][j].getName());
-                    message.append(new TextComponent(typeName).withStyle(ChatFormatting.YELLOW))
+                    message.append(Component.literal(typeName).withStyle(ChatFormatting.YELLOW))
                             .append(" ")
-                            .append(new TextComponent(parameterNames[i][j]).withStyle(ChatFormatting.WHITE));
+                            .append(Component.literal(parameterNames[i][j]).withStyle(ChatFormatting.WHITE));
 
                     if (j != parameterTypes[i].length - 1)
                         message.append(", ");
@@ -238,19 +238,19 @@ public abstract class FiguraDoc {
 
                 //return
                 message.append("): ")
-                        .append(new FiguraText("docs.text.returns").append(" ").withStyle(ColorUtils.Colors.MAYA_BLUE.style))
-                        .append(new TextComponent(FiguraDocsManager.NAME_MAP.getOrDefault(returnTypes[i], returnTypes[i].getName())).withStyle(ChatFormatting.YELLOW));
+                        .append(FiguraText.of("docs.text.returns").append(" ").withStyle(ColorUtils.Colors.MAYA_BLUE.style))
+                        .append(Component.literal(FiguraDocsManager.NAME_MAP.getOrDefault(returnTypes[i], returnTypes[i].getName())).withStyle(ChatFormatting.YELLOW));
             }
 
             //description
             message.append("\n\n")
-                    .append(new TextComponent("• ")
-                            .append(new FiguraText("docs.text.description"))
+                    .append(Component.literal("• ")
+                            .append(FiguraText.of("docs.text.description"))
                             .append(":")
                             .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
                     .append("\n\t")
-                    .append(new TextComponent("• ")
-                            .append(new FiguraText("docs." + description))
+                    .append(Component.literal("• ")
+                            .append(FiguraText.of("docs." + description))
                             .withStyle(ColorUtils.Colors.MAYA_BLUE.style));
 
             FiguraMod.sendChatMessage(message);
@@ -302,27 +302,27 @@ public abstract class FiguraDoc {
 
                     //type
                     .append("\n\n")
-                    .append(new TextComponent("• ")
-                            .append(new FiguraText("docs.text.field"))
+                    .append(Component.literal("• ")
+                            .append(FiguraText.of("docs.text.field"))
                             .append(":")
                             .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
                     .append("\n\t")
-                    .append(new TextComponent("• " + FiguraDocsManager.NAME_MAP.getOrDefault(type, type.getName())).withStyle(ChatFormatting.YELLOW))
-                    .append(new TextComponent(" " + name).withStyle(ColorUtils.Colors.MAYA_BLUE.style))
-                    .append(new TextComponent(" (")
-                            .append(new FiguraText(editable ? "docs.text.editable" : "docs.text.not_editable"))
+                    .append(Component.literal("• " + FiguraDocsManager.NAME_MAP.getOrDefault(type, type.getName())).withStyle(ChatFormatting.YELLOW))
+                    .append(Component.literal(" " + name).withStyle(ColorUtils.Colors.MAYA_BLUE.style))
+                    .append(Component.literal(" (")
+                            .append(FiguraText.of(editable ? "docs.text.editable" : "docs.text.not_editable"))
                             .append(")")
                             .withStyle(editable ? ChatFormatting.GREEN : ChatFormatting.DARK_RED))
 
                     //description
                     .append("\n\n")
-                    .append(new TextComponent("• ")
-                            .append(new FiguraText("docs.text.description"))
+                    .append(Component.literal("• ")
+                            .append(FiguraText.of("docs.text.description"))
                             .append(":")
                             .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
                     .append("\n\t")
-                    .append(new TextComponent("• ")
-                            .append(new FiguraText("docs." + description))
+                    .append(Component.literal("• ")
+                            .append(FiguraText.of("docs." + description))
                             .withStyle(ColorUtils.Colors.MAYA_BLUE.style)));
 
             return 1;

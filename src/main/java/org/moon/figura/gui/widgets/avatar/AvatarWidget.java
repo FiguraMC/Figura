@@ -5,7 +5,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.gui.widgets.TexturedButton;
 import org.moon.figura.gui.widgets.lists.AvatarList;
@@ -22,7 +21,7 @@ public class AvatarWidget extends AbstractAvatarWidget {
         super(depth, width, path, parent);
 
         AvatarWidget instance = this;
-        this.button = new TexturedButton(x, y, width, 20, new TextComponent("  ".repeat(depth)).append(getName()), null, button -> {
+        this.button = new TexturedButton(x, y, width, 20, Component.literal("  ".repeat(depth)).append(getName()), null, button -> {
             AvatarManager.loadLocalAvatar(path);
             AvatarList.selectedEntry = instance;
         }) {

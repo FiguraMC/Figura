@@ -5,7 +5,6 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.config.Config;
@@ -27,8 +26,8 @@ public class GuiMixin {
 
     @Shadow @Final private Minecraft minecraft;
 
-    @ModifyArgs(method = "handleChat", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/chat/ChatListener;handle(Lnet/minecraft/network/chat/ChatType;Lnet/minecraft/network/chat/Component;Ljava/util/UUID;)V"))
-    private void handleChat(Args args) {
+    @ModifyArgs(method = "handlePlayerChat", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/chat/ChatListener;handle(Lnet/minecraft/network/chat/ChatType;Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/ChatSender;)V"))
+    private void handlePlayerChat(Args args) {
         //get config
         int config = (int) Config.CHAT_NAMEPLATE.value;
 
@@ -54,7 +53,7 @@ public class GuiMixin {
             if (custom != null && NameplateCustomization.getText(custom) != null && TrustManager.get(uuid).get(TrustContainer.Trust.NAMEPLATE_EDIT) == 1) {
                 replacement = NameplateCustomization.applyCustomization(NameplateCustomization.getText(custom).replaceAll("\n|\\\\n", ""));
             } else {
-                replacement = new TextComponent(player.getProfile().getName());
+                replacement = Component.literal(player.getProfile().getName());
             }
 
             //apply nameplate

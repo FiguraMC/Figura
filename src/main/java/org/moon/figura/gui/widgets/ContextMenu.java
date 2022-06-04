@@ -10,7 +10,6 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.TextUtils;
@@ -176,7 +175,7 @@ public class ContextMenu extends AbstractContainerElement {
     private static class ContextDivisor extends AbstractWidget {
 
         public ContextDivisor(int x, int y) {
-            super(x, y, 0, 9, TextComponent.EMPTY);
+            super(x, y, 0, 9, Component.empty());
         }
 
         @Override
@@ -197,7 +196,7 @@ public class ContextMenu extends AbstractContainerElement {
 
     private static class TabButton extends ContextButton {
 
-        private static final Component ARROW = new TextComponent(">").setStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT));
+        private static final Component ARROW = Component.literal(">").setStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT));
         private final ContextMenu context;
 
         public TabButton(int x, int y, Component text, ContextMenu parent, ContextMenu context) {

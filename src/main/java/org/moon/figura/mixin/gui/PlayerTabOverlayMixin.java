@@ -4,7 +4,6 @@ import net.minecraft.client.gui.components.PlayerTabOverlay;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.config.Config;
@@ -43,7 +42,7 @@ public class PlayerTabOverlayMixin {
         if (custom != null && NameplateCustomization.getText(custom) != null && TrustManager.get(uuid).get(TrustContainer.Trust.NAMEPLATE_EDIT) == 1) {
             replacement = NameplateCustomization.applyCustomization(NameplateCustomization.getText(custom));
         } else {
-            replacement = new TextComponent(playerInfo.getProfile().getName());
+            replacement = Component.literal(playerInfo.getProfile().getName());
         }
 
         if (config > 1) {

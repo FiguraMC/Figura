@@ -7,7 +7,6 @@ import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.commands.FiguraLinkCommand;
@@ -20,7 +19,7 @@ import org.moon.figura.utils.FiguraText;
 
 public class WardrobeScreen extends AbstractPanelScreen {
 
-    public static final Component TITLE = new FiguraText("gui.panels.title.wardrobe");
+    public static final Component TITLE = FiguraText.of("gui.panels.title.wardrobe");
 
     private StatusWidget statusWidget;
     private AvatarInfoWidget avatarInfo;
@@ -63,20 +62,20 @@ public class WardrobeScreen extends AbstractPanelScreen {
         int buttY = entity.y + entity.height + 4;
 
         //upload
-        addRenderableWidget(upload = new TexturedButton(buttX - 48, buttY, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/upload.png"), 72, 24, new FiguraText("gui.wardrobe.upload.tooltip"), button -> {
-            FiguraToast.sendToast(new TextComponent("lol nope").setStyle(Style.EMPTY.withColor(0xFFADAD)), FiguraToast.ToastType.DEFAULT);
+        addRenderableWidget(upload = new TexturedButton(buttX - 48, buttY, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/upload.png"), 72, 24, FiguraText.of("gui.wardrobe.upload.tooltip"), button -> {
+            FiguraToast.sendToast(Component.literal("lol nope").setStyle(Style.EMPTY.withColor(0xFFADAD)), FiguraToast.ToastType.DEFAULT);
         }));
         upload.active = false;
 
         //reload
-        addRenderableWidget(reload = new TexturedButton(buttX - 12, buttY, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/reload.png"), 72, 24, new FiguraText("gui.wardrobe.reload.tooltip"), button -> {
-            FiguraToast.sendToast(new TextComponent("lol nope").setStyle(Style.EMPTY.withColor(0xFFADAD)), FiguraToast.ToastType.DEFAULT);
+        addRenderableWidget(reload = new TexturedButton(buttX - 12, buttY, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/reload.png"), 72, 24, FiguraText.of("gui.wardrobe.reload.tooltip"), button -> {
+            FiguraToast.sendToast(Component.literal("lol nope").setStyle(Style.EMPTY.withColor(0xFFADAD)), FiguraToast.ToastType.DEFAULT);
         }));
         reload.active = false;
 
         //delete
-        addRenderableWidget(delete = new TexturedButton(buttX + 24, buttY, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/delete.png"), 72, 24, new FiguraText("gui.wardrobe.delete.tooltip"), button -> {
-            FiguraToast.sendToast(new TextComponent("lol nope").setStyle(Style.EMPTY.withColor(0xFFADAD)), FiguraToast.ToastType.DEFAULT);
+        addRenderableWidget(delete = new TexturedButton(buttX + 24, buttY, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/delete.png"), 72, 24, FiguraText.of("gui.wardrobe.delete.tooltip"), button -> {
+            FiguraToast.sendToast(Component.literal("lol nope").setStyle(Style.EMPTY.withColor(0xFFADAD)), FiguraToast.ToastType.DEFAULT);
         }));
         delete.active = false;
 
@@ -87,13 +86,13 @@ public class WardrobeScreen extends AbstractPanelScreen {
         // -- bottom -- //
 
         //version
-        Label version = new Label(new FiguraText().append(" " + FiguraMod.VERSION).withStyle(ChatFormatting.ITALIC, ChatFormatting.DARK_GRAY), middle, this.height - 5, true);
+        Label version = new Label(FiguraText.of().append(" " + FiguraMod.VERSION).withStyle(ChatFormatting.ITALIC, ChatFormatting.DARK_GRAY), middle, this.height - 5, true);
         addRenderableOnly(version);
 
         int rightSide = Math.min(third, 134);
 
         //back
-        addRenderableWidget(new TexturedButton(width - rightSide - 4, height - 24, rightSide, 20, new FiguraText("gui.back"), null,
+        addRenderableWidget(new TexturedButton(width - rightSide - 4, height - 24, rightSide, 20, FiguraText.of("gui.back"), null,
             bx -> this.minecraft.setScreen(parentScreen)
         ));
 
@@ -105,7 +104,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
                 0, 0, 24,
                 new FiguraIdentifier("textures/gui/help.png"),
                 72, 24,
-                new FiguraText("gui.help.tooltip"),
+                FiguraText.of("gui.help.tooltip"),
                 bx -> this.minecraft.setScreen(new ConfirmLinkScreen((bl) -> {
                     if (bl) Util.getPlatform().openUri(FiguraLinkCommand.LINK.WIKI.url);
                     this.minecraft.setScreen(this);
@@ -113,14 +112,14 @@ public class WardrobeScreen extends AbstractPanelScreen {
         ));
 
         //sounds
-        TexturedButton sounds = new TexturedButton(this.width - rightSide / 2 - 16, 32, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/sound.png"), 72, 24, new FiguraText("gui.wardrobe.sound.tooltip"), button -> {
+        TexturedButton sounds = new TexturedButton(this.width - rightSide / 2 - 16, 32, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/sound.png"), 72, 24, FiguraText.of("gui.wardrobe.sound.tooltip"), button -> {
             Minecraft.getInstance().setScreen(new SoundScreen(this));
         });
         sounds.active = false; //TODO
         addRenderableWidget(sounds);
 
         //keybinds
-        TexturedButton keybinds = new TexturedButton(this.width - 28, 32, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/keybind.png"), 72, 24, new FiguraText("gui.wardrobe.keybind.tooltip"), button -> {
+        TexturedButton keybinds = new TexturedButton(this.width - 28, 32, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/keybind.png"), 72, 24, FiguraText.of("gui.wardrobe.keybind.tooltip"), button -> {
             Minecraft.getInstance().setScreen(new KeybindScreen(this));
         });
         addRenderableWidget(keybinds);
@@ -129,8 +128,8 @@ public class WardrobeScreen extends AbstractPanelScreen {
         addRenderableOnly(avatarInfo = new AvatarInfoWidget(this.width - rightSide - 4, 64, rightSide));
 
         //panic warning - always added last, on top
-        addRenderableOnly(panic1 = new Label(new FiguraText("gui.panic.1").withStyle(ChatFormatting.YELLOW), middle, this.height - 23, true, 0));
-        addRenderableOnly(panic2 = new Label(new FiguraText("gui.panic.2", Config.PANIC_BUTTON.keyBind.getTranslatedKeyMessage()).withStyle(ChatFormatting.YELLOW), middle, this.height - 14, true, 0));
+        addRenderableOnly(panic1 = new Label(FiguraText.of("gui.panic.1").withStyle(ChatFormatting.YELLOW), middle, this.height - 23, true, 0));
+        addRenderableOnly(panic2 = new Label(FiguraText.of("gui.panic.2", Config.PANIC_BUTTON.keyBind.getTranslatedKeyMessage()).withStyle(ChatFormatting.YELLOW), middle, this.height - 14, true, 0));
         panic1.setVisible(false);
         panic2.setVisible(false);
     }

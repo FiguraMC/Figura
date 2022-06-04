@@ -4,18 +4,15 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Matrix4f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.model.ElytraModel;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
-import net.minecraft.client.renderer.entity.layers.ElytraLayer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.Score;
 import net.minecraft.world.scores.Scoreboard;
@@ -24,7 +21,6 @@ import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.config.Config;
 import org.moon.figura.lua.api.nameplate.NameplateCustomization;
 import org.moon.figura.math.vector.FiguraVec3;
-import org.moon.figura.mixin.render.layers.elytra.ElytraLayerAccessor;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.TextUtils;
@@ -97,7 +93,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
         if (custom != null && NameplateCustomization.getText(custom) != null && trust) {
             replacement = NameplateCustomization.applyCustomization(NameplateCustomization.getText(custom));
         } else {
-            replacement = new TextComponent(player.getName().getString());
+            replacement = Component.literal(player.getName().getString());
         }
 
         if (config > 1) {
@@ -129,7 +125,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
                 //render scoreboard
                 Score score = scoreboard.getOrCreatePlayerScore(player.getScoreboardName(), scoreboardObjective);
 
-                Component text1 = new TextComponent(Integer.toString(score.getScore())).append(" ").append(scoreboardObjective.getDisplayName());
+                Component text1 = Component.literal(Integer.toString(score.getScore())).append(" ").append(scoreboardObjective.getDisplayName());
                 float x = -font.width(text1) / 2f;
                 float y = deadmau ? -10f : 0f;
 

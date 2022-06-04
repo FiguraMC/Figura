@@ -3,7 +3,6 @@ package org.moon.figura.gui.widgets.avatar;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.widgets.AbstractContainerElement;
 import org.moon.figura.gui.widgets.ContextMenu;
@@ -28,11 +27,11 @@ public class AbstractAvatarWidget extends AbstractContainerElement implements Co
         this.depth = depth;
         this.context = new ContextMenu(this);
 
-        context.addAction(new FiguraText("gui.context.open_folder"), button -> {
+        context.addAction(FiguraText.of("gui.context.open_folder"), button -> {
             File f = path.toFile();
             Util.getPlatform().openFile(f.isDirectory() ? f : f.getParentFile());
         });
-        context.addAction(new FiguraText("gui.context.copy_path"), button -> {
+        context.addAction(FiguraText.of("gui.context.copy_path"), button -> {
             Minecraft.getInstance().keyboardHandler.setClipboard(path.toString());
             FiguraToast.sendToast(new FiguraText("toast.clipboard"));
         });
@@ -67,7 +66,7 @@ public class AbstractAvatarWidget extends AbstractContainerElement implements Co
     }
 
     public Component getName() {
-        return new TextComponent(path.getFileName().toString());
+        return Component.literal(path.getFileName().toString());
     }
 
     public int getHeight() {

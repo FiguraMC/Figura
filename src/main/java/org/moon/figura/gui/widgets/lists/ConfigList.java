@@ -4,7 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.components.events.GuiEventListener;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import org.moon.figura.config.Config;
 import org.moon.figura.gui.widgets.config.ConfigWidget;
@@ -83,7 +83,7 @@ public class ConfigList extends AbstractList {
             if (config.type != Config.ConfigType.CATEGORY) {
                 //create dummy category if empty
                 if (lastCategory == null) {
-                    ConfigWidget widget = new ConfigWidget(width - 22, TextComponent.EMPTY, null, this);
+                    ConfigWidget widget = new ConfigWidget(width - 22, Component.empty(), null, this);
                     lastCategory = widget;
 
                     temp.add(widget);

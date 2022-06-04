@@ -1,7 +1,7 @@
 package org.moon.figura.backend;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientHandshakePacketListenerImpl;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -59,7 +59,7 @@ public class NetworkManager {
         });
 
         authConnection.send(new ClientIntentionPacket(inetSocketAddress.getHostName(), inetSocketAddress.getPort(), ConnectionProtocol.LOGIN));
-        authConnection.send(new ServerboundHelloPacket(minecraft.getUser().getGameProfile()));
+        authConnection.send(new ServerboundHelloPacket(minecraft.getUser().getName(), minecraft.getProfileKeyPairManager().profilePublicKeyData()));
     }
 
     public static LiteralArgumentBuilder<FabricClientCommandSource> getCommand() {

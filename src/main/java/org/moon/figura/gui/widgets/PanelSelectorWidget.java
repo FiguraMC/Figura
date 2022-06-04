@@ -3,7 +3,6 @@ package org.moon.figura.gui.widgets;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.gui.screens.*;
 
@@ -33,7 +32,7 @@ public class PanelSelectorWidget extends AbstractContainerElement {
 
         for (int i = 0; i < 2; i++) {
             SwitchButton button = buttons.get(i);
-            button.setTooltip(new TextComponent("Not yet ❤"));
+            button.setTooltip(Component.literal("Not yet ❤"));
             button.active = false;
         }
         //TODO }

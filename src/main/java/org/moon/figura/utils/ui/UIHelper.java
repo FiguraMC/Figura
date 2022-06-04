@@ -17,7 +17,6 @@ import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
@@ -284,7 +283,7 @@ public class UIHelper extends GuiComponent {
     }
 
     public static void renderOutlineText(PoseStack stack, Font textRenderer, Component text, float x, float y, int color, int outline) {
-        Component outlineText = new TextComponent(text.getString().replaceAll("§.", "")).setStyle(text.getStyle().withColor(outline));
+        Component outlineText = Component.literal(text.getString().replaceAll("§.", "")).setStyle(text.getStyle().withColor(outline));
         for (int i = -1; i <= 1; ++i) {
             for (int j = -1; j <= 1; ++j) {
                 textRenderer.draw(stack, outlineText, x + i, y + j, outline);

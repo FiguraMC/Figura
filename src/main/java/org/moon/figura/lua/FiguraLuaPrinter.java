@@ -36,12 +36,12 @@ public class FiguraLuaPrinter {
 
     //print a string either on chat or console
     public static void sendLuaMessage(Object message, String owner) {
-        MutableComponent component = TextComponent.EMPTY.copy()
-                .append(new TextComponent("[lua] ").withStyle(ColorUtils.Colors.LUA_LOG.style))
-                .append(new TextComponent(owner).withStyle(ChatFormatting.ITALIC))
-                .append(new TextComponent(" : ").withStyle(ColorUtils.Colors.LUA_LOG.style))
-                .append(message instanceof Component c ? c : new TextComponent(message.toString()))
-                .append(new TextComponent("\n"));
+        MutableComponent component = Component.empty()
+                .append(Component.literal("[lua] ").withStyle(ColorUtils.Colors.LUA_LOG.style))
+                .append(Component.literal(owner).withStyle(ChatFormatting.ITALIC))
+                .append(Component.literal(" : ").withStyle(ColorUtils.Colors.LUA_LOG.style))
+                .append(message instanceof Component c ? c : Component.literal(message.toString()))
+                .append(Component.literal("\n"));
 
         if ((int) Config.LOG_LOCATION.value == 0)
             sendLuaChatMessage(component);
@@ -60,11 +60,11 @@ public class FiguraLuaPrinter {
         //Might do something unexpected in the extremely niche circumstance that someone has their own script named "autoScripts" and has an error on line 1.
         message = message.replace("[string \"autoScripts\"]:1: ", "");
 
-        MutableComponent component = TextComponent.EMPTY.copy()
-                .append(new TextComponent("[error] ").withStyle(ColorUtils.Colors.LUA_ERROR.style))
-                .append(new TextComponent(name).withStyle(ChatFormatting.ITALIC))
-                .append(new TextComponent(" : " + message).withStyle(ColorUtils.Colors.LUA_ERROR.style))
-                .append(new TextComponent("\n"));
+        MutableComponent component = Component.empty()
+                .append(Component.literal("[error] ").withStyle(ColorUtils.Colors.LUA_ERROR.style))
+                .append(Component.literal(name).withStyle(ChatFormatting.ITALIC))
+                .append(Component.literal(" : " + message).withStyle(ColorUtils.Colors.LUA_ERROR.style))
+                .append(Component.literal("\n"));
 
         sendLuaChatMessage(component);
         FiguraMod.LOGGER.error("", error);
@@ -78,14 +78,14 @@ public class FiguraLuaPrinter {
         if (config == 0)
             return;
 
-        MutableComponent component = TextComponent.EMPTY.copy()
-                .append(new TextComponent("[ping] ").withStyle(ColorUtils.Colors.LUA_PING.style))
-                .append(new TextComponent(owner).withStyle(ChatFormatting.ITALIC))
-                .append(new TextComponent(" : ").withStyle(ColorUtils.Colors.LUA_PING.style))
+        MutableComponent component = Component.empty()
+                .append(Component.literal("[ping] ").withStyle(ColorUtils.Colors.LUA_PING.style))
+                .append(Component.literal(owner).withStyle(ChatFormatting.ITALIC))
+                .append(Component.literal(" : ").withStyle(ColorUtils.Colors.LUA_PING.style))
                 .append(size + "b")
-                .append(new TextComponent(" : ").withStyle(ColorUtils.Colors.LUA_PING.style))
+                .append(Component.literal(" : ").withStyle(ColorUtils.Colors.LUA_PING.style))
                 .append(ping)
-                .append(new TextComponent("\n"));
+                .append(Component.literal("\n"));
 
         if (config == 1)
             sendLuaChatMessage(component);
@@ -98,7 +98,7 @@ public class FiguraLuaPrinter {
         if (!(boolean) Config.LOG_OTHERS.value && ((FiguraLuaState) luaState).getOwner().owner.compareTo(FiguraMod.getLocalPlayerUUID()) != 0)
             return 0;
 
-        MutableComponent text = TextComponent.EMPTY.copy();
+        MutableComponent text = Component.empty();
 
         //execute if the stack has entries
         while (luaState.getTop() > 0) {
@@ -116,7 +116,7 @@ public class FiguraLuaPrinter {
         if (!(boolean) Config.LOG_OTHERS.value && ((FiguraLuaState) luaState).getOwner().owner.compareTo(FiguraMod.getLocalPlayerUUID()) != 0)
             return 0;
 
-        MutableComponent text = TextComponent.EMPTY.copy();
+        MutableComponent text = Component.empty();
 
         if (luaState.getTop() > 0)
             text.append(TextUtils.tryParseJson(luaToString(luaState, 1)));
@@ -130,7 +130,7 @@ public class FiguraLuaPrinter {
         if (!(boolean) Config.LOG_OTHERS.value && ((FiguraLuaState) luaState).getOwner().owner.compareTo(FiguraMod.getLocalPlayerUUID()) != 0)
             return 0;
 
-        MutableComponent text = TextComponent.EMPTY.copy();
+        MutableComponent text = Component.empty();
 
         if (luaState.getTop() > 0) {
             int depth = luaState.getTop() > 1 ? (int) luaState.checkInteger(2) : 1;
@@ -160,9 +160,9 @@ public class FiguraLuaPrinter {
         }
 
         //format text
-        MutableComponent text = TextComponent.EMPTY.copy();
-        text.append(new TextComponent(type == LuaType.USERDATA ? "userdata:" : "table:").withStyle(getTypeColor(type)));
-        text.append(new TextComponent(" {\n").withStyle(ChatFormatting.GRAY));
+        MutableComponent text = Component.empty();
+        text.append(Component.literal(type == LuaType.USERDATA ? "userdata:" : "table:").withStyle(getTypeColor(type)));
+        text.append(Component.literal(" {\n").withStyle(ChatFormatting.GRAY));
 
         String spacing = "\t".repeat(indent - 1);
 
@@ -174,9 +174,9 @@ public class FiguraLuaPrinter {
             text.append(spacing).append("\t");
 
             //add key
-            text.append(new TextComponent("[").withStyle(ChatFormatting.GRAY));
+            text.append(Component.literal("[").withStyle(ChatFormatting.GRAY));
             text.append(getPrintText(luaState, tableTop - 1, hasTooltip, true));
-            text.append(new TextComponent("] = ").withStyle(ChatFormatting.GRAY));
+            text.append(Component.literal("] = ").withStyle(ChatFormatting.GRAY));
 
             //add value
             type = luaState.type(tableTop);
@@ -193,7 +193,7 @@ public class FiguraLuaPrinter {
         //pop copied value
         luaState.pop(1);
 
-        text.append(spacing).append(new TextComponent("}").withStyle(ChatFormatting.GRAY));
+        text.append(spacing).append(Component.literal("}").withStyle(ChatFormatting.GRAY));
         return text;
     }
 
@@ -248,7 +248,7 @@ public class FiguraLuaPrinter {
             default -> ret = luaToString(luaState, index);
         }
 
-        MutableComponent text = new TextComponent(ret).withStyle(getTypeColor(type));
+        MutableComponent text = Component.literal(ret).withStyle(getTypeColor(type));
 
         //table tooltip
         if (hasTooltip && (type == LuaType.TABLE || type == LuaType.USERDATA)) {
@@ -287,7 +287,7 @@ public class FiguraLuaPrinter {
      */
     private static void sendLuaChatMessage(MutableComponent message) throws LuaRuntimeException {
         if (message.getSiblings().isEmpty()) {
-            charsQueued += message.getContents().length();
+            charsQueued += message.getString().length();
             if (charsQueued > MAX_CHARS_QUEUED) {
                 chatQueue.clear();
                 charsQueued = 0;
@@ -310,13 +310,13 @@ public class FiguraLuaPrinter {
         int totalLen = 0;
         MutableComponent bigComponent = chatQueue.poll();
         while (chatQueue.size() > 1) {
-            MutableComponent smallComponent = TextComponent.EMPTY.copy();
+            MutableComponent smallComponent = Component.empty();
 
             int len = 0;
             MutableComponent smallerComponent = chatQueue.poll();
-            while (chatQueue.size() > 1 && !smallerComponent.getContents().equals("\n")) {
+            while (chatQueue.size() > 1 && !smallerComponent.getString().equals("\n")) {
                 smallComponent.append(smallerComponent);
-                len += smallerComponent.getContents().length();
+                len += smallerComponent.getString().length();
                 smallerComponent = chatQueue.poll();
             }
             smallComponent.append(smallerComponent);
@@ -327,7 +327,7 @@ public class FiguraLuaPrinter {
                 charsQueued -= len;
                 if (len > MAX_CHARS_PER_TICK) {
                     String s = "[Component too big, not printing]";
-                    chatQueue.addFirst(new TextComponent(s));
+                    chatQueue.addFirst(Component.literal(s));
                     charsQueued += s.length();
                 } else {
                     chatQueue.addFirst(smallComponent);

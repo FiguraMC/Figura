@@ -7,7 +7,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.Mth;
 import org.moon.figura.gui.widgets.SliderWidget;
 import org.moon.figura.gui.widgets.SwitchButton;
@@ -91,7 +90,7 @@ public class TrustList extends AbstractList {
 
     private static class TrustSlider extends SliderWidget {
 
-        private static final Component INFINITY = new FiguraText("trust.infinity");
+        private static final Component INFINITY = FiguraText.of("trust.infinity");
 
         private final TrustContainer container;
         private final TrustContainer.Trust trust;
@@ -104,7 +103,7 @@ public class TrustList extends AbstractList {
             this.container = container;
             this.trust = trust;
             this.parent = parent;
-            this.value = trust.checkInfinity(container.get(trust)) ? INFINITY : new TextComponent(String.valueOf(container.get(trust)));
+            this.value = trust.checkInfinity(container.get(trust)) ? INFINITY : Component.literal(String.valueOf(container.get(trust)));
             this.changed = container.getSettings().containsKey(trust);
 
             setAction(slider -> {
@@ -116,7 +115,7 @@ public class TrustList extends AbstractList {
                 changed = true;
 
                 //update text
-                this.value = infinity ? INFINITY : new TextComponent(String.valueOf(value));
+                this.value = infinity ? INFINITY : Component.literal(String.valueOf(value));
             });
         }
 
@@ -131,8 +130,8 @@ public class TrustList extends AbstractList {
             stack.popPose();
 
             //texts
-            MutableComponent name = new FiguraText("trust." + trust.name().toLowerCase());
-            if (changed) name = new TextComponent("*").setStyle(ColorUtils.Colors.FRAN_PINK.style).append(name).append("*");
+            MutableComponent name = FiguraText.of("trust." + trust.name().toLowerCase());
+            if (changed) name = Component.literal("*").setStyle(ColorUtils.Colors.FRAN_PINK.style).append(name).append("*");
 
             font.draw(stack, name, x + 1, y + 1, 0xFFFFFF);
             font.draw(stack, value, x + width - font.width(value) - 1, y + 1, ChatFormatting.AQUA.getColor());
@@ -173,7 +172,7 @@ public class TrustList extends AbstractList {
             this.trust = trust;
             this.parent = parent;
             this.changed = container.getSettings().containsKey(trust);
-            this.value = new FiguraText("trust." + (toggled ? "enabled" : "disabled"));
+            this.value = FiguraText.of("trust." + (toggled ? "enabled" : "disabled"));
         }
 
         @Override
@@ -185,7 +184,7 @@ public class TrustList extends AbstractList {
             this.changed = true;
 
             //update text
-            this.value = new FiguraText("trust." + (value ? "enabled" : "disabled"));
+            this.value = FiguraText.of("trust." + (value ? "enabled" : "disabled"));
 
             super.onPress();
         }
@@ -201,8 +200,8 @@ public class TrustList extends AbstractList {
             stack.popPose();
 
             //texts
-            MutableComponent name = new FiguraText("trust." + trust.name().toLowerCase());
-            if (changed) name = new TextComponent("*").setStyle(ColorUtils.Colors.FRAN_PINK.style).append(name).append("*");
+            MutableComponent name = FiguraText.of("trust." + trust.name().toLowerCase());
+            if (changed) name = Component.literal("*").setStyle(ColorUtils.Colors.FRAN_PINK.style).append(name).append("*");
 
             font.draw(stack, name, x + 1, y + 1, 0xFFFFFF);
             font.draw(stack, value, x + width - font.width(value) - 1, y + 1, ChatFormatting.AQUA.getColor());

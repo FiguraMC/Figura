@@ -108,7 +108,7 @@ public class FiguraTextureSet {
                     return null;
 
                 ResourceLocation resource = new ResourceLocation(path);
-                return Minecraft.getInstance().getResourceManager().hasResource(resource) ? resource : MissingTextureAtlasSprite.getLocation();
+                return Minecraft.getInstance().getResourceManager().getResource(resource).isPresent() ? resource : MissingTextureAtlasSprite.getLocation();
             } catch (Exception ignored) {}
         }
         throw new LuaRuntimeException("Invalid texture override type: " + type);
