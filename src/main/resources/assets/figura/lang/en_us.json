@@ -2,6 +2,10 @@
   "figura": "Figura",
 
 
+  "figura.backend.connected": "Connected to backend!",
+  "figura.backend.banned": "bananed :-)",
+
+
   "figura.toast.reload": "Avatar reloaded!",
   "figura.toast.panic_enabled": "Panic mode enabled!",
   "figura.toast.panic_disabled": "Panic mode disabled!",

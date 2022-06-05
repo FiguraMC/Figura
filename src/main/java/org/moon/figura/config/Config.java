@@ -81,7 +81,8 @@ public enum Config {
                 FiguraText.of(tooltip + ".groups").setStyle(ColorUtils.Colors.MAYA_BLUE.style));
     }},
     LOG_OTHERS(false),
-    MAIN_DIR("", InputType.FOLDER_PATH);
+    MAIN_DIR("", InputType.FOLDER_PATH),
+    BACKEND("86.125.251.108", InputType.ANY);
 
 
     /**

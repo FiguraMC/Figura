@@ -14,8 +14,7 @@ public class FiguraRunCommand {
 
     public static LiteralArgumentBuilder<FabricClientCommandSource> getCommand() {
         LiteralArgumentBuilder<FabricClientCommandSource> run = LiteralArgumentBuilder.literal("run");
-        RequiredArgumentBuilder<FabricClientCommandSource, String> arg =
-                RequiredArgumentBuilder.argument("code", StringArgumentType.greedyString());
+        RequiredArgumentBuilder<FabricClientCommandSource, String> arg = RequiredArgumentBuilder.argument("code", StringArgumentType.greedyString());
         arg.executes(FiguraRunCommand::executeCode);
         run.then(arg);
         return run;
