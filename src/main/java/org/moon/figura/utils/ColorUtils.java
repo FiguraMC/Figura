@@ -164,7 +164,13 @@ public class ColorUtils {
         return FiguraVec3.of(hsv[0], hsv[1], hsv[2]);
     }
 
+    public static FiguraVec3 rainbow() {
+        return rainbow(1d, 0d, 1d, 1d);
+    }
     public static FiguraVec3 rainbow(double speed, double saturation, double light) {
-        return hsvToRGB(FiguraVec3.of((FiguraMod.ticks * speed) % 255 / 255f, saturation, light));
+        return rainbow(speed, 0d, saturation, light);
+    }
+    public static FiguraVec3 rainbow(double speed, double offset, double saturation, double light) {
+        return hsvToRGB(FiguraVec3.of(((FiguraMod.ticks * speed) + offset) % 255 / 255f, saturation, light));
     }
 }

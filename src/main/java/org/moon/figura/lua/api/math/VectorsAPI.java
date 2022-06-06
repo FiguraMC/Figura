@@ -236,20 +236,21 @@ public class VectorsAPI {
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {Double.class, Double.class},
-                            argumentNames = {"speed", "saturation"}
+                            argumentNames = {"speed", "offset"}
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {Double.class, Double.class, Double.class},
-                            argumentNames = {"speed", "saturation", "light"}
+                            argumentTypes = {Double.class, Double.class, Double.class, Double.class},
+                            argumentNames = {"speed", "offset", "saturation", "light"}
                     )
             },
             description = "vectors.rainbow"
     )
-    public static FiguraVec3 rainbow(Double speed, Double saturation, Double light) {
+    public static FiguraVec3 rainbow(Double speed, Double offset, Double saturation, Double light) {
         if (speed == null) speed = 1d;
+        if (offset == null) offset = 0d;
         if (saturation == null) saturation = 1d;
         if (light == null) light = 1d;
-        return ColorUtils.rainbow(speed, saturation, light);
+        return ColorUtils.rainbow(speed, offset, saturation, light);
     }
 
     @Override

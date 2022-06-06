@@ -45,12 +45,6 @@ public class TextUtils {
                 //append text with the line text
                 currentText.append(Component.literal(lines[i]).setStyle(entry.getStyle()));
             }
-
-            //if the text ends with the split pattern, add to return list and reset the line variable
-            if (entryString.matches(regex + "$")) {
-                textList.add(currentText.copy());
-                currentText = Component.empty();
-            }
         }
         //add the last text iteration then return
         textList.add(currentText);
@@ -144,9 +138,6 @@ public class TextUtils {
         //first split the new line text
         List<Component> splitText = TextUtils.splitText(text, "\n");
 
-        //list to return
-        List<FormattedCharSequence> ret = new ArrayList<>();
-
         //get the possible tooltip width
         int left = mousePos - 16;
         int right = screenWidth - mousePos - 12;
@@ -156,12 +147,12 @@ public class TextUtils {
         for (Component component : splitText)
             largest = Math.max(largest, font.width(component));
 
-        //wrap text
-        int warpSize = largest <= right ? right : largest <= left ? left : Math.max(left, right);
-        for (Component component : splitText)
-            font.getSplitter().splitLines(component, warpSize, Style.EMPTY, (formattedText, aBoolean) -> ret.add(Language.getInstance().getVisualOrder(formattedText)));
+        //get the optimal side for warping
+        int side = largest <= right ? right : largest <= left ? left : Math.max(left, right);
 
-        //return
-        return ret;
+        //warp the unmodified text
+        List<FormattedCharSequence> warp = new ArrayList<>();
+        font.getSplitter().splitLines(text, side, Style.EMPTY, (formattedText, aBoolean) -> warp.add(Language.getInstance().getVisualOrder(formattedText)));
+        return warp;
     }
 }

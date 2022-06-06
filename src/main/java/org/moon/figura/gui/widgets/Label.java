@@ -5,27 +5,32 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.ui.UIHelper;
+
+import java.util.List;
 
 public class Label implements FiguraWidget, GuiEventListener {
 
     private Component text;
 
     public int x, y;
-    public int width, height;
+    public int width = 0;
+    public int height = 0;
     private boolean visible = true;
 
     private final Font font;
     private final boolean centred;
     private final Integer outlineColor;
 
-    public Label(Component text, int x, int y, boolean centred) {
+    public Label(Object text, int x, int y, boolean centred) {
         this(text, x, y, centred, null);
     }
 
-    public Label(Component text, int x, int y, boolean centred, Integer outlineColor) {
+    public Label(Object text, int x, int y, boolean centred, Integer outlineColor) {
         this.font = Minecraft.getInstance().font;
-        this.text = text;
+        this.text = text instanceof Component c ? c : new TextComponent(text.toString());
         this.x = x;
         this.y = y;
         this.centred = centred;
@@ -38,22 +43,30 @@ public class Label implements FiguraWidget, GuiEventListener {
         if (!isVisible())
             return;
 
-        int x = this.x;
-        int y = this.y;
-        if (centred) {
-            x -= font.width(text) / 2;
-            y -= font.lineHeight / 2;
-        }
+        //split new lines
+        List<Component> split = TextUtils.splitText(text, "\n");
+        for (int i = 0; i < split.size(); i++) {
+            Component line = split.get(i);
 
-        if (outlineColor != null)
-            UIHelper.renderOutlineText(stack, font, text, x, y, 0xFFFFFF, outlineColor);
-        else
-            font.drawShadow(stack, text, x, y, 0xFFFFFF);
+            int x = this.x;
+            int y = this.y + font.lineHeight * i;
+            if (centred) {
+                x -= font.width(line) / 2;
+                y -= font.lineHeight / 2;
+            }
+
+            if (outlineColor != null)
+                UIHelper.renderOutlineText(stack, font, line, x, y, 0xFFFFFF, outlineColor);
+            else
+                font.drawShadow(stack, line, x, y, 0xFFFFFF);
+        }
     }
 
     private void calculateDimensions() {
-        this.width = font.width(text);
-        this.height = font.lineHeight;
+        List<Component> split = TextUtils.splitText(text, "\n");
+        for (Component line : split)
+            this.width = Math.max(this.width, font.width(line));
+        this.height = font.lineHeight * split.size();
     }
 
     @Override
@@ -70,8 +83,8 @@ public class Label implements FiguraWidget, GuiEventListener {
         return text;
     }
 
-    public void setText(Component text) {
-        this.text = text;
+    public void setText(Object text) {
+        this.text = text instanceof Component c ? c : new TextComponent(text.toString());
         calculateDimensions();
     }
 }

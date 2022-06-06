@@ -38,6 +38,7 @@ public class DebugScreenOverlayMixin {
 
             //has script
             if (avatar.luaState != null) {
+                lines.add(++i, String.format("Mem: %.2fMB", avatar.getScriptMemory()));
                 if (!FiguraMod.DO_OUR_NATIVES_WORK) {
                     lines.add(++i, "Sorry, but instruction counts are ");
                     lines.add(++i, "only supported on Windows (Maybe Linux?)");

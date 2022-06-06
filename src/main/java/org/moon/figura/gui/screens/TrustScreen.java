@@ -2,7 +2,6 @@ package org.moon.figura.gui.screens;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -61,7 +60,7 @@ public class TrustScreen extends AbstractPanelScreen {
 
         int middle = this.width / 2;
         int listWidth = Math.min(middle - 6, 208);
-        int lineHeight =  Minecraft.getInstance().font.lineHeight;
+        int lineHeight =  font.lineHeight;
 
         double guiScale = this.minecraft.getWindow().getGuiScale();
         double screenScale = Math.min(this.width, this.height) / 1018d;
@@ -80,7 +79,6 @@ public class TrustScreen extends AbstractPanelScreen {
                 super.renderButton(stack, mouseX, mouseY, delta);
 
                 TrustContainer selectedTrust = playerList.selectedEntry.getTrust();
-                Font font = Minecraft.getInstance().font;
                 MutableComponent text = selectedTrust.getGroupName();
 
                 stack.pushPose();

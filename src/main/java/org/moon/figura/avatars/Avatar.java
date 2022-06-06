@@ -253,6 +253,19 @@ public class Avatar {
         }
     }
 
+    public float getScriptMemory() {
+        if (luaState == null)
+            return 0f;
+
+        //get memory size, in bytes
+        int size = luaState.getTotalMemory() - luaState.getFreeMemory();
+
+        //format size to mb
+        DecimalFormat df = new DecimalFormat("#0.00", new DecimalFormatSymbols(Locale.US));
+        df.setRoundingMode(RoundingMode.HALF_UP);
+        return Float.parseFloat(df.format(size / 1_000_000f));
+    }
+
     private void createLuaState() {
         if (!nbt.contains("scripts"))
             return;

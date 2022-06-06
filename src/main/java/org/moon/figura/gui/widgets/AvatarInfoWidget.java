@@ -24,7 +24,8 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
             FiguraText.of("gui.name").withStyle(ChatFormatting.UNDERLINE),
             FiguraText.of("gui.authors").withStyle(ChatFormatting.UNDERLINE),
             FiguraText.of("gui.size").withStyle(ChatFormatting.UNDERLINE),
-            FiguraText.of("gui.complexity").withStyle(ChatFormatting.UNDERLINE)
+            FiguraText.of("gui.complexity").withStyle(ChatFormatting.UNDERLINE),
+            FiguraText.of("gui.memory").withStyle(ChatFormatting.UNDERLINE)
     );
 
     public int x, y;
@@ -58,6 +59,7 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
             values.set(1, Component.literal(avatar.authors).setStyle(ColorUtils.Colors.FRAN_PINK.style)); //authors
             values.set(2, Component.literal(String.valueOf(avatar.fileSize)).setStyle(ColorUtils.Colors.FRAN_PINK.style)); //size
             values.set(3, Component.literal(String.valueOf(avatar.complexity)).setStyle(ColorUtils.Colors.FRAN_PINK.style)); //complexity
+            values.set(4, Component.literal(String.valueOf(avatar.getScriptMemory())).setStyle(ColorUtils.Colors.FRAN_PINK.style)); //memory
         }
     }
 

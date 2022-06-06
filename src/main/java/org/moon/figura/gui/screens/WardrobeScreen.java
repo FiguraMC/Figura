@@ -20,10 +20,12 @@ import org.moon.figura.utils.FiguraText;
 public class WardrobeScreen extends AbstractPanelScreen {
 
     public static final Component TITLE = FiguraText.of("gui.panels.title.wardrobe");
+    private static final String EGG = "hesoyam";
+    private String egg = "";
 
     private StatusWidget statusWidget;
     private AvatarInfoWidget avatarInfo;
-    private Label panic1, panic2;
+    private Label panic;
 
     private TexturedButton upload, reload, delete;
 
@@ -128,10 +130,10 @@ public class WardrobeScreen extends AbstractPanelScreen {
         addRenderableOnly(avatarInfo = new AvatarInfoWidget(this.width - rightSide - 4, 64, rightSide));
 
         //panic warning - always added last, on top
-        addRenderableOnly(panic1 = new Label(FiguraText.of("gui.panic.1").withStyle(ChatFormatting.YELLOW), middle, this.height - 23, true, 0));
-        addRenderableOnly(panic2 = new Label(FiguraText.of("gui.panic.2", Config.PANIC_BUTTON.keyBind.getTranslatedKeyMessage()).withStyle(ChatFormatting.YELLOW), middle, this.height - 14, true, 0));
-        panic1.setVisible(false);
-        panic2.setVisible(false);
+        addRenderableOnly(panic = new Label(FiguraText.of("gui.panic.1").withStyle(ChatFormatting.YELLOW).append("\n").append(FiguraText.of("gui.panic.2", Config.PANIC_BUTTON.keyBind.getTranslatedKeyMessage())),
+                middle, this.height - 23, true, 0)
+        );
+        panic.setVisible(false);
     }
 
     @Override
@@ -142,13 +144,31 @@ public class WardrobeScreen extends AbstractPanelScreen {
         avatarInfo.tick();
 
         //panic visible
-        panic1.setVisible(AvatarManager.panic);
-        panic2.setVisible(AvatarManager.panic);
+        panic.setVisible(AvatarManager.panic);
 
         //backend buttons
         boolean backend = false; //TODO - fetch backend status
         upload.active = backend;
         reload.active = backend;
         delete.active = backend;
+    }
+
+    @Override
+    public boolean charTyped(char chr, int modifiers) {
+        if (!super.charTyped(chr, modifiers)) {
+            egg += String.valueOf(chr).toLowerCase();
+            if (egg.equals(EGG.substring(0, egg.length()))) {
+                if (egg.length() == EGG.length()) {
+                    egg = "";
+                    Minecraft.getInstance().setScreen(new GameScreen(this));
+                }
+                return true;
+            } else {
+                egg = "";
+                return false;
+            }
+        }
+
+        return true;
     }
 }

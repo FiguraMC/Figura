@@ -45,6 +45,7 @@
   "figura.gui.authors": "Authors",
   "figura.gui.size": "Size (kb)",
   "figura.gui.complexity": "Complexity",
+  "figura.gui.memory": "Memory (mb)",
   "figura.gui.back": "Back",
   "figura.gui.cancel": "Cancel",
   "figura.gui.expand": "Expand",
@@ -212,6 +213,9 @@
 
   "figura.config.main_dir": "Figura Folder Location",
   "figura.config.main_dir.tooltip": "Changes the location of the Figura folder",
+
+  "figura.config.backend": "Backend IP",
+  "figura.config.backend.tooltip": "Sets the IP of the backend server",
 
   "figura.command.click_to_open": "Click here to open",
   "figura.command.run.not_local_error" : "No local avatar equipped!",
