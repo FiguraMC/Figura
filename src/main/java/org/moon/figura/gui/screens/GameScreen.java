@@ -26,8 +26,8 @@ public class GameScreen extends AbstractPanelScreen {
     private boolean paused = false;
     private static int scale = 5;
 
-    private static final String EGG = "fran";
-    private String egg = "";
+    private static final String EGG = "FRAN";
+    private String egg = EGG;
 
     protected GameScreen(Screen parentScreen) {
         super(parentScreen, TextComponent.EMPTY.copy(), 2);
@@ -45,30 +45,56 @@ public class GameScreen extends AbstractPanelScreen {
         ));
 
         //text
-        addRenderableOnly(keys = new Label("[R] restart, [P] pause, [SPACE] single step\n[F1] hide text, [Scroll] change scale (restarts)", 4, 4, false, 0));
-        addRenderableOnly(stats = new Label("Iterations " + grid.iterations + ", Scale " + scale, 4, keys.y + keys.height, false, 0));
+        addRenderableOnly(keys = new Label(
+                TextComponent.EMPTY.copy()
+                        .append(new TextComponent("[R]").withStyle(ColorUtils.Colors.FRAN_PINK.style))
+                        .append(" restart, ")
+                        .append(new TextComponent("[P]").withStyle(ColorUtils.Colors.FRAN_PINK.style))
+                        .append(" pause, ")
+                        .append(new TextComponent("[SPACE]").withStyle(ColorUtils.Colors.FRAN_PINK.style))
+                        .append(" step")
+                        .append("\n")
+                        .append(new TextComponent("[F1]").withStyle(ColorUtils.Colors.FRAN_PINK.style))
+                        .append(" hide text, ")
+                        .append(new TextComponent("[Scroll]").withStyle(ColorUtils.Colors.FRAN_PINK.style))
+                        .append(" scale (restarts)"),
+                4, 4, false, 0)
+        );
+        addRenderableOnly(stats = new Label("", 4, keys.y + keys.height, false, 0));
     }
 
     @Override
     public void tick() {
         super.tick();
         if (!paused) grid.tick();
-        stats.setText("Iterations " + grid.iterations + ", Scale " + scale);
+        stats.setText(
+                new TextComponent("Generation")
+                        .append(new TextComponent(" " + grid.gen).withStyle(ColorUtils.Colors.FRAN_PINK.style))
+                        .append(", Scale")
+                        .append(new TextComponent(" " + scale).withStyle(ColorUtils.Colors.FRAN_PINK.style))
+        );
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == GLFW.GLFW_KEY_R)
-            grid.init();
-        else if (keyCode == GLFW.GLFW_KEY_P)
-            paused = !paused;
-        else if (keyCode == GLFW.GLFW_KEY_SPACE)
-            grid.tick();
-        else if (keyCode == GLFW.GLFW_KEY_F1) {
-            keys.setVisible(!keys.isVisible());
-            stats.setVisible(!stats.isVisible());
-        } else
-            return super.keyPressed(keyCode, scanCode, modifiers);
+        egg += (char) keyCode;
+        egg = egg.substring(1);
+        if (EGG.equals(egg)) {
+            grid.yes = true;
+        } else {
+            switch (keyCode) {
+                case GLFW.GLFW_KEY_R -> grid.init();
+                case GLFW.GLFW_KEY_P -> paused = !paused;
+                case GLFW.GLFW_KEY_SPACE -> grid.tick();
+                case GLFW.GLFW_KEY_F1 -> {
+                    keys.setVisible(!keys.isVisible());
+                    stats.setVisible(!stats.isVisible());
+                }
+                default -> {
+                    return super.keyPressed(keyCode, scanCode, modifiers);
+                }
+            }
+        }
 
         return true;
     }
@@ -80,26 +106,11 @@ public class GameScreen extends AbstractPanelScreen {
         return true;
     }
 
-    @Override
-    public boolean charTyped(char chr, int modifiers) {
-        egg += String.valueOf(chr).toLowerCase();
-        if (egg.equals(EGG.substring(0, egg.length()))) {
-            if (egg.length() == EGG.length()) {
-                egg = "";
-                grid.yes = true;
-            }
-            return true;
-        } else {
-            egg = "";
-            return false;
-        }
-    }
-
     private static class Grid implements Widget {
 
         private Cell[][] grid;
         private final int width, height;
-        private long iterations = 0;
+        private long gen = 0;
         private boolean yes = false;
 
         private Grid(int width, int height) {
@@ -109,7 +120,7 @@ public class GameScreen extends AbstractPanelScreen {
         }
 
         private void init() {
-            iterations = 0;
+            gen = 0;
             int width = this.width / scale;
             int height = this.height / scale;
 
@@ -135,7 +146,7 @@ public class GameScreen extends AbstractPanelScreen {
         }
 
         private void tick() {
-            iterations++;
+            gen++;
             for (Cell[] cells : grid)
                 for (Cell cell : cells)
                     cell.update();

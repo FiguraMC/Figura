@@ -24,11 +24,13 @@
     "input.KeyboardHandlerMixin",
     "input.MouseHandlerMixin",
 
+    "render.CameraMixin",
     "render.EntityRenderDispatcherMixin",
-    "render.layers.HumanoidArmorLayerMixin",
-
+    "render.GameRendererMixin",
     "render.PlayerModelMixin",
+
     "render.layers.CapeLayerMixin",
+    "render.layers.HumanoidArmorLayerMixin",
 
     "render.layers.elytra.ElytraLayerAccessor",
     "render.layers.elytra.ElytraModelAccessor",

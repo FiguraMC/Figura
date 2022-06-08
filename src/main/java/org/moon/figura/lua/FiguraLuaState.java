@@ -81,6 +81,9 @@ public class FiguraLuaState extends LuaState53 {
         //Load debug.setHook to registry, used later for instruction caps
         loadSetHook();
 
+        //load the loadString function
+        loadLoadStringFunction();
+
         //Loads print(), log(), and logTable() into the env.
         FiguraLuaPrinter.loadPrintFunctions(this);
 
@@ -169,6 +172,12 @@ public class FiguraLuaState extends LuaState53 {
         pop(1);
         //Remove debug from the environment
         loadGlobal(null, "debug");
+    }
+
+    public void loadLoadStringFunction() {
+        pushJavaFunction(LOADSTRING_FUNCTION);
+        pushValue(-1);
+        setGlobal("load");
     }
 
     public void setInstructionLimit(int limit) {
@@ -263,6 +272,28 @@ public class FiguraLuaState extends LuaState53 {
         String error = "Script overran resource limits!";
         ((FiguraLuaState) luaState).setInstructionLimit(1);
         throw new LuaRuntimeException(error);
+    };
+
+    private static final JavaFunction LOADSTRING_FUNCTION = luaState -> {
+        //fix stack args
+        if (luaState.getTop() < 1)
+            luaState.pushNil();
+
+        String string = luaState.checkString(1);
+        luaState.pop(1);
+
+        try {
+            //load string
+            luaState.load(string, "loadstring");
+
+            //call string and add return to the stack
+            luaState.call(0, 0);
+            luaState.pushNil(); //make sure it returns nil
+        } catch (Exception e) {
+            luaState.pushString(e.getMessage());
+        }
+
+        return 1;
     };
 
     public Avatar getOwner() {

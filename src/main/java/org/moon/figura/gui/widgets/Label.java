@@ -30,12 +30,11 @@ public class Label implements FiguraWidget, GuiEventListener {
 
     public Label(Object text, int x, int y, boolean centred, Integer outlineColor) {
         this.font = Minecraft.getInstance().font;
-        this.text = text instanceof Component c ? c : new TextComponent(text.toString());
         this.x = x;
         this.y = y;
         this.centred = centred;
         this.outlineColor = outlineColor;
-        calculateDimensions();
+        setText(text);
     }
 
     @Override

@@ -638,6 +638,8 @@
   "figura.docs.renderer.get_shadow_radius": "Gets the radius of your shadow. The default value is nil, which means to use the vanilla default of 0.5 for players.",
   "figura.docs.renderer.render_vehicle": "Whether or not your vehicle (boat, minecart, horse, whatever) will be rendered. True by default.",
   "figura.docs.renderer.render_fire": "Whether or not you should visually have the fire effect while on fire. True by default.",
+  "figura.docs.renderer.set_camera_rot": "",
+  "figura.docs.renderer.set_camera_bonus_rot": "",
 
   "figura.docs.vectors": "A global API which provides functions dedicated to creating and otherwise manipulating vectors. Accessed using the name \"vectors\".",
   "figura.docs.vectors.vec": "Creates and returns a vector of the appropriate size to hold the arguments passed in. For example, if you call vec(3, 4, 0, 2), then the function will return a Vector4 containing those values. There is a global alias \"vec\" for this function, meaning the \"vectors.\" can be omitted.",

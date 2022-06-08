@@ -20,8 +20,8 @@ import org.moon.figura.utils.FiguraText;
 public class WardrobeScreen extends AbstractPanelScreen {
 
     public static final Component TITLE = FiguraText.of("gui.panels.title.wardrobe");
-    private static final String EGG = "hesoyam";
-    private String egg = "";
+    private static final String EGG = "ĉĉĈĈćĆćĆBAā";
+    private String egg = EGG;
 
     private StatusWidget statusWidget;
     private AvatarInfoWidget avatarInfo;
@@ -154,21 +154,14 @@ public class WardrobeScreen extends AbstractPanelScreen {
     }
 
     @Override
-    public boolean charTyped(char chr, int modifiers) {
-        if (!super.charTyped(chr, modifiers)) {
-            egg += String.valueOf(chr).toLowerCase();
-            if (egg.equals(EGG.substring(0, egg.length()))) {
-                if (egg.length() == EGG.length()) {
-                    egg = "";
-                    Minecraft.getInstance().setScreen(new GameScreen(this));
-                }
-                return true;
-            } else {
-                egg = "";
-                return false;
-            }
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        egg += (char) keyCode;
+        egg = egg.substring(1);
+        if (EGG.equals(egg)) {
+            Minecraft.getInstance().setScreen(new GameScreen(this));
+            return true;
+        } else {
+            return super.keyPressed(keyCode, scanCode, modifiers);
         }
-
-        return true;
     }
 }

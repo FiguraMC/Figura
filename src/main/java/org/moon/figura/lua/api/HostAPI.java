@@ -49,7 +49,7 @@ public class HostAPI {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = HostAPI.class,
-                    argumentNames = "host"
+                    argumentNames = "api"
             ),
             description = "host.is_host"
     )
@@ -61,7 +61,7 @@ public class HostAPI {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = HostAPI.class,
-                    argumentNames = "host"
+                    argumentNames = "api"
             ),
             description = "host.get_targeted_entity"
     )
@@ -80,11 +80,11 @@ public class HostAPI {
             overloads = {
                     @LuaFunctionOverload(
                             argumentTypes = {HostAPI.class, FiguraVec3.class},
-                            argumentNames = {"host", "timesData"}
+                            argumentNames = {"api", "timesData"}
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {HostAPI.class, Integer.class, Integer.class, Integer.class},
-                            argumentNames = {"host", "fadeInTime", "stayTime", "fadeOutTime"}
+                            argumentNames = {"api", "fadeInTime", "stayTime", "fadeOutTime"}
                     )
             },
             description = "host.set_title_times"
@@ -99,7 +99,7 @@ public class HostAPI {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = HostAPI.class,
-                    argumentNames = "host"
+                    argumentNames = "api"
             ),
             description = "host.clear_title"
     )
@@ -112,7 +112,7 @@ public class HostAPI {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = {HostAPI.class, String.class},
-                    argumentNames = {"host", "text"}
+                    argumentNames = {"api", "text"}
             ),
             description = "host.set_title"
     )
@@ -125,7 +125,7 @@ public class HostAPI {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = {HostAPI.class, String.class},
-                    argumentNames = {"host", "text"}
+                    argumentNames = {"api", "text"}
             ),
             description = "host.set_subtitle"
     )
@@ -139,11 +139,11 @@ public class HostAPI {
             overloads = {
                     @LuaFunctionOverload(
                             argumentTypes = {HostAPI.class, String.class},
-                            argumentNames = {"host", "text"}
+                            argumentNames = {"api", "text"}
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {HostAPI.class, String.class, Boolean.class},
-                            argumentNames = {"host", "text", "animated"}
+                            argumentNames = {"api", "text", "animated"}
                     )
             },
             description = "host.set_actionbar"
@@ -158,7 +158,7 @@ public class HostAPI {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = {HostAPI.class, String.class},
-                    argumentNames = {"host", "text"}
+                    argumentNames = {"api", "text"}
             ),
             description = "host.send_chat_message"
     )
@@ -172,7 +172,7 @@ public class HostAPI {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = {HostAPI.class, Boolean.class},
-                    argumentNames = {"host", "offhand"}
+                    argumentNames = {"api", "offhand"}
             ),
             description = "host.swing_arm"
     )
@@ -186,7 +186,7 @@ public class HostAPI {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = {HostAPI.class, String.class},
-                    argumentNames = {"host", "slot"}
+                    argumentNames = {"api", "slot"}
             ),
             description = "host.get_slot"
     )
@@ -214,11 +214,11 @@ public class HostAPI {
             overloads = {
                     @LuaFunctionOverload(
                             argumentTypes = {HostAPI.class, FiguraVec3.class},
-                            argumentNames = {"host", "color"}
+                            argumentNames = {"api", "color"}
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {HostAPI.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"host", "r", "g", "b"}
+                            argumentNames = {"api", "r", "g", "b"}
                     )
             },
             description = "host.set_chat_color"
@@ -236,7 +236,7 @@ public class HostAPI {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = HostAPI.class,
-                    argumentNames = "host"
+                    argumentNames = "api"
             ),
             description = "host.get_chat_text"
     )
@@ -253,7 +253,7 @@ public class HostAPI {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = {HostAPI.class, String.class},
-                    argumentNames = {"host", "text"}
+                    argumentNames = {"api", "text"}
             ),
             description = "host.set_chat_text"
     )

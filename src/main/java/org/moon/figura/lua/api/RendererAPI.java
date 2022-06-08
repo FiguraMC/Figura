@@ -9,6 +9,8 @@ import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.utils.LuaUtils;
 
 import java.util.UUID;
 
@@ -33,6 +35,9 @@ public class RendererAPI {
             description = "renderer.render_vehicle"
     )
     public boolean renderVehicle = true;
+
+    public FiguraVec3 cameraRot;
+    public FiguraVec3 cameraBonusRot;
 
     public RendererAPI(UUID owner) {
         this.owner = owner;
@@ -89,6 +94,42 @@ public class RendererAPI {
     )
     public static Boolean isCameraBackwards(@LuaNotNil RendererAPI api) {
         return checkCameraOwner(api.owner) && Minecraft.getInstance().options.getCameraType().isMirrored();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = {RendererAPI.class, FiguraVec3.class},
+                            argumentNames = {"api", "rot"}
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {RendererAPI.class, Double.class, Double.class, Double.class},
+                            argumentNames = {"api", "x", "y", "z"}
+                    )
+            },
+            description = "renderer.set_camera_rot"
+    )
+    public static void setCameraRot(@LuaNotNil RendererAPI api, Object x, Double y, Double z) {
+        api.cameraRot = LuaUtils.parseVec3("setCameraRot", x, y, z);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = {RendererAPI.class, FiguraVec3.class},
+                            argumentNames = {"api", "rot"}
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {RendererAPI.class, Double.class, Double.class, Double.class},
+                            argumentNames = {"api", "x", "y", "z"}
+                    )
+            },
+            description = "renderer.set_camera_bonus_rot"
+    )
+    public static void setCameraBonusRot(@LuaNotNil RendererAPI api, Object x, Double y, Double z) {
+        api.cameraBonusRot = LuaUtils.parseVec3("setCameraBonusRot", x, y, z);
     }
 
     @Override
