@@ -3,7 +3,7 @@ package org.moon.figura.gui.screens;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 import org.moon.figura.gui.widgets.Label;
 import org.moon.figura.gui.widgets.TexturedButton;
@@ -30,7 +30,7 @@ public class GameScreen extends AbstractPanelScreen {
     private String egg = EGG;
 
     protected GameScreen(Screen parentScreen) {
-        super(parentScreen, TextComponent.EMPTY.copy(), 2);
+        super(parentScreen, Component.empty(), 2);
     }
 
     protected void init() {
@@ -40,23 +40,23 @@ public class GameScreen extends AbstractPanelScreen {
         addRenderableOnly(grid = new Grid(width, height));
 
         //back button
-        addRenderableWidget(new TexturedButton(this.width - 28, 4, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/back.png"), 72, 24, new FiguraText("gui.back"),
+        addRenderableWidget(new TexturedButton(this.width - 28, 4, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/back.png"), 72, 24, FiguraText.of("gui.back"),
             bx -> this.minecraft.setScreen(parentScreen)
         ));
 
         //text
         addRenderableOnly(keys = new Label(
-                TextComponent.EMPTY.copy()
-                        .append(new TextComponent("[R]").withStyle(ColorUtils.Colors.FRAN_PINK.style))
+                Component.empty()
+                        .append(Component.literal("[R]").withStyle(ColorUtils.Colors.FRAN_PINK.style))
                         .append(" restart, ")
-                        .append(new TextComponent("[P]").withStyle(ColorUtils.Colors.FRAN_PINK.style))
+                        .append(Component.literal("[P]").withStyle(ColorUtils.Colors.FRAN_PINK.style))
                         .append(" pause, ")
-                        .append(new TextComponent("[SPACE]").withStyle(ColorUtils.Colors.FRAN_PINK.style))
+                        .append(Component.literal("[SPACE]").withStyle(ColorUtils.Colors.FRAN_PINK.style))
                         .append(" step")
                         .append("\n")
-                        .append(new TextComponent("[F1]").withStyle(ColorUtils.Colors.FRAN_PINK.style))
+                        .append(Component.literal("[F1]").withStyle(ColorUtils.Colors.FRAN_PINK.style))
                         .append(" hide text, ")
-                        .append(new TextComponent("[Scroll]").withStyle(ColorUtils.Colors.FRAN_PINK.style))
+                        .append(Component.literal("[Scroll]").withStyle(ColorUtils.Colors.FRAN_PINK.style))
                         .append(" scale (restarts)"),
                 4, 4, false, 0)
         );
@@ -68,10 +68,10 @@ public class GameScreen extends AbstractPanelScreen {
         super.tick();
         if (!paused) grid.tick();
         stats.setText(
-                new TextComponent("Generation")
-                        .append(new TextComponent(" " + grid.gen).withStyle(ColorUtils.Colors.FRAN_PINK.style))
+                Component.literal("Generation")
+                        .append(Component.literal(" " + grid.gen).withStyle(ColorUtils.Colors.FRAN_PINK.style))
                         .append(", Scale")
-                        .append(new TextComponent(" " + scale).withStyle(ColorUtils.Colors.FRAN_PINK.style))
+                        .append(Component.literal(" " + scale).withStyle(ColorUtils.Colors.FRAN_PINK.style))
         );
     }
 

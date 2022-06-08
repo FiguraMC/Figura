@@ -5,7 +5,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.ui.UIHelper;
 
@@ -83,7 +82,7 @@ public class Label implements FiguraWidget, GuiEventListener {
     }
 
     public void setText(Object text) {
-        this.text = text instanceof Component c ? c : new TextComponent(text.toString());
+        this.text = text instanceof Component c ? c : Component.literal(text.toString());
         calculateDimensions();
     }
 }

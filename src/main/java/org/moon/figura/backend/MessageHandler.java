@@ -2,7 +2,7 @@ package org.moon.figura.backend;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.utils.ColorUtils;
@@ -27,7 +27,7 @@ public enum MessageHandler {
     SYSTEM(json -> {
         if (FiguraMod.DEBUG_MODE) {
             String message = NetworkManager.GSON.toJson(json);
-            FiguraMod.sendChatMessage(TextComponent.EMPTY.copy().append(new TextComponent("-- " + FiguraMod.MOD_NAME + " backend message --\n\n").withStyle(ColorUtils.Colors.SKYE_BLUE.style)).append(message));
+            FiguraMod.sendChatMessage(Component.empty().append(Component.literal("-- " + FiguraMod.MOD_NAME + " backend message --\n\n").withStyle(ColorUtils.Colors.SKYE_BLUE.style)).append(message));
         }
     }),
     CONNECTED(json -> FiguraToast.sendToast(new FiguraText("backend.connected"))),
