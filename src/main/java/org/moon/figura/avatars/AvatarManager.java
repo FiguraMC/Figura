@@ -7,6 +7,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.providers.LocalAvatarLoader;
+import org.moon.figura.backend.NetworkManager;
 import org.moon.figura.config.Config;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.utils.FiguraText;
@@ -22,7 +23,6 @@ import java.util.*;
 public class AvatarManager {
 
     private static final HashMap<UUID, Avatar> LOADED_AVATARS = new HashMap<>();
-    private static final Set<UUID> PLAYER_AVATARS = new HashSet<>();
     private static final Set<UUID> FETCHED_AVATARS = new HashSet<>();
 
     public static boolean localUploaded = true; //init as true :3
@@ -35,15 +35,17 @@ public class AvatarManager {
         if (panic || connection == null)
             return;
 
-        //remove disconnected player avatars
-        PLAYER_AVATARS.removeIf(id -> {
-            if (connection.getPlayerInfo(id) != null)
-                return false;
+        //unload avatars from disconnected players
+        Set<UUID> toRemove = new HashSet<>();
+        for (UUID id : LOADED_AVATARS.keySet()) {
+            if (connection.getPlayerInfo(id) == null)
+                toRemove.add(id);
+        }
 
-            LOADED_AVATARS.remove(id).clean(); //if loaded avatar is null, something is very wrong
-            FiguraMod.LOGGER.debug("Removed avatar for " + id);
-            return true;
-        });
+        for (UUID id : toRemove)
+            clearAvatar(id);
+
+        //actual tick event
 
         for (Avatar avatar : LOADED_AVATARS.values())
             avatar.onTick();
@@ -87,26 +89,16 @@ public class AvatarManager {
         if (entity instanceof Player)
             return getAvatarForPlayer(uuid);
 
-        //otherwise, just normally load it
-        return LOADED_AVATARS.get(uuid);
-    }
-
-    //clear entity data when unloaded
-    public static void entityUnload(Entity entity) {
-        //player avatars are kept until the player disconnects
-        if (!(entity instanceof Player))
-            clearAvatar(entity.getUUID(), false);
+        //TODO
+        //otherwise, returns the avatar from the entity pool (cem)
+        return null;
     }
 
     //removes an loaded avatar
-    public static void clearAvatar(UUID id, boolean player) {
+    public static void clearAvatar(UUID id) {
         if (LOADED_AVATARS.containsKey(id))
             LOADED_AVATARS.remove(id).clean();
-
-        if (player) {
-            PLAYER_AVATARS.remove(id);
-            FETCHED_AVATARS.remove(id);
-        }
+        FETCHED_AVATARS.remove(id);
     }
 
     //clears ALL loaded avatars, including local
@@ -115,16 +107,16 @@ public class AvatarManager {
             avatar.clean();
 
         LOADED_AVATARS.clear();
-        PLAYER_AVATARS.clear();
         FETCHED_AVATARS.clear();
+
         localUploaded = true;
-        FiguraMod.LOGGER.debug("Cleared all avatars");
+        FiguraMod.LOGGER.info("Cleared all avatars");
     }
 
     //reloads an avatar
     public static void reloadAvatar(UUID id) {
         //first clear the avatar
-        clearAvatar(id, true);
+        clearAvatar(id);
 
         //only non uploaded local needs to be manually reloaded
         //other ones will be fetched from backend on further request
@@ -132,7 +124,7 @@ public class AvatarManager {
             loadLocalAvatar(LocalAvatarLoader.getLastLoadedPath());
 
         //send client feedback
-        FiguraToast.sendToast(new FiguraText("toast.reload"));
+        FiguraToast.sendToast(FiguraText.of("toast.reload"));
     }
 
     //load the local player avatar
@@ -140,7 +132,7 @@ public class AvatarManager {
     public static boolean loadLocalAvatar(Path path) {
         //clear
         UUID id = FiguraMod.getLocalPlayerUUID();
-        clearAvatar(id, true);
+        clearAvatar(id);
 
         //mark as not uploaded
         localUploaded = false;
@@ -150,24 +142,24 @@ public class AvatarManager {
             CompoundTag nbt = LocalAvatarLoader.loadAvatar(path);
             if (nbt != null) {
                 LOADED_AVATARS.put(id, new Avatar(nbt, id));
-                PLAYER_AVATARS.add(id);
                 return true;
             }
         } catch (Exception e) {
             FiguraMod.LOGGER.error("Failed to load avatar from " + path, e);
-            FiguraToast.sendToast(new FiguraText("toast.load_error"), FiguraToast.ToastType.ERROR);
+            FiguraToast.sendToast(FiguraText.of("toast.load_error"), FiguraToast.ToastType.ERROR);
         }
         return false;
     }
 
     //set an user's avatar
-    public static void setAvatar(UUID id, CompoundTag nbt, boolean player) {
-        if (id.compareTo(FiguraMod.getLocalPlayerUUID()) == 0)
-            //force local loading to remove watch keys and flag as not uploaded
-            loadLocalAvatar(null);
+    public static void setAvatar(UUID id, CompoundTag nbt) {
+        //if local, remove local watch keys and mark as uploaded
+        if (id.compareTo(FiguraMod.getLocalPlayerUUID()) == 0) {
+            LocalAvatarLoader.resetWatchKeys();
+            localUploaded = true;
+        }
 
         LOADED_AVATARS.put(id, new Avatar(nbt, id));
-        if (player) PLAYER_AVATARS.add(id);
     }
 
     //get avatar from the backend
@@ -177,18 +169,13 @@ public class AvatarManager {
         if (id == null || FETCHED_AVATARS.contains(id))
             return;
 
-        //force local loading to remove watch keys and flag as not uploaded
-        boolean local = id.compareTo(FiguraMod.getLocalPlayerUUID()) == 0;
-        if (local) loadLocalAvatar(null);
-
         //egg
         if (FiguraMod.CHEESE_DAY && (boolean) Config.EASTER_EGGS.value && LocalAvatarLoader.cheese != null) {
-            LOADED_AVATARS.put(id, new Avatar(LocalAvatarLoader.cheese, id));
-            PLAYER_AVATARS.add(id);
+            setAvatar(id, LocalAvatarLoader.cheese);
             return;
         }
 
-        //TODO - then we really fetch the backend
-        if (local) localUploaded = true;
+        if (NetworkManager.getAvatar(id))
+            FETCHED_AVATARS.add(id);
     }
 }

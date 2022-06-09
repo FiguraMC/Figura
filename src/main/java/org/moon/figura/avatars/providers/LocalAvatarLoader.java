@@ -57,8 +57,8 @@ public class LocalAvatarLoader {
      * @return the NbtCompound from this path
      */
     public static CompoundTag loadAvatar(Path path) throws IOException {
-        lastLoadedPath = path;
         resetWatchKeys();
+        lastLoadedPath = path;
         addWatchKey(path);
 
         if (path == null)
@@ -153,8 +153,6 @@ public class LocalAvatarLoader {
         return result;
     }
 
-
-
     /**
      * Saves the loaded NBT into a folder inside the avatar list
      */
@@ -208,7 +206,8 @@ public class LocalAvatarLoader {
         }
     }
 
-    private static void resetWatchKeys() {
+    public static void resetWatchKeys() {
+        lastLoadedPath = null;
         for (WatchKey key : KEYS.values())
             key.cancel();
         KEYS.clear();

@@ -31,7 +31,7 @@ public class MinecraftMixin {
     private void handleKeybinds(CallbackInfo ci) {
         if (Config.PANIC_BUTTON.keyBind.consumeClick()) {
             AvatarManager.panic = !AvatarManager.panic;
-            FiguraToast.sendToast(new FiguraText(AvatarManager.panic ? "toast.panic_enabled" : "toast.panic_disabled"), FiguraToast.ToastType.WARNING);
+            FiguraToast.sendToast(FiguraText.of(AvatarManager.panic ? "toast.panic_enabled" : "toast.panic_disabled"), FiguraToast.ToastType.WARNING);
             return;
         }
 

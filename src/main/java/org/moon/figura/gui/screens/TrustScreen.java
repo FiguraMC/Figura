@@ -132,7 +132,7 @@ public class TrustScreen extends AbstractPanelScreen {
                 return;
 
             if (playerList.selectedEntry instanceof PlayerElement player) {
-                AvatarManager.setAvatar(player.getOwner(), avatar.nbt, true);
+                AvatarManager.setAvatar(player.getOwner(), avatar.nbt);
                 FiguraToast.sendToast("yoinked");
             }
         });

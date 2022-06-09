@@ -11,6 +11,7 @@ import net.minecraft.network.chat.Style;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
+import org.moon.figura.backend.NetworkManager;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.ui.UIHelper;
@@ -62,9 +63,11 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
         int script = avatar == null ? 0 : avatar.scriptError ? 1 : avatar.luaState == null ? 0 : 3;
         status += (byte) (script << 4);
 
-        int backend = 1;
+        int backend = NetworkManager.backendStatus;
         status += (byte) (backend << 6);
-        if (backend == 1) disconnectedReason = Component.literal("It doesnt exists");
+
+        String dc = NetworkManager.disconnectedReason;
+        disconnectedReason = dc != null && !dc.isBlank() ? Component.literal(dc) : null;
     }
 
     @Override

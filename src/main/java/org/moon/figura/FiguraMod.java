@@ -2,7 +2,6 @@ package org.moon.figura;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
@@ -67,7 +66,6 @@ public class FiguraMod implements ClientModInitializer {
         WorldRenderEvents.END.register(levelRenderer -> AvatarManager.afterWorldRender());
         WorldRenderEvents.AFTER_ENTITIES.register(FiguraMod::renderFirstPersonWorldParts);
         HudRenderCallback.EVENT.register(FiguraMod::hudRender);
-        ClientEntityEvents.ENTITY_UNLOAD.register((entity, level) -> AvatarManager.entityUnload(entity));
         ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(FiguraLuaState.SCRIPT_LISTENER);
         ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(LocalAvatarLoader.AVATAR_LISTENER);
     }

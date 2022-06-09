@@ -3,6 +3,7 @@ package org.moon.figura.lua.api;
 import com.mojang.brigadier.StringReader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ChatScreen;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.commands.arguments.SlotArgument;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
@@ -164,8 +165,14 @@ public class HostAPI {
     )
     public static void sendChatMessage(@LuaNotNil HostAPI api, @LuaNotNil String text) {
         if (!isHost(api)) return;
-        if (Minecraft.getInstance().player != null)
-            Minecraft.getInstance().player.chat(text);
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player != null) {
+            if (text.startsWith("/")) {
+                player.command(text.substring(1));
+            } else {
+                player.chat(text);
+            }
+        }
     }
 
     @LuaWhitelist

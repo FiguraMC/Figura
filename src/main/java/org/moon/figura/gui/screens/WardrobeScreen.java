@@ -8,7 +8,9 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import org.moon.figura.FiguraMod;
+import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
+import org.moon.figura.backend.NetworkManager;
 import org.moon.figura.commands.FiguraLinkCommand;
 import org.moon.figura.config.Config;
 import org.moon.figura.gui.FiguraToast;
@@ -65,7 +67,9 @@ public class WardrobeScreen extends AbstractPanelScreen {
 
         //upload
         addRenderableWidget(upload = new TexturedButton(buttX - 48, buttY, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/upload.png"), 72, 24, FiguraText.of("gui.wardrobe.upload.tooltip"), button -> {
-            FiguraToast.sendToast(Component.literal("lol nope").setStyle(Style.EMPTY.withColor(0xFFADAD)), FiguraToast.ToastType.DEFAULT);
+            Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
+            if (avatar != null && NetworkManager.uploadAvatar(avatar, null))
+                AvatarManager.localUploaded = true;
         }));
         upload.active = false;
 
@@ -147,7 +151,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
         panic.setVisible(AvatarManager.panic);
 
         //backend buttons
-        boolean backend = false; //TODO - fetch backend status
+        boolean backend = true; //TODO - fetch backend status
         upload.active = backend;
         reload.active = backend;
         delete.active = backend;

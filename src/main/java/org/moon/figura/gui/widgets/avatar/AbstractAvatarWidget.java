@@ -33,7 +33,7 @@ public class AbstractAvatarWidget extends AbstractContainerElement implements Co
         });
         context.addAction(FiguraText.of("gui.context.copy_path"), button -> {
             Minecraft.getInstance().keyboardHandler.setClipboard(path.toString());
-            FiguraToast.sendToast(new FiguraText("toast.clipboard"));
+            FiguraToast.sendToast(FiguraText.of("toast.clipboard"));
         });
     }
 

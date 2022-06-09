@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import net.minecraft.network.chat.Component;
 import org.moon.figura.FiguraMod;
+import org.moon.figura.backend.NetworkManager;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.FiguraText;
 
@@ -82,7 +83,13 @@ public enum Config {
     }},
     LOG_OTHERS(false),
     MAIN_DIR("", InputType.FOLDER_PATH),
-    BACKEND("86.125.251.108", InputType.ANY);
+    BACKEND("86.125.251.108", InputType.ANY) {
+        @Override
+        public void onChange() {
+            super.onChange();
+            NetworkManager.auth();
+        }
+    };
 
 
     /**
@@ -161,7 +168,7 @@ public enum Config {
     }
 
     public void setValue(String text) {
-        boolean change = value.equals(configValue);
+        boolean change = !value.equals(configValue);
 
         try {
             if (enumList != null)
@@ -188,10 +195,16 @@ public enum Config {
         }
 
         configValue = value;
-        if (change) runOnChange();
+        if (change) {
+            try {
+                onChange();
+            } catch (Exception e) {
+                FiguraMod.LOGGER.warn("Failed to run onChange for this config (" + this.name() + ")", e);
+            }
+        }
     }
 
-    public void runOnChange() {}
+    public void onChange() {}
 
     public enum ConfigType {
         CATEGORY,

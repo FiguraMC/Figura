@@ -2,8 +2,30 @@
   "figura": "Figura",
 
 
-  "figura.backend.connected": "Connected to backend!",
+  "figura.backend.connected": "Backend Connected!",
+  "figura.backend.disconnected": "Backend Disconnected!",
   "figura.backend.banned": "bananed :-)",
+
+  "figura.backend.error": "Error",
+  "figura.backend.invalid_uuid": "Invalid UUID",
+  "figura.backend.invalid_data": "Invalid data",
+
+  "figura.backend.rate_limited": "Rate Limited!",
+  "figura.backend.download": "Download",
+  "figura.backend.ping_rate": "Ping Rate",
+  "figura.backend.ping_size": "Ping Size",
+  "figura.backend.upload": "Upload",
+
+  "figura.backend.upload_success": "Avatar uploaded!",
+  "figura.backend.upload_error": "Upload Error",
+  "figura.backend.upload_invalid": "Invalid data",
+  "figura.backend.upload_too_big": "Avatar is too big",
+  "figura.backend.upload_too_many": "You have too many avatars",
+
+  "figura.backend.delete_success": "Avatar deleted!",
+  "figura.backend.delete_error": "Delete Error",
+  "figura.backend.delete_invalid": "Invalid data",
+  "figura.backend.delete_not_found": "Avatar not found",
 
 
   "figura.toast.reload": "Avatar reloaded!",

@@ -47,11 +47,11 @@ public class PlayerElement extends AbstractTrustElement {
         //name uuid
         context.addAction(FiguraText.of("gui.context.copy_name"), button -> {
             Minecraft.getInstance().keyboardHandler.setClipboard(this.getName());
-            FiguraToast.sendToast(new FiguraText("toast.clipboard"));
+            FiguraToast.sendToast(FiguraText.of("toast.clipboard"));
         });
         context.addAction(FiguraText.of("gui.context.copy_uuid"), button -> {
             Minecraft.getInstance().keyboardHandler.setClipboard(this.getOwner().toString());
-            FiguraToast.sendToast(new FiguraText("toast.clipboard"));
+            FiguraToast.sendToast(FiguraText.of("toast.clipboard"));
         });
 
         //reload
