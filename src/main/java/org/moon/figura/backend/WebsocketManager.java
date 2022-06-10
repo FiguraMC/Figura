@@ -34,21 +34,29 @@ public class WebsocketManager extends WebSocketClient {
         put(4001, "Banned ^.^");
     }};
 
-    private final String authToken;
+    //limits
+    public int avatarSize, maxAvatars;
 
-    public WebsocketManager(String authToken) {
+    public float equip, upload, download;
+    private float remEquip = 0, remUpload = 0, remDownload = 0;
+
+    public WebsocketManager() {
         super(URI.create(getBackendAddress()));
-        this.authToken = authToken;
     }
 
     private static String getBackendAddress() {
         return "ws://" + Config.BACKEND.value + ":" + NetworkManager.BACKEND_PORT;
     }
 
+    public void tick() {
+        DownloadRequest request = NetworkManager.REQUEST_QUEUE.poll();
+        if (request != null) request.function().run();
+    }
+
     @Override
     public void onOpen(ServerHandshake handshakedata) {
-        FiguraMod.LOGGER.info("Connecting to " + getBackendAddress());
-        send(authToken);
+        FiguraMod.LOGGER.info("Connecting to " + FiguraMod.MOD_NAME + " ws backend (" + getBackendAddress() + ")");
+        send(NetworkManager.authToken);
     }
 
     @Override
@@ -90,7 +98,7 @@ public class WebsocketManager extends WebSocketClient {
 
     private void handleClose(int code) {
         switch (code) {
-            case 4000 -> NetworkManager.reAuth();
+            case 4000 -> NetworkManager.auth(true);
             case 4001 -> NetworkManager.banned = true;
         }
     }

@@ -5,6 +5,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.minecraft.client.ClientTelemetryManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientHandshakePacketListenerImpl;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -15,31 +16,40 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.handshake.ClientIntentionPacket;
 import net.minecraft.network.protocol.login.ClientboundGameProfilePacket;
 import net.minecraft.network.protocol.login.ServerboundHelloPacket;
-import org.jetbrains.annotations.NotNull;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
+import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.config.Config;
 
 import java.io.ByteArrayOutputStream;
 import java.net.InetSocketAddress;
-import java.util.Base64;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 public class NetworkManager {
 
     public static final int AUTH_PORT = 25565;
     public static final int BACKEND_PORT = 25500;
     public static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
+    private static final int RECONNECT = 6000; //5 min
+
+    protected static final LinkedList<DownloadRequest> REQUEST_QUEUE = new LinkedList<>();
 
     public static int backendStatus = 1;
     public static String disconnectedReason;
     public static boolean banned = false;
+    protected static int lastAuth = 0;
+    protected static String authToken;
 
     protected static Connection authConnection;
     protected static WebsocketManager backend;
 
+    private static CompletableFuture<Void> networkTasks;
+
+    // -- methods -- //
+
     public static void tick() {
+        //auth ticking
         if (authConnection != null) {
             if (authConnection.isConnected())
                 authConnection.tick();
@@ -48,78 +58,159 @@ public class NetworkManager {
                 authConnection = null;
             }
         }
+
+        //backend tick
+        if (hasBackend())
+            backend.tick();
+
+        //re auth
+        lastAuth++;
+        if (lastAuth >= RECONNECT)
+            assertBackend();
     }
 
-    public static void auth() {
-        if (banned) return;
-
-        Minecraft minecraft = Minecraft.getInstance();
-
-        InetSocketAddress inetSocketAddress = new InetSocketAddress((String) Config.BACKEND.value, AUTH_PORT);
-        authConnection = Connection.connectToServer(inetSocketAddress, minecraft.options.useNativeTransport());
-        authConnection.setListener(new ClientHandshakePacketListenerImpl(authConnection, minecraft, null, (text) -> FiguraMod.LOGGER.info(text.getString())) {
-            @Override
-            public void handleGameProfile(@NotNull ClientboundGameProfilePacket clientboundGameProfilePacket) {
-                //Do nothing. The superclass sets the listener to a new listener, getting rid of ours. So we set the listener back.
-                super.handleGameProfile(clientboundGameProfilePacket);
-                authConnection.setListener(new ClientPacketListener(minecraft, null, authConnection, clientboundGameProfilePacket.getGameProfile(), minecraft.createTelemetryManager()) {
-                    @Override
-                    public void onDisconnect(@NotNull Component reason) {
-                        disconnectedReason = reason.getString();
-                        backendStatus = 1;
-                        MessageHandler.handleMessage(reason.getString());
-                    }
-                });
-            }
-        });
-
-        backendStatus = 2;
-        authConnection.send(new ClientIntentionPacket(inetSocketAddress.getHostName(), inetSocketAddress.getPort(), ConnectionProtocol.LOGIN));
-        authConnection.send(new ServerboundHelloPacket(minecraft.getUser().getName(), minecraft.getProfileKeyPairManager().profilePublicKeyData()));
-    }
-
-    //TODO
-    public static void reAuth() {
-
-    }
-
-    public static boolean uploadAvatar(Avatar avatar, UUID id) {
-        if (backend == null || !backend.isOpen())
-            return false;
-
-        JsonObject json = new JsonObject();
-        json.addProperty("type", "upload");
-        json.addProperty("id", id == null ? "avatar" : id.toString()); //todo - change to a random UUID when the multiple avatar system is done
-
-        try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            NbtIo.writeCompressed(avatar.nbt, baos);
-
-            String bytes = Base64.getEncoder().encodeToString(baos.toByteArray());
-            json.addProperty("data", bytes);
-        } catch (Exception e) {
-            FiguraMod.LOGGER.error("Failed to upload avatar!", e);
-            return false;
+    private static void doTask(Runnable toRun) {
+        if (networkTasks == null || networkTasks.isDone()) {
+            networkTasks = CompletableFuture.runAsync(toRun);
+        } else {
+            networkTasks.thenRun(toRun);
         }
-
-        backend.send(GSON.toJson(json));
-        return true;
     }
 
-    public static boolean getAvatar(UUID id) {
-        if (backend == null || !backend.isOpen())
-            return false;
+    // -- functions -- //
 
-        JsonObject json = new JsonObject();
-        json.addProperty("type", "download");
-        json.addProperty("owner", id.toString());
-        json.addProperty("id", "avatar"); // TODO
+    public static void auth(boolean force) {
+        doTask(() -> {
+            lastAuth = 0;
 
-        backend.send(GSON.toJson(json));
-        return true;
+            if (!force && authToken != null || banned)
+                return;
+
+            if (authConnection != null && !authConnection.isConnected())
+                authConnection.handleDisconnection();
+
+            FiguraMod.LOGGER.info("Authenticating with " + FiguraMod.MOD_NAME + " server");
+            backendStatus = 2;
+
+            Minecraft minecraft = Minecraft.getInstance();
+            ClientTelemetryManager telemetryManager = minecraft.createTelemetryManager();
+            InetSocketAddress inetSocketAddress = new InetSocketAddress((String) Config.BACKEND.value, AUTH_PORT);
+
+            Connection connection = Connection.connectToServer(inetSocketAddress, minecraft.options.useNativeTransport());
+            connection.setListener(new ClientHandshakePacketListenerImpl(connection, minecraft, null, (text) -> FiguraMod.LOGGER.info(text.getString())) {
+                @Override
+                public void handleGameProfile(ClientboundGameProfilePacket clientboundGameProfilePacket) {
+                    super.handleGameProfile(clientboundGameProfilePacket);
+                    connection.setListener(new ClientPacketListener(minecraft, null, connection, clientboundGameProfilePacket.getGameProfile(), telemetryManager) {
+                        @Override
+                        public void onDisconnect(Component reason) {
+                            telemetryManager.onDisconnect();
+
+                            authConnection = null;
+                            backendStatus = 1;
+                            disconnectedReason = reason.getString();
+                            MessageHandler.handleMessage(reason.getString());
+                        }
+                    });
+                }
+
+                @Override
+                public void onDisconnect(Component reason) {
+                    authConnection = null;
+                    backendStatus = 1;
+                    disconnectedReason = reason.getString();
+                }
+            });
+
+            connection.send(new ClientIntentionPacket(inetSocketAddress.getHostName(), inetSocketAddress.getPort(), ConnectionProtocol.LOGIN));
+            connection.send(new ServerboundHelloPacket(minecraft.getUser().getName(), minecraft.getProfileKeyPairManager().profilePublicKeyData()));
+
+            authConnection = connection;
+        });
     }
 
-    //command
+    public static void closeBackend() {
+        doTask(() -> {
+            if (backend == null)
+                return;
+
+            if (!backend.isOpen()) {
+                backend = null;
+                return;
+            }
+
+            backend.close();
+            backend = null;
+
+            backendStatus = 1;
+            disconnectedReason = null;
+        });
+    }
+
+    public static void openBackend() {
+        auth(false);
+        doTask(() -> {
+            if (NetworkManager.authToken == null || hasBackend())
+                return;
+
+            backend = new WebsocketManager();
+            backend.connect();
+        });
+    }
+
+    public static void assertBackend() {
+        doTask(() -> {
+            if (!hasBackend())
+                openBackend();
+        });
+    }
+
+    public static boolean hasBackend() {
+        return backend != null && backend.isOpen();
+    }
+
+    public static void sendMessage(String message) {
+        if (hasBackend()) backend.send(message);
+    }
+
+    // -- avatar management -- //
+
+    public static void uploadAvatar(Avatar avatar, UUID id) {
+        assertBackend();
+        doTask(() -> {
+            if (avatar == null || !hasBackend())
+                return;
+
+            JsonObject json = new JsonObject();
+            json.addProperty("type", "upload");
+            json.addProperty("id", id == null ? "avatar" : id.toString()); //todo - change to a random UUID when the multiple avatar system is done
+
+            try {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                NbtIo.writeCompressed(avatar.nbt, baos);
+
+                String bytes = Base64.getEncoder().encodeToString(baos.toByteArray());
+                json.addProperty("data", bytes);
+            } catch (Exception e) {
+                FiguraMod.LOGGER.error("Failed to upload avatar!", e);
+                return;
+            }
+
+            sendMessage(GSON.toJson(json));
+            AvatarManager.localUploaded = true;
+        });
+    }
+
+    public static void getAvatar(UUID owner) { //TODO - replace "avatar"
+        String id = "avatar";
+
+        DownloadRequest.AvatarRequest request = new DownloadRequest.AvatarRequest(owner, id);
+        REQUEST_QUEUE.remove(request);
+        REQUEST_QUEUE.add(request);
+    }
+
+    // -- backend command -- //
+
     public static LiteralArgumentBuilder<FabricClientCommandSource> getCommand() {
         //root
         LiteralArgumentBuilder<FabricClientCommandSource> backend = LiteralArgumentBuilder.literal("backend");
@@ -127,7 +218,7 @@ public class NetworkManager {
         //force backend connection
         LiteralArgumentBuilder<FabricClientCommandSource> connect = LiteralArgumentBuilder.literal("connect");
         connect.executes(context -> {
-            NetworkManager.auth();
+            NetworkManager.auth(true);
             return 1;
         });
 
@@ -154,7 +245,7 @@ public class NetworkManager {
         messageType.executes(context -> {
             JsonObject json = new JsonObject();
             json.addProperty("type", StringArgumentType.getString(context, "messageType"));
-            NetworkManager.backend.send(GSON.toJson(json));
+            sendMessage(GSON.toJson(json));
             return 1;
         });
 
@@ -171,7 +262,7 @@ public class NetworkManager {
             for (Map.Entry<String, JsonElement> entry : object.entrySet())
                 json.add(entry.getKey(), entry.getValue());
 
-            NetworkManager.backend.send(GSON.toJson(json));
+            sendMessage(GSON.toJson(json));
             return 1;
         });
 

@@ -29,7 +29,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
     private AvatarInfoWidget avatarInfo;
     private Label panic;
 
-    private TexturedButton upload, reload, delete;
+    private TexturedButton upload, delete;
 
     public WardrobeScreen(Screen parentScreen) {
         super(parentScreen, TITLE, 2);
@@ -68,16 +68,16 @@ public class WardrobeScreen extends AbstractPanelScreen {
         //upload
         addRenderableWidget(upload = new TexturedButton(buttX - 48, buttY, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/upload.png"), 72, 24, FiguraText.of("gui.wardrobe.upload.tooltip"), button -> {
             Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
-            if (avatar != null && NetworkManager.uploadAvatar(avatar, null))
-                AvatarManager.localUploaded = true;
+            NetworkManager.uploadAvatar(avatar, null);
         }));
         upload.active = false;
 
         //reload
-        addRenderableWidget(reload = new TexturedButton(buttX - 12, buttY, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/reload.png"), 72, 24, FiguraText.of("gui.wardrobe.reload.tooltip"), button -> {
-            FiguraToast.sendToast(Component.literal("lol nope").setStyle(Style.EMPTY.withColor(0xFFADAD)), FiguraToast.ToastType.DEFAULT);
+        addRenderableWidget(new TexturedButton(buttX - 12, buttY, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/reload.png"), 72, 24, FiguraText.of("gui.wardrobe.reload.tooltip"), button -> {
+            AvatarManager.clearAvatar(FiguraMod.getLocalPlayerUUID());
+            AvatarManager.localUploaded = true;
+            NetworkManager.assertBackend();
         }));
-        reload.active = false;
 
         //delete
         addRenderableWidget(delete = new TexturedButton(buttX + 24, buttY, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/delete.png"), 72, 24, FiguraText.of("gui.wardrobe.delete.tooltip"), button -> {
@@ -151,9 +151,8 @@ public class WardrobeScreen extends AbstractPanelScreen {
         panic.setVisible(AvatarManager.panic);
 
         //backend buttons
-        boolean backend = true; //TODO - fetch backend status
+        boolean backend = NetworkManager.backendStatus == 3;
         upload.active = backend;
-        reload.active = backend;
         delete.active = backend;
     }
 

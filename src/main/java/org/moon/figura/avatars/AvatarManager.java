@@ -120,7 +120,7 @@ public class AvatarManager {
 
         //only non uploaded local needs to be manually reloaded
         //other ones will be fetched from backend on further request
-        if (!localUploaded && id.compareTo(FiguraMod.getLocalPlayerUUID()) == 0)
+        if (!localUploaded && FiguraMod.isLocal(id))
             loadLocalAvatar(LocalAvatarLoader.getLastLoadedPath());
 
         //send client feedback
@@ -153,11 +153,9 @@ public class AvatarManager {
 
     //set an user's avatar
     public static void setAvatar(UUID id, CompoundTag nbt) {
-        //if local, remove local watch keys and mark as uploaded
-        if (id.compareTo(FiguraMod.getLocalPlayerUUID()) == 0) {
+        //remove local watch keys
+        if (FiguraMod.isLocal(id))
             LocalAvatarLoader.resetWatchKeys();
-            localUploaded = true;
-        }
 
         LOADED_AVATARS.put(id, new Avatar(nbt, id));
     }
@@ -166,8 +164,10 @@ public class AvatarManager {
     //mark as uploaded if local
     private static void fetchBackend(UUID id) {
         //already fetched :p
-        if (id == null || FETCHED_AVATARS.contains(id))
+        if (FETCHED_AVATARS.contains(id))
             return;
+
+        FETCHED_AVATARS.add(id);
 
         //egg
         if (FiguraMod.CHEESE_DAY && (boolean) Config.EASTER_EGGS.value && LocalAvatarLoader.cheese != null) {
@@ -175,7 +175,6 @@ public class AvatarManager {
             return;
         }
 
-        if (NetworkManager.getAvatar(id))
-            FETCHED_AVATARS.add(id);
+        NetworkManager.getAvatar(id);
     }
 }

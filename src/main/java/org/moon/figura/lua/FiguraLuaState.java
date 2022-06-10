@@ -220,7 +220,7 @@ public class FiguraLuaState extends LuaState53 {
     }
 
     private void runResourceLibraries() {
-        if (owner.owner.compareTo(FiguraMod.getLocalPlayerUUID()) == 0 && !(boolean) Config.SERVER_SCRIPT.value)
+        if (FiguraMod.isLocal(owner.owner) && !(boolean) Config.SERVER_SCRIPT.value)
             return;
 
         for (int i = 0; i < RESOURCE_SCRIPTS.size(); i++) {

@@ -67,7 +67,7 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
         status += (byte) (backend << 6);
 
         String dc = NetworkManager.disconnectedReason;
-        disconnectedReason = dc != null && !dc.isBlank() ? Component.literal(dc) : null;
+        disconnectedReason = backend == 1 && dc != null && !dc.isBlank() ? Component.literal(dc) : null;
     }
 
     @Override

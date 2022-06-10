@@ -3,9 +3,11 @@ package org.moon.figura.mixin;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.multiplayer.ClientLevel;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
+import org.moon.figura.backend.NetworkManager;
 import org.moon.figura.config.Config;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.actionwheel.ActionWheel;
@@ -74,5 +76,10 @@ public class MinecraftMixin {
     @Inject(at = @At("HEAD"), method = "clearLevel(Lnet/minecraft/client/gui/screens/Screen;)V")
     private void clearLevel(Screen screen, CallbackInfo ci) {
         AvatarManager.clearAllAvatars();
+    }
+
+    @Inject(at = @At("RETURN"), method = "setLevel")
+    private void setLevel(ClientLevel world, CallbackInfo ci) {
+        NetworkManager.assertBackend();
     }
 }

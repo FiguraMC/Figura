@@ -21,13 +21,9 @@ public enum MessageHandler {
     // -- auth server messages -- //
 
     AUTH(json -> {
-        if (NetworkManager.backend != null && NetworkManager.backend.isOpen())
-            NetworkManager.backend.close();
-
-        NetworkManager.backendStatus = 1;
-        String token = NetworkManager.GSON.toJson(json);
-        NetworkManager.backend = new WebsocketManager(token);
-        NetworkManager.backend.connect();
+        NetworkManager.authToken = NetworkManager.GSON.toJson(json);
+        NetworkManager.closeBackend();
+        NetworkManager.openBackend();
     }),
     BANNED(json -> {
         NetworkManager.banned = true;
@@ -45,12 +41,18 @@ public enum MessageHandler {
     CONNECTED(json -> {
         NetworkManager.backendStatus = 3;
         FiguraToast.sendToast(FiguraText.of("backend.connected"));
-    }),
-    KEEPALIVE(json -> {
+
+        JsonObject limits = json.get("limits").getAsJsonObject();
         WebsocketManager backend = NetworkManager.backend;
-        if (backend != null && backend.isOpen())
-            backend.send(NetworkManager.GSON.toJson(json));
+
+        backend.avatarSize = limits.get("avatarSize").getAsInt();
+        backend.maxAvatars = limits.get("maxAvatars").getAsInt();
+
+        backend.equip = limits.get("equip").getAsFloat();
+        backend.upload = limits.get("upload").getAsFloat();
+        backend.download = limits.get("download").getAsFloat();
     }),
+    KEEPALIVE(json -> NetworkManager.sendMessage(NetworkManager.GSON.toJson(json))),
     TOAST(json -> {
         FiguraToast.ToastType type;
         try {

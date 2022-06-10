@@ -51,7 +51,7 @@ public class FiguraLuaPrinter {
 
     //print an error, errors should always show up on chat
     public static void sendLuaError(Exception error, String name, UUID owner) {
-        if (!(boolean) Config.LOG_OTHERS.value && owner.compareTo(FiguraMod.getLocalPlayerUUID()) != 0)
+        if (!(boolean) Config.LOG_OTHERS.value && !FiguraMod.isLocal(owner))
             return;
 
         //Jank as hell
@@ -95,7 +95,7 @@ public class FiguraLuaPrinter {
 
     //print functions
     private static final JavaFunction PRINT_FUNCTION = luaState -> {
-        if (!(boolean) Config.LOG_OTHERS.value && ((FiguraLuaState) luaState).getOwner().owner.compareTo(FiguraMod.getLocalPlayerUUID()) != 0)
+        if (!(boolean) Config.LOG_OTHERS.value && !FiguraMod.isLocal(((FiguraLuaState) luaState).getOwner().owner))
             return 0;
 
         MutableComponent text = Component.empty();
@@ -113,7 +113,7 @@ public class FiguraLuaPrinter {
     };
 
     private static final JavaFunction PRINT_JSON_FUNCTION = luaState -> {
-        if (!(boolean) Config.LOG_OTHERS.value && ((FiguraLuaState) luaState).getOwner().owner.compareTo(FiguraMod.getLocalPlayerUUID()) != 0)
+        if (!(boolean) Config.LOG_OTHERS.value && !FiguraMod.isLocal(((FiguraLuaState) luaState).getOwner().owner))
             return 0;
 
         MutableComponent text = Component.empty();
@@ -127,7 +127,7 @@ public class FiguraLuaPrinter {
     };
 
     private static final JavaFunction PRINT_TABLE_FUNCTION = luaState -> {
-        if (!(boolean) Config.LOG_OTHERS.value && ((FiguraLuaState) luaState).getOwner().owner.compareTo(FiguraMod.getLocalPlayerUUID()) != 0)
+        if (!(boolean) Config.LOG_OTHERS.value && !FiguraMod.isLocal(((FiguraLuaState) luaState).getOwner().owner))
             return 0;
 
         MutableComponent text = Component.empty();

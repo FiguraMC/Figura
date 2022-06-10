@@ -55,7 +55,7 @@ public class HostAPI {
             description = "host.is_host"
     )
     public static boolean isHost(@LuaNotNil HostAPI api) {
-        return api.owner.owner.compareTo(FiguraMod.getLocalPlayerUUID()) == 0;
+        return FiguraMod.isLocal(api.owner.owner);
     }
 
     @LuaWhitelist

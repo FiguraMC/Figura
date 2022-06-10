@@ -87,7 +87,8 @@ public enum Config {
         @Override
         public void onChange() {
             super.onChange();
-            NetworkManager.auth();
+            NetworkManager.closeBackend();
+            NetworkManager.auth(true);
         }
     };
 

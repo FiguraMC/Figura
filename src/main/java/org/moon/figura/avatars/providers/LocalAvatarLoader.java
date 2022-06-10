@@ -3,6 +3,7 @@ package org.moon.figura.avatars.providers;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtIo;
+import net.minecraft.server.packs.resources.ResourceManager;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.parsers.AvatarMetadataParser;
@@ -18,10 +19,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.*;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.BiFunction;
 import java.util.regex.Pattern;
 
 /**
@@ -35,12 +34,23 @@ public class LocalAvatarLoader {
     private static Path lastLoadedPath;
 
     public static CompoundTag cheese;
-    public static final FiguraResourceListener AVATAR_LISTENER = new FiguraResourceListener("avatars", manager -> {
+    public static final ArrayList<CompoundTag> SERVER_AVATARS = new ArrayList<>();
+    private static final BiFunction<String, ResourceManager, CompoundTag> LOAD_AVATAR = (name, manager) -> {
         try {
-            cheese = NbtIo.readCompressed(manager.getResource(new FiguraIdentifier("avatars/cheese.moon")).get().open());
+            return NbtIo.readCompressed(manager.getResource(new FiguraIdentifier("avatars/" + name + ".moon")).get().open());
         } catch (Exception e) {
-            FiguraMod.LOGGER.error("Failed to load the cheese", e);
+            FiguraMod.LOGGER.error("Failed to load the " + name + " avatar", e);
+            return null;
         }
+    };
+    public static final FiguraResourceListener AVATAR_LISTENER = new FiguraResourceListener("avatars", manager -> {
+        cheese = LOAD_AVATAR.apply("cheese", manager);
+
+        SERVER_AVATARS.clear();
+        manager.listResources("avatars/server", resource -> resource.getNamespace().equals(FiguraMod.MOD_ID) && resource.getPath().endsWith(".moon")).forEach((location, resource) -> {
+            String name = location.getPath().substring(8, location.getPath().length() - 5);
+            SERVER_AVATARS.add(LOAD_AVATAR.apply(name, manager));
+        });
     });
 
     static {
