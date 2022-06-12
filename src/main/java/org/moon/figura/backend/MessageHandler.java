@@ -45,12 +45,15 @@ public enum MessageHandler {
         JsonObject limits = json.get("limits").getAsJsonObject();
         WebsocketManager backend = NetworkManager.backend;
 
-        backend.avatarSize = limits.get("avatarSize").getAsInt();
+        backend.maxAvatarSize = limits.get("maxAvatarSize").getAsInt();
         backend.maxAvatars = limits.get("maxAvatars").getAsInt();
 
-        backend.equip = limits.get("equip").getAsFloat();
-        backend.upload = limits.get("upload").getAsFloat();
-        backend.download = limits.get("download").getAsFloat();
+        backend.pingSize.set(limits.get("pingSize").getAsFloat());
+        backend.pingRate.set(limits.get("pingRate").getAsFloat());
+
+        backend.equip.set(limits.get("equip").getAsFloat());
+        backend.upload.set(limits.get("upload").getAsFloat());
+        backend.download.set(limits.get("download").getAsFloat());
     }),
     KEEPALIVE(json -> NetworkManager.sendMessage(NetworkManager.GSON.toJson(json))),
     TOAST(json -> {

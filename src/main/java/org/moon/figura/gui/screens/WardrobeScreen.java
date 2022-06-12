@@ -152,7 +152,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
 
         //backend buttons
         boolean backend = NetworkManager.backendStatus == 3;
-        upload.active = backend;
+        upload.active = backend && NetworkManager.canUpload();
         delete.active = backend;
     }
 

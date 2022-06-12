@@ -52,9 +52,8 @@ public class SoundAPI {
             description = "sound.play_sound"
     )
     public static void playSound(@LuaNotNil SoundAPI api, @LuaNotNil String id, Object x, Double y, Double z, Double w, Double t) {
-        if (api.owner.soundsRemaining < 1)
+        if (!api.owner.soundsRemaining.use())
             return;
-        api.owner.soundsRemaining--;
 
         FiguraVec3 pos;
         double volume = 1.0;

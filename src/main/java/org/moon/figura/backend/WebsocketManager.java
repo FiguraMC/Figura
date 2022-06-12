@@ -6,6 +6,7 @@ import org.moon.figura.FiguraMod;
 import org.moon.figura.config.Config;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.utils.FiguraText;
+import org.moon.figura.utils.RefilledNumber;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -32,13 +33,18 @@ public class WebsocketManager extends WebSocketClient {
         put(3000, "Unauthorized");
         put(4000, "Re-Auth");
         put(4001, "Banned ^.^");
+        put(4002, "Too Many Connections");
     }};
 
     //limits
-    public int avatarSize, maxAvatars;
+    public int maxAvatarSize, maxAvatars;
 
-    public float equip, upload, download;
-    private float remEquip = 0, remUpload = 0, remDownload = 0;
+    public final RefilledNumber pingSize = new RefilledNumber();
+    public final RefilledNumber pingRate = new RefilledNumber();
+
+    public final RefilledNumber equip = new RefilledNumber();
+    public final RefilledNumber upload = new RefilledNumber();
+    public final RefilledNumber download = new RefilledNumber();
 
     public WebsocketManager() {
         super(URI.create(getBackendAddress()));
@@ -49,8 +55,16 @@ public class WebsocketManager extends WebSocketClient {
     }
 
     public void tick() {
-        DownloadRequest request = NetworkManager.REQUEST_QUEUE.poll();
-        if (request != null) request.function().run();
+        pingSize.tick();
+        pingRate.tick();
+        equip.tick();
+        upload.tick();
+        download.tick();
+
+        if (download.use()) {
+            DownloadRequest request = NetworkManager.REQUEST_QUEUE.poll();
+            if (request != null) request.function().run();
+        }
     }
 
     @Override
@@ -61,7 +75,7 @@ public class WebsocketManager extends WebSocketClient {
 
     @Override
     public void onMessage(String message) {
-        if (FiguraMod.DEBUG_MODE) FiguraMod.LOGGER.info("Received message: " + message);
+        //FiguraMod.LOGGER.info("Received message: " + message);
         MessageHandler.handleMessage(message);
     }
 
@@ -92,7 +106,7 @@ public class WebsocketManager extends WebSocketClient {
 
     @Override
     public void send(String text) {
-        if (FiguraMod.DEBUG_MODE) FiguraMod.LOGGER.info("Sending message: " + text);
+        //FiguraMod.LOGGER.info("Sending message: " + text);
         super.send(text);
     }
 

@@ -71,7 +71,8 @@ public class AvatarManager {
 
     //player will also attempt to load from network, if possible
     public static Avatar getAvatarForPlayer(UUID player) {
-        if (panic) return null;
+        if (panic || Minecraft.getInstance().level == null)
+            return null;
 
         if (!LOADED_AVATARS.containsKey(player))
             fetchBackend(player);
@@ -81,7 +82,8 @@ public class AvatarManager {
 
     //tries to get data from an entity
     public static Avatar getAvatar(Entity entity) {
-        if (panic) return null;
+        if (panic || Minecraft.getInstance().level == null)
+            return null;
 
         UUID uuid = entity.getUUID();
 
@@ -99,6 +101,8 @@ public class AvatarManager {
         if (LOADED_AVATARS.containsKey(id))
             LOADED_AVATARS.remove(id).clean();
         FETCHED_AVATARS.remove(id);
+
+        NetworkManager.clearRequestsFor(id);
     }
 
     //clears ALL loaded avatars, including local
@@ -110,6 +114,7 @@ public class AvatarManager {
         FETCHED_AVATARS.clear();
 
         localUploaded = true;
+        NetworkManager.clearRequests();
         FiguraMod.LOGGER.info("Cleared all avatars");
     }
 

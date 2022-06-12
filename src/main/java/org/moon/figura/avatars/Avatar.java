@@ -1,7 +1,6 @@
 package org.moon.figura.avatars;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.SharedConstants;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelPart;
@@ -25,6 +24,7 @@ import org.moon.figura.lua.api.nameplate.NameplateCustomization;
 import org.moon.figura.lua.types.LuaFunction;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
+import org.moon.figura.utils.RefilledNumber;
 import org.terasology.jnlua.LuaRuntimeException;
 
 import java.io.ByteArrayOutputStream;
@@ -69,8 +69,8 @@ public class Avatar {
     public int postWorldRenderInstructions = 0;
     public int accumulatedRenderInstructions = 0;
 
-    public float particlesRemaining = 0f;
-    public float soundsRemaining = 0f;
+    public final RefilledNumber particlesRemaining = new RefilledNumber();
+    public final RefilledNumber soundsRemaining = new RefilledNumber();
 
     public Avatar(CompoundTag nbt, UUID owner) {
         this.nbt = nbt;
@@ -113,12 +113,12 @@ public class Avatar {
     public void onTick() {
         if (!scriptError && luaState != null) {
             //sound
-            float maxParticles = TrustManager.get(this.owner).get(TrustContainer.Trust.PARTICLES);
-            this.particlesRemaining = Math.min(particlesRemaining + (maxParticles / SharedConstants.TICKS_PER_SECOND), maxParticles);
+            particlesRemaining.set(TrustManager.get(this.owner).get(TrustContainer.Trust.PARTICLES));
+            particlesRemaining.tick();
 
             //particles
-            float maxSounds = TrustManager.get(this.owner).get(TrustContainer.Trust.SOUNDS);
-            this.soundsRemaining = Math.min(soundsRemaining + (maxSounds / SharedConstants.TICKS_PER_SECOND), maxSounds);
+            soundsRemaining.set(TrustManager.get(this.owner).get(TrustContainer.Trust.SOUNDS));
+            soundsRemaining.tick();
 
             //event
             tryCall(luaState.events.TICK, tickLimit);

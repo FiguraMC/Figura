@@ -173,9 +173,24 @@ public class NetworkManager {
         if (hasBackend()) backend.send(message);
     }
 
+    public static void clearRequests() {
+        REQUEST_QUEUE.clear();
+    }
+
+    public static void clearRequestsFor(UUID id) {
+        REQUEST_QUEUE.removeIf(request -> request.id.equals(id));
+    }
+
+    public static boolean canUpload() {
+        return hasBackend() && backend.upload.peek();
+    }
+
     // -- avatar management -- //
 
     public static void uploadAvatar(Avatar avatar, UUID id) {
+        if (hasBackend())
+            backend.upload.use();
+
         assertBackend();
         doTask(() -> {
             if (avatar == null || !hasBackend())
@@ -201,10 +216,10 @@ public class NetworkManager {
         });
     }
 
-    public static void getAvatar(UUID owner) { //TODO - replace "avatar"
-        String id = "avatar";
+    public static void getAvatar(UUID id) { //TODO - replace "avatar"
+        String avatarID = "avatar";
 
-        DownloadRequest.AvatarRequest request = new DownloadRequest.AvatarRequest(owner, id);
+        DownloadRequest.AvatarRequest request = new DownloadRequest.AvatarRequest(id, avatarID);
         REQUEST_QUEUE.remove(request);
         REQUEST_QUEUE.add(request);
     }

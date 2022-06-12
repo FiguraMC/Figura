@@ -65,9 +65,8 @@ public class ParticleAPI {
             description = "particle.add_particle"
     )
     public static void addParticle(@LuaNotNil ParticleAPI api, @LuaNotNil String id, Object x, Object y, Double z, Object w, Double t, Double h) {
-        if (api.owner.particlesRemaining < 1)
+        if (!api.owner.particlesRemaining.use())
             return;
-        api.owner.particlesRemaining--;
 
         FiguraVec3 pos, vel;
 
