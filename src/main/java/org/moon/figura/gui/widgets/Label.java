@@ -62,8 +62,7 @@ public class Label implements FiguraWidget, GuiEventListener {
 
     private void calculateDimensions() {
         List<Component> split = TextUtils.splitText(text, "\n");
-        for (Component line : split)
-            this.width = Math.max(this.width, font.width(line));
+        this.width = TextUtils.getWidth(split, font);
         this.height = font.lineHeight * split.size();
     }
 

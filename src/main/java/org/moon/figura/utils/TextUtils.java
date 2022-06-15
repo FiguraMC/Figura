@@ -18,7 +18,7 @@ public class TextUtils {
     public static final int TAB_SPACING = 2;
 
     public static Component noBadges4U(Component text) {
-        return replaceInText(text, "[❗❌\uD83C\uDF54\uD83E\uDD90\uD83C\uDF19\uD83C\uDF00\uD83D\uDEAB❤★]", "\uFFFD");
+        return replaceInText(text, "[❗❌\uD83C\uDF54\uD83E\uDD90\uD83C\uDF19\uD83C\uDF00❤☆★]", "\uFFFD");
     }
 
     public static List<Component> splitText(Component text, String regex) {
@@ -143,9 +143,7 @@ public class TextUtils {
         int right = screenWidth - mousePos - 12;
 
         //get largest text size
-        int largest = 0;
-        for (Component component : splitText)
-            largest = Math.max(largest, font.width(component));
+        int largest = getWidth(splitText, font);
 
         //get the optimal side for warping
         int side = largest <= right ? right : largest <= left ? left : Math.max(left, right);
@@ -154,5 +152,13 @@ public class TextUtils {
         List<FormattedCharSequence> warp = new ArrayList<>();
         font.getSplitter().splitLines(text, side, Style.EMPTY, (formattedText, aBoolean) -> warp.add(Language.getInstance().getVisualOrder(formattedText)));
         return warp;
+    }
+
+    //get the largest text width from a list
+    public static int getWidth(List<Component> text, Font font) {
+        int width = 0;
+        for (Component component : text)
+            width = Math.max(width, font.width(component));
+        return width;
     }
 }

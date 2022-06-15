@@ -23,7 +23,10 @@ import org.moon.figura.config.Config;
 
 import java.io.ByteArrayOutputStream;
 import java.net.InetSocketAddress;
-import java.util.*;
+import java.util.Base64;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public class NetworkManager {
@@ -81,51 +84,57 @@ public class NetworkManager {
 
     public static void auth(boolean force) {
         doTask(() -> {
-            lastAuth = 0;
+            try {
+                lastAuth = 0;
 
-            if (!force && authToken != null || banned)
-                return;
+                if (!force && authToken != null || banned)
+                    return;
 
-            if (authConnection != null && !authConnection.isConnected())
-                authConnection.handleDisconnection();
+                if (authConnection != null && !authConnection.isConnected())
+                    authConnection.handleDisconnection();
 
-            FiguraMod.LOGGER.info("Authenticating with " + FiguraMod.MOD_NAME + " server");
-            backendStatus = 2;
+                FiguraMod.LOGGER.info("Authenticating with " + FiguraMod.MOD_NAME + " server...");
+                backendStatus = 2;
 
-            Minecraft minecraft = Minecraft.getInstance();
-            ClientTelemetryManager telemetryManager = minecraft.createTelemetryManager();
-            InetSocketAddress inetSocketAddress = new InetSocketAddress((String) Config.BACKEND.value, AUTH_PORT);
+                Minecraft minecraft = Minecraft.getInstance();
+                ClientTelemetryManager telemetryManager = minecraft.createTelemetryManager();
+                InetSocketAddress inetSocketAddress = new InetSocketAddress((String) Config.BACKEND.value, AUTH_PORT);
 
-            Connection connection = Connection.connectToServer(inetSocketAddress, minecraft.options.useNativeTransport());
-            connection.setListener(new ClientHandshakePacketListenerImpl(connection, minecraft, null, (text) -> FiguraMod.LOGGER.info(text.getString())) {
-                @Override
-                public void handleGameProfile(ClientboundGameProfilePacket clientboundGameProfilePacket) {
-                    super.handleGameProfile(clientboundGameProfilePacket);
-                    connection.setListener(new ClientPacketListener(minecraft, null, connection, clientboundGameProfilePacket.getGameProfile(), telemetryManager) {
-                        @Override
-                        public void onDisconnect(Component reason) {
-                            telemetryManager.onDisconnect();
+                Connection connection = Connection.connectToServer(inetSocketAddress, minecraft.options.useNativeTransport());
+                connection.setListener(new ClientHandshakePacketListenerImpl(connection, minecraft, null, (text) -> FiguraMod.LOGGER.info(text.getString())) {
+                    @Override
+                    public void handleGameProfile(ClientboundGameProfilePacket clientboundGameProfilePacket) {
+                        super.handleGameProfile(clientboundGameProfilePacket);
+                        connection.setListener(new ClientPacketListener(minecraft, null, connection, clientboundGameProfilePacket.getGameProfile(), telemetryManager) {
+                            @Override
+                            public void onDisconnect(Component reason) {
+                                telemetryManager.onDisconnect();
 
-                            authConnection = null;
-                            backendStatus = 1;
-                            disconnectedReason = reason.getString();
-                            MessageHandler.handleMessage(reason.getString());
-                        }
-                    });
-                }
+                                authConnection = null;
+                                backendStatus = 1;
+                                disconnectedReason = reason.getString();
+                                MessageHandler.handleMessage(reason.getString());
+                            }
+                        });
+                    }
 
-                @Override
-                public void onDisconnect(Component reason) {
-                    authConnection = null;
-                    backendStatus = 1;
-                    disconnectedReason = reason.getString();
-                }
-            });
+                    @Override
+                    public void onDisconnect(Component reason) {
+                        authConnection = null;
+                        backendStatus = 1;
+                        disconnectedReason = reason.getString();
+                    }
+                });
 
-            connection.send(new ClientIntentionPacket(inetSocketAddress.getHostName(), inetSocketAddress.getPort(), ConnectionProtocol.LOGIN));
-            connection.send(new ServerboundHelloPacket(minecraft.getUser().getName(), minecraft.getProfileKeyPairManager().profilePublicKeyData()));
+                connection.send(new ClientIntentionPacket(inetSocketAddress.getHostName(), inetSocketAddress.getPort(), ConnectionProtocol.LOGIN));
+                connection.send(new ServerboundHelloPacket(minecraft.getUser().getName(), minecraft.getProfileKeyPairManager().profilePublicKeyData()));
 
-            authConnection = connection;
+                authConnection = connection;
+            } catch (Exception e) {
+                authConnection = null;
+                backendStatus = 1;
+                disconnectedReason = e.getMessage();
+            }
         });
     }
 

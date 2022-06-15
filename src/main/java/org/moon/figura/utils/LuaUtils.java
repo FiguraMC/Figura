@@ -1,8 +1,14 @@
 package org.moon.figura.utils;
 
+import com.mojang.brigadier.StringReader;
 import net.minecraft.CrashReport;
 import net.minecraft.client.Minecraft;
+import net.minecraft.commands.CommandBuildContext;
+import net.minecraft.commands.arguments.item.ItemArgument;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.world.item.ItemStack;
 import org.moon.figura.FiguraMod;
+import org.moon.figura.lua.api.world.ItemStackWrapper;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.terasology.jnlua.LuaRuntimeException;
@@ -76,6 +82,22 @@ public class LuaUtils {
             return FiguraVec2.of((double) x, y);
         }
         throw new LuaRuntimeException("Illegal argument to " + methodName + "(): " + x);
+    }
+
+    public static ItemStack parseItemStack(String methodName, Object item) {
+        if (item == null)
+            return ItemStack.EMPTY;
+        else if (item instanceof ItemStackWrapper wrapper)
+            return ItemStackWrapper.getStack(wrapper);
+        else if (item instanceof String string) {
+            try {
+                return ItemArgument.item(new CommandBuildContext(RegistryAccess.BUILTIN.get())).parse(new StringReader(string)).createItemStack(1, false);
+            } catch (Exception e) {
+                throw new LuaRuntimeException("Could not parse item stack from string: " + string);
+            }
+        }
+
+        throw new LuaRuntimeException("Illegal argument to " + methodName + "(): " + item);
     }
 
     /**

@@ -34,8 +34,8 @@ public class FiguraLuaState extends LuaState53 {
         RESOURCE_SCRIPTS.clear();
 
         manager.listResources("lua/scripts/server", resource -> resource.getNamespace().equals(FiguraMod.MOD_ID) && resource.getPath().endsWith(".lua")).forEach((location, resource) -> {
-            try {
-                RESOURCE_SCRIPTS.add(new String(resource.open().readAllBytes()));
+            try (InputStream stream = resource.open()) {
+                RESOURCE_SCRIPTS.add(new String(stream.readAllBytes()));
                 FiguraMod.LOGGER.debug("Loaded resource script \"" + location.toString() + "\"");
             } catch (Exception e) {
                 e.printStackTrace();
@@ -55,6 +55,7 @@ public class FiguraLuaState extends LuaState53 {
     public MetaAPI meta;
     public KeybindAPI keybind;
     public RendererAPI renderer;
+    public ActionWheelAPI actionWheel;
 
     public static final String STORAGE_KEY = "STORAGE";
     public LuaOwnedTable<Object> storedStuff = new LuaOwnedTable<>(this, STORAGE_KEY);
@@ -159,6 +160,7 @@ public class FiguraLuaState extends LuaState53 {
         loadGlobal(meta = new MetaAPI(owner), "meta");
         loadGlobal(keybind = new KeybindAPI(owner), "keybind");
         loadGlobal(renderer = new RendererAPI(owner.owner), "renderer");
+        loadGlobal(actionWheel = new ActionWheelAPI(owner.owner), "action_wheel");
     }
 
     private void loadSetHook() {

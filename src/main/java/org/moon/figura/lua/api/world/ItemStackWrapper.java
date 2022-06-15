@@ -55,7 +55,7 @@ public class ItemStackWrapper {
         this.tag = (LuaTable) NbtToLua.convert(wrapped.getTag() != null ? wrapped.getTag() : null);
     }
 
-    protected static ItemStack getStack(ItemStackWrapper itemStack) {
+    public static ItemStack getStack(ItemStackWrapper itemStack) {
         if (!exists(itemStack)) throw new LuaRuntimeException("ItemStack does not exist!");
         return itemStack.itemStack.get();
     }

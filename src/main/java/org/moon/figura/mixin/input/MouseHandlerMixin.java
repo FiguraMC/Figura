@@ -21,19 +21,19 @@ public class MouseHandlerMixin {
         if (window != Minecraft.getInstance().getWindow().getWindow())
             return;
 
+        boolean pressed = action != 0;
+
+        if (pressed && (ActionWheel.isEnabled())) {
+            if (button <= 1) ActionWheel.execute(button == 0);
+            ci.cancel();
+        }
+
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
         if (avatar == null || avatar.luaState == null)
             return;
 
-        boolean pressed = action != 0;
-
-        if (pressed) {
-            if (ActionWheel.isEnabled())
-                ActionWheel.execute(button == 0);
-
-            if (avatar.luaState.host.unlockCursor)
-                ci.cancel();
-        }
+        if (pressed && avatar.luaState.host.unlockCursor)
+            ci.cancel();
 
         //this needs to be last because it executes functions and can cause lua errors, making luaState null
         FiguraKeybind.set(avatar.luaState.keybind.keyBindings, InputConstants.Type.MOUSE.getOrCreate(button), pressed);

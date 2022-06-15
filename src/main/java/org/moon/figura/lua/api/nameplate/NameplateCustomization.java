@@ -116,11 +116,11 @@ public class NameplateCustomization {
         SHRIMP("\uD83E\uDD90"),
         MOON("\uD83C\uDF19"),
         SHADOW("\uD83C\uDF00"),
-        BANNED("\uD83D\uDEAB"),
         DONATOR("❤", ColorUtils.Colors.FRAN_PINK.hex),
-        CONTEST("★", ColorUtils.Colors.FRAN_PINK.hex),
-        DISCORD("★", 0x7289DA),
-        DEV("★", -1);
+        CONTEST("☆", ColorUtils.Colors.FRAN_PINK.hex),
+        DISCORD_MOD("☆", 0x72B7FF),
+        DISCORD_ADMIN("☆", 0xB7FF72),
+        DEV("★");
 
         public final String badge;
         private final Integer color;
@@ -135,7 +135,7 @@ public class NameplateCustomization {
         }
 
         public int color() {
-            return this.color == null ? 0xFFFFFF : this.color == -1 ? ColorUtils.rgbToInt(ColorUtils.rainbow(2d, 0.7d, 1d)) : this.color;
+            return this.color == null ? 0xFFFFFF : this.color;
         }
     }
 

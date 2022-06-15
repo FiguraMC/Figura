@@ -61,10 +61,8 @@ public class WebsocketManager extends WebSocketClient {
         upload.tick();
         download.tick();
 
-        if (download.use()) {
-            DownloadRequest request = NetworkManager.REQUEST_QUEUE.poll();
-            if (request != null) request.function().run();
-        }
+        DownloadRequest request = NetworkManager.REQUEST_QUEUE.poll();
+        if (request != null && download.use()) request.function().run();
     }
 
     @Override
