@@ -9,6 +9,8 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Style;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.model.FiguraModelPart;
+import org.moon.figura.gui.actionwheel.Action;
+import org.moon.figura.gui.actionwheel.Page;
 import org.moon.figura.lua.api.*;
 import org.moon.figura.lua.api.entity.EntityWrapper;
 import org.moon.figura.lua.api.entity.LivingEntityWrapper;
@@ -56,6 +58,12 @@ public class FiguraDocsManager {
         //Globals. Group name is an empty string, meaning they're not in any group at all.
         put("", List.of(
                 FiguraGlobalsDocs.class
+        ));
+
+        put("action_wheel", List.of(
+                ActionWheelAPI.class,
+                Page.class,
+                Action.class
         ));
 
         //misc (only 1 type)

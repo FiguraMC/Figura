@@ -84,7 +84,7 @@ public abstract class AbstractPanelScreen extends Screen {
         }
         //render tooltip
         else if (tooltip != null)
-            UIHelper.renderTooltip(stack, tooltip, mouseX, mouseY);
+            UIHelper.renderTooltip(stack, tooltip, mouseX, mouseY, true);
 
         tooltip = null;
     }

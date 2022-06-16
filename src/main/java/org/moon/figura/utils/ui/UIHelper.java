@@ -11,13 +11,13 @@ import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiComponent;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import org.lwjgl.opengl.GL11;
@@ -27,11 +27,14 @@ import org.moon.figura.gui.widgets.ContextMenu;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.TextUtils;
 
+import java.util.List;
+
 public class UIHelper extends GuiComponent {
 
     // -- Variables -- //
 
     public static final ResourceLocation OUTLINE = new FiguraIdentifier("textures/gui/outline.png");
+    public static final ResourceLocation TOOLTIP = new FiguraIdentifier("textures/gui/tooltip.png");
 
     public static boolean forceNameplate = false;
     public static boolean forceNoFire = false;
@@ -296,9 +299,39 @@ public class UIHelper extends GuiComponent {
         stack.popPose();
     }
 
-    public static void renderTooltip(PoseStack stack, Component tooltip, int mouseX, int mouseY) {
-        Screen screen = Minecraft.getInstance().screen;
-        if (screen != null) screen.renderTooltip(stack, TextUtils.warpTooltip(tooltip, Minecraft.getInstance().font, mouseX, screen.width), mouseX, Math.max(mouseY, 16));
+    public static void renderTooltip(PoseStack stack, Component tooltip, int mouseX, int mouseY, boolean background) {
+        Minecraft minecraft = Minecraft.getInstance();
+
+        //window
+        double screenX = minecraft.getWindow().getGuiScaledWidth();
+        double screenY = minecraft.getWindow().getGuiScaledHeight();
+
+        //prepare text
+        Font font = minecraft.font;
+        List<FormattedCharSequence> text = TextUtils.warpTooltip(tooltip, font, mouseX, (int) screenX);
+        int height = font.lineHeight * text.size();
+
+        //calculate pos
+        double x = mouseX + 12;
+        double y = Math.min(Math.max(mouseY - 12, 0), screenY - height);
+
+        int width = TextUtils.getWidth(text, font);
+        if (x + width > screenX)
+            x = Math.max(x - 28 - width, 0);
+
+        //render
+        stack.pushPose();
+        stack.translate(0d, 0d, 400d);
+
+        if (background)
+            renderSliced(stack, (int) (x - 4), (int) (y - 4), width + 8, height + 8, TOOLTIP);
+
+        for (int i = 0; i < text.size(); i++) {
+            FormattedCharSequence charSequence = text.get(i);
+            font.drawShadow(stack, charSequence, (float) x, (float) y + font.lineHeight * i, 0xFFFFFF);
+        }
+
+        stack.popPose();
     }
 
     public static void setContext(ContextMenu context) {

@@ -155,10 +155,10 @@ public class TextUtils {
     }
 
     //get the largest text width from a list
-    public static int getWidth(List<Component> text, Font font) {
+    public static int getWidth(List<?> text, Font font) {
         int width = 0;
-        for (Component component : text)
-            width = Math.max(width, font.width(component));
+        for (Object object : text)
+            width = Math.max(width, object instanceof Component component ? font.width(component) : object instanceof FormattedCharSequence charSequence ? font.width(charSequence) : 0);
         return width;
     }
 }

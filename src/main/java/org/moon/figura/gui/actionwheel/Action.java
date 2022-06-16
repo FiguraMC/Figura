@@ -15,19 +15,19 @@ import org.moon.figura.utils.LuaUtils;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "Action",
-        description = "action"
+        description = "wheel_action"
 )
 public class Action {
 
     @LuaWhitelist
-    @LuaFieldDoc(description = "action.left_action")
+    @LuaFieldDoc(description = "wheel_action.left_action")
     public LuaFunction leftAction;
     @LuaWhitelist
-    @LuaFieldDoc(description = "action.right_action")
+    @LuaFieldDoc(description = "wheel_action.right_action")
     public LuaFunction rightAction;
 
     @LuaWhitelist
-    @LuaFieldDoc(description = "action.title")
+    @LuaFieldDoc(description = "wheel_action.title")
     public String title;
 
     public ItemStack item;
@@ -53,7 +53,7 @@ public class Action {
                             argumentNames = {"action", "r", "g", "b"}
                     )
             },
-            description = "action.set_color"
+            description = "wheel_action.set_color"
     )
     public static void setColor(@LuaNotNil Action action, Object x, Double y, Double z) {
         action.color = LuaUtils.parseVec3("setColor", x, y, z);
@@ -75,7 +75,7 @@ public class Action {
                             argumentNames = {"action", "item"}
                     )
             },
-            description = "action.set_item"
+            description = "wheel_action.set_item"
     )
     public static void setItem(@LuaNotNil Action action, Object item) {
         ItemStack itemStack = LuaUtils.parseItemStack("setItem", item);

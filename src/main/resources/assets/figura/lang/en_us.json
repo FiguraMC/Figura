@@ -184,6 +184,17 @@
   "figura.config.action_wheel_scale": "Action Wheel Size",
   "figura.config.action_wheel_scale.tooltip": "Changes the Action Wheel size",
 
+  "figura.config.action_wheel_title": "Selected Action's Text",
+  "figura.config.action_wheel_title.tooltip": "Changes where the place of the selected action's text is shown",
+  "figura.config.action_wheel_title.1": "Mouse (Tooltip)",
+  "figura.config.action_wheel_title.2": "Mouse",
+  "figura.config.action_wheel_title.3": "Top",
+  "figura.config.action_wheel_title.4": "Middle",
+  "figura.config.action_wheel_title.5": "Bottom",
+
+  "figura.config.action_wheel_decorations": "Item Decorations",
+  "figura.config.action_wheel_decorations.tooltip": "Toggle the rendering of the item decorations, like the damage bar and the item count",
+
   "figura.config.paperdoll": "Paperdoll",
   "figura.config.paperdoll.tooltip": "Paperdoll settings",
 
@@ -240,11 +251,11 @@
   "figura.config.backend.tooltip": "Sets the IP of the backend server",
 
   "figura.command.click_to_open": "Click here to open",
-  "figura.command.run.not_local_error" : "No local avatar equipped!",
-  "figura.command.run.no_script_error" : "No active script to run code in!",
-  "figura.command.load.success" : "Avatar loaded!",
-  "figura.command.load.error" : "Failed to load avatar from path \"%s\"",
-  "figura.command.load.invalid" : "Invalid path \"%s\"",
+  "figura.command.run.not_local_error": "No local avatar equipped!",
+  "figura.command.run.no_script_error": "No active script to run code in!",
+  "figura.command.load.success": "Avatar loaded!",
+  "figura.command.load.error": "Failed to load avatar from path \"%s\"",
+  "figura.command.load.invalid": "Invalid path \"%s\"",
   "figura.command.docs_export.success": "Exported Figura docs into the cache directory.",
   "figura.command.docs_export.error": "Failed to export Figura docs!",
 
@@ -324,6 +335,22 @@
   "figura.docs.nameplate_customization.set_scale": "The scale factor of the nameplate. Only usable on the ENTITY nameplate.",
   "figura.docs.nameplate_customization.is_visible": "Whether or not the nameplate should be visible. Only usable on the ENTITY nameplate.",
   "figura.docs.nameplate_customization.set_visible": "Whether or not the nameplate should be visible. Only usable on the ENTITY nameplate.",
+
+  "figura.docs.action_wheel": "",
+  "figura.docs.action_wheel.execute": "",
+  "figura.docs.action_wheel.is_enabled": "",
+
+  "figura.docs.wheel_page": "",
+  "figura.docs.wheel_page.name": "",
+  "figura.docs.wheel_page.add_action": "",
+  "figura.docs.wheel_page.get_action": "",
+
+  "figura.docs.wheel_action": "",
+  "figura.docs.wheel_action.left_action": "",
+  "figura.docs.wheel_action.right_action": "",
+  "figura.docs.wheel_action.title": "",
+  "figura.docs.wheel_action.set_color": "",
+  "figura.docs.wheel_action.set_item": "",
 
   "figura.docs.world": "A global API dedicated to reading information from the Minecraft world. Accessed using the name \"world\".",
   "figura.docs.world.get_biome": "Gets the Biome located at the given position.",

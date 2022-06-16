@@ -29,7 +29,7 @@ public class ProfileScreen extends AbstractPanelScreen {
         }));
 
         this.addRenderableWidget(new TexturedButton(width / 2 - 30, height / 2 + 10, 60, 20, Component.literal("meow"), TextUtils.tryParseJson(
-                "{\"text\": \"△🟥🟧🟨🟩\n🟦🟪🟫⬜⬛\n\n❗❌🧀🍔🦐\n\n\n🌙🌀🚫❤★\n\",\"font\": \"figura:default\"}"), button -> {
+                "{\"text\": \"△🟥🟧🟨🟩\n🟦🟪🟫⬜⬛\n\n❗❌🧀🍔🦐\n\n\n🌙🌀❤☆★\n\",\"font\": \"figura:default\"}"), button -> {
             FiguraToast.sendToast(Component.literal("Backend restarting").setStyle(Style.EMPTY.withColor(0x99BBEE)), "in 10 minutes!", FiguraToast.ToastType.DEFAULT);
         }));
     }

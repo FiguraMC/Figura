@@ -60,6 +60,8 @@ public enum Config {
     ActionWheel,
     ACTION_WHEEL_BUTTON("key.keyboard.b"),
     ACTION_WHEEL_SCALE(1f, InputType.FLOAT),
+    ACTION_WHEEL_TITLE(0, 5),
+    ACTION_WHEEL_DECORATIONS(true),
 
     Paperdoll,
     HAS_PAPERDOLL(false),
@@ -83,7 +85,7 @@ public enum Config {
     }},
     LOG_OTHERS(false),
     MAIN_DIR("", InputType.FOLDER_PATH),
-    BACKEND("86.125.251.108", InputType.ANY) {
+    BACKEND("95.111.226.95", InputType.ANY) {
         @Override
         public void onChange() {
             super.onChange();
