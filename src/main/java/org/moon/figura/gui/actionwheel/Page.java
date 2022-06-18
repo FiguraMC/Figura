@@ -1,16 +1,11 @@
 package org.moon.figura.gui.actionwheel;
 
-import net.minecraft.world.item.ItemStack;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
-import org.moon.figura.lua.api.world.ItemStackWrapper;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
-import org.moon.figura.lua.types.LuaFunction;
-import org.moon.figura.math.vector.FiguraVec3;
-import org.moon.figura.utils.LuaUtils;
 import org.terasology.jnlua.LuaRuntimeException;
 
 @LuaWhitelist
@@ -37,6 +32,31 @@ public class Page {
         return Math.max(count, 2);
     }
 
+    private int checkIndex(Integer index) {
+        //check and fix index
+        if (index != null) {
+            if (index < 1 || index > 8)
+                throw new LuaRuntimeException("Index must be between 1 and 8!");
+
+            return index - 1;
+        }
+
+        //if no index is given, get the first null slot
+        index = -1;
+        for (int i = 0; i < actions.length; i++) {
+            if (actions[i] == null) {
+                index = i;
+                break;
+            }
+        }
+
+        //if failed to find a null slot, that means the page is full
+        if (index == -1)
+            throw new LuaRuntimeException("Page \"" + name + "\" is full!");
+
+        return index;
+    }
+
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
@@ -45,65 +65,64 @@ public class Page {
                             argumentNames = "page"
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {Page.class, String.class},
-                            argumentNames = {"page", "title"}
-                    ),
-                    @LuaFunctionOverload(
-                            argumentTypes = {Page.class, String.class, LuaFunction.class},
-                            argumentNames = {"page", "title", "leftAction"}
-                    ),
-                    @LuaFunctionOverload(
-                            argumentTypes = {Page.class, String.class, LuaFunction.class, LuaFunction.class},
-                            argumentNames = {"page", "title", "leftAction", "rightAction"}
-                    ),
-                    @LuaFunctionOverload(
-                            argumentTypes = {Page.class, String.class, LuaFunction.class, LuaFunction.class, String.class},
-                            argumentNames = {"page", "title", "leftAction", "rightAction", "item"}
-                    ),
-                    @LuaFunctionOverload(
-                            argumentTypes = {Page.class, String.class, LuaFunction.class, LuaFunction.class, ItemStackWrapper.class},
-                            argumentNames = {"page", "title", "leftAction", "rightAction", "item"}
-                    ),
-                    @LuaFunctionOverload(
-                            argumentTypes = {Page.class, String.class, LuaFunction.class, LuaFunction.class, String.class, FiguraVec3.class},
-                            argumentNames = {"page", "title", "leftAction", "rightAction", "item", "color"}
-                    ),
-                    @LuaFunctionOverload(
-                            argumentTypes = {Page.class, String.class, LuaFunction.class, LuaFunction.class, ItemStackWrapper.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"page", "title", "leftAction", "rightAction", "item", "r", "g", "b"}
-                    ),
-                    @LuaFunctionOverload(
-                            argumentTypes = {Page.class, String.class, LuaFunction.class, LuaFunction.class, String.class, FiguraVec3.class},
-                            argumentNames = {"page", "title", "leftAction", "rightAction", "item", "color"}
-                    ),
-                    @LuaFunctionOverload(
-                            argumentTypes = {Page.class, String.class, LuaFunction.class, LuaFunction.class, ItemStackWrapper.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"page", "title", "leftAction", "rightAction", "item", "r", "g", "b"}
+                            argumentTypes = {Page.class, Integer.class},
+                            argumentNames = {"page", "index"}
                     )
             },
-            description = "wheel_page.add_action"
+            description = "wheel_page.new_action"
     )
-    public static Action addAction(@LuaNotNil Page page, String title, LuaFunction leftAction, LuaFunction rightAction, Object item, Object r, Double g, Double b) {
-        //get the first null slot
-        int index = -1;
-        for (int i = 0; i < page.actions.length; i++) {
-            if (page.actions[i] == null) {
-                index = i;
-                break;
-            }
-        }
-
-        //if failed to find a null slot, that means the page is full
-        if (index == -1)
-            throw new LuaRuntimeException("Page " + page.name + " is full!");
-
+    public static Action newAction(@LuaNotNil Page page, Integer index) {
         //set the action
-        FiguraVec3 color = LuaUtils.parseVec3("addAction", r, g, b);
-        ItemStack itemStack = LuaUtils.parseItemStack("addAction", item);
-        Action action = new Action(title, color, itemStack, leftAction, rightAction);
-        page.actions[index] = action;
+        Action action = new ClickAction();
+        page.actions[page.checkIndex(index)] = action;
 
-        //return the action for convenience
+        //return the action
+        return action;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = Page.class,
+                            argumentNames = "page"
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {Page.class, Integer.class},
+                            argumentNames = {"page", "index"}
+                    )
+            },
+            description = "wheel_page.new_toggle"
+    )
+    public static Action newToggle(@LuaNotNil Page page, Integer index) {
+        //set the action
+        Action action = new ToggleAction();
+        page.actions[page.checkIndex(index)] = action;
+
+        //return the action
+        return action;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = Page.class,
+                            argumentNames = "page"
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {Page.class, Integer.class},
+                            argumentNames = {"page", "index"}
+                    )
+            },
+            description = "wheel_page.new_scroll"
+    )
+    public static Action newScroll(@LuaNotNil Page page, Integer index) {
+        //set the action
+        Action action = new ScrollAction();
+        page.actions[page.checkIndex(index)] = action;
+
+        //return the action
         return action;
     }
 

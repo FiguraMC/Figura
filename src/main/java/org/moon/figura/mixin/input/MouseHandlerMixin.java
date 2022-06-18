@@ -39,6 +39,16 @@ public class MouseHandlerMixin {
         FiguraKeybind.set(avatar.luaState.keybind.keyBindings, InputConstants.Type.MOUSE.getOrCreate(button), pressed);
     }
 
+    @Inject(method = "onScroll", at = @At("HEAD"), cancellable = true)
+    private void onScroll(long window, double scrollDeltaX, double scrollDeltaY, CallbackInfo ci) {
+        double scroll = Math.signum(scrollDeltaY);
+
+        if (ActionWheel.isEnabled()) {
+            ActionWheel.scroll(scroll);
+            ci.cancel();
+        }
+    }
+
     @Inject(method = "grabMouse", at = @At("HEAD"), cancellable = true)
     private void grabMouse(CallbackInfo ci) {
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());

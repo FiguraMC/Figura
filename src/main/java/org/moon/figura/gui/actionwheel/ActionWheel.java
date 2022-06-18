@@ -11,7 +11,6 @@ import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.config.Config;
-import org.moon.figura.lua.types.LuaFunction;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.TextUtils;
@@ -22,6 +21,9 @@ import java.util.List;
 public class ActionWheel {
 
     private static final ResourceLocation WHEEL_TEXTURE = new FiguraIdentifier("textures/gui/action_wheel.png");
+    private static final ResourceLocation WHEEL_ICONS = new FiguraIdentifier("textures/gui/action_wheel_icons.png");
+    private static final FiguraVec3 HOVER_COLOR = FiguraVec3.of(1, 1, 1);
+    private static final FiguraVec3 TOGGLE_COLOR = FiguraVec3.of(0, 1, 0);
 
     private static boolean enabled = false;
     private static int selected = -1;
@@ -61,9 +63,8 @@ public class ActionWheel {
         //calculate selected slot
         getSelected(mouseX, mouseY, minecraft, leftSlots, rightSlots, scale);
 
-        //render selected overlay
-        Action action = selected == -1 ? null : currentPage.actions[selected];
-        renderSelected(stack, leftSlots, rightSlots, action == null ? null : action.color);
+        //render overlays
+        renderOverlays(stack, leftSlots, rightSlots, currentPage);
 
         //render items
         renderItems(x, y, leftSlots, rightSlots, scale, minecraft, currentPage);
@@ -71,6 +72,7 @@ public class ActionWheel {
         stack.popPose();
 
         //render title
+        Action action = selected == -1 ? null : currentPage.actions[selected];
         renderTitle(stack, x, y, mouseX, mouseY, scale, minecraft, action == null ? null : action.title);
     }
 
@@ -102,24 +104,66 @@ public class ActionWheel {
             selected = (int) Math.floor((leftSlots / 180d) * (angle - 180)) + rightSlots;
     }
 
-    private static void renderSelected(PoseStack stack, int leftSlots, int rightSlots, FiguraVec3 color) {
-        if (selected == -1) return;
+    private static void renderOverlays(PoseStack stack, int leftSlots, int rightSlots, Page page) {;
+        int slots = leftSlots + rightSlots;
 
-        boolean left = selected >= rightSlots;
-        int type = left ? leftSlots : rightSlots;
-        int relativeSel = left ? selected - rightSlots : selected;
-        TextureData data = OverlayTexture.values()[type - 1].data[relativeSel];
+        for (int i = 0; i < slots; i++) {
+            Action action = page.actions[i];
+            if (action == null)
+                continue;
 
-        //render
-        stack.pushPose();
-        stack.mulPose(Vector3f.ZP.rotationDegrees(data.rotation + (left ? 180 : 0)));
+            boolean left = i >= rightSlots;
+            int type = left ? leftSlots : rightSlots;
+            int relativeIndex = left ? i - rightSlots : i;
+            TextureData data = OverlayTexture.values()[type - 1].data[relativeIndex];
 
-        UIHelper.setupTexture(TextureData.TEXTURE);
-        if (color != null)
-            RenderSystem.setShaderColor((float) color.x, (float) color.y, (float) color.z, 1f);
-        UIHelper.blit(stack, data.x, data.y, data.w, data.h, data.u, data.v, data.rw, data.rh, TextureData.TW, TextureData.TH);
+            double angle;
+            if (i < rightSlots)
+                angle = 180d / rightSlots * (i - ((rightSlots - 1) * 0.5));
+            else
+                angle = 180d / leftSlots * (i - rightSlots - ((leftSlots - 1) * 0.5f) + leftSlots);
 
-        stack.popPose();
+            //convert angle to x and y coordinates
+            double x = Math.cos(Math.toRadians(angle)) * 15 - 3.5;
+            double y = Math.sin(Math.toRadians(angle)) * 15 - 3.5;
+
+            //get color
+            FiguraVec3 color;
+            if (selected == i)
+                color = action.hoverColor == null ? HOVER_COLOR : action.hoverColor;
+            else if (action instanceof ToggleAction toggle && toggle.isToggled())
+                color = toggle.toggleColor == null ? TOGGLE_COLOR : toggle.toggleColor;
+            else
+                color = action.color;
+
+            //render hover overlay
+            if (color != null) {
+                stack.pushPose();
+                stack.mulPose(Vector3f.ZP.rotationDegrees(data.rotation + (left ? 180 : 0)));
+
+                UIHelper.setupTexture(TextureData.TEXTURE);
+                RenderSystem.setShaderColor((float) color.x, (float) color.y, (float) color.z, 1f);
+                UIHelper.blit(stack, data.x, data.y, data.w, data.h, data.u, data.v, data.rw, data.rh, TextureData.TW, TextureData.TH);
+
+                stack.popPose();
+            }
+
+            //render icon
+            UIHelper.setupTexture(WHEEL_ICONS);
+
+            if (color != null)
+                RenderSystem.setShaderColor((float) color.x, (float) color.y, (float) color.z, 1f);
+            else
+                RenderSystem.setShaderColor(0f, 0f, 0f, 1f);
+
+            UIHelper.blit(stack,
+                    (int) Math.round(x), (int) Math.round(y),
+                    7, 7,
+                    action instanceof ScrollAction ? 21f : action instanceof ToggleAction toggle ? toggle.isToggled() ? 14f : 7f : 0f, 0f,
+                    7, 7,
+                    28, 7
+            );
+        }
     }
 
     private static void renderItems(double screenX, double screenY, int leftSlots, int rightSlots, float scale, Minecraft minecraft, Page page) {
@@ -128,7 +172,7 @@ public class ActionWheel {
 
         for (int i = 0; i < slots; i++) {
             Action action = page.actions[i];
-            if (action == null)
+            if (action == null || action.item == null || action.item.isEmpty())
                 continue;
 
             double angle;
@@ -202,15 +246,22 @@ public class ActionWheel {
             return;
         }
 
-        //get action
+        //execute action
         Action action = currentPage.actions[selected];
-        LuaFunction function = action == null ? null : (left ? action.leftAction : action.rightAction);
-
-        //execute
-        if (function != null)
-            avatar.tryCall(function, -1);
+        if (action != null) action.execute(avatar, left);
 
         selected = -1;
+    }
+
+    public static void scroll(double delta) {
+        Avatar avatar;
+        Page currentPage;
+        if (!isEnabled() || selected == -1 || (avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID())) == null || avatar.luaState == null || (currentPage = avatar.luaState.actionWheel.currentPage) == null)
+            return;
+
+        //scroll
+        Action action = currentPage.actions[selected];
+        if (action != null) action.mouseScroll(avatar, delta);
     }
 
     public static void setEnabled(boolean enabled) {

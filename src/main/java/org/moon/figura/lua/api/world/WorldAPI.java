@@ -84,7 +84,7 @@ public class WorldAPI {
                             argumentNames = {"x", "y", "z"}
                     )
             },
-            description = "world.get_restone_power"
+            description = "world.get_redstone_power"
     )
     public static Integer getRedstonePower(Object x, Double y, Double z) {
         FiguraVec3 pos = LuaUtils.parseVec3("getRedstonePower", x, y, z);
