@@ -8,10 +8,18 @@ import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.world.item.ItemStack;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.lua.api.world.ItemStackWrapper;
+import org.moon.figura.lua.docs.LuaFunctionOverload;
+import org.moon.figura.lua.docs.LuaMethodDoc;
+import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.utils.LuaUtils;
 import org.terasology.jnlua.LuaRuntimeException;
 
 @LuaWhitelist
+@LuaTypeDoc(
+        name = "ItemTask",
+        description = "item_task"
+)
 public class ItemTask extends RenderTask {
 
     private ItemStack item;
@@ -32,13 +40,33 @@ public class ItemTask extends RenderTask {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = {ItemTask.class, String.class},
+                            argumentNames = {"task", "item"}
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {ItemTask.class, ItemStackWrapper.class},
+                            argumentNames = {"task", "item"}
+                    )
+            },
+            description = "item_task.item"
+    )
     public static RenderTask item(@LuaNotNil ItemTask task, Object item) {
         task.item = LuaUtils.parseItemStack("item", item);
         return task;
     }
 
     @LuaWhitelist
-    public static RenderTask renderType(@LuaNotNil ItemTask task, String type) {
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                        argumentTypes = {ItemTask.class, String.class},
+                        argumentNames = {"task", "renderType"}
+            ),
+            description = "item_task.render_type"
+    )
+    public static RenderTask renderType(@LuaNotNil ItemTask task, @LuaNotNil String type) {
         try {
             task.renderType = ItemTransforms.TransformType.valueOf(type);
             return task;

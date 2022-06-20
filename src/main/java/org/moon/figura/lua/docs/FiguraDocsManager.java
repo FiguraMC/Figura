@@ -9,6 +9,7 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Style;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.model.FiguraModelPart;
+import org.moon.figura.avatars.model.rendertasks.*;
 import org.moon.figura.gui.actionwheel.*;
 import org.moon.figura.lua.api.*;
 import org.moon.figura.lua.api.entity.EntityWrapper;
@@ -62,7 +63,6 @@ public class FiguraDocsManager {
         put("action_wheel", List.of(
                 ActionWheelAPI.class,
                 Page.class,
-                Action.class,
                 ClickAction.class,
                 ToggleAction.class,
                 ScrollAction.class
@@ -96,7 +96,10 @@ public class FiguraDocsManager {
         put("model", List.of(
                 FiguraModelPart.class,
                 VanillaModelAPI.class,
-                VanillaModelAPI.VanillaModelPart.class
+                VanillaModelAPI.VanillaModelPart.class,
+                BlockTask.class,
+                ItemTask.class,
+                TextTask.class
         ));
 
         //Entity classes
@@ -166,6 +169,8 @@ public class FiguraDocsManager {
 
         //Figura types
         put(FiguraVector.class, "Vector");
+        put(Action.class, "Action");
+        put(RenderTask.class, "RenderTask");
     }};
 
     private static final Map<String, List<FiguraDoc.ClassDoc>> GENERATED_CLASS_DOCS = new HashMap<>();

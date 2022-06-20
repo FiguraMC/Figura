@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
@@ -67,7 +68,7 @@ public class ActionWheel {
         mouseY = minecraft.mouseHandler.ypos();
 
         //calculate selected slot
-        getSelected();
+        calculateSelected();
 
         //render overlays
         renderTextures(stack, currentPage);
@@ -109,7 +110,7 @@ public class ActionWheel {
         UIHelper.renderOutlineText(stack, font, component, (float) x - font.width(component) / 2f, (float) y - font.lineHeight / 2f, 0xFFFFFF, 0);
     }
 
-    private static void getSelected() {
+    private static void calculateSelected() {
         //window specific variables
         double screenMiddleW = minecraft.getWindow().getScreenWidth() / 2d;
         double screenMiddleH = minecraft.getWindow().getScreenHeight() / 2d;
@@ -185,7 +186,25 @@ public class ActionWheel {
 
         for (int i = 0; i < slots; i++) {
             Action action = page.actions[i];
-            if (action == null || action.item == null || action.item.isEmpty())
+            if (action == null)
+                continue;
+
+            ItemStack item = null;
+
+            //selected case
+            if (selected == i)
+                item = action.hoverItem;
+
+            //toggle case
+            if (item == null && action instanceof ToggleAction toggle && ToggleAction.isToggled(toggle))
+                item = toggle.toggleItem;
+
+            //default case
+            if (item == null)
+                item = action.item;
+
+            //no item, no render
+            if (item == null || item.isEmpty())
                 continue;
 
             //convert angle to x and y coordinates
@@ -199,9 +218,9 @@ public class ActionWheel {
             stack.translate(xOff, yOff, 0);
             stack.scale(scale, scale, scale);
 
-            minecraft.getItemRenderer().renderGuiItem(action.item, -8, -8);
+            minecraft.getItemRenderer().renderGuiItem(item, -8, -8);
             if ((boolean) Config.ACTION_WHEEL_DECORATIONS.value)
-                minecraft.getItemRenderer().renderGuiItemDecorations(minecraft.font, action.item, -8, -8);
+                minecraft.getItemRenderer().renderGuiItemDecorations(minecraft.font, item, -8, -8);
 
             stack.popPose();
             RenderSystem.applyModelViewMatrix();
@@ -246,16 +265,16 @@ public class ActionWheel {
 
     // -- functions -- //
 
-    public static void execute(boolean left) {
+    public static void execute(int index, boolean left) {
         Avatar avatar;
         Page currentPage;
-        if (!isEnabled() || selected == -1 || (avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID())) == null || avatar.luaState == null || (currentPage = avatar.luaState.actionWheel.currentPage) == null) {
+        if (!isEnabled() || index < 0 || index > 7 || (avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID())) == null || avatar.luaState == null || (currentPage = avatar.luaState.actionWheel.currentPage) == null) {
             selected = -1;
             return;
         }
 
         //execute action
-        Action action = currentPage.actions[selected];
+        Action action = currentPage.actions[index];
         if (action != null) action.execute(avatar, left);
 
         selected = -1;
@@ -278,6 +297,10 @@ public class ActionWheel {
 
     public static boolean isEnabled() {
         return enabled;
+    }
+
+    public static int getSelected() {
+        return selected;
     }
 
     // -- overlay texture data -- //

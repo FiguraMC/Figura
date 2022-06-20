@@ -7,9 +7,17 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.level.block.state.BlockState;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.lua.api.world.BlockStateWrapper;
+import org.moon.figura.lua.docs.LuaFunctionOverload;
+import org.moon.figura.lua.docs.LuaMethodDoc;
+import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.utils.LuaUtils;
 
 @LuaWhitelist
+@LuaTypeDoc(
+        name = "BlockTask",
+        description = "block_task"
+)
 public class BlockTask extends RenderTask {
 
     private BlockState block;
@@ -29,6 +37,19 @@ public class BlockTask extends RenderTask {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = {BlockTask.class, String.class},
+                            argumentNames = {"task", "block"}
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {BlockTask.class, BlockStateWrapper.class},
+                            argumentNames = {"task", "block"}
+                    )
+            },
+            description = "block_task.block"
+    )
     public static RenderTask block(@LuaNotNil BlockTask task, Object block) {
         task.block = LuaUtils.parseBlockState("block", block);
         return task;

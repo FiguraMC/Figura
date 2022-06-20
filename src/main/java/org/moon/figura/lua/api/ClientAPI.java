@@ -11,6 +11,7 @@ import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.utils.TextUtils;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -294,6 +295,18 @@ public class ClientAPI {
     public static FiguraVec3 getCameraRot() {
         Vector3f rot = Minecraft.getInstance().gameRenderer.getMainCamera().rotation().toXYZDegrees();
         return FiguraVec3.of(rot.x(), rot.y(), rot.z());
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = String.class,
+                    argumentNames = "text"
+            ),
+            description = "client.get_text_width"
+    )
+    public static int getTextWidth(String text) {
+        return Minecraft.getInstance().font.width(TextUtils.tryParseJson(text));
     }
 
     @Override

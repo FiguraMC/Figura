@@ -17,11 +17,12 @@ function math.map(value, min1, max1, min2, max2)
 end
 
 function math.shortAngle(a, b)
-  return math.fmod((b - a), 360)
+  local x = math.fmod(b - a, 360)
+  return x - math.fmod(2 * x, 360)
 end
 
 function math.lerpAngle(a, b, t)
-  return a + shortAngle(a, b) * t
+  return a + math.shortAngle(a, b) * t
 end
 
 function math.sign(x)

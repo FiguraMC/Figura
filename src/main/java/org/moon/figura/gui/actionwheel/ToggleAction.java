@@ -1,8 +1,10 @@
 package org.moon.figura.gui.actionwheel;
 
+import net.minecraft.world.item.ItemStack;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.lua.api.world.ItemStackWrapper;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
@@ -19,6 +21,7 @@ import org.moon.figura.utils.LuaUtils;
 public class ToggleAction extends Action {
 
     private boolean toggled = false;
+    public ItemStack toggleItem;
     public FiguraVec3 toggleColor;
 
     @LuaWhitelist
@@ -71,6 +74,25 @@ public class ToggleAction extends Action {
     )
     public static Action toggleColor(@LuaNotNil ToggleAction action, Object x, Double y, Double z) {
         action.toggleColor = LuaUtils.parseVec3("toggleColor", x, y, z);
+        return action;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = {ToggleAction.class, ItemStackWrapper.class},
+                            argumentNames = {"action", "item"}
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {ToggleAction.class, String.class},
+                            argumentNames = {"action", "item"}
+                    )
+            },
+            description = "toggle_action.toggle_item"
+    )
+    public static Action toggleItem(@LuaNotNil ToggleAction action, Object item) {
+        action.toggleItem = LuaUtils.parseItemStack("toggleItem", item);
         return action;
     }
 

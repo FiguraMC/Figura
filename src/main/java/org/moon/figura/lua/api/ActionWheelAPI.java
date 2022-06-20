@@ -36,14 +36,20 @@ public class ActionWheelAPI {
                             argumentNames = "api"
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {ActionWheelAPI.class, Boolean.class},
-                            argumentNames = {"api", "rightClick"}
+                            argumentTypes = {ActionWheelAPI.class, Integer.class},
+                            argumentNames = {"api", "index"}
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {ActionWheelAPI.class, Integer.class, Boolean.class},
+                            argumentNames = {"api", "index", "rightClick"}
                     )
             },
             description = "action_wheel.execute"
     )
-    public static void execute(@LuaNotNil ActionWheelAPI api, Boolean right) {
-        if (api.isHost) ActionWheel.execute(right == null || !right);
+    public static void execute(@LuaNotNil ActionWheelAPI api, Integer index, Boolean right) {
+        if (index != null && (index < 1 || index > 8))
+            throw new LuaRuntimeException("index must be between 1 and 8");
+        if (api.isHost) ActionWheel.execute(index == null ? ActionWheel.getSelected() : index - 1, right == null || !right);
     }
 
     @LuaWhitelist
@@ -56,6 +62,18 @@ public class ActionWheelAPI {
     )
     public static boolean isEnabled(@LuaNotNil ActionWheelAPI api) {
         return api.isHost && ActionWheel.isEnabled();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = ActionWheelAPI.class,
+                    argumentNames = "api"
+            ),
+            description = "action_wheel.get_selected"
+    )
+    public static int getSelected(@LuaNotNil ActionWheelAPI api) {
+        return api.isHost ? ActionWheel.getSelected() + 1 : 0;
     }
 
     @LuaWhitelist

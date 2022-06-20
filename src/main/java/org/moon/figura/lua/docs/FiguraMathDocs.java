@@ -1,5 +1,7 @@
 package org.moon.figura.lua.docs;
 
+import org.moon.figura.math.vector.FiguraVector;
+
 /**
  * Adds docs for the functions added to Lua's math library.
  */
@@ -9,10 +11,18 @@ package org.moon.figura.lua.docs;
 )
 public class FiguraMathDocs {
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = {Object.class, Object.class, Double.class},
-                    argumentNames = {"a", "b", "t"}
-            ),
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"a", "b", "t"},
+                            returnType = Double.class
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraVector.class, FiguraVector.class, Double.class},
+                            argumentNames = {"a", "b", "t"},
+                            returnType = FiguraVector.class
+                    )
+            },
             description = "math.lerp"
     )
     public static Object lerp() {return null;}
@@ -55,12 +65,12 @@ public class FiguraMathDocs {
 
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
-                    argumentTypes = {Object.class, Object.class, Double.class},
+                    argumentTypes = {Double.class, Double.class, Double.class},
                     argumentNames = {"a", "b", "t"}
             ),
             description = "math.lerp_angle"
     )
-    public static Object lerpAngle() {return null;}
+    public static Double lerpAngle() {return null;}
 
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(

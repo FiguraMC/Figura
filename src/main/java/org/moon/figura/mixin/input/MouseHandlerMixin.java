@@ -24,7 +24,7 @@ public class MouseHandlerMixin {
         boolean pressed = action != 0;
 
         if (pressed && (ActionWheel.isEnabled())) {
-            if (button <= 1) ActionWheel.execute(button == 0);
+            if (button <= 1) ActionWheel.execute(ActionWheel.getSelected(), button == 0);
             ci.cancel();
         }
 

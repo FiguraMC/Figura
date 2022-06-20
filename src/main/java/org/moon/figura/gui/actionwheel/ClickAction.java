@@ -31,7 +31,7 @@ public class ClickAction extends Action {
                     argumentTypes = {ClickAction.class, LuaFunction.class},
                     argumentNames = {"action", "leftFunction"}
             ),
-            description = "wheel_action.on_left_click"
+            description = "click_action.on_left_click"
     )
     public static Action onLeftClick(ClickAction action, LuaFunction function) {
         action.leftClick = function;
@@ -44,7 +44,7 @@ public class ClickAction extends Action {
                     argumentTypes = {ClickAction.class, LuaFunction.class},
                     argumentNames = {"action", "rightFunction"}
             ),
-            description = "wheel_action.on_right_click"
+            description = "click_action.on_right_click"
     )
     public static Action onRightClick(ClickAction action, LuaFunction function) {
         action.rightClick = function;

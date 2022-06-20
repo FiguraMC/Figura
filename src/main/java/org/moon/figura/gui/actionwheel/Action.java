@@ -7,21 +7,15 @@ import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.world.ItemStackWrapper;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
-import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.LuaUtils;
 
 @LuaWhitelist
-@LuaTypeDoc(
-        name = "Action",
-        description = "wheel_action"
-)
 public abstract class Action {
 
     public String title;
-    public ItemStack item;
-    public FiguraVec3 color;
-    public FiguraVec3 hoverColor;
+    public ItemStack item, hoverItem;
+    public FiguraVec3 color, hoverColor;
 
     public void execute(Avatar avatar, boolean left) {}
 
@@ -94,6 +88,25 @@ public abstract class Action {
     )
     public static Action item(@LuaNotNil Action action, Object item) {
         action.item = LuaUtils.parseItemStack("item", item);
+        return action;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = {Action.class, ItemStackWrapper.class},
+                            argumentNames = {"action", "item"}
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {Action.class, String.class},
+                            argumentNames = {"action", "item"}
+                    )
+            },
+            description = "wheel_action.hover_item"
+    )
+    public static Action hoverItem(@LuaNotNil Action action, Object item) {
+        action.hoverItem = LuaUtils.parseItemStack("hoverItem", item);
         return action;
     }
 

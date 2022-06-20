@@ -8,11 +8,18 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.lua.docs.LuaFunctionOverload;
+import org.moon.figura.lua.docs.LuaMethodDoc;
+import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.utils.TextUtils;
 
 import java.util.List;
 
 @LuaWhitelist
+@LuaTypeDoc(
+        name = "TextTask",
+        description = "text_task"
+)
 public class TextTask extends RenderTask {
 
     private List<Component> text;
@@ -35,8 +42,17 @@ public class TextTask extends RenderTask {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = {TextTask.class, String.class},
+                            argumentNames = {"task", "text"}
+                    )
+            },
+            description = "text_task.text"
+    )
     public static RenderTask text(@LuaNotNil TextTask task, String text) {
-        task.text = TextUtils.splitText(TextUtils.tryParseJson(text), "\n");
+        task.text = text == null ? null : TextUtils.splitText(TextUtils.tryParseJson(text), "\n");
         return task;
     }
 }
