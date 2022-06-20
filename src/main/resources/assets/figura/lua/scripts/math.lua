@@ -17,7 +17,7 @@ function math.map(value, min1, max1, min2, max2)
 end
 
 function math.shortAngle(a, b)
-  local x = math.fmod(b - a, 360)
+  local x = math.fmod(a - b, 360)
   return x - math.fmod(2 * x, 360)
 end
 
