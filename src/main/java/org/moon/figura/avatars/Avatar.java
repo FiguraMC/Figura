@@ -7,6 +7,7 @@ import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtIo;
@@ -127,7 +128,7 @@ public class Avatar {
         }
     }
 
-    public void onRender(Entity entity, float yaw, float delta, float alpha, PoseStack matrices, MultiBufferSource bufferSource, int light, LivingEntityRenderer<?, ?> entityRenderer) {
+    public void onRender(Entity entity, float yaw, float delta, float alpha, PoseStack matrices, MultiBufferSource bufferSource, int light, int overlay, LivingEntityRenderer<?, ?> entityRenderer) {
         if (entity.isSpectator())
             renderer.currentFilterScheme = AvatarRenderer.RENDER_HEAD;
         renderer.entity = entity;
@@ -137,6 +138,7 @@ public class Avatar {
         renderer.matrices = matrices;
         renderer.bufferSource = bufferSource;
         renderer.light = light;
+        renderer.overlay = overlay;
         renderer.entityRenderer = entityRenderer;
         if (!scriptError && luaState != null) {
             tryCall(luaState.events.RENDER, -1, delta);
@@ -206,6 +208,7 @@ public class Avatar {
         renderer.tickDelta = tickDelta;
         renderer.light = light;
         renderer.alpha = 1f;
+        renderer.overlay = OverlayTexture.NO_OVERLAY;
         matrices.pushPose();
         matrices.translate(-camX, -camY, -camZ);
         matrices.scale(-1, -1, 1);
@@ -220,10 +223,10 @@ public class Avatar {
         onWorldRender(watcher, camPos.x, camPos.y, camPos.z, matrices, bufferSource, light, tickDelta);
     }
 
-    public void onFirstPersonRender(PoseStack stack, MultiBufferSource bufferSource, Player player, PlayerRenderer playerRenderer, ModelPart arm, int light, float tickDelta) {
+    public void onFirstPersonRender(PoseStack stack, MultiBufferSource bufferSource, Player player, PlayerRenderer playerRenderer, ModelPart arm, int light, int overlay, float tickDelta) {
         arm.xRot = 0;
         renderer.currentFilterScheme = arm == playerRenderer.getModel().leftArm ? AvatarRenderer.RENDER_LEFT_ARM : AvatarRenderer.RENDER_RIGHT_ARM;
-        onRender(player, 0f, tickDelta, 1f, stack, bufferSource, light, playerRenderer);
+        onRender(player, 0f, tickDelta, 1f, stack, bufferSource, light, overlay, playerRenderer);
     }
 
     /**
@@ -276,7 +279,7 @@ public class Avatar {
         if (metadata.contains("autoScripts"))
             autoScripts = metadata.getList("autoScripts", Tag.TAG_STRING);
 
-        FiguraLuaState luaState = new FiguraLuaState(this, TrustManager.get(owner).get(TrustContainer.Trust.MAX_MEM));
+        FiguraLuaState luaState = new FiguraLuaState(this, Math.min(TrustManager.get(owner).get(TrustContainer.Trust.MAX_MEM), 2048));
 
         if (renderer != null && renderer.root != null)
             luaState.loadGlobal(renderer.root, "models");

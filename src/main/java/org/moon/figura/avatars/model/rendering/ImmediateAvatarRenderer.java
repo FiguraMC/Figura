@@ -4,7 +4,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -13,6 +12,7 @@ import org.moon.figura.avatars.model.FiguraModelPart;
 import org.moon.figura.avatars.model.FiguraModelPartReader;
 import org.moon.figura.avatars.model.PartCustomization;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
+import org.moon.figura.avatars.model.rendertasks.RenderTask;
 import org.moon.figura.config.Config;
 import org.moon.figura.ducks.LivingEntityRendererAccessor;
 import org.moon.figura.math.matrix.FiguraMat3;
@@ -149,6 +149,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         customization.visible = true;
         customization.light = light;
         customization.alpha = alpha;
+        customization.overlay = overlay;
         return customization;
     }
 
@@ -193,8 +194,14 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         for (FiguraModelPart child : part.children)
             renderPart(child, remainingComplexity, thisPassedPredicate);
 
-        if (thisPassedPredicate && (shouldRenderPivots > 1 || shouldRenderPivots == 1 && customizationStack.peek().visible))
-            renderPivot(part);
+        if (thisPassedPredicate) {
+            //pivots
+            if (shouldRenderPivots > 1 || shouldRenderPivots == 1 && customizationStack.peek().visible)
+                renderPivot(part);
+
+            //tasks
+            renderTasks(part, customizationStack.peek().light, customizationStack.peek().overlay);
+        }
 
         customizationStack.pop();
 
@@ -223,7 +230,23 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
                 (float) color.x, (float) color.y, (float) color.z, 1f);
     }
 
+    private static final PoseStack TASKS_POSE_STACK = new PoseStack();
+    private void renderTasks(FiguraModelPart part, int light, int overlay) {
+        TASKS_POSE_STACK.setIdentity();
+
+        FiguraMat4 posMat = part.savedPartToWorldMat.copy();
+        FiguraMat4 worldToView = AvatarRenderer.worldToViewMatrix();
+        TASKS_POSE_STACK.mulPoseMatrix(worldToView.toMatrix4f());
+        TASKS_POSE_STACK.mulPoseMatrix(posMat.toMatrix4f());
+
+        worldToView.free();
+        posMat.free();
+
+        for (RenderTask task : part.renderTasks.values())
+            task.render(TASKS_POSE_STACK, bufferSource, light, overlay);
+    }
+
     public void pushFaces(int texIndex, int faceCount, int[] remainingComplexity) {
-        buffers.get(texIndex).pushVertices(bufferSource, OverlayTexture.NO_OVERLAY, faceCount, remainingComplexity);
+        buffers.get(texIndex).pushVertices(bufferSource, faceCount, remainingComplexity);
     }
 }

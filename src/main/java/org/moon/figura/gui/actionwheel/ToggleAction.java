@@ -74,6 +74,30 @@ public class ToggleAction extends Action {
         return action;
     }
 
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = {ToggleAction.class, Boolean.class},
+                    argumentNames = {"toggled", "bool"}
+            ),
+            description = "toggle_action.toggled"
+    )
+    public static void toggled(@LuaNotNil ToggleAction action, @LuaNotNil Boolean bool) {
+        action.toggled = bool;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = ToggleAction.class,
+                    argumentNames = "toggle"
+            ),
+            description = "toggle_action.is_toggled"
+    )
+    public static boolean isToggled(@LuaNotNil ToggleAction action) {
+        return action.toggled;
+    }
+
     @Override
     public void execute(Avatar avatar, boolean left) {
         if (!left)
@@ -85,10 +109,6 @@ public class ToggleAction extends Action {
         //execute
         if (function != null)
             avatar.tryCall(function, -1);
-    }
-
-    public boolean isToggled() {
-        return toggled;
     }
 
     @Override

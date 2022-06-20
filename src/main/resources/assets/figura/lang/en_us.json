@@ -77,6 +77,10 @@
   "figura.gui.panic.2": "toggle panic mode with [%s] key",
   "figura.gui.help.tooltip": "Help",
 
+  "figura.gui.error.no_avatar": "No Avatar selected!",
+  "figura.gui.error.no_keybinds": "Avatar does not have keybinds!",
+  "figura.gui.error.no_wheel_page": "Action Wheel has no active Page!",
+
 
   "figura.gui.context.set_trust": "Set Trust",
   "figura.gui.context.reload": "Reload Avatar",
@@ -106,9 +110,6 @@
   "figura.gui.wardrobe.keybind.tooltip": "Avatar Keybinds",
   "figura.gui.wardrobe.folder.tooltip": "Open avatars root folder",
   "figura.gui.wardrobe.unselect": "Unselect",
-
-  "figura.gui.keybinds.no_avatar": "No Avatar selected!",
-  "figura.gui.keybinds.no_keybinds": "Avatar does not have keybinds!",
 
 
   "figura.gui.trust.reset": "Reset All",
@@ -339,9 +340,11 @@
   "figura.docs.action_wheel": "",
   "figura.docs.action_wheel.execute": "",
   "figura.docs.action_wheel.is_enabled": "",
+  "figura.docs.action_wheel.create_page": "",
+  "figura.docs.action_wheel.set_page": "",
+  "figura.docs.action_wheel.get_page": "",
 
   "figura.docs.wheel_page": "",
-  "figura.docs.wheel_page.name": "",
   "figura.docs.wheel_page.new_action": "",
   "figura.docs.wheel_page.new_toggle": "",
   "figura.docs.wheel_page.new_scroll": "",
@@ -365,6 +368,8 @@
   "figura.docs.toggle_action.on_toggle": "",
   "figura.docs.toggle_action.on_untoggle": "",
   "figura.docs.toggle_action.toggle_color": "",
+  "figura.docs.toggle_action.toggled": "",
+  "figura.docs.toggle_action.is_toggled": "",
 
   "figura.docs.scroll_action": "",
   "figura.docs.scroll_action.scroll": "",

@@ -85,7 +85,7 @@ public enum Config {
     }},
     LOG_OTHERS(false),
     MAIN_DIR("", InputType.FOLDER_PATH),
-    BACKEND("95.111.226.95", InputType.ANY) {
+    BACKEND("figura.moonlight-devs.org", InputType.ANY) {
         @Override
         public void onChange() {
             super.onChange();

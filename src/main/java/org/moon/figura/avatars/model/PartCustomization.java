@@ -39,6 +39,7 @@ public class PartCustomization implements CachedType {
     public FiguraVec3 color = FiguraVec3.of(1, 1, 1);
     public Float alpha = null;
     public Integer light = null;
+    public Integer overlay = null;
 
     /**
      * Recalculates the matrix if necessary.
@@ -266,6 +267,7 @@ public class PartCustomization implements CachedType {
             to.color.set(from.color);
             to.alpha = from.alpha;
             to.light = from.light;
+            to.overlay = from.overlay;
             to.needsMatrixRecalculation = from.needsMatrixRecalculation;
             to.visible = from.visible;
             to.setPrimaryRenderType(from.primaryRenderType);
@@ -291,6 +293,9 @@ public class PartCustomization implements CachedType {
 
         if (other.light != null)
             light = other.light;
+
+        if (other.overlay != null)
+            overlay = other.overlay;
 
         if (other.alpha != null) {
             if (alpha != null)

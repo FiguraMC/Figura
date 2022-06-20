@@ -2,7 +2,6 @@ package org.moon.figura.gui.actionwheel;
 
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
-import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
@@ -15,21 +14,14 @@ import org.terasology.jnlua.LuaRuntimeException;
 )
 public class Page {
 
-    @LuaWhitelist
-    @LuaFieldDoc(description = "wheel_page.name")
-    public String name;
-
     Action[] actions = new Action[8]; //max 8 actions per page
 
-    public Page(String name) {
-        this.name = name;
-    }
-
     public int getSize() {
-        int count = 0;
-        for (Action action : actions)
-            if (action != null) count++;
-        return Math.max(count, 2);
+        int i = actions.length;
+        while (i > 0 && actions[i - 1] == null) {
+            i--;
+        }
+        return Math.max(i, 2);
     }
 
     private int checkIndex(Integer index) {
@@ -52,7 +44,7 @@ public class Page {
 
         //if failed to find a null slot, that means the page is full
         if (index == -1)
-            throw new LuaRuntimeException("Page \"" + name + "\" is full!");
+            throw new LuaRuntimeException("Pages have a limit of 8 actions!");
 
         return index;
     }
@@ -142,6 +134,6 @@ public class Page {
 
     @Override
     public String toString() {
-        return "Action Wheel Page (" + name + ")";
+        return "Action Wheel Page";
     }
 }

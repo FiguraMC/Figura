@@ -4,10 +4,14 @@ import com.mojang.brigadier.StringReader;
 import net.minecraft.CrashReport;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandBuildContext;
+import net.minecraft.commands.arguments.blocks.BlockStateArgument;
 import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import org.moon.figura.FiguraMod;
+import org.moon.figura.lua.api.world.BlockStateWrapper;
 import org.moon.figura.lua.api.world.ItemStackWrapper;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
@@ -98,6 +102,22 @@ public class LuaUtils {
         }
 
         throw new LuaRuntimeException("Illegal argument to " + methodName + "(): " + item);
+    }
+
+    public static BlockState parseBlockState(String methodName, Object block) {
+        if (block == null)
+            return Blocks.AIR.defaultBlockState();
+        else if (block instanceof BlockStateWrapper wrapper)
+            return BlockStateWrapper.getState(wrapper);
+        else if (block instanceof String string) {
+            try {
+                return BlockStateArgument.block(new CommandBuildContext(RegistryAccess.BUILTIN.get())).parse(new StringReader(string)).getState();
+            } catch (Exception e) {
+                throw new LuaRuntimeException("Could not parse block state from string: " + string);
+            }
+        }
+
+        throw new LuaRuntimeException("Illegal argument to " + methodName + "(): " + block);
     }
 
     /**

@@ -59,7 +59,7 @@ public class BlockStateWrapper {
         this.properties = (LuaTable) NbtToLua.convert(tag.contains("Properties") ? tag.get("Properties") : null);
     }
 
-    protected static BlockState getState(BlockStateWrapper blockState) {
+    public static BlockState getState(BlockStateWrapper blockState) {
         if (!exists(blockState)) throw new LuaRuntimeException("BlockState does not exist!");
         return blockState.blockState.get();
     }

@@ -1,22 +1,20 @@
 package org.moon.figura.avatars.model;
 
-import com.google.common.collect.ImmutableMap;
 import net.minecraft.client.model.ElytraModel;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.nbt.ByteTag;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.util.Mth;
 import org.moon.figura.avatars.Avatar;
-import org.moon.figura.avatars.model.rendering.FiguraImmediateBuffer;
 import org.moon.figura.avatars.model.rendering.ImmediateAvatarRenderer;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
+import org.moon.figura.avatars.model.rendertasks.BlockTask;
+import org.moon.figura.avatars.model.rendertasks.ItemTask;
+import org.moon.figura.avatars.model.rendertasks.RenderTask;
+import org.moon.figura.avatars.model.rendertasks.TextTask;
 import org.moon.figura.avatars.vanilla.VanillaPartOffsetManager;
+import org.moon.figura.ducks.PlayerModelAccessor;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
@@ -28,13 +26,13 @@ import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
-import org.moon.figura.math.vector.FiguraVec4;
-import org.moon.figura.ducks.PlayerModelAccessor;
 import org.moon.figura.mixin.render.layers.elytra.ElytraModelAccessor;
 import org.moon.figura.utils.LuaUtils;
 import org.terasology.jnlua.LuaRuntimeException;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -58,6 +56,8 @@ public class FiguraModelPart {
     public final List<FiguraModelPart> children;
 
     public List<Integer> facesByTexture;
+
+    public Map<String, RenderTask> renderTasks = new HashMap<>();
 
     public int textureWidth, textureHeight; //If the part has multiple textures, then these are -1.
 
@@ -791,6 +791,60 @@ public class FiguraModelPart {
     )
     public static String getType(@LuaNotNil FiguraModelPart modelPart) {
         return modelPart.customization.partType.name();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = {FiguraModelPart.class, String.class},
+                    argumentNames = {"modelPart", "taskName"}
+            ),
+            description = "model_part.add_text"
+    )
+    public static RenderTask addText(@LuaNotNil FiguraModelPart modelPart, @LuaNotNil String name) {
+        RenderTask task = new TextTask();
+        modelPart.renderTasks.put(name, task);
+        return task;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = {FiguraModelPart.class, String.class},
+                    argumentNames = {"modelPart", "taskName"}
+            ),
+            description = "model_part.add_item"
+    )
+    public static RenderTask addItem(@LuaNotNil FiguraModelPart modelPart, @LuaNotNil String name) {
+        RenderTask task = new ItemTask();
+        modelPart.renderTasks.put(name, task);
+        return task;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = {FiguraModelPart.class, String.class},
+                    argumentNames = {"modelPart", "taskName"}
+            ),
+            description = "model_part.add_block"
+    )
+    public static RenderTask addBlock(@LuaNotNil FiguraModelPart modelPart, @LuaNotNil String name) {
+        RenderTask task = new BlockTask();
+        modelPart.renderTasks.put(name, task);
+        return task;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = {FiguraModelPart.class, String.class},
+                    argumentNames = {"modelPart", "taskName"}
+            ),
+            description = "model_part.get_task"
+    )
+    public static RenderTask getTask(@LuaNotNil FiguraModelPart modelPart, @LuaNotNil String name) {
+        return modelPart.renderTasks.get(name);
     }
 
     //-- METAMETHODS --//

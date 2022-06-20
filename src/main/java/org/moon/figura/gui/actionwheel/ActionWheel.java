@@ -3,6 +3,7 @@ package org.moon.figura.gui.actionwheel;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
@@ -13,6 +14,7 @@ import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.config.Config;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.FiguraIdentifier;
+import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.ui.UIHelper;
 
@@ -20,65 +22,94 @@ import java.util.List;
 
 public class ActionWheel {
 
-    private static final ResourceLocation WHEEL_TEXTURE = new FiguraIdentifier("textures/gui/action_wheel.png");
-    private static final ResourceLocation WHEEL_ICONS = new FiguraIdentifier("textures/gui/action_wheel_icons.png");
+    private static final ResourceLocation TEXTURE = new FiguraIdentifier("textures/gui/action_wheel.png");
+    private static final ResourceLocation ICONS = new FiguraIdentifier("textures/gui/action_wheel_icons.png");
     private static final FiguraVec3 HOVER_COLOR = FiguraVec3.of(1, 1, 1);
     private static final FiguraVec3 TOGGLE_COLOR = FiguraVec3.of(0, 1, 0);
 
     private static boolean enabled = false;
     private static int selected = -1;
 
+    //rendering data
+    private static Minecraft minecraft;
+    private static int slots, leftSlots, rightSlots;
+    private static float scale;
+    private static double x, y, mouseX, mouseY;
+
     public static void render(PoseStack stack) {
         if (!isEnabled()) return;
 
-        Minecraft minecraft = Minecraft.getInstance();
-        double x = minecraft.getWindow().getGuiScaledWidth() / 2d;
-        double y = minecraft.getWindow().getGuiScaledHeight() / 2d;
+        minecraft = Minecraft.getInstance();
+        x = minecraft.getWindow().getGuiScaledWidth() / 2d;
+        y = minecraft.getWindow().getGuiScaledHeight() / 2d;
 
         //rendering
         stack.pushPose();
         stack.translate(x, y, 0d);
 
-        float scale = (float) Config.ACTION_WHEEL_SCALE.value;
+        scale = (float) Config.ACTION_WHEEL_SCALE.value;
         stack.scale(scale, scale, scale);
-
-        //render wheel
-        UIHelper.renderTexture(stack, -64, -64, 128, 128, WHEEL_TEXTURE);
 
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
         Page currentPage;
         if (avatar == null || avatar.luaState == null || (currentPage = avatar.luaState.actionWheel.currentPage) == null) {
-            stack.popPose();
+            //this also pops the stack
+            renderEmpty(stack, avatar == null);
             return;
         }
 
         //get left and right slots, right side have preference when the slots its odd
-        int slots = currentPage.getSize();
-        int leftSlots = (int) Math.floor(slots / 2d);
-        int rightSlots = (int) Math.ceil(slots / 2d);
+        slots = currentPage.getSize();
+        leftSlots = (int) Math.floor(slots / 2d);
+        rightSlots = (int) Math.ceil(slots / 2d);
 
-        double mouseX = minecraft.mouseHandler.xpos();
-        double mouseY = minecraft.mouseHandler.ypos();
+        mouseX = minecraft.mouseHandler.xpos();
+        mouseY = minecraft.mouseHandler.ypos();
 
         //calculate selected slot
-        getSelected(mouseX, mouseY, minecraft, leftSlots, rightSlots, scale);
+        getSelected();
 
         //render overlays
-        renderOverlays(stack, leftSlots, rightSlots, currentPage);
+        renderTextures(stack, currentPage);
 
         //render items
-        renderItems(x, y, leftSlots, rightSlots, scale, minecraft, currentPage);
+        renderItems(currentPage);
 
         stack.popPose();
 
         //render title
         Action action = selected == -1 ? null : currentPage.actions[selected];
-        renderTitle(stack, x, y, mouseX, mouseY, scale, minecraft, action == null ? null : action.title);
+        renderTitle(stack, action == null ? null : action.title);
     }
 
     // -- render helpers -- //
 
-    private static void getSelected(double mouseX, double mouseY, Minecraft minecraft, int leftSlots, int rightSlots, float scale) {
+    private static double getAngle(int i) {
+        double angle;
+        if (i < rightSlots)
+            angle = 180d / rightSlots * (i - ((rightSlots - 1) * 0.5));
+        else
+            angle = 180d / leftSlots * (i - rightSlots - ((leftSlots - 1) * 0.5f) + leftSlots);
+
+        return Math.toRadians(angle);
+    }
+
+    private static void renderEmpty(PoseStack stack, boolean avatar) {
+        //render empty wheel
+        TextureData data = OverlayTexture.values()[0].data[0];
+        data.render(stack, null, false);
+        data.render(stack, null, true);
+
+        stack.popPose(); //previous stack
+
+        //warning text
+        Component component = FiguraText.of("gui.error." + (avatar ? "no_avatar" : "no_wheel_page")).withStyle(ChatFormatting.YELLOW);
+        Font font = minecraft.font;
+
+        UIHelper.renderOutlineText(stack, font, component, (float) x - font.width(component) / 2f, (float) y - font.lineHeight / 2f, 0xFFFFFF, 0);
+    }
+
+    private static void getSelected() {
         //window specific variables
         double screenMiddleW = minecraft.getWindow().getScreenWidth() / 2d;
         double screenMiddleH = minecraft.getWindow().getScreenHeight() / 2d;
@@ -104,91 +135,68 @@ public class ActionWheel {
             selected = (int) Math.floor((leftSlots / 180d) * (angle - 180)) + rightSlots;
     }
 
-    private static void renderOverlays(PoseStack stack, int leftSlots, int rightSlots, Page page) {;
-        int slots = leftSlots + rightSlots;
-
+    private static void renderTextures(PoseStack stack, Page page) {
         for (int i = 0; i < slots; i++) {
             Action action = page.actions[i];
-            if (action == null)
-                continue;
-
             boolean left = i >= rightSlots;
             int type = left ? leftSlots : rightSlots;
             int relativeIndex = left ? i - rightSlots : i;
-            TextureData data = OverlayTexture.values()[type - 1].data[relativeIndex];
-
-            double angle;
-            if (i < rightSlots)
-                angle = 180d / rightSlots * (i - ((rightSlots - 1) * 0.5));
-            else
-                angle = 180d / leftSlots * (i - rightSlots - ((leftSlots - 1) * 0.5f) + leftSlots);
-
-            //convert angle to x and y coordinates
-            double x = Math.cos(Math.toRadians(angle)) * 15 - 3.5;
-            double y = Math.sin(Math.toRadians(angle)) * 15 - 3.5;
 
             //get color
             FiguraVec3 color;
-            if (selected == i)
+            if (action == null)
+                color = null;
+            else if (selected == i)
                 color = action.hoverColor == null ? HOVER_COLOR : action.hoverColor;
-            else if (action instanceof ToggleAction toggle && toggle.isToggled())
+            else if (action instanceof ToggleAction toggle && ToggleAction.isToggled(toggle))
                 color = toggle.toggleColor == null ? TOGGLE_COLOR : toggle.toggleColor;
             else
                 color = action.color;
 
-            //render hover overlay
-            if (color != null) {
-                stack.pushPose();
-                stack.mulPose(Vector3f.ZP.rotationDegrees(data.rotation + (left ? 180 : 0)));
+            //render background texture
+            OverlayTexture.values()[type - 1].data[relativeIndex].render(stack, color, left);
 
-                UIHelper.setupTexture(TextureData.TEXTURE);
-                RenderSystem.setShaderColor((float) color.x, (float) color.y, (float) color.z, 1f);
-                UIHelper.blit(stack, data.x, data.y, data.w, data.h, data.u, data.v, data.rw, data.rh, TextureData.TW, TextureData.TH);
+            //no icon for null action
+            if (action == null)
+                continue;
 
-                stack.popPose();
-            }
+            //convert angle to x and y coordinates
+            double angle = getAngle(i);
+            double x = Math.cos(angle) * 15 - 4;
+            double y = Math.sin(angle) * 15 - 4;
 
             //render icon
-            UIHelper.setupTexture(WHEEL_ICONS);
+            UIHelper.setupTexture(ICONS);
 
             if (color != null)
                 RenderSystem.setShaderColor((float) color.x, (float) color.y, (float) color.z, 1f);
-            else
-                RenderSystem.setShaderColor(0f, 0f, 0f, 1f);
-
             UIHelper.blit(stack,
                     (int) Math.round(x), (int) Math.round(y),
-                    7, 7,
-                    action instanceof ScrollAction ? 21f : action instanceof ToggleAction toggle ? toggle.isToggled() ? 14f : 7f : 0f, 0f,
-                    7, 7,
-                    28, 7
+                    8, 8,
+                    action instanceof ScrollAction ? 24f : action instanceof ToggleAction toggle ? ToggleAction.isToggled(toggle) ? 16f : 8f : 0f, color == null ? 0f : 8f,
+                    8, 8,
+                    32, 16
             );
         }
     }
 
-    private static void renderItems(double screenX, double screenY, int leftSlots, int rightSlots, float scale, Minecraft minecraft, Page page) {
+    private static void renderItems(Page page) {
         double distance = 41 * scale;
-        int slots = leftSlots + rightSlots;
 
         for (int i = 0; i < slots; i++) {
             Action action = page.actions[i];
             if (action == null || action.item == null || action.item.isEmpty())
                 continue;
 
-            double angle;
-            if (i < rightSlots)
-                angle = 180d / rightSlots * (i - ((rightSlots - 1) * 0.5));
-            else
-                angle = 180d / leftSlots * (i - rightSlots - ((leftSlots - 1) * 0.5f) + leftSlots);
-
             //convert angle to x and y coordinates
-            double x = screenX + Math.cos(Math.toRadians(angle)) * distance;
-            double y = screenY + Math.sin(Math.toRadians(angle)) * distance;
+            double angle = getAngle(i);
+            double xOff = x + Math.cos(angle) * distance;
+            double yOff = y + Math.sin(angle) * distance;
 
             //render
             PoseStack stack = RenderSystem.getModelViewStack();
             stack.pushPose();
-            stack.translate(x, y, 0);
+            stack.translate(xOff, yOff, 0);
             stack.scale(scale, scale, scale);
 
             minecraft.getItemRenderer().renderGuiItem(action.item, -8, -8);
@@ -200,7 +208,7 @@ public class ActionWheel {
         }
     }
 
-    private static void renderTitle(PoseStack stack, double screenX, double screenY, double mouseX, double mouseY, float scale, Minecraft minecraft, String title) {
+    private static void renderTitle(PoseStack stack, String title) {
         if (title == null)
             return;
 
@@ -211,12 +219,12 @@ public class ActionWheel {
         int height = font.lineHeight * list.size();
 
         //pos
-        double y;
+        double yOff;
         int config = (int) Config.ACTION_WHEEL_TITLE.value;
         switch (config) {
-            case 2 -> y = Math.max(screenY - 64 * scale - 4 - height, 4); // top
-            case 3 -> y = screenY - height / 2f; // middle
-            case 4 -> y = Math.min(screenY + 64 * scale + 4 + height, screenY * 2 - 4) - height; // bottom
+            case 2 -> yOff = Math.max(y - 64 * scale - 4 - height, 4); // top
+            case 3 -> yOff = y - height / 2f; // middle
+            case 4 -> yOff = Math.min(y + 64 * scale + 4 + height, y * 2 - 4) - height; // bottom
             default -> { // tooltip
                 double guiScale = minecraft.getWindow().getGuiScale();
                 UIHelper.renderTooltip(stack, text, (int) (mouseX / guiScale), (int) (mouseY / guiScale), config == 0);
@@ -230,7 +238,7 @@ public class ActionWheel {
 
         for (int i = 0; i < list.size(); i++) {
             Component component = list.get(i);
-            font.drawShadow(stack, component, (float) screenX - font.width(component) / 2f, (float) y + font.lineHeight * i, 0xFFFFFF);
+            font.drawShadow(stack, component, (float) x - font.width(component) / 2f, (float) yOff + font.lineHeight * i, 0xFFFFFF);
         }
 
         stack.popPose();
@@ -303,22 +311,15 @@ public class ActionWheel {
 
     private static class TextureData {
 
-        private static final ResourceLocation TEXTURE = new FiguraIdentifier("textures/gui/action_wheel_selected.png");
-        private static final int TW = 256;
-        private static final int TH = 128;
-
-        private final int x, y, w, h, rw, rh;
+        private final int y, h, rh;
         private final float u, v;
         private final int rotation;
 
         public TextureData(boolean large, int y, float u, float v, int rotation) {
-            this.x = 0;
             this.y = y;
-            this.w = 64;
             this.h = large ? 128 : 64;
             this.u = u;
             this.v = v;
-            this.rw = 64;
             this.rh = large ? 128 : 64;
             this.rotation = rotation;
         }
@@ -331,6 +332,18 @@ public class ActionWheel {
         }
         public TextureData(float u, float v) {
             this(u, v, 0);
+        }
+
+        public void render(PoseStack stack, FiguraVec3 color, boolean left) {
+            stack.pushPose();
+            stack.mulPose(Vector3f.ZP.rotationDegrees(rotation + (left ? 180 : 0)));
+
+            UIHelper.setupTexture(TEXTURE);
+            if (color != null)
+                RenderSystem.setShaderColor((float) color.x, (float) color.y, (float) color.z, 1f);
+            UIHelper.blit(stack, 0, y, 64, h, u, color == null ? v : v + 128, 64, rh, 256, 256);
+
+            stack.popPose();
         }
     }
 }

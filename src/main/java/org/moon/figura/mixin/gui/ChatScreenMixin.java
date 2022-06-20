@@ -21,7 +21,7 @@ public class ChatScreenMixin {
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/ChatScreen;handleChatInput(Ljava/lang/String;Z)V"), method = "keyPressed")
     private void keyPressed(ChatScreen instance, String text, boolean bl) {
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
-        if (avatar != null) {
+        if (avatar != null && !text.isBlank()) {
             String str = avatar.chatSendMessageEvent(text);
 
             if (str == null)

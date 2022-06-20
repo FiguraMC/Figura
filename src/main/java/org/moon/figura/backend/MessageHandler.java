@@ -25,10 +25,6 @@ public enum MessageHandler {
         NetworkManager.closeBackend();
         NetworkManager.openBackend();
     }),
-    BANNED(json -> {
-        NetworkManager.banned = true;
-        FiguraToast.sendToast(FiguraText.of("backend.banned"), FiguraToast.ToastType.ERROR);
-    }),
 
     // -- backend messages -- //
 
@@ -102,9 +98,12 @@ public enum MessageHandler {
     // -- methods -- //
 
     public static void handleMessage(String message) {
-        JsonObject json = JsonParser.parseString(message).getAsJsonObject();
-
-        if (!json.has("type")) {
+        JsonObject json;
+        try {
+             json = JsonParser.parseString(message).getAsJsonObject();
+             if (!json.has("type"))
+                 throw new Exception();
+        } catch (Exception ignored) {
             FiguraMod.LOGGER.warn("Invalid backend message: " + message);
             return;
         }

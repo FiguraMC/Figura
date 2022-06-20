@@ -8,6 +8,7 @@ import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.terasology.jnlua.LuaRuntimeException;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -59,16 +60,54 @@ public class ActionWheelAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = {ActionWheelAPI.class, String.class},
-                    argumentNames = {"api", "title"}
-            ),
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = ActionWheelAPI.class,
+                            argumentNames = "api"
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {ActionWheelAPI.class, String.class},
+                            argumentNames = {"api", "title"}
+                    )
+            },
             description = "action_wheel.create_page"
     )
-    public static Page createPage(@LuaNotNil ActionWheelAPI api, @LuaNotNil String title) {
-        Page page = new Page(title);
-        api.pages.put(title, page);
+    public static Page createPage(@LuaNotNil ActionWheelAPI api, String title) {
+        Page page = new Page();
+        if (title != null) api.pages.put(title, page);
         return page;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = {ActionWheelAPI.class, String.class},
+                            argumentNames = {"api", "pageTitle"}
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {ActionWheelAPI.class, Page.class},
+                            argumentNames = {"api", "page"}
+                    )
+            },
+            description = "action_wheel.set_page"
+    )
+    public static void setPage(@LuaNotNil ActionWheelAPI api, Object page) {
+        Page currentPage;
+        if (page == null) {
+            currentPage = null;
+        } else if (page instanceof Page p) {
+            currentPage = p;
+        } else if (page instanceof String s) {
+            currentPage = api.pages.get(s);
+            if (currentPage == null) {
+                throw new LuaRuntimeException("Page \"" + s + "\" not found");
+            }
+        } else {
+            throw new LuaRuntimeException("Invalid page type, expected \"string\" or \"page\"");
+        }
+
+        if (api.isHost) api.currentPage = currentPage;
     }
 
     @LuaWhitelist
@@ -77,10 +116,10 @@ public class ActionWheelAPI {
                     argumentTypes = {ActionWheelAPI.class, String.class},
                     argumentNames = {"api", "pageTitle"}
             ),
-            description = "action_wheel.set_page"
+            description = "action_wheel.get_page"
     )
-    public static void setPage(@LuaNotNil ActionWheelAPI api, @LuaNotNil String title) {
-        if (api.isHost) api.currentPage = api.pages.get(title);
+    public static Page getPage(@LuaNotNil ActionWheelAPI api, @LuaNotNil String pageTitle) {
+        return api.pages.get(pageTitle);
     }
 
     @Override

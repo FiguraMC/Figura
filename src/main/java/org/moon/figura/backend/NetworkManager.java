@@ -109,11 +109,27 @@ public class NetworkManager {
                             @Override
                             public void onDisconnect(Component reason) {
                                 telemetryManager.onDisconnect();
-
                                 authConnection = null;
-                                backendStatus = 1;
                                 disconnectedReason = reason.getString();
-                                MessageHandler.handleMessage(reason.getString());
+
+                                //parse token
+                                String[] split = disconnectedReason.split("<", 2);
+                                if (split.length < 2) {
+                                    backendStatus = 1;
+                                    return;
+                                }
+
+                                split = split[1].split(">", 2);
+                                if (split.length < 2) {
+                                    backendStatus = 1;
+                                    return;
+                                }
+
+                                JsonObject token = new JsonObject();
+                                token.addProperty("type", "auth");
+                                token.addProperty("token", split[0]);
+
+                                MessageHandler.handleMessage(GSON.toJson(token));
                             }
                         });
                     }
@@ -150,9 +166,6 @@ public class NetworkManager {
 
             backend.close();
             backend = null;
-
-            backendStatus = 1;
-            disconnectedReason = null;
         });
     }
 

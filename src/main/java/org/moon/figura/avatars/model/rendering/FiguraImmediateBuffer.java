@@ -76,7 +76,7 @@ public class FiguraImmediateBuffer {
     }
 
 
-    public void pushVertices(MultiBufferSource bufferSource, int overlay, int faceCount, int[] remainingComplexity) {
+    public void pushVertices(MultiBufferSource bufferSource, int faceCount, int[] remainingComplexity) {
         //Handle cases that we can quickly
         if (faceCount == 0)
             return;
@@ -92,16 +92,16 @@ public class FiguraImmediateBuffer {
         if (primary != null) {
             if (secondary != null)
                 markBuffers();
-            pushToConsumer(bufferSource.getBuffer(primary), overlay, faceCount);
+            pushToConsumer(bufferSource.getBuffer(primary), faceCount);
         }
         if (secondary != null) {
             if (primary != null)
                 resetBuffers();
-            pushToConsumer(bufferSource.getBuffer(secondary), overlay, faceCount);
+            pushToConsumer(bufferSource.getBuffer(secondary), faceCount);
         }
     }
 
-    private void pushToConsumer(VertexConsumer consumer, int overlay, int faceCount) {
+    private void pushToConsumer(VertexConsumer consumer, int faceCount) {
         PartCustomization customization = customizationStack.peek();
 
         FiguraVec3 uvFixer = FiguraVec3.of();
@@ -130,7 +130,7 @@ public class FiguraImmediateBuffer {
                     (float) uv.x,
                     (float) uv.y,
 
-                    overlay,
+                    customization.overlay,
                     customization.light,
 
                     (float) normal.x,

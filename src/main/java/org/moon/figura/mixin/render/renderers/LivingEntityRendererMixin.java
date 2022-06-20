@@ -56,6 +56,11 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
 
     @Shadow protected abstract boolean isBodyVisible(T livingEntity);
     @Shadow protected abstract RenderType getRenderType(T livingEntity, boolean bl, boolean bl2, boolean bl3);
+    @Shadow
+    public static int getOverlayCoords(LivingEntity entity, float whiteOverlayProgress) {
+        return 0;
+    }
+    @Shadow protected abstract float getWhiteOverlayProgress(T entity, float tickDelta);
 
     private void fetchElytraModel() {
         triedFetchElytraModel = true;
@@ -106,9 +111,9 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
         //No camera/hud or whatever in yet. when they are, they won't be included here either.
         if (visible) {
             currentAvatar.renderer.currentFilterScheme = AvatarRenderer.RENDER_REGULAR;
-            currentAvatar.onRender(entity, yaw, delta, translucent ? 0.15f : 1f, matrices, bufferSource, light, (LivingEntityRenderer<?, ?>) (Object) this);
+            int overlay = getOverlayCoords(entity, getWhiteOverlayProgress(entity, delta));
+            currentAvatar.onRender(entity, yaw, delta, translucent ? 0.15f : 1f, matrices, bufferSource, light, overlay, (LivingEntityRenderer<?, ?>) (Object) this);
         }
-
 
         if (model instanceof PlayerModel<?> playerModel && entity instanceof Player)
             if (TrustManager.get(entity.getUUID()).get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 1)

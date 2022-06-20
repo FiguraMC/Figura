@@ -30,6 +30,7 @@ public abstract class AvatarRenderer {
     public float yaw, tickDelta, alpha;
     public PoseStack matrices;
     public int light;
+    public int overlay;
     public MultiBufferSource bufferSource;
     public LivingEntityRenderer<?, ?> entityRenderer;
     public PartFilterScheme currentFilterScheme;
