@@ -32,6 +32,8 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
     private final PartCustomization.Stack customizationStack = new PartCustomization.Stack();
 
+    private static final PoseStack VIEW_MATRICES = new PoseStack();
+
     public ImmediateAvatarRenderer(Avatar avatar) {
         super(avatar);
 
@@ -87,7 +89,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
     }
 
     @Override
-    public void renderWorldParts() {
+    public void renderSpecialParts() {
         commonRender(0);
     }
 
@@ -118,7 +120,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
             viewToWorldMatrix = AvatarRenderer.worldToViewMatrix().inverted();
 
         int[] remainingComplexity = new int[] {complexityLimit};
-        renderPart(root, remainingComplexity, currentFilterScheme.initialValue());
+        renderPart(root, remainingComplexity, currentFilterScheme.initialValue);
         avatar.complexity = complexityLimit - remainingComplexity[0];
 
         customizationStack.pop();
@@ -166,7 +168,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
         //Store old visibility, but overwrite it in case we only want to render certain parts
         Boolean storedVisibility = part.customization.visible;
-        boolean thisPassedPredicate = currentFilterScheme.predicate().test(part, parentPassedPredicate);
+        boolean thisPassedPredicate = currentFilterScheme.predicate.test(part, parentPassedPredicate);
 
         part.customization.visible = FiguraModelPart.getVisible(part) && thisPassedPredicate;
         customizationStack.push(part.customization);
@@ -195,12 +197,17 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
             renderPart(child, remainingComplexity, thisPassedPredicate);
 
         if (thisPassedPredicate) {
+            calculateWorldMatrices(part);
+
             //pivots
             if (shouldRenderPivots > 1 || shouldRenderPivots == 1 && customizationStack.peek().visible)
                 renderPivot(part);
 
             //tasks
-            renderTasks(part, customizationStack.peek().light, customizationStack.peek().overlay);
+            int light = customizationStack.peek().light;
+            int overlay = customizationStack.peek().overlay;
+            for (RenderTask task : part.renderTasks.values())
+                task.render(VIEW_MATRICES, bufferSource, light, overlay);
         }
 
         customizationStack.pop();
@@ -208,42 +215,28 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         part.resetVanillaTransforms();
     }
 
-    private static final PoseStack DEBUG_POSE_STACK = new PoseStack();
     private void renderPivot(FiguraModelPart part) {
         //Index == -1 means it's a group
         FiguraVec3 color = part.index == -1 ? ColorUtils.Colors.MAYA_BLUE.vec : ColorUtils.Colors.FRAN_PINK.vec;
-        double boxSize = part.index == -1 ? 1.0/16 : 1.0/32;
-        DEBUG_POSE_STACK.setIdentity();
-        FiguraMat4 posMat = part.savedPartToWorldMat.copy();
-        boxSize /= Math.cbrt(posMat.det());
+        double boxSize = part.index == -1 ? 1 / 16d : 1 / 32d;
+        boxSize /= Math.cbrt(part.savedPartToWorldMat.det());
 
-        FiguraMat4 worldToView = AvatarRenderer.worldToViewMatrix();
-        DEBUG_POSE_STACK.mulPoseMatrix(worldToView.toMatrix4f());
-        DEBUG_POSE_STACK.mulPoseMatrix(posMat.toMatrix4f());
-
-        worldToView.free();
-        posMat.free();
-
-        LevelRenderer.renderLineBox(DEBUG_POSE_STACK, bufferSource.getBuffer(RenderType.LINES),
+        LevelRenderer.renderLineBox(VIEW_MATRICES, bufferSource.getBuffer(RenderType.LINES),
                 -boxSize, -boxSize, -boxSize,
                 boxSize, boxSize, boxSize,
                 (float) color.x, (float) color.y, (float) color.z, 1f);
     }
 
-    private static final PoseStack TASKS_POSE_STACK = new PoseStack();
-    private void renderTasks(FiguraModelPart part, int light, int overlay) {
-        TASKS_POSE_STACK.setIdentity();
+    private void calculateWorldMatrices(FiguraModelPart part) {
+        VIEW_MATRICES.setIdentity();
 
         FiguraMat4 posMat = part.savedPartToWorldMat.copy();
         FiguraMat4 worldToView = AvatarRenderer.worldToViewMatrix();
-        TASKS_POSE_STACK.mulPoseMatrix(worldToView.toMatrix4f());
-        TASKS_POSE_STACK.mulPoseMatrix(posMat.toMatrix4f());
+        VIEW_MATRICES.mulPoseMatrix(worldToView.toMatrix4f());
+        VIEW_MATRICES.mulPoseMatrix(posMat.toMatrix4f());
 
         worldToView.free();
         posMat.free();
-
-        for (RenderTask task : part.renderTasks.values())
-            task.render(TASKS_POSE_STACK, bufferSource, light, overlay);
     }
 
     public void pushFaces(int texIndex, int faceCount, int[] remainingComplexity) {

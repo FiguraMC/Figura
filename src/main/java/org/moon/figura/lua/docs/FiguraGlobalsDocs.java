@@ -1,10 +1,7 @@
 package org.moon.figura.lua.docs;
 
 import org.moon.figura.avatars.model.FiguraModelPart;
-import org.moon.figura.lua.api.ClientAPI;
-import org.moon.figura.lua.api.EventsAPI;
-import org.moon.figura.lua.api.ParticleAPI;
-import org.moon.figura.lua.api.SoundAPI;
+import org.moon.figura.lua.api.*;
 import org.moon.figura.lua.api.entity.PlayerEntityWrapper;
 import org.moon.figura.lua.api.math.MatricesAPI;
 import org.moon.figura.lua.api.math.VectorsAPI;
@@ -50,6 +47,8 @@ public abstract class FiguraGlobalsDocs {
     public NameplateAPI nameplate;
     @LuaFieldDoc(description = "globals.client")
     public ClientAPI client;
+    @LuaFieldDoc(description = "globals.action_wheel")
+    public ActionWheelAPI action_wheel;
 
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(

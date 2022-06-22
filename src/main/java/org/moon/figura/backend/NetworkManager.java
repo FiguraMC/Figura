@@ -41,10 +41,10 @@ public class NetworkManager {
     public static int backendStatus = 1;
     public static String disconnectedReason;
     public static boolean banned = false;
-    protected static int lastAuth = 0;
+    private static int lastAuth = 0;
     protected static String authToken;
 
-    protected static Connection authConnection;
+    private static Connection authConnection;
     protected static WebsocketManager backend;
 
     private static CompletableFuture<Void> networkTasks;
@@ -85,7 +85,7 @@ public class NetworkManager {
     public static void auth(boolean force) {
         doTask(() -> {
             try {
-                lastAuth = 0;
+                lastAuth = (int) (Math.random() * 300) - 150; //between -15 and +15 seconds
 
                 if (!force && authToken != null || banned)
                     return;

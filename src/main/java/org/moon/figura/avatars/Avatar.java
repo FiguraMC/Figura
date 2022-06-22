@@ -1,9 +1,11 @@
 package org.moon.figura.avatars;
 
+import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
@@ -130,7 +132,7 @@ public class Avatar {
 
     public void onRender(Entity entity, float yaw, float delta, float alpha, PoseStack matrices, MultiBufferSource bufferSource, int light, int overlay, LivingEntityRenderer<?, ?> entityRenderer) {
         if (entity.isSpectator())
-            renderer.currentFilterScheme = AvatarRenderer.RENDER_HEAD;
+            renderer.currentFilterScheme = AvatarRenderer.PartFilterScheme.HEAD;
         renderer.entity = entity;
         renderer.yaw = yaw;
         renderer.tickDelta = delta;
@@ -202,7 +204,7 @@ public class Avatar {
 
     public void onWorldRender(Entity entity, double camX, double camY, double camZ, PoseStack matrices, MultiBufferSource bufferSource, int light, float tickDelta) {
         renderer.entity = entity;
-        renderer.currentFilterScheme = AvatarRenderer.RENDER_WORLD;
+        renderer.currentFilterScheme = AvatarRenderer.PartFilterScheme.WORLD;
         renderer.bufferSource = bufferSource;
         renderer.matrices = matrices;
         renderer.tickDelta = tickDelta;
@@ -213,7 +215,7 @@ public class Avatar {
         matrices.translate(-camX, -camY, -camZ);
         matrices.scale(-1, -1, 1);
 
-        renderer.renderWorldParts();
+        renderer.renderSpecialParts();
         matrices.popPose();
     }
 
@@ -225,8 +227,29 @@ public class Avatar {
 
     public void onFirstPersonRender(PoseStack stack, MultiBufferSource bufferSource, Player player, PlayerRenderer playerRenderer, ModelPart arm, int light, int overlay, float tickDelta) {
         arm.xRot = 0;
-        renderer.currentFilterScheme = arm == playerRenderer.getModel().leftArm ? AvatarRenderer.RENDER_LEFT_ARM : AvatarRenderer.RENDER_RIGHT_ARM;
+        renderer.currentFilterScheme = arm == playerRenderer.getModel().leftArm ? AvatarRenderer.PartFilterScheme.LEFT_ARM : AvatarRenderer.PartFilterScheme.RIGHT_ARM;
         onRender(player, 0f, tickDelta, 1f, stack, bufferSource, light, overlay, playerRenderer);
+    }
+
+    public void onHudRender(PoseStack stack, MultiBufferSource bufferSource, Entity entity, float tickDelta) {
+        renderer.currentFilterScheme = AvatarRenderer.PartFilterScheme.HUD;
+        renderer.entity = entity;
+        renderer.tickDelta = tickDelta;
+        renderer.overlay = OverlayTexture.NO_OVERLAY;
+        renderer.light = LightTexture.FULL_BRIGHT;
+        renderer.alpha = 1f;
+        renderer.matrices = stack;
+        renderer.bufferSource = bufferSource;
+
+        stack.pushPose();
+        stack.scale(16, 16, -16);
+
+        Lighting.setupForFlatItems();
+
+        renderer.renderSpecialParts();
+
+        Lighting.setupFor3DItems();
+        stack.popPose();
     }
 
     /**

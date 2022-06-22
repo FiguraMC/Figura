@@ -110,7 +110,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
         //When viewed 3rd person, render all non-world parts.
         //No camera/hud or whatever in yet. when they are, they won't be included here either.
         if (visible) {
-            currentAvatar.renderer.currentFilterScheme = AvatarRenderer.RENDER_REGULAR;
+            currentAvatar.renderer.currentFilterScheme = AvatarRenderer.PartFilterScheme.MODEL;
             int overlay = getOverlayCoords(entity, getWhiteOverlayProgress(entity, delta));
             currentAvatar.onRender(entity, yaw, delta, translucent ? 0.15f : 1f, matrices, bufferSource, light, overlay, (LivingEntityRenderer<?, ?>) (Object) this);
         }

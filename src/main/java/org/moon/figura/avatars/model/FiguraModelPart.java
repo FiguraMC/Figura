@@ -106,7 +106,7 @@ public class FiguraModelPart {
 
         FiguraVec3 defaultPivot = VanillaPartOffsetManager.getVanillaOffset(vanillaModel, parentType);
         defaultPivot.subtract(part.x, part.y, part.z);
-        defaultPivot.multiply(1, 1, -1);
+        defaultPivot.multiply(part.xScale, part.yScale, -part.zScale);
 
         customization.setBonusPivot(defaultPivot);
         customization.setBonusPos(defaultPivot);
@@ -146,10 +146,12 @@ public class FiguraModelPart {
 
         Cape("CAPE"),
 
-        World(false, "WORLD");
+        World(false, "WORLD"),
+        Hud(false, "HUD", "Gui", "GUI");
 
         public final boolean vanilla;
         public final String[] aliases;
+        public static final List<ParentType> SPECIAL_PARTS = List.of(World, Hud);
 
         ParentType(String... aliases) {
             this(true, aliases);

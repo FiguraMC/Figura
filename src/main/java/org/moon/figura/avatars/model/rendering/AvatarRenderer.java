@@ -42,45 +42,53 @@ public abstract class AvatarRenderer {
      * Boolean input: The result of the predicate from the previous part.
      * Boolean output: The result for the current part.
      */
-    public static final PartFilterScheme RENDER_REGULAR = new PartFilterScheme(true, (part, previousPassed) -> {
-        //Allow everything except descendants of WORLD parts.
-        if (part.parentType == FiguraModelPart.ParentType.World)
-            return false;
-        return previousPassed;
-    });
-    public static final PartFilterScheme RENDER_WORLD = new PartFilterScheme(false, (part, previousPassed) -> {
-        //Allow nothing except descendants of WORLD parts.
-        if (part.parentType == FiguraModelPart.ParentType.World)
-            return true;
-        return previousPassed;
-    });
-    public static final PartFilterScheme RENDER_HEAD = new PartFilterScheme(false, (part, previousPassed) -> {
-        //Allow nothing except descendants of HEAD parts.
-        if (part.parentType == FiguraModelPart.ParentType.Head)
-            return true;
-        return previousPassed;
-    });
-    public static final PartFilterScheme RENDER_LEFT_ARM = new PartFilterScheme(false, (part, previousPassed) -> {
-        //Allow nothing except descendants of LEFT_ARM parts.
-        if (part.parentType == FiguraModelPart.ParentType.LeftArm)
-            return true;
-        return previousPassed;
-    });
-    public static final PartFilterScheme RENDER_RIGHT_ARM = new PartFilterScheme(false, (part, previousPassed) -> {
-        //Allow nothing except descendants of LEFT_ARM parts.
-        if (part.parentType == FiguraModelPart.ParentType.RightArm)
-            return true;
-        return previousPassed;
-    });
+    public enum PartFilterScheme {
+        MODEL(true, (part, previousPassed) -> {
+            if (FiguraModelPart.ParentType.SPECIAL_PARTS.contains(part.parentType))
+                return false;
+            return previousPassed;
+        }),
+        WORLD(false, (part, previousPassed) -> {
+            if (part.parentType == FiguraModelPart.ParentType.World)
+                return true;
+            return previousPassed;
+        }),
+        HEAD(false, (part, previousPassed) -> {
+            if (part.parentType == FiguraModelPart.ParentType.Head)
+                return true;
+            return previousPassed;
+        }),
+        LEFT_ARM(false, (part, previousPassed) -> {
+            if (part.parentType == FiguraModelPart.ParentType.LeftArm)
+                return true;
+            return previousPassed;
+        }),
+        RIGHT_ARM(false, (part, previousPassed) -> {
+            if (part.parentType == FiguraModelPart.ParentType.RightArm)
+                return true;
+            return previousPassed;
+        }),
+        HUD(false, (part, previousPassed) -> {
+            if (part.parentType == FiguraModelPart.ParentType.Hud)
+                return true;
+            return previousPassed;
+        });
 
-    public record PartFilterScheme(boolean initialValue, BiPredicate<FiguraModelPart, Boolean> predicate) {}
+        public final boolean initialValue;
+        public final BiPredicate<FiguraModelPart, Boolean> predicate;
+
+        PartFilterScheme(boolean initialValue, BiPredicate<FiguraModelPart, Boolean> predicate) {
+            this.initialValue = initialValue;
+            this.predicate = predicate;
+        }
+    }
 
     public AvatarRenderer(Avatar avatar) {
         this.avatar = avatar;
     }
 
     public abstract void render();
-    public abstract void renderWorldParts();
+    public abstract void renderSpecialParts();
     public void clean() {
         root.clean();
     }
