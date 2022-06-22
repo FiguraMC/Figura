@@ -162,10 +162,10 @@ public class FiguraModelPart {
 
         public static ParentType get(String name) {
             for (ParentType parentType : values()) {
-                if (parentType.name().startsWith(name))
+                if (name.startsWith(parentType.name()))
                     return parentType;
                 for (String alias : parentType.aliases) {
-                    if (alias.startsWith(name))
+                    if (name.startsWith(alias))
                         return parentType;
                 }
             }
@@ -556,7 +556,7 @@ public class FiguraModelPart {
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {FiguraModelPart.class, String.class, String.class},
-                            argumentNames = {"modelPart", "textureType", "path"}
+                            argumentNames = {"modelPart", "resource", "path"}
                     )
             },
             description = "model_part.set_primary_texture"
@@ -574,7 +574,7 @@ public class FiguraModelPart {
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {FiguraModelPart.class, String.class, String.class},
-                            argumentNames = {"modelPart", "textureType", "path"}
+                            argumentNames = {"modelPart", "resource", "path"}
                     )
             },
             description = "model_part.set_secondary_texture"

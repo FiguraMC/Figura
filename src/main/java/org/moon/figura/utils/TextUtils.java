@@ -157,8 +157,20 @@ public class TextUtils {
     //get the largest text width from a list
     public static int getWidth(List<?> text, Font font) {
         int width = 0;
-        for (Object object : text)
-            width = Math.max(width, object instanceof Component component ? font.width(component) : object instanceof FormattedCharSequence charSequence ? font.width(charSequence) : 0);
+
+        for (Object object : text) {
+            int w;
+            if (object instanceof Component component) //instanceof switch case only for java 17 experimental ;-;
+                w = font.width(component);
+            else if (object instanceof FormattedCharSequence charSequence)
+                w = font.width(charSequence);
+            else if (object instanceof String s)
+                w = font.width(s);
+            else
+                w = 0;
+
+            width = Math.max(width, w);
+        }
         return width;
     }
 }

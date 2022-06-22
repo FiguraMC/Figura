@@ -88,29 +88,31 @@ public class FiguraTextureSet {
             return null;
 
         type = type.toLowerCase();
-        if (type.equals("skin") || type.equals("cape") || type.equals("elytra")) {
-            if (Minecraft.getInstance().player == null)
-                return null;
+        return switch (type) {
+            case "skin", "cape", "elytra" -> {
+                if (Minecraft.getInstance().player == null)
+                    yield null;
 
-            PlayerInfo info = Minecraft.getInstance().player.connection.getPlayerInfo(owner.owner);
-            if (info == null)
-                return null;
+                PlayerInfo info = Minecraft.getInstance().player.connection.getPlayerInfo(owner.owner);
+                if (info == null)
+                    yield null;
 
-            if (type.equals("skin"))
-                return info.getSkinLocation();
-            else if (type.equals("cape"))
-                return info.getCapeLocation();
-            else
-                return info.getElytraLocation();
-        } else if (type.equals("resource")) {
-            try {
-                if (path == null)
-                    return null;
-
-                ResourceLocation resource = new ResourceLocation(path);
-                return Minecraft.getInstance().getResourceManager().getResource(resource).isPresent() ? resource : MissingTextureAtlasSprite.getLocation();
-            } catch (Exception ignored) {}
-        }
-        throw new LuaRuntimeException("Invalid texture override type: " + type);
+                yield switch (type) {
+                    case "cape" -> info.getCapeLocation();
+                    case "elytra" -> info.getElytraLocation();
+                    default -> info.getSkinLocation();
+                };
+            }
+            case "resource" -> {
+                try {
+                    ResourceLocation resource = new ResourceLocation(path);
+                    yield Minecraft.getInstance().getResourceManager().getResource(resource).isPresent() ? resource : MissingTextureAtlasSprite.getLocation();
+                } catch (Exception ignored) {
+                    throw new LuaRuntimeException("Failed to get texture from path \"" + path + "\"");
+                }
+            }
+            case "texture" -> null;
+            default -> throw new LuaRuntimeException("Invalid texture override type: " + type);
+        };
     }
 }

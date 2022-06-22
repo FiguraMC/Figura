@@ -54,7 +54,7 @@ public class EntityWrapper<T extends Entity> {
         return new EntityWrapper<>(entity.getUUID());
     }
 
-    protected T getEntity() {
+    public T getEntity() {
         return getEntityByUUID(savedUUID);
     }
 
