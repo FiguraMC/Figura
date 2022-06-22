@@ -1,13 +1,16 @@
 package org.moon.figura.lua.api;
 
 import org.moon.figura.FiguraMod;
+import org.moon.figura.avatars.Avatar;
 import org.moon.figura.gui.actionwheel.ActionWheel;
 import org.moon.figura.gui.actionwheel.Page;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.lua.types.LuaFunction;
 import org.terasology.jnlua.LuaRuntimeException;
 
 import java.util.HashMap;
@@ -21,8 +24,18 @@ import java.util.UUID;
 public class ActionWheelAPI {
 
     public Page currentPage;
-    public HashMap<String, Page> pages = new HashMap<>();
+    private final HashMap<String, Page> pages = new HashMap<>();
     private final boolean isHost;
+
+    @LuaWhitelist
+    @LuaFieldDoc(description = "action_wheel.left_click")
+    public LuaFunction leftClick;
+    @LuaWhitelist
+    @LuaFieldDoc(description = "action_wheel.right_click")
+    public LuaFunction rightClick;
+    @LuaWhitelist
+    @LuaFieldDoc(description = "action_wheel.scroll")
+    public LuaFunction scroll;
 
     public ActionWheelAPI(UUID owner) {
         this.isHost = FiguraMod.isLocal(owner);
@@ -125,7 +138,7 @@ public class ActionWheelAPI {
             throw new LuaRuntimeException("Invalid page type, expected \"string\" or \"page\"");
         }
 
-        if (api.isHost) api.currentPage = currentPage;
+        api.currentPage = currentPage;
     }
 
     @LuaWhitelist
@@ -138,6 +151,19 @@ public class ActionWheelAPI {
     )
     public static Page getPage(@LuaNotNil ActionWheelAPI api, @LuaNotNil String pageTitle) {
         return api.pages.get(pageTitle);
+    }
+
+    public void execute(Avatar avatar, boolean left) {
+        LuaFunction function = left ? leftClick : rightClick;
+
+        //execute
+        if (function != null)
+            avatar.tryCall(function, -1);
+    }
+
+    public void mouseScroll(Avatar avatar, double delta) {
+        if (scroll != null)
+            avatar.tryCall(scroll, -1, delta);
     }
 
     @Override

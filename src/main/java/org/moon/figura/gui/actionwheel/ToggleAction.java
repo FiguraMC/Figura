@@ -20,9 +20,12 @@ import org.moon.figura.utils.LuaUtils;
 )
 public class ToggleAction extends Action {
 
-    private boolean toggled = false;
-    public ItemStack toggleItem;
-    public FiguraVec3 toggleColor;
+    protected static final FiguraVec3 TOGGLE_COLOR = FiguraVec3.of(0, 1, 0);
+
+    protected boolean toggled = false;
+    protected String toggleTitle;
+    protected ItemStack toggleItem;
+    protected FiguraVec3 toggleColor;
 
     @LuaWhitelist
     @LuaFieldDoc(description = "toggle_action.toggle")
@@ -55,6 +58,19 @@ public class ToggleAction extends Action {
     )
     public static Action onUntoggle(ToggleAction action, LuaFunction function) {
         action.untoggle = function;
+        return action;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            description = "toggle_action.toggle_title",
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = {ToggleAction.class, String.class},
+                    argumentNames = {"action", "title"}
+            )
+    )
+    public static Action toggleTitle(ToggleAction action, String title) {
+        action.toggleTitle = title;
         return action;
     }
 
@@ -131,6 +147,33 @@ public class ToggleAction extends Action {
         //execute
         if (function != null)
             avatar.tryCall(function, -1);
+    }
+
+    @Override
+    public String getTitle() {
+        return toggled ? toggleTitle == null ? title : toggleTitle : title;
+    }
+
+    @Override
+    public ItemStack getItem(boolean selected) {
+        ItemStack ret = null;
+        if (selected)
+            ret = hoverItem;
+        if (ret == null && toggled)
+            ret = toggleItem;
+        if (ret == null)
+            ret = item;
+        return ret;
+    }
+
+    @Override
+    public FiguraVec3 getColor(boolean selected) {
+        if (selected)
+            return hoverColor == null ? HOVER_COLOR : hoverColor;
+        else if (toggled)
+            return toggleColor == null ? TOGGLE_COLOR : toggleColor;
+        else
+            return color;
     }
 
     @Override

@@ -13,9 +13,11 @@ import org.moon.figura.utils.LuaUtils;
 @LuaWhitelist
 public abstract class Action {
 
-    public String title;
-    public ItemStack item, hoverItem;
-    public FiguraVec3 color, hoverColor;
+    protected static final FiguraVec3 HOVER_COLOR = FiguraVec3.of(1, 1, 1);
+
+    protected String title;
+    protected ItemStack item, hoverItem;
+    protected FiguraVec3 color, hoverColor;
 
     public void execute(Avatar avatar, boolean left) {}
 
@@ -108,6 +110,18 @@ public abstract class Action {
     public static Action hoverItem(@LuaNotNil Action action, Object item) {
         action.hoverItem = LuaUtils.parseItemStack("hoverItem", item);
         return action;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public ItemStack getItem(boolean selected) {
+        return selected ? hoverItem == null ? item : hoverItem : item;
+    }
+
+    public FiguraVec3 getColor(boolean selected) {
+        return selected ? hoverColor == null ? HOVER_COLOR : hoverColor : color;
     }
 
     @Override

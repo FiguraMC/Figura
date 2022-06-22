@@ -108,7 +108,7 @@ public class FiguraTextureSet {
                     ResourceLocation resource = new ResourceLocation(path);
                     yield Minecraft.getInstance().getResourceManager().getResource(resource).isPresent() ? resource : MissingTextureAtlasSprite.getLocation();
                 } catch (Exception ignored) {
-                    throw new LuaRuntimeException("Failed to get texture from path \"" + path + "\"");
+                    yield MissingTextureAtlasSprite.getLocation();
                 }
             }
             case "texture" -> null;

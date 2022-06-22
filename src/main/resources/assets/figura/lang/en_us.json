@@ -338,6 +338,9 @@
   "figura.docs.nameplate_customization.set_visible": "Whether or not the nameplate should be visible. Only usable on the ENTITY nameplate.",
 
   "figura.docs.action_wheel": "A global API which is used for customizing your player's Action Wheel",
+  "figura.docs.action_wheel.left_click": "Function that is executed when the left mouse button is clicked.",
+  "figura.docs.action_wheel.right_click": "Function that is executed when the right mouse button is clicked.",
+  "figura.docs.action_wheel.scroll": "Function that is executed when the mouse is scrolled.",
   "figura.docs.action_wheel.execute": "Executes the action of the given index. If the index is null, it will execute the last selected action. A second parameter can be given to specify if it should be executed the left or right action.",
   "figura.docs.action_wheel.is_enabled": "Returns if the Action Wheel is being currently rendered or not.",
   "figura.docs.action_wheel.get_selected": "Returns the index of the currently selected action.",
@@ -368,6 +371,7 @@
   "figura.docs.toggle_action.untoggle": "Function that is executed when the Action is untoggled.",
   "figura.docs.toggle_action.on_toggle": "Sets the function that is executed when the Action is toggled. Returns the Action for function chaining.",
   "figura.docs.toggle_action.on_untoggle": "Sets the function that is executed when the Action is untoggled. Returns the Action for function chaining.",
+  "figura.docs.toggle_action.toggle_title": "Sets the title of the Action when it is toggled. Returns the Action for function chaining.",
   "figura.docs.toggle_action.toggle_color": "Sets the color of the Action when it is toggled. Returns the Action for function chaining.",
   "figura.docs.toggle_action.toggle_item": "Sets the item of the Action when it is toggled. Returns the Action for function chaining.",
   "figura.docs.toggle_action.toggled": "Sets the toggle state of the Action. Returns the Action for function chaining.",

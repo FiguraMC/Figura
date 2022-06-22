@@ -39,4 +39,8 @@ public class ScrollAction extends Action {
             avatar.tryCall(scroll, -1, delta);
     }
 
+    @Override
+    public String toString() {
+        return "Action Wheel Scroll (" + title + ")";
+    }
 }

@@ -25,8 +25,6 @@ public class ActionWheel {
 
     private static final ResourceLocation TEXTURE = new FiguraIdentifier("textures/gui/action_wheel.png");
     private static final ResourceLocation ICONS = new FiguraIdentifier("textures/gui/action_wheel_icons.png");
-    private static final FiguraVec3 HOVER_COLOR = FiguraVec3.of(1, 1, 1);
-    private static final FiguraVec3 TOGGLE_COLOR = FiguraVec3.of(0, 1, 0);
 
     private static boolean enabled = false;
     private static int selected = -1;
@@ -80,7 +78,7 @@ public class ActionWheel {
 
         //render title
         Action action = selected == -1 ? null : currentPage.actions[selected];
-        renderTitle(stack, action == null ? null : action.title);
+        renderTitle(stack, action == null ? null : action.getTitle());
     }
 
     // -- render helpers -- //
@@ -144,15 +142,7 @@ public class ActionWheel {
             int relativeIndex = left ? i - rightSlots : i;
 
             //get color
-            FiguraVec3 color;
-            if (action == null)
-                color = null;
-            else if (selected == i)
-                color = action.hoverColor == null ? HOVER_COLOR : action.hoverColor;
-            else if (action instanceof ToggleAction toggle && ToggleAction.isToggled(toggle))
-                color = toggle.toggleColor == null ? TOGGLE_COLOR : toggle.toggleColor;
-            else
-                color = action.color;
+            FiguraVec3 color = action == null ? null : action.getColor(selected == i);
 
             //render background texture
             OverlayTexture.values()[type - 1].data[relativeIndex].render(stack, color, left);
@@ -189,19 +179,7 @@ public class ActionWheel {
             if (action == null)
                 continue;
 
-            ItemStack item = null;
-
-            //selected case
-            if (selected == i)
-                item = action.hoverItem;
-
-            //toggle case
-            if (item == null && action instanceof ToggleAction toggle && ToggleAction.isToggled(toggle))
-                item = toggle.toggleItem;
-
-            //default case
-            if (item == null)
-                item = action.item;
+            ItemStack item = action.getItem(selected == i);
 
             //no item, no render
             if (item == null || item.isEmpty())
@@ -267,13 +245,21 @@ public class ActionWheel {
 
     public static void execute(int index, boolean left) {
         Avatar avatar;
-        Page currentPage;
-        if (!isEnabled() || index < 0 || index > 7 || (avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID())) == null || avatar.luaState == null || (currentPage = avatar.luaState.actionWheel.currentPage) == null) {
+        if (!isEnabled() || (avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID())) == null || avatar.luaState == null) {
             selected = -1;
             return;
         }
 
+        //wheel click action
+        avatar.luaState.actionWheel.execute(avatar, left);
+
         //execute action
+        Page currentPage;
+        if (index < 0 || index > 7 || (currentPage = avatar.luaState.actionWheel.currentPage) == null) {
+            selected = -1;
+            return;
+        }
+
         Action action = currentPage.actions[index];
         if (action != null) action.execute(avatar, left);
 
@@ -282,11 +268,17 @@ public class ActionWheel {
 
     public static void scroll(double delta) {
         Avatar avatar;
-        Page currentPage;
-        if (!isEnabled() || selected == -1 || (avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID())) == null || avatar.luaState == null || (currentPage = avatar.luaState.actionWheel.currentPage) == null)
+        if (!isEnabled() || (avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID())) == null || avatar.luaState == null)
             return;
 
+        //wheel scroll action
+        avatar.luaState.actionWheel.mouseScroll(avatar, delta);
+
         //scroll
+        Page currentPage;
+        if (selected < 0 || selected > 7 || (currentPage = avatar.luaState.actionWheel.currentPage) == null)
+            return;
+
         Action action = currentPage.actions[selected];
         if (action != null) action.mouseScroll(avatar, delta);
     }
