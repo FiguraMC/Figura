@@ -108,7 +108,7 @@ public class TextUtils {
                 if (!s.matches(regex))
                     ret.append(Component.literal(s).withStyle(component.getStyle()));
                 else
-                    ret.append(replace);
+                    ret.append(replace.copy().withStyle(component.getStyle()));
             }
         }
 
