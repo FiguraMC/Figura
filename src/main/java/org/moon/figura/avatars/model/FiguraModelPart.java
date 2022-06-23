@@ -846,6 +846,18 @@ public class FiguraModelPart {
         return modelPart.renderTasks.get(name);
     }
 
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = {FiguraModelPart.class, String.class},
+                    argumentNames = {"modelPart", "taskName"}
+            ),
+            description = "model_part.remove_task"
+    )
+    public static void removeTask(@LuaNotNil FiguraModelPart modelPart, @LuaNotNil String name) {
+        modelPart.renderTasks.remove(name);
+    }
+
     //-- METAMETHODS --//
     @LuaWhitelist
     public static Object __index(@LuaNotNil FiguraModelPart modelPart, @LuaNotNil String key) {

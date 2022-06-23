@@ -1,5 +1,6 @@
 package org.moon.figura.lua.api.nameplate;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
@@ -39,7 +40,7 @@ public class NameplateCustomization {
         if (avatar == null)
             return Component.empty();
 
-        MutableComponent badges = Component.literal(" ").withStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT));
+        MutableComponent badges = Component.literal(" ").withStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT).withColor(ChatFormatting.WHITE));
         Pride[] pride = Pride.values();
         Special[] special = Special.values();
 
@@ -57,7 +58,7 @@ public class NameplateCustomization {
         else {
             mark: {
                 //pride (mark skins)
-                for (int i = 0; i < pride.length; i++) {
+                for (int i = pride.length - 1; i >= 0; i--) {
                     if (avatar.badges.get(i)) {
                         badges.append(pride[i].badge);
                         break mark;
@@ -71,10 +72,12 @@ public class NameplateCustomization {
 
         // -- special -- //
 
-        //special badges
-        for (int i = 0; i < special.length; i++) {
-            if (avatar.badges.get(i + pride.length))
+        //special badge
+        for (int i = special.length - 1; i >= 0; i--) {
+            if (avatar.badges.get(i + pride.length)) {
                 badges.append(Component.literal(special[i].badge).withStyle(Style.EMPTY.withColor(special[i].color())));
+                break;
+            }
         }
 
         return badges;
@@ -118,8 +121,9 @@ public class NameplateCustomization {
         SHADOW("\uD83C\uDF00"),
         DONATOR("❤", ColorUtils.Colors.FRAN_PINK.hex),
         CONTEST("☆", ColorUtils.Colors.FRAN_PINK.hex),
-        DISCORD_MOD("☆", 0x72B7FF),
-        DISCORD_ADMIN("☆", 0xB7FF72),
+        REDDIT_MOD("☆", ColorUtils.Colors.REDDIT_MOD.hex),
+        DISCORD_MOD("☆", ColorUtils.Colors.DISCORD_MOD.hex),
+        DISCORD_ADMIN("☆", ColorUtils.Colors.DISCORD_ADMIN.hex),
         DEV("★");
 
         public final String badge;

@@ -397,6 +397,10 @@
 
   "figura.docs.text_task": "A task for rendering a Text.",
   "figura.docs.text_task.text": "Sets the Text for this task render.",
+  "figura.docs.text_task.centred": "Toggles if the Text should render centred on this task pivot point.",
+  "figura.docs.text_task.shadow": "Toggles if the Text should render with a drop shadow. Not compatible with \"Outline\" mode",
+  "figura.docs.text_task.outline": "Toggles if the Text should render with a outline. Always renders at full bright. Not compatible with \"Shadow\" and \"Emissive\" modes",
+  "figura.docs.text_task.outline_color": "Sets the outline color this Text should render. Only compatible with \"Outline\" mode",
 
   "figura.docs.world": "A global API dedicated to reading information from the Minecraft world. Accessed using the name \"world\".",
   "figura.docs.world.get_biome": "Gets the Biome located at the given position.",
@@ -521,6 +525,7 @@
   "figura.docs.model_part.add_item": "Adds a new Item Render Task on this part.",
   "figura.docs.model_part.add_block": "Adds a new Block Render Task on this part.",
   "figura.docs.model_part.get_task": "Gets the Render Task with the given name from this part.",
+  "figura.docs.model_part.remove_task": "Removes the Task with the given name from this part.",
 
   "figura.docs.vanilla_model": "A global API that provides functions to interact with the vanilla player model and its parts. Accessed using the name \"vanilla_model\".",
   "figura.docs.vanilla_model.head": "The head of the player, not including the hat.",

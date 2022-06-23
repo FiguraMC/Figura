@@ -21,7 +21,10 @@ public class ColorUtils {
         LUA_ERROR(0xFF5555),
         LUA_PING(0xAA55FF),
 
-        DEFAULT(0x5AAAFF);
+        DEFAULT(0x5AAAFF),
+        REDDIT_MOD(0xFF673D),
+        DISCORD_MOD(0x72B7FF),
+        DISCORD_ADMIN(0xB7FF72);
 
         public final int hex;
         public final FiguraVec3 vec;
