@@ -26,6 +26,7 @@ public class EventsAPI {
 
     public EventsAPI(LuaState state) {
         TICK = new LuaEvent(state, "TICK");
+        WORLD_TICK = new LuaEvent(state, "WORLD_TICK");
         RENDER = new LuaEvent(state, "RENDER");
         POST_RENDER = new LuaEvent(state, "POST_RENDER");
         WORLD_RENDER = new LuaEvent(state, "WORLD_RENDER");
@@ -37,6 +38,9 @@ public class EventsAPI {
     @LuaWhitelist
     @LuaFieldDoc(description = "events.tick")
     public final LuaEvent TICK;
+    @LuaWhitelist
+    @LuaFieldDoc(description = "events.world_tick")
+    public final LuaEvent WORLD_TICK;
     @LuaWhitelist
     @LuaFieldDoc(description = "events.render")
     public final LuaEvent RENDER;

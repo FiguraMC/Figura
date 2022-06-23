@@ -177,10 +177,34 @@ public class MetaAPI {
                     argumentTypes = MetaAPI.class,
                     argumentNames = "meta"
             ),
+            description = "meta.get_world_tick_count"
+    )
+    public static int getWorldTickCount(@LuaNotNil MetaAPI api) {
+        return api.avatar.worldTickInstructions;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = MetaAPI.class,
+                    argumentNames = "meta"
+            ),
             description = "meta.get_render_count"
     )
     public static int getRenderCount(@LuaNotNil MetaAPI api) {
         return api.avatar.renderInstructions;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = MetaAPI.class,
+                    argumentNames = "meta"
+            ),
+            description = "meta.get_world_render_count"
+    )
+    public static int getWorldRenderCount(@LuaNotNil MetaAPI api) {
+        return api.avatar.worldRenderInstructions;
     }
 
     @LuaWhitelist
@@ -225,10 +249,34 @@ public class MetaAPI {
                     argumentTypes = MetaAPI.class,
                     argumentNames = "meta"
             ),
+            description = "meta.get_max_world_tick_count"
+    )
+    public static int getMaxWorldTickCount(@LuaNotNil MetaAPI api) {
+        return api.trust.get(TrustContainer.Trust.WORLD_TICK_INST);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = MetaAPI.class,
+                    argumentNames = "meta"
+            ),
             description = "meta.get_max_render_count"
     )
     public static int getMaxRenderCount(@LuaNotNil MetaAPI api) {
         return api.trust.get(TrustContainer.Trust.RENDER_INST);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = MetaAPI.class,
+                    argumentNames = "meta"
+            ),
+            description = "meta.get_max_world_render_count"
+    )
+    public static int getMaxWorldRenderCount(@LuaNotNil MetaAPI api) {
+        return api.trust.get(TrustContainer.Trust.WORLD_RENDER_INST);
     }
 
     @LuaWhitelist

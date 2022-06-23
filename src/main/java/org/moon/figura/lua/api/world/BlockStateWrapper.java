@@ -11,6 +11,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -431,6 +432,26 @@ public class BlockStateWrapper {
         sounds.put("step", snd.getStepSound().getLocation().toString());
 
         return sounds;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = BlockStateWrapper.class,
+                    argumentNames = "blockState"
+            ),
+            description = "blockstate.get_fluid_tags"
+    )
+    public static LuaTable getFluidTags(@LuaNotNil BlockStateWrapper blockState) {
+        LuaTable table = new LuaTable();
+
+        int i = 1;
+        for (TagKey<Fluid> fluidTagKey : getState(blockState).getFluidState().getTags().toList()) {
+            table.put(i, fluidTagKey.location().toString());
+            i++;
+        }
+
+        return table;
     }
 
     @LuaWhitelist

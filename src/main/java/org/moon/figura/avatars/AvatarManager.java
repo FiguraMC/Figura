@@ -47,8 +47,10 @@ public class AvatarManager {
 
         //actual tick event
 
-        for (Avatar avatar : LOADED_AVATARS.values())
+        for (Avatar avatar : LOADED_AVATARS.values()) {
+            avatar.onWorldTick();
             avatar.onTick();
+        }
     }
 
     public static void onWorldRender(float tickDelta) {

@@ -31,27 +31,30 @@ public class DebugScreenOverlayMixin {
 
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
         if (avatar != null) {
-            lines.add(++i, String.format("Complexity: %d", avatar.complexity));
+            lines.add(++i, String.format("Model Complexity: %d", avatar.complexity));
 
             //if (avatar.renderer != null)
             //    lines.add(++i, String.format("Animations Complexity: %d", animRendered));
 
             //has script
             if (avatar.luaState != null) {
-                lines.add(++i, String.format("Mem: %.2fMB", avatar.getScriptMemory()));
-                if (!FiguraMod.DO_OUR_NATIVES_WORK) {
-                    lines.add(++i, "Sorry, but instruction counts are ");
-                    lines.add(++i, "only supported on Windows (Maybe Linux?)");
-                    lines.add(++i, "right now :( We're working on it!");
-                } else {
+                lines.add(++i, String.format("Script Memory: %.2fMB", avatar.getScriptMemory()));
+
+                if (FiguraMod.DO_OUR_NATIVES_WORK) {
                     lines.add(++i, String.format("Init instructions: %d", avatar.initInstructions));
-                    lines.add(++i, String.format("Tick instructions: %d", avatar.tickInstructions));
-                    lines.add(++i, "Render instructions (W, R, PR, PW):");
-                    lines.add(++i, String.format("%d (%d, %d, %d, %d)", avatar.accumulatedRenderInstructions,
+
+                    lines.add(++i, String.format("Tick instructions: %d (W: %d E: %d)", avatar.accumulatedTickInstructions, avatar.worldTickInstructions, avatar.tickInstructions));
+                    lines.add(++i, String.format("Render instructions: %d (W: %d E: %d PW: %d PE: %d)",
+                            avatar.accumulatedRenderInstructions,
                             avatar.worldRenderInstructions,
                             avatar.renderInstructions,
                             avatar.postRenderInstructions,
-                            avatar.postWorldRenderInstructions));
+                            avatar.postWorldRenderInstructions)
+                    );
+                } else {
+                    lines.add(++i, "Sorry, but instruction counts are ");
+                    lines.add(++i, "only supported on Windows (Maybe Linux?)");
+                    lines.add(++i, "right now :( We're working on it!");
                 }
             }
         }

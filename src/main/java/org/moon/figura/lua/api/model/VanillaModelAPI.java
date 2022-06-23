@@ -146,7 +146,7 @@ public class VanillaModelAPI {
     @LuaFieldDoc(description = "vanilla_model.left_item")
     public final VanillaModelPart<EntityModel<?>> LEFT_ITEM;
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.left_item")
+    @LuaFieldDoc(description = "vanilla_model.right_item")
     public final VanillaModelPart<EntityModel<?>> RIGHT_ITEM;
 
 

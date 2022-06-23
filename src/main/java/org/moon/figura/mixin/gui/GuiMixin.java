@@ -1,5 +1,6 @@
 package org.moon.figura.mixin.gui;
 
+import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -27,8 +28,12 @@ public class GuiMixin {
             return;
 
         avatar.renderer.allowMatrixUpdate = true;
+        Lighting.setupForFlatItems();
+
         avatar.onHudRender(stack, minecraft.renderBuffers().bufferSource(), entity, tickDelta);
+
         avatar.renderer.allowMatrixUpdate = false;
+        Lighting.setupFor3DItems();
     }
 
     @Inject(at = @At("HEAD"), method = "renderCrosshair", cancellable = true)

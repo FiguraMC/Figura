@@ -28,6 +28,8 @@ public class TrustContainer {
         INIT_INST(0, 32767),
         TICK_INST(0, 32767),
         RENDER_INST(0, 32767),
+        WORLD_TICK_INST(0, 32767),
+        WORLD_RENDER_INST(0, 32767),
         MAX_MEM(0, 2047),
         COMPLEXITY(0, 8191),
         PARTICLES(0, 63),

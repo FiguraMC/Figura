@@ -15,6 +15,7 @@ public class FiguraCommands {
 
         //docs
         root.then(FiguraDocsManager.getCommand());
+        root.then(FiguraDocsManager.getExportCommand());
 
         //links
         root.then(FiguraLinkCommand.getCommand());
@@ -25,13 +26,9 @@ public class FiguraCommands {
         //load
         root.then(FiguraLoadCommand.getCommand());
 
-        if (FiguraMod.DEBUG_MODE) {
-            //force backend auth
+        //backend debug
+        if (FiguraMod.DEBUG_MODE)
             root.then(NetworkManager.getCommand());
-
-            //export docs
-            root.then(FiguraDocsManager.getExportCommand());
-        }
 
         //register
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> dispatcher.register(root));

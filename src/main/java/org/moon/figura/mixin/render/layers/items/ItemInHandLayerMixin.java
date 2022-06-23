@@ -23,10 +23,10 @@ public abstract class ItemInHandLayerMixin<T extends LivingEntity, M extends Ent
         Avatar avatar = AvatarManager.getAvatar(livingEntity);
         if (avatar == null || avatar.luaState == null)
             return;
+
         if (humanoidArm == HumanoidArm.LEFT && !avatar.luaState.vanillaModel.LEFT_ITEM.isVisible())
             ci.cancel();
-        if (!avatar.luaState.vanillaModel.RIGHT_ITEM.isVisible())
+        else if (humanoidArm == HumanoidArm.RIGHT && !avatar.luaState.vanillaModel.RIGHT_ITEM.isVisible())
             ci.cancel();
     }
-
 }
