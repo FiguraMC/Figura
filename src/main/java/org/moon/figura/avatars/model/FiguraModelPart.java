@@ -525,9 +525,9 @@ public class FiguraModelPart {
             ),
             description = "model_part.set_primary_render_type"
     )
-    public static void setPrimaryRenderType(@LuaNotNil FiguraModelPart modelPart, @LuaNotNil String type) {
+    public static void setPrimaryRenderType(@LuaNotNil FiguraModelPart modelPart, String type) {
         try {
-            modelPart.customization.setPrimaryRenderType(FiguraTextureSet.RenderTypes.valueOf(type));
+            modelPart.customization.setPrimaryRenderType(type == null ? null : FiguraTextureSet.RenderTypes.valueOf(type));
         } catch (Exception ignored) {
             throw new LuaRuntimeException("Illegal RenderType: \"" + type + "\".");
         }
@@ -541,9 +541,9 @@ public class FiguraModelPart {
             ),
             description = "model_part.set_secondary_render_type"
     )
-    public static void setSecondaryRenderType(@LuaNotNil FiguraModelPart modelPart, @LuaNotNil String type) {
+    public static void setSecondaryRenderType(@LuaNotNil FiguraModelPart modelPart, String type) {
         try {
-            modelPart.customization.setSecondaryRenderType(FiguraTextureSet.RenderTypes.valueOf(type));
+            modelPart.customization.setSecondaryRenderType(type == null ? null : FiguraTextureSet.RenderTypes.valueOf(type));
         } catch (Exception ignored) {
             throw new LuaRuntimeException("Illegal RenderType: \"" + type + "\".");
         }
