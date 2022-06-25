@@ -77,7 +77,7 @@ public class FiguraTextureSet {
 
         public RenderType get(ResourceLocation id) {
             if (force)
-                return func.apply(null);
+                return func.apply(id);
 
             return id == null ? null : func.apply(id);
         }

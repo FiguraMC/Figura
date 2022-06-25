@@ -141,8 +141,8 @@ public class FiguraModelPart {
         LeftLeg("LEFT_LEG"),
         RightLeg("RIGHT_LEG"),
 
-        LeftElytra("LeftElytron, LEFT_ELYTRON, LEFT_ELYTRA"),
-        RightElytra("RightElytron, RIGHT_ELYTRON, RIGHT_ELYTRA"),
+        LeftElytra("LEFT_ELYTRA", "LeftElytron", "LEFT_ELYTRON"),
+        RightElytra("RIGHT_ELYTRA", "RightElytron", "RIGHT_ELYTRON"),
 
         Cape("CAPE"),
 

@@ -208,6 +208,9 @@ public class FiguraDocsManager {
             }
         }
 
+        //list docs
+        root.then(FiguraListDocs.getCommand());
+
         return root;
     }
 

@@ -31,14 +31,14 @@ public class ItemStackWrapper {
     private final WeakReference<ItemStack> itemStack;
 
     /**
-     * Checks whether the given ItemStack is null, empty, or air. If it is, returns null. If it isn't,
+     * Checks whether the given ItemStack is null, empty. If it is, returns air. If it isn't,
      * returns a new ItemStack for that item.
      * @param itemStack The ItemStack to check if it's a valid stack.
      * @return Null if the stack was invalid, or a wrapper for the stack if it was valid.
      */
     public static ItemStackWrapper verify(ItemStack itemStack) {
-        if (itemStack == null || itemStack == ItemStack.EMPTY || itemStack.getItem() == Items.AIR)
-            return null;
+        if (itemStack == null || itemStack == ItemStack.EMPTY)
+            itemStack = Items.AIR.getDefaultInstance();
         return new ItemStackWrapper(itemStack);
     }
 

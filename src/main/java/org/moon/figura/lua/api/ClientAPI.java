@@ -306,7 +306,19 @@ public class ClientAPI {
             description = "client.get_text_width"
     )
     public static int getTextWidth(String text) {
-        return Minecraft.getInstance().font.width(TextUtils.tryParseJson(text));
+        return TextUtils.getWidth(TextUtils.splitText(TextUtils.tryParseJson(text), "\n"), Minecraft.getInstance().font);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = String.class,
+                    argumentNames = "text"
+            ),
+            description = "client.get_text_height"
+    )
+    public static int getTextHeight(String text) {
+        return Minecraft.getInstance().font.lineHeight * TextUtils.splitText(TextUtils.tryParseJson(text), "\n").size();
     }
 
     @Override

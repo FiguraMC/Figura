@@ -204,10 +204,12 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
                 renderPivot(part);
 
             //tasks
-            int light = customizationStack.peek().light;
-            int overlay = customizationStack.peek().overlay;
-            for (RenderTask task : part.renderTasks.values())
-                task.render(VIEW_MATRICES, bufferSource, light, overlay);
+            if (customizationStack.peek().visible) {
+                int light = customizationStack.peek().light;
+                int overlay = customizationStack.peek().overlay;
+                for (RenderTask task : part.renderTasks.values())
+                    task.render(VIEW_MATRICES, bufferSource, light, overlay);
+            }
         }
 
         customizationStack.pop();

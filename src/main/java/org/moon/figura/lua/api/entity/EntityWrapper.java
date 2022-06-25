@@ -10,13 +10,17 @@ import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.NbtToLua;
+import org.moon.figura.lua.api.world.BlockStateWrapper;
 import org.moon.figura.lua.api.world.ItemStackWrapper;
+import org.moon.figura.lua.api.world.WorldAPI;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
@@ -530,6 +534,35 @@ public class EntityWrapper<T extends Entity> {
     )
     public static <T extends Entity> boolean isOnFire(@LuaNotNil EntityWrapper<T> entity) {
         return getEntity(entity).displayFireAnimation();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = EntityWrapper.class,
+                            argumentNames = "entity"
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {EntityWrapper.class, Boolean.class},
+                            argumentNames = {"entity", "ignoreLiquids"}
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {EntityWrapper.class, Boolean.class, Double.class},
+                            argumentNames = {"entity", "ignoreLiquids", "distance"}
+                    )
+            },
+            description = "entity.get_looking_block"
+    )
+    public static <T extends Entity> BlockStateWrapper getLookingBlock(@LuaNotNil EntityWrapper<T> entity, Boolean ignoreLiquids, Double distance) {
+        if (distance == null) distance = 20d;
+        distance = Math.max(Math.min(distance, 20), -20);
+        HitResult result = getEntity(entity).pick(distance, 0f, !ignoreLiquids);
+        if (result instanceof BlockHitResult blockHit) {
+            BlockPos pos = blockHit.getBlockPos();
+            return new BlockStateWrapper(WorldAPI.getCurrentWorld().getBlockState(pos), pos);
+        }
+        return null;
     }
 
     @Override
