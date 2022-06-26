@@ -95,6 +95,8 @@ public class BlockbenchModelParser {
                 renderType = "emissive";
                 name = name.substring(0, name.length() - 2);
             }
+            if (!renderType.equals("emissive"))
+                renderType = "default";
 
             //add textures nbt
             if (texturesNbt.containsKey(name)) {
