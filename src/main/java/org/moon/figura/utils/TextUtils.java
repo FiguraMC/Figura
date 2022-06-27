@@ -18,7 +18,7 @@ public class TextUtils {
     public static final int TAB_SPACING = 2;
 
     public static Component noBadges4U(Component text) {
-        return replaceInText(text, "[❗❌\uD83C\uDF54\uD83E\uDD90\uD83C\uDF19\uD83C\uDF00❤☆★]", "\uFFFD");
+        return replaceInText(text, "[❗❌\uD83C\uDF54\uD83E\uDD90\uD83C\uDF19\uD83C\uDF00❤☆★]", Component.literal("�").withStyle(Style.EMPTY.withFont(Style.DEFAULT_FONT)));
     }
 
     public static List<Component> splitText(Component text, String regex) {
@@ -108,7 +108,7 @@ public class TextUtils {
                 if (!s.matches(regex))
                     ret.append(Component.literal(s).withStyle(component.getStyle()));
                 else
-                    ret.append(replace.copy().withStyle(component.getStyle()));
+                    ret.append(Component.empty().withStyle(component.getStyle()).append(replace));
             }
         }
 
@@ -172,5 +172,15 @@ public class TextUtils {
             width = Math.max(width, w);
         }
         return width;
+    }
+
+    public static Component replaceStyle(Component text, Style newStyle) {
+        MutableComponent ret = Component.empty();
+
+        List<Component> list = text.toFlatList(text.getStyle());
+        for (Component component : list)
+            ret.append(component.copy().withStyle(newStyle));
+
+        return ret;
     }
 }
