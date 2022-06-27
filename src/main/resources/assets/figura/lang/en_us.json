@@ -757,6 +757,9 @@
   "figura.docs.keybind.is_pressed": "Gets whether this keybind is currently pressed down.",
   "figura.docs.keybind.on_press": "A function that runs when the key is pressed down.",
   "figura.docs.keybind.on_release": "A function that runs when the key is released.",
+  "figura.docs.keybind.enabled": "Toggles if this keybind should be processed or not.",
+  "figura.docs.keybind.gui": "Whenever or not this keybind should run when a GUI is open.",
+  "figura.docs.keybind.override": "Toggles if this keybind should stop vanilla keys from running.",
 
   "figura.docs.renderer": "A global API providing functions that change the way Minecraft renders your player.",
   "figura.docs.renderer.set_shadow_radius": "Sets the radius of your shadow. The default value is nil, which means to use the vanilla default of 0.5 for players. The maximum value is 12.",

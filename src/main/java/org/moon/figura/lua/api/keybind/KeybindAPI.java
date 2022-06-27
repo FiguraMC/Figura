@@ -27,16 +27,29 @@ public class KeybindAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = {KeybindAPI.class, String.class, String.class, Boolean.class},
-                    argumentNames = {"api", "name", "key", "gui"}
-            ),
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = {KeybindAPI.class, String.class, String.class},
+                            argumentNames = {"api", "name", "key"}
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {KeybindAPI.class, String.class, String.class, Boolean.class},
+                            argumentNames = {"api", "name", "key", "gui"}
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {KeybindAPI.class, String.class, String.class, Boolean.class, Boolean.class},
+                            argumentNames = {"api", "name", "key", "gui", "override"}
+                    )
+            },
             description = "keybind_api.create"
     )
-    public static FiguraKeybind create(@LuaNotNil KeybindAPI api, @LuaNotNil String name, @LuaNotNil String key, Boolean gui) {
+    public static FiguraKeybind create(@LuaNotNil KeybindAPI api, @LuaNotNil String name, @LuaNotNil String key, Boolean gui, Boolean override) {
         api.keyBindings.removeIf(binding -> FiguraKeybind.getName(binding).equals(name));
 
-        FiguraKeybind binding = new FiguraKeybind(api.owner, name, FiguraKeybind.parseStringKey(key), gui != null && gui);
+        FiguraKeybind binding = new FiguraKeybind(api.owner, name, FiguraKeybind.parseStringKey(key));
+        binding.gui = gui;
+        binding.override = override;
+
         api.keyBindings.add(binding);
         return binding;
     }

@@ -25,7 +25,6 @@ public final class FiguraKeybind {
     private final Avatar owner;
     private final String name;
     private final InputConstants.Key defaultKey;
-    private final boolean ignoreScreen;
 
     private InputConstants.Key key;
     private boolean isDown = false;
@@ -38,12 +37,23 @@ public final class FiguraKeybind {
     @LuaFieldDoc(description = "keybind.on_release")
     public LuaFunction onRelease;
 
-    public FiguraKeybind(Avatar owner, String name, InputConstants.Key key, boolean ignoreScreen) {
+    @LuaWhitelist
+    @LuaFieldDoc(description = "keybind.enabled")
+    public Boolean enabled = true;
+
+    @LuaWhitelist
+    @LuaFieldDoc(description = "keybind.gui")
+    public Boolean gui;
+
+    @LuaWhitelist
+    @LuaFieldDoc(description = "keybind.override")
+    public Boolean override;
+
+    public FiguraKeybind(Avatar owner, String name, InputConstants.Key key) {
         this.owner = owner;
         this.name = name;
         this.defaultKey = key;
         this.key = key;
-        this.ignoreScreen = ignoreScreen;
     }
 
     public void resetDefaultKey() {
@@ -82,10 +92,15 @@ public final class FiguraKeybind {
         }
     }
 
-    public static void set(List<FiguraKeybind> bindings, InputConstants.Key key, boolean pressed) {
-        for (FiguraKeybind keybind : bindings)
-            if (keybind.key == key && (keybind.ignoreScreen || Minecraft.getInstance().screen == null))
+    public static boolean set(List<FiguraKeybind> bindings, InputConstants.Key key, boolean pressed) {
+        boolean overrided = false;
+        for (FiguraKeybind keybind : bindings) {
+            if (keybind.key == key && keybind.enabled != null && keybind.enabled && ((keybind.gui != null && keybind.gui) || Minecraft.getInstance().screen == null)) {
                 keybind.setDown(pressed);
+                overrided = overrided || (keybind.override != null && keybind.override);
+            }
+        }
+        return overrided;
     }
 
     public static void releaseAll(List<FiguraKeybind> bindings) {
@@ -162,7 +177,7 @@ public final class FiguraKeybind {
             description = "keybind.is_pressed"
     )
     public static boolean isPressed(@LuaNotNil FiguraKeybind keybind) {
-        return (keybind.ignoreScreen || Minecraft.getInstance().screen == null) && keybind.isDown;
+        return ((keybind.gui != null && keybind.gui) || Minecraft.getInstance().screen == null) && keybind.isDown;
     }
 
     @Override

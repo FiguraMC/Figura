@@ -36,7 +36,8 @@ public class MouseHandlerMixin {
             ci.cancel();
 
         //this needs to be last because it executes functions and can cause lua errors, making luaState null
-        FiguraKeybind.set(avatar.luaState.keybind.keyBindings, InputConstants.Type.MOUSE.getOrCreate(button), pressed);
+        if (FiguraKeybind.set(avatar.luaState.keybind.keyBindings, InputConstants.Type.MOUSE.getOrCreate(button), pressed))
+            ci.cancel();
     }
 
     @Inject(method = "onScroll", at = @At("HEAD"), cancellable = true)
