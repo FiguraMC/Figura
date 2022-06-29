@@ -1,5 +1,7 @@
 package org.moon.figura.avatars;
 
+import com.mojang.blaze3d.audio.OggAudioStream;
+import com.mojang.blaze3d.audio.SoundBuffer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -24,12 +26,14 @@ import org.moon.figura.lua.FiguraLuaState;
 import org.moon.figura.lua.api.EventsAPI;
 import org.moon.figura.lua.api.entity.EntityWrapper;
 import org.moon.figura.lua.api.nameplate.NameplateCustomization;
+import org.moon.figura.lua.api.sound.FiguraChannel;
 import org.moon.figura.lua.types.LuaFunction;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.RefilledNumber;
 import org.terasology.jnlua.LuaRuntimeException;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.math.RoundingMode;
@@ -56,6 +60,8 @@ public class Avatar {
     public final UUID owner;
     public final AvatarRenderer renderer;
     public FiguraLuaState luaState;
+
+    public final HashMap<String, SoundBuffer> customSounds = new HashMap<>();
 
     private int tickLimit, renderLimit;
     private int worldTickLimit, worldRenderLimit;
@@ -91,10 +97,14 @@ public class Avatar {
         color = metadata.getString("color");
         fileSize = getFileSize();
 
+        //read custom sounds
+        loadCustomSounds();
+
         //read model
         renderer = new ImmediateAvatarRenderer(this);
 
         //read script
+        //must always be loaded last
         createLuaState();
     }
 
@@ -265,9 +275,13 @@ public class Avatar {
      * We should call this whenever an avatar is no longer reachable!
      * It free()s all the CachedType used inside of the avatar, and also
      * closes the native texture resources.
+     * also closes and stops this avatar sounds
      */
     public void clean() {
         renderer.clean();
+        FiguraChannel.getInstance().stopSound(owner, null);
+        for (SoundBuffer value : customSounds.values())
+            value.discardAlBuffer();
     }
 
     private float getFileSize() {
@@ -331,6 +345,24 @@ public class Avatar {
         } else {
             if (FiguraMod.DO_OUR_NATIVES_WORK)
                 initInstructions = initLimit - luaState.getInstructions();
+        }
+    }
+
+    private void loadCustomSounds() {
+        if (!nbt.contains("sounds"))
+            return;
+
+        CompoundTag root = nbt.getCompound("sounds");
+        for (String key : root.getAllKeys()) {
+            try {
+                byte[] source = root.getByteArray(key);
+                OggAudioStream oggAudioStream = new OggAudioStream(new ByteArrayInputStream(source));
+                SoundBuffer sound = new SoundBuffer(oggAudioStream.readAll(), oggAudioStream.getFormat());
+
+                this.customSounds.put(key, sound);
+            } catch (Exception e) {
+                FiguraMod.LOGGER.warn("Failed to load custom sound \"" + key + "\"", e);
+            }
         }
     }
 

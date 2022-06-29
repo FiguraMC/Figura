@@ -22,6 +22,7 @@ import org.moon.figura.lua.api.math.VectorsAPI;
 import org.moon.figura.lua.api.model.VanillaModelAPI;
 import org.moon.figura.lua.api.nameplate.NameplateAPI;
 import org.moon.figura.lua.api.nameplate.NameplateCustomization;
+import org.moon.figura.lua.api.sound.SoundAPI;
 import org.moon.figura.lua.api.world.BiomeWrapper;
 import org.moon.figura.lua.api.world.BlockStateWrapper;
 import org.moon.figura.lua.api.world.ItemStackWrapper;

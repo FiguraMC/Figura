@@ -19,6 +19,7 @@ import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FiguraText;
+import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.ui.UIHelper;
 
 import java.util.ArrayList;
@@ -113,13 +114,22 @@ public class PlayerElement extends AbstractTrustElement {
 
         //name
         Font font = Minecraft.getInstance().font;
-        UIHelper.renderOutlineText(stack, font, Component.literal(this.name).append(NameplateCustomization.fetchBadges(AvatarManager.getAvatarForPlayer(owner))), x + 40, y + 4, 0xFFFFFF, 0);
+        Avatar avatar = AvatarManager.getAvatarForPlayer(owner);
+        UIHelper.renderOutlineText(stack, font, Component.literal(this.name).append(NameplateCustomization.fetchBadges(avatar)), x + 40, y + 4, 0xFFFFFF, 0);
 
         //uuid
         stack.pushPose();
         stack.translate(x + 40, y + 4 + font.lineHeight, 0f);
         stack.scale(0.5f, 0.5f, 0.5f);
+
         drawString(stack, font, Component.literal(trust.name), 0, 0, 0x888888);
+
+        //size and memory
+        if (avatar != null) {
+            Component text = FiguraText.of("gui.trust.avatar_size", avatar.fileSize).append(TextUtils.TAB).append(FiguraText.of("gui.trust.avatar_memory", avatar.getScriptMemory()));
+            drawString(stack, font, text, 0, font.lineHeight, 0x888888);
+        }
+
         stack.popPose();
 
         //trust

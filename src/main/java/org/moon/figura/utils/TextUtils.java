@@ -15,7 +15,7 @@ import java.util.List;
 public class TextUtils {
 
     public static final ResourceLocation FIGURA_FONT = new FiguraIdentifier("default");
-    public static final int TAB_SPACING = 2;
+    public static final Component TAB = FiguraText.of("tab");
 
     public static Component noBadges4U(Component text) {
         return replaceInText(text, "[❗❌\uD83C\uDF54\uD83E\uDD90\uD83C\uDF19\uD83C\uDF00❤☆★]", Component.literal("�").withStyle(Style.EMPTY.withFont(Style.DEFAULT_FONT)));
@@ -131,7 +131,7 @@ public class TextUtils {
     }
 
     public static Component replaceTabs(Component text) {
-        return TextUtils.replaceInText(text, "\\t", " ".repeat(TAB_SPACING));
+        return TextUtils.replaceInText(text, "\\t", TAB);
     }
 
     public static List<FormattedCharSequence> warpTooltip(Component text, Font font, int mousePos, int screenWidth) {

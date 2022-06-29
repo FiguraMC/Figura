@@ -37,9 +37,9 @@ public class TrustContainer {
         //BB_ANIMATIONS(0, 255),
         VANILLA_MODEL_EDIT,
         NAMEPLATE_EDIT,
-        OFFSCREEN_RENDERING;
+        OFFSCREEN_RENDERING,
         //CUSTOM_RENDER_LAYER,
-        //CUSTOM_SOUNDS;
+        CUSTOM_SOUNDS;
 
         //toggle check
         public final boolean isToggle;

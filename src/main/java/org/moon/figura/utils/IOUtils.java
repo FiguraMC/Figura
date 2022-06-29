@@ -12,14 +12,14 @@ import java.util.List;
 
 public class IOUtils {
 
-    public static List<File> getFilesByExtension(Path root, String extension, boolean recurse) {
+    public static List<File> getFilesByExtension(Path root, String extension) {
         List<File> result = new ArrayList<>();
         File rf = root.toFile();
         File[] children = rf.listFiles();
         if (children == null) return result;
         for (File child : children) {
-            if (recurse && child.isDirectory() && !child.isHidden() && !child.getName().startsWith("."))
-                result.addAll(getFilesByExtension(child.toPath(), extension, true));
+            if (child.isDirectory() && !child.isHidden() && !child.getName().startsWith("."))
+                result.addAll(getFilesByExtension(child.toPath(), extension));
             else if (child.toString().toLowerCase().endsWith(extension.toLowerCase()))
                 result.add(child);
         }
@@ -27,15 +27,20 @@ public class IOUtils {
     }
 
     public static String readFile(File file) throws IOException {
-        try {
-            FileInputStream stream = new FileInputStream(file);
-            String fileContent = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
-            stream.close();
-            return fileContent;
+        try (FileInputStream stream = new FileInputStream(file)) {
+            return new String(stream.readAllBytes(), StandardCharsets.UTF_8);
         } catch (IOException e) {
             FiguraMod.LOGGER.error("Failed to read File: " + file);
             throw e;
         }
     }
 
+    public static byte[] readFileBytes(File file) throws IOException {
+        try (FileInputStream stream = new FileInputStream(file)) {
+            return stream.readAllBytes();
+        } catch (IOException e) {
+            FiguraMod.LOGGER.error("Failed to read File: " + file);
+            throw e;
+        }
+    }
 }

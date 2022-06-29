@@ -43,8 +43,12 @@
     "render.renderers.EntityRendererMixin",
     "render.renderers.LivingEntityRendererMixin",
     "render.renderers.PlayerRendererMixin",
-    "render.renderers.LevelRendererMixin"
+    "render.renderers.LevelRendererMixin",
 
+    "sound.ChannelAccessMixin",
+    "sound.ChannelHandleMixin",
+    "sound.SoundEngineAccessor",
+    "sound.SoundManagerAccessor"
   ],
   "server": [
   ],

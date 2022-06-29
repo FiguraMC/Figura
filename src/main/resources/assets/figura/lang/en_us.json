@@ -1,5 +1,6 @@
 {
   "figura": "Figura",
+  "figura.tab": "  ",
 
 
   "figura.backend.connected": "Backend Connected!",
@@ -117,6 +118,8 @@
   "figura.gui.trust.reset": "Reset All",
   "figura.gui.trust.expand_trust.tooltip": "Expand advanced trust menu",
   "figura.gui.trust.minimize_trust.tooltip": "Minimize advanced trust menu",
+  "figura.gui.trust.avatar_size": "Size: %skb",
+  "figura.gui.trust.avatar_memory": "Memory: %smb",
 
 
   "figura.gui.status.size": "Size",
@@ -330,7 +333,8 @@
   "figura.docs.math.sign": "Returns the sign of the given number. Returns 1 if the number is positive, -1 if it's negative, and 0 if it's 0.",
 
   "figura.docs.sound": "A global API which is used to play Minecraft sounds. Accessed using the name \"sound\".",
-  "figura.docs.sound.play_sound": "Plays the specified sound at the specified position with the given volume and pitch multipliers. Volume in Minecraft refers to how far away people can hear the sound from, not the actual loudness of it. If you don't give values for volume and pitch, the default values are 1.",
+  "figura.docs.sound.play_sound": "Plays the specified sound at the specified position with the given volume and pitch multipliers. The sound id is either an identifier or the custom sound name. Volume in Minecraft refers to how far away people can hear the sound from, not the actual loudness of it. If you don't give values for volume and pitch, the default values are 1.",
+  "figura.docs.sound.stop_sound": "Stops the playing sounds from this avatar. If an id is specified, it only stops the sounds from that id.",
 
   "figura.docs.particle": "A global API which is used for dealing with Minecraft's particles. Can currently only be used to summon a particle. Accessed using the name \"particle\".",
   "figura.docs.particle.add_particle": "Creates a particle with the given name at the specified position, with the given velocity. Some particles have special properties, like the \"dust\" particle. For these particles, the special properties can be put into the \"name\" parameter, the same way as it works for commands.",
@@ -762,10 +766,12 @@
   "figura.docs.keybind.override": "Toggles if this keybind should stop vanilla keys from running.",
 
   "figura.docs.renderer": "A global API providing functions that change the way Minecraft renders your player.",
+  "figura.docs.renderer.render_fire": "Whether or not you should visually have the fire effect while on fire. True by default.",
+  "figura.docs.renderer.render_vehicle": "Whether or not your vehicle (boat, minecart, horse, whatever) will be rendered. True by default.",
   "figura.docs.renderer.set_shadow_radius": "Sets the radius of your shadow. The default value is nil, which means to use the vanilla default of 0.5 for players. The maximum value is 12.",
   "figura.docs.renderer.get_shadow_radius": "Gets the radius of your shadow. The default value is nil, which means to use the vanilla default of 0.5 for players.",
-  "figura.docs.renderer.render_vehicle": "Whether or not your vehicle (boat, minecart, horse, whatever) will be rendered. True by default.",
-  "figura.docs.renderer.render_fire": "Whether or not you should visually have the fire effect while on fire. True by default.",
+  "figura.docs.renderer.is_first_person": "Checks if your camera is in the first person view.",
+  "figura.docs.renderer.is_camera_backwards": "Checks if your camera is in the backwards third person view.",
   "figura.docs.renderer.set_camera_rot": "Sets the absolute rotation of the camera. Nil values for rotation are assumed to be 0. For relative rotation values, check out the \"bonus\" rot function.",
   "figura.docs.renderer.set_camera_bonus_rot": "Sets the bonus rotation for the camera. Nil values for rotation are assumed to be 0. Angles are given in degrees. For absolute rotation values, check out the non-bonus rot function.",
 

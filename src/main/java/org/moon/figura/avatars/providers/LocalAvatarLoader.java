@@ -90,6 +90,9 @@ public class LocalAvatarLoader {
         //scripts
         loadScripts(path, nbt);
 
+        //custom sounds
+        loadSounds(path, nbt);
+
         ListTag textures = new ListTag();
         ListTag animations = new ListTag();
         BlockbenchModelParser parser = new BlockbenchModelParser();
@@ -108,7 +111,7 @@ public class LocalAvatarLoader {
     }
 
     private static void loadScripts(Path path, CompoundTag nbt) throws IOException {
-        List<File> scripts = IOUtils.getFilesByExtension(path, ".lua", true);
+        List<File> scripts = IOUtils.getFilesByExtension(path, ".lua");
         if (scripts.size() > 0) {
             CompoundTag scriptsNbt = new CompoundTag();
             String pathRegex = Pattern.quote(path + File.separator);
@@ -120,20 +123,16 @@ public class LocalAvatarLoader {
             }
 
             nbt.put("scripts", scriptsNbt);
-
-            //sounds
-            //avatar needs a script to load custom sounds
-            loadSounds(path, nbt);
         }
     }
 
     private static void loadSounds(Path path, CompoundTag nbt) throws IOException {
-        List<File> sounds = IOUtils.getFilesByExtension(path, ".ogg", false);
+        List<File> sounds = IOUtils.getFilesByExtension(path, ".ogg");
         if (sounds.size() > 0) {
             CompoundTag soundsNbt = new CompoundTag();
             for (File sound : sounds) {
                 String name = sound.getName();
-                soundsNbt.putByteArray(name.substring(0, name.length() - 4), IOUtils.readFile(sound).getBytes());
+                soundsNbt.putByteArray(name.substring(0, name.length() - 4), IOUtils.readFileBytes(sound));
             }
             nbt.put("sounds", soundsNbt);
         }

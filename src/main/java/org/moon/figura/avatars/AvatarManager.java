@@ -164,7 +164,11 @@ public class AvatarManager {
         if (FiguraMod.isLocal(id))
             LocalAvatarLoader.resetWatchKeys();
 
-        LOADED_AVATARS.put(id, new Avatar(nbt, id));
+        try {
+            LOADED_AVATARS.put(id, new Avatar(nbt, id));
+        } catch (Exception e) {
+            FiguraMod.LOGGER.error("Failed to set avatar for " + id, e);
+        }
     }
 
     //get avatar from the backend

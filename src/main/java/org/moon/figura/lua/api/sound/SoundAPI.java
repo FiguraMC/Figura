@@ -1,18 +1,17 @@
-package org.moon.figura.lua.api;
+package org.moon.figura.lua.api.sound;
 
-import net.minecraft.client.Minecraft;
+import com.mojang.blaze3d.audio.SoundBuffer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.level.Level;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
-import org.moon.figura.lua.api.world.WorldAPI;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.trust.TrustContainer;
+import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.LuaUtils;
 import org.terasology.jnlua.LuaRuntimeException;
 
@@ -71,17 +70,34 @@ public class SoundAPI {
             throw new LuaRuntimeException("Illegal argument to playSound(): " + x);
         }
 
-        Level level = WorldAPI.getCurrentWorld();
-        if (Minecraft.getInstance().isPaused() || level == null)
-            return;
+        //get and play the sound
+        SoundBuffer buffer = api.owner.customSounds.get(id);
+        if (buffer != null && TrustManager.get(api.owner.owner).get(TrustContainer.Trust.CUSTOM_SOUNDS) == 1) {
+            FiguraChannel.getInstance().playSound(api.owner.owner, id, buffer, pos.x, pos.y, pos.z, (float) volume, (float) pitch, false);
+        } else {
+            SoundEvent event = new SoundEvent(new ResourceLocation(id));
+            FiguraChannel.getInstance().playSound(api.owner.owner, id, event, pos.x, pos.y, pos.z, (float) volume, (float) pitch, false);
+        }
 
-        SoundEvent targetEvent = new SoundEvent(new ResourceLocation(id));
-        level.playLocalSound(
-                pos.x, pos.y, pos.z,
-                targetEvent, SoundSource.PLAYERS,
-                (float) volume, (float) pitch, true
-        );
         pos.free();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = SoundAPI.class,
+                            argumentNames = "api"
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {SoundAPI.class, String.class},
+                            argumentNames = {"api", "id"}
+                    )
+            },
+            description = "sound.stop_sound"
+    )
+    public static void stopSound(@LuaNotNil SoundAPI api, String id) {
+        FiguraChannel.getInstance().stopSound(api.owner.owner, id);
     }
 
     @Override
