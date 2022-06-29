@@ -2,12 +2,15 @@ package org.moon.figura.mixin.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
+import org.moon.figura.ducks.GameRendererAccessor;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -15,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GameRenderer.class)
-public class GameRendererMixin {
+public abstract class GameRendererMixin implements GameRendererAccessor {
 
     @Shadow @Final private Minecraft minecraft;
 
@@ -37,4 +40,11 @@ public class GameRendererMixin {
 
         matrix.mulPose(Vector3f.ZP.rotationDegrees(z));
     }
+
+    @Override @Intrinsic
+    public double figura$getFov(Camera camera, float tickDelta, boolean changingFov) {
+        return this.getFov(camera, tickDelta, changingFov);
+    }
+
+    @Shadow protected abstract double getFov(Camera camera, float tickDelta, boolean changingFov);
 }

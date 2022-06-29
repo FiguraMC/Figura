@@ -28,15 +28,10 @@ public class FiguraLoadCommand {
             //parse path
             Path p = LocalAvatarFetcher.getLocalAvatarDirectory().resolve(Path.of(str));
 
-            //return on success
-            if (AvatarManager.loadLocalAvatar(p)) {
-                context.getSource().sendFeedback(FiguraText.of("command.load.success"));
-                return 1;
-            }
-
-            //send error on fail
-            context.getSource().sendError(FiguraText.of("command.load.error", str));
-            return 0;
+            //try to load avatar
+            AvatarManager.loadLocalAvatar(p);
+            context.getSource().sendFeedback(FiguraText.of("command.load.loading"));
+            return 1;
         } catch (Exception e) {
             context.getSource().sendError(FiguraText.of("command.load.invalid", str));
         }

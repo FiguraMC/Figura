@@ -43,7 +43,7 @@ public class WorldAPI {
     )
     public static BiomeWrapper getBiome(Object x, Double y, Double z) {
         FiguraVec3 pos = LuaUtils.parseVec3("getBiome", x, y, z);
-        BiomeWrapper result = new BiomeWrapper(getCurrentWorld().getBiome(pos.asBlockPos()).value());
+        BiomeWrapper result = new BiomeWrapper(getCurrentWorld().getBiome(pos.asBlockPos()).value(), pos.asBlockPos());
         pos.free();
         return result;
     }

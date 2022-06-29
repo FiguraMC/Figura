@@ -1,5 +1,11 @@
 package org.moon.figura.utils;
 
+import com.mojang.math.*;
+import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.phys.Vec3;
+import org.moon.figura.ducks.GameRendererAccessor;
+import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.vector.*;
 
 public class MathUtils {
@@ -22,5 +28,57 @@ public class MathUtils {
 
     public static double modulus(double number, double mod) {
         return ((number % mod) + mod) % mod;
+    }
+
+    //maya pls check those
+    public static FiguraVec3 rotateAroundAxis(FiguraVec3 vec, FiguraVec3 axis, float degrees) {
+        FiguraVec3 normalizedAxis = axis.copy().normalized();
+        Quaternion vectorQuat = new Quaternion((float) vec.x, (float) vec.y, (float) vec.z, 0);
+        Quaternion rotatorQuat = new Quaternion(new Vector3f((float) normalizedAxis.x, (float) normalizedAxis.y, (float) normalizedAxis.z), degrees, true);
+        Quaternion rotatorQuatConj = new Quaternion(rotatorQuat);
+        rotatorQuatConj.conj();
+
+        rotatorQuat.mul(vectorQuat);
+        rotatorQuat.mul(rotatorQuatConj);
+
+        normalizedAxis.free();
+        return FiguraVec3.of(rotatorQuat.i(), rotatorQuat.j(), rotatorQuat.k());
+    }
+
+    public static FiguraVec3 toCameraSpace(FiguraVec3 vec) {
+        Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
+
+        Matrix3f transformMatrix = new Matrix3f(camera.rotation());
+        Vec3 pos = camera.getPosition();
+        transformMatrix.invert();
+
+        FiguraVec3 ret = vec.copy();
+        ret.subtract(pos.x, pos.y, pos.z);
+        ret.multiply(FiguraMat3.fromMatrix3f(transformMatrix));
+        ret.multiply(-1, 1, 1);
+
+        return ret;
+    }
+
+    public static FiguraVec4 worldToScreenSpace(FiguraVec3 worldSpace) {
+        Minecraft minecraft = Minecraft.getInstance();
+        Camera camera = minecraft.gameRenderer.getMainCamera();
+        Matrix3f transformMatrix = new Matrix3f(camera.rotation());
+        transformMatrix.invert();
+
+        Vector3f camSpace = new Vector3f((float) worldSpace.x, (float) worldSpace.y, (float) worldSpace.z);
+        Vec3 camPos = camera.getPosition();
+        camSpace.sub(new Vector3f((float) camPos.x, (float) camPos.y, (float) camPos.z));
+        camSpace.transform(transformMatrix);
+
+        Vector4f projectiveCamSpace = new Vector4f(camSpace);
+        Matrix4f projMat = minecraft.gameRenderer.getProjectionMatrix(((GameRendererAccessor) minecraft.gameRenderer).figura$getFov(camera, minecraft.getFrameTime(), true));
+        projectiveCamSpace.transform(projMat);
+        float x = projectiveCamSpace.x();
+        float y = projectiveCamSpace.y();
+        float z = projectiveCamSpace.z();
+        float w = projectiveCamSpace.w();
+
+        return FiguraVec4.of(x / w, y / w, z / w, Math.sqrt(camSpace.dot(camSpace)));
     }
 }

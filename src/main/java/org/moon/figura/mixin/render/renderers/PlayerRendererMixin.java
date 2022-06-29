@@ -174,7 +174,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
 
         avatar.renderer.allowMatrixUpdate = true;
 
-        float delta = Minecraft.getInstance().getDeltaFrameTime();
+        float delta = Minecraft.getInstance().getFrameTime();
         int overlay = getOverlayCoords(player, getWhiteOverlayProgress(player, delta));
         avatar.onFirstPersonRender(stack, multiBufferSource, player, (PlayerRenderer) (Object) this, arm, light, overlay, delta);
 
