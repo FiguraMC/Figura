@@ -20,7 +20,6 @@ import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.config.Config;
-import org.moon.figura.utils.FiguraFuture;
 
 import java.io.ByteArrayOutputStream;
 import java.net.InetSocketAddress;
@@ -28,6 +27,7 @@ import java.util.Base64;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public class NetworkManager {
 
@@ -47,7 +47,7 @@ public class NetworkManager {
     private static Connection authConnection;
     protected static WebsocketManager backend;
 
-    private static final FiguraFuture FUTURE = new FiguraFuture();
+    private static CompletableFuture<Void> tasks;
 
     // -- methods -- //
 
@@ -72,10 +72,18 @@ public class NetworkManager {
             assertBackend();
     }
 
+    private static void run(Runnable toRun) {
+        if (tasks == null || tasks.isDone()) {
+            tasks = CompletableFuture.runAsync(toRun);
+        } else {
+            tasks.thenRun(toRun);
+        }
+    }
+
     // -- functions -- //
 
     public static void auth(boolean force) {
-        FUTURE.run(() -> {
+        run(() -> {
             try {
                 lastAuth = (int) (Math.random() * 300) - 150; //between -15 and +15 seconds
 
@@ -147,7 +155,7 @@ public class NetworkManager {
     }
 
     public static void closeBackend() {
-        FUTURE.run(() -> {
+        run(() -> {
             if (backend == null)
                 return;
 
@@ -163,7 +171,7 @@ public class NetworkManager {
 
     public static void openBackend() {
         auth(false);
-        FUTURE.run(() -> {
+        run(() -> {
             if (NetworkManager.authToken == null || hasBackend())
                 return;
 
@@ -173,7 +181,7 @@ public class NetworkManager {
     }
 
     public static void assertBackend() {
-        FUTURE.run(() -> {
+        run(() -> {
             if (!hasBackend())
                 openBackend();
         });
@@ -206,7 +214,7 @@ public class NetworkManager {
             backend.upload.use();
 
         assertBackend();
-        FUTURE.run(() -> {
+        run(() -> {
             if (avatar == null || !hasBackend())
                 return;
 

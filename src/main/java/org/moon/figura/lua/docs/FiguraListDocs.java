@@ -3,6 +3,7 @@ package org.moon.figura.lua.docs;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.Pose;
@@ -49,6 +50,11 @@ public class FiguraListDocs {
             add(value.name());
         }
     }};
+    private static final LinkedHashSet<String> ITEM_RENDER_TYPES = new LinkedHashSet<>() {{
+        for (ItemTransforms.TransformType value : ItemTransforms.TransformType.values()) {
+            add(value.name());
+        }
+    }};
 
     // -- main method -- //
 
@@ -75,6 +81,7 @@ public class FiguraListDocs {
         root.then(generateCommand(() -> TEXTURE_TYPES, "texture_types", 1));
         root.then(generateCommand(() -> new LinkedHashSet<>() {{this.addAll(KeyMappingAccessor.getAll().keySet());}}, "key_list", 2));
         root.then(generateCommand(() -> ENTITY_POSES, "entity_poses", 2));
+        root.then(generateCommand(() -> ITEM_RENDER_TYPES, "item_render_types", 1));
 
         return root;
     }

@@ -54,7 +54,7 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
         //update status indicators
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
 
-        int size = avatar == null ? 0 : avatar.fileSize > SIZE_LARGE ? 1 : avatar.fileSize > SIZE_WARNING ? 2 : 3;
+        int size = avatar == null ? 0 : avatar.fileSize / 1000f > SIZE_LARGE ? 1 : avatar.fileSize / 1000f > SIZE_WARNING ? 2 : 3;
         status = (byte) size;
 
         int texture = avatar == null || !avatar.hasTexture ? 0 : 3;

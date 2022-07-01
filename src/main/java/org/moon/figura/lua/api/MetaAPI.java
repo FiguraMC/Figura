@@ -106,7 +106,7 @@ public class MetaAPI {
             ),
             description = "meta.get_size"
     )
-    public static float getSize(@LuaNotNil MetaAPI api) {
+    public static double getSize(@LuaNotNil MetaAPI api) {
         return api.avatar.fileSize;
     }
 

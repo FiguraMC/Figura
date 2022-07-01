@@ -8,6 +8,11 @@ import org.moon.figura.ducks.GameRendererAccessor;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.vector.*;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
+
 public class MathUtils {
 
     public static Object sizedVector(double... vals) {
@@ -80,5 +85,19 @@ public class MathUtils {
         float w = projectiveCamSpace.w();
 
         return FiguraVec4.of(x / w, y / w, z / w, Math.sqrt(camSpace.dot(camSpace)));
+    }
+
+    private static final String[] SIZE_UNITS = {"b", "kb", "mb", "gb"};
+    public static String asFileSize(double size) {
+        int i = 0;
+        while (i < SIZE_UNITS.length) {
+            if (size < 1000) break;
+            size /= 1000;
+            i++;
+        }
+
+        DecimalFormat df = new DecimalFormat(".00", new DecimalFormatSymbols(Locale.US));
+        df.setRoundingMode(RoundingMode.HALF_UP);
+        return df.format(size) + SIZE_UNITS[i];
     }
 }

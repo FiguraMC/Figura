@@ -108,20 +108,20 @@ public class FiguraModelPart {
         defaultPivot.subtract(part.x, part.y, part.z);
         defaultPivot.multiply(part.xScale, part.yScale, -part.zScale);
 
-        customization.setBonusPivot(defaultPivot);
-        customization.setBonusPos(defaultPivot);
+        customization.offsetPivot(defaultPivot);
+        customization.offsetPos(defaultPivot);
 
         //customization.setBonusPivot(pivot);
-        customization.setBonusRot(Math.toDegrees(-part.xRot), Math.toDegrees(-part.yRot), Math.toDegrees(part.zRot));
+        customization.offsetRot(Math.toDegrees(-part.xRot), Math.toDegrees(-part.yRot), Math.toDegrees(part.zRot));
 
         defaultPivot.free();
     }
 
     public void resetVanillaTransforms() {
         if (parentType.vanilla) {
-            customization.setBonusPivot(0, 0, 0);
-            customization.setBonusPos(0, 0, 0);
-            customization.setBonusRot(0, 0, 0);
+            customization.offsetPivot(0, 0, 0);
+            customization.offsetPos(0, 0, 0);
+            customization.offsetRot(0, 0, 0);
         }
     }
 
@@ -273,10 +273,10 @@ public class FiguraModelPart {
                     argumentTypes = FiguraModelPart.class,
                     argumentNames = "modelPart"
             ),
-            description = "model_part.get_bonus_rot"
+            description = "model_part.get_offset_rot"
     )
-    public static FiguraVec3 getBonusRot(@LuaNotNil FiguraModelPart modelPart) {
-        return modelPart.customization.getBonusRot();
+    public static FiguraVec3 getOffsetRot(@LuaNotNil FiguraModelPart modelPart) {
+        return modelPart.customization.getOffsetRot();
     }
 
     @LuaWhitelist
@@ -284,18 +284,18 @@ public class FiguraModelPart {
             overloads = {
                     @LuaFunctionOverload(
                             argumentTypes = {FiguraModelPart.class, FiguraVec3.class},
-                            argumentNames = {"modelPart", "bonusRot"}
+                            argumentNames = {"modelPart", "offsetRot"}
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {FiguraModelPart.class, Double.class, Double.class, Double.class},
                             argumentNames = {"modelPart", "x", "y", "z"}
                     )
             },
-            description = "model_part.set_bonus_rot"
+            description = "model_part.offset_rot"
     )
-    public static void setBonusRot(@LuaNotNil FiguraModelPart modelPart, Object x, Double y, Double z) {
-        FiguraVec3 vec = LuaUtils.parseVec3("setBonusRot", x, y, z);
-        modelPart.customization.setBonusRot(vec);
+    public static void offsetRot(@LuaNotNil FiguraModelPart modelPart, Object x, Double y, Double z) {
+        FiguraVec3 vec = LuaUtils.parseVec3("offsetRot", x, y, z);
+        modelPart.customization.offsetRot(vec);
     }
 
     @LuaWhitelist
@@ -366,10 +366,10 @@ public class FiguraModelPart {
                     argumentTypes = FiguraModelPart.class,
                     argumentNames = "modelPart"
             ),
-            description = "model_part.get_bonus_pivot"
+            description = "model_part.get_offset_pivot"
     )
-    public static FiguraVec3 getBonusPivot(@LuaNotNil FiguraModelPart modelPart) {
-        return modelPart.customization.getBonusPivot();
+    public static FiguraVec3 getOffsetPivot(@LuaNotNil FiguraModelPart modelPart) {
+        return modelPart.customization.getOffsetPivot();
     }
 
     @LuaWhitelist
@@ -377,18 +377,18 @@ public class FiguraModelPart {
             overloads = {
                     @LuaFunctionOverload(
                             argumentTypes = {FiguraModelPart.class, FiguraVec3.class},
-                            argumentNames = {"modelPart", "bonusPivot"}
+                            argumentNames = {"modelPart", "offsetPivot"}
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {FiguraModelPart.class, Double.class, Double.class, Double.class},
                             argumentNames = {"modelPart", "x", "y", "z"}
                     )
             },
-            description = "model_part.set_bonus_pivot"
+            description = "model_part.offset_pivot"
     )
-    public static void setBonusPivot(@LuaNotNil FiguraModelPart modelPart, Object x, Double y, Double z) {
-        FiguraVec3 vec = LuaUtils.parseVec3("setBonusPivot", x, y, z);
-        modelPart.customization.setBonusPivot(vec);
+    public static void offsetPivot(@LuaNotNil FiguraModelPart modelPart, Object x, Double y, Double z) {
+        FiguraVec3 vec = LuaUtils.parseVec3("offsetPivot", x, y, z);
+        modelPart.customization.offsetPivot(vec);
     }
 
     @LuaWhitelist

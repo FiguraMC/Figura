@@ -4,6 +4,7 @@ import net.minecraft.client.gui.components.DebugScreenOverlay;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
+import org.moon.figura.utils.MathUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -38,7 +39,7 @@ public class DebugScreenOverlayMixin {
 
             //has script
             if (avatar.luaState != null) {
-                lines.add(++i, String.format("Script Memory: %.2fMB", avatar.getScriptMemory()));
+                lines.add(++i, String.format("Script Memory: %s", MathUtils.asFileSize(avatar.getScriptMemory()).toUpperCase()));
 
                 if (FiguraMod.DO_OUR_NATIVES_WORK) {
                     lines.add(++i, String.format("Init instructions: %d", avatar.initInstructions));

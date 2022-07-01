@@ -19,6 +19,7 @@ import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FiguraText;
+import org.moon.figura.utils.MathUtils;
 import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.ui.UIHelper;
 
@@ -126,7 +127,7 @@ public class PlayerElement extends AbstractTrustElement {
 
         //size and memory
         if (avatar != null) {
-            Component text = FiguraText.of("gui.trust.avatar_size", avatar.fileSize).append(TextUtils.TAB).append(FiguraText.of("gui.trust.avatar_memory", avatar.getScriptMemory()));
+            Component text = FiguraText.of("gui.trust.avatar_size", MathUtils.asFileSize(avatar.fileSize)).append(TextUtils.TAB).append(FiguraText.of("gui.trust.avatar_memory", MathUtils.asFileSize(avatar.getScriptMemory())));
             drawString(stack, font, text, 0, font.lineHeight, 0x888888);
         }
 

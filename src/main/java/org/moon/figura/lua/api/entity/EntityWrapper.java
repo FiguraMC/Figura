@@ -552,9 +552,9 @@ public class EntityWrapper<T extends Entity> {
                             argumentNames = {"entity", "ignoreLiquids", "distance"}
                     )
             },
-            description = "entity.get_looking_block"
+            description = "entity.get_targeted_block"
     )
-    public static <T extends Entity> BlockStateWrapper getLookingBlock(@LuaNotNil EntityWrapper<T> entity, Boolean ignoreLiquids, Double distance) {
+    public static <T extends Entity> BlockStateWrapper getTargetedBlock(@LuaNotNil EntityWrapper<T> entity, Boolean ignoreLiquids, Double distance) {
         if (distance == null) distance = 20d;
         distance = Math.max(Math.min(distance, 20), -20);
         HitResult result = getEntity(entity).pick(distance, 0f, !ignoreLiquids);

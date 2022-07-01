@@ -35,29 +35,30 @@ import org.terasology.jnlua.LuaRuntimeException;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.util.*;
+import java.util.BitSet;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 //the avatar class
 //contains all things related to the avatar
 //and also related to the owner, like trust settings
 public class Avatar {
 
+    //properties
+    public final CompoundTag nbt;
+    public final UUID owner;
+
     //metadata
     public final String name;
     public final String authors;
     public final String version;
-    public final float fileSize;
+    public final int fileSize;
     public final String color;
 
     public BitSet badges = new BitSet(NameplateCustomization.badgesLen());
 
     //Runtime data
-    public final CompoundTag nbt;
-    public final UUID owner;
     public final AvatarRenderer renderer;
     public FiguraLuaState luaState;
 
@@ -284,34 +285,23 @@ public class Avatar {
             value.discardAlBuffer();
     }
 
-    private float getFileSize() {
+    private int getFileSize() {
         try {
             //get size
-            DataOutputStream dos = new DataOutputStream(new ByteArrayOutputStream());
-            NbtIo.writeCompressed(nbt, dos);
-            long size = dos.size();
-
-            //format size to kb
-            DecimalFormat df = new DecimalFormat("#0.00", new DecimalFormatSymbols(Locale.US));
-            df.setRoundingMode(RoundingMode.HALF_UP);
-            return Float.parseFloat(df.format(size / 1000f));
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            NbtIo.writeCompressed(nbt, baos);
+            return baos.size();
         } catch (Exception e) {
             FiguraMod.LOGGER.warn("Failed to generate file size for model " + this.name, e);
-            return 0f;
+            return 0;
         }
     }
 
-    public float getScriptMemory() {
+    public int getScriptMemory() {
         if (luaState == null)
-            return 0f;
+            return 0;
 
-        //get memory size, in bytes
-        int size = luaState.getTotalMemory() - luaState.getFreeMemory();
-
-        //format size to mb
-        DecimalFormat df = new DecimalFormat("#0.00", new DecimalFormatSymbols(Locale.US));
-        df.setRoundingMode(RoundingMode.HALF_UP);
-        return Float.parseFloat(df.format(size / 1_000_000f));
+        return luaState.getTotalMemory() - luaState.getFreeMemory();
     }
 
     private void createLuaState() {

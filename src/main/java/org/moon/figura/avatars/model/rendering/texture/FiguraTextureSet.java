@@ -6,6 +6,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.avatars.Avatar;
+import org.moon.figura.mixin.render.layers.elytra.ElytraLayerAccessor;
 import org.terasology.jnlua.LuaRuntimeException;
 
 import java.util.function.Function;
@@ -99,7 +100,7 @@ public class FiguraTextureSet {
 
                 yield switch (type) {
                     case "cape" -> info.getCapeLocation();
-                    case "elytra" -> info.getElytraLocation();
+                    case "elytra" -> info.getElytraLocation() == null ? ElytraLayerAccessor.getWingsLocation() : info.getElytraLocation();
                     default -> info.getSkinLocation();
                 };
             }

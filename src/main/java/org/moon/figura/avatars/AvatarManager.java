@@ -10,11 +10,13 @@ import org.moon.figura.avatars.providers.LocalAvatarLoader;
 import org.moon.figura.backend.NetworkManager;
 import org.moon.figura.config.Config;
 import org.moon.figura.gui.FiguraToast;
-import org.moon.figura.utils.FiguraFuture;
 import org.moon.figura.utils.FiguraText;
 
 import java.nio.file.Path;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * Manages all the avatars that are currently loaded in memory, and also
@@ -25,8 +27,6 @@ public class AvatarManager {
 
     private static final HashMap<UUID, Avatar> LOADED_AVATARS = new HashMap<>();
     private static final Set<UUID> FETCHED_AVATARS = new HashSet<>();
-
-    private static final FiguraFuture FUTURE = new FiguraFuture();
 
     public static boolean localUploaded = true; //init as true :3
     public static boolean panic = false;
@@ -147,16 +147,14 @@ public class AvatarManager {
         localUploaded = false;
 
         //load
-        FUTURE.run(() -> {
-            try {
-                CompoundTag nbt = LocalAvatarLoader.loadAvatar(path);
-                if (nbt != null)
-                    LOADED_AVATARS.put(id, new Avatar(nbt, id));
-            } catch (Exception e) {
-                FiguraMod.LOGGER.error("Failed to load avatar from " + path, e);
-                FiguraToast.sendToast(FiguraText.of("toast.load_error"), FiguraToast.ToastType.ERROR);
-            }
-        });
+        try {
+            CompoundTag nbt = LocalAvatarLoader.loadAvatar(path);
+            if (nbt != null)
+                LOADED_AVATARS.put(id, new Avatar(nbt, id));
+        } catch (Exception e) {
+            FiguraMod.LOGGER.error("Failed to load avatar from " + path, e);
+            FiguraToast.sendToast(FiguraText.of("toast.load_error"), FiguraToast.ToastType.ERROR);
+        }
     }
 
     //set an user's avatar
@@ -165,13 +163,11 @@ public class AvatarManager {
         if (FiguraMod.isLocal(id))
             LocalAvatarLoader.resetWatchKeys();
 
-        FUTURE.run(() -> {
-            try {
-                LOADED_AVATARS.put(id, new Avatar(nbt, id));
-            } catch (Exception e) {
-                FiguraMod.LOGGER.error("Failed to set avatar for " + id, e);
-            }
-        });
+        try {
+            LOADED_AVATARS.put(id, new Avatar(nbt, id));
+        } catch (Exception e) {
+            FiguraMod.LOGGER.error("Failed to set avatar for " + id, e);
+        }
     }
 
     //get avatar from the backend

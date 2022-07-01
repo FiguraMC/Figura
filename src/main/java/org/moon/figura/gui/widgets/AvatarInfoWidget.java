@@ -11,6 +11,7 @@ import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.FiguraText;
+import org.moon.figura.utils.MathUtils;
 import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.ui.UIHelper;
 
@@ -57,9 +58,9 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
         } else {
             values.set(0, Component.literal(avatar.name).setStyle(ColorUtils.Colors.FRAN_PINK.style)); //name
             values.set(1, Component.literal(avatar.authors).setStyle(ColorUtils.Colors.FRAN_PINK.style)); //authors
-            values.set(2, Component.literal(String.valueOf(avatar.fileSize)).setStyle(ColorUtils.Colors.FRAN_PINK.style)); //size
+            values.set(2, Component.literal(MathUtils.asFileSize(avatar.fileSize)).setStyle(ColorUtils.Colors.FRAN_PINK.style)); //size
             values.set(3, Component.literal(String.valueOf(avatar.complexity)).setStyle(ColorUtils.Colors.FRAN_PINK.style)); //complexity
-            values.set(4, Component.literal(String.valueOf(avatar.getScriptMemory())).setStyle(ColorUtils.Colors.FRAN_PINK.style)); //memory
+            values.set(4, Component.literal(MathUtils.asFileSize(avatar.getScriptMemory())).setStyle(ColorUtils.Colors.FRAN_PINK.style)); //memory
         }
     }
 
