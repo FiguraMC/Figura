@@ -39,6 +39,9 @@ public class ColorUtils {
         }
 
         public static Colors getColor(String s) {
+            if (s == null)
+                return null;
+
             for (Colors value : Colors.values()) {
                 for (String alias : value.alias) {
                     if (s.equalsIgnoreCase(alias))
@@ -168,7 +171,7 @@ public class ColorUtils {
     }
 
     public static FiguraVec3 rainbow() {
-        return rainbow(1d, 0d, 1d, 1d);
+        return rainbow(1d, 1d, 1d);
     }
     public static FiguraVec3 rainbow(double speed, double saturation, double light) {
         return rainbow(speed, 0d, saturation, light);

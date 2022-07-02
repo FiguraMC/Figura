@@ -96,7 +96,7 @@ public class MathUtils {
             i++;
         }
 
-        DecimalFormat df = new DecimalFormat(".00", new DecimalFormatSymbols(Locale.US));
+        DecimalFormat df = new DecimalFormat("0.00", new DecimalFormatSymbols(Locale.US));
         df.setRoundingMode(RoundingMode.HALF_UP);
         return df.format(size) + SIZE_UNITS[i];
     }

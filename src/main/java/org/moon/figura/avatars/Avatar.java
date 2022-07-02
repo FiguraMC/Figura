@@ -39,27 +39,31 @@ import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 //the avatar class
 //contains all things related to the avatar
 //and also related to the owner, like trust settings
 public class Avatar {
 
+    private static CompletableFuture<Void> tasks;
+
     //properties
-    public final CompoundTag nbt;
     public final UUID owner;
+    public CompoundTag nbt;
+    public boolean loaded = true;
 
     //metadata
-    public final String name;
-    public final String authors;
-    public final String version;
-    public final int fileSize;
-    public final String color;
+    public String name;
+    public String authors;
+    public String version;
+    public int fileSize;
+    public String color;
 
     public BitSet badges = new BitSet(NameplateCustomization.badgesLen());
 
     //Runtime data
-    public final AvatarRenderer renderer;
+    public AvatarRenderer renderer;
     public FiguraLuaState luaState;
 
     public final HashMap<String, SoundBuffer> customSounds = new HashMap<>();
@@ -86,31 +90,50 @@ public class Avatar {
     public final RefilledNumber particlesRemaining = new RefilledNumber();
     public final RefilledNumber soundsRemaining = new RefilledNumber();
 
-    public Avatar(CompoundTag nbt, UUID owner) {
-        this.nbt = nbt;
+    public Avatar(UUID owner) {
         this.owner = owner;
-
-        //read metadata
-        CompoundTag metadata = nbt.getCompound("metadata");
-        name = metadata.getString("name");
-        authors = metadata.getString("authors");
-        version = metadata.getString("ver");
-        color = metadata.getString("color");
-        fileSize = getFileSize();
-
-        //read custom sounds
-        loadCustomSounds();
-
-        //read model
-        renderer = new ImmediateAvatarRenderer(this);
-
-        //read script
-        //must always be loaded last
-        createLuaState();
     }
 
+    private static CompletableFuture<Void> run(Runnable toRun) {
+        if (tasks == null || tasks.isDone()) {
+            tasks = CompletableFuture.runAsync(toRun);
+        } else {
+            tasks.thenRun(toRun);
+        }
+        return tasks;
+    }
+
+    public void load(CompoundTag nbt) {
+        if (nbt == null)
+            return;
+
+        loaded = false;
+
+        //sounds
+        run(() -> { //metadata
+            this.nbt = nbt;
+            CompoundTag metadata = nbt.getCompound("metadata");
+            name = metadata.getString("name");
+            authors = metadata.getString("authors");
+            version = metadata.getString("ver");
+            color = metadata.getString("color");
+            fileSize = getFileSize();
+        }).thenRun(() -> { //models
+            renderer = new ImmediateAvatarRenderer(this);
+        }).thenRun(this::loadCustomSounds).thenRun(() -> { //script
+            createLuaState();
+            loaded = true;
+        });
+    }
+
+    // -- script events -- //
+
     //Calling with maxInstructions as -1 will not set the max instructions, and instead keep them as they are.
+    //returns whatever if it succeeded or not calling the function
     public void tryCall(Object toRun, int maxInstructions, Object... args) {
+        if (scriptError || luaState == null)
+            return;
+
         try {
             if (maxInstructions != -1)
                 luaState.setInstructionLimit(maxInstructions);
@@ -128,7 +151,7 @@ public class Avatar {
         }
     }
 
-    public void onTick() {
+    public void tickEvent() {
         if (scriptError || luaState == null || !EntityWrapper.exists(luaState.entity))
             return;
 
@@ -147,7 +170,7 @@ public class Avatar {
         }
     }
 
-    public void onWorldTick() {
+    public void worldTickEvent() {
         if (scriptError || luaState == null)
             return;
 
@@ -158,9 +181,68 @@ public class Avatar {
         }
     }
 
-    public void onRender(Entity entity, float yaw, float delta, float alpha, PoseStack matrices, MultiBufferSource bufferSource, int light, int overlay, LivingEntityRenderer<?, ?> entityRenderer) {
-        if (entity.isSpectator())
-            renderer.currentFilterScheme = AvatarRenderer.PartFilterScheme.HEAD;
+    public void renderEvent(float delta) {
+        if (scriptError || luaState == null)
+            return;
+
+        tryCall(luaState.events.RENDER, renderLimit, delta);
+        if (FiguraMod.DO_OUR_NATIVES_WORK && luaState != null) {
+            renderInstructions = renderLimit - accumulatedRenderInstructions - luaState.getInstructions();
+            accumulatedRenderInstructions += renderInstructions;
+        }
+    }
+
+    public void postRenderEvent(float delta) {
+        if (scriptError || luaState == null)
+            return;
+
+        tryCall(luaState.events.POST_RENDER, -1, delta);
+        if (FiguraMod.DO_OUR_NATIVES_WORK && luaState != null) {
+            postRenderInstructions = renderLimit - accumulatedRenderInstructions - luaState.getInstructions();
+            accumulatedRenderInstructions += postRenderInstructions;
+        }
+    }
+
+    public void worldRenderEvent(float delta) {
+        if (scriptError || luaState == null)
+            return;
+
+        tryCall(luaState.events.WORLD_RENDER, worldRenderLimit, delta);
+        if (FiguraMod.DO_OUR_NATIVES_WORK && luaState != null) {
+            worldRenderInstructions = worldRenderLimit - luaState.getInstructions();
+            accumulatedRenderInstructions = worldRenderInstructions;
+        }
+    }
+
+    public void postWorldRenderEvent() {
+        if (scriptError || luaState == null)
+            return;
+
+        tryCall(luaState.events.POST_WORLD_RENDER, -1, renderer.tickDelta);
+        if (FiguraMod.DO_OUR_NATIVES_WORK && luaState != null) {
+            postWorldRenderInstructions = worldRenderLimit - accumulatedRenderInstructions - luaState.getInstructions();
+            accumulatedRenderInstructions += postWorldRenderInstructions;
+        }
+    }
+
+    public String chatSendMessageEvent(String message) {
+        if (!scriptError && luaState != null)
+            tryCall(luaState.events.CHAT_SEND_MESSAGE, -1, message);
+        return message;
+    }
+
+    public void chatReceivedMessageEvent(String message) {
+        if (!scriptError && luaState != null)
+            tryCall(luaState.events.CHAT_RECEIVE_MESSAGE, -1, message);
+    }
+
+    // -- rendering events -- //
+
+    public void render(Entity entity, float yaw, float delta, float alpha, PoseStack matrices, MultiBufferSource bufferSource, int light, int overlay, LivingEntityRenderer<?, ?> entityRenderer, AvatarRenderer.PartFilterScheme filter) {
+        if (renderer == null)
+            return;
+
+        renderer.currentFilterScheme = filter;
         renderer.entity = entity;
         renderer.yaw = yaw;
         renderer.tickDelta = delta;
@@ -171,63 +253,14 @@ public class Avatar {
         renderer.overlay = overlay;
         renderer.entityRenderer = entityRenderer;
 
-        if (!scriptError && luaState != null) {
-            tryCall(luaState.events.RENDER, renderLimit, delta);
-            if (FiguraMod.DO_OUR_NATIVES_WORK && luaState != null) {
-                renderInstructions = renderLimit - accumulatedRenderInstructions - luaState.getInstructions();
-                accumulatedRenderInstructions += renderInstructions;
-            }
-        }
-
         renderer.render();
-
-        if (!scriptError && luaState != null) {
-            tryCall(luaState.events.POST_RENDER, -1, delta);
-            if (FiguraMod.DO_OUR_NATIVES_WORK && luaState != null) {
-                postRenderInstructions = renderLimit - accumulatedRenderInstructions - luaState.getInstructions();
-                accumulatedRenderInstructions += postRenderInstructions;
-            }
-        }
     }
 
-    public void worldRenderEvent(float tickDelta) {
-        renderer.tickDelta = tickDelta;
+    public void worldRender(Entity entity, double camX, double camY, double camZ, PoseStack matrices, MultiBufferSource bufferSource, int light, float tickDelta) {
+        if (renderer == null)
+            return;
+
         renderer.allowMatrixUpdate = true;
-
-        if (!scriptError && luaState != null) {
-            tryCall(luaState.events.WORLD_RENDER, worldRenderLimit, tickDelta);
-            if (FiguraMod.DO_OUR_NATIVES_WORK && luaState != null) {
-                worldRenderInstructions = worldRenderLimit - luaState.getInstructions();
-                accumulatedRenderInstructions = worldRenderInstructions;
-            }
-        }
-    }
-
-    public void endWorldRenderEvent() {
-        renderer.allowMatrixUpdate = false;
-        if (!scriptError && luaState != null) {
-            tryCall(luaState.events.POST_WORLD_RENDER, -1, renderer.tickDelta);
-            if (FiguraMod.DO_OUR_NATIVES_WORK && luaState != null) {
-                postWorldRenderInstructions = worldRenderLimit - accumulatedRenderInstructions - luaState.getInstructions();
-                accumulatedRenderInstructions += postWorldRenderInstructions;
-            }
-        }
-    }
-
-    public String chatSendMessageEvent(String message) {
-        if (!scriptError && luaState != null) {
-            tryCall(luaState.events.CHAT_SEND_MESSAGE, -1, message);
-            return message; //TODO
-        }
-        return message;
-    }
-
-    public void chatReceivedMessageEvent(String message) {
-        if (!scriptError && luaState != null)
-            tryCall(luaState.events.CHAT_RECEIVE_MESSAGE, -1, message);
-    }
-
-    public void onWorldRender(Entity entity, double camX, double camY, double camZ, PoseStack matrices, MultiBufferSource bufferSource, int light, float tickDelta) {
         renderer.entity = entity;
         renderer.currentFilterScheme = AvatarRenderer.PartFilterScheme.WORLD;
         renderer.bufferSource = bufferSource;
@@ -242,21 +275,35 @@ public class Avatar {
         matrices.scale(-1, -1, 1);
         renderer.renderSpecialParts();
         matrices.popPose();
+
+        renderer.allowMatrixUpdate = false;
     }
 
-    public void onFirstPersonWorldRender(Entity watcher, MultiBufferSource bufferSource, PoseStack matrices, Camera camera, float tickDelta) {
+    public void firstPersonWorldRender(Entity watcher, MultiBufferSource bufferSource, PoseStack matrices, Camera camera, float tickDelta) {
+        if (renderer == null)
+            return;
+
         int light = Minecraft.getInstance().getEntityRenderDispatcher().getPackedLightCoords(watcher, tickDelta);
         Vec3 camPos = camera.getPosition();
-        onWorldRender(watcher, camPos.x, camPos.y, camPos.z, matrices, bufferSource, light, tickDelta);
+        worldRender(watcher, camPos.x, camPos.y, camPos.z, matrices, bufferSource, light, tickDelta);
     }
 
-    public void onFirstPersonRender(PoseStack stack, MultiBufferSource bufferSource, Player player, PlayerRenderer playerRenderer, ModelPart arm, int light, int overlay, float tickDelta) {
+    public void firstPersonRender(PoseStack stack, MultiBufferSource bufferSource, Player player, PlayerRenderer playerRenderer, ModelPart arm, int light, int overlay, float tickDelta) {
+        if (renderer == null)
+            return;
+
         arm.xRot = 0;
-        renderer.currentFilterScheme = arm == playerRenderer.getModel().leftArm ? AvatarRenderer.PartFilterScheme.LEFT_ARM : AvatarRenderer.PartFilterScheme.RIGHT_ARM;
-        onRender(player, 0f, tickDelta, 1f, stack, bufferSource, light, overlay, playerRenderer);
+        renderer.allowMatrixUpdate = true;
+        AvatarRenderer.PartFilterScheme filter = arm == playerRenderer.getModel().leftArm ? AvatarRenderer.PartFilterScheme.LEFT_ARM : AvatarRenderer.PartFilterScheme.RIGHT_ARM;
+        render(player, 0f, tickDelta, 1f, stack, bufferSource, light, overlay, playerRenderer, filter);
+        renderer.allowMatrixUpdate = false;
     }
 
-    public void onHudRender(PoseStack stack, MultiBufferSource bufferSource, Entity entity, float tickDelta) {
+    public void hudRender(PoseStack stack, MultiBufferSource bufferSource, Entity entity, float tickDelta) {
+        if (renderer == null)
+            return;
+
+        renderer.allowMatrixUpdate = true;
         renderer.currentFilterScheme = AvatarRenderer.PartFilterScheme.HUD;
         renderer.entity = entity;
         renderer.tickDelta = tickDelta;
@@ -270,7 +317,11 @@ public class Avatar {
         stack.scale(16, 16, -16);
         renderer.renderSpecialParts();
         stack.popPose();
+
+        renderer.allowMatrixUpdate = false;
     }
+
+    // -- extra stuff -- //
 
     /**
      * We should call this whenever an avatar is no longer reachable!
@@ -279,7 +330,9 @@ public class Avatar {
      * also closes and stops this avatar sounds
      */
     public void clean() {
-        renderer.clean();
+        if (renderer != null)
+            renderer.clean();
+
         FiguraChannel.getInstance().stopSound(owner, null);
         for (SoundBuffer value : customSounds.values())
             value.discardAlBuffer();

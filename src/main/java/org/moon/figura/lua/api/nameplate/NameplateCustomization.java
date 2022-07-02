@@ -41,10 +41,17 @@ public class NameplateCustomization {
             return Component.empty();
 
         MutableComponent badges = Component.literal(" ").withStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT).withColor(ChatFormatting.WHITE));
-        Pride[] pride = Pride.values();
-        Special[] special = Special.values();
+
+        // -- loading -- //
+
+        if (!avatar.loaded) {
+            badges.append(Integer.toHexString(Math.abs(FiguraMod.ticks) % 16));
+            return badges;
+        }
 
         // -- mark -- //
+
+        Pride[] pride = Pride.values();
 
         //error
         if (avatar.scriptError)
@@ -55,7 +62,7 @@ public class NameplateCustomization {
             badges.append(Default.CHEESE.badge);
 
         //mark
-        else {
+        else if (avatar.nbt != null) {
             mark: {
                 //pride (mark skins)
                 for (int i = pride.length - 1; i >= 0; i--) {
@@ -72,6 +79,8 @@ public class NameplateCustomization {
 
         // -- special -- //
 
+        Special[] special = Special.values();
+
         //special badge
         for (int i = special.length - 1; i >= 0; i--) {
             if (avatar.badges.get(i + pride.length)) {
@@ -80,7 +89,7 @@ public class NameplateCustomization {
             }
         }
 
-        return badges;
+        return badges.getString().isBlank() ? Component.empty() : badges;
     }
 
     private enum Default {

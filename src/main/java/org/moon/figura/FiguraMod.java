@@ -84,9 +84,8 @@ public class FiguraMod implements ClientModInitializer {
         if (!context.camera().isDetached()) {
             Entity watcher = context.camera().getEntity();
             Avatar avatar = AvatarManager.getAvatar(watcher);
-            if (avatar != null) {
-                avatar.onFirstPersonWorldRender(watcher, context.consumers(), context.matrixStack(), context.camera(), context.tickDelta());
-            }
+            if (avatar != null)
+                avatar.firstPersonWorldRender(watcher, context.consumers(), context.matrixStack(), context.camera(), context.tickDelta());
         }
     }
 

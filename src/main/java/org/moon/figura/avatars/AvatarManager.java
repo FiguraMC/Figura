@@ -10,6 +10,7 @@ import org.moon.figura.avatars.providers.LocalAvatarLoader;
 import org.moon.figura.backend.NetworkManager;
 import org.moon.figura.config.Config;
 import org.moon.figura.gui.FiguraToast;
+import org.moon.figura.gui.widgets.lists.AvatarList;
 import org.moon.figura.utils.FiguraText;
 
 import java.nio.file.Path;
@@ -51,8 +52,8 @@ public class AvatarManager {
         //actual tick event
 
         for (Avatar avatar : LOADED_AVATARS.values()) {
-            avatar.onWorldTick();
-            avatar.onTick();
+            avatar.worldTickEvent();
+            avatar.tickEvent();
         }
     }
 
@@ -69,7 +70,7 @@ public class AvatarManager {
             return;
 
         for (Avatar avatar : LOADED_AVATARS.values())
-            avatar.endWorldRenderEvent();
+            avatar.postWorldRenderEvent();
     }
 
     // -- avatar management -- //
@@ -148,9 +149,9 @@ public class AvatarManager {
 
         //load
         try {
-            CompoundTag nbt = LocalAvatarLoader.loadAvatar(path);
-            if (nbt != null)
-                LOADED_AVATARS.put(id, new Avatar(nbt, id));
+            Avatar avatar = new Avatar(id);
+            LOADED_AVATARS.put(id, avatar);
+            avatar.load(LocalAvatarLoader.loadAvatar(path));
         } catch (Exception e) {
             FiguraMod.LOGGER.error("Failed to load avatar from " + path, e);
             FiguraToast.sendToast(FiguraText.of("toast.load_error"), FiguraToast.ToastType.ERROR);
@@ -160,11 +161,15 @@ public class AvatarManager {
     //set an user's avatar
     public static void setAvatar(UUID id, CompoundTag nbt) {
         //remove local watch keys
-        if (FiguraMod.isLocal(id))
+        if (FiguraMod.isLocal(id)) {
             LocalAvatarLoader.resetWatchKeys();
+            AvatarList.selectedEntry = null;
+            localUploaded = true;
+        }
 
         try {
-            LOADED_AVATARS.put(id, new Avatar(nbt, id));
+            Avatar avatar = LOADED_AVATARS.get(id);
+            if (avatar != null) avatar.load(nbt);
         } catch (Exception e) {
             FiguraMod.LOGGER.error("Failed to set avatar for " + id, e);
         }
@@ -178,6 +183,7 @@ public class AvatarManager {
             return;
 
         FETCHED_AVATARS.add(id);
+        LOADED_AVATARS.put(id, new Avatar(id));
 
         //egg
         if (FiguraMod.CHEESE_DAY && (boolean) Config.EASTER_EGGS.value && LocalAvatarLoader.cheese != null) {

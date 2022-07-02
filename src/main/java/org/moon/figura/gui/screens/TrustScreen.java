@@ -128,7 +128,7 @@ public class TrustScreen extends AbstractPanelScreen {
             }
 
             Avatar avatar = AvatarManager.getAvatarForPlayer(id);
-            if (avatar == null)
+            if (avatar == null || avatar.nbt == null)
                 return;
 
             if (playerList.selectedEntry instanceof PlayerElement player) {

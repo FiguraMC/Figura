@@ -215,7 +215,7 @@ public class NetworkManager {
 
         assertBackend();
         run(() -> {
-            if (avatar == null || !hasBackend())
+            if (avatar == null || avatar.nbt == null || !hasBackend())
                 return;
 
             JsonObject json = new JsonObject();

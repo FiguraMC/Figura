@@ -51,16 +51,16 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
 
         //update values
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
-        if (avatar == null) {
-            for (int i = 0; i < TITLES.size(); i++) {
-                values.set(i, UNKNOWN);
-            }
-        } else {
+        if (avatar != null && avatar.nbt != null) {
             values.set(0, Component.literal(avatar.name).setStyle(ColorUtils.Colors.FRAN_PINK.style)); //name
             values.set(1, Component.literal(avatar.authors).setStyle(ColorUtils.Colors.FRAN_PINK.style)); //authors
             values.set(2, Component.literal(MathUtils.asFileSize(avatar.fileSize)).setStyle(ColorUtils.Colors.FRAN_PINK.style)); //size
             values.set(3, Component.literal(String.valueOf(avatar.complexity)).setStyle(ColorUtils.Colors.FRAN_PINK.style)); //complexity
             values.set(4, Component.literal(MathUtils.asFileSize(avatar.getScriptMemory())).setStyle(ColorUtils.Colors.FRAN_PINK.style)); //memory
+        } else {
+            for (int i = 0; i < TITLES.size(); i++) {
+                values.set(i, UNKNOWN);
+            }
         }
     }
 

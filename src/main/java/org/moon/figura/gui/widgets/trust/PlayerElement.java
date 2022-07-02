@@ -77,8 +77,12 @@ public class PlayerElement extends AbstractTrustElement {
             context.addAction(Component.literal("yoink to cache"), button -> {
                 Avatar a = AvatarManager.getAvatarForPlayer(owner);
                 if (a != null) {
-                    LocalAvatarLoader.saveNbt(a.nbt);
-                    FiguraToast.sendToast("yoinked");
+                    if (a.nbt != null) {
+                        LocalAvatarLoader.saveNbt(a.nbt);
+                        FiguraToast.sendToast("yoinked");
+                    } else {
+                        FiguraToast.sendToast("no avatar :(", FiguraToast.ToastType.ERROR);
+                    }
                 }
             });
         }
@@ -126,7 +130,7 @@ public class PlayerElement extends AbstractTrustElement {
         drawString(stack, font, Component.literal(trust.name), 0, 0, 0x888888);
 
         //size and memory
-        if (avatar != null) {
+        if (avatar != null && avatar.nbt != null) {
             Component text = FiguraText.of("gui.trust.avatar_size", MathUtils.asFileSize(avatar.fileSize)).append(TextUtils.TAB).append(FiguraText.of("gui.trust.avatar_memory", MathUtils.asFileSize(avatar.getScriptMemory())));
             drawString(stack, font, text, 0, font.lineHeight, 0x888888);
         }

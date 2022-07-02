@@ -27,12 +27,8 @@ public class GuiMixin {
         if (entity == null || (avatar = AvatarManager.getAvatar(entity)) == null)
             return;
 
-        avatar.renderer.allowMatrixUpdate = true;
         Lighting.setupForFlatItems();
-
-        avatar.onHudRender(stack, minecraft.renderBuffers().bufferSource(), entity, tickDelta);
-
-        avatar.renderer.allowMatrixUpdate = false;
+        avatar.hudRender(stack, minecraft.renderBuffers().bufferSource(), entity, tickDelta);
         Lighting.setupFor3DItems();
     }
 
