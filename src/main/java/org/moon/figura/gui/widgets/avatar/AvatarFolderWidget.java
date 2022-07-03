@@ -30,8 +30,7 @@ public class AvatarFolderWidget extends AbstractAvatarWidget {
                     setTooltip(instance.getName());
             }
         };
-        this.groupButton.setToggled(true);
-        this.groupButton.shouldHaveBackground(false);
+
         children.add(this.groupButton);
 
         for (LocalAvatarFetcher.AvatarPath child : avatar.getChildren()) {
@@ -47,6 +46,11 @@ public class AvatarFolderWidget extends AbstractAvatarWidget {
                 return avatar1.compareTo(avatar2);
             return 0;
         });
+
+        this.groupButton.setToggled(false);
+        toggleEntries(false);
+        parent.updateScroll();
+        this.groupButton.shouldHaveBackground(false);
     }
 
     public void toggleEntries(boolean bool) {

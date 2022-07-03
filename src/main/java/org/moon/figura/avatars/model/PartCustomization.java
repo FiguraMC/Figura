@@ -1,5 +1,6 @@
 package org.moon.figura.avatars.model;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
 import org.moon.figura.math.matrix.FiguraMat3;
@@ -241,12 +242,33 @@ public class PartCustomization implements CachedType {
         return CACHE.getFresh();
     }
     public static class Stack extends CacheStack<PartCustomization, PartCustomization> {
+
+        /**
+         * A vanilla pose stack useful for certain UI elements.
+         * Mirrors the matrices of the customizations on the stack.
+         */
+        public final PoseStack poseStack = new PoseStack();
+
         public Stack() {
             this(CACHE);
         }
         public Stack(CacheUtils.Cache<PartCustomization> cache) {
             super(cache);
         }
+
+        @Override
+        public void push(PartCustomization modifier) {
+            super.push(modifier);
+            poseStack.pushPose();
+            poseStack.mulPoseMatrix(modifier.positionMatrix.toMatrix4f());
+        }
+
+        @Override
+        public PartCustomization pop() {
+            poseStack.popPose();
+            return super.pop();
+        }
+
         @Override
         protected void modify(PartCustomization valueToModify, PartCustomization modifierArg) {
             valueToModify.modify(modifierArg);
