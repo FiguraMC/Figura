@@ -309,6 +309,11 @@ public class ItemStackWrapper {
         return ret;
     }
 
+    @LuaWhitelist
+    public static boolean __eq(@LuaNotNil ItemStackWrapper stack1, @LuaNotNil ItemStackWrapper stack2) {
+        return getStack(stack1).equals(getStack(stack2));
+    }
+
     @Override
     public String toString() {
         return id + " (ItemStack)";

@@ -565,6 +565,11 @@ public class EntityWrapper<T extends Entity> {
         return null;
     }
 
+    @LuaWhitelist
+    public static boolean __eq(@LuaNotNil EntityWrapper<?> stack1, @LuaNotNil EntityWrapper<?> stack2) {
+        return getEntity(stack1).equals(getEntity(stack2));
+    }
+
     @Override
     public String toString() {
         return savedUUID + " (Entity)";

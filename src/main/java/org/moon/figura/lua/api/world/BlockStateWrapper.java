@@ -482,6 +482,11 @@ public class BlockStateWrapper {
         return BlockStateParser.serialize(getState(blockState)) + tag;
     }
 
+    @LuaWhitelist
+    public static boolean __eq(@LuaNotNil BlockStateWrapper block1, @LuaNotNil BlockStateWrapper block2) {
+        return getState(block1).equals(getState(block2));
+    }
+
     @Override
     public String toString() {
         return id + " (BlockState)";

@@ -223,6 +223,11 @@ public class BiomeWrapper {
         return getBiome(biome).coldEnoughToSnow(getBlockPos(biome));
     }
 
+    @LuaWhitelist
+    public static boolean __eq(@LuaNotNil BiomeWrapper block1, @LuaNotNil BiomeWrapper block2) {
+        return getBiome(block1).equals(getBiome(block2));
+    }
+
     @Override
     public String toString() {
         return name + " (Biome)";
