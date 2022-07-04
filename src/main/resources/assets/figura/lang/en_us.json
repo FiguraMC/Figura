@@ -371,6 +371,7 @@
   "figura.docs.wheel_page.new_scroll": "Adds a new Scroll Action on the selected Page's index. If no index is given it is added in the first available index.",
   "figura.docs.wheel_page.get_action": "Gets an Action from the Page's given index.",
 
+  "figura.docs.wheel_action": "An action in the Figura Action Wheel. An abstract superclass of ClickAction, ToggleAction, and ScrollAction.",
   "figura.docs.wheel_action.title": "Sets the title of the Action. Returns the Action for function chaining.",
   "figura.docs.wheel_action.color": "Sets the color of the Action. Returns the Action for function chaining.",
   "figura.docs.wheel_action.hover_color": "Sets the color of the Action when it is being hovered. Returns the Action for function chaining.",
@@ -398,6 +399,7 @@
   "figura.docs.scroll_action.scroll": "Function that is executed when the mouse is scrolled.",
   "figura.docs.scroll_action.on_scroll": "Sets the function that is executed when the mouse is scrolled. Returns the Action for function chaining.",
 
+  "figura.docs.render_task": "Represents a rendering task for Figura to complete each frame. An abstract superclass of ItemTask, BlockTask, and TextTask.",
   "figura.docs.render_task.enabled": "Whether or not this task should be rendered.",
   "figura.docs.render_task.emissive": "Whether or not this task should be rendered at full bright.",
   "figura.docs.render_task.pos": "The position of the task, relative with its attached part. Uses model coordinates.",
@@ -411,7 +413,7 @@
   "figura.docs.block_task": "A task for rendering a Block.",
   "figura.docs.block_task.block": "Sets the Block for this task render.",
 
-  "figura.docs.text_task": "A task for rendering a Text.",
+  "figura.docs.text_task": "A task for rendering some Text.",
   "figura.docs.text_task.text": "Sets the Text for this task render.",
   "figura.docs.text_task.centred": "Toggles if the Text should render centred on this task pivot point.",
   "figura.docs.text_task.shadow": "Toggles if the Text should render with a drop shadow. Not compatible with \"Outline\" mode",

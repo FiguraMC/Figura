@@ -7,10 +7,15 @@ import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.world.ItemStackWrapper;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
+import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.LuaUtils;
 
 @LuaWhitelist
+@LuaTypeDoc(
+        name = "Action",
+        description = "wheel_action"
+)
 public abstract class Action {
 
     protected static final FiguraVec3 HOVER_COLOR = FiguraVec3.of(1, 1, 1);

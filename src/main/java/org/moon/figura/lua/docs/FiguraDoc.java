@@ -9,6 +9,7 @@ import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import org.moon.figura.FiguraMod;
+import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.FiguraText;
 
@@ -94,7 +95,11 @@ public abstract class FiguraDoc {
 
         public ClassDoc(Class<?> clazz, LuaTypeDoc typeDoc) {
             super(typeDoc.name(), typeDoc.description());
-            superclass = clazz.getSuperclass();
+
+            if (clazz.getSuperclass().isAnnotationPresent(LuaWhitelist.class) && clazz.getSuperclass().isAnnotationPresent(LuaTypeDoc.class))
+                superclass = clazz.getSuperclass();
+            else
+                superclass = null;
 
             //Find methods
             documentedMethods = new ArrayList<>();
@@ -111,6 +116,11 @@ public abstract class FiguraDoc {
 
         @Override
         public int print() {
+
+            String name = this.name;
+            if (superclass != null)
+                name += " (extends " + FiguraDocsManager.NAME_MAP.getOrDefault(superclass, superclass.getName()) + ")";
+
             //header
             FiguraMod.sendChatMessage(HEADER.copy()
 
@@ -157,7 +167,7 @@ public abstract class FiguraDoc {
         public JsonObject toJson() {
             JsonObject json = super.toJson();
 
-            if (superclass != Object.class)
+            if (superclass != null)
                 json.addProperty("parent", FiguraDocsManager.NAME_MAP.getOrDefault(superclass, superclass.getName()));
 
             JsonArray methods = new JsonArray();

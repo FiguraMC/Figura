@@ -52,7 +52,7 @@ public class FiguraDocsManager {
      * all the classes in this static set, and generate documentation for
      * all of them, based on the annotations of members within.
      * Entries of the map are organized by group names, because otherwise there
-     * will be too many different APIs and autocomplete will get cluttered.
+     * will be too many APIs and autocomplete will get cluttered.
      */
     public static final Map<String, List<Class<?>>> DOCUMENTED_CLASSES = new HashMap<>() {{
 
@@ -64,6 +64,7 @@ public class FiguraDocsManager {
         put("action_wheel", List.of(
                 ActionWheelAPI.class,
                 Page.class,
+                Action.class,
                 ClickAction.class,
                 ToggleAction.class,
                 ScrollAction.class
@@ -98,6 +99,7 @@ public class FiguraDocsManager {
                 FiguraModelPart.class,
                 VanillaModelAPI.class,
                 VanillaModelAPI.VanillaModelPart.class,
+                RenderTask.class,
                 BlockTask.class,
                 ItemTask.class,
                 TextTask.class
@@ -170,8 +172,8 @@ public class FiguraDocsManager {
 
         //Figura types
         put(FiguraVector.class, "Vector");
-        put(Action.class, "Action");
-        put(RenderTask.class, "RenderTask");
+        //put(Action.class, "Action");
+        //put(RenderTask.class, "RenderTask");
     }};
 
     private static final Map<String, List<FiguraDoc.ClassDoc>> GENERATED_CLASS_DOCS = new HashMap<>();
