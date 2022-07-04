@@ -168,7 +168,7 @@ public class MetaAPI {
             description = "meta.get_tick_count"
     )
     public static int getTickCount(@LuaNotNil MetaAPI api) {
-        return api.avatar.tickInstructions;
+        return api.avatar.entityTickInstructions;
     }
 
     @LuaWhitelist
@@ -192,7 +192,7 @@ public class MetaAPI {
             description = "meta.get_render_count"
     )
     public static int getRenderCount(@LuaNotNil MetaAPI api) {
-        return api.avatar.renderInstructions;
+        return api.avatar.entityRenderInstructions;
     }
 
     @LuaWhitelist

@@ -1,11 +1,15 @@
 package org.moon.figura.avatars.model;
 
+import com.mojang.math.Quaternion;
+import com.mojang.math.Vector3f;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ElytraModel;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.model.rendering.ImmediateAvatarRenderer;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
@@ -30,6 +34,7 @@ import org.terasology.jnlua.LuaRuntimeException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -95,6 +100,12 @@ public class FiguraModelPart {
         }
     }
 
+    public void applyExtraTransforms() {
+        switch (parentType) {
+            case Camera -> applyCameraTransform();
+        }
+    }
+
     @Override
     public String toString() {
         return name + " (ModelPart)";
@@ -115,6 +126,12 @@ public class FiguraModelPart {
         customization.offsetRot(Math.toDegrees(-part.xRot), Math.toDegrees(-part.yRot), Math.toDegrees(part.zRot));
 
         defaultPivot.free();
+    }
+
+    public void applyCameraTransform() {
+        Quaternion orient = Minecraft.getInstance().getEntityRenderDispatcher().cameraOrientation();
+        Vector3f xyzDeg = orient.toXYZDegrees();
+        customization.offsetRot(-xyzDeg.x(), -xyzDeg.y(), xyzDeg.z());
     }
 
     public void resetVanillaTransforms() {
@@ -147,11 +164,13 @@ public class FiguraModelPart {
         Cape("CAPE"),
 
         World(false, "WORLD"),
-        Hud(false, "HUD", "Gui", "GUI");
+        Hud(false, "HUD", "Gui", "GUI"),
+
+        Camera(false, "CAMERA");
 
         public final boolean vanilla;
         public final String[] aliases;
-        public static final List<ParentType> SPECIAL_PARTS = List.of(World, Hud);
+        public static final Set<ParentType> SPECIAL_PARTS = Set.of(World, Hud);
 
         ParentType(String... aliases) {
             this(true, aliases);

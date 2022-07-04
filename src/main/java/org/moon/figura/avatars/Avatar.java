@@ -68,7 +68,7 @@ public class Avatar {
 
     public final HashMap<String, SoundBuffer> customSounds = new HashMap<>();
 
-    private int tickLimit, renderLimit;
+    private int entityTickLimit, entityRenderLimit;
     private int worldTickLimit, worldRenderLimit;
 
     //runtime status
@@ -76,16 +76,11 @@ public class Avatar {
     public boolean scriptError = false;
 
     public int complexity = 0;
-    public int initInstructions = 0;
-    public int tickInstructions = 0;
-    public int worldTickInstructions = 0;
-    public int renderInstructions = 0;
-    public int worldRenderInstructions = 0;
+    public int initInstructions;
+    public int entityTickInstructions, worldTickInstructions;
 
-    public int postRenderInstructions = 0;
-    public int postWorldRenderInstructions = 0;
-    public int accumulatedRenderInstructions = 0;
-    public int accumulatedTickInstructions = 0;
+    public int worldRenderInstructions, entityRenderInstructions, postEntityRenderInstructions, postWorldRenderInstructions;
+    public int accumulatedTickInstructions, accumulatedEntityRenderInstructions, accumulatedWorldRenderInstructions;
 
     public final RefilledNumber particlesRemaining = new RefilledNumber();
     public final RefilledNumber soundsRemaining = new RefilledNumber();
@@ -163,10 +158,10 @@ public class Avatar {
         soundsRemaining.set(TrustManager.get(this.owner).get(TrustContainer.Trust.SOUNDS));
         soundsRemaining.tick();
 
-        tryCall(luaState.events.TICK, tickLimit);
+        tryCall(luaState.events.TICK, entityTickLimit);
         if (FiguraMod.DO_OUR_NATIVES_WORK && luaState != null) {
-            tickInstructions = tickLimit - luaState.getInstructions();
-            accumulatedTickInstructions += tickInstructions;
+            entityTickInstructions = entityTickLimit - luaState.getInstructions();
+            accumulatedTickInstructions += entityTickInstructions;
         }
     }
 
@@ -185,10 +180,10 @@ public class Avatar {
         if (scriptError || luaState == null)
             return;
 
-        tryCall(luaState.events.RENDER, renderLimit, delta);
+        tryCall(luaState.events.RENDER, entityRenderLimit, delta);
         if (FiguraMod.DO_OUR_NATIVES_WORK && luaState != null) {
-            renderInstructions = renderLimit - accumulatedRenderInstructions - luaState.getInstructions();
-            accumulatedRenderInstructions += renderInstructions;
+            entityRenderInstructions = entityRenderLimit - luaState.getInstructions();
+            accumulatedEntityRenderInstructions = entityRenderInstructions;
         }
     }
 
@@ -198,8 +193,8 @@ public class Avatar {
 
         tryCall(luaState.events.POST_RENDER, -1, delta);
         if (FiguraMod.DO_OUR_NATIVES_WORK && luaState != null) {
-            postRenderInstructions = renderLimit - accumulatedRenderInstructions - luaState.getInstructions();
-            accumulatedRenderInstructions += postRenderInstructions;
+            postEntityRenderInstructions = entityRenderLimit - accumulatedEntityRenderInstructions - luaState.getInstructions();
+            accumulatedEntityRenderInstructions += postEntityRenderInstructions;
         }
     }
 
@@ -210,7 +205,7 @@ public class Avatar {
         tryCall(luaState.events.WORLD_RENDER, worldRenderLimit, delta);
         if (FiguraMod.DO_OUR_NATIVES_WORK && luaState != null) {
             worldRenderInstructions = worldRenderLimit - luaState.getInstructions();
-            accumulatedRenderInstructions = worldRenderInstructions;
+            accumulatedWorldRenderInstructions = worldRenderInstructions;
         }
     }
 
@@ -220,8 +215,8 @@ public class Avatar {
 
         tryCall(luaState.events.POST_WORLD_RENDER, -1, renderer.tickDelta);
         if (FiguraMod.DO_OUR_NATIVES_WORK && luaState != null) {
-            postWorldRenderInstructions = worldRenderLimit - accumulatedRenderInstructions - luaState.getInstructions();
-            accumulatedRenderInstructions += postWorldRenderInstructions;
+            postWorldRenderInstructions = worldRenderLimit - accumulatedEntityRenderInstructions - luaState.getInstructions();
+            accumulatedWorldRenderInstructions += postWorldRenderInstructions;
         }
     }
 
@@ -374,9 +369,9 @@ public class Avatar {
             luaState.loadGlobal(renderer.root, "models");
 
         int initLimit = TrustManager.get(owner).get(TrustContainer.Trust.INIT_INST);
-        tickLimit = TrustManager.get(owner).get(TrustContainer.Trust.TICK_INST);
+        entityTickLimit = TrustManager.get(owner).get(TrustContainer.Trust.TICK_INST);
         worldTickLimit = TrustManager.get(owner).get(TrustContainer.Trust.WORLD_TICK_INST);
-        renderLimit = TrustManager.get(owner).get(TrustContainer.Trust.RENDER_INST);
+        entityRenderLimit = TrustManager.get(owner).get(TrustContainer.Trust.RENDER_INST);
         worldRenderLimit = TrustManager.get(owner).get(TrustContainer.Trust.WORLD_RENDER_INST);
 
         luaState.setInstructionLimit(initLimit);

@@ -44,12 +44,12 @@ public class DebugScreenOverlayMixin {
                 if (FiguraMod.DO_OUR_NATIVES_WORK) {
                     lines.add(++i, String.format("Init instructions: %d", avatar.initInstructions));
 
-                    lines.add(++i, String.format("Tick instructions: %d (W: %d E: %d)", avatar.accumulatedTickInstructions, avatar.worldTickInstructions, avatar.tickInstructions));
-                    lines.add(++i, String.format("Render instructions: %d (W: %d E: %d PW: %d PE: %d)",
-                            avatar.accumulatedRenderInstructions,
+                    lines.add(++i, String.format("Tick instructions: %d (W: %d E: %d)", avatar.accumulatedTickInstructions, avatar.worldTickInstructions, avatar.entityTickInstructions));
+                    lines.add(++i, String.format("Render instructions: %d (W: %d E: %d PE: %d PW: %d)",
+                            avatar.accumulatedEntityRenderInstructions + avatar.accumulatedWorldRenderInstructions,
                             avatar.worldRenderInstructions,
-                            avatar.renderInstructions,
-                            avatar.postRenderInstructions,
+                            avatar.entityRenderInstructions,
+                            avatar.postEntityRenderInstructions,
                             avatar.postWorldRenderInstructions)
                     );
                 } else {

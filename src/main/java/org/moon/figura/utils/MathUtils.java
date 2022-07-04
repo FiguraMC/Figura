@@ -37,7 +37,7 @@ public class MathUtils {
 
     //maya pls check those
     public static FiguraVec3 rotateAroundAxis(FiguraVec3 vec, FiguraVec3 axis, float degrees) {
-        FiguraVec3 normalizedAxis = axis.copy().normalized();
+        FiguraVec3 normalizedAxis = axis.normalized();
         Quaternion vectorQuat = new Quaternion((float) vec.x, (float) vec.y, (float) vec.z, 0);
         Quaternion rotatorQuat = new Quaternion(new Vector3f((float) normalizedAxis.x, (float) normalizedAxis.y, (float) normalizedAxis.z), degrees, true);
         Quaternion rotatorQuatConj = new Quaternion(rotatorQuat);
@@ -53,15 +53,16 @@ public class MathUtils {
     public static FiguraVec3 toCameraSpace(FiguraVec3 vec) {
         Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
 
-        Matrix3f transformMatrix = new Matrix3f(camera.rotation());
+        FiguraMat3 transformMatrix = FiguraMat3.fromMatrix3f(new Matrix3f(camera.rotation()));
         Vec3 pos = camera.getPosition();
         transformMatrix.invert();
 
         FiguraVec3 ret = vec.copy();
         ret.subtract(pos.x, pos.y, pos.z);
-        ret.multiply(FiguraMat3.fromMatrix3f(transformMatrix));
+        ret.multiply(transformMatrix);
         ret.multiply(-1, 1, 1);
 
+        transformMatrix.free();
         return ret;
     }
 
@@ -79,12 +80,9 @@ public class MathUtils {
         Vector4f projectiveCamSpace = new Vector4f(camSpace);
         Matrix4f projMat = minecraft.gameRenderer.getProjectionMatrix(((GameRendererAccessor) minecraft.gameRenderer).figura$getFov(camera, minecraft.getFrameTime(), true));
         projectiveCamSpace.transform(projMat);
-        float x = projectiveCamSpace.x();
-        float y = projectiveCamSpace.y();
-        float z = projectiveCamSpace.z();
         float w = projectiveCamSpace.w();
 
-        return FiguraVec4.of(x / w, y / w, z / w, Math.sqrt(camSpace.dot(camSpace)));
+        return FiguraVec4.of(projectiveCamSpace.x() / w, projectiveCamSpace.y() / w, projectiveCamSpace.z() / w, Math.sqrt(camSpace.dot(camSpace)));
     }
 
     private static final String[] SIZE_UNITS = {"b", "kb", "mb", "gb"};

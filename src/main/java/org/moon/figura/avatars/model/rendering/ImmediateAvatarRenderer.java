@@ -163,6 +163,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
             part.applyVanillaTransforms(entityRenderer.getModel());
             part.applyVanillaTransforms(((LivingEntityRendererAccessor<?>) entityRenderer).figura$getElytraModel());
         }
+        part.applyExtraTransforms();
 
         part.customization.recalculate();
 
