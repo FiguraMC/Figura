@@ -1,7 +1,6 @@
 package org.moon.figura.avatars.providers;
 
 import org.moon.figura.FiguraMod;
-import org.moon.figura.config.Config;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -66,7 +65,8 @@ public class LocalAvatarFetcher {
 
         public AvatarPath(Path path) {
             this.path = path;
-            hasAvatar = Files.exists(path.resolve("avatar.json")) || path.toString().endsWith(".moon");
+            Path folderPath = path.resolve("avatar.json");
+            hasAvatar = (Files.exists(folderPath) && !Files.isDirectory(folderPath)) || (path.toString().endsWith(".moon") && !Files.isDirectory(path));
         }
 
         /**

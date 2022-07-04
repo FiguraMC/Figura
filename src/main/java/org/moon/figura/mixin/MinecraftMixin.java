@@ -12,7 +12,7 @@ import org.moon.figura.config.Config;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.actionwheel.ActionWheel;
 import org.moon.figura.lua.api.keybind.FiguraKeybind;
-import org.moon.figura.lua.api.sound.FiguraChannel;
+import org.moon.figura.lua.api.SoundAPI;
 import org.moon.figura.utils.FiguraText;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -35,7 +35,7 @@ public class MinecraftMixin {
         if (Config.PANIC_BUTTON.keyBind.consumeClick()) {
             AvatarManager.panic = !AvatarManager.panic;
             FiguraToast.sendToast(FiguraText.of(AvatarManager.panic ? "toast.panic_enabled" : "toast.panic_disabled"), FiguraToast.ToastType.WARNING);
-            FiguraChannel.getInstance().stopAllSounds();
+            SoundAPI.getSoundEngine().figura$stopAllSounds();
             return;
         }
 

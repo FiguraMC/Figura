@@ -45,9 +45,8 @@
     "render.renderers.PlayerRendererMixin",
     "render.renderers.LevelRendererMixin",
 
-    "sound.ChannelAccessMixin",
     "sound.ChannelHandleMixin",
-    "sound.SoundEngineAccessor",
+    "sound.SoundEngineMixin",
     "sound.SoundManagerAccessor"
   ],
   "server": [

@@ -1,5 +1,6 @@
 package org.moon.figura.backend;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.nbt.NbtIo;
@@ -85,6 +86,13 @@ public enum MessageHandler {
         } catch (Exception e) {
             FiguraMod.LOGGER.error("", e);
         }
+    }),
+    USERINFO(json -> {
+        json = json.getAsJsonObject("user");
+        UUID uuid = UUID.fromString(json.get("uuid").getAsString());
+        JsonArray array = json.get("allowedBadges").getAsJsonArray();
+        for (int i = 0; i < array.size(); i++)
+            AvatarManager.setBadge(uuid, i, array.get(i).getAsInt() >= 1);
     });
 
     // -- fields -- //

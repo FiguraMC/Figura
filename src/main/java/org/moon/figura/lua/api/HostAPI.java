@@ -68,8 +68,8 @@ public class HostAPI {
     )
     public static EntityWrapper<?> getTargetedEntity(@LuaNotNil HostAPI api) {
         if (!isHost(api)) return null;
-        Entity entity = api.minecraft.crosshairPickEntity;
 
+        Entity entity = api.minecraft.crosshairPickEntity;
         if (entity != null && Minecraft.getInstance().player != null && !entity.isInvisibleTo(Minecraft.getInstance().player))
             return EntityWrapper.fromEntity(entity);
 
@@ -105,8 +105,8 @@ public class HostAPI {
             description = "host.clear_title"
     )
     public static void clearTitle(@LuaNotNil HostAPI api) {
-        if (!isHost(api)) return;
-        api.minecraft.gui.clear();
+        if (isHost(api))
+            api.minecraft.gui.clear();
     }
 
     @LuaWhitelist
@@ -118,8 +118,8 @@ public class HostAPI {
             description = "host.set_title"
     )
     public static void setTitle(@LuaNotNil HostAPI api, @LuaNotNil String text) {
-        if (!isHost(api)) return;
-        api.minecraft.gui.setTitle(TextUtils.tryParseJson(text));
+        if (isHost(api))
+            api.minecraft.gui.setTitle(TextUtils.tryParseJson(text));
     }
 
     @LuaWhitelist
@@ -131,8 +131,8 @@ public class HostAPI {
             description = "host.set_subtitle"
     )
     public static void setSubtitle(@LuaNotNil HostAPI api, @LuaNotNil String text) {
-        if (!isHost(api)) return;
-        api.minecraft.gui.setSubtitle(TextUtils.tryParseJson(text));
+        if (isHost(api))
+            api.minecraft.gui.setSubtitle(TextUtils.tryParseJson(text));
     }
 
     @LuaWhitelist
@@ -184,8 +184,7 @@ public class HostAPI {
             description = "host.swing_arm"
     )
     public static void swingArm(@LuaNotNil HostAPI api, Boolean offhand) {
-        if (!isHost(api)) return;
-        if (Minecraft.getInstance().player != null)
+        if (isHost(api) && Minecraft.getInstance().player != null)
             Minecraft.getInstance().player.swing(offhand == null || !offhand ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND);
     }
 
@@ -231,12 +230,8 @@ public class HostAPI {
             description = "host.set_chat_color"
     )
     public static void setChatColor(@LuaNotNil HostAPI api, Object x, Double y, Double z) {
-        if (!isHost(api)) return;
-
-        if (x != null)
-            api.chatColor = ColorUtils.rgbToInt(LuaUtils.parseVec3("setChatColor", x, y, z));
-        else
-            api.chatColor = null;
+        if (isHost(api))
+            api.chatColor = x == null ? null : ColorUtils.rgbToInt(LuaUtils.parseVec3("setChatColor", x, y, z));
     }
 
     @LuaWhitelist
@@ -248,9 +243,7 @@ public class HostAPI {
             description = "host.get_chat_text"
     )
     public static String getChatText(@LuaNotNil HostAPI api) {
-        if (!isHost(api)) return null;
-
-        if (Minecraft.getInstance().screen instanceof ChatScreen chat)
+        if (isHost(api) && Minecraft.getInstance().screen instanceof ChatScreen chat)
             return ((ChatScreenAccessor) chat).getInput().getValue();
 
         return null;
@@ -265,9 +258,7 @@ public class HostAPI {
             description = "host.set_chat_text"
     )
     public static void setChatText(@LuaNotNil HostAPI api, @LuaNotNil String text) {
-        if (!isHost(api)) return;
-
-        if (Minecraft.getInstance().screen instanceof ChatScreen chat)
+        if (isHost(api) && Minecraft.getInstance().screen instanceof ChatScreen chat)
             ((ChatScreenAccessor) chat).getInput().setValue(text);
     }
 

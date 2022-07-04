@@ -1,15 +1,22 @@
-package org.moon.figura.lua.api.sound;
+package org.moon.figura.lua.api;
 
 import com.mojang.blaze3d.audio.SoundBuffer;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import org.moon.figura.avatars.Avatar;
+import org.moon.figura.ducks.SoundEngineAccessor;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.lua.api.world.WorldAPI;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.mixin.sound.SoundManagerAccessor;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.LuaUtils;
@@ -26,6 +33,10 @@ public class SoundAPI {
 
     public SoundAPI(Avatar owner) {
         this.owner = owner;
+    }
+
+    public static SoundEngineAccessor getSoundEngine() {
+        return (SoundEngineAccessor) ((SoundManagerAccessor) Minecraft.getInstance().getSoundManager()).getSoundEngine();
     }
 
     @LuaWhitelist
@@ -72,11 +83,13 @@ public class SoundAPI {
 
         //get and play the sound
         SoundBuffer buffer = api.owner.customSounds.get(id);
-        if (buffer != null && TrustManager.get(api.owner.owner).get(TrustContainer.Trust.CUSTOM_SOUNDS) == 1) {
-            FiguraChannel.getInstance().playSound(api.owner.owner, id, buffer, pos.x, pos.y, pos.z, (float) volume, (float) pitch, false);
+        if (buffer != null) {
+            if (TrustManager.get(api.owner.owner).get(TrustContainer.Trust.CUSTOM_SOUNDS) == 1)
+                getSoundEngine().figura$playCustomSound(api.owner.owner, id, buffer, pos.x, pos.y, pos.z, (float) volume, (float) pitch, false);
         } else {
             SoundEvent event = new SoundEvent(new ResourceLocation(id));
-            FiguraChannel.getInstance().playSound(api.owner.owner, id, event, pos.x, pos.y, pos.z, (float) volume, (float) pitch, false);
+            SimpleSoundInstance instance = new SimpleSoundInstance(event, SoundSource.PLAYERS, (float) volume, (float) pitch, RandomSource.create(WorldAPI.getCurrentWorld().random.nextLong()), pos.x, pos.y, pos.z);
+            getSoundEngine().figura$playSound(api.owner.owner, id, instance, false);
         }
 
         pos.free();
@@ -97,7 +110,7 @@ public class SoundAPI {
             description = "sound.stop_sound"
     )
     public static void stopSound(@LuaNotNil SoundAPI api, String id) {
-        FiguraChannel.getInstance().stopSound(api.owner.owner, id);
+        getSoundEngine().figura$stopSound(api.owner.owner, id);
     }
 
     @Override

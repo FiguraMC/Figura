@@ -7,7 +7,7 @@ import org.moon.figura.lua.api.math.MatricesAPI;
 import org.moon.figura.lua.api.math.VectorsAPI;
 import org.moon.figura.lua.api.model.VanillaModelAPI;
 import org.moon.figura.lua.api.nameplate.NameplateAPI;
-import org.moon.figura.lua.api.sound.SoundAPI;
+import org.moon.figura.lua.api.SoundAPI;
 import org.moon.figura.lua.api.world.WorldAPI;
 import org.moon.figura.lua.types.LuaTable;
 import org.terasology.jnlua.JavaFunction;

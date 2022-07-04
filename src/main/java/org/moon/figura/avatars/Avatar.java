@@ -26,7 +26,7 @@ import org.moon.figura.lua.FiguraLuaState;
 import org.moon.figura.lua.api.EventsAPI;
 import org.moon.figura.lua.api.entity.EntityWrapper;
 import org.moon.figura.lua.api.nameplate.NameplateCustomization;
-import org.moon.figura.lua.api.sound.FiguraChannel;
+import org.moon.figura.lua.api.SoundAPI;
 import org.moon.figura.lua.types.LuaFunction;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
@@ -333,9 +333,9 @@ public class Avatar {
         if (renderer != null)
             renderer.clean();
 
-        FiguraChannel.getInstance().stopSound(owner, null);
+        SoundAPI.getSoundEngine().figura$stopSound(owner, null);
         for (SoundBuffer value : customSounds.values())
-            value.discardAlBuffer();
+            value.releaseAlBuffer();
     }
 
     private int getFileSize() {

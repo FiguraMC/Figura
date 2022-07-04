@@ -24,7 +24,6 @@ import org.moon.figura.gui.PaperDoll;
 import org.moon.figura.gui.actionwheel.ActionWheel;
 import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.lua.FiguraLuaState;
-import org.moon.figura.lua.api.sound.FiguraChannel;
 import org.moon.figura.lua.docs.FiguraDocsManager;
 import org.moon.figura.mixin.SkullBlockEntityAccessor;
 import org.moon.figura.trust.TrustManager;
@@ -76,7 +75,6 @@ public class FiguraMod implements ClientModInitializer {
         LocalAvatarLoader.tickWatchedKey();
         AvatarManager.tickLoadedAvatars();
         FiguraLuaPrinter.printChatFromQueue();
-        FiguraChannel.getInstance().tick();
         ticks++;
     }
 

@@ -89,7 +89,7 @@ public class ToggleAction extends Action {
             description = "toggle_action.toggle_color"
     )
     public static Action toggleColor(@LuaNotNil ToggleAction action, Object x, Double y, Double z) {
-        action.toggleColor = LuaUtils.parseVec3("toggleColor", x, y, z);
+        action.toggleColor = x == null ? null : LuaUtils.parseVec3("toggleColor", x, y, z);
         return action;
     }
 
