@@ -266,7 +266,17 @@ public class FiguraVec2 extends FiguraVector<FiguraVec2> implements CachedType {
 
     @LuaWhitelist
     public static int __len(@LuaNotNil FiguraVec2 arg1) {
-        return 6;
+        return 2;
+    }
+
+    @LuaWhitelist
+    public static boolean __lt(@LuaNotNil FiguraVec2 l, @LuaNotNil FiguraVec2 r) {
+        return l.x < r.x && l.y < r.y;
+    }
+
+    @LuaWhitelist
+    public static boolean __le(@LuaNotNil FiguraVec2 l, @LuaNotNil FiguraVec2 r) {
+        return l.x <= r.x && l.y <= r.y;
     }
 
     @LuaWhitelist

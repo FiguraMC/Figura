@@ -294,6 +294,16 @@ public class FiguraVec4 extends FiguraVector<FiguraVec4> implements CachedType {
     }
 
     @LuaWhitelist
+    public static boolean __lt(@LuaNotNil FiguraVec4 l, @LuaNotNil FiguraVec4 r) {
+        return l.x < r.x && l.y < r.y && l.z < r.z && l.w < r.w;
+    }
+
+    @LuaWhitelist
+    public static boolean __le(@LuaNotNil FiguraVec4 l, @LuaNotNil FiguraVec4 r) {
+        return l.x <= r.x && l.y <= r.y && l.z <= r.z && l.w <= r.w;
+    }
+
+    @LuaWhitelist
     public static String __tostring(@LuaNotNil FiguraVec4 arg1) {
         return arg1.toString();
     }
