@@ -6,11 +6,13 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Pose;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.model.FiguraModelPart;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
 import org.moon.figura.mixin.input.KeyMappingAccessor;
+import org.moon.figura.mixin.render.GameRendererAccessor;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.FiguraText;
 
@@ -55,6 +57,13 @@ public class FiguraListDocs {
             add(value.name());
         }
     }};
+    private static final LinkedHashSet<String> POST_EFFECTS = new LinkedHashSet<>() {{
+        for (ResourceLocation effect : GameRendererAccessor.getEffects()) {
+            String[] split = effect.getPath().split("/");
+            String name = split[split.length - 1];
+            add(name.split("\\.")[0]);
+        }
+    }};
 
     // -- main method -- //
 
@@ -82,6 +91,7 @@ public class FiguraListDocs {
         root.then(generateCommand(() -> new LinkedHashSet<>() {{this.addAll(KeyMappingAccessor.getAll().keySet());}}, "key_list", 2));
         root.then(generateCommand(() -> ENTITY_POSES, "entity_poses", 2));
         root.then(generateCommand(() -> ITEM_RENDER_TYPES, "item_render_types", 1));
+        root.then(generateCommand(() -> POST_EFFECTS, "post_effects", 2));
 
         return root;
     }

@@ -1,6 +1,7 @@
 package org.moon.figura.lua.api;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import org.moon.figura.lua.LuaNotNil;
@@ -38,6 +39,7 @@ public class RendererAPI {
 
     public FiguraVec3 cameraRot;
     public FiguraVec3 cameraBonusRot;
+    public ResourceLocation postShader;
 
     public RendererAPI(UUID owner) {
         this.owner = owner;
@@ -130,6 +132,21 @@ public class RendererAPI {
     )
     public static void setCameraBonusRot(@LuaNotNil RendererAPI api, Object x, Double y, Double z) {
         api.cameraBonusRot = x == null ? null : LuaUtils.parseVec3("setCameraBonusRot", x, y, z);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = {RendererAPI.class, String.class},
+                    argumentNames = {"api", "effect"}
+            ),
+            description = "renderer.set_post_effect"
+    )
+    public static void setPostEffect(@LuaNotNil RendererAPI api, String effect) {
+        api.postShader = effect == null ? null : new ResourceLocation("shaders/post/" + effect.toLowerCase() + ".json");
+        Entity e = Minecraft.getInstance().getCameraEntity();
+        if (e != null && e.getUUID().compareTo(api.owner) == 0)
+            Minecraft.getInstance().gameRenderer.checkEntityPostEffect(e);
     }
 
     @Override

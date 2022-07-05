@@ -28,6 +28,7 @@
     "render.CameraMixin",
     "render.EntityRenderDispatcherMixin",
     "render.GameRendererMixin",
+    "render.GameRendererAccessor",
     "render.PlayerModelMixin",
 
     "render.layers.CapeLayerMixin",
