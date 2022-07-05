@@ -49,9 +49,9 @@ public class UIHelper extends GuiComponent {
     public static void useFiguraGuiFramebuffer() {
         previousFBO = GL30.glGetInteger(GL30.GL_DRAW_FRAMEBUFFER_BINDING);
 
-        int windowWidth = Minecraft.getInstance().getWindow().getScreenWidth();
-        int windowHeight = Minecraft.getInstance().getWindow().getScreenHeight();
-        FIGURA_FRAMEBUFFER.setSize(windowWidth, windowHeight);
+        int width = Minecraft.getInstance().getWindow().getWidth();
+        int height = Minecraft.getInstance().getWindow().getHeight();
+        FIGURA_FRAMEBUFFER.setSize(width, height);
 
         //Enable stencil buffer during this phase of rendering
         GL30.glEnable(GL30.GL_STENCIL_TEST);
@@ -66,7 +66,7 @@ public class UIHelper extends GuiComponent {
         GlStateManager._clear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT | GL30.GL_STENCIL_BUFFER_BIT, false);
 
         Matrix4f mf = RenderSystem.getProjectionMatrix();
-        Minecraft.getInstance().getMainRenderTarget().blitToScreen(windowWidth, windowHeight, false);
+        Minecraft.getInstance().getMainRenderTarget().blitToScreen(width, height, false);
         RenderSystem.setProjectionMatrix(mf);
     }
 
