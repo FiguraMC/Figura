@@ -1,6 +1,7 @@
 {
   "figura": "Figura",
   "figura.tab": "  ",
+  "figura.ellipsis": "...",
 
 
   "figura.backend.connected": "Backend Connected!",
@@ -276,6 +277,7 @@
   "figura.docs.text.not_editable": "Not Editable",
   "figura.docs.text.group": "Type Group",
   "figura.docs.text.entries": "Entries",
+  "figura.docs.text.extends": "extends",
 
   "figura.docs.group.misc": "Contains various miscellaneous types, which don't earn their own full category.",
   "figura.docs.group.client": "Contains types related to the running client. Currently only ClientAPI.",
@@ -721,7 +723,7 @@
   "figura.docs.host.unlock_cursor": "Setting this value to true will unlock your cursor, letting you move it freely on the screen instead of it controlling your player's rotation.",
   "figura.docs.host.is_host": "Returns true if this instance of the script is running on host.",
   "figura.docs.host.get_targeted_entity": "Returns a proxy for your currently targeted entity. This entity appears on the F3 screen.",
-  "figura.docs.host.set_title_times": "I'm going to be honest, I don't really know what this one does. It has something to do with the amount of time that titles stay on screen, but nothing more specific than that.",
+  "figura.docs.host.set_title_times": "Sets the duration of the title on the screen, also its fade-in and fade-out durations.",
   "figura.docs.host.clear_title": "Clears the current title from the GUI.",
   "figura.docs.host.set_title": "Sets the current title to the given text. The text is given as json.",
   "figura.docs.host.set_subtitle": "Sets the current subtitle to the given text. The text is given as json.",

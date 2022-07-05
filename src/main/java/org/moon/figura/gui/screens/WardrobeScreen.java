@@ -100,9 +100,10 @@ public class WardrobeScreen extends AbstractPanelScreen {
         int rightSide = Math.min(third, 134);
 
         //back
-        addRenderableWidget(new TexturedButton(width - rightSide - 4, height - 24, rightSide, 20, FiguraText.of("gui.back"), null,
-            bx -> this.minecraft.setScreen(parentScreen)
-        ));
+        TexturedButton back = new TexturedButton(width - rightSide - 4, height - 24, rightSide, 20, FiguraText.of("gui.back"), null,
+                bx -> this.minecraft.setScreen(parentScreen)
+        );
+        addRenderableWidget(back);
 
         // -- right side -- //
 
@@ -133,7 +134,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
         addRenderableWidget(keybinds);
 
         //avatar metadata
-        addRenderableOnly(avatarInfo = new AvatarInfoWidget(this.width - rightSide - 4, 64, rightSide));
+        addRenderableOnly(avatarInfo = new AvatarInfoWidget(this.width - rightSide - 4, 64, rightSide, back.y - 68));
 
         //panic warning - always added last, on top
         addRenderableOnly(panic = new Label(FiguraText.of("gui.panic.1").withStyle(ChatFormatting.YELLOW).append("\n").append(FiguraText.of("gui.panic.2", Config.PANIC_BUTTON.keyBind.getTranslatedKeyMessage())),
@@ -156,7 +157,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
         Avatar avatar;
         boolean backend = NetworkManager.backendStatus == 3;
         upload.active = backend && NetworkManager.canUpload() && !AvatarManager.localUploaded && (avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID())) != null && avatar.nbt != null;
-        delete.active = backend;
+        //delete.active = backend;
     }
 
     @Override

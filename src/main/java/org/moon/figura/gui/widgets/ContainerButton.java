@@ -25,7 +25,7 @@ public class ContainerButton extends SwitchButton {
         int color = (!this.active || !this.isToggled() ? ChatFormatting.DARK_GRAY : ChatFormatting.WHITE).getColor();
         Component arrow = Component.literal(this.toggled ? "V" : "^").setStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT));
         int arrowWidth = font.width(arrow);
-        Component message = TextUtils.trimToWidthEllipsis(font, getMessage(), this.width - arrowWidth - 6);
+        Component message = TextUtils.trimToWidthEllipsis(font, getMessage(), this.width - arrowWidth - 6, TextUtils.ELLIPSIS.copy().withStyle(getMessage().getStyle()));
 
         //draw text
         font.drawShadow(

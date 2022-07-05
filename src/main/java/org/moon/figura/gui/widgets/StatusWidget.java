@@ -28,8 +28,8 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
             Style.EMPTY.withColor(ChatFormatting.YELLOW),
             Style.EMPTY.withColor(ChatFormatting.GREEN)
     );
-    public static final int SIZE_WARNING = 75;
-    public static final int SIZE_LARGE = 100;
+    public static final int SIZE_WARNING = 75_000;
+    public static final int SIZE_LARGE = 100_000;
 
     private final Font font;
     private byte status = 0;
@@ -55,7 +55,7 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
         boolean empty = avatar == null || avatar.nbt == null;
 
-        int size = empty ? 0 : avatar.fileSize / 1000f > SIZE_LARGE ? 1 : avatar.fileSize / 1000f > SIZE_WARNING ? 2 : 3;
+        int size = empty ? 0 : avatar.fileSize > SIZE_LARGE ? 1 : avatar.fileSize > SIZE_WARNING ? 2 : 3;
         status = (byte) size;
 
         int texture = empty || !avatar.hasTexture ? 0 : 3;

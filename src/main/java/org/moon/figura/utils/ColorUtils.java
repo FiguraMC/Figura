@@ -19,12 +19,12 @@ public class ColorUtils {
 
         LUA_LOG(0x5555FF),
         LUA_ERROR(0xFF5555),
-        LUA_PING(0xAA55FF),
+        LUA_PING(0xA155DA, "luna", "moff", "moth"),
 
         DEFAULT(0x5AAAFF),
-        REDDIT_MOD(0xFF673D),
-        DISCORD_MOD(0x72B7FF),
-        DISCORD_ADMIN(0xB7FF72);
+        REDDIT_MOD(0xFF7F72),
+        DISCORD_MOD(0x72B8FF),
+        DISCORD_ADMIN(0x72FF73);
 
         public final int hex;
         public final FiguraVec3 vec;

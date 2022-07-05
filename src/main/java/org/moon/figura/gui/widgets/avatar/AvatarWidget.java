@@ -38,7 +38,7 @@ public class AvatarWidget extends AbstractAvatarWidget {
             protected void renderText(PoseStack stack) {
                 //variables
                 Font font = Minecraft.getInstance().font;
-                Component message = TextUtils.trimToWidthEllipsis(font, getMessage(), this.width - 6);
+                Component message = TextUtils.trimToWidthEllipsis(font, getMessage(), this.width - 6, TextUtils.ELLIPSIS.copy().withStyle(getMessage().getStyle()));
 
                 //draw text
                 font.drawShadow(

@@ -116,25 +116,28 @@ public abstract class FiguraDoc {
 
         @Override
         public int print() {
-
-            String name = this.name;
-            if (superclass != null)
-                name += " (extends " + FiguraDocsManager.NAME_MAP.getOrDefault(superclass, superclass.getName()) + ")";
-
             //header
-            FiguraMod.sendChatMessage(HEADER.copy()
-
-                    //type
+            MutableComponent message = HEADER.copy()
                     .append("\n\n")
                     .append(Component.literal("• ")
                             .append(FiguraText.of("docs.text.type"))
                             .append(":")
-                            .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
-                    .append("\n\t")
-                    .append(Component.literal("• " + name).withStyle(ColorUtils.Colors.MAYA_BLUE.style))
+                            .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style));
 
-                    //description
-                    .append("\n\n")
+            //type
+            message.append("\n\t")
+                    .append(Component.literal("• " + name).withStyle(ColorUtils.Colors.MAYA_BLUE.style));
+
+            if (superclass != null) {
+                message.append(" (")
+                        .append(FiguraText.of("docs.text.extends"))
+                        .append(" ")
+                        .append(Component.literal(FiguraDocsManager.NAME_MAP.getOrDefault(superclass, superclass.getName())).withStyle(ColorUtils.Colors.MAYA_BLUE.style))
+                        .append(")");
+            }
+
+            //description
+            message.append("\n\n")
                     .append(Component.literal("• ")
                             .append(FiguraText.of("docs.text.description"))
                             .append(":")
@@ -142,8 +145,9 @@ public abstract class FiguraDoc {
                     .append("\n\t")
                     .append(Component.literal("• ")
                             .append(FiguraText.of("docs." + description))
-                            .withStyle(ColorUtils.Colors.MAYA_BLUE.style)));
+                            .withStyle(ColorUtils.Colors.MAYA_BLUE.style));
 
+            FiguraMod.sendChatMessage(message);
             return 1;
         }
 

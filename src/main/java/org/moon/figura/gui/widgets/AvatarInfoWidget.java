@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.FormattedCharSequence;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
@@ -16,12 +17,14 @@ import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.ui.UIHelper;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventListener {
 
-    public static final Component UNKNOWN = Component.literal("?").setStyle(ColorUtils.Colors.FRAN_PINK.style);
-    public static final List<Component> TITLES = List.of(
+    private static final Component UNKNOWN = Component.literal("?").setStyle(ColorUtils.Colors.FRAN_PINK.style);
+    private static final Component ELLIPSIS = TextUtils.ELLIPSIS.copy().setStyle(ColorUtils.Colors.FRAN_PINK.style);
+    private static final List<Component> TITLES = List.of(
             FiguraText.of("gui.name").withStyle(ChatFormatting.UNDERLINE),
             FiguraText.of("gui.authors").withStyle(ChatFormatting.UNDERLINE),
             FiguraText.of("gui.size").withStyle(ChatFormatting.UNDERLINE),
@@ -32,17 +35,19 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
     public int x, y;
     public int width, height;
     private boolean visible = true;
+    private final int maxSize;
 
     private final Font font;
     private final List<Component> values = Arrays.asList(new Component[TITLES.size()]);
 
-    public AvatarInfoWidget(int x, int y, int width) {
+    public AvatarInfoWidget(int x, int y, int width, int maxSize) {
         this.x = x;
         this.y = y;
         this.font = Minecraft.getInstance().font;
 
         this.width = width;
         this.height = (font.lineHeight + 4) * TITLES.size() * 2 + 4; //font + spacing + border
+        this.maxSize = maxSize;
     }
 
     @Override
@@ -68,33 +73,67 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
     public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
         if (!visible) return;
 
-        //render background
-        UIHelper.renderSliced(stack, x, y, width, height, UIHelper.OUTLINE);
-
         //prepare vars
         int x = this.x + width / 2;
         int y = this.y + 4;
         int height = font.lineHeight + 4;
+        int maxLines = (maxSize - 8) / height;
+
+        //special author stuff
+        int authorFreeLines = maxLines - 9;
+        Component authors = values.get(1);
+        List<FormattedCharSequence> authorLines = authors == null ? Collections.emptyList() : TextUtils.warpText(authors, width - 10, font);
+        int authorUsedLines = Math.max(Math.min(authorLines.size(), authorFreeLines), 1);
+        this.height = height * TITLES.size() * 2 + 4 + height * (authorUsedLines - 1);
+
+        //render background
+        UIHelper.renderSliced(stack, this.x, this.y, this.width, this.height, UIHelper.OUTLINE);
 
         //render texts
         for (int i = 0; i < TITLES.size(); i++) {
-            //title
+            // -- title -- //
+
             Component title = TITLES.get(i);
             if (title != null)
                 UIHelper.drawCenteredString(stack, font, title, x, y, 0xFFFFFF);
             y += height;
 
-            //value
+            // -- value -- //
+
             Component value = values.get(i);
-            if (value != null) {
-                Component toRender = TextUtils.trimToWidthEllipsis(font, value, width - 10);
+            if (value == null) {
+                y += height;
+                continue;
+            }
+
+            //default rendering
+            if (i != 1) {
+                Component toRender = TextUtils.trimToWidthEllipsis(font, value, width - 10, ELLIPSIS);
                 UIHelper.drawCenteredString(stack, font, toRender, x, y, 0xFFFFFF);
 
                 //tooltip
                 if (value != toRender && UIHelper.isMouseOver(this.x, y - height, width, height * 2 - 4, mouseX, mouseY))
                     UIHelper.setTooltip(value);
+
+                y += height;
+                continue;
             }
-            y += height;
+
+            //author special rendering
+            for (int j = 0; j < authorUsedLines; j++) {
+                FormattedCharSequence text = authorLines.get(j);
+
+                //add ellipsis and tooltip if it is the last entry and out lines exceeded the free space
+                if (j == authorUsedLines - 1 && authorLines.size() > authorFreeLines) {
+                    text = TextUtils.addEllipsis(font, TextUtils.charSequenceToText(text), width - 10, ELLIPSIS).getVisualOrderText();
+
+                    if (UIHelper.isMouseOver(this.x, y - height * authorUsedLines, width, height * (authorUsedLines + 1) - 4, mouseX, mouseY))
+                        UIHelper.setTooltip(value);
+                }
+
+                UIHelper.drawCenteredString(stack, font, text, x, y, 0xFFFFFF);
+                y += height;
+            }
         }
     }
 

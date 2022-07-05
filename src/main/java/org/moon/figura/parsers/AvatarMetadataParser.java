@@ -41,7 +41,7 @@ public class AvatarMetadataParser {
                 authors.append(name);
 
                 if (i < metadata.authors.length - 1)
-                    authors.append(", ");
+                    authors.append("\n");
             }
 
             nbt.putString("authors", authors.toString());

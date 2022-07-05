@@ -4,6 +4,7 @@ import com.mojang.brigadier.StringReader;
 import net.minecraft.client.gui.Font;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
@@ -11,11 +12,13 @@ import net.minecraft.util.FormattedCharSequence;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class TextUtils {
 
     public static final ResourceLocation FIGURA_FONT = new FiguraIdentifier("default");
     public static final Component TAB = FiguraText.of("tab");
+    public static final Component ELLIPSIS = FiguraText.of("ellipsis");
 
     public static Component noBadges4U(Component text) {
         return replaceInText(text, "[❗❌\uD83C\uDF54\uD83E\uDD90\uD83C\uDF19\uD83C\uDF00❤☆★]", Component.literal("�").withStyle(Style.EMPTY.withFont(Style.DEFAULT_FONT)));
@@ -116,18 +119,19 @@ public class TextUtils {
         return ret;
     }
 
-    public static Component trimToWidthEllipsis(Font font, Component text, int width) {
+    public static Component trimToWidthEllipsis(Font font, Component text, int width, Component ellipsis) {
         //return text without changes if it is not larger than width
         if (font.width(text.getVisualOrderText()) <= width)
             return text;
 
-        //get ellipsis size
-        Component dots = Component.literal("...");
-        int size = font.width(dots.getVisualOrderText());
+        //add ellipsis
+        return addEllipsis(font, text, width, ellipsis);
+    }
 
-        //trim and return modified text
-        String trimmed = font.substrByWidth(text, width - size).getString();
-        return Component.literal(trimmed).setStyle(text.getStyle()).append(dots);
+    public static Component addEllipsis(Font font, Component text, int width, Component ellipsis) {
+        //trim with the ellipsis size and return the modified text
+        FormattedText trimmed = font.substrByWidth(text, width - font.width(ellipsis));
+        return formattedTextToText(trimmed).copy().append(ellipsis);
     }
 
     public static Component replaceTabs(Component text) {
@@ -149,9 +153,7 @@ public class TextUtils {
         int side = largest <= right ? right : largest <= left ? left : Math.max(left, right);
 
         //warp the unmodified text
-        List<FormattedCharSequence> warp = new ArrayList<>();
-        font.getSplitter().splitLines(text, side, Style.EMPTY, (formattedText, aBoolean) -> warp.add(Language.getInstance().getVisualOrder(formattedText)));
-        return warp;
+        return warpText(text, side, font);
     }
 
     //get the largest text width from a list
@@ -182,5 +184,29 @@ public class TextUtils {
             ret.append(component.copy().withStyle(newStyle));
 
         return ret;
+    }
+
+    public static List<FormattedCharSequence> warpText(Component text, int width, Font font) {
+        List<FormattedCharSequence> warp = new ArrayList<>();
+        font.getSplitter().splitLines(text, width, Style.EMPTY, (formattedText, aBoolean) -> warp.add(Language.getInstance().getVisualOrder(formattedText)));
+        return warp;
+    }
+
+    public static Component charSequenceToText(FormattedCharSequence charSequence) {
+        MutableComponent builder = Component.empty();
+        charSequence.accept((index, style, codePoint) -> {
+            builder.append(Component.literal(String.valueOf(Character.toChars(codePoint))).withStyle(style));
+            return true;
+        });
+        return builder;
+    }
+
+    public static Component formattedTextToText(FormattedText formattedText) {
+        MutableComponent builder = Component.empty();
+        formattedText.visit((style, string) -> {
+            builder.append(Component.literal(string).withStyle(style));
+            return Optional.empty();
+        }, Style.EMPTY);
+        return builder;
     }
 }
