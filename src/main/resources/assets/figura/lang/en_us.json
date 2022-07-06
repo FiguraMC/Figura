@@ -262,7 +262,7 @@
   "figura.command.run.no_script_error": "No active script to run code in!",
   "figura.command.load.loading": "Loading avatar!",
   "figura.command.load.invalid": "Invalid path \"%s\"",
-  "figura.command.docs_export.success": "Exported Figura docs into the cache directory.",
+  "figura.command.docs_export.success": "Exported Figura docs into the Figura directory.",
   "figura.command.docs_export.error": "Failed to export Figura docs!",
 
   "figura.docs": "The \"/figura docs\" command allows you to access documentation for all types and functions Figura adds to its Lua scripting environment.",
@@ -299,7 +299,7 @@
   "figura.docs.list.parent_types": "List of valid ParentTypes. Used within ModelParts.",
   "figura.docs.list.render_types": "List of valid RenderTypes. Used within ModelParts.",
   "figura.docs.list.texture_types": "List of valid TextureTypes. Used within ModelParts.",
-  "figura.docs.list.key_list": "List of valid KeyLists. Used within the KeybindAPI.",
+  "figura.docs.list.key_ids": "List of valid KeyIDs. Used within the KeybindAPI.",
   "figura.docs.list.entity_poses": "List of valid EntityPoses. Used within the EntityAPI.",
   "figura.docs.list.item_render_types": "List of valid RenderTypes. Used within the Item RenderTask.",
   "figura.docs.list.post_effects": "List of valid PostEffects. Used within the RendererAPI.",

@@ -82,11 +82,12 @@ public class Avatar {
     public int worldRenderInstructions, entityRenderInstructions, postEntityRenderInstructions, postWorldRenderInstructions;
     public int accumulatedTickInstructions, accumulatedEntityRenderInstructions, accumulatedWorldRenderInstructions;
 
-    public final RefilledNumber particlesRemaining = new RefilledNumber();
-    public final RefilledNumber soundsRemaining = new RefilledNumber();
+    public final RefilledNumber particlesRemaining, soundsRemaining;
 
     public Avatar(UUID owner) {
         this.owner = owner;
+        this.particlesRemaining = new RefilledNumber(TrustManager.get(this.owner).get(TrustContainer.Trust.PARTICLES));
+        this.soundsRemaining = new RefilledNumber(TrustManager.get(this.owner).get(TrustContainer.Trust.SOUNDS));
     }
 
     private static CompletableFuture<Void> run(Runnable toRun) {

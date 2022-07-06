@@ -222,7 +222,7 @@ public class FiguraDocsManager {
         root.executes(context -> {
             try {
                 //get path
-                Path targetPath = FiguraMod.getCacheDirectory().resolve("exported_docs.json");
+                Path targetPath = FiguraMod.getFiguraDirectory().resolve("exported_docs.json");
 
                 //create file
                 if (!Files.exists(targetPath))
@@ -264,6 +264,9 @@ public class FiguraDocsManager {
 
             root.add(entry.getKey(), group);
         }
+
+        //lists
+        root.add("lists", FiguraListDocs.toJson());
 
         //return as string
         return new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create().toJson(root);

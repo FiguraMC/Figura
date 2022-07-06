@@ -144,9 +144,6 @@ public class RendererAPI {
     )
     public static void setPostEffect(@LuaNotNil RendererAPI api, String effect) {
         api.postShader = effect == null ? null : new ResourceLocation("shaders/post/" + effect.toLowerCase() + ".json");
-        Entity e = Minecraft.getInstance().getCameraEntity();
-        if (e != null && e.getUUID().compareTo(api.owner) == 0)
-            Minecraft.getInstance().gameRenderer.checkEntityPostEffect(e);
     }
 
     @Override

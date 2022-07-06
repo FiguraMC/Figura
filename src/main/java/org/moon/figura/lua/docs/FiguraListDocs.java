@@ -1,9 +1,13 @@
 package org.moon.figura.lua.docs;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -24,7 +28,7 @@ import java.util.function.Supplier;
  */
 public class FiguraListDocs {
 
-    //-- custom types --//
+    //-- types --//
 
     public static final LinkedHashSet<String> KEYBINDS = new LinkedHashSet<>();
     private static final LinkedHashSet<Component> PARENT_TYPES = new LinkedHashSet<>() {{
@@ -65,7 +69,105 @@ public class FiguraListDocs {
         }
     }};
 
-    // -- main method -- //
+    private enum ListDoc {
+        KEYBINDS(() -> FiguraListDocs.KEYBINDS, "Keybinds", "keybinds", 2),
+        PARENT_TYPES(() -> FiguraListDocs.PARENT_TYPES, "ParentTypes", "parent_types", 2),
+        RENDER_TYPES(() -> FiguraListDocs.RENDER_TYPES, "RenderTypes", "render_types", 1),
+        TEXTURE_TYPES(() -> FiguraListDocs.TEXTURE_TYPES, "TextureTypes", "texture_types", 1),
+        KEY_IDS(() -> new LinkedHashSet<>() {{this.addAll(KeyMappingAccessor.getAll().keySet());}}, "KeyIDs", "key_ids", 2),
+        ENTITY_POSES(() -> FiguraListDocs.ENTITY_POSES, "EntityPoses", "entity_poses", 2),
+        ITEM_RENDER_TYPES(() -> FiguraListDocs.ITEM_RENDER_TYPES, "Item RenderTypes", "item_render_types", 1),
+        POST_EFFECTS(() -> FiguraListDocs.POST_EFFECTS, "PostEffects", "post_effects", 2);
+
+        private final Supplier<LinkedHashSet<?>> supplier;
+        private final String name, id;
+        private final int split;
+
+        ListDoc(Supplier<LinkedHashSet<?>> supplier, String name, String id, int split) {
+            this.supplier = supplier;
+            this.name = name;
+            this.id = id;
+            this.split = split;
+        }
+
+        private JsonElement generateJson() {
+            JsonObject object = new JsonObject();
+
+            //list properties
+            object.addProperty("name", name);
+            object.addProperty("description", Language.getInstance().getOrDefault(FiguraText.of("docs.list." + id).getString()));
+
+            //list entries
+            LinkedHashSet<?> coll = supplier.get();
+            if (coll.size() == 0)
+                return object;
+
+            JsonArray entries = new JsonArray();
+            for (Object element : supplier.get())
+                entries.add(element instanceof Component c ? c.getString() : element.toString());
+
+            object.add("entries", entries);
+            return object;
+        }
+
+        private LiteralArgumentBuilder<FabricClientCommandSource> generateCommand() {
+            //command
+            LiteralArgumentBuilder<FabricClientCommandSource> command = LiteralArgumentBuilder.literal(id);
+
+            //display everything
+            command.executes(context -> {
+                LinkedHashSet<?> coll = supplier.get();
+
+                if (coll.size() == 0) {
+                    FiguraMod.sendChatMessage(FiguraText.of("docs.list.empty"));
+                    return 0;
+                }
+
+                MutableComponent text = FiguraDoc.HEADER.copy()
+                        .append("\n\n")
+                        .append(Component.literal("• ")
+                                .append(FiguraText.of("docs.text.description"))
+                                .append(":")
+                                .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
+                        .append("\n\t")
+                        .append(Component.literal("• ")
+                                .append(FiguraText.of("docs.list." + id))
+                                .withStyle(ColorUtils.Colors.MAYA_BLUE.style))
+                        .append("\n\n")
+                        .append(Component.literal("• ")
+                                .append(FiguraText.of("docs.text.entries"))
+                                .append(":")
+                                .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style));
+
+                int i = 0;
+                for (Object element : coll) {
+                    Component component = element instanceof Component c ? c : Component.literal(element.toString()).withStyle(ChatFormatting.WHITE);
+                    text.append(i % split == 0 ? "\n\t" : "\t");
+                    text.append(Component.literal("• ").withStyle(ChatFormatting.YELLOW)).append(component);
+                    i++;
+                }
+
+                FiguraMod.sendChatMessage(text);
+                return 1;
+            });
+
+            //add collection as child for easy navigation
+            for (Object element : supplier.get()) {
+                String text = element instanceof Component c ? c.getString() : element.toString();
+                LiteralArgumentBuilder<FabricClientCommandSource> child = LiteralArgumentBuilder.literal(text);
+                child.executes(context -> {
+                    FiguraMod.sendChatMessage(Component.literal(text).withStyle(ColorUtils.Colors.FRAN_PINK.style));
+                    return 1;
+                });
+                command.then(child);
+            }
+
+            //return
+            return command;
+        }
+    }
+
+    // -- doc methods -- //
 
     public static LiteralArgumentBuilder<FabricClientCommandSource> getCommand() {
         //self
@@ -84,73 +186,16 @@ public class FiguraListDocs {
             return 1;
         });
 
-        root.then(generateCommand(() -> KEYBINDS, "keybinds", 2));
-        root.then(generateCommand(() -> PARENT_TYPES, "parent_types", 2));
-        root.then(generateCommand(() -> RENDER_TYPES, "render_types", 1));
-        root.then(generateCommand(() -> TEXTURE_TYPES, "texture_types", 1));
-        root.then(generateCommand(() -> new LinkedHashSet<>() {{this.addAll(KeyMappingAccessor.getAll().keySet());}}, "key_list", 2));
-        root.then(generateCommand(() -> ENTITY_POSES, "entity_poses", 2));
-        root.then(generateCommand(() -> ITEM_RENDER_TYPES, "item_render_types", 1));
-        root.then(generateCommand(() -> POST_EFFECTS, "post_effects", 2));
+        for (ListDoc value : ListDoc.values())
+            root.then(value.generateCommand());
 
         return root;
     }
 
-    // -- helper functions -- //
-
-    private static LiteralArgumentBuilder<FabricClientCommandSource> generateCommand(Supplier<LinkedHashSet<?>> supplier, String name, int split) {
-        //command
-        LiteralArgumentBuilder<FabricClientCommandSource> command = LiteralArgumentBuilder.literal(name);
-
-        //display everything
-        command.executes(context -> {
-            LinkedHashSet<?> coll = supplier.get();
-
-            if (coll.size() == 0) {
-                FiguraMod.sendChatMessage(FiguraText.of("docs.list.empty"));
-                return 0;
-            }
-
-            MutableComponent text = FiguraDoc.HEADER.copy()
-                    .append("\n\n")
-                    .append(Component.literal("• ")
-                            .append(FiguraText.of("docs.text.description"))
-                            .append(":")
-                            .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
-                    .append("\n\t")
-                    .append(Component.literal("• ")
-                            .append(FiguraText.of("docs.list." + name))
-                            .withStyle(ColorUtils.Colors.MAYA_BLUE.style))
-                    .append("\n\n")
-                    .append(Component.literal("• ")
-                            .append(FiguraText.of("docs.text.entries"))
-                            .append(":")
-                            .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style));
-
-            int i = 0;
-            for (Object element : coll) {
-                Component component = element instanceof Component c ? c : Component.literal(element.toString()).withStyle(ChatFormatting.WHITE);
-                text.append(i % split == 0 ? "\n\t" : "\t");
-                text.append(Component.literal("• ").withStyle(ChatFormatting.YELLOW)).append(component);
-                i++;
-            }
-
-            FiguraMod.sendChatMessage(text);
-            return 1;
-        });
-
-        //add collection as child for easy navigation
-        for (Object element : supplier.get()) {
-            String text = element instanceof Component c ? c.getString() : element.toString();
-            LiteralArgumentBuilder<FabricClientCommandSource> child = LiteralArgumentBuilder.literal(text);
-            child.executes(context -> {
-                FiguraMod.sendChatMessage(Component.literal(text).withStyle(ColorUtils.Colors.FRAN_PINK.style));
-                return 1;
-            });
-            command.then(child);
-        }
-
-        //return
-        return command;
+    public static JsonElement toJson() {
+        JsonArray array = new JsonArray();
+        for (ListDoc value : ListDoc.values())
+            array.add(value.generateJson());
+        return array;
     }
 }

@@ -11,8 +11,8 @@ import org.moon.figura.backend.NetworkManager;
 import org.moon.figura.config.Config;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.actionwheel.ActionWheel;
-import org.moon.figura.lua.api.keybind.FiguraKeybind;
 import org.moon.figura.lua.api.SoundAPI;
+import org.moon.figura.lua.api.keybind.FiguraKeybind;
 import org.moon.figura.utils.FiguraText;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,7 +23,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Minecraft.class)
-public class MinecraftMixin {
+public abstract class MinecraftMixin {
 
     @Shadow @Final public MouseHandler mouseHandler;
 

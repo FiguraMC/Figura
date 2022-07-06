@@ -14,16 +14,21 @@ public class RefilledNumber {
     private double max;
     private double add;
 
-    private double current = 0d;
+    private double current;
 
     //empty/dummy constructor
     public RefilledNumber() {
         this(0d);
     }
 
-    //actual constructor
     public RefilledNumber(double max) {
+        this(max, max);
+    }
+
+    //actual constructor
+    public RefilledNumber(double max, double initial) {
         set(max);
+        current = initial;
     }
 
     //update the current value
