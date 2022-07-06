@@ -91,7 +91,7 @@ public abstract class CapeLayerMixin extends RenderLayer<AbstractClientPlayer, P
     @Inject(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/player/AbstractClientPlayer;FFFFFF)V", at = @At("TAIL"))
     public void postRender(PoseStack poseStack, MultiBufferSource multiBufferSource, int i, AbstractClientPlayer abstractClientPlayer, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
         Avatar avatar = AvatarManager.getAvatar(abstractClientPlayer);
-        if (avatar == null || avatar.luaState == null || TrustManager.get(abstractClientPlayer.getUUID()).get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 0)
+        if (avatar == null || avatar.luaState == null)
             return;
 
         avatar.luaState.vanillaModel.CAPE.restore(getParentModel());

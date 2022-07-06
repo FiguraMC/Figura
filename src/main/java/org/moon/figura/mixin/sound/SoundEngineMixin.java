@@ -113,7 +113,7 @@ public abstract class SoundEngineMixin implements SoundEngineAccessor {
             channel.linearAttenuation(finalAttenuation);
             channel.setLooping(loop);
             channel.setSelfPosition(pos);
-            channel.setRelative(false);
+            channel.setRelative(true);
             channel.attachStaticBuffer(buffer);
             channel.play();
         });
