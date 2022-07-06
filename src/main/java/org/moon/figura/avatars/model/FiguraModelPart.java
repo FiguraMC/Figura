@@ -9,11 +9,13 @@ import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.model.rendering.ImmediateAvatarRenderer;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
-import org.moon.figura.avatars.model.rendertasks.*;
+import org.moon.figura.avatars.model.rendertasks.BlockTask;
+import org.moon.figura.avatars.model.rendertasks.ItemTask;
+import org.moon.figura.avatars.model.rendertasks.RenderTask;
+import org.moon.figura.avatars.model.rendertasks.TextTask;
 import org.moon.figura.avatars.vanilla.VanillaPartOffsetManager;
 import org.moon.figura.ducks.PlayerModelAccessor;
 import org.moon.figura.lua.LuaNotNil;
@@ -74,14 +76,11 @@ public class FiguraModelPart {
 
     public void applyVanillaTransforms(EntityModel<?> vanillaModel) {
         if (!parentType.vanilla) return;
-        if (vanillaModel instanceof PlayerModel<?> player) {
-            applyVanillaTransform(vanillaModel, parentType, switch (parentType) {
-                case Cape -> ((PlayerModelAccessor) player).figura$getFakeCloak();
-                default -> null;
-            });
-        }
+        if (vanillaModel instanceof PlayerModel<?> player)
+            applyVanillaTransform(parentType, parentType == ParentType.Cape ? ((PlayerModelAccessor) player).figura$getFakeCloak() : null);
+
         if (vanillaModel instanceof HumanoidModel<?> humanoid) {
-            applyVanillaTransform(vanillaModel, parentType, switch (parentType) {
+            applyVanillaTransform(parentType, switch (parentType) {
                 case Head -> humanoid.head;
                 case Body -> humanoid.body;
                 case LeftArm -> humanoid.leftArm;
@@ -92,7 +91,7 @@ public class FiguraModelPart {
             });
         }
         if (vanillaModel instanceof ElytraModel<?> elytra) {
-            applyVanillaTransform(vanillaModel, parentType, switch (parentType) {
+            applyVanillaTransform(parentType, switch (parentType) {
                 case LeftElytra -> ((ElytraModelAccessor) elytra).getLeftWing();
                 case RightElytra -> ((ElytraModelAccessor) elytra).getRightWing();
                 default -> null;
@@ -101,9 +100,8 @@ public class FiguraModelPart {
     }
 
     public void applyExtraTransforms() {
-        switch (parentType) {
-            case Camera -> applyCameraTransform();
-        }
+        if (parentType == ParentType.Camera)
+            applyCameraTransform();
     }
 
     @Override
@@ -111,11 +109,11 @@ public class FiguraModelPart {
         return name + " (ModelPart)";
     }
 
-    public void applyVanillaTransform(EntityModel<?> vanillaModel, ParentType parentType, ModelPart part) {
+    public void applyVanillaTransform(ParentType parentType, ModelPart part) {
         if (part == null)
             return;
 
-        FiguraVec3 defaultPivot = VanillaPartOffsetManager.getVanillaOffset(vanillaModel, parentType);
+        FiguraVec3 defaultPivot = VanillaPartOffsetManager.getVanillaOffset(parentType);
         defaultPivot.subtract(part.x, part.y, part.z);
         defaultPivot.multiply(part.xScale, part.yScale, -part.zScale);
 

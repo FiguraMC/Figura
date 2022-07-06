@@ -19,7 +19,9 @@ import org.moon.figura.lua.api.keybind.FiguraKeybind;
 import org.moon.figura.lua.api.keybind.KeybindAPI;
 import org.moon.figura.lua.api.math.MatricesAPI;
 import org.moon.figura.lua.api.math.VectorsAPI;
+import org.moon.figura.lua.api.model.VanillaGroupPart;
 import org.moon.figura.lua.api.model.VanillaModelAPI;
+import org.moon.figura.lua.api.model.VanillaModelPart;
 import org.moon.figura.lua.api.nameplate.NameplateAPI;
 import org.moon.figura.lua.api.nameplate.NameplateCustomization;
 import org.moon.figura.lua.api.SoundAPI;
@@ -98,7 +100,8 @@ public class FiguraDocsManager {
         put("model", List.of(
                 FiguraModelPart.class,
                 VanillaModelAPI.class,
-                VanillaModelAPI.VanillaModelPart.class,
+                VanillaModelPart.class,
+                VanillaGroupPart.class,
                 RenderTask.class,
                 BlockTask.class,
                 ItemTask.class,

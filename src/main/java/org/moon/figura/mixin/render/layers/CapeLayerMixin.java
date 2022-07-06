@@ -12,6 +12,8 @@ import net.minecraft.util.Mth;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.ducks.PlayerModelAccessor;
+import org.moon.figura.trust.TrustContainer;
+import org.moon.figura.trust.TrustManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -79,17 +81,20 @@ public abstract class CapeLayerMixin extends RenderLayer<AbstractClientPlayer, P
         fakeCloak.zRot = (float) Math.toRadians(s / 2f);
 
         //Copy rotations from fake cloak
-        avatar.luaState.vanillaModel.copyByPart(getParentModel(), avatar.luaState.vanillaModel.CAPE);
+        avatar.luaState.vanillaModel.CAPE.store(getParentModel());
+
         //Setup visibility for real cloak
-        avatar.luaState.vanillaModel.alterByPart(getParentModel(), avatar.luaState.vanillaModel.CAPE);
+        if (TrustManager.get(abstractClientPlayer.getUUID()).get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 1)
+            avatar.luaState.vanillaModel.CAPE.alter(getParentModel());
     }
 
     @Inject(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/player/AbstractClientPlayer;FFFFFF)V", at = @At("TAIL"))
     public void postRender(PoseStack poseStack, MultiBufferSource multiBufferSource, int i, AbstractClientPlayer abstractClientPlayer, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
         Avatar avatar = AvatarManager.getAvatar(abstractClientPlayer);
-        if (avatar == null || avatar.luaState == null)
+        if (avatar == null || avatar.luaState == null || TrustManager.get(abstractClientPlayer.getUUID()).get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 0)
             return;
-        avatar.luaState.vanillaModel.restoreByPart(getParentModel(), avatar.luaState.vanillaModel.CAPE);
+
+        avatar.luaState.vanillaModel.CAPE.restore(getParentModel());
     }
 
 }

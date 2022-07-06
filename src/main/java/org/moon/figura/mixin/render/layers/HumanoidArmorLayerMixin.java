@@ -9,6 +9,7 @@ import net.minecraft.world.entity.LivingEntity;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.lua.api.model.VanillaModelAPI;
+import org.moon.figura.lua.api.model.VanillaPart;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
 import org.spongepowered.asm.mixin.Mixin;
@@ -37,30 +38,35 @@ public class HumanoidArmorLayerMixin<T extends LivingEntity, M extends HumanoidM
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/layers/HumanoidArmorLayer;usesInnerModel(Lnet/minecraft/world/entity/EquipmentSlot;)Z"), method = "renderArmorPiece")
     public void onRenderArmorPiece(PoseStack poseStack, MultiBufferSource multiBufferSource, T livingEntity, EquipmentSlot equipmentSlot, int i, A humanoidModel, CallbackInfo ci) {
-        if (vanillaModelAPI != null) {
-            vanillaModelAPI.alterByPart(humanoidModel,
-                switch (equipmentSlot) {
-                    case HEAD -> vanillaModelAPI.HELMET;
-                    case CHEST -> vanillaModelAPI.CHESTPLATE;
-                    case LEGS -> vanillaModelAPI.LEGGINGS;
-                    case FEET -> vanillaModelAPI.BOOTS;
-                    default -> null;
-                });
-        }
+        if (vanillaModelAPI == null)
+            return;
+
+        VanillaPart part = switch (equipmentSlot) {
+            case HEAD -> vanillaModelAPI.HELMET;
+            case CHEST -> vanillaModelAPI.CHESTPLATE;
+            case LEGS -> vanillaModelAPI.LEGGINGS;
+            case FEET -> vanillaModelAPI.BOOTS;
+            default -> null;
+        };
+
+        if (part != null)
+            part.alter(humanoidModel);
     }
 
     @Inject(at = @At("RETURN"), method = "renderArmorPiece")
     public void postRenderArmorPiece(PoseStack poseStack, MultiBufferSource multiBufferSource, T livingEntity, EquipmentSlot equipmentSlot, int i, A humanoidModel, CallbackInfo ci) {
-        if (vanillaModelAPI != null) {
-            vanillaModelAPI.restoreByPart(humanoidModel,
-                switch (equipmentSlot) {
-                    case HEAD -> vanillaModelAPI.HELMET;
-                    case CHEST -> vanillaModelAPI.CHESTPLATE;
-                    case LEGS -> vanillaModelAPI.LEGGINGS;
-                    case FEET -> vanillaModelAPI.BOOTS;
-                    default -> null;
-                });
-        }
-    }
+        if (vanillaModelAPI == null)
+            return;
 
+        VanillaPart part = switch (equipmentSlot) {
+            case HEAD -> vanillaModelAPI.HELMET;
+            case CHEST -> vanillaModelAPI.CHESTPLATE;
+            case LEGS -> vanillaModelAPI.LEGGINGS;
+            case FEET -> vanillaModelAPI.BOOTS;
+            default -> null;
+        };
+
+        if (part != null)
+            part.restore(humanoidModel);
+    }
 }

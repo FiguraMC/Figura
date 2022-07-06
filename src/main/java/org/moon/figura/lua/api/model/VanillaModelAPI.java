@@ -1,27 +1,20 @@
 package org.moon.figura.lua.api.model;
 
-import net.minecraft.client.model.*;
+import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
 import org.moon.figura.avatars.model.FiguraModelPart;
-import org.moon.figura.avatars.vanilla.VanillaPartOffsetManager;
+import org.moon.figura.ducks.PlayerModelAccessor;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
-import org.moon.figura.lua.docs.LuaFunctionOverload;
-import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.lua.types.LuaPairsIterator;
-import org.moon.figura.math.vector.FiguraVec3;
-import org.moon.figura.ducks.PlayerModelAccessor;
 import org.moon.figura.mixin.render.layers.elytra.ElytraModelAccessor;
-import org.terasology.jnlua.LuaRuntimeException;
 
 import java.util.List;
 import java.util.function.Function;
-
-/**
- * This class is honestly decently organized, it just has... a lot of stuff in it
- */
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -30,370 +23,246 @@ import java.util.function.Function;
 )
 public class VanillaModelAPI {
 
+    // -- body -- //
+
     @LuaWhitelist
     @LuaFieldDoc(description = "vanilla_model.head")
-    public final VanillaModelPart<HumanoidModel<?>> HEAD;
+    public final VanillaModelPart HEAD;
     @LuaWhitelist
     @LuaFieldDoc(description = "vanilla_model.body")
-    public final VanillaModelPart<HumanoidModel<?>> BODY;
+    public final VanillaModelPart BODY;
     @LuaWhitelist
     @LuaFieldDoc(description = "vanilla_model.left_arm")
-    public final VanillaModelPart<HumanoidModel<?>> LEFT_ARM;
+    public final VanillaModelPart LEFT_ARM;
     @LuaWhitelist
     @LuaFieldDoc(description = "vanilla_model.right_arm")
-    public final VanillaModelPart<HumanoidModel<?>> RIGHT_ARM;
+    public final VanillaModelPart RIGHT_ARM;
     @LuaWhitelist
     @LuaFieldDoc(description = "vanilla_model.left_leg")
-    public final VanillaModelPart<HumanoidModel<?>> LEFT_LEG;
+    public final VanillaModelPart LEFT_LEG;
     @LuaWhitelist
     @LuaFieldDoc(description = "vanilla_model.right_leg")
-    public final VanillaModelPart<HumanoidModel<?>> RIGHT_LEG;
+    public final VanillaModelPart RIGHT_LEG;
 
     @LuaWhitelist
     @LuaFieldDoc(description = "vanilla_model.hat")
-    public final VanillaModelPart<HumanoidModel<?>> HAT;
+    public final VanillaModelPart HAT;
     @LuaWhitelist
     @LuaFieldDoc(description = "vanilla_model.jacket")
-    public final VanillaModelPart<PlayerModel<?>> JACKET;
+    public final VanillaModelPart JACKET;
     @LuaWhitelist
     @LuaFieldDoc(description = "vanilla_model.left_sleeve")
-    public final VanillaModelPart<PlayerModel<?>> LEFT_SLEEVE;
+    public final VanillaModelPart LEFT_SLEEVE;
     @LuaWhitelist
     @LuaFieldDoc(description = "vanilla_model.right_sleeve")
-    public final VanillaModelPart<PlayerModel<?>> RIGHT_SLEEVE;
+    public final VanillaModelPart RIGHT_SLEEVE;
     @LuaWhitelist
     @LuaFieldDoc(description = "vanilla_model.left_pants")
-    public final VanillaModelPart<PlayerModel<?>> LEFT_PANTS;
+    public final VanillaModelPart LEFT_PANTS;
     @LuaWhitelist
     @LuaFieldDoc(description = "vanilla_model.right_pants")
-    public final VanillaModelPart<PlayerModel<?>> RIGHT_PANTS;
-    @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.cape")
-    public final VanillaModelPart<PlayerModel<?>> CAPE;
+    public final VanillaModelPart RIGHT_PANTS;
+
+    // -- cape -- //
 
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.helmet")
-    public final VanillaModelPart<HumanoidModel<?>> HELMET;
+    @LuaFieldDoc(description = "vanilla_model.cape_model")
+    public final VanillaModelPart CAPE_MODEL;
+    @LuaWhitelist
+    @LuaFieldDoc(description = "vanilla_model.fake_cape")
+    public final VanillaModelPart FAKE_CAPE;
+
+    // -- armor -- //
 
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.chestplate")
-    public final VanillaModelPart<HumanoidModel<?>> CHESTPLATE;
+    @LuaFieldDoc(description = "vanilla_model.helmet_head")
+    public final VanillaModelPart HELMET_HEAD;
+    @LuaWhitelist
+    @LuaFieldDoc(description = "vanilla_model.helmet_hat")
+    public final VanillaModelPart HELMET_HAT;
+
     @LuaWhitelist
     @LuaFieldDoc(description = "vanilla_model.chestplate_body")
-    public final VanillaModelPart<HumanoidModel<?>> CHESTPLATE_BODY;
+    public final VanillaModelPart CHESTPLATE_BODY;
     @LuaWhitelist
     @LuaFieldDoc(description = "vanilla_model.chestplate_left_arm")
-    public final VanillaModelPart<HumanoidModel<?>> CHESTPLATE_LEFT_ARM;
+    public final VanillaModelPart CHESTPLATE_LEFT_ARM;
     @LuaWhitelist
     @LuaFieldDoc(description = "vanilla_model.chestplate_right_arm")
-    public final VanillaModelPart<HumanoidModel<?>> CHESTPLATE_RIGHT_ARM;
+    public final VanillaModelPart CHESTPLATE_RIGHT_ARM;
 
 
-    @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.leggings")
-    public final VanillaModelPart<HumanoidModel<?>> LEGGINGS;
     @LuaWhitelist
     @LuaFieldDoc(description = "vanilla_model.leggings_body")
-    public final VanillaModelPart<HumanoidModel<?>> LEGGINGS_BODY;
+    public final VanillaModelPart LEGGINGS_BODY;
     @LuaWhitelist
     @LuaFieldDoc(description = "vanilla_model.leggings_left_leg")
-    public final VanillaModelPart<HumanoidModel<?>> LEGGINGS_LEFT_LEG;
+    public final VanillaModelPart LEGGINGS_LEFT_LEG;
     @LuaWhitelist
     @LuaFieldDoc(description = "vanilla_model.leggings_right_leg")
-    public final VanillaModelPart<HumanoidModel<?>> LEGGINGS_RIGHT_LEG;
+    public final VanillaModelPart LEGGINGS_RIGHT_LEG;
 
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.boots")
-    public final VanillaModelPart<HumanoidModel<?>> BOOTS;
-    @LuaWhitelist
     @LuaFieldDoc(description = "vanilla_model.boots_left_leg")
-    public final VanillaModelPart<HumanoidModel<?>> BOOTS_LEFT_LEG;
+    public final VanillaModelPart BOOTS_LEFT_LEG;
     @LuaWhitelist
     @LuaFieldDoc(description = "vanilla_model.boots_right_leg")
-    public final VanillaModelPart<HumanoidModel<?>> BOOTS_RIGHT_LEG;
+    public final VanillaModelPart BOOTS_RIGHT_LEG;
+
+    // -- elytra -- //
+
+    @LuaWhitelist
+    @LuaFieldDoc(description = "vanilla_model.left_elytra")
+    public final VanillaModelPart LEFT_ELYTRA;
+    @LuaWhitelist
+    @LuaFieldDoc(description = "vanilla_model.right_elytra")
+    public final VanillaModelPart RIGHT_ELYTRA;
+
+    // -- held items -- //
+
+    @LuaWhitelist
+    @LuaFieldDoc(description = "vanilla_model.left_item")
+    public final VanillaModelPart LEFT_ITEM;
+    @LuaWhitelist
+    @LuaFieldDoc(description = "vanilla_model.right_item")
+    public final VanillaModelPart RIGHT_ITEM;
+
+
+    // -- groups -- //
 
 
     @LuaWhitelist
     @LuaFieldDoc(description = "vanilla_model.all")
-    public final VanillaModelPart<HumanoidModel<?>> ALL;
+    public final VanillaGroupPart ALL;
+
     @LuaWhitelist
     @LuaFieldDoc(description = "vanilla_model.player")
-    public final VanillaModelPart<HumanoidModel<?>> PLAYER;
+    public final VanillaGroupPart PLAYER;
     @LuaWhitelist
     @LuaFieldDoc(description = "vanilla_model.outer_layer")
-    public final VanillaModelPart<HumanoidModel<?>> OUTER_LAYER;
+    public final VanillaGroupPart OUTER_LAYER;
     @LuaWhitelist
     @LuaFieldDoc(description = "vanilla_model.inner_layer")
-    public final VanillaModelPart<HumanoidModel<?>> INNER_LAYER;
+    public final VanillaGroupPart INNER_LAYER;
+
+    @LuaWhitelist
+    @LuaFieldDoc(description = "vanilla_model.cape")
+    public final VanillaGroupPart CAPE;
+
     @LuaWhitelist
     @LuaFieldDoc(description = "vanilla_model.armor")
-    public final VanillaModelPart<HumanoidModel<?>> ARMOR;
+    public final VanillaGroupPart ARMOR;
+    @LuaWhitelist
+    @LuaFieldDoc(description = "vanilla_model.helmet")
+    public final VanillaGroupPart HELMET;
+    @LuaWhitelist
+    @LuaFieldDoc(description = "vanilla_model.chestplate")
+    public final VanillaGroupPart CHESTPLATE;
+    @LuaWhitelist
+    @LuaFieldDoc(description = "vanilla_model.leggings")
+    public final VanillaGroupPart LEGGINGS;
+    @LuaWhitelist
+    @LuaFieldDoc(description = "vanilla_model.boots")
+    public final VanillaGroupPart BOOTS;
 
     @LuaWhitelist
     @LuaFieldDoc(description = "vanilla_model.elytra")
-    public final VanillaModelPart<ElytraModel<?>> ELYTRA;
-    @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.left_elytra")
-    public final VanillaModelPart<ElytraModel<?>> LEFT_ELYTRA;
-    @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.right_elytra")
-    public final VanillaModelPart<ElytraModel<?>> RIGHT_ELYTRA;
+    public final VanillaGroupPart ELYTRA;
 
     @LuaWhitelist
     @LuaFieldDoc(description = "vanilla_model.held_items")
-    public final VanillaModelPart<EntityModel<?>> HELD_ITEMS;
-    @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.left_item")
-    public final VanillaModelPart<EntityModel<?>> LEFT_ITEM;
-    @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.right_item")
-    public final VanillaModelPart<EntityModel<?>> RIGHT_ITEM;
-
-
-    public void alterPlayerModel(PlayerModel<?> playerModel) {
-        alterByPart(playerModel, HEAD);
-        alterByPart(playerModel, BODY);
-        alterByPart(playerModel, LEFT_ARM);
-        alterByPart(playerModel, RIGHT_ARM);
-        alterByPart(playerModel, LEFT_LEG);
-        alterByPart(playerModel, RIGHT_LEG);
-        alterByPart(playerModel, HAT);
-        alterByPart(playerModel, JACKET);
-        alterByPart(playerModel, LEFT_SLEEVE);
-        alterByPart(playerModel, RIGHT_SLEEVE);
-        alterByPart(playerModel, LEFT_PANTS);
-        alterByPart(playerModel, RIGHT_PANTS);
-    }
-
-    public void copyPlayerModel(PlayerModel<?> playerModel) {
-        copyByPart(playerModel, HEAD);
-        copyByPart(playerModel, BODY);
-        copyByPart(playerModel, LEFT_ARM);
-        copyByPart(playerModel, RIGHT_ARM);
-        copyByPart(playerModel, LEFT_LEG);
-        copyByPart(playerModel, RIGHT_LEG);
-        copyByPart(playerModel, HAT);
-        copyByPart(playerModel, JACKET);
-        copyByPart(playerModel, LEFT_SLEEVE);
-        copyByPart(playerModel, RIGHT_SLEEVE);
-        copyByPart(playerModel, LEFT_PANTS);
-        copyByPart(playerModel, RIGHT_PANTS);
-    }
-
-    public void restorePlayerModel(PlayerModel<?> playerModel) {
-        restoreByPart(playerModel, PLAYER);
-        //We don't need to call restore on individual parts, as restoring does not need to set origin rot and pos.
-    }
-
-
-    public <T extends EntityModel<?>> void copyByPart(T model, VanillaModelPart<T> vanillaModelPart) {
-        if (vanillaModelPart != null)
-            vanillaModelPart.copyInfo(model);
-    }
-
-    public <T extends EntityModel<?>> void alterByPart(T model, VanillaModelPart<T> vanillaModelPart) {
-        if (vanillaModelPart != null)
-            vanillaModelPart.alter(model);
-    }
-
-    public <T extends EntityModel<?>> void restoreByPart(T model, VanillaModelPart<T> vanillaModelPart) {
-        if (vanillaModelPart != null)
-            vanillaModelPart.restore(model);
-    }
+    public final VanillaGroupPart HELD_ITEMS;
 
     public VanillaModelAPI() {
-        //REUSED LAMBDAS
-        Function<HumanoidModel<?>, ModelPart> HEAD_FUNC = model -> model.head;
-        Function<HumanoidModel<?>, ModelPart> BODY_FUNC = model -> model.body;
-        Function<HumanoidModel<?>, ModelPart> LEFT_ARM_FUNC = model -> model.leftArm;
-        Function<HumanoidModel<?>, ModelPart> RIGHT_ARM_FUNC = model -> model.rightArm;
-        Function<HumanoidModel<?>, ModelPart> LEFT_LEG_FUNC = model -> model.leftLeg;
-        Function<HumanoidModel<?>, ModelPart> RIGHT_LEG_FUNC = model -> model.rightLeg;
+        // -- body -- //
 
-        Function<HumanoidModel<?>, ModelPart> HAT_FUNC = model -> model.hat;
-        Function<PlayerModel<?>, ModelPart> JACKET_FUNC = model -> model.jacket;
-        Function<PlayerModel<?>, ModelPart> LEFT_SLEEVE_FUNC = model -> model.leftSleeve;
-        Function<PlayerModel<?>, ModelPart> RIGHT_SLEEVE_FUNC = model -> model.rightSleeve;
-        Function<PlayerModel<?>, ModelPart> LEFT_PANTS_FUNC = model -> model.leftPants;
-        Function<PlayerModel<?>, ModelPart> RIGHT_PANTS_FUNC = model -> model.rightPants;
-        Function<PlayerModel<?>, ModelPart> CAPE_FUNC = model -> ((PlayerModelAccessor) model).figura$getCloak();
-        Function<PlayerModel<?>, ModelPart> FAKE_CAPE_FUNC = model -> ((PlayerModelAccessor) model).figura$getFakeCloak();
+        HEAD = new VanillaModelPart(FiguraModelPart.ParentType.Head, ModelFunction.HEAD.func);
+        BODY = new VanillaModelPart(FiguraModelPart.ParentType.Body, ModelFunction.BODY.func);
+        LEFT_ARM = new VanillaModelPart(FiguraModelPart.ParentType.LeftArm, ModelFunction.LEFT_ARM.func);
+        RIGHT_ARM = new VanillaModelPart(FiguraModelPart.ParentType.RightArm, ModelFunction.RIGHT_ARM.func);
+        LEFT_LEG = new VanillaModelPart(FiguraModelPart.ParentType.LeftLeg, ModelFunction.LEFT_LEG.func);
+        RIGHT_LEG = new VanillaModelPart(FiguraModelPart.ParentType.RightLeg, ModelFunction.RIGHT_LEG.func);
 
-        Function<ElytraModel<?>, ModelPart> LEFT_ELYTRON_FUNC = model -> ((ElytraModelAccessor) model).getLeftWing();
-        Function<ElytraModel<?>, ModelPart> RIGHT_ELYTRON_FUNC = model -> ((ElytraModelAccessor) model).getRightWing();
+        HAT = new VanillaModelPart(FiguraModelPart.ParentType.Head, ModelFunction.HAT.func);
+        JACKET = new VanillaModelPart(FiguraModelPart.ParentType.Body, ModelFunction.JACKET.func);
+        LEFT_SLEEVE = new VanillaModelPart(FiguraModelPart.ParentType.LeftArm, ModelFunction.LEFT_SLEEVE.func);
+        RIGHT_SLEEVE = new VanillaModelPart(FiguraModelPart.ParentType.RightArm, ModelFunction.RIGHT_SLEEVE.func);
+        LEFT_PANTS = new VanillaModelPart(FiguraModelPart.ParentType.LeftLeg, ModelFunction.LEFT_PANTS.func);
+        RIGHT_PANTS = new VanillaModelPart(FiguraModelPart.ParentType.RightLeg, ModelFunction.RIGHT_PANTS.func);
 
-        Function<EntityModel<?>, ModelPart> NULL_FUNC = model -> null;
+        // -- cape -- //
 
-        //TRACKERS
-        PartTracker<HumanoidModel<?>> HEAD_TRACKER = new PartTracker<>(HEAD_FUNC, true);
-        PartTracker<HumanoidModel<?>> BODY_TRACKER = new PartTracker<>(BODY_FUNC, true);
-        PartTracker<HumanoidModel<?>> LEFT_ARM_TRACKER = new PartTracker<>(LEFT_ARM_FUNC, true);
-        PartTracker<HumanoidModel<?>> RIGHT_ARM_TRACKER = new PartTracker<>(RIGHT_ARM_FUNC, true);
-        PartTracker<HumanoidModel<?>> LEFT_LEG_TRACKER = new PartTracker<>(LEFT_LEG_FUNC, true);
-        PartTracker<HumanoidModel<?>> RIGHT_LEG_TRACKER = new PartTracker<>(RIGHT_LEG_FUNC, true);
-        PartTracker<HumanoidModel<?>> HAT_TRACKER = new PartTracker<>(HAT_FUNC, true);
-        PartTracker<PlayerModel<?>> JACKET_TRACKER = new PartTracker<>(JACKET_FUNC, true);
-        PartTracker<PlayerModel<?>> LEFT_SLEEVE_TRACKER = new PartTracker<>(LEFT_SLEEVE_FUNC, true);
-        PartTracker<PlayerModel<?>> RIGHT_SLEEVE_TRACKER = new PartTracker<>(RIGHT_SLEEVE_FUNC, true);
-        PartTracker<PlayerModel<?>> LEFT_PANTS_TRACKER = new PartTracker<>(LEFT_PANTS_FUNC, true);
-        PartTracker<PlayerModel<?>> RIGHT_PANTS_TRACKER = new PartTracker<>(RIGHT_PANTS_FUNC, true);
-        PartTracker<PlayerModel<?>> CAPE_TRACKER = new PartTracker<>(CAPE_FUNC, FAKE_CAPE_FUNC, true);
+        CAPE_MODEL = new VanillaModelPart(FiguraModelPart.ParentType.Cape, ModelFunction.CAPE.func);
+        FAKE_CAPE = new VanillaModelPart(FiguraModelPart.ParentType.Cape, ModelFunction.FAKE_CAPE.func);
 
-        PartTracker<HumanoidModel<?>> HELMET_TRACKER = new PartTracker<>(HEAD_FUNC, true);
-        PartTracker<HumanoidModel<?>> HELMET_HAT_TRACKER = new PartTracker<>(HAT_FUNC, true);
-        PartTracker<HumanoidModel<?>> CHESTPLATE_BODY_TRACKER = new PartTracker<>(BODY_FUNC, true);
-        PartTracker<HumanoidModel<?>> CHESTPLATE_LEFT_ARM_TRACKER = new PartTracker<>(LEFT_ARM_FUNC, true);
-        PartTracker<HumanoidModel<?>> CHESTPLATE_RIGHT_ARM_TRACKER = new PartTracker<>(RIGHT_ARM_FUNC, true);
-        PartTracker<HumanoidModel<?>> LEGGINGS_BODY_TRACKER = new PartTracker<>(BODY_FUNC, true);
-        PartTracker<HumanoidModel<?>> LEGGINGS_LEFT_LEG_TRACKER = new PartTracker<>(LEFT_LEG_FUNC, true);
-        PartTracker<HumanoidModel<?>> LEGGINGS_RIGHT_LEG_TRACKER = new PartTracker<>(RIGHT_LEG_FUNC, true);
-        PartTracker<HumanoidModel<?>> BOOTS_LEFT_LEG_TRACKER = new PartTracker<>(LEFT_LEG_FUNC, true);
-        PartTracker<HumanoidModel<?>> BOOTS_RIGHT_LEG_TRACKER = new PartTracker<>(RIGHT_LEG_FUNC, true);
+        // -- armor -- //
 
-        PartTracker<ElytraModel<?>> LEFT_ELYTRON_TRACKER = new PartTracker<>(LEFT_ELYTRON_FUNC, true);
-        PartTracker<ElytraModel<?>> RIGHT_ELYTRON_TRACKER = new PartTracker<>(RIGHT_ELYTRON_FUNC, true);
+        HELMET_HEAD = new VanillaModelPart(FiguraModelPart.ParentType.Head, ModelFunction.HEAD.func);
+        HELMET_HAT = new VanillaModelPart(FiguraModelPart.ParentType.Head, ModelFunction.HAT.func);
 
-        PartTracker<EntityModel<?>> LEFT_ITEM_TRACKER = new PartTracker<>(NULL_FUNC, true);
-        PartTracker<EntityModel<?>> RIGHT_ITEM_TRACKER = new PartTracker<>(NULL_FUNC, true);
+        CHESTPLATE_BODY = new VanillaModelPart(FiguraModelPart.ParentType.Body, ModelFunction.BODY.func);
+        CHESTPLATE_LEFT_ARM = new VanillaModelPart(FiguraModelPart.ParentType.LeftArm, ModelFunction.LEFT_ARM.func);
+        CHESTPLATE_RIGHT_ARM = new VanillaModelPart(FiguraModelPart.ParentType.RightArm, ModelFunction.RIGHT_ARM.func);
 
-        //INIT VanillaModelPart FIELDS
-        HEAD = new VanillaModelPart<>(List.of(HEAD_TRACKER), FiguraModelPart.ParentType.Head);
-        BODY = new VanillaModelPart<>(List.of(BODY_TRACKER), FiguraModelPart.ParentType.Body);
-        LEFT_ARM = new VanillaModelPart<>(List.of(LEFT_ARM_TRACKER), FiguraModelPart.ParentType.LeftArm);
-        RIGHT_ARM = new VanillaModelPart<>(List.of(RIGHT_ARM_TRACKER), FiguraModelPart.ParentType.RightArm);
-        LEFT_LEG = new VanillaModelPart<>(List.of(LEFT_LEG_TRACKER), FiguraModelPart.ParentType.LeftLeg);
-        RIGHT_LEG = new VanillaModelPart<>(List.of(RIGHT_LEG_TRACKER), FiguraModelPart.ParentType.RightLeg);
+        LEGGINGS_BODY = new VanillaModelPart(FiguraModelPart.ParentType.Body, ModelFunction.BODY.func);
+        LEGGINGS_LEFT_LEG = new VanillaModelPart(FiguraModelPart.ParentType.LeftLeg, ModelFunction.LEFT_LEG.func);
+        LEGGINGS_RIGHT_LEG = new VanillaModelPart(FiguraModelPart.ParentType.RightLeg, ModelFunction.RIGHT_LEG.func);
 
-        HAT = new VanillaModelPart<>(List.of(HAT_TRACKER), FiguraModelPart.ParentType.Head);
-        JACKET = new VanillaModelPart<>(List.of(JACKET_TRACKER), FiguraModelPart.ParentType.Body);
-        LEFT_SLEEVE = new VanillaModelPart<>(List.of(LEFT_SLEEVE_TRACKER), FiguraModelPart.ParentType.LeftArm);
-        RIGHT_SLEEVE = new VanillaModelPart<>(List.of(RIGHT_SLEEVE_TRACKER), FiguraModelPart.ParentType.RightArm);
-        LEFT_PANTS = new VanillaModelPart<>(List.of(LEFT_PANTS_TRACKER), FiguraModelPart.ParentType.LeftLeg);
-        RIGHT_PANTS = new VanillaModelPart<>(List.of(RIGHT_PANTS_TRACKER), FiguraModelPart.ParentType.RightLeg);
-        CAPE = new VanillaModelPart<>(List.of(CAPE_TRACKER), FiguraModelPart.ParentType.Cape);
+        BOOTS_LEFT_LEG = new VanillaModelPart(FiguraModelPart.ParentType.LeftLeg, ModelFunction.LEFT_LEG.func);
+        BOOTS_RIGHT_LEG = new VanillaModelPart(FiguraModelPart.ParentType.RightLeg, ModelFunction.RIGHT_LEG.func);
 
-        HELMET = new VanillaModelPart<>(List.of(HELMET_TRACKER, HELMET_HAT_TRACKER), null);
+        // -- elytra -- //
 
-        CHESTPLATE = new VanillaModelPart<>(List.of(CHESTPLATE_BODY_TRACKER, CHESTPLATE_LEFT_ARM_TRACKER, CHESTPLATE_RIGHT_ARM_TRACKER), null);
-        CHESTPLATE_BODY = new VanillaModelPart<>(List.of(CHESTPLATE_BODY_TRACKER), FiguraModelPart.ParentType.Body);
-        CHESTPLATE_LEFT_ARM = new VanillaModelPart<>(List.of(CHESTPLATE_LEFT_ARM_TRACKER), FiguraModelPart.ParentType.LeftArm);
-        CHESTPLATE_RIGHT_ARM = new VanillaModelPart<>(List.of(CHESTPLATE_RIGHT_ARM_TRACKER), FiguraModelPart.ParentType.RightArm);
+        LEFT_ELYTRA = new VanillaModelPart(FiguraModelPart.ParentType.LeftElytra, ModelFunction.LEFT_ELYTRON.func);
+        RIGHT_ELYTRA = new VanillaModelPart(FiguraModelPart.ParentType.RightElytra, ModelFunction.RIGHT_ELYTRON.func);
 
-        LEGGINGS = new VanillaModelPart<>(List.of(LEGGINGS_BODY_TRACKER, LEGGINGS_LEFT_LEG_TRACKER, LEGGINGS_RIGHT_LEG_TRACKER), null);
-        LEGGINGS_BODY = new VanillaModelPart<>(List.of(LEGGINGS_BODY_TRACKER), FiguraModelPart.ParentType.Body);
-        LEGGINGS_LEFT_LEG = new VanillaModelPart<>(List.of(LEGGINGS_LEFT_LEG_TRACKER), FiguraModelPart.ParentType.LeftLeg);
-        LEGGINGS_RIGHT_LEG = new VanillaModelPart<>(List.of(LEGGINGS_RIGHT_LEG_TRACKER), FiguraModelPart.ParentType.RightLeg);
+        // -- held items -- //
 
-        BOOTS = new VanillaModelPart<>(List.of(BOOTS_LEFT_LEG_TRACKER, BOOTS_RIGHT_LEG_TRACKER), null);
-        BOOTS_LEFT_LEG = new VanillaModelPart<>(List.of(BOOTS_LEFT_LEG_TRACKER), FiguraModelPart.ParentType.LeftLeg);
-        BOOTS_RIGHT_LEG = new VanillaModelPart<>(List.of(BOOTS_RIGHT_LEG_TRACKER), FiguraModelPart.ParentType.RightLeg);
+        LEFT_ITEM = new VanillaModelPart(FiguraModelPart.ParentType.LeftArm, null);
+        RIGHT_ITEM = new VanillaModelPart(FiguraModelPart.ParentType.RightArm, null);
 
-        ELYTRA = new VanillaModelPart<>(List.of(LEFT_ELYTRON_TRACKER, RIGHT_ELYTRON_TRACKER), null);
-        LEFT_ELYTRA = new VanillaModelPart<>(List.of(LEFT_ELYTRON_TRACKER), FiguraModelPart.ParentType.LeftElytra);
-        RIGHT_ELYTRA = new VanillaModelPart<>(List.of(RIGHT_ELYTRON_TRACKER), FiguraModelPart.ParentType.RightElytra);
 
-        HELD_ITEMS = new VanillaModelPart<>(List.of(LEFT_ITEM_TRACKER, RIGHT_ITEM_TRACKER), null);
-        LEFT_ITEM = new VanillaModelPart<>(List.of(LEFT_ITEM_TRACKER), FiguraModelPart.ParentType.LeftArm);
-        RIGHT_ITEM = new VanillaModelPart<>(List.of(RIGHT_ITEM_TRACKER), FiguraModelPart.ParentType.RightArm);
+        // -- groups -- //
 
-        ALL = new VanillaModelPart<>(List.of(
-                HEAD_TRACKER, BODY_TRACKER, LEFT_ARM_TRACKER, RIGHT_ARM_TRACKER, LEFT_LEG_TRACKER, RIGHT_LEG_TRACKER,
-                HAT_TRACKER, JACKET_TRACKER, LEFT_SLEEVE_TRACKER, RIGHT_SLEEVE_TRACKER, LEFT_PANTS_TRACKER, RIGHT_PANTS_TRACKER,
-                CAPE_TRACKER,
 
-                HELMET_TRACKER, HELMET_HAT_TRACKER,
-                CHESTPLATE_BODY_TRACKER, CHESTPLATE_LEFT_ARM_TRACKER, CHESTPLATE_RIGHT_ARM_TRACKER,
-                LEGGINGS_BODY_TRACKER, LEGGINGS_LEFT_LEG_TRACKER, LEGGINGS_RIGHT_LEG_TRACKER,
-                BOOTS_LEFT_LEG_TRACKER, BOOTS_RIGHT_LEG_TRACKER,
+        INNER_LAYER = new VanillaGroupPart(HEAD, BODY, LEFT_ARM, RIGHT_ARM, LEFT_LEG, RIGHT_LEG);
+        OUTER_LAYER = new VanillaGroupPart(HAT, JACKET, LEFT_SLEEVE, RIGHT_SLEEVE, LEFT_PANTS, RIGHT_PANTS);
+        PLAYER = new VanillaGroupPart(INNER_LAYER, OUTER_LAYER);
 
-                LEFT_ELYTRON_TRACKER, RIGHT_ELYTRON_TRACKER,
+        CAPE = new VanillaGroupPart(CAPE_MODEL, FAKE_CAPE);
 
-                LEFT_ITEM_TRACKER, RIGHT_ITEM_TRACKER
-        ), null);
+        HELMET = new VanillaGroupPart(HELMET_HEAD, HELMET_HAT);
+        CHESTPLATE = new VanillaGroupPart(CHESTPLATE_BODY, CHESTPLATE_LEFT_ARM, CHESTPLATE_RIGHT_ARM);
+        LEGGINGS = new VanillaGroupPart(LEGGINGS_BODY, LEGGINGS_LEFT_LEG, LEGGINGS_RIGHT_LEG);
+        BOOTS = new VanillaGroupPart(BOOTS_LEFT_LEG, BOOTS_RIGHT_LEG);
+        ARMOR = new VanillaGroupPart(HELMET, CHESTPLATE, LEGGINGS, BOOTS);
 
-        PLAYER = new VanillaModelPart<>(List.of(
-                HEAD_TRACKER, BODY_TRACKER, LEFT_ARM_TRACKER, RIGHT_ARM_TRACKER, LEFT_LEG_TRACKER, RIGHT_LEG_TRACKER,
-                HAT_TRACKER, JACKET_TRACKER, LEFT_SLEEVE_TRACKER, RIGHT_SLEEVE_TRACKER, LEFT_PANTS_TRACKER, RIGHT_PANTS_TRACKER,
-                CAPE_TRACKER
-        ), null);
-        OUTER_LAYER = new VanillaModelPart<>(List.of(
-                HAT_TRACKER, JACKET_TRACKER, LEFT_SLEEVE_TRACKER, RIGHT_SLEEVE_TRACKER, LEFT_PANTS_TRACKER, RIGHT_PANTS_TRACKER
-        ), null);
-        INNER_LAYER = new VanillaModelPart<>(List.of(
-                HEAD_TRACKER, BODY_TRACKER, LEFT_ARM_TRACKER, RIGHT_ARM_TRACKER, LEFT_LEG_TRACKER, RIGHT_LEG_TRACKER
-        ), null);
+        ELYTRA = new VanillaGroupPart(LEFT_ELYTRA, RIGHT_ELYTRA);
 
-        ARMOR = new VanillaModelPart<>(List.of(
-                HELMET_TRACKER, HELMET_HAT_TRACKER,
-                CHESTPLATE_BODY_TRACKER, CHESTPLATE_LEFT_ARM_TRACKER, CHESTPLATE_RIGHT_ARM_TRACKER,
-                LEGGINGS_BODY_TRACKER, LEGGINGS_LEFT_LEG_TRACKER, LEGGINGS_RIGHT_LEG_TRACKER,
-                BOOTS_LEFT_LEG_TRACKER, BOOTS_RIGHT_LEG_TRACKER
-        ), null);
+        HELD_ITEMS = new VanillaGroupPart(LEFT_ITEM, RIGHT_ITEM);
 
+        ALL = new VanillaGroupPart(PLAYER, CAPE, ARMOR, ELYTRA, HELD_ITEMS);
     }
 
-    @LuaWhitelist
-    public static LuaPairsIterator<VanillaModelAPI, String> __pairs(@LuaNotNil VanillaModelAPI arg) {
-        return PAIRS_ITERATOR;
-    }
     private static final LuaPairsIterator<VanillaModelAPI, String> PAIRS_ITERATOR =
             new LuaPairsIterator<>(List.of(
-
                     "HEAD", "BODY", "LEFT_ARM", "RIGHT_ARM", "LEFT_LEG", "RIGHT_LEG",
                     "HAT", "JACKET", "LEFT_SLEEVE", "RIGHT_SLEEVE", "LEFT_PANTS", "RIGHT_PANTS",
-                    "CAPE",
 
-                    "HELMET",
+                    "CAPE_MODEL", "FAKE_CAPE",
+
+                    "HELMET_HEAD", "HELMET_HAT",
                     "CHESTPLATE_BODY", "CHESTPLATE_LEFT_ARM", "CHESTPLATE_RIGHT_ARM",
-                    "LEGGINGS", "LEGGINGS_BODY", "LEGGINGS_LEFT_LEG", "LEGGINGS_RIGHT_LEG",
-                    "BOOTS", "BOOTS_LEFT_LEG", "BOOTS_RIGHT_LEG",
+                    "LEGGINGS_BODY", "LEGGINGS_LEFT_LEG", "LEGGINGS_RIGHT_LEG",
+                    "BOOTS_LEFT_LEG", "BOOTS_RIGHT_LEG",
 
                     "LEFT_ELYTRA", "RIGHT_ELYTRA",
 
                     "LEFT_ITEM", "RIGHT_ITEM"
-
             ), VanillaModelAPI.class, String.class);
-
-    private static class PartTracker<T extends EntityModel<?>> {
-        private final Function<T, ModelPart> partProvider, fakePartProvider;
-
-        private boolean visible, storedVisibility;
-
-        public PartTracker(Function<T, ModelPart> partProvider, boolean defaultVisibility) {
-            this(partProvider, partProvider, defaultVisibility);
-        }
-
-        public PartTracker(Function<T, ModelPart> realPartProvider, Function<T, ModelPart> fakePartProvider, boolean defaultVisibility) {
-            this.partProvider = realPartProvider;
-            this.fakePartProvider = fakePartProvider;
-            visible = defaultVisibility;
-        }
-
-        public void storeOriginData(VanillaModelPart<? extends T> vanillaModelPart, T model) {
-            ModelPart part = fakePartProvider.apply(model);
-            if (part == null) return;
-            vanillaModelPart.savedOriginRot.set(-part.xRot, -part.yRot, part.zRot);
-            vanillaModelPart.savedOriginRot.scale(180 / Math.PI);
-
-            FiguraVec3 pivot = VanillaPartOffsetManager.getVanillaOffset(model, vanillaModelPart.parentType);
-            pivot.subtract(part.x, part.y, part.z);
-            pivot.multiply(1, -1, -1);
-            vanillaModelPart.savedOriginPos.set(pivot);
-            pivot.free();
-        }
-
-        public void alter(T model) {
-            ModelPart part = partProvider.apply(model);
-            if (part == null) return;
-            storedVisibility = part.visible;
-            part.visible = visible;
-        }
-
-        public void restore(T model) {
-            ModelPart part = partProvider.apply(model);
-            if (part == null) return;
-            part.visible = storedVisibility;
-        }
+    @LuaWhitelist
+    public static LuaPairsIterator<VanillaModelAPI, String> __pairs(@LuaNotNil VanillaModelAPI arg) {
+        return PAIRS_ITERATOR;
     }
 
     @Override
@@ -401,103 +270,30 @@ public class VanillaModelAPI {
         return "VanillaModelAPI";
     }
 
-    @LuaWhitelist
-    @LuaTypeDoc(
-            name = "VanillaModelPart",
-            description = "vanilla_part"
-    )
-    public static class VanillaModelPart<T extends EntityModel<?>> {
+    public enum ModelFunction {
+        HEAD(model -> ((HumanoidModel<?>) model).head),
+        BODY(model -> ((HumanoidModel<?>) model).body),
+        LEFT_ARM(model -> ((HumanoidModel<?>) model).leftArm),
+        RIGHT_ARM(model -> ((HumanoidModel<?>) model).rightArm),
+        LEFT_LEG(model -> ((HumanoidModel<?>) model).leftLeg),
+        RIGHT_LEG(model -> ((HumanoidModel<?>) model).rightLeg),
 
-        private final List<PartTracker> partModifiers;
-        private final FiguraModelPart.ParentType parentType;
+        HAT(model -> ((HumanoidModel<?>) model).hat),
+        JACKET(model -> ((PlayerModel<?>) model).jacket),
+        LEFT_SLEEVE(model -> ((PlayerModel<?>) model).leftSleeve),
+        RIGHT_SLEEVE(model -> ((PlayerModel<?>) model).rightSleeve),
+        LEFT_PANTS(model -> ((PlayerModel<?>) model).leftPants),
+        RIGHT_PANTS(model -> ((PlayerModel<?>) model).rightPants),
+        CAPE(model -> ((PlayerModelAccessor) model).figura$getCloak()),
+        FAKE_CAPE(model -> ((PlayerModelAccessor) model).figura$getFakeCloak()),
 
-        private final FiguraVec3 savedOriginRot = FiguraVec3.of();
-        private final FiguraVec3 savedOriginPos = FiguraVec3.of();
+        LEFT_ELYTRON(model -> ((ElytraModelAccessor) model).getLeftWing()),
+        RIGHT_ELYTRON(model -> ((ElytraModelAccessor) model).getRightWing());
 
-        public VanillaModelPart(List<PartTracker> modelParts, FiguraModelPart.ParentType parentType) {
-            this.partModifiers = modelParts;
-            this.parentType = parentType;
-        }
+        public final Function<EntityModel<?>, ModelPart> func;
 
-        public void copyInfo(T model) {
-            if (partModifiers.size() > 1) return;
-            partModifiers.get(0).storeOriginData(this, model);
-        }
-
-        public void alter(T model) {
-            for (PartTracker<T> tracker : partModifiers)
-                tracker.alter(model);
-        }
-
-        public void restore(T model) {
-            for (PartTracker<T> tracker : partModifiers)
-                tracker.restore(model);
-        }
-
-        public boolean isVisible() {
-            if (partModifiers.size() > 1)
-                throw new IllegalArgumentException("Tried to call isVisible on multi-part!");
-            return partModifiers.get(0).visible;
-        }
-
-        @LuaWhitelist
-        @LuaMethodDoc(
-                overloads = @LuaFunctionOverload(
-                        argumentTypes = {VanillaModelPart.class, Boolean.class},
-                        argumentNames = {"vanillaPart", "visible"}
-                ),
-                description = "vanilla_part.set_visible"
-        )
-        public static <T extends EntityModel<?>> void setVisible(@LuaNotNil VanillaModelPart<T> vanillaPart, @LuaNotNil Boolean visible) {
-            for (PartTracker<T> tracker : vanillaPart.partModifiers)
-                tracker.visible = visible;
-        }
-
-        @LuaWhitelist
-        @LuaMethodDoc(
-                overloads = @LuaFunctionOverload(
-                        argumentTypes = VanillaModelPart.class,
-                        argumentNames = "vanillaPart"
-                ),
-                description = "vanilla_part.get_visible"
-        )
-        public static <T extends EntityModel<?>> boolean getVisible(@LuaNotNil VanillaModelPart<T> vanillaPart) {
-            if (vanillaPart.partModifiers.size() > 1)
-                throw new LuaRuntimeException("Cannot get visibility of vanilla multi-part!");
-            return vanillaPart.partModifiers.get(0).visible;
-        }
-
-        @LuaWhitelist
-        @LuaMethodDoc(
-                overloads = @LuaFunctionOverload(
-                        argumentTypes = VanillaModelPart.class,
-                        argumentNames = "vanillaPart"
-                ),
-                description = "vanilla_part.get_origin_rot"
-        )
-        public static <T extends EntityModel<?>> FiguraVec3 getOriginRot(@LuaNotNil VanillaModelPart<T> vanillaPart) {
-            if (vanillaPart.partModifiers.size() > 1)
-                throw new LuaRuntimeException("Cannot get origin rotation of vanilla multi-part!");
-            return vanillaPart.savedOriginRot.copy();
-        }
-
-        @LuaWhitelist
-        @LuaMethodDoc(
-                overloads = @LuaFunctionOverload(
-                        argumentTypes = VanillaModelPart.class,
-                        argumentNames = "vanillaPart"
-                ),
-                description = "vanilla_part.get_origin_pos"
-        )
-        public static <T extends EntityModel<?>> FiguraVec3 getOriginPos(@LuaNotNil VanillaModelPart<T> vanillaPart) {
-            if (vanillaPart.partModifiers.size() > 1)
-                throw new LuaRuntimeException("Cannot get origin position of vanilla multi-part!");
-            return vanillaPart.savedOriginPos.copy();
-        }
-
-        @Override
-        public String toString() {
-            return "VanillaModelPart";
+        ModelFunction(Function<EntityModel<?>, ModelPart> func) {
+            this.func = func;
         }
     }
 }

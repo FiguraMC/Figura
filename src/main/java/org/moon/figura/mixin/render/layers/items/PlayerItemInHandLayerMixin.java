@@ -11,6 +11,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
+import org.moon.figura.trust.TrustContainer;
+import org.moon.figura.trust.TrustManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -29,7 +31,7 @@ public class PlayerItemInHandLayerMixin <T extends Player, M extends EntityModel
     @Inject(method = "renderArmWithSpyglass", at = @At("HEAD"), cancellable = true)
     private void adjustSpyglassVisibility(LivingEntity livingEntity, ItemStack itemStack, HumanoidArm humanoidArm, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, CallbackInfo ci) {
         Avatar avatar = AvatarManager.getAvatar(livingEntity);
-        if (avatar == null || avatar.luaState == null)
+        if (avatar == null || avatar.luaState == null || TrustManager.get(livingEntity.getUUID()).get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 0)
             return;
 
         if (humanoidArm == HumanoidArm.LEFT && !avatar.luaState.vanillaModel.LEFT_ITEM.isVisible())

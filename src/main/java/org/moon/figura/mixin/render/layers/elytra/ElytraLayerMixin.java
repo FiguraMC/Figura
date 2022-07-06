@@ -14,6 +14,7 @@ import org.moon.figura.trust.TrustManager;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -22,6 +23,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class ElytraLayerMixin<T extends LivingEntity, M extends EntityModel<T>> {
 
     @Shadow @Final private ElytraModel<T> elytraModel;
+    @Unique
     private VanillaModelAPI vanillaModelAPI;
 
     @Inject(at = @At("HEAD"), method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V")
@@ -32,19 +34,19 @@ public abstract class ElytraLayerMixin<T extends LivingEntity, M extends EntityM
         else
             vanillaModelAPI = null;
 
-        if (vanillaModelAPI != null) {
-            vanillaModelAPI.copyByPart(elytraModel, vanillaModelAPI.LEFT_ELYTRA);
-            vanillaModelAPI.copyByPart(elytraModel, vanillaModelAPI.RIGHT_ELYTRA);
-            if (TrustManager.get(livingEntity.getUUID()).get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 1) {
-                vanillaModelAPI.alterByPart(elytraModel, vanillaModelAPI.LEFT_ELYTRA);
-                vanillaModelAPI.alterByPart(elytraModel, vanillaModelAPI.RIGHT_ELYTRA);
-            }
-        }
+        if (vanillaModelAPI != null && TrustManager.get(livingEntity.getUUID()).get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 1)
+            vanillaModelAPI.ELYTRA.alter(elytraModel);
+    }
+
+    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/ElytraModel;setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V", shift = At.Shift.AFTER), method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V")
+    public void middleRender(PoseStack poseStack, MultiBufferSource multiBufferSource, int i, T livingEntity, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
+        if (vanillaModelAPI != null)
+            vanillaModelAPI.ELYTRA.store(elytraModel);
     }
 
     @Inject(at = @At("RETURN"), method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V")
     public void postRender(PoseStack poseStack, MultiBufferSource multiBufferSource, int i, T livingEntity, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
         if (vanillaModelAPI != null)
-            vanillaModelAPI.restoreByPart(elytraModel, vanillaModelAPI.ELYTRA);
+            vanillaModelAPI.ELYTRA.restore(elytraModel);
     }
 }
