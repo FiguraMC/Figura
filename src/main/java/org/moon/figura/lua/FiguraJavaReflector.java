@@ -175,6 +175,8 @@ public class FiguraJavaReflector implements JavaReflector {
     private static int callMetamethod(LuaState luaState, Metamethod metamethod) {
         String name = metamethod.getMetamethodName();
         Object object = luaState.toJavaObject(1, Object.class);
+        if (object == null)
+            throw new LuaRuntimeException("Attempt to call metamethod " + metamethod.getMetamethodName() + " on nil");
         Class<?> objectClass = getObjectClass(object);
 
         if (objectClass == Double.class || objectClass == Integer.class ||

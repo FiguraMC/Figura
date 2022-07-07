@@ -50,7 +50,7 @@ public class VanillaModelPart implements VanillaPart {
 
         ModelPart part = provider.apply(model);
         savedOriginRot.set(-part.xRot, -part.yRot, part.zRot);
-        savedOriginRot.set(savedOriginRot.toDeg());
+        savedOriginRot.scale(180/Math.PI);
 
         FiguraVec3 pivot = VanillaPartOffsetManager.getVanillaOffset(parentType);
         pivot.subtract(part.x, part.y, part.z);
