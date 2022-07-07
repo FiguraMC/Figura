@@ -83,13 +83,14 @@ public class SoundAPI {
 
         //get and play the sound
         SoundBuffer buffer = api.owner.customSounds.get(id);
-        if (buffer != null) {
-            if (TrustManager.get(api.owner.owner).get(TrustContainer.Trust.CUSTOM_SOUNDS) == 1)
-                getSoundEngine().figura$playCustomSound(api.owner.owner, id, buffer, pos.x, pos.y, pos.z, (float) volume, (float) pitch, false);
+        if (buffer != null && TrustManager.get(api.owner.owner).get(TrustContainer.Trust.CUSTOM_SOUNDS) == 1) {
+            getSoundEngine().figura$playCustomSound(api.owner.owner, id, buffer, pos.x, pos.y, pos.z, (float) volume, (float) pitch, false);
         } else {
-            SoundEvent event = new SoundEvent(new ResourceLocation(id));
-            SimpleSoundInstance instance = new SimpleSoundInstance(event, SoundSource.PLAYERS, (float) volume, (float) pitch, RandomSource.create(WorldAPI.getCurrentWorld().random.nextLong()), pos.x, pos.y, pos.z);
-            getSoundEngine().figura$playSound(api.owner.owner, id, instance, false);
+            try {
+                SoundEvent event = new SoundEvent(new ResourceLocation(id));
+                SimpleSoundInstance instance = new SimpleSoundInstance(event, SoundSource.PLAYERS, (float) volume, (float) pitch, RandomSource.create(WorldAPI.getCurrentWorld().random.nextLong()), pos.x, pos.y, pos.z);
+                getSoundEngine().figura$playSound(api.owner.owner, id, instance, false);
+            } catch (Exception ignored) {}
         }
 
         pos.free();
