@@ -1,5 +1,6 @@
 package org.moon.figura.backend;
 
+import net.minecraft.client.multiplayer.resolver.ServerAddress;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.moon.figura.FiguraMod;
@@ -51,7 +52,8 @@ public class WebsocketManager extends WebSocketClient {
     }
 
     private static String getBackendAddress() {
-        return "ws://" + Config.BACKEND.value + ":" + NetworkManager.BACKEND_PORT;
+        ServerAddress backendIP = ServerAddress.parseString((String) Config.BACKEND.value);
+        return "ws://" + backendIP.getHost() + ":" + backendIP.getPort();
     }
 
     public void tick() {

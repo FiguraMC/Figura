@@ -76,6 +76,8 @@ public class Avatar {
     public boolean scriptError = false;
 
     public int complexity = 0;
+    public int remainingComplexity;
+
     public int initInstructions;
     public int entityTickInstructions, worldTickInstructions;
 
@@ -116,10 +118,35 @@ public class Avatar {
             fileSize = getFileSize();
         }).thenRun(() -> { //models
             renderer = new ImmediateAvatarRenderer(this);
-        }).thenRun(this::loadCustomSounds).thenRun(() -> { //script
+        }).thenRun(() -> { //script
+            loadCustomSounds();
             createLuaState();
             loaded = true;
         });
+    }
+
+    public void tick() {
+        if (scriptError || luaState == null)
+            return;
+
+        //trust
+        TrustContainer container = TrustManager.get(owner);
+        entityTickLimit = container.get(TrustContainer.Trust.TICK_INST);
+        worldTickLimit = container.get(TrustContainer.Trust.WORLD_TICK_INST);
+        entityRenderLimit = container.get(TrustContainer.Trust.RENDER_INST);
+        worldRenderLimit = container.get(TrustContainer.Trust.WORLD_RENDER_INST);
+
+        //sound
+        particlesRemaining.set(container.get(TrustContainer.Trust.PARTICLES));
+        particlesRemaining.tick();
+
+        //particles
+        soundsRemaining.set(container.get(TrustContainer.Trust.SOUNDS));
+        soundsRemaining.tick();
+
+        //call events
+        worldTickEvent();
+        tickEvent();
     }
 
     // -- script events -- //
@@ -150,14 +177,6 @@ public class Avatar {
     public void tickEvent() {
         if (scriptError || luaState == null || !EntityWrapper.exists(luaState.entity))
             return;
-
-        //sound
-        particlesRemaining.set(TrustManager.get(this.owner).get(TrustContainer.Trust.PARTICLES));
-        particlesRemaining.tick();
-
-        //particles
-        soundsRemaining.set(TrustManager.get(this.owner).get(TrustContainer.Trust.SOUNDS));
-        soundsRemaining.tick();
 
         tryCall(luaState.events.TICK, entityTickLimit);
         if (FiguraMod.DO_OUR_NATIVES_WORK && luaState != null) {
@@ -255,6 +274,9 @@ public class Avatar {
     public void worldRender(Entity entity, double camX, double camY, double camZ, PoseStack matrices, MultiBufferSource bufferSource, int light, float tickDelta) {
         if (renderer == null)
             return;
+
+        complexity = 0;
+        remainingComplexity = TrustManager.get(owner).get(TrustContainer.Trust.COMPLEXITY);
 
         renderer.allowMatrixUpdate = true;
         renderer.entity = entity;
@@ -369,11 +391,12 @@ public class Avatar {
         if (renderer != null && renderer.root != null)
             luaState.loadGlobal(renderer.root, "models");
 
-        int initLimit = TrustManager.get(owner).get(TrustContainer.Trust.INIT_INST);
-        entityTickLimit = TrustManager.get(owner).get(TrustContainer.Trust.TICK_INST);
-        worldTickLimit = TrustManager.get(owner).get(TrustContainer.Trust.WORLD_TICK_INST);
-        entityRenderLimit = TrustManager.get(owner).get(TrustContainer.Trust.RENDER_INST);
-        worldRenderLimit = TrustManager.get(owner).get(TrustContainer.Trust.WORLD_RENDER_INST);
+        TrustContainer trust = TrustManager.get(owner);
+        int initLimit = trust.get(TrustContainer.Trust.INIT_INST);
+        entityTickLimit = trust.get(TrustContainer.Trust.TICK_INST);
+        worldTickLimit = trust.get(TrustContainer.Trust.WORLD_TICK_INST);
+        entityRenderLimit = trust.get(TrustContainer.Trust.RENDER_INST);
+        worldRenderLimit = trust.get(TrustContainer.Trust.WORLD_RENDER_INST);
 
         luaState.setInstructionLimit(initLimit);
         this.luaState = luaState;
@@ -381,9 +404,8 @@ public class Avatar {
         if (!luaState.init(scripts, autoScripts)) {
             luaState.close();
             this.luaState = null;
-        } else {
-            if (FiguraMod.DO_OUR_NATIVES_WORK)
-                initInstructions = initLimit - luaState.getInstructions();
+        } else if (FiguraMod.DO_OUR_NATIVES_WORK) {
+            initInstructions = initLimit - luaState.getInstructions();
         }
     }
 

@@ -254,6 +254,9 @@
   "figura.config.main_dir": "Figura Folder Location",
   "figura.config.main_dir.tooltip": "Changes the location of the Figura folder",
 
+  "figura.config.auth_server": "Auth Server IP",
+  "figura.config.auth_server.tooltip": "Sets the IP of the auth server",
+
   "figura.config.backend": "Backend IP",
   "figura.config.backend.tooltip": "Sets the IP of the backend server",
 
@@ -262,7 +265,7 @@
   "figura.command.run.no_script_error": "No active script to run code in!",
   "figura.command.load.loading": "Loading avatar!",
   "figura.command.load.invalid": "Invalid path \"%s\"",
-  "figura.command.docs_export.success": "Exported Figura docs into the Figura directory.",
+  "figura.command.docs_export.success": "Exported Figura docs into the Figura directory",
   "figura.command.docs_export.error": "Failed to export Figura docs!",
 
   "figura.docs": "The \"/figura docs\" command allows you to access documentation for all types and functions Figura adds to its Lua scripting environment.",

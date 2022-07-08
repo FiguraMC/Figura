@@ -10,6 +10,7 @@ import net.minecraft.nbt.Tag;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.model.FiguraModelPart;
 import org.moon.figura.avatars.model.FiguraModelPartReader;
+import org.moon.figura.avatars.model.ParentType;
 import org.moon.figura.avatars.model.PartCustomization;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
 import org.moon.figura.avatars.model.rendertasks.RenderTask;
@@ -18,8 +19,6 @@ import org.moon.figura.ducks.LivingEntityRendererAccessor;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec3;
-import org.moon.figura.trust.TrustContainer;
-import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.ColorUtils;
 
 import java.util.ArrayList;
@@ -28,7 +27,6 @@ import java.util.List;
 public class ImmediateAvatarRenderer extends AvatarRenderer {
 
     private final List<FiguraImmediateBuffer> buffers = new ArrayList<>(0);
-    private final int complexityLimit; //In faces
 
     private final PartCustomization.Stack customizationStack = new PartCustomization.Stack();
 
@@ -36,9 +34,6 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
     public ImmediateAvatarRenderer(Avatar avatar) {
         super(avatar);
-
-        //Get complexity limit from trust
-        complexityLimit = TrustManager.get(avatar.owner).get(TrustContainer.Trust.COMPLEXITY);
 
         //Textures
         List<FiguraTextureSet> textureSets = new ArrayList<>();
@@ -119,9 +114,12 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         if (allowMatrixUpdate)
             viewToWorldMatrix = AvatarRenderer.worldToViewMatrix().inverted();
 
-        int[] remainingComplexity = new int[] {complexityLimit};
+        int prev = avatar.remainingComplexity;
+        int[] remainingComplexity = new int[] {prev};
         renderPart(root, remainingComplexity, currentFilterScheme.initialValue);
-        avatar.complexity = complexityLimit - remainingComplexity[0];
+
+        avatar.complexity += prev - remainingComplexity[0];
+        avatar.remainingComplexity = remainingComplexity[0];
 
         customizationStack.pop();
         checkEmpty();
@@ -160,8 +158,10 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
     private static FiguraMat4 viewToWorldMatrix = FiguraMat4.of();
     private void renderPart(FiguraModelPart part, int[] remainingComplexity, boolean parentPassedPredicate) {
         if (entityRenderer != null) {
-            part.applyVanillaTransforms(entityRenderer.getModel());
-            part.applyVanillaTransforms(((LivingEntityRendererAccessor<?>) entityRenderer).figura$getElytraModel());
+            if (part.parentType == ParentType.LeftElytra || part.parentType == ParentType.RightElytra)
+                part.applyVanillaTransforms(((LivingEntityRendererAccessor<?>) entityRenderer).figura$getElytraModel());
+            else
+                part.applyVanillaTransforms(entityRenderer.getModel());
         }
         part.applyExtraTransforms();
 

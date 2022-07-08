@@ -6,6 +6,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
+import net.minecraft.client.multiplayer.resolver.ServerAddress;
 import net.minecraft.network.chat.Component;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.backend.NetworkManager;
@@ -85,7 +86,15 @@ public enum Config {
     }},
     LOG_OTHERS(false),
     MAIN_DIR("", InputType.FOLDER_PATH),
-    BACKEND("figura.moonlight-devs.org", InputType.ANY) {
+    AUTH_SERVER("figura.moonlight-devs.org:25565", InputType.IP) {
+        @Override
+        public void onChange() {
+            super.onChange();
+            NetworkManager.closeBackend();
+            NetworkManager.auth(true);
+        }
+    },
+    BACKEND("figura.moonlight-devs.org:25500", InputType.IP) {
         @Override
         public void onChange() {
             super.onChange();
@@ -232,7 +241,8 @@ public enum Config {
             }
 
             return true;
-        });
+        }),
+        IP(ServerAddress::isValidAddress);
 
         public final Predicate<String> validator;
         public final Component hint;

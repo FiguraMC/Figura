@@ -13,7 +13,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Pose;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.avatars.model.FiguraModelPart;
+import org.moon.figura.avatars.model.ParentType;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
 import org.moon.figura.mixin.input.KeyMappingAccessor;
 import org.moon.figura.mixin.render.GameRendererAccessor;
@@ -32,7 +32,7 @@ public class FiguraListDocs {
 
     public static final LinkedHashSet<String> KEYBINDS = new LinkedHashSet<>();
     private static final LinkedHashSet<Component> PARENT_TYPES = new LinkedHashSet<>() {{
-        for (FiguraModelPart.ParentType value : FiguraModelPart.ParentType.values()) {
+        for (ParentType value : ParentType.values()) {
             add(Component.literal(value.name()).withStyle(ChatFormatting.WHITE));
             for (String alias : value.aliases) {
                 add(Component.literal(alias).withStyle(ChatFormatting.GRAY));

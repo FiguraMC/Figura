@@ -2,8 +2,7 @@ package org.moon.figura.lua.api.model;
 
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
-import org.moon.figura.avatars.model.FiguraModelPart;
-import org.moon.figura.avatars.vanilla.VanillaPartOffsetManager;
+import org.moon.figura.avatars.model.ParentType;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
@@ -20,7 +19,7 @@ import java.util.function.Function;
 )
 public class VanillaModelPart implements VanillaPart {
 
-    private final FiguraModelPart.ParentType parentType;
+    private final ParentType parentType;
     private final Function<EntityModel<?>, ModelPart> provider;
 
     private boolean visible = true;
@@ -28,7 +27,7 @@ public class VanillaModelPart implements VanillaPart {
     private final FiguraVec3 savedOriginRot = FiguraVec3.of();
     private final FiguraVec3 savedOriginPos = FiguraVec3.of();
 
-    public VanillaModelPart(FiguraModelPart.ParentType parentType, Function<EntityModel<?>, ModelPart> provider) {
+    public VanillaModelPart(ParentType parentType, Function<EntityModel<?>, ModelPart> provider) {
         this.parentType = parentType;
         this.provider = provider;
     }
@@ -52,7 +51,7 @@ public class VanillaModelPart implements VanillaPart {
         savedOriginRot.set(-part.xRot, -part.yRot, part.zRot);
         savedOriginRot.scale(180/Math.PI);
 
-        FiguraVec3 pivot = VanillaPartOffsetManager.getVanillaOffset(parentType);
+        FiguraVec3 pivot = parentType.offset.copy();
         pivot.subtract(part.x, part.y, part.z);
         pivot.multiply(1, -1, -1);
         savedOriginPos.set(pivot);

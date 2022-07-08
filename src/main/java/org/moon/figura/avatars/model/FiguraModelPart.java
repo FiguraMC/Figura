@@ -3,10 +3,7 @@ package org.moon.figura.avatars.model;
 import com.mojang.math.Quaternion;
 import com.mojang.math.Vector3f;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.ElytraModel;
 import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.HumanoidModel;
-import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.LightTexture;
 import org.moon.figura.avatars.Avatar;
@@ -16,8 +13,6 @@ import org.moon.figura.avatars.model.rendertasks.BlockTask;
 import org.moon.figura.avatars.model.rendertasks.ItemTask;
 import org.moon.figura.avatars.model.rendertasks.RenderTask;
 import org.moon.figura.avatars.model.rendertasks.TextTask;
-import org.moon.figura.avatars.vanilla.VanillaPartOffsetManager;
-import org.moon.figura.ducks.PlayerModelAccessor;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
@@ -29,14 +24,12 @@ import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
-import org.moon.figura.mixin.render.layers.elytra.ElytraModelAccessor;
 import org.moon.figura.utils.LuaUtils;
 import org.terasology.jnlua.LuaRuntimeException;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -65,6 +58,16 @@ public class FiguraModelPart {
 
     public int textureWidth, textureHeight; //If the part has multiple textures, then these are -1.
 
+    public FiguraModelPart(Avatar owner, String name, PartCustomization customization, int index, List<FiguraModelPart> children) {
+        this.owner = owner;
+        this.name = name;
+        this.customization = customization;
+        this.index = index;
+        this.children = children;
+        for (FiguraModelPart child : children)
+            child.parent = this;
+    }
+
     public void pushVerticesImmediate(ImmediateAvatarRenderer avatarRenderer, int[] remainingComplexity) {
         for (int i = 0; i < facesByTexture.size(); i++) {
             if (remainingComplexity[0] <= 0)
@@ -75,45 +78,15 @@ public class FiguraModelPart {
     }
 
     public void applyVanillaTransforms(EntityModel<?> vanillaModel) {
-        if (!parentType.vanilla) return;
-        if (vanillaModel instanceof PlayerModel<?> player)
-            applyVanillaTransform(parentType, parentType == ParentType.Cape ? ((PlayerModelAccessor) player).figura$getFakeCloak() : null);
+        if (parentType.provider == null)
+            return;
 
-        if (vanillaModel instanceof HumanoidModel<?> humanoid) {
-            applyVanillaTransform(parentType, switch (parentType) {
-                case Head -> humanoid.head;
-                case Body -> humanoid.body;
-                case LeftArm -> humanoid.leftArm;
-                case RightArm -> humanoid.rightArm;
-                case LeftLeg -> humanoid.leftLeg;
-                case RightLeg -> humanoid.rightLeg;
-                default -> null;
-            });
-        }
-        if (vanillaModel instanceof ElytraModel<?> elytra) {
-            applyVanillaTransform(parentType, switch (parentType) {
-                case LeftElytra -> ((ElytraModelAccessor) elytra).getLeftWing();
-                case RightElytra -> ((ElytraModelAccessor) elytra).getRightWing();
-                default -> null;
-            });
-        }
-    }
-
-    public void applyExtraTransforms() {
-        if (parentType == ParentType.Camera)
-            applyCameraTransform();
-    }
-
-    @Override
-    public String toString() {
-        return name + " (ModelPart)";
-    }
-
-    public void applyVanillaTransform(ParentType parentType, ModelPart part) {
+        ModelPart part = parentType.provider.func.apply(vanillaModel);
         if (part == null)
             return;
 
-        FiguraVec3 defaultPivot = VanillaPartOffsetManager.getVanillaOffset(parentType);
+        FiguraVec3 defaultPivot = parentType.offset.copy();
+
         defaultPivot.subtract(part.x, part.y, part.z);
         defaultPivot.multiply(part.xScale, part.yScale, -part.zScale);
 
@@ -126,70 +99,29 @@ public class FiguraModelPart {
         defaultPivot.free();
     }
 
-    public void applyCameraTransform() {
-        Quaternion orient = Minecraft.getInstance().getEntityRenderDispatcher().cameraOrientation();
-        Vector3f xyzDeg = orient.toXYZDegrees();
-        customization.offsetRot(-xyzDeg.x(), -xyzDeg.y(), xyzDeg.z());
-    }
-
     public void resetVanillaTransforms() {
-        if (parentType.vanilla) {
+        if (parentType.provider != null) {
             customization.offsetPivot(0, 0, 0);
             customization.offsetPos(0, 0, 0);
             customization.offsetRot(0, 0, 0);
         }
     }
 
+    public void applyExtraTransforms() {
+        if (parentType == ParentType.Camera)
+            applyCameraTransform();
+    }
+
+    private void applyCameraTransform() {
+        Quaternion orient = Minecraft.getInstance().getEntityRenderDispatcher().cameraOrientation();
+        Vector3f xyzDeg = orient.toXYZDegrees();
+        customization.offsetRot(-xyzDeg.x(), -xyzDeg.y(), xyzDeg.z());
+    }
+
     public void clean() {
         customization.free();
         for (FiguraModelPart child : children)
             child.clean();
-    }
-
-    public enum ParentType {
-        None(false, "NONE"),
-
-        Head("HEAD"),
-        Body("BODY"),
-        LeftArm("LEFT_ARM"),
-        RightArm("RIGHT_ARM"),
-        LeftLeg("LEFT_LEG"),
-        RightLeg("RIGHT_LEG"),
-
-        LeftElytra("LEFT_ELYTRA", "LeftElytron", "LEFT_ELYTRON"),
-        RightElytra("RIGHT_ELYTRA", "RightElytron", "RIGHT_ELYTRON"),
-
-        Cape("CAPE"),
-
-        World(false, "WORLD"),
-        Hud(false, "HUD", "Gui", "GUI"),
-
-        Camera(false, "CAMERA");
-
-        public final boolean vanilla;
-        public final String[] aliases;
-        public static final Set<ParentType> SPECIAL_PARTS = Set.of(World, Hud);
-
-        ParentType(String... aliases) {
-            this(true, aliases);
-        }
-
-        ParentType(Boolean vanilla, String... aliases) {
-            this.vanilla = vanilla;
-            this.aliases = aliases;
-        }
-
-        public static ParentType get(String name) {
-            for (ParentType parentType : values()) {
-                if (name.startsWith(parentType.name()))
-                    return parentType;
-                for (String alias : parentType.aliases) {
-                    if (name.startsWith(alias))
-                        return parentType;
-                }
-            }
-            return None;
-        }
     }
 
     //-- LUA BUSINESS --//
@@ -890,18 +822,8 @@ public class FiguraModelPart {
         return null;
     }
 
-    //-- READING METHODS FROM NBT --//
-
-    public FiguraModelPart(Avatar owner, String name, PartCustomization customization, int index, List<FiguraModelPart> children) {
-        this.owner = owner;
-        this.name = name;
-        this.customization = customization;
-        this.index = index;
-        this.children = children;
-        for (FiguraModelPart child : children)
-            child.parent = this;
+    @Override
+    public String toString() {
+        return name + " (ModelPart)";
     }
-
-
-
 }

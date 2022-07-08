@@ -11,6 +11,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.model.FiguraModelPart;
+import org.moon.figura.avatars.model.ParentType;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 
@@ -44,32 +45,32 @@ public abstract class AvatarRenderer {
      */
     public enum PartFilterScheme {
         MODEL(true, (part, previousPassed) -> {
-            if (FiguraModelPart.ParentType.SPECIAL_PARTS.contains(part.parentType))
+            if (ParentType.SPECIAL_PARTS.contains(part.parentType))
                 return false;
             return previousPassed;
         }),
         WORLD(false, (part, previousPassed) -> {
-            if (part.parentType == FiguraModelPart.ParentType.World)
+            if (part.parentType == ParentType.World)
                 return true;
             return previousPassed;
         }),
         HEAD(false, (part, previousPassed) -> {
-            if (part.parentType == FiguraModelPart.ParentType.Head)
+            if (part.parentType == ParentType.Head)
                 return true;
             return previousPassed;
         }),
         LEFT_ARM(false, (part, previousPassed) -> {
-            if (part.parentType == FiguraModelPart.ParentType.LeftArm)
+            if (part.parentType == ParentType.LeftArm)
                 return true;
             return previousPassed;
         }),
         RIGHT_ARM(false, (part, previousPassed) -> {
-            if (part.parentType == FiguraModelPart.ParentType.RightArm)
+            if (part.parentType == ParentType.RightArm)
                 return true;
             return previousPassed;
         }),
         HUD(false, (part, previousPassed) -> {
-            if (part.parentType == FiguraModelPart.ParentType.Hud)
+            if (part.parentType == ParentType.Hud)
                 return true;
             return previousPassed;
         });

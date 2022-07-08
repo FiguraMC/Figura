@@ -1,20 +1,14 @@
 package org.moon.figura.lua.api.model;
 
-import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.HumanoidModel;
-import net.minecraft.client.model.PlayerModel;
-import net.minecraft.client.model.geom.ModelPart;
-import org.moon.figura.avatars.model.FiguraModelPart;
-import org.moon.figura.ducks.PlayerModelAccessor;
+import org.moon.figura.avatars.model.ParentType;
+import org.moon.figura.avatars.model.VanillaModelProvider;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.lua.types.LuaPairsIterator;
-import org.moon.figura.mixin.render.layers.elytra.ElytraModelAccessor;
 
 import java.util.List;
-import java.util.function.Function;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -176,50 +170,50 @@ public class VanillaModelAPI {
     public VanillaModelAPI() {
         // -- body -- //
 
-        HEAD = new VanillaModelPart(FiguraModelPart.ParentType.Head, ModelFunction.HEAD.func);
-        BODY = new VanillaModelPart(FiguraModelPart.ParentType.Body, ModelFunction.BODY.func);
-        LEFT_ARM = new VanillaModelPart(FiguraModelPart.ParentType.LeftArm, ModelFunction.LEFT_ARM.func);
-        RIGHT_ARM = new VanillaModelPart(FiguraModelPart.ParentType.RightArm, ModelFunction.RIGHT_ARM.func);
-        LEFT_LEG = new VanillaModelPart(FiguraModelPart.ParentType.LeftLeg, ModelFunction.LEFT_LEG.func);
-        RIGHT_LEG = new VanillaModelPart(FiguraModelPart.ParentType.RightLeg, ModelFunction.RIGHT_LEG.func);
+        HEAD = new VanillaModelPart(ParentType.Head, VanillaModelProvider.HEAD.func);
+        BODY = new VanillaModelPart(ParentType.Body, VanillaModelProvider.BODY.func);
+        LEFT_ARM = new VanillaModelPart(ParentType.LeftArm, VanillaModelProvider.LEFT_ARM.func);
+        RIGHT_ARM = new VanillaModelPart(ParentType.RightArm, VanillaModelProvider.RIGHT_ARM.func);
+        LEFT_LEG = new VanillaModelPart(ParentType.LeftLeg, VanillaModelProvider.LEFT_LEG.func);
+        RIGHT_LEG = new VanillaModelPart(ParentType.RightLeg, VanillaModelProvider.RIGHT_LEG.func);
 
-        HAT = new VanillaModelPart(FiguraModelPart.ParentType.Head, ModelFunction.HAT.func);
-        JACKET = new VanillaModelPart(FiguraModelPart.ParentType.Body, ModelFunction.JACKET.func);
-        LEFT_SLEEVE = new VanillaModelPart(FiguraModelPart.ParentType.LeftArm, ModelFunction.LEFT_SLEEVE.func);
-        RIGHT_SLEEVE = new VanillaModelPart(FiguraModelPart.ParentType.RightArm, ModelFunction.RIGHT_SLEEVE.func);
-        LEFT_PANTS = new VanillaModelPart(FiguraModelPart.ParentType.LeftLeg, ModelFunction.LEFT_PANTS.func);
-        RIGHT_PANTS = new VanillaModelPart(FiguraModelPart.ParentType.RightLeg, ModelFunction.RIGHT_PANTS.func);
+        HAT = new VanillaModelPart(ParentType.Head, VanillaModelProvider.HAT.func);
+        JACKET = new VanillaModelPart(ParentType.Body, VanillaModelProvider.JACKET.func);
+        LEFT_SLEEVE = new VanillaModelPart(ParentType.LeftArm, VanillaModelProvider.LEFT_SLEEVE.func);
+        RIGHT_SLEEVE = new VanillaModelPart(ParentType.RightArm, VanillaModelProvider.RIGHT_SLEEVE.func);
+        LEFT_PANTS = new VanillaModelPart(ParentType.LeftLeg, VanillaModelProvider.LEFT_PANTS.func);
+        RIGHT_PANTS = new VanillaModelPart(ParentType.RightLeg, VanillaModelProvider.RIGHT_PANTS.func);
 
         // -- cape -- //
 
-        CAPE_MODEL = new VanillaModelPart(FiguraModelPart.ParentType.Cape, ModelFunction.CAPE.func);
-        FAKE_CAPE = new VanillaModelPart(FiguraModelPart.ParentType.Cape, ModelFunction.FAKE_CAPE.func);
+        CAPE_MODEL = new VanillaModelPart(ParentType.Cape, VanillaModelProvider.CAPE.func);
+        FAKE_CAPE = new VanillaModelPart(ParentType.Cape, VanillaModelProvider.FAKE_CAPE.func);
 
         // -- armor -- //
 
-        HELMET_HEAD = new VanillaModelPart(FiguraModelPart.ParentType.Head, ModelFunction.HEAD.func);
-        HELMET_HAT = new VanillaModelPart(FiguraModelPart.ParentType.Head, ModelFunction.HAT.func);
+        HELMET_HEAD = new VanillaModelPart(ParentType.Head, VanillaModelProvider.HEAD.func);
+        HELMET_HAT = new VanillaModelPart(ParentType.Head, VanillaModelProvider.HAT.func);
 
-        CHESTPLATE_BODY = new VanillaModelPart(FiguraModelPart.ParentType.Body, ModelFunction.BODY.func);
-        CHESTPLATE_LEFT_ARM = new VanillaModelPart(FiguraModelPart.ParentType.LeftArm, ModelFunction.LEFT_ARM.func);
-        CHESTPLATE_RIGHT_ARM = new VanillaModelPart(FiguraModelPart.ParentType.RightArm, ModelFunction.RIGHT_ARM.func);
+        CHESTPLATE_BODY = new VanillaModelPart(ParentType.Body, VanillaModelProvider.BODY.func);
+        CHESTPLATE_LEFT_ARM = new VanillaModelPart(ParentType.LeftArm, VanillaModelProvider.LEFT_ARM.func);
+        CHESTPLATE_RIGHT_ARM = new VanillaModelPart(ParentType.RightArm, VanillaModelProvider.RIGHT_ARM.func);
 
-        LEGGINGS_BODY = new VanillaModelPart(FiguraModelPart.ParentType.Body, ModelFunction.BODY.func);
-        LEGGINGS_LEFT_LEG = new VanillaModelPart(FiguraModelPart.ParentType.LeftLeg, ModelFunction.LEFT_LEG.func);
-        LEGGINGS_RIGHT_LEG = new VanillaModelPart(FiguraModelPart.ParentType.RightLeg, ModelFunction.RIGHT_LEG.func);
+        LEGGINGS_BODY = new VanillaModelPart(ParentType.Body, VanillaModelProvider.BODY.func);
+        LEGGINGS_LEFT_LEG = new VanillaModelPart(ParentType.LeftLeg, VanillaModelProvider.LEFT_LEG.func);
+        LEGGINGS_RIGHT_LEG = new VanillaModelPart(ParentType.RightLeg, VanillaModelProvider.RIGHT_LEG.func);
 
-        BOOTS_LEFT_LEG = new VanillaModelPart(FiguraModelPart.ParentType.LeftLeg, ModelFunction.LEFT_LEG.func);
-        BOOTS_RIGHT_LEG = new VanillaModelPart(FiguraModelPart.ParentType.RightLeg, ModelFunction.RIGHT_LEG.func);
+        BOOTS_LEFT_LEG = new VanillaModelPart(ParentType.LeftLeg, VanillaModelProvider.LEFT_LEG.func);
+        BOOTS_RIGHT_LEG = new VanillaModelPart(ParentType.RightLeg, VanillaModelProvider.RIGHT_LEG.func);
 
         // -- elytra -- //
 
-        LEFT_ELYTRA = new VanillaModelPart(FiguraModelPart.ParentType.LeftElytra, ModelFunction.LEFT_ELYTRON.func);
-        RIGHT_ELYTRA = new VanillaModelPart(FiguraModelPart.ParentType.RightElytra, ModelFunction.RIGHT_ELYTRON.func);
+        LEFT_ELYTRA = new VanillaModelPart(ParentType.LeftElytra, VanillaModelProvider.LEFT_ELYTRON.func);
+        RIGHT_ELYTRA = new VanillaModelPart(ParentType.RightElytra, VanillaModelProvider.RIGHT_ELYTRON.func);
 
         // -- held items -- //
 
-        LEFT_ITEM = new VanillaModelPart(FiguraModelPart.ParentType.LeftArm, null);
-        RIGHT_ITEM = new VanillaModelPart(FiguraModelPart.ParentType.RightArm, null);
+        LEFT_ITEM = new VanillaModelPart(ParentType.LeftArm, null);
+        RIGHT_ITEM = new VanillaModelPart(ParentType.RightArm, null);
 
 
         // -- groups -- //
@@ -268,32 +262,5 @@ public class VanillaModelAPI {
     @Override
     public String toString() {
         return "VanillaModelAPI";
-    }
-
-    public enum ModelFunction {
-        HEAD(model -> ((HumanoidModel<?>) model).head),
-        BODY(model -> ((HumanoidModel<?>) model).body),
-        LEFT_ARM(model -> ((HumanoidModel<?>) model).leftArm),
-        RIGHT_ARM(model -> ((HumanoidModel<?>) model).rightArm),
-        LEFT_LEG(model -> ((HumanoidModel<?>) model).leftLeg),
-        RIGHT_LEG(model -> ((HumanoidModel<?>) model).rightLeg),
-
-        HAT(model -> ((HumanoidModel<?>) model).hat),
-        JACKET(model -> ((PlayerModel<?>) model).jacket),
-        LEFT_SLEEVE(model -> ((PlayerModel<?>) model).leftSleeve),
-        RIGHT_SLEEVE(model -> ((PlayerModel<?>) model).rightSleeve),
-        LEFT_PANTS(model -> ((PlayerModel<?>) model).leftPants),
-        RIGHT_PANTS(model -> ((PlayerModel<?>) model).rightPants),
-        CAPE(model -> ((PlayerModelAccessor) model).figura$getCloak()),
-        FAKE_CAPE(model -> ((PlayerModelAccessor) model).figura$getFakeCloak()),
-
-        LEFT_ELYTRON(model -> ((ElytraModelAccessor) model).getLeftWing()),
-        RIGHT_ELYTRON(model -> ((ElytraModelAccessor) model).getRightWing());
-
-        public final Function<EntityModel<?>, ModelPart> func;
-
-        ModelFunction(Function<EntityModel<?>, ModelPart> func) {
-            this.func = func;
-        }
     }
 }

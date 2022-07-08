@@ -80,7 +80,7 @@ public class FiguraModelPartReader {
         result.facesByTexture = facesByTexture;
         storeTexSize(result, textureSets);
         if (partCompound.contains("pt"))
-            result.parentType = FiguraModelPart.ParentType.valueOf(partCompound.getString("pt"));
+            result.parentType = ParentType.valueOf(partCompound.getString("pt"));
 
         return result;
     }

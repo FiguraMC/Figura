@@ -49,12 +49,9 @@ public class AvatarManager {
         for (UUID id : toRemove)
             clearAvatar(id);
 
-        //actual tick event
-
-        for (Avatar avatar : LOADED_AVATARS.values()) {
-            avatar.worldTickEvent();
-            avatar.tickEvent();
-        }
+        //tick the avatar
+        for (Avatar avatar : LOADED_AVATARS.values())
+            avatar.tick();
     }
 
     public static void onWorldRender(float tickDelta) {

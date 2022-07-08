@@ -59,8 +59,9 @@ public class PartCustomization implements CachedType {
                 positionMatrix.rotateZ(rotation.z + offsetRot.z);
                 positionMatrix.rotateY(rotation.y + offsetRot.y);
                 positionMatrix.rotateX(rotation.x + offsetRot.x);
-            } else
+            } else {
                 positionMatrix.rotateZYX(rotation.x + offsetRot.x, rotation.y + offsetRot.y, rotation.z + offsetRot.z);
+            }
 
             positionMatrix.translate(pivot.x + offsetPivot.x, pivot.y + offsetPivot.y, pivot.z + offsetPivot.z);
 

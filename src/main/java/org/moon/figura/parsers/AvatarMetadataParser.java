@@ -7,7 +7,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.avatars.model.FiguraModelPart;
+import org.moon.figura.avatars.model.ParentType;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
 
 import java.io.IOException;
@@ -85,9 +85,9 @@ public class AvatarMetadataParser {
             }
         }
         if (customization.parentType != null) {
-            FiguraModelPart.ParentType type = FiguraModelPart.ParentType.get(customization.parentType);
+            ParentType type = ParentType.get(customization.parentType);
 
-            if (type == FiguraModelPart.ParentType.None)
+            if (type == ParentType.None)
                 modelPart.remove("pt");
             else
                 modelPart.putString("pt", type.name());

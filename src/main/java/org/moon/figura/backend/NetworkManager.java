@@ -9,6 +9,7 @@ import net.minecraft.client.ClientTelemetryManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientHandshakePacketListenerImpl;
 import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.client.multiplayer.resolver.ServerAddress;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.network.Connection;
 import net.minecraft.network.ConnectionProtocol;
@@ -31,8 +32,6 @@ import java.util.concurrent.CompletableFuture;
 
 public class NetworkManager {
 
-    public static final int AUTH_PORT = 25565;
-    public static final int BACKEND_PORT = 25500;
     public static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
     private static final int RECONNECT = 6000; //5 min
 
@@ -98,9 +97,11 @@ public class NetworkManager {
 
                 Minecraft minecraft = Minecraft.getInstance();
                 ClientTelemetryManager telemetryManager = minecraft.createTelemetryManager();
-                InetSocketAddress inetSocketAddress = new InetSocketAddress((String) Config.BACKEND.value, AUTH_PORT);
 
+                ServerAddress authServer = ServerAddress.parseString((String) Config.AUTH_SERVER.value);
+                InetSocketAddress inetSocketAddress = new InetSocketAddress(authServer.getHost(), authServer.getPort());
                 Connection connection = Connection.connectToServer(inetSocketAddress, minecraft.options.useNativeTransport());
+
                 connection.setListener(new ClientHandshakePacketListenerImpl(connection, minecraft, null, (text) -> FiguraMod.LOGGER.info(text.getString())) {
                     @Override
                     public void handleGameProfile(ClientboundGameProfilePacket clientboundGameProfilePacket) {
