@@ -27,7 +27,7 @@ public class CustomFramebuffer {
     public void setSize(int nWidth, int nHeight) {
 
         //Minimized window, we don't even need the framebuffer, so...
-        if(nWidth == 0 || nHeight == 0)
+        if (nWidth == 0 || nHeight == 0)
             return;
 
         if (nWidth != width || nHeight != height) {

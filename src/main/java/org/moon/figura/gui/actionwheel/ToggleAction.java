@@ -120,8 +120,9 @@ public class ToggleAction extends Action {
             ),
             description = "toggle_action.toggled"
     )
-    public static void toggled(@LuaNotNil ToggleAction action, @LuaNotNil Boolean bool) {
+    public static Action toggled(@LuaNotNil ToggleAction action, @LuaNotNil Boolean bool) {
         action.toggled = bool;
+        return action;
     }
 
     @LuaWhitelist

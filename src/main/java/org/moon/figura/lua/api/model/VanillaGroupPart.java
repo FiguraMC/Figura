@@ -14,8 +14,9 @@ import org.moon.figura.lua.docs.LuaTypeDoc;
 )
 public class VanillaGroupPart implements VanillaPart {
 
-    private boolean visible = true;
     private final VanillaPart[] parts;
+
+    private boolean visible = true;
 
     public VanillaGroupPart(VanillaPart... parts) {
         this.parts = parts;

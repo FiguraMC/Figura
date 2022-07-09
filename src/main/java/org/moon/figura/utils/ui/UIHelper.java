@@ -82,8 +82,8 @@ public class UIHelper extends GuiComponent {
 
         RenderSystem.disableBlend();
         //Draw GUI framebuffer -> vanilla framebuffer
-        int windowWidth = Minecraft.getInstance().getWindow().getScreenWidth();
-        int windowHeight = Minecraft.getInstance().getWindow().getScreenHeight();
+        int windowWidth = Minecraft.getInstance().getWindow().getWidth();
+        int windowHeight = Minecraft.getInstance().getWindow().getHeight();
 
         Matrix4f mf = RenderSystem.getProjectionMatrix();
         FIGURA_FRAMEBUFFER.drawToScreen(windowWidth, windowHeight);

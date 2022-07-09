@@ -53,7 +53,7 @@ public class MouseHandlerMixin {
     @Inject(method = "grabMouse", at = @At("HEAD"), cancellable = true)
     private void grabMouse(CallbackInfo ci) {
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
-        if (avatar != null && avatar.luaState != null && avatar.luaState.host.unlockCursor)
+        if (ActionWheel.isEnabled() || (avatar != null && avatar.luaState != null && avatar.luaState.host.unlockCursor))
             ci.cancel();
     }
 }

@@ -22,10 +22,11 @@ public class VanillaModelPart implements VanillaPart {
     private final ParentType parentType;
     private final Function<EntityModel<?>, ModelPart> provider;
 
-    private boolean visible = true;
-    private boolean storedVisibility;
     private final FiguraVec3 savedOriginRot = FiguraVec3.of();
     private final FiguraVec3 savedOriginPos = FiguraVec3.of();
+
+    private boolean visible = true;
+    private boolean storedVisibility;
 
     public VanillaModelPart(ParentType parentType, Function<EntityModel<?>, ModelPart> provider) {
         this.parentType = parentType;
