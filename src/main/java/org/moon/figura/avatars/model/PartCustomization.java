@@ -32,10 +32,15 @@ public class PartCustomization implements CachedType {
     private FiguraVec3 scale = FiguraVec3.of(1, 1, 1);
     private FiguraVec3 pivot = FiguraVec3.of();
 
-    //The "bonus" values are for vanilla part scaling.
+    //The "offset" values are for vanilla part scaling. The offset pivot and rot can be get and set from script.
     private FiguraVec3 offsetPivot = FiguraVec3.of();
     private FiguraVec3 offsetPos = FiguraVec3.of();
     private FiguraVec3 offsetRot = FiguraVec3.of();
+
+    //These values are set by animation players. They can be queried, though not set, by script.
+    private FiguraVec3 animPos = FiguraVec3.of();
+    private FiguraVec3 animRot = FiguraVec3.of();
+    private FiguraVec3 animScale = FiguraVec3.of(1, 1, 1);
 
     public FiguraVec3 color = FiguraVec3.of(1, 1, 1);
     public Float alpha = null;
@@ -48,37 +53,65 @@ public class PartCustomization implements CachedType {
     public void recalculate() {
         if (needsMatrixRecalculation) {
             positionMatrix.reset();
-            positionMatrix.translate(
-                    position.x + offsetPos.x - pivot.x - offsetPivot.x,
-                    position.y + offsetPos.y - pivot.y - offsetPivot.y,
-                    position.z + offsetPos.z - pivot.z - offsetPivot.z
-            );
-            positionMatrix.scale(scale.x, scale.y, scale.z);
 
+            //Position the pivot point at 0, 0, 0, and translate the part
+            positionMatrix.translate(
+                    position.x + offsetPos.x + animPos.x - pivot.x - offsetPivot.x,
+                    position.y + offsetPos.y + animPos.y - pivot.y - offsetPivot.y,
+                    position.z + offsetPos.z + animPos.z - pivot.z - offsetPivot.z
+            );
+
+            //Scale the model part around the pivot
+            positionMatrix.scale(
+                    scale.x*animScale.x,
+                    scale.y*animScale.y,
+                    scale.z*animScale.z
+            );
+
+            //Rotate the model part around the pivot
             if (partType == PartType.MESH) {
-                positionMatrix.rotateZ(rotation.z + offsetRot.z);
-                positionMatrix.rotateY(rotation.y + offsetRot.y);
-                positionMatrix.rotateX(rotation.x + offsetRot.x);
+                positionMatrix.rotateZ(rotation.z + offsetRot.z + animRot.z);
+                positionMatrix.rotateY(rotation.y + offsetRot.y + animRot.y);
+                positionMatrix.rotateX(rotation.x + offsetRot.x + animRot.x);
             } else {
-                positionMatrix.rotateZYX(rotation.x + offsetRot.x, rotation.y + offsetRot.y, rotation.z + offsetRot.z);
+                positionMatrix.rotateZYX(
+                        rotation.x + offsetRot.x + animRot.x,
+                        rotation.y + offsetRot.y + animRot.y,
+                        rotation.z + offsetRot.z + animRot.z
+                );
             }
 
-            positionMatrix.translate(pivot.x + offsetPivot.x, pivot.y + offsetPivot.y, pivot.z + offsetPivot.z);
-
-            normalMatrix.reset();
-            double c = Math.cbrt(scale.x * scale.y * scale.z);
-            normalMatrix.scale(
-                    c == 0 && scale.x == 0 ? 1 : c / scale.x,
-                    c == 0 && scale.y == 0 ? 1 : c / scale.y,
-                    c == 0 && scale.z == 0 ? 1 : c / scale.z
+            //Undo the effects of the pivot translation
+            positionMatrix.translate(
+                    pivot.x + offsetPivot.x,
+                    pivot.y + offsetPivot.y,
+                    pivot.z + offsetPivot.z
             );
 
+            //Set up the normal matrix as well
+            normalMatrix.reset();
+            double x = scale.x * animScale.x;
+            double y = scale.y * animScale.y;
+            double z = scale.z * animScale.z;
+            double c = Math.cbrt(x * y * z);
+            normalMatrix.scale(
+                    c == 0 && x == 0 ? 1 : c / x,
+                    c == 0 && y == 0 ? 1 : c / y,
+                    c == 0 && z == 0 ? 1 : c / z
+            );
+
+            //Perform rotation of normals
             if (partType == PartType.MESH) {
-                normalMatrix.rotateZ(rotation.z + offsetRot.z);
-                normalMatrix.rotateY(rotation.y + offsetRot.y);
-                normalMatrix.rotateX(rotation.x + offsetRot.x);
-            } else
-                normalMatrix.rotateZYX(rotation.x + offsetRot.x, rotation.y + offsetRot.y, rotation.z + offsetRot.z);
+                normalMatrix.rotateZ(rotation.z + offsetRot.z + animRot.z);
+                normalMatrix.rotateY(rotation.y + offsetRot.y + animRot.y);
+                normalMatrix.rotateX(rotation.x + offsetRot.x + animRot.x);
+            } else {
+                normalMatrix.rotateZYX(
+                        rotation.x + offsetRot.x + animRot.x,
+                        rotation.y + offsetRot.y + animRot.y,
+                        rotation.z + offsetRot.z + animRot.z
+                );
+            }
 
             needsMatrixRecalculation = false;
         }
@@ -159,6 +192,16 @@ public class PartCustomization implements CachedType {
     }
     public FiguraVec3 getOffsetRot() {
         return offsetRot.copy();
+    }
+
+    public FiguraVec3 getAnimPos() {
+        return animPos.copy();
+    }
+    public FiguraVec3 getAnimRot() {
+        return animRot.copy();
+    }
+    public FiguraVec3 getAnimScale() {
+        return animScale.copy();
     }
 
     public void setMatrix(FiguraMat4 matrix) {

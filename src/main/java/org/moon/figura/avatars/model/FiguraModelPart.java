@@ -197,6 +197,18 @@ public class FiguraModelPart {
                     argumentTypes = FiguraModelPart.class,
                     argumentNames = "modelPart"
             ),
+            description = "model_part.get_anim_pos"
+    )
+    public static FiguraVec3 getAnimPos(@LuaNotNil FiguraModelPart modelPart) {
+        return modelPart.customization.getAnimPos();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraModelPart.class,
+                    argumentNames = "modelPart"
+            ),
             description = "model_part.get_rot"
     )
     public static FiguraVec3 getRot(@LuaNotNil FiguraModelPart modelPart) {
@@ -259,6 +271,18 @@ public class FiguraModelPart {
                     argumentTypes = FiguraModelPart.class,
                     argumentNames = "modelPart"
             ),
+            description = "model_part.get_anim_rot"
+    )
+    public static FiguraVec3 getAnimRot(@LuaNotNil FiguraModelPart modelPart) {
+        return modelPart.customization.getAnimRot();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraModelPart.class,
+                    argumentNames = "modelPart"
+            ),
             description = "model_part.get_scale"
     )
     public static FiguraVec3 getScale(@LuaNotNil FiguraModelPart modelPart) {
@@ -282,6 +306,18 @@ public class FiguraModelPart {
     public static void setScale(@LuaNotNil FiguraModelPart modelPart, Object x, Double y, Double z) {
         FiguraVec3 vec = LuaUtils.parseVec3("setScale", x, y, z, 1, 1, 1);
         modelPart.customization.setScale(vec);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraModelPart.class,
+                    argumentNames = "modelPart"
+            ),
+            description = "model_part.get_anim_scale"
+    )
+    public static FiguraVec3 getAnimScale(@LuaNotNil FiguraModelPart modelPart) {
+        return modelPart.customization.getAnimScale();
     }
 
     @LuaWhitelist
