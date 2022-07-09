@@ -56,9 +56,9 @@ public class PartCustomization implements CachedType {
 
             //Position the pivot point at 0, 0, 0, and translate the part
             positionMatrix.translate(
-                    position.x + offsetPos.x + animPos.x - pivot.x - offsetPivot.x,
-                    position.y + offsetPos.y + animPos.y - pivot.y - offsetPivot.y,
-                    position.z + offsetPos.z + animPos.z - pivot.z - offsetPivot.z
+                    offsetPos.x - pivot.x - offsetPivot.x,
+                    offsetPos.y - pivot.y - offsetPivot.y,
+                    offsetPos.z - pivot.z - offsetPivot.z
             );
 
             //Scale the model part around the pivot
@@ -83,9 +83,9 @@ public class PartCustomization implements CachedType {
 
             //Undo the effects of the pivot translation
             positionMatrix.translate(
-                    pivot.x + offsetPivot.x,
-                    pivot.y + offsetPivot.y,
-                    pivot.z + offsetPivot.z
+                    position.x + animPos.x + pivot.x + offsetPivot.x,
+                    position.y + animPos.y + pivot.y + offsetPivot.y,
+                    position.z + animPos.z + pivot.z + offsetPivot.z
             );
 
             //Set up the normal matrix as well
