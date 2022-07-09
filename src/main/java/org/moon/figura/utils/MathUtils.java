@@ -98,4 +98,14 @@ public class MathUtils {
         df.setRoundingMode(RoundingMode.HALF_UP);
         return df.format(size) + SIZE_UNITS[i];
     }
+
+    public static double lerp(double delta, double prev, double next) {
+        return delta * (next - prev) + prev;
+    }
+
+    //no idea how it works
+    //it is the same function from minecraft, but using doubles instead
+    public static double catmullrom(double delta, double prevA, double prevB, double nextA, double nextB) {
+        return 0.5 * (2 * prevB + (nextA - prevA) * delta + (2 * prevA - 5 * prevB + 4 * nextA - nextB) * delta * delta + (3 * prevB - prevA - 3 * nextA + nextB) * delta * delta * delta);
+    }
 }

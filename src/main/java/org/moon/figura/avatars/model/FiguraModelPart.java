@@ -124,6 +124,12 @@ public class FiguraModelPart {
             child.clean();
     }
 
+    // -- animations -- //
+
+    public void animPosition(FiguraVec3 vec) {}
+    public void animRotation(FiguraVec3 vec) {}
+    public void animScale(FiguraVec3 vec) {}
+
     //-- LUA BUSINESS --//
 
     @LuaWhitelist

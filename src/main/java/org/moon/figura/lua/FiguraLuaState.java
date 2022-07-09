@@ -181,6 +181,7 @@ public class FiguraLuaState extends LuaState53 {
         pushJavaFunction(LOADSTRING_FUNCTION);
         pushValue(-1);
         setGlobal("load");
+        setGlobal("loadstring");
     }
 
     public void setInstructionLimit(int limit) {
