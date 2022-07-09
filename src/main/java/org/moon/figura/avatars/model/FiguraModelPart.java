@@ -126,9 +126,15 @@ public class FiguraModelPart {
 
     // -- animations -- //
 
-    public void animPosition(FiguraVec3 vec) {}
-    public void animRotation(FiguraVec3 vec) {}
-    public void animScale(FiguraVec3 vec) {}
+    public void animPosition(FiguraVec3 vec) {
+        customization.setAnimPos(vec);
+    }
+    public void animRotation(FiguraVec3 vec) {
+        customization.setAnimRot(vec);
+    }
+    public void animScale(FiguraVec3 vec) {
+        customization.setAnimScale(vec);
+    }
 
     //-- LUA BUSINESS --//
 

@@ -194,11 +194,20 @@ public class PartCustomization implements CachedType {
         return offsetRot.copy();
     }
 
+    public void setAnimPos(FiguraVec3 vec) {
+        animPos.set(vec);
+    }
     public FiguraVec3 getAnimPos() {
         return animPos.copy();
     }
+    public void setAnimRot(FiguraVec3 vec) {
+        animRot.set(vec);
+    }
     public FiguraVec3 getAnimRot() {
         return animRot.copy();
+    }
+    public void setAnimScale(FiguraVec3 vec) {
+        animScale.set(vec);
     }
     public FiguraVec3 getAnimScale() {
         return animScale.copy();
