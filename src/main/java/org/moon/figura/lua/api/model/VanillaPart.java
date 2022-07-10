@@ -2,10 +2,14 @@ package org.moon.figura.lua.api.model;
 
 import net.minecraft.client.model.EntityModel;
 
-public interface VanillaPart {
-    void alter(EntityModel<?> model);
-    void store(EntityModel<?> model);
-    void restore(EntityModel<?> model);
-    boolean isVisible();
-    void setVisible(boolean visible);
+public abstract class VanillaPart {
+    protected String name;
+    public VanillaPart(String name) {
+        this.name = name;
+    }
+    public abstract void alter(EntityModel<?> model);
+    public abstract void store(EntityModel<?> model);
+    public abstract void restore(EntityModel<?> model);
+    public abstract boolean isVisible();
+    public abstract void setVisible(boolean visible);
 }

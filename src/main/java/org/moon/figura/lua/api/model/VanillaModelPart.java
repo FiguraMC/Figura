@@ -17,7 +17,7 @@ import java.util.function.Function;
         name = "VanillaModelPart",
         description = "vanilla_part"
 )
-public class VanillaModelPart implements VanillaPart {
+public class VanillaModelPart extends VanillaPart {
 
     private final ParentType parentType;
     private final Function<EntityModel<?>, ModelPart> provider;
@@ -28,7 +28,8 @@ public class VanillaModelPart implements VanillaPart {
     private boolean visible = true;
     private boolean storedVisibility;
 
-    public VanillaModelPart(ParentType parentType, Function<EntityModel<?>, ModelPart> provider) {
+    public VanillaModelPart(String name, ParentType parentType, Function<EntityModel<?>, ModelPart> provider) {
+        super(name);
         this.parentType = parentType;
         this.provider = provider;
     }

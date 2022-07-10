@@ -6,37 +6,51 @@ import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.lua.types.LuaIPairsIterator;
+import org.moon.figura.lua.types.LuaPairsIterator;
+import org.terasology.jnlua.LuaRuntimeException;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 
 @LuaWhitelist
 @LuaTypeDoc(
         name = "VanillaModelGroup",
         description = "vanilla_group"
 )
-public class VanillaGroupPart implements VanillaPart {
+public class VanillaGroupPart extends VanillaPart {
 
-    private final VanillaPart[] parts;
+    private List<String> cachedKeyList;
+    private Collection<VanillaPart> cachedParts;
+    private final HashMap<String, VanillaPart> partMap;
 
     private boolean visible = true;
 
-    public VanillaGroupPart(VanillaPart... parts) {
-        this.parts = parts;
+    public VanillaGroupPart(String name, VanillaPart... parts) {
+        super(name);
+        partMap = new HashMap<>();
+        for (VanillaPart part : parts)
+            partMap.put(part.name, part);
+        cachedParts = partMap.values();
+        cachedKeyList = partMap.keySet().stream().toList();
     }
 
     @Override
     public void alter(EntityModel<?> model) {
-        for (VanillaPart part : parts)
+        for (VanillaPart part : cachedParts)
             part.alter(model);
     }
 
     @Override
     public void store(EntityModel<?> model) {
-        for (VanillaPart part : parts)
+        for (VanillaPart part : cachedParts)
             part.store(model);
     }
 
     @Override
     public void restore(EntityModel<?> model) {
-        for (VanillaPart part : parts)
+        for (VanillaPart part : cachedParts)
             part.restore(model);
     }
 
@@ -48,7 +62,7 @@ public class VanillaGroupPart implements VanillaPart {
     @Override
     public void setVisible(boolean visible) {
         this.visible = visible;
-        for (VanillaPart part : parts)
+        for (VanillaPart part : cachedParts)
             part.setVisible(visible);
     }
 
@@ -80,4 +94,15 @@ public class VanillaGroupPart implements VanillaPart {
     public String toString() {
         return "VanillaModelGroup";
     }
+
+    @LuaWhitelist
+    public static Object __index(@LuaNotNil VanillaGroupPart part, @LuaNotNil String arg) {
+        return part.partMap.get(arg);
+    }
+
+    @LuaWhitelist
+    public static LuaPairsIterator<VanillaGroupPart, String> __pairs(@LuaNotNil VanillaGroupPart group) {
+        return new LuaPairsIterator<>(group.cachedKeyList, VanillaGroupPart.class, String.class);
+    }
+
 }
