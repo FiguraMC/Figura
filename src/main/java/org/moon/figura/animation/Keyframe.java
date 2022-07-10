@@ -2,7 +2,7 @@ package org.moon.figura.animation;
 
 import org.moon.figura.math.vector.FiguraVec3;
 
-public class Keyframe {
+public class Keyframe implements Comparable<Keyframe> {
 
     private final float time;
     private final Interpolation interpolation;
@@ -33,5 +33,10 @@ public class Keyframe {
 
     public Interpolation getInterpolation() {
         return interpolation;
+    }
+
+    @Override
+    public int compareTo(Keyframe other) {
+        return Float.compare(this.getTime(), other.getTime());
     }
 }

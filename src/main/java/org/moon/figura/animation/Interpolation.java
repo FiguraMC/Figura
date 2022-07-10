@@ -24,7 +24,8 @@ public enum Interpolation {
                 MathUtils.catmullrom(delta, prevA.y, prevB.y, nextA.y, nextB.y) * strength,
                 MathUtils.catmullrom(delta, prevA.z, prevB.z, nextA.z, nextB.z) * strength
         );
-    });
+    }),
+    STEP((frames, currentFrame, targetFrame, strength, delta) -> frames[currentFrame].getTargetB());
 
     private final IInterpolation function;
 

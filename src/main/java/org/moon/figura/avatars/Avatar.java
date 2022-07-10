@@ -19,6 +19,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import org.moon.figura.FiguraMod;
+import org.moon.figura.animation.Animation;
 import org.moon.figura.avatars.model.rendering.AvatarRenderer;
 import org.moon.figura.avatars.model.rendering.ImmediateAvatarRenderer;
 import org.moon.figura.lua.FiguraLuaPrinter;
@@ -67,6 +68,7 @@ public class Avatar {
     public FiguraLuaState luaState;
 
     public final HashMap<String, SoundBuffer> customSounds = new HashMap<>();
+    public final HashMap<String, Animation> animations = new HashMap<>();
 
     private int entityTickLimit, entityRenderLimit;
     private int worldTickLimit, worldRenderLimit;
@@ -117,6 +119,7 @@ public class Avatar {
             color = metadata.getString("color");
             fileSize = getFileSize();
         }).thenRun(() -> { //models
+            loadAnimations();
             renderer = new ImmediateAvatarRenderer(this);
         }).thenRun(() -> { //script
             loadCustomSounds();
@@ -406,6 +409,38 @@ public class Avatar {
             this.luaState = null;
         } else if (FiguraMod.DO_OUR_NATIVES_WORK) {
             initInstructions = initLimit - luaState.getInstructions();
+        }
+    }
+
+    private void loadAnimations() {
+        if (!nbt.contains("animations"))
+            return;
+
+        CompoundTag root = nbt.getCompound("animations");
+        for (String key : root.getAllKeys()) {
+            try {
+                CompoundTag nbt = root.getCompound(key);
+
+                Animation animation = new Animation()
+                        .loop(nbt.contains("loop") ? Animation.LoopMode.valueOf(nbt.getString("loop").toUpperCase()) : Animation.LoopMode.ONCE)
+                        .override(nbt.contains("ovr") && nbt.getBoolean("ovr"))
+                        .length(nbt.contains("len") ? nbt.getFloat("len") : 0f)
+                        .offset(nbt.contains("off") ? nbt.getFloat("off") : 0f)
+                        .blend(nbt.contains("bld") ? nbt.getFloat("bld") : 1f)
+                        .startDelay(nbt.contains("sdel") ? nbt.getFloat("sdel") : 0f)
+                        .loopDelay(nbt.contains("ldel") ? nbt.getFloat("ldel") : 0f);
+
+                if (nbt.contains("code")) {
+                    for (Tag code : nbt.getList("code", Tag.TAG_COMPOUND)) {
+                        CompoundTag compound = (CompoundTag) code;
+                        animation.addCode(compound.getFloat("time"), compound.getString("src"));
+                    }
+                }
+
+                animations.put(key, animation);
+            } catch (Exception e) {
+                FiguraMod.LOGGER.warn("Failed to load blockbench animation \"" + key + "\"", e);
+            }
         }
     }
 

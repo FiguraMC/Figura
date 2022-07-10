@@ -6,6 +6,10 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.util.Mth;
+import org.moon.figura.animation.Animation;
+import org.moon.figura.animation.Interpolation;
+import org.moon.figura.animation.Keyframe;
+import org.moon.figura.animation.TransformType;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.model.rendering.FiguraImmediateBuffer;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
@@ -81,6 +85,43 @@ public class FiguraModelPartReader {
         storeTexSize(result, textureSets);
         if (partCompound.contains("pt"))
             result.parentType = ParentType.valueOf(partCompound.getString("pt"));
+
+        //Read animations :D
+        if (partCompound.contains("anim")) {
+            CompoundTag nbt = partCompound.getCompound("anim");
+            for (String key : nbt.getAllKeys()) {
+                Animation animation = owner.animations.get(key);
+                if (animation == null)
+                    continue;
+
+                CompoundTag animNbt = nbt.getCompound(key);
+                for (String channelString : animNbt.getAllKeys()) {
+                    TransformType type = TransformType.valueOf(channelString.toUpperCase());
+                    List<Keyframe> keyframes = new ArrayList<>();
+                    ListTag keyframeList = animNbt.getList(channelString, Tag.TAG_COMPOUND);
+
+                    for (Tag keyframeTag : keyframeList) {
+                        CompoundTag keyframeNbt = (CompoundTag) keyframeTag;
+                        float time = keyframeNbt.getFloat("time");
+                        Interpolation interpolation = Interpolation.valueOf(keyframeNbt.getString("int").toUpperCase());
+
+                        FiguraVec3 pos = FiguraVec3.of();
+                        readVec3(pos, keyframeNbt, "pre");
+
+                        if (keyframeNbt.contains("end")) {
+                            FiguraVec3 end = FiguraVec3.of();
+                            readVec3(end, keyframeNbt, "end");
+                            keyframes.add(new Keyframe(time, interpolation, pos, end));
+                        } else {
+                            keyframes.add(new Keyframe(time, interpolation, pos));
+                        }
+                    }
+
+                    keyframes.sort(Keyframe::compareTo);
+                    animation.addAnimation(result, new Animation.AnimationChannel(type, keyframes.toArray(new Keyframe[0])));
+                }
+            }
+        }
 
         return result;
     }

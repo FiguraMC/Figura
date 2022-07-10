@@ -31,7 +31,7 @@ public class Player {
                 float timeDiff = anim.getTime() - current.getTime();
                 float delta = Math.min(Math.max(timeDiff / (next.getTime() - current.getTime()), 0), 1);
 
-                FiguraVec3 transform = next.getInterpolation().generate(keyframes, currentIndex, nextIndex, anim.strength, delta);
+                FiguraVec3 transform = next.getInterpolation().generate(keyframes, currentIndex, nextIndex, anim.blend, delta);
                 channel.type().apply(part, transform);
             }
         }

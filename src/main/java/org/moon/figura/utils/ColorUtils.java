@@ -9,7 +9,7 @@ import java.awt.*;
 public class ColorUtils {
 
     public enum Colors {
-        FRAN_PINK(0xFF72B7, "fran", "francielly", "bunny"),
+        FRAN_PINK(0xFF72AD, "fran", "francielly", "bunny"),
         CHLOE_PURPLE(0xA672EF, "chloe", "space"),
         MAYA_BLUE(0x00F0FF, "maya", "devnull"),
         SKYE_BLUE(0x99BBEE, "sky", "skye", "skylar"),

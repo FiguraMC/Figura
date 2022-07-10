@@ -94,7 +94,7 @@ public class LocalAvatarLoader {
         loadSounds(path, nbt);
 
         ListTag textures = new ListTag();
-        ListTag animations = new ListTag();
+        CompoundTag animations = new CompoundTag();
         BlockbenchModelParser parser = new BlockbenchModelParser();
 
         CompoundTag models = loadModels(path, parser, textures, animations);
@@ -103,9 +103,12 @@ public class LocalAvatarLoader {
         AvatarMetadataParser.injectToModels(metadata, models);
 
         //return :3
-        nbt.put("models", models);
-        nbt.put("textures", textures);
-        nbt.put("animations", animations);
+        if (!models.isEmpty())
+            nbt.put("models", models);
+        if (!textures.isEmpty())
+            nbt.put("textures", textures);
+        if (!animations.isEmpty())
+            nbt.put("animations", animations);
 
         return nbt;
     }
@@ -138,7 +141,7 @@ public class LocalAvatarLoader {
         }
     }
 
-    private static CompoundTag loadModels(Path path, BlockbenchModelParser parser, ListTag textures, ListTag animations) throws IOException {
+    private static CompoundTag loadModels(Path path, BlockbenchModelParser parser, ListTag textures, CompoundTag animations) throws IOException {
         CompoundTag result = new CompoundTag();
         File[] subFiles = path.toFile().listFiles(f -> !f.isHidden() && !f.getName().startsWith("."));
         ListTag children = new ListTag();
@@ -152,7 +155,7 @@ public class LocalAvatarLoader {
                     BlockbenchModelParser.ModelData data = parser.parseModel(IOUtils.readFile(file), file.getName().substring(0, file.getName().length() - 8));
                     children.add(data.modelNbt());
                     textures.addAll(data.textureList());
-                    animations.addAll(data.animationList());
+                    animations.merge(data.animations());
                 }
             }
 
