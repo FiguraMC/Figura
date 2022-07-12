@@ -86,7 +86,7 @@ public enum Config {
     }},
     LOG_OTHERS(false),
     MAIN_DIR("", InputType.FOLDER_PATH),
-    AUTH_SERVER("figura.moonlight-devs.org:25565", InputType.IP) {
+    AUTH_SERVER_IP("figura.moonlight-devs.org:25565", InputType.IP) {
         @Override
         public void onChange() {
             super.onChange();
@@ -94,7 +94,7 @@ public enum Config {
             NetworkManager.auth(true);
         }
     },
-    BACKEND("figura.moonlight-devs.org:25500", InputType.IP) {
+    BACKEND_IP("figura.moonlight-devs.org:25500", InputType.IP) {
         @Override
         public void onChange() {
             super.onChange();

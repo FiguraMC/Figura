@@ -9,15 +9,15 @@ import java.util.Map;
 
 public class AnimationPlayer {
 
-    public static void render(Animation anim) {
+    public static int tick(Animation anim, int limit) {
         if (anim.playState == Animation.PlayState.STOPPED)
-            return;
+            return limit;
 
         if (anim.playState != Animation.PlayState.PAUSED)
-            anim.updateTime();
+            anim.tick();
 
         if (anim.time < 0f)
-            return;
+            return limit;
 
         for (Map.Entry<FiguraModelPart, List<Animation.AnimationChannel>> entry : anim.animationParts.entrySet()) {
             FiguraModelPart part = entry.getKey();
@@ -31,6 +31,9 @@ public class AnimationPlayer {
             part.animationOverride = part.animationOverride || anim.override;
 
             for (Animation.AnimationChannel channel : entry.getValue()) {
+                if (limit <= 0)
+                    return limit;
+
                 Keyframe[] keyframes = channel.keyframes();
 
                 int currentIndex = Math.max(0, Mth.binarySearch(0, keyframes.length, index -> anim.time <= keyframes[index].getTime()) - 1);
@@ -44,8 +47,11 @@ public class AnimationPlayer {
 
                 FiguraVec3 transform = next.getInterpolation().generate(keyframes, currentIndex, nextIndex, anim.blend, delta);
                 channel.type().apply(part, transform, merge);
+                limit--;
             }
         }
+
+        return limit;
     }
 
     public static void clear(Animation anim) {

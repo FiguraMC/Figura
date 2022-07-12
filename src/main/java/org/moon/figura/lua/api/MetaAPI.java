@@ -141,82 +141,10 @@ public class MetaAPI {
                     argumentTypes = MetaAPI.class,
                     argumentNames = "meta"
             ),
-            description = "meta.get_complexity"
-    )
-    public static int getComplexity(@LuaNotNil MetaAPI api) {
-        return api.avatar.complexity;
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = MetaAPI.class,
-                    argumentNames = "meta"
-            ),
             description = "meta.get_init_count"
     )
     public static int getInitCount(@LuaNotNil MetaAPI api) {
         return api.avatar.initInstructions;
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = MetaAPI.class,
-                    argumentNames = "meta"
-            ),
-            description = "meta.get_tick_count"
-    )
-    public static int getTickCount(@LuaNotNil MetaAPI api) {
-        return api.avatar.entityTickInstructions;
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = MetaAPI.class,
-                    argumentNames = "meta"
-            ),
-            description = "meta.get_world_tick_count"
-    )
-    public static int getWorldTickCount(@LuaNotNil MetaAPI api) {
-        return api.avatar.worldTickInstructions;
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = MetaAPI.class,
-                    argumentNames = "meta"
-            ),
-            description = "meta.get_render_count"
-    )
-    public static int getRenderCount(@LuaNotNil MetaAPI api) {
-        return api.avatar.entityRenderInstructions;
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = MetaAPI.class,
-                    argumentNames = "meta"
-            ),
-            description = "meta.get_world_render_count"
-    )
-    public static int getWorldRenderCount(@LuaNotNil MetaAPI api) {
-        return api.avatar.worldRenderInstructions;
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = MetaAPI.class,
-                    argumentNames = "meta"
-            ),
-            description = "meta.get_script_memory"
-    )
-    public static int getScriptMemory(@LuaNotNil MetaAPI api) {
-        return api.avatar.luaState.getTotalMemory() - api.avatar.luaState.getFreeMemory();
     }
 
     @LuaWhitelist
@@ -237,6 +165,18 @@ public class MetaAPI {
                     argumentTypes = MetaAPI.class,
                     argumentNames = "meta"
             ),
+            description = "meta.get_tick_count"
+    )
+    public static int getTickCount(@LuaNotNil MetaAPI api) {
+        return api.avatar.entityTickInstructions;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = MetaAPI.class,
+                    argumentNames = "meta"
+            ),
             description = "meta.get_max_tick_count"
     )
     public static int getMaxTickCount(@LuaNotNil MetaAPI api) {
@@ -249,10 +189,10 @@ public class MetaAPI {
                     argumentTypes = MetaAPI.class,
                     argumentNames = "meta"
             ),
-            description = "meta.get_max_world_tick_count"
+            description = "meta.get_render_count"
     )
-    public static int getMaxWorldTickCount(@LuaNotNil MetaAPI api) {
-        return api.trust.get(TrustContainer.Trust.WORLD_TICK_INST);
+    public static int getRenderCount(@LuaNotNil MetaAPI api) {
+        return api.avatar.entityRenderInstructions;
     }
 
     @LuaWhitelist
@@ -273,10 +213,58 @@ public class MetaAPI {
                     argumentTypes = MetaAPI.class,
                     argumentNames = "meta"
             ),
+            description = "meta.get_world_tick_count"
+    )
+    public static int getWorldTickCount(@LuaNotNil MetaAPI api) {
+        return api.avatar.worldTickInstructions;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = MetaAPI.class,
+                    argumentNames = "meta"
+            ),
+            description = "meta.get_max_world_tick_count"
+    )
+    public static int getMaxWorldTickCount(@LuaNotNil MetaAPI api) {
+        return api.trust.get(TrustContainer.Trust.WORLD_TICK_INST);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = MetaAPI.class,
+                    argumentNames = "meta"
+            ),
+            description = "meta.get_world_render_count"
+    )
+    public static int getWorldRenderCount(@LuaNotNil MetaAPI api) {
+        return api.avatar.worldRenderInstructions;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = MetaAPI.class,
+                    argumentNames = "meta"
+            ),
             description = "meta.get_max_world_render_count"
     )
     public static int getMaxWorldRenderCount(@LuaNotNil MetaAPI api) {
         return api.trust.get(TrustContainer.Trust.WORLD_RENDER_INST);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = MetaAPI.class,
+                    argumentNames = "meta"
+            ),
+            description = "meta.get_script_memory"
+    )
+    public static int getScriptMemory(@LuaNotNil MetaAPI api) {
+        return api.avatar.luaState.getTotalMemory() - api.avatar.luaState.getFreeMemory();
     }
 
     @LuaWhitelist
@@ -297,10 +285,34 @@ public class MetaAPI {
                     argumentTypes = MetaAPI.class,
                     argumentNames = "meta"
             ),
+            description = "meta.get_complexity"
+    )
+    public static int getComplexity(@LuaNotNil MetaAPI api) {
+        return api.avatar.complexity;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = MetaAPI.class,
+                    argumentNames = "meta"
+            ),
             description = "meta.get_max_complexity"
     )
     public static int getMaxComplexity(@LuaNotNil MetaAPI api) {
         return api.trust.get(TrustContainer.Trust.COMPLEXITY);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = MetaAPI.class,
+                    argumentNames = "meta"
+            ),
+            description = "meta.get_remaining_particles"
+    )
+    public static int getRemainingParticles(@LuaNotNil MetaAPI api) {
+        return api.avatar.particlesRemaining.peek();
     }
 
     @LuaWhitelist
@@ -321,10 +333,59 @@ public class MetaAPI {
                     argumentTypes = MetaAPI.class,
                     argumentNames = "meta"
             ),
+            description = "meta.get_remaining_sounds"
+    )
+    public static int getRemainingSounds(@LuaNotNil MetaAPI api) {
+        return api.avatar.soundsRemaining.peek();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = MetaAPI.class,
+                    argumentNames = "meta"
+            ),
             description = "meta.get_max_sounds"
     )
     public static int getMaxSounds(@LuaNotNil MetaAPI api) {
         return api.trust.get(TrustContainer.Trust.SOUNDS);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = MetaAPI.class,
+                    argumentNames = "meta"
+            ),
+            description = "meta.get_animation_complexity"
+    )
+    public static int getAnimationComplexity(@LuaNotNil MetaAPI api) {
+        return api.avatar.animationComplexity;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = MetaAPI.class,
+                    argumentNames = "meta"
+            ),
+            description = "meta.get_max_animation_complexity"
+    )
+    public static int getMaxAnimationComplexity(@LuaNotNil MetaAPI api) {
+        return api.trust.get(TrustContainer.Trust.BB_ANIMATIONS);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = MetaAPI.class,
+                    argumentNames = "meta"
+            ),
+            description = "meta.can_edit_vanilla_model"
+    )
+    public static boolean canEditVanillaModel(@LuaNotNil MetaAPI api) {
+        TrustContainer.Trust trust = TrustContainer.Trust.VANILLA_MODEL_EDIT;
+        return trust.asBoolean(api.trust.get(trust));
     }
 
     @LuaWhitelist
@@ -350,6 +411,19 @@ public class MetaAPI {
     )
     public static boolean canRenderOffscreen(@LuaNotNil MetaAPI api) {
         TrustContainer.Trust trust = TrustContainer.Trust.OFFSCREEN_RENDERING;
+        return trust.asBoolean(api.trust.get(trust));
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = MetaAPI.class,
+                    argumentNames = "meta"
+            ),
+            description = "meta.can_use_custom_sounds"
+    )
+    public static boolean canUseCustomSounds(@LuaNotNil MetaAPI api) {
+        TrustContainer.Trust trust = TrustContainer.Trust.CUSTOM_SOUNDS;
         return trust.asBoolean(api.trust.get(trust));
     }
 

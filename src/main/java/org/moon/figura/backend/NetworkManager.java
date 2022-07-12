@@ -98,7 +98,7 @@ public class NetworkManager {
                 Minecraft minecraft = Minecraft.getInstance();
                 ClientTelemetryManager telemetryManager = minecraft.createTelemetryManager();
 
-                ServerAddress authServer = ServerAddress.parseString((String) Config.AUTH_SERVER.value);
+                ServerAddress authServer = ServerAddress.parseString((String) Config.AUTH_SERVER_IP.value);
                 InetSocketAddress inetSocketAddress = new InetSocketAddress(authServer.getHost(), authServer.getPort());
                 Connection connection = Connection.connectToServer(inetSocketAddress, minecraft.options.useNativeTransport());
 
@@ -205,7 +205,7 @@ public class NetworkManager {
     }
 
     public static boolean canUpload() {
-        return hasBackend() && backend.upload.peek();
+        return hasBackend() && backend.upload.check();
     }
 
     // -- avatar management -- //

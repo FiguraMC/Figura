@@ -68,6 +68,7 @@ public class Avatar {
     public final Map<String, SoundBuffer> customSounds = new HashMap<>();
     public final Map<String, Map<String, Animation>> animations = Collections.synchronizedMap(new HashMap<>());
 
+    private int animationsLimit;
     private int entityTickLimit, entityRenderLimit;
     private int worldTickLimit, worldRenderLimit;
 
@@ -76,7 +77,7 @@ public class Avatar {
     public boolean scriptError = false;
 
     public int complexity = 0;
-    public int remainingComplexity;
+    public int remainingComplexity, animationComplexity;
 
     public int initInstructions;
     public int entityTickInstructions, worldTickInstructions;
@@ -132,6 +133,7 @@ public class Avatar {
 
         //trust
         TrustContainer container = TrustManager.get(owner);
+        animationsLimit = container.get(TrustContainer.Trust.BB_ANIMATIONS);
         entityTickLimit = container.get(TrustContainer.Trust.TICK_INST);
         worldTickLimit = container.get(TrustContainer.Trust.WORLD_TICK_INST);
         entityRenderLimit = container.get(TrustContainer.Trust.RENDER_INST);
@@ -343,9 +345,11 @@ public class Avatar {
     // -- animations -- //
 
     public void applyAnimations() {
+        int limit = animationsLimit;
         for (Map<String, Animation> modelData : animations.values())
             for (Animation animation : modelData.values())
-                AnimationPlayer.render(animation);
+                limit = AnimationPlayer.tick(animation, limit);
+        animationComplexity = animationsLimit - limit;
     }
 
     public void clearAnimations() {

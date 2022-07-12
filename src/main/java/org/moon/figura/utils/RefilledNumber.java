@@ -38,14 +38,19 @@ public class RefilledNumber {
 
     //checks if the current value can be consumed and then consumes it if it can
     public boolean use() {
-        boolean peek = peek();
+        boolean peek = check();
         if (peek) current--;
         return peek;
     }
 
     //checks if the current value can be consumed without consuming it
-    public boolean peek() {
+    public boolean check() {
         return current >= 1;
+    }
+
+    //returns the current value, as integer, rounded down
+    public int peek() {
+        return (int) Math.floor(current);
     }
 
     //updates the max value

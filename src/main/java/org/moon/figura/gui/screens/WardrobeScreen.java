@@ -82,7 +82,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
         }));
 
         //delete
-        addRenderableWidget(delete = new TexturedButton(buttX + 24, buttY, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/delete.png"), 72, 24, FiguraText.of("gui.wardrobe.delete.tooltip"), button -> {
+        addRenderableWidget(delete = new TexturedButton(buttX + 24, buttY, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/delete.png"), 72, 24, Component.literal("not yet ❤").withStyle(ChatFormatting.RED) /*FiguraText.of("gui.wardrobe.delete.tooltip")*/, button -> {
             FiguraToast.sendToast(Component.literal("lol nope").setStyle(Style.EMPTY.withColor(0xFFADAD)), FiguraToast.ToastType.DEFAULT);
         }));
         delete.active = false;

@@ -8,6 +8,7 @@ import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Style;
 import org.moon.figura.FiguraMod;
+import org.moon.figura.animation.Animation;
 import org.moon.figura.avatars.model.FiguraModelPart;
 import org.moon.figura.avatars.model.rendertasks.*;
 import org.moon.figura.gui.actionwheel.*;
@@ -79,7 +80,8 @@ public class FiguraDocsManager {
                 MetaAPI.class,
                 RendererAPI.class,
                 SoundAPI.class,
-                ParticleAPI.class
+                ParticleAPI.class,
+                Animation.class
         ));
 
         //nameplate

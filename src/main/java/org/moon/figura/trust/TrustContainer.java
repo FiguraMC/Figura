@@ -34,7 +34,7 @@ public class TrustContainer {
         COMPLEXITY(0, 8191),
         PARTICLES(0, 63),
         SOUNDS(0, 63),
-        //BB_ANIMATIONS(0, 255),
+        BB_ANIMATIONS(0, 255),
         VANILLA_MODEL_EDIT,
         NAMEPLATE_EDIT,
         OFFSCREEN_RENDERING,

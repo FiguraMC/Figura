@@ -52,7 +52,7 @@ public class WebsocketManager extends WebSocketClient {
     }
 
     private static String getBackendAddress() {
-        ServerAddress backendIP = ServerAddress.parseString((String) Config.BACKEND.value);
+        ServerAddress backendIP = ServerAddress.parseString((String) Config.BACKEND_IP.value);
         return "ws://" + backendIP.getHost() + ":" + backendIP.getPort();
     }
 

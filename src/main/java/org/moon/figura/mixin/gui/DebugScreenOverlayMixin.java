@@ -33,9 +33,7 @@ public class DebugScreenOverlayMixin {
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
         if (avatar != null && avatar.nbt != null) {
             lines.add(++i, String.format("Model Complexity: %d", avatar.complexity));
-
-            //if (avatar.renderer != null)
-            //    lines.add(++i, String.format("Animations Complexity: %d", animRendered));
+            lines.add(++i, String.format("Animations Complexity: %d", avatar.animationComplexity));
 
             //has script
             if (avatar.luaState != null) {

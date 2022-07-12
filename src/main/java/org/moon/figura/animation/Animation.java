@@ -67,7 +67,7 @@ public class Animation {
         this.animationParts.computeIfAbsent(part, modelPart -> new ArrayList<>()).add(anim);
     }
 
-    public void updateTime() {
+    public void tick() {
         this.controller.tick();
         float newTime = controller.getElapsedTimeSeconds();
 
