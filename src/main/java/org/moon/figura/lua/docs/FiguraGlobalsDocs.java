@@ -51,7 +51,7 @@ public abstract class FiguraGlobalsDocs {
     @LuaFieldDoc(description = "globals.action_wheel")
     public ActionWheelAPI action_wheel;
     @LuaFieldDoc(description = "globals.animation")
-    public AnimationAPI animation;
+    public LuaTable animation;
 
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(

@@ -8,6 +8,7 @@ import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.lua.types.LuaTable;
 import org.terasology.jnlua.LuaRuntimeException;
 
 import java.util.ArrayList;
@@ -94,6 +95,18 @@ public class Animation {
             if (codeTime >= minTime && codeTime < maxTime && !owner.scriptError && owner.luaState != null)
                 owner.luaState.runScript(codeFrames.get(codeTime), "animation (" + this.name + ")");
         }
+    }
+
+    public static LuaTable getTableForAnimations(Avatar avatar) {
+        LuaTable result = new LuaTable();
+        for (Map.Entry<String, Map<String, Animation>> entry : avatar.animations.entrySet()) {
+            LuaTable anims = new LuaTable();
+            for (Map.Entry<String, Animation> entry2: entry.getValue().entrySet()) {
+                anims.put(entry2.getKey(), entry2.getValue());
+            }
+            result.put(entry.getKey(), anims);
+        }
+        return result;
     }
 
     // -- lua methods -- //

@@ -90,7 +90,11 @@ public class FiguraModelPartReader {
         if (partCompound.contains("anim")) {
             CompoundTag nbt = partCompound.getCompound("anim");
             for (String key : nbt.getAllKeys()) {
-                Animation animation = owner.animations.get(key);
+                int slashLoc = key.indexOf('/');
+                String modelName = key.substring(0, slashLoc);
+                String animName = key.substring(slashLoc+1);
+
+                Animation animation = owner.animations.get(modelName).get(animName);
                 if (animation == null)
                     continue;
 

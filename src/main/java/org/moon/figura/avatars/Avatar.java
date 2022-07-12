@@ -66,7 +66,7 @@ public class Avatar {
     public FiguraLuaState luaState;
 
     public final Map<String, SoundBuffer> customSounds = new HashMap<>();
-    public final Map<String, Animation> animations = Collections.synchronizedMap(new HashMap<>());
+    public final Map<String, Map<String, Animation>> animations = Collections.synchronizedMap(new HashMap<>());
 
     private int entityTickLimit, entityRenderLimit;
     private int worldTickLimit, worldRenderLimit;
@@ -239,6 +239,7 @@ public class Avatar {
             postWorldRenderInstructions = worldRenderLimit - accumulatedEntityRenderInstructions - luaState.getInstructions();
             accumulatedWorldRenderInstructions += postWorldRenderInstructions;
         }
+        renderer.allowMatrixUpdate = false;
     }
 
     public String chatSendMessageEvent(String message) {
@@ -295,7 +296,6 @@ public class Avatar {
         renderer.renderSpecialParts();
         matrices.popPose();
 
-        renderer.allowMatrixUpdate = false;
     }
 
     public void firstPersonWorldRender(Entity watcher, MultiBufferSource bufferSource, PoseStack matrices, Camera camera, float tickDelta) {
@@ -312,17 +312,17 @@ public class Avatar {
             return;
 
         arm.xRot = 0;
-        renderer.allowMatrixUpdate = true;
+        //renderer.allowMatrixUpdate = true;
         AvatarRenderer.PartFilterScheme filter = arm == playerRenderer.getModel().leftArm ? AvatarRenderer.PartFilterScheme.LEFT_ARM : AvatarRenderer.PartFilterScheme.RIGHT_ARM;
         render(player, 0f, tickDelta, 1f, stack, bufferSource, light, overlay, playerRenderer, filter);
-        renderer.allowMatrixUpdate = false;
+        //renderer.allowMatrixUpdate = false;
     }
 
     public void hudRender(PoseStack stack, MultiBufferSource bufferSource, Entity entity, float tickDelta) {
         if (renderer == null)
             return;
 
-        renderer.allowMatrixUpdate = true;
+        //renderer.allowMatrixUpdate = true;
         renderer.currentFilterScheme = AvatarRenderer.PartFilterScheme.HUD;
         renderer.entity = entity;
         renderer.tickDelta = tickDelta;
@@ -337,19 +337,21 @@ public class Avatar {
         renderer.renderSpecialParts();
         stack.popPose();
 
-        renderer.allowMatrixUpdate = false;
+        //renderer.allowMatrixUpdate = false;
     }
 
     // -- animations -- //
 
     public void applyAnimations() {
-        for (Animation animation : animations.values())
-            AnimationPlayer.render(animation);
+        for (Map<String, Animation> modelData : animations.values())
+            for (Animation animation : modelData.values())
+                AnimationPlayer.render(animation);
     }
 
     public void clearAnimations() {
-        for (Animation animation : animations.values())
-            AnimationPlayer.clear(animation);
+        for (Map<String, Animation> modelData : animations.values())
+            for (Animation animation : modelData.values())
+                AnimationPlayer.clear(animation);
     }
 
     // -- extra stuff -- //
@@ -427,30 +429,37 @@ public class Avatar {
             return;
 
         CompoundTag root = nbt.getCompound("animations");
-        for (String key : root.getAllKeys()) {
-            try {
-                CompoundTag nbt = root.getCompound(key);
+        for (String modelName : root.getAllKeys()) {
+            CompoundTag modelNbt = root.getCompound(modelName);
+            for (String animName : modelNbt.getAllKeys()) {
+                try {
 
-                Animation animation = new Animation(this, key,
-                        nbt.contains("loop") ? Animation.LoopMode.valueOf(nbt.getString("loop").toUpperCase()) : Animation.LoopMode.ONCE,
-                        nbt.contains("ovr") && nbt.getBoolean("ovr"),
-                        nbt.contains("len") ? nbt.getFloat("len") : 0f,
-                        nbt.contains("off") ? nbt.getFloat("off") : 0f,
-                        nbt.contains("bld") ? nbt.getFloat("bld") : 1f,
-                        nbt.contains("sdel") ? nbt.getFloat("sdel") : 0f,
-                        nbt.contains("ldel") ? nbt.getFloat("ldel") : 0f
-                );
+                    CompoundTag animNbt = modelNbt.getCompound(animName);
 
-                if (nbt.contains("code")) {
-                    for (Tag code : nbt.getList("code", Tag.TAG_COMPOUND)) {
-                        CompoundTag compound = (CompoundTag) code;
-                        Animation.addCode(animation, compound.getFloat("time"), compound.getString("src"));
+                    Animation animation = new Animation(this, animName,
+                            animNbt.contains("loop") ? Animation.LoopMode.valueOf(animNbt.getString("loop").toUpperCase()) : Animation.LoopMode.ONCE,
+                            animNbt.contains("ovr") && animNbt.getBoolean("ovr"),
+                            animNbt.contains("len") ? animNbt.getFloat("len") : 0f,
+                            animNbt.contains("off") ? animNbt.getFloat("off") : 0f,
+                            animNbt.contains("bld") ? animNbt.getFloat("bld") : 1f,
+                            animNbt.contains("sdel") ? animNbt.getFloat("sdel") : 0f,
+                            animNbt.contains("ldel") ? animNbt.getFloat("ldel") : 0f
+                    );
+
+                    if (animNbt.contains("code")) {
+                        for (Tag code : animNbt.getList("code", Tag.TAG_COMPOUND)) {
+                            CompoundTag compound = (CompoundTag) code;
+                            Animation.addCode(animation, compound.getFloat("time"), compound.getString("src"));
+                        }
                     }
-                }
 
-                animations.put(key, animation);
-            } catch (Exception e) {
-                FiguraMod.LOGGER.warn("Failed to load blockbench animation \"" + key + "\"", e);
+                    if (!animations.containsKey(modelName))
+                        animations.put(modelName, new HashMap<>());
+                    animations.get(modelName).put(animName, animation);
+
+                } catch (Exception e) {
+                    FiguraMod.LOGGER.warn("Failed to load blockbench animation \"" + modelName + "\"", e);
+                }
             }
         }
     }

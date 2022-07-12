@@ -353,11 +353,15 @@ public class BlockbenchModelParser {
         if (animations == null)
             return;
 
+        if (!list.contains(modelName))
+            list.put(modelName, new CompoundTag());
+        list = list.getCompound(modelName);
+
         for (BlockbenchModel.Animation animation : animations) {
             CompoundTag animNbt = new CompoundTag();
 
             //animation metadata
-            String name = modelName + "." + animation.name;
+            String name = modelName + "/" + animation.name;
             animNbt.putString("loop", animation.loop);
             if (animation.override != null && animation.override)
                 animNbt.putBoolean("ovr", true);
@@ -450,7 +454,7 @@ public class BlockbenchModelParser {
                 }
             }
 
-            list.put(name, animNbt);
+            list.put(animation.name, animNbt);
         }
     }
 

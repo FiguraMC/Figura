@@ -82,7 +82,7 @@ public class FiguraModelPart {
     }
 
     public void applyVanillaTransforms(EntityModel<?> vanillaModel) {
-        if (parentType.provider == null)
+        if (animationOverride || parentType.provider == null)
             return;
 
         ModelPart part = parentType.provider.func.apply(vanillaModel);
@@ -104,7 +104,7 @@ public class FiguraModelPart {
     }
 
     public void resetVanillaTransforms() {
-        if (parentType.provider != null) {
+        if (!animationOverride && parentType.provider != null) {
             customization.offsetPivot(0, 0, 0);
             customization.offsetPos(0, 0, 0);
             customization.offsetRot(0, 0, 0);
@@ -133,7 +133,8 @@ public class FiguraModelPart {
     public void animPosition(FiguraVec3 vec, boolean merge) {
         if (merge) {
             FiguraVec3 pos = customization.getAnimPos();
-            customization.setAnimPos(pos.plus(vec));
+            pos.add(vec);
+            customization.setAnimPos(pos);
             pos.free();
         } else {
             customization.setAnimPos(vec);
@@ -142,7 +143,8 @@ public class FiguraModelPart {
     public void animRotation(FiguraVec3 vec, boolean merge) {
         if (merge) {
             FiguraVec3 rot = customization.getAnimRot();
-            customization.setAnimRot(rot.plus(vec));
+            rot.add(vec);
+            customization.setAnimRot(rot);
             rot.free();
         } else {
             customization.setAnimRot(vec);
@@ -151,7 +153,8 @@ public class FiguraModelPart {
     public void animScale(FiguraVec3 vec, boolean merge) {
         if (merge) {
             FiguraVec3 scale = customization.getAnimScale();
-            customization.setAnimScale(scale.times(vec));
+            scale.multiply(vec);
+            customization.setAnimScale(scale);
             scale.free();
         } else {
             customization.setAnimScale(vec);

@@ -3,6 +3,7 @@ package org.moon.figura.lua;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import org.moon.figura.FiguraMod;
+import org.moon.figura.animation.Animation;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.config.Config;
 import org.moon.figura.lua.api.*;
@@ -57,7 +58,6 @@ public class FiguraLuaState extends LuaState53 {
     public KeybindAPI keybind;
     public RendererAPI renderer;
     public ActionWheelAPI actionWheel;
-    public AnimationAPI animation;
 
     public static final String STORAGE_KEY = "STORAGE";
     public LuaOwnedTable<Object> storedStuff = new LuaOwnedTable<>(this, STORAGE_KEY);
@@ -163,7 +163,7 @@ public class FiguraLuaState extends LuaState53 {
         loadGlobal(keybind = new KeybindAPI(owner), "keybind");
         loadGlobal(renderer = new RendererAPI(owner.owner), "renderer");
         loadGlobal(actionWheel = new ActionWheelAPI(owner.owner), "action_wheel");
-        loadGlobal(animation = new AnimationAPI(owner), "animation");
+        loadGlobal(Animation.getTableForAnimations(owner), "animation");
     }
 
     private void loadSetHook() {
