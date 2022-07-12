@@ -63,9 +63,9 @@ public class PartCustomization implements CachedType {
 
             //Scale the model part around the pivot
             positionMatrix.scale(
-                    scale.x*animScale.x,
-                    scale.y*animScale.y,
-                    scale.z*animScale.z
+                    scale.x * animScale.x,
+                    scale.y * animScale.y,
+                    scale.z * animScale.z
             );
 
             //Rotate the model part around the pivot
@@ -196,18 +196,21 @@ public class PartCustomization implements CachedType {
 
     public void setAnimPos(FiguraVec3 vec) {
         animPos.set(vec);
+        needsMatrixRecalculation = true;
     }
     public FiguraVec3 getAnimPos() {
         return animPos.copy();
     }
     public void setAnimRot(FiguraVec3 vec) {
         animRot.set(vec);
+        needsMatrixRecalculation = true;
     }
     public FiguraVec3 getAnimRot() {
         return animRot.copy();
     }
     public void setAnimScale(FiguraVec3 vec) {
         animScale.set(vec);
+        needsMatrixRecalculation = true;
     }
     public FiguraVec3 getAnimScale() {
         return animScale.copy();
@@ -271,6 +274,9 @@ public class PartCustomization implements CachedType {
         offsetPos = FiguraVec3.of();
         offsetRot = FiguraVec3.of();
         color = FiguraVec3.of(1, 1, 1);
+        animPos = FiguraVec3.of();
+        animRot = FiguraVec3.of();
+        animScale = FiguraVec3.of(1, 1, 1);
         alpha = null;
         light = null;
         needsMatrixRecalculation = false;

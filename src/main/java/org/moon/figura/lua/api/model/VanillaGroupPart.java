@@ -90,11 +90,6 @@ public class VanillaGroupPart extends VanillaPart {
         return group.isVisible();
     }
 
-    @Override
-    public String toString() {
-        return "VanillaModelGroup";
-    }
-
     @LuaWhitelist
     public static Object __index(@LuaNotNil VanillaGroupPart part, @LuaNotNil String arg) {
         return part.partMap.get(arg);
@@ -105,4 +100,8 @@ public class VanillaGroupPart extends VanillaPart {
         return new LuaPairsIterator<>(group.cachedKeyList, VanillaGroupPart.class, String.class);
     }
 
+    @Override
+    public String toString() {
+        return "VanillaModelGroup";
+    }
 }

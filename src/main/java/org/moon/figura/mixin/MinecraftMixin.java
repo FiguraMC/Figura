@@ -84,4 +84,14 @@ public abstract class MinecraftMixin {
     private void setLevel(ClientLevel world, CallbackInfo ci) {
         NetworkManager.assertBackend();
     }
+
+    @Inject(at = @At("HEAD"), method = "runTick")
+    public void preTick(boolean tick, CallbackInfo ci) {
+        AvatarManager.applyAnimations();
+    }
+
+    @Inject(at = @At("RETURN"), method = "runTick")
+    public void afterTick(boolean tick, CallbackInfo ci) {
+        AvatarManager.clearAnimations();
+    }
 }

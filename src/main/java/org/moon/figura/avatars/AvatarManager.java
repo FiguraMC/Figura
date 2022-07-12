@@ -14,10 +14,7 @@ import org.moon.figura.gui.widgets.lists.AvatarList;
 import org.moon.figura.utils.FiguraText;
 
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Manages all the avatars that are currently loaded in memory, and also
@@ -26,7 +23,7 @@ import java.util.UUID;
  */
 public class AvatarManager {
 
-    private static final HashMap<UUID, Avatar> LOADED_AVATARS = new HashMap<>();
+    private static final Map<UUID, Avatar> LOADED_AVATARS = Collections.synchronizedMap(new HashMap<>());
     private static final Set<UUID> FETCHED_AVATARS = new HashSet<>();
 
     public static boolean localUploaded = true; //init as true :3
@@ -68,6 +65,22 @@ public class AvatarManager {
 
         for (Avatar avatar : LOADED_AVATARS.values())
             avatar.postWorldRenderEvent();
+    }
+
+    public static void applyAnimations() {
+        if (panic)
+            return;
+
+        for (Avatar avatar : LOADED_AVATARS.values())
+            avatar.applyAnimations();
+    }
+
+    public static void clearAnimations() {
+        if (panic)
+            return;
+
+        for (Avatar avatar : LOADED_AVATARS.values())
+            avatar.clearAnimations();
     }
 
     // -- avatar management -- //

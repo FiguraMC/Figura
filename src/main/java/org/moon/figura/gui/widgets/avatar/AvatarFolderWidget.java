@@ -37,7 +37,7 @@ public class AvatarFolderWidget extends AbstractAvatarWidget {
             AbstractAvatarWidget entry = child.hasAvatar() ? new AvatarWidget(depth + 1, width, child.getPath(), parent) : new AvatarFolderWidget(depth + 1, width, child, parent);
             entries.add(entry);
             children.add(entry);
-            this.height += entry.getHeight() + 2;
+            this.height += entry.height + 2;
         }
 
         entries.sort(AbstractAvatarWidget::compareTo);
@@ -48,29 +48,26 @@ public class AvatarFolderWidget extends AbstractAvatarWidget {
         });
 
         this.groupButton.setToggled(false);
+        this.groupButton.shouldHaveBackground(false);
+
         toggleEntries(false);
         parent.updateScroll();
-        this.groupButton.shouldHaveBackground(false);
     }
 
     public void toggleEntries(boolean bool) {
         boolean toggle = bool && this.groupButton.isToggled();
+        int height = 20;
 
         for (AbstractAvatarWidget widget : entries) {
             widget.setVisible(toggle);
 
             if (widget instanceof AvatarFolderWidget folder)
                 folder.toggleEntries(toggle);
-        }
-    }
 
-    @Override
-    public int getHeight() {
-        int height = 20;
-        for (AbstractAvatarWidget widget : entries) {
-            height += widget.getHeight() + 2;
+            height += widget.height + 2;
         }
-        return groupButton.isToggled() ? height : 20;
+
+        this.height = groupButton.isToggled() ? height : 20;
     }
 
     @Override
@@ -84,7 +81,7 @@ public class AvatarFolderWidget extends AbstractAvatarWidget {
         y = 22;
         for (AbstractAvatarWidget widget : entries) {
             widget.setPos(x, this.y + y);
-            y += widget.getHeight() + 2;
+            y += widget.height + 2;
         }
     }
 }

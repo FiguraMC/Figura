@@ -3,20 +3,22 @@ package org.moon.figura.animation;
 import org.moon.figura.avatars.model.FiguraModelPart;
 import org.moon.figura.math.vector.FiguraVec3;
 
-import java.util.function.BiConsumer;
-
 public enum TransformType {
     POSITION(FiguraModelPart::animPosition),
     ROTATION(FiguraModelPart::animRotation),
     SCALE(FiguraModelPart::animScale);
 
-    private final BiConsumer<FiguraModelPart, FiguraVec3> partConsumer;
+    private final ITransform function;
 
-    TransformType(BiConsumer<FiguraModelPart, FiguraVec3> partConsumer) {
-        this.partConsumer = partConsumer;
+    TransformType(ITransform function) {
+        this.function = function;
     }
 
-    public void apply(FiguraModelPart part, FiguraVec3 vec) {
-        this.partConsumer.accept(part, vec);
+    public void apply(FiguraModelPart part, FiguraVec3 vec, boolean merge) {
+        this.function.apply(part, vec, merge);
+    }
+
+    private interface ITransform {
+        void apply(FiguraModelPart part, FiguraVec3 vec, boolean merge);
     }
 }

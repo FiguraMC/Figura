@@ -97,7 +97,7 @@ public class AvatarList extends AbstractList {
         //scrollbar
         totalHeight = -1;
         for (AbstractAvatarWidget avatar : avatarList)
-            totalHeight += avatar.getHeight() + 2;
+            totalHeight += avatar.height + 2;
         int entryHeight = avatarList.isEmpty() ? 0 : totalHeight / avatarList.size();
 
         scrollBar.visible = totalHeight > height - 32;
@@ -113,10 +113,10 @@ public class AvatarList extends AbstractList {
 
             avatar.setPos(x + xOffset, y + yOffset);
 
-            if (avatar.y + avatar.getHeight() > y + scissorsY)
+            if (avatar.y + avatar.height > y + scissorsY)
                 avatar.render(stack, mouseX, mouseY, delta);
 
-            yOffset += avatar.getHeight() + 2;
+            yOffset += avatar.height + 2;
             if (yOffset > height)
                 hidden = true;
         }
@@ -186,7 +186,7 @@ public class AvatarList extends AbstractList {
         //get new height
         totalHeight = -1;
         for (AbstractAvatarWidget avatar : avatarList)
-            totalHeight += avatar.getHeight() + 2;
+            totalHeight += avatar.height + 2;
 
         //set new scroll percentage
         scrollBar.setScrollProgress(pastScroll / (totalHeight - height));

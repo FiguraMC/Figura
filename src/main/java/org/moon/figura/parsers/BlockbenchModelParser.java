@@ -413,12 +413,12 @@ public class BlockbenchModelParser {
 
                         //pre
                         JsonObject dataPoints = keyFrame.data_points.get(0).getAsJsonObject();
-                        keyframeNbt.put("pre", parseKeyFrameData(gson, dataPoints));
+                        keyframeNbt.put("pre", parseKeyFrameData(gson, dataPoints, keyFrame.channel));
 
                         //end
                         if (keyFrame.data_points.size() > 1) {
                             JsonObject endDataPoints = keyFrame.data_points.get(1).getAsJsonObject();
-                            keyframeNbt.put("end", parseKeyFrameData(gson, endDataPoints));
+                            keyframeNbt.put("end", parseKeyFrameData(gson, endDataPoints, keyFrame.channel));
                         }
 
                         switch (keyFrame.channel) {
@@ -454,13 +454,25 @@ public class BlockbenchModelParser {
         }
     }
 
-    private ListTag parseKeyFrameData(Gson gson, JsonObject object) {
+    private ListTag parseKeyFrameData(Gson gson, JsonObject object, String channel) {
         BlockbenchModel.KeyFrameData endFrameData = gson.fromJson(object, BlockbenchModel.KeyFrameData.class);
 
+        float fallback = channel.equals("scale") ? 1f : 0f;
+        float x = toFloat(endFrameData.x, fallback);
+        float y = toFloat(endFrameData.y, fallback);
+        float z = toFloat(endFrameData.z, fallback);
+
+        if (channel.equals("position")) {
+            x = -x;
+        } else if (channel.equals("rotation")) {
+            x = -x;
+            y = -y;
+        }
+
         ListTag nbt = new ListTag();
-        nbt.add(FloatTag.valueOf(toFloat(endFrameData.x, 0f)));
-        nbt.add(FloatTag.valueOf(toFloat(endFrameData.y, 0f)));
-        nbt.add(FloatTag.valueOf(toFloat(endFrameData.z, 0f)));
+        nbt.add(FloatTag.valueOf(x));
+        nbt.add(FloatTag.valueOf(y));
+        nbt.add(FloatTag.valueOf(z));
 
         return nbt;
     }

@@ -20,14 +20,15 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.animation.Animation;
+import org.moon.figura.animation.AnimationPlayer;
 import org.moon.figura.avatars.model.rendering.AvatarRenderer;
 import org.moon.figura.avatars.model.rendering.ImmediateAvatarRenderer;
 import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.lua.FiguraLuaState;
 import org.moon.figura.lua.api.EventsAPI;
+import org.moon.figura.lua.api.SoundAPI;
 import org.moon.figura.lua.api.entity.EntityWrapper;
 import org.moon.figura.lua.api.nameplate.NameplateCustomization;
-import org.moon.figura.lua.api.SoundAPI;
 import org.moon.figura.lua.types.LuaFunction;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
@@ -36,10 +37,7 @@ import org.terasology.jnlua.LuaRuntimeException;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.util.BitSet;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 //the avatar class
@@ -67,8 +65,8 @@ public class Avatar {
     public AvatarRenderer renderer;
     public FiguraLuaState luaState;
 
-    public final HashMap<String, SoundBuffer> customSounds = new HashMap<>();
-    public final HashMap<String, Animation> animations = new HashMap<>();
+    public final Map<String, SoundBuffer> customSounds = new HashMap<>();
+    public final Map<String, Animation> animations = Collections.synchronizedMap(new HashMap<>());
 
     private int entityTickLimit, entityRenderLimit;
     private int worldTickLimit, worldRenderLimit;
@@ -342,6 +340,18 @@ public class Avatar {
         renderer.allowMatrixUpdate = false;
     }
 
+    // -- animations -- //
+
+    public void applyAnimations() {
+        for (Animation animation : animations.values())
+            AnimationPlayer.render(animation);
+    }
+
+    public void clearAnimations() {
+        for (Animation animation : animations.values())
+            AnimationPlayer.clear(animation);
+    }
+
     // -- extra stuff -- //
 
     /**
@@ -421,19 +431,20 @@ public class Avatar {
             try {
                 CompoundTag nbt = root.getCompound(key);
 
-                Animation animation = new Animation()
-                        .loop(nbt.contains("loop") ? Animation.LoopMode.valueOf(nbt.getString("loop").toUpperCase()) : Animation.LoopMode.ONCE)
-                        .override(nbt.contains("ovr") && nbt.getBoolean("ovr"))
-                        .length(nbt.contains("len") ? nbt.getFloat("len") : 0f)
-                        .offset(nbt.contains("off") ? nbt.getFloat("off") : 0f)
-                        .blend(nbt.contains("bld") ? nbt.getFloat("bld") : 1f)
-                        .startDelay(nbt.contains("sdel") ? nbt.getFloat("sdel") : 0f)
-                        .loopDelay(nbt.contains("ldel") ? nbt.getFloat("ldel") : 0f);
+                Animation animation = new Animation(this, key,
+                        nbt.contains("loop") ? Animation.LoopMode.valueOf(nbt.getString("loop").toUpperCase()) : Animation.LoopMode.ONCE,
+                        nbt.contains("ovr") && nbt.getBoolean("ovr"),
+                        nbt.contains("len") ? nbt.getFloat("len") : 0f,
+                        nbt.contains("off") ? nbt.getFloat("off") : 0f,
+                        nbt.contains("bld") ? nbt.getFloat("bld") : 1f,
+                        nbt.contains("sdel") ? nbt.getFloat("sdel") : 0f,
+                        nbt.contains("ldel") ? nbt.getFloat("ldel") : 0f
+                );
 
                 if (nbt.contains("code")) {
                     for (Tag code : nbt.getList("code", Tag.TAG_COMPOUND)) {
                         CompoundTag compound = (CompoundTag) code;
-                        animation.addCode(compound.getFloat("time"), compound.getString("src"));
+                        Animation.addCode(animation, compound.getFloat("time"), compound.getString("src"));
                     }
                 }
 

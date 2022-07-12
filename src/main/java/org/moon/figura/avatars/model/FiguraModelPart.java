@@ -58,6 +58,10 @@ public class FiguraModelPart {
 
     public int textureWidth, textureHeight; //If the part has multiple textures, then these are -1.
 
+    public boolean animated = false;
+    public boolean animationOverride = false;
+    public int lastAnimationPriority = Integer.MIN_VALUE;
+
     public FiguraModelPart(Avatar owner, String name, PartCustomization customization, int index, List<FiguraModelPart> children) {
         this.owner = owner;
         this.name = name;
@@ -126,14 +130,32 @@ public class FiguraModelPart {
 
     // -- animations -- //
 
-    public void animPosition(FiguraVec3 vec) {
-        customization.setAnimPos(vec);
+    public void animPosition(FiguraVec3 vec, boolean merge) {
+        if (merge) {
+            FiguraVec3 pos = customization.getAnimPos();
+            customization.setAnimPos(pos.plus(vec));
+            pos.free();
+        } else {
+            customization.setAnimPos(vec);
+        }
     }
-    public void animRotation(FiguraVec3 vec) {
-        customization.setAnimRot(vec);
+    public void animRotation(FiguraVec3 vec, boolean merge) {
+        if (merge) {
+            FiguraVec3 rot = customization.getAnimRot();
+            customization.setAnimRot(rot.plus(vec));
+            rot.free();
+        } else {
+            customization.setAnimRot(vec);
+        }
     }
-    public void animScale(FiguraVec3 vec) {
-        customization.setAnimScale(vec);
+    public void animScale(FiguraVec3 vec, boolean merge) {
+        if (merge) {
+            FiguraVec3 scale = customization.getAnimScale();
+            customization.setAnimScale(scale.times(vec));
+            scale.free();
+        } else {
+            customization.setAnimScale(vec);
+        }
     }
 
     //-- LUA BUSINESS --//

@@ -69,10 +69,6 @@ public class AbstractAvatarWidget extends AbstractContainerElement implements Co
         return Component.literal(path.getFileName().toString());
     }
 
-    public int getHeight() {
-        return height;
-    }
-
     public void setPos(int x, int y) {
         this.x = x;
         this.y = y;

@@ -57,6 +57,7 @@ public class FiguraLuaState extends LuaState53 {
     public KeybindAPI keybind;
     public RendererAPI renderer;
     public ActionWheelAPI actionWheel;
+    public AnimationAPI animation;
 
     public static final String STORAGE_KEY = "STORAGE";
     public LuaOwnedTable<Object> storedStuff = new LuaOwnedTable<>(this, STORAGE_KEY);
@@ -162,6 +163,7 @@ public class FiguraLuaState extends LuaState53 {
         loadGlobal(keybind = new KeybindAPI(owner), "keybind");
         loadGlobal(renderer = new RendererAPI(owner.owner), "renderer");
         loadGlobal(actionWheel = new ActionWheelAPI(owner.owner), "action_wheel");
+        loadGlobal(animation = new AnimationAPI(owner), "animation");
     }
 
     private void loadSetHook() {

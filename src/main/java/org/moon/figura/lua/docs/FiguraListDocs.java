@@ -13,6 +13,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Pose;
 import org.moon.figura.FiguraMod;
+import org.moon.figura.animation.Animation;
 import org.moon.figura.avatars.model.ParentType;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
 import org.moon.figura.mixin.input.KeyMappingAccessor;
@@ -68,6 +69,16 @@ public class FiguraListDocs {
             add(name.split("\\.")[0]);
         }
     }};
+    private static final LinkedHashSet<String> PLAY_STATES = new LinkedHashSet<>() {{
+        for (Animation.PlayState value : Animation.PlayState.values()) {
+            add(value.name());
+        }
+    }};
+    private static final LinkedHashSet<String> LOOP_MODES = new LinkedHashSet<>() {{
+        for (Animation.LoopMode value : Animation.LoopMode.values()) {
+            add(value.name());
+        }
+    }};
 
     private enum ListDoc {
         KEYBINDS(() -> FiguraListDocs.KEYBINDS, "Keybinds", "keybinds", 2),
@@ -77,7 +88,9 @@ public class FiguraListDocs {
         KEY_IDS(() -> new LinkedHashSet<>() {{this.addAll(KeyMappingAccessor.getAll().keySet());}}, "KeyIDs", "key_ids", 2),
         ENTITY_POSES(() -> FiguraListDocs.ENTITY_POSES, "EntityPoses", "entity_poses", 2),
         ITEM_RENDER_TYPES(() -> FiguraListDocs.ITEM_RENDER_TYPES, "Item RenderTypes", "item_render_types", 1),
-        POST_EFFECTS(() -> FiguraListDocs.POST_EFFECTS, "PostEffects", "post_effects", 2);
+        POST_EFFECTS(() -> FiguraListDocs.POST_EFFECTS, "PostEffects", "post_effects", 2),
+        PLAY_STATES(() -> FiguraListDocs.PLAY_STATES, "PlayStates", "play_states", 1),
+        LOOP_MODES(() -> FiguraListDocs.LOOP_MODES, "LoopModes", "loop_modes", 1);
 
         private final Supplier<LinkedHashSet<?>> supplier;
         private final String name, id;
