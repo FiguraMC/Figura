@@ -38,9 +38,9 @@ public class RefilledNumber {
 
     //checks if the current value can be consumed and then consumes it if it can
     public boolean use() {
-        boolean peek = check();
-        if (peek) current--;
-        return peek;
+        boolean check = check();
+        if (check) current--;
+        return check;
     }
 
     //checks if the current value can be consumed without consuming it

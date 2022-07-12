@@ -133,7 +133,6 @@ public class Avatar {
 
         //trust
         TrustContainer container = TrustManager.get(owner);
-        animationsLimit = container.get(TrustContainer.Trust.BB_ANIMATIONS);
         entityTickLimit = container.get(TrustContainer.Trust.TICK_INST);
         worldTickLimit = container.get(TrustContainer.Trust.WORLD_TICK_INST);
         entityRenderLimit = container.get(TrustContainer.Trust.RENDER_INST);
@@ -345,7 +344,7 @@ public class Avatar {
     // -- animations -- //
 
     public void applyAnimations() {
-        int limit = animationsLimit;
+        int limit = animationsLimit = TrustManager.get(owner).get(TrustContainer.Trust.BB_ANIMATIONS);
         for (Map<String, Animation> modelData : animations.values())
             for (Animation animation : modelData.values())
                 limit = AnimationPlayer.tick(animation, limit);
