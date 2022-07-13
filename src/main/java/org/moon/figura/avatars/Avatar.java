@@ -134,10 +134,11 @@ public class Avatar {
             try {
                 loadCustomSounds();
                 createLuaState();
-                loaded = true;
             } catch (Exception e) {
                 FiguraMod.LOGGER.error("", e);
             }
+
+            loaded = true;
         });
     }
 
