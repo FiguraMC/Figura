@@ -68,7 +68,6 @@ public class Avatar {
     public final Map<String, SoundBuffer> customSounds = new HashMap<>();
     public final Map<String, Map<String, Animation>> animations = Collections.synchronizedMap(new HashMap<>());
 
-    private int animationsLimit;
     private int entityTickLimit, entityRenderLimit;
     private int worldTickLimit, worldRenderLimit;
 
@@ -103,27 +102,42 @@ public class Avatar {
     }
 
     public void load(CompoundTag nbt) {
+        CompletableFuture<Void> future = run(() -> {
+            this.nbt = nbt;
+            loaded = false;
+        });
+
+        future.join();
+
         if (nbt == null)
             return;
 
-        loaded = false;
-
-        //sounds
-        run(() -> { //metadata
-            this.nbt = nbt;
-            CompoundTag metadata = nbt.getCompound("metadata");
-            name = metadata.getString("name");
-            authors = metadata.getString("authors");
-            version = metadata.getString("ver");
-            color = metadata.getString("color");
-            fileSize = getFileSize();
+        future.thenRun(() -> { //metadata
+            try {
+                CompoundTag metadata = nbt.getCompound("metadata");
+                name = metadata.getString("name");
+                authors = metadata.getString("authors");
+                version = metadata.getString("ver");
+                color = metadata.getString("color");
+                fileSize = getFileSize();
+            } catch (Exception e) {
+                FiguraMod.LOGGER.error("", e);
+            }
         }).thenRun(() -> { //models
-            loadAnimations();
-            renderer = new ImmediateAvatarRenderer(this);
-        }).thenRun(() -> { //script
-            loadCustomSounds();
-            createLuaState();
-            loaded = true;
+            try {
+                loadAnimations();
+                renderer = new ImmediateAvatarRenderer(this);
+            } catch (Exception e) {
+                FiguraMod.LOGGER.error("", e);
+            }
+        }).thenRun(() -> { //sounds and script
+            try {
+                loadCustomSounds();
+                createLuaState();
+                loaded = true;
+            } catch (Exception e) {
+                FiguraMod.LOGGER.error("", e);
+            }
         });
     }
 
@@ -344,7 +358,8 @@ public class Avatar {
     // -- animations -- //
 
     public void applyAnimations() {
-        int limit = animationsLimit = TrustManager.get(owner).get(TrustContainer.Trust.BB_ANIMATIONS);
+        int animationsLimit = TrustManager.get(owner).get(TrustContainer.Trust.BB_ANIMATIONS);
+        int limit = animationsLimit;
         for (Map<String, Animation> modelData : animations.values())
             for (Animation animation : modelData.values())
                 limit = AnimationPlayer.tick(animation, limit);
