@@ -368,6 +368,7 @@
   "figura.docs.animation.pause": "Pause the animation's playback.",
   "figura.docs.animation.stop": "Stop the animation.",
   "figura.docs.animation.get_time": "Get the animation's playback current time.",
+  "figura.docs.animation.set_time": "Sets the animation's playback current time.",
   "figura.docs.animation.get_play_state": "Get the animation's playback state.",
   "figura.docs.animation.add_code": "Adds a string to run in a determinant time. If theres already code to run at that time, it is overridden.",
   "figura.docs.animation.blend": "Sets the animation's keyframe blend factor.",
@@ -847,6 +848,9 @@
   "figura.docs.vectors.hsv_to_rgb": "Converts the given color from HSV format to RGB format.",
   "figura.docs.vectors.rgb_to_hsv": "Converts the given color from RGB format to HSV format.",
   "figura.docs.vectors.rainbow": "Gets an rgb vector with a shifting hue based on the given speed value and how much time the game is opened.",
+  "figura.docs.vectors.rotate_around_axis": "Rotates a vector relative to a rotation vector.",
+  "figura.docs.vectors.to_camera_space": "Converts a position in the world into a position relative to the viewer's camera.",
+  "figura.docs.vectors.world_to_screen_space": "Converts a position in the world into a position relative to the viewer's screen.",
 
   "figura.docs.vector2": "A vector that holds 2 numbers. Can be created using functions in the \"vectors\" api.",
   "figura.docs.vector3": "A vector that holds 3 numbers. Can be created using functions in the \"vectors\" api.",

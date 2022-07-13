@@ -171,6 +171,19 @@ public class Animation {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
+                    argumentTypes = {Animation.class, Float.class},
+                    argumentNames = {"animation", "time"}
+            ),
+            description = "animation.set_time"
+    )
+    public static void setTime(@LuaNotNil Animation animation, @LuaNotNil Float time) {
+        animation.controller.setTime(time);
+        animation.tick();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
                     argumentTypes = Animation.class,
                     argumentNames = "animation"
             ),

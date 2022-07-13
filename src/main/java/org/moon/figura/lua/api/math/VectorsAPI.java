@@ -8,6 +8,7 @@ import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.*;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.LuaUtils;
+import org.moon.figura.utils.MathUtils;
 import org.terasology.jnlua.LuaRuntimeException;
 
 @LuaWhitelist
@@ -251,6 +252,104 @@ public class VectorsAPI {
         if (saturation == null) saturation = 1d;
         if (light == null) light = 1d;
         return ColorUtils.rainbow(speed, offset, saturation, light);
+    }
+
+    // -- math utils -- //
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = {Double.class, FiguraVec3.class, FiguraVec3.class},
+                            argumentNames = {"angle", "vec", "axis"}
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {Double.class, Double.class, Double.class, Double.class, FiguraVec3.class},
+                            argumentNames = {"angle", "x", "y", "z", "axis"}
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {Double.class, FiguraVec3.class, Double.class, Double.class, Double.class},
+                            argumentNames = {"angle", "vec", "axisX", "axisY", "axisZ"}
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {Double.class, Double.class, Double.class, Double.class, Double.class, Double.class, Double.class},
+                            argumentNames = {"angle", "x", "y", "z", "axisX", "axisY", "axisZ"}
+                    )
+            },
+            description = "vectors.rotate_around_axis"
+    )
+    public static FiguraVec3 rotateAroundAxis(@LuaNotNil Double angle, Object x, Object y, Double z, Object w, Double t, Double h) {
+        FiguraVec3 vec, axis;
+
+        //parse vec and axis (basically the same logic used in the particle#addParticle() method)
+        if (x instanceof FiguraVec3 vec1) {
+            vec = vec1.copy();
+            if (y instanceof FiguraVec3 vec2) {
+                axis = vec2.copy();
+            } else if (y == null || y instanceof Double) {
+                axis = LuaUtils.parseVec3("rotateAroundAxis", y, z, (Double) w);
+            } else {
+                throw new LuaRuntimeException("Illegal argument to rotateAroundAxis(): " + y);
+            }
+        } else if (x == null || x instanceof Double) {
+            vec = LuaUtils.parseVec3("rotateAroundAxis", x, (Double) y, z);
+            if (w instanceof FiguraVec3 vec1) {
+                axis = vec1.copy();
+            } else if (w == null || w instanceof Double) {
+                axis = LuaUtils.parseVec3("rotateAroundAxis", w, t, h);
+            } else {
+                throw new LuaRuntimeException("Illegal argument to rotateAroundAxis(): " + w);
+            }
+        } else {
+            throw new LuaRuntimeException("Illegal argument to rotateAroundAxis(): " + x);
+        }
+
+        System.out.println(angle + " ||| " + vec + " ||| " + axis);
+
+        FiguraVec3 ret = MathUtils.rotateAroundAxis(vec, axis, angle);
+
+        vec.free();
+        axis.free();
+
+        return ret;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "vec"
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"x", "y", "z"}
+                    )
+            },
+            description = "vectors.to_camera_space"
+    )
+    public static FiguraVec3 toCameraSpace(Object x, Double y, Double z) {
+        FiguraVec3 vec = LuaUtils.parseVec3("toCameraSpace", x, y, z);
+        return MathUtils.toCameraSpace(vec);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "vec"
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"x", "y", "z"}
+                    )
+            },
+            description = "vectors.world_to_screen_space"
+    )
+    public static FiguraVec4 worldToScreenSpace(Object x, Double y, Double z) {
+        FiguraVec3 vec = LuaUtils.parseVec3("worldToScreenSpace", x, y, z);
+        return MathUtils.worldToScreenSpace(vec);
     }
 
     @Override

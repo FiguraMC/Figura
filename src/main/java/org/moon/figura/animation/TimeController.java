@@ -34,6 +34,15 @@ public class TimeController {
         startTime += Util.getMillis() - pauseTime;
     }
 
+    public void setTime(float timeSeconds) {
+        setTime((long) (timeSeconds * 1000L));
+    }
+
+    public void setTime(long time) {
+        lastTime = Util.getMillis();
+        startTime = lastTime - time;
+    }
+
     public long getElapsedTime() {
         return lastTime - startTime;
     }

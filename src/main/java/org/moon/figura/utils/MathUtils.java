@@ -35,11 +35,11 @@ public class MathUtils {
         return ((number % mod) + mod) % mod;
     }
 
-    //maya pls check those
-    public static FiguraVec3 rotateAroundAxis(FiguraVec3 vec, FiguraVec3 axis, float degrees) {
+    //maya pls check those //ty <3 <3
+    public static FiguraVec3 rotateAroundAxis(FiguraVec3 vec, FiguraVec3 axis, double degrees) {
         FiguraVec3 normalizedAxis = axis.normalized();
         Quaternion vectorQuat = new Quaternion((float) vec.x, (float) vec.y, (float) vec.z, 0);
-        Quaternion rotatorQuat = new Quaternion(new Vector3f((float) normalizedAxis.x, (float) normalizedAxis.y, (float) normalizedAxis.z), degrees, true);
+        Quaternion rotatorQuat = new Quaternion(new Vector3f((float) normalizedAxis.x, (float) normalizedAxis.y, (float) normalizedAxis.z), (float) degrees, true);
         Quaternion rotatorQuatConj = new Quaternion(rotatorQuat);
         rotatorQuatConj.conj();
 
