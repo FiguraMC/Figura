@@ -9,12 +9,12 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.Mth;
+import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.gui.widgets.AbstractContainerElement;
 import org.moon.figura.gui.widgets.Label;
 import org.moon.figura.gui.widgets.TexturedButton;
 import org.moon.figura.lua.api.keybind.FiguraKeybind;
-import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.ui.UIHelper;
@@ -127,7 +127,7 @@ public class KeybindList extends AbstractList {
 
             //editing message
             if (parent.focusedKeybind == this.keybind) {
-                keybindButton.setMessage(Component.literal("> ").setStyle(ColorUtils.Colors.FRAN_PINK.style).append(keybindButton.getMessage()).append(" <"));
+                keybindButton.setMessage(Component.literal("> ").setStyle(FiguraMod.getAccentColor()).append(keybindButton.getMessage()).append(" <"));
             }
             //conflict check
             else {

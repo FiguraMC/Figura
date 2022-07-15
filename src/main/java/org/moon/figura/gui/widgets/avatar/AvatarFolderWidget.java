@@ -14,7 +14,7 @@ public class AvatarFolderWidget extends AbstractAvatarWidget {
     private ContainerButton groupButton;
 
     public AvatarFolderWidget(int depth, int width, LocalAvatarFetcher.AvatarPath avatar, AvatarList parent) {
-        super(depth, width, avatar.getPath(), parent);
+        super(depth, width, avatar, parent);
 
         AvatarFolderWidget instance = this;
         this.groupButton = new ContainerButton(parent, x, y, width, 20, Component.literal("  ".repeat(depth)).append(getName()), null, button -> {
@@ -34,7 +34,7 @@ public class AvatarFolderWidget extends AbstractAvatarWidget {
         children.add(this.groupButton);
 
         for (LocalAvatarFetcher.AvatarPath child : avatar.getChildren()) {
-            AbstractAvatarWidget entry = child.hasAvatar() ? new AvatarWidget(depth + 1, width, child.getPath(), parent) : new AvatarFolderWidget(depth + 1, width, child, parent);
+            AbstractAvatarWidget entry = child.hasAvatar() ? new AvatarWidget(depth + 1, width, child, parent) : new AvatarFolderWidget(depth + 1, width, child, parent);
             entries.add(entry);
             children.add(entry);
             this.height += entry.height + 2;
@@ -47,10 +47,11 @@ public class AvatarFolderWidget extends AbstractAvatarWidget {
             return 0;
         });
 
-        this.groupButton.setToggled(false);
+        boolean expanded = avatar.isExpanded();
+        this.groupButton.setToggled(expanded);
         this.groupButton.shouldHaveBackground(false);
 
-        toggleEntries(false);
+        toggleEntries(expanded);
         parent.updateScroll();
     }
 
@@ -68,6 +69,10 @@ public class AvatarFolderWidget extends AbstractAvatarWidget {
         }
 
         this.height = groupButton.isToggled() ? height : 20;
+    }
+
+    public void filterChildren() {
+
     }
 
     @Override

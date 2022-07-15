@@ -3,6 +3,7 @@ package org.moon.figura.gui.widgets.avatar;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import org.moon.figura.avatars.providers.LocalAvatarFetcher;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.widgets.AbstractContainerElement;
 import org.moon.figura.gui.widgets.ContextMenu;
@@ -11,28 +12,27 @@ import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.ui.UIHelper;
 
 import java.io.File;
-import java.nio.file.Path;
 
 public class AbstractAvatarWidget extends AbstractContainerElement implements Comparable<AbstractAvatarWidget> {
 
     protected final AvatarList parent;
-    protected final Path path;
+    protected final LocalAvatarFetcher.AvatarPath avatar;
     protected final int depth;
     protected final ContextMenu context;
 
-    public AbstractAvatarWidget(int depth, int width, Path path, AvatarList parent) {
+    public AbstractAvatarWidget(int depth, int width, LocalAvatarFetcher.AvatarPath avatar, AvatarList parent) {
         super(0, 0, width, 20);
         this.parent = parent;
-        this.path = path;
+        this.avatar = avatar;
         this.depth = depth;
         this.context = new ContextMenu(this);
 
         context.addAction(FiguraText.of("gui.context.open_folder"), button -> {
-            File f = path.toFile();
+            File f = avatar.getPath().toFile();
             Util.getPlatform().openFile(f.isDirectory() ? f : f.getParentFile());
         });
         context.addAction(FiguraText.of("gui.context.copy_path"), button -> {
-            Minecraft.getInstance().keyboardHandler.setClipboard(path.toString());
+            Minecraft.getInstance().keyboardHandler.setClipboard(avatar.getPath().toString());
             FiguraToast.sendToast(FiguraText.of("toast.clipboard"));
         });
     }
@@ -66,7 +66,7 @@ public class AbstractAvatarWidget extends AbstractContainerElement implements Co
     }
 
     public Component getName() {
-        return Component.literal(path.getFileName().toString());
+        return Component.literal(avatar.getName());
     }
 
     public void setPos(int x, int y) {

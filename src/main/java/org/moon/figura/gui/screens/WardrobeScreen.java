@@ -10,6 +10,7 @@ import net.minecraft.network.chat.Style;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
+import org.moon.figura.avatars.providers.LocalAvatarFetcher;
 import org.moon.figura.backend.NetworkManager;
 import org.moon.figura.commands.FiguraLinkCommand;
 import org.moon.figura.config.Config;
@@ -158,6 +159,12 @@ public class WardrobeScreen extends AbstractPanelScreen {
         boolean backend = NetworkManager.backendStatus == 3;
         upload.active = backend && NetworkManager.canUpload() && !AvatarManager.localUploaded && (avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID())) != null && avatar.nbt != null;
         //delete.active = backend;
+    }
+
+    @Override
+    public void removed() {
+        LocalAvatarFetcher.save();
+        super.removed();
     }
 
     @Override

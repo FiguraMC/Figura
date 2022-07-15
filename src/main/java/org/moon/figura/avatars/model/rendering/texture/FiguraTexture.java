@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.lwjgl.BufferUtils;
+import org.moon.figura.FiguraMod;
 import org.moon.figura.utils.FiguraIdentifier;
 
 import java.io.Closeable;
@@ -42,7 +43,7 @@ public class FiguraTexture extends AbstractTexture implements Closeable {
             wrapper.rewind();
             nativeImage = NativeImage.read(wrapper);
         } catch (IOException e) {
-            e.printStackTrace();
+            FiguraMod.LOGGER.error("", e);
         }
     }
 

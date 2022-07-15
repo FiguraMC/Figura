@@ -6,6 +6,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.util.FormattedCharSequence;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
@@ -22,8 +24,8 @@ import java.util.List;
 
 public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventListener {
 
-    private static final Component UNKNOWN = Component.literal("?").setStyle(ColorUtils.Colors.FRAN_PINK.style);
-    private static final Component ELLIPSIS = TextUtils.ELLIPSIS.copy().setStyle(ColorUtils.Colors.FRAN_PINK.style);
+    private static final MutableComponent UNKNOWN = Component.literal("?").setStyle(ColorUtils.Colors.FRAN_PINK.style);
+    private static final MutableComponent ELLIPSIS = TextUtils.ELLIPSIS.copy().setStyle(ColorUtils.Colors.FRAN_PINK.style);
     private static final List<Component> TITLES = List.of(
             FiguraText.of("gui.name").withStyle(ChatFormatting.UNDERLINE),
             FiguraText.of("gui.authors").withStyle(ChatFormatting.UNDERLINE),
@@ -54,14 +56,18 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
     public void tick() {
         if (!visible) return;
 
+        Style accent = FiguraMod.getAccentColor();
+        ELLIPSIS.setStyle(accent);
+        UNKNOWN.setStyle(accent);
+
         //update values
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
         if (avatar != null && avatar.nbt != null) {
-            values.set(0, Component.literal(avatar.name).setStyle(ColorUtils.Colors.FRAN_PINK.style)); //name
-            values.set(1, Component.literal(avatar.authors).setStyle(ColorUtils.Colors.FRAN_PINK.style)); //authors
-            values.set(2, Component.literal(MathUtils.asFileSize(avatar.fileSize)).setStyle(ColorUtils.Colors.FRAN_PINK.style)); //size
-            values.set(3, Component.literal(String.valueOf(avatar.complexity)).setStyle(ColorUtils.Colors.FRAN_PINK.style)); //complexity
-            values.set(4, Component.literal(MathUtils.asFileSize(avatar.getScriptMemory())).setStyle(ColorUtils.Colors.FRAN_PINK.style)); //memory
+            values.set(0, Component.literal(avatar.name).setStyle(accent)); //name
+            values.set(1, Component.literal(avatar.authors).setStyle(accent)); //authors
+            values.set(2, Component.literal(MathUtils.asFileSize(avatar.fileSize)).setStyle(accent)); //size
+            values.set(3, Component.literal(String.valueOf(avatar.complexity)).setStyle(accent)); //complexity
+            values.set(4, Component.literal(MathUtils.asFileSize(avatar.getScriptMemory())).setStyle(accent)); //memory
         } else {
             for (int i = 0; i < TITLES.size(); i++) {
                 values.set(i, UNKNOWN);

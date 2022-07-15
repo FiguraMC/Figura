@@ -5,9 +5,9 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import org.moon.figura.FiguraMod;
 import org.moon.figura.config.Config;
 import org.moon.figura.gui.widgets.lists.ConfigList;
-import org.moon.figura.utils.ColorUtils;
 
 public class KeybindElement extends AbstractConfigElement {
 
@@ -38,7 +38,7 @@ public class KeybindElement extends AbstractConfigElement {
 
         //editing message
         if (parent.focusedBinding == this.binding) {
-            button.setMessage(Component.literal("> ").setStyle(ColorUtils.Colors.FRAN_PINK.style).append(button.getMessage()).append(" <"));
+            button.setMessage(Component.literal("> ").setStyle(FiguraMod.getAccentColor()).append(button.getMessage()).append(" <"));
         }
         //conflict check
         else if (!this.binding.isUnbound()) {

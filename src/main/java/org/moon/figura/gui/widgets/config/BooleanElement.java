@@ -2,9 +2,9 @@ package org.moon.figura.gui.widgets.config;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.network.chat.Component;
+import org.moon.figura.FiguraMod;
 import org.moon.figura.config.Config;
 import org.moon.figura.gui.widgets.lists.ConfigList;
-import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.FiguraText;
 
 public class BooleanElement extends AbstractConfigElement {
@@ -33,7 +33,7 @@ public class BooleanElement extends AbstractConfigElement {
 
         //edited colour
         if (this.config.configValue != this.initValue)
-            text = text.copy().setStyle(ColorUtils.Colors.FRAN_PINK.style);
+            text = text.copy().setStyle(FiguraMod.getAccentColor());
 
         //set text
         this.button.setMessage(text);

@@ -82,7 +82,7 @@ public class FiguraModelPart {
     }
 
     public void applyVanillaTransforms(EntityModel<?> vanillaModel) {
-        if (animationOverride || parentType.provider == null)
+        if (vanillaModel == null || animationOverride || parentType.provider == null)
             return;
 
         ModelPart part = parentType.provider.func.apply(vanillaModel);
@@ -730,7 +730,7 @@ public class FiguraModelPart {
             ),
             description = "model_part.set_opacity"
     )
-    public static void setOpacity(@LuaNotNil FiguraModelPart modelPart, @LuaNotNil Float opacity) {
+    public static void setOpacity(@LuaNotNil FiguraModelPart modelPart, Float opacity) {
         modelPart.customization.alpha = opacity;
     }
 
@@ -761,6 +761,11 @@ public class FiguraModelPart {
             description = "model_part.set_light"
     )
     public static void setLight(@LuaNotNil FiguraModelPart modelPart, Object light, Double skyLight) {
+        if (light == null) {
+            modelPart.customization.light = null;
+            return;
+        }
+
         FiguraVec2 lightVec = LuaUtils.parseVec2("setLight", light, skyLight);
         modelPart.customization.light = LightTexture.pack((int) lightVec.x, (int) lightVec.y);
     }
@@ -774,8 +779,8 @@ public class FiguraModelPart {
             description = "model_part.get_light"
     )
     public static FiguraVec2 getLight(@LuaNotNil FiguraModelPart modelPart) {
-        int light = modelPart.customization.light;
-        return FiguraVec2.of(LightTexture.block(light), LightTexture.sky(light));
+        Integer light = modelPart.customization.light;
+        return light == null ? null : FiguraVec2.of(LightTexture.block(light), LightTexture.sky(light));
     }
 
     @LuaWhitelist

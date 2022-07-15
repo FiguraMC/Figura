@@ -7,11 +7,11 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import org.moon.figura.FiguraMod;
 import org.moon.figura.config.Config;
 import org.moon.figura.gui.widgets.ContextMenu;
 import org.moon.figura.gui.widgets.TexturedButton;
 import org.moon.figura.gui.widgets.lists.ConfigList;
-import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.ui.UIHelper;
 
@@ -73,7 +73,7 @@ public class EnumElement extends AbstractConfigElement {
 
         //edited colour
         if (this.config.configValue != this.initValue)
-            text = text.copy().setStyle(ColorUtils.Colors.FRAN_PINK.style);
+            text = text.copy().setStyle(FiguraMod.getAccentColor());
 
         //set text
         this.button.setMessage(text);
@@ -107,7 +107,7 @@ public class EnumElement extends AbstractConfigElement {
 
             //selected entry
             if (i == (int) this.config.configValue % this.names.size())
-                text = text.copy().setStyle(ColorUtils.Colors.FRAN_PINK.style);
+                text = text.copy().setStyle(FiguraMod.getAccentColor());
 
             //apply text
             entries.get(i).setMessage(text);

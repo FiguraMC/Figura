@@ -109,8 +109,10 @@ public class Avatar {
 
         future.join();
 
-        if (nbt == null)
+        if (nbt == null) {
+            loaded = true;
             return;
+        }
 
         future.thenRun(() -> { //metadata
             try {
@@ -123,7 +125,7 @@ public class Avatar {
             } catch (Exception e) {
                 FiguraMod.LOGGER.error("", e);
             }
-        }).thenRun(() -> { //models
+        }).thenRun(() -> { //animations and models
             try {
                 loadAnimations();
                 renderer = new ImmediateAvatarRenderer(this);
@@ -373,7 +375,7 @@ public class Avatar {
                 AnimationPlayer.clear(animation);
     }
 
-    // -- extra stuff -- //
+    // -- functions -- //
 
     /**
      * We should call this whenever an avatar is no longer reachable!
@@ -408,6 +410,8 @@ public class Avatar {
 
         return luaState.getTotalMemory() - luaState.getFreeMemory();
     }
+
+    // -- loading -- //
 
     private void createLuaState() {
         if (!nbt.contains("scripts"))
@@ -491,10 +495,11 @@ public class Avatar {
         for (String key : root.getAllKeys()) {
             try {
                 byte[] source = root.getByteArray(key);
-                OggAudioStream oggAudioStream = new OggAudioStream(new ByteArrayInputStream(source));
-                SoundBuffer sound = new SoundBuffer(oggAudioStream.readAll(), oggAudioStream.getFormat());
 
-                this.customSounds.put(key, sound);
+                try (ByteArrayInputStream inputStream = new ByteArrayInputStream(source); OggAudioStream oggAudioStream = new OggAudioStream(inputStream)) {
+                    SoundBuffer sound = new SoundBuffer(oggAudioStream.readAll(), oggAudioStream.getFormat());
+                    this.customSounds.put(key, sound);
+                }
             } catch (Exception e) {
                 FiguraMod.LOGGER.warn("Failed to load custom sound \"" + key + "\"", e);
             }

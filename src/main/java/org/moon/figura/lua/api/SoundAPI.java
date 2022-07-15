@@ -51,32 +51,43 @@ public class SoundAPI {
                             argumentNames = {"api", "sound", "posX", "posY", "posZ"}
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {SoundAPI.class, String.class, FiguraVec3.class, Double.class, Double.class},
-                            argumentNames = {"api", "sound", "pos", "volume", "pitch"}
+                            argumentTypes = {SoundAPI.class, String.class, FiguraVec3.class, Double.class, Double.class, Boolean.class},
+                            argumentNames = {"api", "sound", "pos", "volume", "pitch", "loop"}
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {SoundAPI.class, String.class, Double.class, Double.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"api", "sound", "posX", "posY", "posZ", "volume", "pitch"}
+                            argumentTypes = {SoundAPI.class, String.class, Double.class, Double.class, Double.class, Double.class, Double.class, Boolean.class},
+                            argumentNames = {"api", "sound", "posX", "posY", "posZ", "volume", "pitch", "loop"}
                     )
             },
             description = "sound.play_sound"
     )
-    public static void playSound(@LuaNotNil SoundAPI api, @LuaNotNil String id, Object x, Double y, Double z, Double w, Double t) {
+    public static void playSound(@LuaNotNil SoundAPI api, @LuaNotNil String id, Object x, Double y, Double z, Object w, Double t, Boolean bl) {
         if (!api.owner.soundsRemaining.use())
             return;
 
         FiguraVec3 pos;
         double volume = 1.0;
         double pitch = 1.0;
+        boolean loop = false;
 
         if (x instanceof FiguraVec3) {
             pos = ((FiguraVec3) x).copy();
             if (y != null) volume = y;
             if (z != null) pitch = z;
+            if (w != null) {
+                if (!(w instanceof Boolean))
+                    throw new LuaRuntimeException("Illegal argument to playSound(): " + w);
+                loop = (boolean) w;
+            }
         } else if (x == null || x instanceof Double) {
             pos = LuaUtils.parseVec3("playSound", x, y, z);
-            if (w != null) volume = w;
+            if (w != null) {
+                if (!(w instanceof Double))
+                    throw new LuaRuntimeException("Illegal argument to playSound(): " + w);
+                volume = (double) w;
+            }
             if (t != null) pitch = t;
+            if (bl != null) loop = bl;
         } else {
             throw new LuaRuntimeException("Illegal argument to playSound(): " + x);
         }
@@ -84,12 +95,12 @@ public class SoundAPI {
         //get and play the sound
         SoundBuffer buffer = api.owner.customSounds.get(id);
         if (buffer != null && TrustManager.get(api.owner.owner).get(TrustContainer.Trust.CUSTOM_SOUNDS) == 1) {
-            getSoundEngine().figura$playCustomSound(api.owner.owner, id, buffer, pos.x, pos.y, pos.z, (float) volume, (float) pitch, false);
+            getSoundEngine().figura$playCustomSound(api.owner.owner, id, buffer, pos.x, pos.y, pos.z, (float) volume, (float) pitch, loop);
         } else {
             try {
                 SoundEvent event = new SoundEvent(new ResourceLocation(id));
                 SimpleSoundInstance instance = new SimpleSoundInstance(event, SoundSource.PLAYERS, (float) volume, (float) pitch, RandomSource.create(WorldAPI.getCurrentWorld().random.nextLong()), pos.x, pos.y, pos.z);
-                getSoundEngine().figura$playSound(api.owner.owner, id, instance, false);
+                getSoundEngine().figura$playSound(api.owner.owner, id, instance, loop);
             } catch (Exception ignored) {}
         }
 

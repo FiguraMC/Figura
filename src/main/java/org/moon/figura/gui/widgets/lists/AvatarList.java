@@ -137,16 +137,15 @@ public class AvatarList extends AbstractList {
 
         for (LocalAvatarFetcher.AvatarPath avatar : foundAvatars) {
             Path path = avatar.getPath();
-            String name = path.getFileName().toString();
 
             //filter
-            if (!name.toLowerCase().contains(filter.toLowerCase()))
+            if (!filter(avatar))
                 continue;
 
             missingPaths.remove(path);
             avatars.computeIfAbsent(path, p -> {
                 int width = this.width - 22;
-                AbstractAvatarWidget entry = avatar.hasAvatar() ? new AvatarWidget(0, width, avatar.getPath(), this) : new AvatarFolderWidget(0, width, avatar, this);
+                AbstractAvatarWidget entry = avatar.hasAvatar() ? new AvatarWidget(0, width, avatar, this) : new AvatarFolderWidget(0, width, avatar, this);
 
                 avatarList.add(entry);
                 children.add(entry);
@@ -190,6 +189,18 @@ public class AvatarList extends AbstractList {
 
         //set new scroll percentage
         scrollBar.setScrollProgress(pastScroll / (totalHeight - height));
+    }
+
+    public boolean filter(LocalAvatarFetcher.AvatarPath path) {
+        boolean ret = path.getName().toLowerCase().contains(filter.toLowerCase());
+
+        for (LocalAvatarFetcher.AvatarPath child : path.getChildren())
+            ret = filter(child) || ret;
+
+        AbstractAvatarWidget avatar = avatars.get(path.getPath());
+        if (avatar != null) avatar.setVisible(ret);
+
+        return ret;
     }
 
     @Override

@@ -82,7 +82,7 @@ public class TrustManager {
             readNbt(getTag);
             fis.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            FiguraMod.LOGGER.error("", e);
         }
     }
 
@@ -104,7 +104,7 @@ public class TrustManager {
             NbtIo.writeCompressed(targetTag, fs);
             fs.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            FiguraMod.LOGGER.error("", e);
         }
     }
 

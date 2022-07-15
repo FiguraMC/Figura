@@ -10,11 +10,13 @@ import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.players.GameProfileCache;
 import net.minecraft.world.entity.Entity;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
+import org.moon.figura.avatars.providers.LocalAvatarFetcher;
 import org.moon.figura.avatars.providers.LocalAvatarLoader;
 import org.moon.figura.backend.NetworkManager;
 import org.moon.figura.commands.FiguraCommands;
@@ -25,8 +27,10 @@ import org.moon.figura.gui.actionwheel.ActionWheel;
 import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.lua.FiguraLuaState;
 import org.moon.figura.lua.docs.FiguraDocsManager;
+import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.mixin.SkullBlockEntityAccessor;
 import org.moon.figura.trust.TrustManager;
+import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.TextUtils;
 import org.slf4j.Logger;
@@ -43,7 +47,8 @@ public class FiguraMod implements ClientModInitializer {
     public static final String MOD_NAME = "Figura";
     public static final String VERSION = FabricLoader.getInstance().getModContainer(MOD_ID).get().getMetadata().getVersion().getFriendlyString();
     public static final boolean DEBUG_MODE = Math.random() + 1 < 0;
-    public static final boolean CHEESE_DAY = LocalDate.now().getDayOfMonth() == 1 && LocalDate.now().getMonthValue() == 4;
+    public static final LocalDate TIME = LocalDate.now();
+    public static final boolean CHEESE_DAY = TIME.getDayOfMonth() == 1 && TIME.getMonthValue() == 4;
     public static final Path GAME_DIR = FabricLoader.getInstance().getGameDir().normalize();
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_NAME);
 
@@ -56,6 +61,7 @@ public class FiguraMod implements ClientModInitializer {
         //init managers
         ConfigManager.init();
         TrustManager.init();
+        LocalAvatarFetcher.init();
         FiguraDocsManager.init();
         FiguraCommands.init();
         LuaUtils.setupNativesForLua();
@@ -153,5 +159,15 @@ public class FiguraMod implements ClientModInitializer {
 
         var profile = cache.get(playerName);
         return profile.isEmpty() ? null : profile.get().getId();
+    }
+
+    public static Style getAccentColor() {
+        return getAccentColor(ColorUtils.Colors.FRAN_PINK.vec);
+    }
+
+    public static Style getAccentColor(FiguraVec3 fallback) {
+        Avatar avatar = AvatarManager.getAvatarForPlayer(getLocalPlayerUUID());
+        int color = avatar != null ? ColorUtils.userInputHex(avatar.color, fallback) : ColorUtils.Colors.FRAN_PINK.hex;
+        return Style.EMPTY.withColor(color);
     }
 }

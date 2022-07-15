@@ -67,7 +67,7 @@ public class FiguraJavaReflector implements JavaReflector {
                 }
 
             } catch (IllegalAccessException e) {
-                e.printStackTrace();
+                FiguraMod.LOGGER.error("", e);
             }
 
             luaState.pushNil();
@@ -101,7 +101,7 @@ public class FiguraJavaReflector implements JavaReflector {
                 else
                     throw new LuaRuntimeException("Attempt to assign invalid value " + key + ".");
             } catch (IllegalAccessException e) {
-                e.printStackTrace();
+                FiguraMod.LOGGER.error("", e);
             }
             return 0;
         }
@@ -242,7 +242,7 @@ public class FiguraJavaReflector implements JavaReflector {
             for (Map.Entry<String, MethodWrapper> methodsEntry : methodCache.get(clazz).entrySet())
                 result.put(methodsEntry.getKey(), methodsEntry.getValue());
         } catch (Exception e) {
-            e.printStackTrace();
+            FiguraMod.LOGGER.error("", e);
         }
         return result;
     }

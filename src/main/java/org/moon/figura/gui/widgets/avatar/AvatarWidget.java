@@ -6,23 +6,22 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import org.moon.figura.avatars.AvatarManager;
+import org.moon.figura.avatars.providers.LocalAvatarFetcher;
 import org.moon.figura.gui.widgets.TexturedButton;
 import org.moon.figura.gui.widgets.lists.AvatarList;
 import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.ui.UIHelper;
 
-import java.nio.file.Path;
-
 public class AvatarWidget extends AbstractAvatarWidget {
 
     private final TexturedButton button;
 
-    public AvatarWidget(int depth, int width, Path path, AvatarList parent) {
-        super(depth, width, path, parent);
+    public AvatarWidget(int depth, int width, LocalAvatarFetcher.AvatarPath avatar, AvatarList parent) {
+        super(depth, width, avatar, parent);
 
         AvatarWidget instance = this;
         this.button = new TexturedButton(x, y, width, 20, Component.literal("  ".repeat(depth)).append(getName()), null, button -> {
-            AvatarManager.loadLocalAvatar(path);
+            AvatarManager.loadLocalAvatar(avatar.getPath());
             AvatarList.selectedEntry = instance;
         }) {
             @Override
@@ -30,7 +29,8 @@ public class AvatarWidget extends AbstractAvatarWidget {
                 super.renderButton(stack, mouseX, mouseY, delta);
 
                 //selected border
-                if (AvatarList.selectedEntry != null && AvatarList.selectedEntry.path != null && AvatarList.selectedEntry.path.equals(instance.path))
+                AvatarWidget sel = AvatarList.selectedEntry;
+                if (instance.avatar != null && sel != null && sel.avatar != null && sel.avatar.getPath().equals(instance.avatar.getPath()))
                     UIHelper.fillOutline(stack, x - 1, y - 1, width + 2, height + 2, 0xFFFFFFFF);
             }
 

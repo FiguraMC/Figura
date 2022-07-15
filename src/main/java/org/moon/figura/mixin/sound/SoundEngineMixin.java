@@ -87,7 +87,6 @@ public abstract class SoundEngineMixin implements SoundEngineAccessor {
 
     @Override @Intrinsic
     public void figura$playCustomSound(UUID owner, String name, SoundBuffer buffer, double x, double y, double z, float volume, float pitch, boolean loop) {
-        System.out.println("e");
         if (!this.loaded || this.listener.getGain() <= 0)
             return;
 
@@ -113,7 +112,7 @@ public abstract class SoundEngineMixin implements SoundEngineAccessor {
             channel.linearAttenuation(finalAttenuation);
             channel.setLooping(loop);
             channel.setSelfPosition(pos);
-            channel.setRelative(true);
+            channel.setRelative(false);
             channel.attachStaticBuffer(buffer);
             channel.play();
         });

@@ -49,8 +49,8 @@ public class FiguraTextureSet {
     }
 
     public enum RenderTypes {
-        CUTOUT_NO_CULL(RenderType::entityCutoutNoCull),
-        CUTOUT(RenderType::entityCutout),
+        CUTOUT(RenderType::entityCutoutNoCull),
+        CUTOUT_CULL(RenderType::entityCutout),
         TRANSLUCENT(RenderType::entityTranslucent),
         TRANSLUCENT_CULL(RenderType::entityTranslucentCull),
 

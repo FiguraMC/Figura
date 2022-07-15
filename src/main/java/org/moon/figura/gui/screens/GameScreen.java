@@ -5,6 +5,7 @@ import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
+import org.moon.figura.FiguraMod;
 import org.moon.figura.gui.widgets.Label;
 import org.moon.figura.gui.widgets.TexturedButton;
 import org.moon.figura.utils.ColorUtils;
@@ -47,16 +48,16 @@ public class GameScreen extends AbstractPanelScreen {
         //text
         addRenderableOnly(keys = new Label(
                 Component.empty()
-                        .append(Component.literal("[R]").withStyle(ColorUtils.Colors.FRAN_PINK.style))
+                        .append(Component.literal("[R]").withStyle(FiguraMod.getAccentColor()))
                         .append(" restart, ")
-                        .append(Component.literal("[P]").withStyle(ColorUtils.Colors.FRAN_PINK.style))
+                        .append(Component.literal("[P]").withStyle(FiguraMod.getAccentColor()))
                         .append(" pause, ")
-                        .append(Component.literal("[SPACE]").withStyle(ColorUtils.Colors.FRAN_PINK.style))
+                        .append(Component.literal("[SPACE]").withStyle(FiguraMod.getAccentColor()))
                         .append(" step")
                         .append("\n")
-                        .append(Component.literal("[F1]").withStyle(ColorUtils.Colors.FRAN_PINK.style))
+                        .append(Component.literal("[F1]").withStyle(FiguraMod.getAccentColor()))
                         .append(" hide text, ")
-                        .append(Component.literal("[Scroll]").withStyle(ColorUtils.Colors.FRAN_PINK.style))
+                        .append(Component.literal("[Scroll]").withStyle(FiguraMod.getAccentColor()))
                         .append(" scale (restarts)"),
                 4, 4, false, 0)
         );
@@ -69,9 +70,9 @@ public class GameScreen extends AbstractPanelScreen {
         if (!paused) grid.tick();
         stats.setText(
                 Component.literal("Generation")
-                        .append(Component.literal(" " + grid.gen).withStyle(ColorUtils.Colors.FRAN_PINK.style))
+                        .append(Component.literal(" " + grid.gen).withStyle(FiguraMod.getAccentColor()))
                         .append(", Scale")
-                        .append(Component.literal(" " + scale).withStyle(ColorUtils.Colors.FRAN_PINK.style))
+                        .append(Component.literal(" " + scale).withStyle(FiguraMod.getAccentColor()))
         );
     }
 

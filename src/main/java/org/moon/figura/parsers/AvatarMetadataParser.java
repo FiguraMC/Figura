@@ -21,10 +21,14 @@ public class AvatarMetadataParser {
     private static final Gson GSON = new GsonBuilder().create();
     private static final String SEPARATOR_REGEX = "\\.";
 
+    public static Metadata read(String json) {
+        Metadata metadata = GSON.fromJson(json, Metadata.class);
+        return metadata == null ? new Metadata() : metadata;
+    }
+
     public static CompoundTag parse(String json, String filename) {
         //parse json -> object
-        Metadata metadata = GSON.fromJson(json, Metadata.class);
-        if (metadata == null) metadata = new Metadata();
+        Metadata metadata = read(json);
 
         //nbt
         CompoundTag nbt = new CompoundTag();
@@ -32,6 +36,7 @@ public class AvatarMetadataParser {
         nbt.putString("name", metadata.name == null ? filename : metadata.name);
         nbt.putString("ver", metadata.version == null ? FiguraMod.VERSION : metadata.version);
         nbt.putString("color", metadata.color == null ? "default" : metadata.color);
+        nbt.putString("bg", metadata.background == null ? "default" : metadata.background);
 
         if (metadata.authors != null) {
             StringBuilder authors = new StringBuilder();
@@ -116,10 +121,10 @@ public class AvatarMetadataParser {
     }
 
     //json object class
-    private static class Metadata {
-        String name, author, version, color;
-        String[] authors, autoScripts;
-        HashMap<String, Customization> customizations;
+    public static class Metadata {
+        public String name, author, version, color, background;
+        public String[] authors, autoScripts;
+        public HashMap<String, Customization> customizations;
     }
 
     /**
@@ -127,9 +132,8 @@ public class AvatarMetadataParser {
      * So nothing about position, rotation, scale, uv, whatever
      * customizations you could just put in the model regularly yourself.
      */
-    private static class Customization {
-        String primaryRenderType, secondaryRenderType;
-        String parentType;
+    public static class Customization {
+        public String primaryRenderType, secondaryRenderType;
+        public String parentType;
     }
-
 }

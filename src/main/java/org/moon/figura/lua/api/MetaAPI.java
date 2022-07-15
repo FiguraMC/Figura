@@ -6,8 +6,11 @@ import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
+import org.moon.figura.utils.ColorUtils;
+import org.moon.figura.utils.LuaUtils;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -18,8 +21,6 @@ public class MetaAPI {
 
     private final Avatar avatar;
     private final TrustContainer trust;
-
-    private String color = "";
 
     public MetaAPI(Avatar avatar) {
         this.avatar = avatar;
@@ -47,19 +48,27 @@ public class MetaAPI {
             description = "meta.get_color"
     )
     public static String getColor(@LuaNotNil MetaAPI api) {
-        return api.color;
+        return api.avatar.color;
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = {MetaAPI.class, String.class},
-                    argumentNames = {"meta", "color"}
-            ),
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = {MetaAPI.class, FiguraVec3.class},
+                            argumentNames = {"meta", "color"}
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {MetaAPI.class, Double.class, Double.class, Double.class},
+                            argumentNames = {"meta", "r", "g", "b"}
+                    )
+            },
             description = "meta.set_color"
     )
-    public static void setColor(@LuaNotNil MetaAPI api, @LuaNotNil String text) {
-        api.color = text;
+    public static void setColor(@LuaNotNil MetaAPI api, @LuaNotNil Object r, Double g, Double b) {
+        FiguraVec3 vec = LuaUtils.parseVec3("setColor", r, g, b, 1, 1, 1);
+        api.avatar.color = Integer.toHexString(ColorUtils.rgbToInt(vec));
+        vec.free();
     }
 
     @LuaWhitelist

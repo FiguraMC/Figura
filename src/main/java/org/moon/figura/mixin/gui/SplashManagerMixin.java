@@ -8,9 +8,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.Calendar;
-import java.util.Date;
-
 @Mixin(SplashManager.class)
 public class SplashManagerMixin {
 
@@ -19,14 +16,11 @@ public class SplashManagerMixin {
         if (!(boolean) Config.EASTER_EGGS.value)
             return;
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(new Date());
-
         if (FiguraMod.CHEESE_DAY) {
             cir.setReturnValue("LARGECHEESE!");
         } else { //b-days!!
-            int month = calendar.get(Calendar.MONTH) + 1;
-            int day = calendar.get(Calendar.DAY_OF_MONTH);
+            int month = FiguraMod.TIME.getMonthValue();
+            int day = FiguraMod.TIME.getDayOfMonth();
             String bday = "Happy birthday ";
 
             switch (month) {

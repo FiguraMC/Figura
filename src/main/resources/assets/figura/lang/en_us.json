@@ -364,9 +364,10 @@
 
   "figura.docs.animation": "A blockbench animation.",
   "figura.docs.animation.name": "This animation's name.",
-  "figura.docs.animation.play": "Initializes the animation.",
+  "figura.docs.animation.play": "Initializes the animation. Resume the animation if it was paused.",
   "figura.docs.animation.pause": "Pause the animation's playback.",
   "figura.docs.animation.stop": "Stop the animation.",
+  "figura.docs.animation.restart": "Restarts the animation. Plays the animation if it was stopped. This behaviour can also be reproduced by stopping then playing the animation",
   "figura.docs.animation.get_time": "Get the animation's playback current time.",
   "figura.docs.animation.set_time": "Sets the animation's playback current time.",
   "figura.docs.animation.get_play_state": "Get the animation's playback state.",

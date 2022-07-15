@@ -9,6 +9,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.FiguraMod;
+import org.moon.figura.config.Config;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.ui.UIHelper;
@@ -23,7 +24,7 @@ public class FiguraToast implements Toast {
     private boolean justUpdated;
 
     public FiguraToast(Component title, Component message, ToastType type) {
-        this.title = Component.empty().setStyle(Style.EMPTY.withColor(type.color)).append(title);
+        this.title = Component.empty().setStyle(type.style).append(title);
         this.message = message;
         this.type = type;
     }
@@ -68,8 +69,12 @@ public class FiguraToast implements Toast {
         Component text = title instanceof Component t ? t : Component.translatable(title.toString());
         Component text2 = message instanceof Component m ? m : Component.translatable(message.toString());
 
-        if (type == ToastType.DEFAULT && (FiguraMod.CHEESE_DAY || Math.random() < 0.0001))
-            type = ToastType.CHEESE;
+        if (type == ToastType.DEFAULT && (boolean) Config.EASTER_EGGS.value) {
+            if (FiguraMod.CHEESE_DAY || Math.random() < 0.0001)
+                type = ToastType.CHEESE;
+            else if (FiguraMod.getAccentColor(ColorUtils.Colors.DEFAULT.vec).hashCode() == ColorUtils.Colors.FRAN_PINK.style.hashCode() || (FiguraMod.TIME.getDayOfMonth() == 21 && FiguraMod.TIME.getMonthValue() == 9))
+                type = ToastType.FRAN;
+        }
 
         ToastComponent toasts = Minecraft.getInstance().getToasts();
         toasts.clear();
@@ -80,16 +85,17 @@ public class FiguraToast implements Toast {
         DEFAULT(new FiguraIdentifier("textures/gui/toast/default.png"), 4, 0x55FFFF),
         WARNING(new FiguraIdentifier("textures/gui/toast/warning.png"), 4, 0xFFFF00),
         ERROR(new FiguraIdentifier("textures/gui/toast/error.png"), 4, 0xFF0000),
-        CHEESE(new FiguraIdentifier("textures/gui/toast/cheese.png"), 1, ColorUtils.Colors.CHEESE.hex);
+        CHEESE(new FiguraIdentifier("textures/gui/toast/cheese.png"), 1, ColorUtils.Colors.CHEESE.hex),
+        FRAN(new FiguraIdentifier("textures/gui/toast/fran.png"), 4, ColorUtils.Colors.FRAN_PINK.hex);
 
         private final ResourceLocation texture;
         private final int frames;
-        private final int color;
+        private final Style style;
 
         ToastType(ResourceLocation texture, int frames, int color) {
             this.texture = texture;
             this.frames = frames;
-            this.color = color;
+            this.style = Style.EMPTY.withColor(color);
         }
     }
 }

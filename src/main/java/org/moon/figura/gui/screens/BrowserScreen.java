@@ -21,7 +21,7 @@ public class BrowserScreen extends AbstractPanelScreen {
 
         FiguraToast.sendToast("not yet!", "<3");
 
-        int y = -72;
+        int y = -84;
         this.addRenderableWidget(new TexturedButton(width / 2 - 30, height / 2 + (y += 24), 60, 20, Component.literal("default toast"), FiguraText.of("backend.error"), button -> {
             FiguraToast.sendToast("default", "test", FiguraToast.ToastType.DEFAULT);
         }));
@@ -31,8 +31,11 @@ public class BrowserScreen extends AbstractPanelScreen {
         this.addRenderableWidget(new TexturedButton(width / 2 - 30, height / 2 + (y += 24), 60, 20, Component.literal("warning toast"), Component.literal("test3\novo"), button -> {
             FiguraToast.sendToast("warning", "test", FiguraToast.ToastType.WARNING);
         }));
-        this.addRenderableWidget(new TexturedButton(width / 2 - 30, height / 2 + (y + 24), 60, 20, Component.literal("cheese toast"), Component.literal("test4\n\nhehe"), button -> {
+        this.addRenderableWidget(new TexturedButton(width / 2 - 30, height / 2 + (y += 24), 60, 20, Component.literal("cheese toast"), Component.literal("test4\n\nhehe"), button -> {
             FiguraToast.sendToast("cheese", "test", FiguraToast.ToastType.CHEESE);
+        }));
+        this.addRenderableWidget(new TexturedButton(width / 2 - 30, height / 2 + (y + 24), 60, 20, Component.literal("fran toast"), Component.literal("fran ❤❤❤"), button -> {
+            FiguraToast.sendToast("fran", "test", FiguraToast.ToastType.FRAN);
         }));
     }
 }

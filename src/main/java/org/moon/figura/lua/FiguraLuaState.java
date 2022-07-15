@@ -40,7 +40,6 @@ public class FiguraLuaState extends LuaState53 {
                 RESOURCE_SCRIPTS.add(new String(stream.readAllBytes()));
                 FiguraMod.LOGGER.debug("Loaded resource script \"" + location.toString() + "\"");
             } catch (Exception e) {
-                e.printStackTrace();
                 FiguraMod.LOGGER.error("Failed to load resource pack script \"" + location.toString() + "\"", e);
             }
         });

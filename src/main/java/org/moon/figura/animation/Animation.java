@@ -120,11 +120,13 @@ public class Animation {
             description = "animation.play"
     )
     public static void play(@LuaNotNil Animation animation) {
-        if (animation.playState == PlayState.PAUSED) {
-            animation.controller.resume();
-        } else {
-            animation.controller.init(animation.startDelay);
-            animation.lastTime = animation.offset;
+        switch (animation.playState) {
+            case PAUSED -> animation.controller.resume();
+            case STOPPED -> {
+                animation.controller.init(animation.startDelay);
+                animation.lastTime = animation.offset;
+            }
+            default -> {return;}
         }
 
         animation.playState = PlayState.PLAYING;
@@ -154,6 +156,19 @@ public class Animation {
     public static void stop(@LuaNotNil Animation animation) {
         animation.controller.reset();
         animation.playState = PlayState.STOPPED;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = Animation.class,
+                    argumentNames = "animation"
+            ),
+            description = "animation.restart"
+    )
+    public static void restart(@LuaNotNil Animation animation) {
+        stop(animation);
+        play(animation);
     }
 
     @LuaWhitelist

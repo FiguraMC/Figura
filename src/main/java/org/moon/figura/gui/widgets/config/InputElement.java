@@ -2,6 +2,8 @@ package org.moon.figura.gui.widgets.config;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextColor;
+import org.moon.figura.FiguraMod;
 import org.moon.figura.config.Config;
 import org.moon.figura.gui.widgets.TextField;
 import org.moon.figura.gui.widgets.lists.ConfigList;
@@ -60,7 +62,8 @@ public class InputElement extends AbstractConfigElement {
         }
         //config was changed
         else if (!text.equals(formatText(initValue))) {
-            color = ColorUtils.Colors.FRAN_PINK.hex;
+            TextColor textColor = FiguraMod.getAccentColor().getColor();
+            color = textColor == null ? ColorUtils.Colors.FRAN_PINK.hex : textColor.getValue();
         }
 
         //set text colour

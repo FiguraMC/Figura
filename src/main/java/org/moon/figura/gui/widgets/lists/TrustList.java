@@ -8,10 +8,10 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
+import org.moon.figura.FiguraMod;
 import org.moon.figura.gui.widgets.SliderWidget;
 import org.moon.figura.gui.widgets.SwitchButton;
 import org.moon.figura.trust.TrustContainer;
-import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.ui.UIHelper;
 
@@ -131,7 +131,7 @@ public class TrustList extends AbstractList {
 
             //texts
             MutableComponent name = FiguraText.of("trust." + trust.name().toLowerCase());
-            if (changed) name = Component.literal("*").setStyle(ColorUtils.Colors.FRAN_PINK.style).append(name).append("*");
+            if (changed) name = Component.literal("*").setStyle(FiguraMod.getAccentColor()).append(name).append("*");
 
             font.draw(stack, name, x + 1, y + 1, 0xFFFFFF);
             font.draw(stack, value, x + width - font.width(value) - 1, y + 1, ChatFormatting.AQUA.getColor());
@@ -201,7 +201,7 @@ public class TrustList extends AbstractList {
 
             //texts
             MutableComponent name = FiguraText.of("trust." + trust.name().toLowerCase());
-            if (changed) name = Component.literal("*").setStyle(ColorUtils.Colors.FRAN_PINK.style).append(name).append("*");
+            if (changed) name = Component.literal("*").setStyle(FiguraMod.getAccentColor()).append(name).append("*");
 
             font.draw(stack, name, x + 1, y + 1, 0xFFFFFF);
             font.draw(stack, value, x + width - font.width(value) - 1, y + 1, ChatFormatting.AQUA.getColor());
