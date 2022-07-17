@@ -22,7 +22,7 @@
   "figura.backend.upload_error": "Hochladefehler",
   "figura.backend.upload_invalid": "Ungültige daten",
   "figura.backend.upload_too_big": "Avatar ist zu groß",
-  "figura.backend.upload_too_many": "Du hast zu viele Avatars",
+  "figura.backend.upload_too_many": "Du hast zu viele Avatare",
 
   "figura.backend.delete_success": "Avatar gelöscht!",
   "figura.backend.delete_error": "Löschfehler",
@@ -234,11 +234,11 @@
   "figura.config.dev": "Dev",
   "figura.config.dev.tooltip": "Entwickler/Experimentelle Einstellungen",
 
-  "figura.config.reload_button": "Avatars neu laden",
+  "figura.config.reload_button": "Avatar neu laden",
   "figura.config.reload_button.tooltip": "Lädt den derzeitig aktiven Avatar neu",
 
   "figura.config.panic_button": "Panik Knopf",
-  "figura.config.panic_button.tooltip": "Verhindert das rendern von allen Avatars",
+  "figura.config.panic_button.tooltip": "Verhindert das rendern von allen Avataren",
 
   "figura.config.render_debug_parts_pivot": "Drehpunkte anzeigen",
   "figura.config.render_debug_parts_pivot.tooltip": "Rendert die Drehpunkte von %d und %d wenn Hitbox Debug Rendering aktiviert ist",
