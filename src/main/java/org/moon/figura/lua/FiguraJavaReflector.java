@@ -339,11 +339,13 @@ public class FiguraJavaReflector implements JavaReflector {
         public int invoke(LuaState luaState) {
             try {
                 Object[] args = new Object[argumentTypes.length];
-                for (int i = luaState.getTop(); i < args.length; i++)
+                for (int i = luaState.getTop(); i < args.length; i++) {
                     luaState.pushNil();
+                }
                 for (int i = 0; i < luaState.getTop() && i < args.length; i++) {
-                    if (params[i].isAnnotationPresent(LuaNotNil.class) && luaState.type(i + 1) == LuaType.NIL)
-                        throw new LuaRuntimeException("bad argument #"+ (i + 1) + " to '" + method.getName() + "' (" + FiguraDocsManager.NAME_MAP.getOrDefault(argumentTypes[i], argumentTypes[i].getName()) + " expected, got nil)");
+                    if (params[i].isAnnotationPresent(LuaNotNil.class) && luaState.type(i + 1) == LuaType.NIL) {
+                        throw new LuaRuntimeException("bad argument #" + (i + 1) + " to '" + method.getName() + "' (" + FiguraDocsManager.NAME_MAP.getOrDefault(argumentTypes[i], argumentTypes[i].getName()) + " expected, got nil)");
+                    }
                     args[i] = luaState.toJavaObject(i + 1, argumentTypes[i]);
                 }
                 luaState.pushJavaObject(method.invoke(null, args));
@@ -360,8 +362,9 @@ public class FiguraJavaReflector implements JavaReflector {
                 errorBuilder.append(". Expected (");
                 for (int j = 0; j < argumentTypes.length; j++) {
                     errorBuilder.append(FiguraDocsManager.NAME_MAP.getOrDefault(argumentTypes[j], argumentTypes[j].getName()));
-                    if (j != argumentTypes.length - 1)
+                    if (j != argumentTypes.length - 1) {
                         errorBuilder.append(", ");
+                    }
                 }
                 errorBuilder.append(").");
                 throw new LuaRuntimeException(errorBuilder.toString());
