@@ -1,8 +1,7 @@
 package org.moon.figura.newlua;
 
 import org.luaj.vm2.*;
-import org.luaj.vm2.lib.OneArgFunction;
-import org.luaj.vm2.lib.VarArgFunction;
+import org.luaj.vm2.lib.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -40,9 +39,18 @@ public class LuaTypeManager {
                 metatable.set("__tostring", getWrapper(method));
             } else if (name.startsWith("__")) { //metamethods
                 if (name.equals("__index")) {
-                    LuaTable metatable2 = new LuaTable();
-                    metatable2.set("__index", getWrapper(method));
-                    indexTable.setmetatable(metatable2);
+                    //Custom __index implementation. First checks the regular __index table, and if it gets NIL, then calls the custom-defined __index function.
+                    metatable.set("__index", new TwoArgFunction() {
+                        final LuaFunction wrappedIndexer = getWrapper(method);
+                        @Override
+                        public LuaValue call(LuaValue arg1, LuaValue arg2) {
+                            LuaValue result = indexTable.get(arg2);
+                            if (result == LuaValue.NIL)
+                                result = wrappedIndexer.call(arg1, arg2);
+                            return result;
+                        }
+                    });
+
                 } else {
                     metatable.set(name, getWrapper(method));
                 }
@@ -50,10 +58,11 @@ public class LuaTypeManager {
                 indexTable.set(name, getWrapper(method));
             }
         }
-        metatable.set("__index", indexTable);
+        if (metatable.rawget("__index") == LuaValue.NIL)
+            metatable.set("__index", indexTable);
 
         //if we don't have a special toString, then have our toString give the type name from the annotation
-        if (metatable.get("__tostring") == LuaValue.NIL) {
+        if (metatable.rawget("__tostring") == LuaValue.NIL) {
             metatable.set("__tostring", new OneArgFunction() {
                 private final String val = clazz.getAnnotation(LuaType.class).typeName();
                 @Override
@@ -64,7 +73,7 @@ public class LuaTypeManager {
         }
 
         //if we don't have a special __index, then have our indexer look in the next metatable up in the java inheritance.
-        if (indexTable.get("__index") == LuaValue.NIL) {
+        if (indexTable.rawget("__index") == LuaValue.NIL) {
             LuaTable superclassMetatable = metatables.get(clazz.getSuperclass());
             if (superclassMetatable != null) {
                 LuaTable newMetatable = new LuaTable();
@@ -84,7 +93,7 @@ public class LuaTypeManager {
         }
     }
 
-    private LuaValue getWrapper(Method method) {
+    private VarArgFunction getWrapper(Method method) {
         return new VarArgFunction() {
 
             private final boolean isStatic = Modifier.isStatic(method.getModifiers());
@@ -107,13 +116,15 @@ public class LuaTypeManager {
 
                     if (i < args.narg()) {
                         actualArgs[i] = switch (argumentTypes[i].getName()) {
-                            case "Double", "double" -> args.checkdouble(argIndex);
-                            case "String" -> args.checkjstring(argIndex);
-                            case "Float", "float" -> (float) args.checkdouble(argIndex);
-                            case "Integer", "int" -> args.checkint(argIndex);
-                            case "Long", "long" -> args.checklong(argIndex);
-                            case "LuaTable" -> args.checktable(argIndex);
-                            case "LuaFunction" -> args.checkfunction(argIndex);
+                            case "java.lang.Double", "double" -> args.checkdouble(argIndex);
+                            case "java.lang.String" -> args.checkjstring(argIndex);
+                            case "java.lang.Boolean", "boolean" -> args.toboolean(argIndex);
+                            case "java.lang.Float", "float" -> (float) args.checkdouble(argIndex);
+                            case "java.lang.Integer", "int" -> args.checkint(argIndex);
+                            case "java.lang.Long", "long" -> args.checklong(argIndex);
+                            case "org.luaj.vm2.LuaTable" -> args.checktable(argIndex);
+                            case "org.luaj.vm2.LuaFunction" -> args.checkfunction(argIndex);
+                            case "java.lang.Object" -> convertLua2Java(args.arg(argIndex));
                             default -> args.checkuserdata(argIndex, argumentTypes[i]);
                         };
                     } else {
@@ -136,11 +147,16 @@ public class LuaTypeManager {
                 }
 
                 //Convert the return value
-                return switch (method.getReturnType().getName()) {
-                    case "Double", "double" -> LuaDouble.valueOf((Double) result);
-                    case "Integer", "int" -> LuaInteger.valueOf((Integer) result);
-                    case "Long", "long" -> LuaInteger.valueOf((Long) result);
-                    case "Float", "float" -> LuaDouble.valueOf((Float) result);
+                if (result == null) {return LuaValue.NIL;}
+                return switch (result.getClass().getName()) {
+                    case "java.lang.Double", "double" -> LuaDouble.valueOf((Double) result);
+                    case "java.lang.String" -> LuaString.valueOf((String) result);
+                    case "java.lang.Boolean", "boolean" -> LuaBoolean.valueOf((Boolean) result);
+                    case "java.lang.Integer", "int" -> LuaInteger.valueOf((Integer) result);
+                    case "java.lang.Long", "long" -> LuaInteger.valueOf((Long) result);
+                    case "java.lang.Float", "float" -> LuaDouble.valueOf((Float) result);
+                    case "org.luaj.vm2.LuaTable" -> (LuaTable) result;
+                    case "org.luaj.vm2.LuaFunction" -> (LuaFunction) result;
                     case "void" -> LuaValue.NIL;
                     default -> wrap(result);
                 };
@@ -153,10 +169,22 @@ public class LuaTypeManager {
             return LuaValue.NIL;
         LuaTable metatable = metatables.get(instance.getClass());
         if (metatable == null)
-            throw new RuntimeException("Attempt to wrap illegal type (not registered in LuaTypeManager's METATABLE map)!");
+            throw new RuntimeException("Attempt to wrap illegal type " + instance.getClass().getName() + " (not registered in LuaTypeManager's METATABLE map)!");
         LuaUserdata result = new LuaUserdata(instance);
         result.setmetatable(metatable);
         return result;
+    }
+
+    private static Object convertLua2Java(LuaValue val) {
+        return switch (val.type()) {
+            case LuaValue.TBOOLEAN -> val.checkboolean();
+            case LuaValue.TLIGHTUSERDATA, LuaValue.TUSERDATA -> val.checkuserdata(Object.class);
+            case LuaValue.TNUMBER -> val.isint() ? val.checkint() : val.checkdouble();
+            case LuaValue.TSTRING -> val.checkstring();
+            case LuaValue.TTABLE -> val.checktable();
+            case LuaValue.TFUNCTION -> val.checkfunction();
+            default -> null;
+        };
     }
 
 }

@@ -10,7 +10,8 @@ import org.luaj.vm2.lib.StringLib;
 import org.luaj.vm2.lib.TableLib;
 import org.luaj.vm2.lib.jse.JseBaseLib;
 import org.luaj.vm2.lib.jse.JseMathLib;
-import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.newlua.LuaType;
+import org.moon.figura.newlua.LuaWhitelist;
 import org.moon.figura.newlua.LuaTypeManager;
 
 public class LuaTest {
@@ -46,10 +47,10 @@ public class LuaTest {
                 
                 print("Hello")
                 
-                print(myTestValue)
-                
-                local fun = myTestValue.get(5, 6)
-                print(fun:getA().." + "..fun:getB().." = "..myTestValue.add(fun))
+                local myfun = myTestValue.get(3, 4)
+                for i=1,10000000 do
+                    local x = myfun:getA()
+                end
                                 
                 """, "main");
 
@@ -57,10 +58,11 @@ public class LuaTest {
         chunk.call();
         time = System.nanoTime() - time;
         System.out.println(time / 1000000 + " ms");
+
+
     }
 
-
-    @LuaWhitelist
+    @LuaType(typeName = "test_class")
     public static class TestClass {
         @LuaWhitelist
         public static double add(MyFunClass fun) {
@@ -77,7 +79,7 @@ public class LuaTest {
 
     }
 
-    @LuaWhitelist
+    @LuaType(typeName = "my_fun_class")
     public static class MyFunClass {
 
         int a;
@@ -91,6 +93,29 @@ public class LuaTest {
         @LuaWhitelist
         public double getB() {
             return b;
+        }
+
+        @LuaWhitelist
+        public Object __index(String key) {
+            if (key.equals("a")) return a;
+            if (key.equals("b")) return b;
+            return null;
+        }
+
+        @LuaWhitelist
+        public void __newindex(String key, Object value) {
+            if (key.equals("a")) a = ((Number) value).intValue();
+            if (key.equals("b")) b = ((Number) value).doubleValue();
+        }
+
+        @LuaWhitelist
+        public int __len() {
+            return 2;
+        }
+
+        @LuaWhitelist
+        public String toString() {
+            return "(" + a + ", " + b + ")";
         }
 
     }
