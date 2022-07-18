@@ -175,7 +175,7 @@
   "figura.config.script.tooltip": "Script settings",
 
   "figura.config.log_location": "Print Output",
-  "figura.config.log_location.tooltip": "Location where is shown script prints",
+  "figura.config.log_location.tooltip": "Output location of script print functions",
   "figura.config.log_location.1": "Chat",
   "figura.config.log_location.2": "Logger",
 
@@ -754,6 +754,7 @@
   "figura.docs.client.get_screen": "Gets the name of the screen the player is currently on. If the player is not currently in a screen, returns nil.",
   "figura.docs.client.get_text_width": "Returns the width of the given text in pixels. In case of multiple lines, return the largest width of all lines",
   "figura.docs.client.get_text_height": "Returns the height of the given text in pixels.",
+  "figura.docs.client.get_active_lang": "Returns a string representation of the current game language.",
 
   "figura.docs.host": "A global API dedicated to specifically the host of the avatar. For other viewers, these do nothing.",
   "figura.docs.host.unlock_cursor": "Setting this value to true will unlock your cursor, letting you move it freely on the screen instead of it controlling your player's rotation.",

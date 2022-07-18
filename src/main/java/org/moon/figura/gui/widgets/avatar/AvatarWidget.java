@@ -14,14 +14,12 @@ import org.moon.figura.utils.ui.UIHelper;
 
 public class AvatarWidget extends AbstractAvatarWidget {
 
-    private final TexturedButton button;
-
     public AvatarWidget(int depth, int width, LocalAvatarFetcher.AvatarPath avatar, AvatarList parent) {
         super(depth, width, avatar, parent);
 
         AvatarWidget instance = this;
         this.button = new TexturedButton(x, y, width, 20, Component.literal("  ".repeat(depth)).append(getName()), null, button -> {
-            AvatarManager.loadLocalAvatar(avatar.getPath());
+            AvatarManager.loadLocalAvatar(avatar == null ? null : avatar.getPath());
             AvatarList.selectedEntry = instance;
         }) {
             @Override
@@ -60,14 +58,5 @@ public class AvatarWidget extends AbstractAvatarWidget {
 
         this.button.shouldHaveBackground(false);
         children.add(this.button);
-    }
-
-    @Override
-    public void setPos(int x, int y) {
-        this.x = x;
-        this.y = y;
-
-        this.button.x = x;
-        this.button.y = y;
     }
 }

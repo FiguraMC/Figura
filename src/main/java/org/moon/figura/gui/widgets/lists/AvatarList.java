@@ -28,7 +28,6 @@ public class AvatarList extends AbstractList {
 
     // -- Variables -- //
     private final HashMap<Path, AbstractAvatarWidget> avatars = new HashMap<>();
-    private final HashSet<Path> missingPaths = new HashSet<>();
     private final ArrayList<AbstractAvatarWidget> avatarList = new ArrayList<>();
 
     private final AvatarWidget unselect;
@@ -95,17 +94,17 @@ public class AvatarList extends AbstractList {
         UIHelper.setupScissor(x + scissorsX, y + scissorsY, width + scissorsWidth, height + scissorsHeight);
 
         //scrollbar
-        totalHeight = -1;
+        totalHeight = 2;
         for (AbstractAvatarWidget avatar : avatarList)
             totalHeight += avatar.height + 2;
         int entryHeight = avatarList.isEmpty() ? 0 : totalHeight / avatarList.size();
 
         scrollBar.visible = totalHeight > height - 32;
-        scrollBar.setScrollRatio(entryHeight, totalHeight - (height - 34));
+        scrollBar.setScrollRatio(entryHeight, totalHeight - (height - 32));
 
         //render list
         int xOffset = scrollBar.visible ? 4 : 11;
-        int yOffset = scrollBar.visible ? (int) -(Mth.lerp(scrollBar.getScrollProgress(), -32, totalHeight - height)) : 32;
+        int yOffset = scrollBar.visible ? (int) -(Mth.lerp(scrollBar.getScrollProgress(), -29, totalHeight - height)) : 32;
         boolean hidden = false;
 
         for (AbstractAvatarWidget avatar : avatarList) {
@@ -129,23 +128,26 @@ public class AvatarList extends AbstractList {
     }
 
     private void loadContents() {
-        missingPaths.clear();
-        missingPaths.addAll(avatars.keySet());
-
         // Load avatars //
-        List<LocalAvatarFetcher.AvatarPath> foundAvatars = LocalAvatarFetcher.ALL_AVATARS;
-
-        for (LocalAvatarFetcher.AvatarPath avatar : foundAvatars) {
+        HashSet<Path> missingPaths = new HashSet<>(avatars.keySet());
+        for (LocalAvatarFetcher.AvatarPath avatar : LocalAvatarFetcher.ALL_AVATARS) {
             Path path = avatar.getPath();
 
             //filter
-            if (!filter(avatar))
+            if (!avatar.search(filter))
                 continue;
 
+            //update current
+            if (avatars.get(path) instanceof AvatarFolderWidget folder)
+                folder.update((LocalAvatarFetcher.FolderPath) avatar, filter);
+
+            //do not remove if passed
             missingPaths.remove(path);
+
+            //add to the avatar list
             avatars.computeIfAbsent(path, p -> {
                 int width = this.width - 22;
-                AbstractAvatarWidget entry = avatar.hasAvatar() ? new AvatarWidget(0, width, avatar, this) : new AvatarFolderWidget(0, width, avatar, this);
+                AbstractAvatarWidget entry = avatar instanceof LocalAvatarFetcher.FolderPath folder ? new AvatarFolderWidget(0, width, folder, this) : new AvatarWidget(0, width, avatar, this);
 
                 avatarList.add(entry);
                 children.add(entry);
@@ -154,14 +156,14 @@ public class AvatarList extends AbstractList {
             });
         }
 
-        //Remove missing avatars
+        //remove missing avatars
         for (Path missingPath : missingPaths) {
             AbstractAvatarWidget obj = avatars.remove(missingPath);
             avatarList.remove(obj);
             children.remove(obj);
         }
 
-        //sort list
+        //sort lists
         avatarList.sort(AbstractAvatarWidget::compareTo);
         children.sort((children1, children2) -> {
             if (children1 instanceof AbstractAvatarWidget avatar1 && children2 instanceof AbstractAvatarWidget avatar2)
@@ -169,10 +171,11 @@ public class AvatarList extends AbstractList {
             return 0;
         });
 
+        //add unselect button
         if (filter.isEmpty()) {
             avatars.computeIfAbsent(Path.of(""), path -> {
                 avatarList.add(0, unselect);
-                children.add(2, unselect); //after field and scrollbar
+                children.add(2, unselect); //after text field and scrollbar
                 return unselect;
             });
         }
@@ -183,24 +186,12 @@ public class AvatarList extends AbstractList {
         double pastScroll = (totalHeight - height) * scrollBar.getScrollProgress();
 
         //get new height
-        totalHeight = -1;
+        totalHeight = 2;
         for (AbstractAvatarWidget avatar : avatarList)
             totalHeight += avatar.height + 2;
 
         //set new scroll percentage
         scrollBar.setScrollProgress(pastScroll / (totalHeight - height));
-    }
-
-    public boolean filter(LocalAvatarFetcher.AvatarPath path) {
-        boolean ret = path.getName().toLowerCase().contains(filter.toLowerCase());
-
-        for (LocalAvatarFetcher.AvatarPath child : path.getChildren())
-            ret = filter(child) || ret;
-
-        AbstractAvatarWidget avatar = avatars.get(path.getPath());
-        if (avatar != null) avatar.setVisible(ret);
-
-        return ret;
     }
 
     @Override

@@ -7,18 +7,22 @@ import org.moon.figura.avatars.providers.LocalAvatarFetcher;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.widgets.AbstractContainerElement;
 import org.moon.figura.gui.widgets.ContextMenu;
+import org.moon.figura.gui.widgets.TexturedButton;
 import org.moon.figura.gui.widgets.lists.AvatarList;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.ui.UIHelper;
 
 import java.io.File;
 
-public class AbstractAvatarWidget extends AbstractContainerElement implements Comparable<AbstractAvatarWidget> {
+public abstract class AbstractAvatarWidget extends AbstractContainerElement implements Comparable<AbstractAvatarWidget> {
 
     protected final AvatarList parent;
-    protected final LocalAvatarFetcher.AvatarPath avatar;
     protected final int depth;
     protected final ContextMenu context;
+
+    protected LocalAvatarFetcher.AvatarPath avatar;
+    protected TexturedButton button;
+    protected String filter = "";
 
     public AbstractAvatarWidget(int depth, int width, LocalAvatarFetcher.AvatarPath avatar, AvatarList parent) {
         super(0, 0, width, 20);
@@ -72,6 +76,18 @@ public class AbstractAvatarWidget extends AbstractContainerElement implements Co
     public void setPos(int x, int y) {
         this.x = x;
         this.y = y;
+
+        this.button.x = x;
+        this.button.y = y;
+    }
+
+    public boolean filtered() {
+        return this.getName().getString().toLowerCase().contains(filter.toLowerCase());
+    }
+
+    @Override
+    public void setVisible(boolean visible) {
+        super.setVisible(visible && filtered());
     }
 
     @Override

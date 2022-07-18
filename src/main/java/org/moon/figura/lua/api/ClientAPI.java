@@ -321,6 +321,15 @@ public class ClientAPI {
         return Minecraft.getInstance().font.lineHeight * TextUtils.splitText(TextUtils.tryParseJson(text), "\n").size();
     }
 
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(),
+            description = "client.get_active_lang"
+    )
+    public static String getActiveLang() {
+        return Minecraft.getInstance().options.languageCode;
+    }
+
     @Override
     public String toString() {
         return "ClientAPI";
