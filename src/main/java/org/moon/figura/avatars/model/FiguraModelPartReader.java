@@ -88,17 +88,15 @@ public class FiguraModelPartReader {
 
         //Read animations :D
         if (partCompound.contains("anim")) {
-            CompoundTag nbt = partCompound.getCompound("anim");
-            for (String key : nbt.getAllKeys()) {
-                int slashLoc = key.indexOf('/');
-                String modelName = key.substring(0, slashLoc);
-                String animName = key.substring(slashLoc+1);
+            ListTag nbt = partCompound.getList("anim", Tag.TAG_COMPOUND);
+            for (Tag tag : nbt) {
+                CompoundTag compound = (CompoundTag) tag;
+                Animation animation;
 
-                Animation animation = owner.animations.get(modelName).get(animName);
-                if (animation == null)
+                if (!compound.contains("id") || !compound.contains("data") || (animation = owner.animations.get(compound.getInt("id"))) == null)
                     continue;
 
-                CompoundTag animNbt = nbt.getCompound(key);
+                CompoundTag animNbt = compound.getCompound("data");
                 for (String channelString : animNbt.getAllKeys()) {
                     TransformType type = TransformType.valueOf(channelString.toUpperCase());
                     List<Keyframe> keyframes = new ArrayList<>();

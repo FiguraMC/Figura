@@ -66,7 +66,7 @@ public class Avatar {
     public FiguraLuaState luaState;
 
     public final Map<String, SoundBuffer> customSounds = new HashMap<>();
-    public final Map<String, Map<String, Animation>> animations = Collections.synchronizedMap(new HashMap<>());
+    public final Map<Integer, Animation> animations = Collections.synchronizedMap(new HashMap<>());
 
     private int entityTickLimit, entityRenderLimit;
     private int worldTickLimit, worldRenderLimit;
@@ -363,16 +363,14 @@ public class Avatar {
     public void applyAnimations() {
         int animationsLimit = TrustManager.get(owner).get(TrustContainer.Trust.BB_ANIMATIONS);
         int limit = animationsLimit;
-        for (Map<String, Animation> modelData : animations.values())
-            for (Animation animation : modelData.values())
-                limit = AnimationPlayer.tick(animation, limit);
+        for (Animation animation : animations.values())
+            limit = AnimationPlayer.tick(animation, limit);
         animationComplexity = animationsLimit - limit;
     }
 
     public void clearAnimations() {
-        for (Map<String, Animation> modelData : animations.values())
-            for (Animation animation : modelData.values())
-                AnimationPlayer.clear(animation);
+        for (Animation animation : animations.values())
+            AnimationPlayer.clear(animation);
     }
 
     // -- functions -- //
@@ -451,39 +449,34 @@ public class Avatar {
         if (!nbt.contains("animations"))
             return;
 
-        CompoundTag root = nbt.getCompound("animations");
-        for (String modelName : root.getAllKeys()) {
-            CompoundTag modelNbt = root.getCompound(modelName);
-            for (String animName : modelNbt.getAllKeys()) {
-                try {
+        ListTag root = nbt.getList("animations", Tag.TAG_COMPOUND);
+        for (int i = 0; i < root.size(); i++) {
+            try {
+                CompoundTag animNbt = root.getCompound(i);
 
-                    CompoundTag animNbt = modelNbt.getCompound(animName);
+                if (!animNbt.contains("mdl") || !animNbt.contains("name"))
+                    continue;
 
-                    Animation animation = new Animation(this, animName,
-                            animNbt.contains("loop") ? Animation.LoopMode.valueOf(animNbt.getString("loop").toUpperCase()) : Animation.LoopMode.ONCE,
-                            animNbt.contains("ovr") && animNbt.getBoolean("ovr"),
-                            animNbt.contains("len") ? animNbt.getFloat("len") : 0f,
-                            animNbt.contains("off") ? animNbt.getFloat("off") : 0f,
-                            animNbt.contains("bld") ? animNbt.getFloat("bld") : 1f,
-                            animNbt.contains("sdel") ? animNbt.getFloat("sdel") : 0f,
-                            animNbt.contains("ldel") ? animNbt.getFloat("ldel") : 0f
-                    );
+                Animation animation = new Animation(this,
+                        animNbt.getString("mdl"), animNbt.getString("name"),
+                        animNbt.contains("loop") ? Animation.LoopMode.valueOf(animNbt.getString("loop").toUpperCase()) : Animation.LoopMode.ONCE,
+                        animNbt.contains("ovr") && animNbt.getBoolean("ovr"),
+                        animNbt.contains("len") ? animNbt.getFloat("len") : 0f,
+                        animNbt.contains("off") ? animNbt.getFloat("off") : 0f,
+                        animNbt.contains("bld") ? animNbt.getFloat("bld") : 1f,
+                        animNbt.contains("sdel") ? animNbt.getFloat("sdel") : 0f,
+                        animNbt.contains("ldel") ? animNbt.getFloat("ldel") : 0f
+                );
 
-                    if (animNbt.contains("code")) {
-                        for (Tag code : animNbt.getList("code", Tag.TAG_COMPOUND)) {
-                            CompoundTag compound = (CompoundTag) code;
-                            Animation.addCode(animation, compound.getFloat("time"), compound.getString("src"));
-                        }
+                if (animNbt.contains("code")) {
+                    for (Tag code : animNbt.getList("code", Tag.TAG_COMPOUND)) {
+                        CompoundTag compound = (CompoundTag) code;
+                        Animation.addCode(animation, compound.getFloat("time"), compound.getString("src"));
                     }
-
-                    if (!animations.containsKey(modelName))
-                        animations.put(modelName, new HashMap<>());
-                    animations.get(modelName).put(animName, animation);
-
-                } catch (Exception e) {
-                    FiguraMod.LOGGER.warn("Failed to load blockbench animation \"" + modelName + "\"", e);
                 }
-            }
+
+                animations.put(i, animation);
+            } catch (Exception ignored) {}
         }
     }
 

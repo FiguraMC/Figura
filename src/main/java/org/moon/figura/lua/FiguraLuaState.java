@@ -162,7 +162,7 @@ public class FiguraLuaState extends LuaState53 {
         loadGlobal(keybind = new KeybindAPI(owner), "keybind");
         loadGlobal(renderer = new RendererAPI(owner.owner), "renderer");
         loadGlobal(actionWheel = new ActionWheelAPI(owner.owner), "action_wheel");
-        loadGlobal(Animation.getTableForAnimations(owner), "animation");
+        loadGlobal(Animation.getTableForAnimations(owner), "animations");
     }
 
     private void loadSetHook() {

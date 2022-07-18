@@ -24,6 +24,7 @@ import java.util.Map;
 public class Animation {
 
     private final Avatar owner;
+    private final String modelName;
 
     @LuaWhitelist
     @LuaFieldDoc(description = "animation.name")
@@ -51,8 +52,9 @@ public class Animation {
 
     // -- java methods -- //
 
-    public Animation(Avatar owner, String name, LoopMode loop, boolean override, float length, float offset, float blend, float startDelay, float loopDelay) {
+    public Animation(Avatar owner, String modelName, String name, LoopMode loop, boolean override, float length, float offset, float blend, float startDelay, float loopDelay) {
         this.owner = owner;
+        this.modelName = modelName;
         this.name = name;
         this.loop = loop;
         this.override = override;
@@ -98,15 +100,18 @@ public class Animation {
     }
 
     public static LuaTable getTableForAnimations(Avatar avatar) {
-        LuaTable result = new LuaTable();
-        for (Map.Entry<String, Map<String, Animation>> entry : avatar.animations.entrySet()) {
-            LuaTable anims = new LuaTable();
-            for (Map.Entry<String, Animation> entry2: entry.getValue().entrySet()) {
-                anims.put(entry2.getKey(), entry2.getValue());
-            }
-            result.put(entry.getKey(), anims);
+        LuaTable models = new LuaTable();
+        for (Animation animation : avatar.animations.values()) {
+            //get or create animation table
+            LuaTable animations = (LuaTable) models.get(animation.modelName);
+            if (animations == null)
+                animations = new LuaTable();
+
+            //put animation on the model table
+            animations.put(animation.name, animation);
+            models.put(animation.modelName, animations);
         }
-        return result;
+        return models;
     }
 
     // -- lua methods -- //

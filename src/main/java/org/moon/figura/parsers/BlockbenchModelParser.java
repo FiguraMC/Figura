@@ -12,12 +12,13 @@ import java.util.*;
 //note: use the same instance for parsing multiple models for the same avatar
 public class BlockbenchModelParser {
 
-    //texture offset for diverse models
+    //offsets for usage of diverse models
     private int textureOffset = 0;
+    private int animationOffset = 0;
 
     //used during the parser
     private final HashMap<String, CompoundTag> elementMap = new HashMap<>();
-    private final HashMap<String, CompoundTag> animationMap = new HashMap<>();
+    private final HashMap<String, ListTag> animationMap = new HashMap<>();
     private final HashMap<String, TextureData> textureMap = new HashMap<>();
     private final HashMap<Integer, String> textureIdMap = new HashMap<>();
 
@@ -29,7 +30,7 @@ public class BlockbenchModelParser {
 
         //return lists
         List<CompoundTag> textureList = new ArrayList<>();
-        CompoundTag animations = new CompoundTag();
+        List<CompoundTag> animationList = new ArrayList<>();
 
         //object -> nbt
         CompoundTag nbt = new CompoundTag();
@@ -48,7 +49,7 @@ public class BlockbenchModelParser {
         //parse animations
         //add the animation metadata to the animation list
         //but return a map with the group animation, as we will store it on the groups themselves
-        parseAnimations(animations, gson, model.animations, modelName);
+        parseAnimations(animationList, gson, model.animations, modelName);
 
         //add and parse the outliner
         nbt.put("chld", parseOutliner(gson, model.outliner, null));
@@ -60,7 +61,7 @@ public class BlockbenchModelParser {
         textureIdMap.clear();
 
         //return the parsed data
-        return new ModelData(textureList, animations, nbt);
+        return new ModelData(textureList, animationList, nbt);
     }
 
     // -- internal functions -- //
@@ -349,19 +350,17 @@ public class BlockbenchModelParser {
         return t1.dot(t2) < 0;
     }
 
-    private void parseAnimations(CompoundTag list, Gson gson, BlockbenchModel.Animation[] animations, String modelName) {
+    private void parseAnimations(List<CompoundTag> list, Gson gson, BlockbenchModel.Animation[] animations, String modelName) {
         if (animations == null)
             return;
 
-        if (!list.contains(modelName))
-            list.put(modelName, new CompoundTag());
-        list = list.getCompound(modelName);
-
+        int i = 0;
         for (BlockbenchModel.Animation animation : animations) {
             CompoundTag animNbt = new CompoundTag();
 
             //animation metadata
-            String name = modelName + "/" + animation.name;
+            animNbt.putString("mdl", modelName);
+            animNbt.putString("name", animation.name);
             animNbt.putString("loop", animation.loop);
             if (animation.override != null && animation.override)
                 animNbt.putBoolean("ovr", true);
@@ -437,7 +436,8 @@ public class BlockbenchModelParser {
                 if (effect) {
                     animNbt.put("code", effectData);
                 } else {
-                    CompoundTag nbt = animationMap.containsKey(id) ? animationMap.get(id) : new CompoundTag();
+                    ListTag partAnimations = animationMap.containsKey(id) ? animationMap.get(id) : new ListTag();
+                    CompoundTag nbt = new CompoundTag();
                     CompoundTag channels = new CompoundTag();
 
                     if (!rotData.isEmpty())
@@ -447,15 +447,23 @@ public class BlockbenchModelParser {
                     if (!scaleData.isEmpty())
                         channels.put("scale", scaleData);
 
-                    if (!channels.isEmpty())
-                        nbt.put(name, channels);
+                    if (!channels.isEmpty()) {
+                        nbt.putInt("id", i + animationOffset);
+                        nbt.put("data", channels);
+                    }
                     if (!nbt.isEmpty())
-                        animationMap.put(id, nbt);
+                        partAnimations.add(nbt);
+
+                    if (!partAnimations.isEmpty())
+                        animationMap.put(id, partAnimations);
                 }
             }
 
-            list.put(animation.name, animNbt);
+            list.add(animNbt);
+            i++;
         }
+
+        animationOffset += list.size();
     }
 
     private ListTag parseKeyFrameData(Gson gson, JsonObject object, String channel) {
@@ -614,5 +622,5 @@ public class BlockbenchModelParser {
     private record TextureData(int id, float[] fixedSize) {}
 
     //dummy class containing the return object of the parser
-    public record ModelData(List<CompoundTag> textureList, CompoundTag animations, CompoundTag modelNbt) {}
+    public record ModelData(List<CompoundTag> textureList, List<CompoundTag> animationList, CompoundTag modelNbt) {}
 }
