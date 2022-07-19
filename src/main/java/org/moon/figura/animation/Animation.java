@@ -40,11 +40,12 @@ public class Animation {
     private final TimeController controller = new TimeController();
     protected PlayState playState = PlayState.STOPPED;
     protected float time = 0f;
-    private float lastTime = -1f;
+    private float lastTime = -0.001f;
 
     // -- data variables -- //
 
     protected float length, blend, offset;
+    protected float speed = 1f;
     protected float startDelay, loopDelay;
     protected boolean override;
     protected int priority = 0;
@@ -70,26 +71,38 @@ public class Animation {
     }
 
     public void tick() {
+        //tick time
         this.controller.tick();
-        float newTime = controller.getElapsedTimeSeconds();
+        float newTime = controller.getElapsedTimeSeconds() * Math.abs(speed);
 
-        switch (this.loop) {
-            case HOLD -> this.time = newTime + offset;
-            case LOOP -> this.time = newTime % (length + loopDelay - offset) + offset;
-            case ONCE -> {
-                this.time = newTime + offset;
-                if (this.time >= length)
-                    Animation.stop(this);
-            }
+        //increase time
+        if (this.loop == LoopMode.LOOP && newTime >= 0)
+            this.time = newTime % (length + loopDelay - offset) + offset;
+        else
+            this.time = Math.max(newTime, offset);
+
+        //stop
+        if (this.loop == LoopMode.ONCE && this.time >= length)
+            Animation.stop(this);
+
+        //invert and code events
+        if (speed < 0) {
+            this.time = length - time;
+            playCode(this.time, this.lastTime);
+        } else {
+            playCode(this.lastTime, this.time);
         }
 
-        playCode(this.lastTime, this.time);
         this.lastTime = this.time;
     }
 
     public void playCode(float minTime, float maxTime) {
+        if (codeFrames.keySet().isEmpty())
+            return;
+
         if (maxTime < minTime) {
-            playCode(minTime, length + 0.001f);
+            float len = length + 0.001f;
+            playCode(Math.min(minTime, len), len);
             minTime = offset;
         }
 
@@ -130,6 +143,8 @@ public class Animation {
             case STOPPED -> {
                 animation.controller.init(animation.startDelay);
                 animation.lastTime = animation.offset;
+                if (animation.speed < 0)
+                    animation.lastTime = animation.length - animation.lastTime;
             }
             default -> {return;}
         }
@@ -331,6 +346,19 @@ public class Animation {
     )
     public static Animation priority(@LuaNotNil Animation animation, @LuaNotNil Integer priority) {
         animation.priority = priority;
+        return animation;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = {Animation.class, Float.class},
+                    argumentNames = {"animation", "speed"}
+            ),
+            description = "animation.speed"
+    )
+    public static Animation speed(@LuaNotNil Animation animation, @LuaNotNil Float speed) {
+        animation.speed = speed;
         return animation;
     }
 

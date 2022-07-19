@@ -380,6 +380,7 @@
   "figura.docs.animation.override": "Set if this animation should override its part transforms.",
   "figura.docs.animation.loop": "Sets the animation's loop mode.",
   "figura.docs.animation.priority": "Sets the animation's priority. Instead of blending, low priority animations are overridden by high priority ones.",
+  "figura.docs.animation.speed": "Sets the animation's playback speed. Negative numbers can be used for an inverted animation.",
 
   "figura.docs.action_wheel": "A global API which is used for customizing your player's Action Wheel.",
   "figura.docs.action_wheel.left_click": "Function that is executed when the left mouse button is clicked.",
