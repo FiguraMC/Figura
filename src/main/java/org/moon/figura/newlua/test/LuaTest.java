@@ -1,15 +1,11 @@
 package org.moon.figura.newlua.test;
 
-import org.luaj.vm2.Globals;
-import org.luaj.vm2.LoadState;
-import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.*;
 import org.luaj.vm2.compiler.LuaC;
-import org.luaj.vm2.lib.OneArgFunction;
-import org.luaj.vm2.lib.PackageLib;
-import org.luaj.vm2.lib.StringLib;
-import org.luaj.vm2.lib.TableLib;
+import org.luaj.vm2.lib.*;
 import org.luaj.vm2.lib.jse.JseBaseLib;
 import org.luaj.vm2.lib.jse.JseMathLib;
+import org.moon.figura.math.newvector.FiguraVec6;
 import org.moon.figura.newlua.LuaType;
 import org.moon.figura.newlua.LuaWhitelist;
 import org.moon.figura.newlua.LuaTypeManager;
@@ -30,10 +26,9 @@ public class LuaTest {
 
         LuaTypeManager typeManager = new LuaTypeManager();
 
-        typeManager.generateMetatableFor(TestClass.class);
-        typeManager.generateMetatableFor(MyFunClass.class);
-        LuaValue testValue = typeManager.wrap(new TestClass());
-        globals.set("myTestValue", testValue);
+        typeManager.generateMetatableFor(FiguraVec6.class);
+
+        globals.set("vec", typeManager.wrap(FiguraVec6.of()));
 
         globals.set("print", new OneArgFunction() {
             @Override
@@ -43,22 +38,27 @@ public class LuaTest {
             }
         });
 
+        LuaTable tab = new LuaTable();
+        typeManager.dumpMetatables(tab);
+        globals.set("figuraMetatables", tab);
+
         LuaValue chunk = globals.load("""
                 
                 print("Hello")
                 
-                local myfun = myTestValue.get(3, 4)
-                for i=1,10000000 do
-                    local x = myfun:getA()
-                end
-                                
+                local a = vec
+                local b = vec:copy()
+                a:set(3.4, 3.6, 7.8, 8.999, 10.3, 0)
+                b:set(1, 2, 3, 4, 5, 6)
+                
+                print(a:floor())
+                            
                 """, "main");
 
         long time = System.nanoTime();
         chunk.call();
         time = System.nanoTime() - time;
         System.out.println(time / 1000000 + " ms");
-
 
     }
 

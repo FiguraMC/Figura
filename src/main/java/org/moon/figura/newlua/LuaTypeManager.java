@@ -30,7 +30,7 @@ public class LuaTypeManager {
         LuaTable metatable = new LuaTable();
 
         LuaTable indexTable = new LuaTable();
-        for (Method method : clazz.getDeclaredMethods()) {
+        for (Method method : clazz.getMethods()) {
             if (!method.isAnnotationPresent(LuaWhitelist.class)) {
                 continue;
             }
@@ -64,10 +64,10 @@ public class LuaTypeManager {
         //if we don't have a special toString, then have our toString give the type name from the annotation
         if (metatable.rawget("__tostring") == LuaValue.NIL) {
             metatable.set("__tostring", new OneArgFunction() {
-                private final String val = clazz.getAnnotation(LuaType.class).typeName();
+                private final LuaString val = LuaString.valueOf(clazz.getAnnotation(LuaType.class).typeName());
                 @Override
                 public LuaValue call(LuaValue arg) {
-                    return LuaString.valueOf(val);
+                    return val;
                 }
             });
         }
@@ -78,6 +78,7 @@ public class LuaTypeManager {
             if (superclassMetatable != null) {
                 LuaTable newMetatable = new LuaTable();
                 newMetatable.set("__index", superclassMetatable.get("__index"));
+                indexTable.setmetatable(newMetatable);
             }
         }
 
