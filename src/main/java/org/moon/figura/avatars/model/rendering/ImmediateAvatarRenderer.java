@@ -8,10 +8,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import org.moon.figura.avatars.Avatar;
-import org.moon.figura.avatars.model.FiguraModelPart;
-import org.moon.figura.avatars.model.FiguraModelPartReader;
-import org.moon.figura.avatars.model.ParentType;
-import org.moon.figura.avatars.model.PartCustomization;
+import org.moon.figura.avatars.model.*;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
 import org.moon.figura.avatars.model.rendertasks.RenderTask;
 import org.moon.figura.config.Config;
@@ -175,9 +172,11 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         customizationStack.push(part.customization);
         part.customization.visible = storedVisibility;
 
+        PartCustomization peek = customizationStack.peek();
+
         //Right now, part.customization.positionMatrix contains a transformation from part space to view space.
         if (thisPassedPredicate && allowMatrixUpdate) {
-            FiguraMat4 customizePeek = customizationStack.peek().positionMatrix.copy();
+            FiguraMat4 customizePeek = peek.positionMatrix.copy();
             customizePeek.multiply(viewToWorldMatrix);
             FiguraVec3 piv = part.customization.getPivot();
             FiguraVec3 pos = part.customization.getPos();
@@ -193,6 +192,9 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
             translation.free();
         }
 
+        if (peek.visible && ParentType.PIVOT_PARTS.contains(part.parentType))
+            applyPivotTransforms(part.parentType, customizationStack.poseStack);
+
         part.pushVerticesImmediate(this, remainingComplexity);
         for (FiguraModelPart child : part.children)
             renderPart(child, remainingComplexity, thisPassedPredicate);
@@ -201,13 +203,13 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
             calculateWorldMatrices(part);
 
             //pivots
-            if (shouldRenderPivots > 1 || shouldRenderPivots == 1 && customizationStack.peek().visible)
+            if (shouldRenderPivots > 1 || shouldRenderPivots == 1 && peek.visible)
                 renderPivot(part);
 
             //tasks
             if (customizationStack.peek().visible) {
-                int light = customizationStack.peek().light;
-                int overlay = customizationStack.peek().overlay;
+                int light = peek.light;
+                int overlay = peek.overlay;
                 for (RenderTask task : part.renderTasks.values())
                     task.render(VIEW_MATRICES, bufferSource, light, overlay);
             }
@@ -240,6 +242,12 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
         worldToView.free();
         posMat.free();
+    }
+
+    private void applyPivotTransforms(ParentType parentType, PoseStack stack) {
+        Transformable transformable = new Transformable();
+        transformable.pose = stack.last();
+        this.pivotCustomizations.put(parentType, transformable);
     }
 
     public void pushFaces(int texIndex, int faceCount, int[] remainingComplexity) {

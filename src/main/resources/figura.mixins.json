@@ -30,6 +30,7 @@
     "render.GameRendererMixin",
     "render.GameRendererAccessor",
     "render.PlayerModelMixin",
+    "render.PoseStackMixin",
 
     "render.layers.CapeLayerMixin",
     "render.layers.HumanoidArmorLayerMixin",

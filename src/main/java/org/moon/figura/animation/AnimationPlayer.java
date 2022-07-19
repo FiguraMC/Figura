@@ -28,7 +28,6 @@ public class AnimationPlayer {
             boolean merge = part.lastAnimationPriority == anim.priority;
             part.lastAnimationPriority = anim.priority;
             part.animated = true;
-            part.animationOverride = part.animationOverride || anim.override;
 
             for (Animation.AnimationChannel channel : entry.getValue()) {
                 if (limit <= 0)
@@ -47,6 +46,15 @@ public class AnimationPlayer {
 
                 FiguraVec3 transform = next.getInterpolation().generate(keyframes, currentIndex, nextIndex, anim.blend, delta);
                 channel.type().apply(part, transform, merge);
+
+                if (anim.override) {
+                    switch (channel.type()) {
+                        case ROTATION -> part.animationOverride |= 1;
+                        case POSITION -> part.animationOverride |= 2;
+                        case SCALE -> part.animationOverride |= 4;
+                    }
+                }
+
                 limit--;
             }
         }
@@ -65,7 +73,7 @@ public class AnimationPlayer {
             part.animScale(FiguraVec3.of(1, 1, 1), false);
             part.lastAnimationPriority = Integer.MIN_VALUE;
             part.animated = false;
-            part.animationOverride = false;
+            part.animationOverride = 0;
         }
     }
 }

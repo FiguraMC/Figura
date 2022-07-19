@@ -38,7 +38,7 @@ public class TextTask extends RenderTask {
             return;
 
         stack.pushPose();
-        applyMatrices(stack);
+        this.transformable.apply(stack);
         stack.scale(1, -1, 1);
 
         Font font = Minecraft.getInstance().font;

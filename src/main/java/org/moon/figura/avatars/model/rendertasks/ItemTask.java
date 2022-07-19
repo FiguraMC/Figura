@@ -23,7 +23,8 @@ import org.terasology.jnlua.LuaRuntimeException;
 public class ItemTask extends RenderTask {
 
     private ItemStack item;
-    private ItemTransforms.TransformType renderType;
+    private ItemTransforms.TransformType renderType = ItemTransforms.TransformType.NONE;
+    private boolean left = false;
 
     @Override
     public void render(PoseStack stack, MultiBufferSource buffer, int light, int overlay) {
@@ -31,10 +32,13 @@ public class ItemTask extends RenderTask {
             return;
 
         stack.pushPose();
-        applyMatrices(stack);
+        this.transformable.apply(stack);
         stack.scale(16, 16, 16);
 
-        Minecraft.getInstance().getItemRenderer().renderStatic(item, renderType == null ? ItemTransforms.TransformType.NONE : renderType, emissive ? LightTexture.FULL_BRIGHT : light, overlay, stack, buffer, 0);
+        Minecraft.getInstance().getItemRenderer().renderStatic(
+                null, item, renderType, left,
+                stack, buffer, null,
+                emissive ? LightTexture.FULL_BRIGHT : light, overlay, 0);
 
         stack.popPose();
     }
@@ -69,6 +73,7 @@ public class ItemTask extends RenderTask {
     public static RenderTask renderType(@LuaNotNil ItemTask task, @LuaNotNil String type) {
         try {
             task.renderType = ItemTransforms.TransformType.valueOf(type);
+            task.left = task.renderType == ItemTransforms.TransformType.FIRST_PERSON_LEFT_HAND || task.renderType == ItemTransforms.TransformType.THIRD_PERSON_LEFT_HAND;
             return task;
         } catch (Exception ignored) {
             throw new LuaRuntimeException("Illegal RenderType: \"" + type + "\".");

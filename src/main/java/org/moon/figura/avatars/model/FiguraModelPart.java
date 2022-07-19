@@ -59,7 +59,7 @@ public class FiguraModelPart {
     public int textureWidth, textureHeight; //If the part has multiple textures, then these are -1.
 
     public boolean animated = false;
-    public boolean animationOverride = false;
+    public int animationOverride = 0;
     public int lastAnimationPriority = Integer.MIN_VALUE;
 
     public FiguraModelPart(Avatar owner, String name, PartCustomization customization, int index, List<FiguraModelPart> children) {
@@ -82,7 +82,7 @@ public class FiguraModelPart {
     }
 
     public void applyVanillaTransforms(EntityModel<?> vanillaModel) {
-        if (vanillaModel == null || animationOverride || parentType.provider == null)
+        if (vanillaModel == null || parentType.provider == null)
             return;
 
         ModelPart part = parentType.provider.func.apply(vanillaModel);
@@ -92,22 +92,30 @@ public class FiguraModelPart {
         FiguraVec3 defaultPivot = parentType.offset.copy();
 
         defaultPivot.subtract(part.x, part.y, part.z);
-        defaultPivot.multiply(part.xScale, part.yScale, -part.zScale);
 
-        customization.offsetPivot(defaultPivot);
-        customization.offsetPos(defaultPivot);
+        if ((animationOverride & 4) != 4)
+            defaultPivot.multiply(part.xScale, part.yScale, -part.zScale);
+
+        if ((animationOverride & 2) != 2) {
+            customization.offsetPivot(defaultPivot);
+            customization.offsetPos(defaultPivot);
+        }
 
         //customization.setBonusPivot(pivot);
-        customization.offsetRot(Math.toDegrees(-part.xRot), Math.toDegrees(-part.yRot), Math.toDegrees(part.zRot));
+        if ((animationOverride & 1) != 1)
+            customization.offsetRot(Math.toDegrees(-part.xRot), Math.toDegrees(-part.yRot), Math.toDegrees(part.zRot));
 
         defaultPivot.free();
     }
 
     public void resetVanillaTransforms() {
-        if (!animationOverride && parentType.provider != null) {
-            customization.offsetPivot(0, 0, 0);
-            customization.offsetPos(0, 0, 0);
-            customization.offsetRot(0, 0, 0);
+        if (parentType.provider != null) {
+            if ((animationOverride & 2) != 2) {
+                customization.offsetPivot(0, 0, 0);
+                customization.offsetPos(0, 0, 0);
+            }
+            if ((animationOverride & 1) != 1)
+                customization.offsetRot(0, 0, 0);
         }
     }
 

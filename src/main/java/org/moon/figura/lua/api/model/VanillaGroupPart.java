@@ -6,9 +6,7 @@ import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
-import org.moon.figura.lua.types.LuaIPairsIterator;
 import org.moon.figura.lua.types.LuaPairsIterator;
-import org.terasology.jnlua.LuaRuntimeException;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -21,8 +19,8 @@ import java.util.List;
 )
 public class VanillaGroupPart extends VanillaPart {
 
-    private List<String> cachedKeyList;
-    private Collection<VanillaPart> cachedParts;
+    private final List<String> cachedKeyList;
+    private final Collection<VanillaPart> cachedParts;
     private final HashMap<String, VanillaPart> partMap;
 
     private boolean visible = true;

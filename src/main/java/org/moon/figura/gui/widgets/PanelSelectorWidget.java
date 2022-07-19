@@ -35,12 +35,12 @@ public class PanelSelectorWidget extends AbstractContainerElement {
             button.setTooltip(Component.literal("Not yet ❤"));
             button.active = false;
         }
-        //TODO }
+        //TODO
     }
 
     private void createPanelButton(Supplier<AbstractPanelScreen> screenSupplier, Component title) {
         //create button
-        SwitchButton button = new SwitchButton(width / 2 - 176 + 72 * buttons.size(), y + 4, 60, 20, title, null, bx -> Minecraft.getInstance().setScreen(screenSupplier.get()));
+        SwitchButton button = new SwitchButton(width / 2 - 176 + 72 * buttons.size() + 2, y + 4, 60, 20, title, null, bx -> Minecraft.getInstance().setScreen(screenSupplier.get()));
         button.shouldHaveBackground(false);
 
         //add button
