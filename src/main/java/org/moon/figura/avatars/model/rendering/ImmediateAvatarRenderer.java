@@ -10,6 +10,7 @@ import net.minecraft.nbt.Tag;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.model.*;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
+import org.moon.figura.avatars.model.rendering.texture.RenderTypes;
 import org.moon.figura.avatars.model.rendertasks.RenderTask;
 import org.moon.figura.config.Config;
 import org.moon.figura.ducks.LivingEntityRendererAccessor;
@@ -23,11 +24,11 @@ import java.util.List;
 
 public class ImmediateAvatarRenderer extends AvatarRenderer {
 
-    private final List<FiguraImmediateBuffer> buffers = new ArrayList<>(0);
-
-    private final PartCustomization.Stack customizationStack = new PartCustomization.Stack();
+    protected final List<FiguraImmediateBuffer> buffers = new ArrayList<>(0);
+    protected final PartCustomization.Stack customizationStack = new PartCustomization.Stack();
 
     private static final PoseStack VIEW_MATRICES = new PoseStack();
+    private static FiguraMat4 viewToWorldMatrix = FiguraMat4.of();
 
     public ImmediateAvatarRenderer(Avatar avatar) {
         super(avatar);
@@ -37,16 +38,15 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         ListTag texturesList = avatar.nbt.getList("textures", Tag.TAG_COMPOUND);
         for (int i = 0; i < texturesList.size(); i++) {
             CompoundTag tag = texturesList.getCompound(i);
+
             String name = tag.getString("name");
-            byte[] mainData = tag.getByteArray("main");
-            if (mainData.length == 0)
-                mainData = tag.getByteArray("normal");
-            if (mainData.length == 0)
-                mainData = tag.getByteArray("default");
-            if (mainData.length == 0)
-                mainData = null;
+
+            byte[] mainData = tag.getByteArray("default");
+            mainData = mainData.length == 0 ? null : mainData;
+
             byte[] emissiveData = tag.getByteArray("emissive");
             emissiveData = emissiveData.length == 0 ? null : emissiveData;
+
             textureSets.add(new FiguraTextureSet(name, mainData, emissiveData));
         }
 
@@ -60,6 +60,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         avatar.hasTexture = !texturesList.isEmpty();
     }
 
+    @Override
     public void clean() {
         customizationStack.fullClear();
         for (FiguraImmediateBuffer buffer : buffers)
@@ -68,15 +69,11 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
     public void checkEmpty() {
         if (!customizationStack.isEmpty())
-            throw new IllegalStateException("Pushed matrices without popping them!");
+            throw new IllegalStateException("Customization stack not empty!");
     }
 
     @Override
     public void render() {
-        //Offset is NOT hard coded for one pose, this comes from LivingEntityRenderer.java.
-//        commonRender(1.5010000467300415D);
-
-        //Edit: apparently that number was bad, and it is actually correct to just use 1.5d
         commonRender(1.5d);
     }
 
@@ -85,7 +82,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         commonRender(0);
     }
 
-    private void commonRender(double vertOffset) {
+    protected void commonRender(double vertOffset) {
         //Push position and normal matrices
         PartCustomization customization = setupRootCustomization(vertOffset);
 
@@ -122,11 +119,11 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         checkEmpty();
     }
 
-    private PartCustomization setupRootCustomization(double vertOffset) {
+    protected PartCustomization setupRootCustomization(double vertOffset) {
         PartCustomization customization = PartCustomization.of();
 
-        customization.setPrimaryRenderType(FiguraTextureSet.RenderTypes.TRANSLUCENT);
-        customization.setSecondaryRenderType(FiguraTextureSet.RenderTypes.EMISSIVE);
+        customization.setPrimaryRenderType(RenderTypes.TRANSLUCENT);
+        customization.setSecondaryRenderType(RenderTypes.EMISSIVE);
 
         double s = 1.0 / 16;
         customization.positionMatrix.scale(s, s, s);
@@ -150,10 +147,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         return customization;
     }
 
-
-    private static int shouldRenderPivots;
-    private static FiguraMat4 viewToWorldMatrix = FiguraMat4.of();
-    private void renderPart(FiguraModelPart part, int[] remainingComplexity, boolean parentPassedPredicate) {
+    protected void renderPart(FiguraModelPart part, int[] remainingComplexity, boolean parentPassedPredicate) {
         if (entityRenderer != null) {
             if (part.parentType == ParentType.LeftElytra || part.parentType == ParentType.RightElytra)
                 part.applyVanillaTransforms(((LivingEntityRendererAccessor<?>) entityRenderer).figura$getElytraModel());
@@ -192,41 +186,42 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
             translation.free();
         }
 
-        if (peek.visible && ParentType.PIVOT_PARTS.contains(part.parentType))
-            applyPivotTransforms(part.parentType, customizationStack.poseStack);
-
-        part.pushVerticesImmediate(this, remainingComplexity);
-        for (FiguraModelPart child : part.children)
-            renderPart(child, remainingComplexity, thisPassedPredicate);
-
         if (thisPassedPredicate) {
             calculateWorldMatrices(part);
 
             //pivots
             if (shouldRenderPivots > 1 || shouldRenderPivots == 1 && peek.visible)
-                renderPivot(part);
+                renderPivot(part, VIEW_MATRICES);
 
-            //tasks
-            if (customizationStack.peek().visible) {
+            if (peek.visible) {
+                //tasks
                 int light = peek.light;
                 int overlay = peek.overlay;
                 for (RenderTask task : part.renderTasks.values())
                     task.render(VIEW_MATRICES, bufferSource, light, overlay);
+
+                //pivot parts
+                if (ParentType.PIVOT_PARTS.contains(part.parentType))
+                    applyPivotTransforms(part.parentType, VIEW_MATRICES);
             }
         }
+
+        part.pushVerticesImmediate(this, remainingComplexity);
+        for (FiguraModelPart child : part.children)
+            renderPart(child, remainingComplexity, thisPassedPredicate);
 
         customizationStack.pop();
 
         part.resetVanillaTransforms();
     }
 
-    private void renderPivot(FiguraModelPart part) {
+    protected void renderPivot(FiguraModelPart part, PoseStack stack) {
         //Index == -1 means it's a group
         FiguraVec3 color = part.index == -1 ? ColorUtils.Colors.MAYA_BLUE.vec : ColorUtils.Colors.FRAN_PINK.vec;
         double boxSize = part.index == -1 ? 1 / 16d : 1 / 32d;
         boxSize /= Math.cbrt(part.savedPartToWorldMat.det());
 
-        LevelRenderer.renderLineBox(VIEW_MATRICES, bufferSource.getBuffer(RenderType.LINES),
+        LevelRenderer.renderLineBox(stack, bufferSource.getBuffer(RenderType.LINES),
                 -boxSize, -boxSize, -boxSize,
                 boxSize, boxSize, boxSize,
                 (float) color.x, (float) color.y, (float) color.z, 1f);
@@ -244,7 +239,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         posMat.free();
     }
 
-    private void applyPivotTransforms(ParentType parentType, PoseStack stack) {
+    protected void applyPivotTransforms(ParentType parentType, PoseStack stack) {
         Transformable transformable = new Transformable();
         transformable.pose = stack.last();
         this.pivotCustomizations.put(parentType, transformable);

@@ -15,7 +15,7 @@ import net.minecraft.world.entity.Pose;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.animation.Animation;
 import org.moon.figura.avatars.model.ParentType;
-import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
+import org.moon.figura.avatars.model.rendering.texture.RenderTypes;
 import org.moon.figura.mixin.input.KeyMappingAccessor;
 import org.moon.figura.mixin.render.GameRendererAccessor;
 import org.moon.figura.utils.ColorUtils;
@@ -41,7 +41,7 @@ public class FiguraListDocs {
         }
     }};
     private static final LinkedHashSet<String> RENDER_TYPES = new LinkedHashSet<>() {{
-        for (FiguraTextureSet.RenderTypes value : FiguraTextureSet.RenderTypes.values()) {
+        for (RenderTypes value : RenderTypes.values()) {
             add(value.name());
         }
     }};

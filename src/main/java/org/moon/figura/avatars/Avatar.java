@@ -23,6 +23,8 @@ import org.moon.figura.animation.Animation;
 import org.moon.figura.animation.AnimationPlayer;
 import org.moon.figura.avatars.model.rendering.AvatarRenderer;
 import org.moon.figura.avatars.model.rendering.ImmediateAvatarRenderer;
+import org.moon.figura.avatars.model.rendering.PartFilterScheme;
+import org.moon.figura.avatars.model.rendering.StackAvatarRenderer;
 import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.lua.FiguraLuaState;
 import org.moon.figura.lua.api.EventsAPI;
@@ -273,7 +275,7 @@ public class Avatar {
 
     // -- rendering events -- //
 
-    public void render(Entity entity, float yaw, float delta, float alpha, PoseStack matrices, MultiBufferSource bufferSource, int light, int overlay, LivingEntityRenderer<?, ?> entityRenderer, AvatarRenderer.PartFilterScheme filter) {
+    public void render(Entity entity, float yaw, float delta, float alpha, PoseStack matrices, MultiBufferSource bufferSource, int light, int overlay, LivingEntityRenderer<?, ?> entityRenderer, PartFilterScheme filter) {
         if (renderer == null)
             return;
 
@@ -300,7 +302,7 @@ public class Avatar {
 
         renderer.allowMatrixUpdate = true;
         renderer.entity = entity;
-        renderer.currentFilterScheme = AvatarRenderer.PartFilterScheme.WORLD;
+        renderer.currentFilterScheme = PartFilterScheme.WORLD;
         renderer.bufferSource = bufferSource;
         renderer.matrices = matrices;
         renderer.tickDelta = tickDelta;
@@ -331,7 +333,7 @@ public class Avatar {
 
         arm.xRot = 0;
         //renderer.allowMatrixUpdate = true;
-        AvatarRenderer.PartFilterScheme filter = arm == playerRenderer.getModel().leftArm ? AvatarRenderer.PartFilterScheme.LEFT_ARM : AvatarRenderer.PartFilterScheme.RIGHT_ARM;
+        PartFilterScheme filter = arm == playerRenderer.getModel().leftArm ? PartFilterScheme.LEFT_ARM : PartFilterScheme.RIGHT_ARM;
         render(player, 0f, tickDelta, 1f, stack, bufferSource, light, overlay, playerRenderer, filter);
         //renderer.allowMatrixUpdate = false;
     }
@@ -341,7 +343,7 @@ public class Avatar {
             return;
 
         //renderer.allowMatrixUpdate = true;
-        renderer.currentFilterScheme = AvatarRenderer.PartFilterScheme.HUD;
+        renderer.currentFilterScheme = PartFilterScheme.HUD;
         renderer.entity = entity;
         renderer.tickDelta = tickDelta;
         renderer.overlay = OverlayTexture.NO_OVERLAY;

@@ -7,6 +7,7 @@ import net.minecraft.client.renderer.RenderType;
 import org.lwjgl.BufferUtils;
 import org.moon.figura.avatars.model.PartCustomization;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
+import org.moon.figura.avatars.model.rendering.texture.RenderTypes;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec4;
@@ -19,6 +20,10 @@ public class FiguraImmediateBuffer {
     private final FiguraTextureSet textureSet;
     private final CacheStack<PartCustomization, PartCustomization> customizationStack;
     public final FloatBuffer positions, uvs, normals;
+
+    private static final FiguraVec4 pos = FiguraVec4.of();
+    private static final FiguraVec3 normal = FiguraVec3.of();
+    private static final FiguraVec3 uv = FiguraVec3.of(0, 0, 1);
 
     private FiguraImmediateBuffer(FloatArrayList posList, FloatArrayList uvList, FloatArrayList normalList, FiguraTextureSet textureSet, PartCustomization.Stack customizationStack) {
         positions = BufferUtils.createFloatBuffer(posList.size());
@@ -38,10 +43,6 @@ public class FiguraImmediateBuffer {
     public void uploadTexIfNeeded() {
         textureSet.uploadIfNeeded();
     }
-
-    private static final FiguraVec4 pos = FiguraVec4.of();
-    private static final FiguraVec3 normal = FiguraVec3.of();
-    private static final FiguraVec3 uv = FiguraVec3.of(0, 0, 1);
 
     public void markBuffers() {
         positions.mark();
@@ -75,7 +76,6 @@ public class FiguraImmediateBuffer {
         remainingComplexity[0] += faceCount;
     }
 
-
     public void pushVertices(MultiBufferSource bufferSource, int faceCount, int[] remainingComplexity) {
         //Handle cases that we can quickly
         if (faceCount == 0)
@@ -87,8 +87,8 @@ public class FiguraImmediateBuffer {
             return;
         }
 
-        FiguraTextureSet.RenderTypes prt = customization.getPrimaryRenderType();
-        FiguraTextureSet.RenderTypes srt = customization.getSecondaryRenderType();
+        RenderTypes prt = customization.getPrimaryRenderType();
+        RenderTypes srt = customization.getSecondaryRenderType();
         RenderType primary = prt == null ? null : prt.get(customization.primaryTexture == null ? textureSet.mainTex == null ? null : textureSet.mainTex.textureID : customization.primaryTexture);
         RenderType secondary = srt == null ? null : srt.get(customization.secondaryTexture == null ? textureSet.emissiveTex == null ? null : textureSet.emissiveTex.textureID : customization.secondaryTexture);
 
@@ -182,5 +182,4 @@ public class FiguraImmediateBuffer {
             return new FiguraImmediateBuffer(positions, uvs, normals, textureSet, customizationStack);
         }
     }
-
 }

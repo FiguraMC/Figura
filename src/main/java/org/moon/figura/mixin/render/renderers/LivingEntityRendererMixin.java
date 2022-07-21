@@ -19,7 +19,7 @@ import net.minecraft.world.entity.player.Player;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
-import org.moon.figura.avatars.model.rendering.AvatarRenderer;
+import org.moon.figura.avatars.model.rendering.PartFilterScheme;
 import org.moon.figura.config.Config;
 import org.moon.figura.ducks.LivingEntityRendererAccessor;
 import org.moon.figura.mixin.render.layers.elytra.ElytraLayerAccessor;
@@ -108,7 +108,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
         //When viewed 3rd person, render all non-world parts.
         //No camera/hud or whatever in yet. when they are, they won't be included here either.
         if (visible) {
-            AvatarRenderer.PartFilterScheme filter = entity.isSpectator() ? AvatarRenderer.PartFilterScheme.HEAD : AvatarRenderer.PartFilterScheme.MODEL;
+            PartFilterScheme filter = entity.isSpectator() ? PartFilterScheme.HEAD : PartFilterScheme.MODEL;
             int overlay = getOverlayCoords(entity, getWhiteOverlayProgress(entity, delta));
             currentAvatar.renderEvent(delta);
             currentAvatar.render(entity, yaw, delta, translucent ? 0.15f : 1f, matrices, bufferSource, light, overlay, (LivingEntityRenderer<?, ?>) (Object) this, filter);

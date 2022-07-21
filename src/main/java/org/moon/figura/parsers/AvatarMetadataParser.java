@@ -8,7 +8,7 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.model.ParentType;
-import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
+import org.moon.figura.avatars.model.rendering.texture.RenderTypes;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -77,14 +77,14 @@ public class AvatarMetadataParser {
         //Add more of these later
         if (customization.primaryRenderType != null) {
             try {
-                modelPart.putString("primary", FiguraTextureSet.RenderTypes.valueOf(customization.primaryRenderType).name());
+                modelPart.putString("primary", RenderTypes.valueOf(customization.primaryRenderType).name());
             } catch (Exception ignored) {
                 throw new IOException("Invalid render type \"" + customization.primaryRenderType + "\"!");
             }
         }
         if (customization.secondaryRenderType != null) {
             try {
-                modelPart.putString("secondary", FiguraTextureSet.RenderTypes.valueOf(customization.secondaryRenderType).name());
+                modelPart.putString("secondary", RenderTypes.valueOf(customization.secondaryRenderType).name());
             } catch (Exception ignored) {
                 throw new IOException("Invalid render type \"" + customization.secondaryRenderType + "\"!");
             }

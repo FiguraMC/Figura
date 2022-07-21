@@ -2,14 +2,11 @@ package org.moon.figura.avatars.model.rendering.texture;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.PlayerInfo;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.mixin.render.layers.elytra.ElytraLayerAccessor;
 import org.terasology.jnlua.LuaRuntimeException;
-
-import java.util.function.Function;
 
 public class FiguraTextureSet {
 
@@ -46,42 +43,6 @@ public class FiguraTextureSet {
         if (mainTex != null)
             return mainTex.getHeight();
         return emissiveTex.getHeight();
-    }
-
-    public enum RenderTypes {
-        CUTOUT(RenderType::entityCutoutNoCull),
-        CUTOUT_CULL(RenderType::entityCutout),
-        TRANSLUCENT(RenderType::entityTranslucent),
-        TRANSLUCENT_CULL(RenderType::entityTranslucentCull),
-
-        EMISSIVE(RenderType::eyes),
-        EMISSIVE_SOLID(resourceLocation -> RenderType.beaconBeam(resourceLocation, false)),
-
-        END_PORTAL(t -> RenderType.endPortal(), true),
-        END_GATEWAY(t -> RenderType.endGateway(), true),
-        GLINT(t ->  RenderType.entityGlintDirect(), true),
-        GLINT2(t ->  RenderType.glintDirect(), true),
-        LINES(t ->  RenderType.lines(), true),
-        LINES_STRIP(t ->  RenderType.lineStrip(), true);
-
-        private final Function<ResourceLocation, RenderType> func;
-        private final boolean force;
-
-        RenderTypes(Function<ResourceLocation, RenderType> func) {
-            this(func, false);
-        }
-
-        RenderTypes(Function<ResourceLocation, RenderType> func, boolean force) {
-            this.func = func;
-            this.force = force;
-        }
-
-        public RenderType get(ResourceLocation id) {
-            if (force)
-                return func.apply(id);
-
-            return id == null ? null : func.apply(id);
-        }
     }
 
     public static ResourceLocation getOverrideTexture(Avatar owner, String type, String path) {

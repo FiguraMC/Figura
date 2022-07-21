@@ -13,6 +13,7 @@ import org.moon.figura.animation.TransformType;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.model.rendering.FiguraImmediateBuffer;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
+import org.moon.figura.avatars.model.rendering.texture.RenderTypes;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec4;
@@ -45,12 +46,12 @@ public class FiguraModelPartReader {
         target.free();
         if (partCompound.contains("primary")) {
             try {
-                customization.setPrimaryRenderType(FiguraTextureSet.RenderTypes.valueOf(partCompound.getString("primary")));
+                customization.setPrimaryRenderType(RenderTypes.valueOf(partCompound.getString("primary")));
             } catch (Exception ignored) {}
         }
         if (partCompound.contains("secondary")) {
             try {
-                customization.setSecondaryRenderType(FiguraTextureSet.RenderTypes.valueOf(partCompound.getString("secondary")));
+                customization.setSecondaryRenderType(RenderTypes.valueOf(partCompound.getString("secondary")));
             } catch (Exception ignored) {}
         }
         if (partCompound.contains("vsb"))

@@ -1,8 +1,9 @@
 package org.moon.figura.avatars.model;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
 import net.minecraft.resources.ResourceLocation;
-import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
+import org.moon.figura.avatars.model.rendering.texture.RenderTypes;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec3;
@@ -46,6 +47,50 @@ public class PartCustomization implements CachedType {
     public Float alpha = null;
     public Integer light = null;
     public Integer overlay = null;
+
+    private RenderTypes primaryRenderType, secondaryRenderType;
+    public ResourceLocation primaryTexture = null;
+    public ResourceLocation secondaryTexture = null;
+
+    public void applyStack(PoseStack stack) {
+        stack.translate(
+                position.x + offsetPos.x + animPos.x + pivot.x + offsetPivot.x,
+                position.y + offsetPos.y + animPos.y + pivot.y + offsetPivot.y,
+                position.z + offsetPos.z + animPos.z + pivot.z + offsetPivot.z
+        );
+
+        float rotationX = (float) (rotation.x + offsetRot.x + animRot.x);
+        float rotationY = (float) (rotation.y + offsetRot.y + animRot.y);
+        float rotationZ = (float) (rotation.z + offsetRot.z + animRot.z);
+
+        //Rotate the model part around the pivot
+        if (partType == PartType.MESH) {
+            stack.mulPose(Vector3f.XP.rotationDegrees(rotationX));
+            stack.mulPose(Vector3f.YP.rotationDegrees(rotationY));
+            stack.mulPose(Vector3f.ZP.rotationDegrees(rotationZ));
+        } else {
+            stack.mulPose(Vector3f.ZP.rotationDegrees(rotationZ));
+            stack.mulPose(Vector3f.YP.rotationDegrees(rotationY));
+            stack.mulPose(Vector3f.XP.rotationDegrees(rotationX));
+        }
+
+        //Scale the model part around the pivot
+        stack.scale(
+                (float) (scale.x * animScale.x),
+                (float) (scale.y * animScale.y),
+                (float) (scale.z * animScale.z)
+        );
+
+        //Undo the effects of the pivot translation
+        stack.translate(
+                -pivot.x - offsetPivot.x,
+                -pivot.y - offsetPivot.y,
+                -pivot.z - offsetPivot.z
+        );
+
+        positionMatrix.set(FiguraMat4.fromMatrix4f(stack.last().pose()));
+        normalMatrix.set(FiguraMat3.fromMatrix3f(stack.last().normal()));
+    }
 
     /**
      * Recalculates the matrix if necessary.
@@ -238,21 +283,16 @@ public class PartCustomization implements CachedType {
 
     //-- Render type thingies --//
 
-    private FiguraTextureSet.RenderTypes primaryRenderType;
-    private FiguraTextureSet.RenderTypes secondaryRenderType;
-    public ResourceLocation primaryTexture = null;
-    public ResourceLocation secondaryTexture = null;
-
-    public void setPrimaryRenderType(FiguraTextureSet.RenderTypes type) {
+    public void setPrimaryRenderType(RenderTypes type) {
         primaryRenderType = type;
     }
-    public FiguraTextureSet.RenderTypes getPrimaryRenderType() {
+    public RenderTypes getPrimaryRenderType() {
         return primaryRenderType;
     }
-    public void setSecondaryRenderType(FiguraTextureSet.RenderTypes type) {
+    public void setSecondaryRenderType(RenderTypes type) {
         secondaryRenderType = type;
     }
-    public FiguraTextureSet.RenderTypes getSecondaryRenderType() {
+    public RenderTypes getSecondaryRenderType() {
         return secondaryRenderType;
     }
 
@@ -302,30 +342,11 @@ public class PartCustomization implements CachedType {
     }
     public static class Stack extends CacheStack<PartCustomization, PartCustomization> {
 
-        /**
-         * A vanilla pose stack useful for certain UI elements.
-         * Mirrors the matrices of the customizations on the stack.
-         */
-        public final PoseStack poseStack = new PoseStack();
-
         public Stack() {
             this(CACHE);
         }
         public Stack(CacheUtils.Cache<PartCustomization> cache) {
             super(cache);
-        }
-
-        @Override
-        public void push(PartCustomization modifier) {
-            super.push(modifier);
-            poseStack.pushPose();
-            poseStack.mulPoseMatrix(modifier.positionMatrix.toMatrix4f());
-        }
-
-        @Override
-        public PartCustomization pop() {
-            poseStack.popPose();
-            return super.pop();
         }
 
         @Override

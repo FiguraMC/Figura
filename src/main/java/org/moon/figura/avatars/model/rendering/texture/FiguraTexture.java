@@ -31,10 +31,6 @@ public class FiguraTexture extends AbstractTexture implements Closeable {
 
     private boolean isClosed = false;
 
-    public FiguraTexture() {
-
-    }
-
     public FiguraTexture(byte[] data) {
         //Read image from wrapper
         try {
@@ -48,8 +44,7 @@ public class FiguraTexture extends AbstractTexture implements Closeable {
     }
 
     @Override
-    public void load(ResourceManager manager) throws IOException {
-    }
+    public void load(ResourceManager manager) throws IOException {}
 
     //Called when a texture is first created and when it reloads
     //Registers the texture to minecraft, and uploads it to GPU.
@@ -66,7 +61,6 @@ public class FiguraTexture extends AbstractTexture implements Closeable {
         uploaded = true;
     }
 
-
     public int getWidth() {
         return nativeImage.getWidth();
     }
@@ -77,17 +71,15 @@ public class FiguraTexture extends AbstractTexture implements Closeable {
 
     @Override
     public void close() {
-
         //Make sure it doesn't close twice (minecraft tries to close the texture when reloading textures
-        if(isClosed) return;
+        if (isClosed) return;
+
         isClosed = true;
 
         //Close native image
         nativeImage.close();
 
         //Cache GLID and then release it on GPU
-        RenderSystem.recordRenderCall(() -> {
-            TextureUtil.releaseTextureId(this.id);
-        });
+        RenderSystem.recordRenderCall(() -> TextureUtil.releaseTextureId(this.id));
     }
 }

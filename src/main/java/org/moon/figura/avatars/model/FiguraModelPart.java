@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.LightTexture;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.model.rendering.ImmediateAvatarRenderer;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
+import org.moon.figura.avatars.model.rendering.texture.RenderTypes;
 import org.moon.figura.avatars.model.rendertasks.BlockTask;
 import org.moon.figura.avatars.model.rendertasks.ItemTask;
 import org.moon.figura.avatars.model.rendertasks.RenderTask;
@@ -530,7 +531,7 @@ public class FiguraModelPart {
             description = "model_part.get_primary_render_type"
     )
     public static String getPrimaryRenderType(@LuaNotNil FiguraModelPart modelPart) {
-        FiguraTextureSet.RenderTypes renderType = modelPart.customization.getPrimaryRenderType();
+        RenderTypes renderType = modelPart.customization.getPrimaryRenderType();
         return renderType == null ? null : renderType.name();
     }
 
@@ -543,7 +544,7 @@ public class FiguraModelPart {
             description = "model_part.get_secondary_render_type"
     )
     public static String getSecondaryRenderType(@LuaNotNil FiguraModelPart modelPart) {
-        FiguraTextureSet.RenderTypes renderType = modelPart.customization.getSecondaryRenderType();
+        RenderTypes renderType = modelPart.customization.getSecondaryRenderType();
         return renderType == null ? null : renderType.name();
     }
 
@@ -557,7 +558,7 @@ public class FiguraModelPart {
     )
     public static void setPrimaryRenderType(@LuaNotNil FiguraModelPart modelPart, String type) {
         try {
-            modelPart.customization.setPrimaryRenderType(type == null ? null : FiguraTextureSet.RenderTypes.valueOf(type));
+            modelPart.customization.setPrimaryRenderType(type == null ? null : RenderTypes.valueOf(type));
         } catch (Exception ignored) {
             throw new LuaRuntimeException("Illegal RenderType: \"" + type + "\".");
         }
@@ -573,7 +574,7 @@ public class FiguraModelPart {
     )
     public static void setSecondaryRenderType(@LuaNotNil FiguraModelPart modelPart, String type) {
         try {
-            modelPart.customization.setSecondaryRenderType(type == null ? null : FiguraTextureSet.RenderTypes.valueOf(type));
+            modelPart.customization.setSecondaryRenderType(type == null ? null : RenderTypes.valueOf(type));
         } catch (Exception ignored) {
             throw new LuaRuntimeException("Illegal RenderType: \"" + type + "\".");
         }
