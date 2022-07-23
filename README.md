@@ -59,6 +59,11 @@ you can filter those people and tweak their avatar available resources using a s
 > 
 > "`animationName`" is, as the name says, the animation name
 
+### • How can I add an emissive texture?
+> Simple, just name the texture, the same as the non-emissive counterpart, but then adding `_e` in the end
+> 
+> Alternatively, still renaming the texture the same as its non-emissive however without the `_e`, in blockbench, you could set the texture render type to `emissive`
+
 ### • How can I use Figura with OptiFine?
 > You can't, OptiFine closed source nature and invasive code are a really high difficulty for mod compatibility. Check those [alternatives](https://lambdaurora.dev/optifine_alternatives/) instead
 
@@ -72,6 +77,9 @@ you can filter those people and tweak their avatar available resources using a s
 > Non-premium Minecraft accounts cannot upload nor dowload Figura avatars
 > 
 > Figura uses your account UUID and your Mojang authentication as a way to prove you own that account, avoiding unwanted / malicious uploads
+
+### • My emissive texture looks weird?
+> If youre using a custom shader (Iris), it is the shaders who controls how emissive works, however, if this still happens without shaders, try colouring the places you dont want to glow as **transparent black** (#00000000), this is due how Iris handles emissives which takes account the transparency and colour of the pixels
 
 ## Community Resources
 

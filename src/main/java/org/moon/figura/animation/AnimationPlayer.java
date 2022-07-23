@@ -16,9 +16,6 @@ public class AnimationPlayer {
         if (anim.playState != Animation.PlayState.PAUSED)
             anim.tick();
 
-        if (anim.time < 0f)
-            return limit;
-
         for (Map.Entry<FiguraModelPart, List<Animation.AnimationChannel>> entry : anim.animationParts.entrySet()) {
             FiguraModelPart part = entry.getKey();
 
@@ -35,13 +32,13 @@ public class AnimationPlayer {
 
                 Keyframe[] keyframes = channel.keyframes();
 
-                int currentIndex = Math.max(0, Mth.binarySearch(0, keyframes.length, index -> anim.time <= keyframes[index].getTime()) - 1);
+                int currentIndex = Math.max(0, Mth.binarySearch(0, keyframes.length, index -> anim.frameTime <= keyframes[index].getTime()) - 1);
                 int nextIndex = Math.min(keyframes.length - 1, currentIndex + 1);
 
                 Keyframe current = keyframes[currentIndex];
                 Keyframe next = keyframes[nextIndex];
 
-                float timeDiff = anim.time - current.getTime();
+                float timeDiff = anim.frameTime - current.getTime();
                 float delta = Math.min(Math.max(timeDiff / (next.getTime() - current.getTime()), 0), 1);
 
                 FiguraVec3 transform = next.getInterpolation().generate(keyframes, currentIndex, nextIndex, anim.blend, delta);

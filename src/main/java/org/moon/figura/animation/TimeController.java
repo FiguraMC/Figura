@@ -4,50 +4,34 @@ import net.minecraft.Util;
 
 public class TimeController {
 
-    private long startTime = 0L;
-    private long lastTime = 0L;
-    private long pauseTime = 0L;
+    private long lastTime, time, pauseTime;
 
-    public void init(float offsetSeconds) {
-        this.init((long) (offsetSeconds * 1000L));
-    }
-
-    public void init(long offset) {
-        startTime = Util.getMillis() + offset;
-        lastTime = startTime;
+    public void init() {
+        pauseTime = 0L;
+        lastTime = time = Util.getMillis();
     }
 
     public void tick() {
-        lastTime = Util.getMillis();
+        lastTime = time;
+        time = Util.getMillis();
     }
 
     public void reset() {
-        startTime = 0L;
-        lastTime = 0L;
+        lastTime = time = pauseTime = 0L;
     }
 
     public void pause() {
+        lastTime = time;
         pauseTime = Util.getMillis();
     }
 
     public void resume() {
-        startTime += Util.getMillis() - pauseTime;
+        long diff = Util.getMillis() - pauseTime;
+        lastTime += diff;
+        time += diff;
     }
 
-    public void setTime(float timeSeconds) {
-        setTime((long) (timeSeconds * 1000L));
-    }
-
-    public void setTime(long time) {
-        lastTime = Util.getMillis();
-        startTime = lastTime - time;
-    }
-
-    public long getElapsedTime() {
-        return lastTime - startTime;
-    }
-
-    public float getElapsedTimeSeconds() {
-        return getElapsedTime() / 1000f;
+    public float getDiff() {
+        return (time - lastTime) / 1000f;
     }
 }

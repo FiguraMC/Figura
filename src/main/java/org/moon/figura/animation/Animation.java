@@ -39,8 +39,10 @@ public class Animation {
 
     private final TimeController controller = new TimeController();
     protected PlayState playState = PlayState.STOPPED;
-    protected float time = 0f;
-    private float lastTime = -0.001f;
+    private float time = 0f;
+    private boolean inverted = false;
+    private float lastTime = 0f;
+    protected float frameTime = 0f;
 
     // -- data variables -- //
 
@@ -73,27 +75,31 @@ public class Animation {
     public void tick() {
         //tick time
         this.controller.tick();
-        float newTime = controller.getElapsedTimeSeconds() * Math.abs(speed);
 
-        //increase time
-        if (this.loop == LoopMode.LOOP && newTime >= 0)
-            this.time = newTime % (length + loopDelay - offset) + offset;
-        else
-            this.time = Math.max(newTime, offset);
+        this.time += controller.getDiff() * speed;
 
-        //stop
-        if (this.loop == LoopMode.ONCE && this.time >= length)
-            Animation.stop(this);
-
-        //invert and code events
-        if (speed < 0) {
-            this.time = length - time;
-            playCode(this.time, this.lastTime);
-        } else {
-            playCode(this.lastTime, this.time);
+        //loop checks
+        switch (this.loop) {
+            case ONCE -> {
+                if ((!inverted && time >= length) || (inverted && time <= 0))
+                    Animation.stop(this);
+            }
+            case LOOP -> {
+                if (!inverted && time > length + loopDelay)
+                    time -= length + loopDelay - offset;
+                else if (inverted && time < offset - loopDelay)
+                    time += length + loopDelay - offset;
+            }
         }
 
-        this.lastTime = this.time;
+        this.lastTime = this.frameTime;
+        this.frameTime = Math.max(this.time, this.offset);
+
+        //code events
+        if (inverted)
+            playCode(this.frameTime, this.lastTime);
+        else
+            playCode(this.lastTime, this.frameTime);
     }
 
     public void playCode(float minTime, float maxTime) {
@@ -141,10 +147,9 @@ public class Animation {
         switch (animation.playState) {
             case PAUSED -> animation.controller.resume();
             case STOPPED -> {
-                animation.controller.init(animation.startDelay);
-                animation.lastTime = animation.offset;
-                if (animation.speed < 0)
-                    animation.lastTime = animation.length - animation.lastTime;
+                animation.controller.init();
+                animation.time = animation.inverted ? (animation.length + animation.startDelay) : (animation.offset - animation.startDelay);
+                animation.lastTime = animation.time;
             }
             default -> {return;}
         }
@@ -212,7 +217,7 @@ public class Animation {
             description = "animation.set_time"
     )
     public static void setTime(@LuaNotNil Animation animation, @LuaNotNil Float time) {
-        animation.controller.setTime(time);
+        animation.time = time;
         animation.tick();
     }
 
@@ -237,7 +242,7 @@ public class Animation {
             description = "animation.add_code"
     )
     public static Animation addCode(@LuaNotNil Animation animation, @LuaNotNil Float time, @LuaNotNil String data) {
-        animation.codeFrames.put(time, data);
+        animation.codeFrames.put(Math.max(time, 0f), data);
         return animation;
     }
 
@@ -359,6 +364,7 @@ public class Animation {
     )
     public static Animation speed(@LuaNotNil Animation animation, @LuaNotNil Float speed) {
         animation.speed = speed;
+        animation.inverted = speed < 0;
         return animation;
     }
 
