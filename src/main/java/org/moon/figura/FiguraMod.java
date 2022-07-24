@@ -69,7 +69,7 @@ public class FiguraMod implements ClientModInitializer {
         //register events
         ClientTickEvents.START_CLIENT_TICK.register(FiguraMod::tick);
         WorldRenderEvents.START.register(levelRenderer -> AvatarManager.onWorldRender(levelRenderer.tickDelta()));
-        WorldRenderEvents.END.register(levelRenderer -> AvatarManager.afterWorldRender());
+        WorldRenderEvents.END.register(levelRenderer -> AvatarManager.afterWorldRender(levelRenderer.tickDelta()));
         WorldRenderEvents.AFTER_ENTITIES.register(FiguraMod::renderFirstPersonWorldParts);
         HudRenderCallback.EVENT.register(FiguraMod::hudRender);
         ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(FiguraLuaState.SCRIPT_LISTENER);

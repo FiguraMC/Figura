@@ -28,7 +28,7 @@ public class BlockTask extends RenderTask {
             return;
 
         stack.pushPose();
-        this.transformable.apply(stack);
+        this.apply(stack);
         stack.scale(16, 16, 16);
 
         Minecraft.getInstance().getBlockRenderer().renderSingleBlock(block, stack, buffer, emissive ? LightTexture.FULL_BRIGHT : light, overlay);

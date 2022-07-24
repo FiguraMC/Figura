@@ -59,12 +59,12 @@ public class AvatarManager {
             avatar.worldRenderEvent(tickDelta);
     }
 
-    public static void afterWorldRender() {
+    public static void afterWorldRender(float tickDelta) {
         if (panic)
             return;
 
         for (Avatar avatar : LOADED_AVATARS.values())
-            avatar.postWorldRenderEvent();
+            avatar.postWorldRenderEvent(tickDelta);
     }
 
     public static void applyAnimations() {

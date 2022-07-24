@@ -130,7 +130,7 @@ public class Avatar {
         }).thenRun(() -> { //animations and models
             try {
                 loadAnimations();
-                renderer = new ImmediateAvatarRenderer(this);
+                renderer = new StackAvatarRenderer(this);
             } catch (Exception e) {
                 FiguraMod.LOGGER.error("", e);
             }
@@ -250,11 +250,11 @@ public class Avatar {
         }
     }
 
-    public void postWorldRenderEvent() {
+    public void postWorldRenderEvent(float delta) {
         if (scriptError || luaState == null)
             return;
 
-        tryCall(luaState.events.POST_WORLD_RENDER, -1, renderer.tickDelta);
+        tryCall(luaState.events.POST_WORLD_RENDER, -1, delta);
         if (FiguraMod.DO_OUR_NATIVES_WORK && luaState != null) {
             postWorldRenderInstructions = worldRenderLimit - accumulatedEntityRenderInstructions - luaState.getInstructions();
             accumulatedWorldRenderInstructions += postWorldRenderInstructions;

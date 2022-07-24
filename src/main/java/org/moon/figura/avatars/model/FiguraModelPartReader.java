@@ -29,10 +29,6 @@ import java.util.Map;
 public class FiguraModelPartReader {
 
     public static FiguraModelPart read(Avatar owner, CompoundTag partCompound, List<FiguraImmediateBuffer.Builder> bufferBuilders, List<FiguraTextureSet> textureSets) {
-        return read(owner, partCompound, bufferBuilders, new int[] {0}, textureSets);
-    }
-
-    private static FiguraModelPart read(Avatar owner, CompoundTag partCompound, List<FiguraImmediateBuffer.Builder> bufferBuilders, int[] index, List<FiguraTextureSet> textureSets) {
         //Read name
         String name = partCompound.getString("name");
 
@@ -60,17 +56,14 @@ public class FiguraModelPartReader {
         customization.needsMatrixRecalculation = true;
 
         //Read vertex data
-        int newIndex = -1;
         List<Integer> facesByTexture = new ArrayList<>(0);
         if (hasCubeData(partCompound)) {
             readCuboid(facesByTexture, bufferBuilders, partCompound);
             customization.partType = PartCustomization.PartType.CUBE;
-            newIndex = index[0]++;
         } else if (hasMeshData(partCompound)) {
             //TODO: smooth normals
             readMesh(facesByTexture, bufferBuilders, partCompound);
             customization.partType = PartCustomization.PartType.MESH;
-            newIndex = index[0]++;
         }
 
         //Read children
@@ -78,10 +71,10 @@ public class FiguraModelPartReader {
         if (partCompound.contains("chld")) {
             ListTag listTag = partCompound.getList("chld", Tag.TAG_COMPOUND);
             for (Tag tag : listTag)
-                children.add(read(owner, (CompoundTag) tag, bufferBuilders, index, textureSets));
+                children.add(read(owner, (CompoundTag) tag, bufferBuilders, textureSets));
         }
 
-        FiguraModelPart result = new FiguraModelPart(owner, name, customization, newIndex, children);
+        FiguraModelPart result = new FiguraModelPart(owner, name, customization, children);
         result.facesByTexture = facesByTexture;
         storeTexSize(result, textureSets);
         if (partCompound.contains("pt"))
@@ -153,7 +146,7 @@ public class FiguraModelPartReader {
                 h = child.textureHeight;
             }
         }
-        if (modelPart.index != -1) {
+        if (modelPart.customization.partType != PartCustomization.PartType.GROUP) {
             int i = -1;
             for (int j = 0; j < modelPart.facesByTexture.size(); j++) {
                 if (modelPart.facesByTexture.get(j) > 0) {

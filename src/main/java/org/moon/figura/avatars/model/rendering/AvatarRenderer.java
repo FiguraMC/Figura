@@ -12,7 +12,6 @@ import net.minecraft.world.entity.LivingEntity;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.model.FiguraModelPart;
 import org.moon.figura.avatars.model.ParentType;
-import org.moon.figura.avatars.model.Transformable;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 
@@ -43,7 +42,7 @@ public abstract class AvatarRenderer {
     public boolean allowMatrixUpdate = false;
 
     public PartFilterScheme currentFilterScheme;
-    public HashMap<ParentType, Transformable> pivotCustomizations = new HashMap<>();
+    public HashMap<ParentType, PoseStack> pivotCustomizations = new HashMap<>();
     protected static int shouldRenderPivots;
 
     public AvatarRenderer(Avatar avatar) {

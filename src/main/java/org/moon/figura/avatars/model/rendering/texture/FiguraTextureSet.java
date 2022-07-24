@@ -36,13 +36,19 @@ public class FiguraTextureSet {
     public int getWidth() {
         if (mainTex != null)
             return mainTex.getWidth();
-        return emissiveTex.getWidth();
+        else if (emissiveTex != null)
+            return emissiveTex.getWidth();
+        else
+            return -1;
     }
 
     public int getHeight() {
         if (mainTex != null)
             return mainTex.getHeight();
-        return emissiveTex.getHeight();
+        else if (emissiveTex != null)
+            return emissiveTex.getHeight();
+        else
+            return -1;
     }
 
     public static ResourceLocation getOverrideTexture(Avatar owner, String type, String path) {

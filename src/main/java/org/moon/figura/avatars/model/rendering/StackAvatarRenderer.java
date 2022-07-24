@@ -10,6 +10,8 @@ import org.moon.figura.avatars.model.rendering.texture.RenderTypes;
 import org.moon.figura.avatars.model.rendertasks.RenderTask;
 import org.moon.figura.config.Config;
 import org.moon.figura.ducks.LivingEntityRendererAccessor;
+import org.moon.figura.math.matrix.FiguraMat4;
+import org.moon.figura.math.vector.FiguraVec3;
 
 public class StackAvatarRenderer extends ImmediateAvatarRenderer {
 
@@ -40,6 +42,9 @@ public class StackAvatarRenderer extends ImmediateAvatarRenderer {
 
         //Free customization after use
         customization.free();
+
+        //world matrices
+        viewToWorldMatrix = AvatarRenderer.worldToViewMatrix().inverted();
 
         //Render all model parts
         int prev = avatar.remainingComplexity;
@@ -75,54 +80,81 @@ public class StackAvatarRenderer extends ImmediateAvatarRenderer {
 
     @Override
     protected void renderPart(FiguraModelPart part, int[] remainingComplexity, boolean parentPassedPredicate) {
+        //part transforms
         if (entityRenderer != null) {
             if (part.parentType == ParentType.LeftElytra || part.parentType == ParentType.RightElytra)
                 part.applyVanillaTransforms(((LivingEntityRendererAccessor<?>) entityRenderer).figura$getElytraModel());
             else
                 part.applyVanillaTransforms(entityRenderer.getModel());
         }
-        part.applyExtraTransforms();
+
+        PartCustomization custom = part.customization;
 
         matrices.pushPose();
-        part.customization.applyStack(matrices);
+        custom.applyStack(matrices);
+        part.applyExtraTransforms(matrices);
 
         //Store old visibility, but overwrite it in case we only want to render certain parts
-        Boolean storedVisibility = part.customization.visible;
+        Boolean storedVisibility = custom.visible;
         boolean thisPassedPredicate = currentFilterScheme.predicate.test(part, parentPassedPredicate);
 
-        part.customization.visible = FiguraModelPart.getVisible(part) && thisPassedPredicate;
-        customizationStack.push(part.customization);
-        part.customization.visible = storedVisibility;
+        custom.visible = FiguraModelPart.getVisible(part) && thisPassedPredicate;
+        customizationStack.push(custom);
+        custom.visible = storedVisibility;
 
         PartCustomization peek = customizationStack.peek();
 
         //this feels wrong
-        peek.positionMatrix.set(part.customization.positionMatrix);
-        peek.normalMatrix.set(part.customization.normalMatrix);
-        peek.uvMatrix.set(part.customization.uvMatrix);
+        peek.positionMatrix.set(custom.positionMatrix);
+        peek.normalMatrix.set(custom.normalMatrix);
+        peek.uvMatrix.set(custom.uvMatrix);
 
         if (thisPassedPredicate) {
-            //pivots
+            //part to world matrices
+            if (allowMatrixUpdate) {
+                FiguraMat4 mat = partToWorldMatrices(part.customization);
+                part.savedPartToWorldMat.set(mat);
+                mat.free();
+            }
+
+            //fix pivots
+            matrices.pushPose();
+
+            FiguraVec3 pivot = custom.getPivot();
+            FiguraVec3 offsetPivot = custom.getOffsetPivot();
+            matrices.translate(
+                    pivot.x + offsetPivot.x,
+                    pivot.y + offsetPivot.y,
+                    pivot.z + offsetPivot.z
+            );
+            pivot.free();
+            offsetPivot.free();
+
+            //render pivot indicators
             if (shouldRenderPivots > 1 || shouldRenderPivots == 1 && peek.visible)
                 renderPivot(part, matrices);
 
             if (peek.visible) {
-                //tasks
+                //render tasks
                 int light = peek.light;
                 int overlay = peek.overlay;
                 for (RenderTask task : part.renderTasks.values())
                     task.render(matrices, bufferSource, light, overlay);
 
-                //pivot parts
+                //render pivot parts
                 if (ParentType.PIVOT_PARTS.contains(part.parentType))
                     applyPivotTransforms(part.parentType, matrices);
             }
+
+            matrices.popPose();
         }
 
+        //render
         part.pushVerticesImmediate(this, remainingComplexity);
         for (FiguraModelPart child : part.children)
             renderPart(child, remainingComplexity, thisPassedPredicate);
 
+        //pop
         matrices.popPose();
         customizationStack.pop();
         part.resetVanillaTransforms();

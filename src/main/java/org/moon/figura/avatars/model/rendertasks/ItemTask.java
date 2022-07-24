@@ -32,8 +32,8 @@ public class ItemTask extends RenderTask {
             return;
 
         stack.pushPose();
-        this.transformable.apply(stack);
-        stack.scale(16, 16, 16);
+        this.apply(stack);
+        stack.scale(-16, 16, -16);
 
         Minecraft.getInstance().getItemRenderer().renderStatic(
                 null, item, renderType, left,

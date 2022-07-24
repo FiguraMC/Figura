@@ -323,6 +323,7 @@
   "figura.docs.globals.client": "The global instance of ClientAPI.",
   "figura.docs.globals.action_wheel": "The global instance of ActionWheelAPI.",
   "figura.docs.globals.models": "A global instance of ModelPart. This is the root node of all your blockbench models. Each bbmodel file is a child of this part.",
+  "figura.docs.globals.animations": "A global instance of the Animations table. This is the root table containing a key-pair of your model names, and its Animations.",
   "figura.docs.globals.require": "The require() function takes the name of one of your scripts, without the .lua extension. If this script has not been already run before, it will run that script and return the value that script returns. If it has been run before, then it will not run the file again, but it will return the same thing as the first time. If a required script has no returns, then require() will return true. If the name you give isn't any of your scripts, it will error.",
   "figura.docs.globals.print": "A function that writes its arguments to chat. Even though the syntax says only one argument, you can put as many as you want. All of them will print, and they'll be separated by some spaces.",
   "figura.docs.globals.log": "An alias for print().",

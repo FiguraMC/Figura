@@ -1,5 +1,6 @@
 package org.moon.figura.avatars.model;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Quaternion;
 import com.mojang.math.Vector3f;
 import net.minecraft.client.Minecraft;
@@ -48,7 +49,6 @@ public class FiguraModelPart {
 
     public final PartCustomization customization;
     public ParentType parentType = ParentType.None;
-    public final int index;
 
     private final Map<String, FiguraModelPart> childCache = new HashMap<>();
     public final List<FiguraModelPart> children;
@@ -63,11 +63,12 @@ public class FiguraModelPart {
     public int animationOverride = 0;
     public int lastAnimationPriority = Integer.MIN_VALUE;
 
-    public FiguraModelPart(Avatar owner, String name, PartCustomization customization, int index, List<FiguraModelPart> children) {
+    public final FiguraMat4 savedPartToWorldMat = FiguraMat4.of();
+
+    public FiguraModelPart(Avatar owner, String name, PartCustomization customization, List<FiguraModelPart> children) {
         this.owner = owner;
         this.name = name;
         this.customization = customization;
-        this.index = index;
         this.children = children;
         for (FiguraModelPart child : children)
             child.parent = this;
@@ -98,7 +99,7 @@ public class FiguraModelPart {
             defaultPivot.multiply(part.xScale, part.yScale, -part.zScale);
 
         if ((animationOverride & 2) != 2) {
-            customization.offsetPivot(defaultPivot);
+            //customization.offsetPivot(defaultPivot);
             customization.offsetPos(defaultPivot);
         }
 
@@ -120,15 +121,17 @@ public class FiguraModelPart {
         }
     }
 
-    public void applyExtraTransforms() {
+    public void applyExtraTransforms(PoseStack stack) {
         if (parentType == ParentType.Camera)
-            applyCameraTransform();
+            stack.mulPose(Minecraft.getInstance().getEntityRenderDispatcher().cameraOrientation());
     }
 
-    private void applyCameraTransform() {
-        Quaternion orient = Minecraft.getInstance().getEntityRenderDispatcher().cameraOrientation();
-        Vector3f xyzDeg = orient.toXYZDegrees();
-        customization.offsetRot(-xyzDeg.x(), -xyzDeg.y(), xyzDeg.z());
+    public void applyExtraTransforms() {
+        if (parentType == ParentType.Camera) {
+            Quaternion orient = Minecraft.getInstance().getEntityRenderDispatcher().cameraOrientation();
+            Vector3f xyzDeg = orient.toXYZDegrees();
+            customization.offsetRot(-xyzDeg.x(), -xyzDeg.y(), xyzDeg.z());
+        }
     }
 
     public void clean() {
@@ -616,7 +619,6 @@ public class FiguraModelPart {
         modelPart.customization.secondaryTexture = FiguraTextureSet.getOverrideTexture(modelPart.owner, type, path);
     }
 
-    public final FiguraMat4 savedPartToWorldMat = FiguraMat4.of();
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(

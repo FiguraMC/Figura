@@ -8,12 +8,16 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import org.moon.figura.avatars.Avatar;
-import org.moon.figura.avatars.model.*;
+import org.moon.figura.avatars.model.FiguraModelPart;
+import org.moon.figura.avatars.model.FiguraModelPartReader;
+import org.moon.figura.avatars.model.ParentType;
+import org.moon.figura.avatars.model.PartCustomization;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
 import org.moon.figura.avatars.model.rendering.texture.RenderTypes;
 import org.moon.figura.avatars.model.rendertasks.RenderTask;
 import org.moon.figura.config.Config;
 import org.moon.figura.ducks.LivingEntityRendererAccessor;
+import org.moon.figura.ducks.PoseStackAccessor;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec3;
@@ -28,7 +32,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
     protected final PartCustomization.Stack customizationStack = new PartCustomization.Stack();
 
     private static final PoseStack VIEW_MATRICES = new PoseStack();
-    private static FiguraMat4 viewToWorldMatrix = FiguraMat4.of();
+    protected static FiguraMat4 viewToWorldMatrix = FiguraMat4.of();
 
     public ImmediateAvatarRenderer(Avatar avatar) {
         super(avatar);
@@ -170,20 +174,9 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
         //Right now, part.customization.positionMatrix contains a transformation from part space to view space.
         if (thisPassedPredicate && allowMatrixUpdate) {
-            FiguraMat4 customizePeek = peek.positionMatrix.copy();
-            customizePeek.multiply(viewToWorldMatrix);
-            FiguraVec3 piv = part.customization.getPivot();
-            FiguraVec3 pos = part.customization.getPos();
-            piv.subtract(pos);
-
-            FiguraMat4 translation = FiguraMat4.createTranslationMatrix(piv);
-            customizePeek.rightMultiply(translation);
-            part.savedPartToWorldMat.set(customizePeek);
-
-            customizePeek.free();
-            piv.free();
-            pos.free();
-            translation.free();
+            FiguraMat4 matrices = partToWorldMatrices(part.customization);
+            part.savedPartToWorldMat.set(matrices);
+            matrices.free();
         }
 
         if (thisPassedPredicate) {
@@ -216,9 +209,9 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
     }
 
     protected void renderPivot(FiguraModelPart part, PoseStack stack) {
-        //Index == -1 means it's a group
-        FiguraVec3 color = part.index == -1 ? ColorUtils.Colors.MAYA_BLUE.vec : ColorUtils.Colors.FRAN_PINK.vec;
-        double boxSize = part.index == -1 ? 1 / 16d : 1 / 32d;
+        boolean group = part.customization.partType == PartCustomization.PartType.GROUP;
+        FiguraVec3 color = group ? ColorUtils.Colors.MAYA_BLUE.vec : ColorUtils.Colors.FRAN_PINK.vec;
+        double boxSize = group ? 1 / 16d : 1 / 32d;
         boxSize /= Math.cbrt(part.savedPartToWorldMat.det());
 
         LevelRenderer.renderLineBox(stack, bufferSource.getBuffer(RenderType.LINES),
@@ -240,9 +233,26 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
     }
 
     protected void applyPivotTransforms(ParentType parentType, PoseStack stack) {
-        Transformable transformable = new Transformable();
-        transformable.pose = stack.last();
-        this.pivotCustomizations.put(parentType, transformable);
+        PoseStack matrices = new PoseStack();
+        ((PoseStackAccessor) matrices).pushPose(stack.last());
+        this.pivotCustomizations.put(parentType, matrices);
+    }
+
+    protected FiguraMat4 partToWorldMatrices(PartCustomization cust) {
+        FiguraMat4 customizePeek = cust.positionMatrix.copy();
+        customizePeek.multiply(viewToWorldMatrix);
+        FiguraVec3 piv = cust.getPivot();
+        FiguraVec3 pos = cust.getPos();
+        piv.subtract(pos);
+
+        FiguraMat4 translation = FiguraMat4.createTranslationMatrix(piv);
+        customizePeek.rightMultiply(translation);
+
+        piv.free();
+        pos.free();
+        translation.free();
+
+        return customizePeek;
     }
 
     public void pushFaces(int texIndex, int faceCount, int[] remainingComplexity) {

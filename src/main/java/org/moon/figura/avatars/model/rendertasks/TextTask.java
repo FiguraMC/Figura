@@ -38,8 +38,8 @@ public class TextTask extends RenderTask {
             return;
 
         stack.pushPose();
-        this.transformable.apply(stack);
-        stack.scale(1, -1, 1);
+        this.apply(stack);
+        stack.scale(-1, -1, 1);
 
         Font font = Minecraft.getInstance().font;
 

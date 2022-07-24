@@ -50,8 +50,8 @@ public abstract class FiguraGlobalsDocs {
     public ClientAPI client;
     @LuaFieldDoc(description = "globals.action_wheel")
     public ActionWheelAPI action_wheel;
-    @LuaFieldDoc(description = "globals.animation")
-    public LuaTable animation;
+    @LuaFieldDoc(description = "globals.animations")
+    public LuaTable animations;
 
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
