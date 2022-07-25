@@ -164,7 +164,9 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
         //Store old visibility, but overwrite it in case we only want to render certain parts
         Boolean storedVisibility = part.customization.visible;
-        boolean thisPassedPredicate = currentFilterScheme.predicate.test(part, parentPassedPredicate);
+        Boolean thisPassedPredicate = currentFilterScheme.test(part.parentType, parentPassedPredicate);
+        if (thisPassedPredicate == null)
+            thisPassedPredicate = false;
 
         part.customization.visible = FiguraModelPart.getVisible(part) && thisPassedPredicate;
         customizationStack.push(part.customization);
@@ -234,8 +236,13 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
     protected void applyPivotTransforms(ParentType parentType, PoseStack stack) {
         PoseStack matrices = new PoseStack();
-        ((PoseStackAccessor) matrices).pushPose(stack.last());
-        this.pivotCustomizations.put(parentType, matrices);
+        ((PoseStackAccessor) matrices).addPose(stack.last());
+
+        List<PoseStack> list = this.pivotCustomizations.get(parentType);
+        if (list == null) list = new ArrayList<>();
+
+        list.add(matrices);
+        this.pivotCustomizations.put(parentType, list);
     }
 
     protected FiguraMat4 partToWorldMatrices(PartCustomization cust) {

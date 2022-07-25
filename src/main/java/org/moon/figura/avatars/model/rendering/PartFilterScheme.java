@@ -1,47 +1,36 @@
 package org.moon.figura.avatars.model.rendering;
 
-import org.moon.figura.avatars.model.FiguraModelPart;
 import org.moon.figura.avatars.model.ParentType;
 
-import java.util.function.BiPredicate;
-
 public enum PartFilterScheme {
-    MODEL(true, (part, previousPassed) -> {
-        if (ParentType.SPECIAL_PARTS.contains(part.parentType))
-            return false;
-        return previousPassed;
-    }),
-    WORLD(false, (part, previousPassed) -> {
-        if (part.parentType == ParentType.World)
-            return true;
-        return previousPassed;
-    }),
-    HEAD(false, (part, previousPassed) -> {
-        if (part.parentType == ParentType.Head)
-            return true;
-        return previousPassed;
-    }),
-    LEFT_ARM(false, (part, previousPassed) -> {
-        if (part.parentType == ParentType.LeftArm)
-            return true;
-        return previousPassed;
-    }),
-    RIGHT_ARM(false, (part, previousPassed) -> {
-        if (part.parentType == ParentType.RightArm)
-            return true;
-        return previousPassed;
-    }),
-    HUD(false, (part, previousPassed) -> {
-        if (part.parentType == ParentType.Hud)
-            return true;
-        return previousPassed;
-    });
+    MODEL(true, null),
+    WORLD(false, ParentType.World, true),
+    HEAD(false, ParentType.Head),
+    LEFT_ARM(false, ParentType.LeftArm),
+    RIGHT_ARM(false, ParentType.RightArm),
+    HUD(false, ParentType.Hud, true);
 
     public final boolean initialValue;
-    public final BiPredicate<FiguraModelPart, Boolean> predicate;
+    public final ParentType parent;
+    private final boolean special;
 
-    PartFilterScheme(boolean initialValue, BiPredicate<FiguraModelPart, Boolean> predicate) {
+    PartFilterScheme(boolean initialValue, ParentType parent) {
+        this(initialValue, parent, false);
+    }
+
+    PartFilterScheme(boolean initialValue, ParentType parent, boolean special) {
         this.initialValue = initialValue;
-        this.predicate = predicate;
+        this.parent = parent;
+        this.special = special;
+    }
+
+    public Boolean test(ParentType toTest, boolean prevResult) {
+        if (this.parent != null && this.parent == toTest)
+            return true;
+
+        if (!this.special && ParentType.SPECIAL_PARTS.contains(toTest))
+            return null;
+
+        return prevResult;
     }
 }

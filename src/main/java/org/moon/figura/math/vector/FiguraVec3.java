@@ -377,7 +377,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3> implements CachedType {
             ),
             description = "vector_n.reset"
     )
-    public static void reset(FiguraVec3 vec) {
+    public static void reset(@LuaNotNil FiguraVec3 vec) {
         vec.reset();
     }
 
@@ -389,7 +389,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3> implements CachedType {
             ),
             description = "vector_n.set"
     )
-    public static void set(FiguraVec3 vec, Double x, Double y, Double z) {
+    public static void set(@LuaNotNil FiguraVec3 vec, Double x, Double y, Double z) {
         if (x == null) x = 0d;
         if (y == null) y = 0d;
         if (z == null) z = 0d;
@@ -404,7 +404,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3> implements CachedType {
             ),
             description = "vector_n.copy"
     )
-    public static FiguraVec3 copy(FiguraVec3 vec) {
+    public static FiguraVec3 copy(@LuaNotNil FiguraVec3 vec) {
         return vec.copy();
     }
 
@@ -416,7 +416,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3> implements CachedType {
             ),
             description = "vector_n.normalize"
     )
-    public static void normalize(FiguraVec3 vec) {
+    public static void normalize(@LuaNotNil FiguraVec3 vec) {
         vec.normalize();
     }
 
@@ -428,7 +428,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3> implements CachedType {
             ),
             description = "vector_n.normalized"
     )
-    public static FiguraVec3 normalized(FiguraVec3 vec) {
+    public static FiguraVec3 normalized(@LuaNotNil FiguraVec3 vec) {
         return vec.normalized();
     }
 

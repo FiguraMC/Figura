@@ -274,7 +274,7 @@ public class UIHelper extends GuiComponent {
 
     public static void setupScissor(int x, int y, int width, int height) {
         double scale = Minecraft.getInstance().getWindow().getGuiScale();
-        int screenY = Minecraft.getInstance().getWindow().getScreenHeight();
+        int screenY = Minecraft.getInstance().getWindow().getHeight();
 
         int scaledWidth = (int) Math.max(width * scale, 0);
         int scaledHeight = (int) Math.max(height * scale, 0);

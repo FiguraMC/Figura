@@ -47,8 +47,8 @@ public class FiguraMod implements ClientModInitializer {
     public static final String MOD_NAME = "Figura";
     public static final String VERSION = FabricLoader.getInstance().getModContainer(MOD_ID).get().getMetadata().getVersion().getFriendlyString();
     public static final boolean DEBUG_MODE = Math.random() + 1 < 0;
-    public static final LocalDate TIME = LocalDate.now();
-    public static final boolean CHEESE_DAY = TIME.getDayOfMonth() == 1 && TIME.getMonthValue() == 4;
+    public static final LocalDate DATE = LocalDate.now();
+    public static final boolean CHEESE_DAY = DATE.getDayOfMonth() == 1 && DATE.getMonthValue() == 4;
     public static final Path GAME_DIR = FabricLoader.getInstance().getGameDir().normalize();
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_NAME);
 
@@ -94,6 +94,9 @@ public class FiguraMod implements ClientModInitializer {
     }
 
     private static void hudRender(PoseStack stack, float delta) {
+        if (AvatarManager.panic)
+            return;
+
         PaperDoll.render(stack);
         ActionWheel.render(stack);
         //TODO popup menu

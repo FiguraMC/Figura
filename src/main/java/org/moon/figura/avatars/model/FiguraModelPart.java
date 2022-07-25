@@ -1,6 +1,5 @@
 package org.moon.figura.avatars.model;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Quaternion;
 import com.mojang.math.Vector3f;
 import net.minecraft.client.Minecraft;
@@ -119,11 +118,6 @@ public class FiguraModelPart {
             if ((animationOverride & 1) != 1)
                 customization.offsetRot(0, 0, 0);
         }
-    }
-
-    public void applyExtraTransforms(PoseStack stack) {
-        if (parentType == ParentType.Camera)
-            stack.mulPose(Minecraft.getInstance().getEntityRenderDispatcher().cameraOrientation());
     }
 
     public void applyExtraTransforms() {

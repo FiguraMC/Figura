@@ -182,6 +182,9 @@
   "figura.config.server_script": "Server Scripts",
   "figura.config.server_script.tooltip": "Toggles if scripts can be loaded and run from resource packs (server), affects only the Host",
 
+  "figura.config.allow_fp_hands": "First Person Hands",
+  "figura.config.allow_fp_hands.tooltip": "Toggles if scripts can move around, rotate or scale the First Person Hands",
+
   "figura.config.actionwheel": "Action Wheel",
   "figura.config.actionwheel.tooltip": "Action Wheel settings",
 

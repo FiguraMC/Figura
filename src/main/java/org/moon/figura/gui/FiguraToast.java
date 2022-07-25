@@ -72,7 +72,7 @@ public class FiguraToast implements Toast {
         if (type == ToastType.DEFAULT && (boolean) Config.EASTER_EGGS.value) {
             if (FiguraMod.CHEESE_DAY || Math.random() < 0.0001)
                 type = ToastType.CHEESE;
-            else if (FiguraMod.getAccentColor(ColorUtils.Colors.DEFAULT.vec).hashCode() == ColorUtils.Colors.FRAN_PINK.style.hashCode() || (FiguraMod.TIME.getDayOfMonth() == 21 && FiguraMod.TIME.getMonthValue() == 9))
+            else if (FiguraMod.getAccentColor(ColorUtils.Colors.DEFAULT.vec).hashCode() == ColorUtils.Colors.FRAN_PINK.style.hashCode() || (FiguraMod.DATE.getDayOfMonth() == 21 && FiguraMod.DATE.getMonthValue() == 9))
                 type = ToastType.FRAN;
         }
 

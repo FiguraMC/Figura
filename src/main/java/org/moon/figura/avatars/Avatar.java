@@ -3,6 +3,7 @@ package org.moon.figura.avatars;
 import com.mojang.blaze3d.audio.OggAudioStream;
 import com.mojang.blaze3d.audio.SoundBuffer;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelPart;
@@ -22,9 +23,9 @@ import org.moon.figura.FiguraMod;
 import org.moon.figura.animation.Animation;
 import org.moon.figura.animation.AnimationPlayer;
 import org.moon.figura.avatars.model.rendering.AvatarRenderer;
-import org.moon.figura.avatars.model.rendering.ImmediateAvatarRenderer;
 import org.moon.figura.avatars.model.rendering.PartFilterScheme;
 import org.moon.figura.avatars.model.rendering.StackAvatarRenderer;
+import org.moon.figura.config.Config;
 import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.lua.FiguraLuaState;
 import org.moon.figura.lua.api.EventsAPI;
@@ -331,11 +332,20 @@ public class Avatar {
         if (renderer == null)
             return;
 
-        arm.xRot = 0;
-        //renderer.allowMatrixUpdate = true;
         PartFilterScheme filter = arm == playerRenderer.getModel().leftArm ? PartFilterScheme.LEFT_ARM : PartFilterScheme.RIGHT_ARM;
+        boolean config = (boolean) Config.ALLOW_FP_HANDS.value;
+        renderer.allowHiddenTransforms = config;
+
+        stack.pushPose();
+        if (!config) {
+            stack.mulPose(Vector3f.ZP.rotation(arm.zRot));
+            stack.mulPose(Vector3f.YP.rotation(arm.yRot));
+            stack.mulPose(Vector3f.XP.rotation(arm.xRot));
+        }
         render(player, 0f, tickDelta, 1f, stack, bufferSource, light, overlay, playerRenderer, filter);
-        //renderer.allowMatrixUpdate = false;
+        stack.popPose();
+
+        renderer.allowHiddenTransforms = true;
     }
 
     public void hudRender(PoseStack stack, MultiBufferSource bufferSource, Entity entity, float tickDelta) {

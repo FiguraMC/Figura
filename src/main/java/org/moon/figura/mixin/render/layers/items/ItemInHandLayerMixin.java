@@ -22,6 +22,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.List;
+
 @Mixin(ItemInHandLayer.class)
 public abstract class ItemInHandLayerMixin<T extends LivingEntity, M extends EntityModel<T>> {
 
@@ -40,11 +42,14 @@ public abstract class ItemInHandLayerMixin<T extends LivingEntity, M extends Ent
 
         //pivot part
         if (avatar.renderer != null) {
-            PoseStack stack = avatar.renderer.pivotCustomizations.remove(left ? ParentType.LeftItemPivot : ParentType.RightItemPivot);
-            if (stack != null) {
-                stack.scale(16, 16, 16);
-                stack.mulPose(Vector3f.XP.rotationDegrees(-90f));
-                this.itemInHandRenderer.renderItem(livingEntity, itemStack, transformType, left, stack, multiBufferSource, i);
+            List<PoseStack> list = avatar.renderer.pivotCustomizations.remove(left ? ParentType.LeftItemPivot : ParentType.RightItemPivot);
+            if (list != null && !list.isEmpty()) {
+                for (PoseStack stack : list) {
+                    stack.scale(16, 16, 16);
+                    stack.mulPose(Vector3f.XP.rotationDegrees(-90f));
+                    this.itemInHandRenderer.renderItem(livingEntity, itemStack, transformType, left, stack, multiBufferSource, i);
+                }
+                list.clear();
                 ci.cancel();
                 return;
             }

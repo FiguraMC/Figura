@@ -79,24 +79,14 @@ public class StackAvatarRenderer extends ImmediateAvatarRenderer {
     }
 
     @Override
-    protected void renderPart(FiguraModelPart part, int[] remainingComplexity, boolean parentPassedPredicate) {
-        //part transforms
-        if (entityRenderer != null) {
-            if (part.parentType == ParentType.LeftElytra || part.parentType == ParentType.RightElytra)
-                part.applyVanillaTransforms(((LivingEntityRendererAccessor<?>) entityRenderer).figura$getElytraModel());
-            else
-                part.applyVanillaTransforms(entityRenderer.getModel());
-        }
-
+    protected void renderPart(FiguraModelPart part, int[] remainingComplexity, boolean prevPredicate) {
         PartCustomization custom = part.customization;
-
-        matrices.pushPose();
-        custom.applyStack(matrices);
-        part.applyExtraTransforms(matrices);
 
         //Store old visibility, but overwrite it in case we only want to render certain parts
         Boolean storedVisibility = custom.visible;
-        boolean thisPassedPredicate = currentFilterScheme.predicate.test(part, parentPassedPredicate);
+        Boolean thisPassedPredicate = currentFilterScheme.test(part.parentType, prevPredicate);
+        if (thisPassedPredicate == null)
+            return;
 
         custom.visible = FiguraModelPart.getVisible(part) && thisPassedPredicate;
         customizationStack.push(custom);
@@ -104,11 +94,35 @@ public class StackAvatarRenderer extends ImmediateAvatarRenderer {
 
         PartCustomization peek = customizationStack.peek();
 
-        //this feels wrong
+        //calculate part transforms
+        //we do not want to apply it straight away, so we check for the parent only
+        matrices.pushPose();
+
+        if (allowHiddenTransforms || prevPredicate) {
+            //calculate vanilla parent
+            if (entityRenderer != null) {
+                if (part.parentType == ParentType.LeftElytra || part.parentType == ParentType.RightElytra)
+                    part.applyVanillaTransforms(((LivingEntityRendererAccessor<?>) entityRenderer).figura$getElytraModel());
+                else
+                    part.applyVanillaTransforms(entityRenderer.getModel());
+            }
+
+            //apply
+            custom.applyStack(matrices, part.parentType == ParentType.Camera);
+
+            //reset the parent
+            part.resetVanillaTransforms();
+        }
+
+        //TODO {this feels wrong}
         peek.positionMatrix.set(custom.positionMatrix);
         peek.normalMatrix.set(custom.normalMatrix);
         peek.uvMatrix.set(custom.uvMatrix);
 
+        //render
+        part.pushVerticesImmediate(this, remainingComplexity);
+
+        //render extras
         if (thisPassedPredicate) {
             //part to world matrices
             if (allowMatrixUpdate) {
@@ -149,14 +163,12 @@ public class StackAvatarRenderer extends ImmediateAvatarRenderer {
             matrices.popPose();
         }
 
-        //render
-        part.pushVerticesImmediate(this, remainingComplexity);
+        //render children
         for (FiguraModelPart child : part.children)
             renderPart(child, remainingComplexity, thisPassedPredicate);
 
         //pop
-        matrices.popPose();
         customizationStack.pop();
-        part.resetVanillaTransforms();
+        matrices.popPose();
     }
 }

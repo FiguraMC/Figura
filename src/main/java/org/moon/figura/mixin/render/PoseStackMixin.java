@@ -15,7 +15,7 @@ public class PoseStackMixin implements PoseStackAccessor {
     @Shadow @Final private Deque<PoseStack.Pose> poseStack;
 
     @Override @Intrinsic
-    public void pushPose(PoseStack.Pose pose) {
+    public void addPose(PoseStack.Pose pose) {
         this.poseStack.addLast(pose);
     }
 }

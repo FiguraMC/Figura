@@ -4,5 +4,5 @@ import com.mojang.blaze3d.vertex.PoseStack;
 
 public interface PoseStackAccessor {
 
-    void pushPose(PoseStack.Pose pose);
+    void addPose(PoseStack.Pose pose);
 }

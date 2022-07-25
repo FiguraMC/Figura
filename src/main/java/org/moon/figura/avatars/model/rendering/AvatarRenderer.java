@@ -16,6 +16,7 @@ import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Mainly exists as an abstract superclass for VAO-based and
@@ -42,8 +43,9 @@ public abstract class AvatarRenderer {
     public boolean allowMatrixUpdate = false;
 
     public PartFilterScheme currentFilterScheme;
-    public HashMap<ParentType, PoseStack> pivotCustomizations = new HashMap<>();
+    public HashMap<ParentType, List<PoseStack>> pivotCustomizations = new HashMap<>();
     protected static int shouldRenderPivots;
+    public boolean allowHiddenTransforms = true;
 
     public AvatarRenderer(Avatar avatar) {
         this.avatar = avatar;

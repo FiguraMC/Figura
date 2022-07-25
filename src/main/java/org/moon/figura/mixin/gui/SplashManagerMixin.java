@@ -19,8 +19,8 @@ public class SplashManagerMixin {
         if (FiguraMod.CHEESE_DAY) {
             cir.setReturnValue("LARGECHEESE!");
         } else { //b-days!!
-            int month = FiguraMod.TIME.getMonthValue();
-            int day = FiguraMod.TIME.getDayOfMonth();
+            int month = FiguraMod.DATE.getMonthValue();
+            int day = FiguraMod.DATE.getDayOfMonth();
             String bday = "Happy birthday ";
 
             switch (month) {
