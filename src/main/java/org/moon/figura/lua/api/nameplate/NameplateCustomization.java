@@ -209,7 +209,7 @@ public class NameplateCustomization {
             description = "nameplate_customization.set_pos"
     )
     public static void setPos(@LuaNotNil NameplateCustomization custom, Object x, Double y, Double z) {
-        custom.position = x == null ? null : LuaUtils.parseVec3("setPosition", x, y, z);
+        custom.position = x == null ? null : LuaUtils.oldParseVec3("setPosition", x, y, z);
     }
 
     @LuaWhitelist
@@ -239,7 +239,7 @@ public class NameplateCustomization {
             description = "nameplate_customization.set_scale"
     )
     public static void setScale(@LuaNotNil NameplateCustomization custom, Object x, Double y, Double z) {
-        custom.scale = x == null ? null : LuaUtils.parseVec3("setScale", x, y, z, 1, 1, 1);
+        custom.scale = x == null ? null : LuaUtils.oldParseVec3("setScale", x, y, z, 1, 1, 1);
     }
 
     @LuaWhitelist

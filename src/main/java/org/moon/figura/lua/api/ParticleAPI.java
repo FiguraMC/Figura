@@ -78,16 +78,16 @@ public class ParticleAPI {
             } else if (y == null || y instanceof Double) {
                 //Intellij says: y should probably not be passed as parameter x
                 //It really doesn't like the kind of programming that happens in this function lol
-                vel = LuaUtils.parseVec3("addParticle", y, z, (Double) w);
+                vel = LuaUtils.oldParseVec3("addParticle", y, z, (Double) w);
             } else {
                 throw new LuaRuntimeException("Illegal argument to addParticle(): " + y);
             }
         } else if (x == null || x instanceof Double) {
-            pos = LuaUtils.parseVec3("addParticle", x, (Double) y, z);
+            pos = LuaUtils.oldParseVec3("addParticle", x, (Double) y, z);
             if (w instanceof FiguraVec3) {
                 vel = ((FiguraVec3) w).copy();
             } else if (w == null || w instanceof Double) {
-                vel = LuaUtils.parseVec3("addParticle", w, t, h);
+                vel = LuaUtils.oldParseVec3("addParticle", w, t, h);
             } else {
                 throw new LuaRuntimeException("Illegal argument to addParticle(): " + w);
             }

@@ -107,7 +107,7 @@ public class BlockStateWrapper {
             description = "blockstate.set_pos"
     )
     public static void setPos(@LuaNotNil BlockStateWrapper blockState, Object x, Double y, Double z) {
-        FiguraVec3 newPos = LuaUtils.parseVec3("setPos", x, y, z);
+        FiguraVec3 newPos = LuaUtils.oldParseVec3("setPos", x, y, z);
         blockState.pos = newPos.asBlockPos();
         newPos.free();
     }

@@ -224,7 +224,7 @@ public class FiguraModelPart {
             description = "model_part.set_pos"
     )
     public static void setPos(@LuaNotNil FiguraModelPart modelPart, Object x, Double y, Double z) {
-        FiguraVec3 vec = LuaUtils.parseVec3("setPos", x, y, z);
+        FiguraVec3 vec = LuaUtils.oldParseVec3("setPos", x, y, z);
         modelPart.customization.setPos(vec);
     }
 
@@ -267,7 +267,7 @@ public class FiguraModelPart {
             description = "model_part.set_rot"
     )
     public static void setRot(@LuaNotNil FiguraModelPart modelPart, Object x, Double y, Double z) {
-        FiguraVec3 vec = LuaUtils.parseVec3("setRot", x, y, z);
+        FiguraVec3 vec = LuaUtils.oldParseVec3("setRot", x, y, z);
         modelPart.customization.setRot(vec);
     }
 
@@ -298,7 +298,7 @@ public class FiguraModelPart {
             description = "model_part.offset_rot"
     )
     public static void offsetRot(@LuaNotNil FiguraModelPart modelPart, Object x, Double y, Double z) {
-        FiguraVec3 vec = LuaUtils.parseVec3("offsetRot", x, y, z);
+        FiguraVec3 vec = LuaUtils.oldParseVec3("offsetRot", x, y, z);
         modelPart.customization.offsetRot(vec);
     }
 
@@ -341,7 +341,7 @@ public class FiguraModelPart {
             description = "model_part.set_scale"
     )
     public static void setScale(@LuaNotNil FiguraModelPart modelPart, Object x, Double y, Double z) {
-        FiguraVec3 vec = LuaUtils.parseVec3("setScale", x, y, z, 1, 1, 1);
+        FiguraVec3 vec = LuaUtils.oldParseVec3("setScale", x, y, z, 1, 1, 1);
         modelPart.customization.setScale(vec);
     }
 
@@ -384,7 +384,7 @@ public class FiguraModelPart {
             description = "model_part.set_pivot"
     )
     public static void setPivot(@LuaNotNil FiguraModelPart modelPart, Object x, Double y, Double z) {
-        FiguraVec3 vec = LuaUtils.parseVec3("setPivot", x, y, z);
+        FiguraVec3 vec = LuaUtils.oldParseVec3("setPivot", x, y, z);
         modelPart.customization.setPivot(vec);
     }
 
@@ -415,7 +415,7 @@ public class FiguraModelPart {
             description = "model_part.offset_pivot"
     )
     public static void offsetPivot(@LuaNotNil FiguraModelPart modelPart, Object x, Double y, Double z) {
-        FiguraVec3 vec = LuaUtils.parseVec3("offsetPivot", x, y, z);
+        FiguraVec3 vec = LuaUtils.oldParseVec3("offsetPivot", x, y, z);
         modelPart.customization.offsetPivot(vec);
     }
 
@@ -655,7 +655,7 @@ public class FiguraModelPart {
     )
     public static void setUV(@LuaNotNil FiguraModelPart modelPart, Object x, Double y) {
         modelPart.customization.uvMatrix.reset();
-        FiguraVec2 uv = LuaUtils.parseVec2("setUV", x, y);
+        FiguraVec2 uv = LuaUtils.oldParseVec2("setUV", x, y);
         modelPart.customization.uvMatrix.translate(uv.x, uv.y);
         uv.free();
     }
@@ -679,7 +679,7 @@ public class FiguraModelPart {
             throw new LuaRuntimeException("Cannot call setUVPixels on a part with multiple texture sizes!");
 
         modelPart.customization.uvMatrix.reset();
-        FiguraVec2 uv = LuaUtils.parseVec2("setUVPixels", x, y);
+        FiguraVec2 uv = LuaUtils.oldParseVec2("setUVPixels", x, y);
         uv.divide(modelPart.textureWidth, modelPart.textureHeight);
         modelPart.customization.uvMatrix.translate(uv.x, uv.y);
         uv.free();
@@ -712,7 +712,7 @@ public class FiguraModelPart {
             description = "model_part.set_color"
     )
     public static void setColor(@LuaNotNil FiguraModelPart modelPart, Object r, Double g, Double b) {
-        modelPart.customization.color = LuaUtils.parseVec3("setColor", r, g, b, 1, 1, 1);
+        modelPart.customization.color = LuaUtils.oldParseVec3("setColor", r, g, b, 1, 1, 1);
     }
 
     @LuaWhitelist
@@ -771,7 +771,7 @@ public class FiguraModelPart {
             return;
         }
 
-        FiguraVec2 lightVec = LuaUtils.parseVec2("setLight", light, skyLight);
+        FiguraVec2 lightVec = LuaUtils.oldParseVec2("setLight", light, skyLight);
         modelPart.customization.light = LightTexture.pack((int) lightVec.x, (int) lightVec.y);
     }
 

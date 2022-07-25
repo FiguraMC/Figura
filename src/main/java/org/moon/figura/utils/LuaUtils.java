@@ -10,6 +10,7 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import org.apache.commons.lang3.NotImplementedException;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.lua.api.world.BlockStateWrapper;
 import org.moon.figura.lua.api.world.ItemStackWrapper;
@@ -57,11 +58,17 @@ public class LuaUtils {
      * @param z The z coordinate of a vector, used if the first parameter was a number.
      * @return A FiguraVec3 representing the data passed in.
      */
-    public static FiguraVec3 parseVec3(String methodName, Object x, Double y, Double z) {
-        return parseVec3(methodName, x, y, z, 0, 0, 0);
+    public static org.moon.figura.math.newvector.FiguraVec3 parseVec3(String methodName, Object x, Double y, Double z, double defaultX, double defaultY, double defaultZ) {
+        throw new NotImplementedException();
     }
 
-    public static FiguraVec3 parseVec3(String methodName, Object x, Double y, Double z, double defaultX, double defaultY, double defaultZ) {
+    @Deprecated
+    public static FiguraVec3 oldParseVec3(String methodName, Object x, Double y, Double z) {
+        return oldParseVec3(methodName, x, y, z, 0, 0, 0);
+    }
+
+    @Deprecated
+    public static FiguraVec3 oldParseVec3(String methodName, Object x, Double y, Double z, double defaultX, double defaultY, double defaultZ) {
         if (x instanceof FiguraVec3 vec)
             return vec.copy();
         if (x == null || x instanceof Double) {
@@ -70,14 +77,16 @@ public class LuaUtils {
             if (z == null) z = defaultZ;
             return FiguraVec3.of((double) x, y, z);
         }
-        throw new LuaRuntimeException("Illegal argument to " + methodName + "(): " + x);
+        throw new LuaRuntimeException("Illegal argument to " + methodName + "(): " + x.getClass().getSimpleName());
     }
 
-    public static FiguraVec2 parseVec2(String methodName, Object x, Double y) {
-        return parseVec2(methodName, x, y, 0, 0);
+    @Deprecated
+    public static FiguraVec2 oldParseVec2(String methodName, Object x, Double y) {
+        return oldParseVec2(methodName, x, y, 0, 0);
     }
 
-    public static FiguraVec2 parseVec2(String methodName, Object x, Double y, double defaultX, double defaultY) {
+    @Deprecated
+    public static FiguraVec2 oldParseVec2(String methodName, Object x, Double y, double defaultX, double defaultY) {
         if (x instanceof FiguraVec2 vec)
             return vec.copy();
         if (x == null || x instanceof Double) {

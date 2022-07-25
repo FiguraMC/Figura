@@ -23,7 +23,7 @@ import java.nio.FloatBuffer;
         name = "Matrix4",
         description = "matrix4"
 )
-public class FiguraMat4 implements CachedType {
+public class FiguraMat4 implements CachedType<FiguraMat4> {
 
     //Values are named as v(ROW)(COLUMN), both 1-indexed like in actual math
     @LuaWhitelist
@@ -41,11 +41,12 @@ public class FiguraMat4 implements CachedType {
     // CACHING METHODS
     //----------------------------------------------------------------
     private static final CacheUtils.Cache<FiguraMat4> CACHE = CacheUtils.getCache(FiguraMat4::new);
-    public void reset() {
+    public FiguraMat4 reset() {
         v12=v13=v14=v21=v23=v24=v31=v32=v34=v41=v42=v43 = 0;
         v11=v22=v33=v44 = 1;
         cachedInverse = null;
         cachedDeterminant = Double.MAX_VALUE;
+        return this;
     }
     public void free() {
         CACHE.offerOld(this);
@@ -884,7 +885,7 @@ public class FiguraMat4 implements CachedType {
             description = "matrix4.translate"
     )
     public static void translate(@LuaNotNil FiguraMat4 mat, Object x, Double y, Double z) {
-        FiguraVec3 vec = LuaUtils.parseVec3("translate", x, y, z);
+        FiguraVec3 vec = LuaUtils.oldParseVec3("translate", x, y, z);
         mat.translate(vec.x, vec.y, vec.z);
     }
 
@@ -903,7 +904,7 @@ public class FiguraMat4 implements CachedType {
             description = "matrix4.rotate"
     )
     public static void rotate(@LuaNotNil FiguraMat4 mat, Object x, Double y, Double z) {
-        FiguraVec3 vec = LuaUtils.parseVec3("rotate", x, y, z);
+        FiguraVec3 vec = LuaUtils.oldParseVec3("rotate", x, y, z);
         mat.rotateZYX(vec.x, vec.y, vec.z);
     }
 
@@ -922,7 +923,7 @@ public class FiguraMat4 implements CachedType {
             description = "matrix_n.scale"
     )
     public static void scale(@LuaNotNil FiguraMat4 mat, Object x, Double y, Double z) {
-        FiguraVec3 vec = LuaUtils.parseVec3("scale", x, y, z, 1, 1, 1);
+        FiguraVec3 vec = LuaUtils.oldParseVec3("scale", x, y, z, 1, 1, 1);
         mat.scale(vec.x, vec.y, vec.z);
     }
 

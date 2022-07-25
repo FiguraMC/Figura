@@ -12,7 +12,7 @@ import org.moon.figura.utils.caching.CacheStack;
 import org.moon.figura.utils.caching.CacheUtils;
 import org.moon.figura.utils.caching.CachedType;
 
-public class PartCustomization implements CachedType {
+public class PartCustomization implements CachedType<PartCustomization> {
 
     //-- Matrix thingies --//
     /**
@@ -304,7 +304,7 @@ public class PartCustomization implements CachedType {
 
     private static final CacheUtils.Cache<PartCustomization> CACHE = CacheUtils.getCache(PartCustomization::new);
     private PartCustomization() {}
-    public void reset() {
+    public PartCustomization reset() {
         positionMatrix = FiguraMat4.of();
         uvMatrix = FiguraMat3.of();
         normalMatrix = FiguraMat3.of();
@@ -326,6 +326,7 @@ public class PartCustomization implements CachedType {
         visible = null;
         primaryTexture = null;
         secondaryTexture = null;
+        return this;
     }
     public void free() {
         positionMatrix.free();

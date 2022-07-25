@@ -162,7 +162,7 @@ public class VectorsAPI {
             description = "vectors.rgb_to_int"
     )
     public static Integer rgbToINT(Object r, Double g, Double b) {
-        FiguraVec3 rgb = LuaUtils.parseVec3("rgbToINT", r, g, b);
+        FiguraVec3 rgb = LuaUtils.oldParseVec3("rgbToINT", r, g, b);
         return ColorUtils.rgbToInt(rgb);
     }
 
@@ -205,7 +205,7 @@ public class VectorsAPI {
             description = "vectors.hsv_to_rgb"
     )
     public static FiguraVec3 hsvToRGB(Object h, Double s, Double v) {
-        FiguraVec3 hsv = LuaUtils.parseVec3("hsvToRGB", h, s, v);
+        FiguraVec3 hsv = LuaUtils.oldParseVec3("hsvToRGB", h, s, v);
         return ColorUtils.hsvToRGB(hsv);
     }
 
@@ -224,7 +224,7 @@ public class VectorsAPI {
             description = "vectors.rgb_to_hsv"
     )
     public static FiguraVec3 rgbToHSV(Object r, Double g, Double b) {
-        FiguraVec3 rgb = LuaUtils.parseVec3("rgbToHSV", r, g, b);
+        FiguraVec3 rgb = LuaUtils.oldParseVec3("rgbToHSV", r, g, b);
         return ColorUtils.rgbToHSV(rgb);
     }
 
@@ -287,16 +287,16 @@ public class VectorsAPI {
             if (y instanceof FiguraVec3 vec2) {
                 axis = vec2.copy();
             } else if (y == null || y instanceof Double) {
-                axis = LuaUtils.parseVec3("rotateAroundAxis", y, z, (Double) w);
+                axis = LuaUtils.oldParseVec3("rotateAroundAxis", y, z, (Double) w);
             } else {
                 throw new LuaRuntimeException("Illegal argument to rotateAroundAxis(): " + y);
             }
         } else if (x == null || x instanceof Double) {
-            vec = LuaUtils.parseVec3("rotateAroundAxis", x, (Double) y, z);
+            vec = LuaUtils.oldParseVec3("rotateAroundAxis", x, (Double) y, z);
             if (w instanceof FiguraVec3 vec1) {
                 axis = vec1.copy();
             } else if (w == null || w instanceof Double) {
-                axis = LuaUtils.parseVec3("rotateAroundAxis", w, t, h);
+                axis = LuaUtils.oldParseVec3("rotateAroundAxis", w, t, h);
             } else {
                 throw new LuaRuntimeException("Illegal argument to rotateAroundAxis(): " + w);
             }
@@ -306,7 +306,8 @@ public class VectorsAPI {
 
         System.out.println(angle + " ||| " + vec + " ||| " + axis);
 
-        FiguraVec3 ret = MathUtils.rotateAroundAxis(vec, axis, angle);
+        org.moon.figura.math.newvector.FiguraVec3 result = MathUtils.rotateAroundAxis(org.moon.figura.math.newvector.FiguraVec3.of(vec.x, vec.y, vec.z), org.moon.figura.math.newvector.FiguraVec3.of(axis.x, axis.y, axis.z), angle);
+        FiguraVec3 ret = FiguraVec3.of(result.x, result.y, result.z);
 
         vec.free();
         axis.free();
@@ -329,8 +330,9 @@ public class VectorsAPI {
             description = "vectors.to_camera_space"
     )
     public static FiguraVec3 toCameraSpace(Object x, Double y, Double z) {
-        FiguraVec3 vec = LuaUtils.parseVec3("toCameraSpace", x, y, z);
-        return MathUtils.toCameraSpace(vec);
+        FiguraVec3 vec = LuaUtils.oldParseVec3("toCameraSpace", x, y, z);
+        org.moon.figura.math.newvector.FiguraVec3 result = MathUtils.toCameraSpace(org.moon.figura.math.newvector.FiguraVec3.of(vec.x, vec.y, vec.z));
+        return FiguraVec3.of(result.x, result.y, result.z);
     }
 
     @LuaWhitelist
@@ -348,8 +350,9 @@ public class VectorsAPI {
             description = "vectors.world_to_screen_space"
     )
     public static FiguraVec4 worldToScreenSpace(Object x, Double y, Double z) {
-        FiguraVec3 vec = LuaUtils.parseVec3("worldToScreenSpace", x, y, z);
-        return MathUtils.worldToScreenSpace(vec);
+        FiguraVec3 vec = LuaUtils.oldParseVec3("worldToScreenSpace", x, y, z);
+        org.moon.figura.math.newvector.FiguraVec4 result = MathUtils.worldToScreenSpace(org.moon.figura.math.newvector.FiguraVec3.of(vec.x, vec.y, vec.z));
+        return FiguraVec4.of(result.x, result.y, result.z, result.w);
     }
 
     @Override

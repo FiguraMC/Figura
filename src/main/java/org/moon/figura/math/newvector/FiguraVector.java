@@ -1,8 +1,10 @@
 package org.moon.figura.math.newvector;
 
+import org.moon.figura.math.newmatrix.FiguraMatrix;
 import org.moon.figura.newlua.LuaType;
+import org.moon.figura.utils.caching.CachedType;
 
-public abstract class FiguraVector<T extends FiguraVector<T>> {
+public abstract class FiguraVector<T extends FiguraVector<T, M>, M extends FiguraMatrix<M, T>> implements CachedType<T> {
 
     public abstract double lengthSquared();
     public double length() {
@@ -18,6 +20,7 @@ public abstract class FiguraVector<T extends FiguraVector<T>> {
     public abstract T add(T other);
     public abstract T subtract(T other);
     public abstract T multiply(T other);
+    public abstract T transform(M mat);
     public abstract T divide(T other);
     public abstract T reduce(T other);
     public abstract T scale(double factor);

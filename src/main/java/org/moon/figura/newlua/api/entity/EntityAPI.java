@@ -1,9 +1,8 @@
-package org.moon.figura.newlua.api;
+package org.moon.figura.newlua.api.entity;
 
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import org.moon.figura.lua.LuaWhitelist;
-import org.moon.figura.lua.api.entity.EntityWrapper;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.math.vector.FiguraVec3;
@@ -12,12 +11,11 @@ import org.moon.figura.newlua.LuaType;
 @LuaType(typeName = "entity")
 public class EntityAPI<T extends Entity> {
 
-    private T entity;
+    private T entity; //We just do not care about memory anymore so, have something not wrapped in a WeakReference
 
     public EntityAPI(T entity) {
         this.entity = entity;
     }
-
 
     @LuaWhitelist
     @LuaMethodDoc(

@@ -16,7 +16,7 @@ import org.moon.figura.utils.caching.CachedType;
         name = "Matrix2",
         description = "matrix2"
 )
-public class FiguraMat2 implements CachedType {
+public class FiguraMat2 implements CachedType<FiguraMat2> {
 
     //Values are named as v(ROW)(COLUMN), both 1-indexed like in actual math
     @LuaWhitelist
@@ -30,9 +30,10 @@ public class FiguraMat2 implements CachedType {
     // CACHING METHODS
     //----------------------------------------------------------------
     private static final CacheUtils.Cache<FiguraMat2> CACHE = CacheUtils.getCache(FiguraMat2::new);
-    public void reset() {
+    public FiguraMat2 reset() {
         v12=v21 = 0;
         v11=v22 = 1;
+        return this;
     }
     public void free() {
         CACHE.offerOld(this);
@@ -417,7 +418,7 @@ public class FiguraMat2 implements CachedType {
             description = "matrix_n.scale"
     )
     public static void scale(@LuaNotNil FiguraMat2 mat, Object x, Double y) {
-        FiguraVec2 vec = LuaUtils.parseVec2("scale", x, y, 1, 1);
+        FiguraVec2 vec = LuaUtils.oldParseVec2("scale", x, y, 1, 1);
         mat.scale(vec.x, vec.y);
     }
 

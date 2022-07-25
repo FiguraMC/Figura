@@ -113,7 +113,7 @@ public class RendererAPI {
             description = "renderer.set_camera_rot"
     )
     public static void setCameraRot(@LuaNotNil RendererAPI api, Object x, Double y, Double z) {
-        api.cameraRot = x == null ? null : LuaUtils.parseVec3("setCameraRot", x, y, z);
+        api.cameraRot = x == null ? null : LuaUtils.oldParseVec3("setCameraRot", x, y, z);
     }
 
     @LuaWhitelist
@@ -131,7 +131,7 @@ public class RendererAPI {
             description = "renderer.set_camera_bonus_rot"
     )
     public static void setCameraBonusRot(@LuaNotNil RendererAPI api, Object x, Double y, Double z) {
-        api.cameraBonusRot = x == null ? null : LuaUtils.parseVec3("setCameraBonusRot", x, y, z);
+        api.cameraBonusRot = x == null ? null : LuaUtils.oldParseVec3("setCameraBonusRot", x, y, z);
     }
 
     @LuaWhitelist

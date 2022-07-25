@@ -85,7 +85,7 @@ public class BiomeWrapper {
             description = "biome.set_pos"
     )
     public static void setPos(@LuaNotNil BiomeWrapper biome, Object x, Double y, Double z) {
-        FiguraVec3 newPos = LuaUtils.parseVec3("setPos", x, y, z);
+        FiguraVec3 newPos = LuaUtils.oldParseVec3("setPos", x, y, z);
         biome.pos = newPos.asBlockPos();
         newPos.free();
     }

@@ -133,7 +133,7 @@ public class TextTask extends RenderTask {
             description = "text_task.outline_color"
     )
     public static TextTask outlineColor(@LuaNotNil TextTask task, Object x, Double y, Double z) {
-        task.outlineColor = LuaUtils.parseVec3("outlineColor", x, y, z);
+        task.outlineColor = LuaUtils.oldParseVec3("outlineColor", x, y, z);
         return task;
     }
 }

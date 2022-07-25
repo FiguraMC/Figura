@@ -21,7 +21,7 @@ import java.util.List;
         name = "Vector2",
         description = "vector2"
 )
-public class FiguraVec2 extends FiguraVector<FiguraVec2> implements CachedType {
+public class FiguraVec2 extends FiguraVector<FiguraVec2> implements CachedType<FiguraVec2> {
 
     @LuaWhitelist
     @LuaFieldDoc(description = "vector_n.x")
@@ -38,8 +38,9 @@ public class FiguraVec2 extends FiguraVector<FiguraVec2> implements CachedType {
     private static final CacheUtils.Cache<FiguraVec2> CACHE = CacheUtils.getCache(FiguraVec2::new);
 
     @Override
-    public void reset() {
+    public FiguraVec2 reset() {
         x = y = 0;
+        return this;
     }
 
     @Override
@@ -306,7 +307,7 @@ public class FiguraVec2 extends FiguraVector<FiguraVec2> implements CachedType {
                 case '_' -> 0;
                 default -> throw new LuaRuntimeException("Invalid swizzle: " + arg2);
             };
-        return MathUtils.sizedVector(vals);
+        return MathUtils.oldSizedVector(vals);
     }
 
     @LuaWhitelist

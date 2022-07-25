@@ -22,7 +22,7 @@ import java.nio.FloatBuffer;
         name = "Matrix3",
         description = "matrix3"
 )
-public class FiguraMat3 implements CachedType {
+public class FiguraMat3 implements CachedType<FiguraMat3> {
 
     //Values are named as v(ROW)(COLUMN), both 1-indexed like in actual math
     @LuaWhitelist
@@ -40,11 +40,12 @@ public class FiguraMat3 implements CachedType {
     // CACHING METHODS
     //----------------------------------------------------------------
     private static final CacheUtils.Cache<FiguraMat3> CACHE = CacheUtils.getCache(FiguraMat3::new);
-    public void reset() {
+    public FiguraMat3 reset() {
         v12=v13=v21=v23=v31=v32 = 0;
         v11=v22=v33 = 1;
         cachedInverse = null;
         cachedDeterminant = Double.MAX_VALUE;
+        return this;
     }
     public void free() {
         CACHE.offerOld(this);
@@ -730,7 +731,7 @@ public class FiguraMat3 implements CachedType {
             description = "matrix3.rotate"
     )
     public static void rotate(@LuaNotNil FiguraMat3 mat, Object x, Double y, Double z) {
-        FiguraVec3 vec = LuaUtils.parseVec3("rotate", x, y, z);
+        FiguraVec3 vec = LuaUtils.oldParseVec3("rotate", x, y, z);
         mat.rotateZYX(vec.x, vec.y, vec.z);
     }
 
@@ -749,7 +750,7 @@ public class FiguraMat3 implements CachedType {
             description = "matrix_n.scale"
     )
     public static void scale(@LuaNotNil FiguraMat3 mat, Object x, Double y, Double z) {
-        FiguraVec3 vec = LuaUtils.parseVec3("scale", x, y, z, 1, 1, 1);
+        FiguraVec3 vec = LuaUtils.oldParseVec3("scale", x, y, z, 1, 1, 1);
         mat.scale(vec.x, vec.y, vec.z);
     }
 
@@ -768,7 +769,7 @@ public class FiguraMat3 implements CachedType {
             description = "matrix3.translate"
     )
     public static void translate(@LuaNotNil FiguraMat3 mat, Object x, Double y) {
-        FiguraVec2 vec = LuaUtils.parseVec2("translate", x, y);
+        FiguraVec2 vec = LuaUtils.oldParseVec2("translate", x, y);
         mat.translate(vec.x, vec.y);
         vec.free();
     }

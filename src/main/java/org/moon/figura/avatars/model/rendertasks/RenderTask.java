@@ -79,7 +79,7 @@ public abstract class RenderTask {
             description = "render_task.pos"
     )
     public static RenderTask pos(@LuaNotNil RenderTask task, Object x, Double y, Double z) {
-        task.pos = LuaUtils.parseVec3("pos", x, y, z);
+        task.pos = LuaUtils.oldParseVec3("pos", x, y, z);
         return task;
     }
 
@@ -98,7 +98,7 @@ public abstract class RenderTask {
             description = "render_task.rot"
     )
     public static RenderTask rot(@LuaNotNil RenderTask task, Object x, Double y, Double z) {
-        task.rot = LuaUtils.parseVec3("rot", x, y, z);
+        task.rot = LuaUtils.oldParseVec3("rot", x, y, z);
         return task;
     }
 
@@ -117,7 +117,7 @@ public abstract class RenderTask {
             description = "render_task.scale"
     )
     public static RenderTask scale(@LuaNotNil RenderTask task, Object x, Double y, Double z) {
-        task.scale = LuaUtils.parseVec3("scale", x, y, z, 1, 1, 1);
+        task.scale = LuaUtils.oldParseVec3("scale", x, y, z, 1, 1, 1);
         return task;
     }
 }

@@ -35,9 +35,7 @@ public class LuaTypeManager {
                 continue;
             }
             String name = method.getName();
-            if (name.equals("toString") && method.getParameterTypes().length == 0) { //toString special case
-                metatable.set("__tostring", getWrapper(method));
-            } else if (name.startsWith("__")) { //metamethods
+            if (name.startsWith("__")) { //metamethods
                 if (name.equals("__index")) {
                     //Custom __index implementation. First checks the regular __index table, and if it gets NIL, then calls the custom-defined __index function.
                     metatable.set("__index", new TwoArgFunction() {
@@ -50,7 +48,6 @@ public class LuaTypeManager {
                             return result;
                         }
                     });
-
                 } else {
                     metatable.set(name, getWrapper(method));
                 }
@@ -115,7 +112,7 @@ public class LuaTypeManager {
                 for (int i = 0; i < argumentTypes.length; i++) {
                     int argIndex = i + (isStatic ? 1 : 2);
 
-                    if (i < args.narg()) {
+                    if (i < args.narg() && !args.isnil(i+1)) {
                         actualArgs[i] = switch (argumentTypes[i].getName()) {
                             case "java.lang.Double", "double" -> args.checkdouble(argIndex);
                             case "java.lang.String" -> args.checkjstring(argIndex);
@@ -170,7 +167,7 @@ public class LuaTypeManager {
             return LuaValue.NIL;
         LuaTable metatable = metatables.get(instance.getClass());
         if (metatable == null)
-            throw new RuntimeException("Attempt to wrap illegal type " + instance.getClass().getName() + " (not registered in LuaTypeManager's METATABLE map)!");
+            throw new RuntimeException("Attempt to wrap illegal type " + instance.getClass().getName() + " (not registered in LuaTypeManager's \"metatables\" map)!");
         LuaUserdata result = new LuaUserdata(instance);
         result.setmetatable(metatable);
         return result;

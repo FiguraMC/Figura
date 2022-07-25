@@ -56,7 +56,7 @@ public abstract class Action {
             description = "wheel_action.color"
     )
     public static Action color(@LuaNotNil Action action, Object x, Double y, Double z) {
-        action.color = x == null ? null : LuaUtils.parseVec3("color", x, y, z);
+        action.color = x == null ? null : LuaUtils.oldParseVec3("color", x, y, z);
         return action;
     }
 
@@ -75,7 +75,7 @@ public abstract class Action {
             description = "wheel_action.hover_color"
     )
     public static Action hoverColor(@LuaNotNil Action action, Object x, Double y, Double z) {
-        action.hoverColor = x == null ? null : LuaUtils.parseVec3("hoverColor", x, y, z);
+        action.hoverColor = x == null ? null : LuaUtils.oldParseVec3("hoverColor", x, y, z);
         return action;
     }
 

@@ -22,7 +22,6 @@ import java.util.Set;
 public class FiguraLuaRuntime {
 
     private final Avatar owner;
-
     private final Globals userGlobals;
     private final LuaValue setHookFunction;
     private final LuaTable requireResults = new LuaTable();

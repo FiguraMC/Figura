@@ -5,8 +5,8 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.Vec3;
 import org.moon.figura.ducks.GameRendererAccessor;
-import org.moon.figura.math.matrix.FiguraMat3;
-import org.moon.figura.math.vector.*;
+import org.moon.figura.math.newmatrix.FiguraMat3;
+import org.moon.figura.math.newvector.*;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
@@ -15,13 +15,25 @@ import java.util.Locale;
 
 public class MathUtils {
 
+    @Deprecated
+    public static Object oldSizedVector(double... vals) {
+        return switch (vals.length) {
+            case 2 -> org.moon.figura.math.vector.FiguraVec2.of(vals[0], vals[1]);
+            case 3 -> org.moon.figura.math.vector.FiguraVec3.of(vals[0], vals[1], vals[2]);
+            case 4 -> org.moon.figura.math.vector.FiguraVec4.of(vals[0], vals[1], vals[2], vals[3]);
+            case 5 -> org.moon.figura.math.vector.FiguraVec5.of(vals[0], vals[1], vals[2], vals[3], vals[4]);
+            case 6 -> org.moon.figura.math.vector.FiguraVec6.of(vals[0], vals[1], vals[2], vals[3], vals[4], vals[5]);
+            default -> throw new IllegalStateException("Cannot create vector of size: " + vals.length);
+        };
+    }
+
     public static Object sizedVector(double... vals) {
         return switch (vals.length) {
             case 2 -> FiguraVec2.of(vals[0], vals[1]);
             case 3 -> FiguraVec3.of(vals[0], vals[1], vals[2]);
             case 4 -> FiguraVec4.of(vals[0], vals[1], vals[2], vals[3]);
             case 5 -> FiguraVec5.of(vals[0], vals[1], vals[2], vals[3], vals[4]);
-            case 6 -> FiguraVec6.of(vals[0], vals[1], vals[2], vals[3], vals[4], vals[5]);
+            case 6 -> org.moon.figura.math.newvector.FiguraVec6.of(vals[0], vals[1], vals[2], vals[3], vals[4], vals[5]);
             default -> throw new IllegalStateException("Cannot create vector of size: " + vals.length);
         };
     }
@@ -59,7 +71,7 @@ public class MathUtils {
 
         FiguraVec3 ret = vec.copy();
         ret.subtract(pos.x, pos.y, pos.z);
-        ret.multiply(transformMatrix);
+        ret.transform(transformMatrix);
         ret.multiply(-1, 1, 1);
 
         transformMatrix.free();

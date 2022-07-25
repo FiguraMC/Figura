@@ -80,7 +80,7 @@ public class SoundAPI {
                 loop = (boolean) w;
             }
         } else if (x == null || x instanceof Double) {
-            pos = LuaUtils.parseVec3("playSound", x, y, z);
+            pos = LuaUtils.oldParseVec3("playSound", x, y, z);
             if (w != null) {
                 if (!(w instanceof Double))
                     throw new LuaRuntimeException("Illegal argument to playSound(): " + w);

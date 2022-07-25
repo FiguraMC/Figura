@@ -120,7 +120,7 @@ public class MatricesAPI {
             description = "matrices.rotation3"
     )
     public static FiguraMat3 rotation3(Object x, Double y, Double z) {
-        FiguraVec3 angles = LuaUtils.parseVec3("rotation3", x, y, z);
+        FiguraVec3 angles = LuaUtils.oldParseVec3("rotation3", x, y, z);
         FiguraMat3 result = FiguraMat3.createZYXRotationMatrix(angles.x, angles.y, angles.z);
         angles.free();
         return result;
@@ -177,7 +177,7 @@ public class MatricesAPI {
             description = "matrices.rotation4"
     )
     public static FiguraMat4 rotation4(Object x, Double y, Double z) {
-        FiguraVec3 angles = LuaUtils.parseVec3("rotation4", x, y, z);
+        FiguraVec3 angles = LuaUtils.oldParseVec3("rotation4", x, y, z);
         FiguraMat4 result = FiguraMat4.createZYXRotationMatrix(angles.x, angles.y, angles.z);
         angles.free();
         return result;
@@ -235,7 +235,7 @@ public class MatricesAPI {
             description = "matrices.scale2"
     )
     public static FiguraMat2 scale2(Object x, Double y) {
-        FiguraVec2 vec = LuaUtils.parseVec2("scale2", x, y, 1, 1);
+        FiguraVec2 vec = LuaUtils.oldParseVec2("scale2", x, y, 1, 1);
         FiguraMat2 result = FiguraMat2.createScaleMatrix(vec.x, vec.y);
         vec.free();
         return result;
@@ -256,7 +256,7 @@ public class MatricesAPI {
             description = "matrices.scale3"
     )
     public static FiguraMat3 scale3(Object x, Double y, Double z) {
-        FiguraVec3 scale = LuaUtils.parseVec3("scale3", x, y, z, 1, 1, 1);
+        FiguraVec3 scale = LuaUtils.oldParseVec3("scale3", x, y, z, 1, 1, 1);
         FiguraMat3 result = FiguraMat3.createScaleMatrix(scale.x, scale.y, scale.z);
         scale.free();
         return result;
@@ -277,7 +277,7 @@ public class MatricesAPI {
             description = "matrices.scale4"
     )
     public static FiguraMat4 scale4(Object x, Double y, Double z) {
-        FiguraVec3 scale = LuaUtils.parseVec3("scale4", x, y, z, 1, 1, 1);
+        FiguraVec3 scale = LuaUtils.oldParseVec3("scale4", x, y, z, 1, 1, 1);
         FiguraMat4 result = FiguraMat4.createScaleMatrix(scale.x, scale.y, scale.z);
         scale.free();
         return result;
@@ -299,7 +299,7 @@ public class MatricesAPI {
             description = "matrices.translate3"
     )
     public static FiguraMat3 translate3(Object x, Double y) {
-        FiguraVec2 offset = LuaUtils.parseVec2("translate3", x, y);
+        FiguraVec2 offset = LuaUtils.oldParseVec2("translate3", x, y);
         FiguraMat3 result = FiguraMat3.createTranslationMatrix(offset.x, offset.y);
         offset.free();
         return result;
@@ -319,7 +319,7 @@ public class MatricesAPI {
             description = "matrices.translate4"
     )
     public static FiguraMat4 translate4(Object x, Double y, Double z) {
-        FiguraVec3 offset = LuaUtils.parseVec3("translate4", x, y, z);
+        FiguraVec3 offset = LuaUtils.oldParseVec3("translate4", x, y, z);
         FiguraMat4 result = FiguraMat4.createTranslationMatrix(offset.x, offset.y, offset.z);
         offset.free();
         return result;

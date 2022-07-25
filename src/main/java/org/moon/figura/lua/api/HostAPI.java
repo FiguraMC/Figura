@@ -92,7 +92,7 @@ public class HostAPI {
     )
     public static void setTitleTimes(@LuaNotNil HostAPI api, Object x, Double y, Double z) {
         if (!isHost(api)) return;
-        FiguraVec3 times = LuaUtils.parseVec3("setTitleTimes", x, y, z);
+        FiguraVec3 times = LuaUtils.oldParseVec3("setTitleTimes", x, y, z);
         api.minecraft.gui.setTimes((int) times.x, (int) times.y, (int) times.z);
     }
 
@@ -231,7 +231,7 @@ public class HostAPI {
     )
     public static void setChatColor(@LuaNotNil HostAPI api, Object x, Double y, Double z) {
         if (isHost(api))
-            api.chatColor = x == null ? null : ColorUtils.rgbToInt(LuaUtils.parseVec3("setChatColor", x, y, z));
+            api.chatColor = x == null ? null : ColorUtils.rgbToInt(LuaUtils.oldParseVec3("setChatColor", x, y, z));
     }
 
     @LuaWhitelist
