@@ -239,7 +239,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         ((PoseStackAccessor) matrices).addPose(stack.last());
 
         List<PoseStack> list = this.pivotCustomizations.get(parentType);
-        if (list == null) list = new ArrayList<>();
+        if (list == null) list = new ArrayList<>(1);
 
         list.add(matrices);
         this.pivotCustomizations.put(parentType, list);

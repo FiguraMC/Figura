@@ -42,7 +42,7 @@ public abstract class ItemInHandLayerMixin<T extends LivingEntity, M extends Ent
 
         //pivot part
         if (avatar.renderer != null) {
-            List<PoseStack> list = avatar.renderer.pivotCustomizations.remove(left ? ParentType.LeftItemPivot : ParentType.RightItemPivot);
+            List<PoseStack> list = avatar.renderer.pivotCustomizations.get(left ? ParentType.LeftItemPivot : ParentType.RightItemPivot);
             if (list != null && !list.isEmpty()) {
                 for (PoseStack stack : list) {
                     stack.scale(16, 16, 16);

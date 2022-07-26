@@ -15,6 +15,7 @@ import org.moon.figura.ducks.PlayerModelAccessor;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -26,9 +27,12 @@ public abstract class CapeLayerMixin extends RenderLayer<AbstractClientPlayer, P
         super(renderLayerParent);
     }
 
-    @Inject(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/player/AbstractClientPlayer;FFFFFF)V", at = @At("HEAD"), cancellable = true)
+    @Unique
+    private Avatar avatar;
+
+    @Inject(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/player/AbstractClientPlayer;FFFFFF)V", at = @At("HEAD"))
     public void preRender(PoseStack poseStack, MultiBufferSource multiBufferSource, int i, AbstractClientPlayer abstractClientPlayer, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
-        Avatar avatar = AvatarManager.getAvatar(abstractClientPlayer);
+        avatar = AvatarManager.getAvatar(abstractClientPlayer);
         if (avatar == null || avatar.luaState == null)
             return;
 
@@ -90,11 +94,12 @@ public abstract class CapeLayerMixin extends RenderLayer<AbstractClientPlayer, P
 
     @Inject(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/player/AbstractClientPlayer;FFFFFF)V", at = @At("TAIL"))
     public void postRender(PoseStack poseStack, MultiBufferSource multiBufferSource, int i, AbstractClientPlayer abstractClientPlayer, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
-        Avatar avatar = AvatarManager.getAvatar(abstractClientPlayer);
-        if (avatar == null || avatar.luaState == null)
+        if (avatar == null)
             return;
 
-        avatar.luaState.vanillaModel.CAPE.restore(getParentModel());
-    }
+        if (avatar.luaState != null)
+            avatar.luaState.vanillaModel.CAPE.restore(getParentModel());
 
+        avatar = null;
+    }
 }

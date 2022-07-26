@@ -57,7 +57,7 @@ public abstract class PlayerItemInHandLayerMixin <T extends Player, M extends En
 
         //pivot part
         if (avatar.renderer != null) {
-            List<PoseStack> list = avatar.renderer.pivotCustomizations.remove(left ? ParentType.LeftSpyglassPivot : ParentType.RightSpyglassPivot);
+            List<PoseStack> list = avatar.renderer.pivotCustomizations.get(left ? ParentType.LeftSpyglassPivot : ParentType.RightSpyglassPivot);
             if (list != null && !list.isEmpty()) {
                 for (PoseStack stack : list) {
                     //spyglass code is weird - might need a fix, however it will break with non-humanoid avatars
