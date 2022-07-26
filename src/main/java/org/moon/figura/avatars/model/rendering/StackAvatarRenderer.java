@@ -21,6 +21,9 @@ public class StackAvatarRenderer extends ImmediateAvatarRenderer {
 
     @Override
     protected void commonRender(double vertOffset) {
+        //clear pivot list
+        pivotCustomizations.clear();
+
         //setup root customizations
         matrices.pushPose();
         PartCustomization customization = setupRootCustomization(vertOffset);

@@ -87,6 +87,9 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
     }
 
     protected void commonRender(double vertOffset) {
+        //clear pivot list
+        pivotCustomizations.clear();
+
         //Push position and normal matrices
         PartCustomization customization = setupRootCustomization(vertOffset);
 
