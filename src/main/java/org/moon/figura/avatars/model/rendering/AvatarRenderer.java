@@ -46,6 +46,7 @@ public abstract class AvatarRenderer {
     public HashMap<ParentType, List<PoseStack>> pivotCustomizations = new HashMap<>();
     protected static int shouldRenderPivots;
     public boolean allowHiddenTransforms = true;
+    public boolean allowRenderTasks = true;
 
     public AvatarRenderer(Avatar avatar) {
         this.avatar = avatar;

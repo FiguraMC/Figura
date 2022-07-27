@@ -2,6 +2,7 @@ package org.moon.figura.avatars;
 
 import com.mojang.blaze3d.audio.OggAudioStream;
 import com.mojang.blaze3d.audio.SoundBuffer;
+import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
 import net.minecraft.client.Camera;
@@ -12,6 +13,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtIo;
@@ -22,6 +24,7 @@ import net.minecraft.world.phys.Vec3;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.animation.Animation;
 import org.moon.figura.animation.AnimationPlayer;
+import org.moon.figura.avatars.model.ParentType;
 import org.moon.figura.avatars.model.rendering.AvatarRenderer;
 import org.moon.figura.avatars.model.rendering.PartFilterScheme;
 import org.moon.figura.avatars.model.rendering.StackAvatarRenderer;
@@ -42,6 +45,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 //the avatar class
 //contains all things related to the avatar
@@ -362,12 +366,80 @@ public class Avatar {
         renderer.matrices = stack;
         renderer.bufferSource = bufferSource;
 
+        Lighting.setupForFlatItems();
+
         stack.pushPose();
         stack.scale(16, 16, -16);
         renderer.renderSpecialParts();
         stack.popPose();
 
+        Lighting.setupFor3DItems();
+
         //renderer.allowMatrixUpdate = false;
+    }
+
+    public boolean skullRender(PoseStack stack, MultiBufferSource bufferSource, int light, Direction direction, float yaw) {
+        if (renderer == null)
+            return false;
+
+        int prevComplexity = remainingComplexity;
+
+        renderer.allowRenderTasks = false;
+        renderer.currentFilterScheme = PartFilterScheme.SKULL;
+        renderer.tickDelta = 1f;
+        renderer.overlay = OverlayTexture.NO_OVERLAY;
+        renderer.light = light;
+        renderer.alpha = 1f;
+        renderer.matrices = stack;
+        renderer.bufferSource = bufferSource;
+
+        stack.pushPose();
+
+        if (direction == null)
+            stack.translate(0.5d, 0d, 0.5d);
+        else
+            stack.translate((0.5d - direction.getStepX() * 0.25d), 0.25d, (0.5d - direction.getStepZ() * 0.25d));
+
+        stack.scale(-1f, -1f, 1f);
+        stack.mulPose(Vector3f.YP.rotationDegrees(yaw));
+
+        renderer.renderSpecialParts();
+
+        //hacky
+        if (prevComplexity > remainingComplexity) {
+            renderer.allowRenderTasks = true;
+            stack.popPose();
+            return true;
+        }
+
+        //otherwise render head parts
+        stack.translate(0d, 24d / 16d, 0d);
+        renderer.allowHiddenTransforms = false;
+        renderer.allowRenderTasks = false;
+        renderer.currentFilterScheme = PartFilterScheme.HEAD;
+        renderer.renderSpecialParts();
+
+        renderer.allowHiddenTransforms = true;
+        renderer.allowRenderTasks = true;
+
+        //hacky 2
+        stack.popPose();
+        return prevComplexity > remainingComplexity && luaState != null && !luaState.vanillaModel.HEAD.isVisible();
+    }
+
+    public boolean pivotPartRender(ParentType parent, Consumer<PoseStack> consumer) {
+        if (renderer == null || !ParentType.PIVOT_PARTS.contains(parent))
+            return false;
+
+        List<PoseStack> list = renderer.pivotCustomizations.get(parent);
+        if (list == null || list.isEmpty())
+            return false;
+
+        for (PoseStack stack : list)
+            consumer.accept(stack);
+
+        list.clear();
+        return true;
     }
 
     // -- animations -- //

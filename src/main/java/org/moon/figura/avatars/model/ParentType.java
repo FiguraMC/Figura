@@ -21,8 +21,8 @@ public enum ParentType {
 
     World("WORLD"),
     Hud("HUD", "Gui", "GUI"),
-
     Camera("CAMERA"),
+    Skull("SKULL"),
 
     LeftItemPivot("LEFT_ITEM_PIVOT"),
     RightItemPivot("RIGHT_ITEM_PIVOT"),
@@ -33,7 +33,7 @@ public enum ParentType {
     public final VanillaModelProvider provider;
     public final FiguraVec3 offset;
     public final String[] aliases;
-    public static final Set<ParentType> SPECIAL_PARTS = Set.of(World, Hud);
+    public static final Set<ParentType> SPECIAL_PARTS = Set.of(World, Hud, Skull);
     public static final Set<ParentType> PIVOT_PARTS = Set.of(
             LeftItemPivot, RightItemPivot,
             LeftSpyglassPivot, RightSpyglassPivot,

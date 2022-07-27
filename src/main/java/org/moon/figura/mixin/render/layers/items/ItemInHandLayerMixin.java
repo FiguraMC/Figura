@@ -2,11 +2,14 @@ package org.moon.figura.mixin.render.layers.items;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
+import net.minecraft.client.model.ArmedModel;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
+import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -22,10 +25,12 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.List;
-
 @Mixin(ItemInHandLayer.class)
-public abstract class ItemInHandLayerMixin<T extends LivingEntity, M extends EntityModel<T>> {
+public abstract class ItemInHandLayerMixin<T extends LivingEntity, M extends EntityModel<T> & ArmedModel> extends RenderLayer<T, M> {
+
+    public ItemInHandLayerMixin(RenderLayerParent<T, M> renderLayerParent) {
+        super(renderLayerParent);
+    }
 
     @Shadow @Final private ItemInHandRenderer itemInHandRenderer;
 
@@ -50,17 +55,13 @@ public abstract class ItemInHandLayerMixin<T extends LivingEntity, M extends Ent
         }
 
         //pivot part
-        if (avatar.renderer != null) {
-            List<PoseStack> list = avatar.renderer.pivotCustomizations.get(left ? ParentType.LeftItemPivot : ParentType.RightItemPivot);
-            if (list != null && !list.isEmpty()) {
-                for (PoseStack stack : list) {
-                    stack.scale(16, 16, 16);
-                    stack.mulPose(Vector3f.XP.rotationDegrees(-90f));
-                    this.itemInHandRenderer.renderItem(livingEntity, itemStack, transformType, left, stack, multiBufferSource, i);
-                }
-                list.clear();
-                ci.cancel();
-            }
+        if (avatar.pivotPartRender(left ? ParentType.LeftItemPivot : ParentType.RightItemPivot, stack -> {
+            float s = 16f;
+            stack.scale(s, s, s);
+            stack.mulPose(Vector3f.XP.rotationDegrees(-90f));
+            this.itemInHandRenderer.renderItem(livingEntity, itemStack, transformType, left, stack, multiBufferSource, i);
+        })) {
+            ci.cancel();
         }
     }
 }

@@ -152,11 +152,13 @@ public class StackAvatarRenderer extends ImmediateAvatarRenderer {
                 renderPivot(part, matrices);
 
             if (peek.visible) {
-                //render tasks
-                int light = peek.light;
-                int overlay = peek.overlay;
-                for (RenderTask task : part.renderTasks.values())
-                    task.render(matrices, bufferSource, light, overlay);
+                if (allowRenderTasks) {
+                    //render tasks
+                    int light = peek.light;
+                    int overlay = peek.overlay;
+                    for (RenderTask task : part.renderTasks.values())
+                        task.render(matrices, bufferSource, light, overlay);
+                }
 
                 //render pivot parts
                 if (ParentType.PIVOT_PARTS.contains(part.parentType))

@@ -43,10 +43,10 @@ public abstract class FiguraDoc {
         return command;
     }
 
-    public JsonObject toJson() {
+    public JsonObject toJson(boolean translate) {
         JsonObject json = new JsonObject();
         json.addProperty("name", name);
-        json.addProperty("description", Language.getInstance().getOrDefault(FiguraText.of("docs." + description).getString()));
+        json.addProperty("description", translate ? Language.getInstance().getOrDefault(FiguraText.of("docs." + description).getString()) : FiguraMod.MOD_ID + "." + "docs." + description);
         return json;
     }
 
@@ -168,20 +168,20 @@ public abstract class FiguraDoc {
         }
 
         @Override
-        public JsonObject toJson() {
-            JsonObject json = super.toJson();
+        public JsonObject toJson(boolean translate) {
+            JsonObject json = super.toJson(translate);
 
             if (superclass != null)
                 json.addProperty("parent", FiguraDocsManager.NAME_MAP.getOrDefault(superclass, superclass.getName()));
 
             JsonArray methods = new JsonArray();
             for (FiguraDoc.MethodDoc methodDoc : documentedMethods)
-                methods.add(methodDoc.toJson());
+                methods.add(methodDoc.toJson(translate));
             json.add("methods", methods);
 
             JsonArray fields = new JsonArray();
             for (FiguraDoc.FieldDoc fieldDoc : documentedFields)
-                fields.add(fieldDoc.toJson());
+                fields.add(fieldDoc.toJson(translate));
             json.add("fields", fields);
 
             return json;
@@ -272,8 +272,8 @@ public abstract class FiguraDoc {
         }
 
         @Override
-        public JsonObject toJson() {
-            JsonObject json = super.toJson();
+        public JsonObject toJson(boolean translate) {
+            JsonObject json = super.toJson(translate);
 
             JsonArray params = new JsonArray();
             for (int i = 0; i < parameterNames.length; i++) {
@@ -343,8 +343,8 @@ public abstract class FiguraDoc {
         }
 
         @Override
-        public JsonObject toJson() {
-            JsonObject json = super.toJson();
+        public JsonObject toJson(boolean translate) {
+            JsonObject json = super.toJson(translate);
             json.addProperty("type", FiguraDocsManager.NAME_MAP.getOrDefault(this.type, this.type.getName()));
             json.addProperty("editable", this.editable);
             return json;

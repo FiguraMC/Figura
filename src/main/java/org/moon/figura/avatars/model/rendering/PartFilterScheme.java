@@ -8,7 +8,8 @@ public enum PartFilterScheme {
     HEAD(false, ParentType.Head),
     LEFT_ARM(false, ParentType.LeftArm),
     RIGHT_ARM(false, ParentType.RightArm),
-    HUD(false, ParentType.Hud, true);
+    HUD(false, ParentType.Hud, true),
+    SKULL(false, ParentType.Skull, true);
 
     public final boolean initialValue;
     public final ParentType parent;

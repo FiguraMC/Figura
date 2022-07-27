@@ -3,14 +3,20 @@ package org.moon.figura.lua.docs;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Style;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.animation.Animation;
 import org.moon.figura.avatars.model.FiguraModelPart;
-import org.moon.figura.avatars.model.rendertasks.*;
+import org.moon.figura.avatars.model.rendertasks.BlockTask;
+import org.moon.figura.avatars.model.rendertasks.ItemTask;
+import org.moon.figura.avatars.model.rendertasks.RenderTask;
+import org.moon.figura.avatars.model.rendertasks.TextTask;
 import org.moon.figura.gui.actionwheel.*;
 import org.moon.figura.lua.api.*;
 import org.moon.figura.lua.api.entity.EntityWrapper;
@@ -25,7 +31,6 @@ import org.moon.figura.lua.api.model.VanillaModelAPI;
 import org.moon.figura.lua.api.model.VanillaModelPart;
 import org.moon.figura.lua.api.nameplate.NameplateAPI;
 import org.moon.figura.lua.api.nameplate.NameplateCustomization;
-import org.moon.figura.lua.api.SoundAPI;
 import org.moon.figura.lua.api.world.BiomeWrapper;
 import org.moon.figura.lua.api.world.BlockStateWrapper;
 import org.moon.figura.lua.api.world.ItemStackWrapper;
@@ -224,40 +229,46 @@ public class FiguraDocsManager {
 
     public static LiteralArgumentBuilder<FabricClientCommandSource> getExportCommand() {
         LiteralArgumentBuilder<FabricClientCommandSource> root = LiteralArgumentBuilder.literal("export_docs");
-        root.executes(context -> {
-            try {
-                //get path
-                Path targetPath = FiguraMod.getFiguraDirectory().resolve("exported_docs.json");
+        root.executes(context -> exportDocsFunction(context, true));
 
-                //create file
-                if (!Files.exists(targetPath))
-                    Files.createFile(targetPath);
-
-                //write file
-                FileOutputStream fs = new FileOutputStream(targetPath.toFile());
-                fs.write(exportAsJsonString().getBytes());
-                fs.close();
-
-                //feedback
-                context.getSource().sendFeedback(
-                        FiguraText.of("command.docs_export.success")
-                                .append(" ")
-                                .append(FiguraText.of("command.click_to_open")
-                                        .setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, targetPath.toFile().toString())).withUnderlined(true))
-                                )
-                );
-                return 1;
-            } catch (Exception e) {
-                context.getSource().sendError(FiguraText.of("command.docs_export.error"));
-                FiguraMod.LOGGER.error("Failed to export docs!", e);
-                return 0;
-            }
-        });
+        RequiredArgumentBuilder<FabricClientCommandSource, Boolean> e = RequiredArgumentBuilder.argument("translate", BoolArgumentType.bool());
+        e.executes(context -> exportDocsFunction(context, BoolArgumentType.getBool(context, "translate")));
+        root.then(e);
 
         return root;
     }
 
-    public static String exportAsJsonString() {
+    private static int exportDocsFunction(CommandContext<FabricClientCommandSource> context, boolean translate) {
+        try {
+            //get path
+            Path targetPath = FiguraMod.getFiguraDirectory().resolve("exported_docs.json");
+
+            //create file
+            if (!Files.exists(targetPath))
+                Files.createFile(targetPath);
+
+            //write file
+            FileOutputStream fs = new FileOutputStream(targetPath.toFile());
+            fs.write(exportAsJsonString(translate).getBytes());
+            fs.close();
+
+            //feedback
+            context.getSource().sendFeedback(
+                    FiguraText.of("command.docs_export.success")
+                            .append(" ")
+                            .append(FiguraText.of("command.click_to_open")
+                                    .setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, targetPath.toFile().toString())).withUnderlined(true))
+                            )
+            );
+            return 1;
+        } catch (Exception e) {
+            context.getSource().sendError(FiguraText.of("command.docs_export.error"));
+            FiguraMod.LOGGER.error("Failed to export docs!", e);
+            return 0;
+        }
+    }
+
+    public static String exportAsJsonString(boolean translate) {
         //root
         JsonObject root = new JsonObject();
 
@@ -265,13 +276,13 @@ public class FiguraDocsManager {
         for (Map.Entry<String, List<FiguraDoc.ClassDoc>> entry : GENERATED_CLASS_DOCS.entrySet()) {
             JsonArray group = new JsonArray();
             for (FiguraDoc.ClassDoc classDoc : entry.getValue())
-                group.add(classDoc.toJson());
+                group.add(classDoc.toJson(translate));
 
             root.add(entry.getKey(), group);
         }
 
         //lists
-        root.add("lists", FiguraListDocs.toJson());
+        root.add("lists", FiguraListDocs.toJson(translate));
 
         //return as string
         return new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create().toJson(root);

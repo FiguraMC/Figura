@@ -26,8 +26,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.List;
-
 /**
  * This class only exists because of spyglass jank.
  * Has literally the exact same code as ItemInHandLayerMixin, just for the spyglass specifically.
@@ -65,18 +63,14 @@ public abstract class PlayerItemInHandLayerMixin <T extends Player, M extends En
         }
 
         //pivot part
-        if (avatar.renderer != null) {
-            List<PoseStack> list = avatar.renderer.pivotCustomizations.get(left ? ParentType.LeftSpyglassPivot : ParentType.RightSpyglassPivot);
-            if (list != null && !list.isEmpty()) {
-                for (PoseStack stack : list) {
-                    //spyglass code is weird - might need a fix, however it will break with non-humanoid avatars
-                    stack.scale(10f, 10f, 10f);
-                    stack.translate(0, 0, 7 / 16f);
-                    this.itemInHandRenderer.renderItem(livingEntity, itemStack, ItemTransforms.TransformType.HEAD, false, stack, multiBufferSource, i);
-                }
-                list.clear();
-                ci.cancel();
-            }
+        if (avatar.pivotPartRender(left ? ParentType.LeftSpyglassPivot : ParentType.RightSpyglassPivot, stack -> {
+            //spyglass code is weird - might need a fix, however it will break with non-humanoid avatars
+            float s = 10f;
+            stack.scale(s, s, s);
+            stack.translate(0, 0, 7 / 16f);
+            this.itemInHandRenderer.renderItem(livingEntity, itemStack, ItemTransforms.TransformType.HEAD, false, stack, multiBufferSource, i);
+        })) {
+            ci.cancel();
         }
     }
 }

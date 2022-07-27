@@ -103,12 +103,12 @@ public class FiguraListDocs {
             this.split = split;
         }
 
-        private JsonElement generateJson() {
+        private JsonElement generateJson(boolean translate) {
             JsonObject object = new JsonObject();
 
             //list properties
             object.addProperty("name", name);
-            object.addProperty("description", Language.getInstance().getOrDefault(FiguraText.of("docs.list." + id).getString()));
+            object.addProperty("description", translate ? Language.getInstance().getOrDefault(FiguraText.of("docs.list." + id).getString()) : FiguraMod.MOD_ID + "." + "docs.list." + id);
 
             //list entries
             LinkedHashSet<?> coll = supplier.get();
@@ -205,10 +205,10 @@ public class FiguraListDocs {
         return root;
     }
 
-    public static JsonElement toJson() {
+    public static JsonElement toJson(boolean translate) {
         JsonArray array = new JsonArray();
         for (ListDoc value : ListDoc.values())
-            array.add(value.generateJson());
+            array.add(value.generateJson(translate));
         return array;
     }
 }

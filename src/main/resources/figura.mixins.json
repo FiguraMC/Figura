@@ -44,9 +44,10 @@
     "render.layers.items.PlayerItemInHandLayerMixin",
 
     "render.renderers.EntityRendererMixin",
+    "render.renderers.LevelRendererMixin",
     "render.renderers.LivingEntityRendererMixin",
     "render.renderers.PlayerRendererMixin",
-    "render.renderers.LevelRendererMixin",
+    "render.renderers.SkullBlockRendererMixin",
 
     "sound.ChannelHandleMixin",
     "sound.SoundEngineMixin",
