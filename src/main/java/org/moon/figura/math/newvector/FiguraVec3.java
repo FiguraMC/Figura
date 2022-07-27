@@ -1,6 +1,7 @@
 package org.moon.figura.math.newvector;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
 import org.luaj.vm2.LuaDouble;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
@@ -349,6 +350,10 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
 
     public BlockPos asBlockPos() {
         return new BlockPos(x, y, z);
+    }
+
+    public static FiguraVec3 fromVec3(Vec3 vec) {
+        return of(vec.x, vec.y, vec.z);
     }
 
     /*

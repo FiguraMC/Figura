@@ -1,7 +1,9 @@
 package org.moon.figura.newlua;
 
 import org.luaj.vm2.*;
-import org.luaj.vm2.lib.*;
+import org.luaj.vm2.lib.OneArgFunction;
+import org.luaj.vm2.lib.TwoArgFunction;
+import org.luaj.vm2.lib.VarArgFunction;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
