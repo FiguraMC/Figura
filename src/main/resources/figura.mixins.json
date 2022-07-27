@@ -33,6 +33,7 @@
     "render.PoseStackMixin",
 
     "render.layers.CapeLayerMixin",
+    "render.layers.CustomHeadLayerMixin",
     "render.layers.HumanoidArmorLayerMixin",
 
     "render.layers.elytra.ElytraLayerAccessor",

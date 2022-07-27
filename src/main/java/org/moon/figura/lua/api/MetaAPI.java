@@ -67,7 +67,8 @@ public class MetaAPI {
     )
     public static void setColor(@LuaNotNil MetaAPI api, @LuaNotNil Object r, Double g, Double b) {
         FiguraVec3 vec = LuaUtils.oldParseVec3("setColor", r, g, b, 1, 1, 1);
-        api.avatar.color = Integer.toHexString(ColorUtils.rgbToInt(vec));
+        String color = Integer.toHexString(ColorUtils.rgbToInt(vec));
+        api.avatar.color = "0".repeat(Math.max(6 - color.length(), 0)) + color;
         vec.free();
     }
 

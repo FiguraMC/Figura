@@ -3,6 +3,7 @@ package org.moon.figura.lua.docs;
 import org.moon.figura.avatars.model.FiguraModelPart;
 import org.moon.figura.lua.api.*;
 import org.moon.figura.lua.api.entity.PlayerEntityWrapper;
+import org.moon.figura.lua.api.keybind.KeybindAPI;
 import org.moon.figura.lua.api.math.MatricesAPI;
 import org.moon.figura.lua.api.math.VectorsAPI;
 import org.moon.figura.lua.api.model.VanillaModelAPI;
@@ -52,6 +53,14 @@ public abstract class FiguraGlobalsDocs {
     public ActionWheelAPI action_wheel;
     @LuaFieldDoc(description = "globals.animations")
     public LuaTable animations;
+    @LuaFieldDoc(description = "globals.host")
+    public HostAPI host;
+    @LuaFieldDoc(description = "globals.meta")
+    public MetaAPI meta;
+    @LuaFieldDoc(description = "globals.renderer")
+    public RendererAPI renderer;
+    @LuaFieldDoc(description = "globals.keybind")
+    public KeybindAPI keybind;
 
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(

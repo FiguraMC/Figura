@@ -55,6 +55,15 @@ public abstract class PlayerItemInHandLayerMixin <T extends Player, M extends En
 
         boolean left = humanoidArm == HumanoidArm.LEFT;
 
+        //script hide
+        if (avatar.luaState != null &&
+                (left && !avatar.luaState.vanillaModel.LEFT_ITEM.isVisible() ||
+                !left && !avatar.luaState.vanillaModel.RIGHT_ITEM.isVisible()
+        )) {
+            ci.cancel();
+            return;
+        }
+
         //pivot part
         if (avatar.renderer != null) {
             List<PoseStack> list = avatar.renderer.pivotCustomizations.get(left ? ParentType.LeftSpyglassPivot : ParentType.RightSpyglassPivot);
@@ -67,16 +76,7 @@ public abstract class PlayerItemInHandLayerMixin <T extends Player, M extends En
                 }
                 list.clear();
                 ci.cancel();
-                return;
             }
-        }
-
-        //vanilla part (script)
-        if (avatar.luaState != null &&
-                (left && !avatar.luaState.vanillaModel.LEFT_ITEM.isVisible() ||
-                !left && !avatar.luaState.vanillaModel.RIGHT_ITEM.isVisible())
-        ) {
-            ci.cancel();
         }
     }
 }

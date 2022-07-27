@@ -334,6 +334,10 @@
   "figura.docs.globals.log_table": "An alias for printTable().",
   "figura.docs.globals.print_json": "Takes a Minecraft json string as an argument, and prints it to the chat formatted.",
   "figura.docs.globals.log_json": "An alias for printJson().",
+  "figura.docs.globals.host": "The global instance of HostAPI.",
+  "figura.docs.globals.meta": "The global instance of MetaAPI.",
+  "figura.docs.globals.renderer": "The global instance of RendererAPI.",
+  "figura.docs.globals.keybind": "The global instance of KeybindAPI.",
 
   "figura.docs.math": "Contains functions which Figura adds to the default Lua \"math\" library table.",
   "figura.docs.math.lerp": "Linearly interpolates from its first argument to its second argument, with the third argument as the parameter. Works on both regular numbers and vectors.",
@@ -612,6 +616,7 @@
   "figura.docs.vanilla_model.cape_model": "The vanilla cape model.",
   "figura.docs.vanilla_model.fake_cape": "A custom copy of the cape, as attempt of storing its transformations since vanilla cape math is... weird.",
   "figura.docs.vanilla_model.helmet": "Multi-part: The helmet model.",
+  "figura.docs.vanilla_model.helmet_item": "The item on the armor head slot.",
   "figura.docs.vanilla_model.helmet_head": "The head of the helmet model.",
   "figura.docs.vanilla_model.helmet_hat": "The hat of the helmet model.",
   "figura.docs.vanilla_model.chestplate": "Multi-part: The chestplate model.",

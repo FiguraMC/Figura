@@ -69,6 +69,10 @@ public class VanillaModelAPI {
     // -- armor -- //
 
     @LuaWhitelist
+    @LuaFieldDoc(description = "vanilla_model.helmet_item")
+    public final VanillaModelPart HELMET_ITEM;
+
+    @LuaWhitelist
     @LuaFieldDoc(description = "vanilla_model.helmet_head")
     public final VanillaModelPart HELMET_HEAD;
     @LuaWhitelist
@@ -191,6 +195,8 @@ public class VanillaModelAPI {
 
         // -- armor -- //
 
+        HELMET_ITEM = new VanillaModelPart("HELMET_ITEM", ParentType.Head, VanillaModelProvider.HEAD.func);
+
         HELMET_HEAD = new VanillaModelPart("HELMET_HEAD", ParentType.Head, VanillaModelProvider.HEAD.func);
         HELMET_HAT = new VanillaModelPart("HELMET_HAT", ParentType.Head, VanillaModelProvider.HAT.func);
 
@@ -225,7 +231,7 @@ public class VanillaModelAPI {
 
         CAPE = new VanillaGroupPart("CAPE", CAPE_MODEL, FAKE_CAPE);
 
-        HELMET = new VanillaGroupPart("HELMET", HELMET_HEAD, HELMET_HAT);
+        HELMET = new VanillaGroupPart("HELMET", HELMET_ITEM, HELMET_HEAD, HELMET_HAT);
         CHESTPLATE = new VanillaGroupPart("CHESTPLATE", CHESTPLATE_BODY, CHESTPLATE_LEFT_ARM, CHESTPLATE_RIGHT_ARM);
         LEGGINGS = new VanillaGroupPart("LEGGINGS", LEGGINGS_BODY, LEGGINGS_LEFT_LEG, LEGGINGS_RIGHT_LEG);
         BOOTS = new VanillaGroupPart("BOOTS", BOOTS_LEFT_LEG, BOOTS_RIGHT_LEG);
@@ -245,7 +251,7 @@ public class VanillaModelAPI {
 
                     "CAPE_MODEL", "FAKE_CAPE",
 
-                    "HELMET_HEAD", "HELMET_HAT",
+                    "HELMET_ITEM", "HELMET_HEAD", "HELMET_HAT",
                     "CHESTPLATE_BODY", "CHESTPLATE_LEFT_ARM", "CHESTPLATE_RIGHT_ARM",
                     "LEGGINGS_BODY", "LEGGINGS_LEFT_LEG", "LEGGINGS_RIGHT_LEG",
                     "BOOTS_LEFT_LEG", "BOOTS_RIGHT_LEG",
