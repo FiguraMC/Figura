@@ -53,8 +53,6 @@ public abstract class FiguraDoc {
     // -- Special prints :p -- //
 
     public static int printGroup(String name) {
-        String capitalised = name.substring(0,1).toUpperCase() + name.substring(1).toLowerCase();
-
         FiguraMod.sendChatMessage(HEADER.copy()
                 .append("\n\n")
                 .append(Component.literal("• ")
@@ -62,7 +60,9 @@ public abstract class FiguraDoc {
                         .append(":")
                         .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
                 .append("\n\t")
-                .append(Component.literal(capitalised).withStyle(ColorUtils.Colors.MAYA_BLUE.style))
+                .append(Component.literal("• ")
+                        .append(Component.literal(name))
+                        .withStyle(ColorUtils.Colors.MAYA_BLUE.style))
 
                 .append("\n\n")
                 .append(Component.literal("• ")
@@ -72,7 +72,8 @@ public abstract class FiguraDoc {
                 .append("\n\t")
                 .append(Component.literal("• ")
                         .append(FiguraText.of("docs.group." + name))
-                        .withStyle(ColorUtils.Colors.MAYA_BLUE.style)));
+                        .withStyle(ColorUtils.Colors.MAYA_BLUE.style))
+        );
 
         return 1;
     }
@@ -81,6 +82,32 @@ public abstract class FiguraDoc {
         FiguraMod.sendChatMessage(HEADER.copy()
                 .append("\n\n")
                 .append(FiguraText.of("docs").withStyle(ColorUtils.Colors.MAYA_BLUE.style)));
+
+        return 1;
+    }
+
+    public static int printTypesRoot() {
+        FiguraMod.sendChatMessage(HEADER.copy()
+                .append("\n\n")
+                .append(Component.literal("• ")
+                        .append(FiguraText.of("docs.text.type"))
+                        .append(":")
+                        .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
+                .append("\n\t")
+                .append(Component.literal("• ")
+                        .append(Component.literal("types"))
+                        .withStyle(ColorUtils.Colors.MAYA_BLUE.style))
+
+                .append("\n\n")
+                .append(Component.literal("• ")
+                        .append(FiguraText.of("docs.text.description"))
+                        .append(":")
+                        .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
+                .append("\n\t")
+                .append(Component.literal("• ")
+                        .append(FiguraText.of("docs.group"))
+                        .withStyle(ColorUtils.Colors.MAYA_BLUE.style))
+        );
 
         return 1;
     }

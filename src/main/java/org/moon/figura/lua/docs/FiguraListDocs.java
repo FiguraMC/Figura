@@ -189,11 +189,22 @@ public class FiguraListDocs {
             FiguraMod.sendChatMessage(FiguraDoc.HEADER.copy()
                     .append("\n\n")
                     .append(Component.literal("• ")
+                            .append(FiguraText.of("docs.text.type"))
+                            .append(":")
+                            .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
+                    .append("\n\t")
+                    .append(Component.literal("• ")
+                            .append(Component.literal("lists"))
+                            .withStyle(ColorUtils.Colors.MAYA_BLUE.style))
+
+                    .append("\n\n")
+                    .append(Component.literal("• ")
                             .append(FiguraText.of("docs.text.description"))
                             .append(":")
                             .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
                     .append("\n\t")
-                    .append(FiguraText.of("docs.group.lists")
+                    .append(Component.literal("• ")
+                            .append(FiguraText.of("docs.list"))
                             .withStyle(ColorUtils.Colors.MAYA_BLUE.style))
             );
             return 1;
