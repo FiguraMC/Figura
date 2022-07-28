@@ -175,9 +175,15 @@ public class LuaTypeManager {
     public LuaValue wrap(Object instance) {
         if (instance == null)
             return LuaValue.NIL;
-        LuaTable metatable = metatables.get(instance.getClass());
-        if (metatable == null)
-            throw new RuntimeException("Attempt to wrap illegal type " + instance.getClass().getName() + " (not registered in LuaTypeManager's \"metatables\" map)!");
+        Class<?> clazz = instance.getClass();
+        LuaTable metatable = metatables.get(clazz);
+        while (metatable == null) {
+            clazz = clazz.getSuperclass();
+            if (clazz == Object.class)
+                throw new RuntimeException("Attempt to wrap illegal type " + instance.getClass().getName() + " (not registered in LuaTypeManager's \"metatables\" map)!");
+            metatable = metatables.get(clazz);
+        }
+
         LuaUserdata result = new LuaUserdata(instance);
         result.setmetatable(metatable);
         return result;

@@ -1,9 +1,7 @@
 package org.moon.figura.newlua.api.event;
 
-import org.luaj.vm2.LuaError;
-import org.luaj.vm2.LuaFunction;
-import org.luaj.vm2.LuaTable;
-import org.luaj.vm2.ast.Str;
+import org.luaj.vm2.*;
+import org.luaj.vm2.lib.VarArgFunction;
 import org.moon.figura.newlua.LuaType;
 import org.moon.figura.newlua.LuaWhitelist;
 import org.moon.figura.newlua.docs.LuaFunctionOverload;
@@ -31,6 +29,7 @@ public class EventsAPI {
 
     //Unsure on how to do the docs for these fields. Maybe we keep the @LuaFieldDoc, just don't allow them to be
     //whitelisted and accessed automatically?
+    //Maybe in the __index comment we give a docs list of the events?
 
     public final LuaEvent TICK;
     public final LuaEvent WORLD_TICK;
@@ -68,6 +67,8 @@ public class EventsAPI {
     )
     public static class LuaEvent {
 
+        static long namesGenerated = 0;
+
         private static final int MAX_FUNCTIONS = 1000;
 
         LuaTable functionList = new LuaTable();
@@ -75,7 +76,7 @@ public class EventsAPI {
         LuaTable queuedFunctions = new LuaTable();
         LuaTable queuedNames = new LuaTable();
 
-        private void flushQueue() {
+        protected void flushQueue() {
             //Add all waiting functions from the queue
             int nQueued = queuedFunctions.rawlen();
             int nAdded = functionList.rawlen();
@@ -85,6 +86,43 @@ public class EventsAPI {
             }
             queuedNames = new LuaTable();
             queuedFunctions = new LuaTable();
+        }
+
+        //Calls all the functions in the order they were registered, using the given args for all calls.
+        public void call(Varargs args) {
+            flushQueue();
+            int len = functionList.rawlen();
+            for (int i = 1; i <= len; i++)
+                functionList.get(i).invoke(args);
+        }
+
+        //The result of one function is passed through to the next, repeatedly, eventually returning the result.
+        //Used for CHAT_SEND_MESSAGE.
+        public Varargs pipedCall(Varargs args) {
+            flushQueue();
+            int len = functionList.rawlen();
+            for (int i = 1; i <= len; i++)
+                args = functionList.get(i).invoke(args);
+            return args;
+        }
+
+        public void runOnce(LuaFunction predicate, LuaFunction toRun) {
+            //Hey, if users want to "abuse" this somehow, then go ahead.
+            //Very low chance of anyone randomly using this name anyway, and nothing bad even happens if they do use it intentionally.
+            final String uniqueName = "FIGURA_GENERATED_" + (namesGenerated++);
+            VarArgFunction wrappedInPredicate = new VarArgFunction() {
+                @Override
+                public Varargs invoke(Varargs args) {
+                    LuaValue predicateResult = predicate.invoke(args).arg1();
+                    Varargs result = LuaValue.NIL;
+                    if (predicateResult.toboolean()) {
+                        result = toRun.invoke(args);
+                        remove(uniqueName);
+                    }
+                    return result;
+                }
+            };
+            register(wrappedInPredicate, uniqueName);
         }
 
         @LuaWhitelist
@@ -160,5 +198,4 @@ public class EventsAPI {
         }
 
     }
-
 }
