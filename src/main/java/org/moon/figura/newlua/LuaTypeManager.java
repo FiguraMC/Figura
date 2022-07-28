@@ -32,31 +32,38 @@ public class LuaTypeManager {
         LuaTable metatable = new LuaTable();
 
         LuaTable indexTable = new LuaTable();
-        for (Method method : clazz.getMethods()) {
-            if (!method.isAnnotationPresent(LuaWhitelist.class)) {
-                continue;
-            }
-            String name = method.getName();
-            if (name.startsWith("__")) { //metamethods
-                if (name.equals("__index")) {
-                    //Custom __index implementation. First checks the regular __index table, and if it gets NIL, then calls the custom-defined __index function.
-                    metatable.set("__index", new TwoArgFunction() {
-                        final LuaFunction wrappedIndexer = getWrapper(method);
-                        @Override
-                        public LuaValue call(LuaValue arg1, LuaValue arg2) {
-                            LuaValue result = indexTable.get(arg2);
-                            if (result == LuaValue.NIL)
-                                result = wrappedIndexer.call(arg1, arg2);
-                            return result;
-                        }
-                    });
-                } else {
-                    metatable.set(name, getWrapper(method));
+        Class<?> currentClass = clazz;
+        while (currentClass.isAnnotationPresent(LuaType.class)) {
+            for (Method method : currentClass.getDeclaredMethods()) {
+                if (!method.isAnnotationPresent(LuaWhitelist.class)) {
+                    continue;
                 }
-            } else { //regular methods
-                indexTable.set(name, getWrapper(method));
+                String name = method.getName();
+                if (name.startsWith("__")) { //metamethods
+                    if (metatable.rawget(name) == LuaValue.NIL) { //Only add the most recently declared metamethod, in the most specific subclass.
+                        if (name.equals("__index")) {
+                            //Custom __index implementation. First checks the regular __index table, and if it gets NIL, then calls the custom-defined __index function.
+                            metatable.set("__index", new TwoArgFunction() {
+                                final LuaFunction wrappedIndexer = getWrapper(method);
+                                @Override
+                                public LuaValue call(LuaValue arg1, LuaValue arg2) {
+                                    LuaValue result = indexTable.get(arg2);
+                                    if (result == LuaValue.NIL)
+                                        result = wrappedIndexer.call(arg1, arg2);
+                                    return result;
+                                }
+                            });
+                        } else {
+                            metatable.set(name, getWrapper(method));
+                        }
+                    }
+                } else { //regular methods
+                    indexTable.set(name, getWrapper(method));
+                }
             }
+            currentClass = currentClass.getSuperclass();
         }
+
         if (metatable.rawget("__index") == LuaValue.NIL)
             metatable.set("__index", indexTable);
 
@@ -133,6 +140,7 @@ public class LuaTypeManager {
                             case "int" -> 0;
                             case "long" -> 0L;
                             case "float" -> 0f;
+                            case "boolean" -> false;
                             default -> null;
                         };
                     }

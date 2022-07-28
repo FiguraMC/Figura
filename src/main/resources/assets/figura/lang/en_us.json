@@ -730,7 +730,7 @@
   "figura.docs.event": "A hook for a certain event in Minecraft. You may register functions to one, and those functions will be called when the event occurs.",
   "figura.docs.event.register": "Registers the given function to the given event. When the event occurs, the function will be run. Functions are run in the order they were registered. The optional name parameter is used when you wish to later remove a function from the event.",
   "figura.docs.event.clear": "Clears the given event of all its functions.",
-  "figura.docs.event.remove": "Removes the function specified from the event. The default index is 1, which is the first function you registered. If you provide an integer, then the function at that index is removed. If you provide a name, then all functions registered under that name are removed. Returns true if a function was removed, and false otherwise.",
+  "figura.docs.event.remove": "Removes all functions with the given name from the event. Returns the number of functions that were removed.",
   "figura.docs.event.get_count": "Returns the number of functions registered to this event.",
 
   "figura.docs.client": "A global API used to interact with the current Minecraft client. Most of its functions return things that can be found in the F3 menu.",

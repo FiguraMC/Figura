@@ -336,4 +336,20 @@ public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
         return super.inverted();
     }
 
+    @LuaWhitelist
+    @LuaMethodDoc(
+            description = "matrix_n.det"
+    )
+    public double det() {
+        return super.det();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            description = "matrix_n.reset"
+    )
+    public FiguraMat3 reset() {
+        return super.reset();
+    }
+
 }

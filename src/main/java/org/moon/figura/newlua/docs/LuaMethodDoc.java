@@ -16,7 +16,7 @@ public @interface LuaMethodDoc {
      * Each LuaFunctionOverload should indicate one set of variable types that can
      * be used to call this method in a valid way.
      */
-    LuaFunctionOverload[] overloads();
+    LuaFunctionOverload[] overloads() default @LuaFunctionOverload;
 
     /**
      * A translation key for the description of what this method does with its parameters.

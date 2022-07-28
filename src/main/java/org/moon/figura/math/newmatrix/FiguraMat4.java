@@ -415,4 +415,21 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
         return super.inverted();
     }
 
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            description = "matrix_n.det"
+    )
+    public double det() {
+        return super.det();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            description = "matrix_n.reset"
+    )
+    public FiguraMat4 reset() {
+        return super.reset();
+    }
+
 }

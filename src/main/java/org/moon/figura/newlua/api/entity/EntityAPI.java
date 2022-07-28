@@ -27,7 +27,7 @@ import java.util.UUID;
 )
 public class EntityAPI<T extends Entity> {
 
-    private T entity; //We just do not care about memory anymore so, have something not wrapped in a WeakReference
+    protected final T entity; //We just do not care about memory anymore so, have something not wrapped in a WeakReference
 
     private String cacheType;
 
@@ -39,9 +39,9 @@ public class EntityAPI<T extends Entity> {
         if (e == null)
             return null;
         if (e instanceof Player p)
-            return null;
+            return new PlayerAPI(p);
         if (e instanceof LivingEntity le)
-            return null;
+            return new LivingEntityAPI<>(le);
         return new EntityAPI<>(e);
     }
 
@@ -79,227 +79,154 @@ public class EntityAPI<T extends Entity> {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "entity.get_uuid"
-    )
+    @LuaMethodDoc(description = "entity.get_uuid")
     public String getUUID() {
         return entity.getUUID().toString();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "entity.get_type"
-    )
+    @LuaMethodDoc(description = "entity.get_type")
     public String getType() {
         return cacheType != null ? cacheType : (cacheType = Registry.ENTITY_TYPE.getKey(entity.getType()).toString());
     }
 
     private static final UUID hambrgr = UUID.fromString("66a6c5c4-963b-4b73-a0d9-162faedd8b7f");
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "entity.is_hamburger"
-    )
+    @LuaMethodDoc(description = "entity.is_hamburger")
     public boolean isHamburger() {
         return entity.getUUID().equals(hambrgr);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "entity.get_velocity"
-    )
+    @LuaMethodDoc(description = "entity.get_velocity")
     public FiguraVec3 getVelocity() {
         return FiguraVec3.of(entity.getX() - entity.xOld, entity.getY() - entity.yOld, entity.getZ() - entity.zOld);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "entity.get_look_dir"
-    )
+    @LuaMethodDoc(description = "entity.get_look_dir")
     public FiguraVec3 getLookDir() {
         return FiguraVec3.fromVec3(entity.getLookAngle());
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "entity.get_fire_ticks"
-    )
+    @LuaMethodDoc(description = "entity.get_fire_ticks")
     public int getFireTicks() {
         return entity.getRemainingFireTicks();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "entity.get_frozen_ticks"
-    )
+    @LuaMethodDoc(description = "entity.get_frozen_ticks")
     public int getFrozenTicks() {
         return entity.getTicksFrozen();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "entity.get_air"
-    )
+    @LuaMethodDoc(description = "entity.get_air")
     public int getAir() {
         return entity.getAirSupply();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "entity.get_max_air"
-    )
+    @LuaMethodDoc(description = "entity.get_max_air")
     public int getMaxAir() {
         return entity.getMaxAirSupply();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "entity.get_dimension_name"
-    )
+    @LuaMethodDoc(description = "entity.get_dimension_name")
     public String getDimensionName() {
         return entity.level.dimension().location().toString();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "entity.get_pose"
-    )
+    @LuaMethodDoc(description = "entity.get_pose")
     public String getPose() {
         return entity.getPose().toString();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "entity.get_vehicle"
-    )
+    @LuaMethodDoc(description = "entity.get_vehicle")
     public EntityAPI<?> getVehicle() {
         return wrap(entity.getVehicle());
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "entity.is_on_ground"
-    )
+    @LuaMethodDoc(description = "entity.is_on_ground")
     public boolean isOnGround() {
         return entity.isOnGround();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "entity.get_eye_height"
-    )
+    @LuaMethodDoc(description = "entity.get_eye_height")
     public float getEyeHeight() {
         return entity.getEyeHeight(entity.getPose());
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "entity.get_bounding_box"
-    )
+    @LuaMethodDoc(description = "entity.get_bounding_box")
     public FiguraVec3 getBoundingBox() {
         EntityDimensions dim = entity.getDimensions(entity.getPose());
         return FiguraVec3.of(dim.width, dim.height, dim.width);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "entity.get_name"
-    )
+    @LuaMethodDoc(description = "entity.get_name")
     public String getName() {
         return entity.getName().getString();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "entity.is_wet"
-    )
+    @LuaMethodDoc(description = "entity.is_wet")
     public boolean isWet() {
         return entity.isInWaterRainOrBubble();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "entity.is_in_water"
-    )
+    @LuaMethodDoc(description = "entity.is_in_water")
     public boolean isInWater() {
         return entity.isInWater();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "entity.is_underwater"
-    )
+    @LuaMethodDoc(description = "entity.is_underwater")
     public boolean isUnderwater() {
         return entity.isUnderWater();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "entity.is_in_lava"
-    )
+    @LuaMethodDoc(description = "entity.is_in_lava")
     public boolean isInLava() {
         return entity.isInLava();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "entity.is_in_rain"
-    )
+    @LuaMethodDoc(description = "entity.is_in_rain")
     public boolean isInRain() {
         BlockPos blockPos = entity.blockPosition();
         return entity.level.isRainingAt(blockPos) || entity.level.isRainingAt(new BlockPos(blockPos.getX(), entity.getBoundingBox().maxY, entity.getZ()));
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "entity.has_avatar"
-    )
+    @LuaMethodDoc(description = "entity.has_avatar")
     public boolean hasAvatar() {
         return AvatarManager.getAvatar(entity) != null;
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "entity.has_avatar"
-    )
+    @LuaMethodDoc(description = "entity.has_avatar")
     public boolean isSprinting() {
         return entity.isSprinting();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "entity.get_eye_y"
-    )
+    @LuaMethodDoc(description = "entity.get_eye_y")
     public double getEyeY() {
         return entity.getEyeY();
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
             description = "entity.is_glowing"
     )
     public boolean isGlowing() {
@@ -307,28 +234,19 @@ public class EntityAPI<T extends Entity> {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "entity.has_avatar"
-    )
+    @LuaMethodDoc(description = "entity.has_avatar")
     public boolean isInvisible() {
         return entity.isInvisible();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "entity.is_silent"
-    )
+    @LuaMethodDoc(description = "entity.is_silent")
     public boolean isSilent() {
         return entity.isSilent();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "entity.is_sneaking"
-    )
+    @LuaMethodDoc(description = "entity.is_sneaking")
     public boolean isSneaking() {
         return entity.isDiscrete();
     }
@@ -361,10 +279,7 @@ public class EntityAPI<T extends Entity> {
     //Also want to redo how nbt is accessed, it's often a waste of time to copy the *entire* nbt data into a table.
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "entity.is_sneaking"
-    )
+    @LuaMethodDoc(description = "entity.is_on_fire")
     public boolean isOnFire() {
         return entity.displayFireAnimation();
     }
