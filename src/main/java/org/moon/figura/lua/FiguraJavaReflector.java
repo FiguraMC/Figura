@@ -215,12 +215,12 @@ public class FiguraJavaReflector implements JavaReflector {
         errorBuilder.append("No applicable metamethod ")
                 .append(metamethod.getMetamethodName())
                 .append(" in type ")
-                .append(FiguraDocsManager.NAME_MAP.getOrDefault(objectClass, objectClass.getName()))
+                .append(FiguraDocsManager.getNameFor(objectClass))
                 .append(" for arguments of type (");
 
         for (int i = 0; i < luaState.getTop(); i++) {
             Class<?> argClass = luaState.toJavaObject(i+1, Object.class).getClass();
-            errorBuilder.append(FiguraDocsManager.NAME_MAP.getOrDefault(argClass, argClass.getName()));
+            errorBuilder.append(FiguraDocsManager.getNameFor(argClass));
             if (i < luaState.getTop() - 1)
                 errorBuilder.append(", ");
         }
@@ -344,7 +344,7 @@ public class FiguraJavaReflector implements JavaReflector {
                 }
                 for (int i = 0; i < luaState.getTop() && i < args.length; i++) {
                     if (params[i].isAnnotationPresent(LuaNotNil.class) && luaState.type(i + 1) == LuaType.NIL) {
-                        throw new LuaRuntimeException("bad argument #" + (i + 1) + " to '" + method.getName() + "' (" + FiguraDocsManager.NAME_MAP.getOrDefault(argumentTypes[i], argumentTypes[i].getName()) + " expected, got nil)");
+                        throw new LuaRuntimeException("bad argument #" + (i + 1) + " to '" + method.getName() + "' (" + FiguraDocsManager.getNameFor(argumentTypes[i]) + " expected, got nil)");
                     }
                     args[i] = luaState.toJavaObject(i + 1, argumentTypes[i]);
                 }
@@ -361,7 +361,7 @@ public class FiguraJavaReflector implements JavaReflector {
                 errorBuilder.append(method.getName());
                 errorBuilder.append(". Expected (");
                 for (int j = 0; j < argumentTypes.length; j++) {
-                    errorBuilder.append(FiguraDocsManager.NAME_MAP.getOrDefault(argumentTypes[j], argumentTypes[j].getName()));
+                    errorBuilder.append(FiguraDocsManager.getNameFor(argumentTypes[j]));
                     if (j != argumentTypes.length - 1) {
                         errorBuilder.append(", ");
                     }

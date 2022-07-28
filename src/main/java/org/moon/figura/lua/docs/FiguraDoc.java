@@ -56,7 +56,7 @@ public abstract class FiguraDoc {
         FiguraMod.sendChatMessage(HEADER.copy()
                 .append("\n\n")
                 .append(Component.literal("• ")
-                        .append(FiguraText.of("docs.text.group"))
+                        .append(FiguraText.of("docs.text.type"))
                         .append(":")
                         .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
                 .append("\n\t")
@@ -159,7 +159,7 @@ public abstract class FiguraDoc {
                 message.append(" (")
                         .append(FiguraText.of("docs.text.extends"))
                         .append(" ")
-                        .append(Component.literal(FiguraDocsManager.NAME_MAP.getOrDefault(superclass, superclass.getName())).withStyle(ColorUtils.Colors.MAYA_BLUE.style))
+                        .append(Component.literal(FiguraDocsManager.getNameFor(superclass)).withStyle(ColorUtils.Colors.MAYA_BLUE.style))
                         .append(")");
             }
 
@@ -199,7 +199,7 @@ public abstract class FiguraDoc {
             JsonObject json = super.toJson(translate);
 
             if (superclass != null)
-                json.addProperty("parent", FiguraDocsManager.NAME_MAP.getOrDefault(superclass, superclass.getName()));
+                json.addProperty("parent", FiguraDocsManager.getNameFor(superclass));
 
             JsonArray methods = new JsonArray();
             for (FiguraDoc.MethodDoc methodDoc : documentedMethods)
@@ -268,7 +268,7 @@ public abstract class FiguraDoc {
 
                 for (int j = 0; j < parameterTypes[i].length; j++) {
                     //type and arg
-                    String typeName = FiguraDocsManager.NAME_MAP.getOrDefault(parameterTypes[i][j], parameterTypes[i][j].getName());
+                    String typeName = FiguraDocsManager.getNameFor(parameterTypes[i][j]);
                     message.append(Component.literal(typeName).withStyle(ChatFormatting.YELLOW))
                             .append(" ")
                             .append(Component.literal(parameterNames[i][j]).withStyle(ChatFormatting.WHITE));
@@ -280,7 +280,7 @@ public abstract class FiguraDoc {
                 //return
                 message.append("): ")
                         .append(FiguraText.of("docs.text.returns").append(" ").withStyle(ColorUtils.Colors.MAYA_BLUE.style))
-                        .append(Component.literal(FiguraDocsManager.NAME_MAP.getOrDefault(returnTypes[i], returnTypes[i].getName())).withStyle(ChatFormatting.YELLOW));
+                        .append(Component.literal(FiguraDocsManager.getNameFor(returnTypes[i])).withStyle(ChatFormatting.YELLOW));
             }
 
             //description
@@ -308,7 +308,7 @@ public abstract class FiguraDoc {
                 for (int j = 0; j < parameterNames[i].length; j++) {
                     JsonObject paramObj = new JsonObject();
                     paramObj.addProperty("name", parameterNames[i][j]);
-                    paramObj.addProperty("type", FiguraDocsManager.NAME_MAP.getOrDefault(parameterTypes[i][j], parameterTypes[i][j].getName()));
+                    paramObj.addProperty("type", FiguraDocsManager.getNameFor(parameterTypes[i][j]));
                     param.add(paramObj);
                 }
 
@@ -318,7 +318,7 @@ public abstract class FiguraDoc {
 
             JsonArray returns = new JsonArray();
             for (Class<?> returnType : returnTypes)
-                returns.add(FiguraDocsManager.NAME_MAP.getOrDefault(returnType, returnType.getName()));
+                returns.add(FiguraDocsManager.getNameFor(returnType));
             json.add("returns", returns);
 
             return json;
@@ -348,7 +348,7 @@ public abstract class FiguraDoc {
                             .append(":")
                             .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
                     .append("\n\t")
-                    .append(Component.literal("• " + FiguraDocsManager.NAME_MAP.getOrDefault(type, type.getName())).withStyle(ChatFormatting.YELLOW))
+                    .append(Component.literal("• " + FiguraDocsManager.getNameFor(type)).withStyle(ChatFormatting.YELLOW))
                     .append(Component.literal(" " + name).withStyle(ColorUtils.Colors.MAYA_BLUE.style))
                     .append(Component.literal(" (")
                             .append(FiguraText.of(editable ? "docs.text.editable" : "docs.text.not_editable"))
@@ -372,7 +372,7 @@ public abstract class FiguraDoc {
         @Override
         public JsonObject toJson(boolean translate) {
             JsonObject json = super.toJson(translate);
-            json.addProperty("type", FiguraDocsManager.NAME_MAP.getOrDefault(this.type, this.type.getName()));
+            json.addProperty("type", FiguraDocsManager.getNameFor(this.type));
             json.addProperty("editable", this.editable);
             return json;
         }

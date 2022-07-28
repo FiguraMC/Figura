@@ -50,7 +50,7 @@ import java.util.Map;
 public class FiguraDocsManager {
 
     //class name map
-    public static final Map<Class<?>, String> NAME_MAP = new HashMap<>() {{
+    private static final Map<Class<?>, String> NAME_MAP = new HashMap<>() {{
         //Built in type names, even for things that don't have docs
         put(Double.class, "Number");
         put(double.class, "Number");
@@ -179,6 +179,17 @@ public class FiguraDocsManager {
         return doc;
     }
 
+    public static String getNameFor(Class<?> clazz) {
+        return NAME_MAP.computeIfAbsent(clazz, aClass -> {
+            if (clazz.isAnnotationPresent(LuaTypeDoc.class))
+                return clazz.getAnnotation(LuaTypeDoc.class).name();
+            else
+                return clazz.getName();
+        });
+    }
+
+    // -- commands -- //
+
     public static LiteralArgumentBuilder<FabricClientCommandSource> getCommand() {
         //root
         LiteralArgumentBuilder<FabricClientCommandSource> root = LiteralArgumentBuilder.literal("docs");
@@ -221,6 +232,8 @@ public class FiguraDocsManager {
 
         return root;
     }
+
+    // -- export -- //
 
     private static int exportDocsFunction(CommandContext<FabricClientCommandSource> context, boolean translate) {
         try {
