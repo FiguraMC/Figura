@@ -235,7 +235,6 @@ public class NetworkManager {
             }
 
             sendMessage(GSON.toJson(json));
-            AvatarManager.localUploaded = true;
         });
     }
 
@@ -245,6 +244,20 @@ public class NetworkManager {
         DownloadRequest.AvatarRequest request = new DownloadRequest.AvatarRequest(id, avatarID);
         REQUEST_QUEUE.remove(request);
         REQUEST_QUEUE.add(request);
+    }
+
+    public static void subscribe(UUID id) {
+        JsonObject sub = new JsonObject();
+        sub.addProperty("type", "subscribe");
+        sub.addProperty("uuid", id.toString());
+        NetworkManager.sendMessage(NetworkManager.GSON.toJson(sub));
+    }
+
+    public static void unsubscribe(UUID id) {
+        JsonObject sub = new JsonObject();
+        sub.addProperty("type", "unsubscribe");
+        sub.addProperty("uuid", id.toString());
+        NetworkManager.sendMessage(NetworkManager.GSON.toJson(sub));
     }
 
     // -- backend command -- //

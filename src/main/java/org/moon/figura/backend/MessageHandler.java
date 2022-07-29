@@ -83,6 +83,7 @@ public enum MessageHandler {
         try {
             ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
             AvatarManager.setAvatar(owner, NbtIo.readCompressed(bais));
+            NetworkManager.subscribe(owner);
         } catch (Exception e) {
             FiguraMod.LOGGER.error("", e);
         }
@@ -93,6 +94,11 @@ public enum MessageHandler {
         JsonArray array = json.get("allowedBadges").getAsJsonArray();
         for (int i = 0; i < array.size(); i++)
             AvatarManager.setBadge(uuid, i, array.get(i).getAsInt() >= 1);
+    }),
+    EVENT(json -> {
+        UUID owner = UUID.fromString(json.get("uuid").getAsString());
+        JsonObject event = json.getAsJsonObject("event");
+        EventHandler.readEvent(owner, event);
     });
 
     // -- fields -- //

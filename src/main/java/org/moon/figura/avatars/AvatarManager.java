@@ -119,6 +119,7 @@ public class AvatarManager {
         FETCHED_AVATARS.remove(id);
 
         NetworkManager.clearRequestsFor(id);
+        NetworkManager.unsubscribe(id);
     }
 
     //clears ALL loaded avatars, including local
