@@ -1,11 +1,10 @@
 package org.moon.figura.avatars.model;
 
-import com.mojang.math.Quaternion;
-import com.mojang.math.Vector3f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.model.rendering.ImmediateAvatarRenderer;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
@@ -14,6 +13,7 @@ import org.moon.figura.avatars.model.rendertasks.BlockTask;
 import org.moon.figura.avatars.model.rendertasks.ItemTask;
 import org.moon.figura.avatars.model.rendertasks.RenderTask;
 import org.moon.figura.avatars.model.rendertasks.TextTask;
+import org.moon.figura.ducks.LivingEntityRendererAccessor;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
@@ -26,6 +26,7 @@ import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.LuaUtils;
+import org.moon.figura.utils.MathUtils;
 import org.terasology.jnlua.LuaRuntimeException;
 
 import java.util.HashMap;
@@ -82,7 +83,17 @@ public class FiguraModelPart {
         }
     }
 
-    public void applyVanillaTransforms(EntityModel<?> vanillaModel) {
+    public void applyVanillaTransforms(LivingEntityRenderer<?, ?> entityRenderer) {
+        if (entityRenderer == null)
+            return;
+
+        //get model
+        EntityModel<?> vanillaModel;
+        if (parentType == ParentType.LeftElytra || parentType == ParentType.RightElytra)
+            vanillaModel = ((LivingEntityRendererAccessor<?>) entityRenderer).figura$getElytraModel();
+        else
+            vanillaModel = entityRenderer.getModel();
+
         if (vanillaModel == null || parentType.provider == null)
             return;
 
@@ -90,6 +101,7 @@ public class FiguraModelPart {
         if (part == null)
             return;
 
+        //apply vanilla transforms
         FiguraVec3 defaultPivot = parentType.offset.copy();
 
         defaultPivot.subtract(part.x, part.y, part.z);
@@ -122,9 +134,11 @@ public class FiguraModelPart {
 
     public void applyExtraTransforms() {
         if (parentType == ParentType.Camera) {
-            Quaternion orient = Minecraft.getInstance().getEntityRenderDispatcher().cameraOrientation();
-            Vector3f xyzDeg = orient.toXYZDegrees();
-            customization.offsetRot(-xyzDeg.x(), -xyzDeg.y(), xyzDeg.z());
+            if ((animationOverride & 1) != 1) {
+                FiguraVec3 vec = MathUtils.quaternionToYXZ(Minecraft.getInstance().getEntityRenderDispatcher().cameraOrientation()).toDeg();
+                customization.offsetRot(vec);
+                vec.free();
+            }
         }
     }
 

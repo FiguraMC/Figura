@@ -120,4 +120,24 @@ public class MathUtils {
     public static double catmullrom(double delta, double prevA, double prevB, double nextA, double nextB) {
         return 0.5 * (2 * prevB + (nextA - prevA) * delta + (2 * prevA - 5 * prevB + 4 * nextA - nextB) * delta * delta + (3 * prevB - prevA - 3 * nextA + nextB) * delta * delta * delta);
     }
+
+    //same as minecraft too, but with doubles and fixing the NaN in the Math.asin
+    public static org.moon.figura.math.vector.FiguraVec3 quaternionToYXZ(Quaternion quaternion) {
+        double r, i, j, k;
+        r = quaternion.r();
+        i = quaternion.i();
+        j = quaternion.j();
+        k = quaternion.k();
+
+        double f = r * r;
+        double g = i * i;
+        double h = j * j;
+        double m = k * k;
+        double n = f + g + h + m;
+        double o = 2 * r * i - 2 * j * k;
+        double l = Math.asin(Math.max(Math.min(1, o / n), -1));
+        return Math.abs(o) > 0.999d * n ?
+                org.moon.figura.math.vector.FiguraVec3.of(l, 2 * Math.atan2(j, r), 0) :
+                org.moon.figura.math.vector.FiguraVec3.of(l, Math.atan2(2 * i * k + 2 * j * r, f - g - h + m), Math.atan2(2 * i * j + 2 * r * k, f - g + h - m));
+    }
 }

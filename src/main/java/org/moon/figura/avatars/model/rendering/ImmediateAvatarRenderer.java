@@ -16,7 +16,6 @@ import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
 import org.moon.figura.avatars.model.rendering.texture.RenderTypes;
 import org.moon.figura.avatars.model.rendertasks.RenderTask;
 import org.moon.figura.config.Config;
-import org.moon.figura.ducks.LivingEntityRendererAccessor;
 import org.moon.figura.ducks.PoseStackAccessor;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
@@ -155,12 +154,8 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
     }
 
     protected void renderPart(FiguraModelPart part, int[] remainingComplexity, boolean parentPassedPredicate) {
-        if (entityRenderer != null) {
-            if (part.parentType == ParentType.LeftElytra || part.parentType == ParentType.RightElytra)
-                part.applyVanillaTransforms(((LivingEntityRendererAccessor<?>) entityRenderer).figura$getElytraModel());
-            else
-                part.applyVanillaTransforms(entityRenderer.getModel());
-        }
+        part.applyVanillaTransforms(entityRenderer);
+
         part.applyExtraTransforms();
 
         part.customization.recalculate();

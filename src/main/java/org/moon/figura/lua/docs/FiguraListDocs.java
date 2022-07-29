@@ -108,7 +108,7 @@ public class FiguraListDocs {
 
             //list properties
             object.addProperty("name", name);
-            object.addProperty("description", translate ? Language.getInstance().getOrDefault(FiguraText.of("docs.list." + id).getString()) : FiguraMod.MOD_ID + "." + "docs.list." + id);
+            object.addProperty("description", translate ? Language.getInstance().getOrDefault(FiguraText.of("docs.enum." + id).getString()) : FiguraMod.MOD_ID + "." + "docs.enum." + id);
 
             //list entries
             LinkedHashSet<?> coll = supplier.get();
@@ -132,7 +132,7 @@ public class FiguraListDocs {
                 LinkedHashSet<?> coll = supplier.get();
 
                 if (coll.size() == 0) {
-                    FiguraMod.sendChatMessage(FiguraText.of("docs.list.empty"));
+                    FiguraMod.sendChatMessage(FiguraText.of("docs.enum.empty"));
                     return 0;
                 }
 
@@ -144,7 +144,7 @@ public class FiguraListDocs {
                                 .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
                         .append("\n\t")
                         .append(Component.literal("• ")
-                                .append(FiguraText.of("docs.list." + id))
+                                .append(FiguraText.of("docs.enum." + id))
                                 .withStyle(ColorUtils.Colors.MAYA_BLUE.style))
                         .append("\n\n")
                         .append(Component.literal("• ")
@@ -184,7 +184,7 @@ public class FiguraListDocs {
 
     public static LiteralArgumentBuilder<FabricClientCommandSource> getCommand() {
         //self
-        LiteralArgumentBuilder<FabricClientCommandSource> root = LiteralArgumentBuilder.literal("lists");
+        LiteralArgumentBuilder<FabricClientCommandSource> root = LiteralArgumentBuilder.literal("enums");
         root.executes(context -> {
             FiguraMod.sendChatMessage(FiguraDoc.HEADER.copy()
                     .append("\n\n")
@@ -194,7 +194,7 @@ public class FiguraListDocs {
                             .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
                     .append("\n\t")
                     .append(Component.literal("• ")
-                            .append(Component.literal("lists"))
+                            .append(Component.literal("enumerators"))
                             .withStyle(ColorUtils.Colors.MAYA_BLUE.style))
 
                     .append("\n\n")
@@ -204,7 +204,7 @@ public class FiguraListDocs {
                             .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
                     .append("\n\t")
                     .append(Component.literal("• ")
-                            .append(FiguraText.of("docs.list"))
+                            .append(FiguraText.of("docs.enum"))
                             .withStyle(ColorUtils.Colors.MAYA_BLUE.style))
             );
             return 1;

@@ -17,6 +17,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public abstract class FiguraDoc {
 
@@ -52,32 +54,6 @@ public abstract class FiguraDoc {
 
     // -- Special prints :p -- //
 
-    public static int printGlobal(String name) {
-        FiguraMod.sendChatMessage(HEADER.copy()
-                .append("\n\n")
-                .append(Component.literal("• ")
-                        .append(FiguraText.of("docs.text.type"))
-                        .append(":")
-                        .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
-                .append("\n\t")
-                .append(Component.literal("• ")
-                        .append(Component.literal(name == null ? "types" : name))
-                        .withStyle(ColorUtils.Colors.MAYA_BLUE.style))
-
-                .append("\n\n")
-                .append(Component.literal("• ")
-                        .append(FiguraText.of("docs.text.description"))
-                        .append(":")
-                        .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
-                .append("\n\t")
-                .append(Component.literal("• ")
-                        .append(FiguraText.of(name == null ? "docs.globals" : ("docs.globals." + name)))
-                        .withStyle(ColorUtils.Colors.MAYA_BLUE.style))
-        );
-
-        return 1;
-    }
-
     public static int printRoot() {
         FiguraMod.sendChatMessage(HEADER.copy()
                 .append("\n\n")
@@ -95,6 +71,10 @@ public abstract class FiguraDoc {
         public final Class<?> superclass;
 
         public ClassDoc(Class<?> clazz, LuaTypeDoc typeDoc) {
+            this(clazz, typeDoc, null);
+        }
+
+        public ClassDoc(Class<?> clazz, LuaTypeDoc typeDoc, Map<String, List<FiguraDoc>> children) {
             super(typeDoc.name(), typeDoc.description());
 
             if (clazz.getSuperclass().isAnnotationPresent(LuaWhitelist.class) && clazz.getSuperclass().isAnnotationPresent(LuaTypeDoc.class))
@@ -105,14 +85,18 @@ public abstract class FiguraDoc {
             //Find methods
             documentedMethods = new ArrayList<>();
             for (Method method : clazz.getMethods())
-                if (method.isAnnotationPresent(LuaMethodDoc.class))
-                    documentedMethods.add(new MethodDoc(method, method.getAnnotation(LuaMethodDoc.class)));
+                if (method.isAnnotationPresent(LuaMethodDoc.class)) {
+                    List<FiguraDoc> childList = children == null ? null : children.get(method.getName());
+                    documentedMethods.add(new MethodDoc(method, method.getAnnotation(LuaMethodDoc.class), childList));
+                }
 
             //Find fields
             documentedFields = new ArrayList<>();
             for (Field field : clazz.getFields())
-                if (field.isAnnotationPresent(LuaFieldDoc.class))
-                    documentedFields.add(new FieldDoc(field, field.getAnnotation(LuaFieldDoc.class)));
+                if (field.isAnnotationPresent(LuaFieldDoc.class)) {
+                    List<FiguraDoc> childList = children == null ? null : children.get(field.getName());
+                    documentedFields.add(new FieldDoc(field, field.getAnnotation(LuaFieldDoc.class), childList));
+                }
         }
 
         @Override
@@ -194,14 +178,16 @@ public abstract class FiguraDoc {
         public final Class<?>[][] parameterTypes;
         public final String[][] parameterNames;
         public final Class<?>[] returnTypes;
+        public final List<FiguraDoc> children;
 
-        public MethodDoc(Method method, LuaMethodDoc methodDoc) {
+        public MethodDoc(Method method, LuaMethodDoc methodDoc, List<FiguraDoc> children) {
             super(method.getName(), methodDoc.description());
 
             LuaFunctionOverload[] overloads = methodDoc.overloads();
             parameterTypes = new Class[overloads.length][];
             parameterNames = new String[overloads.length][];
             returnTypes = new Class[overloads.length];
+            this.children = children;
 
             for (int i = 0; i < overloads.length; i++) {
                 parameterTypes[i] = overloads[i].argumentTypes();
@@ -273,6 +259,17 @@ public abstract class FiguraDoc {
         }
 
         @Override
+        public LiteralArgumentBuilder<FabricClientCommandSource> getCommand() {
+            LiteralArgumentBuilder<FabricClientCommandSource> command = super.getCommand();
+
+            if (children != null)
+                for (FiguraDoc child : children)
+                    command.then(child.getCommand());
+
+            return command;
+        }
+
+        @Override
         public JsonObject toJson(boolean translate) {
             JsonObject json = super.toJson(translate);
 
@@ -295,6 +292,13 @@ public abstract class FiguraDoc {
                 returns.add(FiguraDocsManager.getNameFor(returnType));
             json.add("returns", returns);
 
+            JsonArray children = new JsonArray();
+            if (this.children != null) {
+                for (FiguraDoc child : this.children)
+                    children.add(child.toJson(translate));
+            }
+            json.add("children", children);
+
             return json;
         }
     }
@@ -303,11 +307,13 @@ public abstract class FiguraDoc {
 
         public final Class<?> type;
         public final boolean editable;
+        public final List<FiguraDoc> children;
 
-        public FieldDoc(Field field, LuaFieldDoc luaFieldDoc) {
+        public FieldDoc(Field field, LuaFieldDoc luaFieldDoc, List<FiguraDoc> children) {
             super(field.getName(), luaFieldDoc.description());
             type = field.getType();
             editable = !Modifier.isFinal(field.getModifiers());
+            this.children = children;
         }
 
         @Override
@@ -345,10 +351,29 @@ public abstract class FiguraDoc {
         }
 
         @Override
+        public LiteralArgumentBuilder<FabricClientCommandSource> getCommand() {
+            LiteralArgumentBuilder<FabricClientCommandSource> command = super.getCommand();
+
+            if (children != null)
+                for (FiguraDoc child : children)
+                    command.then(child.getCommand());
+
+            return command;
+        }
+
+        @Override
         public JsonObject toJson(boolean translate) {
             JsonObject json = super.toJson(translate);
             json.addProperty("type", FiguraDocsManager.getNameFor(this.type));
             json.addProperty("editable", this.editable);
+
+            JsonArray children = new JsonArray();
+            if (this.children != null) {
+                for (FiguraDoc child : this.children)
+                    children.add(child.toJson(translate));
+            }
+            json.add("children", children);
+
             return json;
         }
     }

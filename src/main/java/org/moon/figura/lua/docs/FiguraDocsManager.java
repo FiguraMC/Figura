@@ -1,7 +1,6 @@
 package org.moon.figura.lua.docs;
 
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -89,7 +88,7 @@ public class FiguraDocsManager {
 
     // -- docs generator data -- //
 
-    private static final Map<String, List<Class<?>>> TYPES = new HashMap<>() {{
+    private static final Map<String, List<Class<?>>> GLOBAL_CHILDREN = new HashMap<>() {{
         put("action_wheel", List.of(
                 ActionWheelAPI.class,
                 Page.class,
@@ -185,31 +184,35 @@ public class FiguraDocsManager {
                 RendererAPI.class
         ));
     }};
-    private static final Map<String, List<FiguraDoc>> GENERATED_GLOBALS = new HashMap<>();
+    private static final Map<String, List<FiguraDoc>> GENERATED_CHILDREN = new HashMap<>();
 
-    private static final FiguraDoc.ClassDoc GENERATED_GLOBAL = generateDocFor(FiguraGlobalsDocs.class);
+    private static FiguraDoc.ClassDoc global;
 
-    private static final List<Class<?>> LUA_LIBRARIES = List.of(
+    private static final List<Class<?>> LUA_LIB_OVERRIDES = List.of(
             FiguraMathDocs.class
     );
-    private static final List<FiguraDoc> GENERATED_LUA_LIB = new ArrayList<>();
+    private static final List<FiguraDoc> GENERATED_LIB_OVERRIDES = new ArrayList<>();
 
     public static void init() {
-        //generate type docs
-        for (Map.Entry<String, List<Class<?>>> packageEntry : TYPES.entrySet()) {
+        //generate children override
+        for (Map.Entry<String, List<Class<?>>> packageEntry : GLOBAL_CHILDREN.entrySet()) {
             for (Class<?> documentedClass : packageEntry.getValue()) {
                 FiguraDoc.ClassDoc doc = generateDocFor(documentedClass);
                 if (doc != null)
-                    GENERATED_GLOBALS.computeIfAbsent(packageEntry.getKey(), s -> new ArrayList<>()).add(doc);
+                    GENERATED_CHILDREN.computeIfAbsent(packageEntry.getKey(), s -> new ArrayList<>()).add(doc);
             }
         }
 
-        //generate library overloads
-        for (Class<?> lib : LUA_LIBRARIES) {
+        //generate standard libraries overrides
+        for (Class<?> lib : LUA_LIB_OVERRIDES) {
             FiguraDoc.ClassDoc libDoc = generateDocFor(lib);
             if (libDoc != null)
-                GENERATED_LUA_LIB.add(libDoc);
+                GENERATED_LIB_OVERRIDES.add(libDoc);
         }
+
+        //generate globals
+        Class<?> globalClass = FiguraGlobalsDocs.class;
+        global = new FiguraDoc.ClassDoc(globalClass, globalClass.getAnnotation(LuaTypeDoc.class), GENERATED_CHILDREN);
     }
 
     private static FiguraDoc.ClassDoc generateDocFor(Class<?> documentedClass) {
@@ -238,23 +241,11 @@ public class FiguraDocsManager {
         root.executes(context -> FiguraDoc.printRoot());
 
         //globals
-        LiteralArgumentBuilder<FabricClientCommandSource> globals = GENERATED_GLOBAL == null ? LiteralArgumentBuilder.literal("globals") : GENERATED_GLOBAL.getCommand();
-
-        for (Map.Entry<String, List<FiguraDoc>> entry : GENERATED_GLOBALS.entrySet()) {
-            LiteralArgumentBuilder<FabricClientCommandSource> group = LiteralArgumentBuilder.literal(entry.getKey());
-
-            //add children
-            for (FiguraDoc doc : entry.getValue())
-                group.then(doc.getCommand());
-
-            group.executes(context -> FiguraDoc.printGlobal(entry.getKey()));
-            globals.then(group);
-        }
-
+        LiteralArgumentBuilder<FabricClientCommandSource> globals = global == null ? LiteralArgumentBuilder.literal("globals") : global.getCommand();
         root.then(globals);
 
         //library overrides
-        for (FiguraDoc figuraDoc : GENERATED_LUA_LIB)
+        for (FiguraDoc figuraDoc : GENERATED_LIB_OVERRIDES)
             root.then(figuraDoc.getCommand());
 
         //list docs
@@ -311,32 +302,11 @@ public class FiguraDocsManager {
         JsonObject root = new JsonObject();
 
         //globals
-        JsonObject globals = new JsonObject();
-
-        if (GENERATED_GLOBAL != null) {
-            JsonArray prop = new JsonArray();
-
-            for (FiguraDoc.FieldDoc field : GENERATED_GLOBAL.documentedFields)
-                prop.add(field.toJson(translate));
-            for (FiguraDoc.MethodDoc method : GENERATED_GLOBAL.documentedMethods)
-                prop.add(method.toJson(translate));
-
-            globals.add("globalProperties", prop);
-        }
-
-        for (Map.Entry<String, List<FiguraDoc>> entry : GENERATED_GLOBALS.entrySet()) {
-            JsonArray group = new JsonArray();
-
-            for (FiguraDoc doc : entry.getValue())
-                group.add(doc.toJson(translate));
-
-            globals.add(entry.getKey(), group);
-        }
-
+        JsonObject globals = global == null ? new JsonObject() : global.toJson(translate);
         root.add("globals", globals);
 
         //library overrides
-        for (FiguraDoc figuraDoc : GENERATED_LUA_LIB)
+        for (FiguraDoc figuraDoc : GENERATED_LIB_OVERRIDES)
             root.add(figuraDoc.name, figuraDoc.toJson(translate));
 
         //lists

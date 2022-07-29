@@ -13,7 +13,7 @@ public enum EventHandler {
 
     UPLOAD((owner, json) -> {
         if (owner.compareTo(FiguraMod.getLocalPlayerUUID()) == 0) {
-            FiguraToast.sendToast(FiguraText.of("backend.test :3"));
+            FiguraToast.sendToast(FiguraText.of("backend.upload_success"));
             AvatarManager.localUploaded = true;
         } else {
             AvatarManager.reloadAvatar(owner);

@@ -9,7 +9,6 @@ import org.moon.figura.avatars.model.PartCustomization;
 import org.moon.figura.avatars.model.rendering.texture.RenderTypes;
 import org.moon.figura.avatars.model.rendertasks.RenderTask;
 import org.moon.figura.config.Config;
-import org.moon.figura.ducks.LivingEntityRendererAccessor;
 import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec3;
 
@@ -91,6 +90,7 @@ public class StackAvatarRenderer extends ImmediateAvatarRenderer {
         if (thisPassedPredicate == null)
             return;
 
+        //push customization stack
         custom.visible = FiguraModelPart.getVisible(part) && thisPassedPredicate;
         customizationStack.push(custom);
         custom.visible = storedVisibility;
@@ -103,15 +103,11 @@ public class StackAvatarRenderer extends ImmediateAvatarRenderer {
 
         if (allowHiddenTransforms || prevPredicate) {
             //calculate vanilla parent
-            if (entityRenderer != null) {
-                if (part.parentType == ParentType.LeftElytra || part.parentType == ParentType.RightElytra)
-                    part.applyVanillaTransforms(((LivingEntityRendererAccessor<?>) entityRenderer).figura$getElytraModel());
-                else
-                    part.applyVanillaTransforms(entityRenderer.getModel());
-            }
+            part.applyVanillaTransforms(entityRenderer);
+            part.applyExtraTransforms();
 
             //apply
-            custom.applyStack(matrices, part.parentType == ParentType.Camera);
+            custom.applyStack(matrices);
 
             //reset the parent
             part.resetVanillaTransforms();
@@ -152,8 +148,8 @@ public class StackAvatarRenderer extends ImmediateAvatarRenderer {
                 renderPivot(part, matrices);
 
             if (peek.visible) {
+                //render tasks
                 if (allowRenderTasks) {
-                    //render tasks
                     int light = peek.light;
                     int overlay = peek.overlay;
                     for (RenderTask task : part.renderTasks.values())
@@ -167,6 +163,7 @@ public class StackAvatarRenderer extends ImmediateAvatarRenderer {
 
             matrices.popPose();
         }
+        //peek.free();
 
         //render children
         for (FiguraModelPart child : part.children)
