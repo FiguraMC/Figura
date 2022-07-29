@@ -52,7 +52,7 @@ public abstract class FiguraDoc {
 
     // -- Special prints :p -- //
 
-    public static int printGroup(String name) {
+    public static int printGlobal(String name) {
         FiguraMod.sendChatMessage(HEADER.copy()
                 .append("\n\n")
                 .append(Component.literal("• ")
@@ -61,7 +61,7 @@ public abstract class FiguraDoc {
                         .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
                 .append("\n\t")
                 .append(Component.literal("• ")
-                        .append(Component.literal(name))
+                        .append(Component.literal(name == null ? "types" : name))
                         .withStyle(ColorUtils.Colors.MAYA_BLUE.style))
 
                 .append("\n\n")
@@ -71,7 +71,7 @@ public abstract class FiguraDoc {
                         .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
                 .append("\n\t")
                 .append(Component.literal("• ")
-                        .append(FiguraText.of("docs.group." + name))
+                        .append(FiguraText.of(name == null ? "docs.globals" : ("docs.globals." + name)))
                         .withStyle(ColorUtils.Colors.MAYA_BLUE.style))
         );
 
@@ -82,32 +82,6 @@ public abstract class FiguraDoc {
         FiguraMod.sendChatMessage(HEADER.copy()
                 .append("\n\n")
                 .append(FiguraText.of("docs").withStyle(ColorUtils.Colors.MAYA_BLUE.style)));
-
-        return 1;
-    }
-
-    public static int printTypesRoot() {
-        FiguraMod.sendChatMessage(HEADER.copy()
-                .append("\n\n")
-                .append(Component.literal("• ")
-                        .append(FiguraText.of("docs.text.type"))
-                        .append(":")
-                        .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
-                .append("\n\t")
-                .append(Component.literal("• ")
-                        .append(Component.literal("types"))
-                        .withStyle(ColorUtils.Colors.MAYA_BLUE.style))
-
-                .append("\n\n")
-                .append(Component.literal("• ")
-                        .append(FiguraText.of("docs.text.description"))
-                        .append(":")
-                        .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
-                .append("\n\t")
-                .append(Component.literal("• ")
-                        .append(FiguraText.of("docs.group"))
-                        .withStyle(ColorUtils.Colors.MAYA_BLUE.style))
-        );
 
         return 1;
     }
@@ -348,7 +322,8 @@ public abstract class FiguraDoc {
                             .append(":")
                             .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
                     .append("\n\t")
-                    .append(Component.literal("• " + FiguraDocsManager.getNameFor(type)).withStyle(ChatFormatting.YELLOW))
+                    .append(Component.literal("• ").withStyle(ColorUtils.Colors.MAYA_BLUE.style))
+                    .append(Component.literal(FiguraDocsManager.getNameFor(type)).withStyle(ChatFormatting.YELLOW))
                     .append(Component.literal(" " + name).withStyle(ColorUtils.Colors.MAYA_BLUE.style))
                     .append(Component.literal(" (")
                             .append(FiguraText.of(editable ? "docs.text.editable" : "docs.text.not_editable"))

@@ -1,15 +1,5 @@
 package org.moon.figura.lua.docs;
 
-import org.moon.figura.avatars.model.FiguraModelPart;
-import org.moon.figura.lua.api.*;
-import org.moon.figura.lua.api.entity.PlayerEntityWrapper;
-import org.moon.figura.lua.api.keybind.KeybindAPI;
-import org.moon.figura.lua.api.math.MatricesAPI;
-import org.moon.figura.lua.api.math.VectorsAPI;
-import org.moon.figura.lua.api.model.VanillaModelAPI;
-import org.moon.figura.lua.api.nameplate.NameplateAPI;
-import org.moon.figura.lua.api.SoundAPI;
-import org.moon.figura.lua.api.world.WorldAPI;
 import org.moon.figura.lua.types.LuaTable;
 import org.terasology.jnlua.JavaFunction;
 import org.terasology.jnlua.TypedJavaObject;
@@ -25,42 +15,8 @@ import org.terasology.jnlua.TypedJavaObject;
 )
 public abstract class FiguraGlobalsDocs {
 
-    @LuaFieldDoc(description = "globals.vectors")
-    public VectorsAPI vectors;
     @LuaFieldDoc(description = "globals.vec")
     public JavaFunction vec;
-    @LuaFieldDoc(description = "globals.matrices")
-    public MatricesAPI matrices;
-    @LuaFieldDoc(description = "globals.models")
-    public FiguraModelPart models;
-    @LuaFieldDoc(description = "globals.events")
-    public EventsAPI events;
-    @LuaFieldDoc(description = "globals.vanilla_model")
-    public VanillaModelAPI vanilla_model;
-    @LuaFieldDoc(description = "globals.world")
-    public WorldAPI world;
-    @LuaFieldDoc(description = "globals.player")
-    public PlayerEntityWrapper player;
-    @LuaFieldDoc(description = "globals.particle")
-    public ParticleAPI particle;
-    @LuaFieldDoc(description = "globals.sound")
-    public SoundAPI sound;
-    @LuaFieldDoc(description = "globals.nameplate")
-    public NameplateAPI nameplate;
-    @LuaFieldDoc(description = "globals.client")
-    public ClientAPI client;
-    @LuaFieldDoc(description = "globals.action_wheel")
-    public ActionWheelAPI action_wheel;
-    @LuaFieldDoc(description = "globals.animations")
-    public LuaTable animations;
-    @LuaFieldDoc(description = "globals.host")
-    public HostAPI host;
-    @LuaFieldDoc(description = "globals.meta")
-    public MetaAPI meta;
-    @LuaFieldDoc(description = "globals.renderer")
-    public RendererAPI renderer;
-    @LuaFieldDoc(description = "globals.keybind")
-    public KeybindAPI keybind;
 
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
