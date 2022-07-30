@@ -2,16 +2,19 @@ package org.moon.figura.newlua;
 
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import org.luaj.vm2.Globals;
-import org.luaj.vm2.LuaError;
-import org.luaj.vm2.LuaTable;
-import org.luaj.vm2.LuaValue;
+import net.minecraft.world.entity.Entity;
+import org.luaj.vm2.*;
+import org.luaj.vm2.compiler.LuaC;
 import org.luaj.vm2.lib.*;
 import org.luaj.vm2.lib.jse.JseBaseLib;
 import org.luaj.vm2.lib.jse.JseMathLib;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.lua.FiguraLuaPrinter;
+import org.moon.figura.newlua.api.entity.EntityAPI;
+import org.moon.figura.newlua.api.entity.PlayerAPI;
+import org.moon.figura.newlua.api.event.EventsAPI;
 
+import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -20,6 +23,15 @@ import java.util.Set;
  * One runtime per avatar
  */
 public class FiguraLuaRuntime {
+
+    //Global API instances
+    //---------------------------------
+    public Entity user;
+    public EntityAPI<?> entityAPI;
+    @Nullable public PlayerAPI playerAPI;
+    public EventsAPI events;
+
+    //---------------------------------
 
     private final Avatar owner;
     private final Globals userGlobals;
@@ -36,6 +48,8 @@ public class FiguraLuaRuntime {
         userGlobals.load(new TableLib());
         userGlobals.load(new StringLib());
         userGlobals.load(new JseMathLib());
+
+        LuaC.install(userGlobals);
 
         userGlobals.load(new DebugLib());
         setHookFunction = userGlobals.get("debug").get("sethook");
@@ -57,6 +71,15 @@ public class FiguraLuaRuntime {
             userGlobals.set(name, val);
         else
             userGlobals.set(name, typeManager.wrap(obj));
+    }
+
+    public void setUser(Entity user) {
+        this.user = user;
+        entityAPI = EntityAPI.wrap(user);
+        if (entityAPI instanceof PlayerAPI playerAPI)
+            this.playerAPI = playerAPI;
+        setGlobal("user", entityAPI);
+        userGlobals.set("player", userGlobals.get("user"));
     }
 
 
@@ -94,7 +117,7 @@ public class FiguraLuaRuntime {
     //In the case of an error, this will return null.
     //If there is no error, it returns the LuaValue that the script does.
     public LuaValue runScript(String script, String name) {
-        LuaValue chunk = FiguraAPIManager.MOD_WIDE_GLOBALS.load(script, name);
+        LuaValue chunk = userGlobals.load(script, name);
         try {
             return chunk.call();
         } catch (LuaError e) {
@@ -157,6 +180,10 @@ public class FiguraLuaRuntime {
     public void setInstructionLimit(int limit) {
         userGlobals.running.state.bytecodes = 0;
         setHookFunction.invoke(LuaValue.varargsOf(onReachedLimit, LuaValue.EMPTYSTRING, LuaValue.valueOf(Math.max(limit, 1))));
+    }
+
+    public int getInstructions() {
+        return userGlobals.running.state.bytecodes;
     }
 
 

@@ -24,34 +24,34 @@ public class PlayerTabOverlayMixin {
     @Inject(at = @At("RETURN"), method = "getNameForDisplay", cancellable = true)
     private void getPlayerName(PlayerInfo playerInfo, CallbackInfoReturnable<Component> cir) {
         //get config
-        int config = (int) Config.LIST_NAMEPLATE.value;
-        if (config == 0)
-            return;
-
-        //get data
-        UUID uuid = playerInfo.getProfile().getId();
-        Avatar avatar = AvatarManager.getAvatarForPlayer(uuid);
-        if (avatar == null)
-            return;
-
-        //apply customization
-        Component text = cir.getReturnValue();
-        Component replacement;
-
-        NameplateCustomization custom = avatar.luaState == null ? null : avatar.luaState.nameplate.LIST;
-        if (custom != null && NameplateCustomization.getText(custom) != null && TrustManager.get(uuid).get(TrustContainer.Trust.NAMEPLATE_EDIT) == 1) {
-            replacement = NameplateCustomization.applyCustomization(NameplateCustomization.getText(custom));
-        } else {
-            replacement = Component.literal(playerInfo.getProfile().getName());
-        }
-
-        if (config > 1) {
-            Component badges = NameplateCustomization.fetchBadges(avatar);
-            ((MutableComponent) replacement).append(badges);
-        }
-
-        text = TextUtils.replaceInText(text, "\\b" + playerInfo.getProfile().getName() + "\\b", replacement);
-
-        cir.setReturnValue(text);
+//        int config = (int) Config.LIST_NAMEPLATE.value;
+//        if (config == 0)
+//            return;
+//
+//        //get data
+//        UUID uuid = playerInfo.getProfile().getId();
+//        Avatar avatar = AvatarManager.getAvatarForPlayer(uuid);
+//        if (avatar == null)
+//            return;
+//
+//        //apply customization
+//        Component text = cir.getReturnValue();
+//        Component replacement;
+//
+//        NameplateCustomization custom = avatar.luaState == null ? null : avatar.luaState.nameplate.LIST;
+//        if (custom != null && NameplateCustomization.getText(custom) != null && TrustManager.get(uuid).get(TrustContainer.Trust.NAMEPLATE_EDIT) == 1) {
+//            replacement = NameplateCustomization.applyCustomization(NameplateCustomization.getText(custom));
+//        } else {
+//            replacement = Component.literal(playerInfo.getProfile().getName());
+//        }
+//
+//        if (config > 1) {
+//            Component badges = NameplateCustomization.fetchBadges(avatar);
+//            ((MutableComponent) replacement).append(badges);
+//        }
+//
+//        text = TextUtils.replaceInText(text, "\\b" + playerInfo.getProfile().getName() + "\\b", replacement);
+//
+//        cir.setReturnValue(text);
     }
 }

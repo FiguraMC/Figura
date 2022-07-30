@@ -35,14 +35,14 @@ public class ChatScreenMixin {
 
     @Inject(at = @At("HEAD"), method = "render")
     private void render(PoseStack poseStack, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
-        if (avatar == null || avatar.luaState == null)
-            return;
-
-        Integer color = avatar.luaState.host.chatColor;
-        if (color == null)
-            return;
-
-        this.input.setTextColor(color);
+//        Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
+//        if (avatar == null || avatar.luaState == null)
+//            return;
+//
+//        Integer color = avatar.luaState.host.chatColor;
+//        if (color == null)
+//            return;
+//
+//        this.input.setTextColor(color);
     }
 }

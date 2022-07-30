@@ -82,14 +82,14 @@ public class KeybindList extends AbstractList {
         keybinds.forEach(children::remove);
 
         //add new keybinds
-        if (owner == null || owner.luaState == null)
-            return;
-
-        for (FiguraKeybind keybind : owner.luaState.keybind.keyBindings) {
-            KeybindElement element = new KeybindElement(width - 22, keybind, this);
-            keybinds.add(element);
-            children.add(element);
-        }
+//        if (owner == null || owner.luaState == null)
+//            return;
+//
+//        for (FiguraKeybind keybind : owner.luaState.keybind.keyBindings) {
+//            KeybindElement element = new KeybindElement(width - 22, keybind, this);
+//            keybinds.add(element);
+//            children.add(element);
+//        }
     }
 
     private static class KeybindElement extends AbstractContainerElement {

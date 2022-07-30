@@ -36,32 +36,32 @@ public abstract class ItemInHandLayerMixin<T extends LivingEntity, M extends Ent
 
     @Inject(method = "renderArmWithItem", at = @At("HEAD"), cancellable = true)
     protected void renderArmWithItem(LivingEntity livingEntity, ItemStack itemStack, ItemTransforms.TransformType transformType, HumanoidArm humanoidArm, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, CallbackInfo ci) {
-        if (itemStack.isEmpty())
-            return;
-
-        Avatar avatar = AvatarManager.getAvatar(livingEntity);
-        if (avatar == null || TrustManager.get(livingEntity.getUUID()).get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 0)
-            return;
-
-        boolean left = humanoidArm == HumanoidArm.LEFT;
-
-        //script hide
-        if (avatar.luaState != null &&
-                (left && !avatar.luaState.vanillaModel.LEFT_ITEM.isVisible() ||
-                !left && !avatar.luaState.vanillaModel.RIGHT_ITEM.isVisible())
-        ) {
-            ci.cancel();
-            return;
-        }
-
-        //pivot part
-        if (avatar.pivotPartRender(left ? ParentType.LeftItemPivot : ParentType.RightItemPivot, stack -> {
-            float s = 16f;
-            stack.scale(s, s, s);
-            stack.mulPose(Vector3f.XP.rotationDegrees(-90f));
-            this.itemInHandRenderer.renderItem(livingEntity, itemStack, transformType, left, stack, multiBufferSource, i);
-        })) {
-            ci.cancel();
-        }
+//        if (itemStack.isEmpty())
+//            return;
+//
+//        Avatar avatar = AvatarManager.getAvatar(livingEntity);
+//        if (avatar == null || TrustManager.get(livingEntity.getUUID()).get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 0)
+//            return;
+//
+//        boolean left = humanoidArm == HumanoidArm.LEFT;
+//
+//        //script hide
+//        if (avatar.luaState != null &&
+//                (left && !avatar.luaState.vanillaModel.LEFT_ITEM.isVisible() ||
+//                !left && !avatar.luaState.vanillaModel.RIGHT_ITEM.isVisible())
+//        ) {
+//            ci.cancel();
+//            return;
+//        }
+//
+//        //pivot part
+//        if (avatar.pivotPartRender(left ? ParentType.LeftItemPivot : ParentType.RightItemPivot, stack -> {
+//            float s = 16f;
+//            stack.scale(s, s, s);
+//            stack.mulPose(Vector3f.XP.rotationDegrees(-90f));
+//            this.itemInHandRenderer.renderItem(livingEntity, itemStack, transformType, left, stack, multiBufferSource, i);
+//        })) {
+//            ci.cancel();
+//        }
     }
 }

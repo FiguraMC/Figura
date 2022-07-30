@@ -81,43 +81,43 @@ public class FiguraModelPartReader {
             result.parentType = ParentType.valueOf(partCompound.getString("pt"));
 
         //Read animations :D
-        if (partCompound.contains("anim")) {
-            ListTag nbt = partCompound.getList("anim", Tag.TAG_COMPOUND);
-            for (Tag tag : nbt) {
-                CompoundTag compound = (CompoundTag) tag;
-                Animation animation;
-
-                if (!compound.contains("id") || !compound.contains("data") || (animation = owner.animations.get(compound.getInt("id"))) == null)
-                    continue;
-
-                CompoundTag animNbt = compound.getCompound("data");
-                for (String channelString : animNbt.getAllKeys()) {
-                    TransformType type = TransformType.valueOf(channelString.toUpperCase());
-                    List<Keyframe> keyframes = new ArrayList<>();
-                    ListTag keyframeList = animNbt.getList(channelString, Tag.TAG_COMPOUND);
-
-                    for (Tag keyframeTag : keyframeList) {
-                        CompoundTag keyframeNbt = (CompoundTag) keyframeTag;
-                        float time = keyframeNbt.getFloat("time");
-                        Interpolation interpolation = Interpolation.valueOf(keyframeNbt.getString("int").toUpperCase());
-
-                        FiguraVec3 pos = FiguraVec3.of();
-                        readVec3(pos, keyframeNbt, "pre");
-
-                        if (keyframeNbt.contains("end")) {
-                            FiguraVec3 end = FiguraVec3.of();
-                            readVec3(end, keyframeNbt, "end");
-                            keyframes.add(new Keyframe(time, interpolation, pos, end));
-                        } else {
-                            keyframes.add(new Keyframe(time, interpolation, pos));
-                        }
-                    }
-
-                    keyframes.sort(Keyframe::compareTo);
-                    animation.addAnimation(result, new Animation.AnimationChannel(type, keyframes.toArray(new Keyframe[0])));
-                }
-            }
-        }
+//        if (partCompound.contains("anim")) {
+//            ListTag nbt = partCompound.getList("anim", Tag.TAG_COMPOUND);
+//            for (Tag tag : nbt) {
+//                CompoundTag compound = (CompoundTag) tag;
+//                Animation animation;
+//
+//                if (!compound.contains("id") || !compound.contains("data") || (animation = owner.animations.get(compound.getInt("id"))) == null)
+//                    continue;
+//
+//                CompoundTag animNbt = compound.getCompound("data");
+//                for (String channelString : animNbt.getAllKeys()) {
+//                    TransformType type = TransformType.valueOf(channelString.toUpperCase());
+//                    List<Keyframe> keyframes = new ArrayList<>();
+//                    ListTag keyframeList = animNbt.getList(channelString, Tag.TAG_COMPOUND);
+//
+//                    for (Tag keyframeTag : keyframeList) {
+//                        CompoundTag keyframeNbt = (CompoundTag) keyframeTag;
+//                        float time = keyframeNbt.getFloat("time");
+//                        Interpolation interpolation = Interpolation.valueOf(keyframeNbt.getString("int").toUpperCase());
+//
+//                        FiguraVec3 pos = FiguraVec3.of();
+//                        readVec3(pos, keyframeNbt, "pre");
+//
+//                        if (keyframeNbt.contains("end")) {
+//                            FiguraVec3 end = FiguraVec3.of();
+//                            readVec3(end, keyframeNbt, "end");
+//                            keyframes.add(new Keyframe(time, interpolation, pos, end));
+//                        } else {
+//                            keyframes.add(new Keyframe(time, interpolation, pos));
+//                        }
+//                    }
+//
+//                    keyframes.sort(Keyframe::compareTo);
+//                    animation.addAnimation(result, new Animation.AnimationChannel(type, keyframes.toArray(new Keyframe[0])));
+//                }
+//            }
+//        }
 
         return result;
     }

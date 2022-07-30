@@ -67,7 +67,7 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
             values.set(1, Component.literal(avatar.authors).setStyle(accent)); //authors
             values.set(2, Component.literal(MathUtils.asFileSize(avatar.fileSize)).setStyle(accent)); //size
             values.set(3, Component.literal(String.valueOf(avatar.complexity)).setStyle(accent)); //complexity
-            values.set(4, Component.literal(MathUtils.asFileSize(avatar.getScriptMemory())).setStyle(accent)); //memory
+            //values.set(4, Component.literal(MathUtils.asFileSize(avatar.getScriptMemory())).setStyle(accent)); //memory
         } else {
             for (int i = 0; i < TITLES.size(); i++) {
                 values.set(i, UNKNOWN);

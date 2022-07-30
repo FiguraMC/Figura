@@ -61,17 +61,17 @@ public final class FiguraKeybind {
     }
 
     public void setDown(boolean bl) {
-        //events
-        if (isDown != bl) {
-            if (bl) {
-                if (onPress != null)
-                    owner.tryCall(onPress, -1, this);
-            } else if (onRelease != null) {
-                owner.tryCall(onRelease, -1, this);
-            }
-        }
-
-        this.isDown = bl;
+//        //events
+//        if (isDown != bl) {
+//            if (bl) {
+//                if (onPress != null)
+//                    owner.tryCall(onPress, -1, this);
+//            } else if (onRelease != null) {
+//                owner.tryCall(onRelease, -1, this);
+//            }
+//        }
+//
+//        this.isDown = bl;
     }
 
     public void setKey(InputConstants.Key key) {

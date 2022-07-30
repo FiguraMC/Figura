@@ -49,36 +49,36 @@ public class ActionWheel {
         scale = (float) Config.ACTION_WHEEL_SCALE.value;
         stack.scale(scale, scale, scale);
 
-        Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
-        Page currentPage;
-        if (avatar == null || avatar.luaState == null || (currentPage = avatar.luaState.actionWheel.currentPage) == null) {
-            //this also pops the stack
-            renderEmpty(stack, avatar == null);
-            return;
-        }
-
-        //get left and right slots, right side have preference when the slots its odd
-        slots = currentPage.getSize();
-        leftSlots = (int) Math.floor(slots / 2d);
-        rightSlots = (int) Math.ceil(slots / 2d);
-
-        mouseX = minecraft.mouseHandler.xpos();
-        mouseY = minecraft.mouseHandler.ypos();
-
-        //calculate selected slot
-        calculateSelected();
-
-        //render overlays
-        renderTextures(stack, currentPage);
-
-        //render items
-        renderItems(currentPage);
+//        Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
+//        Page currentPage;
+//        if (avatar == null || avatar.luaState == null || (currentPage = avatar.luaState.actionWheel.currentPage) == null) {
+//            //this also pops the stack
+//            renderEmpty(stack, avatar == null);
+//            return;
+//        }
+//
+//        //get left and right slots, right side have preference when the slots its odd
+//        slots = currentPage.getSize();
+//        leftSlots = (int) Math.floor(slots / 2d);
+//        rightSlots = (int) Math.ceil(slots / 2d);
+//
+//        mouseX = minecraft.mouseHandler.xpos();
+//        mouseY = minecraft.mouseHandler.ypos();
+//
+//        //calculate selected slot
+//        calculateSelected();
+//
+//        //render overlays
+//        renderTextures(stack, currentPage);
+//
+//        //render items
+//        renderItems(currentPage);
 
         stack.popPose();
 
         //render title
-        Action action = selected == -1 ? null : currentPage.actions[selected];
-        renderTitle(stack, action == null ? null : action.getTitle());
+//        Action action = selected == -1 ? null : currentPage.actions[selected];
+//        renderTitle(stack, action == null ? null : action.getTitle());
     }
 
     // -- render helpers -- //
@@ -244,43 +244,43 @@ public class ActionWheel {
     // -- functions -- //
 
     public static void execute(int index, boolean left) {
-        Avatar avatar;
-        if (!isEnabled() || (avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID())) == null || avatar.luaState == null) {
-            selected = -1;
-            return;
-        }
-
-        //wheel click action
-        avatar.luaState.actionWheel.execute(avatar, left);
-
-        //execute action
-        Page currentPage;
-        if (index < 0 || index > 7 || (currentPage = avatar.luaState.actionWheel.currentPage) == null) {
-            selected = -1;
-            return;
-        }
-
-        Action action = currentPage.actions[index];
-        if (action != null) action.execute(avatar, left);
-
-        selected = -1;
+//        Avatar avatar;
+//        if (!isEnabled() || (avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID())) == null || avatar.luaState == null) {
+//            selected = -1;
+//            return;
+//        }
+//
+//        //wheel click action
+//        avatar.luaState.actionWheel.execute(avatar, left);
+//
+//        //execute action
+//        Page currentPage;
+//        if (index < 0 || index > 7 || (currentPage = avatar.luaState.actionWheel.currentPage) == null) {
+//            selected = -1;
+//            return;
+//        }
+//
+//        Action action = currentPage.actions[index];
+//        if (action != null) action.execute(avatar, left);
+//
+//        selected = -1;
     }
 
     public static void scroll(double delta) {
-        Avatar avatar;
-        if (!isEnabled() || (avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID())) == null || avatar.luaState == null)
-            return;
-
-        //wheel scroll action
-        avatar.luaState.actionWheel.mouseScroll(avatar, delta);
-
-        //scroll
-        Page currentPage;
-        if (selected < 0 || selected > 7 || (currentPage = avatar.luaState.actionWheel.currentPage) == null)
-            return;
-
-        Action action = currentPage.actions[selected];
-        if (action != null) action.mouseScroll(avatar, delta);
+//        Avatar avatar;
+//        if (!isEnabled() || (avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID())) == null || avatar.luaState == null)
+//            return;
+//
+//        //wheel scroll action
+//        avatar.luaState.actionWheel.mouseScroll(avatar, delta);
+//
+//        //scroll
+//        Page currentPage;
+//        if (selected < 0 || selected > 7 || (currentPage = avatar.luaState.actionWheel.currentPage) == null)
+//            return;
+//
+//        Action action = currentPage.actions[selected];
+//        if (action != null) action.mouseScroll(avatar, delta);
     }
 
     public static void setEnabled(boolean enabled) {

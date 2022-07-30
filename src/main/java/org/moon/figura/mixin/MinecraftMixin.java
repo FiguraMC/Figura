@@ -55,24 +55,24 @@ public abstract class MinecraftMixin {
         }
 
         //unlock cursor :p
-        Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
-        if (avatar != null && avatar.luaState != null && avatar.luaState.host.unlockCursor) {
-            this.mouseHandler.releaseMouse();
-            scriptMouseUnlock = true;
-        } else if (scriptMouseUnlock) {
-            this.mouseHandler.grabMouse();
-            scriptMouseUnlock = false;
-        }
+//        Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
+//        if (avatar != null && avatar.luaState != null && avatar.luaState.host.unlockCursor) {
+//            this.mouseHandler.releaseMouse();
+//            scriptMouseUnlock = true;
+//        } else if (scriptMouseUnlock) {
+//            this.mouseHandler.grabMouse();
+//            scriptMouseUnlock = false;
+//        }
     }
 
     @Inject(at = @At("HEAD"), method = "setScreen")
     private void setScreen(Screen screen, CallbackInfo ci) {
-        if (ActionWheel.isEnabled())
-            ActionWheel.setEnabled(false);
-
-        Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
-        if (avatar != null && avatar.luaState != null)
-            FiguraKeybind.releaseAll(avatar.luaState.keybind.keyBindings);
+//        if (ActionWheel.isEnabled())
+//            ActionWheel.setEnabled(false);
+//
+//        Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
+//        if (avatar != null && avatar.luaState != null)
+//            FiguraKeybind.releaseAll(avatar.luaState.keybind.keyBindings);
     }
 
     @Inject(at = @At("RETURN"), method = "clearLevel(Lnet/minecraft/client/gui/screens/Screen;)V")

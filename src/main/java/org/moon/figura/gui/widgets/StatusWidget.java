@@ -61,7 +61,7 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
         int texture = empty || !avatar.hasTexture ? 0 : 3;
         status += (byte) (texture << 2);
 
-        int script = empty ? 0 : avatar.scriptError ? 1 : avatar.luaState == null ? 0 : 3;
+        int script = empty ? 0 : avatar.scriptError ? 1 : avatar.luaRuntime == null ? 0 : 3;
         status += (byte) (script << 4);
 
         int backend = NetworkManager.backendStatus;

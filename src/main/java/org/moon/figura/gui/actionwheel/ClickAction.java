@@ -53,11 +53,11 @@ public class ClickAction extends Action {
 
     @Override
     public void execute(Avatar avatar, boolean left) {
-        LuaFunction function = left ? leftClick : rightClick;
-
-        //execute
-        if (function != null)
-            avatar.tryCall(function, -1);
+//        LuaFunction function = left ? leftClick : rightClick;
+//
+//        //execute
+//        if (function != null)
+//            avatar.tryCall(function, -1);
     }
 
     @Override

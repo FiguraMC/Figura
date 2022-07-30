@@ -27,11 +27,11 @@ public class FiguraRunCommand {
             context.getSource().sendError(FiguraText.of("command.run.not_local_error"));
             return 0;
         }
-        if (localAvatar.luaState == null || localAvatar.scriptError) {
+        if (localAvatar.luaRuntime == null || localAvatar.scriptError) {
             context.getSource().sendError(FiguraText.of("command.run.no_script_error"));
             return 0;
         }
-        localAvatar.luaState.runScript(lua, "runCommand");
+        localAvatar.luaRuntime.runScript(lua, "runCommand");
         return 1;
     }
 }

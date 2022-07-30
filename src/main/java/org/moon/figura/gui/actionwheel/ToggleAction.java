@@ -139,15 +139,15 @@ public class ToggleAction extends Action {
 
     @Override
     public void execute(Avatar avatar, boolean left) {
-        if (!left)
-            return;
-
-        toggled = !toggled;
-        LuaFunction function = !toggled ? untoggle == null ? toggle : untoggle : toggle;
-
-        //execute
-        if (function != null)
-            avatar.tryCall(function, -1, toggled);
+//        if (!left)
+//            return;
+//
+//        toggled = !toggled;
+//        LuaFunction function = !toggled ? untoggle == null ? toggle : untoggle : toggle;
+//
+//        //execute
+//        if (function != null)
+//            avatar.tryCall(function, -1, toggled);
     }
 
     @Override

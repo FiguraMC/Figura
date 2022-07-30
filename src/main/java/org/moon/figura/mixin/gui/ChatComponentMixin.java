@@ -56,22 +56,22 @@ public class ChatComponentMixin {
                 continue;
 
             //apply customization
-            Component replacement;
-            NameplateCustomization custom = avatar.luaState == null ? null : avatar.luaState.nameplate.CHAT;
-            if (custom != null && NameplateCustomization.getText(custom) != null && TrustManager.get(uuid).get(TrustContainer.Trust.NAMEPLATE_EDIT) == 1) {
-                replacement = NameplateCustomization.applyCustomization(NameplateCustomization.getText(custom).replaceAll("\n|\\\\n", ""));
-            } else {
-                replacement = Component.literal(player.getProfile().getName());
-            }
-
-            //apply nameplate
-            if (config > 1) {
-                Component badges = NameplateCustomization.fetchBadges(avatar);
-                ((MutableComponent) replacement).append(badges);
-            }
-
-            //modify message
-            message = TextUtils.replaceInText(message, "\\b" + player.getProfile().getName() + "\\b", replacement);
+//            Component replacement;
+//            NameplateCustomization custom = avatar.luaState == null ? null : avatar.luaState.nameplate.CHAT;
+//            if (custom != null && NameplateCustomization.getText(custom) != null && TrustManager.get(uuid).get(TrustContainer.Trust.NAMEPLATE_EDIT) == 1) {
+//                replacement = NameplateCustomization.applyCustomization(NameplateCustomization.getText(custom).replaceAll("\n|\\\\n", ""));
+//            } else {
+//                replacement = Component.literal(player.getProfile().getName());
+//            }
+//
+//            //apply nameplate
+//            if (config > 1) {
+//                Component badges = NameplateCustomization.fetchBadges(avatar);
+//                ((MutableComponent) replacement).append(badges);
+//            }
+//
+//            //modify message
+//            message = TextUtils.replaceInText(message, "\\b" + player.getProfile().getName() + "\\b", replacement);
         }
 
         return message;

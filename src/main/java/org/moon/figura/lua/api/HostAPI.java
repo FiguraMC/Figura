@@ -197,14 +197,15 @@ public class HostAPI {
             description = "host.get_slot"
     )
     public static ItemStackWrapper getSlot(@LuaNotNil HostAPI api, @LuaNotNil String slot) {
-        if (!isHost(api)) return null;
-        try {
-            Entity e = EntityWrapper.getEntity(api.owner.luaState.entity);
-            Integer index = SlotArgument.slot().parse(new StringReader(slot));
-            return ItemStackWrapper.verify(e.getSlot(index).get());
-        } catch (Exception e) {
-            throw new LuaRuntimeException("Unable to get slot \"" + slot + "\"");
-        }
+//        if (!isHost(api)) return null;
+//        try {
+//            Entity e = EntityWrapper.getEntity(api.owner.luaState.entity);
+//            Integer index = SlotArgument.slot().parse(new StringReader(slot));
+//            return ItemStackWrapper.verify(e.getSlot(index).get());
+//        } catch (Exception e) {
+//            throw new LuaRuntimeException("Unable to get slot \"" + slot + "\"");
+//        }
+        return null;
     }
 
     @LuaWhitelist

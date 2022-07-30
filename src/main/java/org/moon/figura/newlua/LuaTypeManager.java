@@ -121,7 +121,7 @@ public class LuaTypeManager {
                 for (int i = 0; i < argumentTypes.length; i++) {
                     int argIndex = i + (isStatic ? 1 : 2);
 
-                    if (i < args.narg() && !args.isnil(i+1)) {
+                    if (argIndex <= args.narg() && !args.isnil(argIndex)) {
                         actualArgs[i] = switch (argumentTypes[i].getName()) {
                             case "java.lang.Double", "double" -> args.checkdouble(argIndex);
                             case "java.lang.String" -> args.checkjstring(argIndex);

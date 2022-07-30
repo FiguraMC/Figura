@@ -3,12 +3,14 @@ package org.moon.figura.math.newmatrix;
 import org.luaj.vm2.LuaError;
 import org.moon.figura.math.newvector.FiguraVec2;
 import org.moon.figura.math.newvector.FiguraVec3;
+import org.moon.figura.newlua.LuaType;
 import org.moon.figura.newlua.LuaWhitelist;
 import org.moon.figura.newlua.docs.LuaFunctionOverload;
 import org.moon.figura.newlua.docs.LuaMethodDoc;
 import org.moon.figura.utils.caching.CacheStack;
 import org.moon.figura.utils.caching.CacheUtils;
 
+@LuaType(typeName = "mat2")
 public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
 
     //Values are named as v(ROW)(COLUMN), both 1-indexed like in actual math

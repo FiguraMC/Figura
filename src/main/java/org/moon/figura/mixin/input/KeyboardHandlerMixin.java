@@ -21,14 +21,14 @@ public class KeyboardHandlerMixin {
 
     @Inject(method = "keyPress", at = @At("HEAD"), cancellable = true)
     public void keyPress(long window, int key, int scancode, int action, int modifiers, CallbackInfo ci) {
-        if (window != this.minecraft.getWindow().getWindow())
-            return;
-
-        Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
-        if (avatar == null || avatar.luaState == null)
-            return;
-
-        if (FiguraKeybind.set(avatar.luaState.keybind.keyBindings, InputConstants.getKey(key, scancode), action != 0))
-            ci.cancel();
+//        if (window != this.minecraft.getWindow().getWindow())
+//            return;
+//
+//        Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
+//        if (avatar == null || avatar.luaState == null)
+//            return;
+//
+//        if (FiguraKeybind.set(avatar.luaState.keybind.keyBindings, InputConstants.getKey(key, scancode), action != 0))
+//            ci.cancel();
     }
 }

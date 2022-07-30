@@ -36,7 +36,7 @@ public class MetaAPI {
             description = "meta.store"
     )
     public static void store(@LuaNotNil MetaAPI api, @LuaNotNil String key, Object value) {
-        api.avatar.luaState.storedStuff.putValue(key, value);
+//        api.avatar.luaState.storedStuff.putValue(key, value);
     }
 
     @LuaWhitelist
@@ -274,7 +274,8 @@ public class MetaAPI {
             description = "meta.get_script_memory"
     )
     public static int getScriptMemory(@LuaNotNil MetaAPI api) {
-        return api.avatar.luaState.getTotalMemory() - api.avatar.luaState.getFreeMemory();
+//        return api.avatar.luaState.getTotalMemory() - api.avatar.luaState.getFreeMemory();
+        return 0;
     }
 
     @LuaWhitelist

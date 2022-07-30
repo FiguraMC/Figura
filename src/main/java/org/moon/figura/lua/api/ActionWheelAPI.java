@@ -154,16 +154,16 @@ public class ActionWheelAPI {
     }
 
     public void execute(Avatar avatar, boolean left) {
-        LuaFunction function = left ? leftClick : rightClick;
-
-        //execute
-        if (function != null)
-            avatar.tryCall(function, -1);
+//        LuaFunction function = left ? leftClick : rightClick;
+//
+//        //execute
+//        if (function != null)
+//            avatar.tryCall(function, -1);
     }
 
     public void mouseScroll(Avatar avatar, double delta) {
-        if (scroll != null)
-            avatar.tryCall(scroll, -1, delta);
+//        if (scroll != null)
+//            avatar.tryCall(scroll, -1, delta);
     }
 
     @Override

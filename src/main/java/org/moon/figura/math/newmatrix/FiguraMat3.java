@@ -5,6 +5,7 @@ import org.luaj.vm2.LuaError;
 import org.lwjgl.BufferUtils;
 import org.moon.figura.math.newvector.FiguraVec3;
 import org.moon.figura.math.newvector.FiguraVec4;
+import org.moon.figura.newlua.LuaType;
 import org.moon.figura.newlua.LuaWhitelist;
 import org.moon.figura.newlua.docs.LuaFunctionOverload;
 import org.moon.figura.newlua.docs.LuaMethodDoc;
@@ -13,6 +14,7 @@ import org.moon.figura.utils.caching.CacheUtils;
 
 import java.nio.FloatBuffer;
 
+@LuaType(typeName = "mat3")
 public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
 
     private static final FloatBuffer copyingBuffer = BufferUtils.createFloatBuffer(3*3);

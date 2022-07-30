@@ -112,24 +112,24 @@ public class Animation {
             minTime = offset;
         }
 
-        for (Float codeTime : codeFrames.keySet()) {
-            if (codeTime >= minTime && codeTime < maxTime && !owner.scriptError && owner.luaState != null)
-                owner.luaState.runScript(codeFrames.get(codeTime), "animation (" + this.name + ")");
-        }
+//        for (Float codeTime : codeFrames.keySet()) {
+//            if (codeTime >= minTime && codeTime < maxTime && !owner.scriptError && owner.luaState != null)
+//                owner.luaState.runScript(codeFrames.get(codeTime), "animation (" + this.name + ")");
+//        }
     }
 
     public static LuaTable getTableForAnimations(Avatar avatar) {
         LuaTable models = new LuaTable();
-        for (Animation animation : avatar.animations.values()) {
-            //get or create animation table
-            LuaTable animations = (LuaTable) models.get(animation.modelName);
-            if (animations == null)
-                animations = new LuaTable();
-
-            //put animation on the model table
-            animations.put(animation.name, animation);
-            models.put(animation.modelName, animations);
-        }
+//        for (Animation animation : avatar.animations.values()) {
+//            //get or create animation table
+//            LuaTable animations = (LuaTable) models.get(animation.modelName);
+//            if (animations == null)
+//                animations = new LuaTable();
+//
+//            //put animation on the model table
+//            animations.put(animation.name, animation);
+//            models.put(animation.modelName, animations);
+//        }
         return models;
     }
 

@@ -13,7 +13,7 @@ import org.moon.figura.utils.MathUtils;
 import org.moon.figura.utils.caching.CacheUtils;
 import org.moon.figura.utils.caching.CachedType;
 
-@LuaType(typeName = "vec3")
+@LuaType(typeName = "vec2")
 public class FiguraVec2 extends FiguraVector<FiguraVec2, FiguraMat2> {
 
     private final static CacheUtils.Cache<FiguraVec2> CACHE = CacheUtils.getCache(FiguraVec2::new, 300);

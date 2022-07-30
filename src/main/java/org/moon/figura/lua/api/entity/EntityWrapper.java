@@ -481,11 +481,12 @@ public class EntityWrapper<T extends Entity> {
             description = "entity.get_variable"
     )
     public static <T extends Entity> Object getVariable(@LuaNotNil EntityWrapper<T> entity, @LuaNotNil String key) {
-        Avatar a = AvatarManager.getAvatarForPlayer(entity.savedUUID);
-        if (a == null || a.luaState == null)
-            return null;
-
-        return a.luaState.storedStuff.getValue(key, Object.class);
+//        Avatar a = AvatarManager.getAvatarForPlayer(entity.savedUUID);
+//        if (a == null || a.luaState == null)
+//            return null;
+//
+//        return a.luaState.storedStuff.getValue(key, Object.class);
+        return null;
     }
 
     @LuaWhitelist

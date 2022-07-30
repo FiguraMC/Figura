@@ -34,9 +34,9 @@ public class ScrollAction extends Action {
 
     @Override
     public void mouseScroll(Avatar avatar, double delta) {
-        //execute
-        if (scroll != null)
-            avatar.tryCall(scroll, -1, delta);
+//        //execute
+//        if (scroll != null)
+//            avatar.tryCall(scroll, -1, delta);
     }
 
     @Override

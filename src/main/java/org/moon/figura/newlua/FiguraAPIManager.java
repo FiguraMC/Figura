@@ -1,13 +1,23 @@
 package org.moon.figura.newlua;
 
+import net.minecraft.world.entity.player.Player;
 import org.luaj.vm2.*;
 import org.luaj.vm2.compiler.LuaC;
 import org.luaj.vm2.lib.PackageLib;
 import org.luaj.vm2.lib.StringLib;
 import org.luaj.vm2.lib.jse.JseBaseLib;
 import org.luaj.vm2.lib.jse.JseMathLib;
+import org.moon.figura.math.newmatrix.FiguraMat2;
+import org.moon.figura.math.newmatrix.FiguraMat3;
+import org.moon.figura.math.newmatrix.FiguraMat4;
+import org.moon.figura.math.newvector.*;
+import org.moon.figura.newlua.api.entity.EntityAPI;
+import org.moon.figura.newlua.api.entity.LivingEntityAPI;
+import org.moon.figura.newlua.api.entity.PlayerAPI;
+import org.moon.figura.newlua.api.event.EventsAPI;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -16,38 +26,42 @@ import java.util.function.Supplier;
  */
 public class FiguraAPIManager {
 
-    public static final Globals MOD_WIDE_GLOBALS;
-
     /**
      * Addon mods simply need to add their classes to the WHITELISTED_CLASSES set,
      * and whichever global vars they want to set into the API_GETTERS map.
      */
     public static final Set<Class<?>> WHITELISTED_CLASSES = new HashSet<>() {{
+        add(FiguraVec2.class);
+        add(FiguraVec3.class);
+        add(FiguraVec4.class);
+        add(FiguraVec5.class);
+        add(FiguraVec6.class);
 
+        add(FiguraMat2.class);
+        add(FiguraMat3.class);
+        add(FiguraMat4.class);
+
+        add(EntityAPI.class);
+        add(LivingEntityAPI.class);
+        add(PlayerAPI.class);
+
+        add(EventsAPI.class);
+        add(EventsAPI.LuaEvent.class);
     }};
 
-    public static final HashMap<String, Supplier<Object>> API_GETTERS = new LinkedHashMap<>() {{
-
+    public static final Map<String, Function<FiguraLuaRuntime, Object>> API_GETTERS = new LinkedHashMap<>() {{
+        put("events", r -> r.events = new EventsAPI());
     }};
 
     static {
-        MOD_WIDE_GLOBALS = new Globals();
-        MOD_WIDE_GLOBALS.load(new JseBaseLib());
-        MOD_WIDE_GLOBALS.load(new PackageLib());
-        MOD_WIDE_GLOBALS.load(new StringLib());
-        MOD_WIDE_GLOBALS.load(new JseMathLib());
-
-        LoadState.install(MOD_WIDE_GLOBALS);
-        LuaC.install(MOD_WIDE_GLOBALS);
-
         LuaString.s_metatable = new ReadOnlyLuaTable(LuaString.s_metatable);
     }
 
     public static void setupTypesAndAPIs(FiguraLuaRuntime runtime) {
         for (Class<?> clazz : WHITELISTED_CLASSES)
             runtime.registerClass(clazz);
-        for (Map.Entry<String, Supplier<Object>> entry : API_GETTERS.entrySet())
-            runtime.setGlobal(entry.getKey(), entry.getValue().get());
+        for (Map.Entry<String, Function<FiguraLuaRuntime, Object>> entry : API_GETTERS.entrySet())
+            runtime.setGlobal(entry.getKey(), entry.getValue().apply(runtime));
     }
 
     static class ReadOnlyLuaTable extends LuaTable {

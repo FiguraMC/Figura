@@ -4,6 +4,7 @@ import com.mojang.math.Matrix4f;
 import org.luaj.vm2.LuaError;
 import org.lwjgl.BufferUtils;
 import org.moon.figura.math.newvector.FiguraVec4;
+import org.moon.figura.newlua.LuaType;
 import org.moon.figura.newlua.LuaWhitelist;
 import org.moon.figura.newlua.docs.LuaFunctionOverload;
 import org.moon.figura.newlua.docs.LuaMethodDoc;
@@ -12,6 +13,7 @@ import org.moon.figura.utils.caching.CacheUtils;
 
 import java.nio.FloatBuffer;
 
+@LuaType(typeName = "mat4")
 public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
 
     private static final FloatBuffer copyingBuffer = BufferUtils.createFloatBuffer(4*4);

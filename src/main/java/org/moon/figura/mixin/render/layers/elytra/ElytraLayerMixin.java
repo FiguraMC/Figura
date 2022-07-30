@@ -28,14 +28,14 @@ public abstract class ElytraLayerMixin<T extends LivingEntity, M extends EntityM
 
     @Inject(at = @At("HEAD"), method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V")
     public void onRender(PoseStack poseStack, MultiBufferSource multiBufferSource, int i, T livingEntity, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
-        Avatar avatar = AvatarManager.getAvatar(livingEntity);
-        if (avatar != null && avatar.luaState != null)
-            vanillaModelAPI = avatar.luaState.vanillaModel;
-        else
-            vanillaModelAPI = null;
-
-        if (vanillaModelAPI != null && TrustManager.get(livingEntity.getUUID()).get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 1)
-            vanillaModelAPI.ELYTRA.alter(elytraModel);
+//        Avatar avatar = AvatarManager.getAvatar(livingEntity);
+//        if (avatar != null && avatar.luaState != null)
+//            vanillaModelAPI = avatar.luaState.vanillaModel;
+//        else
+//            vanillaModelAPI = null;
+//
+//        if (vanillaModelAPI != null && TrustManager.get(livingEntity.getUUID()).get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 1)
+//            vanillaModelAPI.ELYTRA.alter(elytraModel);
     }
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/ElytraModel;setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V", shift = At.Shift.AFTER), method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V")

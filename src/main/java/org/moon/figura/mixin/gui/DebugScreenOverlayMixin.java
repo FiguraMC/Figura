@@ -36,26 +36,26 @@ public class DebugScreenOverlayMixin {
             lines.add(++i, String.format("Animations Complexity: %d", avatar.animationComplexity));
 
             //has script
-            if (avatar.luaState != null) {
-                lines.add(++i, String.format("Script Memory: %s", MathUtils.asFileSize(avatar.getScriptMemory()).toUpperCase()));
-
-                if (FiguraMod.DO_OUR_NATIVES_WORK) {
-                    lines.add(++i, String.format("Init instructions: %d", avatar.initInstructions));
-
-                    lines.add(++i, String.format("Tick instructions: %d (W: %d E: %d)", avatar.accumulatedTickInstructions, avatar.worldTickInstructions, avatar.entityTickInstructions));
-                    lines.add(++i, String.format("Render instructions: %d (W: %d E: %d PE: %d PW: %d)",
-                            avatar.accumulatedEntityRenderInstructions + avatar.accumulatedWorldRenderInstructions,
-                            avatar.worldRenderInstructions,
-                            avatar.entityRenderInstructions,
-                            avatar.postEntityRenderInstructions,
-                            avatar.postWorldRenderInstructions)
-                    );
-                } else {
-                    lines.add(++i, "Sorry, but instruction counts are ");
-                    lines.add(++i, "only supported on Windows (Maybe Linux?)");
-                    lines.add(++i, "right now :( We're working on it!");
-                }
-            }
+//            if (avatar.luaState != null) {
+//                lines.add(++i, String.format("Script Memory: %s", MathUtils.asFileSize(avatar.getScriptMemory()).toUpperCase()));
+//
+//                if (FiguraMod.DO_OUR_NATIVES_WORK) {
+//                    lines.add(++i, String.format("Init instructions: %d", avatar.initInstructions));
+//
+//                    lines.add(++i, String.format("Tick instructions: %d (W: %d E: %d)", avatar.accumulatedTickInstructions, avatar.worldTickInstructions, avatar.entityTickInstructions));
+//                    lines.add(++i, String.format("Render instructions: %d (W: %d E: %d PE: %d PW: %d)",
+//                            avatar.accumulatedEntityRenderInstructions + avatar.accumulatedWorldRenderInstructions,
+//                            avatar.worldRenderInstructions,
+//                            avatar.entityRenderInstructions,
+//                            avatar.postEntityRenderInstructions,
+//                            avatar.postWorldRenderInstructions)
+//                    );
+//                } else {
+//                    lines.add(++i, "Sorry, but instruction counts are ");
+//                    lines.add(++i, "only supported on Windows (Maybe Linux?)");
+//                    lines.add(++i, "right now :( We're working on it!");
+//                }
+//            }
         }
         //lines.add(++i, String.format("Pings per second: ↑%d, ↓%d", pingSent, pingReceived));
 

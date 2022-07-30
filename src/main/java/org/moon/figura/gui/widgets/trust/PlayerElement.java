@@ -131,7 +131,9 @@ public class PlayerElement extends AbstractTrustElement {
 
         //size and memory
         if (avatar != null && avatar.nbt != null) {
-            Component text = FiguraText.of("gui.trust.avatar_size", MathUtils.asFileSize(avatar.fileSize)).append(TextUtils.TAB).append(FiguraText.of("gui.trust.avatar_memory", MathUtils.asFileSize(avatar.getScriptMemory())));
+            //String memoryUse = MathUtils.asFileSize(avatar.getScriptMemory());
+            String memoryUse = "Memory usage is yeeted now lol";
+            Component text = FiguraText.of("gui.trust.avatar_size", MathUtils.asFileSize(avatar.fileSize)).append(TextUtils.TAB).append(FiguraText.of("gui.trust.avatar_memory", memoryUse));
             drawString(stack, font, text, 0, font.lineHeight, 0x888888);
         }
 

@@ -34,13 +34,13 @@ public class KeybindScreen extends AbstractPanelScreen {
         // -- bottom buttons -- //
 
         //discard
-        this.addRenderableWidget(new TexturedButton(width / 2 - 122, height - 24, 120, 20, FiguraText.of("gui.reset_all"), null, button -> {
-            if (owner == null || owner.luaState == null)
-                return;
-
-            for (FiguraKeybind keybind : owner.luaState.keybind.keyBindings)
-                keybind.resetDefaultKey();
-        }));
+//        this.addRenderableWidget(new TexturedButton(width / 2 - 122, height - 24, 120, 20, FiguraText.of("gui.reset_all"), null, button -> {
+//            if (owner == null || owner.luaState == null)
+//                return;
+//
+//            for (FiguraKeybind keybind : owner.luaState.keybind.keyBindings)
+//                keybind.resetDefaultKey();
+//        }));
 
         //back
         addRenderableWidget(new TexturedButton(width / 2 + 4, height - 24, 120, 20, FiguraText.of("gui.back"), null,

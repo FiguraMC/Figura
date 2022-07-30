@@ -23,33 +23,33 @@ public class EntityRenderDispatcherMixin {
     private void renderFlame(PoseStack stack, MultiBufferSource multiBufferSource, Entity entity, CallbackInfo ci) {
         if (UIHelper.forceNoFire) ci.cancel();
 
-        Avatar avatar = AvatarManager.getAvatar(entity);
-        if (avatar == null || avatar.luaState == null || TrustManager.get(entity.getUUID()).get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 0)
-            return;
-
-        if (!avatar.luaState.renderer.renderFire)
-            ci.cancel();
+//        Avatar avatar = AvatarManager.getAvatar(entity);
+//        if (avatar == null || avatar.luaState == null || TrustManager.get(entity.getUUID()).get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 0)
+//            return;
+//
+//        if (!avatar.luaState.renderer.renderFire)
+//            ci.cancel();
     }
 
     @ModifyVariable(method = "renderShadow", at = @At("HEAD"), ordinal = 2, argsOnly = true)
     private static float modifyShadowSize(float h, PoseStack poseStack, MultiBufferSource multiBufferSource, Entity entity, float f, float g, LevelReader levelReader) {
-        Avatar avatar = AvatarManager.getAvatar(entity);
-        if (avatar != null && avatar.luaState != null && avatar.luaState.renderer.shadowRadius != null && TrustManager.get(entity.getUUID()).get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 1)
-            return avatar.luaState.renderer.shadowRadius;
+//        Avatar avatar = AvatarManager.getAvatar(entity);
+//        if (avatar != null && avatar.luaState != null && avatar.luaState.renderer.shadowRadius != null && TrustManager.get(entity.getUUID()).get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 1)
+//            return avatar.luaState.renderer.shadowRadius;
         return h;
     }
 
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
     private <E extends Entity> void render(E entity, double d, double e, double f, float g, float h, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, CallbackInfo ci) {
-        Entity owner = entity.getControllingPassenger();
-        if (owner == null)
-            return;
-
-        Avatar avatar = AvatarManager.getAvatar(owner);
-        if (avatar == null || avatar.luaState == null || TrustManager.get(owner.getUUID()).get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 0)
-            return;
-
-        if (!avatar.luaState.renderer.renderVehicle)
-            ci.cancel();
+//        Entity owner = entity.getControllingPassenger();
+//        if (owner == null)
+//            return;
+//
+//        Avatar avatar = AvatarManager.getAvatar(owner);
+//        if (avatar == null || avatar.luaState == null || TrustManager.get(owner.getUUID()).get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 0)
+//            return;
+//
+//        if (!avatar.luaState.renderer.renderVehicle)
+//            ci.cancel();
     }
 }
