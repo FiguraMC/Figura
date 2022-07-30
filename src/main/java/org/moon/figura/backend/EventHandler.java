@@ -3,8 +3,6 @@ package org.moon.figura.backend;
 import com.google.gson.JsonObject;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.AvatarManager;
-import org.moon.figura.gui.FiguraToast;
-import org.moon.figura.utils.FiguraText;
 
 import java.util.UUID;
 import java.util.function.BiConsumer;
@@ -12,12 +10,10 @@ import java.util.function.BiConsumer;
 public enum EventHandler {
 
     UPLOAD((owner, json) -> {
-        if (owner.compareTo(FiguraMod.getLocalPlayerUUID()) == 0) {
-            FiguraToast.sendToast(FiguraText.of("backend.upload_success"));
+        if (FiguraMod.isLocal(owner))
             AvatarManager.localUploaded = true;
-        } else {
+        else
             AvatarManager.reloadAvatar(owner);
-        }
 
         //re-sub
         NetworkManager.subscribe(owner);
@@ -29,7 +25,8 @@ public enum EventHandler {
 
     }),
     DELETE((owner, json) -> {
-
+        if (!FiguraMod.isLocal(owner) || AvatarManager.localUploaded)
+            AvatarManager.clearAvatar(owner);
     });
 
     private final BiConsumer<UUID, JsonObject> consumer;

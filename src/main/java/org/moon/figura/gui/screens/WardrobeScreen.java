@@ -6,7 +6,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
@@ -14,7 +13,6 @@ import org.moon.figura.avatars.providers.LocalAvatarFetcher;
 import org.moon.figura.backend.NetworkManager;
 import org.moon.figura.commands.FiguraLinkCommand;
 import org.moon.figura.config.Config;
-import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.widgets.*;
 import org.moon.figura.gui.widgets.lists.AvatarList;
 import org.moon.figura.utils.FiguraIdentifier;
@@ -83,10 +81,9 @@ public class WardrobeScreen extends AbstractPanelScreen {
         }));
 
         //delete
-        addRenderableWidget(delete = new TexturedButton(buttX + 24, buttY, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/delete.png"), 72, 24, Component.literal("not yet ❤").withStyle(ChatFormatting.RED) /*FiguraText.of("gui.wardrobe.delete.tooltip")*/, button -> {
-            FiguraToast.sendToast(Component.literal("lol nope").setStyle(Style.EMPTY.withColor(0xFFADAD)), FiguraToast.ToastType.DEFAULT);
-        }));
-        delete.active = false;
+        addRenderableWidget(delete = new TexturedButton(buttX + 24, buttY, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/delete.png"), 72, 24, FiguraText.of("gui.wardrobe.delete.tooltip"), button ->
+                NetworkManager.deleteAvatar(null))
+        );
 
         statusWidget = new StatusWidget(entity.x + entity.width - 64, 0, 64);
         statusWidget.y = entity.y - statusWidget.height - 4;
@@ -158,7 +155,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
         Avatar avatar;
         boolean backend = NetworkManager.backendStatus == 3;
         upload.active = backend && NetworkManager.canUpload() && !AvatarManager.localUploaded && (avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID())) != null && avatar.nbt != null;
-        //delete.active = backend;
+        delete.active = backend;
     }
 
     @Override

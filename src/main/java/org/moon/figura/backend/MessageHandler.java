@@ -99,6 +99,12 @@ public enum MessageHandler {
         UUID owner = UUID.fromString(json.get("uuid").getAsString());
         JsonObject event = json.getAsJsonObject("event");
         EventHandler.readEvent(owner, event);
+    }),
+    RESPONSE(json -> {
+        try {
+            Response response = Response.valueOf(json.get("data").getAsString().toUpperCase());
+            FiguraToast.sendToast(response.TITLE, response.SUBTITLE, response.TYPE);
+        } catch (Exception ignored) {}
     });
 
     // -- fields -- //

@@ -237,6 +237,19 @@ public class NetworkManager {
         });
     }
 
+    public static void deleteAvatar(UUID id) {
+        assertBackend();
+        run(() -> {
+            if (!hasBackend())
+                return;
+
+            JsonObject json = new JsonObject();
+            json.addProperty("type", "delete");
+            json.addProperty("id", id == null ? "avatar" : id.toString()); //todo
+            sendMessage(GSON.toJson(json));
+        });
+    }
+
     public static void getAvatar(UUID id) { //TODO - replace "avatar"
         String avatarID = "avatar";
 

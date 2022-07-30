@@ -20,13 +20,11 @@
 
   "figura.backend.upload_success": "Avatar uploaded!",
   "figura.backend.upload_error": "Upload Error",
-  "figura.backend.upload_invalid": "Invalid data",
   "figura.backend.upload_too_big": "Avatar is too big",
   "figura.backend.upload_too_many": "You have too many avatars",
 
   "figura.backend.delete_success": "Avatar deleted!",
   "figura.backend.delete_error": "Delete Error",
-  "figura.backend.delete_invalid": "Invalid data",
   "figura.backend.delete_not_found": "Avatar not found",
 
 
