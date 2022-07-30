@@ -45,6 +45,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 //the avatar class
@@ -73,7 +74,7 @@ public class Avatar {
     public FiguraLuaState luaState;
 
     public final Map<String, SoundBuffer> customSounds = new HashMap<>();
-    public final Map<Integer, Animation> animations = Collections.synchronizedMap(new HashMap<>());
+    public final Map<Integer, Animation> animations = new ConcurrentHashMap<>();
 
     private int entityTickLimit, entityRenderLimit;
     private int worldTickLimit, worldRenderLimit;

@@ -98,6 +98,8 @@ public class FiguraJavaReflector implements JavaReflector {
                 Field f = fieldCache.get(objectClass).get(key);
                 if (f != null && !Modifier.isFinal(f.getModifiers()))
                     f.set(object, luaState.toJavaObject(3, f.getType()));
+                else if (metamethodCache.get(objectClass).containsKey("__newindex"))
+                    return callMetamethod(luaState, Metamethod.NEWINDEX);
                 else
                     throw new LuaRuntimeException("Attempt to assign invalid value " + key + ".");
             } catch (IllegalAccessException e) {

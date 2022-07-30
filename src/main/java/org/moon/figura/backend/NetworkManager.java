@@ -19,7 +19,6 @@ import net.minecraft.network.protocol.login.ClientboundGameProfilePacket;
 import net.minecraft.network.protocol.login.ServerboundHelloPacket;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
-import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.config.Config;
 
 import java.io.ByteArrayOutputStream;
@@ -258,6 +257,20 @@ public class NetworkManager {
         sub.addProperty("type", "unsubscribe");
         sub.addProperty("uuid", id.toString());
         NetworkManager.sendMessage(NetworkManager.GSON.toJson(sub));
+    }
+
+    public static void sendPing(String name, boolean sync, Object... args) {
+        JsonObject json = new JsonObject();
+        json.addProperty("type", "sendPing");
+        json.addProperty("name", name);
+        json.addProperty("sync", sync);
+
+        JsonArray array = new JsonArray();
+        for (Object arg : args)
+            array.add(arg.toString()); //TODO - fix it to allow any type
+
+        json.add("data", array);
+        NetworkManager.sendMessage(NetworkManager.GSON.toJson(json));
     }
 
     // -- backend command -- //

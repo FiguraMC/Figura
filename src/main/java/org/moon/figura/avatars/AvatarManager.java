@@ -15,6 +15,7 @@ import org.moon.figura.utils.FiguraText;
 
 import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Manages all the avatars that are currently loaded in memory, and also
@@ -23,7 +24,7 @@ import java.util.*;
  */
 public class AvatarManager {
 
-    private static final Map<UUID, Avatar> LOADED_AVATARS = Collections.synchronizedMap(new HashMap<>());
+    private static final Map<UUID, Avatar> LOADED_AVATARS = new ConcurrentHashMap<>();
     private static final Set<UUID> FETCHED_AVATARS = new HashSet<>();
 
     public static boolean localUploaded = true; //init as true :3

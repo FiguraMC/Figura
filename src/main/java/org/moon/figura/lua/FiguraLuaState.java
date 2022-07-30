@@ -13,7 +13,6 @@ import org.moon.figura.lua.api.math.MatricesAPI;
 import org.moon.figura.lua.api.math.VectorsAPI;
 import org.moon.figura.lua.api.model.VanillaModelAPI;
 import org.moon.figura.lua.api.nameplate.NameplateAPI;
-import org.moon.figura.lua.api.SoundAPI;
 import org.moon.figura.lua.api.world.WorldAPI;
 import org.moon.figura.lua.types.LuaOwnedTable;
 import org.moon.figura.utils.FiguraResourceListener;
@@ -57,6 +56,7 @@ public class FiguraLuaState extends LuaState53 {
     public KeybindAPI keybind;
     public RendererAPI renderer;
     public ActionWheelAPI actionWheel;
+    public PingAPI pings;
 
     public static final String STORAGE_KEY = "STORAGE";
     public LuaOwnedTable<Object> storedStuff = new LuaOwnedTable<>(this, STORAGE_KEY);
@@ -163,6 +163,7 @@ public class FiguraLuaState extends LuaState53 {
         loadGlobal(renderer = new RendererAPI(owner.owner), "renderer");
         loadGlobal(actionWheel = new ActionWheelAPI(owner.owner), "action_wheel");
         loadGlobal(Animation.getTableForAnimations(owner), "animations");
+        loadGlobal(pings = new PingAPI(owner.owner), "pings");
     }
 
     private void loadSetHook() {
@@ -207,17 +208,19 @@ public class FiguraLuaState extends LuaState53 {
     }
 
     private void runSandboxer() throws IOException {
-        InputStream inputStream = FiguraMod.class.getResourceAsStream("/assets/" + FiguraMod.MOD_ID + "/lua/scripts/sandbox.lua");
-        if (inputStream == null) throw new IOException("Failed to load sandbox.lua");
-        load(new String(inputStream.readAllBytes()), "sandboxer");
+        try (InputStream inputStream = FiguraMod.class.getResourceAsStream("/assets/" + FiguraMod.MOD_ID + "/lua/scripts/sandbox.lua")) {
+            if (inputStream == null) throw new IOException("Failed to load sandbox.lua");
+            load(new String(inputStream.readAllBytes()), "sandboxer");
+        }
         call(0, 0);
     }
 
     private void loadExternalLibraries() {
         try {
-            InputStream inputStream = FiguraMod.class.getResourceAsStream("/assets/" + FiguraMod.MOD_ID + "/lua/scripts/math.lua");
-            if (inputStream == null) throw new Exception();
-            load(new String(inputStream.readAllBytes()), "math");
+            try (InputStream inputStream = FiguraMod.class.getResourceAsStream("/assets/" + FiguraMod.MOD_ID + "/lua/scripts/math.lua")) {
+                if (inputStream == null) throw new Exception();
+                load(new String(inputStream.readAllBytes()), "math");
+            }
             call(0, 0);
         } catch (Exception e) {
             FiguraMod.LOGGER.error("Failed to load " + FiguraMod.MOD_ID + " math library", e);
