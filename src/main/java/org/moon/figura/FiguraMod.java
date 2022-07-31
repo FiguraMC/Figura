@@ -25,13 +25,12 @@ import org.moon.figura.config.ConfigManager;
 import org.moon.figura.gui.PaperDoll;
 import org.moon.figura.gui.actionwheel.ActionWheel;
 import org.moon.figura.lua.FiguraLuaPrinter;
-import org.moon.figura.lua.FiguraLuaState;
+import org.moon.figura.lua.FiguraLuaRuntime;
 import org.moon.figura.lua.docs.FiguraDocsManager;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.mixin.SkullBlockEntityAccessor;
 import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.ColorUtils;
-import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.TextUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,8 +51,6 @@ public class FiguraMod implements ClientModInitializer {
     public static final Path GAME_DIR = FabricLoader.getInstance().getGameDir().normalize();
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_NAME);
 
-    public static boolean DO_OUR_NATIVES_WORK = false;
-
     public static int ticks = 0;
 
     @Override
@@ -64,7 +61,6 @@ public class FiguraMod implements ClientModInitializer {
         LocalAvatarFetcher.init();
         FiguraDocsManager.init();
         FiguraCommands.init();
-        LuaUtils.setupNativesForLua();
 
         //register events
         ClientTickEvents.START_CLIENT_TICK.register(FiguraMod::tick);
@@ -72,7 +68,7 @@ public class FiguraMod implements ClientModInitializer {
         WorldRenderEvents.END.register(levelRenderer -> AvatarManager.afterWorldRender(levelRenderer.tickDelta()));
         WorldRenderEvents.AFTER_ENTITIES.register(FiguraMod::renderFirstPersonWorldParts);
         HudRenderCallback.EVENT.register(FiguraMod::hudRender);
-        ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(FiguraLuaState.SCRIPT_LISTENER);
+        ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(FiguraLuaRuntime.SCRIPT_LISTENER);
         ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(LocalAvatarLoader.AVATAR_LISTENER);
     }
 

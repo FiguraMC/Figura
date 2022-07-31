@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
 import net.minecraft.client.renderer.MultiBufferSource;
 import org.moon.figura.lua.LuaNotNil;
+import org.moon.figura.lua.LuaType;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
@@ -11,9 +12,9 @@ import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.LuaUtils;
 
-@LuaWhitelist
+@LuaType(typeName = "render_task")
 @LuaTypeDoc(
-        name = "RenderTask",
+        name = "Render Task",
         description = "render_task"
 )
 public abstract class RenderTask {
@@ -41,83 +42,83 @@ public abstract class RenderTask {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
-                    argumentTypes = {RenderTask.class, Boolean.class},
-                    argumentNames = {"task", "bool"}
+                    argumentTypes = Boolean.class,
+                    argumentNames = "bool"
             ),
             description = "render_task.enabled"
     )
-    public static RenderTask enabled(@LuaNotNil RenderTask task, @LuaNotNil Boolean enabled) {
-        task.enabled = enabled;
-        return task;
+    public RenderTask enabled(@LuaNotNil Boolean enabled) {
+        this.enabled = enabled;
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
-                    argumentTypes = {RenderTask.class, Boolean.class},
-                    argumentNames = {"task", "bool"}
+                    argumentTypes = Boolean.class,
+                    argumentNames = "bool"
             ),
             description = "render_task.emissive"
     )
-    public static RenderTask emissive(@LuaNotNil RenderTask task, @LuaNotNil Boolean emissive) {
-        task.emissive = emissive;
-        return task;
+    public RenderTask emissive(@LuaNotNil Boolean emissive) {
+        this.emissive = emissive;
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload(
-                            argumentTypes = {RenderTask.class, FiguraVec3.class},
-                            argumentNames = {"task", "pos"}
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "pos"
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {RenderTask.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"task", "x", "y", "z"}
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"x", "y", "z"}
                     )
             },
             description = "render_task.pos"
     )
-    public static RenderTask pos(@LuaNotNil RenderTask task, Object x, Double y, Double z) {
-        task.pos = LuaUtils.oldParseVec3("pos", x, y, z);
-        return task;
+    public RenderTask pos(Object x, Double y, Double z) {
+        this.pos = LuaUtils.parseVec3("pos", x, y, z);
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload(
-                            argumentTypes = {RenderTask.class, FiguraVec3.class},
-                            argumentNames = {"task", "rot"}
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "rot"
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {RenderTask.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"task", "x", "y", "z"}
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"x", "y", "z"}
                     )
             },
             description = "render_task.rot"
     )
-    public static RenderTask rot(@LuaNotNil RenderTask task, Object x, Double y, Double z) {
-        task.rot = LuaUtils.oldParseVec3("rot", x, y, z);
-        return task;
+    public RenderTask rot(Object x, Double y, Double z) {
+        this.rot = LuaUtils.parseVec3("rot", x, y, z);
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload(
-                            argumentTypes = {RenderTask.class, FiguraVec3.class},
-                            argumentNames = {"task", "scale"}
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "scale"
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {RenderTask.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"task", "x", "y", "z"}
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"x", "y", "z"}
                     )
             },
             description = "render_task.scale"
     )
-    public static RenderTask scale(@LuaNotNil RenderTask task, Object x, Double y, Double z) {
-        task.scale = LuaUtils.oldParseVec3("scale", x, y, z, 1, 1, 1);
-        return task;
+    public RenderTask scale(Object x, Double y, Double z) {
+        this.scale = LuaUtils.parseVec3("scale", x, y, z, 1, 1, 1);
+        return this;
     }
 }

@@ -1,17 +1,18 @@
 package org.moon.figura.lua.docs;
 
+import org.luaj.vm2.LuaFunction;
+import org.luaj.vm2.LuaTable;
+import org.luaj.vm2.LuaUserdata;
 import org.moon.figura.avatars.model.FiguraModelPart;
 import org.moon.figura.lua.api.*;
-import org.moon.figura.lua.api.entity.PlayerEntityWrapper;
+import org.moon.figura.lua.api.entity.PlayerAPI;
+import org.moon.figura.lua.api.event.EventsAPI;
 import org.moon.figura.lua.api.keybind.KeybindAPI;
 import org.moon.figura.lua.api.math.MatricesAPI;
 import org.moon.figura.lua.api.math.VectorsAPI;
-import org.moon.figura.lua.api.model.VanillaModelAPI;
 import org.moon.figura.lua.api.nameplate.NameplateAPI;
+import org.moon.figura.lua.api.vanilla_model.VanillaModelAPI;
 import org.moon.figura.lua.api.world.WorldAPI;
-import org.moon.figura.lua.types.LuaTable;
-import org.terasology.jnlua.JavaFunction;
-import org.terasology.jnlua.TypedJavaObject;
 
 /**
  * Class only exists to have docs for the global figura
@@ -25,7 +26,7 @@ import org.terasology.jnlua.TypedJavaObject;
 public abstract class FiguraGlobalsDocs {
 
     @LuaFieldDoc(description = "globals.vec")
-    public JavaFunction vec;
+    public LuaFunction vec;
     @LuaFieldDoc(description = "globals.action_wheel")
     public ActionWheelAPI action_wheel;
     @LuaFieldDoc(description = "globals.animations")
@@ -39,7 +40,7 @@ public abstract class FiguraGlobalsDocs {
     @LuaFieldDoc(description = "globals.models")
     public FiguraModelPart models;
     @LuaFieldDoc(description = "globals.player")
-    public PlayerEntityWrapper player;
+    public PlayerAPI player;
     @LuaFieldDoc(description = "globals.events")
     public EventsAPI events;
     @LuaFieldDoc(description = "globals.keybind")
@@ -95,7 +96,7 @@ public abstract class FiguraGlobalsDocs {
                             argumentNames = "table"
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = TypedJavaObject.class,
+                            argumentTypes = LuaUserdata.class,
                             argumentNames = "javaObject"
                     ),
                     @LuaFunctionOverload(
@@ -103,7 +104,7 @@ public abstract class FiguraGlobalsDocs {
                             argumentNames = {"table", "maxDepth"}
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {TypedJavaObject.class, Integer.class},
+                            argumentTypes = {LuaUserdata.class, Integer.class},
                             argumentNames = {"javaObject", "maxDepth"}
                     )
             },
@@ -118,7 +119,7 @@ public abstract class FiguraGlobalsDocs {
                             argumentNames = "table"
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = TypedJavaObject.class,
+                            argumentTypes = LuaUserdata.class,
                             argumentNames = "javaObject"
                     ),
                     @LuaFunctionOverload(
@@ -126,7 +127,7 @@ public abstract class FiguraGlobalsDocs {
                             argumentNames = {"table", "maxDepth"}
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {TypedJavaObject.class, Integer.class},
+                            argumentTypes = {LuaUserdata.class, Integer.class},
                             argumentNames = {"javaObject", "maxDepth"}
                     )
             },

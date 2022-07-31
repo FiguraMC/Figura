@@ -11,7 +11,6 @@ import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.config.Config;
 import org.moon.figura.lua.api.nameplate.NameplateCustomization;
 import org.moon.figura.trust.TrustContainer;
-import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.TextUtils;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -56,22 +55,22 @@ public class ChatComponentMixin {
                 continue;
 
             //apply customization
-//            Component replacement;
-//            NameplateCustomization custom = avatar.luaState == null ? null : avatar.luaState.nameplate.CHAT;
-//            if (custom != null && NameplateCustomization.getText(custom) != null && TrustManager.get(uuid).get(TrustContainer.Trust.NAMEPLATE_EDIT) == 1) {
-//                replacement = NameplateCustomization.applyCustomization(NameplateCustomization.getText(custom).replaceAll("\n|\\\\n", ""));
-//            } else {
-//                replacement = Component.literal(player.getProfile().getName());
-//            }
-//
-//            //apply nameplate
-//            if (config > 1) {
-//                Component badges = NameplateCustomization.fetchBadges(avatar);
-//                ((MutableComponent) replacement).append(badges);
-//            }
-//
-//            //modify message
-//            message = TextUtils.replaceInText(message, "\\b" + player.getProfile().getName() + "\\b", replacement);
+            Component replacement;
+            NameplateCustomization custom = avatar.luaRuntime == null ? null : avatar.luaRuntime.nameplate.CHAT;
+            if (custom != null && custom.getText() != null && avatar.trust.get(TrustContainer.Trust.NAMEPLATE_EDIT) == 1) {
+                replacement = NameplateCustomization.applyCustomization(custom.getText().replaceAll("\n|\\\\n", ""));
+            } else {
+                replacement = Component.literal(player.getProfile().getName());
+            }
+
+            //apply nameplate
+            if (config > 1) {
+                Component badges = NameplateCustomization.fetchBadges(avatar);
+                ((MutableComponent) replacement).append(badges);
+            }
+
+            //modify message
+            message = TextUtils.replaceInText(message, "\\b" + player.getProfile().getName() + "\\b", replacement);
         }
 
         return message;

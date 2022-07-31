@@ -18,7 +18,6 @@ import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.avatars.model.ParentType;
 import org.moon.figura.trust.TrustContainer;
-import org.moon.figura.trust.TrustManager;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -44,33 +43,33 @@ public abstract class PlayerItemInHandLayerMixin <T extends Player, M extends En
 
     @Inject(method = "renderArmWithSpyglass", at = @At("HEAD"), cancellable = true)
     private void adjustSpyglassVisibility(LivingEntity livingEntity, ItemStack itemStack, HumanoidArm humanoidArm, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, CallbackInfo ci) {
-//        if (itemStack.isEmpty())
-//            return;
-//
-//        Avatar avatar = AvatarManager.getAvatar(livingEntity);
-//        if (avatar == null || TrustManager.get(livingEntity.getUUID()).get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 0)
-//            return;
-//
-//        boolean left = humanoidArm == HumanoidArm.LEFT;
-//
-//        //script hide
-//        if (avatar.luaState != null &&
-//                (left && !avatar.luaState.vanillaModel.LEFT_ITEM.isVisible() ||
-//                !left && !avatar.luaState.vanillaModel.RIGHT_ITEM.isVisible()
-//        )) {
-//            ci.cancel();
-//            return;
-//        }
-//
-//        //pivot part
-//        if (avatar.pivotPartRender(left ? ParentType.LeftSpyglassPivot : ParentType.RightSpyglassPivot, stack -> {
-//            //spyglass code is weird - might need a fix, however it will break with non-humanoid avatars
-//            float s = 10f;
-//            stack.scale(s, s, s);
-//            stack.translate(0, 0, 7 / 16f);
-//            this.itemInHandRenderer.renderItem(livingEntity, itemStack, ItemTransforms.TransformType.HEAD, false, stack, multiBufferSource, i);
-//        })) {
-//            ci.cancel();
-//        }
+        if (itemStack.isEmpty())
+            return;
+
+        Avatar avatar = AvatarManager.getAvatar(livingEntity);
+        if (avatar == null || avatar.trust.get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 0)
+            return;
+
+        boolean left = humanoidArm == HumanoidArm.LEFT;
+
+        //script hide
+        if (avatar.luaRuntime != null &&
+                (left && !avatar.luaRuntime.vanilla_model.LEFT_ITEM.getVisible() ||
+                !left && !avatar.luaRuntime.vanilla_model.RIGHT_ITEM.getVisible()
+        )) {
+            ci.cancel();
+            return;
+        }
+
+        //pivot part
+        if (avatar.pivotPartRender(left ? ParentType.LeftSpyglassPivot : ParentType.RightSpyglassPivot, stack -> {
+            //spyglass code is weird - might need a fix, however it will break with non-humanoid avatars
+            float s = 10f;
+            stack.scale(s, s, s);
+            stack.translate(0, 0, 7 / 16f);
+            this.itemInHandRenderer.renderItem(livingEntity, itemStack, ItemTransforms.TransformType.HEAD, false, stack, multiBufferSource, i);
+        })) {
+            ci.cancel();
+        }
     }
 }

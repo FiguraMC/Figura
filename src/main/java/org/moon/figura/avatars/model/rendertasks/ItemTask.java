@@ -6,18 +6,19 @@ import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.world.item.ItemStack;
+import org.luaj.vm2.LuaError;
 import org.moon.figura.lua.LuaNotNil;
+import org.moon.figura.lua.LuaType;
 import org.moon.figura.lua.LuaWhitelist;
-import org.moon.figura.lua.api.world.ItemStackWrapper;
+import org.moon.figura.lua.api.world.ItemStackAPI;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.utils.LuaUtils;
-import org.terasology.jnlua.LuaRuntimeException;
 
-@LuaWhitelist
+@LuaType(typeName = "item_task")
 @LuaTypeDoc(
-        name = "ItemTask",
+        name = "Item Task",
         description = "item_task"
 )
 public class ItemTask extends RenderTask {
@@ -47,36 +48,36 @@ public class ItemTask extends RenderTask {
     @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload(
-                            argumentTypes = {ItemTask.class, String.class},
-                            argumentNames = {"task", "item"}
+                            argumentTypes = String.class,
+                            argumentNames = "item"
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {ItemTask.class, ItemStackWrapper.class},
-                            argumentNames = {"task", "item"}
+                            argumentTypes = ItemStackAPI.class,
+                            argumentNames = "item"
                     )
             },
             description = "item_task.item"
     )
-    public static RenderTask item(@LuaNotNil ItemTask task, Object item) {
-        task.item = LuaUtils.parseItemStack("item", item);
-        return task;
+    public RenderTask item(Object item) {
+        this.item = LuaUtils.parseItemStack("item", item);
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
-                        argumentTypes = {ItemTask.class, String.class},
-                        argumentNames = {"task", "renderType"}
+                        argumentTypes = String.class,
+                        argumentNames = "renderType"
             ),
             description = "item_task.render_type"
     )
-    public static RenderTask renderType(@LuaNotNil ItemTask task, @LuaNotNil String type) {
+    public RenderTask renderType(@LuaNotNil String type) {
         try {
-            task.renderType = ItemTransforms.TransformType.valueOf(type);
-            task.left = task.renderType == ItemTransforms.TransformType.FIRST_PERSON_LEFT_HAND || task.renderType == ItemTransforms.TransformType.THIRD_PERSON_LEFT_HAND;
-            return task;
+            this.renderType = ItemTransforms.TransformType.valueOf(type);
+            this.left = this.renderType == ItemTransforms.TransformType.FIRST_PERSON_LEFT_HAND || this.renderType == ItemTransforms.TransformType.THIRD_PERSON_LEFT_HAND;
+            return this;
         } catch (Exception ignored) {
-            throw new LuaRuntimeException("Illegal RenderType: \"" + type + "\".");
+            throw new LuaError("Illegal RenderType: \"" + type + "\".");
         }
     }
 }

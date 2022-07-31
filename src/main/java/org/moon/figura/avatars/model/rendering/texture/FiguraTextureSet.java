@@ -4,9 +4,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
+import org.luaj.vm2.LuaError;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.mixin.render.layers.elytra.ElytraLayerAccessor;
-import org.terasology.jnlua.LuaRuntimeException;
 
 public class FiguraTextureSet {
 
@@ -80,7 +80,7 @@ public class FiguraTextureSet {
                 }
             }
             case "texture" -> null;
-            default -> throw new LuaRuntimeException("Invalid texture override type: " + type);
+            default -> throw new LuaError("Invalid texture override type: " + type);
         };
     }
 }

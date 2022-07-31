@@ -7,22 +7,22 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
+import org.luaj.vm2.LuaError;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.ducks.SoundEngineAccessor;
+import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.mixin.sound.SoundManagerAccessor;
 import org.moon.figura.lua.LuaNotNil;
+import org.moon.figura.lua.LuaType;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.world.WorldAPI;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
-import org.moon.figura.math.vector.FiguraVec3;
-import org.moon.figura.mixin.sound.SoundManagerAccessor;
 import org.moon.figura.trust.TrustContainer;
-import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.LuaUtils;
-import org.terasology.jnlua.LuaRuntimeException;
 
-@LuaWhitelist
+@LuaType(typeName = "sound")
 @LuaTypeDoc(
         name = "SoundAPI",
         description = "sound"
@@ -61,50 +61,50 @@ public class SoundAPI {
             },
             description = "sound.play_sound"
     )
-    public static void playSound(@LuaNotNil SoundAPI api, @LuaNotNil String id, Object x, Double y, Double z, Object w, Double t, Boolean bl) {
-//        if (!api.owner.soundsRemaining.use())
-//            return;
-//
-//        FiguraVec3 pos;
-//        double volume = 1.0;
-//        double pitch = 1.0;
-//        boolean loop = false;
-//
-//        if (x instanceof FiguraVec3) {
-//            pos = ((FiguraVec3) x).copy();
-//            if (y != null) volume = y;
-//            if (z != null) pitch = z;
-//            if (w != null) {
-//                if (!(w instanceof Boolean))
-//                    throw new LuaRuntimeException("Illegal argument to playSound(): " + w);
-//                loop = (boolean) w;
-//            }
-//        } else if (x == null || x instanceof Double) {
-//            pos = LuaUtils.oldParseVec3("playSound", x, y, z);
-//            if (w != null) {
-//                if (!(w instanceof Double))
-//                    throw new LuaRuntimeException("Illegal argument to playSound(): " + w);
-//                volume = (double) w;
-//            }
-//            if (t != null) pitch = t;
-//            if (bl != null) loop = bl;
-//        } else {
-//            throw new LuaRuntimeException("Illegal argument to playSound(): " + x);
-//        }
-//
-//        //get and play the sound
-//        SoundBuffer buffer = api.owner.customSounds.get(id);
-//        if (buffer != null && TrustManager.get(api.owner.owner).get(TrustContainer.Trust.CUSTOM_SOUNDS) == 1) {
-//            getSoundEngine().figura$playCustomSound(api.owner.owner, id, buffer, pos.x, pos.y, pos.z, (float) volume, (float) pitch, loop);
-//        } else {
-//            try {
-//                SoundEvent event = new SoundEvent(new ResourceLocation(id));
-//                SimpleSoundInstance instance = new SimpleSoundInstance(event, SoundSource.PLAYERS, (float) volume, (float) pitch, RandomSource.create(WorldAPI.getCurrentWorld().random.nextLong()), pos.x, pos.y, pos.z);
-//                getSoundEngine().figura$playSound(api.owner.owner, id, instance, loop);
-//            } catch (Exception ignored) {}
-//        }
-//
-//        pos.free();
+    public void playSound(@LuaNotNil String id, Object x, Double y, Double z, Object w, Double t, Boolean bl) {
+        if (!owner.soundsRemaining.use())
+            return;
+
+        FiguraVec3 pos;
+        double volume = 1.0;
+        double pitch = 1.0;
+        boolean loop = false;
+
+        if (x instanceof FiguraVec3) {
+            pos = ((FiguraVec3) x).copy();
+            if (y != null) volume = y;
+            if (z != null) pitch = z;
+            if (w != null) {
+                if (!(w instanceof Boolean))
+                    throw new LuaError("Illegal argument to playSound(): " + w);
+                loop = (boolean) w;
+            }
+        } else if (x == null || x instanceof Double) {
+            pos = LuaUtils.parseVec3("playSound", x, y, z);
+            if (w != null) {
+                if (!(w instanceof Double))
+                    throw new LuaError("Illegal argument to playSound(): " + w);
+                volume = (double) w;
+            }
+            if (t != null) pitch = t;
+            if (bl != null) loop = bl;
+        } else {
+            throw new LuaError("Illegal argument to playSound(): " + x);
+        }
+
+        //get and play the sound
+        SoundBuffer buffer = owner.customSounds.get(id);
+        if (buffer != null && owner.trust.get(TrustContainer.Trust.CUSTOM_SOUNDS) == 1) {
+            getSoundEngine().figura$playCustomSound(owner.owner, id, buffer, pos.x, pos.y, pos.z, (float) volume, (float) pitch, loop);
+        } else {
+            try {
+                SoundEvent event = new SoundEvent(new ResourceLocation(id));
+                SimpleSoundInstance instance = new SimpleSoundInstance(event, SoundSource.PLAYERS, (float) volume, (float) pitch, RandomSource.create(WorldAPI.getCurrentWorld().random.nextLong()), pos.x, pos.y, pos.z);
+                getSoundEngine().figura$playSound(owner.owner, id, instance, loop);
+            } catch (Exception ignored) {}
+        }
+
+        pos.free();
     }
 
     @LuaWhitelist
@@ -121,12 +121,7 @@ public class SoundAPI {
             },
             description = "sound.stop_sound"
     )
-    public static void stopSound(@LuaNotNil SoundAPI api, String id) {
-        getSoundEngine().figura$stopSound(api.owner.owner, id);
-    }
-
-    @Override
-    public String toString() {
-        return "SoundAPI";
+    public void stopSound(String id) {
+        getSoundEngine().figura$stopSound(owner.owner, id);
     }
 }

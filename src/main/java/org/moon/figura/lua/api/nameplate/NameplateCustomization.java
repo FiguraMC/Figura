@@ -4,21 +4,22 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
+import org.luaj.vm2.LuaError;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.config.Config;
+import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.lua.LuaNotNil;
+import org.moon.figura.lua.LuaType;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
-import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.TextUtils;
-import org.terasology.jnlua.LuaRuntimeException;
 
-@LuaWhitelist
+@LuaType(typeName = "nameplate_customization")
 @LuaTypeDoc(
         name = "NameplateCustomization",
         description = "nameplate_customization"
@@ -157,117 +158,88 @@ public class NameplateCustomization {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = NameplateCustomization.class,
-                    argumentNames = "customization"
-            ),
-            description = "nameplate_customization.get_text"
-    )
-    public static String getText(@LuaNotNil NameplateCustomization custom) {
-        return custom.text;
+    @LuaMethodDoc(description = "nameplate_customization.get_text")
+    public String getText() {
+        return this.text;
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
-                    argumentTypes = {NameplateCustomization.class, String.class},
-                    argumentNames = {"customization", "text"}
+                    argumentTypes = String.class,
+                    argumentNames = "text"
             ),
             description = "nameplate_customization.set_text"
     )
-    public static void setText(@LuaNotNil NameplateCustomization custom, @LuaNotNil String text) {
+    public void setText(@LuaNotNil String text) {
         if (TextUtils.tryParseJson(text).getString().length() > 256)
-            throw new LuaRuntimeException("Text length exceeded limit of 256 characters");
-        custom.text = text;
+            throw new LuaError("Text length exceeded limit of 256 characters");
+        this.text = text;
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = NameplateCustomization.class,
-                    argumentNames = "customization"
-            ),
-            description = "nameplate_customization.get_pos"
-    )
-    public static FiguraVec3 getPos(@LuaNotNil NameplateCustomization custom) {
-        return custom.position;
+    @LuaMethodDoc(description = "nameplate_customization.get_pos")
+    public FiguraVec3 getPos() {
+        return this.position;
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload(
-                            argumentTypes = {NameplateCustomization.class, FiguraVec3.class},
-                            argumentNames = {"customization", "pos"}
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "pos"
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {NameplateCustomization.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"customization", "x", "y", "z"}
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"x", "y", "z"}
                     )
             },
             description = "nameplate_customization.set_pos"
     )
-    public static void setPos(@LuaNotNil NameplateCustomization custom, Object x, Double y, Double z) {
-        custom.position = x == null ? null : LuaUtils.oldParseVec3("setPosition", x, y, z);
+    public void setPos(Object x, Double y, Double z) {
+        this.position = x == null ? null : LuaUtils.parseVec3("setPosition", x, y, z);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = NameplateCustomization.class,
-                    argumentNames = "customization"
-            ),
-            description = "nameplate_customization.get_scale"
-    )
-    public static FiguraVec3 getScale(@LuaNotNil NameplateCustomization custom) {
-        return custom.scale;
+    @LuaMethodDoc(description = "nameplate_customization.get_scale")
+    public FiguraVec3 getScale() {
+        return this.scale;
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload(
-                            argumentTypes = {NameplateCustomization.class, FiguraVec3.class},
-                            argumentNames = {"customization", "scale"}
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "scale"
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {NameplateCustomization.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"customization", "x", "y", "z"}
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"x", "y", "z"}
                     )
             },
             description = "nameplate_customization.set_scale"
     )
-    public static void setScale(@LuaNotNil NameplateCustomization custom, Object x, Double y, Double z) {
-        custom.scale = x == null ? null : LuaUtils.oldParseVec3("setScale", x, y, z, 1, 1, 1);
+    public void setScale(Object x, Double y, Double z) {
+        this.scale = x == null ? null : LuaUtils.parseVec3("setScale", x, y, z, 1, 1, 1);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(description = "nameplate_customization.is_visible")
+    public Boolean isVisible() {
+        return this.visible;
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
-                    argumentTypes = NameplateCustomization.class,
-                    argumentNames = "customization"
-            ),
-            description = "nameplate_customization.is_visible"
-    )
-    public static Boolean isVisible(@LuaNotNil NameplateCustomization custom) {
-        return custom.visible;
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = {NameplateCustomization.class, Boolean.class},
-                    argumentNames = {"customization", "visible"}
+                    argumentTypes = Boolean.class,
+                    argumentNames = "visible"
             ),
             description = "nameplate_customization.set_visible"
     )
-    public static void setVisible(@LuaNotNil NameplateCustomization custom, Boolean visible) {
-        custom.visible = visible;
-    }
-
-    @Override
-    public String toString() {
-        return "NameplateCustomization";
+    public void setVisible(Boolean visible) {
+        this.visible = visible;
     }
 }

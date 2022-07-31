@@ -6,6 +6,7 @@ import net.minecraft.world.level.BlockGetter;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.trust.TrustContainer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -22,25 +23,25 @@ public abstract class CameraMixin {
 
     @Inject(method = "setup", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setPosition(DDD)V", shift = At.Shift.BEFORE))
     private void setupRot(BlockGetter area, Entity focusedEntity, boolean thirdPerson, boolean inverseView, float tickDelta, CallbackInfo ci) {
-//        Avatar avatar = AvatarManager.getAvatar(focusedEntity);
-//        if (avatar == null || avatar.luaState == null)
-//            return;
-//
-//        float x = xRot;
-//        float y = yRot;
-//
-//        FiguraVec3 rot = avatar.luaState.renderer.cameraRot;
-//        if (rot != null) {
-//            x = (float) rot.x;
-//            y = (float) rot.y;
-//        }
-//
-//        FiguraVec3 bonus = avatar.luaState.renderer.cameraBonusRot;
-//        if (bonus != null) {
-//            x += (float) bonus.x;
-//            y += (float) bonus.y;
-//        }
-//
-//        setRotation(y, x);
+        Avatar avatar = AvatarManager.getAvatar(focusedEntity);
+        if (avatar == null || avatar.luaRuntime == null || avatar.trust.get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 0)
+            return;
+
+        float x = xRot;
+        float y = yRot;
+
+        FiguraVec3 rot = avatar.luaRuntime.renderer.cameraRot;
+        if (rot != null) {
+            x = (float) rot.x;
+            y = (float) rot.y;
+        }
+
+        FiguraVec3 bonus = avatar.luaRuntime.renderer.cameraBonusRot;
+        if (bonus != null) {
+            x += (float) bonus.x;
+            y += (float) bonus.y;
+        }
+
+        setRotation(y, x);
     }
 }

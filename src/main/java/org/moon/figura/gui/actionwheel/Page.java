@@ -1,13 +1,14 @@
 package org.moon.figura.gui.actionwheel;
 
+import org.luaj.vm2.LuaError;
 import org.moon.figura.lua.LuaNotNil;
+import org.moon.figura.lua.LuaType;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
-import org.terasology.jnlua.LuaRuntimeException;
 
-@LuaWhitelist
+@LuaType(typeName = "wheel_page")
 @LuaTypeDoc(
         name = "Page",
         description = "wheel_page"
@@ -28,7 +29,7 @@ public class Page {
         //check and fix index
         if (index != null) {
             if (index < 1 || index > 8)
-                throw new LuaRuntimeException("Index must be between 1 and 8!");
+                throw new LuaError("Index must be between 1 and 8!");
 
             return index - 1;
         }
@@ -44,7 +45,7 @@ public class Page {
 
         //if failed to find a null slot, that means the page is full
         if (index == -1)
-            throw new LuaRuntimeException("Pages have a limit of 8 actions!");
+            throw new LuaError("Pages have a limit of 8 actions!");
 
         return index;
     }
@@ -52,21 +53,18 @@ public class Page {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
+                    @LuaFunctionOverload,
                     @LuaFunctionOverload(
-                            argumentTypes = Page.class,
-                            argumentNames = "page"
-                    ),
-                    @LuaFunctionOverload(
-                            argumentTypes = {Page.class, Integer.class},
-                            argumentNames = {"page", "index"}
+                            argumentTypes = Integer.class,
+                            argumentNames = "index"
                     )
             },
             description = "wheel_page.new_action"
     )
-    public static Action newAction(@LuaNotNil Page page, Integer index) {
+    public Action newAction(Integer index) {
         //set the action
         Action action = new ClickAction();
-        page.actions[page.checkIndex(index)] = action;
+        this.actions[this.checkIndex(index)] = action;
 
         //return the action
         return action;
@@ -75,21 +73,18 @@ public class Page {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
+                    @LuaFunctionOverload,
                     @LuaFunctionOverload(
-                            argumentTypes = Page.class,
-                            argumentNames = "page"
-                    ),
-                    @LuaFunctionOverload(
-                            argumentTypes = {Page.class, Integer.class},
-                            argumentNames = {"page", "index"}
+                            argumentTypes = Integer.class,
+                            argumentNames = "index"
                     )
             },
             description = "wheel_page.new_toggle"
     )
-    public static Action newToggle(@LuaNotNil Page page, Integer index) {
+    public Action newToggle(Integer index) {
         //set the action
         Action action = new ToggleAction();
-        page.actions[page.checkIndex(index)] = action;
+        this.actions[this.checkIndex(index)] = action;
 
         //return the action
         return action;
@@ -98,21 +93,18 @@ public class Page {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
+                    @LuaFunctionOverload,
                     @LuaFunctionOverload(
-                            argumentTypes = Page.class,
-                            argumentNames = "page"
-                    ),
-                    @LuaFunctionOverload(
-                            argumentTypes = {Page.class, Integer.class},
-                            argumentNames = {"page", "index"}
+                            argumentTypes = Integer.class,
+                            argumentNames = "index"
                     )
             },
             description = "wheel_page.new_scroll"
     )
-    public static Action newScroll(@LuaNotNil Page page, Integer index) {
+    public Action newScroll(Integer index) {
         //set the action
         Action action = new ScrollAction();
-        page.actions[page.checkIndex(index)] = action;
+        this.actions[this.checkIndex(index)] = action;
 
         //return the action
         return action;
@@ -121,19 +113,14 @@ public class Page {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
-                    argumentTypes = {Page.class, Integer.class},
-                    argumentNames = {"page", "index"}
+                    argumentTypes = Integer.class,
+                    argumentNames = "index"
             ),
             description = "wheel_page.get_action"
     )
-    public static Action getAction(@LuaNotNil Page page, @LuaNotNil Integer index) {
+    public Action getAction(@LuaNotNil Integer index) {
         if (index < 1 || index > 8)
-            throw new LuaRuntimeException("Index must be between 1 and 8!");
-        return page.actions[index - 1];
-    }
-
-    @Override
-    public String toString() {
-        return "Action Wheel Page";
+            throw new LuaError("Index must be between 1 and 8!");
+        return this.actions[index - 1];
     }
 }

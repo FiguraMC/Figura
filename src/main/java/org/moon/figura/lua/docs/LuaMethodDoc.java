@@ -13,13 +13,13 @@ import java.lang.annotation.Target;
 public @interface LuaMethodDoc {
 
     /**
-     * Each ParameterList should indicate one set of variable types that can
+     * Each LuaFunctionOverload should indicate one set of variable types that can
      * be used to call this method in a valid way.
      */
-    LuaFunctionOverload[] overloads();
+    LuaFunctionOverload[] overloads() default @LuaFunctionOverload;
 
     /**
-     * A description of what this method does with its parameters.
+     * A translation key for the description of what this method does with its parameters.
      */
     String description();
 

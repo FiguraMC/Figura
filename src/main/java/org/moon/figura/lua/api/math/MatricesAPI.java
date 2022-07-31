@@ -1,20 +1,21 @@
 package org.moon.figura.lua.api.math;
 
-import org.moon.figura.lua.LuaNotNil;
-import org.moon.figura.lua.LuaWhitelist;
-import org.moon.figura.lua.docs.LuaFunctionOverload;
-import org.moon.figura.lua.docs.LuaMethodDoc;
-import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.luaj.vm2.LuaError;
 import org.moon.figura.math.matrix.FiguraMat2;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec4;
+import org.moon.figura.lua.LuaNotNil;
+import org.moon.figura.lua.LuaType;
+import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.lua.docs.LuaFunctionOverload;
+import org.moon.figura.lua.docs.LuaMethodDoc;
+import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.utils.LuaUtils;
-import org.terasology.jnlua.LuaRuntimeException;
 
-@LuaWhitelist
+@LuaType(typeName = "matrices")
 @LuaTypeDoc(
         name = "MatricesAPI",
         description = "matrices"
@@ -26,7 +27,7 @@ public class MatricesAPI {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(),
+                    @LuaFunctionOverload,
                     @LuaFunctionOverload(
                             argumentTypes = {FiguraVec2.class, FiguraVec2.class},
                             argumentNames = {"col1", "col2"}
@@ -38,7 +39,7 @@ public class MatricesAPI {
         if (col1 == null && col2 == null)
             return FiguraMat2.of();
         if (col1 == null || col2 == null)
-            throw new LuaRuntimeException("Invalid arguments to mat2(), needs 0 or 2 arguments!");
+            throw new LuaError("Invalid arguments to mat2(), needs 0 or 2 arguments!");
         return FiguraMat2.of(
                 col1.x, col1.y,
                 col2.x, col2.y
@@ -48,7 +49,7 @@ public class MatricesAPI {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(),
+                    @LuaFunctionOverload,
                     @LuaFunctionOverload(
                             argumentTypes = {FiguraVec3.class, FiguraVec3.class, FiguraVec3.class},
                             argumentNames = {"col1", "col2", "col3"}
@@ -60,7 +61,7 @@ public class MatricesAPI {
         if (col1 == null && col2 == null && col3 == null)
             return FiguraMat3.of();
         if (col1 == null || col2 == null || col3 == null)
-            throw new LuaRuntimeException("Invalid arguments to mat3(), needs 0 or 3 arguments!");
+            throw new LuaError("Invalid arguments to mat3(), needs 0 or 3 arguments!");
         return FiguraMat3.of(
                 col1.x, col1.y, col1.z,
                 col2.x, col2.y, col2.z,
@@ -71,7 +72,7 @@ public class MatricesAPI {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(),
+                    @LuaFunctionOverload,
                     @LuaFunctionOverload(
                             argumentTypes = {FiguraVec4.class, FiguraVec4.class, FiguraVec4.class, FiguraVec4.class},
                             argumentNames = {"col1", "col2", "col3", "col4"}
@@ -83,7 +84,7 @@ public class MatricesAPI {
         if (col1 == null && col2 == null && col3 == null && col4 == null)
             return FiguraMat4.of();
         if (col1 == null || col2 == null || col3 == null || col4 == null)
-            throw new LuaRuntimeException("Invalid arguments to mat4(), needs 0 or 4 arguments!");
+            throw new LuaError("Invalid arguments to mat4(), needs 0 or 4 arguments!");
         return FiguraMat4.of(
                 col1.x, col1.y, col1.z, col1.w,
                 col2.x, col2.y, col2.z, col2.w,
@@ -120,7 +121,7 @@ public class MatricesAPI {
             description = "matrices.rotation3"
     )
     public static FiguraMat3 rotation3(Object x, Double y, Double z) {
-        FiguraVec3 angles = LuaUtils.oldParseVec3("rotation3", x, y, z);
+        FiguraVec3 angles = LuaUtils.parseVec3("rotation3", x, y, z);
         FiguraMat3 result = FiguraMat3.createZYXRotationMatrix(angles.x, angles.y, angles.z);
         angles.free();
         return result;
@@ -177,7 +178,7 @@ public class MatricesAPI {
             description = "matrices.rotation4"
     )
     public static FiguraMat4 rotation4(Object x, Double y, Double z) {
-        FiguraVec3 angles = LuaUtils.oldParseVec3("rotation4", x, y, z);
+        FiguraVec3 angles = LuaUtils.parseVec3("rotation4", x, y, z);
         FiguraMat4 result = FiguraMat4.createZYXRotationMatrix(angles.x, angles.y, angles.z);
         angles.free();
         return result;
@@ -235,7 +236,7 @@ public class MatricesAPI {
             description = "matrices.scale2"
     )
     public static FiguraMat2 scale2(Object x, Double y) {
-        FiguraVec2 vec = LuaUtils.oldParseVec2("scale2", x, y, 1, 1);
+        FiguraVec2 vec = LuaUtils.parseVec2("scale2", x, y, 1, 1);
         FiguraMat2 result = FiguraMat2.createScaleMatrix(vec.x, vec.y);
         vec.free();
         return result;
@@ -256,7 +257,7 @@ public class MatricesAPI {
             description = "matrices.scale3"
     )
     public static FiguraMat3 scale3(Object x, Double y, Double z) {
-        FiguraVec3 scale = LuaUtils.oldParseVec3("scale3", x, y, z, 1, 1, 1);
+        FiguraVec3 scale = LuaUtils.parseVec3("scale3", x, y, z, 1, 1, 1);
         FiguraMat3 result = FiguraMat3.createScaleMatrix(scale.x, scale.y, scale.z);
         scale.free();
         return result;
@@ -277,7 +278,7 @@ public class MatricesAPI {
             description = "matrices.scale4"
     )
     public static FiguraMat4 scale4(Object x, Double y, Double z) {
-        FiguraVec3 scale = LuaUtils.oldParseVec3("scale4", x, y, z, 1, 1, 1);
+        FiguraVec3 scale = LuaUtils.parseVec3("scale4", x, y, z, 1, 1, 1);
         FiguraMat4 result = FiguraMat4.createScaleMatrix(scale.x, scale.y, scale.z);
         scale.free();
         return result;
@@ -299,7 +300,7 @@ public class MatricesAPI {
             description = "matrices.translate3"
     )
     public static FiguraMat3 translate3(Object x, Double y) {
-        FiguraVec2 offset = LuaUtils.oldParseVec2("translate3", x, y);
+        FiguraVec2 offset = LuaUtils.parseVec2("translate3", x, y);
         FiguraMat3 result = FiguraMat3.createTranslationMatrix(offset.x, offset.y);
         offset.free();
         return result;
@@ -319,14 +320,9 @@ public class MatricesAPI {
             description = "matrices.translate4"
     )
     public static FiguraMat4 translate4(Object x, Double y, Double z) {
-        FiguraVec3 offset = LuaUtils.oldParseVec3("translate4", x, y, z);
+        FiguraVec3 offset = LuaUtils.parseVec3("translate4", x, y, z);
         FiguraMat4 result = FiguraMat4.createTranslationMatrix(offset.x, offset.y, offset.z);
         offset.free();
         return result;
-    }
-
-    @Override
-    public String toString() {
-        return "MatricesAPI";
     }
 }

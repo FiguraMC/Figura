@@ -91,7 +91,7 @@ public class StackAvatarRenderer extends ImmediateAvatarRenderer {
             return;
 
         //push customization stack
-        custom.visible = FiguraModelPart.getVisible(part) && thisPassedPredicate;
+        custom.visible = part.getVisible() && thisPassedPredicate;
         customizationStack.push(custom);
         custom.visible = storedVisibility;
 

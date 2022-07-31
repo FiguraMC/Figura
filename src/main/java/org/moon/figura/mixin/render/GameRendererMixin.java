@@ -12,6 +12,7 @@ import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.ducks.GameRendererAccessor;
 import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.trust.TrustContainer;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -33,52 +34,52 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
 
     @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setup(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/world/entity/Entity;ZZF)V", shift = At.Shift.BEFORE))
     private void onCameraRotation(float tickDelta, long limitTime, PoseStack matrix, CallbackInfo ci) {
-//        Avatar avatar = AvatarManager.getAvatar(this.minecraft.getCameraEntity() == null ? this.minecraft.player : this.minecraft.getCameraEntity());
-//        if (avatar == null || avatar.luaState == null)
-//            return;
-//
-//        float z = 0f;
-//
-//        FiguraVec3 rot = avatar.luaState.renderer.cameraRot;
-//        if (rot != null)
-//            z = (float) rot.z;
-//
-//        FiguraVec3 bonus = avatar.luaState.renderer.cameraBonusRot;
-//        if (bonus != null)
-//            z += (float) bonus.z;
-//
-//        matrix.mulPose(Vector3f.ZP.rotationDegrees(z));
+        Avatar avatar = AvatarManager.getAvatar(this.minecraft.getCameraEntity() == null ? this.minecraft.player : this.minecraft.getCameraEntity());
+        if (avatar == null || avatar.luaRuntime == null || avatar.trust.get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 0)
+            return;
+
+        float z = 0f;
+
+        FiguraVec3 rot = avatar.luaRuntime.renderer.cameraRot;
+        if (rot != null)
+            z = (float) rot.z;
+
+        FiguraVec3 bonus = avatar.luaRuntime.renderer.cameraBonusRot;
+        if (bonus != null)
+            z += (float) bonus.z;
+
+        matrix.mulPose(Vector3f.ZP.rotationDegrees(z));
     }
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;doEntityOutline()V", shift = At.Shift.AFTER))
     private void render(float tickDelta, long startTime, boolean tick, CallbackInfo ci) {
-//        Entity entity = this.minecraft.getCameraEntity();
-//        Avatar avatar = AvatarManager.getAvatar(entity);
-//        if (avatar == null || avatar.luaState == null) {
-//            if (avatarPostShader) {
-//                avatarPostShader = false;
-//                this.checkEntityPostEffect(entity);
-//            }
-//            return;
-//        }
-//
-//        ResourceLocation resource = avatar.luaState.renderer.postShader;
-//        if (resource == null) {
-//            if (avatarPostShader) {
-//                avatarPostShader = false;
-//                this.checkEntityPostEffect(entity);
-//            }
-//            return;
-//        }
-//
-//        try {
-//            avatarPostShader = true;
-//            this.effectActive = true;
-//            if (this.postEffect == null || !this.postEffect.getName().equals(resource.toString()))
-//                this.loadEffect(resource);
-//        } catch (Exception ignored) {
-//            this.effectActive = false;
-//        }
+        Entity entity = this.minecraft.getCameraEntity();
+        Avatar avatar = AvatarManager.getAvatar(entity);
+        if (avatar == null || avatar.luaRuntime == null || avatar.trust.get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 0) {
+            if (avatarPostShader) {
+                avatarPostShader = false;
+                this.checkEntityPostEffect(entity);
+            }
+            return;
+        }
+
+        ResourceLocation resource = avatar.luaRuntime.renderer.postShader;
+        if (resource == null) {
+            if (avatarPostShader) {
+                avatarPostShader = false;
+                this.checkEntityPostEffect(entity);
+            }
+            return;
+        }
+
+        try {
+            avatarPostShader = true;
+            this.effectActive = true;
+            if (this.postEffect == null || !this.postEffect.getName().equals(resource.toString()))
+                this.loadEffect(resource);
+        } catch (Exception ignored) {
+            this.effectActive = false;
+        }
     }
 
     @Inject(method = "checkEntityPostEffect", at = @At("HEAD"), cancellable = true)

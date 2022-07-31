@@ -27,7 +27,6 @@ import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.avatars.model.ParentType;
 import org.moon.figura.trust.TrustContainer;
-import org.moon.figura.trust.TrustManager;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -50,50 +49,50 @@ public abstract class CustomHeadLayerMixin<T extends LivingEntity, M extends Ent
 
     @Inject(at = @At("HEAD"), method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V", cancellable = true)
     private void render(PoseStack poseStack, MultiBufferSource multiBufferSource, int i, T livingEntity, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
-//        ItemStack itemStack = livingEntity.getItemBySlot(EquipmentSlot.HEAD);
-//        if (itemStack == null || (itemStack.getItem() instanceof ArmorItem armorItem && armorItem.getSlot() == EquipmentSlot.HEAD))
-//            return;
-//
-//        Avatar avatar = AvatarManager.getAvatar(livingEntity);
-//        if (avatar == null || TrustManager.get(livingEntity.getUUID()).get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 0)
-//            return;
-//
-//        //script hide
-//        if (avatar.luaState != null && !avatar.luaState.vanillaModel.HELMET_ITEM.isVisible()) {
-//            ci.cancel();
-//            return;
-//        }
-//
-//        //pivot part
-//        if (itemStack.getItem() instanceof BlockItem block && block.getBlock() instanceof AbstractSkullBlock) {
-//            //fetch skull data
-//            GameProfile gameProfile = null;
-//            if (itemStack.hasTag()) {
-//                CompoundTag tag = itemStack.getTag();
-//                if (tag != null && tag.contains("SkullOwner", Tag.TAG_COMPOUND))
-//                    gameProfile = NbtUtils.readGameProfile(itemStack.getTag().getCompound("SkullOwner"));
-//            }
-//
-//            SkullBlock.Type type = ((AbstractSkullBlock) ((BlockItem) itemStack.getItem()).getBlock()).getType();
-//            SkullModelBase skullModelBase = this.skullModels.get(type);
-//            RenderType renderType = SkullBlockRenderer.getRenderType(type, gameProfile);
-//
-//            //render!!
-//            if (avatar.pivotPartRender(ParentType.HelmetItemPivot, stack -> {
-//                float s = 19f;
-//                stack.scale(s, s, s);
-//                stack.translate(-0.5d, 0d, -0.5d);
-//                SkullBlockRenderer.renderSkull(null, 0f, f, stack, multiBufferSource, i, skullModelBase, renderType);
-//            })) {
-//                ci.cancel();
-//            }
-//        } else if (avatar.pivotPartRender(ParentType.HelmetItemPivot, stack -> {
-//            float s = 10f;
-//            stack.translate(0d, 4d, 0d);
-//            stack.scale(s, s, s);
-//            this.itemInHandRenderer.renderItem(livingEntity, itemStack, ItemTransforms.TransformType.HEAD, false, stack, multiBufferSource, i);
-//        })) {
-//            ci.cancel();
-//        }
+        ItemStack itemStack = livingEntity.getItemBySlot(EquipmentSlot.HEAD);
+        if (itemStack == null || (itemStack.getItem() instanceof ArmorItem armorItem && armorItem.getSlot() == EquipmentSlot.HEAD))
+            return;
+
+        Avatar avatar = AvatarManager.getAvatar(livingEntity);
+        if (avatar == null || avatar.trust.get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 0)
+            return;
+
+        //script hide
+        if (avatar.luaRuntime != null && !avatar.luaRuntime.vanilla_model.HELMET_ITEM.getVisible()) {
+            ci.cancel();
+            return;
+        }
+
+        //pivot part
+        if (itemStack.getItem() instanceof BlockItem block && block.getBlock() instanceof AbstractSkullBlock) {
+            //fetch skull data
+            GameProfile gameProfile = null;
+            if (itemStack.hasTag()) {
+                CompoundTag tag = itemStack.getTag();
+                if (tag != null && tag.contains("SkullOwner", Tag.TAG_COMPOUND))
+                    gameProfile = NbtUtils.readGameProfile(itemStack.getTag().getCompound("SkullOwner"));
+            }
+
+            SkullBlock.Type type = ((AbstractSkullBlock) ((BlockItem) itemStack.getItem()).getBlock()).getType();
+            SkullModelBase skullModelBase = this.skullModels.get(type);
+            RenderType renderType = SkullBlockRenderer.getRenderType(type, gameProfile);
+
+            //render!!
+            if (avatar.pivotPartRender(ParentType.HelmetItemPivot, stack -> {
+                float s = 19f;
+                stack.scale(s, s, s);
+                stack.translate(-0.5d, 0d, -0.5d);
+                SkullBlockRenderer.renderSkull(null, 0f, f, stack, multiBufferSource, i, skullModelBase, renderType);
+            })) {
+                ci.cancel();
+            }
+        } else if (avatar.pivotPartRender(ParentType.HelmetItemPivot, stack -> {
+            float s = 10f;
+            stack.translate(0d, 4d, 0d);
+            stack.scale(s, s, s);
+            this.itemInHandRenderer.renderItem(livingEntity, itemStack, ItemTransforms.TransformType.HEAD, false, stack, multiBufferSource, i);
+        })) {
+            ci.cancel();
+        }
     }
 }

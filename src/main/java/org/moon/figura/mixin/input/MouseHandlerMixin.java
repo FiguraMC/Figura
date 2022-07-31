@@ -18,26 +18,26 @@ public class MouseHandlerMixin {
 
     @Inject(method = "onPress", at = @At("HEAD"), cancellable = true)
     private void onPress(long window, int button, int action, int mods, CallbackInfo ci) {
-//        if (window != Minecraft.getInstance().getWindow().getWindow())
-//            return;
-//
-//        boolean pressed = action != 0;
-//
-//        if (pressed && (ActionWheel.isEnabled())) {
-//            if (button <= 1) ActionWheel.execute(ActionWheel.getSelected(), button == 0);
-//            ci.cancel();
-//        }
-//
-//        Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
-//        if (avatar == null || avatar.luaState == null)
-//            return;
-//
-//        if (pressed && avatar.luaState.host.unlockCursor)
-//            ci.cancel();
-//
-//        //this needs to be last because it executes functions and can cause lua errors, making luaState null
-//        if (FiguraKeybind.set(avatar.luaState.keybind.keyBindings, InputConstants.Type.MOUSE.getOrCreate(button), pressed))
-//            ci.cancel();
+        if (window != Minecraft.getInstance().getWindow().getWindow())
+            return;
+
+        boolean pressed = action != 0;
+
+        if (pressed && (ActionWheel.isEnabled())) {
+            if (button <= 1) ActionWheel.execute(ActionWheel.getSelected(), button == 0);
+            ci.cancel();
+        }
+
+        Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
+        if (avatar == null || avatar.luaRuntime == null)
+            return;
+
+        if (pressed && avatar.luaRuntime.host.unlockCursor)
+            ci.cancel();
+
+        //this needs to be last because it executes functions and can cause lua errors, making luaState null
+        if (FiguraKeybind.set(avatar.luaRuntime.keybind.keyBindings, InputConstants.Type.MOUSE.getOrCreate(button), pressed))
+            ci.cancel();
     }
 
     @Inject(method = "onScroll", at = @At("HEAD"), cancellable = true)
@@ -52,8 +52,8 @@ public class MouseHandlerMixin {
 
     @Inject(method = "grabMouse", at = @At("HEAD"), cancellable = true)
     private void grabMouse(CallbackInfo ci) {
-//        Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
-//        if (ActionWheel.isEnabled() || (avatar != null && avatar.luaState != null && avatar.luaState.host.unlockCursor))
-//            ci.cancel();
+        Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
+        if (ActionWheel.isEnabled() || (avatar != null && avatar.luaRuntime != null && avatar.luaRuntime.host.unlockCursor))
+            ci.cancel();
     }
 }

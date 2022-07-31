@@ -4,18 +4,18 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
-import org.moon.figura.lua.LuaNotNil;
+import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.lua.LuaType;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
-import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.LuaUtils;
 
 import java.util.UUID;
 
-@LuaWhitelist
+@LuaType(typeName = "renderer")
 @LuaTypeDoc(
         name = "RendererAPI",
         description = "renderer"
@@ -25,16 +25,10 @@ public class RendererAPI {
     private final UUID owner;
     public Float shadowRadius;
 
-    @LuaWhitelist
-    @LuaFieldDoc(
-            description = "renderer.render_fire"
-    )
+    @LuaFieldDoc(description = "renderer.render_fire")
     public boolean renderFire = true;
 
-    @LuaWhitelist
-    @LuaFieldDoc(
-            description = "renderer.render_vehicle"
-    )
+    @LuaFieldDoc(description = "renderer.render_vehicle")
     public boolean renderVehicle = true;
 
     public FiguraVec3 cameraRot;
@@ -52,102 +46,82 @@ public class RendererAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = {RendererAPI.class, Float.class},
-                    argumentNames = {"api", "radius"}
-            ),
+            overloads = {
+                    @LuaFunctionOverload,
+                    @LuaFunctionOverload(
+                            argumentTypes = Float.class,
+                            argumentNames = "radius"
+                    )
+            },
             description = "renderer.set_shadow_radius"
     )
-    public static void setShadowRadius(@LuaNotNil RendererAPI api, Float shadowRadius) {
-        api.shadowRadius = shadowRadius == null ? null : Mth.clamp(shadowRadius, 0f, 12f);
+    public void setShadowRadius(Float shadowRadius) {
+        this.shadowRadius = shadowRadius == null ? null : Mth.clamp(shadowRadius, 0f, 12f);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = RendererAPI.class,
-                    argumentNames = "api"
-            ),
-            description = "renderer.get_shadow_radius"
-    )
-    public static Float getShadowRadius(@LuaNotNil RendererAPI api) {
-        return api.shadowRadius;
+    @LuaMethodDoc(description = "renderer.get_shadow_radius")
+    public Float getShadowRadius() {
+        return this.shadowRadius;
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = RendererAPI.class,
-                    argumentNames = "api"
-            ),
-            description = "renderer.is_first_person"
-    )
-    public static Boolean isFirstPerson(@LuaNotNil RendererAPI api) {
-        return checkCameraOwner(api.owner) && Minecraft.getInstance().options.getCameraType().isFirstPerson();
+    @LuaMethodDoc(description = "renderer.is_first_person")
+    public Boolean isFirstPerson() {
+        return checkCameraOwner(this.owner) && Minecraft.getInstance().options.getCameraType().isFirstPerson();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = RendererAPI.class,
-                    argumentNames = "api"
-            ),
-            description = "renderer.is_camera_backwards"
-    )
-    public static Boolean isCameraBackwards(@LuaNotNil RendererAPI api) {
-        return checkCameraOwner(api.owner) && Minecraft.getInstance().options.getCameraType().isMirrored();
+    @LuaMethodDoc(description = "renderer.is_camera_backwards")
+    public Boolean isCameraBackwards() {
+        return checkCameraOwner(this.owner) && Minecraft.getInstance().options.getCameraType().isMirrored();
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload(
-                            argumentTypes = {RendererAPI.class, FiguraVec3.class},
-                            argumentNames = {"api", "rot"}
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "rot"
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {RendererAPI.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"api", "x", "y", "z"}
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"x", "y", "z"}
                     )
             },
             description = "renderer.set_camera_rot"
     )
-    public static void setCameraRot(@LuaNotNil RendererAPI api, Object x, Double y, Double z) {
-        api.cameraRot = x == null ? null : LuaUtils.oldParseVec3("setCameraRot", x, y, z);
+    public void setCameraRot(Object x, Double y, Double z) {
+        this.cameraRot = x == null ? null : LuaUtils.parseVec3("setCameraRot", x, y, z);
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload(
-                            argumentTypes = {RendererAPI.class, FiguraVec3.class},
-                            argumentNames = {"api", "rot"}
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "rot"
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {RendererAPI.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"api", "x", "y", "z"}
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"x", "y", "z"}
                     )
             },
             description = "renderer.offset_camera_rot"
     )
-    public static void offsetCameraRot(@LuaNotNil RendererAPI api, Object x, Double y, Double z) {
-        api.cameraBonusRot = x == null ? null : LuaUtils.oldParseVec3("offsetCameraRot", x, y, z);
+    public void offsetCameraRot(Object x, Double y, Double z) {
+        this.cameraBonusRot = x == null ? null : LuaUtils.parseVec3("offsetCameraRot", x, y, z);
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
-                    argumentTypes = {RendererAPI.class, String.class},
-                    argumentNames = {"api", "effect"}
+                    argumentTypes = String.class,
+                    argumentNames = "effect"
             ),
             description = "renderer.set_post_effect"
     )
-    public static void setPostEffect(@LuaNotNil RendererAPI api, String effect) {
-        api.postShader = effect == null ? null : new ResourceLocation("shaders/post/" + effect.toLowerCase() + ".json");
-    }
-
-    @Override
-    public String toString() {
-        return "RendererAPI";
+    public void setPostEffect(String effect) {
+        this.postShader = effect == null ? null : new ResourceLocation("shaders/post/" + effect.toLowerCase() + ".json");
     }
 }

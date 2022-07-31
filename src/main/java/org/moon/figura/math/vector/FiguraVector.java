@@ -1,99 +1,88 @@
 package org.moon.figura.math.vector;
 
-import net.minecraft.util.Mth;
+import org.moon.figura.math.matrix.FiguraMatrix;
+import org.moon.figura.utils.caching.CachedType;
 
-public abstract class FiguraVector<T extends FiguraVector<T>> {
+public abstract class FiguraVector<T extends FiguraVector<T, M>, M extends FiguraMatrix<M, T>> implements CachedType<T> {
 
     public abstract double lengthSquared();
     public double length() {
         return Math.sqrt(lengthSquared());
     }
+
     public abstract T copy();
     public abstract double dot(T other);
     public abstract boolean equals(T other);
+    public abstract T set(T other);
 
-    public abstract void set(T other);
-    public abstract void add(T other);
-    public abstract void subtract(T other);
-    public abstract void multiply(T other);
-    public abstract void divide(T other);
-    public abstract void reduce(T other);
-    public abstract void iDivide(T other);
-    public abstract void scale(double factor);
 
-    public void normalize() {
+    public abstract T add(T other);
+    public abstract T subtract(T other);
+    public abstract T multiply(T other);
+    public abstract T transform(M mat);
+    public abstract T divide(T other);
+    public abstract T reduce(T other);
+    public abstract T scale(double factor);
+
+    @SuppressWarnings("unchecked")
+    public T normalize() {
         double len = length();
         if (len > 0)
             scale(1 / len);
+        return (T) this;
     }
-
-    public void clampLength(Double minLength, Double maxLength) {
+    @SuppressWarnings("unchecked")
+    public T clampLength(Double minLength, Double maxLength) {
         if (minLength == null) minLength = 0d;
         if (maxLength == null) maxLength = Double.POSITIVE_INFINITY;
         double len = length();
         if (len == 0)
-            return;
+            return (T) this;
         if (len < minLength) {
             scale(minLength / len);
         } else if (len > maxLength) {
             scale(maxLength / len);
         }
+        return (T) this;
     }
 
     public T clamped(Double minLength, Double maxLength) {
-        T result = copy();
-        result.clampLength(minLength, maxLength);
-        return result;
+        return copy().clampLength(minLength, maxLength);
     }
 
     public T plus(T other) {
-        T result = copy();
-        result.add(other);
-        return result;
+        return copy().add(other);
     }
+
     public T minus(T other) {
-        T result = copy();
-        result.subtract(other);
-        return result;
+        return copy().subtract(other);
     }
+
     public T times(T other) {
-        T result = copy();
-        result.multiply(other);
-        return result;
+        return copy().multiply(other);
     }
+
     public T dividedBy(T other) {
-        T result = copy();
-        result.divide(other);
-        return result;
+        return copy().divide(other);
     }
+
     public T mod(T other) {
-        T result = copy();
-        result.reduce(other);
-        return result;
+        return copy().reduce(other);
     }
-    public T iDividedBy(T other) {
-        T result = copy();
-        result.iDivide(other);
-        return result;
-    }
+
     public T scaled(double factor) {
-        T result = copy();
-        result.scale(factor);
-        return result;
+        return copy().scale(factor);
     }
+
     public T normalized() {
-        T result = copy();
-        result.normalize();
-        return result;
+        return copy().normalize();
     }
+
     public T toRad() {
-        T result = copy();
-        result.scale(Mth.DEG_TO_RAD);
-        return result;
+        return copy().scale(Math.PI/180);
     }
+
     public T toDeg() {
-        T result = copy();
-        result.scale(Mth.RAD_TO_DEG);
-        return result;
+        return copy().scale(180/Math.PI);
     }
 }

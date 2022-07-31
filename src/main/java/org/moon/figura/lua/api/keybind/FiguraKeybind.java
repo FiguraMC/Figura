@@ -3,24 +3,25 @@ package org.moon.figura.lua.api.keybind;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaFunction;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.lua.LuaNotNil;
+import org.moon.figura.lua.LuaType;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
-import org.moon.figura.lua.types.LuaFunction;
-import org.terasology.jnlua.LuaRuntimeException;
 
 import java.util.List;
 
-@LuaWhitelist
+@LuaType(typeName = "keybind")
 @LuaTypeDoc(
         name = "Keybind",
         description = "keybind"
 )
-public final class FiguraKeybind {
+public class FiguraKeybind {
 
     private final Avatar owner;
     private final String name;
@@ -29,23 +30,18 @@ public final class FiguraKeybind {
     private InputConstants.Key key;
     private boolean isDown = false;
 
-    @LuaWhitelist
     @LuaFieldDoc(description = "keybind.on_press")
     public LuaFunction onPress;
 
-    @LuaWhitelist
     @LuaFieldDoc(description = "keybind.on_release")
     public LuaFunction onRelease;
 
-    @LuaWhitelist
     @LuaFieldDoc(description = "keybind.enabled")
     public Boolean enabled = true;
 
-    @LuaWhitelist
     @LuaFieldDoc(description = "keybind.gui")
     public Boolean gui;
 
-    @LuaWhitelist
     @LuaFieldDoc(description = "keybind.override")
     public Boolean override;
 
@@ -61,17 +57,17 @@ public final class FiguraKeybind {
     }
 
     public void setDown(boolean bl) {
-//        //events
-//        if (isDown != bl) {
-//            if (bl) {
-//                if (onPress != null)
-//                    owner.tryCall(onPress, -1, this);
-//            } else if (onRelease != null) {
-//                owner.tryCall(onRelease, -1, this);
-//            }
-//        }
-//
-//        this.isDown = bl;
+        //events
+        if (isDown != bl) {
+            if (bl) {
+                if (onPress != null)
+                    owner.tryCall(onPress, -1, this);
+            } else if (onRelease != null) {
+                owner.tryCall(onRelease, -1, this);
+            }
+        }
+
+        this.isDown = bl;
     }
 
     public void setKey(InputConstants.Key key) {
@@ -88,7 +84,7 @@ public final class FiguraKeybind {
         try {
             return InputConstants.getKey(key);
         } catch (Exception passed) {
-            throw new LuaRuntimeException("Invalid key: " + key);
+            throw new LuaError("Invalid key: " + key);
         }
     }
 
@@ -111,77 +107,54 @@ public final class FiguraKeybind {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
-                    argumentTypes = {FiguraKeybind.class, String.class},
-                    argumentNames = {"keybind", "key"}
+                    argumentTypes = String.class,
+                    argumentNames = "key"
             ),
             description = "keybind.set_key"
     )
-    public static void setKey(@LuaNotNil FiguraKeybind keybind, @LuaNotNil String key) {
-        keybind.key = parseStringKey(key);
+    public void setKey(@LuaNotNil String key) {
+        this.key = parseStringKey(key);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = FiguraKeybind.class,
-                    argumentNames = "keybind"
-            ),
-            description = "keybind.is_default"
-    )
-    public static boolean isDefault(@LuaNotNil FiguraKeybind keybind) {
-        return keybind.key.equals(keybind.defaultKey);
+    @LuaMethodDoc(description = "keybind.is_default")
+    public boolean isDefault() {
+        return this.key.equals(this.defaultKey);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = FiguraKeybind.class,
-                    argumentNames = "keybind"
-            ),
-            description = "keybind.get_key"
-    )
-    public static String getKey(@LuaNotNil FiguraKeybind keybind) {
-        return keybind.key.getName();
+    @LuaMethodDoc(description = "keybind.get_key")
+    public String getKey() {
+        return this.key.getName();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = FiguraKeybind.class,
-                    argumentNames = "keybind"
-            ),
-            description = "keybind.get_key_name"
-    )
-    public static String getKeyName(@LuaNotNil FiguraKeybind keybind) {
-        return keybind.key.getDisplayName().getString();
+    @LuaMethodDoc(description = "keybind.get_key_name")
+    public String getKeyName() {
+        return this.key.getDisplayName().getString();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = FiguraKeybind.class,
-                    argumentNames = "keybind"
-            ),
-            description = "keybind.get_name"
-    )
-    public static String getName(@LuaNotNil FiguraKeybind keybind) {
-        return keybind.name;
+    @LuaMethodDoc(description = "keybind.get_name")
+    public String getName() {
+        return this.name;
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = FiguraKeybind.class,
-                    argumentNames = "keybind"
-            ),
-            description = "keybind.is_pressed"
-    )
-    public static boolean isPressed(@LuaNotNil FiguraKeybind keybind) {
-        return ((keybind.gui != null && keybind.gui) || Minecraft.getInstance().screen == null) && keybind.isDown;
+    @LuaMethodDoc(description = "keybind.is_pressed")
+    public boolean isPressed() {
+        return ((this.gui != null && this.gui) || Minecraft.getInstance().screen == null) && this.isDown;
     }
 
-    @Override
-    public String toString() {
-        return this.name + " (" + key.getName() + ") (Keybind)";
+    @LuaWhitelist
+    public Object __index(String arg) {
+        return switch (arg) {
+            case "onPress" -> onPress;
+            case "onRelease" -> onRelease;
+            case "enabled" -> enabled;
+            case "gui" -> gui;
+            case "override" -> override;
+            default -> null;
+        };
     }
 }

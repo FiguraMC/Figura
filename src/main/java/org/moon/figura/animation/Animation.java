@@ -1,22 +1,25 @@
 package org.moon.figura.animation;
 
+import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaTable;
+import org.luaj.vm2.LuaValue;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.model.FiguraModelPart;
 import org.moon.figura.lua.LuaNotNil;
+import org.moon.figura.lua.LuaType;
+import org.moon.figura.lua.LuaTypeManager;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
-import org.moon.figura.lua.types.LuaTable;
-import org.terasology.jnlua.LuaRuntimeException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@LuaWhitelist
+@LuaType(typeName = "animation")
 @LuaTypeDoc(
         name = "Animation",
         description = "animation"
@@ -26,7 +29,6 @@ public class Animation {
     private final Avatar owner;
     private final String modelName;
 
-    @LuaWhitelist
     @LuaFieldDoc(description = "animation.name")
     public final String name;
 
@@ -82,7 +84,7 @@ public class Animation {
         switch (this.loop) {
             case ONCE -> {
                 if ((!inverted && time >= length) || (inverted && time <= 0))
-                    Animation.stop(this);
+                    stop();
             }
             case LOOP -> {
                 if (!inverted && time > length + loopDelay)
@@ -112,265 +114,224 @@ public class Animation {
             minTime = offset;
         }
 
-//        for (Float codeTime : codeFrames.keySet()) {
-//            if (codeTime >= minTime && codeTime < maxTime && !owner.scriptError && owner.luaState != null)
-//                owner.luaState.runScript(codeFrames.get(codeTime), "animation (" + this.name + ")");
-//        }
+        for (Float codeTime : codeFrames.keySet()) {
+            if (codeTime >= minTime && codeTime < maxTime && !owner.scriptError && owner.luaRuntime != null)
+                owner.luaRuntime.runScript(codeFrames.get(codeTime), "animation (" + this.name + ")");
+        }
     }
 
     public static LuaTable getTableForAnimations(Avatar avatar) {
         LuaTable models = new LuaTable();
-//        for (Animation animation : avatar.animations.values()) {
-//            //get or create animation table
-//            LuaTable animations = (LuaTable) models.get(animation.modelName);
-//            if (animations == null)
-//                animations = new LuaTable();
-//
-//            //put animation on the model table
-//            animations.put(animation.name, animation);
-//            models.put(animation.modelName, animations);
-//        }
+        for (Animation animation : avatar.animations.values()) {
+            //get or create animation table
+            LuaValue animations = models.get(animation.modelName);
+            if (animations == null || animations.isnil())
+                animations = new LuaTable();
+
+            //put animation on the model table
+            animations.set(animation.name, LuaTypeManager.wrap(animation));
+            models.set(animation.modelName, animations);
+        }
         return models;
     }
 
     // -- lua methods -- //
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = Animation.class,
-                    argumentNames = "animation"
-            ),
-            description = "animation.play"
-    )
-    public static void play(@LuaNotNil Animation animation) {
-        switch (animation.playState) {
-            case PAUSED -> animation.controller.resume();
+    @LuaMethodDoc(description = "animation.play")
+    public void play() {
+        switch (playState) {
+            case PAUSED -> controller.resume();
             case STOPPED -> {
-                animation.controller.init();
-                animation.time = animation.inverted ? (animation.length + animation.startDelay) : (animation.offset - animation.startDelay);
-                animation.lastTime = animation.time;
+                controller.init();
+                time = inverted ? (length + startDelay) : (offset - startDelay);
+                lastTime = time;
             }
             default -> {return;}
         }
 
-        animation.playState = PlayState.PLAYING;
+        playState = PlayState.PLAYING;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(description = "animation.pause")
+    public void pause() {
+        controller.pause();
+        playState = PlayState.PAUSED;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(description = "animation.stop")
+    public void stop() {
+        controller.reset();
+        playState = PlayState.STOPPED;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(description = "animation.restart")
+    public void restart() {
+        stop();
+        play();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(description = "animation.get_time")
+    public float getTime() {
+        return time;
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
-                    argumentTypes = Animation.class,
-                    argumentNames = "animation"
-            ),
-            description = "animation.pause"
-    )
-    public static void pause(@LuaNotNil Animation animation) {
-        animation.controller.pause();
-        animation.playState = PlayState.PAUSED;
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = Animation.class,
-                    argumentNames = "animation"
-            ),
-            description = "animation.stop"
-    )
-    public static void stop(@LuaNotNil Animation animation) {
-        animation.controller.reset();
-        animation.playState = PlayState.STOPPED;
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = Animation.class,
-                    argumentNames = "animation"
-            ),
-            description = "animation.restart"
-    )
-    public static void restart(@LuaNotNil Animation animation) {
-        stop(animation);
-        play(animation);
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = Animation.class,
-                    argumentNames = "animation"
-            ),
-            description = "animation.get_time"
-    )
-    public static float getTime(@LuaNotNil Animation animation) {
-        return animation.time;
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = {Animation.class, Float.class},
-                    argumentNames = {"animation", "time"}
+                    argumentTypes = Float.class,
+                    argumentNames = "time"
             ),
             description = "animation.set_time"
     )
-    public static void setTime(@LuaNotNil Animation animation, @LuaNotNil Float time) {
-        animation.time = time;
-        animation.tick();
+    public void setTime(@LuaNotNil Float time) {
+        this.time = time;
+        tick();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(description = "animation.get_play_state")
+    public String getPlayState() {
+        return playState.name();
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
-                    argumentTypes = Animation.class,
-                    argumentNames = "animation"
-            ),
-            description = "animation.get_play_state"
-    )
-    public static String getPlayState(@LuaNotNil Animation animation) {
-        return animation.playState.name();
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = {Animation.class, Float.class, String.class},
-                    argumentNames = {"animation", "time", "code"}
+                    argumentTypes = {Float.class, String.class},
+                    argumentNames = {"time", "code"}
             ),
             description = "animation.add_code"
     )
-    public static Animation addCode(@LuaNotNil Animation animation, @LuaNotNil Float time, @LuaNotNil String data) {
-        animation.codeFrames.put(Math.max(time, 0f), data);
-        return animation;
+    public Animation addCode(@LuaNotNil Float time, @LuaNotNil String data) {
+        codeFrames.put(Math.max(time, 0f), data);
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
-                    argumentTypes = {Animation.class, Float.class},
-                    argumentNames = {"animation", "blend"}
+                    argumentTypes = Float.class,
+                    argumentNames = "blend"
             ),
             description = "animation.blend"
     )
-    public static Animation blend(@LuaNotNil Animation animation, @LuaNotNil Float blend) {
-        animation.blend = blend;
-        return animation;
+    public Animation blend(@LuaNotNil Float blend) {
+        this.blend = blend;
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
-                    argumentTypes = {Animation.class, Float.class},
-                    argumentNames = {"animation", "offset"}
+                    argumentTypes = Float.class,
+                    argumentNames = "offset"
             ),
             description = "animation.offset"
     )
-    public static Animation offset(@LuaNotNil Animation animation, @LuaNotNil Float offset) {
-        animation.offset = offset;
-        return animation;
+    public Animation offset(@LuaNotNil Float offset) {
+        this.offset = offset;
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
-                    argumentTypes = {Animation.class, Float.class},
-                    argumentNames = {"animation", "delay"}
+                    argumentTypes = Float.class,
+                    argumentNames = "delay"
             ),
             description = "animation.start_delay"
     )
-    public static Animation startDelay(@LuaNotNil Animation animation, @LuaNotNil Float startDelay) {
-        animation.startDelay = startDelay;
-        return animation;
+    public Animation startDelay(@LuaNotNil Float delay) {
+        this.startDelay = delay;
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
-                    argumentTypes = {Animation.class, Float.class},
-                    argumentNames = {"animation", "delay"}
+                    argumentTypes = Float.class,
+                    argumentNames = "delay"
             ),
             description = "animation.loop_delay"
     )
-    public static Animation loopDelay(@LuaNotNil Animation animation, @LuaNotNil Float loopDelay) {
-        animation.loopDelay = loopDelay;
-        return animation;
+    public Animation loopDelay(@LuaNotNil Float delay) {
+        this.loopDelay = delay;
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
-                    argumentTypes = {Animation.class, Float.class},
-                    argumentNames = {"animation", "length"}
+                    argumentTypes = Float.class,
+                    argumentNames = "length"
             ),
             description = "animation.length"
     )
-    public static Animation length(@LuaNotNil Animation animation, @LuaNotNil Float length) {
-        animation.length = length;
-        return animation;
+    public Animation length(@LuaNotNil Float length) {
+        this.length = length;
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
-                    argumentTypes = {Animation.class, Boolean.class},
-                    argumentNames = {"animation", "override"}
+                    argumentTypes = Boolean.class,
+                    argumentNames = "override"
             ),
             description = "animation.override"
     )
-    public static Animation override(@LuaNotNil Animation animation, @LuaNotNil Boolean override) {
-        animation.override = override;
-        return animation;
+    public Animation override(@LuaNotNil Boolean override) {
+        this.override = override;
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
-                    argumentTypes = {Animation.class, String.class},
-                    argumentNames = {"animation", "loop"}
+                    argumentTypes = String.class,
+                    argumentNames = "loop"
             ),
             description = "animation.loop"
     )
-    public static Animation loop(@LuaNotNil Animation animation, @LuaNotNil String loop) {
+    public Animation override(@LuaNotNil String loop) {
         try {
-            animation.loop = LoopMode.valueOf(loop.toUpperCase());
-            return animation;
+            this.loop = LoopMode.valueOf(loop.toUpperCase());
+            return this;
         } catch (Exception ignored) {
-            throw new LuaRuntimeException("Illegal LoopMode: \"" + loop + "\".");
+            throw new LuaError("Illegal LoopMode: \"" + loop + "\".");
         }
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
-                    argumentTypes = {Animation.class, Integer.class},
-                    argumentNames = {"animation", "priority"}
+                    argumentTypes = Integer.class,
+                    argumentNames = "priority"
             ),
             description = "animation.priority"
     )
-    public static Animation priority(@LuaNotNil Animation animation, @LuaNotNil Integer priority) {
-        animation.priority = priority;
-        return animation;
+    public Animation priority(@LuaNotNil Integer priority) {
+        this.priority = priority;
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
-                    argumentTypes = {Animation.class, Float.class},
-                    argumentNames = {"animation", "speed"}
+                    argumentTypes = Float.class,
+                    argumentNames = "speed"
             ),
             description = "animation.speed"
     )
-    public static Animation speed(@LuaNotNil Animation animation, @LuaNotNil Float speed) {
-        animation.speed = speed;
-        animation.inverted = speed < 0;
-        return animation;
-    }
-
-    @Override
-    public String toString() {
-        return "Animation";
+    public Animation speed(@LuaNotNil Float speed) {
+        this.speed = speed;
+        this.inverted = speed < 0;
+        return this;
     }
 
     // -- other classes -- //

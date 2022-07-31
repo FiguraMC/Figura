@@ -1,21 +1,22 @@
 package org.moon.figura.lua;
 
 import net.minecraft.nbt.*;
-import org.moon.figura.lua.types.LuaTable;
+import org.luaj.vm2.LuaTable;
+import org.luaj.vm2.LuaValue;
 
 import java.util.HashMap;
 import java.util.function.Function;
 
 public class NbtToLua {
 
-    private static final HashMap<Class<?>, Function<Tag, Object>> CONVERTERS = new HashMap<>() {{
+    private static final HashMap<Class<?>, Function<Tag, LuaValue>> CONVERTERS = new HashMap<>() {{
         //primitive types
-        put(ByteTag.class, tag -> ((ByteTag) tag).getAsByte());
-        put(ShortTag.class, tag -> ((ShortTag) tag).getAsShort());
-        put(IntTag.class, tag -> ((IntTag) tag).getAsInt());
-        put(LongTag.class, tag -> ((LongTag) tag).getAsLong());
-        put(FloatTag.class, tag -> ((FloatTag) tag).getAsFloat());
-        put(DoubleTag.class, tag -> ((DoubleTag) tag).getAsDouble());
+        put(ByteTag.class, tag -> LuaValue.valueOf(((ByteTag) tag).getAsByte()));
+        put(ShortTag.class, tag -> LuaValue.valueOf(((ShortTag) tag).getAsShort()));
+        put(IntTag.class, tag -> LuaValue.valueOf(((IntTag) tag).getAsInt()));
+        put(LongTag.class, tag -> LuaValue.valueOf(((LongTag) tag).getAsLong()));
+        put(FloatTag.class, tag -> LuaValue.valueOf(((FloatTag) tag).getAsFloat()));
+        put(DoubleTag.class, tag -> LuaValue.valueOf(((DoubleTag) tag).getAsDouble()));
 
         //compound special :D
         put(CompoundTag.class, tag -> {
@@ -23,7 +24,7 @@ public class NbtToLua {
             CompoundTag compound = (CompoundTag) tag;
 
             for (String key : compound.getAllKeys())
-                table.put(key, convert(compound.get(key)));
+                table.set(key, convert(compound.get(key)));
 
             return table;
         });
@@ -35,26 +36,26 @@ public class NbtToLua {
         put(ListTag.class, tag -> fromCollection((CollectionTag<?>) tag));
     }};
 
-    private static Object fromCollection(CollectionTag<?> tag) {
+    private static LuaValue fromCollection(CollectionTag<?> tag) {
         LuaTable table = new LuaTable();
 
         int i = 1;
         for (Tag children : tag) {
-            table.put(i, convert(children));
+            table.set(i, convert(children));
             i++;
         }
 
         return table;
     }
 
-    public static Object convert(Tag tag) {
+    public static LuaValue convert(Tag tag) {
         if (tag == null)
             return null;
 
-        Class<?> getClass = tag.getClass();
-        Function<Tag, Object> builder = CONVERTERS.get(getClass);
+        Class<?> clazz = tag.getClass();
+        Function<Tag, LuaValue> builder = CONVERTERS.get(clazz);
         if (builder == null)
-            return tag.getAsString();
+            return LuaValue.valueOf(tag.getAsString());
 
         return builder.apply(tag);
     }

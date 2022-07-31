@@ -5,6 +5,8 @@ import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaTable;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.model.rendering.ImmediateAvatarRenderer;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
@@ -14,26 +16,26 @@ import org.moon.figura.avatars.model.rendertasks.ItemTask;
 import org.moon.figura.avatars.model.rendertasks.RenderTask;
 import org.moon.figura.avatars.model.rendertasks.TextTask;
 import org.moon.figura.ducks.LivingEntityRendererAccessor;
+import org.moon.figura.math.matrix.FiguraMat3;
+import org.moon.figura.math.matrix.FiguraMat4;
+import org.moon.figura.math.vector.FiguraVec2;
+import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.lua.LuaNotNil;
+import org.moon.figura.lua.LuaType;
+import org.moon.figura.lua.LuaTypeManager;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
-import org.moon.figura.lua.types.LuaTable;
-import org.moon.figura.math.matrix.FiguraMat3;
-import org.moon.figura.math.matrix.FiguraMat4;
-import org.moon.figura.math.vector.FiguraVec2;
-import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.MathUtils;
-import org.terasology.jnlua.LuaRuntimeException;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@LuaWhitelist
+@LuaType(typeName = "model_part")
 @LuaTypeDoc(
         name = "ModelPart",
         description = "model_part"
@@ -42,7 +44,6 @@ public class FiguraModelPart {
 
     private final Avatar owner;
 
-    @LuaWhitelist
     @LuaFieldDoc(description = "model_part.name")
     public final String name;
     public FiguraModelPart parent;
@@ -184,410 +185,297 @@ public class FiguraModelPart {
     //-- LUA BUSINESS --//
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = FiguraModelPart.class,
-                    argumentNames = "modelPart"
-            ),
-            description = "model_part.get_parent"
-    )
-    public static FiguraModelPart getParent(@LuaNotNil FiguraModelPart modelPart) {
-        return modelPart.parent;
+    @LuaMethodDoc(description = "model_part.get_parent")
+    public FiguraModelPart getParent() {
+        return this.parent;
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = FiguraModelPart.class,
-                    argumentNames = "modelPart"
-            ),
-            description = "model_part.get_children"
-    )
-    public static LuaTable getChildren(@LuaNotNil FiguraModelPart modelPart) {
+    @LuaMethodDoc(description = "model_part.get_children")
+    public LuaTable getChildren() {
         LuaTable table = new LuaTable();
         int i = 1;
-        for (FiguraModelPart child : modelPart.children)
-            table.put(i++, child);
+        for (FiguraModelPart child : this.children)
+            table.set(i++, LuaTypeManager.wrap(child));
         return table;
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = FiguraModelPart.class,
-                    argumentNames = "modelPart"
-            ),
-            description = "model_part.get_pos"
-    )
-    public static FiguraVec3 getPos(@LuaNotNil FiguraModelPart modelPart) {
-        return modelPart.customization.getPos();
+    @LuaMethodDoc(description = "model_part.get_pos")
+    public FiguraVec3 getPos() {
+        return this.customization.getPos();
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload(
-                            argumentTypes = {FiguraModelPart.class, FiguraVec3.class},
-                            argumentNames = {"modelPart", "pos"}
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "pos"
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {FiguraModelPart.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"modelPart", "x", "y", "z"}
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"x", "y", "z"}
                     )
             },
             description = "model_part.set_pos"
     )
-    public static void setPos(@LuaNotNil FiguraModelPart modelPart, Object x, Double y, Double z) {
-        FiguraVec3 vec = LuaUtils.oldParseVec3("setPos", x, y, z);
-        modelPart.customization.setPos(vec);
+    public void setPos(Object x, Double y, Double z) {
+        FiguraVec3 vec = LuaUtils.parseVec3("setPos", x, y, z);
+        this.customization.setPos(vec);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = FiguraModelPart.class,
-                    argumentNames = "modelPart"
-            ),
-            description = "model_part.get_anim_pos"
-    )
-    public static FiguraVec3 getAnimPos(@LuaNotNil FiguraModelPart modelPart) {
-        return modelPart.customization.getAnimPos();
+    @LuaMethodDoc(description = "model_part.get_anim_pos")
+    public FiguraVec3 getAnimPos() {
+        return this.customization.getAnimPos();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = FiguraModelPart.class,
-                    argumentNames = "modelPart"
-            ),
-            description = "model_part.get_rot"
-    )
-    public static FiguraVec3 getRot(@LuaNotNil FiguraModelPart modelPart) {
-        return modelPart.customization.getRot();
+    @LuaMethodDoc(description = "model_part.get_rot")
+    public FiguraVec3 getRot() {
+        return this.customization.getRot();
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload(
-                            argumentTypes = {FiguraModelPart.class, FiguraVec3.class},
-                            argumentNames = {"modelPart", "rot"}
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "rot"
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {FiguraModelPart.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"modelPart", "x", "y", "z"}
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"x", "y", "z"}
                     )
             },
             description = "model_part.set_rot"
     )
-    public static void setRot(@LuaNotNil FiguraModelPart modelPart, Object x, Double y, Double z) {
-        FiguraVec3 vec = LuaUtils.oldParseVec3("setRot", x, y, z);
-        modelPart.customization.setRot(vec);
+    public void setRot(Object x, Double y, Double z) {
+        FiguraVec3 vec = LuaUtils.parseVec3("setRot", x, y, z);
+        this.customization.setRot(vec);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = FiguraModelPart.class,
-                    argumentNames = "modelPart"
-            ),
-            description = "model_part.get_offset_rot"
-    )
-    public static FiguraVec3 getOffsetRot(@LuaNotNil FiguraModelPart modelPart) {
-        return modelPart.customization.getOffsetRot();
+    @LuaMethodDoc(description = "model_part.get_offset_rot")
+    public FiguraVec3 getOffsetRot() {
+        return this.customization.getOffsetRot();
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload(
-                            argumentTypes = {FiguraModelPart.class, FiguraVec3.class},
-                            argumentNames = {"modelPart", "offsetRot"}
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "offsetRot"
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {FiguraModelPart.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"modelPart", "x", "y", "z"}
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"x", "y", "z"}
                     )
             },
             description = "model_part.offset_rot"
     )
-    public static void offsetRot(@LuaNotNil FiguraModelPart modelPart, Object x, Double y, Double z) {
-        FiguraVec3 vec = LuaUtils.oldParseVec3("offsetRot", x, y, z);
-        modelPart.customization.offsetRot(vec);
+    public void offsetRot(Object x, Double y, Double z) {
+        FiguraVec3 vec = LuaUtils.parseVec3("offsetRot", x, y, z);
+        this.customization.offsetRot(vec);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = FiguraModelPart.class,
-                    argumentNames = "modelPart"
-            ),
-            description = "model_part.get_anim_rot"
-    )
-    public static FiguraVec3 getAnimRot(@LuaNotNil FiguraModelPart modelPart) {
-        return modelPart.customization.getAnimRot();
+    @LuaMethodDoc(description = "model_part.get_anim_rot")
+    public FiguraVec3 getAnimRot() {
+        return this.customization.getAnimRot();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = FiguraModelPart.class,
-                    argumentNames = "modelPart"
-            ),
-            description = "model_part.get_scale"
-    )
-    public static FiguraVec3 getScale(@LuaNotNil FiguraModelPart modelPart) {
-        return modelPart.customization.getScale();
+    @LuaMethodDoc(description = "model_part.get_scale")
+    public FiguraVec3 getScale() {
+        return this.customization.getScale();
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload(
-                            argumentTypes = {FiguraModelPart.class, FiguraVec3.class},
-                            argumentNames = {"modelPart", "scale"}
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "scale"
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {FiguraModelPart.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"modelPart", "x", "y", "z"}
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"x", "y", "z"}
                     )
             },
             description = "model_part.set_scale"
     )
-    public static void setScale(@LuaNotNil FiguraModelPart modelPart, Object x, Double y, Double z) {
-        FiguraVec3 vec = LuaUtils.oldParseVec3("setScale", x, y, z, 1, 1, 1);
-        modelPart.customization.setScale(vec);
+    public void setScale(Object x, Double y, Double z) {
+        FiguraVec3 vec = LuaUtils.parseVec3("setScale", x, y, z, 1, 1, 1);
+        this.customization.setScale(vec);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = FiguraModelPart.class,
-                    argumentNames = "modelPart"
-            ),
-            description = "model_part.get_anim_scale"
-    )
-    public static FiguraVec3 getAnimScale(@LuaNotNil FiguraModelPart modelPart) {
-        return modelPart.customization.getAnimScale();
+    @LuaMethodDoc(description = "model_part.get_anim_scale")
+    public FiguraVec3 getAnimScale() {
+        return this.customization.getAnimScale();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = FiguraModelPart.class,
-                    argumentNames = "modelPart"
-            ),
-            description = "model_part.get_pivot"
-    )
-    public static FiguraVec3 getPivot(@LuaNotNil FiguraModelPart modelPart) {
-        return modelPart.customization.getPivot();
+    @LuaMethodDoc(description = "model_part.get_pivot")
+    public FiguraVec3 getPivot() {
+        return this.customization.getPivot();
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload(
-                            argumentTypes = {FiguraModelPart.class, FiguraVec3.class},
-                            argumentNames = {"modelPart", "pivot"}
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "pivot"
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {FiguraModelPart.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"modelPart", "x", "y", "z"}
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"x", "y", "z"}
                     )
             },
             description = "model_part.set_pivot"
     )
-    public static void setPivot(@LuaNotNil FiguraModelPart modelPart, Object x, Double y, Double z) {
-        FiguraVec3 vec = LuaUtils.oldParseVec3("setPivot", x, y, z);
-        modelPart.customization.setPivot(vec);
+    public void setPivot(Object x, Double y, Double z) {
+        FiguraVec3 vec = LuaUtils.parseVec3("setPivot", x, y, z);
+        this.customization.setPivot(vec);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = FiguraModelPart.class,
-                    argumentNames = "modelPart"
-            ),
-            description = "model_part.get_offset_pivot"
-    )
-    public static FiguraVec3 getOffsetPivot(@LuaNotNil FiguraModelPart modelPart) {
-        return modelPart.customization.getOffsetPivot();
+    @LuaMethodDoc(description = "model_part.get_offset_pivot")
+    public FiguraVec3 getOffsetPivot() {
+        return this.customization.getOffsetPivot();
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload(
-                            argumentTypes = {FiguraModelPart.class, FiguraVec3.class},
-                            argumentNames = {"modelPart", "offsetPivot"}
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "offsetPivot"
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {FiguraModelPart.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"modelPart", "x", "y", "z"}
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"x", "y", "z"}
                     )
             },
             description = "model_part.offset_pivot"
     )
-    public static void offsetPivot(@LuaNotNil FiguraModelPart modelPart, Object x, Double y, Double z) {
-        FiguraVec3 vec = LuaUtils.oldParseVec3("offsetPivot", x, y, z);
-        modelPart.customization.offsetPivot(vec);
+    public void offsetPivot(Object x, Double y, Double z) {
+        FiguraVec3 vec = LuaUtils.parseVec3("offsetPivot", x, y, z);
+        this.customization.offsetPivot(vec);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(description = "model_part.get_position_matrix")
+    public FiguraMat4 getPositionMatrix() {
+        this.customization.recalculate();
+        return this.customization.getPositionMatrix();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(description = "model_part.get_position_matrix_raw")
+    public FiguraMat4 getPositionMatrixRaw() {
+        return this.customization.getPositionMatrix();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(description = "model_part.get_normal_matrix")
+    public FiguraMat3 getNormalMatrix() {
+        this.customization.recalculate();
+        return this.customization.getNormalMatrix();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(description = "model_part.get_normal_matrix_raw")
+    public FiguraMat3 getNormalMatrixRaw() {
+        return this.customization.getNormalMatrix();
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
-                    argumentTypes = FiguraModelPart.class,
-                    argumentNames = "modelPart"
-            ),
-            description = "model_part.get_position_matrix"
-    )
-    public static FiguraMat4 getPositionMatrix(@LuaNotNil FiguraModelPart modelPart) {
-        modelPart.customization.recalculate();
-        return modelPart.customization.getPositionMatrix();
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = FiguraModelPart.class,
-                    argumentNames = "modelPart"
-            ),
-            description = "model_part.get_position_matrix_raw"
-    )
-    public static FiguraMat4 getPositionMatrixRaw(@LuaNotNil FiguraModelPart modelPart) {
-        return modelPart.customization.getPositionMatrix();
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = FiguraModelPart.class,
-                    argumentNames = "modelPart"
-            ),
-            description = "model_part.get_normal_matrix"
-    )
-    public static FiguraMat3 getNormalMatrix(@LuaNotNil FiguraModelPart modelPart) {
-        modelPart.customization.recalculate();
-        return modelPart.customization.getNormalMatrix();
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = FiguraModelPart.class,
-                    argumentNames = "modelPart"
-            ),
-            description = "model_part.get_normal_matrix_raw"
-    )
-    public static FiguraMat3 getNormalMatrixRaw(@LuaNotNil FiguraModelPart modelPart) {
-        return modelPart.customization.getNormalMatrix();
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = {FiguraModelPart.class, FiguraMat4.class},
-                    argumentNames = {"modelPart", "matrix"}
+                    argumentTypes = FiguraMat4.class,
+                    argumentNames = "matrix"
             ),
             description = "model_part.set_matrix"
     )
-    public static void setMatrix(@LuaNotNil FiguraModelPart modelPart, @LuaNotNil FiguraMat4 matrix) {
-        modelPart.customization.setMatrix(matrix);
+    public void setMatrix(@LuaNotNil FiguraMat4 matrix) {
+        this.customization.setMatrix(matrix);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(description = "model_part.get_visible")
+    public boolean getVisible() {
+        FiguraModelPart part = this;
+        while (part != null && part.customization.visible == null)
+            part = part.parent;
+        return part == null || part.customization.visible;
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
-                    argumentTypes = FiguraModelPart.class,
-                    argumentNames = "modelPart"
-            ),
-            description = "model_part.get_visible"
-    )
-    public static boolean getVisible(@LuaNotNil FiguraModelPart modelPart) {
-        while (modelPart != null && modelPart.customization.visible == null)
-            modelPart = modelPart.parent;
-        return modelPart == null || modelPart.customization.visible;
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = {FiguraModelPart.class, Boolean.class},
-                    argumentNames = {"modelPart", "visible"}
+                    argumentTypes = Boolean.class,
+                    argumentNames = "visible"
             ),
             description = "model_part.set_visible"
     )
-    public static void setVisible(@LuaNotNil FiguraModelPart modelPart, Boolean bool) {
-        modelPart.customization.visible = bool;
+    public void setVisible(Boolean bool) {
+        this.customization.visible = bool;
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = FiguraModelPart.class,
-                    argumentNames = "modelPart"
-            ),
-            description = "model_part.reset_visible"
-    )
-    public static void resetVisible(@LuaNotNil FiguraModelPart modelPart) {
-        modelPart.customization.visible = null;
+    @LuaMethodDoc(description = "model_part.reset_visible")
+    public void resetVisible() {
+        this.customization.visible = null;
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = FiguraModelPart.class,
-                    argumentNames = "modelPart"
-            ),
-            description = "model_part.get_primary_render_type"
-    )
-    public static String getPrimaryRenderType(@LuaNotNil FiguraModelPart modelPart) {
-        RenderTypes renderType = modelPart.customization.getPrimaryRenderType();
+    @LuaMethodDoc(description = "model_part.get_primary_render_type")
+    public String getPrimaryRenderType() {
+        RenderTypes renderType = this.customization.getPrimaryRenderType();
+        return renderType == null ? null : renderType.name();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(description = "model_part.get_secondary_render_type")
+    public String getSecondaryRenderType() {
+        RenderTypes renderType = this.customization.getSecondaryRenderType();
         return renderType == null ? null : renderType.name();
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
-                    argumentTypes = FiguraModelPart.class,
-                    argumentNames = "modelPart"
-            ),
-            description = "model_part.get_secondary_render_type"
-    )
-    public static String getSecondaryRenderType(@LuaNotNil FiguraModelPart modelPart) {
-        RenderTypes renderType = modelPart.customization.getSecondaryRenderType();
-        return renderType == null ? null : renderType.name();
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = {FiguraModelPart.class, String.class},
-                    argumentNames = {"modelPart", "renderType"}
+                    argumentTypes = String.class,
+                    argumentNames = "renderType"
             ),
             description = "model_part.set_primary_render_type"
     )
-    public static void setPrimaryRenderType(@LuaNotNil FiguraModelPart modelPart, String type) {
+    public void setPrimaryRenderType(String type) {
         try {
-            modelPart.customization.setPrimaryRenderType(type == null ? null : RenderTypes.valueOf(type));
+            this.customization.setPrimaryRenderType(type == null ? null : RenderTypes.valueOf(type));
         } catch (Exception ignored) {
-            throw new LuaRuntimeException("Illegal RenderType: \"" + type + "\".");
+            throw new LuaError("Illegal RenderType: \"" + type + "\".");
         }
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
-                    argumentTypes = {FiguraModelPart.class, String.class},
-                    argumentNames = {"modelPart", "renderType"}
+                    argumentTypes = String.class,
+                    argumentNames = "renderType"
             ),
             description = "model_part.set_secondary_render_type"
     )
-    public static void setSecondaryRenderType(@LuaNotNil FiguraModelPart modelPart, String type) {
+    public void setSecondaryRenderType(String type) {
         try {
-            modelPart.customization.setSecondaryRenderType(type == null ? null : RenderTypes.valueOf(type));
+            this.customization.setSecondaryRenderType(type == null ? null : RenderTypes.valueOf(type));
         } catch (Exception ignored) {
-            throw new LuaRuntimeException("Illegal RenderType: \"" + type + "\".");
+            throw new LuaError("Illegal RenderType: \"" + type + "\".");
         }
     }
 
@@ -595,82 +483,69 @@ public class FiguraModelPart {
     @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload(
-                            argumentTypes = {FiguraModelPart.class, String.class},
-                            argumentNames = {"modelPart", "textureType"}
+                            argumentTypes = String.class,
+                            argumentNames = "textureType"
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {FiguraModelPart.class, String.class, String.class},
-                            argumentNames = {"modelPart", "resource", "path"}
+                            argumentTypes = {String.class, String.class},
+                            argumentNames = {"resource", "path"}
                     )
             },
             description = "model_part.set_primary_texture"
     )
-    public static void setPrimaryTexture(@LuaNotNil FiguraModelPart modelPart, String type, String path) {
-        modelPart.customization.primaryTexture = FiguraTextureSet.getOverrideTexture(modelPart.owner, type, path);
+    public void setPrimaryTexture(String type, String path) {
+        this.customization.primaryTexture = FiguraTextureSet.getOverrideTexture(this.owner, type, path);
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload(
-                            argumentTypes = {FiguraModelPart.class, String.class},
-                            argumentNames = {"modelPart", "textureType"}
+                            argumentTypes = String.class,
+                            argumentNames = "textureType"
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {FiguraModelPart.class, String.class, String.class},
-                            argumentNames = {"modelPart", "resource", "path"}
+                            argumentTypes = {String.class, String.class},
+                            argumentNames = {"resource", "path"}
                     )
             },
             description = "model_part.set_secondary_texture"
     )
-    public static void setSecondaryTexture(@LuaNotNil FiguraModelPart modelPart, String type, String path) {
-        modelPart.customization.secondaryTexture = FiguraTextureSet.getOverrideTexture(modelPart.owner, type, path);
+    public void setSecondaryTexture(String type, String path) {
+        this.customization.secondaryTexture = FiguraTextureSet.getOverrideTexture(this.owner, type, path);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = FiguraModelPart.class,
-                    argumentNames = "modelPart"
-            ),
-            description = "model_part.part_to_world_matrix"
-    )
-    public static FiguraMat4 partToWorldMatrix(@LuaNotNil FiguraModelPart modelPart) {
-        return modelPart.savedPartToWorldMat.copy();
+    @LuaMethodDoc(description = "model_part.part_to_world_matrix")
+    public FiguraMat4 partToWorldMatrix() {
+        return this.savedPartToWorldMat.copy();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = FiguraModelPart.class,
-                    argumentNames = "modelPart"
-            ),
-            description = "model_part.get_texture_size"
-    )
-    public static FiguraVec2 getTextureSize(@LuaNotNil FiguraModelPart modelPart) {
-        if (modelPart.textureWidth == -1 || modelPart.textureHeight == -1)
-            throw new LuaRuntimeException("Cannot get texture size of part, it has multiple different-sized textures!");
-        return FiguraVec2.of(modelPart.textureWidth, modelPart.textureHeight);
+    @LuaMethodDoc(description = "model_part.get_texture_size")
+    public FiguraVec2 getTextureSize() {
+        if (this.textureWidth == -1 || this.textureHeight == -1)
+            throw new LuaError("Cannot get texture size of part, it has multiple different-sized textures!");
+        return FiguraVec2.of(this.textureWidth, this.textureHeight);
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload(
-                            argumentTypes = {FiguraModelPart.class, FiguraVec2.class},
-                            argumentNames = {"modelPart", "uv"}
+                            argumentTypes = FiguraVec2.class,
+                            argumentNames = "uv"
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {FiguraModelPart.class, Double.class, Double.class},
-                            argumentNames = {"modelPart", "u", "v"}
+                            argumentTypes = {Double.class, Double.class},
+                            argumentNames = {"u", "v"}
                     )
             },
-            description = "model_part.set_uv"
-    )
-    public static void setUV(@LuaNotNil FiguraModelPart modelPart, Object x, Double y) {
-        modelPart.customization.uvMatrix.reset();
-        FiguraVec2 uv = LuaUtils.oldParseVec2("setUV", x, y);
-        modelPart.customization.uvMatrix.translate(uv.x, uv.y);
+            description = "model_part.set_uv")
+    public void setUV(Object x, Double y) {
+        this.customization.uvMatrix.reset();
+        FiguraVec2 uv = LuaUtils.parseVec2("setUV", x, y);
+        this.customization.uvMatrix.translate(uv.x, uv.y);
         uv.free();
     }
 
@@ -678,249 +553,201 @@ public class FiguraModelPart {
     @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload(
-                            argumentTypes = {FiguraModelPart.class, FiguraVec2.class},
-                            argumentNames = {"modelPart", "uv"}
+                            argumentTypes = FiguraVec2.class,
+                            argumentNames = "uv"
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {FiguraModelPart.class, Double.class, Double.class},
-                            argumentNames = {"modelPart", "u", "v"}
+                            argumentTypes = {Double.class, Double.class},
+                            argumentNames = {"u", "v"}
                     )
             },
-            description = "model_part.set_uv_pixels"
-    )
-    public static void setUVPixels(@LuaNotNil FiguraModelPart modelPart, Object x, Double y) {
-        if (modelPart.textureWidth == -1 || modelPart.textureHeight == -1)
-            throw new LuaRuntimeException("Cannot call setUVPixels on a part with multiple texture sizes!");
+            description = "model_part.set_uv_pixels")
+    public void setUVPixels(Object x, Double y) {
+        if (this.textureWidth == -1 || this.textureHeight == -1)
+            throw new LuaError("Cannot call setUVPixels on a part with multiple texture sizes!");
 
-        modelPart.customization.uvMatrix.reset();
-        FiguraVec2 uv = LuaUtils.oldParseVec2("setUVPixels", x, y);
-        uv.divide(modelPart.textureWidth, modelPart.textureHeight);
-        modelPart.customization.uvMatrix.translate(uv.x, uv.y);
+        this.customization.uvMatrix.reset();
+        FiguraVec2 uv = LuaUtils.parseVec2("setUVPixels", x, y);
+        uv.divide(this.textureWidth, this.textureHeight);
+        this.customization.uvMatrix.translate(uv.x, uv.y);
         uv.free();
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
-                    argumentTypes = {FiguraModelPart.class, FiguraMat3.class},
-                    argumentNames = {"modelPart", "matrix"}
+                    argumentTypes = FiguraMat3.class,
+                    argumentNames = "matrix"
             ),
-            description = "model_part.set_uv_matrix"
-    )
-    public static void setUVMatrix(@LuaNotNil FiguraModelPart modelPart, @LuaNotNil FiguraMat3 matrix) {
-        modelPart.customization.uvMatrix.set(matrix);
+            description = "model_part.set_uv_matrix")
+    public void setUVMatrix(@LuaNotNil FiguraMat3 matrix) {
+        this.customization.uvMatrix.set(matrix);
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload(
-                            argumentTypes = {FiguraModelPart.class, FiguraVec3.class},
-                            argumentNames = {"modelPart", "color"}
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "color"
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {FiguraModelPart.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"modelPart", "r", "g", "b"}
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"r", "g", "b"}
                     )
             },
-            description = "model_part.set_color"
-    )
-    public static void setColor(@LuaNotNil FiguraModelPart modelPart, Object r, Double g, Double b) {
-        modelPart.customization.color = LuaUtils.oldParseVec3("setColor", r, g, b, 1, 1, 1);
+            description = "model_part.set_color")
+    public void setColor(Object r, Double g, Double b) {
+        this.customization.color = LuaUtils.parseVec3("setColor", r, g, b, 1, 1, 1);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(description = "model_part.get_color")
+    public FiguraVec3 getColor() {
+        return this.customization.color.copy();
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
-                    argumentTypes = FiguraModelPart.class,
-                    argumentNames = "modelPart"
+                    argumentTypes = Float.class,
+                    argumentNames = "opacity"
             ),
-            description = "model_part.get_color"
-    )
-    public static FiguraVec3 getColor(@LuaNotNil FiguraModelPart modelPart) {
-        return modelPart.customization.color.copy();
+            description = "model_part.set_opacity")
+    public void setOpacity(Float opacity) {
+        this.customization.alpha = opacity;
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = {FiguraModelPart.class, Float.class},
-                    argumentNames = {"modelPart", "opacity"}
-            ),
-            description = "model_part.set_opacity"
-    )
-    public static void setOpacity(@LuaNotNil FiguraModelPart modelPart, Float opacity) {
-        modelPart.customization.alpha = opacity;
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = FiguraModelPart.class,
-                    argumentNames = "modelPart"
-            ),
-            description = "model_part.get_opacity"
-    )
-    public static Float getOpacity(@LuaNotNil FiguraModelPart modelPart) {
-        return modelPart.customization.alpha;
+    @LuaMethodDoc(description = "model_part.get_opacity")
+    public Float getOpacity() {
+        return this.customization.alpha;
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload(
-                            argumentTypes = {FiguraModelPart.class, FiguraVec2.class},
-                            argumentNames = {"modelPart", "light"}
+                            argumentTypes = FiguraVec2.class,
+                            argumentNames = "light"
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {FiguraModelPart.class, Integer.class, Integer.class},
-                            argumentNames = {"modelPart", "blockLight", "skyLight"}
+                            argumentTypes = {Integer.class, Integer.class},
+                            argumentNames = {"blockLight", "skyLight"}
                     )
             },
-            description = "model_part.set_light"
-    )
-    public static void setLight(@LuaNotNil FiguraModelPart modelPart, Object light, Double skyLight) {
+            description = "model_part.set_light")
+    public void setLight(Object light, Double skyLight) {
         if (light == null) {
-            modelPart.customization.light = null;
+            this.customization.light = null;
             return;
         }
 
-        FiguraVec2 lightVec = LuaUtils.oldParseVec2("setLight", light, skyLight);
-        modelPart.customization.light = LightTexture.pack((int) lightVec.x, (int) lightVec.y);
+        FiguraVec2 lightVec = LuaUtils.parseVec2("setLight", light, skyLight);
+        this.customization.light = LightTexture.pack((int) lightVec.x, (int) lightVec.y);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = FiguraModelPart.class,
-                    argumentNames = "modelPart"
-            ),
-            description = "model_part.get_light"
-    )
-    public static FiguraVec2 getLight(@LuaNotNil FiguraModelPart modelPart) {
-        Integer light = modelPart.customization.light;
+    @LuaMethodDoc(description = "model_part.get_light")
+    public FiguraVec2 getLight() {
+        Integer light = this.customization.light;
         return light == null ? null : FiguraVec2.of(LightTexture.block(light), LightTexture.sky(light));
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
-                    argumentTypes = {FiguraModelPart.class, String.class},
-                    argumentNames = {"modelPart", "parentType"}
+                    argumentTypes = String.class,
+                    argumentNames = "parentType"
             ),
-            description = "model_part.set_parent_type"
-    )
-    public static void setParentType(@LuaNotNil FiguraModelPart modelPart, @LuaNotNil String parent) {
-        modelPart.parentType = ParentType.get(parent);
+            description = "model_part.set_parent_type")
+    public void setParentType(@LuaNotNil String parent) {
+        this.parentType = ParentType.get(parent);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(description = "model_part.get_parent_type")
+    public String getParentType() {
+        return this.parentType == null ? null : this.parentType.name();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(description = "model_part.get_type")
+    public String getType() {
+        return this.customization.partType.name();
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
-                    argumentTypes = FiguraModelPart.class,
-                    argumentNames = "modelPart"
+                    argumentTypes = String.class,
+                    argumentNames = "taskName"
             ),
-            description = "model_part.get_parent_type"
-    )
-    public static String getParentType(@LuaNotNil FiguraModelPart modelPart) {
-        return modelPart.parentType == null ? null : modelPart.parentType.name();
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = FiguraModelPart.class,
-                    argumentNames = "modelPart"
-            ),
-            description = "model_part.get_type"
-    )
-    public static String getType(@LuaNotNil FiguraModelPart modelPart) {
-        return modelPart.customization.partType.name();
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = {FiguraModelPart.class, String.class},
-                    argumentNames = {"modelPart", "taskName"}
-            ),
-            description = "model_part.add_text"
-    )
-    public static RenderTask addText(@LuaNotNil FiguraModelPart modelPart, @LuaNotNil String name) {
+            description = "model_part.add_text")
+    public RenderTask addText(@LuaNotNil String name) {
         RenderTask task = new TextTask();
-        modelPart.renderTasks.put(name, task);
+        this.renderTasks.put(name, task);
         return task;
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
-                    argumentTypes = {FiguraModelPart.class, String.class},
-                    argumentNames = {"modelPart", "taskName"}
+                    argumentTypes = String.class,
+                    argumentNames = "taskName"
             ),
-            description = "model_part.add_item"
-    )
-    public static RenderTask addItem(@LuaNotNil FiguraModelPart modelPart, @LuaNotNil String name) {
+            description = "model_part.add_item")
+    public RenderTask addItem(@LuaNotNil String name) {
         RenderTask task = new ItemTask();
-        modelPart.renderTasks.put(name, task);
+        this.renderTasks.put(name, task);
         return task;
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
-                    argumentTypes = {FiguraModelPart.class, String.class},
-                    argumentNames = {"modelPart", "taskName"}
+                    argumentTypes = String.class,
+                    argumentNames = "taskName"
             ),
-            description = "model_part.add_block"
-    )
-    public static RenderTask addBlock(@LuaNotNil FiguraModelPart modelPart, @LuaNotNil String name) {
+            description = "model_part.add_block")
+    public RenderTask addBlock(@LuaNotNil String name) {
         RenderTask task = new BlockTask();
-        modelPart.renderTasks.put(name, task);
+        this.renderTasks.put(name, task);
         return task;
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
-                    argumentTypes = {FiguraModelPart.class, String.class},
-                    argumentNames = {"modelPart", "taskName"}
+                    argumentTypes = String.class,
+                    argumentNames = "taskName"
             ),
-            description = "model_part.get_task"
-    )
-    public static RenderTask getTask(@LuaNotNil FiguraModelPart modelPart, @LuaNotNil String name) {
-        return modelPart.renderTasks.get(name);
+            description = "model_part.get_task")
+    public RenderTask getTask(@LuaNotNil String name) {
+        return this.renderTasks.get(name);
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
-                    argumentTypes = {FiguraModelPart.class, String.class},
-                    argumentNames = {"modelPart", "taskName"}
+                    argumentTypes = String.class,
+                    argumentNames = "taskName"
             ),
-            description = "model_part.remove_task"
-    )
-    public static void removeTask(@LuaNotNil FiguraModelPart modelPart, @LuaNotNil String name) {
-        modelPart.renderTasks.remove(name);
+            description = "model_part.remove_task")
+    public void removeTask(@LuaNotNil String name) {
+        this.renderTasks.remove(name);
     }
 
     //-- METAMETHODS --//
     @LuaWhitelist
-    public static Object __index(@LuaNotNil FiguraModelPart modelPart, @LuaNotNil String key) {
-        if (modelPart.childCache.containsKey(key))
-            return modelPart.childCache.get(key);
-        for (FiguraModelPart child : modelPart.children) {
-            if (child.name.equals(key)) {
-                modelPart.childCache.put(key, child);
-                return child;
-            }
-        }
-        modelPart.childCache.put(key, null);
-        return null;
-    }
+    public Object __index(@LuaNotNil String key) {
+        if (this.childCache.containsKey(key))
+            return this.childCache.get(key);
 
-    @Override
-    public String toString() {
-        return name + " (ModelPart)";
+        for (FiguraModelPart child : this.children)
+            if (child.name.equals(key))
+                return this.childCache.put(key, child);
+
+        return this.childCache.put(key, null);
     }
 }

@@ -166,7 +166,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         if (thisPassedPredicate == null)
             thisPassedPredicate = false;
 
-        part.customization.visible = FiguraModelPart.getVisible(part) && thisPassedPredicate;
+        part.customization.visible = part.getVisible() && thisPassedPredicate;
         customizationStack.push(part.customization);
         part.customization.visible = storedVisibility;
 

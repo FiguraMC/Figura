@@ -18,7 +18,7 @@ public @interface LuaTypeDoc {
     String name();
 
     /**
-     * Returns a description of this type.
+     * Returns a translation key for the description of this type.
      */
     String description();
 

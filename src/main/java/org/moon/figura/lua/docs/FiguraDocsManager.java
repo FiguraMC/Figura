@@ -9,6 +9,9 @@ import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Style;
+import org.luaj.vm2.LuaFunction;
+import org.luaj.vm2.LuaTable;
+import org.luaj.vm2.LuaUserdata;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.animation.Animation;
 import org.moon.figura.avatars.model.FiguraModelPart;
@@ -17,32 +20,30 @@ import org.moon.figura.avatars.model.rendertasks.ItemTask;
 import org.moon.figura.avatars.model.rendertasks.RenderTask;
 import org.moon.figura.avatars.model.rendertasks.TextTask;
 import org.moon.figura.gui.actionwheel.*;
-import org.moon.figura.lua.api.*;
-import org.moon.figura.lua.api.entity.EntityWrapper;
-import org.moon.figura.lua.api.entity.LivingEntityWrapper;
-import org.moon.figura.lua.api.entity.PlayerEntityWrapper;
-import org.moon.figura.lua.api.keybind.FiguraKeybind;
-import org.moon.figura.lua.api.keybind.KeybindAPI;
-import org.moon.figura.lua.api.math.MatricesAPI;
-import org.moon.figura.lua.api.math.VectorsAPI;
-import org.moon.figura.lua.api.model.VanillaGroupPart;
-import org.moon.figura.lua.api.model.VanillaModelAPI;
-import org.moon.figura.lua.api.model.VanillaModelPart;
-import org.moon.figura.lua.api.nameplate.NameplateAPI;
-import org.moon.figura.lua.api.nameplate.NameplateCustomization;
-import org.moon.figura.lua.api.world.BiomeWrapper;
-import org.moon.figura.lua.api.world.BlockStateWrapper;
-import org.moon.figura.lua.api.world.ItemStackWrapper;
-import org.moon.figura.lua.api.world.WorldAPI;
-import org.moon.figura.lua.types.LuaFunction;
-import org.moon.figura.lua.types.LuaTable;
 import org.moon.figura.math.matrix.FiguraMat2;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.*;
+import org.moon.figura.lua.api.*;
+import org.moon.figura.lua.api.entity.EntityAPI;
+import org.moon.figura.lua.api.entity.LivingEntityAPI;
+import org.moon.figura.lua.api.entity.PlayerAPI;
+import org.moon.figura.lua.api.event.EventsAPI;
+import org.moon.figura.lua.api.event.LuaEvent;
+import org.moon.figura.lua.api.keybind.FiguraKeybind;
+import org.moon.figura.lua.api.keybind.KeybindAPI;
+import org.moon.figura.lua.api.math.MatricesAPI;
+import org.moon.figura.lua.api.math.VectorsAPI;
+import org.moon.figura.lua.api.nameplate.NameplateAPI;
+import org.moon.figura.lua.api.nameplate.NameplateCustomization;
+import org.moon.figura.lua.api.vanilla_model.VanillaGroupPart;
+import org.moon.figura.lua.api.vanilla_model.VanillaModelAPI;
+import org.moon.figura.lua.api.vanilla_model.VanillaModelPart;
+import org.moon.figura.lua.api.world.BiomeAPI;
+import org.moon.figura.lua.api.world.BlockStateAPI;
+import org.moon.figura.lua.api.world.ItemStackAPI;
+import org.moon.figura.lua.api.world.WorldAPI;
 import org.moon.figura.utils.FiguraText;
-import org.terasology.jnlua.JavaFunction;
-import org.terasology.jnlua.TypedJavaObject;
 
 import java.io.FileOutputStream;
 import java.nio.file.Files;
@@ -72,14 +73,13 @@ public class FiguraDocsManager {
         put(String.class, "String");
 
         put(Object.class, "AnyType"); //not sure if best name //Fran - yes it is
-        put(TypedJavaObject.class, "Userdata");
+        put(LuaUserdata.class, "Userdata");
 
         put(Boolean.class, "Boolean");
         put(boolean.class, "Boolean");
 
         //Lua things
         put(LuaFunction.class, "Function");
-        put(JavaFunction.class, "Function");
         put(LuaTable.class, "Table");
 
         //Figura types
@@ -109,9 +109,9 @@ public class FiguraDocsManager {
 
         put("world", List.of(
                 WorldAPI.class,
-                BlockStateWrapper.class,
-                ItemStackWrapper.class,
-                BiomeWrapper.class
+                BiomeAPI.class,
+                BlockStateAPI.class,
+                ItemStackAPI.class
         ));
 
         put("vanilla_model", List.of(
@@ -129,14 +129,14 @@ public class FiguraDocsManager {
         ));
 
         put("player", List.of(
-                EntityWrapper.class,
-                LivingEntityWrapper.class,
-                PlayerEntityWrapper.class
+                EntityAPI.class,
+                LivingEntityAPI.class,
+                PlayerAPI.class
         ));
 
         put("events", List.of(
                 EventsAPI.class,
-                EventsAPI.LuaEvent.class
+                LuaEvent.class
         ));
 
         put("keybind", List.of(

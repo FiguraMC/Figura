@@ -5,8 +5,11 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.Vec3;
 import org.moon.figura.ducks.GameRendererAccessor;
-import org.moon.figura.math.newmatrix.FiguraMat3;
-import org.moon.figura.math.newvector.*;
+import org.moon.figura.math.matrix.FiguraMat3;
+import org.moon.figura.math.vector.FiguraVec2;
+import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.math.vector.FiguraVec4;
+import org.moon.figura.math.vector.FiguraVec5;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
@@ -33,7 +36,7 @@ public class MathUtils {
             case 3 -> FiguraVec3.of(vals[0], vals[1], vals[2]);
             case 4 -> FiguraVec4.of(vals[0], vals[1], vals[2], vals[3]);
             case 5 -> FiguraVec5.of(vals[0], vals[1], vals[2], vals[3], vals[4]);
-            case 6 -> org.moon.figura.math.newvector.FiguraVec6.of(vals[0], vals[1], vals[2], vals[3], vals[4], vals[5]);
+            case 6 -> org.moon.figura.math.vector.FiguraVec6.of(vals[0], vals[1], vals[2], vals[3], vals[4], vals[5]);
             default -> throw new IllegalStateException("Cannot create vector of size: " + vals.length);
         };
     }
@@ -122,7 +125,7 @@ public class MathUtils {
     }
 
     //same as minecraft too, but with doubles and fixing the NaN in the Math.asin
-    public static org.moon.figura.math.vector.FiguraVec3 quaternionToYXZ(Quaternion quaternion) {
+    public static FiguraVec3 quaternionToYXZ(Quaternion quaternion) {
         double r, i, j, k;
         r = quaternion.r();
         i = quaternion.i();
@@ -137,7 +140,7 @@ public class MathUtils {
         double o = 2 * r * i - 2 * j * k;
         double l = Math.asin(Math.max(Math.min(1, o / n), -1));
         return Math.abs(o) > 0.999d * n ?
-                org.moon.figura.math.vector.FiguraVec3.of(l, 2 * Math.atan2(j, r), 0) :
-                org.moon.figura.math.vector.FiguraVec3.of(l, Math.atan2(2 * i * k + 2 * j * r, f - g - h + m), Math.atan2(2 * i * j + 2 * r * k, f - g + h - m));
+                FiguraVec3.of(l, 2 * Math.atan2(j, r), 0) :
+                FiguraVec3.of(l, Math.atan2(2 * i * k + 2 * j * r, f - g - h + m), Math.atan2(2 * i * j + 2 * r * k, f - g + h - m));
     }
 }

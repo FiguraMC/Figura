@@ -82,14 +82,14 @@ public class KeybindList extends AbstractList {
         keybinds.forEach(children::remove);
 
         //add new keybinds
-//        if (owner == null || owner.luaState == null)
-//            return;
-//
-//        for (FiguraKeybind keybind : owner.luaState.keybind.keyBindings) {
-//            KeybindElement element = new KeybindElement(width - 22, keybind, this);
-//            keybinds.add(element);
-//            children.add(element);
-//        }
+        if (owner == null || owner.luaRuntime == null)
+            return;
+
+        for (FiguraKeybind keybind : owner.luaRuntime.keybind.keyBindings) {
+            KeybindElement element = new KeybindElement(width - 22, keybind, this);
+            keybinds.add(element);
+            children.add(element);
+        }
     }
 
     private static class KeybindElement extends AbstractContainerElement {
@@ -120,7 +120,7 @@ public class KeybindList extends AbstractList {
             if (!this.isVisible()) return;
 
             //reset enabled
-            this.resetButton.active = !FiguraKeybind.isDefault(this.keybind);
+            this.resetButton.active = !this.keybind.isDefault();
 
             //button message
             this.keybindButton.setMessage(this.keybind.getTranslatedKeyMessage());
@@ -133,7 +133,7 @@ public class KeybindList extends AbstractList {
             else {
                 boolean found = false;
                 for (KeyMapping key : Minecraft.getInstance().options.keyMappings) {
-                    if (key.saveString().equals(FiguraKeybind.getKey(this.keybind))) {
+                    if (key.saveString().equals(this.keybind.getKey())) {
                         found = true;
                         keybindButton.setMessage(keybindButton.getMessage().copy().withStyle(ChatFormatting.RED));
                         break;
@@ -142,7 +142,7 @@ public class KeybindList extends AbstractList {
 
                 if (!found) {
                     for (KeybindElement keybindElement : this.parent.keybinds) {
-                        if (keybindElement.keybind != this.keybind && FiguraKeybind.getKey(keybindElement.keybind).equals(FiguraKeybind.getKey(this.keybind))) {
+                        if (keybindElement.keybind != this.keybind && keybindElement.keybind.getKey().equals(this.keybind.getKey())) {
                             keybindButton.setMessage(keybindButton.getMessage().copy().withStyle(ChatFormatting.YELLOW));
                             break;
                         }
@@ -159,7 +159,7 @@ public class KeybindList extends AbstractList {
             if (this.hovered) font.draw(stack, HOVERED_ARROW, x + 4, textY, 0xFFFFFF);
 
             //render name
-            font.draw(stack, FiguraKeybind.getName(this.keybind), x + 16, textY, 0xFFFFFF);
+            font.draw(stack, this.keybind.getName(), x + 16, textY, 0xFFFFFF);
 
             //render children
             super.render(stack, mouseX, mouseY, delta);

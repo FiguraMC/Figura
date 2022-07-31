@@ -8,11 +8,11 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
-import org.moon.figura.lua.api.model.VanillaModelAPI;
-import org.moon.figura.lua.api.model.VanillaPart;
+import org.moon.figura.lua.api.vanilla_model.VanillaModelAPI;
+import org.moon.figura.lua.api.vanilla_model.VanillaPart;
 import org.moon.figura.trust.TrustContainer;
-import org.moon.figura.trust.TrustManager;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -20,15 +20,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(HumanoidArmorLayer.class)
 public class HumanoidArmorLayerMixin<T extends LivingEntity, M extends HumanoidModel<T>, A extends HumanoidModel<T>> {
 
+    @Unique
     private VanillaModelAPI vanillaModelAPI;
 
     @Inject(at = @At("HEAD"), method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V")
     public void onRender(PoseStack poseStack, MultiBufferSource multiBufferSource, int i, T livingEntity, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
-//        Avatar avatar = AvatarManager.getAvatar(livingEntity);
-//        if (avatar != null && avatar.luaState != null && TrustManager.get(livingEntity.getUUID()).get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 1)
-//            vanillaModelAPI = avatar.luaState.vanillaModel;
-//        else
-//            vanillaModelAPI = null;
+        Avatar avatar = AvatarManager.getAvatar(livingEntity);
+        if (avatar != null && avatar.luaRuntime != null && avatar.trust.get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 1)
+            vanillaModelAPI = avatar.luaRuntime.vanilla_model;
+        else
+            vanillaModelAPI = null;
     }
 
     @Inject(at = @At("RETURN"), method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V")

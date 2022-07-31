@@ -20,7 +20,6 @@ import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.MathUtils;
-import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.ui.UIHelper;
 
 import java.util.ArrayList;
@@ -129,13 +128,9 @@ public class PlayerElement extends AbstractTrustElement {
 
         drawString(stack, font, Component.literal(trust.name), 0, 0, 0x888888);
 
-        //size and memory
-        if (avatar != null && avatar.nbt != null) {
-            //String memoryUse = MathUtils.asFileSize(avatar.getScriptMemory());
-            String memoryUse = "Memory usage is yeeted now lol";
-            Component text = FiguraText.of("gui.trust.avatar_size", MathUtils.asFileSize(avatar.fileSize)).append(TextUtils.TAB).append(FiguraText.of("gui.trust.avatar_memory", memoryUse));
-            drawString(stack, font, text, 0, font.lineHeight, 0x888888);
-        }
+        //size
+        if (avatar != null && avatar.nbt != null)
+            drawString(stack, font, FiguraText.of("gui.trust.avatar_size", MathUtils.asFileSize(avatar.fileSize)), 0, font.lineHeight, 0x888888);
 
         stack.popPose();
 

@@ -2,21 +2,17 @@ package org.moon.figura.lua;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.*;
+import org.luaj.vm2.LuaError;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.config.Config;
-import org.moon.figura.lua.types.LuaTable;
 import org.moon.figura.utils.ColorUtils;
-import org.moon.figura.utils.TextUtils;
-import org.terasology.jnlua.JavaFunction;
-import org.terasology.jnlua.LuaRuntimeException;
-import org.terasology.jnlua.LuaState;
-import org.terasology.jnlua.LuaType;
 
 import java.util.LinkedList;
 import java.util.UUID;
 
 public class FiguraLuaPrinter {
 
+    /*
     public static void loadPrintFunctions(FiguraLuaState luaState) {
         luaState.pushJavaFunction(PRINT_FUNCTION);
         luaState.pushValue(-1);
@@ -33,6 +29,7 @@ public class FiguraLuaPrinter {
         luaState.setGlobal("printTable");
         luaState.setGlobal("logTable");
     }
+     */
 
     //print a string either on chat or console
     public static void sendLuaMessage(Object message, String owner) {
@@ -94,6 +91,7 @@ public class FiguraLuaPrinter {
     }
 
     //print functions
+    /*
     private static final JavaFunction PRINT_FUNCTION = luaState -> {
         if (!(boolean) Config.LOG_OTHERS.value && !FiguraMod.isLocal(((FiguraLuaState) luaState).getOwner().owner))
             return 0;
@@ -272,6 +270,8 @@ public class FiguraLuaPrinter {
         };
     }
 
+     */
+
     //-- SLOW PRINTING OF LOG --//
 
     //Log safety
@@ -282,16 +282,16 @@ public class FiguraLuaPrinter {
 
     /**
      * Sends a message making use of the queue
-     * @param message
-     * @throws LuaRuntimeException if the message could not fit in the queue
+     * @param message to send
+     * @throws org.luaj.vm2.LuaError if the message could not fit in the queue
      */
-    private static void sendLuaChatMessage(MutableComponent message) throws LuaRuntimeException {
+    private static void sendLuaChatMessage(MutableComponent message) throws LuaError {
         if (message.getSiblings().isEmpty()) {
             charsQueued += message.getString().length();
             if (charsQueued > MAX_CHARS_QUEUED) {
                 chatQueue.clear();
                 charsQueued = 0;
-                throw new LuaRuntimeException("Chat overflow: printing too much!");
+                throw new LuaError("Chat overflow: printing too much!");
             }
             chatQueue.offer(message);
         } else {

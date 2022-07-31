@@ -1,22 +1,23 @@
 package org.moon.figura.lua.api;
 
+import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaFunction;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.gui.actionwheel.ActionWheel;
 import org.moon.figura.gui.actionwheel.Page;
 import org.moon.figura.lua.LuaNotNil;
+import org.moon.figura.lua.LuaType;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
-import org.moon.figura.lua.types.LuaFunction;
-import org.terasology.jnlua.LuaRuntimeException;
 
 import java.util.HashMap;
 import java.util.UUID;
 
-@LuaWhitelist
+@LuaType(typeName = "action_wheel")
 @LuaTypeDoc(
         name = "ActionWheelAPI",
         description = "action_wheel"
@@ -27,13 +28,10 @@ public class ActionWheelAPI {
     private final HashMap<String, Page> pages = new HashMap<>();
     private final boolean isHost;
 
-    @LuaWhitelist
     @LuaFieldDoc(description = "action_wheel.left_click")
     public LuaFunction leftClick;
-    @LuaWhitelist
     @LuaFieldDoc(description = "action_wheel.right_click")
     public LuaFunction rightClick;
-    @LuaWhitelist
     @LuaFieldDoc(description = "action_wheel.scroll")
     public LuaFunction scroll;
 
@@ -44,68 +42,50 @@ public class ActionWheelAPI {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
+                    @LuaFunctionOverload,
                     @LuaFunctionOverload(
-                            argumentTypes = ActionWheelAPI.class,
-                            argumentNames = "api"
+                            argumentTypes = Integer.class,
+                            argumentNames = "index"
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {ActionWheelAPI.class, Integer.class},
-                            argumentNames = {"api", "index"}
-                    ),
-                    @LuaFunctionOverload(
-                            argumentTypes = {ActionWheelAPI.class, Integer.class, Boolean.class},
-                            argumentNames = {"api", "index", "rightClick"}
+                            argumentTypes = {Integer.class, Boolean.class},
+                            argumentNames = {"index", "rightClick"}
                     )
             },
             description = "action_wheel.execute"
     )
-    public static void execute(@LuaNotNil ActionWheelAPI api, Integer index, Boolean right) {
+    public void execute(Integer index, Boolean right) {
         if (index != null && (index < 1 || index > 8))
-            throw new LuaRuntimeException("index must be between 1 and 8");
-        if (api.isHost) ActionWheel.execute(index == null ? ActionWheel.getSelected() : index - 1, right == null || !right);
+            throw new LuaError("index must be between 1 and 8");
+        if (this.isHost) ActionWheel.execute(index == null ? ActionWheel.getSelected() : index - 1, right == null || !right);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = ActionWheelAPI.class,
-                    argumentNames = "api"
-            ),
-            description = "action_wheel.is_enabled"
-    )
-    public static boolean isEnabled(@LuaNotNil ActionWheelAPI api) {
-        return api.isHost && ActionWheel.isEnabled();
+    @LuaMethodDoc(description = "action_wheel.is_enabled")
+    public boolean isEnabled() {
+        return this.isHost && ActionWheel.isEnabled();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = ActionWheelAPI.class,
-                    argumentNames = "api"
-            ),
-            description = "action_wheel.get_selected"
-    )
-    public static int getSelected(@LuaNotNil ActionWheelAPI api) {
-        return api.isHost ? ActionWheel.getSelected() + 1 : 0;
+    @LuaMethodDoc(description = "action_wheel.get_selected")
+    public int getSelected() {
+        return this.isHost ? ActionWheel.getSelected() + 1 : 0;
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
+                    @LuaFunctionOverload,
                     @LuaFunctionOverload(
-                            argumentTypes = ActionWheelAPI.class,
-                            argumentNames = "api"
-                    ),
-                    @LuaFunctionOverload(
-                            argumentTypes = {ActionWheelAPI.class, String.class},
-                            argumentNames = {"api", "title"}
+                            argumentTypes = String.class,
+                            argumentNames = "title"
                     )
             },
             description = "action_wheel.create_page"
     )
-    public static Page createPage(@LuaNotNil ActionWheelAPI api, String title) {
+    public Page createPage(String title) {
         Page page = new Page();
-        if (title != null) api.pages.put(title, page);
+        if (title != null) this.pages.put(title, page);
         return page;
     }
 
@@ -113,57 +93,57 @@ public class ActionWheelAPI {
     @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload(
-                            argumentTypes = {ActionWheelAPI.class, String.class},
-                            argumentNames = {"api", "pageTitle"}
+                            argumentTypes = String.class,
+                            argumentNames = "pageTitle"
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {ActionWheelAPI.class, Page.class},
-                            argumentNames = {"api", "page"}
+                            argumentTypes = Page.class,
+                            argumentNames = "page"
                     )
             },
             description = "action_wheel.set_page"
     )
-    public static void setPage(@LuaNotNil ActionWheelAPI api, Object page) {
+    public void setPage(Object page) {
         Page currentPage;
         if (page == null) {
             currentPage = null;
         } else if (page instanceof Page p) {
             currentPage = p;
         } else if (page instanceof String s) {
-            currentPage = api.pages.get(s);
+            currentPage = this.pages.get(s);
             if (currentPage == null) {
-                throw new LuaRuntimeException("Page \"" + s + "\" not found");
+                throw new LuaError("Page \"" + s + "\" not found");
             }
         } else {
-            throw new LuaRuntimeException("Invalid page type, expected \"string\" or \"page\"");
+            throw new LuaError("Invalid page type, expected \"string\" or \"page\"");
         }
 
-        api.currentPage = currentPage;
+        this.currentPage = currentPage;
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
-                    argumentTypes = {ActionWheelAPI.class, String.class},
-                    argumentNames = {"api", "pageTitle"}
+                    argumentTypes = String.class,
+                    argumentNames = "pageTitle"
             ),
             description = "action_wheel.get_page"
     )
-    public static Page getPage(@LuaNotNil ActionWheelAPI api, @LuaNotNil String pageTitle) {
-        return api.pages.get(pageTitle);
+    public Page getPage(@LuaNotNil String pageTitle) {
+        return this.pages.get(pageTitle);
     }
 
     public void execute(Avatar avatar, boolean left) {
-//        LuaFunction function = left ? leftClick : rightClick;
-//
-//        //execute
-//        if (function != null)
-//            avatar.tryCall(function, -1);
+        LuaFunction function = left ? leftClick : rightClick;
+
+        //execute
+        if (function != null)
+            avatar.tryCall(function, -1, null);
     }
 
     public void mouseScroll(Avatar avatar, double delta) {
-//        if (scroll != null)
-//            avatar.tryCall(scroll, -1, delta);
+        if (scroll != null)
+            avatar.tryCall(scroll, -1, delta);
     }
 
     @Override

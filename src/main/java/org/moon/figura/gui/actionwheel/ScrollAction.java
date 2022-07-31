@@ -1,46 +1,41 @@
 package org.moon.figura.gui.actionwheel;
 
+import org.luaj.vm2.LuaFunction;
 import org.moon.figura.avatars.Avatar;
+import org.moon.figura.lua.LuaType;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
-import org.moon.figura.lua.types.LuaFunction;
 
-@LuaWhitelist
+@LuaType(typeName = "scroll_action")
 @LuaTypeDoc(
-        name = "ScrollAction",
+        name = "Scroll Action",
         description = "scroll_action"
 )
 public class ScrollAction extends Action {
 
-    @LuaWhitelist
     @LuaFieldDoc(description = "scroll_action.scroll")
     public LuaFunction scroll;
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
-                    argumentTypes = {ScrollAction.class, LuaFunction.class},
-                    argumentNames = {"action", "scrollFunction"}
+                    argumentTypes = LuaFunction.class,
+                    argumentNames = "scrollFunction"
             ),
             description = "scroll_action.on_scroll"
     )
-    public static Action onScroll(ScrollAction action, LuaFunction function) {
-        action.scroll = function;
-        return action;
+    public Action onScroll(LuaFunction function) {
+        this.scroll = function;
+        return this;
     }
 
     @Override
     public void mouseScroll(Avatar avatar, double delta) {
-//        //execute
-//        if (scroll != null)
-//            avatar.tryCall(scroll, -1, delta);
-    }
-
-    @Override
-    public String toString() {
-        return "Action Wheel Scroll (" + title + ")";
+        //execute
+        if (scroll != null)
+            avatar.tryCall(scroll, -1, delta);
     }
 }

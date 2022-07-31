@@ -5,19 +5,20 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.commands.arguments.ParticleArgument;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.world.level.Level;
+import org.luaj.vm2.LuaError;
 import org.moon.figura.avatars.Avatar;
+import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.math.vector.FiguraVec6;
 import org.moon.figura.lua.LuaNotNil;
+import org.moon.figura.lua.LuaType;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.world.WorldAPI;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
-import org.moon.figura.math.vector.FiguraVec3;
-import org.moon.figura.math.vector.FiguraVec6;
 import org.moon.figura.utils.LuaUtils;
-import org.terasology.jnlua.LuaRuntimeException;
 
-@LuaWhitelist
+@LuaType(typeName = "particle")
 @LuaTypeDoc(
         name = "ParticleAPI",
         description = "particle"
@@ -34,38 +35,38 @@ public class ParticleAPI {
     @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload(
-                            argumentTypes = {ParticleAPI.class, String.class, FiguraVec6.class},
-                            argumentNames = {"api", "name", "posVel"}
+                            argumentTypes = {String.class, FiguraVec6.class},
+                            argumentNames = {"name", "posVel"}
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {ParticleAPI.class, String.class, FiguraVec3.class},
-                            argumentNames = {"api", "name", "pos"}
+                            argumentTypes = {String.class, FiguraVec3.class},
+                            argumentNames = {"name", "pos"}
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {ParticleAPI.class, String.class, FiguraVec3.class, FiguraVec3.class},
-                            argumentNames = {"api", "name", "pos", "vel"}
+                            argumentTypes = {String.class, FiguraVec3.class, FiguraVec3.class},
+                            argumentNames = {"name", "pos", "vel"}
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {ParticleAPI.class, String.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"api", "name", "posX", "posY", "posZ"}
+                            argumentTypes = {String.class, Double.class, Double.class, Double.class},
+                            argumentNames = {"name", "posX", "posY", "posZ"}
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {ParticleAPI.class, String.class, FiguraVec3.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"api", "name", "pos", "velX", "velY", "velZ"}
+                            argumentTypes = {String.class, FiguraVec3.class, Double.class, Double.class, Double.class},
+                            argumentNames = {"name", "pos", "velX", "velY", "velZ"}
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {ParticleAPI.class, String.class, Double.class, Double.class, Double.class, FiguraVec3.class},
-                            argumentNames = {"api", "name", "posX", "posY", "posZ", "vel"}
+                            argumentTypes = {String.class, Double.class, Double.class, Double.class, FiguraVec3.class},
+                            argumentNames = {"name", "posX", "posY", "posZ", "vel"}
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {ParticleAPI.class, String.class, Double.class, Double.class, Double.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"api", "name", "posX", "posY", "posZ", "velX", "velY", "velZ"}
+                            argumentTypes = {String.class, Double.class, Double.class, Double.class, Double.class, Double.class, Double.class},
+                            argumentNames = {"name", "posX", "posY", "posZ", "velX", "velY", "velZ"}
                     )
             },
             description = "particle.add_particle"
     )
-    public static void addParticle(@LuaNotNil ParticleAPI api, @LuaNotNil String id, Object x, Object y, Double z, Object w, Double t, Double h) {
-        if (!api.owner.particlesRemaining.use())
+    public void addParticle(@LuaNotNil String id, Object x, Object y, Double z, Object w, Double t, Double h) {
+        if (!owner.particlesRemaining.use())
             return;
 
         FiguraVec3 pos, vel;
@@ -78,24 +79,24 @@ public class ParticleAPI {
             } else if (y == null || y instanceof Double) {
                 //Intellij says: y should probably not be passed as parameter x
                 //It really doesn't like the kind of programming that happens in this function lol
-                vel = LuaUtils.oldParseVec3("addParticle", y, z, (Double) w);
+                vel = LuaUtils.parseVec3("addParticle", y, z, (Double) w);
             } else {
-                throw new LuaRuntimeException("Illegal argument to addParticle(): " + y);
+                throw new LuaError("Illegal argument to addParticle(): " + y);
             }
         } else if (x == null || x instanceof Double) {
-            pos = LuaUtils.oldParseVec3("addParticle", x, (Double) y, z);
+            pos = LuaUtils.parseVec3("addParticle", x, (Double) y, z);
             if (w instanceof FiguraVec3) {
                 vel = ((FiguraVec3) w).copy();
             } else if (w == null || w instanceof Double) {
-                vel = LuaUtils.oldParseVec3("addParticle", w, t, h);
+                vel = LuaUtils.parseVec3("addParticle", w, t, h);
             } else {
-                throw new LuaRuntimeException("Illegal argument to addParticle(): " + w);
+                throw new LuaError("Illegal argument to addParticle(): " + w);
             }
         } else if (x instanceof FiguraVec6 posVel) {
             pos = FiguraVec3.of(posVel.x, posVel.y, posVel.z);
             vel = FiguraVec3.of(posVel.w, posVel.t, posVel.h);
         } else {
-            throw new LuaRuntimeException("Illegal argument to addParticle(): " + x);
+            throw new LuaError("Illegal argument to addParticle(): " + x);
         }
 
         try {
@@ -105,15 +106,10 @@ public class ParticleAPI {
             if (!Minecraft.getInstance().isPaused() && level != null)
                 level.addParticle(particle, pos.x, pos.y, pos.z, vel.x, vel.y, vel.z);
         } catch (Exception e) {
-            throw new LuaRuntimeException(e.getMessage());
+            throw new LuaError(e.getMessage());
         } finally {
             pos.free();
             vel.free();
         }
-    }
-
-    @Override
-    public String toString() {
-        return "ParticleAPI";
     }
 }

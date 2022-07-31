@@ -7,24 +7,25 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.commands.arguments.SlotArgument;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
+import org.luaj.vm2.LuaError;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
+import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.mixin.gui.ChatScreenAccessor;
 import org.moon.figura.lua.LuaNotNil;
+import org.moon.figura.lua.LuaType;
 import org.moon.figura.lua.LuaWhitelist;
-import org.moon.figura.lua.api.entity.EntityWrapper;
-import org.moon.figura.lua.api.world.ItemStackWrapper;
+import org.moon.figura.lua.api.entity.EntityAPI;
+import org.moon.figura.lua.api.world.ItemStackAPI;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
-import org.moon.figura.math.vector.FiguraVec3;
-import org.moon.figura.mixin.gui.ChatScreenAccessor;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.TextUtils;
-import org.terasology.jnlua.LuaRuntimeException;
 
-@LuaWhitelist
+@LuaType(typeName = "host")
 @LuaTypeDoc(
         name = "HostAPI",
         description = "host"
@@ -34,10 +35,7 @@ public class HostAPI {
     private final Avatar owner;
     private final Minecraft minecraft;
 
-    @LuaWhitelist
-    @LuaFieldDoc(
-            description = "host.unlock_cursor"
-    )
+    @LuaFieldDoc(description = "host.unlock_cursor")
     public boolean unlockCursor = false;
     public Integer chatColor;
 
@@ -47,31 +45,19 @@ public class HostAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = HostAPI.class,
-                    argumentNames = "api"
-            ),
-            description = "host.is_host"
-    )
-    public static boolean isHost(@LuaNotNil HostAPI api) {
-        return FiguraMod.isLocal(api.owner.owner);
+    @LuaMethodDoc(description = "host.is_host")
+    public boolean isHost() {
+        return FiguraMod.isLocal(this.owner.owner);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = HostAPI.class,
-                    argumentNames = "api"
-            ),
-            description = "host.get_targeted_entity"
-    )
-    public static EntityWrapper<?> getTargetedEntity(@LuaNotNil HostAPI api) {
-        if (!isHost(api)) return null;
+    @LuaMethodDoc(description = "host.get_targeted_entity")
+    public EntityAPI<?> getTargetedEntity() {
+        if (!isHost()) return null;
 
-        Entity entity = api.minecraft.crosshairPickEntity;
+        Entity entity = this.minecraft.crosshairPickEntity;
         if (entity != null && Minecraft.getInstance().player != null && !entity.isInvisibleTo(Minecraft.getInstance().player))
-            return EntityWrapper.fromEntity(entity);
+            return EntityAPI.wrap(entity);
 
         return null;
     }
@@ -80,91 +66,85 @@ public class HostAPI {
     @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload(
-                            argumentTypes = {HostAPI.class, FiguraVec3.class},
-                            argumentNames = {"api", "timesData"}
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "timesData"
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {HostAPI.class, Integer.class, Integer.class, Integer.class},
-                            argumentNames = {"api", "fadeInTime", "stayTime", "fadeOutTime"}
+                            argumentTypes = {Integer.class, Integer.class, Integer.class},
+                            argumentNames = {"fadeInTime", "stayTime", "fadeOutTime"}
                     )
             },
             description = "host.set_title_times"
     )
-    public static void setTitleTimes(@LuaNotNil HostAPI api, Object x, Double y, Double z) {
-        if (!isHost(api)) return;
-        FiguraVec3 times = LuaUtils.oldParseVec3("setTitleTimes", x, y, z);
-        api.minecraft.gui.setTimes((int) times.x, (int) times.y, (int) times.z);
+    public void setTitleTimes(Object x, Double y, Double z) {
+        if (!isHost()) return;
+        FiguraVec3 times = LuaUtils.parseVec3("setTitleTimes", x, y, z);
+        this.minecraft.gui.setTimes((int) times.x, (int) times.y, (int) times.z);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(description = "host.clear_title")
+    public void clearTitle() {
+        if (isHost())
+            this.minecraft.gui.clear();
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
-                    argumentTypes = HostAPI.class,
-                    argumentNames = "api"
-            ),
-            description = "host.clear_title"
-    )
-    public static void clearTitle(@LuaNotNil HostAPI api) {
-        if (isHost(api))
-            api.minecraft.gui.clear();
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = {HostAPI.class, String.class},
-                    argumentNames = {"api", "text"}
+                    argumentTypes = String.class,
+                    argumentNames = "text"
             ),
             description = "host.set_title"
     )
-    public static void setTitle(@LuaNotNil HostAPI api, @LuaNotNil String text) {
-        if (isHost(api))
-            api.minecraft.gui.setTitle(TextUtils.tryParseJson(text));
+    public void setTitle(@LuaNotNil String text) {
+        if (isHost())
+            this.minecraft.gui.setTitle(TextUtils.tryParseJson(text));
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
-                    argumentTypes = {HostAPI.class, String.class},
-                    argumentNames = {"api", "text"}
+                    argumentTypes = String.class,
+                    argumentNames = "text"
             ),
             description = "host.set_subtitle"
     )
-    public static void setSubtitle(@LuaNotNil HostAPI api, @LuaNotNil String text) {
-        if (isHost(api))
-            api.minecraft.gui.setSubtitle(TextUtils.tryParseJson(text));
+    public void setSubtitle(@LuaNotNil String text) {
+        if (isHost())
+            this.minecraft.gui.setSubtitle(TextUtils.tryParseJson(text));
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload(
-                            argumentTypes = {HostAPI.class, String.class},
-                            argumentNames = {"api", "text"}
+                            argumentTypes = String.class,
+                            argumentNames = "text"
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {HostAPI.class, String.class, Boolean.class},
-                            argumentNames = {"api", "text", "animated"}
+                            argumentTypes = {String.class, Boolean.class},
+                            argumentNames = {"text", "animated"}
                     )
             },
             description = "host.set_actionbar"
     )
-    public static void setActionbar(@LuaNotNil HostAPI api, @LuaNotNil String text, Boolean animated) {
-        if (!isHost(api)) return;
+    public void setActionbar(@LuaNotNil String text, Boolean animated) {
+        if (!isHost()) return;
         if (animated == null) animated = false;
-        api.minecraft.gui.setOverlayMessage(TextUtils.tryParseJson(text), animated);
+        this.minecraft.gui.setOverlayMessage(TextUtils.tryParseJson(text), animated);
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
-                    argumentTypes = {HostAPI.class, String.class},
-                    argumentNames = {"api", "text"}
+                    argumentTypes = String.class,
+                    argumentNames = "text"
             ),
             description = "host.send_chat_message"
     )
-    public static void sendChatMessage(@LuaNotNil HostAPI api, @LuaNotNil String text) {
-        if (!isHost(api)) return;
+    public void sendChatMessage(@LuaNotNil String text) {
+        if (!isHost()) return;
         LocalPlayer player = Minecraft.getInstance().player;
         if (player != null) {
             if (text.startsWith("/")) {
@@ -177,74 +157,70 @@ public class HostAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = {HostAPI.class, Boolean.class},
-                    argumentNames = {"api", "offhand"}
-            ),
+            overloads = {
+                    @LuaFunctionOverload,
+                    @LuaFunctionOverload(
+                            argumentTypes = Boolean.class,
+                            argumentNames = "offhand"
+                    )
+            },
             description = "host.swing_arm"
     )
-    public static void swingArm(@LuaNotNil HostAPI api, Boolean offhand) {
-        if (isHost(api) && Minecraft.getInstance().player != null)
+    public void swingArm(Boolean offhand) {
+        if (isHost() && Minecraft.getInstance().player != null)
             Minecraft.getInstance().player.swing(offhand == null || !offhand ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND);
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
-                    argumentTypes = {HostAPI.class, String.class},
-                    argumentNames = {"api", "slot"}
+                    argumentTypes = String.class,
+                    argumentNames = "slot"
             ),
             description = "host.get_slot"
     )
-    public static ItemStackWrapper getSlot(@LuaNotNil HostAPI api, @LuaNotNil String slot) {
-//        if (!isHost(api)) return null;
-//        try {
-//            Entity e = EntityWrapper.getEntity(api.owner.luaState.entity);
-//            Integer index = SlotArgument.slot().parse(new StringReader(slot));
-//            return ItemStackWrapper.verify(e.getSlot(index).get());
-//        } catch (Exception e) {
-//            throw new LuaRuntimeException("Unable to get slot \"" + slot + "\"");
-//        }
-        return null;
+    public ItemStackAPI getSlot(@LuaNotNil String slot) {
+        if (!isHost()) return null;
+        try {
+            Entity e = this.owner.luaRuntime.user;
+            Integer index = SlotArgument.slot().parse(new StringReader(slot));
+            return ItemStackAPI.verify(e.getSlot(index).get());
+        } catch (Exception e) {
+            throw new LuaError("Unable to get slot \"" + slot + "\"");
+        }
     }
 
     @LuaWhitelist
-    public static void setBadge(@LuaNotNil HostAPI api, @LuaNotNil Integer index, @LuaNotNil Boolean value) {
-        if (!isHost(api)) return;
+    public void setBadge(@LuaNotNil Integer index, @LuaNotNil Boolean value) {
+        if (!isHost()) return;
         if (!FiguraMod.DEBUG_MODE)
-            throw new LuaRuntimeException("Congrats, you found this debug easter egg!");
-        api.owner.badges.set(index, value);
+            throw new LuaError("Congrats, you found this debug easter egg!");
+        this.owner.badges.set(index, value);
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload(
-                            argumentTypes = {HostAPI.class, FiguraVec3.class},
-                            argumentNames = {"api", "color"}
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "color"
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {HostAPI.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"api", "r", "g", "b"}
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"r", "g", "b"}
                     )
             },
             description = "host.set_chat_color"
     )
-    public static void setChatColor(@LuaNotNil HostAPI api, Object x, Double y, Double z) {
-        if (isHost(api))
-            api.chatColor = x == null ? null : ColorUtils.rgbToInt(LuaUtils.oldParseVec3("setChatColor", x, y, z));
+    public void setChatColor(Object x, Double y, Double z) {
+        if (isHost())
+            this.chatColor = x == null ? null : ColorUtils.rgbToInt(LuaUtils.parseVec3("setChatColor", x, y, z));
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = HostAPI.class,
-                    argumentNames = "api"
-            ),
-            description = "host.get_chat_text"
-    )
-    public static String getChatText(@LuaNotNil HostAPI api) {
-        if (isHost(api) && Minecraft.getInstance().screen instanceof ChatScreen chat)
+    @LuaMethodDoc(description = "host.get_chat_text")
+    public String getChatText() {
+        if (isHost() && Minecraft.getInstance().screen instanceof ChatScreen chat)
             return ((ChatScreenAccessor) chat).getInput().getValue();
 
         return null;
@@ -253,18 +229,13 @@ public class HostAPI {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
-                    argumentTypes = {HostAPI.class, String.class},
-                    argumentNames = {"api", "text"}
+                    argumentTypes = String.class,
+                    argumentNames = "text"
             ),
             description = "host.set_chat_text"
     )
-    public static void setChatText(@LuaNotNil HostAPI api, @LuaNotNil String text) {
-        if (isHost(api) && Minecraft.getInstance().screen instanceof ChatScreen chat)
+    public void setChatText(@LuaNotNil String text) {
+        if (isHost() && Minecraft.getInstance().screen instanceof ChatScreen chat)
             ((ChatScreenAccessor) chat).getInput().setValue(text);
-    }
-
-    @Override
-    public String toString() {
-        return "HostAPI";
     }
 }

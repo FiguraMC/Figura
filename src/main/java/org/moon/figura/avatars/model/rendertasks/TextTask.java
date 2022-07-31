@@ -7,6 +7,7 @@ import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import org.moon.figura.lua.LuaNotNil;
+import org.moon.figura.lua.LuaType;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
@@ -19,9 +20,9 @@ import org.moon.figura.utils.ui.UIHelper;
 
 import java.util.List;
 
-@LuaWhitelist
+@LuaType(typeName = "text_task")
 @LuaTypeDoc(
-        name = "TextTask",
+        name = "Text Task",
         description = "text_task"
 )
 public class TextTask extends RenderTask {
@@ -62,78 +63,78 @@ public class TextTask extends RenderTask {
     @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload(
-                            argumentTypes = {TextTask.class, String.class},
-                            argumentNames = {"task", "text"}
+                            argumentTypes = String.class,
+                            argumentNames = "text"
                     )
             },
             description = "text_task.text"
     )
-    public static RenderTask text(@LuaNotNil TextTask task, String text) {
-        task.text = text == null ? null : TextUtils.splitText(TextUtils.tryParseJson(text), "\n");
-        return task;
+    public RenderTask text(String text) {
+        this.text = text == null ? null : TextUtils.splitText(TextUtils.tryParseJson(text), "\n");
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload(
-                            argumentTypes = {TextTask.class, Boolean.class},
-                            argumentNames = {"task", "centred"}
+                            argumentTypes = Boolean.class,
+                            argumentNames = "centred"
                     )
             },
             description = "text_task.centred"
     )
-    public static RenderTask centred(@LuaNotNil TextTask task, @LuaNotNil Boolean centred) {
-        task.centred = centred;
-        return task;
+    public RenderTask centred(@LuaNotNil Boolean centred) {
+        this.centred = centred;
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload(
-                            argumentTypes = {TextTask.class, Boolean.class},
-                            argumentNames = {"task", "shadow"}
+                            argumentTypes = Boolean.class,
+                            argumentNames = "shadow"
                     )
             },
             description = "text_task.shadow"
     )
-    public static RenderTask shadow(@LuaNotNil TextTask task, @LuaNotNil Boolean shadow) {
-        task.shadow = shadow;
-        return task;
+    public RenderTask shadow(@LuaNotNil Boolean shadow) {
+        this.shadow = shadow;
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload(
-                            argumentTypes = {TextTask.class, Boolean.class},
-                            argumentNames = {"task", "outline"}
+                            argumentTypes = Boolean.class,
+                            argumentNames = "outline"
                     )
             },
             description = "text_task.outline"
     )
-    public static RenderTask outline(@LuaNotNil TextTask task, @LuaNotNil Boolean outline) {
-        task.outline = outline;
-        return task;
+    public RenderTask outline(@LuaNotNil Boolean outline) {
+        this.outline = outline;
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload(
-                            argumentTypes = {TextTask.class, FiguraVec3.class},
-                            argumentNames = {"task", "color"}
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "color"
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {TextTask.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"task", "r", "g", "b"}
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"r", "g", "b"}
                     )
             },
             description = "text_task.outline_color"
     )
-    public static TextTask outlineColor(@LuaNotNil TextTask task, Object x, Double y, Double z) {
-        task.outlineColor = LuaUtils.oldParseVec3("outlineColor", x, y, z);
-        return task;
+    public TextTask outlineColor(Object x, Double y, Double z) {
+        this.outlineColor = LuaUtils.parseVec3("outlineColor", x, y, z);
+        return this;
     }
 }

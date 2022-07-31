@@ -5,16 +5,18 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
+import org.luaj.vm2.LuaTable;
+import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.lua.LuaType;
+import org.moon.figura.lua.LuaTypeManager;
 import org.moon.figura.lua.LuaWhitelist;
-import org.moon.figura.lua.api.entity.PlayerEntityWrapper;
+import org.moon.figura.lua.api.entity.PlayerAPI;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
-import org.moon.figura.lua.types.LuaTable;
-import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.LuaUtils;
 
-@LuaWhitelist
+@LuaType(typeName = "world")
 @LuaTypeDoc(
         name = "WorldAPI",
         description = "world"
@@ -41,9 +43,9 @@ public class WorldAPI {
             },
             description = "world.get_biome"
     )
-    public static BiomeWrapper getBiome(Object x, Double y, Double z) {
-        FiguraVec3 pos = LuaUtils.oldParseVec3("getBiome", x, y, z);
-        BiomeWrapper result = new BiomeWrapper(getCurrentWorld().getBiome(pos.asBlockPos()).value(), pos.asBlockPos());
+    public static BiomeAPI getBiome(Object x, Double y, Double z) {
+        FiguraVec3 pos = LuaUtils.parseVec3("getBiome", x, y, z);
+        BiomeAPI result = new BiomeAPI(getCurrentWorld().getBiome(pos.asBlockPos()).value(), pos.asBlockPos());
         pos.free();
         return result;
     }
@@ -62,14 +64,14 @@ public class WorldAPI {
             },
             description = "world.get_blockstate"
     )
-    public static BlockStateWrapper getBlockState(Object x, Double y, Double z) {
-        FiguraVec3 pos = LuaUtils.oldParseVec3("getBlockState", x, y, z);
+    public static BlockStateAPI getBlockState(Object x, Double y, Double z) {
+        FiguraVec3 pos = LuaUtils.parseVec3("getBlockState", x, y, z);
         BlockPos blockPos = pos.asBlockPos();
         pos.free();
         Level world = getCurrentWorld();
         if (world.getChunkAt(blockPos) == null)
             return null;
-        return new BlockStateWrapper(world.getBlockState(blockPos), blockPos);
+        return new BlockStateAPI(world.getBlockState(blockPos), blockPos);
     }
 
     @LuaWhitelist
@@ -87,7 +89,7 @@ public class WorldAPI {
             description = "world.get_redstone_power"
     )
     public static Integer getRedstonePower(Object x, Double y, Double z) {
-        FiguraVec3 pos = LuaUtils.oldParseVec3("getRedstonePower", x, y, z);
+        FiguraVec3 pos = LuaUtils.parseVec3("getRedstonePower", x, y, z);
         BlockPos blockPos = pos.asBlockPos();
         pos.free();
         if (getCurrentWorld().getChunkAt(blockPos) == null)
@@ -110,7 +112,7 @@ public class WorldAPI {
             description = "world.get_strong_redstone_power"
     )
     public static Integer getStrongRedstonePower(Object x, Double y, Double z) {
-        FiguraVec3 pos = LuaUtils.oldParseVec3("getStrongRedstonePower", x, y, z);
+        FiguraVec3 pos = LuaUtils.parseVec3("getStrongRedstonePower", x, y, z);
         BlockPos blockPos = pos.asBlockPos();
         pos.free();
         if (getCurrentWorld().getChunkAt(blockPos) == null)
@@ -199,7 +201,7 @@ public class WorldAPI {
             description = "world.get_light_level"
     )
     public static Integer getLightLevel(Object x, Double y, Double z) {
-        FiguraVec3 pos = LuaUtils.oldParseVec3("getLightLevel", x, y, z);
+        FiguraVec3 pos = LuaUtils.parseVec3("getLightLevel", x, y, z);
         BlockPos blockPos = pos.asBlockPos();
         pos.free();
         Level world = getCurrentWorld();
@@ -224,7 +226,7 @@ public class WorldAPI {
             description = "world.get_sky_light_level"
     )
     public static Integer getSkyLightLevel(Object x, Double y, Double z) {
-        FiguraVec3 pos = LuaUtils.oldParseVec3("getSkyLightLevel", x, y, z);
+        FiguraVec3 pos = LuaUtils.parseVec3("getSkyLightLevel", x, y, z);
         BlockPos blockPos = pos.asBlockPos();
         pos.free();
         Level world = getCurrentWorld();
@@ -248,7 +250,7 @@ public class WorldAPI {
             description = "world.get_block_light_level"
     )
     public static Integer getBlockLightLevel(Object x, Double y, Double z) {
-        FiguraVec3 pos = LuaUtils.oldParseVec3("getBlockLightLevel", x, y, z);
+        FiguraVec3 pos = LuaUtils.parseVec3("getBlockLightLevel", x, y, z);
         BlockPos blockPos = pos.asBlockPos();
         pos.free();
         Level world = getCurrentWorld();
@@ -272,7 +274,7 @@ public class WorldAPI {
             description = "world.is_open_sky"
     )
     public static Boolean isOpenSky(Object x, Double y, Double z) {
-        FiguraVec3 pos = LuaUtils.oldParseVec3("isOpenSky", x, y, z);
+        FiguraVec3 pos = LuaUtils.parseVec3("isOpenSky", x, y, z);
         BlockPos blockPos = pos.asBlockPos();
         pos.free();
         Level world = getCurrentWorld();
@@ -289,7 +291,7 @@ public class WorldAPI {
     public static LuaTable getPlayers() {
         LuaTable playerList = new LuaTable();
         for (Player player : getCurrentWorld().players())
-            playerList.put(player.getName().getString(), PlayerEntityWrapper.fromEntity(player));
+            playerList.set(player.getName().getString(), LuaTypeManager.wrap(PlayerAPI.wrap(player)));
         return playerList;
     }
 
@@ -300,10 +302,5 @@ public class WorldAPI {
     )
     public static boolean exists() {
         return getCurrentWorld() != null;
-    }
-
-    @Override
-    public String toString() {
-        return "WorldAPI";
     }
 }
