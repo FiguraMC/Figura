@@ -55,4 +55,9 @@ public class EventsAPI {
             default -> null;
         };
     }
+
+    @Override
+    public String toString() {
+        return "EventsAPI";
+    }
 }

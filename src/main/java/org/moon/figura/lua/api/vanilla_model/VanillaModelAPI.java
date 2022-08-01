@@ -93,6 +93,13 @@ public class VanillaModelAPI {
     @LuaFieldDoc(description = "vanilla_model.right_item")
     public final VanillaModelPart RIGHT_ITEM;
 
+    // -- parrots -- //
+
+    @LuaFieldDoc(description = "vanilla_model.left_parrot")
+    public final VanillaModelPart LEFT_PARROT;
+    @LuaFieldDoc(description = "vanilla_model.right_parrot")
+    public final VanillaModelPart RIGHT_PARROT;
+
 
     // -- groups -- //
 
@@ -126,6 +133,9 @@ public class VanillaModelAPI {
 
     @LuaFieldDoc(description = "vanilla_model.held_items")
     public final VanillaGroupPart HELD_ITEMS;
+
+    @LuaFieldDoc(description = "vanilla_model.parrots")
+    public final VanillaGroupPart PARROTS;
 
     public VanillaModelAPI() {
         // -- body -- //
@@ -177,6 +187,11 @@ public class VanillaModelAPI {
         LEFT_ITEM = new VanillaModelPart("LEFT_ITEM", ParentType.LeftArm, null);
         RIGHT_ITEM = new VanillaModelPart("RIGHT_ITEM", ParentType.RightArm, null);
 
+        // -- parrots -- //
+
+        LEFT_PARROT = new VanillaModelPart("LEFT_PARROT", ParentType.Body, null);
+        RIGHT_PARROT = new VanillaModelPart("RIGHT_PARROT", ParentType.Body, null);
+
 
         // -- groups -- //
 
@@ -197,7 +212,9 @@ public class VanillaModelAPI {
 
         HELD_ITEMS = new VanillaGroupPart("HELD_ITEMS", LEFT_ITEM, RIGHT_ITEM);
 
-        ALL = new VanillaGroupPart("ALL", PLAYER, CAPE, ARMOR, ELYTRA, HELD_ITEMS);
+        PARROTS = new VanillaGroupPart("PARROTS", LEFT_PARROT, RIGHT_PARROT);
+
+        ALL = new VanillaGroupPart("ALL", PLAYER, CAPE, ARMOR, ELYTRA, HELD_ITEMS, PARROTS);
     }
 
     @LuaWhitelist
@@ -246,5 +263,10 @@ public class VanillaModelAPI {
             case "ALL" -> ALL;
             default -> null;
         };
+    }
+
+    @Override
+    public String toString() {
+        return "VanillaModelAPI";
     }
 }

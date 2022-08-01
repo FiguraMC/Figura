@@ -67,4 +67,9 @@ public class KeybindAPI {
         KeyMapping key = KeyMappingAccessor.getAll().get(id);
         return key == null ? null : key.saveString();
     }
+
+    @Override
+    public String toString() {
+        return "KeybindAPI";
+    }
 }

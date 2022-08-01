@@ -112,4 +112,9 @@ public class ParticleAPI {
             vel.free();
         }
     }
+
+    @Override
+    public String toString() {
+        return "ParticleAPI";
+    }
 }

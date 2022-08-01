@@ -136,4 +136,9 @@ public class BiomeAPI {
             return name;
         return null;
     }
+
+    @Override
+    public String toString() {
+        return name + " (Biome)";
+    }
 }

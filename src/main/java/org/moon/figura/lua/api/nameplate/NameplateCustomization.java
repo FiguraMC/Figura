@@ -242,4 +242,9 @@ public class NameplateCustomization {
     public void setVisible(Boolean visible) {
         this.visible = visible;
     }
+
+    @Override
+    public String toString() {
+        return "NameplateCustomization";
+    }
 }

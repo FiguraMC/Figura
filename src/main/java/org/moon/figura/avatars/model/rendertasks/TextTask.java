@@ -137,4 +137,9 @@ public class TextTask extends RenderTask {
         this.outlineColor = LuaUtils.parseVec3("outlineColor", x, y, z);
         return this;
     }
+
+    @Override
+    public String toString() {
+        return "Text Render Task";
+    }
 }

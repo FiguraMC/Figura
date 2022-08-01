@@ -273,7 +273,7 @@ public class EntityAPI<T extends Entity> {
         if (a == null || a.luaRuntime == null)
             return null;
 
-        return a.luaRuntime.storedStuff.get(key);
+        return a.luaRuntime.meta.storedStuff.get(key);
     }
 
     @LuaWhitelist
@@ -360,7 +360,6 @@ public class EntityAPI<T extends Entity> {
 
     @Override
     public String toString() {
-        return getType();
+        return entity.getUUID() + "(" + getType() + ") (Entity)";
     }
-
 }

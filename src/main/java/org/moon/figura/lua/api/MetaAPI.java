@@ -1,5 +1,6 @@
 package org.moon.figura.lua.api;
 
+import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.math.vector.FiguraVec3;
@@ -21,6 +22,7 @@ import org.moon.figura.utils.LuaUtils;
 public class MetaAPI {
 
     private final Avatar avatar;
+    public final LuaTable storedStuff = new LuaTable();
 
     public MetaAPI(Avatar avatar) {
         this.avatar = avatar;
@@ -35,7 +37,7 @@ public class MetaAPI {
             description = "meta.store"
     )
     public void store(@LuaNotNil String key, LuaValue value) {
-        avatar.luaRuntime.storedStuff.set(key, value);
+        storedStuff.set(key, value);
     }
 
     @LuaWhitelist
@@ -236,5 +238,10 @@ public class MetaAPI {
     public boolean canUseCustomSounds() {
         TrustContainer.Trust trust = TrustContainer.Trust.CUSTOM_SOUNDS;
         return trust.asBoolean(avatar.trust.get(trust));
+    }
+
+    @Override
+    public String toString() {
+        return "MetaAPI";
     }
 }

@@ -54,4 +54,9 @@ public class BlockTask extends RenderTask {
         this.block = LuaUtils.parseBlockState("block", block);
         return this;
     }
+
+    @Override
+    public String toString() {
+        return "Block Render Task";
+    }
 }

@@ -146,4 +146,8 @@ public class LuaEvent {
         return functionList.rawlen() + queuedFunctions.rawlen();
     }
 
+    @Override
+    public String toString() {
+        return "Event";
+    }
 }

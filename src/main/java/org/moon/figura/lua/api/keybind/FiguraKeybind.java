@@ -168,4 +168,9 @@ public class FiguraKeybind {
             case "override" -> override = (Boolean) value;
         }
     }
+
+    @Override
+    public String toString() {
+        return this.name + " (" + key.getName() + ") (Keybind)";
+    }
 }

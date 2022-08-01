@@ -185,4 +185,9 @@ public class ToggleAction extends Action {
             case "untoggle" -> untoggle = (LuaFunction) value;
         }
     }
+
+    @Override
+    public String toString() {
+        return "Action Wheel Toggle (" + title + ")";
+    }
 }

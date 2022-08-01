@@ -28,7 +28,9 @@ public enum ParentType {
     RightItemPivot("RIGHT_ITEM_PIVOT"),
     LeftSpyglassPivot("LEFT_SPYGLASS_PIVOT"),
     RightSpyglassPivot("RIGHT_SPYGLASS_PIVOT"),
-    HelmetItemPivot("HELMET_ITEM_PIVOT");
+    HelmetItemPivot("HELMET_ITEM_PIVOT"),
+    LeftParrotPivot("LEFT_PARROT_PIVOT"),
+    RightParrotPivot("RIGHT_PARROT_PIVOT");
 
     public final VanillaModelProvider provider;
     public final FiguraVec3 offset;
@@ -37,7 +39,8 @@ public enum ParentType {
     public static final Set<ParentType> PIVOT_PARTS = Set.of(
             LeftItemPivot, RightItemPivot,
             LeftSpyglassPivot, RightSpyglassPivot,
-            HelmetItemPivot
+            HelmetItemPivot,
+            LeftParrotPivot, RightParrotPivot
     );
 
     ParentType(String... aliases) {

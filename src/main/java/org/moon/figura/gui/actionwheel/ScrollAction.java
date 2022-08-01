@@ -51,4 +51,9 @@ public class ScrollAction extends Action {
         if ("scroll".equals(key))
             scroll = (LuaFunction) value;
     }
+
+    @Override
+    public String toString() {
+        return "Action Wheel Scroll (" + title + ")";
+    }
 }

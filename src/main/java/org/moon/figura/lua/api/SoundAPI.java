@@ -43,20 +43,20 @@ public class SoundAPI {
     @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload(
-                            argumentTypes = {SoundAPI.class, String.class, FiguraVec3.class},
-                            argumentNames = {"api", "sound", "pos"}
+                            argumentTypes = {String.class, FiguraVec3.class},
+                            argumentNames = {"sound", "pos"}
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {SoundAPI.class, String.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"api", "sound", "posX", "posY", "posZ"}
+                            argumentTypes = {String.class, Double.class, Double.class, Double.class},
+                            argumentNames = {"sound", "posX", "posY", "posZ"}
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {SoundAPI.class, String.class, FiguraVec3.class, Double.class, Double.class, Boolean.class},
-                            argumentNames = {"api", "sound", "pos", "volume", "pitch", "loop"}
+                            argumentTypes = {String.class, FiguraVec3.class, Double.class, Double.class, Boolean.class},
+                            argumentNames = {"sound", "pos", "volume", "pitch", "loop"}
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {SoundAPI.class, String.class, Double.class, Double.class, Double.class, Double.class, Double.class, Boolean.class},
-                            argumentNames = {"api", "sound", "posX", "posY", "posZ", "volume", "pitch", "loop"}
+                            argumentTypes = {String.class, Double.class, Double.class, Double.class, Double.class, Double.class, Boolean.class},
+                            argumentNames = {"sound", "posX", "posY", "posZ", "volume", "pitch", "loop"}
                     )
             },
             description = "sound.play_sound"
@@ -110,18 +110,20 @@ public class SoundAPI {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
+                    @LuaFunctionOverload,
                     @LuaFunctionOverload(
-                            argumentTypes = SoundAPI.class,
-                            argumentNames = "api"
-                    ),
-                    @LuaFunctionOverload(
-                            argumentTypes = {SoundAPI.class, String.class},
-                            argumentNames = {"api", "id"}
+                            argumentTypes = String.class,
+                            argumentNames = "id"
                     )
             },
             description = "sound.stop_sound"
     )
     public void stopSound(String id) {
         getSoundEngine().figura$stopSound(owner.owner, id);
+    }
+
+    @Override
+    public String toString() {
+        return "SoundAPI";
     }
 }

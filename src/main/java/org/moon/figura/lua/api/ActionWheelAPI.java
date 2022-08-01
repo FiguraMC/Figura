@@ -164,4 +164,9 @@ public class ActionWheelAPI {
             case "scroll" -> scroll = (LuaFunction) value;
         }
     }
+
+    @Override
+    public String toString() {
+        return "ActionWheelAPI";
+    }
 }

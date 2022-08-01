@@ -141,4 +141,8 @@ public class LivingEntityAPI<T extends LivingEntity> extends EntityAPI<T> {
         return entity.onClimbable();
     }
 
+    @Override
+    public String toString() {
+        return entity.getUUID() + "(" + getType() + ") (LivingEntity)";
+    }
 }

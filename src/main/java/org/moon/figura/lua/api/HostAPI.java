@@ -251,4 +251,9 @@ public class HostAPI {
         if ("unlockCursor".equals(key))
             unlockCursor = (Boolean) value;
     }
+
+    @Override
+    public String toString() {
+        return "HostAPI";
+    }
 }

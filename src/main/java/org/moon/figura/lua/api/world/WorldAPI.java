@@ -303,4 +303,9 @@ public class WorldAPI {
     public static boolean exists() {
         return getCurrentWorld() != null;
     }
+
+    @Override
+    public String toString() {
+        return "WorldAPI";
+    }
 }

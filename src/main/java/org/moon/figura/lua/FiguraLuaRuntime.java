@@ -10,6 +10,7 @@ import org.luaj.vm2.lib.jse.JseBaseLib;
 import org.luaj.vm2.lib.jse.JseMathLib;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
+import org.moon.figura.config.Config;
 import org.moon.figura.lua.api.*;
 import org.moon.figura.lua.api.entity.EntityAPI;
 import org.moon.figura.lua.api.entity.PlayerAPI;
@@ -20,6 +21,7 @@ import org.moon.figura.lua.api.vanilla_model.VanillaModelAPI;
 import org.moon.figura.utils.FiguraResourceListener;
 
 import javax.annotation.Nullable;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -43,6 +45,7 @@ public class FiguraLuaRuntime {
     public NameplateAPI nameplate;
     public RendererAPI renderer;
     public ActionWheelAPI action_wheel;
+    public MetaAPI meta;
 
     //---------------------------------
 
@@ -51,12 +54,11 @@ public class FiguraLuaRuntime {
     private final LuaValue setHookFunction;
     private final LuaTable requireResults = new LuaTable();
     private final LuaTypeManager typeManager = new LuaTypeManager();
-    public final LuaTable storedStuff = new LuaTable();
 
     private static final ArrayList<String> RESOURCE_SCRIPTS = new ArrayList<>();
     public static final FiguraResourceListener SCRIPT_LISTENER = new FiguraResourceListener("resource_script", manager -> {
         RESOURCE_SCRIPTS.clear();
-        manager.listResources("lua/scripts/server", resource -> resource.getNamespace().equals(FiguraMod.MOD_ID) && resource.getPath().endsWith(".lua")).forEach((location, resource) -> {
+        manager.listResources("script/resources", resource -> resource.getNamespace().equals(FiguraMod.MOD_ID) && resource.getPath().endsWith(".lua")).forEach((location, resource) -> {
             try (InputStream stream = resource.open()) {
                 RESOURCE_SCRIPTS.add(new String(stream.readAllBytes()));
                 FiguraMod.LOGGER.debug("Loaded resource script \"" + location.toString() + "\"");
@@ -82,7 +84,11 @@ public class FiguraLuaRuntime {
         setHookFunction = userGlobals.get("debug").get("sethook");
         userGlobals.set("debug", LuaValue.NIL);
 
+        setupFiguraSandbox();
+
         FiguraAPIManager.setupTypesAndAPIs(this);
+
+        loadExtraLibraries();
 
         LuaTable figuraMetatables = new LuaTable();
         typeManager.dumpMetatables(figuraMetatables);
@@ -109,6 +115,34 @@ public class FiguraLuaRuntime {
         userGlobals.set("player", userGlobals.get("user"));
     }
 
+    private void setupFiguraSandbox() {
+        try (InputStream inputStream = FiguraMod.class.getResourceAsStream("/assets/" + FiguraMod.MOD_ID + "/script/sandbox.lua")) {
+            if (inputStream == null) throw new IOException("Failed to load sandbox.lua");
+            runScript(new String(inputStream.readAllBytes()), "figura_sandbox");
+        } catch (Exception e) {
+            FiguraLuaPrinter.sendLuaError(e, owner.name, owner.owner);
+        }
+    }
+
+    private void loadExtraLibraries() {
+        //load print functions
+        FiguraLuaPrinter.loadPrintFunctions(this);
+
+        //load math library
+        try (InputStream inputStream = FiguraMod.class.getResourceAsStream("/assets/" + FiguraMod.MOD_ID + "/script/math.lua")) {
+            if (inputStream == null) throw new IOException("Failed to load math.lua");
+            runScript(new String(inputStream.readAllBytes()), "math");
+        } catch (Exception e) {
+            FiguraLuaPrinter.sendLuaError(e, owner.name, owner.owner);
+        }
+
+        //load server scripts
+        if (FiguraMod.isLocal(owner.owner) && !(boolean) Config.SERVER_SCRIPT.value)
+            return;
+
+        for (int i = 0; i < RESOURCE_SCRIPTS.size(); i++)
+            runScript(RESOURCE_SCRIPTS.get(i), "resources" + i);
+    }
 
     /**
      * Writing documentation of this function, just because I don't
@@ -198,7 +232,7 @@ public class FiguraLuaRuntime {
     private final ZeroArgFunction onReachedLimit = new ZeroArgFunction() {
         @Override
         public LuaValue call() {
-            //TODO: translation key for this
+            //TODO: translation key for this // cant unless if we do it in a cursed way
             FiguraLuaPrinter.sendLuaError(new LuaError("Script overran resource limits!"), owner.name, owner.owner);
             return LuaValue.NIL;
         }

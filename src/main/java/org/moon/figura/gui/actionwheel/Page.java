@@ -123,4 +123,9 @@ public class Page {
             throw new LuaError("Index must be between 1 and 8!");
         return this.actions[index - 1];
     }
+
+    @Override
+    public String toString() {
+        return "Action Wheel Page";
+    }
 }

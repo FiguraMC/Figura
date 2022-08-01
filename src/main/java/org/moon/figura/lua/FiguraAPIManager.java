@@ -122,7 +122,7 @@ public class FiguraAPIManager {
         put("animations", r -> Animation.getTableForAnimations(r.owner));
         put("client", r -> ClientAPI.INSTANCE);
         put("particle", r -> new ParticleAPI(r.owner));
-        put("meta", r -> new MetaAPI(r.owner));
+        put("meta", r -> r.meta = new MetaAPI(r.owner));
         put("vectors", r -> VectorsAPI.INSTANCE);
         put("matrices", r -> MatricesAPI.INSTANCE);
         put("world", r -> WorldAPI.INSTANCE);

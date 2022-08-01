@@ -341,6 +341,11 @@ public class Animation {
         return null;
     }
 
+    @Override
+    public String toString() {
+        return name + " (Animation)";
+    }
+
     // -- other classes -- //
 
     public enum PlayState {

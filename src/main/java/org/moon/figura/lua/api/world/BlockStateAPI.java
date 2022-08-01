@@ -306,4 +306,9 @@ public class BlockStateAPI {
             default -> null;
         };
     }
+
+    @Override
+    public String toString() {
+        return id + " (BlockState)";
+    }
 }

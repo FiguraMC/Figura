@@ -78,4 +78,9 @@ public class PlayerAPI extends LivingEntityAPI<Player> {
 
         return info.getGameMode() == null ? null : info.getGameMode().getName().toUpperCase();
     }
+
+    @Override
+    public String toString() {
+        return entity.getUUID() + " (Player)";
+    }
 }

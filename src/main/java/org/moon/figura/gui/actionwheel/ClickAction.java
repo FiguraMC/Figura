@@ -73,4 +73,9 @@ public class ClickAction extends Action {
             case "rightClick" -> rightClick = (LuaFunction) value;
         }
     }
+
+    @Override
+    public String toString() {
+        return "Action Wheel Click Action (" + title + ")";
+    }
 }

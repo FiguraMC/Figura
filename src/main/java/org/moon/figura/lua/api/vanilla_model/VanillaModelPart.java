@@ -98,4 +98,9 @@ public class VanillaModelPart extends VanillaPart {
     public FiguraVec3 getOriginPos() {
         return this.savedOriginPos.copy();
     }
+
+    @Override
+    public String toString() {
+        return "VanillaModelPart";
+    }
 }

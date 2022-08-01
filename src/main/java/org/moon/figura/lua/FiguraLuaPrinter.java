@@ -1,35 +1,39 @@
 package org.moon.figura.lua;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.*;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaTable;
+import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.Varargs;
+import org.luaj.vm2.lib.VarArgFunction;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.config.Config;
 import org.moon.figura.utils.ColorUtils;
+import org.moon.figura.utils.TextUtils;
 
 import java.util.LinkedList;
 import java.util.UUID;
+import java.util.function.Function;
 
 public class FiguraLuaPrinter {
 
-    /*
-    public static void loadPrintFunctions(FiguraLuaState luaState) {
-        luaState.pushJavaFunction(PRINT_FUNCTION);
-        luaState.pushValue(-1);
-        luaState.setGlobal("print");
-        luaState.setGlobal("log");
+    public static void loadPrintFunctions(FiguraLuaRuntime runtime) {
+        LuaValue print = PRINT_FUNCTION.apply(runtime);
+        runtime.setGlobal("print", print);
+        runtime.setGlobal("log", print);
 
-        luaState.pushJavaFunction(PRINT_JSON_FUNCTION);
-        luaState.pushValue(-1);
-        luaState.setGlobal("printJson");
-        luaState.setGlobal("logJson");
+        LuaValue printJson = PRINT_JSON_FUNCTION.apply(runtime);
+        runtime.setGlobal("printJson", printJson);
+        runtime.setGlobal("logJson", printJson);
 
-        luaState.pushJavaFunction(PRINT_TABLE_FUNCTION);
-        luaState.pushValue(-1);
-        luaState.setGlobal("printTable");
-        luaState.setGlobal("logTable");
+        LuaValue printTable = PRINT_TABLE_FUNCTION.apply(runtime);
+        runtime.setGlobal("printTable", printTable);
+        runtime.setGlobal("logTable", printTable);
     }
-     */
 
     //print a string either on chat or console
     public static void sendLuaMessage(Object message, String owner) {
@@ -52,10 +56,8 @@ public class FiguraLuaPrinter {
             return;
 
         //Jank as hell
-        String message = error.toString().replace("org.terasology.jnlua.LuaRuntimeException: ", "");
-        message = message.replace("org.terasology.jnlua.LuaMemoryAllocationException: ", "Memory error: ");
-        //Might do something unexpected in the extremely niche circumstance that someone has their own script named "autoScripts" and has an error on line 1.
-        message = message.replace("[string \"autoScripts\"]:1: ", "");
+        String message = error.toString().replace("org.luaj.vm2.LuaError: ", "");
+        message = message.replace("\n\t[Java]: in ?", "");
 
         MutableComponent component = Component.empty()
                 .append(Component.literal("[error] ").withStyle(ColorUtils.Colors.LUA_ERROR.style))
@@ -91,186 +93,146 @@ public class FiguraLuaPrinter {
     }
 
     //print functions
-    /*
-    private static final JavaFunction PRINT_FUNCTION = luaState -> {
-        if (!(boolean) Config.LOG_OTHERS.value && !FiguraMod.isLocal(((FiguraLuaState) luaState).getOwner().owner))
-            return 0;
+    private static final Function<FiguraLuaRuntime, LuaValue> PRINT_FUNCTION = runtime -> new VarArgFunction() {
+        @Override
+        public Varargs invoke(Varargs args) {
+            if (!(boolean) Config.LOG_OTHERS.value && !FiguraMod.isLocal(runtime.owner.owner))
+                return NIL;
 
-        MutableComponent text = Component.empty();
+            MutableComponent text = Component.empty();
+            for (int i = 0; i < args.narg(); i++)
+                text.append(getPrintText(args.arg(i + 1), true, false)).append("\t");
 
-        //execute if the stack has entries
-        while (luaState.getTop() > 0) {
-            text.append(getPrintText(luaState, 1, true, false)).append("\t");
-            luaState.remove(1);
+            //prints the value, either on chat or console
+            sendLuaMessage(text, runtime.owner.name);
+
+            return NIL;
         }
-
-        //prints the value, either on chat or console
-        sendLuaMessage(text, ((FiguraLuaState) luaState).getOwner().name);
-
-        return 0;
     };
 
-    private static final JavaFunction PRINT_JSON_FUNCTION = luaState -> {
-        if (!(boolean) Config.LOG_OTHERS.value && !FiguraMod.isLocal(((FiguraLuaState) luaState).getOwner().owner))
-            return 0;
+    private static final Function<FiguraLuaRuntime, LuaValue> PRINT_JSON_FUNCTION = runtime -> new VarArgFunction() {
+        @Override
+        public Varargs invoke(Varargs args) {
+            if (!(boolean) Config.LOG_OTHERS.value && !FiguraMod.isLocal(runtime.owner.owner))
+                return NIL;
 
-        MutableComponent text = Component.empty();
+            MutableComponent text = Component.empty();
+            for (int i = 0; i < args.narg(); i++)
+                text.append(TextUtils.tryParseJson(args.arg(i + 1).tojstring()));
 
-        if (luaState.getTop() > 0)
-            text.append(TextUtils.tryParseJson(luaToString(luaState, 1)));
+            sendLuaMessage(text, runtime.owner.name);
 
-        sendLuaMessage(text, ((FiguraLuaState) luaState).getOwner().name);
-
-        return 0;
-    };
-
-    private static final JavaFunction PRINT_TABLE_FUNCTION = luaState -> {
-        if (!(boolean) Config.LOG_OTHERS.value && !FiguraMod.isLocal(((FiguraLuaState) luaState).getOwner().owner))
-            return 0;
-
-        MutableComponent text = Component.empty();
-
-        if (luaState.getTop() > 0) {
-            int depth = luaState.getTop() > 1 ? (int) luaState.checkInteger(2) : 1;
-            text.append(tableToText(luaState, 1, depth, 1, true));
+            return NIL;
         }
-
-        sendLuaMessage(text, ((FiguraLuaState) luaState).getOwner().name);
-
-        return 0;
     };
 
-    private static Component tableToText(LuaState luaState, int index, int depth, int indent, boolean hasTooltip) {
-        //copy the value to top
-        luaState.pushValue(index);
-        int top = luaState.getTop();
+    private static final Function<FiguraLuaRuntime, LuaValue> PRINT_TABLE_FUNCTION = runtime -> new VarArgFunction() {
+        @Override
+        public Varargs invoke(Varargs args) {
+            if (!(boolean) Config.LOG_OTHERS.value && !FiguraMod.isLocal(runtime.owner.owner))
+                return NIL;
 
+            MutableComponent text = Component.empty();
+
+            if (args.narg() > 0) {
+                int depth = args.arg(2).isnumber() ? args.arg(2).checkint() : 1;
+                text.append(tableToText(args.arg(1), depth, 1, true));
+            }
+
+            sendLuaMessage(text, runtime.owner.name);
+
+            return NIL;
+        }
+    };
+
+    private static Component tableToText(LuaValue value, int depth, int indent, boolean hasTooltip) {
         //attempt to parse top
-        LuaType type = luaState.type(index);
-        if (type == LuaType.USERDATA)
-            tryParseUserdata(luaState, top);
+        if (value.isuserdata())
+            return userdataToText(value, depth, indent, hasTooltip);
 
         //normal print when failed to parse userdata or depth limit
-        if (luaState.type(top) != LuaType.TABLE || depth <= 0) {
-            Component text = getPrintText(luaState, index, hasTooltip, true);
-            luaState.pop(1);
-            return text;
-        }
+        if (!value.istable() || depth <= 0)
+            return getPrintText(value, hasTooltip, true);
 
         //format text
         MutableComponent text = Component.empty();
-        text.append(Component.literal(type == LuaType.USERDATA ? "userdata:" : "table:").withStyle(getTypeColor(type)));
+        text.append(Component.literal(value.isuserdata() ? "userdata:" : "table:").withStyle(getTypeColor(value)));
         text.append(Component.literal(" {\n").withStyle(ChatFormatting.GRAY));
 
         String spacing = "\t".repeat(indent - 1);
 
-        luaState.pushNil();
-        while (luaState.next(top)) {
-            int tableTop = luaState.getTop();
-
+        LuaTable table = value.checktable();
+        for (LuaValue key : table.keys()) {
             //add indentation
             text.append(spacing).append("\t");
 
             //add key
             text.append(Component.literal("[").withStyle(ChatFormatting.GRAY));
-            text.append(getPrintText(luaState, tableTop - 1, hasTooltip, true));
+            text.append(getPrintText(key, hasTooltip, true));
             text.append(Component.literal("] = ").withStyle(ChatFormatting.GRAY));
 
             //add value
-            type = luaState.type(tableTop);
-            if (type == LuaType.TABLE || type == LuaType.USERDATA)
-                text.append(tableToText(luaState, tableTop, depth - 1, indent + 1, hasTooltip));
+            LuaValue val = table.get(key);
+            if (val.istable() || val.isuserdata())
+                text.append(tableToText(val, depth - 1, indent + 1, hasTooltip));
             else
-                text.append(getPrintText(luaState, tableTop, hasTooltip, true));
+                text.append(getPrintText(val, hasTooltip, true));
 
-            //pop value
-            luaState.pop(1);
             text.append("\n");
         }
-
-        //pop copied value
-        luaState.pop(1);
 
         text.append(spacing).append(Component.literal("}").withStyle(ChatFormatting.GRAY));
         return text;
     }
 
-    private static boolean tryParseUserdata(LuaState luaState, int index) {
-        //if we have an userdata item, get its table representation
-        LuaTable table = FiguraJavaReflector.getTableRepresentation(luaState.toJavaObject(index, Object.class));
-        if (table != null) {
-            table.push(luaState);
-            luaState.replace(index);
-            return true;
-        }
-
-        return false;
-    }
-
-    private static String luaToString(LuaState luaState, int index) {
-        //push lua "tostring" into the stack
-        luaState.getGlobal("tostring");
-
-        //copies a value from the stack and place it on top
-        luaState.pushValue(index);
-
-        //make a function call at the top of the stack
-        luaState.call(1, 1);
-
-        //gets a value from stack, as string
-        String ret = luaState.toString(-1);
-
-        //remove the copied value
-        luaState.pop(1);
-
-        return ret;
+    private static Component userdataToText(LuaValue userdata, int depth, int indent, boolean hasTooltip) {
+        //TODO convert userdata to table, then return a printTable of it
+        return getPrintText(userdata, hasTooltip, true);
     }
 
     //fancyString just means to add quotation marks around strings.
-    private static MutableComponent getPrintText(LuaState luaState, int index, boolean hasTooltip, boolean quoteStrings) {
-        LuaType type = luaState.type(index);
+    private static MutableComponent getPrintText(LuaValue value, boolean hasTooltip, boolean quoteStrings) {
         String ret;
 
         //format value
-        switch (type) {
-            case STRING -> {
-                if (!quoteStrings)
-                    ret = luaToString(luaState, index);
-                else
-                    ret = "\"" + luaToString(luaState, index) + "\"";
-            }
-            case NUMBER -> {
-                Double d = luaState.toJavaObject(index, Double.class);
-                ret = d == Math.rint(d) ? String.valueOf(d.longValue()) : String.valueOf(d);
-            }
-            default -> ret = luaToString(luaState, index);
+        if (value.isnumber()) {
+            Double d = value.checkdouble();
+            ret = d == Math.rint(d) ? String.valueOf(d.longValue()) : String.valueOf(d);
+        } else {
+            ret = value.tojstring();
+            if (value.isstring() && quoteStrings)
+                ret = "\"" + ret + "\"";
         }
 
-        MutableComponent text = Component.literal(ret).withStyle(getTypeColor(type));
+        MutableComponent text = Component.literal(ret).withStyle(getTypeColor(value));
 
         //table tooltip
-        if (hasTooltip && (type == LuaType.TABLE || type == LuaType.USERDATA)) {
-            Component table = TextUtils.replaceTabs(tableToText(luaState, index, 1, 1, false));
+        if (hasTooltip && (value.istable() || value.isuserdata())) {
+            Component table = TextUtils.replaceTabs(tableToText(value, 1, 1, false));
             text.withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, table)));
         }
 
         return text;
     }
 
-    private static Style getTypeColor(LuaType type) {
-        return switch (type) {
-            case TABLE -> ColorUtils.Colors.FRAN_PINK.style;
-            case NUMBER -> ColorUtils.Colors.MAYA_BLUE.style;
-            case NIL -> ColorUtils.Colors.LUA_ERROR.style;
-            case BOOLEAN -> ColorUtils.Colors.LUA_PING.style;
-            case FUNCTION -> Style.EMPTY.withColor(ChatFormatting.GREEN);
-            case USERDATA, LIGHTUSERDATA -> Style.EMPTY.withColor(ChatFormatting.YELLOW);
-            case THREAD -> Style.EMPTY.withColor(ChatFormatting.GOLD);
-            case STRING -> Style.EMPTY.withColor(ChatFormatting.WHITE);
-        };
+    private static Style getTypeColor(LuaValue value) {
+        if (value.istable())
+            return ColorUtils.Colors.FRAN_PINK.style;
+        else if (value.isnumber())
+            return ColorUtils.Colors.MAYA_BLUE.style;
+        else if (value.isnil())
+            return ColorUtils.Colors.LUA_ERROR.style;
+        else if (value.isboolean())
+            return ColorUtils.Colors.LUA_PING.style;
+        else if (value.isfunction())
+            return Style.EMPTY.withColor(ChatFormatting.GREEN);
+        else if (value.isuserdata())
+            return Style.EMPTY.withColor(ChatFormatting.YELLOW);
+        else if (value.isthread())
+            return Style.EMPTY.withColor(ChatFormatting.GOLD);
+        else
+            return Style.EMPTY.withColor(ChatFormatting.WHITE);
     }
-
-     */
 
     //-- SLOW PRINTING OF LOG --//
 
@@ -344,5 +306,4 @@ public class FiguraLuaPrinter {
             charsQueued -= totalLen;
         }
     }
-
 }

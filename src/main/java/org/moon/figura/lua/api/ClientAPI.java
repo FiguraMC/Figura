@@ -243,4 +243,9 @@ public class ClientAPI {
     public static String getActiveLang() {
         return Minecraft.getInstance().options.languageCode;
     }
+
+    @Override
+    public String toString() {
+        return "ClientAPI";
+    }
 }

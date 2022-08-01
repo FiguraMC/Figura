@@ -121,4 +121,9 @@ public abstract class RenderTask {
         this.scale = LuaUtils.parseVec3("scale", x, y, z, 1, 1, 1);
         return this;
     }
+
+    @Override
+    public String toString() {
+        return "Render Task";
+    }
 }

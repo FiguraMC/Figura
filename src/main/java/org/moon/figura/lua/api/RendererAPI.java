@@ -141,4 +141,9 @@ public class RendererAPI {
             case "renderVehicle" -> renderVehicle = (Boolean) value;
         }
     }
+
+    @Override
+    public String toString() {
+        return "RendererAPI";
+    }
 }

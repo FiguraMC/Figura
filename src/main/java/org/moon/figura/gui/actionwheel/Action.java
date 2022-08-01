@@ -131,4 +131,9 @@ public abstract class Action {
     public FiguraVec3 getColor(boolean selected) {
         return selected ? hoverColor == null ? HOVER_COLOR : hoverColor : color;
     }
+
+    @Override
+    public String toString() {
+        return "Action Wheel Action (" + title + ")";
+    }
 }

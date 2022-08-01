@@ -325,4 +325,9 @@ public class MatricesAPI {
         offset.free();
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "MatricesAPI";
+    }
 }

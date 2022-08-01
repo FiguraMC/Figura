@@ -81,14 +81,12 @@
   "figura.gui.error.no_keybinds": "Avatar does not have keybinds!",
   "figura.gui.error.no_wheel_page": "Action Wheel has no active Page!",
 
-
   "figura.gui.context.set_trust": "Set Trust",
   "figura.gui.context.reload": "Reload Avatar",
   "figura.gui.context.copy_name": "Copy Name",
   "figura.gui.context.copy_uuid": "Copy UUID",
   "figura.gui.context.copy_path": "Copy Path",
   "figura.gui.context.open_folder": "Open Folder",
-
 
   "figura.gui.panels.title.profile": "Profile",
   "figura.gui.panels.title.browser": "Browser",
@@ -100,7 +98,6 @@
   "figura.gui.panels.title.keybind": "Avatar Keybinds",
   "figura.gui.panels.title.avatar": "Avatar Preview",
 
-
   "figura.gui.wardrobe.expand_wardrobe.tooltip": "Expand wardrobe list",
   "figura.gui.wardrobe.minimize_wardrobe.tooltip": "Minimize wardrobe list",
   "figura.gui.wardrobe.upload.tooltip": "Upload avatar to Figura server",
@@ -111,12 +108,10 @@
   "figura.gui.wardrobe.folder.tooltip": "Open avatars root folder",
   "figura.gui.wardrobe.unselect": "Unselect",
 
-
   "figura.gui.trust.reset": "Reset All",
   "figura.gui.trust.expand_trust.tooltip": "Expand advanced trust menu",
   "figura.gui.trust.minimize_trust.tooltip": "Minimize advanced trust menu",
   "figura.gui.trust.avatar_size": "Size: %s",
-
 
   "figura.gui.status.size": "Size",
   "figura.gui.status.size.0": "none",
@@ -145,7 +140,6 @@
   "figura.config.input.float": "Number...",
   "figura.config.input.hex_color": "Color...",
   "figura.config.input.folder_path": "Path...",
-
 
   "figura.config.nameplate": "Nameplate",
   "figura.config.nameplate.tooltip": "Nameplate settings",
@@ -258,6 +252,7 @@
   "figura.config.backend_ip": "Backend IP",
   "figura.config.backend_ip.tooltip": "Sets the IP of the backend server",
 
+
   "figura.command.click_to_open": "Click here to open",
   "figura.command.run.not_local_error": "No local avatar equipped!",
   "figura.command.run.no_script_error": "No active script to run code in!",
@@ -265,6 +260,7 @@
   "figura.command.load.invalid": "Invalid path \"%s\"",
   "figura.command.docs_export.success": "Exported Figura docs into the Figura directory",
   "figura.command.docs_export.error": "Failed to export Figura docs!",
+
 
   "figura.docs": "The \"/figura docs\" command allows you to access documentation for all types and functions Figura adds to its Lua scripting environment.",
 
@@ -614,6 +610,9 @@
   "figura.docs.vanilla_model.held_items": "Multi-part: Items in the player's hands.",
   "figura.docs.vanilla_model.left_item": "The item in the player's left hand.",
   "figura.docs.vanilla_model.right_item": "The item in the player's right hand.",
+  "figura.docs.vanilla_model.parrots": "Multi-part: Parrots on the player's shoulders.",
+  "figura.docs.vanilla_model.left_parrot": "The Parrot in the player's left shoulder.",
+  "figura.docs.vanilla_model.right_parrot": "The Parrot in the player's right shoulder.",
   "figura.docs.vanilla_model.all": "Multi-part: The entirety of the vanilla model.",
   "figura.docs.vanilla_model.outer_layer": "Multi-part: The outer layer of the player.",
   "figura.docs.vanilla_model.inner_layer": "Multi-part: The main body of the player, everything except the outer layer.",

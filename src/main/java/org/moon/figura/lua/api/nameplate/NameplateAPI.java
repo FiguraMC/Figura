@@ -34,4 +34,9 @@ public class NameplateAPI {
             default -> null;
         };
     }
+
+    @Override
+    public String toString() {
+        return "NameplateAPI";
+    }
 }

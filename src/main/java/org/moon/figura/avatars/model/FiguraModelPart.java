@@ -756,4 +756,9 @@ public class FiguraModelPart {
         this.childCache.put(key, null);
         return null;
     }
+
+    @Override
+    public String toString() {
+        return name + " (ModelPart)";
+    }
 }

@@ -187,4 +187,9 @@ public class ItemStackAPI {
             default -> null;
         };
     }
+
+    @Override
+    public String toString() {
+        return id + " (ItemStack)";
+    }
 }

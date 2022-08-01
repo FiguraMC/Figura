@@ -75,4 +75,9 @@ public class VanillaGroupPart extends VanillaPart {
     public Object __index(String key) {
         return partMap.get(key);
     }
+
+    @Override
+    public String toString() {
+        return "VanillaModelGroup";
+    }
 }

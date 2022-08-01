@@ -80,4 +80,9 @@ public class ItemTask extends RenderTask {
             throw new LuaError("Illegal RenderType: \"" + type + "\".");
         }
     }
+
+    @Override
+    public String toString() {
+        return "Item Render Task";
+    }
 }

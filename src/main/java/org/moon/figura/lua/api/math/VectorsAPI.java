@@ -1,13 +1,13 @@
 package org.moon.figura.lua.api.math;
 
 import org.luaj.vm2.LuaError;
-import org.moon.figura.math.vector.*;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaType;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.math.vector.*;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.MathUtils;
@@ -307,7 +307,7 @@ public class VectorsAPI {
 
         System.out.println(angle + " ||| " + vec + " ||| " + axis);
 
-        org.moon.figura.math.vector.FiguraVec3 result = MathUtils.rotateAroundAxis(org.moon.figura.math.vector.FiguraVec3.of(vec.x, vec.y, vec.z), org.moon.figura.math.vector.FiguraVec3.of(axis.x, axis.y, axis.z), angle);
+        FiguraVec3 result = MathUtils.rotateAroundAxis(FiguraVec3.of(vec.x, vec.y, vec.z), FiguraVec3.of(axis.x, axis.y, axis.z), angle);
         FiguraVec3 ret = FiguraVec3.of(result.x, result.y, result.z);
 
         vec.free();
@@ -332,7 +332,7 @@ public class VectorsAPI {
     )
     public static FiguraVec3 toCameraSpace(Object x, Double y, Double z) {
         FiguraVec3 vec = LuaUtils.parseVec3("toCameraSpace", x, y, z);
-        org.moon.figura.math.vector.FiguraVec3 result = MathUtils.toCameraSpace(org.moon.figura.math.vector.FiguraVec3.of(vec.x, vec.y, vec.z));
+        FiguraVec3 result = MathUtils.toCameraSpace(FiguraVec3.of(vec.x, vec.y, vec.z));
         return FiguraVec3.of(result.x, result.y, result.z);
     }
 
@@ -352,7 +352,12 @@ public class VectorsAPI {
     )
     public static FiguraVec4 worldToScreenSpace(Object x, Double y, Double z) {
         FiguraVec3 vec = LuaUtils.parseVec3("worldToScreenSpace", x, y, z);
-        org.moon.figura.math.vector.FiguraVec4 result = MathUtils.worldToScreenSpace(org.moon.figura.math.vector.FiguraVec3.of(vec.x, vec.y, vec.z));
+        FiguraVec4 result = MathUtils.worldToScreenSpace(FiguraVec3.of(vec.x, vec.y, vec.z));
         return FiguraVec4.of(result.x, result.y, result.z, result.w);
+    }
+
+    @Override
+    public String toString() {
+        return "VectorsAPI";
     }
 }
