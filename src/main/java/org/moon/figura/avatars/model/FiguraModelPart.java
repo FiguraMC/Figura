@@ -24,7 +24,6 @@ import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaType;
 import org.moon.figura.lua.LuaTypeManager;
 import org.moon.figura.lua.LuaWhitelist;
-import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
@@ -43,8 +42,6 @@ import java.util.Map;
 public class FiguraModelPart {
 
     private final Avatar owner;
-
-    @LuaFieldDoc(description = "model_part.name")
     public final String name;
     public FiguraModelPart parent;
 
@@ -183,6 +180,12 @@ public class FiguraModelPart {
     }
 
     //-- LUA BUSINESS --//
+
+    @LuaWhitelist
+    @LuaMethodDoc(description = "model_part.get_name")
+    public String getName() {
+        return this.name;
+    }
 
     @LuaWhitelist
     @LuaMethodDoc(description = "model_part.get_parent")
@@ -745,9 +748,12 @@ public class FiguraModelPart {
             return this.childCache.get(key);
 
         for (FiguraModelPart child : this.children)
-            if (child.name.equals(key))
-                return this.childCache.put(key, child);
+            if (child.name.equals(key)) {
+                this.childCache.put(key, child);
+                return child;
+            }
 
-        return this.childCache.put(key, null);
+        this.childCache.put(key, null);
+        return null;
     }
 }

@@ -131,6 +131,7 @@ public class LuaTypeManager {
                             case "java.lang.Long", "long" -> args.checklong(argIndex);
                             case "org.luaj.vm2.LuaTable" -> args.checktable(argIndex);
                             case "org.luaj.vm2.LuaFunction" -> args.checkfunction(argIndex);
+                            case "org.luaj.vm2.LuaValue" -> args.arg(argIndex);
                             case "java.lang.Object" -> convertLua2Java(args.arg(argIndex));
                             default -> args.checkuserdata(argIndex, argumentTypes[i]);
                         };
@@ -194,7 +195,7 @@ public class LuaTypeManager {
             case LuaValue.TBOOLEAN -> val.checkboolean();
             case LuaValue.TLIGHTUSERDATA, LuaValue.TUSERDATA -> val.checkuserdata(Object.class);
             case LuaValue.TNUMBER -> val.isint() ? val.checkint() : val.checkdouble();
-            case LuaValue.TSTRING -> val.checkstring();
+            case LuaValue.TSTRING -> val.checkjstring();
             case LuaValue.TTABLE -> val.checktable();
             case LuaValue.TFUNCTION -> val.checkfunction();
             default -> null;

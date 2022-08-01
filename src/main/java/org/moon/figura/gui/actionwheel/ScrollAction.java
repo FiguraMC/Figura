@@ -38,4 +38,17 @@ public class ScrollAction extends Action {
         if (scroll != null)
             avatar.tryCall(scroll, -1, delta);
     }
+
+    @LuaWhitelist
+    public Object __index(String arg) {
+        if ("scroll".equals(arg))
+            return scroll;
+        return null;
+    }
+
+    @LuaWhitelist
+    public void __newindex(String key, Object value) {
+        if ("scroll".equals(key))
+            scroll = (LuaFunction) value;
+    }
 }

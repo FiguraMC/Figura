@@ -10,8 +10,6 @@ import net.minecraft.world.entity.Entity;
 import org.luaj.vm2.LuaError;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
-import org.moon.figura.math.vector.FiguraVec3;
-import org.moon.figura.mixin.gui.ChatScreenAccessor;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaType;
 import org.moon.figura.lua.LuaWhitelist;
@@ -21,6 +19,8 @@ import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.mixin.gui.ChatScreenAccessor;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.TextUtils;
@@ -237,5 +237,18 @@ public class HostAPI {
     public void setChatText(@LuaNotNil String text) {
         if (isHost() && Minecraft.getInstance().screen instanceof ChatScreen chat)
             ((ChatScreenAccessor) chat).getInput().setValue(text);
+    }
+
+    @LuaWhitelist
+    public Object __index(String arg) {
+        if ("unlockCursor".equals(arg))
+            return unlockCursor;
+        return null;
+    }
+
+    @LuaWhitelist
+    public void __newindex(String key, Object value) {
+        if ("unlockCursor".equals(key))
+            unlockCursor = (Boolean) value;
     }
 }

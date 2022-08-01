@@ -82,10 +82,10 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/EntityModel;setupAnim(Lnet/minecraft/world/entity/Entity;FFFFF)V", shift = At.Shift.AFTER), method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V")
     private void preRender(T entity, float yaw, float delta, PoseStack matrices, MultiBufferSource bufferSource, int light, CallbackInfo ci) {
         currentAvatar = AvatarManager.getAvatar(entity);
-        if (currentAvatar == null || currentAvatar.luaRuntime == null)
+        if (currentAvatar == null)
             return;
 
-        if (getModel() instanceof PlayerModel<?> playerModel && entity instanceof Player) {
+        if (currentAvatar.luaRuntime != null && getModel() instanceof PlayerModel<?> playerModel && entity instanceof Player) {
             currentAvatar.luaRuntime.vanilla_model.PLAYER.store(playerModel);
             if (currentAvatar.trust.get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 1)
                 currentAvatar.luaRuntime.vanilla_model.PLAYER.alter(playerModel);

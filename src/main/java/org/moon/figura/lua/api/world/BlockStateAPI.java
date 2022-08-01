@@ -297,4 +297,13 @@ public class BlockStateAPI {
 
         return BlockStateParser.serialize(blockState) + tag;
     }
+
+    @LuaWhitelist
+    public Object __index(String arg) {
+        return switch (arg) {
+            case "id" -> id;
+            case "properties" -> properties;
+            default -> null;
+        };
+    }
 }

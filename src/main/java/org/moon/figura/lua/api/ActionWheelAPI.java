@@ -146,8 +146,22 @@ public class ActionWheelAPI {
             avatar.tryCall(scroll, -1, delta);
     }
 
-    @Override
-    public String toString() {
-        return "ActionWheelAPI";
+    @LuaWhitelist
+    public Object __index(String arg) {
+        return switch (arg) {
+            case "leftClick" -> leftClick;
+            case "rightClick" -> rightClick;
+            case "scroll" -> scroll;
+            default -> null;
+        };
+    }
+
+    @LuaWhitelist
+    public void __newindex(String key, Object value) {
+        switch (key) {
+            case "leftClick" -> leftClick = (LuaFunction) value;
+            case "rightClick" -> rightClick = (LuaFunction) value;
+            case "scroll" -> scroll = (LuaFunction) value;
+        }
     }
 }

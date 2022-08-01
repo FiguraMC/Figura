@@ -97,7 +97,7 @@ public class FiguraLuaRuntime {
         if (obj instanceof LuaValue val)
             userGlobals.set(name, val);
         else
-            userGlobals.set(name, typeManager.wrap(obj));
+            userGlobals.set(name, LuaTypeManager.wrap(obj));
     }
 
     public void setUser(Entity user) {

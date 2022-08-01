@@ -6,7 +6,6 @@ import net.minecraft.world.entity.Entity;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.trust.TrustContainer;
-import org.moon.figura.trust.TrustManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -18,7 +17,7 @@ public abstract class EntityRendererMixin<T extends Entity> {
     @Inject(at = @At("HEAD"), method = "shouldRender", cancellable = true)
     private void shouldRender(T entity, Frustum frustum, double d, double e, double f, CallbackInfoReturnable<Boolean> cir) {
         Avatar avatar = AvatarManager.getAvatar(entity);
-        if (avatar != null && TrustManager.get(entity.getUUID()).get(TrustContainer.Trust.OFFSCREEN_RENDERING) == 1)
+        if (avatar != null && avatar.trust.get(TrustContainer.Trust.OFFSCREEN_RENDERING) == 1)
             cir.setReturnValue(true);
     }
 }

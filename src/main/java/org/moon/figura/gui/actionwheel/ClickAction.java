@@ -56,4 +56,21 @@ public class ClickAction extends Action {
         if (function != null)
             avatar.tryCall(function, -1, null);
     }
+
+    @LuaWhitelist
+    public Object __index(String arg) {
+        return switch (arg) {
+            case "leftClick" -> leftClick;
+            case "rightClick" -> rightClick;
+            default -> null;
+        };
+    }
+
+    @LuaWhitelist
+    public void __newindex(String key, Object value) {
+        switch (key) {
+            case "leftClick" -> leftClick = (LuaFunction) value;
+            case "rightClick" -> rightClick = (LuaFunction) value;
+        }
+    }
 }

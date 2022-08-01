@@ -4,13 +4,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
-import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.lua.LuaType;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.LuaUtils;
 
 import java.util.UUID;
@@ -123,5 +123,22 @@ public class RendererAPI {
     )
     public void setPostEffect(String effect) {
         this.postShader = effect == null ? null : new ResourceLocation("shaders/post/" + effect.toLowerCase() + ".json");
+    }
+
+    @LuaWhitelist
+    public Object __index(String arg) {
+        return switch (arg) {
+            case "renderFire" -> renderFire;
+            case "renderVehicle" -> renderVehicle;
+            default -> null;
+        };
+    }
+
+    @LuaWhitelist
+    public void __newindex(String key, Object value) {
+        switch (key) {
+            case "renderFire" -> renderFire = (Boolean) value;
+            case "renderVehicle" -> renderVehicle = (Boolean) value;
+        }
     }
 }

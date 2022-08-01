@@ -334,6 +334,13 @@ public class Animation {
         return this;
     }
 
+    @LuaWhitelist
+    public Object __index(String arg) {
+        if (arg.equals("name"))
+            return name;
+        return null;
+    }
+
     // -- other classes -- //
 
     public enum PlayState {

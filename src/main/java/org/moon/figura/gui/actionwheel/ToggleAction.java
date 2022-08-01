@@ -168,4 +168,21 @@ public class ToggleAction extends Action {
         else
             return color;
     }
+
+    @LuaWhitelist
+    public Object __index(String arg) {
+        return switch (arg) {
+            case "toggle" -> toggle;
+            case "untoggle" -> untoggle;
+            default -> null;
+        };
+    }
+
+    @LuaWhitelist
+    public void __newindex(String key, Object value) {
+        switch (key) {
+            case "toggle" -> toggle = (LuaFunction) value;
+            case "untoggle" -> untoggle = (LuaFunction) value;
+        }
+    }
 }

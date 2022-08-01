@@ -525,7 +525,7 @@
   "figura.docs.biome.is_cold": "Checks if this biome is cold.",
 
   "figura.docs.model_part": "Represents a node in the model tree, basically a group/cube/mesh in Blockbench. Each bbmodel file is itself a ModelPart, and all of your models are contained in a global ModelPart called \"models\".",
-  "figura.docs.model_part.name": "The name of this model part.",
+  "figura.docs.model_part.get_name": "The name of this model part.",
   "figura.docs.model_part.get_parent": "Gets the parent part of this part. If this part has no parent, returns nil.",
   "figura.docs.model_part.get_children": "Gets the children of this part, stored in a table.",
   "figura.docs.model_part.get_pos": "Gets the position of the model part, as an offset from its position in blockbench. Only changes from {0,0,0} when you call setPos().",

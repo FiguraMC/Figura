@@ -157,4 +157,15 @@ public class FiguraKeybind {
             default -> null;
         };
     }
+
+    @LuaWhitelist
+    public void __newindex(String key, Object value) {
+        switch (key) {
+            case "onPress" -> onPress = (LuaFunction) value;
+            case "onRelease" -> onRelease = (LuaFunction) value;
+            case "enabled" -> enabled = (Boolean) value;
+            case "gui" -> gui = (Boolean) value;
+            case "override" -> override = (Boolean) value;
+        }
+    }
 }

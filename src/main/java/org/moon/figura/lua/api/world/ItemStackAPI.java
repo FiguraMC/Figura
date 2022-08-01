@@ -178,4 +178,13 @@ public class ItemStackAPI {
 
         return ret;
     }
+
+    @LuaWhitelist
+    public Object __index(String arg) {
+        return switch (arg) {
+            case "id" -> id;
+            case "tag" -> tag;
+            default -> null;
+        };
+    }
 }

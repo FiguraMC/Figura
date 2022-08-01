@@ -129,4 +129,11 @@ public class BiomeAPI {
     public boolean isCold() {
         return biome.coldEnoughToSnow(getBlockPos());
     }
+
+    @LuaWhitelist
+    public Object __index(String arg) {
+        if ("name".equals(arg))
+            return name;
+        return null;
+    }
 }
