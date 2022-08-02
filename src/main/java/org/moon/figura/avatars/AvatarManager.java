@@ -1,7 +1,6 @@
 package org.moon.figura.avatars;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -14,7 +13,10 @@ import org.moon.figura.gui.widgets.lists.AvatarList;
 import org.moon.figura.utils.FiguraText;
 
 import java.nio.file.Path;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -33,19 +35,21 @@ public class AvatarManager {
     // -- avatar events -- //
 
     public static void tickLoadedAvatars() {
-        ClientPacketListener connection = Minecraft.getInstance().getConnection();
-        if (panic || connection == null)
+        if (panic)
             return;
 
         //unload avatars from disconnected players
+        /*
+        ClientPacketListener connection = Minecraft.getInstance().getConnection();
         Set<UUID> toRemove = new HashSet<>();
         for (UUID id : LOADED_AVATARS.keySet()) {
-            if (connection.getPlayerInfo(id) == null)
+            if (connection != null && connection.getPlayerInfo(id) == null)
                 toRemove.add(id);
         }
 
         for (UUID id : toRemove)
             clearAvatar(id);
+        */
 
         //tick the avatar
         for (Avatar avatar : LOADED_AVATARS.values())
@@ -145,9 +149,6 @@ public class AvatarManager {
         //other ones will be fetched from backend on further request
         if (!localUploaded && FiguraMod.isLocal(id))
             loadLocalAvatar(LocalAvatarLoader.getLastLoadedPath());
-
-        //send client feedback
-        FiguraToast.sendToast(FiguraText.of("toast.reload"));
     }
 
     //load the local player avatar

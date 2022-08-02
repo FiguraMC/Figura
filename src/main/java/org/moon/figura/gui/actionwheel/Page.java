@@ -2,13 +2,12 @@ package org.moon.figura.gui.actionwheel;
 
 import org.luaj.vm2.LuaError;
 import org.moon.figura.lua.LuaNotNil;
-import org.moon.figura.lua.LuaType;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 
-@LuaType(typeName = "wheel_page")
+@LuaWhitelist
 @LuaTypeDoc(
         name = "Page",
         description = "wheel_page"

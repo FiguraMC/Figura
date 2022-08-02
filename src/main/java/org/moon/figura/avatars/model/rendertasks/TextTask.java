@@ -7,7 +7,6 @@ import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import org.moon.figura.lua.LuaNotNil;
-import org.moon.figura.lua.LuaType;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
@@ -20,9 +19,9 @@ import org.moon.figura.utils.ui.UIHelper;
 
 import java.util.List;
 
-@LuaType(typeName = "text_task")
+@LuaWhitelist
 @LuaTypeDoc(
-        name = "Text Task",
+        name = "TextTask",
         description = "text_task"
 )
 public class TextTask extends RenderTask {

@@ -4,7 +4,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
 import net.minecraft.client.renderer.MultiBufferSource;
 import org.moon.figura.lua.LuaNotNil;
-import org.moon.figura.lua.LuaType;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
@@ -12,9 +11,9 @@ import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.LuaUtils;
 
-@LuaType(typeName = "render_task")
+@LuaWhitelist
 @LuaTypeDoc(
-        name = "Render Task",
+        name = "RenderTask",
         description = "render_task"
 )
 public abstract class RenderTask {

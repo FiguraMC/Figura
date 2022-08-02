@@ -14,7 +14,7 @@ import org.moon.figura.avatars.providers.LocalAvatarLoader;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.widgets.ContextMenu;
 import org.moon.figura.gui.widgets.lists.PlayerList;
-import org.moon.figura.lua.api.nameplate.NameplateCustomization;
+import org.moon.figura.lua.api.nameplate.Badges;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.FiguraIdentifier;
@@ -56,7 +56,10 @@ public class PlayerElement extends AbstractTrustElement {
         });
 
         //reload
-        context.addAction(FiguraText.of("gui.context.reload"), button -> AvatarManager.reloadAvatar(owner));
+        context.addAction(FiguraText.of("gui.context.reload"), button -> {
+            AvatarManager.reloadAvatar(owner);
+            FiguraToast.sendToast(FiguraText.of("toast.reload"));
+        });
 
         //trust
         ContextMenu trustContext = new ContextMenu();
@@ -119,7 +122,7 @@ public class PlayerElement extends AbstractTrustElement {
         //name
         Font font = Minecraft.getInstance().font;
         Avatar avatar = AvatarManager.getAvatarForPlayer(owner);
-        UIHelper.renderOutlineText(stack, font, Component.literal(this.name).append(NameplateCustomization.fetchBadges(avatar)), x + 40, y + 4, 0xFFFFFF, 0);
+        UIHelper.renderOutlineText(stack, font, Component.literal(this.name).append(Badges.fetchBadges(avatar)), x + 40, y + 4, 0xFFFFFF, 0);
 
         //uuid
         stack.pushPose();

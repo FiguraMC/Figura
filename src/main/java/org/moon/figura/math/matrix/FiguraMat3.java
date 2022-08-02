@@ -3,17 +3,21 @@ package org.moon.figura.math.matrix;
 import com.mojang.math.Matrix3f;
 import org.luaj.vm2.LuaError;
 import org.lwjgl.BufferUtils;
-import org.moon.figura.math.vector.FiguraVec3;
-import org.moon.figura.lua.LuaType;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
+import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.caching.CacheStack;
 import org.moon.figura.utils.caching.CacheUtils;
 
 import java.nio.FloatBuffer;
 
-@LuaType(typeName = "mat3")
+@LuaWhitelist
+@LuaTypeDoc(
+        name = "Matrix3",
+        description = "matrix3"
+)
 public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
 
     private static final FloatBuffer copyingBuffer = BufferUtils.createFloatBuffer(3*3);

@@ -3,17 +3,16 @@ package org.moon.figura.lua.api.world;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.world.level.biome.Biome;
-import org.moon.figura.math.vector.FiguraVec3;
-import org.moon.figura.lua.LuaType;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.LuaUtils;
 
-@LuaType(typeName = "biome")
+@LuaWhitelist
 @LuaTypeDoc(
         name = "Biome",
         description = "biome"
@@ -23,6 +22,7 @@ public class BiomeAPI {
     private final Biome biome;
     private BlockPos pos;
 
+    @LuaWhitelist
     @LuaFieldDoc(description = "biome.name")
     public final String name;
 

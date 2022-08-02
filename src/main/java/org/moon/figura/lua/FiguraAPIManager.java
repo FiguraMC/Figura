@@ -23,6 +23,10 @@ import org.moon.figura.lua.api.math.MatricesAPI;
 import org.moon.figura.lua.api.math.VectorsAPI;
 import org.moon.figura.lua.api.nameplate.NameplateAPI;
 import org.moon.figura.lua.api.nameplate.NameplateCustomization;
+import org.moon.figura.lua.api.particle.ParticleAPI;
+import org.moon.figura.lua.api.particle.ParticleBuilder;
+import org.moon.figura.lua.api.sound.SoundAPI;
+import org.moon.figura.lua.api.sound.SoundBuilder;
 import org.moon.figura.lua.api.vanilla_model.VanillaGroupPart;
 import org.moon.figura.lua.api.vanilla_model.VanillaModelAPI;
 import org.moon.figura.lua.api.vanilla_model.VanillaModelPart;
@@ -76,10 +80,14 @@ public class FiguraAPIManager {
         add(TextTask.class);
 
         add(SoundAPI.class);
+        add(SoundBuilder.class);
+
+        add(ParticleAPI.class);
+        add(ParticleBuilder.class);
+
         add(HostAPI.class);
         add(RendererAPI.class);
         add(ClientAPI.class);
-        add(ParticleAPI.class);
         add(MetaAPI.class);
 
         add(VanillaModelAPI.class);

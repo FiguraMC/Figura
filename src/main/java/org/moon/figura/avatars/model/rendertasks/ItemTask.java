@@ -8,7 +8,6 @@ import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.world.item.ItemStack;
 import org.luaj.vm2.LuaError;
 import org.moon.figura.lua.LuaNotNil;
-import org.moon.figura.lua.LuaType;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.world.ItemStackAPI;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
@@ -16,9 +15,9 @@ import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.utils.LuaUtils;
 
-@LuaType(typeName = "item_task")
+@LuaWhitelist
 @LuaTypeDoc(
-        name = "Item Task",
+        name = "ItemTask",
         description = "item_task"
 )
 public class ItemTask extends RenderTask {

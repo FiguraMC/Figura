@@ -1,11 +1,11 @@
 package org.moon.figura.lua.api.event;
 
-import org.moon.figura.lua.LuaType;
 import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaMetamethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 
-@LuaType(typeName = "events")
+@LuaWhitelist
 @LuaTypeDoc(
         name = "EventsAPI",
         description = "events"
@@ -27,13 +27,29 @@ public class EventsAPI {
     //whitelisted and accessed automatically?
     //Maybe in the __index comment we give a docs list of the events?
 
+    @LuaWhitelist
+    @LuaFieldDoc(description = "enets.tick")
     public final LuaEvent TICK;
+    @LuaWhitelist
+    @LuaFieldDoc(description = "enets.world_tick")
     public final LuaEvent WORLD_TICK;
+    @LuaWhitelist
+    @LuaFieldDoc(description = "enets.render")
     public final LuaEvent RENDER;
+    @LuaWhitelist
+    @LuaFieldDoc(description = "enets.post_render")
     public final LuaEvent POST_RENDER;
+    @LuaWhitelist
+    @LuaFieldDoc(description = "enets.world_render")
     public final LuaEvent WORLD_RENDER;
+    @LuaWhitelist
+    @LuaFieldDoc(description = "enets.post_world_render")
     public final LuaEvent POST_WORLD_RENDER;
+    @LuaWhitelist
+    @LuaFieldDoc(description = "enets.chat_send_message")
     public final LuaEvent CHAT_SEND_MESSAGE;
+    @LuaWhitelist
+    @LuaFieldDoc(description = "enets.chat_receive_message")
     public final LuaEvent CHAT_RECEIVE_MESSAGE;
 
 

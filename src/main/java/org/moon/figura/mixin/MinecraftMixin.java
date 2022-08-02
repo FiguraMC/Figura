@@ -11,7 +11,7 @@ import org.moon.figura.backend.NetworkManager;
 import org.moon.figura.config.Config;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.actionwheel.ActionWheel;
-import org.moon.figura.lua.api.SoundAPI;
+import org.moon.figura.lua.api.sound.SoundAPI;
 import org.moon.figura.lua.api.keybind.FiguraKeybind;
 import org.moon.figura.utils.FiguraText;
 import org.spongepowered.asm.mixin.Final;
@@ -43,8 +43,10 @@ public abstract class MinecraftMixin {
         if (AvatarManager.panic)
             return;
 
-        if (Config.RELOAD_BUTTON.keyBind.consumeClick())
+        if (Config.RELOAD_BUTTON.keyBind.consumeClick()) {
             AvatarManager.reloadAvatar(FiguraMod.getLocalPlayerUUID());
+            FiguraToast.sendToast(FiguraText.of("toast.reload"));
+        }
 
         if (Config.ACTION_WHEEL_BUTTON.keyBind.isDown()) {
             ActionWheel.setEnabled(true);

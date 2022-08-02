@@ -3,16 +3,20 @@ package org.moon.figura.math.vector;
 import org.luaj.vm2.LuaDouble;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
-import org.moon.figura.math.matrix.FiguraMatrix;
-import org.moon.figura.lua.LuaType;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMetamethodDoc;
 import org.moon.figura.lua.docs.LuaMethodDoc;
+import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.math.matrix.FiguraMatrix;
 import org.moon.figura.utils.MathUtils;
 import org.moon.figura.utils.caching.CacheUtils;
 
-@LuaType(typeName = "vec5")
+@LuaWhitelist
+@LuaTypeDoc(
+        name = "Vector5",
+        description = "vector5"
+)
 public class FiguraVec5 extends FiguraVector<FiguraVec5, FiguraMatrix.DummyMatrix<FiguraVec5>> {
 
     private final static CacheUtils.Cache<FiguraVec5> CACHE = CacheUtils.getCache(FiguraVec5::new, 200);

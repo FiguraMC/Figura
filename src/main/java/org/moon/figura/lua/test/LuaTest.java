@@ -1,14 +1,19 @@
 package org.moon.figura.lua.test;
 
-import org.luaj.vm2.*;
+import org.luaj.vm2.Globals;
+import org.luaj.vm2.LoadState;
+import org.luaj.vm2.LuaTable;
+import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.compiler.LuaC;
-import org.luaj.vm2.lib.*;
+import org.luaj.vm2.lib.OneArgFunction;
+import org.luaj.vm2.lib.PackageLib;
+import org.luaj.vm2.lib.StringLib;
+import org.luaj.vm2.lib.TableLib;
 import org.luaj.vm2.lib.jse.JseBaseLib;
 import org.luaj.vm2.lib.jse.JseMathLib;
-import org.moon.figura.math.vector.FiguraVec6;
-import org.moon.figura.lua.LuaType;
-import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.LuaTypeManager;
+import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.math.vector.FiguraVec6;
 
 public class LuaTest {
 
@@ -62,7 +67,7 @@ public class LuaTest {
 
     }
 
-    @LuaType(typeName = "test_class")
+    @LuaWhitelist
     public static class TestClass {
         @LuaWhitelist
         public static double add(MyFunClass fun) {
@@ -79,7 +84,7 @@ public class LuaTest {
 
     }
 
-    @LuaType(typeName = "my_fun_class")
+    @LuaWhitelist
     public static class MyFunClass {
 
         int a;

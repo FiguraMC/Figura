@@ -4,7 +4,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
-import org.moon.figura.lua.LuaType;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
@@ -15,7 +14,7 @@ import org.moon.figura.utils.LuaUtils;
 
 import java.util.UUID;
 
-@LuaType(typeName = "renderer")
+@LuaWhitelist
 @LuaTypeDoc(
         name = "RendererAPI",
         description = "renderer"
@@ -25,9 +24,10 @@ public class RendererAPI {
     private final UUID owner;
     public Float shadowRadius;
 
+    @LuaWhitelist
     @LuaFieldDoc(description = "renderer.render_fire")
     public boolean renderFire = true;
-
+    @LuaWhitelist
     @LuaFieldDoc(description = "renderer.render_vehicle")
     public boolean renderVehicle = true;
 

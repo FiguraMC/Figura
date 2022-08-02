@@ -2,14 +2,13 @@ package org.moon.figura.lua.api.event;
 
 import org.luaj.vm2.*;
 import org.luaj.vm2.lib.VarArgFunction;
-import org.moon.figura.lua.LuaType;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMetamethodDoc;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 
-@LuaType(typeName = "event")
+@LuaWhitelist
 @LuaTypeDoc(
         name = "Event",
         description = "event"

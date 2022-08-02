@@ -7,7 +7,6 @@ import org.moon.figura.avatars.Avatar;
 import org.moon.figura.gui.actionwheel.ActionWheel;
 import org.moon.figura.gui.actionwheel.Page;
 import org.moon.figura.lua.LuaNotNil;
-import org.moon.figura.lua.LuaType;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
@@ -17,7 +16,7 @@ import org.moon.figura.lua.docs.LuaTypeDoc;
 import java.util.HashMap;
 import java.util.UUID;
 
-@LuaType(typeName = "action_wheel")
+@LuaWhitelist
 @LuaTypeDoc(
         name = "ActionWheelAPI",
         description = "action_wheel"
@@ -28,10 +27,13 @@ public class ActionWheelAPI {
     private final HashMap<String, Page> pages = new HashMap<>();
     private final boolean isHost;
 
+    @LuaWhitelist
     @LuaFieldDoc(description = "action_wheel.left_click")
     public LuaFunction leftClick;
+    @LuaWhitelist
     @LuaFieldDoc(description = "action_wheel.right_click")
     public LuaFunction rightClick;
+    @LuaWhitelist
     @LuaFieldDoc(description = "action_wheel.scroll")
     public LuaFunction scroll;
 

@@ -1,4 +1,4 @@
-package org.moon.figura.lua.api;
+package org.moon.figura.lua.api.sound;
 
 import com.mojang.blaze3d.audio.SoundBuffer;
 import net.minecraft.client.Minecraft;
@@ -10,19 +10,18 @@ import net.minecraft.util.RandomSource;
 import org.luaj.vm2.LuaError;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.ducks.SoundEngineAccessor;
-import org.moon.figura.math.vector.FiguraVec3;
-import org.moon.figura.mixin.sound.SoundManagerAccessor;
 import org.moon.figura.lua.LuaNotNil;
-import org.moon.figura.lua.LuaType;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.world.WorldAPI;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.mixin.sound.SoundManagerAccessor;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.utils.LuaUtils;
 
-@LuaType(typeName = "sound")
+@LuaWhitelist
 @LuaTypeDoc(
         name = "SoundAPI",
         description = "sound"
@@ -120,6 +119,12 @@ public class SoundAPI {
     )
     public void stopSound(String id) {
         getSoundEngine().figura$stopSound(owner.owner, id);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(description = "sound.new_sound")
+    public SoundBuilder newSound() {
+        return new SoundBuilder(owner);
     }
 
     @Override

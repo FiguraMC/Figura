@@ -1,4 +1,4 @@
-package org.moon.figura.lua.api;
+package org.moon.figura.lua.api.particle;
 
 import com.mojang.brigadier.StringReader;
 import net.minecraft.client.Minecraft;
@@ -7,18 +7,17 @@ import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.world.level.Level;
 import org.luaj.vm2.LuaError;
 import org.moon.figura.avatars.Avatar;
-import org.moon.figura.math.vector.FiguraVec3;
-import org.moon.figura.math.vector.FiguraVec6;
 import org.moon.figura.lua.LuaNotNil;
-import org.moon.figura.lua.LuaType;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.world.WorldAPI;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.math.vector.FiguraVec6;
 import org.moon.figura.utils.LuaUtils;
 
-@LuaType(typeName = "particle")
+@LuaWhitelist
 @LuaTypeDoc(
         name = "ParticleAPI",
         description = "particle"
@@ -111,6 +110,12 @@ public class ParticleAPI {
             pos.free();
             vel.free();
         }
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(description = "particle.new_particle")
+    public ParticleBuilder newParticle() {
+        return new ParticleBuilder(owner);
     }
 
     @Override

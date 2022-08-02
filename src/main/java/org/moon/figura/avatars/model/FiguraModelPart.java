@@ -16,17 +16,15 @@ import org.moon.figura.avatars.model.rendertasks.ItemTask;
 import org.moon.figura.avatars.model.rendertasks.RenderTask;
 import org.moon.figura.avatars.model.rendertasks.TextTask;
 import org.moon.figura.ducks.LivingEntityRendererAccessor;
-import org.moon.figura.math.matrix.FiguraMat3;
-import org.moon.figura.math.matrix.FiguraMat4;
-import org.moon.figura.math.vector.FiguraVec2;
-import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.lua.LuaNotNil;
-import org.moon.figura.lua.LuaType;
-import org.moon.figura.lua.LuaTypeManager;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.math.matrix.FiguraMat3;
+import org.moon.figura.math.matrix.FiguraMat4;
+import org.moon.figura.math.vector.FiguraVec2;
+import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.MathUtils;
 
@@ -34,7 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@LuaType(typeName = "model_part")
+@LuaWhitelist
 @LuaTypeDoc(
         name = "ModelPart",
         description = "model_part"
@@ -199,7 +197,7 @@ public class FiguraModelPart {
         LuaTable table = new LuaTable();
         int i = 1;
         for (FiguraModelPart child : this.children)
-            table.set(i++, LuaTypeManager.wrap(child));
+            table.set(i++, owner.luaRuntime.typeManager.wrap(child));
         return table;
     }
 

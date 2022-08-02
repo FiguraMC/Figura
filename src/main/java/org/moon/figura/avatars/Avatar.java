@@ -32,10 +32,9 @@ import org.moon.figura.avatars.model.rendering.StackAvatarRenderer;
 import org.moon.figura.config.Config;
 import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.lua.FiguraLuaRuntime;
-import org.moon.figura.lua.LuaTypeManager;
-import org.moon.figura.lua.api.SoundAPI;
 import org.moon.figura.lua.api.event.LuaEvent;
-import org.moon.figura.lua.api.nameplate.NameplateCustomization;
+import org.moon.figura.lua.api.nameplate.Badges;
+import org.moon.figura.lua.api.sound.SoundAPI;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.EntityUtils;
@@ -67,7 +66,7 @@ public class Avatar {
     public int fileSize;
     public String color;
 
-    public BitSet badges = new BitSet(NameplateCustomization.badgesLen());
+    public BitSet badges = new BitSet(Badges.count());
 
     //Runtime data
     public AvatarRenderer renderer;
@@ -189,7 +188,7 @@ public class Avatar {
         if (scriptError || luaRuntime == null)
             return;
 
-        LuaValue val = args instanceof LuaValue v ? v : LuaTypeManager.wrap(args);
+        LuaValue val = args instanceof LuaValue v ? v : luaRuntime.typeManager.wrap(args);
 
         try {
             if (maxInstructions != -1)
@@ -279,8 +278,19 @@ public class Avatar {
     }
 
     public String chatSendMessageEvent(String message) {
-        if (!scriptError && luaRuntime != null)
-            tryCall(luaRuntime.events.CHAT_SEND_MESSAGE, -1, LuaString.valueOf(message));
+        if (!scriptError && luaRuntime != null) {
+            try {
+                Varargs result = luaRuntime.events.CHAT_SEND_MESSAGE.pipedCall(LuaString.valueOf(message));
+                if ((boolean) Config.CHAT_MESSAGES.value) {
+                    LuaValue value = result.arg(1);
+                    return value.isnil() ? null : value.tojstring();
+                }
+            } catch (Exception ex) {
+                FiguraLuaPrinter.sendLuaError(ex, name, owner);
+                scriptError = true;
+                luaRuntime = null;
+            }
+        }
         return message;
     }
 

@@ -21,7 +21,7 @@ public class LuaTypeManager {
     public void generateMetatableFor(Class<?> clazz) {
         if (metatables.containsKey(clazz))
             return;
-        if (!clazz.isAnnotationPresent(LuaType.class))
+        if (!clazz.isAnnotationPresent(LuaWhitelist.class))
             throw new IllegalArgumentException("Tried to generate metatable for un-whitelisted class " + clazz.getName() + "!");
 
         //Ensure that all whitelisted superclasses are loaded before this one
@@ -33,7 +33,7 @@ public class LuaTypeManager {
 
         LuaTable indexTable = new LuaTable();
         Class<?> currentClass = clazz;
-        while (currentClass.isAnnotationPresent(LuaType.class)) {
+        while (currentClass.isAnnotationPresent(LuaWhitelist.class)) {
             for (Method method : currentClass.getDeclaredMethods()) {
                 if (!method.isAnnotationPresent(LuaWhitelist.class)) {
                     continue;
@@ -70,7 +70,7 @@ public class LuaTypeManager {
         //if we don't have a special toString, then have our toString give the type name from the annotation
         if (metatable.rawget("__tostring") == LuaValue.NIL) {
             metatable.set("__tostring", new OneArgFunction() {
-                private final LuaString val = LuaString.valueOf(clazz.getAnnotation(LuaType.class).typeName());
+                private final LuaString val = LuaString.valueOf(clazz.getName());
                 @Override
                 public LuaValue call(LuaValue arg) {
                     return val;
@@ -93,14 +93,14 @@ public class LuaTypeManager {
 
     public void dumpMetatables(LuaTable table) {
         for (Map.Entry<Class<?>, LuaTable> entry : metatables.entrySet()) {
-            String name = entry.getKey().getAnnotation(LuaType.class).typeName();
+            String name = entry.getKey().getSimpleName();
             if (table.get(name) != LuaValue.NIL)
                 throw new IllegalStateException("Two classes have the same type name: " + name);
             table.set(name, entry.getValue());
         }
     }
 
-    private VarArgFunction getWrapper(Method method) {
+    public VarArgFunction getWrapper(Method method) {
         return new VarArgFunction() {
 
             private final boolean isStatic = Modifier.isStatic(method.getModifiers());
@@ -190,7 +190,7 @@ public class LuaTypeManager {
         return result;
     }
 
-    private static Object convertLua2Java(LuaValue val) {
+    public static Object convertLua2Java(LuaValue val) {
         return switch (val.type()) {
             case LuaValue.TBOOLEAN -> val.checkboolean();
             case LuaValue.TLIGHTUSERDATA, LuaValue.TUSERDATA -> val.checkuserdata(Object.class);
@@ -202,4 +202,30 @@ public class LuaTypeManager {
         };
     }
 
+    public static LuaValue convertJava2Lua(Object val) {
+        if (val instanceof LuaValue l)
+            return l;
+        else if (val instanceof Double d)
+            return LuaValue.valueOf(d);
+        else if (val instanceof String s)
+            return LuaValue.valueOf(s);
+        else if (val instanceof Boolean b)
+            return LuaValue.valueOf(b);
+        else if (val instanceof Integer i)
+            return LuaValue.valueOf(i);
+        else if (val instanceof Float f)
+            return LuaValue.valueOf(f);
+        else if (val instanceof Byte b)
+            return LuaValue.valueOf(b);
+        else if (val instanceof Long l)
+            return LuaValue.valueOf(l);
+        else if (val instanceof Character c)
+            return LuaValue.valueOf(c);
+        else if (val instanceof Short s)
+            return LuaValue.valueOf(s);
+        else if (val == null)
+            return LuaValue.NIL;
+        else
+            return wrap(val);
+    }
 }

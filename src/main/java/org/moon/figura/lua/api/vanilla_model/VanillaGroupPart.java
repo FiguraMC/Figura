@@ -2,7 +2,6 @@ package org.moon.figura.lua.api.vanilla_model;
 
 import net.minecraft.client.model.EntityModel;
 import org.moon.figura.lua.LuaNotNil;
-import org.moon.figura.lua.LuaType;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
@@ -11,7 +10,7 @@ import org.moon.figura.lua.docs.LuaTypeDoc;
 import java.util.Collection;
 import java.util.HashMap;
 
-@LuaType(typeName = "vanilla_group")
+@LuaWhitelist
 @LuaTypeDoc(
         name = "VanillaModelGroup",
         description = "vanilla_group"

@@ -2,20 +2,20 @@ package org.moon.figura.gui.actionwheel;
 
 import org.luaj.vm2.LuaFunction;
 import org.moon.figura.avatars.Avatar;
-import org.moon.figura.lua.LuaType;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 
-@LuaType(typeName = "scroll_action")
+@LuaWhitelist
 @LuaTypeDoc(
-        name = "Scroll Action",
+        name = "ScrollAction",
         description = "scroll_action"
 )
 public class ScrollAction extends Action {
 
+    @LuaWhitelist
     @LuaFieldDoc(description = "scroll_action.scroll")
     public LuaFunction scroll;
 
@@ -54,6 +54,6 @@ public class ScrollAction extends Action {
 
     @Override
     public String toString() {
-        return "Action Wheel Scroll (" + title + ")";
+        return title == null ? "Action Wheel Scroll" : "Action Wheel Scroll (" + title + ")";
     }
 }

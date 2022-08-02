@@ -20,6 +20,10 @@ import org.moon.figura.avatars.model.rendertasks.ItemTask;
 import org.moon.figura.avatars.model.rendertasks.RenderTask;
 import org.moon.figura.avatars.model.rendertasks.TextTask;
 import org.moon.figura.gui.actionwheel.*;
+import org.moon.figura.lua.api.particle.ParticleAPI;
+import org.moon.figura.lua.api.particle.ParticleBuilder;
+import org.moon.figura.lua.api.sound.SoundAPI;
+import org.moon.figura.lua.api.sound.SoundBuilder;
 import org.moon.figura.math.matrix.FiguraMat2;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
@@ -173,11 +177,13 @@ public class FiguraDocsManager {
         ));
 
         put("particle", List.of(
-                ParticleAPI.class
+                ParticleAPI.class,
+                ParticleBuilder.class
         ));
 
         put("sound", List.of(
-                SoundAPI.class
+                SoundAPI.class,
+                SoundBuilder.class
         ));
 
         put("renderer", List.of(

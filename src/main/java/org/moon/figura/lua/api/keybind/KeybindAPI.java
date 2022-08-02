@@ -2,17 +2,16 @@ package org.moon.figura.lua.api.keybind;
 
 import net.minecraft.client.KeyMapping;
 import org.moon.figura.avatars.Avatar;
-import org.moon.figura.mixin.input.KeyMappingAccessor;
 import org.moon.figura.lua.LuaNotNil;
-import org.moon.figura.lua.LuaType;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.mixin.input.KeyMappingAccessor;
 
 import java.util.ArrayList;
 
-@LuaType(typeName = "keybind_api")
+@LuaWhitelist
 @LuaTypeDoc(
         name = "KeybindAPI",
         description = "keybind_api"

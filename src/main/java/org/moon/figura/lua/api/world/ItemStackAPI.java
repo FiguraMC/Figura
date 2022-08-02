@@ -9,7 +9,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import org.luaj.vm2.LuaTable;
-import org.moon.figura.lua.LuaType;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.NbtToLua;
 import org.moon.figura.lua.docs.LuaFieldDoc;
@@ -18,7 +17,7 @@ import org.moon.figura.lua.docs.LuaTypeDoc;
 
 import java.util.Optional;
 
-@LuaType(typeName = "item_stack")
+@LuaWhitelist
 @LuaTypeDoc(
         name = "ItemStack",
         description = "item_stack"
@@ -39,8 +38,10 @@ public class ItemStackAPI {
         return new ItemStackAPI(itemStack);
     }
 
+    @LuaWhitelist
     @LuaFieldDoc(description = "itemstack.id")
     public final String id;
+    @LuaWhitelist
     @LuaFieldDoc(description = "itemstack.tag")
     public final LuaTable tag;
 

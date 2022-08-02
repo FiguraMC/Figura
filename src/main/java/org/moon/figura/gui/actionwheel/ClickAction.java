@@ -2,23 +2,24 @@ package org.moon.figura.gui.actionwheel;
 
 import org.luaj.vm2.LuaFunction;
 import org.moon.figura.avatars.Avatar;
-import org.moon.figura.lua.LuaType;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 
-@LuaType(typeName = "click_action")
+@LuaWhitelist
 @LuaTypeDoc(
-        name = "Click Action",
+        name = "ClickAction",
         description = "click_action"
 )
 public class ClickAction extends Action {
 
     // fields for funni lua syntax
+    @LuaWhitelist
     @LuaFieldDoc(description = "click_action.left_click")
     public LuaFunction leftClick;
+    @LuaWhitelist
     @LuaFieldDoc(description = "click_action.right_click")
     public LuaFunction rightClick;
 
@@ -76,6 +77,6 @@ public class ClickAction extends Action {
 
     @Override
     public String toString() {
-        return "Action Wheel Click Action (" + title + ")";
+        return title == null ? "Action Wheel Click Action" : "Action Wheel Click Action (" + title + ")";
     }
 }

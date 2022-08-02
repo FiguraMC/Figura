@@ -5,16 +5,20 @@ import net.minecraft.world.phys.Vec3;
 import org.luaj.vm2.LuaDouble;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
-import org.moon.figura.math.matrix.FiguraMat3;
-import org.moon.figura.lua.LuaType;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMetamethodDoc;
 import org.moon.figura.lua.docs.LuaMethodDoc;
+import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.utils.MathUtils;
 import org.moon.figura.utils.caching.CacheUtils;
 
-@LuaType(typeName = "vec3")
+@LuaWhitelist
+@LuaTypeDoc(
+        name = "Vector3",
+        description = "vector3"
+)
 public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
 
     private final static CacheUtils.Cache<FiguraVec3> CACHE = CacheUtils.getCache(FiguraVec3::new, 500);

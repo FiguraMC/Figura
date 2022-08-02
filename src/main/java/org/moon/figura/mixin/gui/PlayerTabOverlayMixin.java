@@ -7,6 +7,7 @@ import net.minecraft.network.chat.MutableComponent;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.config.Config;
+import org.moon.figura.lua.api.nameplate.Badges;
 import org.moon.figura.lua.api.nameplate.NameplateCustomization;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.utils.TextUtils;
@@ -45,7 +46,7 @@ public class PlayerTabOverlayMixin {
         }
 
         if (config > 1) {
-            Component badges = NameplateCustomization.fetchBadges(avatar);
+            Component badges = Badges.fetchBadges(avatar);
             ((MutableComponent) replacement).append(badges);
         }
 

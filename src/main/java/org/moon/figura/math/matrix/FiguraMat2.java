@@ -1,15 +1,19 @@
 package org.moon.figura.math.matrix;
 
 import org.luaj.vm2.LuaError;
+import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec2;
-import org.moon.figura.lua.LuaType;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.utils.caching.CacheStack;
 import org.moon.figura.utils.caching.CacheUtils;
 
-@LuaType(typeName = "mat2")
+@LuaWhitelist
+@LuaTypeDoc(
+        name = "Matrix2",
+        description = "matrix2"
+)
 public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
 
     //Values are named as v(ROW)(COLUMN), both 1-indexed like in actual math

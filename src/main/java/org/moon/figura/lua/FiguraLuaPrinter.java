@@ -5,16 +5,15 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import org.luaj.vm2.LuaError;
-import org.luaj.vm2.LuaTable;
-import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.Varargs;
+import org.luaj.vm2.*;
 import org.luaj.vm2.lib.VarArgFunction;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.config.Config;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.TextUtils;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.UUID;
 import java.util.function.Function;
@@ -101,7 +100,7 @@ public class FiguraLuaPrinter {
 
             MutableComponent text = Component.empty();
             for (int i = 0; i < args.narg(); i++)
-                text.append(getPrintText(args.arg(i + 1), true, false)).append("\t");
+                text.append(getPrintText(runtime.typeManager, args.arg(i + 1), true, false)).append("\t");
 
             //prints the value, either on chat or console
             sendLuaMessage(text, runtime.owner.name);
@@ -136,7 +135,7 @@ public class FiguraLuaPrinter {
 
             if (args.narg() > 0) {
                 int depth = args.arg(2).isnumber() ? args.arg(2).checkint() : 1;
-                text.append(tableToText(args.arg(1), depth, 1, true));
+                text.append(tableToText(runtime.typeManager, args.arg(1), depth, 1, true));
             }
 
             sendLuaMessage(text, runtime.owner.name);
@@ -145,53 +144,91 @@ public class FiguraLuaPrinter {
         }
     };
 
-    private static Component tableToText(LuaValue value, int depth, int indent, boolean hasTooltip) {
+    private static Component tableToText(LuaTypeManager typeManager, LuaValue value, int depth, int indent, boolean hasTooltip) {
         //attempt to parse top
         if (value.isuserdata())
-            return userdataToText(value, depth, indent, hasTooltip);
+            return userdataToText(typeManager, value, depth, indent, hasTooltip);
 
-        //normal print when failed to parse userdata or depth limit
+        //normal print when invalid type or depth limit
         if (!value.istable() || depth <= 0)
-            return getPrintText(value, hasTooltip, true);
+            return getPrintText(typeManager, value, hasTooltip, true);
 
         //format text
-        MutableComponent text = Component.empty();
-        text.append(Component.literal(value.isuserdata() ? "userdata:" : "table:").withStyle(getTypeColor(value)));
-        text.append(Component.literal(" {\n").withStyle(ChatFormatting.GRAY));
+        MutableComponent text = Component.empty()
+                .append(Component.literal("userdata:").withStyle(getTypeColor(value)))
+                .append(Component.literal(" {\n").withStyle(ChatFormatting.GRAY));
 
         String spacing = "\t".repeat(indent - 1);
 
         LuaTable table = value.checktable();
-        for (LuaValue key : table.keys()) {
-            //add indentation
-            text.append(spacing).append("\t");
+        for (LuaValue key : table.keys())
+            text.append(getTableEntry(typeManager, spacing, key, table.get(key), hasTooltip, depth, indent));
 
-            //add key
-            text.append(Component.literal("[").withStyle(ChatFormatting.GRAY));
-            text.append(getPrintText(key, hasTooltip, true));
-            text.append(Component.literal("] = ").withStyle(ChatFormatting.GRAY));
+        text.append(spacing).append(Component.literal("}").withStyle(ChatFormatting.GRAY));
+        return text;
+    }
 
-            //add value
-            LuaValue val = table.get(key);
-            if (val.istable() || val.isuserdata())
-                text.append(tableToText(val, depth - 1, indent + 1, hasTooltip));
-            else
-                text.append(getPrintText(val, hasTooltip, true));
+    //needs a special print because we want to also print NIL values
+    private static Component userdataToText(LuaTypeManager typeManager, LuaValue value, int depth, int indent, boolean hasTooltip) {
+        //normal print when failed to parse userdata or depth limit
+        if (!value.isuserdata() || depth <= 0)
+            return getPrintText(typeManager, value, hasTooltip, true);
 
-            text.append("\n");
+        //format text
+        MutableComponent text = Component.empty()
+                .append(Component.literal("userdata:").withStyle(getTypeColor(value)))
+                .append(Component.literal(" {\n").withStyle(ChatFormatting.GRAY));
+
+        String spacing = "\t".repeat(indent - 1);
+
+        Object data = value.checkuserdata();
+        Class<?> clazz = data.getClass();
+        if (clazz.isAnnotationPresent(LuaWhitelist.class)) {
+            //fields
+            for (Field field : clazz.getFields()) {
+                if (!field.isAnnotationPresent(LuaWhitelist.class))
+                    continue;
+
+                try {
+                    Object obj = field.get(data);
+                    text.append(getTableEntry(typeManager, spacing, LuaValue.valueOf(field.getName()), LuaTypeManager.convertJava2Lua(obj), hasTooltip, depth, indent));
+                } catch (Exception e) {
+                    FiguraMod.LOGGER.error("", e);
+                }
+            }
+
+            //methods
+            for (Method method : clazz.getMethods()) {
+                if (method.isAnnotationPresent(LuaWhitelist.class) && !method.getName().startsWith("__"))
+                    text.append(getTableEntry(typeManager, spacing, LuaValue.valueOf(method.getName()), typeManager.getWrapper(method), hasTooltip, depth, indent));
+            }
         }
 
         text.append(spacing).append(Component.literal("}").withStyle(ChatFormatting.GRAY));
         return text;
     }
 
-    private static Component userdataToText(LuaValue userdata, int depth, int indent, boolean hasTooltip) {
-        //TODO convert userdata to table, then return a printTable of it
-        return getPrintText(userdata, hasTooltip, true);
+    private static MutableComponent getTableEntry(LuaTypeManager typeManager, String spacing, LuaValue key, LuaValue value, boolean hasTooltip, int depth, int indent) {
+        MutableComponent text = Component.empty()
+                .append(spacing).append("\t");
+
+        //key
+        text.append(Component.literal("[").withStyle(ChatFormatting.GRAY))
+                .append(getPrintText(typeManager, key, hasTooltip, true))
+                .append(Component.literal("] = ").withStyle(ChatFormatting.GRAY));
+
+        //value
+        if (value.istable() || value.isuserdata())
+            text.append(tableToText(typeManager, value, depth - 1, indent + 1, hasTooltip));
+        else
+            text.append(getPrintText(typeManager, value, hasTooltip, true));
+
+        text.append("\n");
+        return text;
     }
 
     //fancyString just means to add quotation marks around strings.
-    private static MutableComponent getPrintText(LuaValue value, boolean hasTooltip, boolean quoteStrings) {
+    private static MutableComponent getPrintText(LuaTypeManager typeManager, LuaValue value, boolean hasTooltip, boolean quoteStrings) {
         String ret;
 
         //format value
@@ -208,7 +245,7 @@ public class FiguraLuaPrinter {
 
         //table tooltip
         if (hasTooltip && (value.istable() || value.isuserdata())) {
-            Component table = TextUtils.replaceTabs(tableToText(value, 1, 1, false));
+            Component table = TextUtils.replaceTabs(tableToText(typeManager, value, 1, 1, false));
             text.withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, table)));
         }
 

@@ -10,8 +10,8 @@ import net.minecraft.world.entity.Entity;
 import org.luaj.vm2.LuaError;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
+import org.moon.figura.config.Config;
 import org.moon.figura.lua.LuaNotNil;
-import org.moon.figura.lua.LuaType;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.entity.EntityAPI;
 import org.moon.figura.lua.api.world.ItemStackAPI;
@@ -25,7 +25,7 @@ import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.TextUtils;
 
-@LuaType(typeName = "host")
+@LuaWhitelist
 @LuaTypeDoc(
         name = "HostAPI",
         description = "host"
@@ -35,6 +35,7 @@ public class HostAPI {
     private final Avatar owner;
     private final Minecraft minecraft;
 
+    @LuaWhitelist
     @LuaFieldDoc(description = "host.unlock_cursor")
     public boolean unlockCursor = false;
     public Integer chatColor;
@@ -144,7 +145,7 @@ public class HostAPI {
             description = "host.send_chat_message"
     )
     public void sendChatMessage(@LuaNotNil String text) {
-        if (!isHost()) return;
+        if (!isHost() || !(boolean) Config.CHAT_MESSAGES.value) return;
         LocalPlayer player = Minecraft.getInstance().player;
         if (player != null) {
             if (text.startsWith("/")) {
@@ -235,7 +236,7 @@ public class HostAPI {
             description = "host.set_chat_text"
     )
     public void setChatText(@LuaNotNil String text) {
-        if (isHost() && Minecraft.getInstance().screen instanceof ChatScreen chat)
+        if (isHost() && (boolean) Config.CHAT_MESSAGES.value && Minecraft.getInstance().screen instanceof ChatScreen chat)
             ((ChatScreenAccessor) chat).getInput().setValue(text);
     }
 

@@ -6,17 +6,16 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import org.luaj.vm2.LuaTable;
-import org.moon.figura.math.vector.FiguraVec3;
-import org.moon.figura.lua.LuaType;
 import org.moon.figura.lua.LuaTypeManager;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.entity.PlayerAPI;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.LuaUtils;
 
-@LuaType(typeName = "world")
+@LuaWhitelist
 @LuaTypeDoc(
         name = "WorldAPI",
         description = "world"

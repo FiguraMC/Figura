@@ -53,7 +53,7 @@ public class FiguraLuaRuntime {
     private final Globals userGlobals;
     private final LuaValue setHookFunction;
     private final LuaTable requireResults = new LuaTable();
-    private final LuaTypeManager typeManager = new LuaTypeManager();
+    public final LuaTypeManager typeManager = new LuaTypeManager();
 
     private static final ArrayList<String> RESOURCE_SCRIPTS = new ArrayList<>();
     public static final FiguraResourceListener SCRIPT_LISTENER = new FiguraResourceListener("resource_script", manager -> {
@@ -103,7 +103,7 @@ public class FiguraLuaRuntime {
         if (obj instanceof LuaValue val)
             userGlobals.set(name, val);
         else
-            userGlobals.set(name, LuaTypeManager.wrap(obj));
+            userGlobals.set(name, typeManager.wrap(obj));
     }
 
     public void setUser(Entity user) {
@@ -184,6 +184,7 @@ public class FiguraLuaRuntime {
         } catch (LuaError e) {
             FiguraLuaPrinter.sendLuaError(e, owner.name, owner.owner);
             owner.scriptError = true;
+            owner.luaRuntime = null;
         }
         return null;
     }

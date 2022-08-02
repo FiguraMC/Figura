@@ -7,7 +7,6 @@ import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.lua.LuaNotNil;
-import org.moon.figura.lua.LuaType;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
@@ -16,7 +15,7 @@ import org.moon.figura.lua.docs.LuaTypeDoc;
 
 import java.util.List;
 
-@LuaType(typeName = "keybind")
+@LuaWhitelist
 @LuaTypeDoc(
         name = "Keybind",
         description = "keybind"
@@ -30,18 +29,23 @@ public class FiguraKeybind {
     private InputConstants.Key key;
     private boolean isDown = false;
 
+    @LuaWhitelist
     @LuaFieldDoc(description = "keybind.on_press")
     public LuaFunction onPress;
 
+    @LuaWhitelist
     @LuaFieldDoc(description = "keybind.on_release")
     public LuaFunction onRelease;
 
+    @LuaWhitelist
     @LuaFieldDoc(description = "keybind.enabled")
     public Boolean enabled = true;
 
+    @LuaWhitelist
     @LuaFieldDoc(description = "keybind.gui")
     public Boolean gui;
 
+    @LuaWhitelist
     @LuaFieldDoc(description = "keybind.override")
     public Boolean override;
 

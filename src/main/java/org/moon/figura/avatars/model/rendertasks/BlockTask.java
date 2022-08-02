@@ -5,7 +5,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.level.block.state.BlockState;
-import org.moon.figura.lua.LuaType;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.world.BlockStateAPI;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
@@ -13,9 +12,9 @@ import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.utils.LuaUtils;
 
-@LuaType(typeName = "block_task")
+@LuaWhitelist
 @LuaTypeDoc(
-        name = "Block Task",
+        name = "BlockTask",
         description = "block_task"
 )
 public class BlockTask extends RenderTask {

@@ -3,20 +3,19 @@ package org.moon.figura.gui.actionwheel;
 import net.minecraft.world.item.ItemStack;
 import org.luaj.vm2.LuaFunction;
 import org.moon.figura.avatars.Avatar;
-import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.lua.LuaNotNil;
-import org.moon.figura.lua.LuaType;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.world.ItemStackAPI;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.LuaUtils;
 
-@LuaType(typeName = "toggle_action")
+@LuaWhitelist
 @LuaTypeDoc(
-        name = "Toggle Action",
+        name = "ToggleAction",
         description = "toggle_action"
 )
 public class ToggleAction extends Action {
@@ -28,8 +27,10 @@ public class ToggleAction extends Action {
     protected ItemStack toggleItem;
     protected FiguraVec3 toggleColor;
 
+    @LuaWhitelist
     @LuaFieldDoc(description = "toggle_action.toggle")
     private LuaFunction toggle;
+    @LuaWhitelist
     @LuaFieldDoc(description = "toggle_action.untoggle")
     private LuaFunction untoggle;
 
@@ -188,6 +189,6 @@ public class ToggleAction extends Action {
 
     @Override
     public String toString() {
-        return "Action Wheel Toggle (" + title + ")";
+        return title == null ? "Action Wheel Toggle" : "Action Wheel Toggle (" + title + ")";
     }
 }

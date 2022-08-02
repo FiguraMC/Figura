@@ -2,7 +2,6 @@ package org.moon.figura.lua.api.math;
 
 import org.luaj.vm2.LuaError;
 import org.moon.figura.lua.LuaNotNil;
-import org.moon.figura.lua.LuaType;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
@@ -12,7 +11,7 @@ import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.MathUtils;
 
-@LuaType(typeName = "vectors")
+@LuaWhitelist
 @LuaTypeDoc(
         name = "VectorsAPI",
         description = "vectors"

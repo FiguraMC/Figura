@@ -11,6 +11,8 @@ import org.moon.figura.lua.api.keybind.KeybindAPI;
 import org.moon.figura.lua.api.math.MatricesAPI;
 import org.moon.figura.lua.api.math.VectorsAPI;
 import org.moon.figura.lua.api.nameplate.NameplateAPI;
+import org.moon.figura.lua.api.particle.ParticleAPI;
+import org.moon.figura.lua.api.sound.SoundAPI;
 import org.moon.figura.lua.api.vanilla_model.VanillaModelAPI;
 import org.moon.figura.lua.api.world.WorldAPI;
 

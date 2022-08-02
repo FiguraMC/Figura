@@ -6,20 +6,19 @@ import org.luaj.vm2.LuaValue;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.model.FiguraModelPart;
 import org.moon.figura.lua.LuaNotNil;
-import org.moon.figura.lua.LuaType;
 import org.moon.figura.lua.LuaTypeManager;
 import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
-import org.moon.figura.lua.docs.LuaTypeDoc;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@LuaType(typeName = "animation")
+@LuaWhitelist
 @LuaTypeDoc(
         name = "Animation",
         description = "animation"
@@ -29,6 +28,7 @@ public class Animation {
     private final Avatar owner;
     private final String modelName;
 
+    @LuaWhitelist
     @LuaFieldDoc(description = "animation.name")
     public final String name;
 

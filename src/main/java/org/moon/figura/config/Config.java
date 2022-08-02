@@ -58,6 +58,7 @@ public enum Config {
     LOG_LOCATION(0, 2),
     SERVER_SCRIPT(true),
     ALLOW_FP_HANDS(false),
+    CHAT_MESSAGES(false),
 
     ActionWheel,
     ACTION_WHEEL_BUTTON("key.keyboard.b"),

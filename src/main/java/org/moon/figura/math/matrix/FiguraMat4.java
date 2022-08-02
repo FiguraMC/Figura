@@ -4,18 +4,22 @@ import com.mojang.math.Matrix4f;
 import net.minecraft.world.phys.Vec3;
 import org.luaj.vm2.LuaError;
 import org.lwjgl.BufferUtils;
-import org.moon.figura.math.vector.FiguraVec3;
-import org.moon.figura.math.vector.FiguraVec4;
-import org.moon.figura.lua.LuaType;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
+import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.math.vector.FiguraVec4;
 import org.moon.figura.utils.caching.CacheStack;
 import org.moon.figura.utils.caching.CacheUtils;
 
 import java.nio.FloatBuffer;
 
-@LuaType(typeName = "mat4")
+@LuaWhitelist
+@LuaTypeDoc(
+        name = "Matrix4",
+        description = "matrix4"
+)
 public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
 
     private static final FloatBuffer copyingBuffer = BufferUtils.createFloatBuffer(4*4);

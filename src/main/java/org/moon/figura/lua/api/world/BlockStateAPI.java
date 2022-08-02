@@ -16,10 +16,6 @@ import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.luaj.vm2.LuaTable;
-import org.moon.figura.math.vector.FiguraVec3;
-import org.moon.figura.math.vector.FiguraVec6;
-import org.moon.figura.mixin.BlockBehaviourAccessor;
-import org.moon.figura.lua.LuaType;
 import org.moon.figura.lua.LuaTypeManager;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.NbtToLua;
@@ -27,13 +23,16 @@ import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.math.vector.FiguraVec6;
+import org.moon.figura.mixin.BlockBehaviourAccessor;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.LuaUtils;
 
 import java.lang.reflect.Field;
 import java.util.Optional;
 
-@LuaType(typeName = "blockstate")
+@LuaWhitelist
 @LuaTypeDoc(
         name = "BlockState",
         description = "blockstate"
@@ -43,8 +42,10 @@ public class BlockStateAPI {
     public final BlockState blockState;
     private BlockPos pos;
 
+    @LuaWhitelist
     @LuaFieldDoc(description = "blockstate.id")
     public final String id;
+    @LuaWhitelist
     @LuaFieldDoc(description = "blockstate.properties")
     public final LuaTable properties;
 

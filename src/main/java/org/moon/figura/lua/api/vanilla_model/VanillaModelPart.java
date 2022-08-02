@@ -3,17 +3,16 @@ package org.moon.figura.lua.api.vanilla_model;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
 import org.moon.figura.avatars.model.ParentType;
-import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.lua.LuaNotNil;
-import org.moon.figura.lua.LuaType;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.math.vector.FiguraVec3;
 
 import java.util.function.Function;
 
-@LuaType(typeName = "vanilla_part")
+@LuaWhitelist
 @LuaTypeDoc(
         name = "VanillaModelPart",
         description = "vanilla_part"

@@ -174,6 +174,9 @@
   "figura.config.allow_fp_hands": "First Person Hands",
   "figura.config.allow_fp_hands.tooltip": "Toggles if scripts can move around, rotate or scale the First Person Hands",
 
+  "figura.config.chat_messages": "Chat Messages",
+  "figura.config.chat_messages.tooltip": "Toggles if scripts can change and/or send chat messages for you",
+
   "figura.config.actionwheel": "Action Wheel",
   "figura.config.actionwheel.tooltip": "Action Wheel settings",
 
@@ -328,9 +331,25 @@
   "figura.docs.sound": "A global API which is used to play Minecraft sounds. Accessed using the name \"sound\".",
   "figura.docs.sound.play_sound": "Plays the specified sound at the specified position with the given volume and pitch multipliers. The sound id is either an identifier or the custom sound name. Volume in Minecraft refers to how far away people can hear the sound from, not the actual loudness of it. If you don't give values for volume and pitch, the default values are 1.",
   "figura.docs.sound.stop_sound": "Stops the playing sounds from this avatar. If an id is specified, it only stops the sounds from that id.",
+  "figura.docs.sound.new_sound": "Creates a new sound constructor intended for holding its parameters.",
+
+  "figura.docs.sound_builder": "Object class that holds this sound properties.",
+  "figura.docs.sound_builder.id": "The sound ID.",
+  "figura.docs.sound_builder.pos": "The sound position. Default 0, 0, 0.",
+  "figura.docs.sound_builder.pitch": "The sound pitch. Default 1.",
+  "figura.docs.sound_builder.volume": "The sound volume. Default 1.",
+  "figura.docs.sound_builder.loop": "If the sound should loop or not. Default false.",
+  "figura.docs.sound_builder.play": "Plays this sound with the set properties.",
 
   "figura.docs.particle": "A global API which is used for dealing with Minecraft's particles. Can currently only be used to summon a particle. Accessed using the name \"particle\".",
   "figura.docs.particle.add_particle": "Creates a particle with the given name at the specified position, with the given velocity. Some particles have special properties, like the \"dust\" particle. For these particles, the special properties can be put into the \"name\" parameter, the same way as it works for commands.",
+  "figura.docs.particle.new_particle": "Creates a new Particle constructor intended for holding its parameters.",
+
+  "figura.docs.particle_builder": "Object class that holds this particle properties.",
+  "figura.docs.particle_builder.id": "The particle ID.",
+  "figura.docs.particle_builder.pos": "The particle position. Default 0, 0, 0.",
+  "figura.docs.particle_builder.vel": "The particle velocity. Default 0, 0, 0.",
+  "figura.docs.particle_builder.render": "Renders this particle with the set properties.",
 
   "figura.docs.nameplate": "A global API which is used for customizing your player's nameplate in chat, above your head, and in the tab list.",
   "figura.docs.nameplate.chat": "A customization for your nameplate in the chat.",
@@ -707,7 +726,6 @@
   "figura.docs.event.register": "Registers the given function to the given event. When the event occurs, the function will be run. Functions are run in the order they were registered. The optional name parameter is used when you wish to later remove a function from the event.",
   "figura.docs.event.clear": "Clears the given event of all its functions.",
   "figura.docs.event.remove": "Removes all functions with the given name from the event. Returns the number of functions that were removed.",
-  "figura.docs.event.get_count": "Returns the number of functions registered to this event.",
 
   "figura.docs.client": "A global API used to interact with the current Minecraft client. Most of its functions return things that can be found in the F3 menu.",
   "figura.docs.client.get_fps": "Gets the FPS of the client. Returns 0 if the fps counter isn't ready yet (or if your pc is just that bad).",
