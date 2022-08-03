@@ -63,7 +63,7 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
         if (avatar != null && avatar.nbt != null) {
             values.set(0, Component.literal(avatar.name).setStyle(accent)); //name
-            values.set(1, Component.literal(avatar.authors).setStyle(accent)); //authors
+            values.set(1, avatar.authors.isBlank() ? UNKNOWN : Component.literal(avatar.authors).setStyle(accent)); //authors
             values.set(2, Component.literal(MathUtils.asFileSize(avatar.fileSize)).setStyle(accent)); //size
             values.set(3, Component.literal(String.valueOf(avatar.complexity)).setStyle(accent)); //complexity
         } else {
@@ -87,8 +87,8 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
         int authorFreeLines = maxLines - 9;
         Component authors = values.get(1);
         List<FormattedCharSequence> authorLines = authors == null ? Collections.emptyList() : TextUtils.warpText(authors, width - 10, font);
-        int authorUsedLines = Math.max(Math.min(authorLines.size(), authorFreeLines), 1);
-        this.height = height * TITLES.size() * 2 + 4 + height * (authorUsedLines - 1);
+        int authorUsedLines = Math.min(authorLines.size(), authorFreeLines);
+        this.height = height * TITLES.size() * 2 + 4 + height * (Math.max(authorUsedLines - 1, 0));
 
         //render background
         UIHelper.renderSliced(stack, this.x, this.y, this.width, this.height, UIHelper.OUTLINE);

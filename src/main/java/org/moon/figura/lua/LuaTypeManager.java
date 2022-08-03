@@ -152,7 +152,7 @@ public class LuaTypeManager {
                 try {
                     result = method.invoke(caller, actualArgs);
                 } catch (IllegalAccessException | InvocationTargetException e) {
-                    throw new LuaError(e);
+                    throw e.getCause() instanceof LuaError l ? l : new LuaError(e.getCause());
                 }
 
                 //Convert the return value

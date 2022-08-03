@@ -2,6 +2,7 @@ package org.moon.figura.lua.api.event;
 
 import org.luaj.vm2.*;
 import org.luaj.vm2.lib.VarArgFunction;
+import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMetamethodDoc;
@@ -54,7 +55,15 @@ public class LuaEvent {
         return args;
     }
 
-    public void runOnce(LuaFunction predicate, LuaFunction toRun) {
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = {LuaFunction.class, LuaFunction.class},
+                    argumentNames = {"predicate", "function"}
+            ),
+            description = "event.run_once"
+    )
+    public void runOnce(@LuaNotNil LuaFunction predicate, @LuaNotNil LuaFunction toRun) {
         //Hey, if users want to "abuse" this somehow, then go ahead.
         //Very low chance of anyone randomly using this name anyway, and nothing bad even happens if they do use it intentionally.
         final String uniqueName = "FIGURA_GENERATED_" + (namesGenerated++);
@@ -87,7 +96,7 @@ public class LuaEvent {
             },
             description = "event.register"
     )
-    public void register(LuaFunction func, String name) {
+    public void register(@LuaNotNil LuaFunction func, String name) {
         if (functionList.rawlen() + queuedFunctions.rawlen() >= MAX_FUNCTIONS)
             throw new LuaError("Reached maximum limit of " + MAX_FUNCTIONS + " functions in one event!");
         if (name == null)
@@ -113,7 +122,7 @@ public class LuaEvent {
             ),
             description = "event.remove"
     )
-    public int remove(String name) {
+    public int remove(@LuaNotNil String name) {
         flushQueue();
         LuaTable newFunctions = new LuaTable();
         LuaTable newNames = new LuaTable();

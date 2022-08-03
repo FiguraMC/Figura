@@ -188,7 +188,7 @@ public class Avatar {
         if (scriptError || luaRuntime == null)
             return;
 
-        LuaValue val = args instanceof LuaValue v ? v : luaRuntime.typeManager.wrap(args);
+        LuaValue val = args instanceof LuaValue v ? v : luaRuntime.typeManager.convertJava2Lua(args);
 
         try {
             if (maxInstructions != -1)

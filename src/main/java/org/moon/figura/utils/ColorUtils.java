@@ -120,7 +120,7 @@ public class ColorUtils {
      * @return a vector of 0 to 1
      */
     public static FiguraVec3 hexStringToRGB(String string, FiguraVec3 fallback) {
-        if (string == null)
+        if (string == null || string.isBlank())
             return fallback;
 
         //parse hex color

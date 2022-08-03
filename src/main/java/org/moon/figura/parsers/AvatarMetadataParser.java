@@ -33,8 +33,8 @@ public class AvatarMetadataParser {
         //nbt
         CompoundTag nbt = new CompoundTag();
 
-        nbt.putString("name", metadata.name == null ? filename : metadata.name);
-        nbt.putString("ver", metadata.version == null ? FiguraMod.VERSION : metadata.version);
+        nbt.putString("name", metadata.name == null || metadata.name.isBlank() ? filename : metadata.name);
+        nbt.putString("ver", metadata.version == null || metadata.version.isBlank() ? FiguraMod.VERSION : metadata.version);
         nbt.putString("color", metadata.color == null ? "default" : metadata.color);
         nbt.putString("bg", metadata.background == null ? "default" : metadata.background);
 

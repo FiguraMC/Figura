@@ -152,7 +152,7 @@ public class LocalAvatarFetcher {
                     String str = IOUtils.readFile(path.resolve("avatar.json").toFile());
                     AvatarMetadataParser.Metadata metadata = AvatarMetadataParser.read(str);
 
-                    name = metadata.name == null ? filename : metadata.name;
+                    name = metadata.name == null || metadata.name.isBlank() ? filename : metadata.name;
                     bg = CardBackground.parse(metadata.background);
                 } catch (Exception e) {
                     FiguraMod.LOGGER.warn("Failed to read metadata for \"" + path + "\"", e);

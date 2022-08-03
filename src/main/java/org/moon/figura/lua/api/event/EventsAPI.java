@@ -52,7 +52,6 @@ public class EventsAPI {
     @LuaFieldDoc(description = "enets.chat_receive_message")
     public final LuaEvent CHAT_RECEIVE_MESSAGE;
 
-
     @LuaWhitelist
     @LuaMetamethodDoc(overloads = @LuaMetamethodDoc.LuaMetamethodOverload(
             types = {LuaEvent.class, EventsAPI.class, String.class},
