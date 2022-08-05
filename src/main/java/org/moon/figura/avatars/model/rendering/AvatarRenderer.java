@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.phys.Vec3;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.model.FiguraModelPart;
 import org.moon.figura.avatars.model.ParentType;
@@ -65,7 +66,8 @@ public abstract class AvatarRenderer {
      */
     public static FiguraMat4 entityToWorldMatrix(Entity e, float delta) {
         double yaw = e instanceof LivingEntity le ? Mth.lerp(delta, le.yBodyRotO, le.yBodyRot) : e.getViewYRot(Minecraft.getInstance().getFrameTime());
-        FiguraMat4 result = FiguraMat4.createYRotationMatrix(180 - yaw);
+        FiguraMat4 result = FiguraMat4.of();
+        result.rotateX(180 - yaw);
         result.translate(e.getPosition(delta));
         return result;
     }
@@ -85,7 +87,9 @@ public abstract class AvatarRenderer {
         Camera camera = client.gameRenderer.getMainCamera();
         Matrix3f cameraMat3f = new Matrix3f(camera.rotation());
         cameraMat3f.invert();
-        FiguraMat4 result = FiguraMat4.createTranslationMatrix(camera.getPosition().scale(-1));
+        FiguraMat4 result = FiguraMat4.of();
+        Vec3 cameraPos = camera.getPosition().scale(-1);
+        result.translate(cameraPos.x, cameraPos.y, cameraPos.z);
         FiguraMat3 cameraMat = FiguraMat3.fromMatrix3f(cameraMat3f);
         result.multiply(cameraMat.augmented());
         cameraMat.free();

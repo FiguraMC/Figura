@@ -250,7 +250,8 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         FiguraVec3 pos = cust.getPos();
         piv.subtract(pos);
 
-        FiguraMat4 translation = FiguraMat4.createTranslationMatrix(piv);
+        FiguraMat4 translation = FiguraMat4.of();
+        translation.translate(piv);
         customizePeek.rightMultiply(translation);
 
         piv.free();

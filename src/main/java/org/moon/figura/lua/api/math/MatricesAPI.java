@@ -102,7 +102,9 @@ public class MatricesAPI {
             description = "matrices.rotation2"
     )
     public static FiguraMat2 rotation2(@LuaNotNil Double degrees) {
-        return FiguraMat2.createRotationMatrix(degrees);
+        FiguraMat2 mat = FiguraMat2.of();
+        mat.rotate(degrees);
+        return mat;
     }
 
     @LuaWhitelist
@@ -121,7 +123,8 @@ public class MatricesAPI {
     )
     public static FiguraMat3 rotation3(Object x, Double y, Double z) {
         FiguraVec3 angles = LuaUtils.parseVec3("rotation3", x, y, z);
-        FiguraMat3 result = FiguraMat3.createZYXRotationMatrix(angles.x, angles.y, angles.z);
+        FiguraMat3 result = FiguraMat3.of();
+        result.rotateZYX(angles);
         angles.free();
         return result;
     }
@@ -135,7 +138,9 @@ public class MatricesAPI {
             description = "matrices.x_rotation3"
     )
     public static FiguraMat3 xRotation3(@LuaNotNil Double degrees) {
-        return FiguraMat3.createXRotationMatrix(degrees);
+        FiguraMat3 result = FiguraMat3.of();
+        result.rotateX(degrees);
+        return result;
     }
 
     @LuaWhitelist
@@ -147,7 +152,9 @@ public class MatricesAPI {
             description = "matrices.y_rotation3"
     )
     public static FiguraMat3 yRotation3(@LuaNotNil Double degrees) {
-        return FiguraMat3.createYRotationMatrix(degrees);
+        FiguraMat3 result = FiguraMat3.of();
+        result.rotateY(degrees);
+        return result;
     }
 
     @LuaWhitelist
@@ -159,7 +166,9 @@ public class MatricesAPI {
             description = "matrices.z_rotation3"
     )
     public static FiguraMat3 zRotation3(@LuaNotNil Double degrees) {
-        return FiguraMat3.createZRotationMatrix(degrees);
+        FiguraMat3 result = FiguraMat3.of();
+        result.rotateZ(degrees);
+        return result;
     }
 
     @LuaWhitelist
@@ -178,7 +187,8 @@ public class MatricesAPI {
     )
     public static FiguraMat4 rotation4(Object x, Double y, Double z) {
         FiguraVec3 angles = LuaUtils.parseVec3("rotation4", x, y, z);
-        FiguraMat4 result = FiguraMat4.createZYXRotationMatrix(angles.x, angles.y, angles.z);
+        FiguraMat4 result = FiguraMat4.of();
+        result.rotateZYX(angles);
         angles.free();
         return result;
     }
@@ -192,7 +202,9 @@ public class MatricesAPI {
             description = "matrices.x_rotation4"
     )
     public static FiguraMat4 xRotation4(@LuaNotNil Double degrees) {
-        return FiguraMat4.createXRotationMatrix(degrees);
+        FiguraMat4 result = FiguraMat4.of();
+        result.rotateX(degrees);
+        return result;
     }
 
     @LuaWhitelist
@@ -204,7 +216,9 @@ public class MatricesAPI {
             description = "matrices.y_rotation4"
     )
     public static FiguraMat4 yRotation4(@LuaNotNil Double degrees) {
-        return FiguraMat4.createYRotationMatrix(degrees);
+        FiguraMat4 result = FiguraMat4.of();
+        result.rotateY(degrees);
+        return result;
     }
 
     @LuaWhitelist
@@ -216,7 +230,9 @@ public class MatricesAPI {
             description = "matrices.z_rotation4"
     )
     public static FiguraMat4 zRotation4(@LuaNotNil Double degrees) {
-        return FiguraMat4.createZRotationMatrix(degrees);
+        FiguraMat4 result = FiguraMat4.of();
+        result.rotateZ(degrees);
+        return result;
     }
 
     //-- SCALE MATRICES --//
@@ -236,7 +252,8 @@ public class MatricesAPI {
     )
     public static FiguraMat2 scale2(Object x, Double y) {
         FiguraVec2 vec = LuaUtils.parseVec2("scale2", x, y, 1, 1);
-        FiguraMat2 result = FiguraMat2.createScaleMatrix(vec.x, vec.y);
+        FiguraMat2 result = FiguraMat2.of();
+        result.scale(vec);
         vec.free();
         return result;
     }
@@ -257,7 +274,8 @@ public class MatricesAPI {
     )
     public static FiguraMat3 scale3(Object x, Double y, Double z) {
         FiguraVec3 scale = LuaUtils.parseVec3("scale3", x, y, z, 1, 1, 1);
-        FiguraMat3 result = FiguraMat3.createScaleMatrix(scale.x, scale.y, scale.z);
+        FiguraMat3 result = FiguraMat3.of();
+        result.scale(scale);
         scale.free();
         return result;
     }
@@ -278,7 +296,8 @@ public class MatricesAPI {
     )
     public static FiguraMat4 scale4(Object x, Double y, Double z) {
         FiguraVec3 scale = LuaUtils.parseVec3("scale4", x, y, z, 1, 1, 1);
-        FiguraMat4 result = FiguraMat4.createScaleMatrix(scale.x, scale.y, scale.z);
+        FiguraMat4 result = FiguraMat4.of();
+        result.scale(scale);
         scale.free();
         return result;
     }
@@ -300,7 +319,8 @@ public class MatricesAPI {
     )
     public static FiguraMat3 translate3(Object x, Double y) {
         FiguraVec2 offset = LuaUtils.parseVec2("translate3", x, y);
-        FiguraMat3 result = FiguraMat3.createTranslationMatrix(offset.x, offset.y);
+        FiguraMat3 result = FiguraMat3.of();
+        result.translate(offset);
         offset.free();
         return result;
     }
@@ -320,7 +340,8 @@ public class MatricesAPI {
     )
     public static FiguraMat4 translate4(Object x, Double y, Double z) {
         FiguraVec3 offset = LuaUtils.parseVec3("translate4", x, y, z);
-        FiguraMat4 result = FiguraMat4.createTranslationMatrix(offset.x, offset.y, offset.z);
+        FiguraMat4 result = FiguraMat4.of();
+        result.translate(offset);
         offset.free();
         return result;
     }

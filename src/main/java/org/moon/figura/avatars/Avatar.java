@@ -32,6 +32,7 @@ import org.moon.figura.avatars.model.rendering.StackAvatarRenderer;
 import org.moon.figura.config.Config;
 import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.lua.FiguraLuaRuntime;
+import org.moon.figura.lua.LuaTypeManager;
 import org.moon.figura.lua.api.event.LuaEvent;
 import org.moon.figura.lua.api.nameplate.Badges;
 import org.moon.figura.lua.api.sound.SoundAPI;
@@ -188,7 +189,7 @@ public class Avatar {
         if (scriptError || luaRuntime == null)
             return;
 
-        LuaValue val = args instanceof LuaValue v ? v : luaRuntime.typeManager.convertJava2Lua(args);
+        LuaValue val = LuaTypeManager.java2Lua(luaRuntime.typeManager, args);
 
         try {
             if (maxInstructions != -1)
@@ -207,7 +208,7 @@ public class Avatar {
     }
 
     public void tickEvent() {
-        if (scriptError || luaRuntime == null)
+        if (scriptError || luaRuntime == null || luaRuntime.user == null)
             return;
 
         int entityTickLimit = trust.get(TrustContainer.Trust.TICK_INST);
@@ -357,6 +358,9 @@ public class Avatar {
         if (renderer == null)
             return;
 
+        int oldComplexity = remainingComplexity;
+        remainingComplexity = trust.get(TrustContainer.Trust.COMPLEXITY);
+
         PartFilterScheme filter = arm == playerRenderer.getModel().leftArm ? PartFilterScheme.LEFT_ARM : PartFilterScheme.RIGHT_ARM;
         boolean config = (boolean) Config.ALLOW_FP_HANDS.value;
         renderer.allowHiddenTransforms = config;
@@ -371,6 +375,7 @@ public class Avatar {
         stack.popPose();
 
         renderer.allowHiddenTransforms = true;
+        remainingComplexity = oldComplexity;
     }
 
     public void hudRender(PoseStack stack, MultiBufferSource bufferSource, Entity entity, float tickDelta) {
@@ -403,7 +408,8 @@ public class Avatar {
         if (renderer == null)
             return false;
 
-        int prevComplexity = remainingComplexity;
+        int oldComplexity = remainingComplexity;
+        int prevComplexity = remainingComplexity = trust.get(TrustContainer.Trust.COMPLEXITY);
 
         renderer.allowRenderTasks = false;
         renderer.currentFilterScheme = PartFilterScheme.SKULL;
@@ -428,6 +434,7 @@ public class Avatar {
 
         //hacky
         if (prevComplexity > remainingComplexity) {
+            remainingComplexity = oldComplexity;
             renderer.allowRenderTasks = true;
             stack.popPose();
             return true;
@@ -445,7 +452,9 @@ public class Avatar {
 
         //hacky 2
         stack.popPose();
-        return prevComplexity > remainingComplexity && luaRuntime != null && luaRuntime.vanilla_model.HEAD.getVisible();
+        boolean ret = prevComplexity > remainingComplexity && luaRuntime != null && !luaRuntime.vanilla_model.HEAD.getVisible();
+        remainingComplexity = oldComplexity;
+        return ret;
     }
 
     public boolean pivotPartRender(ParentType parent, Consumer<PoseStack> consumer) {

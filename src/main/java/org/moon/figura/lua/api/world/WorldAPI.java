@@ -5,15 +5,17 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
-import org.luaj.vm2.LuaTable;
-import org.moon.figura.lua.LuaTypeManager;
 import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.lua.api.entity.EntityAPI;
 import org.moon.figura.lua.api.entity.PlayerAPI;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.LuaUtils;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -287,10 +289,10 @@ public class WorldAPI {
             overloads = @LuaFunctionOverload(),
             description = "world.get_players"
     )
-    public static LuaTable getPlayers() {
-        LuaTable playerList = new LuaTable();
+    public static Map<String, EntityAPI<?>> getPlayers() {
+        HashMap<String, EntityAPI<?>> playerList = new HashMap<>();
         for (Player player : getCurrentWorld().players())
-            playerList.set(player.getName().getString(), LuaTypeManager.wrap(PlayerAPI.wrap(player)));
+            playerList.put(player.getName().getString(), PlayerAPI.wrap(player));
         return playerList;
     }
 

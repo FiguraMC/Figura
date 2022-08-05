@@ -4,12 +4,14 @@ import com.mojang.math.Matrix4f;
 import net.minecraft.world.phys.Vec3;
 import org.luaj.vm2.LuaError;
 import org.lwjgl.BufferUtils;
+import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec4;
+import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.caching.CacheStack;
 import org.moon.figura.utils.caching.CacheUtils;
 
@@ -22,7 +24,8 @@ import java.nio.FloatBuffer;
 )
 public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
 
-    private static final FloatBuffer copyingBuffer = BufferUtils.createFloatBuffer(4*4);
+    private static final FloatBuffer copyingBuffer = BufferUtils.createFloatBuffer(4 * 4);
+
     public static FiguraMat4 fromMatrix4f(Matrix4f mat) {
         copyingBuffer.clear();
         mat.store(copyingBuffer);
@@ -31,6 +34,7 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
                 copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get(),
                 copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get());
     }
+
     public Matrix4f toMatrix4f() {
         copyingBuffer.clear();
         copyingBuffer
@@ -43,17 +47,11 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
         return result;
     }
 
-
     //----------------------------IMPLEMENTATION BELOW-----------------------//
 
     //Values are named as v(ROW)(COLUMN), both 1-indexed like in actual math
     public double v11, v12, v13, v14, v21, v22, v23, v24, v31, v32, v33, v34, v41, v42, v43, v44;
 
-    @Override
-    public void resetIdentity() {
-        v12=v13=v14=v21=v23=v24=v31=v32=v34=v41=v42=v43 = 0;
-        v11=v22=v33=v44 = 1;
-    }
     @Override
     public CacheUtils.Cache<FiguraMat4> getCache() {
         return CACHE;
@@ -86,6 +84,12 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
     }
 
     @Override
+    public void resetIdentity() {
+        v12 = v13 = v14 = v21 = v23 = v24 = v31 = v32 = v34 = v41 = v42 = v43 = 0;
+        v11 = v22 = v33 = v44 = 1;
+    }
+
+    @Override
     protected double calculateDeterminant() {
         //https://stackoverflow.com/a/44446912
         var A2323 = v33 * v44 - v34 * v43 ;
@@ -103,10 +107,7 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "matrix_n.copy"
-    )
+    @LuaMethodDoc(description = "matrix_n.copy")
     public FiguraMat4 copy() {
         return of(v11, v21, v31, v41, v12, v22, v32, v42, v13, v23, v33, v43, v14, v24, v34, v44);
     }
@@ -128,10 +129,10 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
     @Override
     public String toString() {
         return "\n[  " +
-                (float) v11 + ", " + (float) v12 + ", " + (float) v13 + ", " + (float) v14 +
-                "\n   " + (float) v21 + ", " + v22 + ", " + (float) v23 + ", " + (float) v24 +
-                "\n   " + (float) v31 + ", " + (float) v32 + ", " + (float) v33 + ", " + (float) v34 +
-                "\n   " + (float) v41 + ", " + (float) v42 + ", " + (float) v43 + ", " + (float) v44 +
+                    (float) v11 + ", " + (float) v12 + ", " + (float) v13 + ", " + (float) v14 + ",\n   " +
+                    (float) v21 + ", " + (float) v22 + ", " + (float) v23 + ", " + (float) v24 + ",\n   " +
+                    (float) v31 + ", " + (float) v32 + ", " + (float) v33 + ", " + (float) v34 + ",\n   " +
+                    (float) v41 + ", " + (float) v42 + ", " + (float) v43 + ", " + (float) v44 +
                 "  ]";
     }
 
@@ -183,6 +184,7 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
         return 4;
     }
 
+    @Override
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
@@ -229,25 +231,25 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
             description = "matrix_n.multiply"
     )
     public FiguraMat4 multiply(FiguraMat4 o) {
-        double nv11 = o.v11*v11+o.v12*v21+o.v13*v31+o.v14*v41;
-        double nv12 = o.v11*v12+o.v12*v22+o.v13*v32+o.v14*v42;
-        double nv13 = o.v11*v13+o.v12*v23+o.v13*v33+o.v14*v43;
-        double nv14 = o.v11*v14+o.v12*v24+o.v13*v34+o.v14*v44;
+        double nv11 = o.v11 * v11 + o.v12 * v21 + o.v13 * v31 + o.v14 * v41;
+        double nv12 = o.v11 * v12 + o.v12 * v22 + o.v13 * v32 + o.v14 * v42;
+        double nv13 = o.v11 * v13 + o.v12 * v23 + o.v13 * v33 + o.v14 * v43;
+        double nv14 = o.v11 * v14 + o.v12 * v24 + o.v13 * v34 + o.v14 * v44;
 
-        double nv21 = o.v21*v11+o.v22*v21+o.v23*v31+o.v24*v41;
-        double nv22 = o.v21*v12+o.v22*v22+o.v23*v32+o.v24*v42;
-        double nv23 = o.v21*v13+o.v22*v23+o.v23*v33+o.v24*v43;
-        double nv24 = o.v21*v14+o.v22*v24+o.v23*v34+o.v24*v44;
+        double nv21 = o.v21 * v11 + o.v22 * v21 + o.v23 * v31 + o.v24 * v41;
+        double nv22 = o.v21 * v12 + o.v22 * v22 + o.v23 * v32 + o.v24 * v42;
+        double nv23 = o.v21 * v13 + o.v22 * v23 + o.v23 * v33 + o.v24 * v43;
+        double nv24 = o.v21 * v14 + o.v22 * v24 + o.v23 * v34 + o.v24 * v44;
 
-        double nv31 = o.v31*v11+o.v32*v21+o.v33*v31+o.v34*v41;
-        double nv32 = o.v31*v12+o.v32*v22+o.v33*v32+o.v34*v42;
-        double nv33 = o.v31*v13+o.v32*v23+o.v33*v33+o.v34*v43;
-        double nv34 = o.v31*v14+o.v32*v24+o.v33*v34+o.v34*v44;
+        double nv31 = o.v31 * v11 + o.v32 * v21 + o.v33 * v31 + o.v34 * v41;
+        double nv32 = o.v31 * v12 + o.v32 * v22 + o.v33 * v32 + o.v34 * v42;
+        double nv33 = o.v31 * v13 + o.v32 * v23 + o.v33 * v33 + o.v34 * v43;
+        double nv34 = o.v31 * v14 + o.v32 * v24 + o.v33 * v34 + o.v34 * v44;
 
-        double nv41 = o.v41*v11+o.v42*v21+o.v43*v31+o.v44*v41;
-        double nv42 = o.v41*v12+o.v42*v22+o.v43*v32+o.v44*v42;
-        double nv43 = o.v41*v13+o.v42*v23+o.v43*v33+o.v44*v43;
-        v44 = o.v41*v14+o.v42*v24+o.v43*v34+o.v44*v44;
+        double nv41 = o.v41 * v11 + o.v42 * v21 + o.v43 * v31 + o.v44 * v41;
+        double nv42 = o.v41 * v12 + o.v42 * v22 + o.v43 * v32 + o.v44 * v42;
+        double nv43 = o.v41 * v13 + o.v42 * v23 + o.v43 * v33 + o.v44 * v43;
+        v44 = o.v41 * v14 + o.v42 * v24 + o.v43 * v34 + o.v44 * v44;
 
         v11 = nv11;
         v12 = nv12;
@@ -278,25 +280,25 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
             description = "matrix_n.right_multiply"
     )
     public FiguraMat4 rightMultiply(FiguraMat4 o) {
-        double nv11 = v11*o.v11+v12*o.v21+v13*o.v31+v14*o.v41;
-        double nv12 = v11*o.v12+v12*o.v22+v13*o.v32+v14*o.v42;
-        double nv13 = v11*o.v13+v12*o.v23+v13*o.v33+v14*o.v43;
-        double nv14 = v11*o.v14+v12*o.v24+v13*o.v34+v14*o.v44;
+        double nv11 = v11 * o.v11 + v12 * o.v21 + v13 * o.v31 + v14 * o.v41;
+        double nv12 = v11 * o.v12 + v12 * o.v22 + v13 * o.v32 + v14 * o.v42;
+        double nv13 = v11 * o.v13 + v12 * o.v23 + v13 * o.v33 + v14 * o.v43;
+        double nv14 = v11 * o.v14 + v12 * o.v24 + v13 * o.v34 + v14 * o.v44;
 
-        double nv21 = v21*o.v11+v22*o.v21+v23*o.v31+v24*o.v41;
-        double nv22 = v21*o.v12+v22*o.v22+v23*o.v32+v24*o.v42;
-        double nv23 = v21*o.v13+v22*o.v23+v23*o.v33+v24*o.v43;
-        double nv24 = v21*o.v14+v22*o.v24+v23*o.v34+v24*o.v44;
+        double nv21 = v21 * o.v11 + v22 * o.v21 + v23 * o.v31 + v24 * o.v41;
+        double nv22 = v21 * o.v12 + v22 * o.v22 + v23 * o.v32 + v24 * o.v42;
+        double nv23 = v21 * o.v13 + v22 * o.v23 + v23 * o.v33 + v24 * o.v43;
+        double nv24 = v21 * o.v14 + v22 * o.v24 + v23 * o.v34 + v24 * o.v44;
 
-        double nv31 = v31*o.v11+v32*o.v21+v33*o.v31+v34*o.v41;
-        double nv32 = v31*o.v12+v32*o.v22+v33*o.v32+v34*o.v42;
-        double nv33 = v31*o.v13+v32*o.v23+v33*o.v33+v34*o.v43;
-        double nv34 = v31*o.v14+v32*o.v24+v33*o.v34+v34*o.v44;
+        double nv31 = v31 * o.v11 + v32 * o.v21 + v33 * o.v31 + v34 * o.v41;
+        double nv32 = v31 * o.v12 + v32 * o.v22 + v33 * o.v32 + v34 * o.v42;
+        double nv33 = v31 * o.v13 + v32 * o.v23 + v33 * o.v33 + v34 * o.v43;
+        double nv34 = v31 * o.v14 + v32 * o.v24 + v33 * o.v34 + v34 * o.v44;
 
-        double nv41 = v41*o.v11+v42*o.v21+v43*o.v31+v44*o.v41;
-        double nv42 = v41*o.v12+v42*o.v22+v43*o.v32+v44*o.v42;
-        double nv43 = v41*o.v13+v42*o.v23+v43*o.v33+v44*o.v43;
-        v44 = v41*o.v14+v42*o.v24+v43*o.v34+v44*o.v44;
+        double nv41 = v41 * o.v11 + v42 * o.v21 + v43 * o.v31 + v44 * o.v41;
+        double nv42 = v41 * o.v12 + v42 * o.v22 + v43 * o.v32 + v44 * o.v42;
+        double nv43 = v41 * o.v13 + v42 * o.v23 + v43 * o.v33 + v44 * o.v43;
+        v44 = v41 * o.v14 + v42 * o.v24 + v43 * o.v34 + v44 * o.v44;
 
         v11 = nv11;
         v12 = nv12;
@@ -319,10 +321,7 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "matrix_n.transpose"
-    )
+    @LuaMethodDoc(description = "matrix_n.transpose")
     public FiguraMat4 transpose() {
         double temp;
         temp = v12; v12 = v21; v21 = temp;
@@ -335,21 +334,16 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
         return this;
     }
 
+    @Override
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "matrix_n.transposed"
-    )
+    @LuaMethodDoc(description = "matrix_n.transposed")
     public FiguraMat4 transposed() {
         return super.transposed();
     }
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "matrix_n.invert"
-    )
+    @LuaMethodDoc(description = "matrix_n.invert")
     public FiguraMat4 invert() {
         FiguraMat4 capture = copy();
         if (cachedInverse != null) {
@@ -411,112 +405,112 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
         return this;
     }
 
+    @Override
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "matrix_n.inverted"
-    )
+    @LuaMethodDoc(description = "matrix_n.inverted")
     public FiguraMat4 inverted() {
         return super.inverted();
     }
 
-
+    @Override
     @LuaWhitelist
-    @LuaMethodDoc(
-            description = "matrix_n.det"
-    )
+    @LuaMethodDoc(description = "matrix_n.det")
     public double det() {
         return super.det();
     }
 
+    @Override
     @LuaWhitelist
-    @LuaMethodDoc(
-            description = "matrix_n.reset"
-    )
+    @LuaMethodDoc(description = "matrix_n.reset")
     public FiguraMat4 reset() {
         return super.reset();
     }
 
+    @Override
+    @LuaWhitelist
+    @LuaMethodDoc(description = "matrix_n.add")
+    public FiguraMat4 add(FiguraMat4 o) {
+        v11 += o.v11;
+        v12 += o.v12;
+        v13 += o.v13;
+        v14 += o.v14;
+        v21 += o.v21;
+        v22 += o.v22;
+        v23 += o.v23;
+        v24 += o.v24;
+        v31 += o.v31;
+        v32 += o.v32;
+        v33 += o.v33;
+        v34 += o.v34;
+        v41 += o.v41;
+        v42 += o.v42;
+        v43 += o.v43;
+        v44 += o.v44;
+        invalidate();
+        return this;
+    }
+
+    @Override
+    @LuaWhitelist
+    @LuaMethodDoc(description = "matrix_n.sub")
+    public FiguraMat4 sub(FiguraMat4 o) {
+        v11 -= o.v11;
+        v12 -= o.v12;
+        v13 -= o.v13;
+        v14 -= o.v14;
+        v21 -= o.v21;
+        v22 -= o.v22;
+        v23 -= o.v23;
+        v24 -= o.v24;
+        v31 -= o.v31;
+        v32 -= o.v32;
+        v33 -= o.v33;
+        v34 -= o.v34;
+        v41 -= o.v41;
+        v42 -= o.v42;
+        v43 -= o.v43;
+        v44 -= o.v44;
+        invalidate();
+        return this;
+    }
+
+    public void scale(double x, double y, double z) {
+        v11 *= x;
+        v12 *= x;
+        v13 *= x;
+        v14 *= x;
+        v21 *= y;
+        v22 *= y;
+        v23 *= y;
+        v24 *= y;
+        v31 *= z;
+        v32 *= z;
+        v33 *= z;
+        v34 *= z;
+        invalidate();
+    }
 
 
+    public void scale(FiguraVec3 vec) {
+        scale(vec.x, vec.y, vec.z);
+    }
 
-
-
-    // STATIC CREATOR METHODS
-    //----------------------------------------------------------------
-    public static FiguraMat4 createScaleMatrix(double x, double y, double z) {
-        FiguraMat4 result = of();
-        result.v11 = x;
-        result.v22 = y;
-        result.v33 = z;
-        return result;
-    }
-    public static FiguraMat4 createXRotationMatrix(double degrees) {
-        degrees = Math.toRadians(degrees);
-        double s = Math.sin(degrees);
-        double c = Math.cos(degrees);
-        FiguraMat4 result = of();
-        result.v22 = result.v33 = c;
-        result.v23 = -s;
-        result.v32 = s;
-        return result;
-    }
-    public static FiguraMat4 createYRotationMatrix(double degrees) {
-        degrees = Math.toRadians(degrees);
-        double s = Math.sin(degrees);
-        double c = Math.cos(degrees);
-        FiguraMat4 result = of();
-        result.v11 = result.v33 = c;
-        result.v13 = s;
-        result.v31 = -s;
-        return result;
-    }
-    public static FiguraMat4 createZRotationMatrix(double degrees) {
-        degrees = Math.toRadians(degrees);
-        double s = Math.sin(degrees);
-        double c = Math.cos(degrees);
-        FiguraMat4 result = of();
-        result.v11 = result.v22 = c;
-        result.v12 = -s;
-        result.v21 = s;
-        return result;
-    }
-    public static FiguraMat4 createZYXRotationMatrix(double x, double y, double z) {
-        x = Math.toRadians(x);
-        y = Math.toRadians(y);
-        z = Math.toRadians(z);
-
-        double a = Math.cos(x);
-        double b = Math.sin(x);
-        double c = Math.cos(y);
-        double d = Math.sin(y);
-        double e = Math.cos(z);
-        double f = Math.sin(z);
-
-        FiguraMat4 result = of();
-        result.v11 = c*e;
-        result.v12 = b*d*e - a*f;
-        result.v13 = a*d*e + b*f;
-        result.v21 = c*f;
-        result.v22 = b*d*f + a*e;
-        result.v23 = a*d*f - b*e;
-        result.v31 = -d;
-        result.v32 = b*c;
-        result.v33 = a*c;
-        return result;
-    }
-    public static FiguraMat4 createTranslationMatrix(double x, double y, double z) {
-        FiguraMat4 result = of();
-        result.v14 = x;
-        result.v24 = y;
-        result.v34 = z;
-        return result;
-    }
-    public static FiguraMat4 createTranslationMatrix(FiguraVec3 amount) {
-        return createTranslationMatrix(amount.x, amount.y, amount.z);
-    }
-    public static FiguraMat4 createTranslationMatrix(Vec3 amount) {
-        return createTranslationMatrix(amount.x, amount.y, amount.z);
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "vec"
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"x", "y", "z"}
+                    )
+            },
+            description = "matrix_n.scale"
+    )
+    public void scale(Object x, Double y, Double z) {
+        scale(LuaUtils.parseVec3("scale", x, y, z, 1, 1, 1));
     }
 
     public void translate(double x, double y, double z) {
@@ -539,42 +533,51 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
     public void translate(FiguraVec3 amount) {
         translate(amount.x, amount.y, amount.z);
     }
+
     public void translate(Vec3 amount) {
         translate(amount.x, amount.y, amount.z);
     }
 
-
-
-    public void scale(double x, double y, double z) {
-        v11 *= x;
-        v12 *= x;
-        v13 *= x;
-        v14 *= x;
-        v21 *= y;
-        v22 *= y;
-        v23 *= y;
-        v24 *= y;
-        v31 *= z;
-        v32 *= z;
-        v33 *= z;
-        v34 *= z;
-        invalidate();
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "vec"
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"x", "y", "z"}
+                    )
+            },
+            description = "matrix_n.translate"
+    )
+    public void translate(Object x, Double y, Double z) {
+        translate(LuaUtils.parseVec3("translate", x, y, z));
     }
 
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = Double.class,
+                    argumentNames = "degrees"
+            ),
+            description = "matrix_n.rotate_x"
+    )
     public void rotateX(double degrees) {
         degrees = Math.toRadians(degrees);
         double c = Math.cos(degrees);
         double s = Math.sin(degrees);
 
-        double nv21 = c*v21 - s*v31;
-        double nv22 = c*v22 - s*v32;
-        double nv23 = c*v23 - s*v33;
-        double nv24 = c*v24 - s*v34;
+        double nv21 = c * v21 - s * v31;
+        double nv22 = c * v22 - s * v32;
+        double nv23 = c * v23 - s * v33;
+        double nv24 = c * v24 - s * v34;
 
-        v31 = s*v21 + c*v31;
-        v32 = s*v22 + c*v32;
-        v33 = s*v23 + c*v33;
-        v34 = s*v24 + c*v34;
+        v31 = s * v21 + c * v31;
+        v32 = s * v22 + c * v32;
+        v33 = s * v23 + c * v33;
+        v34 = s * v24 + c * v34;
 
         v21 = nv21;
         v22 = nv22;
@@ -583,20 +586,28 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
         invalidate();
     }
 
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = Double.class,
+                    argumentNames = "degrees"
+            ),
+            description = "matrix_n.rotate_y"
+    )
     public void rotateY(double degrees) {
         degrees = Math.toRadians(degrees);
         double c = Math.cos(degrees);
         double s = Math.sin(degrees);
 
-        double nv11 = c*v11 + s*v31;
-        double nv12 = c*v12 + s*v32;
-        double nv13 = c*v13 + s*v33;
-        double nv14 = c*v14 + s*v34;
+        double nv11 = c * v11 + s * v31;
+        double nv12 = c * v12 + s * v32;
+        double nv13 = c * v13 + s * v33;
+        double nv14 = c * v14 + s * v34;
 
-        v31 = c*v31 - s*v11;
-        v32 = c*v32 - s*v12;
-        v33 = c*v33 - s*v13;
-        v34 = c*v34 - s*v14;
+        v31 = c * v31 - s * v11;
+        v32 = c * v32 - s * v12;
+        v33 = c * v33 - s * v13;
+        v34 = c * v34 - s * v14;
 
         v11 = nv11;
         v12 = nv12;
@@ -605,20 +616,28 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
         invalidate();
     }
 
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = Double.class,
+                    argumentNames = "degrees"
+            ),
+            description = "matrix_n.rotate_z"
+    )
     public void rotateZ(double degrees) {
         degrees = Math.toRadians(degrees);
         double c = Math.cos(degrees);
         double s = Math.sin(degrees);
 
-        double nv11 = c*v11 - s*v21;
-        double nv12 = c*v12 - s*v22;
-        double nv13 = c*v13 - s*v23;
-        double nv14 = c*v14 - s*v24;
+        double nv11 = c * v11 - s * v21;
+        double nv12 = c * v12 - s * v22;
+        double nv13 = c * v13 - s * v23;
+        double nv14 = c * v14 - s * v24;
 
-        v21 = c*v21 + s*v11;
-        v22 = c*v22 + s*v12;
-        v23 = c*v23 + s*v13;
-        v24 = c*v24 + s*v14;
+        v21 = c * v21 + s * v11;
+        v22 = c * v22 + s * v12;
+        v23 = c * v23 + s * v13;
+        v24 = c * v24 + s * v14;
 
         v11 = nv11;
         v12 = nv12;
@@ -640,30 +659,30 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
         double e = Math.cos(z);
         double f = Math.sin(z);
 
-        double bc = b*c;
-        double ac = a*c;
-        double ce = c*e;
-        double cf = c*f;
-        double p1 = (b*d*e - a*f);
-        double p2 = (a*d*e + b*f);
-        double p3 = (a*e + b*d*f);
-        double p4 = (a*d*f - b*e);
+        double bc = b * c;
+        double ac = a * c;
+        double ce = c * e;
+        double cf = c * f;
+        double p1 = (b * d * e - a * f);
+        double p2 = (a * d * e + b * f);
+        double p3 = (a * e + b * d * f);
+        double p4 = (a * d * f - b * e);
 
-        double nv11 = ce*v11 + p1*v21 + p2*v31;
-        double nv21 = cf*v11 + p3*v21 + p4*v31;
-        double nv31 = -d*v11 + bc*v21 + ac*v31;
+        double nv11 = ce * v11 + p1 * v21 + p2 * v31;
+        double nv21 = cf * v11 + p3 * v21 + p4 * v31;
+        double nv31 = -d * v11 + bc * v21 + ac * v31;
 
-        double nv12 = ce*v12 + p1*v22 + p2*v32;
-        double nv22 = cf*v12 + p3*v22 + p4*v32;
-        double nv32 = -d*v12 + bc*v22 + ac*v32;
+        double nv12 = ce * v12 + p1 * v22 + p2 * v32;
+        double nv22 = cf * v12 + p3 * v22 + p4 * v32;
+        double nv32 = -d * v12 + bc * v22 + ac * v32;
 
-        double nv13 = ce*v13 + p1*v23 + p2*v33;
-        double nv23 = cf*v13 + p3*v23 + p4*v33;
-        double nv33 = -d*v13 + bc*v23 + ac*v33;
+        double nv13 = ce * v13 + p1 * v23 + p2 * v33;
+        double nv23 = cf * v13 + p3 * v23 + p4 * v33;
+        double nv33 = -d * v13 + bc * v23 + ac * v33;
 
-        double nv14 = ce*v14 + p1*v24 + p2*v34;
-        double nv24 = cf*v14 + p3*v24 + p4*v34;
-        v34 = -d*v14 + bc*v24 + ac*v34;
+        double nv14 = ce * v14 + p1 * v24 + p2 * v34;
+        double nv24 = cf * v14 + p3 * v24 + p4 * v34;
+        v34 = -d * v14 + bc * v24 + ac * v34;
 
         v11 = nv11;
         v21 = nv21;
@@ -679,9 +698,76 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
         invalidate();
     }
 
+    public void rotateZYX(FiguraVec3 vec) {
+        rotateZYX(vec.x, vec.y, vec.z);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "vec"
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"x", "y", "z"}
+                    )
+            },
+            description = "matrix_n.rotate"
+    )
+    public void rotate(Object x, Double y, Double z) {
+        rotateZYX(LuaUtils.parseVec3("rotate", x, y, z));
+    }
+
+
+    @LuaWhitelist
+    @LuaMethodDoc(description = "matrix_n.deaugmented")
     public FiguraMat3 deaugmented() {
         FiguraMat3 result = FiguraMat3.of();
         result.set(v11, v21, v31, v12, v22, v32, v13, v23, v33);
         return result;
+    }
+
+    //-----------------------------METAMETHODS-----------------------------------//
+
+    @LuaWhitelist
+    public FiguraMat4 __add(@LuaNotNil FiguraMat4 mat) {
+        return this.plus(mat);
+    }
+    @LuaWhitelist
+    public FiguraMat4 __sub(@LuaNotNil FiguraMat4 mat) {
+        return this.minus(mat);
+    }
+    @LuaWhitelist
+    public Object __mul(@LuaNotNil Object o) {
+        if (o instanceof FiguraMat4 mat)
+            return this.times(mat);
+        else if (o instanceof FiguraVec4 vec)
+            return this.times(vec);
+
+        throw new LuaError("Invalid types to __mul: " + o.getClass().getSimpleName());
+    }
+    @LuaWhitelist
+    public boolean __eq(@LuaNotNil FiguraMat4 mat) {
+        return this.equals(mat);
+    }
+    @LuaWhitelist
+    public int __len() {
+        return 4;
+    }
+    @LuaWhitelist
+    public String __tostring() {
+        return this.toString();
+    }
+    @LuaWhitelist
+    public Object __index(@LuaNotNil String string) {
+        return switch (string) {
+            case "1" -> this.getColumn(1);
+            case "2" -> this.getColumn(2);
+            case "3" -> this.getColumn(3);
+            case "4" -> this.getColumn(4);
+            default -> null;
+        };
     }
 }

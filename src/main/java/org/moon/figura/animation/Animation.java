@@ -1,17 +1,14 @@
 package org.moon.figura.animation;
 
 import org.luaj.vm2.LuaError;
-import org.luaj.vm2.LuaTable;
-import org.luaj.vm2.LuaValue;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.model.FiguraModelPart;
 import org.moon.figura.lua.LuaNotNil;
-import org.moon.figura.lua.LuaTypeManager;
 import org.moon.figura.lua.LuaWhitelist;
-import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
+import org.moon.figura.lua.docs.LuaTypeDoc;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -120,19 +117,19 @@ public class Animation {
         }
     }
 
-    public static LuaTable getTableForAnimations(Avatar avatar) {
-        LuaTable models = new LuaTable();
+    public static Map<String, Map<String, Animation>> getTableForAnimations(Avatar avatar) {
+        HashMap<String, Map<String, Animation>> root = new HashMap<>();
         for (Animation animation : avatar.animations.values()) {
             //get or create animation table
-            LuaValue animations = models.get(animation.modelName);
-            if (animations == null || animations.isnil())
-                animations = new LuaTable();
+            Map<String, Animation> animations = root.get(animation.modelName);
+            if (animations == null)
+                animations = new HashMap<>();
 
             //put animation on the model table
-            animations.set(animation.name, LuaTypeManager.wrap(animation));
-            models.set(animation.modelName, animations);
+            animations.put(animation.name, animation);
+            root.put(animation.modelName, animations);
         }
-        return models;
+        return root;
     }
 
     // -- lua methods -- //

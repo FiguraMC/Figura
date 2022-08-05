@@ -191,7 +191,7 @@ public class FiguraLuaPrinter {
 
                 try {
                     Object obj = field.get(data);
-                    text.append(getTableEntry(typeManager, spacing, LuaValue.valueOf(field.getName()), LuaTypeManager.convertJava2Lua(obj), hasTooltip, depth, indent));
+                    text.append(getTableEntry(typeManager, spacing, LuaValue.valueOf(field.getName()), LuaTypeManager.java2Lua(typeManager, obj), hasTooltip, depth, indent));
                 } catch (Exception e) {
                     FiguraMod.LOGGER.error("", e);
                 }

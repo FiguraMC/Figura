@@ -25,7 +25,8 @@ dependencies {
 	modImplementation "net.fabricmc:fabric-loader:$loader_version"
 
 	// Libraries
-	include(implementation("com.github.Moonlight-MC:LuaJ:$luaj-figura"))
+	include(implementation("com.github.Moonlight-MC.LuaJ:luaj-core:$luaj-figura"))
+	include(implementation("com.github.Moonlight-MC.LuaJ:luaj-jse:$luaj-figura"))
 	include(implementation("org.java-websocket:Java-WebSocket:$websocket"))
 
 	// Mods

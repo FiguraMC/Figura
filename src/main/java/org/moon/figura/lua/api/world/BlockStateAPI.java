@@ -16,7 +16,6 @@ import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.luaj.vm2.LuaTable;
-import org.moon.figura.lua.LuaTypeManager;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.NbtToLua;
 import org.moon.figura.lua.docs.LuaFieldDoc;
@@ -30,6 +29,8 @@ import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.LuaUtils;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @LuaWhitelist
@@ -62,11 +63,11 @@ public class BlockStateAPI {
         return pos == null ? BlockPos.ZERO : pos;
     }
 
-    protected static LuaTable voxelShapeToTable(VoxelShape shape) {
-        LuaTable shapes = new LuaTable();
+    protected static Map<Integer, FiguraVec6> voxelShapeToTable(VoxelShape shape) {
+        HashMap<Integer, FiguraVec6> shapes = new HashMap<>();
         int i = 1;
         for (AABB aabb : shape.toAabbs()) {
-            shapes.set(i, LuaTypeManager.wrap(FiguraVec6.of(aabb.minX, aabb.minY, aabb.minZ, aabb.maxX, aabb.maxY, aabb.maxZ)));
+            shapes.put(i, FiguraVec6.of(aabb.minX, aabb.minY, aabb.minZ, aabb.maxX, aabb.maxY, aabb.maxZ));
             i++;
         }
         return shapes;
@@ -242,13 +243,13 @@ public class BlockStateAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(description = "blockstate.get_collision_shape")
-    public LuaTable getCollisionShape() {
+    public Map<Integer, FiguraVec6> getCollisionShape() {
         return voxelShapeToTable(blockState.getCollisionShape(WorldAPI.getCurrentWorld(), getBlockPos()));
     }
 
     @LuaWhitelist
     @LuaMethodDoc(description = "blockstate.get_outline_shape")
-    public LuaTable getOutlineShape() {
+    public Map<Integer, FiguraVec6> getOutlineShape() {
         return voxelShapeToTable(blockState.getShape(WorldAPI.getCurrentWorld(), getBlockPos()));
     }
 

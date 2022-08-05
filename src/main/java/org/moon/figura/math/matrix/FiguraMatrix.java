@@ -26,6 +26,8 @@ public abstract class FiguraMatrix<T extends FiguraMatrix<T, V>, V extends Figur
     public abstract T rightMultiply(T o);
     public abstract T transpose();
     public abstract T invert();
+    public abstract T add(T o);
+    public abstract T sub(T o);
 
     public T transposed() {
         return copy().transpose();
@@ -39,6 +41,13 @@ public abstract class FiguraMatrix<T extends FiguraMatrix<T, V>, V extends Figur
     }
     public V times(V vec) {
         return vec.copy().transform((T) this);
+    }
+
+    public T plus(T o) {
+        return copy().add(o);
+    }
+    public T minus(T o) {
+        return copy().add(o);
     }
 
     public T reset() {

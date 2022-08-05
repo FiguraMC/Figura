@@ -4,10 +4,7 @@ import org.luaj.vm2.LuaDouble;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
 import org.moon.figura.lua.LuaWhitelist;
-import org.moon.figura.lua.docs.LuaFunctionOverload;
-import org.moon.figura.lua.docs.LuaMetamethodDoc;
-import org.moon.figura.lua.docs.LuaMethodDoc;
-import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.lua.docs.*;
 import org.moon.figura.math.matrix.FiguraMatrix;
 import org.moon.figura.utils.MathUtils;
 import org.moon.figura.utils.caching.CacheUtils;
@@ -19,8 +16,38 @@ import org.moon.figura.utils.caching.CacheUtils;
 )
 public class FiguraVec5 extends FiguraVector<FiguraVec5, FiguraMatrix.DummyMatrix<FiguraVec5>> {
 
-    private final static CacheUtils.Cache<FiguraVec5> CACHE = CacheUtils.getCache(FiguraVec5::new, 200);
-    public double x, y, z, w, t;
+    @LuaWhitelist
+    @LuaFieldDoc(description = "vector_n.x")
+    public double x;
+    @LuaWhitelist
+    @LuaFieldDoc(description = "vector_n.y")
+    public double y;
+    @LuaWhitelist
+    @LuaFieldDoc(description = "vector_n.z")
+    public double z;
+    @LuaWhitelist
+    @LuaFieldDoc(description = "vector_n.w")
+    public double w;
+    @LuaWhitelist
+    @LuaFieldDoc(description = "vector_n.t")
+    public double t;
+
+    // -- cache -- //
+
+    private final static CacheUtils.Cache<FiguraVec5> CACHE = CacheUtils.getCache(FiguraVec5::new, 300);
+
+    @Override
+    @LuaWhitelist
+    @LuaMethodDoc(description = "vector_n.reset")
+    public FiguraVec5 reset() {
+        x = y = z = w = t = 0;
+        return this;
+    }
+
+    @Override
+    public void free() {
+        CACHE.offerOld(this);
+    }
 
     public static FiguraVec5 of() {
         return CACHE.getFresh();
@@ -30,43 +57,7 @@ public class FiguraVec5 extends FiguraVector<FiguraVec5, FiguraMatrix.DummyMatri
         return CACHE.getFresh().set(x, y, z, w, t);
     }
 
-    @Override
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "vector_n.length_squared"
-    )
-    public double lengthSquared() {
-        return x*x + y*y + z*z + w*w + t*t;
-    }
-
-    @Override
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "vector_n.copy"
-    )
-    public FiguraVec5 copy() {
-        return of(x, y, z, w, t);
-    }
-
-    @Override
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = FiguraVec5.class,
-                    argumentNames = "vec"
-            ),
-            description = "vector_n.dot"
-    )
-    public double dot(FiguraVec5 other) {
-        return x*other.x + y*other.y + z*other.z + w*other.w + t*other.t;
-    }
-
-    @Override
-    public boolean equals(FiguraVec5 other) {
-        return x == other.x && y == other.y && z == other.z && w == other.w && t == other.t;
-    }
+    // -- basic math -- //
 
     @Override
     public FiguraVec5 set(FiguraVec5 other) {
@@ -162,8 +153,8 @@ public class FiguraVec5 extends FiguraVector<FiguraVec5, FiguraMatrix.DummyMatri
                             argumentNames = "vec"
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {Double.class, Double.class, Double.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"x", "y", "z", "w", "t", "h"}
+                            argumentTypes = {Double.class, Double.class, Double.class, Double.class, Double.class},
+                            argumentNames = {"x", "y", "z", "w", "t"}
                     )
             },
             description = "vector_n.sub"
@@ -180,12 +171,6 @@ public class FiguraVec5 extends FiguraVector<FiguraVec5, FiguraMatrix.DummyMatri
     public FiguraVec5 multiply(FiguraVec5 other) {
         return multiply(other.x, other.y, other.z, other.w, other.t);
     }
-
-    @Override
-    public FiguraVec5 transform(FiguraMatrix.DummyMatrix<FiguraVec5> matrix) {
-        throw new IllegalStateException("Called bad method, cannot transform a FiguraVec5");
-    }
-
     public FiguraVec5 multiply(double x, double y, double z, double w, double t) {
         this.x *= x;
         this.y *= y;
@@ -204,7 +189,7 @@ public class FiguraVec5 extends FiguraVector<FiguraVec5, FiguraMatrix.DummyMatri
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {Double.class, Double.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"x", "y", "z", "w", "t", "h"}
+                            argumentNames = {"x", "y", "z", "w", "t"}
                     )
             },
             description = "vector_n.mul"
@@ -240,7 +225,7 @@ public class FiguraVec5 extends FiguraVector<FiguraVec5, FiguraMatrix.DummyMatri
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {Double.class, Double.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"x", "y", "z", "w", "t", "h"}
+                            argumentNames = {"x", "y", "z", "w", "t"}
                     )
             },
             description = "vector_n.div"
@@ -276,7 +261,7 @@ public class FiguraVec5 extends FiguraVector<FiguraVec5, FiguraMatrix.DummyMatri
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {Double.class, Double.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"x", "y", "z", "w", "t", "h"}
+                            argumentNames = {"x", "y", "z", "w", "t"}
                     )
             },
             description = "vector_n.reduce"
@@ -307,41 +292,55 @@ public class FiguraVec5 extends FiguraVector<FiguraVec5, FiguraMatrix.DummyMatri
         return this;
     }
 
+    // -- utility methods -- //
+
     @Override
-    public FiguraVec5 reset() {
-        x = y = z = w = t = 0;
-        return this;
+    public FiguraVec5 transform(FiguraMatrix.DummyMatrix<FiguraVec5> matrix) {
+        throw new IllegalStateException("Called bad method, cannot transform a FiguraVec5");
     }
 
     @Override
-    //DO NOT WHITELIST THIS ONE!
-    public void free() {
-        CACHE.offerOld(this);
-    }
-
-
-    /*
-    Additional methods, mirroring super
-     */
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "vector_n.length"
-    )
-    public double length() {
-        return super.length();
+    @LuaMethodDoc(description = "vector_n.length_squared")
+    public double lengthSquared() {
+        return x * x + y * y + z * z + w * w + t * t;
     }
+
+    @Override
+    @LuaWhitelist
+    @LuaMethodDoc(description = "vector_n.copy")
+    public FiguraVec5 copy() {
+        return of(x, y, z, w, t);
+    }
+
+    @Override
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
-                    argumentTypes = {Double.class, Double.class},
-                    argumentNames = {"minLength", "maxLength"}
+                    argumentTypes = FiguraVec5.class,
+                    argumentNames = "vec"
             ),
-            description = "vector_n.clamped"
+            description = "vector_n.dot"
     )
-    public FiguraVec5 clamped(Double min, Double max) {
-        return super.clamped(min, max);
+    public double dot(FiguraVec5 other) {
+        return x * other.x + y * other.y + z * other.z + w * other.w + t * other.t;
     }
+
+    @Override
+    @LuaWhitelist
+    @LuaMethodDoc(description = "vector_n.normalize")
+    public FiguraVec5 normalize() {
+        return super.normalize();
+    }
+
+    @Override
+    @LuaWhitelist
+    @LuaMethodDoc(description = "vector_n.normalized")
+    public FiguraVec5 normalized() {
+        return super.normalized();
+    }
+
+    @Override
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
@@ -353,22 +352,52 @@ public class FiguraVec5 extends FiguraVector<FiguraVec5, FiguraMatrix.DummyMatri
     public FiguraVec5 clampLength(Double min, Double max) {
         return super.clampLength(min, max);
     }
+
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "vector_n.floor"
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = {Double.class, Double.class},
+                    argumentNames = {"minLength", "maxLength"}
+            ),
+            description = "vector_n.clamped"
     )
+    public FiguraVec5 clamped(Double min, Double max) {
+        return super.clamped(min, max);
+    }
+
+    @Override
+    @LuaWhitelist
+    @LuaMethodDoc(description = "vector_n.length")
+    public double length() {
+        return super.length();
+    }
+
+    @Override
+    @LuaWhitelist
+    @LuaMethodDoc(description = "vector_n.to_rad")
+    public FiguraVec5 toRad() {
+        return super.toRad();
+    }
+
+    @Override
+    @LuaWhitelist
+    @LuaMethodDoc(description = "vector_n.to_deg")
+    public FiguraVec5 toDeg() {
+        return super.toDeg();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(description = "vector_n.floor")
     public FiguraVec5 floor() {
         return FiguraVec5.of(Math.floor(x), Math.floor(y), Math.floor(z), Math.floor(w), Math.floor(t));
     }
+
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "vector_n.ceil"
-    )
+    @LuaMethodDoc(description = "vector_n.ceil")
     public FiguraVec5 ceil() {
         return FiguraVec5.of(Math.ceil(x), Math.ceil(y), Math.ceil(z), Math.ceil(w), Math.ceil(t));
     }
+
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
@@ -385,61 +414,19 @@ public class FiguraVec5 extends FiguraVector<FiguraVec5, FiguraMatrix.DummyMatri
         t = function.call(LuaDouble.valueOf(t)).todouble();
         return this;
     }
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "vector_n.normalized"
-    )
-    public FiguraVec5 normalized() {
-        return super.normalized();
+
+    @Override
+    public boolean equals(Object other) {
+        return other instanceof FiguraVec5 vec && x == vec.x && y == vec.y && z == vec.z && w == vec.w && t == vec.t;
     }
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "vector_n.normalize"
-    )
-    public FiguraVec5 normalize() {
-        return super.normalize();
-    }
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = FiguraVec5.class,
-                    argumentNames = "vec"
-            ),
-            description = "vector_n.reset"
-    )
-    public static FiguraVec5 reset(FiguraVec5 vec) { //get around method conflict, need to return this for chaining
-        vec.reset();
-        return vec;
-    }
+
+    @Override
     @LuaWhitelist
     public String toString() {
-        return "{" + x + "," + y + "," + z + "," + w + "," + t + "}";
+        return "{" + x + ", " + y + ", " + z + ", " + w + ", " + t + "}";
     }
 
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "vector_n.to_rad"
-    )
-    public FiguraVec5 toRad() {
-        return super.toRad();
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "vector_n.to_deg"
-    )
-    public FiguraVec5 toDeg() {
-        return super.toDeg();
-    }
-
-
-    /*
-    Metamethods
-     */
+    // -- metamethods -- //
 
     @LuaWhitelist
     @LuaMetamethodDoc(
@@ -450,6 +437,7 @@ public class FiguraVec5 extends FiguraVector<FiguraVec5, FiguraMatrix.DummyMatri
     public FiguraVec5 __add(FiguraVec5 other) {
         return plus(other);
     }
+
     @LuaWhitelist
     @LuaMetamethodDoc(
             overloads = @LuaMetamethodDoc.LuaMetamethodOverload(
@@ -459,6 +447,7 @@ public class FiguraVec5 extends FiguraVector<FiguraVec5, FiguraMatrix.DummyMatri
     public FiguraVec5 __sub(FiguraVec5 other) {
         return minus(other);
     }
+
     @LuaWhitelist
     @LuaMetamethodDoc(
             overloads = {
@@ -475,16 +464,16 @@ public class FiguraVec5 extends FiguraVector<FiguraVec5, FiguraMatrix.DummyMatri
     )
     public static FiguraVec5 __mul(Object a, Object b) {
         if (a instanceof FiguraVec5 vec) {
-            if (b instanceof FiguraVec5 vec2) {
+            if (b instanceof FiguraVec5 vec2)
                 return vec.times(vec2);
-            } else if (b instanceof Double d) {
-                return vec.scaled(d);
-            }
-        } else if (a instanceof Double d) {
-            return ((FiguraVec5) b).scaled(d);
+            else if (b instanceof Number d)
+                return vec.scaled(d.doubleValue());
+        } else if (a instanceof Number d && b instanceof FiguraVec5 vec) {
+            return (vec.scaled(d.doubleValue()));
         }
         throw new LuaError("Invalid types to __mul: " + a.getClass().getSimpleName() + ", " + b.getClass().getSimpleName());
     }
+
     @LuaWhitelist
     @LuaMetamethodDoc(
             overloads = {
@@ -497,10 +486,11 @@ public class FiguraVec5 extends FiguraVector<FiguraVec5, FiguraMatrix.DummyMatri
             }
     )
     public FiguraVec5 __div(Object rhs) {
-        if (rhs instanceof Double d) {
+        if (rhs instanceof Number n) {
+            double d = n.doubleValue();
             if (d == 0)
                 throw new LuaError("Attempt to divide vector by 0");
-            return scaled(1/d);
+            return scaled(1 / d);
         } else if (rhs instanceof FiguraVec5 vec) {
             return dividedBy(vec);
         }
@@ -519,7 +509,8 @@ public class FiguraVec5 extends FiguraVector<FiguraVec5, FiguraMatrix.DummyMatri
             }
     )
     public FiguraVec5 __mod(Object rhs) {
-        if (rhs instanceof Double d) {
+        if (rhs instanceof Number n) {
+            double d = n.doubleValue();
             if (d == 0)
                 throw new LuaError("Attempt to reduce vector by 0");
             FiguraVec5 modulus = of(d, d, d, d, d);
@@ -648,7 +639,7 @@ public class FiguraVec5 extends FiguraVector<FiguraVec5, FiguraMatrix.DummyMatri
                             types = {void.class, FiguraVec5.class, String.class, Double.class}
                     )//,
 //                    @LuaMetamethodDoc.LuaMetamethodOverload(
-//                            types = {void.class, FiguraVec6.class, String.class, FiguraVector.class}
+//                            types = {void.class, FiguraVec5.class, String.class, FiguraVector.class}
 //                    )
             }
     )
@@ -656,16 +647,16 @@ public class FiguraVec5 extends FiguraVector<FiguraVec5, FiguraMatrix.DummyMatri
         String str = key.toString();
         int len = str.length();
         if (len == 1 && value instanceof Number n)  {
+            double d = n.doubleValue();
             switch(str) {
-                case "1", "x", "r" -> x = n.doubleValue();
-                case "2", "y", "g" -> y = n.doubleValue();
-                case "3", "z", "b" -> z = n.doubleValue();
-                case "4", "w", "a" -> w = n.doubleValue();
-                case "5", "t" -> t = n.doubleValue();
+                case "1", "x", "r" -> x = d;
+                case "2", "y", "g" -> y = d;
+                case "3", "z", "b" -> z = d;
+                case "4", "w", "a" -> w = d;
+                case "5", "t" -> t = d;
             }
             return;
         }
         throw new LuaError("Illegal key " + str + " to __newindex()");
     }
-
 }

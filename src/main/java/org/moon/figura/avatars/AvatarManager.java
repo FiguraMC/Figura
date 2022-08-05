@@ -39,6 +39,7 @@ public class AvatarManager {
             return;
 
         //unload avatars from disconnected players
+        //needs to actually be an event, otherwise some things like skulls will try to download the avatar every tick
         /*
         ClientPacketListener connection = Minecraft.getInstance().getConnection();
         Set<UUID> toRemove = new HashSet<>();

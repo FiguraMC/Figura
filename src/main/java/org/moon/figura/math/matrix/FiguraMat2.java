@@ -1,11 +1,13 @@
 package org.moon.figura.math.matrix;
 
 import org.luaj.vm2.LuaError;
-import org.moon.figura.lua.docs.LuaTypeDoc;
-import org.moon.figura.math.vector.FiguraVec2;
+import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
+import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.math.vector.FiguraVec2;
+import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.caching.CacheStack;
 import org.moon.figura.utils.caching.CacheUtils;
 
@@ -20,15 +22,10 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
     public double v11, v12, v21, v22;
 
     @Override
-    public void resetIdentity() {
-        v12=v21 = 0;
-        v11=v22 = 1;
-    }
-    @Override
     public CacheUtils.Cache<FiguraMat2> getCache() {
         return CACHE;
     }
-    private static final CacheUtils.Cache<FiguraMat2> CACHE = CacheUtils.getCache(FiguraMat2::new, 100);
+    private static final CacheUtils.Cache<FiguraMat2> CACHE = CacheUtils.getCache(FiguraMat2::new, 250);
     public static FiguraMat2 of() {
         return CACHE.getFresh();
     }
@@ -54,16 +51,19 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
     }
 
     @Override
+    public void resetIdentity() {
+        v12 = v21 = 0;
+        v11 = v22 = 1;
+    }
+
+    @Override
     protected double calculateDeterminant() {
         return v11 * v22 - v12 * v21;
     }
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "matrix_n.copy"
-    )
+    @LuaMethodDoc(description = "matrix_n.copy")
     public FiguraMat2 copy() {
         return of(v11, v21, v12, v22);
     }
@@ -83,8 +83,8 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
     @Override
     public String toString() {
         return "\n[  " +
-                (float) v11 + ", " + (float) v12 + ", " +
-                "\n   " + (float) v21 + ", " + v22 +
+                (float) v11 + ", " + (float) v12 + ",\n   " +
+                (float) v21 + ", " + (float) v22 + "\n   " +
                 "  ]";
     }
 
@@ -132,6 +132,7 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
         return 2;
     }
 
+    @Override
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
@@ -164,11 +165,11 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
             description = "matrix_n.multiply"
     )
     public FiguraMat2 multiply(FiguraMat2 o) {
-        double nv11 = o.v11*v11+o.v12*v21;
-        double nv12 = o.v11*v12+o.v12*v22;
+        double nv11 = o.v11 * v11 + o.v12 * v21;
+        double nv12 = o.v11 * v12 + o.v12 * v22;
 
-        double nv21 = o.v21*v11+o.v22*v21;
-        double nv22 = o.v21*v12+o.v22*v22;
+        double nv21 = o.v21 * v11 + o.v22 * v21;
+        double nv22 = o.v21 * v12 + o.v22 * v22;
 
         v11 = nv11;
         v12 = nv12;
@@ -188,11 +189,11 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
             description = "matrix_n.right_multiply"
     )
     public FiguraMat2 rightMultiply(FiguraMat2 o) {
-        double nv11 = v11*o.v11+v12*o.v21;
-        double nv12 = v11*o.v12+v12*o.v22;
+        double nv11 = v11 * o.v11 + v12 * o.v21;
+        double nv12 = v11 * o.v12 + v12 * o.v22;
 
-        double nv21 = v21*o.v11+v22*o.v21;
-        double nv22 = v21*o.v12+v22*o.v22;
+        double nv21 = v21 * o.v11 + v22 * o.v21;
+        double nv22 = v21 * o.v12 + v22 * o.v22;
 
         v11 = nv11;
         v12 = nv12;
@@ -204,10 +205,7 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "matrix_n.transpose"
-    )
+    @LuaMethodDoc(description = "matrix_n.transpose")
     public FiguraMat2 transpose() {
         double temp;
         temp = v12; v12 = v21; v21 = temp;
@@ -215,21 +213,16 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
         return this;
     }
 
+    @Override
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "matrix_n.transposed"
-    )
+    @LuaMethodDoc(description = "matrix_n.transposed")
     public FiguraMat2 transposed() {
         return super.transposed();
     }
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "matrix_n.invert"
-    )
+    @LuaMethodDoc(description = "matrix_n.invert")
     public FiguraMat2 invert() {
         double det = det();
         return set(
@@ -240,52 +233,149 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
         );
     }
 
+    @Override
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload,
-            description = "matrix_n.inverted"
-    )
+    @LuaMethodDoc(description = "matrix_n.inverted")
     public FiguraMat2 inverted() {
         return super.inverted();
     }
 
+    @Override
     @LuaWhitelist
-    @LuaMethodDoc(
-            description = "matrix_n.det"
-    )
+    @LuaMethodDoc(description = "matrix_n.det")
     public double det() {
         return super.det();
     }
 
+    @Override
     @LuaWhitelist
-    @LuaMethodDoc(
-            description = "matrix_n.reset"
-    )
+    @LuaMethodDoc(description = "matrix_n.reset")
     public FiguraMat2 reset() {
         return super.reset();
     }
 
+    @Override
+    @LuaWhitelist
+    @LuaMethodDoc(description = "matrix_n.add")
+    public FiguraMat2 add(FiguraMat2 o) {
+        v11 += o.v11;
+        v12 += o.v12;
+        v21 += o.v21;
+        v22 += o.v22;
+        invalidate();
+        return this;
+    }
 
+    @Override
+    @LuaWhitelist
+    @LuaMethodDoc(description = "matrix_n.sub")
+    public FiguraMat2 sub(FiguraMat2 o) {
+        v11 -= o.v11;
+        v12 -= o.v12;
+        v21 -= o.v21;
+        v22 -= o.v22;
+        invalidate();
+        return this;
+    }
 
+    public void scale(double x, double y) {
+        v11 *= x;
+        v12 *= x;
+        v21 *= y;
+        v22 *= y;
+        invalidate();
+    }
 
+    public void scale(FiguraVec2 vec) {
+        scale(vec.x, vec.y);
+    }
 
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = FiguraVec2.class,
+                            argumentNames = "vec"
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {Double.class, Double.class},
+                            argumentNames = {"x", "y"}
+                    )
+            },
+            description = "matrix_n.scale"
+    )
+    public void scale(Object x, Double y) {
+        scale(LuaUtils.parseVec2("scale", x, y, 1, 1));
+    }
 
-    // STATIC CREATOR METHODS
-    //----------------------------------------------------------------
-    public static FiguraMat2 createScaleMatrix(double x, double y) {
-        FiguraMat2 result = of();
-        result.v11 = x;
-        result.v22 = y;
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = Double.class,
+                    argumentNames = "degrees"
+            ),
+            description = "matrix_n.rotate"
+    )
+    public void rotate(Double degrees) {
+        degrees = Math.toRadians(degrees);
+        double c = Math.cos(degrees);
+        double s = Math.sin(degrees);
+
+        double nv11 = c * v11 - s * v21;
+        double nv12 = c * v12 - s * v22;
+
+        v21 = c * v21 + s * v11;
+        v22 = c * v22 + s * v12;
+
+        v11 = nv11;
+        v12 = nv12;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(description = "matrix_n.augmented")
+    public FiguraMat3 augmented() {
+        FiguraMat3 result = FiguraMat3.of();
+        result.set(v11, v21, 0, v12, v22, 0, 0, 0, 1);
         return result;
     }
-    public static FiguraMat2 createRotationMatrix(double degrees) {
-        degrees = Math.toRadians(degrees);
-        double s = Math.sin(degrees);
-        double c = Math.cos(degrees);
-        FiguraMat2 result = of();
-        result.v11 = result.v22 = c;
-        result.v12 = -s;
-        result.v21 = s;
-        return result;
+
+    //-----------------------------METAMETHODS-----------------------------------//
+
+    @LuaWhitelist
+    public FiguraMat2 __add(@LuaNotNil FiguraMat2 mat) {
+        return this.plus(mat);
+    }
+    @LuaWhitelist
+    public FiguraMat2 __sub(@LuaNotNil FiguraMat2 mat) {
+        return this.minus(mat);
+    }
+    @LuaWhitelist
+    public Object __mul(@LuaNotNil Object o) {
+        if (o instanceof FiguraMat2 mat)
+            return this.times(mat);
+        else if (o instanceof FiguraVec2 vec)
+            return this.times(vec);
+
+        throw new LuaError("Invalid types to __mul: " + o.getClass().getSimpleName());
+    }
+    @LuaWhitelist
+    public boolean __eq(@LuaNotNil FiguraMat2 mat) {
+        return this.equals(mat);
+    }
+    @LuaWhitelist
+    public int __len() {
+        return 2;
+    }
+    @LuaWhitelist
+    public String __tostring() {
+        return this.toString();
+    }
+    @LuaWhitelist
+    public Object __index(@LuaNotNil String string) {
+        return switch (string) {
+            case "1" -> this.getColumn(1);
+            case "2" -> this.getColumn(2);
+            default -> null;
+        };
     }
 }

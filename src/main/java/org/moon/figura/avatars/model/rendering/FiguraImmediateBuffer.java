@@ -113,12 +113,12 @@ public class FiguraImmediateBuffer {
         for (int i = 0; i < faceCount*4; i++) {
 
             pos.set(positions.get(), positions.get(), positions.get(), 1);
-            pos.multiply(customization.positionMatrix);
+            pos.transform(customization.positionMatrix);
             normal.set(normals.get(), normals.get(), normals.get());
-            normal.multiply(customization.normalMatrix);
+            normal.transform(customization.normalMatrix);
             uv.set(uvs.get(), uvs.get(), 1);
             uv.divide(uvFixer);
-            uv.multiply(customization.uvMatrix);
+            uv.transform(customization.uvMatrix);
 
             consumer.vertex(
                     (float) pos.x,

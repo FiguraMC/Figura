@@ -103,7 +103,7 @@ public class FiguraLuaRuntime {
         if (obj instanceof LuaValue val)
             userGlobals.set(name, val);
         else
-            userGlobals.set(name, typeManager.wrap(obj));
+            userGlobals.set(name, LuaTypeManager.java2Lua(typeManager, obj));
     }
 
     public void setUser(Entity user) {

@@ -12,10 +12,8 @@ public abstract class FiguraVector<T extends FiguraVector<T, M>, M extends Figur
 
     public abstract T copy();
     public abstract double dot(T other);
-    public abstract boolean equals(T other);
+
     public abstract T set(T other);
-
-
     public abstract T add(T other);
     public abstract T subtract(T other);
     public abstract T multiply(T other);
@@ -85,4 +83,8 @@ public abstract class FiguraVector<T extends FiguraVector<T, M>, M extends Figur
     public T toDeg() {
         return copy().scale(180/Math.PI);
     }
+
+    public abstract boolean equals(Object other);
+
+    public abstract String toString();
 }

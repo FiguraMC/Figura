@@ -16,7 +16,7 @@ import java.util.Map;
  */
 public class LuaTypeManager {
 
-    private static final Map<Class<?>, LuaTable> metatables = new HashMap<>();
+    private final Map<Class<?>, LuaTable> metatables = new HashMap<>();
 
     public void generateMetatableFor(Class<?> clazz) {
         if (metatables.containsKey(clazz))
@@ -132,7 +132,7 @@ public class LuaTypeManager {
                             case "org.luaj.vm2.LuaTable" -> args.checktable(argIndex);
                             case "org.luaj.vm2.LuaFunction" -> args.checkfunction(argIndex);
                             case "org.luaj.vm2.LuaValue" -> args.arg(argIndex);
-                            case "java.lang.Object" -> convertLua2Java(args.arg(argIndex));
+                            case "java.lang.Object" -> lua2Java(args.arg(argIndex));
                             default -> args.checkuserdata(argIndex, argumentTypes[i]);
                         };
                     } else {
@@ -156,26 +156,16 @@ public class LuaTypeManager {
                 }
 
                 //Convert the return value
-                if (result == null) {return LuaValue.NIL;}
-                return switch (result.getClass().getName()) {
-                    case "java.lang.Double", "double" -> LuaDouble.valueOf((Double) result);
-                    case "java.lang.String" -> LuaString.valueOf((String) result);
-                    case "java.lang.Boolean", "boolean" -> LuaBoolean.valueOf((Boolean) result);
-                    case "java.lang.Integer", "int" -> LuaInteger.valueOf((Integer) result);
-                    case "java.lang.Long", "long" -> LuaInteger.valueOf((Long) result);
-                    case "java.lang.Float", "float" -> LuaDouble.valueOf((Float) result);
-                    case "org.luaj.vm2.LuaTable" -> (LuaTable) result;
-                    case "org.luaj.vm2.LuaFunction" -> (LuaFunction) result;
-                    case "void" -> LuaValue.NIL;
-                    default -> wrap(result);
-                };
+                return java2Lua(LuaTypeManager.this, result);
             }
         };
     }
 
-    public static LuaValue wrap(Object instance) {
+    private LuaValue wrap(Object instance) {
         if (instance == null)
             return LuaValue.NIL;
+        else if (instance instanceof Map<?,?> map)
+            return wrapMap(map);
         Class<?> clazz = instance.getClass();
         LuaTable metatable = metatables.get(clazz);
         while (metatable == null) {
@@ -190,7 +180,19 @@ public class LuaTypeManager {
         return result;
     }
 
-    public static Object convertLua2Java(LuaValue val) {
+    private LuaValue wrapMap(Map<?, ?> map) {
+        LuaTable table = new LuaTable();
+
+        for (Map.Entry<?, ?> entry : map.entrySet()) {
+            LuaValue key = java2Lua(this, entry.getKey());
+            LuaValue val = java2Lua(this, entry.getValue());
+            table.set(key, val);
+        }
+
+        return table;
+    }
+
+    public static Object lua2Java(LuaValue val) {
         return switch (val.type()) {
             case LuaValue.TBOOLEAN -> val.checkboolean();
             case LuaValue.TLIGHTUSERDATA, LuaValue.TUSERDATA -> val.checkuserdata(Object.class);
@@ -202,7 +204,7 @@ public class LuaTypeManager {
         };
     }
 
-    public static LuaValue convertJava2Lua(Object val) {
+    public static LuaValue java2Lua(LuaTypeManager typeManager, Object val) {
         if (val instanceof LuaValue l)
             return l;
         else if (val instanceof Double d)
@@ -226,6 +228,6 @@ public class LuaTypeManager {
         else if (val == null)
             return LuaValue.NIL;
         else
-            return wrap(val);
+            return typeManager.wrap(val);
     }
 }
