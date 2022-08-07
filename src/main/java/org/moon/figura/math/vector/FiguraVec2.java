@@ -387,6 +387,20 @@ public class FiguraVec2 extends FiguraVector<FiguraVec2, FiguraMat2> {
     }
 
     @Override
+    public int size() {
+        return 2;
+    }
+
+    @Override
+    public double index(int i) {
+        return switch (i) {
+            case 0 -> x;
+            case 1 -> y;
+            default -> throw new IndexOutOfBoundsException(i);
+        };
+    }
+
+    @Override
     public boolean equals(Object other) {
         return other instanceof FiguraVec2 vec && x == vec.x && y == vec.y;
     }
@@ -526,7 +540,7 @@ public class FiguraVec2 extends FiguraVector<FiguraVec2, FiguraMat2> {
             )
     )
     public int __len() {
-        return 2;
+        return size();
     }
 
     @LuaWhitelist

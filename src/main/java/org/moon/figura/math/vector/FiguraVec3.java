@@ -409,6 +409,21 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
     }
 
     @Override
+    public int size() {
+        return 3;
+    }
+
+    @Override
+    public double index(int i) {
+        return switch (i) {
+            case 0 -> x;
+            case 1 -> y;
+            case 2 -> z;
+            default -> throw new IndexOutOfBoundsException(i);
+        };
+    }
+
+    @Override
     public boolean equals(Object other) {
         return other instanceof FiguraVec3 vec && x == vec.x && y == vec.y && z == vec.z;
     }
@@ -595,7 +610,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
             )
     )
     public int __len() {
-        return 3;
+        return size();
     }
 
     @LuaWhitelist

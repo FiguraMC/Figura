@@ -204,7 +204,7 @@ public class VanillaModelAPI {
 
         // -- armor -- //
 
-        HELMET_ITEM = new VanillaModelPart("HELMET_ITEM", ParentType.Head, VanillaModelProvider.HEAD.func);
+        HELMET_ITEM = new VanillaModelPart("HELMET_ITEM", ParentType.Head, null);
 
         HELMET_HEAD = new VanillaModelPart("HELMET_HEAD", ParentType.Head, VanillaModelProvider.HEAD.func);
         HELMET_HAT = new VanillaModelPart("HELMET_HAT", ParentType.Head, VanillaModelProvider.HAT.func);

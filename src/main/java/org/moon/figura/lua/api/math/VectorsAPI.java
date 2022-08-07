@@ -304,8 +304,6 @@ public class VectorsAPI {
             throw new LuaError("Illegal argument to rotateAroundAxis(): " + x);
         }
 
-        System.out.println(angle + " ||| " + vec + " ||| " + axis);
-
         FiguraVec3 result = MathUtils.rotateAroundAxis(FiguraVec3.of(vec.x, vec.y, vec.z), FiguraVec3.of(axis.x, axis.y, axis.z), angle);
         FiguraVec3 ret = FiguraVec3.of(result.x, result.y, result.z);
 

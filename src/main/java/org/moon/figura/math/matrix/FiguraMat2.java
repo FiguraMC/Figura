@@ -82,10 +82,10 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
     }
     @Override
     public String toString() {
-        return "\n[  " +
-                (float) v11 + ", " + (float) v12 + ",\n   " +
-                (float) v21 + ", " + (float) v22 + "\n   " +
-                "  ]";
+        return "\n[\n  " +
+                (float) v11 + ", " + (float) v12 + ",\n  " +
+                (float) v21 + ", " + (float) v22 +
+                "\n]";
     }
 
     @Override

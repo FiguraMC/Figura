@@ -5,7 +5,10 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.Vec3;
 import org.moon.figura.ducks.GameRendererAccessor;
+import org.moon.figura.math.matrix.FiguraMat2;
 import org.moon.figura.math.matrix.FiguraMat3;
+import org.moon.figura.math.matrix.FiguraMat4;
+import org.moon.figura.math.matrix.FiguraMatrix;
 import org.moon.figura.math.vector.*;
 
 import java.math.RoundingMode;
@@ -15,7 +18,7 @@ import java.util.Locale;
 
 public class MathUtils {
 
-    public static Object sizedVector(double... vals) {
+    public static FiguraVector<?, ?> sizedVector(double... vals) {
         return switch (vals.length) {
             case 2 -> FiguraVec2.of(vals[0], vals[1]);
             case 3 -> FiguraVec3.of(vals[0], vals[1], vals[2]);
@@ -23,6 +26,27 @@ public class MathUtils {
             case 5 -> FiguraVec5.of(vals[0], vals[1], vals[2], vals[3], vals[4]);
             case 6 -> FiguraVec6.of(vals[0], vals[1], vals[2], vals[3], vals[4], vals[5]);
             default -> throw new IllegalStateException("Cannot create vector of size: " + vals.length);
+        };
+    }
+
+    public static FiguraMatrix<?, ?> sizedMat(FiguraVector<?, ?>... vectors) {
+        return switch (vectors.length) {
+            case 4 -> FiguraMat4.of(
+                    vectors[0].index(0), vectors[0].index(1), vectors[0].index(2), vectors[0].index(3),
+                    vectors[1].index(0), vectors[1].index(1), vectors[1].index(2), vectors[1].index(3),
+                    vectors[2].index(0), vectors[2].index(1), vectors[2].index(2), vectors[2].index(3),
+                    vectors[3].index(0), vectors[3].index(1), vectors[3].index(2), vectors[3].index(3)
+            );
+            case 3 -> FiguraMat3.of(
+                    vectors[0].index(0), vectors[0].index(1), vectors[0].index(2),
+                    vectors[1].index(0), vectors[1].index(1), vectors[1].index(2),
+                    vectors[2].index(0), vectors[2].index(1), vectors[2].index(2)
+            );
+            case 2 -> FiguraMat2.of(
+                    vectors[0].index(0), vectors[0].index(1),
+                    vectors[1].index(0), vectors[1].index(1)
+            );
+            default -> throw new IllegalStateException("Cannot create matrix of size: " + vectors.length);
         };
     }
 

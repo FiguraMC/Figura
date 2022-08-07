@@ -32,9 +32,10 @@ import org.moon.figura.avatars.model.rendering.StackAvatarRenderer;
 import org.moon.figura.config.Config;
 import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.lua.FiguraLuaRuntime;
-import org.moon.figura.lua.LuaTypeManager;
 import org.moon.figura.lua.api.event.LuaEvent;
 import org.moon.figura.lua.api.nameplate.Badges;
+import org.moon.figura.lua.api.ping.PingArg;
+import org.moon.figura.lua.api.ping.PingFunction;
 import org.moon.figura.lua.api.sound.SoundAPI;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
@@ -181,6 +182,19 @@ public class Avatar {
         tickEvent();
     }
 
+    public void runPing(String name, byte[] data) {
+        if (scriptError || luaRuntime == null)
+            return;
+
+        Varargs args = PingArg.fromByteArray(data, this);
+        PingFunction function = luaRuntime.ping.get(name);
+        if (args == null || function == null)
+            return;
+
+        FiguraLuaPrinter.sendPingMessage(this, name, data.length, args);
+        function.func.invoke(args);
+    }
+
     // -- script events -- //
 
     //Calling with maxInstructions as -1 will not set the max instructions, and instead keep them as they are.
@@ -189,7 +203,7 @@ public class Avatar {
         if (scriptError || luaRuntime == null)
             return;
 
-        LuaValue val = LuaTypeManager.java2Lua(luaRuntime.typeManager, args);
+        LuaValue val = luaRuntime.typeManager.javaToLua(args);
 
         try {
             if (maxInstructions != -1)

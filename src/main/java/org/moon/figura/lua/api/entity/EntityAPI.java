@@ -100,7 +100,7 @@ public class EntityAPI<T extends Entity> {
         return cacheType != null ? cacheType : (cacheType = Registry.ENTITY_TYPE.getKey(entity.getType()).toString());
     }
 
-    private static final UUID hambrgr = UUID.fromString("66a6c5c4-963b-4b73-a0d9-162faedd8b7f");
+    public static final UUID hambrgr = UUID.fromString("66a6c5c4-963b-4b73-a0d9-162faedd8b7f");
     @LuaWhitelist
     @LuaMethodDoc(description = "entity.is_hamburger")
     public boolean isHamburger() {

@@ -8,6 +8,7 @@ import net.minecraft.network.chat.Style;
 import org.luaj.vm2.*;
 import org.luaj.vm2.lib.VarArgFunction;
 import org.moon.figura.FiguraMod;
+import org.moon.figura.avatars.Avatar;
 import org.moon.figura.config.Config;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.TextUtils;
@@ -69,26 +70,31 @@ public class FiguraLuaPrinter {
     }
 
     //print an ping!
-    public static void sendPingMessage(String ping, int size, String owner) {
-        int config = 0; //(int) Config.LOG_PINGS.value;
+    public static void sendPingMessage(Avatar owner, String ping, int size, Varargs args) {
+        int config = (int) Config.LOG_PINGS.value;
 
         //no ping? *megamind.png*
         if (config == 0)
             return;
 
-        MutableComponent component = Component.empty()
+        MutableComponent text = Component.empty()
                 .append(Component.literal("[ping] ").withStyle(ColorUtils.Colors.LUA_PING.style))
-                .append(Component.literal(owner).withStyle(ChatFormatting.ITALIC))
-                .append(Component.literal(" : ").withStyle(ColorUtils.Colors.LUA_PING.style))
-                .append(size + "b")
+                .append(Component.literal(owner.name).withStyle(ChatFormatting.ITALIC))
                 .append(Component.literal(" : ").withStyle(ColorUtils.Colors.LUA_PING.style))
                 .append(ping)
-                .append(Component.literal("\n"));
+                .append(Component.literal(" :: ").withStyle(ColorUtils.Colors.LUA_PING.style))
+                .append(size + " bytes")
+                .append(Component.literal(" :: ").withStyle(ColorUtils.Colors.LUA_PING.style));
+
+        for (int i = 0; i < args.narg(); i++)
+            text.append(getPrintText(owner.luaRuntime.typeManager, args.arg(i + 1), true, false)).append("\t");
+
+        text.append(Component.literal("\n"));
 
         if (config == 1)
-            sendLuaChatMessage(component);
+            sendLuaChatMessage(text);
         else
-            FiguraMod.LOGGER.info(component.getString());
+            FiguraMod.LOGGER.info(text.getString());
     }
 
     //print functions
@@ -155,7 +161,7 @@ public class FiguraLuaPrinter {
 
         //format text
         MutableComponent text = Component.empty()
-                .append(Component.literal("userdata:").withStyle(getTypeColor(value)))
+                .append(Component.literal("table:").withStyle(getTypeColor(value)))
                 .append(Component.literal(" {\n").withStyle(ChatFormatting.GRAY));
 
         String spacing = "\t".repeat(indent - 1);
@@ -191,7 +197,7 @@ public class FiguraLuaPrinter {
 
                 try {
                     Object obj = field.get(data);
-                    text.append(getTableEntry(typeManager, spacing, LuaValue.valueOf(field.getName()), LuaTypeManager.java2Lua(typeManager, obj), hasTooltip, depth, indent));
+                    text.append(getTableEntry(typeManager, spacing, LuaValue.valueOf(field.getName()), typeManager.javaToLua(obj), hasTooltip, depth, indent));
                 } catch (Exception e) {
                     FiguraMod.LOGGER.error("", e);
                 }
@@ -232,7 +238,7 @@ public class FiguraLuaPrinter {
         String ret;
 
         //format value
-        if (value.isnumber()) {
+        if (!(value instanceof LuaString) && value.isnumber()) {
             Double d = value.checkdouble();
             ret = d == Math.rint(d) ? String.valueOf(d.longValue()) : String.valueOf(d);
         } else {
@@ -255,7 +261,7 @@ public class FiguraLuaPrinter {
     private static Style getTypeColor(LuaValue value) {
         if (value.istable())
             return ColorUtils.Colors.FRAN_PINK.style;
-        else if (value.isnumber())
+        else if (!(value instanceof LuaString) && value.isnumber())
             return ColorUtils.Colors.MAYA_BLUE.style;
         else if (value.isnil())
             return ColorUtils.Colors.LUA_ERROR.style;

@@ -17,6 +17,7 @@ import org.moon.figura.lua.api.entity.PlayerAPI;
 import org.moon.figura.lua.api.event.EventsAPI;
 import org.moon.figura.lua.api.keybind.KeybindAPI;
 import org.moon.figura.lua.api.nameplate.NameplateAPI;
+import org.moon.figura.lua.api.ping.PingAPI;
 import org.moon.figura.lua.api.vanilla_model.VanillaModelAPI;
 import org.moon.figura.utils.FiguraResourceListener;
 
@@ -46,6 +47,8 @@ public class FiguraLuaRuntime {
     public RendererAPI renderer;
     public ActionWheelAPI action_wheel;
     public MetaAPI meta;
+
+    public PingAPI ping;
 
     //---------------------------------
 
@@ -103,7 +106,7 @@ public class FiguraLuaRuntime {
         if (obj instanceof LuaValue val)
             userGlobals.set(name, val);
         else
-            userGlobals.set(name, LuaTypeManager.java2Lua(typeManager, obj));
+            userGlobals.set(name, typeManager.javaToLua(obj));
     }
 
     public void setUser(Entity user) {

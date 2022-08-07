@@ -132,7 +132,7 @@ public class LuaTypeManager {
                             case "org.luaj.vm2.LuaTable" -> args.checktable(argIndex);
                             case "org.luaj.vm2.LuaFunction" -> args.checkfunction(argIndex);
                             case "org.luaj.vm2.LuaValue" -> args.arg(argIndex);
-                            case "java.lang.Object" -> lua2Java(args.arg(argIndex));
+                            case "java.lang.Object" -> luaToJava(args.arg(argIndex));
                             default -> args.checkuserdata(argIndex, argumentTypes[i]);
                         };
                     } else {
@@ -156,16 +156,12 @@ public class LuaTypeManager {
                 }
 
                 //Convert the return value
-                return java2Lua(LuaTypeManager.this, result);
+                return javaToLua(result);
             }
         };
     }
 
     private LuaValue wrap(Object instance) {
-        if (instance == null)
-            return LuaValue.NIL;
-        else if (instance instanceof Map<?,?> map)
-            return wrapMap(map);
         Class<?> clazz = instance.getClass();
         LuaTable metatable = metatables.get(clazz);
         while (metatable == null) {
@@ -184,15 +180,17 @@ public class LuaTypeManager {
         LuaTable table = new LuaTable();
 
         for (Map.Entry<?, ?> entry : map.entrySet()) {
-            LuaValue key = java2Lua(this, entry.getKey());
-            LuaValue val = java2Lua(this, entry.getValue());
+            LuaValue key = javaToLua(entry.getKey());
+            LuaValue val = javaToLua(entry.getValue());
             table.set(key, val);
         }
 
         return table;
     }
 
-    public static Object lua2Java(LuaValue val) {
+    //we need to allow string being numbers here
+    //however in places like pings and print we should keep strings as strings
+    public Object luaToJava(LuaValue val) {
         return switch (val.type()) {
             case LuaValue.TBOOLEAN -> val.checkboolean();
             case LuaValue.TLIGHTUSERDATA, LuaValue.TUSERDATA -> val.checkuserdata(Object.class);
@@ -204,8 +202,10 @@ public class LuaTypeManager {
         };
     }
 
-    public static LuaValue java2Lua(LuaTypeManager typeManager, Object val) {
-        if (val instanceof LuaValue l)
+    public LuaValue javaToLua(Object val) {
+        if (val == null)
+            return LuaValue.NIL;
+        else if (val instanceof LuaValue l)
             return l;
         else if (val instanceof Double d)
             return LuaValue.valueOf(d);
@@ -225,9 +225,9 @@ public class LuaTypeManager {
             return LuaValue.valueOf(c);
         else if (val instanceof Short s)
             return LuaValue.valueOf(s);
-        else if (val == null)
-            return LuaValue.NIL;
+        else if (val instanceof Map<?,?> map)
+            return wrapMap(map);
         else
-            return typeManager.wrap(val);
+            return wrap(val);
     }
 }

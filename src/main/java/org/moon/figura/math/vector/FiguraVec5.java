@@ -416,6 +416,23 @@ public class FiguraVec5 extends FiguraVector<FiguraVec5, FiguraMatrix.DummyMatri
     }
 
     @Override
+    public int size() {
+        return 5;
+    }
+
+    @Override
+    public double index(int i) {
+        return switch (i) {
+            case 0 -> x;
+            case 1 -> y;
+            case 2 -> z;
+            case 3 -> w;
+            case 4 -> t;
+            default -> throw new IndexOutOfBoundsException(i);
+        };
+    }
+
+    @Override
     public boolean equals(Object other) {
         return other instanceof FiguraVec5 vec && x == vec.x && y == vec.y && z == vec.z && w == vec.w && t == vec.t;
     }
@@ -550,7 +567,7 @@ public class FiguraVec5 extends FiguraVector<FiguraVec5, FiguraMatrix.DummyMatri
             )
     )
     public int __len() {
-        return 5;
+        return size();
     }
 
     @LuaWhitelist

@@ -87,6 +87,8 @@ public enum Config {
                 FiguraText.of(tooltip + ".groups").setStyle(ColorUtils.Colors.MAYA_BLUE.style));
     }},
     LOG_OTHERS(false),
+    LOG_PINGS(0, 3),
+    SYNC_PINGS(false),
     MAIN_DIR("", InputType.FOLDER_PATH),
     AUTH_SERVER_IP("figura.moonlight-devs.org:25565", InputType.IP) {
         @Override

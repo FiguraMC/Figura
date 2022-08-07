@@ -2,8 +2,10 @@ package org.moon.figura.backend;
 
 import com.google.gson.JsonObject;
 import org.moon.figura.FiguraMod;
+import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
 
+import java.util.Base64;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 
@@ -22,7 +24,14 @@ public enum EventHandler {
 
     }),
     PING((owner, json) -> {
+        Avatar avatar = AvatarManager.getAvatarForPlayer(owner);
+        if (avatar == null)
+            return;
 
+        String name = json.get("name").getAsString();
+        String data = json.get("data").getAsString();
+
+        avatar.runPing(name, Base64.getDecoder().decode(data.getBytes()));
     }),
     DELETE((owner, json) -> {
         if (!FiguraMod.isLocal(owner) || AvatarManager.localUploaded)

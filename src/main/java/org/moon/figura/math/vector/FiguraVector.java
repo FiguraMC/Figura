@@ -84,6 +84,8 @@ public abstract class FiguraVector<T extends FiguraVector<T, M>, M extends Figur
         return copy().scale(180/Math.PI);
     }
 
+    public abstract int size();
+    public abstract double index(int i);
     public abstract boolean equals(Object other);
 
     public abstract String toString();

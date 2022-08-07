@@ -128,12 +128,12 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
     }
     @Override
     public String toString() {
-        return "\n[  " +
-                    (float) v11 + ", " + (float) v12 + ", " + (float) v13 + ", " + (float) v14 + ",\n   " +
-                    (float) v21 + ", " + (float) v22 + ", " + (float) v23 + ", " + (float) v24 + ",\n   " +
-                    (float) v31 + ", " + (float) v32 + ", " + (float) v33 + ", " + (float) v34 + ",\n   " +
+        return "\n[\n  " +
+                    (float) v11 + ", " + (float) v12 + ", " + (float) v13 + ", " + (float) v14 + ",\n  " +
+                    (float) v21 + ", " + (float) v22 + ", " + (float) v23 + ", " + (float) v24 + ",\n  " +
+                    (float) v31 + ", " + (float) v32 + ", " + (float) v33 + ", " + (float) v34 + ",\n  " +
                     (float) v41 + ", " + (float) v42 + ", " + (float) v43 + ", " + (float) v44 +
-                "  ]";
+                "\n]";
     }
 
     @Override

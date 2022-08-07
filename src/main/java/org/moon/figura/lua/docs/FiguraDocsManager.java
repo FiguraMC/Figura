@@ -20,8 +20,12 @@ import org.moon.figura.avatars.model.rendertasks.ItemTask;
 import org.moon.figura.avatars.model.rendertasks.RenderTask;
 import org.moon.figura.avatars.model.rendertasks.TextTask;
 import org.moon.figura.gui.actionwheel.*;
+import org.moon.figura.lua.api.nameplate.NameplateEntityCust;
+import org.moon.figura.lua.api.nameplate.NameplateGroupCust;
 import org.moon.figura.lua.api.particle.ParticleAPI;
 import org.moon.figura.lua.api.particle.ParticleBuilder;
+import org.moon.figura.lua.api.ping.PingAPI;
+import org.moon.figura.lua.api.ping.PingFunction;
 import org.moon.figura.lua.api.sound.SoundAPI;
 import org.moon.figura.lua.api.sound.SoundBuilder;
 import org.moon.figura.math.matrix.FiguraMat2;
@@ -108,7 +112,9 @@ public class FiguraDocsManager {
 
         put("nameplate", List.of(
                 NameplateAPI.class,
-                NameplateCustomization.class
+                NameplateCustomization.class,
+                NameplateEntityCust.class,
+                NameplateGroupCust.class
         ));
 
         put("world", List.of(
@@ -188,6 +194,11 @@ public class FiguraDocsManager {
 
         put("renderer", List.of(
                 RendererAPI.class
+        ));
+
+        put("ping", List.of(
+                PingAPI.class,
+                PingFunction.class
         ));
     }};
     private static final Map<String, List<FiguraDoc>> GENERATED_CHILDREN = new HashMap<>();

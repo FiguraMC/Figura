@@ -23,8 +23,12 @@ import org.moon.figura.lua.api.math.MatricesAPI;
 import org.moon.figura.lua.api.math.VectorsAPI;
 import org.moon.figura.lua.api.nameplate.NameplateAPI;
 import org.moon.figura.lua.api.nameplate.NameplateCustomization;
+import org.moon.figura.lua.api.nameplate.NameplateEntityCust;
+import org.moon.figura.lua.api.nameplate.NameplateGroupCust;
 import org.moon.figura.lua.api.particle.ParticleAPI;
 import org.moon.figura.lua.api.particle.ParticleBuilder;
+import org.moon.figura.lua.api.ping.PingAPI;
+import org.moon.figura.lua.api.ping.PingFunction;
 import org.moon.figura.lua.api.sound.SoundAPI;
 import org.moon.figura.lua.api.sound.SoundBuilder;
 import org.moon.figura.lua.api.vanilla_model.VanillaGroupPart;
@@ -85,11 +89,6 @@ public class FiguraAPIManager {
         add(ParticleAPI.class);
         add(ParticleBuilder.class);
 
-        add(HostAPI.class);
-        add(RendererAPI.class);
-        add(ClientAPI.class);
-        add(MetaAPI.class);
-
         add(VanillaModelAPI.class);
         add(VanillaGroupPart.class);
         add(VanillaModelPart.class);
@@ -99,6 +98,8 @@ public class FiguraAPIManager {
 
         add(NameplateAPI.class);
         add(NameplateCustomization.class);
+        add(NameplateEntityCust.class);
+        add(NameplateGroupCust.class);
 
         add(ActionWheelAPI.class);
         add(Page.class);
@@ -115,7 +116,18 @@ public class FiguraAPIManager {
         add(BlockStateAPI.class);
         add(ItemStackAPI.class);
 
+        add(PingAPI.class);
+        add(PingFunction.class);
+
         add(Animation.class);
+
+        add(HostAPI.class);
+
+        add(RendererAPI.class);
+
+        add(ClientAPI.class);
+
+        add(MetaAPI.class);
     }};
 
     public static final Map<String, Function<FiguraLuaRuntime, Object>> API_GETTERS = new LinkedHashMap<>() {{
@@ -134,6 +146,7 @@ public class FiguraAPIManager {
         put("vectors", r -> VectorsAPI.INSTANCE);
         put("matrices", r -> MatricesAPI.INSTANCE);
         put("world", r -> WorldAPI.INSTANCE);
+        put("ping", r -> r.ping = new PingAPI(r.owner));
     }};
 
     static {

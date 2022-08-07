@@ -143,20 +143,24 @@ public class AvatarManager {
 
     //reloads an avatar
     public static void reloadAvatar(UUID id) {
-        //first clear the avatar
-        clearAvatar(id);
-
         //only non uploaded local needs to be manually reloaded
         //other ones will be fetched from backend on further request
         if (!localUploaded && FiguraMod.isLocal(id))
             loadLocalAvatar(LocalAvatarLoader.getLastLoadedPath());
+        else
+            clearAvatar(id);
     }
 
     //load the local player avatar
     public static void loadLocalAvatar(Path path) {
         //clear
         UUID id = FiguraMod.getLocalPlayerUUID();
-        clearAvatar(id);
+        if (LOADED_AVATARS.containsKey(id))
+            LOADED_AVATARS.get(id).clean();
+
+        FETCHED_AVATARS.remove(id);
+        NetworkManager.clearRequestsFor(id);
+        NetworkManager.unsubscribe(id);
 
         //mark as not uploaded
         localUploaded = false;

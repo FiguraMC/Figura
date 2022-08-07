@@ -1,10 +1,12 @@
 package org.moon.figura.backend;
 
 import com.google.gson.*;
+import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.ClientTelemetryManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientHandshakePacketListenerImpl;
@@ -20,6 +22,7 @@ import net.minecraft.network.protocol.login.ServerboundHelloPacket;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.config.Config;
+import org.moon.figura.lua.api.ping.PingArg;
 
 import java.io.ByteArrayOutputStream;
 import java.net.InetSocketAddress;
@@ -44,6 +47,7 @@ public class NetworkManager {
 
     private static Connection authConnection;
     protected static WebsocketManager backend;
+    protected static boolean websocketDebug = false;
 
     private static CompletableFuture<Void> tasks;
 
@@ -272,18 +276,23 @@ public class NetworkManager {
         NetworkManager.sendMessage(NetworkManager.GSON.toJson(sub));
     }
 
-    public static void sendPing(String name, boolean sync, Object... args) {
+    public static byte[] sendPing(String name, boolean sync, PingArg arg) {
+        byte[] data = arg.toByteArray();
+        if (data == null)
+            return null;
+
         JsonObject json = new JsonObject();
         json.addProperty("type", "sendPing");
         json.addProperty("name", name);
         json.addProperty("sync", sync);
 
         JsonArray array = new JsonArray();
-        for (Object arg : args)
-            array.add(arg.toString()); //TODO - fix it to allow any type
+        array.add(Base64.getEncoder().encodeToString(data));
 
         json.add("data", array);
         NetworkManager.sendMessage(NetworkManager.GSON.toJson(json));
+
+        return data;
     }
 
     // -- backend command -- //
@@ -347,9 +356,29 @@ public class NetworkManager {
         messageType.then(value);
         message.then(messageType);
 
+        //debug mode
+        LiteralArgumentBuilder<FabricClientCommandSource> debug = LiteralArgumentBuilder.literal("debug");
+        debug.executes(context -> {
+            websocketDebug = !websocketDebug;
+            FiguraMod.sendChatMessage(Component.literal("Backend Debug Mode set to: " + websocketDebug).withStyle(websocketDebug ? ChatFormatting.GREEN : ChatFormatting.RED));
+            return 1;
+        });
+
+        RequiredArgumentBuilder<FabricClientCommandSource, Boolean> bool = RequiredArgumentBuilder.argument("bool", BoolArgumentType.bool());
+        bool.executes(context -> {
+            websocketDebug = BoolArgumentType.getBool(context, "bool");
+            FiguraMod.sendChatMessage(Component.literal("Backend Debug Mode set to: " + websocketDebug).withStyle(websocketDebug ? ChatFormatting.GREEN : ChatFormatting.RED));
+            return 1;
+        });
+
+        //add arguments
+        debug.then(bool);
+
         //add commands to root
+
         backend.then(connect);
         backend.then(message);
+        backend.then(debug);
 
         return backend;
     }

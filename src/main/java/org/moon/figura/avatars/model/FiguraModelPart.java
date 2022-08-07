@@ -17,7 +17,6 @@ import org.moon.figura.avatars.model.rendertasks.RenderTask;
 import org.moon.figura.avatars.model.rendertasks.TextTask;
 import org.moon.figura.ducks.LivingEntityRendererAccessor;
 import org.moon.figura.lua.LuaNotNil;
-import org.moon.figura.lua.LuaTypeManager;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
@@ -198,7 +197,7 @@ public class FiguraModelPart {
         LuaTable table = new LuaTable();
         int i = 1;
         for (FiguraModelPart child : this.children)
-            table.set(i++, LuaTypeManager.java2Lua(owner.luaRuntime.typeManager, child));
+            table.set(i++, owner.luaRuntime.typeManager.javaToLua(child));
         return table;
     }
 
