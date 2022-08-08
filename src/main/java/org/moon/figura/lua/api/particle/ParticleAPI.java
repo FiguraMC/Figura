@@ -112,12 +112,6 @@ public class ParticleAPI {
         }
     }
 
-    @LuaWhitelist
-    @LuaMethodDoc(description = "particle.new_particle")
-    public ParticleBuilder newParticle() {
-        return new ParticleBuilder(owner);
-    }
-
     @Override
     public String toString() {
         return "ParticleAPI";

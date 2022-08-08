@@ -55,7 +55,7 @@ public abstract class AbstractPanelScreen extends Screen {
         UIHelper.useFiguraGuiFramebuffer();
 
         //render background
-        this.renderBackground();
+        this.renderBackground(delta);
 
         //render contents
         super.render(stack, mouseX, mouseY, delta);
@@ -67,10 +67,10 @@ public abstract class AbstractPanelScreen extends Screen {
         UIHelper.useVanillaFramebuffer();
     }
 
-    public void renderBackground() {
+    public void renderBackground(float delta) {
         //render
         float textureSize = (float) (64f / this.minecraft.getWindow().getGuiScale());
-        UIHelper.renderBackgroundTexture(BACKGROUND, 0, 0, this.width, this.height, textureSize, textureSize);
+        UIHelper.renderAnimatedBackground(BACKGROUND, 0, 0, this.width, this.height, textureSize, textureSize, delta);
     }
 
     public void renderOverlays(PoseStack stack, int mouseX, int mouseY, float delta) {

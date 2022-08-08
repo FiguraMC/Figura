@@ -5,6 +5,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
+import org.luaj.vm2.LuaTable;
+import org.moon.figura.avatars.Avatar;
+import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.entity.EntityAPI;
 import org.moon.figura.lua.api.entity.PlayerAPI;
@@ -124,7 +127,7 @@ public class WorldAPI {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(),
+                    @LuaFunctionOverload,
                     @LuaFunctionOverload(
                             argumentTypes = Double.class,
                             argumentNames = "delta"
@@ -140,7 +143,7 @@ public class WorldAPI {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(),
+                    @LuaFunctionOverload,
                     @LuaFunctionOverload(
                             argumentTypes = Double.class,
                             argumentNames = "delta"
@@ -155,7 +158,7 @@ public class WorldAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(),
+            overloads = @LuaFunctionOverload,
             description = "world.get_moon_phase"
     )
     public static int getMoonPhase() {
@@ -165,7 +168,7 @@ public class WorldAPI {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(),
+                    @LuaFunctionOverload,
                     @LuaFunctionOverload(
                             argumentTypes = Double.class,
                             argumentNames = "delta"
@@ -179,10 +182,7 @@ public class WorldAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(),
-            description = "world.is_thundering"
-    )
+    @LuaMethodDoc(description = "world.is_thundering")
     public static boolean isThundering() {
         return getCurrentWorld().isThundering();
     }
@@ -285,10 +285,7 @@ public class WorldAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(),
-            description = "world.get_players"
-    )
+    @LuaMethodDoc(description = "world.get_players")
     public static Map<String, EntityAPI<?>> getPlayers() {
         HashMap<String, EntityAPI<?>> playerList = new HashMap<>();
         for (Player player : getCurrentWorld().players())
@@ -297,10 +294,19 @@ public class WorldAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(),
-            description = "world.exists"
-    )
+    @LuaMethodDoc(description = "world.player_vars")
+    public static Map<String, LuaTable> playerVars() {
+        HashMap<String, LuaTable> playerList = new HashMap<>();
+        for (Player player : getCurrentWorld().players()) {
+            Avatar avatar = AvatarManager.getAvatarForPlayer(player.getUUID());
+            LuaTable tbl = avatar == null || avatar.luaRuntime == null ? new LuaTable() : avatar.luaRuntime.avatar_meta.storedStuff;
+            playerList.put(player.getName().getString(), tbl);
+        }
+        return playerList;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(description = "world.exists")
     public static boolean exists() {
         return getCurrentWorld() != null;
     }

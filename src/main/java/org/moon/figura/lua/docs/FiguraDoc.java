@@ -117,7 +117,7 @@ public abstract class FiguraDoc {
                 message.append(" (")
                         .append(FiguraText.of("docs.text.extends"))
                         .append(" ")
-                        .append(Component.literal(FiguraDocsManager.getNameFor(superclass)).withStyle(ColorUtils.Colors.MAYA_BLUE.style))
+                        .append(FiguraDocsManager.getClassText(superclass).withStyle(ChatFormatting.YELLOW))
                         .append(")");
             }
 
@@ -228,8 +228,7 @@ public abstract class FiguraDoc {
 
                 for (int j = 0; j < parameterTypes[i].length; j++) {
                     //type and arg
-                    String typeName = FiguraDocsManager.getNameFor(parameterTypes[i][j]);
-                    message.append(Component.literal(typeName).withStyle(ChatFormatting.YELLOW))
+                    message.append(FiguraDocsManager.getClassText(parameterTypes[i][j]).withStyle(ChatFormatting.YELLOW))
                             .append(" ")
                             .append(Component.literal(parameterNames[i][j]).withStyle(ChatFormatting.WHITE));
 
@@ -240,7 +239,7 @@ public abstract class FiguraDoc {
                 //return
                 message.append("): ")
                         .append(FiguraText.of("docs.text.returns").append(" ").withStyle(ColorUtils.Colors.MAYA_BLUE.style))
-                        .append(Component.literal(FiguraDocsManager.getNameFor(returnTypes[i])).withStyle(ChatFormatting.YELLOW));
+                        .append(FiguraDocsManager.getClassText(returnTypes[i]).withStyle(ChatFormatting.YELLOW));
             }
 
             //description
@@ -329,7 +328,7 @@ public abstract class FiguraDoc {
                             .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
                     .append("\n\t")
                     .append(Component.literal("• ").withStyle(ColorUtils.Colors.MAYA_BLUE.style))
-                    .append(Component.literal(FiguraDocsManager.getNameFor(type)).withStyle(ChatFormatting.YELLOW))
+                    .append(FiguraDocsManager.getClassText(type).withStyle(ChatFormatting.YELLOW))
                     .append(Component.literal(" " + name).withStyle(ColorUtils.Colors.MAYA_BLUE.style))
                     .append(Component.literal(" (")
                             .append(FiguraText.of(editable ? "docs.text.editable" : "docs.text.not_editable"))

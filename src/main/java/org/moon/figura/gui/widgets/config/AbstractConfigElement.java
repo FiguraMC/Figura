@@ -4,17 +4,15 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
 import org.moon.figura.config.Config;
 import org.moon.figura.gui.widgets.AbstractContainerElement;
 import org.moon.figura.gui.widgets.TexturedButton;
 import org.moon.figura.gui.widgets.lists.ConfigList;
-import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.ui.UIHelper;
 
 public abstract class AbstractConfigElement extends AbstractContainerElement {
 
-    public static final Component HOVERED_ARROW = Component.literal(">").setStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT));
+    public static final Component HOVERED_ARROW = Component.literal("•");
 
     protected final Config config;
     protected final ConfigList parent;
@@ -45,7 +43,7 @@ public abstract class AbstractConfigElement extends AbstractContainerElement {
 
         //hovered arrow
         hovered = isMouseOver(mouseX, mouseY);
-        if (hovered) font.draw(stack, HOVERED_ARROW, x + 4, textY, 0xFFFFFF);
+        if (hovered) font.draw(stack, HOVERED_ARROW, x + 8 - font.width(HOVERED_ARROW) / 2f, textY, 0xFFFFFF);
 
         //render name
         font.draw(stack, config.name, x + 16, textY, 0xFFFFFF);

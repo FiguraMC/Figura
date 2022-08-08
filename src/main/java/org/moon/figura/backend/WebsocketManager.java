@@ -11,6 +11,7 @@ import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.RefilledNumber;
 
 import java.net.URI;
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -82,6 +83,13 @@ public class WebsocketManager extends WebSocketClient {
     }
 
     @Override
+    public void onMessage(ByteBuffer bytes) {
+        if (NetworkManager.websocketDebug)
+            FiguraMod.sendChatMessage(Component.literal("Received raw message [" + bytes.remaining() + "b]"));
+        //MessageHandler.handleMessage(bytes);
+    }
+
+    @Override
     public void onClose(int code, String reason, boolean remote) {
         reason = reason.isBlank() ? ERROR_CODES.getOrDefault(code, "Unknown") : reason;
 
@@ -111,6 +119,13 @@ public class WebsocketManager extends WebSocketClient {
         if (NetworkManager.websocketDebug)
             FiguraMod.sendChatMessage(Component.literal("Sending message: " + text));
         super.send(text);
+    }
+
+    @Override
+    public void send(byte[] data) {
+        if (NetworkManager.websocketDebug)
+            FiguraMod.sendChatMessage(Component.literal("Sending raw message [" + data.length + "b]"));
+        super.send(data);
     }
 
     private void handleClose(int code) {

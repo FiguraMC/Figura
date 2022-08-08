@@ -46,7 +46,7 @@ public class FiguraLuaRuntime {
     public NameplateAPI nameplate;
     public RendererAPI renderer;
     public ActionWheelAPI action_wheel;
-    public MetaAPI meta;
+    public AvatarAPI avatar_meta;
 
     public PingAPI ping;
 

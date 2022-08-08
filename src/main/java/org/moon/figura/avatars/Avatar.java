@@ -79,7 +79,7 @@ public class Avatar {
     public final Map<String, SoundBuffer> customSounds = new HashMap<>();
     public final Map<Integer, Animation> animations = new ConcurrentHashMap<>();
 
-    private int entityRenderLimit, worldRenderLimit;
+    private int worldRenderLimit;
 
     //runtime status
     public boolean hasTexture = false;
@@ -228,7 +228,7 @@ public class Avatar {
         int entityTickLimit = trust.get(TrustContainer.Trust.TICK_INST);
         tryCall(luaRuntime.events.TICK, entityTickLimit, LuaValue.NONE);
         if (luaRuntime != null) {
-            entityTickInstructions = entityTickLimit - luaRuntime.getInstructions();
+            entityTickInstructions = luaRuntime.getInstructions();
             accumulatedTickInstructions += entityTickInstructions;
         }
     }
@@ -240,7 +240,7 @@ public class Avatar {
         int worldTickLimit = trust.get(TrustContainer.Trust.WORLD_TICK_INST);
         tryCall(luaRuntime.events.WORLD_TICK, worldTickLimit, LuaValue.NONE);
         if (luaRuntime != null) {
-            worldTickInstructions = worldTickLimit - luaRuntime.getInstructions();
+            worldTickInstructions = luaRuntime.getInstructions();
             accumulatedTickInstructions = worldTickInstructions;
         }
     }
@@ -249,10 +249,10 @@ public class Avatar {
         if (scriptError || luaRuntime == null)
             return;
 
-        entityRenderLimit = trust.get(TrustContainer.Trust.RENDER_INST);
+        int entityRenderLimit = trust.get(TrustContainer.Trust.RENDER_INST);
         tryCall(luaRuntime.events.RENDER, entityRenderLimit, LuaDouble.valueOf(delta));
         if (luaRuntime != null) {
-            entityRenderInstructions = entityRenderLimit - luaRuntime.getInstructions();
+            entityRenderInstructions = luaRuntime.getInstructions();
             accumulatedEntityRenderInstructions = entityRenderInstructions;
         }
     }
@@ -263,7 +263,7 @@ public class Avatar {
 
         tryCall(luaRuntime.events.POST_RENDER, -1, LuaDouble.valueOf(delta));
         if (luaRuntime != null) {
-            postEntityRenderInstructions = entityRenderLimit - accumulatedEntityRenderInstructions - luaRuntime.getInstructions();
+            postEntityRenderInstructions = luaRuntime.getInstructions() - entityRenderInstructions;
             accumulatedEntityRenderInstructions += postEntityRenderInstructions;
         }
     }
@@ -275,7 +275,7 @@ public class Avatar {
         worldRenderLimit = trust.get(TrustContainer.Trust.WORLD_RENDER_INST);
         tryCall(luaRuntime.events.WORLD_RENDER, worldRenderLimit, LuaDouble.valueOf(delta));
         if (luaRuntime != null) {
-            worldRenderInstructions = worldRenderLimit - luaRuntime.getInstructions();
+            worldRenderInstructions = luaRuntime.getInstructions();
             accumulatedWorldRenderInstructions = worldRenderInstructions;
         }
     }
@@ -284,9 +284,9 @@ public class Avatar {
         if (scriptError || luaRuntime == null)
             return;
 
-        tryCall(luaRuntime.events.POST_WORLD_RENDER, -1, LuaDouble.valueOf(delta));
+        tryCall(luaRuntime.events.POST_WORLD_RENDER, Math.max(worldRenderLimit - worldRenderInstructions, 1), LuaDouble.valueOf(delta));
         if (luaRuntime != null) {
-            postWorldRenderInstructions = worldRenderLimit - accumulatedEntityRenderInstructions - luaRuntime.getInstructions();
+            postWorldRenderInstructions = luaRuntime.getInstructions();
             accumulatedWorldRenderInstructions += postWorldRenderInstructions;
         }
         renderer.allowMatrixUpdate = false;
@@ -556,7 +556,7 @@ public class Avatar {
         if (error) {
             this.luaRuntime = null;
         } else {
-            initInstructions = initLimit - luaRuntime.getInstructions();
+            initInstructions = luaRuntime.getInstructions();
         }
     }
 

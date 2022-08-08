@@ -23,7 +23,6 @@ import org.moon.figura.lua.api.nameplate.NameplateCustomization;
 import org.moon.figura.lua.api.nameplate.NameplateEntityCust;
 import org.moon.figura.lua.api.nameplate.NameplateGroupCust;
 import org.moon.figura.lua.api.particle.ParticleAPI;
-import org.moon.figura.lua.api.particle.ParticleBuilder;
 import org.moon.figura.lua.api.ping.PingAPI;
 import org.moon.figura.lua.api.ping.PingFunction;
 import org.moon.figura.lua.api.sound.LuaSound;
@@ -84,7 +83,6 @@ public class FiguraAPIManager {
         add(LuaSound.class);
 
         add(ParticleAPI.class);
-        add(ParticleBuilder.class);
 
         add(VanillaModelAPI.class);
         add(VanillaGroupPart.class);
@@ -124,7 +122,7 @@ public class FiguraAPIManager {
 
         add(ClientAPI.class);
 
-        add(MetaAPI.class);
+        add(AvatarAPI.class);
     }};
 
     public static final Map<String, Function<FiguraLuaRuntime, Object>> API_GETTERS = new LinkedHashMap<>() {{
@@ -139,7 +137,7 @@ public class FiguraAPIManager {
         put("animations", r -> Animation.getTableForAnimations(r.owner));
         put("client", r -> ClientAPI.INSTANCE);
         put("particle", r -> new ParticleAPI(r.owner));
-        put("meta", r -> r.meta = new MetaAPI(r.owner));
+        put("avatar", r -> r.avatar_meta = new AvatarAPI(r.owner));
         put("vectors", r -> VectorsAPI.INSTANCE);
         put("matrices", r -> MatricesAPI.INSTANCE);
         put("world", r -> WorldAPI.INSTANCE);

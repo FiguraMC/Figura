@@ -15,32 +15,32 @@ import org.moon.figura.utils.LuaUtils;
 
 @LuaWhitelist
 @LuaTypeDoc(
-        name = "MetaAPI",
-        description = "meta"
+        name = "AvatarAPI",
+        description = "avatar"
 )
-public class MetaAPI {
+public class AvatarAPI {
 
     private final Avatar avatar;
     public final LuaTable storedStuff = new LuaTable();
 
-    public MetaAPI(Avatar avatar) {
+    public AvatarAPI(Avatar avatar) {
         this.avatar = avatar;
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
-                    argumentTypes = {String.class, LuaValue.class},
+                    argumentTypes = {String.class, Object.class},
                     argumentNames = {"key", "value"}
             ),
-            description = "meta.store"
+            description = "avatar.store"
     )
     public void store(@LuaNotNil String key, LuaValue value) {
         storedStuff.set(key, value);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "meta.get_color")
+    @LuaMethodDoc(description = "avatar.get_color")
     public String getColor() {
         return avatar.color;
     }
@@ -57,7 +57,7 @@ public class MetaAPI {
                             argumentNames = {"r", "g", "b"}
                     )
             },
-            description = "meta.set_color"
+            description = "avatar.set_color"
     )
     public void setColor(@LuaNotNil Object r, Double g, Double b) {
         FiguraVec3 vec = LuaUtils.parseVec3("setColor", r, g, b, 1, 1, 1);
@@ -67,173 +67,173 @@ public class MetaAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "meta.get_version")
+    @LuaMethodDoc(description = "avatar.get_version")
     public String getVersion() {
         return avatar.version;
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "meta.get_authors")
+    @LuaMethodDoc(description = "avatar.get_authors")
     public String getAuthors() {
         return avatar.authors;
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "meta.get_name")
+    @LuaMethodDoc(description = "avatar.get_name")
     public String getName() {
         return avatar.name;
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "meta.get_size")
+    @LuaMethodDoc(description = "avatar.get_size")
     public double getSize() {
         return avatar.fileSize;
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "meta.has_texture")
+    @LuaMethodDoc(description = "avatar.has_texture")
     public Boolean hasTexture() {
         return avatar.hasTexture;
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "meta.has_script_error")
+    @LuaMethodDoc(description = "avatar.has_script_error")
     public Boolean hasScriptError() {
         //useless I know
         return avatar.scriptError;
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "meta.get_init_count")
+    @LuaMethodDoc(description = "avatar.get_init_count")
     public int getInitCount() {
         return avatar.initInstructions;
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "meta.get_max_init_count")
+    @LuaMethodDoc(description = "avatar.get_max_init_count")
     public int getMaxInitCount() {
         return avatar.trust.get(TrustContainer.Trust.INIT_INST);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "meta.get_tick_count")
+    @LuaMethodDoc(description = "avatar.get_tick_count")
     public int getTickCount() {
         return avatar.entityTickInstructions;
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "meta.get_max_tick_count")
+    @LuaMethodDoc(description = "avatar.get_max_tick_count")
     public int getMaxTickCount() {
         return avatar.trust.get(TrustContainer.Trust.TICK_INST);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "meta.get_render_count")
+    @LuaMethodDoc(description = "avatar.get_render_count")
     public int getRenderCount() {
         return avatar.entityRenderInstructions;
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "meta.get_max_render_count")
+    @LuaMethodDoc(description = "avatar.get_max_render_count")
     public int getMaxRenderCount() {
         return avatar.trust.get(TrustContainer.Trust.RENDER_INST);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "meta.get_world_tick_count")
+    @LuaMethodDoc(description = "avatar.get_world_tick_count")
     public int getWorldTickCount() {
         return avatar.worldTickInstructions;
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "meta.get_max_world_tick_count")
+    @LuaMethodDoc(description = "avatar.get_max_world_tick_count")
     public int getMaxWorldTickCount() {
         return avatar.trust.get(TrustContainer.Trust.WORLD_TICK_INST);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "meta.get_world_render_count")
+    @LuaMethodDoc(description = "avatar.get_world_render_count")
     public int getWorldRenderCount() {
         return avatar.worldRenderInstructions;
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "meta.get_max_world_render_count")
+    @LuaMethodDoc(description = "avatar.get_max_world_render_count")
     public int getMaxWorldRenderCount() {
         return avatar.trust.get(TrustContainer.Trust.WORLD_RENDER_INST);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "meta.get_complexity")
+    @LuaMethodDoc(description = "avatar.get_complexity")
     public int getComplexity() {
         return avatar.complexity;
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "meta.get_max_complexity")
-    public int getMaxComplexity(@LuaNotNil MetaAPI api) {
+    @LuaMethodDoc(description = "avatar.get_max_complexity")
+    public int getMaxComplexity(@LuaNotNil AvatarAPI api) {
         return avatar.trust.get(TrustContainer.Trust.COMPLEXITY);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "meta.get_remaining_particles")
+    @LuaMethodDoc(description = "avatar.get_remaining_particles")
     public int getRemainingParticles() {
         return avatar.particlesRemaining.peek();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "meta.get_max_particles")
+    @LuaMethodDoc(description = "avatar.get_max_particles")
     public int getMaxParticles() {
         return avatar.trust.get(TrustContainer.Trust.PARTICLES);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "meta.get_remaining_sounds")
+    @LuaMethodDoc(description = "avatar.get_remaining_sounds")
     public int getRemainingSounds() {
         return avatar.soundsRemaining.peek();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "meta.get_max_sounds")
+    @LuaMethodDoc(description = "avatar.get_max_sounds")
     public int getMaxSounds() {
         return avatar.trust.get(TrustContainer.Trust.SOUNDS);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "meta.get_animation_complexity")
+    @LuaMethodDoc(description = "avatar.get_animation_complexity")
     public int getAnimationComplexity() {
         return avatar.animationComplexity;
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "meta.get_max_animation_complexity")
+    @LuaMethodDoc(description = "avatar.get_max_animation_complexity")
     public int getMaxAnimationComplexity() {
         return avatar.trust.get(TrustContainer.Trust.BB_ANIMATIONS);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "meta.can_edit_vanilla_model")
+    @LuaMethodDoc(description = "avatar.can_edit_vanilla_model")
     public boolean canEditVanillaModel() {
         TrustContainer.Trust trust = TrustContainer.Trust.VANILLA_MODEL_EDIT;
         return trust.asBoolean(avatar.trust.get(trust));
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "meta.can_edit_nameplate")
+    @LuaMethodDoc(description = "avatar.can_edit_nameplate")
     public boolean canEditNameplate() {
         TrustContainer.Trust trust = TrustContainer.Trust.NAMEPLATE_EDIT;
         return trust.asBoolean(avatar.trust.get(trust));
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "meta.can_render_offscreen")
+    @LuaMethodDoc(description = "avatar.can_render_offscreen")
     public boolean canRenderOffscreen() {
         TrustContainer.Trust trust = TrustContainer.Trust.OFFSCREEN_RENDERING;
         return trust.asBoolean(avatar.trust.get(trust));
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "meta.can_use_custom_sounds")
+    @LuaMethodDoc(description = "avatar.can_use_custom_sounds")
     public boolean canUseCustomSounds() {
         TrustContainer.Trust trust = TrustContainer.Trust.CUSTOM_SOUNDS;
         return trust.asBoolean(avatar.trust.get(trust));
@@ -241,6 +241,6 @@ public class MetaAPI {
 
     @Override
     public String toString() {
-        return "MetaAPI";
+        return "AvatarAPI";
     }
 }

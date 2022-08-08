@@ -6,7 +6,6 @@ import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import org.luaj.vm2.LuaError;
-import org.luaj.vm2.LuaTable;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.model.rendering.ImmediateAvatarRenderer;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
@@ -193,12 +192,11 @@ public class FiguraModelPart {
 
     @LuaWhitelist
     @LuaMethodDoc(description = "model_part.get_children")
-    public LuaTable getChildren() {
-        LuaTable table = new LuaTable();
-        int i = 1;
-        for (FiguraModelPart child : this.children)
-            table.set(i++, owner.luaRuntime.typeManager.javaToLua(child));
-        return table;
+    public Map<Integer, FiguraModelPart> getChildren() {
+        Map<Integer, FiguraModelPart> map = new HashMap<>();
+        for (int i = 0; i < this.children.size(); i++)
+            map.put(i + 1, this.children.get(i));
+        return map;
     }
 
     @LuaWhitelist

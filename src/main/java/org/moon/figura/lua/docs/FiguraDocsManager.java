@@ -7,11 +7,12 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
-import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.Style;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.*;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaUserdata;
+import org.luaj.vm2.LuaValue;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.animation.Animation;
 import org.moon.figura.avatars.model.FiguraModelPart;
@@ -23,7 +24,6 @@ import org.moon.figura.gui.actionwheel.*;
 import org.moon.figura.lua.api.nameplate.NameplateEntityCust;
 import org.moon.figura.lua.api.nameplate.NameplateGroupCust;
 import org.moon.figura.lua.api.particle.ParticleAPI;
-import org.moon.figura.lua.api.particle.ParticleBuilder;
 import org.moon.figura.lua.api.ping.PingAPI;
 import org.moon.figura.lua.api.ping.PingFunction;
 import org.moon.figura.lua.api.sound.LuaSound;
@@ -80,7 +80,7 @@ public class FiguraDocsManager {
 
         put(String.class, "String");
 
-        put(Object.class, "AnyType"); //not sure if best name //Fran - yes it is
+        put(Object.class, "AnyType");
         put(LuaUserdata.class, "Userdata");
 
         put(Boolean.class, "Boolean");
@@ -90,9 +90,14 @@ public class FiguraDocsManager {
         put(LuaFunction.class, "Function");
         put(LuaTable.class, "Table");
 
+        //converted things
+        put(LuaValue.class, "AnyType");
+        put(Map.class, "Table");
+
         //Figura types
         put(FiguraVector.class, "Vector");
     }};
+    private static final Map<Class<?>, String> CLASS_COMMAND_MAP = new HashMap<>();
 
     // -- docs generator data -- //
 
@@ -178,16 +183,15 @@ public class FiguraDocsManager {
                 HostAPI.class
         ));
 
-        put("meta", List.of(
-                MetaAPI.class
+        put("avatar", List.of(
+                AvatarAPI.class
         ));
 
-        put("particle", List.of(
-                ParticleAPI.class,
-                ParticleBuilder.class
+        put("particles", List.of(
+                ParticleAPI.class
         ));
 
-        put("sound", List.of(
+        put("sounds", List.of(
                 SoundAPI.class,
                 LuaSound.class
         ));
@@ -196,7 +200,7 @@ public class FiguraDocsManager {
                 RendererAPI.class
         ));
 
-        put("ping", List.of(
+        put("pings", List.of(
                 PingAPI.class,
                 PingFunction.class
         ));
@@ -214,7 +218,7 @@ public class FiguraDocsManager {
         //generate children override
         for (Map.Entry<String, List<Class<?>>> packageEntry : GLOBAL_CHILDREN.entrySet()) {
             for (Class<?> documentedClass : packageEntry.getValue()) {
-                FiguraDoc.ClassDoc doc = generateDocFor(documentedClass);
+                FiguraDoc.ClassDoc doc = generateDocFor(documentedClass, "globals " + packageEntry.getKey());
                 if (doc != null)
                     GENERATED_CHILDREN.computeIfAbsent(packageEntry.getKey(), s -> new ArrayList<>()).add(doc);
             }
@@ -222,7 +226,7 @@ public class FiguraDocsManager {
 
         //generate standard libraries overrides
         for (Class<?> lib : LUA_LIB_OVERRIDES) {
-            FiguraDoc.ClassDoc libDoc = generateDocFor(lib);
+            FiguraDoc.ClassDoc libDoc = generateDocFor(lib, null);
             if (libDoc != null)
                 GENERATED_LIB_OVERRIDES.add(libDoc);
         }
@@ -232,12 +236,13 @@ public class FiguraDocsManager {
         global = new FiguraDoc.ClassDoc(globalClass, globalClass.getAnnotation(LuaTypeDoc.class), GENERATED_CHILDREN);
     }
 
-    private static FiguraDoc.ClassDoc generateDocFor(Class<?> documentedClass) {
+    private static FiguraDoc.ClassDoc generateDocFor(Class<?> documentedClass, String pack) {
         if (!documentedClass.isAnnotationPresent(LuaTypeDoc.class))
             return null;
 
         FiguraDoc.ClassDoc doc = new FiguraDoc.ClassDoc(documentedClass, documentedClass.getAnnotation(LuaTypeDoc.class));
         NAME_MAP.put(documentedClass, doc.name);
+        CLASS_COMMAND_MAP.put(documentedClass, "/figura docs " + (pack == null ? "" : pack) + " " + doc.name);
         return doc;
     }
 
@@ -248,6 +253,21 @@ public class FiguraDocsManager {
             else
                 return clazz.getName();
         });
+    }
+
+    public static MutableComponent getClassText(Class<?> clazz) {
+        String name = getNameFor(clazz);
+        String doc = CLASS_COMMAND_MAP.get(clazz);
+
+        MutableComponent text = Component.literal(name);
+        if (doc == null)
+            return text;
+
+        text.setStyle(
+                Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, doc))
+                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, FiguraText.of("command.docs_type_hover", Component.literal(name).withStyle(ChatFormatting.DARK_PURPLE))))
+                .withUnderlined(true));
+        return text;
     }
 
     // -- commands -- //

@@ -23,6 +23,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
+import org.moon.figura.FiguraMod;
 import org.moon.figura.gui.screens.AbstractPanelScreen;
 import org.moon.figura.gui.widgets.ContextMenu;
 import org.moon.figura.utils.FiguraIdentifier;
@@ -190,7 +191,17 @@ public class UIHelper extends GuiComponent {
         blit(stack, x, y, width, height, 0f, 0f, 1, 1, 1, 1);
     }
 
-    public static void renderBackgroundTexture(ResourceLocation texture, int x, int y, int width, int height, float textureWidth, float textureHeight) {
+    public static void renderAnimatedBackground(ResourceLocation texture, double x, double y, float width, float height, float textureWidth, float textureHeight, float delta) {
+        x -= (FiguraMod.ticks / 4f) % textureWidth + delta;
+        y -= (FiguraMod.ticks / 4f) % textureHeight + delta;
+
+        width += textureWidth;
+        height += textureHeight;
+
+        renderBackgroundTexture(texture, x, y, width, height, textureWidth, textureHeight);
+    }
+
+    public static void renderBackgroundTexture(ResourceLocation texture, double x, double y, float width, float height, float textureWidth, float textureHeight) {
         setupTexture(texture);
 
         Tesselator tessellator = Tesselator.getInstance();

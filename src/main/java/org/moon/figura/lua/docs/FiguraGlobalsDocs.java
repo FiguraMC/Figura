@@ -57,18 +57,18 @@ public abstract class FiguraGlobalsDocs {
     public ClientAPI client;
     @LuaFieldDoc(description = "globals.host")
     public HostAPI host;
-    @LuaFieldDoc(description = "globals.meta")
-    public MetaAPI meta;
-    @LuaFieldDoc(description = "globals.particle")
-    public ParticleAPI particle;
-    @LuaFieldDoc(description = "globals.sound")
-    public SoundAPI sound;
+    @LuaFieldDoc(description = "globals.avatar")
+    public AvatarAPI avatar;
+    @LuaFieldDoc(description = "globals.particles")
+    public ParticleAPI particles;
+    @LuaFieldDoc(description = "globals.sounds")
+    public SoundAPI sounds;
     @LuaFieldDoc(description = "globals.renderer")
     public RendererAPI renderer;
     @LuaFieldDoc(description = "globals.user")
     public EntityAPI<?> user;
-    @LuaFieldDoc(description = "globals.ping")
-    public PingAPI ping;
+    @LuaFieldDoc(description = "globals.pings")
+    public PingAPI pings;
 
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(

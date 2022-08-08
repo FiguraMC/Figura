@@ -2,7 +2,6 @@ package org.moon.figura.lua.api.sound;
 
 
 import com.mojang.blaze3d.audio.SoundBuffer;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
@@ -10,21 +9,19 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import org.luaj.vm2.LuaError;
 import org.moon.figura.avatars.Avatar;
-import org.moon.figura.ducks.SoundEngineAccessor;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.world.WorldAPI;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
-import org.moon.figura.mixin.sound.SoundManagerAccessor;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.utils.LuaUtils;
 
 @LuaWhitelist
 @LuaTypeDoc(
         name = "Sound",
-        description = "sound"
+        description = "lua_sound"
 )
 public class LuaSound {
 
@@ -33,10 +30,6 @@ public class LuaSound {
     private final String id;
     private final SoundBuffer buffer; //For custom sounds
     private final SoundEvent event; //For vanilla sounds
-
-    public static SoundEngineAccessor getSoundEngine() {
-        return (SoundEngineAccessor) ((SoundManagerAccessor) Minecraft.getInstance().getSoundManager()).getSoundEngine();
-    }
 
     public LuaSound(String id, Avatar owner) {
         this.owner = owner;
@@ -71,7 +64,7 @@ public class LuaSound {
                             argumentNames = {"posX", "posY", "posZ", "volume", "pitch", "loop"}
                     )
             },
-            description = "sound.play_sound"
+            description = "lua_sound.play_sound"
     )
     public void play(Object x, Double y, Double z, Object w, Double t, Boolean bl) {
         if (!owner.soundsRemaining.use())
@@ -107,7 +100,7 @@ public class LuaSound {
         }
 
         if (custom) {
-            getSoundEngine().figura$playCustomSound(
+            SoundAPI.getSoundEngine().figura$playCustomSound(
                     owner.owner,
                     id,
                     buffer,
@@ -122,7 +115,7 @@ public class LuaSound {
                         RandomSource.create(WorldAPI.getCurrentWorld().random.nextLong()),
                         pos.x, pos.y, pos.z);
 
-                getSoundEngine().figura$playSound(
+                SoundAPI.getSoundEngine().figura$playSound(
                         owner.owner, id, instance, loop
                 );
             } catch (Exception ignored) {}

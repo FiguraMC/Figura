@@ -88,7 +88,12 @@ public enum Config {
     }},
     LOG_OTHERS(false),
     LOG_PINGS(0, 3),
-    SYNC_PINGS(false),
+    SYNC_PINGS(false) {{
+        String tooltip = "config.sync_pings.tooltip.";
+        this.tooltip = FiguraText.of(tooltip + "1")
+                .append("\n")
+                .append(FiguraText.of(tooltip + "2").withStyle(ChatFormatting.RED));
+    }},
     MAIN_DIR("", InputType.FOLDER_PATH),
     AUTH_SERVER_IP("figura.moonlight-devs.org:25565", InputType.IP) {
         @Override
