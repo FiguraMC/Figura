@@ -238,7 +238,11 @@ public class FiguraLuaRuntime {
         @Override
         public LuaValue call() {
             //TODO: translation key for this // cant unless if we do it in a cursed way
-            FiguraLuaPrinter.sendLuaError(new LuaError("Script overran resource limits!"), owner.name, owner.owner);
+            if (!owner.scriptError) {
+                FiguraLuaPrinter.sendLuaError(new LuaError("Script overran resource limits!"), owner.name, owner.owner);
+                owner.scriptError = true;
+            }
+            setInstructionLimit(1);
             return LuaValue.NIL;
         }
     };

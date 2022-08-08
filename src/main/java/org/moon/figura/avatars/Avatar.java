@@ -282,7 +282,7 @@ public class Avatar {
     }
 
     public void postWorldRenderEvent(float delta) {
-        if (scriptError || luaRuntime == null)
+        if (scriptError || luaRuntime == null || worldRenderLimit == 0)
             return;
 
         tryCall(luaRuntime.events.POST_WORLD_RENDER, Math.max(worldRenderLimit - worldRenderInstructions, 1), LuaDouble.valueOf(delta));
