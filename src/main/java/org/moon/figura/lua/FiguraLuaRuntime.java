@@ -219,7 +219,8 @@ public class FiguraLuaRuntime {
 
                 LuaValue retVal = runScript(src, scriptName);
                 if (retVal == null) {
-                    throw new LuaError("Error running required script " + scriptName);
+                    //throw new LuaError("Error running required script " + scriptName);
+                    return FALSE;
                 }
 
                 //If luaState didn't return anything, we want the function to return true

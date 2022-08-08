@@ -32,6 +32,8 @@ public enum EventHandler {
         String data = json.get("data").getAsString();
 
         avatar.runPing(name, Base64.getDecoder().decode(data.getBytes()));
+        NetworkManager.pingsReceived++;
+        if (NetworkManager.lastPing == 0) NetworkManager.lastPing = FiguraMod.ticks;
     }),
     DELETE((owner, json) -> {
         if (!FiguraMod.isLocal(owner) || AvatarManager.localUploaded)

@@ -344,6 +344,7 @@
   "figura.docs.sounds": "A global API which is used to play Minecraft sounds. Accessed using the name \"sounds\".",
   "figura.docs.sounds.play_sound": "Plays the specified sound at the specified position with the given volume and pitch multipliers. The sound id is either an identifier or the custom sound name. Volume in Minecraft refers to how far away people can hear the sound from, not the actual loudness of it. If you don't give values for volume and pitch, the default values are 1.",
   "figura.docs.sounds.stop_sound": "Stops the playing sounds from this avatar. If an id is specified, it only stops the sounds from that id.",
+  "figura.docs.sounds.add_sound": "Registers a new custom sound for this avatar. The first argument is the sound id while the second argument is either a byte array of the sound data, or a base64 string representation of the same.",
 
   "figura.docs.sound": "Represents a sound that can be played. Obtained by indexing the SoundAPI. Exists as an object-oriented alternative to sounds:playSound().",
   "figura.docs.sound.play": "Plays this sound with the given parameters. Volume in Minecraft refers to how far away people can hear from, not the actual loudness. The defaults for volume and pitch are 1.",
@@ -693,6 +694,7 @@
   "figura.docs.entity.get_nbt": "Gets a table containing the NBT of this entity. Please note that not all values in the entity's NBT may be synced, as some are handled only on server side.",
   "figura.docs.entity.is_on_fire": "Returns true if this entity is currently on fire.",
   "figura.docs.entity.get_targeted_block": "Returns a proxy for your currently targeted BlockState. This BlockState appears on the F3 screen. Maximum and Default distance is 20, Minimum is -20",
+  "figura.docs.entity.get_variable": "Gets the value of a variable this entity stored in themselves using the Avatar api's store() function.",
 
   "figura.docs.living_entity": "Acts as a proxy for a living entity in the Minecraft world.",
   "figura.docs.living_entity.get_body_yaw": "Gets the yaw of this entity's body in degrees. If delta is passed in, then it will be used to linearly interpolate the rotation of the body between the previous tick and the current tick. The default value of delta is 1.",
@@ -789,6 +791,7 @@
 
   "figura.docs.avatar": "A global API containing functions to interact with your avatar's metadata, and also to get information about the current script environment.",
   "figura.docs.avatar.store": "Store the given key-value pair inside your current avatar's metadata. Someone else can get this information from a different script with the playerVars() function in World. The key must be a string.",
+  "figura.docs.avatar.get_current_instructions": "Gets the current instructions :) .",
   "figura.docs.avatar.get_color": "Gets the current color string of your avatar, used as your avatar theme.",
   "figura.docs.avatar.set_color": "Sets the current color string of your avatar, used as your avatar theme.",
   "figura.docs.avatar.get_version": "Gets the version string of this avatar.",
@@ -860,6 +863,7 @@
   "figura.docs.vectors.hex_to_rgb": "Parses a hex string color into a RGB format vector. The hex \"#\" is optional, and it can have any length, however only the first 6 hex digits are evaluated, short hex (length 3) is also supported. For example, \"#42\" is the same as \"420000\", and \"F0B\" is the same as \"FF00BB\"",
   "figura.docs.vectors.hsv_to_rgb": "Converts the given color from HSV format to RGB format.",
   "figura.docs.vectors.rgb_to_hsv": "Converts the given color from RGB format to HSV format.",
+  "figura.docs.vectors.rgb_to_hex": "Converts the given color from RGB format to HEX format. The \"#\" is not included on the return hex.",
   "figura.docs.vectors.rainbow": "Gets an rgb vector with a shifting hue based on the given speed value and how much time the game is opened.",
   "figura.docs.vectors.rotate_around_axis": "Rotates a vector relative to a rotation vector.",
   "figura.docs.vectors.to_camera_space": "Converts a position in the world into a position relative to the viewer's camera.",

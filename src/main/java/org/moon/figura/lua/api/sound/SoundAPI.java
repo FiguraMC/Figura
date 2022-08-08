@@ -1,6 +1,8 @@
 package org.moon.figura.lua.api.sound;
 
 import net.minecraft.client.Minecraft;
+import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaTable;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.ducks.SoundEngineAccessor;
 import org.moon.figura.lua.LuaNotNil;
@@ -11,8 +13,8 @@ import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.mixin.sound.SoundManagerAccessor;
-import org.moon.figura.trust.TrustContainer;
 
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,12 +44,7 @@ public class SoundAPI {
             )
     )
     public LuaSound __index(String id) {
-        LuaSound sound = luaSounds.computeIfAbsent(id, str -> new LuaSound(str, owner));
-        if (sound.custom && owner.trust.get(TrustContainer.Trust.CUSTOM_SOUNDS) != 1) {
-            luaSounds.remove(id);
-            sound = new LuaSound(id, owner);
-        }
-        return sound;
+        return luaSounds.computeIfAbsent(id, str -> new LuaSound(str, owner));
     }
 
     @LuaWhitelist
@@ -89,6 +86,39 @@ public class SoundAPI {
     )
     public void stopSound(String id) {
         getSoundEngine().figura$stopSound(owner.owner, id);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = {String.class, LuaTable.class},
+                            argumentNames = {"name", "byte array"}
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {String.class, String.class},
+                            argumentNames = {"name", "base64 text"}
+                    )
+            },
+            description = "sounds.add_sound"
+    )
+    public void addSound(@LuaNotNil String name, @LuaNotNil Object object) {
+        byte[] bytes;
+        if (object instanceof LuaTable table) {
+            bytes = new byte[table.length()];
+            for(int i = 0; i < bytes.length; i++)
+                bytes[i] = (byte) table.get(i + 1).checkint();
+        } else if (object instanceof String s) {
+            bytes = Base64.getDecoder().decode(s);
+        } else {
+            throw new LuaError("Invalid type for addSound \"" + object.getClass().getSimpleName() + "\"");
+        }
+
+        try {
+            owner.loadSound(name, bytes);
+        } catch (Exception e) {
+            throw new LuaError("Failed to add custom sound \"" + name + "\"");
+        }
     }
 
     @Override

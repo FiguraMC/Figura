@@ -40,6 +40,12 @@ public class AvatarAPI {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc(description = "avatar.get_current_instructions")
+    public int getCurrentInstructions() {
+        return avatar.luaRuntime == null ? 0 : avatar.luaRuntime.getInstructions();
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc(description = "avatar.get_color")
     public String getColor() {
         return avatar.color;

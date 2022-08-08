@@ -232,6 +232,26 @@ public class VectorsAPI {
     @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload(
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "rgb"
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"r", "g", "b"}
+                    )
+            },
+            description = "vectors.rgb_to_hex"
+    )
+    public static String rgbToHEX(Object r, Double g, Double b) {
+        FiguraVec3 rgb = LuaUtils.parseVec3("rgbToHEX", r, g, b);
+        String color = Integer.toHexString(ColorUtils.rgbToInt(rgb));
+        return "0".repeat(Math.max(6 - color.length(), 0)) + color;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
                             argumentTypes = Double.class,
                             argumentNames = "speed"
                     ),

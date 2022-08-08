@@ -25,23 +25,12 @@ import org.moon.figura.utils.LuaUtils;
 )
 public class LuaSound {
 
-    public final boolean custom;
     private final Avatar owner;
     private final String id;
-    private final SoundBuffer buffer; //For custom sounds
-    private final SoundEvent event; //For vanilla sounds
 
     public LuaSound(String id, Avatar owner) {
         this.owner = owner;
         this.id = id;
-        buffer = owner.customSounds.get(id);
-        if (buffer != null && owner.trust.get(TrustContainer.Trust.CUSTOM_SOUNDS) == 1) {
-            custom = true;
-            event = null;
-            return;
-        }
-        custom = false;
-        event = new SoundEvent(new ResourceLocation(id));
     }
 
     @LuaWhitelist
@@ -68,8 +57,6 @@ public class LuaSound {
     )
     public void play(Object x, Double y, Double z, Object w, Double t, Boolean bl) {
         if (!owner.soundsRemaining.use())
-            return;
-        if (custom && owner.trust.get(TrustContainer.Trust.CUSTOM_SOUNDS) != 1)
             return;
 
         FiguraVec3 pos;
@@ -99,7 +86,8 @@ public class LuaSound {
             throw new LuaError("Illegal argument to playSound(): " + x);
         }
 
-        if (custom) {
+        SoundBuffer buffer = owner.customSounds.get(id);
+        if (buffer != null && owner.trust.get(TrustContainer.Trust.CUSTOM_SOUNDS) == 1) {
             SoundAPI.getSoundEngine().figura$playCustomSound(
                     owner.owner,
                     id,
@@ -109,6 +97,7 @@ public class LuaSound {
                     loop);
         } else {
             try {
+                SoundEvent event = new SoundEvent(new ResourceLocation(id));
                 SimpleSoundInstance instance = new SimpleSoundInstance(
                         event, SoundSource.PLAYERS,
                         volume, pitch,

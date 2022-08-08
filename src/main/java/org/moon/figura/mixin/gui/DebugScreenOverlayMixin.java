@@ -4,6 +4,7 @@ import net.minecraft.client.gui.components.DebugScreenOverlay;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
+import org.moon.figura.backend.NetworkManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -48,7 +49,7 @@ public class DebugScreenOverlayMixin {
                 );
             }
         }
-        //lines.add(++i, String.format("Pings per second: ↑%d, ↓%d", pingSent, pingReceived));
+        lines.add(++i, String.format("Pings per second: ↑%d, ↓%d", NetworkManager.pingsSent, NetworkManager.pingsReceived));
 
         lines.add(++i, "");
     }

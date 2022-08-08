@@ -49,6 +49,8 @@ public class NetworkManager {
     protected static WebsocketManager backend;
     protected static boolean websocketDebug = false;
 
+    public static int lastPing, pingsSent, pingsReceived;
+
     private static CompletableFuture<Void> tasks;
 
     // -- methods -- //
@@ -67,6 +69,10 @@ public class NetworkManager {
         //backend tick
         if (hasBackend())
             backend.tick();
+
+        //pings counter
+        if (lastPing > 0 && FiguraMod.ticks - lastPing >= 20)
+            lastPing = pingsSent = pingsReceived = 0;
 
         //re auth
         lastAuth++;
@@ -291,6 +297,8 @@ public class NetworkManager {
 
         json.add("data", array);
         NetworkManager.sendMessage(NetworkManager.GSON.toJson(json));
+        pingsSent++;
+        if (lastPing == 0) lastPing = FiguraMod.ticks;
 
         return data;
     }

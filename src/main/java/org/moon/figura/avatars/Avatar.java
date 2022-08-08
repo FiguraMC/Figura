@@ -602,15 +602,17 @@ public class Avatar {
         CompoundTag root = nbt.getCompound("sounds");
         for (String key : root.getAllKeys()) {
             try {
-                byte[] source = root.getByteArray(key);
-
-                try (ByteArrayInputStream inputStream = new ByteArrayInputStream(source); OggAudioStream oggAudioStream = new OggAudioStream(inputStream)) {
-                    SoundBuffer sound = new SoundBuffer(oggAudioStream.readAll(), oggAudioStream.getFormat());
-                    this.customSounds.put(key, sound);
-                }
+                loadSound(key, root.getByteArray(key));
             } catch (Exception e) {
                 FiguraMod.LOGGER.warn("Failed to load custom sound \"" + key + "\"", e);
             }
+        }
+    }
+
+    public void loadSound(String name, byte[] data) throws Exception {
+        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(data); OggAudioStream oggAudioStream = new OggAudioStream(inputStream)) {
+            SoundBuffer sound = new SoundBuffer(oggAudioStream.readAll(), oggAudioStream.getFormat());
+            this.customSounds.put(name, sound);
         }
     }
 

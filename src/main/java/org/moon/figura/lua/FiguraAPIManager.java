@@ -136,12 +136,12 @@ public class FiguraAPIManager {
         put("action_wheel", r -> r.action_wheel = new ActionWheelAPI(r.owner.owner));
         put("animations", r -> Animation.getTableForAnimations(r.owner));
         put("client", r -> ClientAPI.INSTANCE);
-        put("particle", r -> new ParticleAPI(r.owner));
+        put("particles", r -> new ParticleAPI(r.owner));
         put("avatar", r -> r.avatar_meta = new AvatarAPI(r.owner));
         put("vectors", r -> VectorsAPI.INSTANCE);
         put("matrices", r -> MatricesAPI.INSTANCE);
         put("world", r -> WorldAPI.INSTANCE);
-        put("ping", r -> r.ping = new PingAPI(r.owner));
+        put("pings", r -> r.ping = new PingAPI(r.owner));
     }};
 
     static {

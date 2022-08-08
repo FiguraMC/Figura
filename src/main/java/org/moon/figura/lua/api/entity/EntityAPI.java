@@ -322,6 +322,21 @@ public class EntityAPI<T extends Entity> {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = String.class,
+                    argumentNames = "key"
+            ),
+            description = "entity.get_variable"
+    )
+    public LuaValue getVariable(String key) {
+        Avatar a = AvatarManager.getAvatar(entity);
+        if (a == null || a.luaRuntime == null)
+            return null;
+        return a.luaRuntime.avatar_meta.storedStuff.get(key);
+    }
+
+    @LuaWhitelist
     @LuaMetamethodDoc(
             overloads = @LuaMetamethodDoc.LuaMetamethodOverload(
                     types = {boolean.class, EntityAPI.class, EntityAPI.class}

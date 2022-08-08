@@ -4,6 +4,7 @@ import org.luaj.vm2.*;
 import org.luaj.vm2.lib.OneArgFunction;
 import org.luaj.vm2.lib.TwoArgFunction;
 import org.luaj.vm2.lib.VarArgFunction;
+import org.moon.figura.lua.docs.FiguraDocsManager;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 
 import java.lang.reflect.InvocationTargetException;
@@ -138,19 +139,29 @@ public class LuaTypeManager {
                     if (nil && requiredNotNil[i])
                         throw new LuaError("Passed nil for required non-nil argument! Java name: " + method.getParameters()[i].getName());
                     if (argIndex <= args.narg() && !nil) {
-                        actualArgs[i] = switch (argumentTypes[i].getName()) {
-                            case "java.lang.Double", "double" -> args.checkdouble(argIndex);
-                            case "java.lang.String" -> args.checkjstring(argIndex);
-                            case "java.lang.Boolean", "boolean" -> args.toboolean(argIndex);
-                            case "java.lang.Float", "float" -> (float) args.checkdouble(argIndex);
-                            case "java.lang.Integer", "int" -> args.checkint(argIndex);
-                            case "java.lang.Long", "long" -> args.checklong(argIndex);
-                            case "org.luaj.vm2.LuaTable" -> args.checktable(argIndex);
-                            case "org.luaj.vm2.LuaFunction" -> args.checkfunction(argIndex);
-                            case "org.luaj.vm2.LuaValue" -> args.arg(argIndex);
-                            case "java.lang.Object" -> luaToJava(args.arg(argIndex));
-                            default -> args.checkuserdata(argIndex, argumentTypes[i]);
-                        };
+                        try {
+                            actualArgs[i] = switch (argumentTypes[i].getName()) {
+                                case "java.lang.Double", "double" -> args.checkdouble(argIndex);
+                                case "java.lang.String" -> args.checkjstring(argIndex);
+                                case "java.lang.Boolean", "boolean" -> args.toboolean(argIndex);
+                                case "java.lang.Float", "float" -> (float) args.checkdouble(argIndex);
+                                case "java.lang.Integer", "int" -> args.checkint(argIndex);
+                                case "java.lang.Long", "long" -> args.checklong(argIndex);
+                                case "org.luaj.vm2.LuaTable" -> args.checktable(argIndex);
+                                case "org.luaj.vm2.LuaFunction" -> args.checkfunction(argIndex);
+                                case "org.luaj.vm2.LuaValue" -> args.arg(argIndex);
+                                case "java.lang.Object" -> luaToJava(args.arg(argIndex));
+                                default -> args.checkuserdata(argIndex, argumentTypes[i]);
+                            };
+                        } catch (LuaError err) {
+                            String expectedType = FiguraDocsManager.getNameFor(argumentTypes[i]);
+                            String actualType;
+                            if (args.arg(argIndex).type() == LuaValue.TUSERDATA)
+                                actualType = FiguraDocsManager.getNameFor(args.arg(argIndex).checkuserdata().getClass());
+                            else
+                                actualType = args.arg(argIndex).typename();
+                            throw new LuaError("Invalid argument " + argIndex + " to function " + method.getName() + ". Expected " + expectedType + ", but got " + actualType);
+                        }
                     } else {
                         actualArgs[i] = switch (argumentTypes[i].getName()) {
                             case "double" -> 0D;
