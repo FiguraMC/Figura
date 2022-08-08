@@ -1,9 +1,6 @@
 package org.moon.figura.lua;
 
 import org.luaj.vm2.LuaString;
-import org.luaj.vm2.LuaTable;
-import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.Varargs;
 import org.moon.figura.animation.Animation;
 import org.moon.figura.avatars.model.FiguraModelPart;
 import org.moon.figura.avatars.model.rendertasks.BlockTask;
@@ -29,8 +26,8 @@ import org.moon.figura.lua.api.particle.ParticleAPI;
 import org.moon.figura.lua.api.particle.ParticleBuilder;
 import org.moon.figura.lua.api.ping.PingAPI;
 import org.moon.figura.lua.api.ping.PingFunction;
+import org.moon.figura.lua.api.sound.LuaSound;
 import org.moon.figura.lua.api.sound.SoundAPI;
-import org.moon.figura.lua.api.sound.SoundBuilder;
 import org.moon.figura.lua.api.vanilla_model.VanillaGroupPart;
 import org.moon.figura.lua.api.vanilla_model.VanillaModelAPI;
 import org.moon.figura.lua.api.vanilla_model.VanillaModelPart;
@@ -84,7 +81,7 @@ public class FiguraAPIManager {
         add(TextTask.class);
 
         add(SoundAPI.class);
-        add(SoundBuilder.class);
+        add(LuaSound.class);
 
         add(ParticleAPI.class);
         add(ParticleBuilder.class);
@@ -132,7 +129,7 @@ public class FiguraAPIManager {
 
     public static final Map<String, Function<FiguraLuaRuntime, Object>> API_GETTERS = new LinkedHashMap<>() {{
         put("events", r -> r.events = new EventsAPI());
-        put("sound", r -> new SoundAPI(r.owner));
+        put("sounds", r -> new SoundAPI(r.owner));
         put("vanilla_model", r -> r.vanilla_model = new VanillaModelAPI());
         put("keybind", r -> r.keybind = new KeybindAPI(r.owner));
         put("host", r -> r.host = new HostAPI(r.owner));
@@ -160,21 +157,6 @@ public class FiguraAPIManager {
             runtime.setGlobal(entry.getKey(), entry.getValue().apply(runtime));
     }
 
-    static class ReadOnlyLuaTable extends LuaTable {
-        public ReadOnlyLuaTable(LuaValue table) {
-            presize(table.length(), 0);
-            for (Varargs n = table.next(LuaValue.NIL); !n.arg1().isnil(); n = table
-                    .next(n.arg1())) {
-                LuaValue key = n.arg1();
-                LuaValue value = n.arg(2);
-                super.rawset(key, value.istable() ? new ReadOnlyLuaTable(value) : value);
-            }
-        }
-        public LuaValue setmetatable(LuaValue metatable) { return error("table is read-only"); }
-        public void set(int key, LuaValue value) { error("table is read-only"); }
-        public void rawset(int key, LuaValue value) { error("table is read-only"); }
-        public void rawset(LuaValue key, LuaValue value) { error("table is read-only"); }
-        public LuaValue remove(int pos) { return error("table is read-only"); }
-    }
+
 
 }

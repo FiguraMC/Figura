@@ -8,12 +8,15 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaTable;
+import org.luaj.vm2.ast.Str;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.ducks.SoundEngineAccessor;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.world.WorldAPI;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
+import org.moon.figura.lua.docs.LuaMetamethodDoc;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
@@ -21,21 +24,42 @@ import org.moon.figura.mixin.sound.SoundManagerAccessor;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.utils.LuaUtils;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @LuaWhitelist
 @LuaTypeDoc(
         name = "SoundAPI",
-        description = "sound"
+        description = "sounds"
 )
 public class SoundAPI {
 
     private final Avatar owner;
+    private final Map<String, LuaSound> luaSounds;
 
     public SoundAPI(Avatar owner) {
         this.owner = owner;
+        luaSounds = new HashMap<>();
     }
 
     public static SoundEngineAccessor getSoundEngine() {
         return (SoundEngineAccessor) ((SoundManagerAccessor) Minecraft.getInstance().getSoundManager()).getSoundEngine();
+    }
+
+    @LuaWhitelist
+    @LuaMetamethodDoc(
+            overloads = @LuaMetamethodDoc.LuaMetamethodOverload(
+                    types = {LuaSound.class, String.class},
+                    comment = ""
+            )
+    )
+    public LuaSound __index(String id) {
+        LuaSound sound = luaSounds.computeIfAbsent(id, str -> new LuaSound(str, owner));
+        if (sound.custom && owner.trust.get(TrustContainer.Trust.CUSTOM_SOUNDS) != 1) {
+            luaSounds.remove(id);
+            sound = new LuaSound(id, owner);
+        }
+        return sound;
     }
 
     @LuaWhitelist
@@ -61,49 +85,7 @@ public class SoundAPI {
             description = "sound.play_sound"
     )
     public void playSound(@LuaNotNil String id, Object x, Double y, Double z, Object w, Double t, Boolean bl) {
-        if (!owner.soundsRemaining.use())
-            return;
-
-        FiguraVec3 pos;
-        double volume = 1.0;
-        double pitch = 1.0;
-        boolean loop = false;
-
-        if (x instanceof FiguraVec3) {
-            pos = ((FiguraVec3) x).copy();
-            if (y != null) volume = y;
-            if (z != null) pitch = z;
-            if (w != null) {
-                if (!(w instanceof Boolean))
-                    throw new LuaError("Illegal argument to playSound(): " + w);
-                loop = (boolean) w;
-            }
-        } else if (x == null || x instanceof Double) {
-            pos = LuaUtils.parseVec3("playSound", x, y, z);
-            if (w != null) {
-                if (!(w instanceof Double))
-                    throw new LuaError("Illegal argument to playSound(): " + w);
-                volume = (double) w;
-            }
-            if (t != null) pitch = t;
-            if (bl != null) loop = bl;
-        } else {
-            throw new LuaError("Illegal argument to playSound(): " + x);
-        }
-
-        //get and play the sound
-        SoundBuffer buffer = owner.customSounds.get(id);
-        if (buffer != null && owner.trust.get(TrustContainer.Trust.CUSTOM_SOUNDS) == 1) {
-            getSoundEngine().figura$playCustomSound(owner.owner, id, buffer, pos.x, pos.y, pos.z, (float) volume, (float) pitch, loop);
-        } else {
-            try {
-                SoundEvent event = new SoundEvent(new ResourceLocation(id));
-                SimpleSoundInstance instance = new SimpleSoundInstance(event, SoundSource.PLAYERS, (float) volume, (float) pitch, RandomSource.create(WorldAPI.getCurrentWorld().random.nextLong()), pos.x, pos.y, pos.z);
-                getSoundEngine().figura$playSound(owner.owner, id, instance, loop);
-            } catch (Exception ignored) {}
-        }
-
-        pos.free();
+        __index(id).play(x, y, z, w, t, bl);
     }
 
     @LuaWhitelist
@@ -119,12 +101,6 @@ public class SoundAPI {
     )
     public void stopSound(String id) {
         getSoundEngine().figura$stopSound(owner.owner, id);
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc(description = "sound.new_sound")
-    public SoundBuilder newSound() {
-        return new SoundBuilder(owner);
     }
 
     @Override

@@ -26,8 +26,8 @@ import org.moon.figura.lua.api.particle.ParticleAPI;
 import org.moon.figura.lua.api.particle.ParticleBuilder;
 import org.moon.figura.lua.api.ping.PingAPI;
 import org.moon.figura.lua.api.ping.PingFunction;
+import org.moon.figura.lua.api.sound.LuaSound;
 import org.moon.figura.lua.api.sound.SoundAPI;
-import org.moon.figura.lua.api.sound.SoundBuilder;
 import org.moon.figura.math.matrix.FiguraMat2;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
@@ -189,7 +189,7 @@ public class FiguraDocsManager {
 
         put("sound", List.of(
                 SoundAPI.class,
-                SoundBuilder.class
+                LuaSound.class
         ));
 
         put("renderer", List.of(

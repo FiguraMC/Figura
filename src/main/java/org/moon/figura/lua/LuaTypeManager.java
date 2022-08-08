@@ -4,10 +4,12 @@ import org.luaj.vm2.*;
 import org.luaj.vm2.lib.OneArgFunction;
 import org.luaj.vm2.lib.TwoArgFunction;
 import org.luaj.vm2.lib.VarArgFunction;
+import org.moon.figura.lua.docs.LuaTypeDoc;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Parameter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -93,11 +95,22 @@ public class LuaTypeManager {
 
     public void dumpMetatables(LuaTable table) {
         for (Map.Entry<Class<?>, LuaTable> entry : metatables.entrySet()) {
-            String name = entry.getKey().getSimpleName();
+            if (!entry.getKey().isAnnotationPresent(LuaTypeDoc.class))
+                continue;
+            String name = entry.getKey().getAnnotation(LuaTypeDoc.class).name();
             if (table.get(name) != LuaValue.NIL)
                 throw new IllegalStateException("Two classes have the same type name: " + name);
             table.set(name, entry.getValue());
         }
+    }
+
+    private static boolean[] getRequiredNotNil(Method method) {
+        Parameter[] params = method.getParameters();
+        boolean[] result = new boolean[params.length];
+        for (int i = 0; i < params.length; i++)
+            if (params[i].isAnnotationPresent(LuaNotNil.class))
+                result[i] = true;
+        return result;
     }
 
     public VarArgFunction getWrapper(Method method) {
@@ -110,6 +123,7 @@ public class LuaTypeManager {
             private final Class<?> clazz = method.getDeclaringClass();
             private final Class<?>[] argumentTypes = method.getParameterTypes();
             private final Object[] actualArgs = new Object[argumentTypes.length];
+            private final boolean[] requiredNotNil = getRequiredNotNil(method);
 
             @Override
             public Varargs invoke(Varargs args) {
@@ -120,8 +134,10 @@ public class LuaTypeManager {
                 //Fill in actualArgs from args
                 for (int i = 0; i < argumentTypes.length; i++) {
                     int argIndex = i + (isStatic ? 1 : 2);
-
-                    if (argIndex <= args.narg() && !args.isnil(argIndex)) {
+                    boolean nil = args.isnil(argIndex);
+                    if (nil && requiredNotNil[i])
+                        throw new LuaError("Passed nil for required non-nil argument! Java name: " + method.getParameters()[i].getName());
+                    if (argIndex <= args.narg() && !nil) {
                         actualArgs[i] = switch (argumentTypes[i].getName()) {
                             case "java.lang.Double", "double" -> args.checkdouble(argIndex);
                             case "java.lang.String" -> args.checkjstring(argIndex);
