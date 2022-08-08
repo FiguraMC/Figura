@@ -124,18 +124,9 @@ public class PlayerElement extends AbstractTrustElement {
         Avatar avatar = AvatarManager.getAvatarForPlayer(owner);
         UIHelper.renderOutlineText(stack, font, Component.literal(this.name).append(Badges.fetchBadges(avatar)), x + 40, y + 4, 0xFFFFFF, 0);
 
-        //uuid
-        stack.pushPose();
-        stack.translate(x + 40, y + 4 + font.lineHeight, 0f);
-        stack.scale(0.5f, 0.5f, 0.5f);
-
-        drawString(stack, font, Component.literal(trust.name), 0, 0, 0x888888);
-
         //size
         if (avatar != null && avatar.nbt != null)
-            drawString(stack, font, FiguraText.of("gui.trust.avatar_size", MathUtils.asFileSize(avatar.fileSize)), 0, font.lineHeight, 0x888888);
-
-        stack.popPose();
+            drawString(stack, font, FiguraText.of("gui.trust.avatar_size", MathUtils.asFileSize(avatar.fileSize)), x + 40, y + 6 + font.lineHeight, 0x888888);
 
         //trust
         drawString(stack, font, trust.getGroupName(), x + 40, y + height - font.lineHeight - 4, trust.getGroupColor());

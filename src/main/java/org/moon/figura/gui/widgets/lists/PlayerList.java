@@ -27,6 +27,7 @@ public class PlayerList extends AbstractList {
     private final ArrayList<AbstractTrustElement> trustList = new ArrayList<>();
 
     public final TrustScreen parent;
+    private final TextField searchBar;
 
     private int totalHeight = 0;
     public AbstractTrustElement selectedEntry;
@@ -43,7 +44,7 @@ public class PlayerList extends AbstractList {
         scrollBar.setHeight(height - 32);
 
         //search bar
-        children.add(new TextField(x + 4, y + 4, width - 8, 20, FiguraText.of("gui.search"), s -> filter = s));
+        children.add(searchBar = new TextField(x + 4, y + 4, width - 8, 20, FiguraText.of("gui.search"), s -> filter = s));
 
         //initial load
         loadGroups();
@@ -186,5 +187,16 @@ public class PlayerList extends AbstractList {
 
         //set new scroll percentage
         scrollBar.setScrollProgress(pastScroll / (totalHeight - height));
+    }
+
+    public void setY(int y) {
+        this.y = y;
+        scrollBar.y = y + 28;
+        searchBar.setPos(searchBar.x, y + 4);
+    }
+
+    public void updateHeight(int height) {
+        this.height = height;
+        scrollBar.setHeight(height - 32);
     }
 }

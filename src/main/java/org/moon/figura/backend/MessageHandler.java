@@ -8,12 +8,14 @@ import net.minecraft.network.chat.Component;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.gui.FiguraToast;
+import org.moon.figura.lua.api.nameplate.Badges;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.TextUtils;
 
 import java.io.ByteArrayInputStream;
 import java.util.Base64;
+import java.util.BitSet;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -92,8 +94,12 @@ public enum MessageHandler {
         json = json.getAsJsonObject("user");
         UUID uuid = UUID.fromString(json.get("uuid").getAsString());
         JsonArray array = json.get("allowedBadges").getAsJsonArray();
+
+        BitSet bitSet = new BitSet(Badges.count());
         for (int i = 0; i < array.size(); i++)
-            AvatarManager.setBadge(uuid, i, array.get(i).getAsInt() >= 1);
+            bitSet.set(i, array.get(i).getAsInt() >= 1);
+
+        Badges.load(uuid, bitSet);
     }),
     EVENT(json -> {
         UUID owner = UUID.fromString(json.get("uuid").getAsString());

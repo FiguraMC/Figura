@@ -33,7 +33,6 @@ import org.moon.figura.config.Config;
 import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.lua.FiguraLuaRuntime;
 import org.moon.figura.lua.api.event.LuaEvent;
-import org.moon.figura.lua.api.nameplate.Badges;
 import org.moon.figura.lua.api.ping.PingArg;
 import org.moon.figura.lua.api.ping.PingFunction;
 import org.moon.figura.lua.api.sound.SoundAPI;
@@ -44,7 +43,10 @@ import org.moon.figura.utils.RefilledNumber;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
@@ -67,8 +69,6 @@ public class Avatar {
     public String version;
     public int fileSize;
     public String color;
-
-    public BitSet badges = new BitSet(Badges.count());
 
     //Runtime data
     public AvatarRenderer renderer;

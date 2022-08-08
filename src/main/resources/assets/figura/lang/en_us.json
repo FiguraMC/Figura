@@ -29,6 +29,7 @@
 
 
   "figura.toast.reload": "Avatar reloaded!",
+  "figura.toast.reload_all": "Reloaded ALL Avatars!",
   "figura.toast.panic_enabled": "Panic mode enabled!",
   "figura.toast.panic_disabled": "Panic mode disabled!",
   "figura.toast.clipboard": "Copied to clipboard!",
@@ -109,9 +110,13 @@
   "figura.gui.wardrobe.unselect": "Unselect",
 
   "figura.gui.trust.reset": "Reset All",
+  "figura.gui.trust.reload_all": "Reload All",
   "figura.gui.trust.expand_trust.tooltip": "Expand advanced trust menu",
   "figura.gui.trust.minimize_trust.tooltip": "Minimize advanced trust menu",
   "figura.gui.trust.avatar_size": "Size: %s",
+  "figura.gui.trust.complexity": "Complexity: %s",
+  "figura.gui.trust.tick": "Tick W: %s E: %s",
+  "figura.gui.trust.render": "Render W: %s E: %s PE: %s PW: %s",
 
   "figura.gui.status.size": "Size",
   "figura.gui.status.size.0": "none",
@@ -222,6 +227,8 @@
   "figura.config.button_location.3": "Top Right",
   "figura.config.button_location.4": "Bottom Left",
   "figura.config.button_location.5": "Bottom Right",
+  "figura.config.button_location.6": "Entity Left",
+  "figura.config.button_location.7": "Entity Right",
 
   "figura.config.easter_eggs": "Enable Easter eggs",
   "figura.config.easter_eggs.tooltip": "Toggles fun and unexpected aspects of Figura (boring!)",
@@ -792,7 +799,7 @@
 
   "figura.docs.avatar": "A global API containing functions to interact with your avatar's metadata, and also to get information about the current script environment.",
   "figura.docs.avatar.store": "Store the given key-value pair inside your current avatar's metadata. Someone else can get this information from a different script with the playerVars() function in World. The key must be a string.",
-  "figura.docs.avatar.get_current_instructions": "Gets the current instructions :) .",
+  "figura.docs.avatar.get_current_instructions": "Gets the current number of instructions that have been executed by your avatar. Resets to 0 at the beginning of certain events.",
   "figura.docs.avatar.get_color": "Gets the current color string of your avatar, used as your avatar theme.",
   "figura.docs.avatar.set_color": "Sets the current color string of your avatar, used as your avatar theme.",
   "figura.docs.avatar.get_version": "Gets the version string of this avatar.",

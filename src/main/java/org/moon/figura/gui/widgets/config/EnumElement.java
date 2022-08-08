@@ -47,7 +47,7 @@ public class EnumElement extends AbstractConfigElement {
                 Component arrow = Component.literal(context.isVisible() ? "V" : "^").setStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT));
                 font.drawShadow(
                         stack, arrow,
-                        this.x + this.width - font.width(arrow) - 3, this.y + this.height / 2f - font.lineHeight / 2f,
+                        this.x + this.width - font.width(arrow) - 3, this.y + this.height / 2 - font.lineHeight / 2,
                         (!this.active ? ChatFormatting.DARK_GRAY : ChatFormatting.WHITE).getColor()
                 );
             }

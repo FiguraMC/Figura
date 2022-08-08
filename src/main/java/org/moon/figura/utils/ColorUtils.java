@@ -22,7 +22,6 @@ public class ColorUtils {
         LUA_PING(0xA155DA, "luna", "moff", "moth"),
 
         DEFAULT(0x5AAAFF),
-        REDDIT_MOD(0xFF7F72),
         DISCORD_MOD(0x72B8FF),
         DISCORD_ADMIN(0x72FF73);
 

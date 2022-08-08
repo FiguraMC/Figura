@@ -45,8 +45,8 @@ public class TextTask extends RenderTask {
 
         for (int i = 0; i < text.size(); i++) {
             Component text = this.text.get(i);
-            float x = centred ? -font.width(text) / 2f : 0f;
-            float y = i * font.lineHeight;
+            int x = centred ? -font.width(text) / 2 : 0;
+            int y = i * font.lineHeight;
 
             if (outline) {
                 UIHelper.renderOutlineText(stack, font, text, x, y, 0xFFFFFF, outlineColor == null ? 0 : ColorUtils.rgbToInt(outlineColor));

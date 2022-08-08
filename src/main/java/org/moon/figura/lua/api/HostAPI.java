@@ -14,6 +14,7 @@ import org.moon.figura.config.Config;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.entity.EntityAPI;
+import org.moon.figura.lua.api.nameplate.Badges;
 import org.moon.figura.lua.api.world.ItemStackAPI;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
@@ -24,6 +25,8 @@ import org.moon.figura.mixin.gui.ChatScreenAccessor;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.TextUtils;
+
+import java.util.BitSet;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -196,7 +199,9 @@ public class HostAPI {
         if (!isHost()) return;
         if (!FiguraMod.DEBUG_MODE)
             throw new LuaError("Congrats, you found this debug easter egg!");
-        this.owner.badges.set(index, value);
+        BitSet set = new BitSet(Badges.count());
+        set.set(index, value);
+        Badges.load(owner.owner, set);
     }
 
     @LuaWhitelist

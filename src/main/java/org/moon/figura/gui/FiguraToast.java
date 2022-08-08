@@ -43,10 +43,10 @@ public class FiguraToast implements Toast {
 
         Font font = component.getMinecraft().font;
         if (this.message == null) {
-            font.draw(stack, this.title, 31f, 12f, 0xFFFFFF);
+            font.draw(stack, this.title, 31, 12, 0xFFFFFF);
         } else {
-            font.draw(stack, this.title, 31f, 7f, 0xFFFFFF);
-            font.draw(stack, this.message, 31f, 18f, 0xFFFFFF);
+            font.draw(stack, this.title, 31, 7, 0xFFFFFF);
+            font.draw(stack, this.message, 31, 18, 0xFFFFFF);
         }
 
         return timeDiff < 5000 ? Toast.Visibility.SHOW : Toast.Visibility.HIDE;
@@ -72,7 +72,7 @@ public class FiguraToast implements Toast {
         if (type == ToastType.DEFAULT && (boolean) Config.EASTER_EGGS.value) {
             if (FiguraMod.CHEESE_DAY || Math.random() < 0.0001)
                 type = ToastType.CHEESE;
-            else if (FiguraMod.getAccentColor(ColorUtils.Colors.DEFAULT.vec).hashCode() == ColorUtils.Colors.FRAN_PINK.style.hashCode() || (FiguraMod.DATE.getDayOfMonth() == 21 && FiguraMod.DATE.getMonthValue() == 9))
+            else if (FiguraMod.DATE.getDayOfMonth() == 21 && FiguraMod.DATE.getMonthValue() == 9)
                 type = ToastType.FRAN;
         }
 

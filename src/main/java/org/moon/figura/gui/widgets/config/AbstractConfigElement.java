@@ -39,11 +39,11 @@ public abstract class AbstractConfigElement extends AbstractContainerElement {
 
         //vars
         Font font = Minecraft.getInstance().font;
-        float textY = y + height / 2f - font.lineHeight / 2f;
+        int textY = y + height / 2 - font.lineHeight / 2;
 
         //hovered arrow
         hovered = isMouseOver(mouseX, mouseY);
-        if (hovered) font.draw(stack, HOVERED_ARROW, x + 8 - font.width(HOVERED_ARROW) / 2f, textY, 0xFFFFFF);
+        if (hovered) font.draw(stack, HOVERED_ARROW, x + 8 - font.width(HOVERED_ARROW) / 2, textY, 0xFFFFFF);
 
         //render name
         font.draw(stack, config.name, x + 16, textY, 0xFFFFFF);

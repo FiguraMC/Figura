@@ -41,7 +41,7 @@ public class AvatarWidget extends AbstractAvatarWidget {
                 //draw text
                 font.drawShadow(
                         stack, message,
-                        this.x + 3, this.y + this.height / 2f - font.lineHeight / 2f,
+                        this.x + 3, this.y + this.height / 2 - font.lineHeight / 2,
                         (!this.active ? ChatFormatting.DARK_GRAY : ChatFormatting.WHITE).getColor()
                 );
 

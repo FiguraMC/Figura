@@ -193,11 +193,6 @@ public class AvatarManager {
         }
     }
 
-    public static void setBadge(UUID id, int index, boolean value) {
-        Avatar avatar = LOADED_AVATARS.get(id);
-        if (avatar != null) avatar.badges.set(index, value);
-    }
-
     //get avatar from the backend
     //mark as uploaded if local
     private static void fetchBackend(UUID id) {

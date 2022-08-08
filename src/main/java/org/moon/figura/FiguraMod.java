@@ -27,7 +27,6 @@ import org.moon.figura.gui.actionwheel.ActionWheel;
 import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.lua.FiguraLuaRuntime;
 import org.moon.figura.lua.docs.FiguraDocsManager;
-import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.mixin.SkullBlockEntityAccessor;
 import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.ColorUtils;
@@ -161,12 +160,8 @@ public class FiguraMod implements ClientModInitializer {
     }
 
     public static Style getAccentColor() {
-        return getAccentColor(ColorUtils.Colors.FRAN_PINK.vec);
-    }
-
-    public static Style getAccentColor(FiguraVec3 fallback) {
         Avatar avatar = AvatarManager.getAvatarForPlayer(getLocalPlayerUUID());
-        int color = avatar != null ? ColorUtils.userInputHex(avatar.color, fallback) : ColorUtils.Colors.FRAN_PINK.hex;
+        int color = avatar != null ? ColorUtils.userInputHex(avatar.color, ColorUtils.Colors.FRAN_PINK.vec) : ColorUtils.Colors.FRAN_PINK.hex;
         return Style.EMPTY.withColor(color);
     }
 }

@@ -152,7 +152,7 @@ public class KeybindList extends AbstractList {
 
             //vars
             Font font = Minecraft.getInstance().font;
-            float textY = y + height / 2f - font.lineHeight / 2f;
+            int textY = y + height / 2 - font.lineHeight / 2;
 
             //hovered arrow
             this.hovered = isMouseOver(mouseX, mouseY);

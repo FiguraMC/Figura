@@ -53,7 +53,7 @@ public class TextField extends AbstractContainerElement {
         if (hint != null && field.getValue().isEmpty() && !field.isFocused()) {
             Minecraft.getInstance().font.drawShadow(
                     stack, hint.copy().withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC),
-                    this.x + 4, this.y + (height - 8f) / 2f, 0xFFFFFF
+                    this.x + 4, this.y + (height - 8) / 2, 0xFFFFFF
             );
         }
         //input text

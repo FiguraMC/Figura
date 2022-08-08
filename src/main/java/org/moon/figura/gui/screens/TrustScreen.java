@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
@@ -38,8 +39,10 @@ public class TrustScreen extends AbstractPanelScreen {
 
     private TrustList trustList;
     private SwitchButton expandButton;
+    private TexturedButton reloadAll;
     private TexturedButton back;
     private TexturedButton resetButton;
+    private Label instructions;
 
     // -- debug -- //
     private TextField uuid;
@@ -49,6 +52,7 @@ public class TrustScreen extends AbstractPanelScreen {
     private float listYPrecise;
     private float expandYPrecise;
     private float resetYPrecise;
+    private float playerYPrecise, playerHeightPrecise;
 
     public TrustScreen(Screen parentScreen) {
         super(parentScreen, TITLE, 3);
@@ -88,9 +92,12 @@ public class TrustScreen extends AbstractPanelScreen {
                 stack.popPose();
             }
         };
-        trustList = new TrustList(middle + 2, height, listWidth, height - 54);
+        trustList = new TrustList(middle + 2, height, listWidth, height - 60);
 
         // -- left -- //
+
+        //labels
+        addRenderableOnly(instructions = new Label("", middle - listWidth - 2, 28, false));
 
         //player list
         addRenderableWidget(playerList = new PlayerList(middle - listWidth - 2, 28, listWidth, height - 32, this));
@@ -105,8 +112,15 @@ public class TrustScreen extends AbstractPanelScreen {
         //add slider
         addRenderableWidget(slider);
 
+        //reload all
+        int bottomButtonsWidth = (listWidth - 24) / 2 - 2;
+        addRenderableWidget(reloadAll = new TexturedButton(middle + 2, height - 24, bottomButtonsWidth, 20, FiguraText.of("gui.trust.reload_all"), null, bx -> {
+            AvatarManager.clearAllAvatars();
+            FiguraToast.sendToast(FiguraText.of("toast.reload_all"));
+        }));
+
         //back button
-        addRenderableWidget(back = new TexturedButton(middle + 2, height - 24, listWidth - 24, 20, FiguraText.of("gui.back"), null,
+        addRenderableWidget(back = new TexturedButton(middle + 6 + bottomButtonsWidth, height - 24, bottomButtonsWidth, 20, FiguraText.of("gui.back"), null,
                 bx -> this.minecraft.setScreen(parentScreen)
         ));
 
@@ -154,6 +168,7 @@ public class TrustScreen extends AbstractPanelScreen {
             //hide widgets
             entityWidget.setVisible(!expanded);
             slider.visible = !expanded;
+            reloadAll.visible = !expanded;
             back.visible = !expanded;
             uuid.setVisible(!expanded);
             yoink.visible = !expanded;
@@ -179,6 +194,8 @@ public class TrustScreen extends AbstractPanelScreen {
         listYPrecise = trustList.y;
         expandYPrecise = expandButton.y;
         resetYPrecise = resetButton.y;
+        playerYPrecise = playerList.y;
+        playerHeightPrecise = playerList.height;
     }
 
     @Override
@@ -191,10 +208,38 @@ public class TrustScreen extends AbstractPanelScreen {
         else
             entityWidget.setEntity(null);
 
+        //label text
+        Avatar avatar;
+        boolean showingInst = false;
+        if (expandButton.isToggled() && playerList.selectedEntry instanceof PlayerElement player && (avatar = AvatarManager.getAvatarForPlayer(player.getOwner())) != null && avatar.nbt != null) {
+            Style style = FiguraMod.getAccentColor();
+            String complexity = avatar.complexity + "";
+            String tick1 = avatar.worldTickInstructions + "";
+            String tick2 = avatar.entityTickInstructions + "";
+            String render1 = avatar.worldRenderInstructions + "";
+            String render2 = avatar.entityRenderInstructions + "";
+            String render3 = avatar.postEntityRenderInstructions + "";
+            String render4 = avatar.postWorldRenderInstructions + "";
+            instructions.setText(Component.empty()
+                    .append(FiguraText.of("gui.trust.complexity", Component.literal(complexity).withStyle(style)))
+                    .append("\n")
+                    .append(FiguraText.of("gui.trust.tick", Component.literal(tick1).withStyle(style), Component.literal(tick2).withStyle(style)))
+                    .append("\n")
+                    .append(FiguraText.of("gui.trust.render",
+                            Component.literal(render1).withStyle(style),
+                            Component.literal(render2).withStyle(style),
+                            Component.literal(render3).withStyle(style),
+                            Component.literal(render4).withStyle(style)
+                    ))
+            );
+            showingInst = true;
+        }
+        instructions.setVisible(showingInst);
+
         //expand animation
         float lerpDelta = (float) (1f - Math.pow(0.6f, delta));
 
-        listYPrecise = Mth.lerp(lerpDelta, listYPrecise, expandButton.isToggled() ? 50f : height);
+        listYPrecise = Mth.lerp(lerpDelta, listYPrecise, expandButton.isToggled() ? 56f : height + 1);
         this.trustList.y = (int) listYPrecise;
 
         expandYPrecise = Mth.lerp(lerpDelta, expandYPrecise, listYPrecise - 24f);
@@ -202,6 +247,12 @@ public class TrustScreen extends AbstractPanelScreen {
 
         resetYPrecise = Mth.lerp(lerpDelta, resetYPrecise, expandButton.isToggled() ? listYPrecise - 22f : height);
         this.resetButton.y = (int) resetYPrecise;
+
+        playerYPrecise = Mth.lerp(lerpDelta, playerYPrecise, showingInst ? 30f + instructions.height : 28);
+        this.playerList.setY((int) playerYPrecise);
+
+        playerHeightPrecise = Mth.lerp(lerpDelta, playerHeightPrecise, showingInst ? height - 34 - instructions.height : height - 32);
+        this.playerList.updateHeight((int) playerHeightPrecise);
 
         //render
         super.render(stack, mouseX, mouseY, delta);

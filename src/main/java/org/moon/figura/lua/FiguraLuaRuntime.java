@@ -241,6 +241,7 @@ public class FiguraLuaRuntime {
             if (!owner.scriptError) {
                 FiguraLuaPrinter.sendLuaError(new LuaError("Script overran resource limits!"), owner.name, owner.owner);
                 owner.scriptError = true;
+                owner.luaRuntime = null;
             }
             setInstructionLimit(1);
             return LuaValue.NIL;

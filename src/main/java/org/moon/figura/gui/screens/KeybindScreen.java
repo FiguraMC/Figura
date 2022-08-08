@@ -28,8 +28,8 @@ public class KeybindScreen extends AbstractPanelScreen {
         Avatar owner = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
 
         //list
-        int width = Math.min(this.width - 8, 420);
-        this.addRenderableWidget(list = new KeybindList((this.width - width) / 2, 28, width, height - 56, owner));
+        int listWidth = Math.min(this.width - 8, 420);
+        this.addRenderableWidget(list = new KeybindList((this.width - listWidth) / 2, 28, listWidth, height - 56, owner));
 
         // -- bottom buttons -- //
 

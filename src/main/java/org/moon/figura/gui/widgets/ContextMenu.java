@@ -159,7 +159,7 @@ public class ContextMenu extends AbstractContainerElement {
             Font font = Minecraft.getInstance().font;
             font.drawShadow(
                     stack, getMessage(),
-                    this.x + 3, this.y + this.height / 2f - font.lineHeight / 2f,
+                    this.x + 3, this.y + this.height / 2 - font.lineHeight / 2,
                     (!this.active ? ChatFormatting.DARK_GRAY : ChatFormatting.WHITE).getColor()
             );
         }
@@ -215,7 +215,7 @@ public class ContextMenu extends AbstractContainerElement {
             Font font = Minecraft.getInstance().font;
             font.drawShadow(
                     stack, ARROW,
-                    this.x + this.width - font.width(ARROW) - 3, this.y + this.height / 2f - font.lineHeight / 2f,
+                    this.x + this.width - font.width(ARROW) - 3, this.y + this.height / 2 - font.lineHeight / 2,
                     (!this.active ? ChatFormatting.DARK_GRAY : ChatFormatting.WHITE).getColor()
             );
         }

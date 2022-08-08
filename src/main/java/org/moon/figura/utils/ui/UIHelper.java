@@ -191,9 +191,10 @@ public class UIHelper extends GuiComponent {
         blit(stack, x, y, width, height, 0f, 0f, 1, 1, 1, 1);
     }
 
-    public static void renderAnimatedBackground(ResourceLocation texture, double x, double y, float width, float height, float textureWidth, float textureHeight, float delta) {
-        x -= (FiguraMod.ticks / 4f) % textureWidth + delta;
-        y -= (FiguraMod.ticks / 4f) % textureHeight + delta;
+    public static void renderAnimatedBackground(ResourceLocation texture, double x, double y, float width, float height, float textureWidth, float textureHeight, double speed, float delta) {
+        double d = FiguraMod.ticks / speed;
+        x -= d % textureWidth + delta;
+        y -= d % textureHeight + delta;
 
         width += textureWidth;
         height += textureHeight;
@@ -297,7 +298,7 @@ public class UIHelper extends GuiComponent {
         return mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height;
     }
 
-    public static void renderOutlineText(PoseStack stack, Font textRenderer, Component text, float x, float y, int color, int outline) {
+    public static void renderOutlineText(PoseStack stack, Font textRenderer, Component text, int x, int y, int color, int outline) {
         Component outlineText = TextUtils.replaceStyle(TextUtils.replaceInText(text, "§.", ""), Style.EMPTY.withColor(outline));
         for (int i = -1; i <= 1; ++i) {
             for (int j = -1; j <= 1; ++j) {
@@ -324,8 +325,8 @@ public class UIHelper extends GuiComponent {
         int height = font.lineHeight * text.size();
 
         //calculate pos
-        double x = mouseX + 12;
-        double y = Math.min(Math.max(mouseY - 12, 0), screenY - height);
+        int x = mouseX + 12;
+        int y = (int) Math.min(Math.max(mouseY - 12, 0), screenY - height);
 
         int width = TextUtils.getWidth(text, font);
         if (x + width > screenX)
@@ -336,11 +337,11 @@ public class UIHelper extends GuiComponent {
         stack.translate(0d, 0d, 400d);
 
         if (background)
-            renderSliced(stack, (int) (x - 4), (int) (y - 4), width + 8, height + 8, TOOLTIP);
+            renderSliced(stack, x - 4, y - 4, width + 8, height + 8, TOOLTIP);
 
         for (int i = 0; i < text.size(); i++) {
             FormattedCharSequence charSequence = text.get(i);
-            font.drawShadow(stack, charSequence, (float) x, (float) y + font.lineHeight * i, 0xFFFFFF);
+            font.drawShadow(stack, charSequence, x, y + font.lineHeight * i, 0xFFFFFF);
         }
 
         stack.popPose();

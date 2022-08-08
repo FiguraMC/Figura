@@ -10,13 +10,26 @@ import org.moon.figura.config.Config;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.TextUtils;
 
+import java.util.BitSet;
+import java.util.HashMap;
+import java.util.UUID;
+
 public class Badges {
+
+    private static final HashMap<UUID, BitSet> badgesMap = new HashMap<>();
 
     public static Component fetchBadges(Avatar avatar) {
         if (avatar == null)
             return Component.empty();
 
         MutableComponent badges = Component.literal(" ").withStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT).withColor(ChatFormatting.WHITE));
+
+        UUID id = avatar.owner;
+        BitSet badgesSet = badgesMap.get(id);
+        if (badgesSet == null) {
+            badgesSet = new BitSet(count());
+            badgesMap.put(id, badgesSet);
+        }
 
         // -- loading -- //
 
@@ -42,7 +55,7 @@ public class Badges {
             mark: {
                 //pride (mark skins)
                 for (int i = pride.length - 1; i >= 0; i--) {
-                    if (avatar.badges.get(i)) {
+                    if (badgesSet.get(i)) {
                         badges.append(pride[i].badge);
                         break mark;
                     }
@@ -58,14 +71,22 @@ public class Badges {
         Special[] special = Special.values();
 
         //special badge
-        for (int i = special.length - 1; i >= 0; i--) {
-            if (avatar.badges.get(i + pride.length)) {
+        for (int i = 0; i < special.length; i++) {
+            if (badgesSet.get(i + pride.length))
                 badges.append(Component.literal(special[i].badge).withStyle(Style.EMPTY.withColor(special[i].color())));
-                break;
-            }
         }
 
         return badges.getString().isBlank() ? Component.empty() : badges;
+    }
+
+    public static void load(UUID id, BitSet bitSet) {
+        BitSet set = badgesMap.getOrDefault(id, new BitSet(count()));
+        set.or(bitSet);
+        badgesMap.put(id, set);
+    }
+
+    public static int count() {
+        return Pride.values().length + Special.values().length;
     }
 
     private enum Default {
@@ -104,9 +125,9 @@ public class Badges {
         SHRIMP("\uD83E\uDD90"),
         MOON("\uD83C\uDF19"),
         SHADOW("\uD83C\uDF00"),
+
         DONATOR("❤", ColorUtils.Colors.FRAN_PINK.hex),
         CONTEST("☆", ColorUtils.Colors.FRAN_PINK.hex),
-        REDDIT_MOD("☆", ColorUtils.Colors.REDDIT_MOD.hex),
         DISCORD_MOD("☆", ColorUtils.Colors.DISCORD_MOD.hex),
         DISCORD_ADMIN("☆", ColorUtils.Colors.DISCORD_ADMIN.hex),
         DEV("★");
@@ -126,9 +147,5 @@ public class Badges {
         public int color() {
             return this.color == null ? 0xFFFFFF : this.color;
         }
-    }
-
-    public static int count() {
-        return Pride.values().length + Special.values().length;
     }
 }

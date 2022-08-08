@@ -105,7 +105,7 @@ public class ActionWheel {
         Component component = FiguraText.of("gui.error." + (avatar ? "no_avatar" : "no_wheel_page")).withStyle(ChatFormatting.YELLOW);
         Font font = minecraft.font;
 
-        UIHelper.renderOutlineText(stack, font, component, (float) x - font.width(component) / 2f, (float) y - font.lineHeight / 2f, 0xFFFFFF, 0);
+        UIHelper.renderOutlineText(stack, font, component, (int) (x - font.width(component) / 2), (int) (y - font.lineHeight / 2), 0xFFFFFF, 0);
     }
 
     private static void calculateSelected() {
@@ -235,7 +235,7 @@ public class ActionWheel {
 
         for (int i = 0; i < list.size(); i++) {
             Component component = list.get(i);
-            font.drawShadow(stack, component, (float) x - font.width(component) / 2f, (float) yOff + font.lineHeight * i, 0xFFFFFF);
+            font.drawShadow(stack, component, (int) (x - font.width(component) / 2), (int) (yOff + font.lineHeight * i), 0xFFFFFF);
         }
 
         stack.popPose();

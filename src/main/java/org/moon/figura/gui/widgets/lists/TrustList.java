@@ -2,7 +2,6 @@ package org.moon.figura.gui.widgets.lists;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
@@ -134,7 +133,7 @@ public class TrustList extends AbstractList {
             if (changed) name = Component.literal("*").setStyle(FiguraMod.getAccentColor()).append(name).append("*");
 
             font.draw(stack, name, x + 1, y + 1, 0xFFFFFF);
-            font.draw(stack, value, x + width - font.width(value) - 1, y + 1, ChatFormatting.AQUA.getColor());
+            font.draw(stack, value.copy().setStyle(FiguraMod.getAccentColor()), x + width - font.width(value) - 1, y + 1, 0xFFFFFF);
         }
 
         @Override
@@ -204,7 +203,7 @@ public class TrustList extends AbstractList {
             if (changed) name = Component.literal("*").setStyle(FiguraMod.getAccentColor()).append(name).append("*");
 
             font.draw(stack, name, x + 1, y + 1, 0xFFFFFF);
-            font.draw(stack, value, x + width - font.width(value) - 1, y + 1, ChatFormatting.AQUA.getColor());
+            font.draw(stack, value.copy().setStyle(FiguraMod.getAccentColor()), x + width - font.width(value) - 1, y + 1, 0xFFFFFF);
         }
 
         @Override
