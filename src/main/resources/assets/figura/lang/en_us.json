@@ -314,6 +314,7 @@
 
   "figura.docs.globals.action_wheel": "The global instance of the ActionWheelAPI and its subtypes.",
   "figura.docs.globals.animations": "The global instance of the \"animations\" table and its subtypes.",
+  "figura.docs.globals.figura_metatables": "A table containing all the metatables for Figura's object types. The metatables are editable.",
   "figura.docs.globals.nameplate": "The global instance of the NameplateAPI and its subtypes.",
   "figura.docs.globals.world": "The global instance of the WorldAPI and its subtypes.",
   "figura.docs.globals.vanilla_model": "The global instance of the VanillaModelAPI and its subtypes.",
