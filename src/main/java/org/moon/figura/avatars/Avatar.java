@@ -182,11 +182,12 @@ public class Avatar {
         tickEvent();
     }
 
-    public void runPing(String name, byte[] data) {
+    public void runPing(int id, byte[] data) {
         if (scriptError || luaRuntime == null)
             return;
 
         Varargs args = PingArg.fromByteArray(data, this);
+        String name = luaRuntime.ping.getName(id);
         PingFunction function = luaRuntime.ping.get(name);
         if (args == null || function == null)
             return;

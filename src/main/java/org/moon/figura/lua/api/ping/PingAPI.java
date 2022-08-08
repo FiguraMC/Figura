@@ -15,7 +15,10 @@ import java.util.HashMap;
 public class PingAPI {
 
     private final HashMap<String, PingFunction> map = new HashMap<>();
+    private final HashMap<Integer, String> idMap = new HashMap<>();
     private final Avatar owner;
+
+    private int id = 0;
 
     public PingAPI(Avatar owner) {
         this.owner = owner;
@@ -25,6 +28,10 @@ public class PingAPI {
         return map.get(arg);
     }
 
+    public String getName(int id) {
+        return idMap.get(id);
+    }
+
     @LuaWhitelist
     public Object __index(String arg) {
         return get(arg);
@@ -32,8 +39,10 @@ public class PingAPI {
 
     @LuaWhitelist
     public void __newindex(String key, LuaFunction value) {
-        PingFunction func = new PingFunction(key, owner, value);
+        PingFunction func = new PingFunction(id, owner, value);
         map.put(key, func);
+        idMap.put(id, key);
+        id++;
     }
 
     @Override

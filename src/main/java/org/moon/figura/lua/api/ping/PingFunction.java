@@ -17,13 +17,13 @@ import org.moon.figura.lua.docs.LuaTypeDoc;
 )
 public class PingFunction extends LuaFunction {
 
-    private final String name;
+    private final int id;
     private final Avatar owner;
     private final boolean isHost;
     public final LuaFunction func;
 
-    public PingFunction(String name, Avatar owner, LuaFunction func) {
-        this.name = name;
+    public PingFunction(int id, Avatar owner, LuaFunction func) {
+        this.id = id;
         this.owner = owner;
         this.isHost = FiguraMod.isLocal(owner.owner);
         this.func = func;
@@ -59,8 +59,8 @@ public class PingFunction extends LuaFunction {
             return NIL;
 
         boolean sync = (boolean) Config.SYNC_PINGS.value;
-        byte[] data = NetworkManager.sendPing(name, sync, new PingArg(args));
-        if (!sync) owner.runPing(name, data);
+        byte[] data = NetworkManager.sendPing(id, sync, new PingArg(args));
+        if (!sync) owner.runPing(id, data);
 
         return NIL;
     }

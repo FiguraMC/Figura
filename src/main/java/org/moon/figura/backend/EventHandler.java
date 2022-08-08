@@ -28,10 +28,10 @@ public enum EventHandler {
         if (avatar == null)
             return;
 
-        String name = json.get("name").getAsString();
+        int id = json.get("name").getAsInt();
         String data = json.get("data").getAsString();
 
-        avatar.runPing(name, Base64.getDecoder().decode(data.getBytes()));
+        avatar.runPing(id, Base64.getDecoder().decode(data.getBytes()));
         NetworkManager.pingsReceived++;
         if (NetworkManager.lastPing == 0) NetworkManager.lastPing = FiguraMod.ticks;
     }),

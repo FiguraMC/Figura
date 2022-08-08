@@ -282,14 +282,14 @@ public class NetworkManager {
         NetworkManager.sendMessage(NetworkManager.GSON.toJson(sub));
     }
 
-    public static byte[] sendPing(String name, boolean sync, PingArg arg) {
+    public static byte[] sendPing(int id, boolean sync, PingArg arg) {
         byte[] data = arg.toByteArray();
         if (data == null)
             return null;
 
         JsonObject json = new JsonObject();
         json.addProperty("type", "sendPing");
-        json.addProperty("name", name);
+        json.addProperty("name", id + "");
         json.addProperty("sync", sync);
 
         JsonArray array = new JsonArray();
