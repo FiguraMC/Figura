@@ -16,9 +16,7 @@ import org.moon.figura.utils.FiguraText;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public abstract class FiguraDoc {
 
@@ -77,27 +75,45 @@ public abstract class FiguraDoc {
         public ClassDoc(Class<?> clazz, LuaTypeDoc typeDoc, Map<String, List<FiguraDoc>> children) {
             super(typeDoc.name(), typeDoc.description());
 
-            if (clazz.getSuperclass().isAnnotationPresent(LuaWhitelist.class) && clazz.getSuperclass().isAnnotationPresent(LuaTypeDoc.class))
+            if (clazz.getSuperclass().isAnnotationPresent(LuaTypeDoc.class))
                 superclass = clazz.getSuperclass();
             else
                 superclass = null;
 
             //Find methods
             documentedMethods = new ArrayList<>();
+            Set<String> foundIndices = new HashSet<>();
+            for (Method method : clazz.getDeclaredMethods())
+                parseMethodIfNeeded(foundIndices, children, typeDoc, method);
             for (Method method : clazz.getMethods())
-                if (method.isAnnotationPresent(LuaMethodDoc.class)) {
-                    List<FiguraDoc> childList = children == null ? null : children.get(method.getName());
-                    documentedMethods.add(new MethodDoc(method, method.getAnnotation(LuaMethodDoc.class), childList, typeDoc.name()));
-                }
+                parseMethodIfNeeded(foundIndices, children, typeDoc, method);
 
             //Find fields
             documentedFields = new ArrayList<>();
+            for (Field field : clazz.getDeclaredFields())
+                parseFieldIfNeeded(children, foundIndices, field);
             for (Field field : clazz.getFields())
-                if (field.isAnnotationPresent(LuaFieldDoc.class)) {
-                    List<FiguraDoc> childList = children == null ? null : children.get(field.getName());
-                    documentedFields.add(new FieldDoc(field, field.getAnnotation(LuaFieldDoc.class), childList));
-                }
+                parseFieldIfNeeded(children, foundIndices, field);
         }
+
+        //Parse docs for this method if none were already found and stored in "foundIndices".
+        private void parseMethodIfNeeded(Set<String> foundIndices, Map<String, List<FiguraDoc>> children, LuaTypeDoc typeDoc, Method method) {
+            if (!foundIndices.contains(method.getName()) && method.isAnnotationPresent(LuaMethodDoc.class)) {
+                List<FiguraDoc> childList = children == null ? null : children.get(method.getName());
+                documentedMethods.add(new MethodDoc(method, method.getAnnotation(LuaMethodDoc.class), childList, typeDoc.name()));
+                foundIndices.add(method.getName());
+            }
+        }
+
+        //Parse docs for this field if none were already found and stored in "foundIndices".
+        private void parseFieldIfNeeded(Map<String, List<FiguraDoc>> children, Set<String> foundIndices, Field field) {
+            if (!foundIndices.contains(field.getName()) && field.isAnnotationPresent(LuaFieldDoc.class)) {
+                List<FiguraDoc> childList = children == null ? null : children.get(field.getName());
+                documentedFields.add(new FieldDoc(field, field.getAnnotation(LuaFieldDoc.class), childList));
+                foundIndices.add(field.getName());
+            }
+        }
+
 
         @Override
         public int print() {
@@ -303,6 +319,8 @@ public abstract class FiguraDoc {
                     children.add(child.toJson(translate));
             }
             json.add("children", children);
+
+            json.addProperty("static", isStatic);
 
             return json;
         }

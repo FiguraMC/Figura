@@ -28,28 +28,28 @@ public class EventsAPI {
     //Maybe in the __index comment we give a docs list of the events?
 
     @LuaWhitelist
-    @LuaFieldDoc(description = "enets.tick")
+    @LuaFieldDoc(description = "events.tick")
     public final LuaEvent TICK;
     @LuaWhitelist
-    @LuaFieldDoc(description = "enets.world_tick")
+    @LuaFieldDoc(description = "events.world_tick")
     public final LuaEvent WORLD_TICK;
     @LuaWhitelist
-    @LuaFieldDoc(description = "enets.render")
+    @LuaFieldDoc(description = "events.render")
     public final LuaEvent RENDER;
     @LuaWhitelist
-    @LuaFieldDoc(description = "enets.post_render")
+    @LuaFieldDoc(description = "events.post_render")
     public final LuaEvent POST_RENDER;
     @LuaWhitelist
-    @LuaFieldDoc(description = "enets.world_render")
+    @LuaFieldDoc(description = "events.world_render")
     public final LuaEvent WORLD_RENDER;
     @LuaWhitelist
-    @LuaFieldDoc(description = "enets.post_world_render")
+    @LuaFieldDoc(description = "events.post_world_render")
     public final LuaEvent POST_WORLD_RENDER;
     @LuaWhitelist
-    @LuaFieldDoc(description = "enets.chat_send_message")
+    @LuaFieldDoc(description = "events.chat_send_message")
     public final LuaEvent CHAT_SEND_MESSAGE;
     @LuaWhitelist
-    @LuaFieldDoc(description = "enets.chat_receive_message")
+    @LuaFieldDoc(description = "events.chat_receive_message")
     public final LuaEvent CHAT_RECEIVE_MESSAGE;
 
     @LuaWhitelist

@@ -20,7 +20,7 @@ import java.util.Optional;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "ItemStack",
-        description = "item_stack"
+        description = "itemstack"
 )
 public class ItemStackAPI {
 
