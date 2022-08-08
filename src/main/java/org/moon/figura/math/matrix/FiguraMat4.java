@@ -474,7 +474,7 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
         return this;
     }
 
-    public void scale(double x, double y, double z) {
+    public FiguraMat4 scale(double x, double y, double z) {
         v11 *= x;
         v12 *= x;
         v13 *= x;
@@ -488,11 +488,12 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
         v33 *= z;
         v34 *= z;
         invalidate();
+        return this;
     }
 
 
-    public void scale(FiguraVec3 vec) {
-        scale(vec.x, vec.y, vec.z);
+    public FiguraMat4 scale(FiguraVec3 vec) {
+        return scale(vec.x, vec.y, vec.z);
     }
 
     @LuaWhitelist
@@ -509,11 +510,11 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
             },
             description = "matrix_n.scale"
     )
-    public void scale(Object x, Double y, Double z) {
-        scale(LuaUtils.parseVec3("scale", x, y, z, 1, 1, 1));
+    public FiguraMat4 scale(Object x, Double y, Double z) {
+        return scale(LuaUtils.parseVec3("scale", x, y, z, 1, 1, 1));
     }
 
-    public void translate(double x, double y, double z) {
+    public FiguraMat4 translate(double x, double y, double z) {
         v11 += x * v41;
         v12 += x * v42;
         v13 += x * v43;
@@ -529,13 +530,14 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
         v33 += z * v43;
         v34 += z * v44;
         invalidate();
+        return this;
     }
-    public void translate(FiguraVec3 amount) {
-        translate(amount.x, amount.y, amount.z);
+    public FiguraMat4 translate(FiguraVec3 amount) {
+        return translate(amount.x, amount.y, amount.z);
     }
 
-    public void translate(Vec3 amount) {
-        translate(amount.x, amount.y, amount.z);
+    public FiguraMat4 translate(Vec3 amount) {
+        return translate(amount.x, amount.y, amount.z);
     }
 
     @LuaWhitelist
@@ -552,8 +554,8 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
             },
             description = "matrix_n.translate"
     )
-    public void translate(Object x, Double y, Double z) {
-        translate(LuaUtils.parseVec3("translate", x, y, z));
+    public FiguraMat4 translate(Object x, Double y, Double z) {
+        return translate(LuaUtils.parseVec3("translate", x, y, z));
     }
 
     @LuaWhitelist
@@ -564,7 +566,7 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
             ),
             description = "matrix_n.rotate_x"
     )
-    public void rotateX(double degrees) {
+    public FiguraMat4 rotateX(double degrees) {
         degrees = Math.toRadians(degrees);
         double c = Math.cos(degrees);
         double s = Math.sin(degrees);
@@ -584,6 +586,7 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
         v23 = nv23;
         v24 = nv24;
         invalidate();
+        return this;
     }
 
     @LuaWhitelist
@@ -594,7 +597,7 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
             ),
             description = "matrix_n.rotate_y"
     )
-    public void rotateY(double degrees) {
+    public FiguraMat4 rotateY(double degrees) {
         degrees = Math.toRadians(degrees);
         double c = Math.cos(degrees);
         double s = Math.sin(degrees);
@@ -614,6 +617,7 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
         v13 = nv13;
         v14 = nv14;
         invalidate();
+        return this;
     }
 
     @LuaWhitelist
@@ -624,7 +628,7 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
             ),
             description = "matrix_n.rotate_z"
     )
-    public void rotateZ(double degrees) {
+    public FiguraMat4 rotateZ(double degrees) {
         degrees = Math.toRadians(degrees);
         double c = Math.cos(degrees);
         double s = Math.sin(degrees);
@@ -644,6 +648,7 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
         v13 = nv13;
         v14 = nv14;
         invalidate();
+        return this;
     }
 
     //Rotates using ZYX matrix order, meaning the X axis, then Y, then Z.
@@ -716,8 +721,9 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
             },
             description = "matrix_n.rotate"
     )
-    public void rotate(Object x, Double y, Double z) {
+    public FiguraMat4 rotate(Object x, Double y, Double z) {
         rotateZYX(LuaUtils.parseVec3("rotate", x, y, z));
+        return this;
     }
 
 

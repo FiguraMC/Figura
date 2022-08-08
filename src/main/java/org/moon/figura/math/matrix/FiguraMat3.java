@@ -381,7 +381,7 @@ public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
         return this;
     }
 
-    public void scale(double x, double y, double z) {
+    public FiguraMat3 scale(double x, double y, double z) {
         v11 *= x;
         v12 *= x;
         v13 *= x;
@@ -392,10 +392,11 @@ public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
         v32 *= z;
         v33 *= z;
         invalidate();
+        return this;
     }
 
-    public void scale(FiguraVec3 vec) {
-        scale(vec.x, vec.y, vec.z);
+    public FiguraMat3 scale(FiguraVec3 vec) {
+        return scale(vec.x, vec.y, vec.z);
     }
 
     @LuaWhitelist
@@ -412,11 +413,11 @@ public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
             },
             description = "matrix_n.scale"
     )
-    public void scale(Object x, Double y, Double z) {
-        scale(LuaUtils.parseVec3("scale", x, y, z, 1, 1, 1));
+    public FiguraMat3 scale(Object x, Double y, Double z) {
+        return scale(LuaUtils.parseVec3("scale", x, y, z, 1, 1, 1));
     }
 
-    public void translate(double x, double y) {
+    public FiguraMat3 translate(double x, double y) {
         v11 += x * v31;
         v12 += x * v32;
         v13 += x * v33;
@@ -425,6 +426,7 @@ public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
         v22 += y * v32;
         v23 += y * v33;
         invalidate();
+        return this;
     }
     public void translate(FiguraVec2 amount) {
         translate(amount.x, amount.y);
@@ -456,7 +458,7 @@ public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
             ),
             description = "matrix_n.rotate_x"
     )
-    public void rotateX(double degrees) {
+    public FiguraMat3 rotateX(double degrees) {
         degrees = Math.toRadians(degrees);
         double c = Math.cos(degrees);
         double s = Math.sin(degrees);
@@ -473,6 +475,7 @@ public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
         v22 = nv22;
         v23 = nv23;
         invalidate();
+        return this;
     }
 
     @LuaWhitelist
@@ -483,7 +486,7 @@ public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
             ),
             description = "matrix_n.rotate_y"
     )
-    public void rotateY(double degrees) {
+    public FiguraMat3 rotateY(double degrees) {
         degrees = Math.toRadians(degrees);
         double c = Math.cos(degrees);
         double s = Math.sin(degrees);
@@ -500,6 +503,7 @@ public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
         v12 = nv12;
         v13 = nv13;
         invalidate();
+        return this;
     }
 
     @LuaWhitelist
@@ -510,7 +514,7 @@ public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
             ),
             description = "matrix_n.rotate_z"
     )
-    public void rotateZ(double degrees) {
+    public FiguraMat3 rotateZ(double degrees) {
         degrees = Math.toRadians(degrees);
         double c = Math.cos(degrees);
         double s = Math.sin(degrees);
@@ -527,6 +531,7 @@ public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
         v12 = nv12;
         v13 = nv13;
         invalidate();
+        return this;
     }
 
     //Rotates using ZYX matrix order, meaning the X axis, then Y, then Z.
@@ -593,8 +598,9 @@ public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
             },
             description = "matrix_n.rotate"
     )
-    public void rotate(Object x, Double y, Double z) {
+    public FiguraMat3 rotate(Object x, Double y, Double z) {
         rotateZYX(LuaUtils.parseVec3("rotate", x, y, z));
+        return this;
     }
 
     @LuaWhitelist

@@ -20,7 +20,7 @@ import org.moon.figura.utils.LuaUtils;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "ParticleAPI",
-        description = "particle"
+        description = "particles"
 )
 public class ParticleAPI {
 
@@ -62,7 +62,7 @@ public class ParticleAPI {
                             argumentNames = {"name", "posX", "posY", "posZ", "velX", "velY", "velZ"}
                     )
             },
-            description = "particle.add_particle"
+            description = "particles.add_particle"
     )
     public void addParticle(@LuaNotNil String id, Object x, Object y, Double z, Object w, Double t, Double h) {
         if (!owner.particlesRemaining.use())

@@ -278,16 +278,17 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
         return this;
     }
 
-    public void scale(double x, double y) {
+    public FiguraMat2 scale(double x, double y) {
         v11 *= x;
         v12 *= x;
         v21 *= y;
         v22 *= y;
         invalidate();
+        return this;
     }
 
-    public void scale(FiguraVec2 vec) {
-        scale(vec.x, vec.y);
+    public FiguraMat2 scale(FiguraVec2 vec) {
+        return scale(vec.x, vec.y);
     }
 
     @LuaWhitelist
@@ -304,8 +305,8 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
             },
             description = "matrix_n.scale"
     )
-    public void scale(Object x, Double y) {
-        scale(LuaUtils.parseVec2("scale", x, y, 1, 1));
+    public FiguraMat2 scale(Object x, Double y) {
+        return scale(LuaUtils.parseVec2("scale", x, y, 1, 1));
     }
 
     @LuaWhitelist
@@ -316,7 +317,7 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
             ),
             description = "matrix_n.rotate"
     )
-    public void rotate(Double degrees) {
+    public FiguraMat2 rotate(Double degrees) {
         degrees = Math.toRadians(degrees);
         double c = Math.cos(degrees);
         double s = Math.sin(degrees);
@@ -329,6 +330,7 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
 
         v11 = nv11;
         v12 = nv12;
+        return this;
     }
 
     @LuaWhitelist

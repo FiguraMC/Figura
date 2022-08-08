@@ -87,7 +87,7 @@ public abstract class FiguraDoc {
             for (Method method : clazz.getMethods())
                 if (method.isAnnotationPresent(LuaMethodDoc.class)) {
                     List<FiguraDoc> childList = children == null ? null : children.get(method.getName());
-                    documentedMethods.add(new MethodDoc(method, method.getAnnotation(LuaMethodDoc.class), childList));
+                    documentedMethods.add(new MethodDoc(method, method.getAnnotation(LuaMethodDoc.class), childList, typeDoc.name()));
                 }
 
             //Find fields
@@ -178,15 +178,19 @@ public abstract class FiguraDoc {
         public final Class<?>[][] parameterTypes;
         public final String[][] parameterNames;
         public final Class<?>[] returnTypes;
+        public final String typeName;
+        public final boolean isStatic;
         public final List<FiguraDoc> children;
 
-        public MethodDoc(Method method, LuaMethodDoc methodDoc, List<FiguraDoc> children) {
+        public MethodDoc(Method method, LuaMethodDoc methodDoc, List<FiguraDoc> children, String typeName) {
             super(method.getName(), methodDoc.description());
 
             LuaFunctionOverload[] overloads = methodDoc.overloads();
             parameterTypes = new Class[overloads.length][];
             parameterNames = new String[overloads.length][];
             returnTypes = new Class[overloads.length];
+            isStatic = Modifier.isStatic(method.getModifiers());
+            this.typeName = typeName;
             this.children = children;
 
             for (int i = 0; i < overloads.length; i++) {
@@ -222,8 +226,10 @@ public abstract class FiguraDoc {
                             .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style));
 
             for (int i = 0; i < parameterTypes.length; i++) {
+
                 //name
-                message.append("\n\t").append(Component.literal("• " + name).withStyle(ColorUtils.Colors.MAYA_BLUE.style))
+                String prefix = "• " + typeName + (isStatic ? "." : ":") + name;
+                message.append("\n\t").append(Component.literal(prefix).withStyle(ColorUtils.Colors.MAYA_BLUE.style))
                         .append("(");
 
                 for (int j = 0; j < parameterTypes[i].length; j++) {
