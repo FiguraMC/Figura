@@ -1,6 +1,5 @@
 package org.moon.figura.avatars.model.rendering;
 
-import com.mojang.math.Vector3f;
 import net.minecraft.client.Minecraft;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.model.FiguraModelPart;
@@ -20,10 +19,8 @@ public class StackAvatarRenderer extends ImmediateAvatarRenderer {
     @Override
     protected void commonRender(double vertOffset) {
         //clear pivot list
-//        pivotCustomizations.clear();
 
         //setup root customizations
-        matrices.pushPose();
         PartCustomization customization = setupRootCustomization(vertOffset);
 
         //Push transform
@@ -57,20 +54,11 @@ public class StackAvatarRenderer extends ImmediateAvatarRenderer {
         avatar.remainingComplexity = remainingComplexity[0];
 
         customizationStack.pop();
-        matrices.popPose();
         checkEmpty();
     }
 
-    @Override
-    protected PartCustomization setupRootCustomization(double vertOffset) {
-        PartCustomization customization = super.setupRootCustomization(vertOffset);
-        float s = 1 / 16f;
-        matrices.translate(0, vertOffset, 0);
-        matrices.mulPose(Vector3f.ZP.rotationDegrees(180));
-        matrices.scale(s, s, s);
-        return customization;
-    }
 
+    private static final PartCustomization pivotOffsetter = PartCustomization.of();
     @Override
     protected void renderPart(FiguraModelPart part, int[] remainingComplexity, boolean prevPredicate) {
         PartCustomization custom = part.customization;
@@ -80,7 +68,6 @@ public class StackAvatarRenderer extends ImmediateAvatarRenderer {
         boolean thisPassedPredicate = currentFilterScheme.test(part.parentType, prevPredicate);
 
         //calculate part transforms
-        matrices.pushPose();
 
         if (thisPassedPredicate) {
             //calculate vanilla parent
@@ -99,13 +86,13 @@ public class StackAvatarRenderer extends ImmediateAvatarRenderer {
 
         custom.visible = part.getVisible() && thisPassedPredicate;
         custom.recalculate();
-        custom.applyToStack(matrices);
         customizationStack.push(custom);
         custom.visible = storedVisibility;
 
         if (reset) custom.needsMatrixRecalculation = true;
 
-        PartCustomization peek = customizationStack.peek();
+        //render this
+        part.pushVerticesImmediate(this, remainingComplexity);
 
         //render extras
         if (thisPassedPredicate) {
@@ -118,42 +105,42 @@ public class StackAvatarRenderer extends ImmediateAvatarRenderer {
 
 //            calculateWorldMatrices(part); //FOR DEBUG TESTING!
 
-            //fix pivots
-            matrices.pushPose();
+            PartCustomization peek = customizationStack.peek();
 
+            //fix pivots
             FiguraVec3 pivot = custom.getPivot();
             FiguraVec3 offsetPivot = custom.getOffsetPivot();
-            matrices.translate(
-                    pivot.x + offsetPivot.x,
-                    pivot.y + offsetPivot.y,
-                    pivot.z + offsetPivot.z
-            );
+            pivotOffsetter.setPos(pivot.add(offsetPivot));
+            pivotOffsetter.recalculate();
+            customizationStack.push(pivotOffsetter);
             pivot.free();
             offsetPivot.free();
 
             //render pivot indicators
             if (shouldRenderPivots > 1 || shouldRenderPivots == 1 && peek.visible)
-                renderPivot(part, matrices);
+                renderPivot(part);
 
             if (peek.visible) {
                 //render tasks
                 if (allowRenderTasks) {
                     int light = peek.light;
                     int overlay = peek.overlay;
-                    for (RenderTask task : part.renderTasks.values())
-                        task.render(matrices, bufferSource, light, overlay);
+                    for (RenderTask task : part.renderTasks.values()) {
+                        if (task.getComplexity() > remainingComplexity[0])
+                            continue;
+                        if (task.render(customizationStack, bufferSource, light, overlay))
+                            remainingComplexity[0] -= task.getComplexity();
+                    }
+
                 }
 
                 //render pivot parts
-                if (ParentType.PIVOT_PARTS.contains(part.parentType))
-                    applyPivotTransforms(part.parentType, matrices);
+                if (part.parentType.isPivot)
+                    savePivotTransform(part.parentType);
             }
 
-            matrices.popPose();
+            customizationStack.pop();
         }
-
-        //render this
-        part.pushVerticesImmediate(this, remainingComplexity);
 
         //render children
         for (FiguraModelPart child : part.children)
@@ -164,6 +151,5 @@ public class StackAvatarRenderer extends ImmediateAvatarRenderer {
 
         //pop
         customizationStack.pop();
-        matrices.popPose();
     }
 }

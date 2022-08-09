@@ -35,14 +35,23 @@ public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
     }
 
     public Matrix3f toMatrix3f() {
+        writeToBuffer();
+        Matrix3f result = new Matrix3f();
+        result.load(copyingBuffer);
+        return result;
+    }
+
+    public void copyDataTo(Matrix3f vanillaMatrix) {
+        writeToBuffer();
+        vanillaMatrix.load(copyingBuffer);
+    }
+
+    private void writeToBuffer() {
         copyingBuffer.clear();
         copyingBuffer
                 .put((float) v11).put((float) v21).put((float) v31)
                 .put((float) v12).put((float) v22).put((float) v32)
                 .put((float) v13).put((float) v23).put((float) v33);
-        Matrix3f result = new Matrix3f();
-        result.load(copyingBuffer);
-        return result;
     }
 
     //----------------------------IMPLEMENTATION BELOW-----------------------//

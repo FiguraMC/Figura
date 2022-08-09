@@ -44,7 +44,7 @@ public abstract class AvatarRenderer {
     public boolean allowMatrixUpdate = false;
 
     public PartFilterScheme currentFilterScheme;
-    public HashMap<ParentType, List<PoseStack>> pivotCustomizations = new HashMap<>();
+    public final HashMap<ParentType, List<FiguraMat4>> pivotCustomizations = new HashMap<>();
     protected static int shouldRenderPivots;
     public boolean allowHiddenTransforms = true;
     public boolean allowRenderTasks = true;

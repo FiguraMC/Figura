@@ -379,6 +379,15 @@ public class PartCustomization implements CachedType<PartCustomization> {
             secondaryTexture = other.secondaryTexture;
     }
 
+    public static final PoseStack GLOBAL_CUSTOMIZATION_POSE_STACK = new PoseStack();
+
+    public PoseStack copyIntoGlobalPoseStack() {
+        recalculate();
+        positionMatrix.copyDataTo(GLOBAL_CUSTOMIZATION_POSE_STACK.last().pose());
+        normalMatrix.copyDataTo(GLOBAL_CUSTOMIZATION_POSE_STACK.last().normal());
+        return GLOBAL_CUSTOMIZATION_POSE_STACK;
+    }
+
     public enum PartType {
         MESH,
         CUBE,

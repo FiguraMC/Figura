@@ -5,8 +5,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import org.luaj.vm2.LuaError;
+import org.moon.figura.avatars.model.PartCustomization;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.world.ItemStackAPI;
@@ -25,22 +27,29 @@ public class ItemTask extends RenderTask {
     private ItemStack item;
     private ItemTransforms.TransformType renderType = ItemTransforms.TransformType.NONE;
     private boolean left = false;
+    private int cachedComplexity;
 
     @Override
-    public void render(PoseStack stack, MultiBufferSource buffer, int light, int overlay) {
+    public boolean render(PartCustomization.Stack stack, MultiBufferSource buffer, int light, int overlay) {
         if (!enabled || item == null || item.isEmpty())
-            return;
+            return false;
 
-        stack.pushPose();
-        this.apply(stack);
-        stack.scale(-16, 16, -16);
+        this.pushOntoStack(stack);
+        PoseStack poseStack = stack.peek().copyIntoGlobalPoseStack();
+        poseStack.scale(-16, 16, -16);
 
         Minecraft.getInstance().getItemRenderer().renderStatic(
                 null, item, renderType, left,
-                stack, buffer, null,
+                poseStack, buffer, null,
                 emissive ? LightTexture.FULL_BRIGHT : light, overlay, 0);
 
-        stack.popPose();
+        stack.pop();
+        return true;
+    }
+
+    @Override
+    public int getComplexity() {
+        return cachedComplexity;
     }
 
     @LuaWhitelist
@@ -59,6 +68,9 @@ public class ItemTask extends RenderTask {
     )
     public RenderTask item(Object item) {
         this.item = LuaUtils.parseItemStack("item", item);
+        Minecraft client = Minecraft.getInstance();
+        RandomSource random = client.level != null ? client.level.random : RandomSource.create();
+        cachedComplexity = client.getItemRenderer().getModel(this.item, null, null, 0).getQuads(null, null, random).size();
         return this;
     }
 

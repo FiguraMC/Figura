@@ -4,7 +4,12 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.block.model.BlockModel;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
+import org.moon.figura.avatars.model.PartCustomization;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.world.BlockStateAPI;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
@@ -20,19 +25,25 @@ import org.moon.figura.utils.LuaUtils;
 public class BlockTask extends RenderTask {
 
     private BlockState block;
+    private int cachedComplexity;
+    @Override
+    public boolean render(PartCustomization.Stack stack, MultiBufferSource buffer, int light, int overlay) {
+        if (!enabled || block == null || block.isAir())
+            return false;
+
+        this.pushOntoStack(stack); //push
+        PoseStack poseStack = stack.peek().copyIntoGlobalPoseStack();
+        poseStack.scale(16, 16, 16);
+
+        Minecraft.getInstance().getBlockRenderer().renderSingleBlock(block, poseStack, buffer, emissive ? LightTexture.FULL_BRIGHT : light, overlay);
+
+        stack.pop(); //pop
+        return true;
+    }
 
     @Override
-    public void render(PoseStack stack, MultiBufferSource buffer, int light, int overlay) {
-        if (!enabled || block == null || block.isAir())
-            return;
-
-        stack.pushPose();
-        this.apply(stack);
-        stack.scale(16, 16, 16);
-
-        Minecraft.getInstance().getBlockRenderer().renderSingleBlock(block, stack, buffer, emissive ? LightTexture.FULL_BRIGHT : light, overlay);
-
-        stack.popPose();
+    public int getComplexity() {
+        return cachedComplexity;
     }
 
     @LuaWhitelist
@@ -51,6 +62,14 @@ public class BlockTask extends RenderTask {
     )
     public RenderTask block(Object block) {
         this.block = LuaUtils.parseBlockState("block", block);
+        Minecraft client = Minecraft.getInstance();
+        RandomSource random = client.level != null ? client.level.random : RandomSource.create();
+
+        BakedModel blockModel = client.getBlockRenderer().getBlockModel(this.block);
+        cachedComplexity = blockModel.getQuads(this.block, null, random).size();
+        for (Direction dir : Direction.values())
+            cachedComplexity += blockModel.getQuads(this.block, dir, random).size();
+
         return this;
     }
 

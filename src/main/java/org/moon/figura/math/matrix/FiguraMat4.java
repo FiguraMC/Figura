@@ -36,15 +36,24 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
     }
 
     public Matrix4f toMatrix4f() {
+        writeToBuffer();
+        Matrix4f result = new Matrix4f();
+        result.load(copyingBuffer);
+        return result;
+    }
+
+    public void copyDataTo(Matrix4f vanillaMatrix) {
+        writeToBuffer();
+        vanillaMatrix.load(copyingBuffer);
+    }
+
+    private void writeToBuffer() {
         copyingBuffer.clear();
         copyingBuffer
                 .put((float) v11).put((float) v21).put((float) v31).put((float) v41)
                 .put((float) v12).put((float) v22).put((float) v32).put((float) v42)
                 .put((float) v13).put((float) v23).put((float) v33).put((float) v43)
                 .put((float) v14).put((float) v24).put((float) v34).put((float) v44);
-        Matrix4f result = new Matrix4f();
-        result.load(copyingBuffer);
-        return result;
     }
 
     //----------------------------IMPLEMENTATION BELOW-----------------------//
@@ -556,6 +565,16 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
     )
     public FiguraMat4 translate(Object x, Double y, Double z) {
         return translate(LuaUtils.parseVec3("translate", x, y, z));
+    }
+
+    // Meant to mimic PoseStack's translate() behavior. This effectively right-multiplies by a translation matrix.
+    public FiguraMat4 translateFirst(double x, double y, double z) {
+        v14 += v11 * x + v12 * y + v13 * z;
+        v24 += v21 * x + v22 * y + v23 * z;
+        v34 += v31 * x + v32 * y + v33 * z;
+        v44 += v41 * x + v42 * y + v43 * z;
+        invalidate();
+        return this;
     }
 
     @LuaWhitelist

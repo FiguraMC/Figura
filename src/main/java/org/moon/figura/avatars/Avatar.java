@@ -27,6 +27,7 @@ import org.moon.figura.FiguraMod;
 import org.moon.figura.animation.Animation;
 import org.moon.figura.animation.AnimationPlayer;
 import org.moon.figura.avatars.model.ParentType;
+import org.moon.figura.avatars.model.PartCustomization;
 import org.moon.figura.avatars.model.rendering.AvatarRenderer;
 import org.moon.figura.avatars.model.rendering.PartFilterScheme;
 import org.moon.figura.avatars.model.rendering.StackAvatarRenderer;
@@ -37,6 +38,7 @@ import org.moon.figura.lua.api.event.LuaEvent;
 import org.moon.figura.lua.api.ping.PingArg;
 import org.moon.figura.lua.api.ping.PingFunction;
 import org.moon.figura.lua.api.sound.SoundAPI;
+import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.EntityUtils;
@@ -339,7 +341,12 @@ public class Avatar {
 
         complexity = 0;
         remainingComplexity = trust.get(TrustContainer.Trust.COMPLEXITY);
-        renderer.pivotCustomizations.clear();
+
+        for (List<FiguraMat4> list : renderer.pivotCustomizations.values()) {
+            for (FiguraMat4 mat : list)
+                mat.free();
+            list.clear();
+        }
 
         renderer.allowMatrixUpdate = true;
         renderer.entity = entity;
@@ -471,16 +478,23 @@ public class Avatar {
         return prevComplexity > remainingComplexity && luaRuntime != null && !luaRuntime.vanilla_model.HEAD.getVisible();
     }
 
+    private static final PartCustomization PIVOT_PART_RENDERING_CUSTOMIZATION = PartCustomization.of();
     public boolean pivotPartRender(ParentType parent, Consumer<PoseStack> consumer) {
-        if (renderer == null || !ParentType.PIVOT_PARTS.contains(parent))
+        if (renderer == null || !parent.isPivot)
             return false;
 
-        List<PoseStack> list = renderer.pivotCustomizations.get(parent);
-        if (list == null || list.isEmpty())
+        List<FiguraMat4> list = renderer.pivotCustomizations.computeIfAbsent(parent, p -> new ArrayList<>());
+
+        if (list.isEmpty())
             return false;
 
-        for (PoseStack stack : new ArrayList<>(list))
+        for (FiguraMat4 matrix : list) {
+            PIVOT_PART_RENDERING_CUSTOMIZATION.setMatrix(matrix);
+            PoseStack stack = PIVOT_PART_RENDERING_CUSTOMIZATION.copyIntoGlobalPoseStack();
+            stack.last().normal().mul(1f/16);
             consumer.accept(stack);
+            matrix.free();
+        }
 
         list.clear();
         return true;

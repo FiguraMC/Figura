@@ -1,8 +1,7 @@
 package org.moon.figura.avatars.model.rendertasks;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
 import net.minecraft.client.renderer.MultiBufferSource;
+import org.moon.figura.avatars.model.PartCustomization;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
@@ -20,22 +19,20 @@ public abstract class RenderTask {
 
     protected boolean enabled = true;
     protected boolean emissive = false;
-    protected FiguraVec3 pos, rot, scale;
+    protected final FiguraVec3 pos = FiguraVec3.of();
+    protected final FiguraVec3 rot = FiguraVec3.of();
+    protected final FiguraVec3 scale = FiguraVec3.of(1, 1, 1);
 
-    public abstract void render(PoseStack stack, MultiBufferSource buffer, int light, int overlay);
-
-    public void apply(PoseStack stack) {
-        if (rot != null) {
-            stack.mulPose(Vector3f.XP.rotationDegrees((float) rot.x));
-            stack.mulPose(Vector3f.YP.rotationDegrees((float) rot.y));
-            stack.mulPose(Vector3f.ZP.rotationDegrees((float) rot.z));
-        }
-
-        if (pos != null)
-            stack.translate(pos.x, pos.y, pos.z);
-
-        if (scale != null)
-            stack.scale((float) scale.x, (float) scale.y, (float) scale.z);
+    //Return true if something was rendered, false if the function cancels for some reason
+    public abstract boolean render(PartCustomization.Stack stack, MultiBufferSource buffer, int light, int overlay);
+    public abstract int getComplexity();
+    private static final PartCustomization dummyCustomization = PartCustomization.of();
+    public void pushOntoStack(PartCustomization.Stack stack) {
+        dummyCustomization.setScale(scale);
+        dummyCustomization.setPos(pos);
+        dummyCustomization.setRot(rot);
+        dummyCustomization.recalculate();
+        stack.push(dummyCustomization);
     }
 
     @LuaWhitelist
@@ -79,7 +76,9 @@ public abstract class RenderTask {
             description = "render_task.pos"
     )
     public RenderTask pos(Object x, Double y, Double z) {
-        this.pos = LuaUtils.parseVec3("pos", x, y, z);
+        FiguraVec3 vec = LuaUtils.parseVec3("pos", x, y, z);
+        pos.set(vec);
+        vec.free();
         return this;
     }
 
@@ -98,7 +97,9 @@ public abstract class RenderTask {
             description = "render_task.rot"
     )
     public RenderTask rot(Object x, Double y, Double z) {
-        this.rot = LuaUtils.parseVec3("rot", x, y, z);
+        FiguraVec3 vec = LuaUtils.parseVec3("rot", x, y, z);
+        rot.set(vec);
+        vec.free();
         return this;
     }
 
@@ -117,7 +118,9 @@ public abstract class RenderTask {
             description = "render_task.scale"
     )
     public RenderTask scale(Object x, Double y, Double z) {
-        this.scale = LuaUtils.parseVec3("scale", x, y, z, 1, 1, 1);
+        FiguraVec3 vec = LuaUtils.parseVec3("scale", x, y, z, 1, 1, 1);
+        scale.set(vec);
+        vec.free();
         return this;
     }
 

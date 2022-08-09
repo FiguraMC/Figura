@@ -6,6 +6,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
+import org.moon.figura.avatars.model.PartCustomization;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
@@ -32,14 +33,16 @@ public class TextTask extends RenderTask {
     private boolean outline = false;
     private FiguraVec3 outlineColor;
 
-    @Override
-    public void render(PoseStack stack, MultiBufferSource buffer, int light, int overlay) {
-        if (!enabled || text == null || text.size() == 0)
-            return;
+    private int cachedComplexity;
 
-        stack.pushPose();
-        this.apply(stack);
-        stack.scale(-1, -1, 1);
+    @Override
+    public boolean render(PartCustomization.Stack stack, MultiBufferSource buffer, int light, int overlay) {
+        if (!enabled || text == null || text.size() == 0)
+            return false;
+
+        this.pushOntoStack(stack);
+        PoseStack poseStack = stack.peek().copyIntoGlobalPoseStack();
+        poseStack.scale(-1, -1, 1);
 
         Font font = Minecraft.getInstance().font;
 
@@ -49,13 +52,19 @@ public class TextTask extends RenderTask {
             int y = i * font.lineHeight;
 
             if (outline) {
-                UIHelper.renderOutlineText(stack, font, text, x, y, 0xFFFFFF, outlineColor == null ? 0 : ColorUtils.rgbToInt(outlineColor));
+                UIHelper.renderOutlineText(poseStack, font, text, x, y, 0xFFFFFF, outlineColor == null ? 0 : ColorUtils.rgbToInt(outlineColor));
             } else {
-                font.drawInBatch(text, x, y, 0xFFFFFF, shadow, stack.last().pose(), buffer, false, 0, emissive ? LightTexture.FULL_BRIGHT : light);
+                font.drawInBatch(text, x, y, 0xFFFFFF, shadow, poseStack.last().pose(), buffer, false, 0, emissive ? LightTexture.FULL_BRIGHT : light);
             }
         }
 
-        stack.popPose();
+        stack.pop();
+        return true;
+    }
+
+    @Override
+    public int getComplexity() {
+        return cachedComplexity;
     }
 
     @LuaWhitelist
@@ -70,6 +79,8 @@ public class TextTask extends RenderTask {
     )
     public RenderTask text(String text) {
         this.text = text == null ? null : TextUtils.splitText(TextUtils.tryParseJson(text), "\n");
+        if (text != null)
+            this.cachedComplexity = text.length() + 1;
         return this;
     }
 

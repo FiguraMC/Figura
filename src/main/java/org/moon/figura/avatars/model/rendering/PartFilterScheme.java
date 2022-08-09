@@ -29,7 +29,7 @@ public enum PartFilterScheme {
         if (this.parent != null && this.parent == toTest)
             return true;
 
-        if (!this.special && ParentType.SPECIAL_PARTS.contains(toTest))
+        if (!this.special && toTest.isSpecial)
             return false;
 
         return prevResult;

@@ -85,6 +85,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         commonRender(0);
     }
 
+    @Deprecated
     protected void commonRender(double vertOffset) {
         //clear pivot list
         pivotCustomizations.clear();
@@ -153,6 +154,8 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         return customization;
     }
 
+    @Deprecated
+    //Method is only kept for reference of how it used to work, this impl no longer works with new system.
     protected void renderPart(FiguraModelPart part, int[] remainingComplexity, boolean parentPassedPredicate) {
         part.applyVanillaTransforms(entityRenderer);
 
@@ -182,19 +185,20 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
             //pivots
             if (shouldRenderPivots > 1 || shouldRenderPivots == 1 && peek.visible)
-                renderPivot(part, VIEW_MATRICES);
+//                renderPivot(part, VIEW_MATRICES);
+                renderPivot(part);
 
-            if (peek.visible) {
-                //tasks
-                int light = peek.light;
-                int overlay = peek.overlay;
-                for (RenderTask task : part.renderTasks.values())
-                    task.render(VIEW_MATRICES, bufferSource, light, overlay);
-
-                //pivot parts
-                if (ParentType.PIVOT_PARTS.contains(part.parentType))
-                    applyPivotTransforms(part.parentType, VIEW_MATRICES);
-            }
+//            if (peek.visible) {
+//                //tasks
+//                int light = peek.light;
+//                int overlay = peek.overlay;
+//                for (RenderTask task : part.renderTasks.values())
+//                    task.render(VIEW_MATRICES, bufferSource, light, overlay);
+//
+//                //pivot parts
+//                if (part.parentType.isPivot)
+//                    savePivotTransform(part.parentType, VIEW_MATRICES);
+//            }
         }
 
         part.pushVerticesImmediate(this, remainingComplexity);
@@ -206,11 +210,13 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         part.resetVanillaTransforms();
     }
 
-    protected void renderPivot(FiguraModelPart part, PoseStack stack) {
+    protected void renderPivot(FiguraModelPart part) {
         boolean group = part.customization.partType == PartCustomization.PartType.GROUP;
         FiguraVec3 color = group ? ColorUtils.Colors.MAYA_BLUE.vec : ColorUtils.Colors.FRAN_PINK.vec;
         double boxSize = group ? 1 / 16d : 1 / 32d;
         boxSize /= Math.cbrt(part.savedPartToWorldMat.det());
+
+        PoseStack stack = customizationStack.peek().copyIntoGlobalPoseStack();
 
         LevelRenderer.renderLineBox(stack, bufferSource.getBuffer(RenderType.LINES),
                 -boxSize, -boxSize, -boxSize,
@@ -230,15 +236,10 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         posMat.free();
     }
 
-    protected void applyPivotTransforms(ParentType parentType, PoseStack stack) {
-        PoseStack matrices = new PoseStack();
-        ((PoseStackAccessor) matrices).addPose(stack.last());
-
-        List<PoseStack> list = this.pivotCustomizations.get(parentType);
-        if (list == null) list = new ArrayList<>(1);
-
-        list.add(matrices);
-        this.pivotCustomizations.put(parentType, list);
+    protected void savePivotTransform(ParentType parentType) {
+        FiguraMat4 currentTransform = customizationStack.peek().getPositionMatrix();
+        List<FiguraMat4> list = pivotCustomizations.computeIfAbsent(parentType, p -> new ArrayList<>());
+        list.add(currentTransform); //CurrentTransform is a COPY, so it's okay to add it
     }
 
     protected FiguraMat4 partToWorldMatrices(PartCustomization cust) {

@@ -19,39 +19,47 @@ public enum ParentType {
 
     Cape(VanillaModelProvider.FAKE_CAPE, "CAPE"),
 
-    World("WORLD"),
-    Hud("HUD", "Gui", "GUI"),
+    World(true, false, "WORLD"),
+    Hud(true, false, "HUD", "Gui", "GUI"),
     Camera("CAMERA"),
-    Skull("SKULL"),
+    Skull(true, false, "SKULL"),
 
-    LeftItemPivot("LEFT_ITEM_PIVOT"),
-    RightItemPivot("RIGHT_ITEM_PIVOT"),
-    LeftSpyglassPivot("LEFT_SPYGLASS_PIVOT"),
-    RightSpyglassPivot("RIGHT_SPYGLASS_PIVOT"),
-    HelmetItemPivot("HELMET_ITEM_PIVOT"),
-    LeftParrotPivot("LEFT_PARROT_PIVOT"),
-    RightParrotPivot("RIGHT_PARROT_PIVOT");
+    LeftItemPivot(false, true,"LEFT_ITEM_PIVOT"),
+    RightItemPivot(false, true,"RIGHT_ITEM_PIVOT"),
+    LeftSpyglassPivot(false, true,"LEFT_SPYGLASS_PIVOT"),
+    RightSpyglassPivot(false, true,"RIGHT_SPYGLASS_PIVOT"),
+    HelmetItemPivot(false, true,"HELMET_ITEM_PIVOT"),
+    LeftParrotPivot(false, true,"LEFT_PARROT_PIVOT"),
+    RightParrotPivot(false, true,"RIGHT_PARROT_PIVOT");
 
     public final VanillaModelProvider provider;
     public final FiguraVec3 offset;
     public final String[] aliases;
-    public static final Set<ParentType> SPECIAL_PARTS = Set.of(World, Hud, Skull);
-    public static final Set<ParentType> PIVOT_PARTS = Set.of(
-            LeftItemPivot, RightItemPivot,
-            LeftSpyglassPivot, RightSpyglassPivot,
-            HelmetItemPivot,
-            LeftParrotPivot, RightParrotPivot
-    );
+    public final boolean isSpecial, isPivot;
 
     ParentType(String... aliases) {
-        this(null, aliases);
+        this(false, false, null, aliases);
     }
 
     ParentType(VanillaModelProvider provider, String... aliases) {
-        this(provider, FiguraVec3.of(), aliases);
+        this(false, false, provider, FiguraVec3.of(), aliases);
+    }
+
+    ParentType(boolean isSpecial, boolean isPivot, String... aliases) {
+        this(isSpecial, isPivot, null, aliases);
+    }
+
+    ParentType(boolean isSpecial, boolean isPivot, VanillaModelProvider provider, String... aliases) {
+        this(isSpecial, isPivot, provider, FiguraVec3.of(), aliases);
     }
 
     ParentType(VanillaModelProvider provider, FiguraVec3 offset, String... aliases) {
+        this(false, false, provider, offset, aliases);
+    }
+
+    ParentType(boolean isSpecial, boolean isPivot, VanillaModelProvider provider, FiguraVec3 offset, String... aliases) {
+        this.isSpecial = isSpecial;
+        this.isPivot = isPivot;
         this.provider = provider;
         this.offset = offset;
         this.aliases = aliases;
