@@ -49,6 +49,7 @@ public abstract class AvatarRenderer {
     protected static int shouldRenderPivots;
     public boolean allowHiddenTransforms = true;
     public boolean allowRenderTasks = true;
+    public boolean allowSkullRendering = true;
 
     public AvatarRenderer(Avatar avatar) {
         this.avatar = avatar;

@@ -434,7 +434,7 @@ public class Avatar {
     }
 
     public boolean skullRender(PoseStack stack, MultiBufferSource bufferSource, int light, Direction direction, float yaw) {
-        if (renderer == null)
+        if (renderer == null || !renderer.allowSkullRendering)
             return false;
 
         int prevComplexity = remainingComplexity;

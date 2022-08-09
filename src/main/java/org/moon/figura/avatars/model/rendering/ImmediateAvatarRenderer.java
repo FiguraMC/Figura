@@ -72,8 +72,8 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
     }
 
     public void checkEmpty() {
-        if (!customizationStack.isEmpty())
-            throw new IllegalStateException("Customization stack not empty!");
+//        if (!customizationStack.isEmpty())
+//            throw new IllegalStateException("Customization stack not empty!");
     }
 
     @Override

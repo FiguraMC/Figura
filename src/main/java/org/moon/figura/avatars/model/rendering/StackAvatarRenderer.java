@@ -125,13 +125,15 @@ public class StackAvatarRenderer extends ImmediateAvatarRenderer {
                 if (allowRenderTasks) {
                     int light = peek.light;
                     int overlay = peek.overlay;
+                    allowSkullRendering = false;
                     for (RenderTask task : part.renderTasks.values()) {
-                        if (task.getComplexity() > remainingComplexity[0])
+                        int neededComplexity = task.getComplexity();
+                        if (neededComplexity > remainingComplexity[0])
                             continue;
                         if (task.render(customizationStack, bufferSource, light, overlay))
-                            remainingComplexity[0] -= task.getComplexity();
+                            remainingComplexity[0] -= neededComplexity;
                     }
-
+                    allowSkullRendering = true;
                 }
 
                 //render pivot parts

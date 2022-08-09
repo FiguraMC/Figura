@@ -56,7 +56,7 @@ public class FiguraModelPart {
     public int animationOverride = 0;
     public int lastAnimationPriority = Integer.MIN_VALUE;
 
-    public final FiguraMat4 savedPartToWorldMat = FiguraMat4.of();
+    public final FiguraMat4 savedPartToWorldMat = FiguraMat4.of().scale(1d/16, 1d/16, 1d/16);
 
     public FiguraModelPart(Avatar owner, String name, PartCustomization customization, List<FiguraModelPart> children) {
         this.owner = owner;
