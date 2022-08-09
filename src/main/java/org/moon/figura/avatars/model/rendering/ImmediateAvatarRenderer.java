@@ -1,6 +1,7 @@
 package org.moon.figura.avatars.model.rendering;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderType;
@@ -237,9 +238,10 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
     }
 
     protected void savePivotTransform(ParentType parentType) {
-        FiguraMat4 currentTransform = customizationStack.peek().getPositionMatrix();
-        List<FiguraMat4> list = pivotCustomizations.computeIfAbsent(parentType, p -> new ArrayList<>());
-        list.add(currentTransform); //CurrentTransform is a COPY, so it's okay to add it
+        FiguraMat4 currentPosMat = customizationStack.peek().getPositionMatrix();
+        FiguraMat3 currentNormalMat = customizationStack.peek().getNormalMatrix();
+        List<Pair<FiguraMat4, FiguraMat3>> list = pivotCustomizations.computeIfAbsent(parentType, p -> new ArrayList<>());
+        list.add(new Pair<>(currentPosMat, currentNormalMat)); //These are COPIES, so ok to add
     }
 
     protected FiguraMat4 partToWorldMatrices(PartCustomization cust) {

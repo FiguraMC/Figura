@@ -1,6 +1,7 @@
 package org.moon.figura.avatars.model.rendering;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.math.Matrix3f;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -44,7 +45,7 @@ public abstract class AvatarRenderer {
     public boolean allowMatrixUpdate = false;
 
     public PartFilterScheme currentFilterScheme;
-    public final HashMap<ParentType, List<FiguraMat4>> pivotCustomizations = new HashMap<>();
+    public final HashMap<ParentType, List<Pair<FiguraMat4, FiguraMat3>>> pivotCustomizations = new HashMap<>();
     protected static int shouldRenderPivots;
     public boolean allowHiddenTransforms = true;
     public boolean allowRenderTasks = true;

@@ -234,6 +234,15 @@ public class PartCustomization implements CachedType<PartCustomization> {
         temp.free();
         needsMatrixRecalculation = false;
     }
+
+    public void setPositionMatrix(FiguraMat4 matrix) {
+        positionMatrix.set(matrix);
+    }
+
+    public void setNormalMatrix(FiguraMat3 matrix) {
+        normalMatrix.set(matrix);
+    }
+
     public FiguraMat4 getPositionMatrix() {
         FiguraMat4 result = FiguraMat4.of();
         result.set(positionMatrix);

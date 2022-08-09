@@ -5,6 +5,8 @@ import com.mojang.blaze3d.audio.SoundBuffer;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.math.Matrix3f;
 import com.mojang.math.Vector3f;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -38,6 +40,7 @@ import org.moon.figura.lua.api.event.LuaEvent;
 import org.moon.figura.lua.api.ping.PingArg;
 import org.moon.figura.lua.api.ping.PingFunction;
 import org.moon.figura.lua.api.sound.SoundAPI;
+import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
@@ -335,16 +338,18 @@ public class Avatar {
         renderer.render();
     }
 
-    public void worldRender(Entity entity, double camX, double camY, double camZ, PoseStack matrices, MultiBufferSource bufferSource, int light, float tickDelta) {
+    public synchronized void worldRender(Entity entity, double camX, double camY, double camZ, PoseStack matrices, MultiBufferSource bufferSource, int light, float tickDelta) {
         if (renderer == null)
             return;
 
         complexity = 0;
         remainingComplexity = trust.get(TrustContainer.Trust.COMPLEXITY);
 
-        for (List<FiguraMat4> list : renderer.pivotCustomizations.values()) {
-            for (FiguraMat4 mat : list)
-                mat.free();
+        for (List<Pair<FiguraMat4, FiguraMat3>> list : renderer.pivotCustomizations.values()) {
+            for (Pair<FiguraMat4, FiguraMat3> pair : list) {
+                pair.getFirst().free();
+                pair.getSecond().free();
+            }
             list.clear();
         }
 
@@ -479,21 +484,24 @@ public class Avatar {
     }
 
     private static final PartCustomization PIVOT_PART_RENDERING_CUSTOMIZATION = PartCustomization.of();
-    public boolean pivotPartRender(ParentType parent, Consumer<PoseStack> consumer) {
+    public synchronized boolean pivotPartRender(ParentType parent, Consumer<PoseStack> consumer) {
         if (renderer == null || !parent.isPivot)
             return false;
 
-        List<FiguraMat4> list = renderer.pivotCustomizations.computeIfAbsent(parent, p -> new ArrayList<>());
+        List<Pair<FiguraMat4, FiguraMat3>> list = renderer.pivotCustomizations.computeIfAbsent(parent, p -> new ArrayList<>());
 
         if (list.isEmpty())
             return false;
 
-        for (FiguraMat4 matrix : list) {
-            PIVOT_PART_RENDERING_CUSTOMIZATION.setMatrix(matrix);
+        for (int i = 0; i < list.size() && i < 1000; i++) { // limit of 1000 pivot part renders, just in case something goes infinitely somehow
+            Pair<FiguraMat4, FiguraMat3> matrixPair = list.get(i);
+            PIVOT_PART_RENDERING_CUSTOMIZATION.setPositionMatrix(matrixPair.getFirst());
+            PIVOT_PART_RENDERING_CUSTOMIZATION.setNormalMatrix(matrixPair.getSecond());
+            PIVOT_PART_RENDERING_CUSTOMIZATION.needsMatrixRecalculation = false;
             PoseStack stack = PIVOT_PART_RENDERING_CUSTOMIZATION.copyIntoGlobalPoseStack();
-            stack.last().normal().mul(1f/16);
             consumer.accept(stack);
-            matrix.free();
+            matrixPair.getFirst().free();
+            matrixPair.getSecond().free();
         }
 
         list.clear();
