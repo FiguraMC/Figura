@@ -3,7 +3,6 @@ package org.moon.figura.avatars.model.rendering;
 import net.minecraft.client.Minecraft;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.model.FiguraModelPart;
-import org.moon.figura.avatars.model.ParentType;
 import org.moon.figura.avatars.model.PartCustomization;
 import org.moon.figura.avatars.model.rendertasks.RenderTask;
 import org.moon.figura.config.Config;
@@ -11,6 +10,8 @@ import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec3;
 
 public class StackAvatarRenderer extends ImmediateAvatarRenderer {
+
+    private static final PartCustomization pivotOffsetter = PartCustomization.of();
 
     public StackAvatarRenderer(Avatar avatar) {
         super(avatar);
@@ -57,8 +58,6 @@ public class StackAvatarRenderer extends ImmediateAvatarRenderer {
         checkEmpty();
     }
 
-
-    private static final PartCustomization pivotOffsetter = PartCustomization.of();
     @Override
     protected void renderPart(FiguraModelPart part, int[] remainingComplexity, boolean prevPredicate) {
         PartCustomization custom = part.customization;

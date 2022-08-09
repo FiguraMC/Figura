@@ -15,9 +15,7 @@ import org.moon.figura.avatars.model.ParentType;
 import org.moon.figura.avatars.model.PartCustomization;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
 import org.moon.figura.avatars.model.rendering.texture.RenderTypes;
-import org.moon.figura.avatars.model.rendertasks.RenderTask;
 import org.moon.figura.config.Config;
-import org.moon.figura.ducks.PoseStackAccessor;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec3;
@@ -72,8 +70,8 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
     }
 
     public void checkEmpty() {
-//        if (!customizationStack.isEmpty())
-//            throw new IllegalStateException("Customization stack not empty!");
+        if (!customizationStack.isEmpty())
+            throw new IllegalStateException("Customization stack not empty!");
     }
 
     @Override

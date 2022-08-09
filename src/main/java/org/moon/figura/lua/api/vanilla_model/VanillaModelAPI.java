@@ -292,6 +292,8 @@ public class VanillaModelAPI {
             case "RIGHT_ELYTRA" -> RIGHT_ELYTRA;
             case "LEFT_ITEM" -> LEFT_ITEM;
             case "RIGHT_ITEM" -> RIGHT_ITEM;
+            case "LEFT_PARROT" -> LEFT_PARROT;
+            case "RIGHT_PARROT" -> RIGHT_PARROT;
             case "INNER_LAYER" -> INNER_LAYER;
             case "OUTER_LAYER" -> OUTER_LAYER;
             case "PLAYER" -> PLAYER;
@@ -303,6 +305,7 @@ public class VanillaModelAPI {
             case "ARMOR" -> ARMOR;
             case "ELYTRA" -> ELYTRA;
             case "HELD_ITEMS" -> HELD_ITEMS;
+            case "PARROTS" -> PARROTS;
             case "ALL" -> ALL;
             default -> null;
         };
