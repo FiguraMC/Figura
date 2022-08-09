@@ -71,6 +71,8 @@ public abstract class FiguraGlobalsDocs {
     public EntityAPI<?> user;
     @LuaFieldDoc(description = "globals.pings")
     public PingAPI pings;
+    @LuaFieldDoc(description = "globals.type")
+    public LuaFunction type;
 
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
