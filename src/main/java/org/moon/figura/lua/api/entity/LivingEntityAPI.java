@@ -142,6 +142,6 @@ public class LivingEntityAPI<T extends LivingEntity> extends EntityAPI<T> {
 
     @Override
     public String toString() {
-        return entity.getUUID() + "(" + getType() + ") (LivingEntity)";
+        return (entity.hasCustomName() ? entity.getCustomName().getString() + " (" + getType() + ")" : getType() ) + " (LivingEntity)";
     }
 }

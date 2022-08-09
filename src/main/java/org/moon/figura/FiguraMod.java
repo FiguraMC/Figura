@@ -25,7 +25,6 @@ import org.moon.figura.config.ConfigManager;
 import org.moon.figura.gui.PaperDoll;
 import org.moon.figura.gui.actionwheel.ActionWheel;
 import org.moon.figura.lua.FiguraLuaPrinter;
-import org.moon.figura.lua.FiguraLuaRuntime;
 import org.moon.figura.lua.docs.FiguraDocsManager;
 import org.moon.figura.mixin.SkullBlockEntityAccessor;
 import org.moon.figura.trust.TrustManager;
@@ -67,7 +66,6 @@ public class FiguraMod implements ClientModInitializer {
         WorldRenderEvents.END.register(levelRenderer -> AvatarManager.afterWorldRender(levelRenderer.tickDelta()));
         WorldRenderEvents.AFTER_ENTITIES.register(FiguraMod::renderFirstPersonWorldParts);
         HudRenderCallback.EVENT.register(FiguraMod::hudRender);
-        ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(FiguraLuaRuntime.SCRIPT_LISTENER);
         ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(LocalAvatarLoader.AVATAR_LISTENER);
     }
 

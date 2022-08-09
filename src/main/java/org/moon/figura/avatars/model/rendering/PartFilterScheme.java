@@ -25,12 +25,12 @@ public enum PartFilterScheme {
         this.special = special;
     }
 
-    public Boolean test(ParentType toTest, boolean prevResult) {
+    public boolean test(ParentType toTest, boolean prevResult) {
         if (this.parent != null && this.parent == toTest)
             return true;
 
         if (!this.special && ParentType.SPECIAL_PARTS.contains(toTest))
-            return null;
+            return false;
 
         return prevResult;
     }

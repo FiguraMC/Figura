@@ -191,6 +191,6 @@ public class ItemStackAPI {
 
     @Override
     public String toString() {
-        return id + "(" + getCount() + ") (ItemStack)";
+        return id + " x" + getCount() + " (ItemStack)";
     }
 }

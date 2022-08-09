@@ -358,6 +358,6 @@ public class EntityAPI<T extends Entity> {
 
     @Override
     public String toString() {
-        return entity.getUUID() + "(" + getType() + ") (Entity)";
+        return (entity.hasCustomName() ? entity.getCustomName().getString() + " (" + getType() + ")" : getType() ) + " (Entity)";
     }
 }

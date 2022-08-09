@@ -87,9 +87,7 @@ public class StackAvatarRenderer extends ImmediateAvatarRenderer {
 
         //Store old visibility, but overwrite it in case we only want to render certain parts
         Boolean storedVisibility = custom.visible;
-        Boolean thisPassedPredicate = currentFilterScheme.test(part.parentType, prevPredicate);
-        if (thisPassedPredicate == null)
-            thisPassedPredicate = false;
+        boolean thisPassedPredicate = currentFilterScheme.test(part.parentType, prevPredicate);
 
         //push customization stack
         custom.visible = part.getVisible() && thisPassedPredicate;

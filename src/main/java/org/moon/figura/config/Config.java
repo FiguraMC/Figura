@@ -56,7 +56,6 @@ public enum Config {
 
     Script,
     LOG_LOCATION(0, 2),
-    SERVER_SCRIPT(true),
     ALLOW_FP_HANDS(false),
     CHAT_MESSAGES(false),
 
