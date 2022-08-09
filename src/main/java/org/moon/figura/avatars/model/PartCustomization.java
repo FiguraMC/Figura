@@ -1,7 +1,6 @@
 package org.moon.figura.avatars.model;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
 import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.avatars.model.rendering.texture.RenderTypes;
 import org.moon.figura.math.matrix.FiguraMat3;
@@ -53,7 +52,6 @@ public class PartCustomization implements CachedType<PartCustomization> {
     public ResourceLocation secondaryTexture = null;
 
     public void applyToStack(PoseStack stack) {
-        recalculate();
         stack.mulPoseMatrix(positionMatrix.toMatrix4f());
         stack.last().normal().mul(normalMatrix.toMatrix3f());
     }

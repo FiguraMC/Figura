@@ -342,6 +342,7 @@ public class Avatar {
 
         complexity = 0;
         remainingComplexity = trust.get(TrustContainer.Trust.COMPLEXITY);
+        renderer.pivotCustomizations.clear();
 
         renderer.allowMatrixUpdate = true;
         renderer.entity = entity;
@@ -427,8 +428,7 @@ public class Avatar {
         if (renderer == null)
             return false;
 
-        int oldComplexity = remainingComplexity;
-        int prevComplexity = remainingComplexity = trust.get(TrustContainer.Trust.COMPLEXITY);
+        int prevComplexity = remainingComplexity;// = trust.get(TrustContainer.Trust.COMPLEXITY);
 
         renderer.allowRenderTasks = false;
         renderer.currentFilterScheme = PartFilterScheme.SKULL;
@@ -453,7 +453,7 @@ public class Avatar {
 
         //hacky
         if (prevComplexity > remainingComplexity) {
-            remainingComplexity = oldComplexity;
+//            remainingComplexity = oldComplexity;
             renderer.allowRenderTasks = true;
             stack.popPose();
             return true;
@@ -472,7 +472,7 @@ public class Avatar {
         //hacky 2
         stack.popPose();
         boolean ret = prevComplexity > remainingComplexity && luaRuntime != null && !luaRuntime.vanilla_model.HEAD.getVisible();
-        remainingComplexity = oldComplexity;
+//        remainingComplexity = oldComplexity;
         return ret;
     }
 

@@ -1,11 +1,9 @@
 package org.moon.figura.avatars.model;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
-import net.minecraft.world.phys.Vec3;
 import org.luaj.vm2.LuaError;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.model.rendering.ImmediateAvatarRenderer;
@@ -25,9 +23,7 @@ import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
-import org.moon.figura.math.vector.FiguraVec4;
 import org.moon.figura.utils.LuaUtils;
-import org.moon.figura.utils.MathUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -107,7 +103,7 @@ public class FiguraModelPart {
             defaultPivot.multiply(part.xScale, part.yScale, -part.zScale);
 
         if ((animationOverride & 2) != 2) {
-            //customization.offsetPivot(defaultPivot);
+            customization.offsetPivot(defaultPivot);
             customization.offsetPos(defaultPivot);
         }
 
