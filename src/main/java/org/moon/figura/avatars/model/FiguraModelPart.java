@@ -5,6 +5,7 @@ import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.world.phys.Vec3;
 import org.luaj.vm2.LuaError;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.model.rendering.ImmediateAvatarRenderer;
@@ -24,6 +25,7 @@ import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.math.vector.FiguraVec4;
 import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.MathUtils;
 
@@ -127,12 +129,15 @@ public class FiguraModelPart {
         }
     }
 
-    public void applyExtraTransforms() {
+    public void applyExtraTransforms(FiguraMat4 currentTransforms) {
         if (parentType == ParentType.Camera) {
             if ((animationOverride & 1) != 1) {
-                FiguraVec3 vec = MathUtils.quaternionToYXZ(Minecraft.getInstance().getEntityRenderDispatcher().cameraOrientation()).toDeg();
-                customization.offsetRot(vec);
-                vec.free();
+                FiguraMat4 prevPartToView = currentTransforms.inverted();
+                prevPartToView.rightMultiply(FiguraMat4.of().rotateY(180));
+                prevPartToView.scale(1d/16, 1d/16, 1d/16);
+                prevPartToView.v14 = prevPartToView.v24 = prevPartToView.v34 = 0;
+                customization.setMatrix(prevPartToView);
+                prevPartToView.free();
             }
         }
     }

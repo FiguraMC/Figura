@@ -413,6 +413,16 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
         return 3;
     }
 
+    public double x() {
+        return x;
+    }
+    public double y() {
+        return y;
+    }
+    public double z() {
+        return z;
+    }
+
     @Override
     public double index(int i) {
         return switch (i) {
@@ -693,24 +703,39 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
                     ),
                     @LuaMetamethodDoc.LuaMetamethodOverload(
                             types = {void.class, FiguraVec3.class, String.class, Double.class}
-                    )//,
-//                    @LuaMetamethodDoc.LuaMetamethodOverload(
-//                            types = {void.class, FiguraVec3.class, String.class, FiguraVector.class}
-//                    )
+                    ),
+                    @LuaMetamethodDoc.LuaMetamethodOverload(
+                            types = {void.class, FiguraVec3.class, String.class, FiguraVector.class}
+                    )
             }
     )
-    public void __newindex(Object key, Object value) {
-        String str = key.toString();
-        int len = str.length();
-        if (len == 1 && value instanceof Number n)  {
-            double d = n.doubleValue();
-            switch(str) {
-                case "1", "x", "r" -> x = d;
-                case "2", "y", "g" -> y = d;
-                case "3", "z", "b" -> z = d;
+    public void __newindex(String key, Object value) {
+        int len = key.length();
+        if (len == 1)  {
+            if (value instanceof Number n) {
+                double d = n.doubleValue();
+                switch(key) {
+                    case "1", "x", "r" -> x = d;
+                    case "2", "y", "g" -> y = d;
+                    case "3", "z", "b" -> z = d;
+                    default -> throw new LuaError("Invalid key to vector __newindex: " + key);
+                }
+                return;
+            }
+            throw new LuaError("Invalid call to __newindex - value assigned to key " + key + " must be number.");
+        }
+        if (value instanceof FiguraVector<?,?> vecVal && len == vecVal.size()) {
+            double[] vals = new double[] {vecVal.x(), vecVal.y(), vecVal.z(), vecVal.w(), vecVal.t(), vecVal.h()};
+            for (int i = 0; i < len; i++) {
+                switch (key.charAt(i)) {
+                    case '1', 'x', 'r' -> x = vals[i];
+                    case '2', 'y', 'g' -> y = vals[i];
+                    case '3', 'z', 'b' -> z = vals[i];
+                    default -> throw new LuaError("Invalid key to __newindex: invalid swizzle character: " + key.charAt(i));
+                }
             }
             return;
         }
-        throw new LuaError("Illegal key " + str + " to __newindex()");
+        throw new LuaError("Invalid call to __newindex - vector swizzles must be the same size.");
     }
 }

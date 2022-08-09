@@ -30,8 +30,8 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
     protected final List<FiguraImmediateBuffer> buffers = new ArrayList<>(0);
     protected final PartCustomization.Stack customizationStack = new PartCustomization.Stack();
 
-    private static final PoseStack VIEW_MATRICES = new PoseStack();
-    protected static FiguraMat4 viewToWorldMatrix = FiguraMat4.of();
+    protected static final PoseStack VIEW_MATRICES = new PoseStack();
+    public static final FiguraMat4 VIEW_TO_WORLD_MATRIX = FiguraMat4.of();
 
     public ImmediateAvatarRenderer(Avatar avatar) {
         super(avatar);
@@ -112,7 +112,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
         //Render all model parts
         if (allowMatrixUpdate)
-            viewToWorldMatrix = AvatarRenderer.worldToViewMatrix().inverted();
+            VIEW_TO_WORLD_MATRIX.set(AvatarRenderer.worldToViewMatrix().invert());
 
         int prev = avatar.remainingComplexity;
         int[] remainingComplexity = new int[] {prev};
@@ -156,7 +156,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
     protected void renderPart(FiguraModelPart part, int[] remainingComplexity, boolean parentPassedPredicate) {
         part.applyVanillaTransforms(entityRenderer);
 
-        part.applyExtraTransforms();
+        part.applyExtraTransforms(customizationStack.peek().positionMatrix);
 
         part.customization.recalculate();
 
@@ -220,7 +220,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
                 (float) color.x, (float) color.y, (float) color.z, 1f);
     }
 
-    private void calculateWorldMatrices(FiguraModelPart part) {
+    protected void calculateWorldMatrices(FiguraModelPart part) {
         VIEW_MATRICES.setIdentity();
 
         FiguraMat4 posMat = part.savedPartToWorldMat.copy();
@@ -244,8 +244,8 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
     }
 
     protected FiguraMat4 partToWorldMatrices(PartCustomization cust) {
-        FiguraMat4 customizePeek = cust.positionMatrix.copy();
-        customizePeek.multiply(viewToWorldMatrix);
+        FiguraMat4 customizePeek = customizationStack.peek().positionMatrix.copy();
+        customizePeek.multiply(VIEW_TO_WORLD_MATRIX);
         FiguraVec3 piv = cust.getPivot();
         FiguraVec3 pos = cust.getPos();
         piv.subtract(pos);

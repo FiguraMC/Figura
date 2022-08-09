@@ -3,6 +3,7 @@ package org.moon.figura.avatars;
 import com.mojang.blaze3d.audio.OggAudioStream;
 import com.mojang.blaze3d.audio.SoundBuffer;
 import com.mojang.blaze3d.platform.Lighting;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
 import net.minecraft.client.Camera;
@@ -411,7 +412,10 @@ public class Avatar {
 
         stack.pushPose();
         stack.scale(16, 16, -16);
+        RenderSystem.disableDepthTest();
         renderer.renderSpecialParts();
+        ((MultiBufferSource.BufferSource) renderer.bufferSource).endBatch();
+        RenderSystem.enableDepthTest();
         stack.popPose();
 
         Lighting.setupFor3DItems();

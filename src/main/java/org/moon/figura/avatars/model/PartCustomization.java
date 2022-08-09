@@ -52,44 +52,10 @@ public class PartCustomization implements CachedType<PartCustomization> {
     public ResourceLocation primaryTexture = null;
     public ResourceLocation secondaryTexture = null;
 
-    public void applyStack(PoseStack stack) {
-        stack.translate(
-                position.x + offsetPos.x + animPos.x + pivot.x + offsetPivot.x,
-                position.y + offsetPos.y + animPos.y + pivot.y + offsetPivot.y,
-                position.z + offsetPos.z + animPos.z + pivot.z + offsetPivot.z
-        );
-
-        float rotationX = (float) (rotation.x + offsetRot.x + animRot.x);
-        float rotationY = (float) (rotation.y + offsetRot.y + animRot.y);
-        float rotationZ = (float) (rotation.z + offsetRot.z + animRot.z);
-
-        //Rotate the model part around the pivot
-        if (partType == PartType.MESH) {
-            stack.mulPose(Vector3f.XP.rotationDegrees(rotationX));
-            stack.mulPose(Vector3f.YP.rotationDegrees(rotationY));
-            stack.mulPose(Vector3f.ZP.rotationDegrees(rotationZ));
-        } else {
-            stack.mulPose(Vector3f.ZP.rotationDegrees(rotationZ));
-            stack.mulPose(Vector3f.YP.rotationDegrees(rotationY));
-            stack.mulPose(Vector3f.XP.rotationDegrees(rotationX));
-        }
-
-        //Scale the model part around the pivot
-        stack.scale(
-                (float) (scale.x * animScale.x),
-                (float) (scale.y * animScale.y),
-                (float) (scale.z * animScale.z)
-        );
-
-        //Undo the effects of the pivot translation
-        stack.translate(
-                -pivot.x - offsetPivot.x,
-                -pivot.y - offsetPivot.y,
-                -pivot.z - offsetPivot.z
-        );
-
-        positionMatrix.set(FiguraMat4.fromMatrix4f(stack.last().pose()));
-        normalMatrix.set(FiguraMat3.fromMatrix3f(stack.last().normal()));
+    public void applyToStack(PoseStack stack) {
+        recalculate();
+        stack.mulPoseMatrix(positionMatrix.toMatrix4f());
+        stack.last().normal().mul(normalMatrix.toMatrix3f());
     }
 
     /**

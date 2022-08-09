@@ -6,7 +6,6 @@ import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.model.FiguraModelPart;
 import org.moon.figura.avatars.model.ParentType;
 import org.moon.figura.avatars.model.PartCustomization;
-import org.moon.figura.avatars.model.rendering.texture.RenderTypes;
 import org.moon.figura.avatars.model.rendertasks.RenderTask;
 import org.moon.figura.config.Config;
 import org.moon.figura.math.matrix.FiguraMat4;
@@ -46,7 +45,8 @@ public class StackAvatarRenderer extends ImmediateAvatarRenderer {
         customization.free();
 
         //world matrices
-        viewToWorldMatrix = AvatarRenderer.worldToViewMatrix().inverted();
+        if (allowMatrixUpdate)
+            VIEW_TO_WORLD_MATRIX.set(AvatarRenderer.worldToViewMatrix().invert());
 
         //Render all model parts
         int prev = avatar.remainingComplexity;
@@ -63,20 +63,11 @@ public class StackAvatarRenderer extends ImmediateAvatarRenderer {
 
     @Override
     protected PartCustomization setupRootCustomization(double vertOffset) {
+        PartCustomization customization = super.setupRootCustomization(vertOffset);
         float s = 1 / 16f;
         matrices.translate(0, vertOffset, 0);
         matrices.mulPose(Vector3f.ZP.rotationDegrees(180));
         matrices.scale(s, s, s);
-
-        PartCustomization customization = PartCustomization.of();
-
-        customization.setPrimaryRenderType(RenderTypes.TRANSLUCENT);
-        customization.setSecondaryRenderType(RenderTypes.EMISSIVE);
-
-        customization.visible = true;
-        customization.light = light;
-        customization.alpha = alpha;
-        customization.overlay = overlay;
         return customization;
     }
 
@@ -84,51 +75,41 @@ public class StackAvatarRenderer extends ImmediateAvatarRenderer {
     protected void renderPart(FiguraModelPart part, int[] remainingComplexity, boolean prevPredicate) {
         PartCustomization custom = part.customization;
 
+        //calculate part transforms
+        //we do not want to apply it straight away, so we check for the parent only
+        matrices.pushPose();
+
+        if (prevPredicate) {
+            //calculate vanilla parent
+            part.applyVanillaTransforms(entityRenderer);
+            part.applyExtraTransforms(customizationStack.peek().positionMatrix);
+        }
+
         //Store old visibility, but overwrite it in case we only want to render certain parts
         Boolean storedVisibility = custom.visible;
         Boolean thisPassedPredicate = currentFilterScheme.test(part.parentType, prevPredicate);
         if (thisPassedPredicate == null)
-            return;
+            thisPassedPredicate = false;
 
         //push customization stack
         custom.visible = part.getVisible() && thisPassedPredicate;
+        custom.recalculate();
+        custom.applyToStack(matrices);
         customizationStack.push(custom);
         custom.visible = storedVisibility;
 
         PartCustomization peek = customizationStack.peek();
 
-        //calculate part transforms
-        //we do not want to apply it straight away, so we check for the parent only
-        matrices.pushPose();
-
-        if (allowHiddenTransforms || prevPredicate) {
-            //calculate vanilla parent
-            part.applyVanillaTransforms(entityRenderer);
-            part.applyExtraTransforms();
-
-            //apply
-            custom.applyStack(matrices);
-
-            //reset the parent
-            part.resetVanillaTransforms();
-        }
-
-        //TODO {this feels wrong}
-        peek.positionMatrix.set(custom.positionMatrix);
-        peek.normalMatrix.set(custom.normalMatrix);
-        peek.uvMatrix.set(custom.uvMatrix);
-
-        //render
-        part.pushVerticesImmediate(this, remainingComplexity);
-
         //render extras
         if (thisPassedPredicate) {
             //part to world matrices
             if (allowMatrixUpdate) {
-                FiguraMat4 mat = partToWorldMatrices(part.customization);
+                FiguraMat4 mat = partToWorldMatrices(custom);
                 part.savedPartToWorldMat.set(mat);
                 mat.free();
             }
+
+//            calculateWorldMatrices(part); //FOR DEBUG TESTING!
 
             //fix pivots
             matrices.pushPose();
@@ -163,11 +144,16 @@ public class StackAvatarRenderer extends ImmediateAvatarRenderer {
 
             matrices.popPose();
         }
-        //peek.free();
+
+        //render this
+        part.pushVerticesImmediate(this, remainingComplexity);
 
         //render children
         for (FiguraModelPart child : part.children)
             renderPart(child, remainingComplexity, thisPassedPredicate);
+
+        //reset the parent
+        part.resetVanillaTransforms();
 
         //pop
         customizationStack.pop();

@@ -7,6 +7,7 @@ import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec2;
+import org.moon.figura.math.vector.FiguraVec4;
 import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.caching.CacheStack;
 import org.moon.figura.utils.caching.CacheUtils;
@@ -375,9 +376,48 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
     @LuaWhitelist
     public Object __index(@LuaNotNil String string) {
         return switch (string) {
-            case "1" -> this.getColumn(1);
-            case "2" -> this.getColumn(2);
+            case "1", "c1" -> this.getColumn(1);
+            case "2", "c2" -> this.getColumn(2);
+
+            case "r1" -> this.getRow(1);
+            case "r2" -> this.getRow(2);
+
+            case "v11" -> this.v11;
+            case "v12" -> this.v12;
+            case "v21" -> this.v21;
+            case "v22" -> this.v22;
             default -> null;
         };
+    }
+
+    @LuaWhitelist
+    public void __newindex(@LuaNotNil String string, @LuaNotNil Object value) {
+        if (value instanceof FiguraVec4 vec4) {
+            switch (string) {
+                case "1", "c1" -> {
+                    v11 = vec4.x; v21 = vec4.y;
+                }
+                case "2", "c2" -> {
+                    v12 = vec4.x; v22 = vec4.y;
+                }
+                case "r1" -> {
+                    v11 = vec4.x; v12 = vec4.y;
+                }
+                case "r2" -> {
+                    v21 = vec4.x; v22 = vec4.y;
+                }
+            }
+            return;
+        }
+        if (value instanceof Number num) {
+            switch (string) {
+                case "v11" -> this.v11 = num.doubleValue();
+                case "v12" -> this.v12 = num.doubleValue();
+                case "v21" -> this.v21 = num.doubleValue();
+                case "v22" -> this.v22 = num.doubleValue();
+            }
+            return;
+        }
+        throw new LuaError("Illegal arguments to FiguraMat2 __newindex: " + string + ", " + value);
     }
 }

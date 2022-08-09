@@ -769,11 +769,88 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
     @LuaWhitelist
     public Object __index(@LuaNotNil String string) {
         return switch (string) {
-            case "1" -> this.getColumn(1);
-            case "2" -> this.getColumn(2);
-            case "3" -> this.getColumn(3);
-            case "4" -> this.getColumn(4);
+            case "1", "c1" -> this.getColumn(1);
+            case "2", "c2" -> this.getColumn(2);
+            case "3", "c3" -> this.getColumn(3);
+            case "4", "c4" -> this.getColumn(4);
+
+            case "r1" -> this.getRow(1);
+            case "r2" -> this.getRow(2);
+            case "r3" -> this.getRow(3);
+            case "r4" -> this.getRow(4);
+
+            case "v11" -> this.v11;
+            case "v12" -> this.v12;
+            case "v13" -> this.v13;
+            case "v14" -> this.v14;
+            case "v21" -> this.v21;
+            case "v22" -> this.v22;
+            case "v23" -> this.v23;
+            case "v24" -> this.v24;
+            case "v31" -> this.v31;
+            case "v32" -> this.v32;
+            case "v33" -> this.v33;
+            case "v34" -> this.v34;
+            case "v41" -> this.v41;
+            case "v42" -> this.v42;
+            case "v43" -> this.v43;
+            case "v44" -> this.v44;
             default -> null;
         };
+    }
+
+    @LuaWhitelist
+    public void __newindex(@LuaNotNil String string, @LuaNotNil Object value) {
+        if (value instanceof FiguraVec4 vec4) {
+            switch (string) {
+                case "1", "c1" -> {
+                    v11 = vec4.x; v21 = vec4.y; v31 = vec4.z; v41 = vec4.w;
+                }
+                case "2", "c2" -> {
+                    v12 = vec4.x; v22 = vec4.y; v32 = vec4.z; v42 = vec4.w;
+                }
+                case "3", "c3" -> {
+                    v13 = vec4.x; v23 = vec4.y; v33 = vec4.z; v43 = vec4.w;
+                }
+                case "4", "c4" -> {
+                    v14 = vec4.x; v24 = vec4.y; v34 = vec4.z; v44 = vec4.w;
+                }
+                case "r1" -> {
+                    v11 = vec4.x; v12 = vec4.y; v13 = vec4.z; v14 = vec4.w;
+                }
+                case "r2" -> {
+                    v21 = vec4.x; v22 = vec4.y; v23 = vec4.z; v24 = vec4.w;
+                }
+                case "r3" -> {
+                    v31 = vec4.x; v32 = vec4.y; v33 = vec4.z; v34 = vec4.w;
+                }
+                case "r4" -> {
+                    v41 = vec4.x; v42 = vec4.y; v43 = vec4.z; v44 = vec4.w;
+                }
+            }
+            return;
+        }
+        if (value instanceof Number num) {
+            switch (string) {
+                case "v11" -> this.v11 = num.doubleValue();
+                case "v12" -> this.v12 = num.doubleValue();
+                case "v13" -> this.v13 = num.doubleValue();
+                case "v14" -> this.v14 = num.doubleValue();
+                case "v21" -> this.v21 = num.doubleValue();
+                case "v22" -> this.v22 = num.doubleValue();
+                case "v23" -> this.v23 = num.doubleValue();
+                case "v24" -> this.v24 = num.doubleValue();
+                case "v31" -> this.v31 = num.doubleValue();
+                case "v32" -> this.v32 = num.doubleValue();
+                case "v33" -> this.v33 = num.doubleValue();
+                case "v34" -> this.v34 = num.doubleValue();
+                case "v41" -> this.v41 = num.doubleValue();
+                case "v42" -> this.v42 = num.doubleValue();
+                case "v43" -> this.v43 = num.doubleValue();
+                case "v44" -> this.v44 = num.doubleValue();
+            }
+            return;
+        }
+        throw new LuaError("Illegal arguments to FiguraMat4 __newindex: " + string + ", " + value);
     }
 }

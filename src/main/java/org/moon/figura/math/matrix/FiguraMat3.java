@@ -10,6 +10,7 @@ import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.math.vector.FiguraVec4;
 import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.caching.CacheStack;
 import org.moon.figura.utils.caching.CacheUtils;
@@ -653,10 +654,66 @@ public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
     @LuaWhitelist
     public Object __index(@LuaNotNil String string) {
         return switch (string) {
-            case "1" -> this.getColumn(1);
-            case "2" -> this.getColumn(2);
-            case "3" -> this.getColumn(3);
+            case "1", "c1" -> this.getColumn(1);
+            case "2", "c2" -> this.getColumn(2);
+            case "3", "c3" -> this.getColumn(3);
+
+            case "r1" -> this.getRow(1);
+            case "r2" -> this.getRow(2);
+            case "r3" -> this.getRow(3);
+
+            case "v11" -> this.v11;
+            case "v12" -> this.v12;
+            case "v13" -> this.v13;
+            case "v21" -> this.v21;
+            case "v22" -> this.v22;
+            case "v23" -> this.v23;
+            case "v31" -> this.v31;
+            case "v32" -> this.v32;
+            case "v33" -> this.v33;
             default -> null;
         };
+    }
+
+    @LuaWhitelist
+    public void __newindex(@LuaNotNil String string, @LuaNotNil Object value) {
+        if (value instanceof FiguraVec4 vec4) {
+            switch (string) {
+                case "1", "c1" -> {
+                    v11 = vec4.x; v21 = vec4.y; v31 = vec4.z;
+                }
+                case "2", "c2" -> {
+                    v12 = vec4.x; v22 = vec4.y; v32 = vec4.z;
+                }
+                case "3", "c3" -> {
+                    v13 = vec4.x; v23 = vec4.y; v33 = vec4.z;
+                }
+                case "r1" -> {
+                    v11 = vec4.x; v12 = vec4.y; v13 = vec4.z;
+                }
+                case "r2" -> {
+                    v21 = vec4.x; v22 = vec4.y; v23 = vec4.z;
+                }
+                case "r3" -> {
+                    v31 = vec4.x; v32 = vec4.y; v33 = vec4.z;
+                }
+            }
+            return;
+        }
+        if (value instanceof Number num) {
+            switch (string) {
+                case "v11" -> this.v11 = num.doubleValue();
+                case "v12" -> this.v12 = num.doubleValue();
+                case "v13" -> this.v13 = num.doubleValue();
+                case "v21" -> this.v21 = num.doubleValue();
+                case "v22" -> this.v22 = num.doubleValue();
+                case "v23" -> this.v23 = num.doubleValue();
+                case "v31" -> this.v31 = num.doubleValue();
+                case "v32" -> this.v32 = num.doubleValue();
+                case "v33" -> this.v33 = num.doubleValue();
+            }
+            return;
+        }
+        throw new LuaError("Illegal arguments to FiguraMat3 __newindex: " + string + ", " + value);
     }
 }

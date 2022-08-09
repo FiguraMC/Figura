@@ -88,5 +88,25 @@ public abstract class FiguraVector<T extends FiguraVector<T, M>, M extends Figur
     public abstract double index(int i);
     public abstract boolean equals(Object other);
 
+    //Return 0 by default.
+    public double x() {
+        return 0;
+    }
+    public double y() {
+        return 0;
+    }
+    public double z() {
+        return 0;
+    }
+    public double w() {
+        return 0;
+    }
+    public double t() {
+        return 0;
+    }
+    public double h() {
+        return 0;
+    }
+
     public abstract String toString();
 }
