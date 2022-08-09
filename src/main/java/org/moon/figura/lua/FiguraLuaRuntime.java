@@ -10,8 +10,10 @@ import org.luaj.vm2.lib.jse.JseBaseLib;
 import org.luaj.vm2.lib.jse.JseMathLib;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
-import org.moon.figura.config.Config;
-import org.moon.figura.lua.api.*;
+import org.moon.figura.lua.api.ActionWheelAPI;
+import org.moon.figura.lua.api.AvatarAPI;
+import org.moon.figura.lua.api.HostAPI;
+import org.moon.figura.lua.api.RendererAPI;
 import org.moon.figura.lua.api.entity.EntityAPI;
 import org.moon.figura.lua.api.entity.PlayerAPI;
 import org.moon.figura.lua.api.event.EventsAPI;
@@ -19,15 +21,14 @@ import org.moon.figura.lua.api.keybind.KeybindAPI;
 import org.moon.figura.lua.api.nameplate.NameplateAPI;
 import org.moon.figura.lua.api.ping.PingAPI;
 import org.moon.figura.lua.api.vanilla_model.VanillaModelAPI;
-import org.moon.figura.utils.FiguraResourceListener;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 /**
  * One runtime per avatar
@@ -57,19 +58,6 @@ public class FiguraLuaRuntime {
     private final LuaValue setHookFunction;
     private final LuaTable requireResults = new LuaTable();
     public final LuaTypeManager typeManager = new LuaTypeManager();
-
-    private static final ArrayList<String> RESOURCE_SCRIPTS = new ArrayList<>();
-    public static final FiguraResourceListener SCRIPT_LISTENER = new FiguraResourceListener("resource_script", manager -> {
-        RESOURCE_SCRIPTS.clear();
-        manager.listResources("script/resources", resource -> resource.getNamespace().equals(FiguraMod.MOD_ID) && resource.getPath().endsWith(".lua")).forEach((location, resource) -> {
-            try (InputStream stream = resource.open()) {
-                RESOURCE_SCRIPTS.add(new String(stream.readAllBytes()));
-                FiguraMod.LOGGER.debug("Loaded resource script \"" + location.toString() + "\"");
-            } catch (Exception e) {
-                FiguraMod.LOGGER.error("Failed to load resource pack script \"" + location.toString() + "\"", e);
-            }
-        });
-    });
 
     public FiguraLuaRuntime(Avatar avatar) {
         owner = avatar;
@@ -119,7 +107,8 @@ public class FiguraLuaRuntime {
     }
 
     private void setupFiguraSandbox() {
-        try (InputStream inputStream = FiguraMod.class.getResourceAsStream("/assets/" + FiguraMod.MOD_ID + "/script/sandbox.lua")) {
+        //actual sandbox file
+        try (InputStream inputStream = FiguraMod.class.getResourceAsStream("/assets/" + FiguraMod.MOD_ID + "/scripts/sandbox.lua")) {
             if (inputStream == null) throw new IOException("Failed to load sandbox.lua");
             runScript(new String(inputStream.readAllBytes()), "figura_sandbox");
         } catch (Exception e) {
@@ -127,24 +116,33 @@ public class FiguraLuaRuntime {
         }
     }
 
+    private static final Function<FiguraLuaRuntime, LuaValue> LOADSTRING_FUNC = runtime -> new VarArgFunction() {
+
+        @Override
+        public Varargs invoke(Varargs args) {
+            try {
+                return runtime.userGlobals.load(args.arg(1).checkjstring(), "loadstring", runtime.userGlobals);
+            } catch (LuaError e) {
+                return varargsOf(NIL, e.getMessageObject());
+            }
+        }
+    };
     private void loadExtraLibraries() {
         //load print functions
         FiguraLuaPrinter.loadPrintFunctions(this);
 
+        //custom loadstring
+        LuaValue loadstring = LOADSTRING_FUNC.apply(this);
+        this.setGlobal("load", loadstring);
+        this.setGlobal("loadstring", loadstring);
+
         //load math library
-        try (InputStream inputStream = FiguraMod.class.getResourceAsStream("/assets/" + FiguraMod.MOD_ID + "/script/math.lua")) {
+        try (InputStream inputStream = FiguraMod.class.getResourceAsStream("/assets/" + FiguraMod.MOD_ID + "/scripts/math.lua")) {
             if (inputStream == null) throw new IOException("Failed to load math.lua");
             runScript(new String(inputStream.readAllBytes()), "math");
         } catch (Exception e) {
             FiguraLuaPrinter.sendLuaError(e, owner.name, owner.owner);
         }
-
-        //load server scripts
-        if (FiguraMod.isLocal(owner.owner) && !(boolean) Config.SERVER_SCRIPT.value)
-            return;
-
-        for (int i = 0; i < RESOURCE_SCRIPTS.size(); i++)
-            runScript(RESOURCE_SCRIPTS.get(i), "resources" + i);
     }
 
     /**

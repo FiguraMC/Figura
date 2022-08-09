@@ -162,7 +162,7 @@ public class VectorsAPI {
             description = "vectors.rgb_to_int"
     )
     public static Integer rgbToInt(Object r, Double g, Double b) {
-        FiguraVec3 rgb = LuaUtils.parseVec3("rgbToINT", r, g, b);
+        FiguraVec3 rgb = LuaUtils.parseVec3("rgbToInt", r, g, b);
         return ColorUtils.rgbToInt(rgb);
     }
 
@@ -242,8 +242,8 @@ public class VectorsAPI {
             },
             description = "vectors.rgb_to_hex"
     )
-    public static String rgbToHEX(Object r, Double g, Double b) {
-        FiguraVec3 rgb = LuaUtils.parseVec3("rgbToHEX", r, g, b);
+    public static String rgbToHex(Object r, Double g, Double b) {
+        FiguraVec3 rgb = LuaUtils.parseVec3("rgbToHex", r, g, b);
         String color = Integer.toHexString(ColorUtils.rgbToInt(rgb));
         return "0".repeat(Math.max(6 - color.length(), 0)) + color;
     }

@@ -80,6 +80,6 @@ public class PlayerAPI extends LivingEntityAPI<Player> {
 
     @Override
     public String toString() {
-        return entity.getUUID() + " (Player)";
+        return entity.getName().getString() + " (Player)";
     }
 }
