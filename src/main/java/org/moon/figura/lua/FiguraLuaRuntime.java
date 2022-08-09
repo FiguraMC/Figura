@@ -139,6 +139,21 @@ public class FiguraLuaRuntime {
             FiguraLuaPrinter.sendLuaError(e, owner.name, owner.owner);
         }
 
+        //Change the type() function
+        setGlobal("type", new OneArgFunction() {
+            @Override
+            public LuaValue call(LuaValue arg) {
+                if (arg.type() == LuaValue.TUSERDATA)
+                    return LuaString.valueOf(typeManager.getTypeName(arg.checkuserdata().getClass()));
+                if (arg.type() == LuaValue.TTABLE && arg.getmetatable() != null) {
+                    LuaValue __type = arg.getmetatable().rawget("__type");
+                    if (!__type.isnil())
+                        return __type;
+                }
+                return LuaString.valueOf(arg.typename());
+            }
+        });
+
         //load server scripts
         if (FiguraMod.isLocal(owner.owner) && !(boolean) Config.SERVER_SCRIPT.value)
             return;

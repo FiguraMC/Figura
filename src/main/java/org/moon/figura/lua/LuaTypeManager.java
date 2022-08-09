@@ -105,6 +105,15 @@ public class LuaTypeManager {
         }
     }
 
+    private final Map<Class<?>, String> namesCache = new HashMap<>();
+    public String getTypeName(Class<?> clazz) {
+        return namesCache.computeIfAbsent(clazz, someClass -> {
+            if (someClass.isAnnotationPresent(LuaTypeDoc.class))
+                return someClass.getAnnotation(LuaTypeDoc.class).name();
+            return someClass.getSimpleName();
+        });
+    }
+
     private static boolean[] getRequiredNotNil(Method method) {
         Parameter[] params = method.getParameters();
         boolean[] result = new boolean[params.length];
