@@ -75,26 +75,35 @@ public class StackAvatarRenderer extends ImmediateAvatarRenderer {
     protected void renderPart(FiguraModelPart part, int[] remainingComplexity, boolean prevPredicate) {
         PartCustomization custom = part.customization;
 
+        //Store old visibility, but overwrite it in case we only want to render certain parts
+        Boolean storedVisibility = custom.visible;
+        boolean thisPassedPredicate = currentFilterScheme.test(part.parentType, prevPredicate);
+
         //calculate part transforms
-        //we do not want to apply it straight away, so we check for the parent only
         matrices.pushPose();
 
-        if (prevPredicate) {
+        if (thisPassedPredicate) {
             //calculate vanilla parent
             part.applyVanillaTransforms(entityRenderer);
             part.applyExtraTransforms(customizationStack.peek().positionMatrix);
         }
 
-        //Store old visibility, but overwrite it in case we only want to render certain parts
-        Boolean storedVisibility = custom.visible;
-        boolean thisPassedPredicate = currentFilterScheme.test(part.parentType, prevPredicate);
-
         //push customization stack
+        //that's right, check only for previous predicate
+        boolean reset = !allowHiddenTransforms && !prevPredicate;
+        if (reset) {
+            custom.positionMatrix.reset();
+            custom.normalMatrix.reset();
+            custom.needsMatrixRecalculation = false;
+        }
+
         custom.visible = part.getVisible() && thisPassedPredicate;
         custom.recalculate();
         custom.applyToStack(matrices);
         customizationStack.push(custom);
         custom.visible = storedVisibility;
+
+        if (reset) custom.needsMatrixRecalculation = true;
 
         PartCustomization peek = customizationStack.peek();
 

@@ -107,7 +107,7 @@ public class FiguraModelPart {
             customization.offsetPos(defaultPivot);
         }
 
-        //customization.setBonusPivot(pivot);
+        //customization.offsetPivot(pivot);
         if ((animationOverride & 1) != 1)
             customization.offsetRot(Math.toDegrees(-part.xRot), Math.toDegrees(-part.yRot), Math.toDegrees(part.zRot));
 

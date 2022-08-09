@@ -47,10 +47,10 @@
   "figura.trust.disabled": "Disabled",
 
   "figura.trust.init_inst": "Init Instructions",
-  "figura.trust.tick_inst": "Tick Instructions",
   "figura.trust.world_tick_inst": "World Tick Instructions",
-  "figura.trust.render_inst": "Render Instructions",
+  "figura.trust.tick_inst": "Tick Instructions",
   "figura.trust.world_render_inst": "World Render Instructions",
+  "figura.trust.render_inst": "Render Instructions",
   "figura.trust.complexity": "Max Complexity",
   "figura.trust.particles": "Max Particles",
   "figura.trust.sounds": "Max Sounds",
@@ -60,6 +60,7 @@
   "figura.trust.offscreen_rendering": "Render Offscreen",
   "figura.trust.custom_render_layer": "Custom Render Layers",
   "figura.trust.custom_sounds": "Custom Sounds",
+  "figura.trust.custom_heads": "Custom Player Heads",
 
 
   "figura.gui.on": "ON",

@@ -26,7 +26,7 @@ public class SkullBlockRendererMixin {
 
     @Inject(at = @At("HEAD"), method = "renderSkull", cancellable = true)
     private static void renderSkull(Direction direction, float yaw, float animationProgress, PoseStack stack, MultiBufferSource bufferSource, int light, SkullModelBase model, RenderType renderLayer, CallbackInfo ci) {
-        if (avatar == null || avatar.trust.get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 0)
+        if (avatar == null || avatar.trust.get(TrustContainer.Trust.CUSTOM_HEADS) == 0)
             return;
 
         //render skull :3

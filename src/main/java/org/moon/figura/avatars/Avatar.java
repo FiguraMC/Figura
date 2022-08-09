@@ -44,10 +44,7 @@ import org.moon.figura.utils.RefilledNumber;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
@@ -428,7 +425,7 @@ public class Avatar {
         if (renderer == null)
             return false;
 
-        int prevComplexity = remainingComplexity;// = trust.get(TrustContainer.Trust.COMPLEXITY);
+        int prevComplexity = remainingComplexity;
 
         renderer.allowRenderTasks = false;
         renderer.currentFilterScheme = PartFilterScheme.SKULL;
@@ -453,7 +450,6 @@ public class Avatar {
 
         //hacky
         if (prevComplexity > remainingComplexity) {
-//            remainingComplexity = oldComplexity;
             renderer.allowRenderTasks = true;
             stack.popPose();
             return true;
@@ -461,6 +457,7 @@ public class Avatar {
 
         //otherwise render head parts
         stack.translate(0d, 24d / 16d, 0d);
+        renderer.allowMatrixUpdate = false;
         renderer.allowHiddenTransforms = false;
         renderer.allowRenderTasks = false;
         renderer.currentFilterScheme = PartFilterScheme.HEAD;
@@ -471,9 +468,7 @@ public class Avatar {
 
         //hacky 2
         stack.popPose();
-        boolean ret = prevComplexity > remainingComplexity && luaRuntime != null && !luaRuntime.vanilla_model.HEAD.getVisible();
-//        remainingComplexity = oldComplexity;
-        return ret;
+        return prevComplexity > remainingComplexity && luaRuntime != null && !luaRuntime.vanilla_model.HEAD.getVisible();
     }
 
     public boolean pivotPartRender(ParentType parent, Consumer<PoseStack> consumer) {
@@ -484,7 +479,7 @@ public class Avatar {
         if (list == null || list.isEmpty())
             return false;
 
-        for (PoseStack stack : list)
+        for (PoseStack stack : new ArrayList<>(list))
             consumer.accept(stack);
 
         list.clear();

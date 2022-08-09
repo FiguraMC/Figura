@@ -26,10 +26,10 @@ public class TrustContainer {
     public enum Trust {
         //trust list
         INIT_INST(0, 32767),
-        TICK_INST(0, 32767),
-        RENDER_INST(0, 32767),
         WORLD_TICK_INST(0, 32767),
+        TICK_INST(0, 32767),
         WORLD_RENDER_INST(0, 32767),
+        RENDER_INST(0, 32767),
         COMPLEXITY(0, 8191),
         PARTICLES(0, 63),
         SOUNDS(0, 63),
@@ -38,7 +38,8 @@ public class TrustContainer {
         NAMEPLATE_EDIT,
         OFFSCREEN_RENDERING,
         //CUSTOM_RENDER_LAYER,
-        CUSTOM_SOUNDS;
+        CUSTOM_SOUNDS,
+        CUSTOM_HEADS;
 
         //toggle check
         public final boolean isToggle;
