@@ -543,7 +543,7 @@
   "figura.docs.itemstack.to_stack_string": "Converts this ItemStack to a string, like you'd see in a command.",
 
   "figura.docs.biome": "A proxy for a Minecraft biome. Instances are obtained through the WorldAPI. This proxy also contains a saved position for the Biome.",
-  "figura.docs.biome.name": "The name of the biome, according to the registry.",
+  "figura.docs.biome.get_name": "Returns the name of the biome, according to the registry.",
   "figura.docs.biome.get_pos": "Returns the saved position for this Biome's proxy. The saved position is used in Biome functions that require a position.",
   "figura.docs.biome.set_pos": "Sets the saved position for this Biome's proxy. The saved position is used in Biome functions that require a position.",
   "figura.docs.biome.get_temperature": "Gets the temperature of this biome.",

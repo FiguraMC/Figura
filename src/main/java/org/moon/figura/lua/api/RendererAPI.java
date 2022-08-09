@@ -135,10 +135,10 @@ public class RendererAPI {
     }
 
     @LuaWhitelist
-    public void __newindex(String key, Object value) {
+    public void __newindex(String key, boolean value) {
         switch (key) {
-            case "renderFire" -> renderFire = (Boolean) value;
-            case "renderVehicle" -> renderVehicle = (Boolean) value;
+            case "renderFire" -> renderFire = value;
+            case "renderVehicle" -> renderVehicle = value;
         }
     }
 

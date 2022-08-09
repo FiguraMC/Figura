@@ -21,8 +21,8 @@ import org.moon.figura.avatars.model.rendertasks.ItemTask;
 import org.moon.figura.avatars.model.rendertasks.RenderTask;
 import org.moon.figura.avatars.model.rendertasks.TextTask;
 import org.moon.figura.gui.actionwheel.*;
-import org.moon.figura.lua.api.nameplate.NameplateEntityCust;
-import org.moon.figura.lua.api.nameplate.NameplateGroupCust;
+import org.moon.figura.lua.api.nameplate.EntityNameplateCustomization;
+import org.moon.figura.lua.api.nameplate.NameplateCustomizationGroup;
 import org.moon.figura.lua.api.particle.ParticleAPI;
 import org.moon.figura.lua.api.ping.PingAPI;
 import org.moon.figura.lua.api.ping.PingFunction;
@@ -118,8 +118,8 @@ public class FiguraDocsManager {
         put("nameplate", List.of(
                 NameplateAPI.class,
                 NameplateCustomization.class,
-                NameplateEntityCust.class,
-                NameplateGroupCust.class
+                EntityNameplateCustomization.class,
+                NameplateCustomizationGroup.class
         ));
 
         put("world", List.of(

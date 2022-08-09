@@ -21,7 +21,7 @@ import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.config.Config;
 import org.moon.figura.lua.api.nameplate.Badges;
 import org.moon.figura.lua.api.nameplate.NameplateCustomization;
-import org.moon.figura.lua.api.nameplate.NameplateEntityCust;
+import org.moon.figura.lua.api.nameplate.EntityNameplateCustomization;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.utils.TextUtils;
@@ -58,7 +58,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
             return;
 
         //get customizations
-        NameplateEntityCust custom = avatar.luaRuntime == null ? null : avatar.luaRuntime.nameplate.ENTITY;
+        EntityNameplateCustomization custom = avatar.luaRuntime == null ? null : avatar.luaRuntime.nameplate.ENTITY;
 
         //enabled
         if (custom != null && custom.isVisible() != null && !custom.isVisible()) {

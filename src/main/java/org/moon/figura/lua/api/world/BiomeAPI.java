@@ -22,8 +22,8 @@ public class BiomeAPI {
     private final Biome biome;
     private BlockPos pos;
 
-    @LuaWhitelist
-    @LuaFieldDoc(description = "biome.name")
+//    @LuaWhitelist
+//    @LuaFieldDoc(description = "biome.name")
     public final String name;
 
     public BiomeAPI(Biome biome, BlockPos pos) {
@@ -131,10 +131,9 @@ public class BiomeAPI {
     }
 
     @LuaWhitelist
-    public Object __index(String arg) {
-        if ("name".equals(arg))
-            return name;
-        return null;
+    @LuaMethodDoc(description = "biome.get_name")
+    public String getName() {
+        return name;
     }
 
     @Override

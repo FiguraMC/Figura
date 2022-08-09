@@ -11,14 +11,14 @@ import java.util.List;
 
 @LuaWhitelist
 @LuaTypeDoc(
-        name = "NameplateGroupCust",
+        name = "NameplateCustomizationGroup",
         description = "nameplate_group"
 )
-public class NameplateGroupCust {
+public class NameplateCustomizationGroup {
 
     private final List<NameplateCustomization> customizations;
 
-    public NameplateGroupCust(NameplateCustomization... customizations) {
+    public NameplateCustomizationGroup(NameplateCustomization... customizations) {
         this.customizations = Arrays.stream(customizations).toList();
     }
 
@@ -37,6 +37,6 @@ public class NameplateGroupCust {
 
     @Override
     public String toString() {
-        return "NameplateGroupCust";
+        return "NameplateCustomizationGroup";
     }
 }

@@ -9,10 +9,10 @@ import org.moon.figura.utils.LuaUtils;
 
 @LuaWhitelist
 @LuaTypeDoc(
-        name = "NameplateEntityCust",
+        name = "EntityNameplateCustomization",
         description = "nameplate_entity"
 )
-public class NameplateEntityCust extends NameplateCustomization {
+public class EntityNameplateCustomization extends NameplateCustomization {
 
     private FiguraVec3 position;
     private FiguraVec3 scale;
@@ -86,6 +86,6 @@ public class NameplateEntityCust extends NameplateCustomization {
 
     @Override
     public String toString() {
-        return "NameplateEntityCust";
+        return "EntityNameplateCustomization";
     }
 }

@@ -161,7 +161,7 @@ public class VectorsAPI {
             },
             description = "vectors.rgb_to_int"
     )
-    public static Integer rgbToINT(Object r, Double g, Double b) {
+    public static Integer rgbToInt(Object r, Double g, Double b) {
         FiguraVec3 rgb = LuaUtils.parseVec3("rgbToINT", r, g, b);
         return ColorUtils.rgbToInt(rgb);
     }

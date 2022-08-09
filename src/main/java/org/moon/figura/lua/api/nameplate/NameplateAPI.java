@@ -16,19 +16,19 @@ public class NameplateAPI {
     public final NameplateCustomization CHAT;
     @LuaWhitelist
     @LuaFieldDoc(description = "nameplate.entity")
-    public final NameplateEntityCust ENTITY;
+    public final EntityNameplateCustomization ENTITY;
     @LuaWhitelist
     @LuaFieldDoc(description = "nameplate.list")
     public final NameplateCustomization LIST;
     @LuaWhitelist
     @LuaFieldDoc(description = "nameplate.all")
-    public final NameplateGroupCust ALL;
+    public final NameplateCustomizationGroup ALL;
 
     public NameplateAPI() {
         CHAT = new NameplateCustomization();
-        ENTITY = new NameplateEntityCust();
+        ENTITY = new EntityNameplateCustomization();
         LIST = new NameplateCustomization();
-        ALL = new NameplateGroupCust(CHAT, ENTITY, LIST);
+        ALL = new NameplateCustomizationGroup(CHAT, ENTITY, LIST);
     }
 
     @LuaWhitelist

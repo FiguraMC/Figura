@@ -20,8 +20,8 @@ import org.moon.figura.lua.api.math.MatricesAPI;
 import org.moon.figura.lua.api.math.VectorsAPI;
 import org.moon.figura.lua.api.nameplate.NameplateAPI;
 import org.moon.figura.lua.api.nameplate.NameplateCustomization;
-import org.moon.figura.lua.api.nameplate.NameplateEntityCust;
-import org.moon.figura.lua.api.nameplate.NameplateGroupCust;
+import org.moon.figura.lua.api.nameplate.EntityNameplateCustomization;
+import org.moon.figura.lua.api.nameplate.NameplateCustomizationGroup;
 import org.moon.figura.lua.api.particle.ParticleAPI;
 import org.moon.figura.lua.api.ping.PingAPI;
 import org.moon.figura.lua.api.ping.PingFunction;
@@ -93,8 +93,8 @@ public class FiguraAPIManager {
 
         add(NameplateAPI.class);
         add(NameplateCustomization.class);
-        add(NameplateEntityCust.class);
-        add(NameplateGroupCust.class);
+        add(EntityNameplateCustomization.class);
+        add(NameplateCustomizationGroup.class);
 
         add(ActionWheelAPI.class);
         add(Page.class);

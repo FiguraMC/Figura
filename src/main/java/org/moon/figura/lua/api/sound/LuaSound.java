@@ -112,4 +112,8 @@ public class LuaSound {
         pos.free();
     }
 
+    public String toString() {
+        return id + " (Sound)";
+    }
+
 }
