@@ -99,11 +99,24 @@ public class UIHelper extends GuiComponent {
         stack.scale(scale, scale, scale);
         stack.last().pose().multiply(Matrix4f.createScaleMatrix(1f, 1f, -1f)); //Scale ONLY THE POSITIONS! Inverted normals don't work for whatever reason
 
-        Quaternion quaternion = Vector3f.ZP.rotationDegrees(180f);
-        Quaternion quaternion2 = Vector3f.XP.rotationDegrees(pitch);
-        quaternion.mul(quaternion2);
-        stack.mulPose(quaternion);
-        quaternion2.conj();
+        Quaternion quaternion2 = null;
+        if (paperdoll) {
+            Quaternion quaternion = Vector3f.ZP.rotationDegrees(180f);
+            quaternion2 = Vector3f.XP.rotationDegrees(pitch);
+            Quaternion quaternion3 = Vector3f.YP.rotationDegrees(yaw);
+            quaternion3.mul(quaternion2);
+            quaternion.mul(quaternion3);
+            stack.mulPose(quaternion);
+            quaternion3.conj();
+            quaternion2 = quaternion3;
+        } else {
+            Quaternion quaternion = Vector3f.ZP.rotationDegrees(180f);
+            quaternion2 = Vector3f.XP.rotationDegrees(pitch);
+            quaternion.mul(quaternion2);
+            stack.mulPose(quaternion);
+            quaternion2.conj();
+        }
+
 
         //backup entity variables
         float bodyYaw = entity.yBodyRot;
@@ -114,7 +127,7 @@ public class UIHelper extends GuiComponent {
         boolean invisible = entity.isInvisible();
 
         //apply entity rotation
-        entity.yBodyRot = 180f - yaw;
+        entity.yBodyRot = paperdoll ? 180f : 180f - yaw;
         entity.setInvisible(false);
         UIHelper.forceNameplate = !paperdoll;
         UIHelper.forceNoFire = true;
@@ -122,7 +135,7 @@ public class UIHelper extends GuiComponent {
         if (paperdoll) {
             //offset
             if (entity.isFallFlying())
-                stack.translate(Mth.triangleWave((float) Math.toRadians(yaw + 270), Mth.TWO_PI), 0d, 0d);
+                stack.translate(Mth.triangleWave((float) Math.toRadians(270), Mth.TWO_PI), 0d, 0d);
 
             if (entity.isAutoSpinAttack() || entity.isVisuallySwimming() || entity.isFallFlying()) {
                 stack.translate(0d, 1d, 0d);
@@ -130,7 +143,7 @@ public class UIHelper extends GuiComponent {
             }
 
             //head rot
-            float rot = entity.yHeadRot - bodyYaw - yaw + 180f;
+            float rot = entity.yHeadRot - bodyYaw + 180f;
             entity.yHeadRot = rot;
             entity.yHeadRotO = rot;
 
@@ -156,7 +169,10 @@ public class UIHelper extends GuiComponent {
         MultiBufferSource.BufferSource immediate = Minecraft.getInstance().renderBuffers().bufferSource();
 
         //render
-        RenderSystem.runAsFancy(() -> dispatcher.render(entity, 0d, -1d, 0d, 0f, 1f, stack, immediate, LightTexture.FULL_BRIGHT));
+        if (paperdoll)
+            RenderSystem.runAsFancy(() -> dispatcher.render(entity, 0d, -1d, 0d, yaw, 1f, stack, immediate, LightTexture.FULL_BRIGHT));
+        else
+            RenderSystem.runAsFancy(() -> dispatcher.render(entity, 0d, -1d, 0d, 0f, 1f, stack, immediate, LightTexture.FULL_BRIGHT));
         immediate.endBatch();
 
         //restore entity rendering data
