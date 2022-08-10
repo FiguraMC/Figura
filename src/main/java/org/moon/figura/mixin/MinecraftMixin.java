@@ -8,10 +8,6 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.ProjectileUtil;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
@@ -23,6 +19,7 @@ import org.moon.figura.gui.PopupMenu;
 import org.moon.figura.gui.actionwheel.ActionWheel;
 import org.moon.figura.lua.api.keybind.FiguraKeybind;
 import org.moon.figura.lua.api.sound.SoundAPI;
+import org.moon.figura.utils.EntityUtils;
 import org.moon.figura.utils.FiguraText;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -72,7 +69,7 @@ public abstract class MinecraftMixin {
             PopupMenu.setEnabled(true);
 
             if (!PopupMenu.hasEntity()) {
-                Entity target = getTargetedEntity();
+                Entity target = EntityUtils.getViewedEntity();
                 if (this.player != null && target instanceof Player && !target.isInvisibleTo(this.player)) {
                     PopupMenu.setEntity(target);
                 } else if (!this.options.getCameraType().isFirstPerson()) {
@@ -134,23 +131,4 @@ public abstract class MinecraftMixin {
         AvatarManager.clearAnimations();
     }
 
-    @Unique //probably can be moved to a helper class, for common usage
-    private Entity getTargetedEntity() {
-        Entity entity = getCameraEntity();
-        if (entity == null) return null;
-
-        float maxDistance = 32f;
-        float tickDelta = getFrameTime();
-        Vec3 entityEye = entity.getEyePosition(tickDelta);
-        Vec3 viewVec = entity.getViewVector(1f).scale(maxDistance);
-        Vec3 raycastEnd = entityEye.add(viewVec);
-        AABB box = entity.getBoundingBox().expandTowards(raycastEnd).inflate(1f, 1f, 1f);
-
-        double raycastDistance = entity.pick(maxDistance, tickDelta, false).getLocation().distanceTo(entityEye);
-        EntityHitResult entityHitResult = ProjectileUtil.getEntityHitResult(entity, entityEye, raycastEnd, box, entity1 -> !entity1.isSpectator() && entity1.isPickable(), raycastDistance);
-        if (entityHitResult != null && entityEye.distanceTo(entityHitResult.getLocation()) < raycastDistance)
-            return entityHitResult.getEntity();
-
-        return null;
-    }
 }
