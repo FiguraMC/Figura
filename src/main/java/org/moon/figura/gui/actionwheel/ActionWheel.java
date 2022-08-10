@@ -255,7 +255,7 @@ public class ActionWheel {
 
         //execute action
         Page currentPage;
-        if (index < 0 || index > 7 || (currentPage = avatar.luaRuntime.action_wheel.currentPage) == null) {
+        if (index < 0 || index > 7 || avatar.luaRuntime == null || (currentPage = avatar.luaRuntime.action_wheel.currentPage) == null) {
             selected = -1;
             return;
         }

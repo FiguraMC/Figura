@@ -65,24 +65,25 @@ public final class ConfigManager {
     public static void saveConfig() {
         try {
             JsonObject configJson = new JsonObject();
-
-            for (Config config : CONFIG_ENTRIES) {
-                if (config.value instanceof Number value)
-                    configJson.addProperty(config.name().toLowerCase(), value);
-                else if (config.value instanceof Character value)
-                    configJson.addProperty(config.name().toLowerCase(), value);
-                else if (config.value instanceof Boolean value)
-                    configJson.addProperty(config.name().toLowerCase(), value);
-                else
-                    configJson.addProperty(config.name().toLowerCase(), String.valueOf(config.value));
-            }
             configJson.addProperty("CONFIG_VERSION", Config.CONFIG_VERSION);
 
-            String jsonString = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create().toJson(configJson);
+            for (Config config : CONFIG_ENTRIES) {
+                String name = config.name().toLowerCase();
+                if (config.value instanceof Number n)
+                    configJson.addProperty(name, n);
+                else if (config.value instanceof Character c)
+                    configJson.addProperty(name, c);
+                else if (config.value instanceof Boolean b)
+                    configJson.addProperty(name, b);
+                else
+                    configJson.addProperty(name, String.valueOf(config.value));
+            }
 
+            String jsonString = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create().toJson(configJson);
             FileWriter fileWriter = new FileWriter(FILE);
             fileWriter.write(jsonString);
             fileWriter.close();
+
             FiguraMod.LOGGER.debug("Successfully saved config file");
         } catch (Exception e) {
             FiguraMod.LOGGER.error("Failed to save config file!", e);

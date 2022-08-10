@@ -55,7 +55,7 @@ public class ClickAction extends Action {
 
         //execute
         if (function != null)
-            avatar.tryCall(function, -1, null);
+            avatar.tryCall(function, -1);
     }
 
     @LuaWhitelist

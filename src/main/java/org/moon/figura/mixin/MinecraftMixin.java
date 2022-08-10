@@ -33,16 +33,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class MinecraftMixin {
 
     @Shadow @Final public MouseHandler mouseHandler;
+    @Shadow @Nullable public LocalPlayer player;
+    @Shadow @Final public Options options;
 
     @Unique
     private boolean scriptMouseUnlock = false;
-
-    @Shadow public abstract Entity getCameraEntity();
-    @Shadow public abstract float getFrameTime();
-
-    @Shadow @Nullable public LocalPlayer player;
-
-    @Shadow @Final public Options options;
 
     @Inject(at = @At("RETURN"), method = "handleKeybinds")
     private void handleKeybinds(CallbackInfo ci) {
@@ -69,7 +64,7 @@ public abstract class MinecraftMixin {
             PopupMenu.setEnabled(true);
 
             if (!PopupMenu.hasEntity()) {
-                Entity target = EntityUtils.getViewedEntity();
+                Entity target = EntityUtils.getViewedEntity(32);
                 if (this.player != null && target instanceof Player && !target.isInvisibleTo(this.player)) {
                     PopupMenu.setEntity(target);
                 } else if (!this.options.getCameraType().isFirstPerson()) {

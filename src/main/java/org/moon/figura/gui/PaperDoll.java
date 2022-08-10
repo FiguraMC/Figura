@@ -42,6 +42,11 @@ public class PaperDoll {
 
         //draw
         float scale = (float) Config.PAPERDOLL_SCALE.value;
-        UIHelper.drawEntity((int) (25 * scale), (int) (45 * scale), (int) (30 * scale), 0, 20, player, stack, true);
+        UIHelper.drawEntity(
+                (float) Config.PAPERDOLL_X.value * scale, (float) Config.PAPERDOLL_Y.value * scale,
+                (int) (30 * scale),
+                (float) Config.PAPERDOLL_PITCH.value, (float) Config.PAPERDOLL_YAW.value,
+                player, stack, true
+        );
     }
 }

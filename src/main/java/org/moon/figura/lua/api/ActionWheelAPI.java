@@ -140,7 +140,7 @@ public class ActionWheelAPI {
 
         //execute
         if (function != null)
-            avatar.tryCall(function, -1, null);
+            avatar.tryCall(function, -1);
     }
 
     public void mouseScroll(Avatar avatar, double delta) {

@@ -92,7 +92,7 @@ public class UIHelper extends GuiComponent {
         RenderSystem.enableBlend();
     }
 
-    public static void drawEntity(int x, int y, float scale, float pitch, float yaw, LivingEntity entity, PoseStack stack, boolean paperdoll) {
+    public static void drawEntity(float x, float y, float scale, float pitch, float yaw, LivingEntity entity, PoseStack stack, boolean paperdoll) {
         //apply matrix transformers
         stack.pushPose();
         stack.translate(x, y, 0f);

@@ -70,13 +70,17 @@ public enum Config {
     PAPERDOLL_ALWAYS_ON(false),
     FIRST_PERSON_PAPERDOLL(true),
     PAPERDOLL_SCALE(1f, InputType.FLOAT),
+    PAPERDOLL_X(25f, InputType.FLOAT),
+    PAPERDOLL_Y(45f, InputType.FLOAT),
+    PAPERDOLL_PITCH(0f, InputType.FLOAT),
+    PAPERDOLL_YAW(20f, InputType.FLOAT),
 
     Misc,
+    POPUP_BUTTON("key.keyboard.r"),
     BUTTON_LOCATION(0, 5),
     EASTER_EGGS(true),
 
     Dev {{this.name = FiguraText.of("config.dev").withStyle(ChatFormatting.RED);}},
-    POPUP_BUTTON("key.keyboard.r"),
     PANIC_BUTTON("key.keyboard.unknown"),
     //LOG_PINGS(0, 3);
     RENDER_DEBUG_PARTS_PIVOT(2, 3) {{

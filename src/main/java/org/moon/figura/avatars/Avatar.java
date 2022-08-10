@@ -222,7 +222,12 @@ public class Avatar {
                         luaRuntime.typeManager.javaToLua(args[0]),
                         luaRuntime.typeManager.javaToLua(args[1])
                 );
-                default -> throw new LuaError("Zephyr was lazy and didnt make tryCall work for more than 2 args lmao, sorry");
+                default -> {
+                    LuaValue[] values = new LuaValue[args.length];
+                    for (int i = 0; i < values.length; i++)
+                        values[i] = luaRuntime.typeManager.javaToLua(args[i]);
+                    yield LuaValue.varargsOf(values);
+                }
             };
 
             if (maxInstructions != -1)

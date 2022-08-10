@@ -20,14 +20,13 @@ public class EntityUtils {
         return ((ClientLevelInvoker) Minecraft.getInstance().level).getEntityGetter().get(uuid);
     }
 
-    public static Entity getViewedEntity() {
+    public static Entity getViewedEntity(float distance) {
         Entity entity = Minecraft.getInstance().getCameraEntity();
         if (entity == null) return null;
 
-        float maxDistance = 32f;
         float tickDelta = Minecraft.getInstance().getFrameTime();
         Vec3 entityEye = entity.getEyePosition(tickDelta);
-        Vec3 viewVec = entity.getViewVector(tickDelta).scale(maxDistance);
+        Vec3 viewVec = entity.getViewVector(tickDelta).scale(distance);
         AABB box = entity.getBoundingBox().expandTowards(viewVec).inflate(1f, 1f, 1f);
 
         Vec3 raycastEnd = entityEye.add(viewVec);
@@ -37,7 +36,7 @@ public class EntityUtils {
         if (blockResult != null)
             raycastDistanceSquared = blockResult.getLocation().distanceToSqr(entityEye);
         else
-            raycastDistanceSquared = maxDistance * maxDistance;
+            raycastDistanceSquared = distance * distance;
 
         EntityHitResult entityHitResult = ProjectileUtil.getEntityHitResult(entity, entityEye, raycastEnd, box, entity1 -> !entity1.isSpectator() && entity1.isPickable(), raycastDistanceSquared);
         if (entityHitResult != null)

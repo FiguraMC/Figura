@@ -224,8 +224,23 @@
   "figura.config.paperdoll_scale": "Paperdoll Scale",
   "figura.config.paperdoll_scale.tooltip": "Changes the paperdoll scale",
 
+  "figura.config.paperdoll_x": "Paperdoll X",
+  "figura.config.paperdoll_x.tooltip": "Changes the paperdoll X position",
+
+  "figura.config.paperdoll_y": "Paperdoll Y",
+  "figura.config.paperdoll_y.tooltip": "Changes the paperdoll Y position",
+
+  "figura.config.paperdoll_pitch": "Paperdoll Pitch",
+  "figura.config.paperdoll_pitch.tooltip": "Changes the paperdoll PITCH rotation",
+
+  "figura.config.paperdoll_yaw": "Paperdoll Yaw",
+  "figura.config.paperdoll_yaw.tooltip": "Changes the paperdoll YAW rotation",
+
   "figura.config.misc": "Misc",
   "figura.config.misc.tooltip": "Unsorted/Unrelated settings",
+
+  "figura.config.popup_button": "Popup Menu",
+  "figura.config.popup_button.tooltip": "Button to open a popup menu with quick actions for the targeted user",
 
   "figura.config.button_location": "Menu Button Location",
   "figura.config.button_location.tooltip": "Location of the figura button",
@@ -242,9 +257,6 @@
 
   "figura.config.dev": "Dev",
   "figura.config.dev.tooltip": "Developer/Experimental settings",
-
-  "figura.config.reload_button": "Reload Avatar",
-  "figura.config.reload_button.tooltip": "Reloads current equipped avatar on press",
 
   "figura.config.panic_button": "Panic Button",
   "figura.config.panic_button.tooltip": "Stop the rendering of all avatars",
