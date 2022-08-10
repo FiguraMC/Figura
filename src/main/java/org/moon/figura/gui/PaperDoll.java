@@ -41,17 +41,10 @@ public class PaperDoll {
         }
 
         //draw
-        float configScale = (float) Config.PAPERDOLL_SCALE.value;
-        float guiScale = (float) Minecraft.getInstance().getWindow().getGuiScale();
-        float width = Minecraft.getInstance().getWindow().getWidth();
-        float height = Minecraft.getInstance().getWindow().getHeight();
-
-        float xPos = ((float) Config.PAPERDOLL_X.value * width) / (100f * guiScale);
-        float yPos = ((float) Config.PAPERDOLL_Y.value * height) / (100f * guiScale);
-        float scale = height * 0.075f * configScale / guiScale;
+        float scale = (float) Config.PAPERDOLL_SCALE.value;
         UIHelper.drawEntity(
-                xPos, yPos,
-                scale,
+                (float) Config.PAPERDOLL_X.value * scale, (float) Config.PAPERDOLL_Y.value * scale,
+                (int) (30 * scale),
                 (float) Config.PAPERDOLL_PITCH.value, (float) Config.PAPERDOLL_YAW.value,
                 player, stack, true
         );

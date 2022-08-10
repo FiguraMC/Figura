@@ -70,8 +70,8 @@ public enum Config {
     PAPERDOLL_ALWAYS_ON(false),
     FIRST_PERSON_PAPERDOLL(true),
     PAPERDOLL_SCALE(1f, InputType.FLOAT),
-    PAPERDOLL_X(5f, InputType.FLOAT),
-    PAPERDOLL_Y(12f, InputType.FLOAT),
+    PAPERDOLL_X(25f, InputType.FLOAT),
+    PAPERDOLL_Y(45f, InputType.FLOAT),
     PAPERDOLL_PITCH(0f, InputType.FLOAT),
     PAPERDOLL_YAW(20f, InputType.FLOAT),
 
