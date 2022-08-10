@@ -23,6 +23,7 @@ import org.moon.figura.utils.ColorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ImmediateAvatarRenderer extends AvatarRenderer {
 
@@ -64,6 +65,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
     @Override
     public void clean() {
+        super.clean();
         customizationStack.fullClear();
         for (FiguraImmediateBuffer buffer : buffers)
             buffer.clean();
@@ -238,8 +240,8 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
     protected void savePivotTransform(ParentType parentType) {
         FiguraMat4 currentPosMat = customizationStack.peek().getPositionMatrix();
         FiguraMat3 currentNormalMat = customizationStack.peek().getNormalMatrix();
-        List<Pair<FiguraMat4, FiguraMat3>> list = pivotCustomizations.computeIfAbsent(parentType, p -> new ArrayList<>());
-        list.add(new Pair<>(currentPosMat, currentNormalMat)); //These are COPIES, so ok to add
+        ConcurrentLinkedQueue<Pair<FiguraMat4, FiguraMat3>> queue = pivotCustomizations.computeIfAbsent(parentType, p -> new ConcurrentLinkedQueue<>());
+        queue.add(new Pair<>(currentPosMat, currentNormalMat)); //These are COPIES, so ok to add
     }
 
     protected FiguraMat4 partToWorldMatrices(PartCustomization cust) {

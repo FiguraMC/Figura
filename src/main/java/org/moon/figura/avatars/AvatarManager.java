@@ -13,11 +13,10 @@ import org.moon.figura.gui.widgets.lists.AvatarList;
 import org.moon.figura.utils.FiguraText;
 
 import java.nio.file.Path;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.function.Consumer;
 
 /**
  * Manages all the avatars that are currently loaded in memory, and also
@@ -28,6 +27,8 @@ public class AvatarManager {
 
     private static final Map<UUID, Avatar> LOADED_AVATARS = new ConcurrentHashMap<>();
     private static final Set<UUID> FETCHED_AVATARS = new HashSet<>();
+
+    private static final Queue<AvatarIOEvent> EVENT_QUEUE = new ConcurrentLinkedQueue<>();
 
     public static boolean localUploaded = true; //init as true :3
     public static boolean panic = false;
@@ -58,6 +59,11 @@ public class AvatarManager {
     }
 
     public static void onWorldRender(float tickDelta) {
+        while (!EVENT_QUEUE.isEmpty()) {
+            AvatarIOEvent event = EVENT_QUEUE.poll();
+            event.type.consumer.accept(event);
+        }
+
         if (panic)
             return;
 
@@ -89,7 +95,7 @@ public class AvatarManager {
             avatar.clearAnimations();
     }
 
-    // -- avatar management -- //
+    // -- avatar getters -- //
 
     //player will also attempt to load from network, if possible
     public static Avatar getAvatarForPlayer(UUID player) {
@@ -118,23 +124,19 @@ public class AvatarManager {
         return null;
     }
 
+    // -- avatar management -- //
+
     //removes an loaded avatar
     public static void clearAvatar(UUID id) {
-        if (LOADED_AVATARS.containsKey(id))
-            LOADED_AVATARS.remove(id).clean();
-        FETCHED_AVATARS.remove(id);
-
+        EVENT_QUEUE.add(new AvatarIOEvent(id, AvatarIOEvent.EventType.CLEAR));
         NetworkManager.clearRequestsFor(id);
         NetworkManager.unsubscribe(id);
     }
 
     //clears ALL loaded avatars, including local
     public static void clearAllAvatars() {
-        for (Avatar avatar : LOADED_AVATARS.values())
-            avatar.clean();
-
-        LOADED_AVATARS.clear();
-        FETCHED_AVATARS.clear();
+        for (UUID id : LOADED_AVATARS.keySet())
+            EVENT_QUEUE.add(new AvatarIOEvent(id, AvatarIOEvent.EventType.CLEAR));
 
         localUploaded = true;
         NetworkManager.clearRequests();
@@ -143,66 +145,33 @@ public class AvatarManager {
 
     //reloads an avatar
     public static void reloadAvatar(UUID id) {
-        //only non uploaded local needs to be manually reloaded
-        //other ones will be fetched from backend on further request
-        if (!localUploaded && FiguraMod.isLocal(id))
-            loadLocalAvatar(LocalAvatarLoader.getLastLoadedPath());
-        else
-            clearAvatar(id);
+        EVENT_QUEUE.add(new AvatarIOEvent(id, AvatarIOEvent.EventType.RELOAD));
     }
 
     //load the local player avatar
     public static void loadLocalAvatar(Path path) {
-        //clear
         UUID id = FiguraMod.getLocalPlayerUUID();
-        if (LOADED_AVATARS.containsKey(id))
-            LOADED_AVATARS.get(id).clean();
+        EVENT_QUEUE.add(new AvatarIOEvent(id, path));
 
-        FETCHED_AVATARS.remove(id);
         NetworkManager.clearRequestsFor(id);
         NetworkManager.unsubscribe(id);
 
         //mark as not uploaded
         localUploaded = false;
-
-        //load
-        try {
-            Avatar avatar = new Avatar(id);
-            LOADED_AVATARS.put(id, avatar);
-            avatar.load(LocalAvatarLoader.loadAvatar(path));
-        } catch (Exception e) {
-            FiguraMod.LOGGER.error("Failed to load avatar from " + path, e);
-            FiguraToast.sendToast(FiguraText.of("toast.load_error"), FiguraToast.ToastType.ERROR);
-        }
     }
 
     //set an user's avatar
     public static void setAvatar(UUID id, CompoundTag nbt) {
-        //remove local watch keys
-        if (FiguraMod.isLocal(id)) {
-            LocalAvatarLoader.resetWatchKeys();
-            AvatarList.selectedEntry = null;
-            localUploaded = true;
-        }
-
-        try {
-            Avatar avatar = new Avatar(id);
-            LOADED_AVATARS.put(id, avatar);
-            avatar.load(nbt);
-        } catch (Exception e) {
-            FiguraMod.LOGGER.error("Failed to set avatar for " + id, e);
-        }
+        EVENT_QUEUE.add(new AvatarIOEvent(id, nbt));
     }
 
     //get avatar from the backend
-    //mark as uploaded if local
     private static void fetchBackend(UUID id) {
         //already fetched :p
         if (FETCHED_AVATARS.contains(id))
             return;
 
         FETCHED_AVATARS.add(id);
-        LOADED_AVATARS.put(id, new Avatar(id));
 
         //egg
         if (FiguraMod.CHEESE_DAY && (boolean) Config.EASTER_EGGS.value && LocalAvatarLoader.cheese != null) {
@@ -211,5 +180,88 @@ public class AvatarManager {
         }
 
         NetworkManager.getAvatar(id);
+    }
+
+    private static class AvatarIOEvent {
+
+        public final UUID owner;
+        public final EventType type;
+        public final CompoundTag nbt;
+        public final Path path;
+
+        public AvatarIOEvent(UUID owner, EventType type) {
+            this(owner, type, null, null);
+        }
+
+        public AvatarIOEvent(UUID owner, Path path) {
+            this(owner, EventType.LOAD_LOCAL, null, path);
+        }
+
+        public AvatarIOEvent(UUID owner, CompoundTag nbt) {
+            this(owner, EventType.SET, nbt, null);
+        }
+
+        private AvatarIOEvent(UUID owner, EventType type, CompoundTag nbt, Path path) {
+            this.owner = owner;
+            this.type = type;
+            this.nbt = nbt;
+            this.path = path;
+        }
+
+        public enum EventType {
+            CLEAR(event -> {
+                UUID id = event.owner;
+                if (LOADED_AVATARS.containsKey(id))
+                    LOADED_AVATARS.remove(id).clean();
+                FETCHED_AVATARS.remove(id);
+            }),
+            SET(event -> {
+                UUID id = event.owner;
+
+                //remove local watch keys
+                if (FiguraMod.isLocal(id)) {
+                    LocalAvatarLoader.resetWatchKeys();
+                    AvatarList.selectedEntry = null;
+                    localUploaded = true;
+                }
+
+                try {
+                    Avatar avatar = new Avatar(id);
+                    LOADED_AVATARS.put(id, avatar);
+                    avatar.load(event.nbt);
+                } catch (Exception e) {
+                    FiguraMod.LOGGER.error("Failed to set avatar for " + id, e);
+                }
+            }),
+            LOAD_LOCAL(event -> {
+                UUID id = event.owner;
+                Path path = event.path;
+
+                //clear
+                CLEAR.consumer.accept(event);
+
+                //load
+                try {
+                    Avatar avatar = new Avatar(id);
+                    LOADED_AVATARS.put(id, avatar);
+                    avatar.load(LocalAvatarLoader.loadAvatar(path));
+                } catch (Exception e) {
+                    FiguraMod.LOGGER.error("Failed to load avatar from " + path, e);
+                    FiguraToast.sendToast(FiguraText.of("toast.load_error"), FiguraToast.ToastType.ERROR);
+                }
+            }),
+            RELOAD(event -> {
+                if (!localUploaded && FiguraMod.isLocal(event.owner))
+                    LOAD_LOCAL.consumer.accept(new AvatarIOEvent(event.owner, LocalAvatarLoader.getLastLoadedPath()));
+                else
+                    CLEAR.consumer.accept(event);
+            });
+
+            public final Consumer<AvatarIOEvent> consumer;
+
+            EventType(Consumer<AvatarIOEvent> consumer) {
+                this.consumer = consumer;
+            }
+        }
     }
 }

@@ -18,7 +18,7 @@ import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 
 import java.util.HashMap;
-import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Mainly exists as an abstract superclass for VAO-based and
@@ -45,7 +45,7 @@ public abstract class AvatarRenderer {
     public boolean allowMatrixUpdate = false;
 
     public PartFilterScheme currentFilterScheme;
-    public final HashMap<ParentType, List<Pair<FiguraMat4, FiguraMat3>>> pivotCustomizations = new HashMap<>();
+    public final HashMap<ParentType, ConcurrentLinkedQueue<Pair<FiguraMat4, FiguraMat3>>> pivotCustomizations = new HashMap<>();
     protected static int shouldRenderPivots;
     public boolean allowHiddenTransforms = true;
     public boolean allowRenderTasks = true;

@@ -6,7 +6,6 @@ import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
-import com.mojang.math.Matrix3f;
 import com.mojang.math.Vector3f;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -16,7 +15,6 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -52,9 +50,13 @@ import org.moon.figura.utils.RefilledNumber;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Queue;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
 
 //the avatar class
@@ -366,12 +368,12 @@ public class Avatar {
         complexity = 0;
         remainingComplexity = trust.get(TrustContainer.Trust.COMPLEXITY);
 
-        for (List<Pair<FiguraMat4, FiguraMat3>> list : renderer.pivotCustomizations.values()) {
-            for (Pair<FiguraMat4, FiguraMat3> pair : list) {
+        for (Queue<Pair<FiguraMat4, FiguraMat3>> queue : renderer.pivotCustomizations.values()) {
+            while (!queue.isEmpty()) {
+                Pair<FiguraMat4, FiguraMat3> pair = queue.poll();
                 pair.getFirst().free();
                 pair.getSecond().free();
             }
-            list.clear();
         }
 
         renderer.allowMatrixUpdate = true;
@@ -509,13 +511,14 @@ public class Avatar {
         if (renderer == null || !parent.isPivot)
             return false;
 
-        List<Pair<FiguraMat4, FiguraMat3>> list = renderer.pivotCustomizations.computeIfAbsent(parent, p -> new ArrayList<>());
+        Queue<Pair<FiguraMat4, FiguraMat3>> queue = renderer.pivotCustomizations.computeIfAbsent(parent, p -> new ConcurrentLinkedQueue<>());
 
-        if (list.isEmpty())
+        if (queue.isEmpty())
             return false;
 
-        for (int i = 0; i < list.size() && i < 1000; i++) { // limit of 1000 pivot part renders, just in case something goes infinitely somehow
-            Pair<FiguraMat4, FiguraMat3> matrixPair = list.get(i);
+        int i = 0;
+        while (!queue.isEmpty() && i++ < 1000) { // limit of 1000 pivot part renders, just in case something goes infinitely somehow
+            Pair<FiguraMat4, FiguraMat3> matrixPair = queue.poll();
             PIVOT_PART_RENDERING_CUSTOMIZATION.setPositionMatrix(matrixPair.getFirst());
             PIVOT_PART_RENDERING_CUSTOMIZATION.setNormalMatrix(matrixPair.getSecond());
             PIVOT_PART_RENDERING_CUSTOMIZATION.needsMatrixRecalculation = false;
@@ -525,7 +528,7 @@ public class Avatar {
             matrixPair.getSecond().free();
         }
 
-        list.clear();
+        queue.clear();
         return true;
     }
 
