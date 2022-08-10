@@ -39,7 +39,7 @@ public class FiguraLuaPrinter {
     public static void sendLuaMessage(Object message, String owner) {
         MutableComponent component = Component.empty()
                 .append(Component.literal("[lua] ").withStyle(ColorUtils.Colors.LUA_LOG.style))
-                .append(Component.literal(owner).withStyle(ChatFormatting.ITALIC))
+                .append(Component.literal(owner))
                 .append(Component.literal(" : ").withStyle(ColorUtils.Colors.LUA_LOG.style))
                 .append(message instanceof Component c ? c : Component.literal(message.toString()))
                 .append(Component.literal("\n"));
@@ -65,7 +65,7 @@ public class FiguraLuaPrinter {
 
         MutableComponent component = Component.empty()
                 .append(Component.literal("[error] ").withStyle(ColorUtils.Colors.LUA_ERROR.style))
-                .append(Component.literal(name).withStyle(ChatFormatting.ITALIC))
+                .append(Component.literal(name))
                 .append(Component.literal(" : " + message).withStyle(ColorUtils.Colors.LUA_ERROR.style))
                 .append(Component.literal("\n"));
 
@@ -83,7 +83,7 @@ public class FiguraLuaPrinter {
 
         MutableComponent text = Component.empty()
                 .append(Component.literal("[ping] ").withStyle(ColorUtils.Colors.LUA_PING.style))
-                .append(Component.literal(owner.name).withStyle(ChatFormatting.ITALIC))
+                .append(Component.literal(owner.entityName))
                 .append(Component.literal(" : ").withStyle(ColorUtils.Colors.LUA_PING.style))
                 .append(ping)
                 .append(Component.literal(" :: ").withStyle(ColorUtils.Colors.LUA_PING.style))
@@ -113,7 +113,7 @@ public class FiguraLuaPrinter {
                 text.append(getPrintText(runtime.typeManager, args.arg(i + 1), true, false)).append("\t");
 
             //prints the value, either on chat or console
-            sendLuaMessage(text, runtime.owner.name);
+            sendLuaMessage(text, runtime.owner.entityName);
 
             return NIL;
         }
@@ -129,7 +129,7 @@ public class FiguraLuaPrinter {
             for (int i = 0; i < args.narg(); i++)
                 text.append(TextUtils.tryParseJson(args.arg(i + 1).tojstring()));
 
-            sendLuaMessage(text, runtime.owner.name);
+            sendLuaMessage(text, runtime.owner.entityName);
 
             return NIL;
         }
@@ -148,7 +148,7 @@ public class FiguraLuaPrinter {
                 text.append(tableToText(runtime.typeManager, args.arg(1), depth, 1, true));
             }
 
-            sendLuaMessage(text, runtime.owner.name);
+            sendLuaMessage(text, runtime.owner.entityName);
 
             return NIL;
         }

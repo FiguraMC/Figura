@@ -39,7 +39,7 @@ public class FiguraToast implements Toast {
         }
 
         UIHelper.setupTexture(type.texture);
-        UIHelper.blit(stack, 0, 0, 0f, (int) (timeDiff / 208 % type.frames + 1) * 32f, width(), height(), 160, 32 * type.frames);
+        UIHelper.blit(stack, 0, 0, 0f, (int) ((FiguraMod.ticks / 5f) % type.frames + 1) * 32f, width(), height(), 160, 32 * type.frames);
 
         Font font = component.getMinecraft().font;
         if (this.message == null) {

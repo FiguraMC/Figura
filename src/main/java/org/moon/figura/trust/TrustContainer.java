@@ -5,6 +5,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.FiguraText;
@@ -131,10 +132,18 @@ public class TrustContainer {
     }
 
     public MutableComponent getGroupName() {
-        if (parentID != null)
-            return TrustManager.get(parentID).getGroupName();
+        return getGroupName(false);
+    }
 
-        return FiguraText.of("trust.group." + name);
+    private MutableComponent getGroupName(boolean changed) {
+        if (parentID != null)
+            return TrustManager.get(parentID).getGroupName(changed || !getSettings().isEmpty());
+
+        MutableComponent text = FiguraText.of("trust.group." + name).withStyle(Style.EMPTY.withColor(getGroupColor()));
+        if (changed)
+            text.append("*");
+
+        return text;
     }
 
     public int getGroupColor() {

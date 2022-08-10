@@ -23,6 +23,7 @@ import org.moon.figura.commands.FiguraCommands;
 import org.moon.figura.config.Config;
 import org.moon.figura.config.ConfigManager;
 import org.moon.figura.gui.PaperDoll;
+import org.moon.figura.gui.PopupMenu;
 import org.moon.figura.gui.actionwheel.ActionWheel;
 import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.lua.docs.FiguraDocsManager;
@@ -92,7 +93,7 @@ public class FiguraMod implements ClientModInitializer {
 
         PaperDoll.render(stack);
         ActionWheel.render(stack);
-        //TODO popup menu
+        PopupMenu.render(stack);
     }
 
     // -- Helper Functions -- //

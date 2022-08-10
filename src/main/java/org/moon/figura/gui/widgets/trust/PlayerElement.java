@@ -5,7 +5,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
@@ -67,7 +66,7 @@ public class PlayerElement extends AbstractTrustElement {
         for (int i = 0; i < (TrustManager.isLocal(trust) ? groupList.size() : groupList.size() - 1); i++) {
             ResourceLocation parentID = groupList.get(i);
             TrustContainer container = TrustManager.get(parentID);
-            trustContext.addAction(container.getGroupName().copy().setStyle(Style.EMPTY.withColor(container.getGroupColor())), button -> {
+            trustContext.addAction(container.getGroupName(), button -> {
                 trust.setParent(parentID);
                 if (parent.selectedEntry == this)
                     parent.parent.updateTrustData(trust);
@@ -129,7 +128,7 @@ public class PlayerElement extends AbstractTrustElement {
             drawString(stack, font, FiguraText.of("gui.trust.avatar_size", MathUtils.asFileSize(avatar.fileSize)), x + 40, y + 6 + font.lineHeight, 0x888888);
 
         //trust
-        drawString(stack, font, trust.getGroupName(), x + 40, y + height - font.lineHeight - 4, trust.getGroupColor());
+        drawString(stack, font, trust.getGroupName(), x + 40, y + height - font.lineHeight - 4, 0xFFFFFF);
 
         stack.popPose();
     }

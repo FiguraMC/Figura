@@ -35,6 +35,7 @@
   "figura.toast.clipboard": "Copied to clipboard!",
   "figura.toast.load_error": "Failed to load avatar!",
   "figura.toast.load_error_l2": "Often from avatar.json",
+  "figura.toast.trust_change": "Trust changed to",
 
 
   "figura.trust.group.blocked": "Blocked",
@@ -62,6 +63,13 @@
   "figura.trust.custom_render_layer": "Custom Render Layers",
   "figura.trust.custom_sounds": "Custom Sounds",
   "figura.trust.custom_heads": "Custom Player Heads",
+
+
+  "figura.popup_menu.cancel": "Cancel",
+  "figura.popup_menu.reload": "Reload Avatar",
+  "figura.popup_menu.increase_trust": "Increase Trust",
+  "figura.popup_menu.decrease_trust": "Decrease Trust",
+  "figura.popup_menu.trust_menu": "Open Trust Menu",
 
 
   "figura.gui.on": "ON",

@@ -166,7 +166,9 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
         //Store old visibility, but overwrite it in case we only want to render certain parts
         Boolean storedVisibility = part.customization.visible;
-        boolean thisPassedPredicate = currentFilterScheme.test(part.parentType, parentPassedPredicate);
+        Boolean thisPassedPredicate = currentFilterScheme.test(part.parentType, parentPassedPredicate);
+        if (thisPassedPredicate == null)
+            thisPassedPredicate = false;
 
         part.customization.visible = part.getVisible() && thisPassedPredicate;
         customizationStack.push(part.customization);

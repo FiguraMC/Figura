@@ -88,7 +88,7 @@ public class TrustScreen extends AbstractPanelScreen {
                 stack.pushPose();
                 stack.translate(this.x + this.getWidth() / 2f - font.width(text) * 0.75, this.y - 4 - font.lineHeight * 2, 0f);
                 stack.scale(1.5f, 1.5f, 1f);
-                UIHelper.renderOutlineText(stack, font, text, 0, 0, selectedTrust.getGroupColor(), 0x202020);
+                UIHelper.renderOutlineText(stack, font, text, 0, 0, 0xFFFFFF, 0x202020);
                 stack.popPose();
             }
         };

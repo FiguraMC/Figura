@@ -64,7 +64,9 @@ public class StackAvatarRenderer extends ImmediateAvatarRenderer {
 
         //Store old visibility, but overwrite it in case we only want to render certain parts
         Boolean storedVisibility = custom.visible;
-        boolean thisPassedPredicate = currentFilterScheme.test(part.parentType, prevPredicate);
+        Boolean thisPassedPredicate = currentFilterScheme.test(part.parentType, prevPredicate);
+        if (thisPassedPredicate == null)
+            return;
 
         //calculate part transforms
 
@@ -136,7 +138,7 @@ public class StackAvatarRenderer extends ImmediateAvatarRenderer {
                 }
 
                 //render pivot parts
-                if (part.parentType.isPivot)
+                if (part.parentType.isPivot && allowPivotParts)
                     savePivotTransform(part.parentType);
             }
 

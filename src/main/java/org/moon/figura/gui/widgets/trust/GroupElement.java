@@ -44,7 +44,7 @@ public class GroupElement extends AbstractTrustElement {
         //name
         Component text = trust.getGroupName();
         Font font = Minecraft.getInstance().font;
-        UIHelper.renderOutlineText(stack, font, text, x + width / 2 - font.width(text) / 2, y + height / 2 - font.lineHeight / 2, trust.getGroupColor(), 0);
+        UIHelper.renderOutlineText(stack, font, text, x + width / 2 - font.width(text) / 2, y + height / 2 - font.lineHeight / 2, 0xFFFFFF, 0);
 
         stack.popPose();
     }

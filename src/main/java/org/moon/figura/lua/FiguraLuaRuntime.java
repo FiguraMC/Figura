@@ -112,7 +112,7 @@ public class FiguraLuaRuntime {
             if (inputStream == null) throw new IOException("Failed to load sandbox.lua");
             runScript(new String(inputStream.readAllBytes()), "figura_sandbox");
         } catch (Exception e) {
-            FiguraLuaPrinter.sendLuaError(e, owner.name, owner.owner);
+            FiguraLuaPrinter.sendLuaError(e, owner.entityName, owner.owner);
         }
     }
 
@@ -141,7 +141,7 @@ public class FiguraLuaRuntime {
             if (inputStream == null) throw new IOException("Failed to load math.lua");
             runScript(new String(inputStream.readAllBytes()), "math");
         } catch (Exception e) {
-            FiguraLuaPrinter.sendLuaError(e, owner.name, owner.owner);
+            FiguraLuaPrinter.sendLuaError(e, owner.entityName, owner.owner);
         }
 
         //Change the type() function
@@ -198,7 +198,7 @@ public class FiguraLuaRuntime {
         try {
             return chunk.call();
         } catch (LuaError e) {
-            FiguraLuaPrinter.sendLuaError(e, owner.name, owner.owner);
+            FiguraLuaPrinter.sendLuaError(e, owner.entityName, owner.owner);
             owner.scriptError = true;
             owner.luaRuntime = null;
         }
@@ -252,7 +252,7 @@ public class FiguraLuaRuntime {
         public LuaValue call() {
             //TODO: translation key for this // cant unless if we do it in a cursed way
             if (!owner.scriptError) {
-                FiguraLuaPrinter.sendLuaError(new LuaError("Script overran resource limits!"), owner.name, owner.owner);
+                FiguraLuaPrinter.sendLuaError(new LuaError("Script overran resource limits!"), owner.entityName, owner.owner);
                 owner.scriptError = true;
                 owner.luaRuntime = null;
             }

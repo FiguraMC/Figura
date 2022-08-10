@@ -76,7 +76,7 @@ public enum Config {
     EASTER_EGGS(true),
 
     Dev {{this.name = FiguraText.of("config.dev").withStyle(ChatFormatting.RED);}},
-    RELOAD_BUTTON("key.keyboard.unknown"),
+    POPUP_BUTTON("key.keyboard.r"),
     PANIC_BUTTON("key.keyboard.unknown"),
     //LOG_PINGS(0, 3);
     RENDER_DEBUG_PARTS_PIVOT(2, 3) {{

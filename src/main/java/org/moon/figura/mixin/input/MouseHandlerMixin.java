@@ -6,6 +6,7 @@ import net.minecraft.client.MouseHandler;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
+import org.moon.figura.gui.PopupMenu;
 import org.moon.figura.gui.actionwheel.ActionWheel;
 import org.moon.figura.lua.api.keybind.FiguraKeybind;
 import org.spongepowered.asm.mixin.Mixin;
@@ -46,6 +47,9 @@ public class MouseHandlerMixin {
 
         if (ActionWheel.isEnabled()) {
             ActionWheel.scroll(scroll);
+            ci.cancel();
+        } else if (PopupMenu.isEnabled()) {
+            PopupMenu.scroll(scroll);
             ci.cancel();
         }
     }

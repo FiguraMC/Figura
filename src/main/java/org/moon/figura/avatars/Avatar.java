@@ -72,7 +72,7 @@ public class Avatar {
     public boolean loaded = true;
 
     //metadata
-    public String name;
+    public String name, entityName;
     public String authors;
     public String version;
     public int fileSize;
@@ -136,7 +136,7 @@ public class Avatar {
         future.thenRun(() -> { //metadata
             try {
                 CompoundTag metadata = nbt.getCompound("metadata");
-                name = metadata.getString("name");
+                name = entityName = metadata.getString("name");
                 authors = metadata.getString("authors");
                 version = metadata.getString("ver");
                 color = metadata.getString("color");
@@ -166,8 +166,10 @@ public class Avatar {
     private void checkUser() {
         if (luaRuntime != null && luaRuntime.user == null) {
             Entity entity = EntityUtils.getEntityByUUID(owner);
-            if (entity != null)
+            if (entity != null) {
                 luaRuntime.setUser(entity);
+                this.entityName = entity.getName().getString();
+            }
         }
     }
 
@@ -232,7 +234,7 @@ public class Avatar {
             else
                 throw new LuaError("Invalid type to run!");
         } catch (Exception ex) {
-            FiguraLuaPrinter.sendLuaError(ex, name, owner);
+            FiguraLuaPrinter.sendLuaError(ex, entityName, owner);
             scriptError = true;
             luaRuntime = null;
         }
@@ -318,7 +320,7 @@ public class Avatar {
                     return value.isnil() ? null : value.tojstring();
                 }
             } catch (Exception ex) {
-                FiguraLuaPrinter.sendLuaError(ex, name, owner);
+                FiguraLuaPrinter.sendLuaError(ex, entityName, owner);
                 scriptError = true;
                 luaRuntime = null;
             }
@@ -462,6 +464,7 @@ public class Avatar {
 
         int prevComplexity = remainingComplexity;
 
+        renderer.allowPivotParts = false;
         renderer.allowRenderTasks = false;
         renderer.currentFilterScheme = PartFilterScheme.SKULL;
         renderer.tickDelta = 1f;
@@ -485,6 +488,7 @@ public class Avatar {
 
         //hacky
         if (prevComplexity > remainingComplexity) {
+            renderer.allowPivotParts = true;
             renderer.allowRenderTasks = true;
             stack.popPose();
             return true;
@@ -494,12 +498,14 @@ public class Avatar {
         stack.translate(0d, 24d / 16d, 0d);
         renderer.allowMatrixUpdate = false;
         renderer.allowHiddenTransforms = false;
+        renderer.allowPivotParts = false;
         renderer.allowRenderTasks = false;
         renderer.currentFilterScheme = PartFilterScheme.HEAD;
         renderer.renderSpecialParts();
 
         renderer.allowHiddenTransforms = true;
         renderer.allowRenderTasks = true;
+        renderer.allowPivotParts = true;
 
         //hacky 2
         stack.popPose();
