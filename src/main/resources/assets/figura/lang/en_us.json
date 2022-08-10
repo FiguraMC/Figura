@@ -34,6 +34,7 @@
   "figura.toast.panic_disabled": "Panic mode disabled!",
   "figura.toast.clipboard": "Copied to clipboard!",
   "figura.toast.load_error": "Failed to load avatar!",
+  "figura.toast.load_error_l2": "Often from avatar.json",
 
 
   "figura.trust.group.blocked": "Blocked",
