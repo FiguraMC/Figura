@@ -16,6 +16,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -23,6 +24,7 @@ import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.entity.SkullBlockEntity;
 import net.minecraft.world.phys.Vec3;
 import org.luaj.vm2.*;
 import org.moon.figura.FiguraMod;
@@ -42,6 +44,7 @@ import org.moon.figura.lua.api.ping.PingFunction;
 import org.moon.figura.lua.api.sound.SoundAPI;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
+import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.EntityUtils;
@@ -203,19 +206,27 @@ public class Avatar {
 
     //Calling with maxInstructions as -1 will not set the max instructions, and instead keep them as they are.
     //returns whatever if it succeeded or not calling the function
-    public void tryCall(Object toRun, int maxInstructions, Object args) {
+    public void tryCall(Object toRun, int maxInstructions, Object... args) {
         if (scriptError || luaRuntime == null)
             return;
 
-        LuaValue val = luaRuntime.typeManager.javaToLua(args);
-
         try {
+            Varargs val = switch (args.length) {
+                case 0 -> LuaValue.NONE;
+                case 1 -> luaRuntime.typeManager.javaToLua(args[0]);
+                case 2 -> LuaValue.varargsOf(
+                        luaRuntime.typeManager.javaToLua(args[0]),
+                        luaRuntime.typeManager.javaToLua(args[1])
+                );
+                default -> throw new LuaError("Zephyr was lazy and didnt make tryCall work for more than 2 args lmao, sorry");
+            };
+
             if (maxInstructions != -1)
                 luaRuntime.setInstructionLimit(maxInstructions);
             if (toRun instanceof LuaEvent event)
                 event.call(val);
             else if (toRun instanceof LuaFunction func)
-                func.call(val);
+                func.invoke(val);
             else
                 throw new LuaError("Invalid type to run!");
         } catch (Exception ex) {
@@ -316,6 +327,16 @@ public class Avatar {
     public void chatReceivedMessageEvent(String message) {
         if (!scriptError && luaRuntime != null)
             tryCall(luaRuntime.events.CHAT_RECEIVE_MESSAGE, -1, LuaString.valueOf(message));
+    }
+
+    public void skullRenderEvent(SkullBlockEntity skullBlockEntity, float delta) {
+        if (scriptError || luaRuntime == null || renderer == null || !renderer.allowSkullRendering)
+            return;
+        tryCall(luaRuntime.events.SKULL_RENDER, -1, delta, FiguraVec3.fromBlockPos(skullBlockEntity.getBlockPos()));
+        if (luaRuntime != null) {
+            postEntityRenderInstructions = luaRuntime.getInstructions();
+            accumulatedEntityRenderInstructions = postEntityRenderInstructions + entityRenderInstructions;
+        }
     }
 
     // -- rendering events -- //

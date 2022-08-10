@@ -186,8 +186,9 @@ public class AvatarManager {
         }
 
         try {
-            Avatar avatar = LOADED_AVATARS.get(id);
-            if (avatar != null) avatar.load(nbt);
+            Avatar avatar = new Avatar(id);
+            LOADED_AVATARS.put(id, avatar);
+            avatar.load(nbt);
         } catch (Exception e) {
             FiguraMod.LOGGER.error("Failed to set avatar for " + id, e);
         }

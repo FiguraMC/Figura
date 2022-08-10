@@ -21,6 +21,7 @@ public class EventsAPI {
         POST_WORLD_RENDER = new LuaEvent();
         CHAT_SEND_MESSAGE = new LuaEvent();
         CHAT_RECEIVE_MESSAGE = new LuaEvent();
+        SKULL_RENDER = new LuaEvent();
     }
 
     //Unsure on how to do the docs for these fields. Maybe we keep the @LuaFieldDoc, just don't allow them to be
@@ -51,6 +52,9 @@ public class EventsAPI {
     @LuaWhitelist
     @LuaFieldDoc(description = "events.chat_receive_message")
     public final LuaEvent CHAT_RECEIVE_MESSAGE;
+    @LuaWhitelist
+    @LuaFieldDoc(description = "events.skull_render")
+    public final LuaEvent SKULL_RENDER;
 
     @LuaWhitelist
     @LuaMetamethodDoc(overloads = @LuaMetamethodDoc.LuaMetamethodOverload(
@@ -67,6 +71,7 @@ public class EventsAPI {
             case "POST_WORLD_RENDER" -> POST_WORLD_RENDER;
             case "CHAT_SEND_MESSAGE" -> CHAT_SEND_MESSAGE;
             case "CHAT_RECEIVE_MESSAGE" -> CHAT_RECEIVE_MESSAGE;
+            case "SKULL_RENDER" -> SKULL_RENDER;
             default -> null;
         };
     }
