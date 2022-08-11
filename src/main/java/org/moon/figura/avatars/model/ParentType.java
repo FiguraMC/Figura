@@ -2,8 +2,6 @@ package org.moon.figura.avatars.model;
 
 import org.moon.figura.math.vector.FiguraVec3;
 
-import java.util.Set;
-
 public enum ParentType {
     None("NONE"),
 
@@ -35,7 +33,12 @@ public enum ParentType {
     public final VanillaModelProvider provider;
     public final FiguraVec3 offset;
     public final String[] aliases;
-    public final boolean isSpecial, isPivot;
+
+    //If this parent part renders separately from the rest of the model.
+    public final boolean isSeparate;
+
+    //If this parent part serves as a modification for a vanilla rendering feature, and *not* to actually render blockbench cubes.
+    public final boolean isPivot;
 
     ParentType(String... aliases) {
         this(false, false, null, aliases);
@@ -45,20 +48,20 @@ public enum ParentType {
         this(false, false, provider, FiguraVec3.of(), aliases);
     }
 
-    ParentType(boolean isSpecial, boolean isPivot, String... aliases) {
-        this(isSpecial, isPivot, null, aliases);
+    ParentType(boolean isSeparate, boolean isPivot, String... aliases) {
+        this(isSeparate, isPivot, null, aliases);
     }
 
-    ParentType(boolean isSpecial, boolean isPivot, VanillaModelProvider provider, String... aliases) {
-        this(isSpecial, isPivot, provider, FiguraVec3.of(), aliases);
+    ParentType(boolean isSeparate, boolean isPivot, VanillaModelProvider provider, String... aliases) {
+        this(isSeparate, isPivot, provider, FiguraVec3.of(), aliases);
     }
 
     ParentType(VanillaModelProvider provider, FiguraVec3 offset, String... aliases) {
         this(false, false, provider, offset, aliases);
     }
 
-    ParentType(boolean isSpecial, boolean isPivot, VanillaModelProvider provider, FiguraVec3 offset, String... aliases) {
-        this.isSpecial = isSpecial;
+    ParentType(boolean isSeparate, boolean isPivot, VanillaModelProvider provider, FiguraVec3 offset, String... aliases) {
+        this.isSeparate = isSeparate;
         this.isPivot = isPivot;
         this.provider = provider;
         this.offset = offset;

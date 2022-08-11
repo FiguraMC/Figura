@@ -49,7 +49,9 @@ public class StackAvatarRenderer extends ImmediateAvatarRenderer {
         //Render all model parts
         int prev = avatar.remainingComplexity;
         int[] remainingComplexity = new int[] {prev};
-        renderPart(root, remainingComplexity, currentFilterScheme.initialValue);
+        Boolean initialValue = currentFilterScheme.initialValue(root);
+        if (initialValue != null)
+            renderPart(root, remainingComplexity, initialValue);
 
         avatar.complexity += prev - remainingComplexity[0];
         avatar.remainingComplexity = remainingComplexity[0];
