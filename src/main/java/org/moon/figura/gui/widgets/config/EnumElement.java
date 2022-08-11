@@ -29,7 +29,7 @@ public class EnumElement extends AbstractConfigElement {
         names = config.enumList;
 
         //toggle button
-        children.add(0, button = new ParentedButton(0, 0, 90, 20, names.get((int) this.config.configValue % this.names.size()), this, button -> {
+        children.add(0, button = new ParentedButton(0, 0, 90, 20, names.get((int) this.config.tempValue % this.names.size()), this, button -> {
             this.context.setVisible(!this.context.isVisible());
 
             if (context.isVisible()) {
@@ -57,7 +57,7 @@ public class EnumElement extends AbstractConfigElement {
         context = new ContextMenu(button, button.getWidth());
         for (int i = 0; i < names.size(); i++) {
             int finalI = i; //bruh
-            context.addAction(names.get(i), button1 -> config.configValue = finalI);
+            context.addAction(names.get(i), button1 -> config.tempValue = finalI);
         }
     }
 
@@ -66,13 +66,13 @@ public class EnumElement extends AbstractConfigElement {
         if (!this.isVisible()) return;
 
         //reset enabled
-        this.resetButton.active = this.config.configValue != this.config.defaultValue;
+        this.resetButton.active = this.config.tempValue != this.config.defaultValue;
 
         //button text
-        Component text = names.get((int) this.config.configValue % this.names.size());
+        Component text = names.get((int) this.config.tempValue % this.names.size());
 
         //edited colour
-        if (this.config.configValue != this.initValue)
+        if (this.config.tempValue != this.initValue)
             text = text.copy().setStyle(FiguraMod.getAccentColor());
 
         //set text
@@ -106,7 +106,7 @@ public class EnumElement extends AbstractConfigElement {
             Component text = names.get(i);
 
             //selected entry
-            if (i == (int) this.config.configValue % this.names.size())
+            if (i == (int) this.config.tempValue % this.names.size())
                 text = text.copy().setStyle(FiguraMod.getAccentColor());
 
             //apply text

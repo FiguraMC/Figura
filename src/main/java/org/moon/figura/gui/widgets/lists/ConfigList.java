@@ -16,14 +16,14 @@ import java.util.List;
 
 public class ConfigList extends AbstractList {
 
-    private static final List<ConfigWidget> CONFIGS = new ArrayList<>();
+    private final List<ConfigWidget> configs = new ArrayList<>();
     public KeyMapping focusedBinding;
 
     private int totalHeight = 0;
 
     public ConfigList(int x, int y, int width, int height) {
         super(x, y, width, height);
-        updateList();
+        initList();
     }
 
     @Override
@@ -34,9 +34,9 @@ public class ConfigList extends AbstractList {
 
         //scrollbar
         totalHeight = -4;
-        for (ConfigWidget config : CONFIGS)
+        for (ConfigWidget config : configs)
             totalHeight += config.getHeight() + 8;
-        int entryHeight = CONFIGS.isEmpty() ? 0 : totalHeight / CONFIGS.size();
+        int entryHeight = configs.isEmpty() ? 0 : totalHeight / configs.size();
 
         scrollBar.visible = totalHeight > height;
         scrollBar.setScrollRatio(entryHeight, totalHeight - height);
@@ -44,7 +44,7 @@ public class ConfigList extends AbstractList {
         //render list
         int xOffset = scrollBar.visible ? 4 : 11;
         int yOffset = scrollBar.visible ? (int) -(Mth.lerp(scrollBar.getScrollProgress(), -4, totalHeight - height)) : 4;
-        for (ConfigWidget config : CONFIGS) {
+        for (ConfigWidget config : configs) {
             config.setPos(x + xOffset, y + yOffset);
             yOffset += config.getHeight() + 8;
         }
@@ -59,7 +59,7 @@ public class ConfigList extends AbstractList {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         //fix mojang focusing for text fields
-        for (ConfigWidget configWidget : CONFIGS) {
+        for (ConfigWidget configWidget : configs) {
             for (GuiEventListener children : configWidget.children()) {
                 if (children instanceof InputElement inputElement)
                     inputElement.getTextField().getField().setFocus(inputElement.getTextField().isMouseOver(mouseX, mouseY));
@@ -69,9 +69,9 @@ public class ConfigList extends AbstractList {
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
-    public void updateList() {
+    public void initList() {
         //clear old widgets
-        CONFIGS.forEach(children::remove);
+        configs.forEach(children::remove);
 
         //temp list
         List<ConfigWidget> temp = new ArrayList<>();
@@ -84,8 +84,8 @@ public class ConfigList extends AbstractList {
                 //create dummy category if empty
                 if (lastCategory == null) {
                     ConfigWidget widget = new ConfigWidget(width - 22, Component.empty(), null, this);
-                    lastCategory = widget;
 
+                    lastCategory = widget;
                     temp.add(widget);
                     children.add(widget);
                 }
@@ -95,22 +95,22 @@ public class ConfigList extends AbstractList {
             //add new config category
             } else {
                 ConfigWidget widget = new ConfigWidget(width - 22, config.name, config.tooltip, this);
-                lastCategory = widget;
 
+                lastCategory = widget;
                 temp.add(widget);
                 children.add(widget);
             }
         }
 
         //fix expanded status
-        if (!CONFIGS.isEmpty()) {
-            for (int i = 0; i < CONFIGS.size(); i++)
-                temp.get(i).setShowChildren(CONFIGS.get(i).isShowingChildren());
+        if (!configs.isEmpty()) {
+            for (int i = 0; i < configs.size(); i++)
+                temp.get(i).setShowChildren(configs.get(i).isShowingChildren());
         }
 
         //add configs
-        CONFIGS.clear();
-        CONFIGS.addAll(temp);
+        configs.clear();
+        configs.addAll(temp);
     }
 
     public void updateScroll() {
@@ -119,10 +119,15 @@ public class ConfigList extends AbstractList {
 
         //get new height
         totalHeight = -4;
-        for (ConfigWidget config : CONFIGS)
+        for (ConfigWidget config : configs)
             totalHeight += config.getHeight() + 8;
 
         //set new scroll percentage
         scrollBar.setScrollProgress(pastScroll / (totalHeight - height));
+    }
+
+    public void updateList() {
+        for (ConfigWidget config : configs)
+            config.update();
     }
 }

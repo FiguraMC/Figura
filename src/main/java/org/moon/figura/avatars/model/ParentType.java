@@ -20,7 +20,7 @@ public enum ParentType {
     World(true, false, "WORLD"),
     Hud(true, false, "HUD", "Gui", "GUI"),
     Camera("CAMERA"),
-    Skull(true, false, "SKULL"),
+    Skull(true, false, "SKULL", "\uD83D\uDC80"),
 
     LeftItemPivot(false, true,"LEFT_ITEM_PIVOT"),
     RightItemPivot(false, true,"RIGHT_ITEM_PIVOT"),

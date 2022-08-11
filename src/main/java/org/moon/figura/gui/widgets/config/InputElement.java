@@ -29,9 +29,9 @@ public class InputElement extends AbstractConfigElement {
         textField = new InputField(0, 0, 90, 20, inputType.hint, this, text -> {
             //only write config value if it's valid
             if (inputType.validator.test(text))
-                config.configValue = isHex ? ColorUtils.userInputHex(text, FiguraVec3.of()) : text;
+                config.tempValue = isHex ? ColorUtils.userInputHex(text, FiguraVec3.of()) : text;
         });
-        updateTextFieldText(formatText(config.configValue));
+        updateTextFieldText(formatText(config.tempValue));
         textField.getField().moveCursorToStart();
 
         children.add(0, textField);
@@ -39,8 +39,8 @@ public class InputElement extends AbstractConfigElement {
         //overwrite reset button to update the text field
         children.remove(resetButton);
         children.add(resetButton = new ParentedButton(x + width - 60, y, 60, 20, Component.translatable("controls.reset"), this, button -> {
-            config.configValue = config.defaultValue;
-            updateTextFieldText(formatText(config.configValue));
+            config.tempValue = config.defaultValue;
+            updateTextFieldText(formatText(config.tempValue));
         }));
     }
 
@@ -78,7 +78,7 @@ public class InputElement extends AbstractConfigElement {
             //border
             UIHelper.fillRounded(stack, x + width - 178, y, 20, 20, getTextField().getField().isFocused() ? getTextField().getBorderColour() : 0xFF404040);
             //inside
-            UIHelper.fillRounded(stack, x + width - 177, y + 1, 18, 18, 0xFF000000 + (int) config.configValue);
+            UIHelper.fillRounded(stack, x + width - 177, y + 1, 18, 18, 0xFF000000 + (int) config.tempValue);
         }
     }
 
@@ -86,6 +86,12 @@ public class InputElement extends AbstractConfigElement {
     public void setPos(int x, int y) {
         this.textField.setPos(x + width - 154, y);
         super.setPos(x, y);
+    }
+
+    @Override
+    public void update() {
+        super.update();
+        updateTextFieldText(formatText(config.tempValue));
     }
 
     public TextField getTextField() {

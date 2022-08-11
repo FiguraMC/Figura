@@ -120,7 +120,7 @@ public class TrustScreen extends AbstractPanelScreen {
         }));
 
         //back button
-        addRenderableWidget(back = new TexturedButton(middle + 6 + bottomButtonsWidth, height - 24, bottomButtonsWidth, 20, FiguraText.of("gui.back"), null,
+        addRenderableWidget(back = new TexturedButton(middle + 6 + bottomButtonsWidth, height - 24, bottomButtonsWidth, 20, FiguraText.of("gui.done"), null,
                 bx -> this.minecraft.setScreen(parentScreen)
         ));
 

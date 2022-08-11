@@ -724,13 +724,20 @@ public class FiguraModelPart {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = String.class,
-                    argumentNames = "taskName"
-            ),
+            overloads = {
+                    @LuaFunctionOverload(returnType = Map.class),
+                    @LuaFunctionOverload(
+                            argumentTypes = String.class,
+                            argumentNames = "taskName",
+                            returnType = RenderTask.class
+                    )
+            },
             description = "model_part.get_task")
-    public RenderTask getTask(@LuaNotNil String name) {
-        return this.renderTasks.get(name);
+    public Object getTask(String name) {
+        if (name != null)
+            return this.renderTasks.get(name);
+        else
+            return this.renderTasks;
     }
 
     @LuaWhitelist

@@ -30,7 +30,7 @@ public abstract class AbstractConfigElement extends AbstractContainerElement {
         this.initValue = config.value;
 
         //reset button
-        children.add(resetButton = new ParentedButton(x + width - 60, y, 60, 20, Component.translatable("controls.reset"), this, button -> config.configValue = config.defaultValue));
+        children.add(resetButton = new ParentedButton(x + width - 60, y, 60, 20, Component.translatable("controls.reset"), this, button -> config.tempValue = config.defaultValue));
     }
 
     @Override
@@ -72,6 +72,10 @@ public abstract class AbstractConfigElement extends AbstractContainerElement {
 
     public boolean isHovered() {
         return hovered;
+    }
+
+    public void update() {
+        this.initValue = config.value;
     }
 
     protected static class ParentedButton extends TexturedButton {

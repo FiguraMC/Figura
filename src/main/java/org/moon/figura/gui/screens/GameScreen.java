@@ -41,7 +41,7 @@ public class GameScreen extends AbstractPanelScreen {
         addRenderableOnly(grid = new Grid(width, height));
 
         //back button
-        addRenderableWidget(new TexturedButton(this.width - 28, 4, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/back.png"), 72, 24, FiguraText.of("gui.back"),
+        addRenderableWidget(new TexturedButton(this.width - 28, 4, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/back.png"), 72, 24, FiguraText.of("gui.done"),
             bx -> this.minecraft.setScreen(parentScreen)
         ));
 

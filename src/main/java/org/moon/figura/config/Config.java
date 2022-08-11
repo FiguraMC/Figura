@@ -87,8 +87,8 @@ public enum Config {
     EASTER_EGGS(true),
 
     Dev {{this.name = FiguraText.of("config.dev").withStyle(ChatFormatting.RED);}},
+    RELOAD_BUTTON("key.keyboard.unknown"),
     PANIC_BUTTON("key.keyboard.unknown"),
-    //LOG_PINGS(0, 3);
     RENDER_DEBUG_PARTS_PIVOT(2, 3) {{
         String tooltip = "config.render_debug_parts_pivot.tooltip";
         this.tooltip = FiguraText.of(tooltip,
@@ -138,12 +138,13 @@ public enum Config {
     /**
      * do not edit below this line :p
      * why not ? lol
+     * *stabs*
      */
 
 
     //values
     public Object value;
-    public Object configValue;
+    public Object tempValue; //settings screen "undo"
     public final Object defaultValue;
 
     //metadata
@@ -180,7 +181,7 @@ public enum Config {
         this.type = type;
         this.value = value;
         this.defaultValue = value;
-        this.configValue = value;
+        this.tempValue = value;
         this.keyBind = keyBind;
         this.inputType = inputType;
 
@@ -199,7 +200,7 @@ public enum Config {
     }
 
     public void setValue(String text) {
-        boolean change = !value.equals(configValue);
+        boolean change = !value.equals(tempValue);
 
         try {
             if (enumList != null)
@@ -225,7 +226,7 @@ public enum Config {
             value = defaultValue;
         }
 
-        configValue = value;
+        tempValue = value;
         if (change) {
             try {
                 onChange();

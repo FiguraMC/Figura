@@ -80,7 +80,6 @@
   "figura.gui.size": "Size",
   "figura.gui.complexity": "Complexity",
   "figura.gui.done": "Done",
-  "figura.gui.apply": "Apply",
   "figura.gui.cancel": "Cancel",
   "figura.gui.expand": "Expand",
   "figura.gui.minimise": "Minimise",
@@ -225,8 +224,6 @@
   "figura.config.popup_max_size": "Player Popup Max Size",
   "figura.config.popup_max_size.tooltip": "Maximum size of player popup as you get closer to the person",
 
-
-
   "figura.config.paperdoll": "Paperdoll",
   "figura.config.paperdoll.tooltip": "Paperdoll settings",
 
@@ -275,6 +272,9 @@
 
   "figura.config.dev": "Dev",
   "figura.config.dev.tooltip": "Developer/Experimental settings",
+
+  "figura.config.reload_button": "Reload Avatar",
+  "figura.config.reload_button.tooltip": "Reloads current equipped avatar on press",
 
   "figura.config.panic_button": "Panic Button",
   "figura.config.panic_button.tooltip": "Stop the rendering of all avatars",

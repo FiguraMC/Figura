@@ -98,7 +98,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
         int rightSide = Math.min(third, 134);
 
         //back
-        TexturedButton back = new TexturedButton(width - rightSide - 4, height - 24, rightSide, 20, FiguraText.of("gui.back"), null,
+        TexturedButton back = new TexturedButton(width - rightSide - 4, height - 24, rightSide, 20, FiguraText.of("gui.done"), null,
                 bx -> this.minecraft.setScreen(parentScreen)
         );
         addRenderableWidget(back);

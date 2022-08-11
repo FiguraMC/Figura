@@ -18,7 +18,7 @@ public class BooleanElement extends AbstractConfigElement {
         super(width, config, parent);
 
         //button
-        children.add(0, button = new ParentedButton(0, 0, 90, 20, (boolean) config.configValue ? ON : OFF, this, button -> config.configValue = !(boolean) config.configValue));
+        children.add(0, button = new ParentedButton(0, 0, 90, 20, (boolean) config.tempValue ? ON : OFF, this, button -> config.tempValue = !(boolean) config.tempValue));
     }
 
     @Override
@@ -26,13 +26,13 @@ public class BooleanElement extends AbstractConfigElement {
         if (!this.isVisible()) return;
 
         //reset enabled
-        this.resetButton.active = this.config.configValue != this.config.defaultValue;
+        this.resetButton.active = this.config.tempValue != this.config.defaultValue;
 
         //button text
-        Component text = (boolean) config.configValue ? ON : OFF;
+        Component text = (boolean) config.tempValue ? ON : OFF;
 
         //edited colour
-        if (this.config.configValue != this.initValue)
+        if (this.config.tempValue != this.initValue)
             text = text.copy().setStyle(FiguraMod.getAccentColor());
 
         //set text

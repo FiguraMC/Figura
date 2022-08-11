@@ -89,10 +89,11 @@ public class FiguraDocsManager {
         //Lua things
         put(LuaFunction.class, "Function");
         put(LuaTable.class, "Table");
+        put(LuaValue.class, "AnyType");
 
         //converted things
-        put(LuaValue.class, "AnyType");
         put(Map.class, "Table");
+        put(HashMap.class, "Table");
 
         //Figura types
         put(FiguraVector.class, "Vector");

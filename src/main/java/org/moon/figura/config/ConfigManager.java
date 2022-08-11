@@ -92,12 +92,12 @@ public final class ConfigManager {
 
     public static void applyConfig() {
         for (Config config : CONFIG_ENTRIES)
-            config.setValue(String.valueOf(config.configValue));
+            config.setValue(String.valueOf(config.tempValue));
     }
 
     public static void discardConfig() {
         for (Config config : CONFIG_ENTRIES)
-            config.configValue = config.value;
+            config.tempValue = config.value;
     }
 
     public static void setDefaults() {

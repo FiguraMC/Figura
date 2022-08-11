@@ -89,7 +89,7 @@ public class PopupMenu {
         double s = Config.POPUP_SCALE.asFloat() * Math.max(Math.min(window.getHeight() * 0.035 / vec.w * (1 / window.getGuiScale()), Config.POPUP_MAX_SIZE.asFloat()), Config.POPUP_MIN_SIZE.asFloat());
 
         stack.translate((vec.x + 1) / 2 * w, (vec.y + 1) / 2 * h, -100);
-        stack.scale((float) (s * 0.75), (float) (s * 0.75), 1);
+        stack.scale((float) (s * 0.5), (float) (s * 0.5), 1);
 
         //background
         int width = LENGTH * 18;
@@ -121,8 +121,8 @@ public class PopupMenu {
 
         stack.scale(0.5f, 0.5f, 0.5f);
         stack.translate(0f, 0f, -1f);
-        font.draw(stack, title, -width + 4, -12, 0xFFFFFF);
         UIHelper.renderOutlineText(stack, font, trust, -font.width(trust) / 2, -54, 0xFFFFFF, 0x202020);
+        font.draw(stack, title, -width + 4, -12, 0xFFFFFF);
 
         //finish rendering
         stack.popPose();

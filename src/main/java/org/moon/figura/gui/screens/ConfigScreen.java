@@ -37,23 +37,18 @@ public class ConfigScreen extends AbstractPanelScreen {
 
         // -- bottom buttons -- //
 
-        //discard
-        this.addRenderableWidget(new TexturedButton(width / 2 - 122 - 64, height - 24, 120, 20, FiguraText.of("gui.cancel"), null, button -> {
+        //cancel
+        this.addRenderableWidget(new TexturedButton(width / 2 - 122, height - 24, 120, 20, FiguraText.of("gui.cancel"), null, button -> {
             ConfigManager.discardConfig();
             this.minecraft.setScreen(parentScreen);
         }));
 
-        addRenderableWidget(new TexturedButton(width / 2 + 4 - 64, height - 24, 120, 20, FiguraText.of("gui.apply"), null, button -> {
-            ConfigManager.applyConfig();
-            list.updateList();
-        }));
-
         //done
-        addRenderableWidget(new TexturedButton(width / 2 + 130 - 64, height - 24, 120, 20, FiguraText.of("gui.done"), null,
-                bx -> this.minecraft.setScreen(parentScreen)
-        ));
-
-
+        addRenderableWidget(new TexturedButton(width / 2 + 4, height - 24, 120, 20, FiguraText.of("gui.done"), null, button -> {
+            ConfigManager.applyConfig();
+            ConfigManager.saveConfig();
+            this.minecraft.setScreen(parentScreen);
+        }));
 
         // -- config list -- //
 
@@ -65,8 +60,6 @@ public class ConfigScreen extends AbstractPanelScreen {
     public void removed() {
         ConfigManager.applyConfig();
         ConfigManager.saveConfig();
-        list.updateList();
-
         super.removed();
     }
 

@@ -43,7 +43,7 @@ public class KeybindScreen extends AbstractPanelScreen {
         }));
 
         //back
-        addRenderableWidget(new TexturedButton(width / 2 + 4, height - 24, 120, 20, FiguraText.of("gui.back"), null,
+        addRenderableWidget(new TexturedButton(width / 2 + 4, height - 24, 120, 20, FiguraText.of("gui.done"), null,
                 bx -> this.minecraft.setScreen(parentScreen)
         ));
     }

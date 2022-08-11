@@ -83,4 +83,9 @@ public class ConfigWidget extends AbstractContainerElement {
     public boolean isShowingChildren() {
         return parentConfig.isToggled();
     }
+
+    public void update() {
+        for (AbstractConfigElement entry : entries)
+            entry.update();
+    }
 }
