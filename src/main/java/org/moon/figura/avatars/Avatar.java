@@ -94,7 +94,8 @@ public class Avatar {
     public boolean scriptError = false;
 
     public int complexity = 0;
-    public int remainingComplexity, animationComplexity;
+    public int animationComplexity;
+    public int complexityLimit;
 
     public int initInstructions;
     public int entityTickInstructions, worldTickInstructions;
@@ -109,6 +110,7 @@ public class Avatar {
         this.trust = TrustManager.get(owner);
         this.particlesRemaining = new RefilledNumber(trust.get(TrustContainer.Trust.PARTICLES));
         this.soundsRemaining = new RefilledNumber(trust.get(TrustContainer.Trust.SOUNDS));
+        complexityLimit = trust.get(TrustContainer.Trust.COMPLEXITY);
     }
 
     private static CompletableFuture<Void> run(Runnable toRun) {
@@ -373,7 +375,7 @@ public class Avatar {
             return;
 
         complexity = 0;
-        remainingComplexity = trust.get(TrustContainer.Trust.COMPLEXITY);
+//        remainingComplexity = trust.get(TrustContainer.Trust.COMPLEXITY);
 
         for (Queue<Pair<FiguraMat4, FiguraMat3>> queue : renderer.pivotCustomizations.values()) {
             while (!queue.isEmpty()) {
@@ -414,8 +416,9 @@ public class Avatar {
         if (renderer == null)
             return;
 
-        int oldComplexity = remainingComplexity;
-        remainingComplexity = trust.get(TrustContainer.Trust.COMPLEXITY);
+//        int oldComplexity = remainingComplexity;
+//        remainingComplexity = trust.get(TrustContainer.Trust.COMPLEXITY);
+        int oldComplexity = complexity;
 
         PartFilterScheme filter = arm == playerRenderer.getModel().leftArm ? PartFilterScheme.LEFT_ARM : PartFilterScheme.RIGHT_ARM;
         boolean config = Config.ALLOW_FP_HANDS.asBool();
@@ -431,7 +434,8 @@ public class Avatar {
         stack.popPose();
 
         renderer.allowHiddenTransforms = true;
-        remainingComplexity = oldComplexity;
+//        remainingComplexity = oldComplexity;
+        complexity = oldComplexity;
     }
 
     public void hudRender(PoseStack stack, MultiBufferSource bufferSource, Entity entity, float tickDelta) {
@@ -467,7 +471,8 @@ public class Avatar {
         if (renderer == null || !renderer.allowSkullRendering)
             return false;
 
-        int prevComplexity = remainingComplexity;
+//        int prevComplexity = remainingComplexity;
+        int oldComplexity = complexity;
 
         renderer.allowPivotParts = false;
         renderer.allowRenderTasks = false;
@@ -492,7 +497,8 @@ public class Avatar {
         renderer.renderSpecialParts();
 
         //hacky
-        if (prevComplexity > remainingComplexity) {
+//        if (prevComplexity > remainingComplexity) {
+        if (complexity > oldComplexity) {
             renderer.allowPivotParts = true;
             renderer.allowRenderTasks = true;
             stack.popPose();
@@ -514,7 +520,8 @@ public class Avatar {
 
         //hacky 2
         stack.popPose();
-        return prevComplexity > remainingComplexity && luaRuntime != null && !luaRuntime.vanilla_model.HEAD.getVisible();
+//        return prevComplexity > remainingComplexity && luaRuntime != null && !luaRuntime.vanilla_model.HEAD.getVisible();
+        return complexity > oldComplexity && luaRuntime != null && !luaRuntime.vanilla_model.HEAD.getVisible();
     }
 
     private static final PartCustomization PIVOT_PART_RENDERING_CUSTOMIZATION = PartCustomization.of();

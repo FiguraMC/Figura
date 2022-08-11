@@ -11,6 +11,7 @@ import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.utils.MathUtils;
 import org.moon.figura.utils.TextUtils;
 
 @LuaWhitelist
@@ -209,8 +210,8 @@ public class ClientAPI {
     @LuaWhitelist
     @LuaMethodDoc(description = "client.get_camera_rot")
     public static FiguraVec3 getCameraRot() {
-        Vector3f rot = Minecraft.getInstance().gameRenderer.getMainCamera().rotation().toXYZDegrees();
-        return FiguraVec3.of(rot.x(), rot.y(), rot.z());
+        double f = 180d / Math.PI;
+        return MathUtils.quaternionToYXZ(Minecraft.getInstance().gameRenderer.getMainCamera().rotation()).multiply(f, -f, f); //degrees, and negate y
     }
 
     @LuaWhitelist

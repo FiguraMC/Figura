@@ -8,6 +8,7 @@ import org.moon.figura.avatars.model.rendertasks.RenderTask;
 import org.moon.figura.config.Config;
 import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.trust.TrustContainer;
 
 public class StackAvatarRenderer extends ImmediateAvatarRenderer {
 
@@ -47,14 +48,15 @@ public class StackAvatarRenderer extends ImmediateAvatarRenderer {
             VIEW_TO_WORLD_MATRIX.set(AvatarRenderer.worldToViewMatrix().invert());
 
         //Render all model parts
-        int prev = avatar.remainingComplexity;
+//        int prev = avatar.remainingComplexity;
+        int prev = avatar.trust.get(TrustContainer.Trust.COMPLEXITY) - avatar.complexity;
         int[] remainingComplexity = new int[] {prev};
         Boolean initialValue = currentFilterScheme.initialValue(root);
         if (initialValue != null)
             renderPart(root, remainingComplexity, initialValue);
 
-        avatar.complexity += prev - remainingComplexity[0];
-        avatar.remainingComplexity = remainingComplexity[0];
+        avatar.complexity += prev - Math.max(remainingComplexity[0], 0);
+//        avatar.remainingComplexity = remainingComplexity[0];
 
         customizationStack.pop();
         checkEmpty();

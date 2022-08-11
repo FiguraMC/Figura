@@ -131,9 +131,15 @@ public class FiguraModelPart {
                 FiguraMat4 prevPartToView = currentTransforms.inverted();
                 prevPartToView.rightMultiply(FiguraMat4.of().rotateY(180));
                 prevPartToView.scale(1d/16, 1d/16, 1d/16);
+                FiguraVec3 piv = customization.getPivot();
+                FiguraVec3 piv2 = customization.getOffsetPivot().add(piv);
                 prevPartToView.v14 = prevPartToView.v24 = prevPartToView.v34 = 0;
+                prevPartToView.translateFirst(-piv2.x, -piv2.y, -piv2.z);
+                prevPartToView.translate(piv2.x, piv2.y, piv2.z);
                 customization.setMatrix(prevPartToView);
                 prevPartToView.free();
+                piv.free();
+                piv2.free();
             }
         }
     }

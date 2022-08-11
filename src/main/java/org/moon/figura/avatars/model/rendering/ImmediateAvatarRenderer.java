@@ -19,6 +19,7 @@ import org.moon.figura.config.Config;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.utils.ColorUtils;
 
 import java.util.ArrayList;
@@ -116,14 +117,15 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         if (allowMatrixUpdate)
             VIEW_TO_WORLD_MATRIX.set(AvatarRenderer.worldToViewMatrix().invert());
 
-        int prev = avatar.remainingComplexity;
+//        int prev = avatar.remainingComplexity;
+        int prev = avatar.trust.get(TrustContainer.Trust.COMPLEXITY) - avatar.complexity;
         int[] remainingComplexity = new int[] {prev};
         Boolean initialValue = currentFilterScheme.initialValue(root);
         if (initialValue != null)
             renderPart(root, remainingComplexity, initialValue);
 
         avatar.complexity += prev - remainingComplexity[0];
-        avatar.remainingComplexity = remainingComplexity[0];
+//        avatar.remainingComplexity = remainingComplexity[0];
 
         customizationStack.pop();
         checkEmpty();

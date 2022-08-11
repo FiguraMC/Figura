@@ -1,5 +1,6 @@
 package org.moon.figura.math.vector;
 
+import com.mojang.math.Vector3f;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 import org.luaj.vm2.LuaDouble;
@@ -493,6 +494,10 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
 
     public static FiguraVec3 fromVec3(Vec3 vec) {
         return of(vec.x, vec.y, vec.z);
+    }
+
+    public static FiguraVec3 fromVec3f(Vector3f vec) {
+        return of(vec.x(), vec.y(), vec.z());
     }
 
     // -- metamethods -- //
