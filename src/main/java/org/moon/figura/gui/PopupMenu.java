@@ -85,7 +85,7 @@ public class PopupMenu {
         Window window = minecraft.getWindow();
         double w = window.getGuiScaledWidth();
         double h = window.getGuiScaledHeight();
-        double s = Math.max(Math.min(window.getHeight() * 0.035 / vec.w * (1 / window.getGuiScale()), 16), 1);
+        double s = Math.max(Math.min(window.getHeight() * 0.035 / vec.w * (1 / window.getGuiScale()), 6), 1);
 
         stack.translate((vec.x + 1) / 2 * w, (vec.y + 1) / 2 * h, -100);
         stack.scale((float) (s * 0.75), (float) (s * 0.75), 1);
