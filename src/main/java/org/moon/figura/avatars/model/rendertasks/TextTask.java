@@ -28,7 +28,7 @@ import java.util.List;
 public class TextTask extends RenderTask {
 
     private List<Component> text;
-    private boolean centred = false;
+    private boolean centered = false;
     private boolean shadow = false;
     private boolean outline = false;
     private FiguraVec3 outlineColor;
@@ -48,7 +48,7 @@ public class TextTask extends RenderTask {
 
         for (int i = 0; i < text.size(); i++) {
             Component text = this.text.get(i);
-            int x = centred ? -font.width(text) / 2 : 0;
+            int x = centered ? -font.width(text) / 2 : 0;
             int y = i * font.lineHeight;
 
             if (outline) {
@@ -89,13 +89,13 @@ public class TextTask extends RenderTask {
             overloads = {
                     @LuaFunctionOverload(
                             argumentTypes = Boolean.class,
-                            argumentNames = "centred"
+                            argumentNames = "centered"
                     )
             },
-            description = "text_task.centred"
+            description = "text_task.centered"
     )
-    public RenderTask centred(@LuaNotNil Boolean centred) {
-        this.centred = centred;
+    public RenderTask centered(@LuaNotNil Boolean centered) {
+        this.centered = centered;
         return this;
     }
 
