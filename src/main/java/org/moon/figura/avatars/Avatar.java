@@ -320,7 +320,7 @@ public class Avatar {
         if (!scriptError && luaRuntime != null) {
             try {
                 Varargs result = luaRuntime.events.CHAT_SEND_MESSAGE.pipedCall(LuaString.valueOf(message));
-                if ((boolean) Config.CHAT_MESSAGES.value) {
+                if (Config.CHAT_MESSAGES.asBool()) {
                     LuaValue value = result.arg(1);
                     return value.isnil() ? null : value.tojstring();
                 }
@@ -418,7 +418,7 @@ public class Avatar {
         remainingComplexity = trust.get(TrustContainer.Trust.COMPLEXITY);
 
         PartFilterScheme filter = arm == playerRenderer.getModel().leftArm ? PartFilterScheme.LEFT_ARM : PartFilterScheme.RIGHT_ARM;
-        boolean config = (boolean) Config.ALLOW_FP_HANDS.value;
+        boolean config = Config.ALLOW_FP_HANDS.asBool();
         renderer.allowHiddenTransforms = config;
 
         stack.pushPose();

@@ -31,7 +31,7 @@ public class PauseScreenMixin extends Screen {
     void createPauseMenu(CallbackInfo ci) {
         int x, y;
 
-        int config = (int) Config.BUTTON_LOCATION.value;
+        int config = Config.BUTTON_LOCATION.asInt();
         switch (config) {
             case 1 -> { //top left
                 x = 5;

@@ -46,7 +46,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
     @Inject(method = "renderNameTag(Lnet/minecraft/client/player/AbstractClientPlayer;Lnet/minecraft/network/chat/Component;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", at = @At("HEAD"), cancellable = true)
     private void renderFiguraLabelIfPresent(AbstractClientPlayer player, Component text, PoseStack stack, MultiBufferSource multiBufferSource, int light, CallbackInfo ci) {
         //config
-        int config = (int) Config.ENTITY_NAMEPLATE.value;
+        int config = Config.ENTITY_NAMEPLATE.asInt();
 
         //get metadata
         Avatar avatar = AvatarManager.getAvatarForPlayer(player.getUUID());

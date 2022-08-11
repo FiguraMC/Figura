@@ -174,7 +174,7 @@ public class AvatarManager {
         FETCHED_AVATARS.add(id);
 
         //egg
-        if (FiguraMod.CHEESE_DAY && (boolean) Config.EASTER_EGGS.value && LocalAvatarLoader.cheese != null) {
+        if (FiguraMod.CHEESE_DAY && Config.EASTER_EGGS.asBool() && LocalAvatarLoader.cheese != null) {
             setAvatar(id, LocalAvatarLoader.cheese);
             return;
         }

@@ -14,16 +14,16 @@ public class PaperDoll {
         Minecraft minecraft = Minecraft.getInstance();
         Player player = minecraft.player;
 
-        if (!(boolean) Config.HAS_PAPERDOLL.value ||
+        if (!Config.HAS_PAPERDOLL.asBool() ||
                 player == null ||
                 !Minecraft.renderNames() ||
                 minecraft.options.renderDebug ||
-                ((boolean) Config.FIRST_PERSON_PAPERDOLL.value && !minecraft.options.getCameraType().isFirstPerson()) ||
+                (Config.FIRST_PERSON_PAPERDOLL.asBool() && !minecraft.options.getCameraType().isFirstPerson()) ||
                 player.isSleeping())
             return;
 
         //check if should stay always on
-        if (!(boolean) Config.PAPERDOLL_ALWAYS_ON.value) {
+        if (!Config.PAPERDOLL_ALWAYS_ON.asBool()) {
             //if action - reset activity time and enable can draw
             if (player.isSprinting() ||
                     player.isCrouching() ||
@@ -45,16 +45,16 @@ public class PaperDoll {
         float screenHeight = Minecraft.getInstance().getWindow().getHeight();
         float guiScale = (float) Minecraft.getInstance().getWindow().getGuiScale();
 
-        float scale = (float) Config.PAPERDOLL_SCALE.value;
+        float scale = Config.PAPERDOLL_SCALE.asFloat();
         float x = scale * 25f;
         float y = scale * 45f;
-        x += ((float) Config.PAPERDOLL_X.value / 100f) * screenWidth / guiScale;
-        y += ((float) Config.PAPERDOLL_Y.value / 100f) * screenHeight / guiScale;
+        x += (Config.PAPERDOLL_X.asFloat() / 100f) * screenWidth / guiScale;
+        y += (Config.PAPERDOLL_Y.asFloat() / 100f) * screenHeight / guiScale;
 
         UIHelper.drawEntity(
                 x, y,
                 scale * 30f,
-                (float) Config.PAPERDOLL_PITCH.value, (float) Config.PAPERDOLL_YAW.value,
+                Config.PAPERDOLL_PITCH.asFloat(), Config.PAPERDOLL_YAW.asFloat(),
                 player, stack, true
         );
     }

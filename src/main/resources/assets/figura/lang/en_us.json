@@ -79,7 +79,8 @@
   "figura.gui.authors": "Authors",
   "figura.gui.size": "Size",
   "figura.gui.complexity": "Complexity",
-  "figura.gui.back": "Back",
+  "figura.gui.done": "Done",
+  "figura.gui.apply": "Apply",
   "figura.gui.cancel": "Cancel",
   "figura.gui.expand": "Expand",
   "figura.gui.minimise": "Minimise",
@@ -208,6 +209,23 @@
 
   "figura.config.action_wheel_decorations": "Item Decorations",
   "figura.config.action_wheel_decorations.tooltip": "Toggle the rendering of the item decorations, like the damage bar and the item count",
+
+  "figura.config.ui": "UI Settings",
+  "figura.config.ui.tooltip": "UI Settings",
+
+  "figura.config.background_scroll_speed": "Background Scroll Speed",
+  "figura.config.background_scroll_speed.tooltip": "Multiplier for scroll speed of the animated background.",
+
+  "figura.config.popup_scale": "Player Popup Scale",
+  "figura.config.popup_scale.tooltip": "Scale multiplier for the player popup",
+
+  "figura.config.popup_min_size": "Player Popup Min Size",
+  "figura.config.popup_min_size.tooltip": "Minimum size of player popup as you get farther from the person",
+
+  "figura.config.popup_max_size": "Player Popup Max Size",
+  "figura.config.popup_max_size.tooltip": "Maximum size of player popup as you get closer to the person",
+
+
 
   "figura.config.paperdoll": "Paperdoll",
   "figura.config.paperdoll.tooltip": "Paperdoll settings",

@@ -44,7 +44,7 @@ public class FiguraLuaPrinter {
                 .append(message instanceof Component c ? c : Component.literal(message.toString()))
                 .append(Component.literal("\n"));
 
-        if ((int) Config.LOG_LOCATION.value == 0)
+        if (Config.LOG_LOCATION.asInt() == 0)
             sendLuaChatMessage(component);
         else
             FiguraMod.LOGGER.info(component.getString());
@@ -52,7 +52,7 @@ public class FiguraLuaPrinter {
 
     //print an error, errors should always show up on chat
     public static void sendLuaError(Exception error, String name, UUID owner) {
-        if (!(boolean) Config.LOG_OTHERS.value && !FiguraMod.isLocal(owner))
+        if (!Config.LOG_OTHERS.asBool() && !FiguraMod.isLocal(owner))
             return;
 
         //Jank as hell
@@ -75,7 +75,7 @@ public class FiguraLuaPrinter {
 
     //print an ping!
     public static void sendPingMessage(Avatar owner, String ping, int size, Varargs args) {
-        int config = (int) Config.LOG_PINGS.value;
+        int config = Config.LOG_PINGS.asInt();
 
         //no ping? *megamind.png*
         if (config == 0)
@@ -105,7 +105,7 @@ public class FiguraLuaPrinter {
     private static final Function<FiguraLuaRuntime, LuaValue> PRINT_FUNCTION = runtime -> new VarArgFunction() {
         @Override
         public Varargs invoke(Varargs args) {
-            if (!(boolean) Config.LOG_OTHERS.value && !FiguraMod.isLocal(runtime.owner.owner))
+            if (!Config.LOG_OTHERS.asBool() && !FiguraMod.isLocal(runtime.owner.owner))
                 return NIL;
 
             MutableComponent text = Component.empty();
@@ -122,7 +122,7 @@ public class FiguraLuaPrinter {
     private static final Function<FiguraLuaRuntime, LuaValue> PRINT_JSON_FUNCTION = runtime -> new VarArgFunction() {
         @Override
         public Varargs invoke(Varargs args) {
-            if (!(boolean) Config.LOG_OTHERS.value && !FiguraMod.isLocal(runtime.owner.owner))
+            if (!Config.LOG_OTHERS.asBool() && !FiguraMod.isLocal(runtime.owner.owner))
                 return NIL;
 
             MutableComponent text = Component.empty();
@@ -138,7 +138,7 @@ public class FiguraLuaPrinter {
     private static final Function<FiguraLuaRuntime, LuaValue> PRINT_TABLE_FUNCTION = runtime -> new VarArgFunction() {
         @Override
         public Varargs invoke(Varargs args) {
-            if (!(boolean) Config.LOG_OTHERS.value && !FiguraMod.isLocal(runtime.owner.owner))
+            if (!Config.LOG_OTHERS.asBool() && !FiguraMod.isLocal(runtime.owner.owner))
                 return NIL;
 
             MutableComponent text = Component.empty();

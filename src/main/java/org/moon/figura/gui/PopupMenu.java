@@ -12,6 +12,7 @@ import net.minecraft.world.entity.Entity;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
+import org.moon.figura.config.Config;
 import org.moon.figura.lua.api.nameplate.Badges;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec4;
@@ -85,7 +86,7 @@ public class PopupMenu {
         Window window = minecraft.getWindow();
         double w = window.getGuiScaledWidth();
         double h = window.getGuiScaledHeight();
-        double s = Math.max(Math.min(window.getHeight() * 0.035 / vec.w * (1 / window.getGuiScale()), 6), 1);
+        double s = Config.POPUP_SCALE.asFloat() * Math.max(Math.min(window.getHeight() * 0.035 / vec.w * (1 / window.getGuiScale()), Config.POPUP_MAX_SIZE.asFloat()), Config.POPUP_MIN_SIZE.asFloat());
 
         stack.translate((vec.x + 1) / 2 * w, (vec.y + 1) / 2 * h, -100);
         stack.scale((float) (s * 0.75), (float) (s * 0.75), 1);

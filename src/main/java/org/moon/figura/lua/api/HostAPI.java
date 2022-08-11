@@ -148,7 +148,7 @@ public class HostAPI {
             description = "host.send_chat_message"
     )
     public void sendChatMessage(@LuaNotNil String text) {
-        if (!isHost() || !(boolean) Config.CHAT_MESSAGES.value) return;
+        if (!isHost() || !Config.CHAT_MESSAGES.asBool()) return;
         LocalPlayer player = Minecraft.getInstance().player;
         if (player != null) {
             if (text.startsWith("/")) {
@@ -241,7 +241,7 @@ public class HostAPI {
             description = "host.set_chat_text"
     )
     public void setChatText(@LuaNotNil String text) {
-        if (isHost() && (boolean) Config.CHAT_MESSAGES.value && Minecraft.getInstance().screen instanceof ChatScreen chat)
+        if (isHost() && Config.CHAT_MESSAGES.asBool() && Minecraft.getInstance().screen instanceof ChatScreen chat)
             ((ChatScreenAccessor) chat).getInput().setValue(text);
     }
 

@@ -47,7 +47,7 @@ public class Badges {
             badges.append(Default.ERROR.badge);
 
             //easter egg
-        else if (FiguraMod.CHEESE_DAY && (boolean) Config.EASTER_EGGS.value)
+        else if (FiguraMod.CHEESE_DAY && Config.EASTER_EGGS.asBool())
             badges.append(Default.CHEESE.badge);
 
             //mark

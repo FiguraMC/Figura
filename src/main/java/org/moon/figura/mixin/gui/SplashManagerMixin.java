@@ -13,7 +13,7 @@ public class SplashManagerMixin {
 
     @Inject(at = @At("HEAD"), method = "getSplash", cancellable = true)
     public void init(CallbackInfoReturnable<String> cir) {
-        if (!(boolean) Config.EASTER_EGGS.value)
+        if (!Config.EASTER_EGGS.asBool())
             return;
 
         if (FiguraMod.CHEESE_DAY) {

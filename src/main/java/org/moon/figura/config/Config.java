@@ -65,6 +65,12 @@ public enum Config {
     ACTION_WHEEL_TITLE(0, 5),
     ACTION_WHEEL_DECORATIONS(true),
 
+    UI,
+    BACKGROUND_SCROLL_SPEED(1f, InputType.FLOAT),
+    POPUP_SCALE(1f, InputType.FLOAT),
+    POPUP_MIN_SIZE(1f, InputType.FLOAT),
+    POPUP_MAX_SIZE(6f, InputType.FLOAT),
+
     Paperdoll,
     HAS_PAPERDOLL(false),
     PAPERDOLL_ALWAYS_ON(false),
@@ -131,6 +137,7 @@ public enum Config {
 
     /**
      * do not edit below this line :p
+     * why not ? lol
      */
 
 
@@ -236,6 +243,22 @@ public enum Config {
         ENUM,
         INPUT,
         KEYBIND
+    }
+
+    public float asFloat() {
+        return (float) value;
+    }
+
+    public int asInt() {
+        return (int) value;
+    }
+
+    public boolean asBool() {
+        return (boolean) value;
+    }
+
+    public String asString() {
+        return (String) value;
     }
 
     public enum InputType {

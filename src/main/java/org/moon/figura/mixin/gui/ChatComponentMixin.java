@@ -38,7 +38,7 @@ public class ChatComponentMixin {
     @ModifyVariable(at = @At("HEAD"), method = "addMessage(Lnet/minecraft/network/chat/Component;IIZ)V", argsOnly = true)
     private Component addMessageName(Component message) {
         //get config
-        int config = (int) Config.CHAT_NAMEPLATE.value;
+        int config = Config.CHAT_NAMEPLATE.asInt();
 
         if (config == 0 || this.minecraft.player == null)
             return message;

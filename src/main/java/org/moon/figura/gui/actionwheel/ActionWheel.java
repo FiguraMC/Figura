@@ -46,7 +46,7 @@ public class ActionWheel {
         stack.pushPose();
         stack.translate(x, y, 0d);
 
-        scale = (float) Config.ACTION_WHEEL_SCALE.value;
+        scale = Config.ACTION_WHEEL_SCALE.asFloat();
         stack.scale(scale, scale, scale);
 
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
@@ -197,7 +197,7 @@ public class ActionWheel {
             stack.scale(scale, scale, scale);
 
             minecraft.getItemRenderer().renderGuiItem(item, -8, -8);
-            if ((boolean) Config.ACTION_WHEEL_DECORATIONS.value)
+            if (Config.ACTION_WHEEL_DECORATIONS.asBool())
                 minecraft.getItemRenderer().renderGuiItemDecorations(minecraft.font, item, -8, -8);
 
             stack.popPose();
@@ -217,7 +217,7 @@ public class ActionWheel {
 
         //pos
         double yOff;
-        int config = (int) Config.ACTION_WHEEL_TITLE.value;
+        int config = Config.ACTION_WHEEL_TITLE.asInt();
         switch (config) {
             case 2 -> yOff = Math.max(y - 64 * scale - 4 - height, 4); // top
             case 3 -> yOff = y - height / 2f; // middle

@@ -106,7 +106,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         }
 
         //Set shouldRenderPivots
-        int config = (int) Config.RENDER_DEBUG_PARTS_PIVOT.value;
+        int config = Config.RENDER_DEBUG_PARTS_PIVOT.asInt();
         shouldRenderPivots = !Minecraft.getInstance().getEntityRenderDispatcher().shouldRenderHitBoxes() ? 0 : config;
 
         //Free customization after use

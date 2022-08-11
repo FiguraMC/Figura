@@ -69,7 +69,7 @@ public class FiguraToast implements Toast {
         Component text = title instanceof Component t ? t : Component.translatable(title.toString());
         Component text2 = message instanceof Component m ? m : Component.translatable(message.toString());
 
-        if (type == ToastType.DEFAULT && (boolean) Config.EASTER_EGGS.value) {
+        if (type == ToastType.DEFAULT && Config.EASTER_EGGS.asBool()) {
             if (FiguraMod.CHEESE_DAY || Math.random() < 0.0001)
                 type = ToastType.CHEESE;
             else if (FiguraMod.DATE.getDayOfMonth() == 21 && FiguraMod.DATE.getMonthValue() == 9)

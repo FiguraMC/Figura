@@ -208,12 +208,19 @@ public class UIHelper extends GuiComponent {
     }
 
     public static void renderAnimatedBackground(ResourceLocation texture, double x, double y, float width, float height, float textureWidth, float textureHeight, double speed, float delta) {
-        double d = FiguraMod.ticks / speed;
-        x -= d % textureWidth + delta;
-        y -= d % textureHeight + delta;
+        if (speed != 0) {
+            double d = (FiguraMod.ticks + delta) / speed;
+            x -= d % textureWidth;
+            y -= d % textureHeight;
+        }
 
         width += textureWidth;
         height += textureHeight;
+
+        if (speed < 0) {
+            x -= textureWidth;
+            y -= textureHeight;
+        }
 
         renderBackgroundTexture(texture, x, y, width, height, textureWidth, textureHeight);
     }

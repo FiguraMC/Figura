@@ -121,10 +121,10 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
     @Inject(method = "shouldShowName(Lnet/minecraft/world/entity/LivingEntity;)Z", at = @At("HEAD"), cancellable = true)
     public void shouldShowName(T livingEntity, CallbackInfoReturnable<Boolean> cir) {
         if (UIHelper.forceNameplate)
-            cir.setReturnValue((boolean) Config.PREVIEW_NAMEPLATE.value);
+            cir.setReturnValue(Config.PREVIEW_NAMEPLATE.asBool());
         else if (!Minecraft.renderNames())
             cir.setReturnValue(false);
-        else if ((boolean) Config.SELF_NAMEPLATE.value && livingEntity == Minecraft.getInstance().player)
+        else if (Config.SELF_NAMEPLATE.asBool() && livingEntity == Minecraft.getInstance().player)
             cir.setReturnValue(true);
     }
 }

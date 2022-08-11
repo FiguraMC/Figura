@@ -24,7 +24,7 @@ public class PlayerTabOverlayMixin {
     @Inject(at = @At("RETURN"), method = "getNameForDisplay", cancellable = true)
     private void getPlayerName(PlayerInfo playerInfo, CallbackInfoReturnable<Component> cir) {
         //get config
-        int config = (int) Config.LIST_NAMEPLATE.value;
+        int config = Config.LIST_NAMEPLATE.asInt();
         if (config == 0)
             return;
 
