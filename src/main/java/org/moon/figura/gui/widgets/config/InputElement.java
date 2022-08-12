@@ -88,12 +88,6 @@ public class InputElement extends AbstractConfigElement {
         super.setPos(x, y);
     }
 
-    @Override
-    public void update() {
-        super.update();
-        updateTextFieldText(formatText(config.tempValue));
-    }
-
     public TextField getTextField() {
         return textField;
     }

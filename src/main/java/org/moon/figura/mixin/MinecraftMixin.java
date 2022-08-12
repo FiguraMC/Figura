@@ -52,6 +52,11 @@ public abstract class MinecraftMixin {
         if (AvatarManager.panic)
             return;
 
+        if (Config.RELOAD_BUTTON.keyBind.consumeClick()) {
+            AvatarManager.reloadAvatar(FiguraMod.getLocalPlayerUUID());
+            FiguraToast.sendToast(FiguraText.of("toast.reload"));
+        }
+
         if (Config.ACTION_WHEEL_BUTTON.keyBind.isDown()) {
             ActionWheel.setEnabled(true);
             this.mouseHandler.releaseMouse();

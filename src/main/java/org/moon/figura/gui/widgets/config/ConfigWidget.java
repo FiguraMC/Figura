@@ -3,6 +3,7 @@ package org.moon.figura.gui.widgets.config;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.network.chat.Component;
 import org.moon.figura.config.Config;
+import org.moon.figura.gui.screens.ConfigScreen;
 import org.moon.figura.gui.widgets.AbstractContainerElement;
 import org.moon.figura.gui.widgets.ContainerButton;
 import org.moon.figura.gui.widgets.lists.ConfigList;
@@ -17,16 +18,19 @@ public class ConfigWidget extends AbstractContainerElement {
     private final ConfigList parent;
     private ContainerButton parentConfig;
 
-    public ConfigWidget(int width, Component name, Component tooltip, ConfigList parent) {
+    public ConfigWidget(int width, Config config, ConfigList parent) {
         super(0, 0, width, 20);
         this.parent = parent;
 
-        this.parentConfig = new ContainerButton(parent, x, y, width, 20, name, tooltip, button -> {
-            setShowChildren(this.parentConfig.isToggled());
+        this.parentConfig = new ContainerButton(parent, x, y, width, 20, config == null ? Component.empty() : config.name, config == null ? null : config.tooltip, button -> {
+            boolean toggled = this.parentConfig.isToggled();
+            setShowChildren(toggled);
+            ConfigScreen.CATEGORY_DATA.put(config, toggled);
             parent.updateScroll();
         });
 
-        this.parentConfig.setToggled(true);
+        Boolean expanded = ConfigScreen.CATEGORY_DATA.get(config);
+        this.parentConfig.setToggled(expanded == null || expanded);
         this.parentConfig.shouldHaveBackground(false);
         children.add(this.parentConfig);
     }
@@ -74,18 +78,12 @@ public class ConfigWidget extends AbstractContainerElement {
     }
 
     public void setShowChildren(boolean bool) {
-        boolean toggle = bool && this.parentConfig.isToggled();
-
+        this.parentConfig.setToggled(bool);
         for (AbstractConfigElement element : entries)
-            element.setVisible(toggle);
+            element.setVisible(bool);
     }
 
     public boolean isShowingChildren() {
         return parentConfig.isToggled();
-    }
-
-    public void update() {
-        for (AbstractConfigElement entry : entries)
-            entry.update();
     }
 }

@@ -40,13 +40,13 @@ public class PopupMenu {
             }),
             Pair.of(FiguraText.of("popup_menu.increase_trust"), id -> {
                 TrustContainer trust = TrustManager.get(id);
-                TrustManager.increaseTrust(trust);
-                FiguraToast.sendToast(FiguraText.of("toast.trust_change"), trust.getGroupName());
+                if (TrustManager.increaseTrust(trust))
+                    FiguraToast.sendToast(FiguraText.of("toast.trust_change"), trust.getGroupName());
             }),
             Pair.of(FiguraText.of("popup_menu.decrease_trust"), id -> {
                 TrustContainer trust = TrustManager.get(id);
-                TrustManager.decreaseTrust(trust);
-                FiguraToast.sendToast(FiguraText.of("toast.trust_change"), trust.getGroupName());
+                if (TrustManager.decreaseTrust(trust))
+                    FiguraToast.sendToast(FiguraText.of("toast.trust_change"), trust.getGroupName());
             })
     );
     private static final int LENGTH = BUTTONS.size();

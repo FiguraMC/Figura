@@ -1,14 +1,19 @@
 package org.moon.figura.utils;
 
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtIo;
 import org.moon.figura.FiguraMod;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class IOUtils {
 
@@ -41,6 +46,45 @@ public class IOUtils {
         } catch (IOException e) {
             FiguraMod.LOGGER.error("Failed to read File: " + file);
             throw e;
+        }
+    }
+
+    public static void readCacheFile(String name, Consumer<CompoundTag> consumer) {
+        try {
+            //get file
+            Path path = FiguraMod.getCacheDirectory().resolve(name + ".nbt");
+
+            if (!Files.exists(path))
+                return;
+
+            //read file
+            FileInputStream fis = new FileInputStream(path.toFile());
+            CompoundTag nbt = NbtIo.readCompressed(fis);
+            consumer.accept(nbt);
+            fis.close();
+        } catch (Exception e) {
+            FiguraMod.LOGGER.error("", e);
+        }
+    }
+
+    public static void saveCacheFile(String name, Consumer<CompoundTag> consumer) {
+        try {
+            //get nbt
+            CompoundTag nbt = new CompoundTag();
+            consumer.accept(nbt);
+
+            //create file
+            Path path = FiguraMod.getCacheDirectory().resolve(name + ".nbt");
+
+            if (!Files.exists(path))
+                Files.createFile(path);
+
+            //write file
+            FileOutputStream fs = new FileOutputStream(path.toFile());
+            NbtIo.writeCompressed(nbt, fs);
+            fs.close();
+        } catch (Exception e) {
+            FiguraMod.LOGGER.error("", e);
         }
     }
 }

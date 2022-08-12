@@ -3,17 +3,17 @@ package org.moon.figura.trust;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import net.minecraft.nbt.*;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.IntTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.FiguraMod;
+import org.moon.figura.utils.IOUtils;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -30,7 +30,7 @@ public class TrustManager {
     public static void init() {
         //load from presets file first then load from disk
         loadDefaultGroups();
-        loadFromDisk();
+        IOUtils.readCacheFile("trust_settings", TrustManager::readNbt);
     }
 
     //load default groups from preset file
@@ -67,77 +67,8 @@ public class TrustManager {
         }
     }
 
-    //load all saved trust from disk
-    public static void loadFromDisk() {
-        try {
-            //get file
-            Path targetPath = FiguraMod.getCacheDirectory().resolve("trust_settings.nbt");
-
-            if (!Files.exists(targetPath))
-                return;
-
-            //read file
-            FileInputStream fis = new FileInputStream(targetPath.toFile());
-            CompoundTag getTag = NbtIo.readCompressed(fis);
-            readNbt(getTag);
-            fis.close();
-        } catch (Exception e) {
-            FiguraMod.LOGGER.error("", e);
-        }
-    }
-
-    //saves a copy of trust to disk
-    public static void saveToDisk() {
-        try {
-            //get nbt
-            CompoundTag targetTag = new CompoundTag();
-            writeNbt(targetTag);
-
-            //create file
-            Path targetPath = FiguraMod.getCacheDirectory().resolve("trust_settings.nbt");
-
-            if (!Files.exists(targetPath))
-                Files.createFile(targetPath);
-
-            //write file
-            FileOutputStream fs = new FileOutputStream(targetPath.toFile());
-            NbtIo.writeCompressed(targetTag, fs);
-            fs.close();
-        } catch (Exception e) {
-            FiguraMod.LOGGER.error("", e);
-        }
-    }
-
-    //write trust to nbt
-    public static void writeNbt(CompoundTag nbt) {
-        //create dummy lists for later
-        ListTag groupList = new ListTag();
-        ListTag playerList = new ListTag();
-
-        //get groups nbt
-        for (Map.Entry<ResourceLocation, TrustContainer> entry : GROUPS.entrySet()) {
-            CompoundTag container = new CompoundTag();
-            entry.getValue().writeNbt(container);
-            groupList.add(container);
-        }
-
-        //get players nbt
-        for (Map.Entry<ResourceLocation, TrustContainer> entry : PLAYERS.entrySet()) {
-            TrustContainer trust = entry.getValue();
-            if (!isLocal(trust) && isTrustChanged(trust)) {
-                CompoundTag container = new CompoundTag();
-                trust.writeNbt(container);
-                playerList.add(container);
-            }
-        }
-
-        //add lists to nbt
-        nbt.put("groups", groupList);
-        nbt.put("players", playerList);
-    }
-
     //read trust from nbt, adding them into the hash maps
-    public static void readNbt(CompoundTag nbt) {
+    private static void readNbt(CompoundTag nbt) {
         //get nbt lists
         ListTag groupList = nbt.getList("groups", Tag.TAG_COMPOUND);
         ListTag playerList = nbt.getList("players", Tag.TAG_COMPOUND);
@@ -170,6 +101,36 @@ public class TrustManager {
             //add to list
             PLAYERS.put(new ResourceLocation("player", name), container);
         }
+    }
+
+    //saves a copy of trust to disk
+    public static void saveToDisk() {
+        IOUtils.saveCacheFile("trust_settings", nbt -> {
+            //create dummy lists for later
+            ListTag groupList = new ListTag();
+            ListTag playerList = new ListTag();
+
+            //get groups nbt
+            for (Map.Entry<ResourceLocation, TrustContainer> entry : GROUPS.entrySet()) {
+                CompoundTag container = new CompoundTag();
+                entry.getValue().writeNbt(container);
+                groupList.add(container);
+            }
+
+            //get players nbt
+            for (Map.Entry<ResourceLocation, TrustContainer> entry : PLAYERS.entrySet()) {
+                TrustContainer trust = entry.getValue();
+                if (!isLocal(trust) && isTrustChanged(trust)) {
+                    CompoundTag container = new CompoundTag();
+                    trust.writeNbt(container);
+                    playerList.add(container);
+                }
+            }
+
+            //add lists to nbt
+            nbt.put("groups", groupList);
+            nbt.put("players", playerList);
+        });
     }
 
     //get trust from id

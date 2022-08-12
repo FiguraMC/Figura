@@ -48,7 +48,7 @@ public class MouseHandlerMixin {
         if (ActionWheel.isEnabled()) {
             ActionWheel.scroll(scroll);
             ci.cancel();
-        } else if (PopupMenu.isEnabled()) {
+        } else if (PopupMenu.isEnabled() && PopupMenu.hasEntity()) {
             PopupMenu.scroll(scroll);
             ci.cancel();
         }

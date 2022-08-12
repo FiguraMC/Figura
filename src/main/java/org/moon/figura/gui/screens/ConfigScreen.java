@@ -3,16 +3,26 @@ package org.moon.figura.gui.screens;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import org.moon.figura.config.Config;
 import org.moon.figura.config.ConfigManager;
 import org.moon.figura.gui.widgets.Label;
 import org.moon.figura.gui.widgets.TexturedButton;
 import org.moon.figura.gui.widgets.lists.ConfigList;
 import org.moon.figura.utils.FiguraText;
+import org.moon.figura.utils.IOUtils;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class ConfigScreen extends AbstractPanelScreen {
 
     public static final Component TITLE = FiguraText.of("gui.panels.title.settings");
+
+    public static final Map<Config, Boolean> CATEGORY_DATA = new HashMap<>();
 
     private ConfigList list;
     private final boolean hasPanels;
@@ -29,6 +39,7 @@ public class ConfigScreen extends AbstractPanelScreen {
     @Override
     protected void init() {
         super.init();
+        loadNbt();
 
         if (!hasPanels) {
             this.removeWidget(panels);
@@ -40,15 +51,13 @@ public class ConfigScreen extends AbstractPanelScreen {
         //cancel
         this.addRenderableWidget(new TexturedButton(width / 2 - 122, height - 24, 120, 20, FiguraText.of("gui.cancel"), null, button -> {
             ConfigManager.discardConfig();
-            this.minecraft.setScreen(parentScreen);
+            list.updateList();
         }));
 
         //done
-        addRenderableWidget(new TexturedButton(width / 2 + 4, height - 24, 120, 20, FiguraText.of("gui.done"), null, button -> {
-            ConfigManager.applyConfig();
-            ConfigManager.saveConfig();
-            this.minecraft.setScreen(parentScreen);
-        }));
+        addRenderableWidget(new TexturedButton(width / 2 + 4, height - 24, 120, 20, FiguraText.of("gui.done"), null,
+                button -> this.minecraft.setScreen(parentScreen)
+        ));
 
         // -- config list -- //
 
@@ -60,6 +69,7 @@ public class ConfigScreen extends AbstractPanelScreen {
     public void removed() {
         ConfigManager.applyConfig();
         ConfigManager.saveConfig();
+        saveNbt();
         super.removed();
     }
 
@@ -87,5 +97,33 @@ public class ConfigScreen extends AbstractPanelScreen {
         } else {
             return super.keyPressed(keyCode, scanCode, modifiers);
         }
+    }
+
+    private void loadNbt() {
+        IOUtils.readCacheFile("settings", nbt -> {
+            ListTag groupList = nbt.getList("settings", Tag.TAG_COMPOUND);
+            for (Tag tag : groupList) {
+                CompoundTag compound = (CompoundTag) tag;
+
+                String config = compound.getString("config");
+                boolean expanded = compound.getBoolean("expanded");
+                CATEGORY_DATA.put(Config.valueOf(config), expanded);
+            }
+        });
+    }
+
+    private void saveNbt() {
+        IOUtils.saveCacheFile("settings", nbt -> {
+            ListTag list = new ListTag();
+
+            for (Map.Entry<Config, Boolean> entry : CATEGORY_DATA.entrySet()) {
+                CompoundTag compound = new CompoundTag();
+                compound.putString("config", entry.getKey().name());
+                compound.putBoolean("expanded", entry.getValue());
+                list.add(compound);
+            }
+
+            nbt.put("settings", list);
+        });
     }
 }

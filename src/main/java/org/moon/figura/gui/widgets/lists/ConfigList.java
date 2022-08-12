@@ -4,7 +4,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.components.events.GuiEventListener;
-import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import org.moon.figura.config.Config;
 import org.moon.figura.gui.widgets.config.ConfigWidget;
@@ -23,7 +22,7 @@ public class ConfigList extends AbstractList {
 
     public ConfigList(int x, int y, int width, int height) {
         super(x, y, width, height);
-        initList();
+        updateList();
     }
 
     @Override
@@ -69,12 +68,11 @@ public class ConfigList extends AbstractList {
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
-    public void initList() {
+    public void updateList() {
         //clear old widgets
-        configs.forEach(children::remove);
-
-        //temp list
-        List<ConfigWidget> temp = new ArrayList<>();
+        for (ConfigWidget config : configs)
+            children.remove(config);
+        configs.clear();
 
         //add configs
         ConfigWidget lastCategory = null;
@@ -83,10 +81,10 @@ public class ConfigList extends AbstractList {
             if (config.type != Config.ConfigType.CATEGORY) {
                 //create dummy category if empty
                 if (lastCategory == null) {
-                    ConfigWidget widget = new ConfigWidget(width - 22, Component.empty(), null, this);
+                    ConfigWidget widget = new ConfigWidget(width - 22, null, this);
 
                     lastCategory = widget;
-                    temp.add(widget);
+                    configs.add(widget);
                     children.add(widget);
                 }
 
@@ -94,23 +92,17 @@ public class ConfigList extends AbstractList {
                 lastCategory.addConfig(config);
             //add new config category
             } else {
-                ConfigWidget widget = new ConfigWidget(width - 22, config.name, config.tooltip, this);
+                ConfigWidget widget = new ConfigWidget(width - 22, config, this);
 
                 lastCategory = widget;
-                temp.add(widget);
+                configs.add(widget);
                 children.add(widget);
             }
         }
 
         //fix expanded status
-        if (!configs.isEmpty()) {
-            for (int i = 0; i < configs.size(); i++)
-                temp.get(i).setShowChildren(configs.get(i).isShowingChildren());
-        }
-
-        //add configs
-        configs.clear();
-        configs.addAll(temp);
+        for (ConfigWidget config : configs)
+            config.setShowChildren(config.isShowingChildren());
     }
 
     public void updateScroll() {
@@ -124,10 +116,5 @@ public class ConfigList extends AbstractList {
 
         //set new scroll percentage
         scrollBar.setScrollProgress(pastScroll / (totalHeight - height));
-    }
-
-    public void updateList() {
-        for (ConfigWidget config : configs)
-            config.update();
     }
 }

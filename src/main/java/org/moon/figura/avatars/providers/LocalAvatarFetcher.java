@@ -2,7 +2,6 @@ package org.moon.figura.avatars.providers;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.Tag;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.gui.cards.CardBackground;
@@ -10,8 +9,6 @@ import org.moon.figura.parsers.AvatarMetadataParser;
 import org.moon.figura.utils.IOUtils;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -53,17 +50,7 @@ public class LocalAvatarFetcher {
      * the folder data contains information about the avatar folders
      */
     public static void init() {
-        try {
-            //get file
-            Path targetPath = FiguraMod.getCacheDirectory().resolve("folders.nbt");
-
-            if (!Files.exists(targetPath))
-                return;
-
-            //read file
-            FileInputStream fis = new FileInputStream(targetPath.toFile());
-            CompoundTag nbt = NbtIo.readCompressed(fis);
-
+        IOUtils.readCacheFile("folders", nbt -> {
             //loading
             ListTag groupList = nbt.getList("folders", Tag.TAG_COMPOUND);
             for (Tag tag : groupList) {
@@ -73,20 +60,14 @@ public class LocalAvatarFetcher {
                 boolean expanded = compound.getBoolean("expanded");
                 FOLDER_DATA.put(path, expanded);
             }
-
-            fis.close();
-        } catch (Exception e) {
-            FiguraMod.LOGGER.error("", e);
-        }
+        });
     }
 
     /**
      * Saves the folder data to disk
      */
     public static void save() {
-        try {
-            //get nbt
-            CompoundTag nbt = new CompoundTag();
+        IOUtils.readCacheFile("folders", nbt -> {
             ListTag list = new ListTag();
 
             for (Map.Entry<String, Boolean> entry : FOLDER_DATA.entrySet()) {
@@ -97,20 +78,7 @@ public class LocalAvatarFetcher {
             }
 
             nbt.put("folders", list);
-
-            //create file
-            Path targetPath = FiguraMod.getCacheDirectory().resolve("folders.nbt");
-
-            if (!Files.exists(targetPath))
-                Files.createFile(targetPath);
-
-            //write file
-            FileOutputStream fs = new FileOutputStream(targetPath.toFile());
-            NbtIo.writeCompressed(nbt, fs);
-            fs.close();
-        } catch (Exception e) {
-            FiguraMod.LOGGER.error("", e);
-        }
+        });
     }
 
     /**

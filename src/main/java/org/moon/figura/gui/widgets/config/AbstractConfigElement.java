@@ -74,10 +74,6 @@ public abstract class AbstractConfigElement extends AbstractContainerElement {
         return hovered;
     }
 
-    public void update() {
-        this.initValue = config.value;
-    }
-
     protected static class ParentedButton extends TexturedButton {
 
         private final AbstractConfigElement parent;
