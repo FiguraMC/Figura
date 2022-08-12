@@ -1,12 +1,14 @@
 package org.moon.figura.avatars.model.rendering.texture;
 
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import org.luaj.vm2.LuaError;
-import org.moon.figura.avatars.Avatar;
 import org.moon.figura.mixin.render.layers.elytra.ElytraLayerAccessor;
+
+import java.util.UUID;
 
 public class FiguraTextureSet {
 
@@ -51,7 +53,9 @@ public class FiguraTextureSet {
             return -1;
     }
 
-    public static ResourceLocation getOverrideTexture(Avatar owner, String type, String path) {
+    public static ResourceLocation getOverrideTexture(UUID owner, Pair<String, String> pair) {
+        String type = pair.getFirst();
+
         if (type == null)
             return null;
 
@@ -61,7 +65,7 @@ public class FiguraTextureSet {
                 if (Minecraft.getInstance().player == null)
                     yield null;
 
-                PlayerInfo info = Minecraft.getInstance().player.connection.getPlayerInfo(owner.owner);
+                PlayerInfo info = Minecraft.getInstance().player.connection.getPlayerInfo(owner);
                 if (info == null)
                     yield null;
 
@@ -73,7 +77,7 @@ public class FiguraTextureSet {
             }
             case "resource" -> {
                 try {
-                    ResourceLocation resource = new ResourceLocation(path);
+                    ResourceLocation resource = new ResourceLocation(pair.getSecond());
                     yield Minecraft.getInstance().getResourceManager().getResource(resource).isPresent() ? resource : MissingTextureAtlasSprite.getLocation();
                 } catch (Exception ignored) {
                     yield MissingTextureAtlasSprite.getLocation();

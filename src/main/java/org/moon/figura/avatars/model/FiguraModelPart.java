@@ -1,13 +1,12 @@
 package org.moon.figura.avatars.model;
 
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import org.luaj.vm2.LuaError;
-import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.model.rendering.ImmediateAvatarRenderer;
-import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
 import org.moon.figura.avatars.model.rendering.texture.RenderTypes;
 import org.moon.figura.avatars.model.rendertasks.BlockTask;
 import org.moon.figura.avatars.model.rendertasks.ItemTask;
@@ -36,7 +35,6 @@ import java.util.Map;
 )
 public class FiguraModelPart {
 
-    private final Avatar owner;
     public final String name;
     public FiguraModelPart parent;
 
@@ -58,8 +56,7 @@ public class FiguraModelPart {
 
     public final FiguraMat4 savedPartToWorldMat = FiguraMat4.of().scale(1d/16, 1d/16, 1d/16);
 
-    public FiguraModelPart(Avatar owner, String name, PartCustomization customization, List<FiguraModelPart> children) {
-        this.owner = owner;
+    public FiguraModelPart(String name, PartCustomization customization, List<FiguraModelPart> children) {
         this.name = name;
         this.customization = customization;
         this.children = children;
@@ -434,12 +431,6 @@ public class FiguraModelPart {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "model_part.reset_visible")
-    public void resetVisible() {
-        this.customization.visible = null;
-    }
-
-    @LuaWhitelist
     @LuaMethodDoc(description = "model_part.get_primary_render_type")
     public String getPrimaryRenderType() {
         RenderTypes renderType = this.customization.getPrimaryRenderType();
@@ -500,7 +491,7 @@ public class FiguraModelPart {
             description = "model_part.set_primary_texture"
     )
     public void setPrimaryTexture(String type, String path) {
-        this.customization.primaryTexture = FiguraTextureSet.getOverrideTexture(this.owner, type, path);
+        this.customization.primaryTexture = Pair.of(type, path);
     }
 
     @LuaWhitelist
@@ -518,7 +509,7 @@ public class FiguraModelPart {
             description = "model_part.set_secondary_texture"
     )
     public void setSecondaryTexture(String type, String path) {
-        this.customization.secondaryTexture = FiguraTextureSet.getOverrideTexture(this.owner, type, path);
+        this.customization.secondaryTexture = Pair.of(type, path);
     }
 
     @LuaWhitelist

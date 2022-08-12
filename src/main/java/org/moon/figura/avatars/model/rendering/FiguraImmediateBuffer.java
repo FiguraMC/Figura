@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.floats.FloatArrayList;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import org.lwjgl.BufferUtils;
+import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.model.PartCustomization;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
 import org.moon.figura.avatars.model.rendering.texture.RenderTypes;
@@ -76,7 +77,7 @@ public class FiguraImmediateBuffer {
         remainingComplexity[0] += faceCount;
     }
 
-    public void pushVertices(MultiBufferSource bufferSource, int faceCount, int[] remainingComplexity) {
+    public void pushVertices(MultiBufferSource bufferSource, int faceCount, int[] remainingComplexity, Avatar avatar) {
         //Handle cases that we can quickly
         if (faceCount == 0)
             return;
@@ -89,8 +90,8 @@ public class FiguraImmediateBuffer {
 
         RenderTypes prt = customization.getPrimaryRenderType();
         RenderTypes srt = customization.getSecondaryRenderType();
-        RenderType primary = prt == null ? null : prt.get(customization.primaryTexture == null ? textureSet.mainTex == null ? null : textureSet.mainTex.textureID : customization.primaryTexture);
-        RenderType secondary = srt == null ? null : srt.get(customization.secondaryTexture == null ? textureSet.emissiveTex == null ? null : textureSet.emissiveTex.textureID : customization.secondaryTexture);
+        RenderType primary = prt == null ? null : prt.get(customization.primaryTexture == null ? textureSet.mainTex == null ? null : textureSet.mainTex.textureID : FiguraTextureSet.getOverrideTexture(avatar.owner, customization.primaryTexture));
+        RenderType secondary = srt == null ? null : srt.get(customization.secondaryTexture == null ? textureSet.emissiveTex == null ? null : textureSet.emissiveTex.textureID : FiguraTextureSet.getOverrideTexture(avatar.owner, customization.secondaryTexture));
 
         if (primary != null) {
             if (secondary != null)

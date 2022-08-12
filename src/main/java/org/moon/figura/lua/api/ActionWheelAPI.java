@@ -56,10 +56,10 @@ public class ActionWheelAPI {
             },
             description = "action_wheel.execute"
     )
-    public void execute(Integer index, Boolean right) {
+    public void execute(Integer index, boolean right) {
         if (index != null && (index < 1 || index > 8))
             throw new LuaError("index must be between 1 and 8");
-        if (this.isHost) ActionWheel.execute(index == null ? ActionWheel.getSelected() : index - 1, right == null || !right);
+        if (this.isHost) ActionWheel.execute(index == null ? ActionWheel.getSelected() : index - 1, !right);
     }
 
     @LuaWhitelist

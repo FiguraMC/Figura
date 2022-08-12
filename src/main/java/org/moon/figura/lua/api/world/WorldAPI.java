@@ -5,6 +5,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
+import net.minecraft.world.level.block.Blocks;
 import org.luaj.vm2.LuaTable;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
@@ -74,7 +75,7 @@ public class WorldAPI {
         pos.free();
         Level world = getCurrentWorld();
         if (world.getChunkAt(blockPos) == null)
-            return null;
+            return new BlockStateAPI(Blocks.AIR.defaultBlockState(), blockPos);
         return new BlockStateAPI(world.getBlockState(blockPos), blockPos);
     }
 
@@ -92,12 +93,12 @@ public class WorldAPI {
             },
             description = "world.get_redstone_power"
     )
-    public static Integer getRedstonePower(Object x, Double y, Double z) {
+    public static int getRedstonePower(Object x, Double y, Double z) {
         FiguraVec3 pos = LuaUtils.parseVec3("getRedstonePower", x, y, z);
         BlockPos blockPos = pos.asBlockPos();
         pos.free();
         if (getCurrentWorld().getChunkAt(blockPos) == null)
-            return null;
+            return 0;
         return getCurrentWorld().getBestNeighborSignal(blockPos);
     }
 
@@ -115,12 +116,12 @@ public class WorldAPI {
             },
             description = "world.get_strong_redstone_power"
     )
-    public static Integer getStrongRedstonePower(Object x, Double y, Double z) {
+    public static int getStrongRedstonePower(Object x, Double y, Double z) {
         FiguraVec3 pos = LuaUtils.parseVec3("getStrongRedstonePower", x, y, z);
         BlockPos blockPos = pos.asBlockPos();
         pos.free();
         if (getCurrentWorld().getChunkAt(blockPos) == null)
-            return null;
+            return 0;
         return getCurrentWorld().getDirectSignalTo(blockPos);
     }
 
@@ -135,8 +136,7 @@ public class WorldAPI {
             },
             description = "world.get_time"
     )
-    public static double getTime(Double delta) {
-        if (delta == null) delta = 0d;
+    public static double getTime(double delta) {
         return getCurrentWorld().getGameTime() + delta;
     }
 
@@ -151,8 +151,7 @@ public class WorldAPI {
             },
             description = "world.get_time_of_day"
     )
-    public static double getTimeOfDay(Double delta) {
-        if (delta == null) delta = 0d;
+    public static double getTimeOfDay(double delta) {
         return getCurrentWorld().getDayTime() + delta;
     }
 

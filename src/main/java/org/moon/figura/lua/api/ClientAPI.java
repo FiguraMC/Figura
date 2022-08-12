@@ -84,9 +84,9 @@ public class ClientAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(description = "client.get_entity_count")
-    public static Integer getEntityCount() {
+    public static int getEntityCount() {
         if (Minecraft.getInstance().level == null)
-            return null;
+            return 0;
 
         return Minecraft.getInstance().level.getEntityCount();
     }

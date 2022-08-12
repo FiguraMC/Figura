@@ -15,6 +15,8 @@ import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @LuaWhitelist
@@ -53,19 +55,19 @@ public class ItemStackAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(description = "itemstack.get_count")
-    public Integer getCount() {
+    public int getCount() {
         return itemStack.getCount();
     }
 
     @LuaWhitelist
     @LuaMethodDoc(description = "itemstack.get_damage")
-    public Integer getDamage() {
+    public int getDamage() {
         return itemStack.getDamageValue();
     }
 
     @LuaWhitelist
     @LuaMethodDoc(description = "itemstack.get_cooldown")
-    public Integer getCooldown() {
+    public int getCooldown() {
         return itemStack.getPopTime();
     }
 
@@ -77,22 +79,19 @@ public class ItemStackAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(description = "itemstack.get_tags")
-    public LuaTable getTags() {
-        LuaTable table = new LuaTable();
+    public List<String> getTags() {
+        List<String> list = new ArrayList<>();
 
         Registry<Item> registry = WorldAPI.getCurrentWorld().registryAccess().registryOrThrow(Registry.ITEM_REGISTRY);
         Optional<ResourceKey<Item>> key = registry.getResourceKey(itemStack.getItem());
 
         if (key.isEmpty())
-            return table;
+            return list;
 
-        int i = 1;
-        for (TagKey<Item> itemTagKey : registry.getHolderOrThrow(key.get()).tags().toList()) {
-            table.set(i, itemTagKey.location().toString());
-            i++;
-        }
+        for (TagKey<Item> itemTagKey : registry.getHolderOrThrow(key.get()).tags().toList())
+            list.add(itemTagKey.location().toString());
 
-        return table;
+        return list;
     }
 
     @LuaWhitelist
@@ -121,7 +120,7 @@ public class ItemStackAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(description = "itemstack.get_max_count")
-    public Integer getMaxCount() {
+    public int getMaxCount() {
         return itemStack.getMaxStackSize();
     }
 
@@ -139,7 +138,7 @@ public class ItemStackAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(description = "itemstack.get_max_damage")
-    public Integer getMaxDamage() {
+    public int getMaxDamage() {
         return itemStack.getMaxDamage();
     }
 
@@ -157,13 +156,13 @@ public class ItemStackAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(description = "itemstack.get_repair_cost")
-    public Integer getRepairCost() {
+    public int getRepairCost() {
         return itemStack.getBaseRepairCost();
     }
 
     @LuaWhitelist
     @LuaMethodDoc(description = "itemstack.get_use_duration")
-    public Integer getUseDuration() {
+    public int getUseDuration() {
         return itemStack.getUseDuration();
     }
 

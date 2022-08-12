@@ -127,15 +127,14 @@ public class HostAPI {
                             argumentNames = "text"
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {String.class, Boolean.class},
+                            argumentTypes = {String.class, boolean.class},
                             argumentNames = {"text", "animated"}
                     )
             },
             description = "host.set_actionbar"
     )
-    public void setActionbar(@LuaNotNil String text, Boolean animated) {
+    public void setActionbar(@LuaNotNil String text, boolean animated) {
         if (!isHost()) return;
-        if (animated == null) animated = false;
         this.minecraft.gui.setOverlayMessage(TextUtils.tryParseJson(text), animated);
     }
 
@@ -170,9 +169,9 @@ public class HostAPI {
             },
             description = "host.swing_arm"
     )
-    public void swingArm(Boolean offhand) {
+    public void swingArm(boolean offhand) {
         if (isHost() && Minecraft.getInstance().player != null)
-            Minecraft.getInstance().player.swing(offhand == null || !offhand ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND);
+            Minecraft.getInstance().player.swing(offhand ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND);
     }
 
     @LuaWhitelist
@@ -195,7 +194,7 @@ public class HostAPI {
     }
 
     @LuaWhitelist
-    public void setBadge(@LuaNotNil Integer index, @LuaNotNil Boolean value) {
+    public void setBadge(int index, boolean value) {
         if (!isHost()) return;
         if (!FiguraMod.DEBUG_MODE)
             throw new LuaError("Congrats, you found this debug easter egg!");

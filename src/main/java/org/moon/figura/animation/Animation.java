@@ -185,7 +185,7 @@ public class Animation {
             ),
             description = "animation.set_time"
     )
-    public void setTime(@LuaNotNil Float time) {
+    public void setTime(float time) {
         this.time = time;
         tick();
     }
@@ -204,7 +204,7 @@ public class Animation {
             ),
             description = "animation.add_code"
     )
-    public Animation addCode(@LuaNotNil Float time, @LuaNotNil String data) {
+    public Animation addCode(float time, @LuaNotNil String data) {
         codeFrames.put(Math.max(time, 0f), data);
         return this;
     }
@@ -217,7 +217,7 @@ public class Animation {
             ),
             description = "animation.blend"
     )
-    public Animation blend(@LuaNotNil Float blend) {
+    public Animation blend(float blend) {
         this.blend = blend;
         return this;
     }
@@ -230,7 +230,7 @@ public class Animation {
             ),
             description = "animation.offset"
     )
-    public Animation offset(@LuaNotNil Float offset) {
+    public Animation offset(float offset) {
         this.offset = offset;
         return this;
     }
@@ -243,7 +243,7 @@ public class Animation {
             ),
             description = "animation.start_delay"
     )
-    public Animation startDelay(@LuaNotNil Float delay) {
+    public Animation startDelay(float delay) {
         this.startDelay = delay;
         return this;
     }
@@ -256,7 +256,7 @@ public class Animation {
             ),
             description = "animation.loop_delay"
     )
-    public Animation loopDelay(@LuaNotNil Float delay) {
+    public Animation loopDelay(float delay) {
         this.loopDelay = delay;
         return this;
     }
@@ -269,7 +269,7 @@ public class Animation {
             ),
             description = "animation.length"
     )
-    public Animation length(@LuaNotNil Float length) {
+    public Animation length(float length) {
         this.length = length;
         return this;
     }
@@ -282,7 +282,7 @@ public class Animation {
             ),
             description = "animation.override"
     )
-    public Animation override(@LuaNotNil Boolean override) {
+    public Animation override(boolean override) {
         this.override = override;
         return this;
     }
@@ -312,7 +312,7 @@ public class Animation {
             ),
             description = "animation.priority"
     )
-    public Animation priority(@LuaNotNil Integer priority) {
+    public Animation priority(int priority) {
         this.priority = priority;
         return this;
     }
@@ -325,7 +325,8 @@ public class Animation {
             ),
             description = "animation.speed"
     )
-    public Animation speed(@LuaNotNil Float speed) {
+    public Animation speed(Float speed) {
+        if (speed == null) speed = 1f;
         this.speed = speed;
         this.inverted = speed < 0;
         return this;

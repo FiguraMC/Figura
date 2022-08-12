@@ -29,9 +29,7 @@ import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.LuaUtils;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -63,13 +61,10 @@ public class BlockStateAPI {
         return pos == null ? BlockPos.ZERO : pos;
     }
 
-    protected static Map<Integer, FiguraVec6> voxelShapeToTable(VoxelShape shape) {
-        HashMap<Integer, FiguraVec6> shapes = new HashMap<>();
-        int i = 1;
-        for (AABB aabb : shape.toAabbs()) {
-            shapes.put(i, FiguraVec6.of(aabb.minX, aabb.minY, aabb.minZ, aabb.maxX, aabb.maxY, aabb.maxZ));
-            i++;
-        }
+    protected static List<FiguraVec6> voxelShapeToTable(VoxelShape shape) {
+        List<FiguraVec6> shapes = new ArrayList<>();
+        for (AABB aabb : shape.toAabbs())
+            shapes.add(FiguraVec6.of(aabb.minX, aabb.minY, aabb.minZ, aabb.maxX, aabb.maxY, aabb.maxZ));
         return shapes;
     }
 
@@ -204,22 +199,19 @@ public class BlockStateAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(description = "blockstate.get_tags")
-    public LuaTable getTags() {
-        LuaTable table = new LuaTable();
+    public List<String> getTags() {
+        List<String> list = new ArrayList<>();
 
         Registry<Block> registry = WorldAPI.getCurrentWorld().registryAccess().registryOrThrow(Registry.BLOCK_REGISTRY);
         Optional<ResourceKey<Block>> key = registry.getResourceKey(blockState.getBlock());
 
         if (key.isEmpty())
-            return table;
+            return list;
 
-        int i = 1;
-        for (TagKey<Block> blockTagKey : registry.getHolderOrThrow(key.get()).tags().toList()) {
-            table.set(i, blockTagKey.location().toString());
-            i++;
-        }
+        for (TagKey<Block> blockTagKey : registry.getHolderOrThrow(key.get()).tags().toList())
+            list.add(blockTagKey.location().toString());
 
-        return table;
+        return list;
     }
 
     @LuaWhitelist
@@ -243,45 +235,40 @@ public class BlockStateAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(description = "blockstate.get_collision_shape")
-    public Map<Integer, FiguraVec6> getCollisionShape() {
+    public List<FiguraVec6> getCollisionShape() {
         return voxelShapeToTable(blockState.getCollisionShape(WorldAPI.getCurrentWorld(), getBlockPos()));
     }
 
     @LuaWhitelist
     @LuaMethodDoc(description = "blockstate.get_outline_shape")
-    public Map<Integer, FiguraVec6> getOutlineShape() {
+    public List<FiguraVec6> getOutlineShape() {
         return voxelShapeToTable(blockState.getShape(WorldAPI.getCurrentWorld(), getBlockPos()));
     }
 
     @LuaWhitelist
     @LuaMethodDoc(description = "blockstate.get_sounds")
-    public LuaTable getSounds() {
-        LuaTable sounds = new LuaTable();
+    public Map<String, Object> getSounds() {
+        Map<String, Object> sounds = new HashMap<>();
         SoundType snd = blockState.getSoundType();
 
-        sounds.set("pitch", snd.getPitch());
-        sounds.set("volume", snd.getVolume());
-        sounds.set("break", snd.getBreakSound().getLocation().toString());
-        sounds.set("fall", snd.getFallSound().getLocation().toString());
-        sounds.set("hit", snd.getHitSound().getLocation().toString());
-        sounds.set("plate", snd.getPlaceSound().getLocation().toString());
-        sounds.set("step", snd.getStepSound().getLocation().toString());
+        sounds.put("pitch", snd.getPitch());
+        sounds.put("volume", snd.getVolume());
+        sounds.put("break", snd.getBreakSound().getLocation().toString());
+        sounds.put("fall", snd.getFallSound().getLocation().toString());
+        sounds.put("hit", snd.getHitSound().getLocation().toString());
+        sounds.put("plate", snd.getPlaceSound().getLocation().toString());
+        sounds.put("step", snd.getStepSound().getLocation().toString());
 
         return sounds;
     }
 
     @LuaWhitelist
     @LuaMethodDoc(description = "blockstate.get_fluid_tags")
-    public LuaTable getFluidTags() {
-        LuaTable table = new LuaTable();
-
-        int i = 1;
-        for (TagKey<Fluid> fluidTagKey : blockState.getFluidState().getTags().toList()) {
-            table.set(i, fluidTagKey.location().toString());
-            i++;
-        }
-
-        return table;
+    public List<String> getFluidTags() {
+        List<String> list = new ArrayList<>();
+        for (TagKey<Fluid> fluidTagKey : blockState.getFluidState().getTags().toList())
+            list.add(fluidTagKey.location().toString());
+        return list;
     }
 
     @LuaWhitelist

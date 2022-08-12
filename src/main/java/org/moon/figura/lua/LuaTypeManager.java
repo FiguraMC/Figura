@@ -12,6 +12,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -146,7 +147,7 @@ public class LuaTypeManager {
                     int argIndex = i + (isStatic ? 1 : 2);
                     boolean nil = args.isnil(argIndex);
                     if (nil && requiredNotNil[i])
-                        throw new LuaError("Passed nil for required non-nil argument! Java name: " + method.getParameters()[i].getName());
+                        throw new LuaError("bad argument: " + method.getName() + " " + argIndex + " do not allow nil values, expected " + FiguraDocsManager.getNameFor(argumentTypes[i]));
                     if (argIndex <= args.narg() && !nil) {
                         try {
                             actualArgs[i] = switch (argumentTypes[i].getName()) {
@@ -224,6 +225,15 @@ public class LuaTypeManager {
         return table;
     }
 
+    private LuaValue wrapList(List<?> list) {
+        LuaTable table = new LuaTable();
+
+        for (int i = 0; i < list.size(); i++)
+            table.set(i + 1, javaToLua(list.get(i)));
+
+        return table;
+    }
+
     //we need to allow string being numbers here
     //however in places like pings and print we should keep strings as strings
     public Object luaToJava(LuaValue val) {
@@ -265,6 +275,8 @@ public class LuaTypeManager {
             return LuaValue.valueOf(s);
         else if (val instanceof Map<?,?> map)
             return wrapMap(map);
+        else if (val instanceof List<?> list)
+            return wrapList(list);
         else
             return wrap(val);
     }

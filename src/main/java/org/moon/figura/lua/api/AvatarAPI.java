@@ -65,10 +65,9 @@ public class AvatarAPI {
             },
             description = "avatar.set_color"
     )
-    public void setColor(@LuaNotNil Object r, Double g, Double b) {
+    public void setColor(Object r, Double g, Double b) {
         FiguraVec3 vec = LuaUtils.parseVec3("setColor", r, g, b, 1, 1, 1);
-        String color = Integer.toHexString(ColorUtils.rgbToInt(vec));
-        avatar.color = "0".repeat(Math.max(6 - color.length(), 0)) + color;
+        avatar.color = ColorUtils.rgbToHex(vec);
         vec.free();
     }
 
@@ -98,13 +97,13 @@ public class AvatarAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(description = "avatar.has_texture")
-    public Boolean hasTexture() {
+    public boolean hasTexture() {
         return avatar.hasTexture;
     }
 
     @LuaWhitelist
     @LuaMethodDoc(description = "avatar.has_script_error")
-    public Boolean hasScriptError() {
+    public boolean hasScriptError() {
         //useless I know
         return avatar.scriptError;
     }
@@ -177,7 +176,7 @@ public class AvatarAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(description = "avatar.get_max_complexity")
-    public int getMaxComplexity(@LuaNotNil AvatarAPI api) {
+    public int getMaxComplexity() {
         return avatar.trust.get(TrustContainer.Trust.COMPLEXITY);
     }
 

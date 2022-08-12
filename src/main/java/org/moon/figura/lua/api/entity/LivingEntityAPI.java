@@ -4,13 +4,16 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
-import org.luaj.vm2.LuaTable;
-import org.luaj.vm2.LuaValue;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.world.ItemStackAPI;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -93,23 +96,21 @@ public class LivingEntityAPI<T extends LivingEntity> extends EntityAPI<T> {
 
     @LuaWhitelist
     @LuaMethodDoc(description = "living_entity.get_status_effects")
-    public LuaTable getStatusEffects() {
+    public List<Map<String, Object>> getStatusEffects() {
         checkEntity();
-        LuaTable tbl = new LuaTable();
+        List<Map<String, Object>> list = new ArrayList<>();
 
-        int i = 1;
         for (MobEffectInstance effect : entity.getActiveEffects()) {
-            LuaTable effectTbl = new LuaTable();
-            effectTbl.set("name", effect.getEffect().getDescriptionId());
-            effectTbl.set("amplifier", effect.getAmplifier());
-            effectTbl.set("duration", effect.getDuration());
-            effectTbl.set("visible", LuaValue.valueOf(effect.isVisible()));
+            Map<String, Object> map = new HashMap<>();
+            map.put("name", effect.getEffect().getDescriptionId());
+            map.put("amplifier", effect.getAmplifier());
+            map.put("duration", effect.getDuration());
+            map.put("visible", effect.isVisible());
 
-            tbl.set(i, effectTbl);
-            i++;
+            list.add(map);
         }
 
-        return tbl;
+        return list;
     }
 
     @LuaWhitelist

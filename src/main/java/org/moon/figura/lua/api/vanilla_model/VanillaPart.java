@@ -10,6 +10,6 @@ public abstract class VanillaPart {
     public abstract void alter(EntityModel<?> model);
     public abstract void store(EntityModel<?> model);
     public abstract void restore(EntityModel<?> model);
-    public abstract Boolean getVisible();
-    public abstract void setVisible(Boolean visible);
+    public abstract boolean getVisible();
+    public abstract void setVisible(boolean visible);
 }

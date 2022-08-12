@@ -3,7 +3,6 @@ package org.moon.figura.lua.api.vanilla_model;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
 import org.moon.figura.avatars.model.ParentType;
-import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
@@ -75,14 +74,14 @@ public class VanillaModelPart extends VanillaPart {
             ),
             description = "vanilla_part.set_visible"
     )
-    public void setVisible(@LuaNotNil Boolean visible) {
+    public void setVisible(boolean visible) {
         this.visible = visible;
     }
 
     @Override
     @LuaWhitelist
     @LuaMethodDoc(description = "vanilla_part.get_visible")
-    public Boolean getVisible() {
+    public boolean getVisible() {
         return this.visible;
     }
 

@@ -34,6 +34,7 @@ import org.moon.figura.utils.TextUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
@@ -104,6 +105,7 @@ public class FiguraMod implements ClientModInitializer {
         Path p = config.isBlank() ? GAME_DIR.resolve(MOD_ID) : Path.of(config);
         try {
             Files.createDirectories(p);
+        } catch (FileAlreadyExistsException ignored) {
         } catch (Exception e) {
             LOGGER.error("Failed to create the main " + MOD_NAME + " directory", e);
         }
@@ -116,6 +118,7 @@ public class FiguraMod implements ClientModInitializer {
         Path p = getFiguraDirectory().resolve("cache");
         try {
             Files.createDirectories(p);
+        } catch (FileAlreadyExistsException ignored) {
         } catch (Exception e) {
             LOGGER.error("Failed to create cache directory", e);
         }

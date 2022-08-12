@@ -7,7 +7,6 @@ import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import org.moon.figura.avatars.model.PartCustomization;
-import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
@@ -78,7 +77,7 @@ public class TextTask extends RenderTask {
             description = "text_task.text"
     )
     public RenderTask text(String text) {
-        this.text = text == null ? null : TextUtils.splitText(TextUtils.tryParseJson(text), "\n");
+        this.text = text == null ? null : TextUtils.splitText(TextUtils.noBadges4U(TextUtils.tryParseJson(text)), "\n");
         if (text != null)
             this.cachedComplexity = text.length() + 1;
         return this;
@@ -94,7 +93,7 @@ public class TextTask extends RenderTask {
             },
             description = "text_task.centered"
     )
-    public RenderTask centered(@LuaNotNil Boolean centered) {
+    public RenderTask centered(boolean centered) {
         this.centered = centered;
         return this;
     }
@@ -109,7 +108,7 @@ public class TextTask extends RenderTask {
             },
             description = "text_task.shadow"
     )
-    public RenderTask shadow(@LuaNotNil Boolean shadow) {
+    public RenderTask shadow(boolean shadow) {
         this.shadow = shadow;
         return this;
     }
@@ -124,7 +123,7 @@ public class TextTask extends RenderTask {
             },
             description = "text_task.outline"
     )
-    public RenderTask outline(@LuaNotNil Boolean outline) {
+    public RenderTask outline(boolean outline) {
         this.outline = outline;
         return this;
     }

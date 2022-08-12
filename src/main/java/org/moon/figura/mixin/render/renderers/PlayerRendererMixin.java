@@ -61,7 +61,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
         EntityNameplateCustomization custom = avatar.luaRuntime == null ? null : avatar.luaRuntime.nameplate.ENTITY;
 
         //enabled
-        if (custom != null && custom.isVisible() != null && !custom.isVisible()) {
+        if (custom != null && !custom.isVisible()) {
             ci.cancel();
             return;
         }

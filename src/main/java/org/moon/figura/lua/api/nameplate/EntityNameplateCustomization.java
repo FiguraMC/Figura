@@ -1,6 +1,5 @@
 package org.moon.figura.lua.api.nameplate;
 
-import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
@@ -17,7 +16,7 @@ public class EntityNameplateCustomization extends NameplateCustomization {
 
     private FiguraVec3 position;
     private FiguraVec3 scale;
-    private Boolean visible;
+    private boolean visible = true;
 
     @LuaWhitelist
     @LuaMethodDoc(description = "nameplate_entity.get_pos")
@@ -69,7 +68,7 @@ public class EntityNameplateCustomization extends NameplateCustomization {
 
     @LuaWhitelist
     @LuaMethodDoc(description = "nameplate_entity.is_visible")
-    public Boolean isVisible() {
+    public boolean isVisible() {
         return this.visible;
     }
 
@@ -81,7 +80,7 @@ public class EntityNameplateCustomization extends NameplateCustomization {
             ),
             description = "nameplate_entity.set_visible"
     )
-    public void setVisible(@LuaNotNil Boolean visible) {
+    public void setVisible(boolean visible) {
         this.visible = visible;
     }
 

@@ -101,7 +101,7 @@ public class MatricesAPI {
             ),
             description = "matrices.rotation2"
     )
-    public static FiguraMat2 rotation2(@LuaNotNil Double degrees) {
+    public static FiguraMat2 rotation2(double degrees) {
         FiguraMat2 mat = FiguraMat2.of();
         mat.rotate(degrees);
         return mat;
@@ -137,7 +137,7 @@ public class MatricesAPI {
             ),
             description = "matrices.x_rotation3"
     )
-    public static FiguraMat3 xRotation3(@LuaNotNil Double degrees) {
+    public static FiguraMat3 xRotation3(double degrees) {
         FiguraMat3 result = FiguraMat3.of();
         result.rotateX(degrees);
         return result;
@@ -151,7 +151,7 @@ public class MatricesAPI {
             ),
             description = "matrices.y_rotation3"
     )
-    public static FiguraMat3 yRotation3(@LuaNotNil Double degrees) {
+    public static FiguraMat3 yRotation3(double degrees) {
         FiguraMat3 result = FiguraMat3.of();
         result.rotateY(degrees);
         return result;
@@ -165,7 +165,7 @@ public class MatricesAPI {
             ),
             description = "matrices.z_rotation3"
     )
-    public static FiguraMat3 zRotation3(@LuaNotNil Double degrees) {
+    public static FiguraMat3 zRotation3(double degrees) {
         FiguraMat3 result = FiguraMat3.of();
         result.rotateZ(degrees);
         return result;
@@ -201,7 +201,7 @@ public class MatricesAPI {
             ),
             description = "matrices.x_rotation4"
     )
-    public static FiguraMat4 xRotation4(@LuaNotNil Double degrees) {
+    public static FiguraMat4 xRotation4(double degrees) {
         FiguraMat4 result = FiguraMat4.of();
         result.rotateX(degrees);
         return result;
@@ -215,7 +215,7 @@ public class MatricesAPI {
             ),
             description = "matrices.y_rotation4"
     )
-    public static FiguraMat4 yRotation4(@LuaNotNil Double degrees) {
+    public static FiguraMat4 yRotation4(double degrees) {
         FiguraMat4 result = FiguraMat4.of();
         result.rotateY(degrees);
         return result;
@@ -229,7 +229,7 @@ public class MatricesAPI {
             ),
             description = "matrices.z_rotation4"
     )
-    public static FiguraMat4 zRotation4(@LuaNotNil Double degrees) {
+    public static FiguraMat4 zRotation4(double degrees) {
         FiguraMat4 result = FiguraMat4.of();
         result.rotateZ(degrees);
         return result;

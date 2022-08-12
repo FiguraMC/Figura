@@ -145,14 +145,6 @@ public class ColorUtils {
     }
 
     /**
-     * overload for {@link #hexStringToRGB(String, FiguraVec3)}
-     * fallback is an empty vec3
-     */
-    public static FiguraVec3 hexStringToRGB(String string) {
-        return hexStringToRGB(string, FiguraVec3.of());
-    }
-
-    /**
      * converts a hsv vector into a rgb vector
      * @param hsv - a vector of 0 to 1
      * @return a vector of 0 to 1
@@ -170,6 +162,17 @@ public class ColorUtils {
     public static FiguraVec3 rgbToHSV(FiguraVec3 rgb) {
         float[] hsv = Color.RGBtoHSB((int) (rgb.x * 255f), (int) (rgb.y * 255f), (int) (rgb.z * 255f), null);
         return FiguraVec3.of(hsv[0], hsv[1], hsv[2]);
+    }
+
+    /**
+     * converts a rgb vector into a hex color string
+     * note that the string do not contain the "#" prefix
+     * @param rgb - a vector of 0 to 1
+     * @return a hex color String
+     */
+    public static String rgbToHex(FiguraVec3 rgb) {
+        String color = Integer.toHexString(ColorUtils.rgbToInt(rgb));
+        return "0".repeat(Math.max(6 - color.length(), 0)) + color;
     }
 
     public static FiguraVec3 rainbow() {

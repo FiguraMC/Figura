@@ -2,7 +2,6 @@ package org.moon.figura.avatars.model.rendertasks;
 
 import net.minecraft.client.renderer.MultiBufferSource;
 import org.moon.figura.avatars.model.PartCustomization;
-import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
@@ -43,7 +42,7 @@ public abstract class RenderTask {
             ),
             description = "render_task.enabled"
     )
-    public RenderTask enabled(@LuaNotNil Boolean enabled) {
+    public RenderTask enabled(boolean enabled) {
         this.enabled = enabled;
         return this;
     }
@@ -56,7 +55,7 @@ public abstract class RenderTask {
             ),
             description = "render_task.emissive"
     )
-    public RenderTask emissive(@LuaNotNil Boolean emissive) {
+    public RenderTask emissive(boolean emissive) {
         this.emissive = emissive;
         return this;
     }

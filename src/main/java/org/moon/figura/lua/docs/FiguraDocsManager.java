@@ -95,6 +95,8 @@ public class FiguraDocsManager {
         //converted things
         put(Map.class, "Table");
         put(HashMap.class, "Table");
+        put(List.class, "Table");
+        put(ArrayList.class, "Table");
 
         //Figura types
         put(FiguraVector.class, "Vector");

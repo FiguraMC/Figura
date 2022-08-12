@@ -73,9 +73,7 @@ public class VectorsAPI {
             ),
             description = "vectors.vec2"
     )
-    public static FiguraVec2 vec2(Double x, Double y) {
-        if (x == null) x = 0d;
-        if (y == null) y = 0d;
+    public static FiguraVec2 vec2(double x, double y) {
         return FiguraVec2.of(x, y);
     }
 
@@ -87,10 +85,7 @@ public class VectorsAPI {
             ),
             description = "vectors.vec3"
     )
-    public static FiguraVec3 vec3(Double x, Double y, Double z) {
-        if (x == null) x = 0d;
-        if (y == null) y = 0d;
-        if (z == null) z = 0d;
+    public static FiguraVec3 vec3(double x, double y, double z) {
         return FiguraVec3.of(x, y, z);
     }
 
@@ -102,11 +97,7 @@ public class VectorsAPI {
             ),
             description = "vectors.vec4"
     )
-    public static FiguraVec4 vec4(Double x, Double y, Double z, Double w) {
-        if (x == null) x = 0d;
-        if (y == null) y = 0d;
-        if (z == null) z = 0d;
-        if (w == null) w = 0d;
+    public static FiguraVec4 vec4(double x, double y, double z, double w) {
         return FiguraVec4.of(x, y, z, w);
     }
 
@@ -118,12 +109,7 @@ public class VectorsAPI {
             ),
             description = "vectors.vec5"
     )
-    public static FiguraVec5 vec5(Double x, Double y, Double z, Double w, Double t) {
-        if (x == null) x = 0d;
-        if (y == null) y = 0d;
-        if (z == null) z = 0d;
-        if (w == null) w = 0d;
-        if (t == null) t = 0d;
+    public static FiguraVec5 vec5(double x, double y, double z, double w, double t) {
         return FiguraVec5.of(x, y, z, w, t);
     }
 
@@ -135,13 +121,7 @@ public class VectorsAPI {
             ),
             description = "vectors.vec6"
     )
-    public static FiguraVec6 vec6(Double x, Double y, Double z, Double w, Double t, Double h) {
-        if (x == null) x = 0d;
-        if (y == null) y = 0d;
-        if (z == null) z = 0d;
-        if (w == null) w = 0d;
-        if (t == null) t = 0d;
-        if (h == null) h = 0d;
+    public static FiguraVec6 vec6(double x, double y, double z, double w, double t, double h) {
         return FiguraVec6.of(x, y, z, w, t, h);
     }
 
@@ -161,7 +141,7 @@ public class VectorsAPI {
             },
             description = "vectors.rgb_to_int"
     )
-    public static Integer rgbToInt(Object r, Double g, Double b) {
+    public static int rgbToInt(Object r, Double g, Double b) {
         FiguraVec3 rgb = LuaUtils.parseVec3("rgbToInt", r, g, b);
         return ColorUtils.rgbToInt(rgb);
     }
@@ -174,7 +154,7 @@ public class VectorsAPI {
             ),
             description = "vectors.int_to_rgb"
     )
-    public static FiguraVec3 intToRGB(@LuaNotNil Integer color) {
+    public static FiguraVec3 intToRGB(int color) {
         return ColorUtils.intToRGB(color);
     }
 
@@ -244,8 +224,7 @@ public class VectorsAPI {
     )
     public static String rgbToHex(Object r, Double g, Double b) {
         FiguraVec3 rgb = LuaUtils.parseVec3("rgbToHex", r, g, b);
-        String color = Integer.toHexString(ColorUtils.rgbToInt(rgb));
-        return "0".repeat(Math.max(6 - color.length(), 0)) + color;
+        return ColorUtils.rgbToHex(rgb);
     }
 
     @LuaWhitelist
@@ -266,9 +245,8 @@ public class VectorsAPI {
             },
             description = "vectors.rainbow"
     )
-    public static FiguraVec3 rainbow(Double speed, Double offset, Double saturation, Double light) {
+    public static FiguraVec3 rainbow(Double speed, double offset, Double saturation, Double light) {
         if (speed == null) speed = 1d;
-        if (offset == null) offset = 0d;
         if (saturation == null) saturation = 1d;
         if (light == null) light = 1d;
         return ColorUtils.rainbow(speed, offset, saturation, light);
@@ -298,7 +276,7 @@ public class VectorsAPI {
             },
             description = "vectors.rotate_around_axis"
     )
-    public static FiguraVec3 rotateAroundAxis(@LuaNotNil Double angle, Object x, Object y, Double z, Object w, Double t, Double h) {
+    public static FiguraVec3 rotateAroundAxis(double angle, Object x, Object y, Double z, Object w, Double t, Double h) {
         FiguraVec3 vec, axis;
 
         //parse vec and axis (basically the same logic used in the particle#addParticle() method)

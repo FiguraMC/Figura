@@ -354,7 +354,7 @@ public class EntityAPI<T extends Entity> {
             },
             description = "entity.get_targeted_block"
     )
-    public BlockStateAPI getTargetedBlock(Boolean ignoreLiquids, Double distance) {
+    public BlockStateAPI getTargetedBlock(boolean ignoreLiquids, Double distance) {
         checkEntity();
         if (distance == null) distance = 20d;
         distance = Math.max(Math.min(distance, 20), -20);

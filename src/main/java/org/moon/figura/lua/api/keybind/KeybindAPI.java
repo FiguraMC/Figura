@@ -43,7 +43,7 @@ public class KeybindAPI {
             },
             description = "keybind_api.create"
     )
-    public FiguraKeybind create(@LuaNotNil String name, @LuaNotNil String key, Boolean gui, Boolean override) {
+    public FiguraKeybind create(@LuaNotNil String name, @LuaNotNil String key, boolean gui, boolean override) {
         this.keyBindings.removeIf(binding -> binding.getName().equals(name));
 
         FiguraKeybind binding = new FiguraKeybind(this.owner, name, FiguraKeybind.parseStringKey(key));

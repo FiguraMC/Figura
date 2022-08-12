@@ -67,13 +67,13 @@ public class RendererAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(description = "renderer.is_first_person")
-    public Boolean isFirstPerson() {
+    public boolean isFirstPerson() {
         return checkCameraOwner(this.owner) && Minecraft.getInstance().options.getCameraType().isFirstPerson();
     }
 
     @LuaWhitelist
     @LuaMethodDoc(description = "renderer.is_camera_backwards")
-    public Boolean isCameraBackwards() {
+    public boolean isCameraBackwards() {
         return checkCameraOwner(this.owner) && Minecraft.getInstance().options.getCameraType().isMirrored();
     }
 

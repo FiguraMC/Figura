@@ -3,7 +3,6 @@ package org.moon.figura.gui.actionwheel;
 import net.minecraft.world.item.ItemStack;
 import org.luaj.vm2.LuaFunction;
 import org.moon.figura.avatars.Avatar;
-import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.world.ItemStackAPI;
 import org.moon.figura.lua.docs.LuaFieldDoc;
@@ -119,7 +118,7 @@ public class ToggleAction extends Action {
             ),
             description = "toggle_action.toggled"
     )
-    public Action toggled(@LuaNotNil Boolean bool) {
+    public Action toggled(boolean bool) {
         this.toggled = bool;
         return this;
     }
