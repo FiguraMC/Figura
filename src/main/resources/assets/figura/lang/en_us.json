@@ -155,6 +155,7 @@
   "figura.config.input.float": "Number...",
   "figura.config.input.hex_color": "Color...",
   "figura.config.input.folder_path": "Path...",
+  "figura.config.input.ip": "IP Address...",
 
   "figura.config.nameplate": "Nameplate",
   "figura.config.nameplate.tooltip": "Nameplate settings",
