@@ -131,9 +131,7 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
     }
     @Override
     public boolean equals(Object other) {
-        if (other instanceof FiguraMat4 o)
-            return equals(o);
-        return false;
+        return other instanceof FiguraMat4 o && equals(o);
     }
     @Override
     public String toString() {
@@ -202,7 +200,7 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
             ),
             description = "matrix_n.set"
     )
-    public FiguraMat4 set(FiguraMat4 o) {
+    public FiguraMat4 set(@LuaNotNil FiguraMat4 o) {
         return set(o.v11, o.v21, o.v31, o.v41, o.v12, o.v22, o.v32, o.v42, o.v13, o.v23, o.v33, o.v43, o.v14, o.v24, o.v34, o.v44);
     }
 
@@ -239,7 +237,7 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
             ),
             description = "matrix_n.multiply"
     )
-    public FiguraMat4 multiply(FiguraMat4 o) {
+    public FiguraMat4 multiply(@LuaNotNil FiguraMat4 o) {
         double nv11 = o.v11 * v11 + o.v12 * v21 + o.v13 * v31 + o.v14 * v41;
         double nv12 = o.v11 * v12 + o.v12 * v22 + o.v13 * v32 + o.v14 * v42;
         double nv13 = o.v11 * v13 + o.v12 * v23 + o.v13 * v33 + o.v14 * v43;
@@ -288,7 +286,7 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
             ),
             description = "matrix_n.right_multiply"
     )
-    public FiguraMat4 rightMultiply(FiguraMat4 o) {
+    public FiguraMat4 rightMultiply(@LuaNotNil FiguraMat4 o) {
         double nv11 = v11 * o.v11 + v12 * o.v21 + v13 * o.v31 + v14 * o.v41;
         double nv12 = v11 * o.v12 + v12 * o.v22 + v13 * o.v32 + v14 * o.v42;
         double nv13 = v11 * o.v13 + v12 * o.v23 + v13 * o.v33 + v14 * o.v43;
@@ -437,8 +435,14 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(description = "matrix_n.add")
-    public FiguraMat4 add(FiguraMat4 o) {
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraMat4.class,
+                    argumentNames = "other"
+            ),
+            description = "matrix_n.add"
+    )
+    public FiguraMat4 add(@LuaNotNil FiguraMat4 o) {
         v11 += o.v11;
         v12 += o.v12;
         v13 += o.v13;
@@ -461,8 +465,14 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(description = "matrix_n.sub")
-    public FiguraMat4 sub(FiguraMat4 o) {
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraMat4.class,
+                    argumentNames = "other"
+            ),
+            description = "matrix_n.sub"
+    )
+    public FiguraMat4 sub(@LuaNotNil FiguraMat4 o) {
         v11 -= o.v11;
         v12 -= o.v12;
         v13 -= o.v13;
@@ -774,8 +784,8 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
         throw new LuaError("Invalid types to __mul: " + o.getClass().getSimpleName());
     }
     @LuaWhitelist
-    public boolean __eq(@LuaNotNil FiguraMat4 mat) {
-        return this.equals(mat);
+    public boolean __eq(Object o) {
+        return this.equals(o);
     }
     @LuaWhitelist
     public int __len() {
@@ -786,7 +796,9 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
         return this.toString();
     }
     @LuaWhitelist
-    public Object __index(@LuaNotNil String string) {
+    public Object __index(String string) {
+        if (string == null)
+            return null;
         return switch (string) {
             case "1", "c1" -> this.getColumn(1);
             case "2", "c2" -> this.getColumn(2);
@@ -819,7 +831,8 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
     }
 
     @LuaWhitelist
-    public void __newindex(@LuaNotNil String string, @LuaNotNil Object value) {
+    public void __newindex(String string, Object value) {
+        if (string == null) return;
         if (value instanceof FiguraVec4 vec4) {
             switch (string) {
                 case "1", "c1" -> {

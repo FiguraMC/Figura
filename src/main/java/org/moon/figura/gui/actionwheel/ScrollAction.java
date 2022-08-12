@@ -41,6 +41,7 @@ public class ScrollAction extends Action {
 
     @LuaWhitelist
     public Object __index(String arg) {
+        if (arg == null) return null;
         if ("scroll".equals(arg))
             return scroll;
         return null;
@@ -48,8 +49,10 @@ public class ScrollAction extends Action {
 
     @LuaWhitelist
     public void __newindex(String key, Object value) {
+        if (key == null) return;
+        LuaFunction func = value instanceof LuaFunction f ? f : null;
         if ("scroll".equals(key))
-            scroll = (LuaFunction) value;
+            scroll = func;
     }
 
     @Override

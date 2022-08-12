@@ -3,6 +3,7 @@ package org.moon.figura.math.vector;
 import org.luaj.vm2.LuaDouble;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
+import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.*;
 import org.moon.figura.math.matrix.FiguraMat4;
@@ -83,7 +84,7 @@ public class FiguraVec4 extends FiguraVector<FiguraVec4, FiguraMat4> {
             },
             description = "vector_n.set"
     )
-    public FiguraVec4 set(Object x, double y, double z, double w) {
+    public FiguraVec4 set(@LuaNotNil Object x, double y, double z, double w) {
         if (x instanceof FiguraVec4 vec)
             return set(vec);
         if (x instanceof Number n)
@@ -118,7 +119,7 @@ public class FiguraVec4 extends FiguraVector<FiguraVec4, FiguraMat4> {
             },
             description = "vector_n.add"
     )
-    public FiguraVec4 add(Object x, double y, double z, double w) {
+    public FiguraVec4 add(@LuaNotNil Object x, double y, double z, double w) {
         if (x instanceof FiguraVec4 vec)
             return add(vec);
         if (x instanceof Number n)
@@ -153,7 +154,7 @@ public class FiguraVec4 extends FiguraVector<FiguraVec4, FiguraMat4> {
             },
             description = "vector_n.sub"
     )
-    public FiguraVec4 sub(Object x, double y, double z, double w) {
+    public FiguraVec4 sub(@LuaNotNil Object x, double y, double z, double w) {
         if (x instanceof FiguraVec4 vec)
             return subtract(vec);
         if (x instanceof Number n)
@@ -188,7 +189,7 @@ public class FiguraVec4 extends FiguraVector<FiguraVec4, FiguraMat4> {
             },
             description = "vector_n.mul"
     )
-    public FiguraVec4 mul(Object x, double y, double z, double w) {
+    public FiguraVec4 mul(@LuaNotNil Object x, double y, double z, double w) {
         if (x instanceof FiguraVec4 vec)
             return multiply(vec);
         if (x instanceof Number n)
@@ -223,7 +224,7 @@ public class FiguraVec4 extends FiguraVector<FiguraVec4, FiguraMat4> {
             },
             description = "vector_n.div"
     )
-    public FiguraVec4 div(Object x, double y, double z, double w) {
+    public FiguraVec4 div(@LuaNotNil Object x, double y, double z, double w) {
         if (x instanceof FiguraVec4 vec)
             return divide(vec);
         if (x instanceof Number n)
@@ -258,7 +259,7 @@ public class FiguraVec4 extends FiguraVector<FiguraVec4, FiguraMat4> {
             },
             description = "vector_n.reduce"
     )
-    public FiguraVec4 reduce(Object x, double y, double z, double w) {
+    public FiguraVec4 reduce(@LuaNotNil Object x, double y, double z, double w) {
         if (x instanceof FiguraVec4 vec)
             return reduce(vec);
         if (x instanceof Number n)
@@ -294,7 +295,7 @@ public class FiguraVec4 extends FiguraVector<FiguraVec4, FiguraMat4> {
             ),
             description = "vector_n.transform"
     )
-    public FiguraVec4 transform(FiguraMat4 mat) {
+    public FiguraVec4 transform(@LuaNotNil FiguraMat4 mat) {
         return set(
                 mat.v11 * x + mat.v12 * y + mat.v13 * z + mat.v14 * w,
                 mat.v21 * x + mat.v22 * y + mat.v23 * z + mat.v24 * w,
@@ -326,7 +327,7 @@ public class FiguraVec4 extends FiguraVector<FiguraVec4, FiguraMat4> {
             ),
             description = "vector_n.dot"
     )
-    public double dot(FiguraVec4 other) {
+    public double dot(@LuaNotNil FiguraVec4 other) {
         return x * other.x + y * other.y + z * other.z + w * other.w;
     }
 
@@ -410,7 +411,7 @@ public class FiguraVec4 extends FiguraVector<FiguraVec4, FiguraMat4> {
             ),
             description = "vector_n.apply_func"
     )
-    public FiguraVec4 applyFunc(LuaFunction function) {
+    public FiguraVec4 applyFunc(@LuaNotNil LuaFunction function) {
         x = function.call(LuaDouble.valueOf(x)).todouble();
         y = function.call(LuaDouble.valueOf(y)).todouble();
         z = function.call(LuaDouble.valueOf(z)).todouble();
@@ -466,7 +467,7 @@ public class FiguraVec4 extends FiguraVector<FiguraVec4, FiguraMat4> {
                     types = {FiguraVec4.class, FiguraVec4.class, FiguraVec4.class}
             )
     )
-    public FiguraVec4 __add(FiguraVec4 other) {
+    public FiguraVec4 __add(@LuaNotNil FiguraVec4 other) {
         return plus(other);
     }
 
@@ -476,7 +477,7 @@ public class FiguraVec4 extends FiguraVector<FiguraVec4, FiguraMat4> {
                     types = {FiguraVec4.class, FiguraVec4.class, FiguraVec4.class}
             )
     )
-    public FiguraVec4 __sub(FiguraVec4 other) {
+    public FiguraVec4 __sub(@LuaNotNil FiguraVec4 other) {
         return minus(other);
     }
 
@@ -497,7 +498,7 @@ public class FiguraVec4 extends FiguraVector<FiguraVec4, FiguraMat4> {
                     )
             }
     )
-    public static FiguraVec4 __mul(Object a, Object b) {
+    public static FiguraVec4 __mul(@LuaNotNil Object a, @LuaNotNil Object b) {
         if (a instanceof FiguraVec4 vec) {
             if (b instanceof FiguraVec4 vec2)
                 return vec.times(vec2);
@@ -522,7 +523,7 @@ public class FiguraVec4 extends FiguraVector<FiguraVec4, FiguraMat4> {
                     )
             }
     )
-    public FiguraVec4 __div(Object rhs) {
+    public FiguraVec4 __div(@LuaNotNil Object rhs) {
         if (rhs instanceof Number n) {
             double d = n.doubleValue();
             if (d == 0)
@@ -545,7 +546,7 @@ public class FiguraVec4 extends FiguraVector<FiguraVec4, FiguraMat4> {
                     )
             }
     )
-    public FiguraVec4 __mod(Object rhs) {
+    public FiguraVec4 __mod(@LuaNotNil Object rhs) {
         if (rhs instanceof Number n) {
             double d = n.doubleValue();
             if (d == 0)
@@ -596,7 +597,7 @@ public class FiguraVec4 extends FiguraVector<FiguraVec4, FiguraMat4> {
                     types = {Boolean.class, FiguraVec4.class, FiguraVec4.class}
             )
     )
-    public boolean __lt(FiguraVec4 r) {
+    public boolean __lt(@LuaNotNil FiguraVec4 r) {
         return x < r.x && y < r.y && z < r.z && w < r.w;
     }
 
@@ -606,7 +607,7 @@ public class FiguraVec4 extends FiguraVector<FiguraVec4, FiguraMat4> {
                     types = {Boolean.class, FiguraVec4.class, FiguraVec4.class}
             )
     )
-    public boolean __le(FiguraVec4 r) {
+    public boolean __le(@LuaNotNil FiguraVec4 r) {
         return x <= r.x && y <= r.y && z <= r.z && w <= r.w;
     }
 
@@ -640,11 +641,12 @@ public class FiguraVec4 extends FiguraVector<FiguraVec4, FiguraMat4> {
             return null;
         String str = arg.toString();
         int len = str.length();
-        if (len == 1) return switch(str) {
-            case "1", "x", "r" -> x;
-            case "2", "y", "g" -> y;
-            case "3", "z", "b" -> z;
-            case "4", "w", "a" -> w;
+        if (len == 1) return switch(str.charAt(0)) {
+            case '1', 'x', 'r' -> x;
+            case '2', 'y', 'g' -> y;
+            case '3', 'z', 'b' -> z;
+            case '4', 'w', 'a' -> w;
+            case '_' -> 0;
             default -> null;
         };
 
@@ -679,6 +681,7 @@ public class FiguraVec4 extends FiguraVector<FiguraVec4, FiguraMat4> {
             }
     )
     public void __newindex(String key, Object value) {
+        if (key == null) return;
         int len = key.length();
         if (len == 1)  {
             if (value instanceof Number n) {
@@ -688,6 +691,7 @@ public class FiguraVec4 extends FiguraVector<FiguraVec4, FiguraMat4> {
                     case "2", "y", "g" -> y = d;
                     case "3", "z", "b" -> z = d;
                     case "4", "w", "a" -> w = d;
+                    case "_" -> {}
                     default -> throw new LuaError("Invalid key to vector __newindex: " + key);
                 }
                 return;
@@ -702,6 +706,7 @@ public class FiguraVec4 extends FiguraVector<FiguraVec4, FiguraMat4> {
                     case '2', 'y', 'g' -> y = vals[i];
                     case '3', 'z', 'b' -> z = vals[i];
                     case '4', 'w', 'a' -> w = vals[i];
+                    case '_' -> {}
                     default -> throw new LuaError("Invalid key to __newindex: invalid swizzle character: " + key.charAt(i));
                 }
             }

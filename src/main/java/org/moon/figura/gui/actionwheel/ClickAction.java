@@ -60,6 +60,7 @@ public class ClickAction extends Action {
 
     @LuaWhitelist
     public Object __index(String arg) {
+        if (arg == null) return null;
         return switch (arg) {
             case "leftClick" -> leftClick;
             case "rightClick" -> rightClick;
@@ -69,9 +70,11 @@ public class ClickAction extends Action {
 
     @LuaWhitelist
     public void __newindex(String key, Object value) {
+        if (key == null) return;
+        LuaFunction func = value instanceof LuaFunction f ? f : null;
         switch (key) {
-            case "leftClick" -> leftClick = (LuaFunction) value;
-            case "rightClick" -> rightClick = (LuaFunction) value;
+            case "leftClick" -> leftClick = func;
+            case "rightClick" -> rightClick = func;
         }
     }
 

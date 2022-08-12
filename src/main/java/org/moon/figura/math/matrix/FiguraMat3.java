@@ -10,7 +10,6 @@ import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
-import org.moon.figura.math.vector.FiguraVec4;
 import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.caching.CacheStack;
 import org.moon.figura.utils.caching.CacheUtils;
@@ -187,7 +186,7 @@ public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
             ),
             description = "matrix_n.set"
     )
-    public FiguraMat3 set(FiguraMat3 o) {
+    public FiguraMat3 set(@LuaNotNil FiguraMat3 o) {
         return set(o.v11, o.v21, o.v31, o.v12, o.v22, o.v32, o.v13, o.v23, o.v33);
     }
 
@@ -216,7 +215,7 @@ public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
             ),
             description = "matrix_n.multiply"
     )
-    public FiguraMat3 multiply(FiguraMat3 o) {
+    public FiguraMat3 multiply(@LuaNotNil FiguraMat3 o) {
         double nv11 = o.v11 * v11 + o.v12 * v21 + o.v13 * v31;
         double nv12 = o.v11 * v12 + o.v12 * v22 + o.v13 * v32;
         double nv13 = o.v11 * v13 + o.v12 * v23 + o.v13 * v33;
@@ -251,7 +250,7 @@ public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
             ),
             description = "matrix_n.right_multiply"
     )
-    public FiguraMat3 rightMultiply(FiguraMat3 o) {
+    public FiguraMat3 rightMultiply(@LuaNotNil FiguraMat3 o) {
         double nv11 = v11 * o.v11 + v12 * o.v21 + v13 * o.v31;
         double nv12 = v11 * o.v12 + v12 * o.v22 + v13 * o.v32;
         double nv13 = v11 * o.v13 + v12 * o.v23 + v13 * o.v33;
@@ -359,8 +358,14 @@ public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(description = "matrix_n.add")
-    public FiguraMat3 add(FiguraMat3 o) {
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraMat3.class,
+                    argumentNames = "other"
+            ),
+            description = "matrix_n.add"
+    )
+    public FiguraMat3 add(@LuaNotNil FiguraMat3 o) {
         v11 += o.v11;
         v12 += o.v12;
         v13 += o.v13;
@@ -376,8 +381,14 @@ public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(description = "matrix_n.sub")
-    public FiguraMat3 sub(FiguraMat3 o) {
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraMat3.class,
+                    argumentNames = "other"
+            ),
+            description = "matrix_n.sub"
+    )
+    public FiguraMat3 sub(@LuaNotNil FiguraMat3 o) {
         v11 -= o.v11;
         v12 -= o.v12;
         v13 -= o.v13;
@@ -649,8 +660,8 @@ public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
         throw new LuaError("Invalid types to __mul: " + o.getClass().getSimpleName());
     }
     @LuaWhitelist
-    public boolean __eq(@LuaNotNil FiguraMat3 mat) {
-        return this.equals(mat);
+    public boolean __eq(Object o) {
+        return this.equals(o);
     }
     @LuaWhitelist
     public int __len() {
@@ -661,7 +672,9 @@ public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
         return this.toString();
     }
     @LuaWhitelist
-    public Object __index(@LuaNotNil String string) {
+    public Object __index(String string) {
+        if (string == null)
+            return null;
         return switch (string) {
             case "1", "c1" -> this.getColumn(1);
             case "2", "c2" -> this.getColumn(2);
@@ -685,26 +698,27 @@ public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
     }
 
     @LuaWhitelist
-    public void __newindex(@LuaNotNil String string, @LuaNotNil Object value) {
-        if (value instanceof FiguraVec4 vec4) {
+    public void __newindex(String string, Object value) {
+        if (string == null) return;
+        if (value instanceof FiguraVec3 vec3) {
             switch (string) {
                 case "1", "c1" -> {
-                    v11 = vec4.x; v21 = vec4.y; v31 = vec4.z;
+                    v11 = vec3.x; v21 = vec3.y; v31 = vec3.z;
                 }
                 case "2", "c2" -> {
-                    v12 = vec4.x; v22 = vec4.y; v32 = vec4.z;
+                    v12 = vec3.x; v22 = vec3.y; v32 = vec3.z;
                 }
                 case "3", "c3" -> {
-                    v13 = vec4.x; v23 = vec4.y; v33 = vec4.z;
+                    v13 = vec3.x; v23 = vec3.y; v33 = vec3.z;
                 }
                 case "r1" -> {
-                    v11 = vec4.x; v12 = vec4.y; v13 = vec4.z;
+                    v11 = vec3.x; v12 = vec3.y; v13 = vec3.z;
                 }
                 case "r2" -> {
-                    v21 = vec4.x; v22 = vec4.y; v23 = vec4.z;
+                    v21 = vec3.x; v22 = vec3.y; v23 = vec3.z;
                 }
                 case "r3" -> {
-                    v31 = vec4.x; v32 = vec4.y; v33 = vec4.z;
+                    v31 = vec3.x; v32 = vec3.y; v33 = vec3.z;
                 }
             }
             return;

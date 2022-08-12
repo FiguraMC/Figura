@@ -2,7 +2,6 @@ package org.moon.figura.lua.api.vanilla_model;
 
 import org.moon.figura.avatars.model.ParentType;
 import org.moon.figura.avatars.model.VanillaModelProvider;
-import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
@@ -261,7 +260,8 @@ public class VanillaModelAPI {
     }
 
     @LuaWhitelist
-    public Object __index(@LuaNotNil String key) {
+    public Object __index(String key) {
+        if (key == null) return null;
         return switch (key) {
             case "HEAD" -> HEAD;
             case "BODY" -> BODY;

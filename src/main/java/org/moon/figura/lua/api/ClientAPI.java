@@ -1,7 +1,6 @@
 package org.moon.figura.lua.api;
 
 import com.mojang.blaze3d.platform.Window;
-import com.mojang.math.Vector3f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.world.phys.Vec3;

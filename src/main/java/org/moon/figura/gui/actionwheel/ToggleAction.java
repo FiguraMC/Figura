@@ -172,6 +172,7 @@ public class ToggleAction extends Action {
 
     @LuaWhitelist
     public Object __index(String arg) {
+        if (arg == null) return null;
         return switch (arg) {
             case "toggle" -> toggle;
             case "untoggle" -> untoggle;
@@ -181,9 +182,11 @@ public class ToggleAction extends Action {
 
     @LuaWhitelist
     public void __newindex(String key, Object value) {
+        if (key == null) return;
+        LuaFunction func = value instanceof LuaFunction f ? f : null;
         switch (key) {
-            case "toggle" -> toggle = (LuaFunction) value;
-            case "untoggle" -> untoggle = (LuaFunction) value;
+            case "toggle" -> toggle = func;
+            case "untoggle" -> untoggle = func;
         }
     }
 

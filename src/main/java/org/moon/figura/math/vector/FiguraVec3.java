@@ -6,9 +6,11 @@ import net.minecraft.world.phys.Vec3;
 import org.luaj.vm2.LuaDouble;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
+import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.*;
 import org.moon.figura.math.matrix.FiguraMat3;
+import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.MathUtils;
 import org.moon.figura.utils.caching.CacheUtils;
 
@@ -83,11 +85,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
             description = "vector_n.set"
     )
     public FiguraVec3 set(Object x, double y, double z) {
-        if (x instanceof FiguraVec3 vec)
-            return set(vec);
-        if (x instanceof Number n)
-            return set(n.doubleValue(), y, z);
-        throw new LuaError("Illegal type to set(): " + x.getClass().getSimpleName());
+        return set(LuaUtils.parseVec3("set", x, y, z));
     }
 
     @Override
@@ -117,11 +115,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
             description = "vector_n.add"
     )
     public FiguraVec3 add(Object x, double y, double z) {
-        if (x instanceof FiguraVec3 vec)
-            return add(vec);
-        if (x instanceof Number n)
-            return add(n.doubleValue(), y, z);
-        throw new LuaError("Illegal type to add(): " + x.getClass().getSimpleName());
+        return add(LuaUtils.parseVec3("add", x, y, z));
     }
 
     @Override
@@ -151,11 +145,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
             description = "vector_n.sub"
     )
     public FiguraVec3 sub(Object x, double y, double z) {
-        if (x instanceof FiguraVec3 vec)
-            return subtract(vec);
-        if (x instanceof Number n)
-            return subtract(n.doubleValue(), y, z);
-        throw new LuaError("Illegal type to sub(): " + x.getClass().getSimpleName());
+        return subtract(LuaUtils.parseVec3("sub", x, y, z));
     }
 
     @Override
@@ -185,11 +175,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
             description = "vector_n.mul"
     )
     public FiguraVec3 mul(Object x, double y, double z) {
-        if (x instanceof FiguraVec3 vec)
-            return multiply(vec);
-        if (x instanceof Number n)
-            return multiply(n.doubleValue(), y, z);
-        throw new LuaError("Illegal type to mul(): " + x.getClass().getSimpleName());
+        return multiply(LuaUtils.parseVec3("mul", x, y, z));
     }
 
     @Override
@@ -219,11 +205,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
             description = "vector_n.div"
     )
     public FiguraVec3 div(Object x, double y, double z) {
-        if (x instanceof FiguraVec3 vec)
-            return divide(vec);
-        if (x instanceof Number n)
-            return divide(n.doubleValue(), y, z);
-        throw new LuaError("Illegal type to div(): " + x.getClass().getSimpleName());
+        return divide(LuaUtils.parseVec3("div", x, y, z));
     }
 
     @Override
@@ -253,11 +235,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
             description = "vector_n.reduce"
     )
     public FiguraVec3 reduce(Object x, double y, double z) {
-        if (x instanceof FiguraVec3 vec)
-            return reduce(vec);
-        if (x instanceof Number n)
-            return reduce(n.doubleValue(), y, z);
-        throw new LuaError("Illegal type to reduce(): " + x.getClass().getSimpleName());
+        return reduce(LuaUtils.parseVec3("reduce", x, y, z));
     }
 
     @Override
@@ -287,7 +265,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
             ),
             description = "vector_n.transform"
     )
-    public FiguraVec3 transform(FiguraMat3 mat) {
+    public FiguraVec3 transform(@LuaNotNil FiguraMat3 mat) {
         return set(
                 mat.v11 * x + mat.v12 * y + mat.v13 * z,
                 mat.v21 * x + mat.v22 * y + mat.v23 * z,
@@ -318,7 +296,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
             ),
             description = "vector_n.dot"
     )
-    public double dot(FiguraVec3 other) {
+    public double dot(@LuaNotNil FiguraVec3 other) {
         return x * other.x + y * other.y + z * other.z;
     }
 
@@ -402,7 +380,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
             ),
             description = "vector_n.apply_func"
     )
-    public FiguraVec3 applyFunc(LuaFunction function) {
+    public FiguraVec3 applyFunc(@LuaNotNil LuaFunction function) {
         x = function.call(LuaDouble.valueOf(x)).todouble();
         y = function.call(LuaDouble.valueOf(y)).todouble();
         z = function.call(LuaDouble.valueOf(z)).todouble();
@@ -455,7 +433,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
             ),
             description = "vector3.cross"
     )
-    public FiguraVec3 cross(FiguraVec3 other) {
+    public FiguraVec3 cross(@LuaNotNil FiguraVec3 other) {
         double nx = y * other.z - z * other.y;
         double ny = z * other.x - x * other.z;
         double nz = x * other.y - y * other.x;
@@ -471,7 +449,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
             ),
             description = "vector3.crossed"
     )
-    public FiguraVec3 crossed(FiguraVec3 other) {
+    public FiguraVec3 crossed(@LuaNotNil FiguraVec3 other) {
         double nx = y * other.z - z * other.y;
         double ny = z * other.x - x * other.z;
         double nz = x * other.y - y * other.x;
@@ -508,7 +486,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
                     types = {FiguraVec3.class, FiguraVec3.class, FiguraVec3.class}
             )
     )
-    public FiguraVec3 __add(FiguraVec3 other) {
+    public FiguraVec3 __add(@LuaNotNil FiguraVec3 other) {
         return plus(other);
     }
 
@@ -518,7 +496,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
                     types = {FiguraVec3.class, FiguraVec3.class, FiguraVec3.class}
             )
     )
-    public FiguraVec3 __sub(FiguraVec3 other) {
+    public FiguraVec3 __sub(@LuaNotNil FiguraVec3 other) {
         return minus(other);
     }
 
@@ -539,7 +517,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
                     )
             }
     )
-    public static FiguraVec3 __mul(Object a, Object b) {
+    public static FiguraVec3 __mul(@LuaNotNil Object a, @LuaNotNil Object b) {
         if (a instanceof FiguraVec3 vec) {
             if (b instanceof FiguraVec3 vec2)
                 return vec.times(vec2);
@@ -564,7 +542,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
                     )
             }
     )
-    public FiguraVec3 __div(Object rhs) {
+    public FiguraVec3 __div(@LuaNotNil Object rhs) {
         if (rhs instanceof Number n) {
             double d = n.doubleValue();
             if (d == 0)
@@ -587,7 +565,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
                     )
             }
     )
-    public FiguraVec3 __mod(Object rhs) {
+    public FiguraVec3 __mod(@LuaNotNil Object rhs) {
         if (rhs instanceof Number n) {
             double d = n.doubleValue();
             if (d == 0)
@@ -638,7 +616,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
                     types = {Boolean.class, FiguraVec3.class, FiguraVec3.class}
             )
     )
-    public boolean __lt(FiguraVec3 r) {
+    public boolean __lt(@LuaNotNil FiguraVec3 r) {
         return x < r.x && y < r.y && z < r.z;
     }
 
@@ -648,7 +626,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
                     types = {Boolean.class, FiguraVec3.class, FiguraVec3.class}
             )
     )
-    public boolean __le(FiguraVec3 r) {
+    public boolean __le(@LuaNotNil FiguraVec3 r) {
         return x <= r.x && y <= r.y && z <= r.z;
     }
 
@@ -682,10 +660,11 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
             return null;
         String str = arg.toString();
         int len = str.length();
-        if (len == 1) return switch(str) {
-            case "1", "x", "r" -> x;
-            case "2", "y", "g" -> y;
-            case "3", "z", "b" -> z;
+        if (len == 1) return switch(str.charAt(0)) {
+            case '1', 'x', 'r' -> x;
+            case '2', 'y', 'g' -> y;
+            case '3', 'z', 'b' -> z;
+            case '_' -> 0;
             default -> null;
         };
 
@@ -719,6 +698,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
             }
     )
     public void __newindex(String key, Object value) {
+        if (key == null) return;
         int len = key.length();
         if (len == 1)  {
             if (value instanceof Number n) {
@@ -727,6 +707,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
                     case "1", "x", "r" -> x = d;
                     case "2", "y", "g" -> y = d;
                     case "3", "z", "b" -> z = d;
+                    case "_" -> {}
                     default -> throw new LuaError("Invalid key to vector __newindex: " + key);
                 }
                 return;
@@ -740,6 +721,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
                     case '1', 'x', 'r' -> x = vals[i];
                     case '2', 'y', 'g' -> y = vals[i];
                     case '3', 'z', 'b' -> z = vals[i];
+                    case '_' -> {}
                     default -> throw new LuaError("Invalid key to __newindex: invalid swizzle character: " + key.charAt(i));
                 }
             }

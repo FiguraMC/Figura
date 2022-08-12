@@ -149,7 +149,8 @@ public class ActionWheelAPI {
     }
 
     @LuaWhitelist
-    public Object __index(String arg) {
+    public Object __index( String arg) {
+        if (arg == null) return null;
         return switch (arg) {
             case "leftClick" -> leftClick;
             case "rightClick" -> rightClick;
@@ -160,10 +161,12 @@ public class ActionWheelAPI {
 
     @LuaWhitelist
     public void __newindex(String key, Object value) {
+        if (key == null) return;
+        LuaFunction val = value instanceof LuaFunction f ? f : null;
         switch (key) {
-            case "leftClick" -> leftClick = (LuaFunction) value;
-            case "rightClick" -> rightClick = (LuaFunction) value;
-            case "scroll" -> scroll = (LuaFunction) value;
+            case "leftClick" -> leftClick = val;
+            case "rightClick" -> rightClick = val;
+            case "scroll" -> scroll = val;
         }
     }
 

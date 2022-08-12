@@ -127,6 +127,7 @@ public class RendererAPI {
 
     @LuaWhitelist
     public Object __index(String arg) {
+        if (arg == null) return null;
         return switch (arg) {
             case "renderFire" -> renderFire;
             case "renderVehicle" -> renderVehicle;
@@ -136,6 +137,7 @@ public class RendererAPI {
 
     @LuaWhitelist
     public void __newindex(String key, boolean value) {
+        if (key == null) return;
         switch (key) {
             case "renderFire" -> renderFire = value;
             case "renderVehicle" -> renderVehicle = value;

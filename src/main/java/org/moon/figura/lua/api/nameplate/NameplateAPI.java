@@ -33,6 +33,7 @@ public class NameplateAPI {
 
     @LuaWhitelist
     public Object __index(String arg) {
+        if (arg == null) return null;
         return switch (arg) {
             case "CHAT" -> CHAT;
             case "ENTITY" -> ENTITY;

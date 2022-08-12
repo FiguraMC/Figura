@@ -753,7 +753,9 @@ public class FiguraModelPart {
 
     //-- METAMETHODS --//
     @LuaWhitelist
-    public Object __index(@LuaNotNil String key) {
+    public Object __index(String key) {
+        if (key == null) return null;
+
         if (this.childCache.containsKey(key))
             return this.childCache.get(key);
 

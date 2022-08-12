@@ -302,6 +302,7 @@ public class BlockStateAPI {
 
     @LuaWhitelist
     public Object __index(String arg) {
+        if (arg == null) return null;
         return switch (arg) {
             case "id" -> id;
             case "properties" -> properties;

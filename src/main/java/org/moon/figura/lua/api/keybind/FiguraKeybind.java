@@ -152,6 +152,7 @@ public class FiguraKeybind {
 
     @LuaWhitelist
     public Object __index(String arg) {
+        if (arg == null) return null;
         return switch (arg) {
             case "onPress" -> onPress;
             case "onRelease" -> onRelease;
@@ -164,12 +165,15 @@ public class FiguraKeybind {
 
     @LuaWhitelist
     public void __newindex(String key, Object value) {
+        if (key == null) return;
+        LuaFunction func = value instanceof LuaFunction f ? f : null;
+        boolean bool = value instanceof Boolean b ? b : false;
         switch (key) {
-            case "onPress" -> onPress = (LuaFunction) value;
-            case "onRelease" -> onRelease = (LuaFunction) value;
-            case "enabled" -> enabled = (Boolean) value;
-            case "gui" -> gui = (Boolean) value;
-            case "override" -> override = (Boolean) value;
+            case "onPress" -> onPress = func;
+            case "onRelease" -> onRelease = func;
+            case "enabled" -> enabled = bool;
+            case "gui" -> gui = bool;
+            case "override" -> override = bool;
         }
     }
 

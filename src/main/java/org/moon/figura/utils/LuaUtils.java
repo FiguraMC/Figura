@@ -30,11 +30,11 @@ public class LuaUtils {
     public static FiguraVec3 parseVec3(String methodName, Object x, Double y, Double z, double defaultX, double defaultY, double defaultZ) {
         if (x instanceof FiguraVec3 vec)
             return vec.copy();
-        if (x == null || x instanceof Double) {
+        if (x == null || x instanceof Number) {
             if (x == null) x = defaultX;
             if (y == null) y = defaultY;
             if (z == null) z = defaultZ;
-            return FiguraVec3.of((double) x, y, z);
+            return FiguraVec3.of(((Number) x).doubleValue(), y, z);
         }
         throw new LuaError("Illegal argument to " + methodName + "(): " + x.getClass().getSimpleName());
     }
@@ -46,10 +46,10 @@ public class LuaUtils {
     public static FiguraVec2 parseVec2(String methodName, Object x, Double y, double defaultX, double defaultY) {
         if (x instanceof FiguraVec2 vec)
             return vec.copy();
-        if (x == null || x instanceof Double) {
+        if (x == null || x instanceof Number) {
             if (x == null) x = defaultX;
             if (y == null) y = defaultY;
-            return FiguraVec2.of((double) x, y);
+            return FiguraVec2.of(((Number) x).doubleValue(), y);
         }
         throw new LuaError("Illegal argument to " + methodName + "(): " + x.getClass().getSimpleName());
     }

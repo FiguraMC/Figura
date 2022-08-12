@@ -333,6 +333,7 @@ public class Animation {
 
     @LuaWhitelist
     public Object __index(String arg) {
+        if (arg == null) return null;
         if (arg.equals("name"))
             return name;
         return null;

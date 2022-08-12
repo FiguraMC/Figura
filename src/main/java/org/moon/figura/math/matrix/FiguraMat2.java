@@ -7,7 +7,6 @@ import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec2;
-import org.moon.figura.math.vector.FiguraVec4;
 import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.caching.CacheStack;
 import org.moon.figura.utils.caching.CacheUtils;
@@ -142,7 +141,7 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
             ),
             description = "matrix_n.set"
     )
-    public FiguraMat2 set(FiguraMat2 o) {
+    public FiguraMat2 set(@LuaNotNil FiguraMat2 o) {
         return set(o.v11, o.v21, o.v12, o.v22);
     }
 
@@ -165,7 +164,7 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
             ),
             description = "matrix_n.multiply"
     )
-    public FiguraMat2 multiply(FiguraMat2 o) {
+    public FiguraMat2 multiply(@LuaNotNil FiguraMat2 o) {
         double nv11 = o.v11 * v11 + o.v12 * v21;
         double nv12 = o.v11 * v12 + o.v12 * v22;
 
@@ -189,7 +188,7 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
             ),
             description = "matrix_n.right_multiply"
     )
-    public FiguraMat2 rightMultiply(FiguraMat2 o) {
+    public FiguraMat2 rightMultiply(@LuaNotNil FiguraMat2 o) {
         double nv11 = v11 * o.v11 + v12 * o.v21;
         double nv12 = v11 * o.v12 + v12 * o.v22;
 
@@ -257,8 +256,13 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(description = "matrix_n.add")
-    public FiguraMat2 add(FiguraMat2 o) {
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraMat2.class,
+                    argumentNames = "other"
+            ),
+            description = "matrix_n.add")
+    public FiguraMat2 add(@LuaNotNil FiguraMat2 o) {
         v11 += o.v11;
         v12 += o.v12;
         v21 += o.v21;
@@ -269,8 +273,14 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(description = "matrix_n.sub")
-    public FiguraMat2 sub(FiguraMat2 o) {
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraMat2.class,
+                    argumentNames = "other"
+            ),
+            description = "matrix_n.sub"
+    )
+    public FiguraMat2 sub(@LuaNotNil FiguraMat2 o) {
         v11 -= o.v11;
         v12 -= o.v12;
         v21 -= o.v21;
@@ -362,8 +372,8 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
         throw new LuaError("Invalid types to __mul: " + o.getClass().getSimpleName());
     }
     @LuaWhitelist
-    public boolean __eq(@LuaNotNil FiguraMat2 mat) {
-        return this.equals(mat);
+    public boolean __eq(Object o) {
+        return this.equals(o);
     }
     @LuaWhitelist
     public int __len() {
@@ -374,7 +384,9 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
         return this.toString();
     }
     @LuaWhitelist
-    public Object __index(@LuaNotNil String string) {
+    public Object __index(String string) {
+        if (string == null)
+            return null;
         return switch (string) {
             case "1", "c1" -> this.getColumn(1);
             case "2", "c2" -> this.getColumn(2);
@@ -391,20 +403,21 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
     }
 
     @LuaWhitelist
-    public void __newindex(@LuaNotNil String string, @LuaNotNil Object value) {
-        if (value instanceof FiguraVec4 vec4) {
+    public void __newindex(String string, Object value) {
+        if (string == null) return;
+        if (value instanceof FiguraVec2 vec2) {
             switch (string) {
                 case "1", "c1" -> {
-                    v11 = vec4.x; v21 = vec4.y;
+                    v11 = vec2.x; v21 = vec2.y;
                 }
                 case "2", "c2" -> {
-                    v12 = vec4.x; v22 = vec4.y;
+                    v12 = vec2.x; v22 = vec2.y;
                 }
                 case "r1" -> {
-                    v11 = vec4.x; v12 = vec4.y;
+                    v11 = vec2.x; v12 = vec2.y;
                 }
                 case "r2" -> {
-                    v21 = vec4.x; v22 = vec4.y;
+                    v21 = vec2.x; v22 = vec2.y;
                 }
             }
             return;

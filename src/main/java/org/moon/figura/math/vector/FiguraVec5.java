@@ -3,6 +3,7 @@ package org.moon.figura.math.vector;
 import org.luaj.vm2.LuaDouble;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
+import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.*;
 import org.moon.figura.math.matrix.FiguraMatrix;
@@ -87,7 +88,7 @@ public class FiguraVec5 extends FiguraVector<FiguraVec5, FiguraMatrix.DummyMatri
             },
             description = "vector_n.set"
     )
-    public FiguraVec5 set(Object x, double y, double z, double w, double t) {
+    public FiguraVec5 set(@LuaNotNil Object x, double y, double z, double w, double t) {
         if (x instanceof FiguraVec5 vec)
             return set(vec);
         if (x instanceof Number n)
@@ -123,7 +124,7 @@ public class FiguraVec5 extends FiguraVector<FiguraVec5, FiguraMatrix.DummyMatri
             },
             description = "vector_n.add"
     )
-    public FiguraVec5 add(Object x, double y, double z, double w, double t) {
+    public FiguraVec5 add(@LuaNotNil Object x, double y, double z, double w, double t) {
         if (x instanceof FiguraVec5 vec)
             return add(vec);
         if (x instanceof Number n)
@@ -159,7 +160,7 @@ public class FiguraVec5 extends FiguraVector<FiguraVec5, FiguraMatrix.DummyMatri
             },
             description = "vector_n.sub"
     )
-    public FiguraVec5 sub(Object x, double y, double z, double w, double t) {
+    public FiguraVec5 sub(@LuaNotNil Object x, double y, double z, double w, double t) {
         if (x instanceof FiguraVec5 vec)
             return subtract(vec);
         if (x instanceof Number n)
@@ -194,7 +195,7 @@ public class FiguraVec5 extends FiguraVector<FiguraVec5, FiguraMatrix.DummyMatri
             },
             description = "vector_n.mul"
     )
-    public FiguraVec5 mul(Object x, double y, double z, double w, double t) {
+    public FiguraVec5 mul(@LuaNotNil Object x, double y, double z, double w, double t) {
         if (x instanceof FiguraVec5 vec)
             return multiply(vec);
         if (x instanceof Number n)
@@ -230,7 +231,7 @@ public class FiguraVec5 extends FiguraVector<FiguraVec5, FiguraMatrix.DummyMatri
             },
             description = "vector_n.div"
     )
-    public FiguraVec5 div(Object x, double y, double z, double w, double t) {
+    public FiguraVec5 div(@LuaNotNil Object x, double y, double z, double w, double t) {
         if (x instanceof FiguraVec5 vec)
             return divide(vec);
         if (x instanceof Number n)
@@ -266,7 +267,7 @@ public class FiguraVec5 extends FiguraVector<FiguraVec5, FiguraMatrix.DummyMatri
             },
             description = "vector_n.reduce"
     )
-    public FiguraVec5 reduce(Object x, double y, double z, double w, double t) {
+    public FiguraVec5 reduce(@LuaNotNil Object x, double y, double z, double w, double t) {
         if (x instanceof FiguraVec5 vec)
             return reduce(vec);
         if (x instanceof Number n)
@@ -322,7 +323,7 @@ public class FiguraVec5 extends FiguraVector<FiguraVec5, FiguraMatrix.DummyMatri
             ),
             description = "vector_n.dot"
     )
-    public double dot(FiguraVec5 other) {
+    public double dot(@LuaNotNil FiguraVec5 other) {
         return x * other.x + y * other.y + z * other.z + w * other.w + t * other.t;
     }
 
@@ -406,7 +407,7 @@ public class FiguraVec5 extends FiguraVector<FiguraVec5, FiguraMatrix.DummyMatri
             ),
             description = "vector_n.apply_func"
     )
-    public FiguraVec5 applyFunc(LuaFunction function) {
+    public FiguraVec5 applyFunc(@LuaNotNil LuaFunction function) {
         x = function.call(LuaDouble.valueOf(x)).todouble();
         y = function.call(LuaDouble.valueOf(y)).todouble();
         z = function.call(LuaDouble.valueOf(z)).todouble();
@@ -467,7 +468,7 @@ public class FiguraVec5 extends FiguraVector<FiguraVec5, FiguraMatrix.DummyMatri
                     types = {FiguraVec5.class, FiguraVec5.class, FiguraVec5.class}
             )
     )
-    public FiguraVec5 __add(FiguraVec5 other) {
+    public FiguraVec5 __add(@LuaNotNil FiguraVec5 other) {
         return plus(other);
     }
 
@@ -477,7 +478,7 @@ public class FiguraVec5 extends FiguraVector<FiguraVec5, FiguraMatrix.DummyMatri
                     types = {FiguraVec5.class, FiguraVec5.class, FiguraVec5.class}
             )
     )
-    public FiguraVec5 __sub(FiguraVec5 other) {
+    public FiguraVec5 __sub(@LuaNotNil FiguraVec5 other) {
         return minus(other);
     }
 
@@ -495,7 +496,7 @@ public class FiguraVec5 extends FiguraVector<FiguraVec5, FiguraMatrix.DummyMatri
                     )
             }
     )
-    public static FiguraVec5 __mul(Object a, Object b) {
+    public static FiguraVec5 __mul(@LuaNotNil Object a, @LuaNotNil Object b) {
         if (a instanceof FiguraVec5 vec) {
             if (b instanceof FiguraVec5 vec2)
                 return vec.times(vec2);
@@ -518,7 +519,7 @@ public class FiguraVec5 extends FiguraVector<FiguraVec5, FiguraMatrix.DummyMatri
                     )
             }
     )
-    public FiguraVec5 __div(Object rhs) {
+    public FiguraVec5 __div(@LuaNotNil Object rhs) {
         if (rhs instanceof Number n) {
             double d = n.doubleValue();
             if (d == 0)
@@ -541,7 +542,7 @@ public class FiguraVec5 extends FiguraVector<FiguraVec5, FiguraMatrix.DummyMatri
                     )
             }
     )
-    public FiguraVec5 __mod(Object rhs) {
+    public FiguraVec5 __mod(@LuaNotNil Object rhs) {
         if (rhs instanceof Number n) {
             double d = n.doubleValue();
             if (d == 0)
@@ -592,7 +593,7 @@ public class FiguraVec5 extends FiguraVector<FiguraVec5, FiguraMatrix.DummyMatri
                     types = {Boolean.class, FiguraVec5.class, FiguraVec5.class}
             )
     )
-    public boolean __lt(FiguraVec5 r) {
+    public boolean __lt(@LuaNotNil FiguraVec5 r) {
         return x < r.x && y < r.y && z < r.z && w < r.w && t < r.t;
     }
 
@@ -602,7 +603,7 @@ public class FiguraVec5 extends FiguraVector<FiguraVec5, FiguraMatrix.DummyMatri
                     types = {Boolean.class, FiguraVec5.class, FiguraVec5.class}
             )
     )
-    public boolean __le(FiguraVec5 r) {
+    public boolean __le(@LuaNotNil FiguraVec5 r) {
         return x <= r.x && y <= r.y && z <= r.z && w <= r.w && t <= r.t;
     }
 
@@ -636,12 +637,13 @@ public class FiguraVec5 extends FiguraVector<FiguraVec5, FiguraMatrix.DummyMatri
             return null;
         String str = arg.toString();
         int len = str.length();
-        if (len == 1) return switch(str) {
-            case "1", "x", "r" -> x;
-            case "2", "y", "g" -> y;
-            case "3", "z", "b" -> z;
-            case "4", "w", "a" -> w;
-            case "5", "t" -> t;
+        if (len == 1) return switch(str.charAt(0)) {
+            case '1', 'x', 'r' -> x;
+            case '2', 'y', 'g' -> y;
+            case '3', 'z', 'b' -> z;
+            case '4', 'w', 'a' -> w;
+            case '5', 't' -> t;
+            case '_' -> 0;
             default -> null;
         };
 
@@ -677,6 +679,7 @@ public class FiguraVec5 extends FiguraVector<FiguraVec5, FiguraMatrix.DummyMatri
             }
     )
     public void __newindex(String key, Object value) {
+        if (key == null) return;
         int len = key.length();
         if (len == 1)  {
             if (value instanceof Number n) {
@@ -687,6 +690,7 @@ public class FiguraVec5 extends FiguraVector<FiguraVec5, FiguraMatrix.DummyMatri
                     case "3", "z", "b" -> z = d;
                     case "4", "w", "a" -> w = d;
                     case "5", "t" -> t = d;
+                    case "_" -> {}
                     default -> throw new LuaError("Invalid key to vector __newindex: " + key);
                 }
                 return;
@@ -702,6 +706,7 @@ public class FiguraVec5 extends FiguraVector<FiguraVec5, FiguraMatrix.DummyMatri
                     case '3', 'z', 'b' -> z = vals[i];
                     case '4', 'w', 'a' -> w = vals[i];
                     case '5', 't' -> t = vals[i];
+                    case '_' -> {}
                     default -> throw new LuaError("Invalid key to __newindex: invalid swizzle character: " + key.charAt(i));
                 }
             }

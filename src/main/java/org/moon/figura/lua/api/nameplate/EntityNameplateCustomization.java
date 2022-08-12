@@ -1,5 +1,6 @@
 package org.moon.figura.lua.api.nameplate;
 
+import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
@@ -80,7 +81,7 @@ public class EntityNameplateCustomization extends NameplateCustomization {
             ),
             description = "nameplate_entity.set_visible"
     )
-    public void setVisible(Boolean visible) {
+    public void setVisible(@LuaNotNil Boolean visible) {
         this.visible = visible;
     }
 

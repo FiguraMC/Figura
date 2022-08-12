@@ -62,6 +62,7 @@ public class EventsAPI {
             comment = "events.__index.comment1"
     ))
     public Object __index(String key) {
+        if (key == null) return null;
         return switch (key) {
             case "TICK" -> TICK;
             case "WORLD_TICK" -> WORLD_TICK;
