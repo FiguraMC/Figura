@@ -150,7 +150,7 @@ public class LuaTypeManager {
                     if (argIndex <= args.narg() && !nil) {
                         try {
                             actualArgs[i] = switch (argumentTypes[i].getName()) {
-                                case "java.lang.Double", "double" -> args.checkdouble(argIndex);
+                                case "java.lang.Number", "java.lang.Double", "double" -> args.checkdouble(argIndex);
                                 case "java.lang.String" -> args.checkjstring(argIndex);
                                 case "java.lang.Boolean", "boolean" -> args.toboolean(argIndex);
                                 case "java.lang.Float", "float" -> (float) args.checkdouble(argIndex);

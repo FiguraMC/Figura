@@ -70,6 +70,7 @@ public class FiguraDocsManager {
         put(double.class, "Number");
         put(Float.class, "Number");
         put(float.class, "Number");
+        put(Number.class, "Number");
 
         put(Integer.class, "Integer");
         put(int.class, "Integer");

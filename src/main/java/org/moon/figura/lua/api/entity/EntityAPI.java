@@ -1,5 +1,6 @@
 package org.moon.figura.lua.api.entity;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
@@ -39,7 +40,6 @@ import java.util.UUID;
 public class EntityAPI<T extends Entity> {
 
     protected final UUID entityUUID;
-    private final Class<?> entityClass; //thanks java for making this required for what I wanted to do
     protected T entity; //We just do not care about memory anymore so, just have something not wrapped in a WeakReference
 
     private String cacheType;
@@ -47,7 +47,6 @@ public class EntityAPI<T extends Entity> {
     public EntityAPI(T entity) {
         this.entity = entity;
         entityUUID = entity.getUUID();
-        entityClass = entity.getClass();
     }
 
     public static EntityAPI<?> wrap(Entity e) {
@@ -61,10 +60,10 @@ public class EntityAPI<T extends Entity> {
     }
 
     protected final void checkEntity() {
-        if (entity.isRemoved()) {
-            Entity newEntity = EntityUtils.getEntityByUUID(entityUUID);
-            if (entityClass.isInstance(newEntity))
-                entity = (T) newEntity;
+        if (entity.isRemoved() || entity.level != Minecraft.getInstance().level) {
+            T newEntityInstance = (T) EntityUtils.getEntityByUUID(entityUUID);
+            if (newEntityInstance != null)
+                entity = newEntityInstance;
         }
     }
 
