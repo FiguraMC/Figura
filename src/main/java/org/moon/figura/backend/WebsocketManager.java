@@ -39,7 +39,7 @@ public class WebsocketManager extends WebSocketClient {
         put(4002, "Too Many Connections");
     }};
 
-    //limits
+    //limits //(hey thats us)
     public int maxAvatarSize, maxAvatars;
 
     public final RefilledNumber pingSize = new RefilledNumber();

@@ -227,6 +227,8 @@ public class LuaTypeManager {
     //we need to allow string being numbers here
     //however in places like pings and print we should keep strings as strings
     public Object luaToJava(LuaValue val) {
+        if (val instanceof LuaInteger integer) //because java jank
+            return integer.checkint();
         return switch (val.type()) {
             case LuaValue.TBOOLEAN -> val.checkboolean();
             case LuaValue.TLIGHTUSERDATA, LuaValue.TUSERDATA -> val.checkuserdata(Object.class);
