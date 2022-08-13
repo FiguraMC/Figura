@@ -62,6 +62,13 @@ public class ConfigWidget extends AbstractContainerElement {
         this.entries.add(element);
     }
 
+    public boolean isChanged() {
+        for (AbstractConfigElement entry : entries)
+            if (entry.isChanged())
+                return true;
+        return false;
+    }
+
     public int getHeight() {
         return parentConfig.isToggled() ? height : 20;
     }

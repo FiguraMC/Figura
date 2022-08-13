@@ -66,13 +66,13 @@ public class EnumElement extends AbstractConfigElement {
         if (!this.isVisible()) return;
 
         //reset enabled
-        this.resetButton.active = this.config.tempValue != this.config.defaultValue;
+        this.resetButton.active = this.isDefault();
 
         //button text
         Component text = names.get((int) this.config.tempValue % this.names.size());
 
         //edited colour
-        if (this.config.tempValue != this.initValue)
+        if (this.isChanged())
             text = text.copy().setStyle(FiguraMod.getAccentColor());
 
         //set text

@@ -9,6 +9,7 @@ import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.trust.TrustContainer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -16,16 +17,21 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Camera.class)
 public abstract class CameraMixin {
 
-    @Shadow protected abstract void setRotation(float yaw, float pitch);
-
     @Shadow private float xRot;
     @Shadow private float yRot;
 
+    @Unique private Avatar avatar;
+
+    @Shadow protected abstract void setRotation(float yaw, float pitch);
+    @Shadow protected abstract void move(double x, double y, double z);
+
     @Inject(method = "setup", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setPosition(DDD)V", shift = At.Shift.BEFORE))
     private void setupRot(BlockGetter area, Entity focusedEntity, boolean thirdPerson, boolean inverseView, float tickDelta, CallbackInfo ci) {
-        Avatar avatar = AvatarManager.getAvatar(focusedEntity);
-        if (avatar == null || avatar.luaRuntime == null || avatar.trust.get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 0)
+        avatar = AvatarManager.getAvatar(focusedEntity);
+        if (avatar == null || avatar.luaRuntime == null || avatar.trust.get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 0) {
+            avatar = null;
             return;
+        }
 
         float x = xRot;
         float y = yRot;
@@ -43,5 +49,16 @@ public abstract class CameraMixin {
         }
 
         setRotation(y, x);
+    }
+
+    @Inject(method = "setup", at = @At(value = "RETURN"))
+    private void setupPos(BlockGetter area, Entity focusedEntity, boolean thirdPerson, boolean inverseView, float tickDelta, CallbackInfo ci) {
+        if (avatar != null) {
+            FiguraVec3 pos = avatar.luaRuntime.renderer.cameraPos;
+            if (pos != null)
+                move(-pos.z, pos.y, -pos.x);
+
+            avatar = null;
+        }
     }
 }

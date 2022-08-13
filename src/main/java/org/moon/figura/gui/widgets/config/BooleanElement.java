@@ -26,13 +26,13 @@ public class BooleanElement extends AbstractConfigElement {
         if (!this.isVisible()) return;
 
         //reset enabled
-        this.resetButton.active = this.config.tempValue != this.config.defaultValue;
+        this.resetButton.active = this.isDefault();
 
         //button text
         Component text = (boolean) config.tempValue ? ON : OFF;
 
         //edited colour
-        if (this.config.tempValue != this.initValue)
+        if (isChanged())
             text = text.copy().setStyle(FiguraMod.getAccentColor());
 
         //set text

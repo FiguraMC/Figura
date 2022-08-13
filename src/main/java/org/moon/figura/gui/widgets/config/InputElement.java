@@ -48,15 +48,14 @@ public class InputElement extends AbstractConfigElement {
     public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
         if (!this.isVisible()) return;
 
-        String text = textField.getField().getValue();
-
         //reset enabled
-        this.resetButton.active = !text.equals(formatText(config.defaultValue));
+        this.resetButton.active = isDefault();
 
         //text colour
         int color = 0xFFFFFF;
 
         //invalid config
+        String text = textField.getField().getValue();
         if (!config.inputType.validator.test(text)) {
             color = 0xFF5555;
         }
@@ -86,6 +85,16 @@ public class InputElement extends AbstractConfigElement {
     public void setPos(int x, int y) {
         this.textField.setPos(x + width - 154, y);
         super.setPos(x, y);
+    }
+
+    @Override
+    public boolean isDefault() {
+        return !textField.getField().getValue().equals(formatText(config.defaultValue));
+    }
+
+    @Override
+    public boolean isChanged() {
+        return !textField.getField().getValue().equals(formatText(initValue));
     }
 
     public TextField getTextField() {

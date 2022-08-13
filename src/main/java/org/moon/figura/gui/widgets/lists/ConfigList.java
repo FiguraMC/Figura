@@ -117,4 +117,11 @@ public class ConfigList extends AbstractList {
         //set new scroll percentage
         scrollBar.setScrollProgress(pastScroll / (totalHeight - height));
     }
+
+    public boolean hasChanges() {
+        for (ConfigWidget config : configs)
+            if (config.isChanged())
+                return true;
+        return false;
+    }
 }

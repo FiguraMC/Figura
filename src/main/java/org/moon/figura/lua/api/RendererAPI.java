@@ -31,6 +31,8 @@ public class RendererAPI {
     @LuaFieldDoc(description = "renderer.render_vehicle")
     public boolean renderVehicle = true;
 
+    public FiguraVec3 cameraPos;
+    public FiguraVec3 cameraPivot;
     public FiguraVec3 cameraRot;
     public FiguraVec3 cameraBonusRot;
     public ResourceLocation postShader;
@@ -75,6 +77,42 @@ public class RendererAPI {
     @LuaMethodDoc(description = "renderer.is_camera_backwards")
     public boolean isCameraBackwards() {
         return checkCameraOwner(this.owner) && Minecraft.getInstance().options.getCameraType().isMirrored();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "pos"
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"x", "y", "z"}
+                    )
+            },
+            description = "renderer.set_camera_pos"
+    )
+    public void setCameraPos(Object x, Double y, Double z) {
+        this.cameraPos = x == null ? null : LuaUtils.parseVec3("setCameraPos", x, y, z);
+    }
+
+    //@LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "pivot"
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"x", "y", "z"}
+                    )
+            },
+            description = "renderer.set_camera_pivot"
+    )
+    public void setCameraPivot(Object x, Double y, Double z) {
+        this.cameraPivot = x == null ? null : LuaUtils.parseVec3("setCameraPivot", x, y, z);
     }
 
     @LuaWhitelist

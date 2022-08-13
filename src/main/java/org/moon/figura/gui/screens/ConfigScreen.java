@@ -25,6 +25,7 @@ public class ConfigScreen extends AbstractPanelScreen {
     public static final Map<Config, Boolean> CATEGORY_DATA = new HashMap<>();
 
     private ConfigList list;
+    private TexturedButton cancel;
     private final boolean hasPanels;
 
     public ConfigScreen(Screen parentScreen) {
@@ -49,7 +50,7 @@ public class ConfigScreen extends AbstractPanelScreen {
         // -- bottom buttons -- //
 
         //cancel
-        this.addRenderableWidget(new TexturedButton(width / 2 - 122, height - 24, 120, 20, FiguraText.of("gui.cancel"), null, button -> {
+        this.addRenderableWidget(cancel = new TexturedButton(width / 2 - 122, height - 24, 120, 20, FiguraText.of("gui.cancel"), null, button -> {
             ConfigManager.discardConfig();
             list.updateList();
         }));
@@ -63,6 +64,12 @@ public class ConfigScreen extends AbstractPanelScreen {
 
         int width = Math.min(this.width - 8, 420);
         this.addRenderableWidget(list = new ConfigList((this.width - width) / 2, 28, width, height - 56));
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        this.cancel.active = list.hasChanges();
     }
 
     @Override

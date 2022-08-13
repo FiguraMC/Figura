@@ -62,6 +62,14 @@ public abstract class AbstractConfigElement extends AbstractContainerElement {
         return over;
     }
 
+    public boolean isDefault() {
+        return this.config.tempValue != this.config.defaultValue;
+    }
+
+    public boolean isChanged() {
+        return this.config.tempValue != this.initValue;
+    }
+
     public void setPos(int x, int y) {
         this.x = x;
         this.y = y;

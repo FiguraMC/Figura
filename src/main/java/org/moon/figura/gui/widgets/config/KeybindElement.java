@@ -31,7 +31,7 @@ public class KeybindElement extends AbstractConfigElement {
         if (!this.isVisible()) return;
 
         //reset enabled
-        this.resetButton.active = !this.binding.isDefault();
+        this.resetButton.active = isDefault();
 
         //button message
         button.setMessage(binding.getTranslatedKeyMessage());
@@ -60,5 +60,15 @@ public class KeybindElement extends AbstractConfigElement {
 
         this.button.x = x + width - 154;
         this.button.y = y;
+    }
+
+    @Override
+    public boolean isDefault() {
+        return !this.binding.isDefault();
+    }
+
+    @Override
+    public boolean isChanged() {
+        return false;
     }
 }
