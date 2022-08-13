@@ -36,7 +36,11 @@ public class FiguraVec4 extends FiguraVector<FiguraVec4, FiguraMat4> {
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(description = "vector_n.reset")
+    @LuaMethodDoc(description = "vector_n.reset",
+            overloads = @LuaFunctionOverload(
+                    returnType = FiguraVector.class
+            )
+    )
     public FiguraVec4 reset() {
         x = y = z = w = 0;
         return this;

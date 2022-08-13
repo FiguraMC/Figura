@@ -39,7 +39,11 @@ public class FiguraVec5 extends FiguraVector<FiguraVec5, FiguraMatrix.DummyMatri
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(description = "vector_n.reset")
+    @LuaMethodDoc(description = "vector_n.reset",
+            overloads = @LuaFunctionOverload(
+                    returnType = FiguraVector.class
+            )
+    )
     public FiguraVec5 reset() {
         x = y = z = w = t = 0;
         return this;

@@ -11,6 +11,7 @@ import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec4;
+import org.moon.figura.math.vector.FiguraVec5;
 import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.caching.CacheStack;
 import org.moon.figura.utils.caching.CacheUtils;
@@ -423,7 +424,11 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(description = "matrix_n.reset")
+    @LuaMethodDoc(description = "matrix_n.reset",
+            overloads = @LuaFunctionOverload(
+                    returnType = FiguraMatrix.class
+            )
+    )
     public FiguraMat4 reset() {
         return super.reset();
     }

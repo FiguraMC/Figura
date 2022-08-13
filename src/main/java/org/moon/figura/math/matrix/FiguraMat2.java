@@ -7,6 +7,8 @@ import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec2;
+import org.moon.figura.math.vector.FiguraVec5;
+import org.moon.figura.math.vector.FiguraVector;
 import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.caching.CacheStack;
 import org.moon.figura.utils.caching.CacheUtils;
@@ -246,7 +248,11 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(description = "matrix_n.reset")
+    @LuaMethodDoc(description = "matrix_n.reset",
+            overloads = @LuaFunctionOverload(
+                    returnType = FiguraMatrix.class
+            )
+    )
     public FiguraMat2 reset() {
         return super.reset();
     }

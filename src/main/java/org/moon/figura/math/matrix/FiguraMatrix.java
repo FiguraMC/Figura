@@ -8,7 +8,7 @@ import org.moon.figura.utils.caching.CachedType;
 public abstract class FiguraMatrix<T extends FiguraMatrix<T, V>, V extends FiguraVector<V, T>> implements CachedType<T> {
 
     protected T cachedInverse = null;
-    protected double cachedDeterminant = Double.MAX_VALUE;
+    protected double cachedDeterminant = Double.NaN;
     protected FiguraMatrix() {}
 
     protected abstract double calculateDeterminant();
@@ -52,7 +52,7 @@ public abstract class FiguraMatrix<T extends FiguraMatrix<T, V>, V extends Figur
     }
 
     public T reset() {
-        cachedDeterminant = Double.MAX_VALUE;
+        cachedDeterminant = Double.NaN;
         cachedInverse = null;
         resetIdentity();
         return (T) this;
@@ -63,7 +63,7 @@ public abstract class FiguraMatrix<T extends FiguraMatrix<T, V>, V extends Figur
     }
 
     public double det() {
-        if (cachedDeterminant != Double.MAX_VALUE)
+        if (!Double.isNaN(cachedDeterminant))
             return cachedDeterminant;
         cachedDeterminant = calculateDeterminant();
         if (cachedDeterminant == 0)
@@ -75,7 +75,7 @@ public abstract class FiguraMatrix<T extends FiguraMatrix<T, V>, V extends Figur
         if (cachedInverse != null)
             cachedInverse.free();
         cachedInverse = null;
-        cachedDeterminant = Double.MAX_VALUE;
+        cachedDeterminant = Double.NaN;
     }
 
     protected static String getString(Double... d) {

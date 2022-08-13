@@ -42,7 +42,12 @@ public class FiguraVec6 extends FiguraVector<FiguraVec6, FiguraMatrix.DummyMatri
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(description = "vector_n.reset")
+    @LuaMethodDoc(
+            description = "vector_n.reset",
+            overloads = @LuaFunctionOverload(
+                    returnType = FiguraVector.class
+            )
+    )
     public FiguraVec6 reset() {
         x = y = z = w = t = h = 0;
         return this;

@@ -5,7 +5,7 @@ import org.moon.figura.config.Config;
 
 public class NewNetworkManager {
 
-
+    public static BackendConnection currentConnection;
 
     public static String getBackendAddress() {
         ServerAddress backendIP = ServerAddress.parseString(Config.BACKEND_IP.asString());

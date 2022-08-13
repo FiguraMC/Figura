@@ -59,6 +59,7 @@ public class WebsocketManager extends WebSocketClient {
     }
 
     public void tick() {
+        //Tick all refilled numbers
         pingSize.tick();
         pingRate.tick();
         equip.tick();
