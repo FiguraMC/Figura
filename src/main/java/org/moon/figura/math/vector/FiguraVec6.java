@@ -472,7 +472,7 @@ public class FiguraVec6 extends FiguraVector<FiguraVec6, FiguraMatrix.DummyMatri
     @Override
     @LuaWhitelist
     public String toString() {
-        return "{" + x + ", " + y + ", " + z + ", " + w + ", " + t + ", " + h + "}";
+        return getString(x, y, z, w, t, h);
     }
 
     // -- metamethods -- //

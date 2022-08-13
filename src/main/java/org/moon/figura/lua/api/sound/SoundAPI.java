@@ -93,11 +93,11 @@ public class SoundAPI {
             overloads = {
                     @LuaFunctionOverload(
                             argumentTypes = {String.class, LuaTable.class},
-                            argumentNames = {"name", "byte array"}
+                            argumentNames = {"name", "byteArray"}
                     ),
                     @LuaFunctionOverload(
                             argumentTypes = {String.class, String.class},
-                            argumentNames = {"name", "base64 text"}
+                            argumentNames = {"name", "base64Text"}
                     )
             },
             description = "sounds.add_sound"

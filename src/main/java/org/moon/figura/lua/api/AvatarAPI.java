@@ -36,7 +36,7 @@ public class AvatarAPI {
             description = "avatar.store"
     )
     public void store(@LuaNotNil String key, LuaValue value) {
-        storedStuff.set(key, value);
+        storedStuff.set(key, value == null ? LuaValue.NIL : value);
     }
 
     @LuaWhitelist

@@ -126,6 +126,11 @@ public class FiguraLuaRuntime {
                 return varargsOf(NIL, e.getMessageObject());
             }
         }
+
+        @Override
+        public String tojstring() {
+            return "function: loadstring";
+        }
     };
     private void loadExtraLibraries() {
         //load print functions

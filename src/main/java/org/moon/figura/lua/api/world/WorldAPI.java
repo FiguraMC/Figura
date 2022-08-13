@@ -6,9 +6,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.Blocks;
+import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaTable;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
+import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.entity.EntityAPI;
 import org.moon.figura.lua.api.entity.PlayerAPI;
@@ -16,10 +18,12 @@ import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.utils.EntityUtils;
 import org.moon.figura.utils.LuaUtils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -290,6 +294,22 @@ public class WorldAPI {
         for (Player player : getCurrentWorld().players())
             playerList.put(player.getName().getString(), PlayerAPI.wrap(player));
         return playerList;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = String.class,
+                    argumentNames = "UUID"
+            ),
+            description = "world.get_entity"
+    )
+    public static EntityAPI<?> getEntity(@LuaNotNil String uuid) {
+        try {
+            return EntityAPI.wrap(EntityUtils.getEntityByUUID(UUID.fromString(uuid)));
+        } catch (Exception ignored) {
+            throw new LuaError("Invalid UUID");
+        }
     }
 
     @LuaWhitelist

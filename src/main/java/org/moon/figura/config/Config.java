@@ -10,6 +10,7 @@ import net.minecraft.client.multiplayer.resolver.ServerAddress;
 import net.minecraft.network.chat.Component;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.backend.NetworkManager;
+import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.FiguraText;
 
@@ -58,6 +59,13 @@ public enum Config {
     LOG_LOCATION(0, 2),
     ALLOW_FP_HANDS(false),
     CHAT_MESSAGES(false),
+    LOG_NUMBER_LENGTH(5, InputType.POSITIVE_INT) {
+        @Override
+        public void onChange() {
+            super.onChange();
+            FiguraLuaPrinter.loadDF();
+        }
+    },
 
     ActionWheel,
     ACTION_WHEEL_BUTTON("key.keyboard.b"),
@@ -83,12 +91,12 @@ public enum Config {
 
     Misc,
     POPUP_BUTTON("key.keyboard.r"),
+    RELOAD_BUTTON("key.keyboard.unknown"),
+    PANIC_BUTTON("key.keyboard.unknown"),
     BUTTON_LOCATION(0, 5),
     EASTER_EGGS(true),
 
     Dev {{this.name = FiguraText.of("config.dev").withStyle(ChatFormatting.RED);}},
-    RELOAD_BUTTON("key.keyboard.unknown"),
-    PANIC_BUTTON("key.keyboard.unknown"),
     RENDER_DEBUG_PARTS_PIVOT(2, 3) {{
         String tooltip = "config.render_debug_parts_pivot.tooltip";
         this.tooltip = FiguraText.of(tooltip,
@@ -224,6 +232,7 @@ public enum Config {
         } catch (Exception e) {
             FiguraMod.LOGGER.warn("Failed to set this config (" + this.name() + ") value \"" + value + "\", restoring it to default", e);
             value = defaultValue;
+            change = true;
         }
 
         tempValue = value;
@@ -265,6 +274,7 @@ public enum Config {
     public enum InputType {
         ANY(s -> true),
         INT(s -> s.matches("^[-+]?\\d*$")),
+        POSITIVE_INT(s -> s.matches("^\\+?\\d*$")),
         FLOAT(s -> s.matches("^[-+]?\\d*(\\.(\\d*)?)?$")),
         HEX_COLOR(s -> s.matches("^#?(?i)[\\da-f]{0,6}$") || ColorUtils.Colors.getColor(s) != null),
         FOLDER_PATH(s -> {

@@ -456,7 +456,7 @@ public class FiguraVec4 extends FiguraVector<FiguraVec4, FiguraMat4> {
     @Override
     @LuaWhitelist
     public String toString() {
-        return "{" + x + ", " + y + ", " + z + ", " + w + "}";
+        return getString(x, y, z, w);
     }
 
     // -- metamethods -- //

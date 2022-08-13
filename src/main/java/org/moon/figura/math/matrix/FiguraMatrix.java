@@ -1,5 +1,6 @@
 package org.moon.figura.math.matrix;
 
+import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.math.vector.FiguraVector;
 import org.moon.figura.utils.caching.CacheUtils;
 import org.moon.figura.utils.caching.CachedType;
@@ -75,6 +76,23 @@ public abstract class FiguraMatrix<T extends FiguraMatrix<T, V>, V extends Figur
             cachedInverse.free();
         cachedInverse = null;
         cachedDeterminant = Double.MAX_VALUE;
+    }
+
+    protected static String getString(Double... d) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("\n[");
+
+        int mod = (int) Math.sqrt(d.length);
+
+        for (int i = 0; i < d.length; i++) {
+            if (i % mod == 0)
+                sb.append("\n\t");
+            sb.append(FiguraLuaPrinter.df.format(d[i]));
+            if (i < d.length - 1)
+                sb.append(", ");
+        }
+
+        return sb.append("\n]").toString();
     }
 
     public static abstract class DummyMatrix<V extends FiguraVector<V, DummyMatrix<V>>> extends FiguraMatrix<DummyMatrix<V>, V> {}

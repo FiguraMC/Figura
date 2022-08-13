@@ -31,6 +31,7 @@ import org.moon.figura.lua.api.sound.SoundAPI;
 import org.moon.figura.math.matrix.FiguraMat2;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
+import org.moon.figura.math.matrix.FiguraMatrix;
 import org.moon.figura.math.vector.*;
 import org.moon.figura.lua.api.*;
 import org.moon.figura.lua.api.entity.EntityAPI;
@@ -100,6 +101,7 @@ public class FiguraDocsManager {
 
         //Figura types
         put(FiguraVector.class, "Vector");
+        put(FiguraMatrix.class, "Matrix");
     }};
     private static final Map<Class<?>, String> CLASS_COMMAND_MAP = new HashMap<>();
 

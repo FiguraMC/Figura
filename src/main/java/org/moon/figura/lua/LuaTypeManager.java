@@ -195,6 +195,11 @@ public class LuaTypeManager {
                 //Convert the return value
                 return javaToLua(result);
             }
+
+            @Override
+            public String tojstring() {
+                return "function: " + method.getName();
+            }
         };
     }
 
@@ -237,17 +242,25 @@ public class LuaTypeManager {
     //we need to allow string being numbers here
     //however in places like pings and print we should keep strings as strings
     public Object luaToJava(LuaValue val) {
-        if (val instanceof LuaInteger integer) //because java jank
-            return integer.checkint();
-        return switch (val.type()) {
-            case LuaValue.TBOOLEAN -> val.checkboolean();
-            case LuaValue.TLIGHTUSERDATA, LuaValue.TUSERDATA -> val.checkuserdata(Object.class);
-            case LuaValue.TNUMBER -> val.isint() ? val.checkint() : val.checkdouble();
-            case LuaValue.TSTRING -> val.checkjstring();
-            case LuaValue.TTABLE -> val.checktable();
-            case LuaValue.TFUNCTION -> val.checkfunction();
-            default -> null;
-        };
+        if (val.istable())
+            return val.checktable();
+        else if (val.isnumber())
+            if (val instanceof LuaInteger i) //dumb
+                return i.checkint();
+            else if (val.isint() && val instanceof LuaString s) //very dumb
+                return s.checkint();
+            else
+                return val.checkdouble();
+        else if (val.isstring())
+            return val.checkjstring();
+        else if (val.isboolean())
+            return val.checkboolean();
+        else if (val.isfunction())
+            return val.checkfunction();
+        else if (val.isuserdata())
+            return val.checkuserdata(Object.class);
+        else
+            return null;
     }
 
     public LuaValue javaToLua(Object val) {

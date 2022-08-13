@@ -59,7 +59,7 @@ public class LuaEvent {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = {LuaFunction.class, LuaFunction.class},
-                    argumentNames = {"predicate", "function"}
+                    argumentNames = {"predicate", "toRun"}
             ),
             description = "event.run_once"
     )
@@ -77,6 +77,11 @@ public class LuaEvent {
                     remove(uniqueName);
                 }
                 return result;
+            }
+
+            @Override
+            public String tojstring() {
+                return "function: " + uniqueName;
             }
         };
         register(wrappedInPredicate, uniqueName);

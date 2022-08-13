@@ -124,11 +124,7 @@ public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
     }
     @Override
     public String toString() {
-        return "\n[\n  " +
-                (float) v11 + ", " + (float) v12 + ", " + (float) v13 + ",\n  " +
-                (float) v21 + ", " + (float) v22 + ", " + (float) v23 + ",\n  " +
-                (float) v31 + ", " + (float) v32 + ", " + (float) v33 +
-                "\n]";
+        return getString(v11, v12, v13, v21, v22, v23, v31, v32, v33);
     }
 
     @Override

@@ -50,15 +50,6 @@ public class MathUtils {
         };
     }
 
-    public static boolean getBool(long number, int byteAt) {
-        int byteVal = (int) Math.pow(2, byteAt);
-        return (number & byteVal) == byteVal;
-    }
-
-    public static double modulus(double number, double mod) {
-        return ((number % mod) + mod) % mod;
-    }
-
     //maya pls check those //ty <3 <3
     public static FiguraVec3 rotateAroundAxis(FiguraVec3 vec, FiguraVec3 axis, double degrees) {
         FiguraVec3 normalizedAxis = axis.normalized();

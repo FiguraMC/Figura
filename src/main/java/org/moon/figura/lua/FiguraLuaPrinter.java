@@ -15,11 +15,24 @@ import org.moon.figura.utils.TextUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.LinkedList;
 import java.util.UUID;
 import java.util.function.Function;
 
 public class FiguraLuaPrinter {
+
+    public static DecimalFormat df;
+    static {
+        loadDF();
+    }
+
+    public static void loadDF() {
+        int config = Config.LOG_NUMBER_LENGTH.asInt();
+        df = new DecimalFormat("0" + (config > 0 ? "." + "#".repeat(config) : ""));
+        df.setRoundingMode(RoundingMode.DOWN);
+    }
 
     public static void loadPrintFunctions(FiguraLuaRuntime runtime) {
         LuaValue print = PRINT_FUNCTION.apply(runtime);
@@ -117,6 +130,11 @@ public class FiguraLuaPrinter {
 
             return NIL;
         }
+
+        @Override
+        public String tojstring() {
+            return "function: print";
+        }
     };
 
     private static final Function<FiguraLuaRuntime, LuaValue> PRINT_JSON_FUNCTION = runtime -> new VarArgFunction() {
@@ -132,6 +150,11 @@ public class FiguraLuaPrinter {
             sendLuaMessage(text, runtime.owner.entityName);
 
             return NIL;
+        }
+
+        @Override
+        public String tojstring() {
+            return "function: printJson";
         }
     };
 
@@ -151,6 +174,11 @@ public class FiguraLuaPrinter {
             sendLuaMessage(text, runtime.owner.entityName);
 
             return NIL;
+        }
+
+        @Override
+        public String tojstring() {
+            return "function: printTable";
         }
     };
 
@@ -244,7 +272,7 @@ public class FiguraLuaPrinter {
         //format value
         if (!(value instanceof LuaString) && value.isnumber()) {
             Double d = value.checkdouble();
-            ret = d == Math.rint(d) ? String.valueOf(d.longValue()) : String.valueOf(d);
+            ret = d == Math.rint(d) ? String.valueOf(d.longValue()) : df.format(d);
         } else {
             ret = value.tojstring();
             if (value.isstring() && quoteStrings)

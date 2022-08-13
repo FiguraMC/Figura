@@ -46,10 +46,15 @@ public final class ConfigManager {
                         if (object == null)
                             continue;
 
-                        if (config.type == Config.ConfigType.KEYBIND)
-                            config.keyBind.setKey(InputConstants.getKey((object.getAsString())));
-                        else
-                            config.setValue(object.getAsString());
+                        String obj = object.getAsString();
+                        switch (config.type) {
+                            case KEYBIND -> config.keyBind.setKey(InputConstants.getKey(obj));
+                            case INPUT -> {
+                                if (config.inputType.validator.test(obj))
+                                    config.setValue(obj);
+                            }
+                            default -> config.setValue(obj);
+                        }
                     }
                 }
 

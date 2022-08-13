@@ -393,7 +393,7 @@ public class FiguraVec2 extends FiguraVector<FiguraVec2, FiguraMat2> {
     @Override
     @LuaWhitelist
     public String toString() {
-        return "{" + x + ", " + y + "}";
+        return getString(x, y);
     }
 
     // -- metamethods -- //

@@ -1,5 +1,6 @@
 package org.moon.figura.math.vector;
 
+import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.math.matrix.FiguraMatrix;
 import org.moon.figura.utils.caching.CachedType;
 
@@ -109,4 +110,17 @@ public abstract class FiguraVector<T extends FiguraVector<T, M>, M extends Figur
     }
 
     public abstract String toString();
+
+    protected static String getString(Double... d) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+
+        for (int i = 0; i < d.length; i++) {
+            sb.append(FiguraLuaPrinter.df.format(d[i]));
+            if (i < d.length - 1)
+                sb.append(", ");
+        }
+
+        return sb.append("}").toString();
+    }
 }

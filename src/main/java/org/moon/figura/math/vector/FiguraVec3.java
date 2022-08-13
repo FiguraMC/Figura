@@ -6,6 +6,7 @@ import net.minecraft.world.phys.Vec3;
 import org.luaj.vm2.LuaDouble;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
+import org.moon.figura.config.Config;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.*;
@@ -420,7 +421,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
     @Override
     @LuaWhitelist
     public String toString() {
-        return "{" + x + ", " + y + ", " + z + "}";
+        return getString(x, y, z);
     }
 
     // -- vec3 specific -- //

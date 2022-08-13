@@ -152,6 +152,7 @@
 
   "figura.config.input.any": "Text...",
   "figura.config.input.int": "Integer...",
+  "figura.config.input.positive_int": "Integer...",
   "figura.config.input.float": "Number...",
   "figura.config.input.hex_color": "Color...",
   "figura.config.input.folder_path": "Path...",
@@ -189,6 +190,9 @@
 
   "figura.config.chat_messages": "Chat Messages",
   "figura.config.chat_messages.tooltip": "Toggles if scripts can change and/or send chat messages for you",
+
+  "figura.config.log_number_length": "Print Number Length",
+  "figura.config.log_number_length.tooltip": "Changes the length of the decimal places that will be displayed within print functions",
 
   "figura.config.actionwheel": "Action Wheel",
   "figura.config.actionwheel.tooltip": "Action Wheel settings",
@@ -258,6 +262,12 @@
   "figura.config.popup_button": "Popup Menu",
   "figura.config.popup_button.tooltip": "Button to open a popup menu with quick actions for the targeted user",
 
+  "figura.config.reload_button": "Reload Avatar",
+  "figura.config.reload_button.tooltip": "Reloads current equipped avatar on press",
+
+  "figura.config.panic_button": "Panic Button",
+  "figura.config.panic_button.tooltip": "Stop the rendering of all avatars",
+
   "figura.config.button_location": "Menu Button Location",
   "figura.config.button_location.tooltip": "Location of the figura button",
   "figura.config.button_location.1": "Icon",
@@ -273,12 +283,6 @@
 
   "figura.config.dev": "Dev",
   "figura.config.dev.tooltip": "Developer/Experimental settings",
-
-  "figura.config.reload_button": "Reload Avatar",
-  "figura.config.reload_button.tooltip": "Reloads current equipped avatar on press",
-
-  "figura.config.panic_button": "Panic Button",
-  "figura.config.panic_button.tooltip": "Stop the rendering of all avatars",
 
   "figura.config.render_debug_parts_pivot": "Render Parts Pivot",
   "figura.config.render_debug_parts_pivot.tooltip": "Render the Pivots from %d and %d when the hitbox debug rendering is enabled",
@@ -523,6 +527,7 @@
   "figura.docs.world.get_sky_light_level": "Gets the sky light level of the block at the given position.",
   "figura.docs.world.get_block_light_level": "Gets the block light level of the block at the given position.",
   "figura.docs.world.is_open_sky": "Gets whether or not the sky is open at the given position.",
+  "figura.docs.world.get_entity": "Returns an EntityAPI object from this UUID's entity, or nil if no entity was found.",
   "figura.docs.world.get_players": "Returns a table containing instances of Player for all players in the world. The players are indexed by their names.",
   "figura.docs.world.player_vars": "Returns a table from all players in the world containing variables stored from their Avatar api's store() function. The players are indexed by their names.",
   "figura.docs.world.exists": "Checks whether or not a world currently exists. This will almost always be true, but might be false on some occasions such as while travelling between dimensions.",
@@ -706,6 +711,7 @@
   "figura.docs.vanilla_group.get_visible": "Gets whether you have set this parts to be visible or invisible. Only responds to your own changes in script, not anything done by Minecraft.",
 
   "figura.docs.entity": "Acts as a proxy for an entity in the Minecraft world.",
+  "figura.docs.entity.is_loaded": "Checks if this entity object is still being updated and loaded. A non loaded entity would be someone who is in another dimension or out of the render distance for example.",
   "figura.docs.entity.get_pos": "Gets the position of the entity in the world. If delta is passed in, then it will be used to linearly interpolate the position of the entity between the previous tick and the current tick. The default value of delta is 1.",
   "figura.docs.entity.get_rot": "Gets the rotation of the entity in degrees. If delta is passed in, then it will be used to linearly interpolate the rotation of the entity between the previous tick and the current tick. The default value of delta is 1.",
   "figura.docs.entity.get_uuid": "Gets the UUID of the proxied entity.",

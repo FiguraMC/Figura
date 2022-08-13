@@ -42,6 +42,7 @@ public class EntityAPI<T extends Entity> {
     protected final UUID entityUUID;
     protected T entity; //We just do not care about memory anymore so, just have something not wrapped in a WeakReference
 
+    private boolean thingy = true;
     private String cacheType;
 
     public EntityAPI(T entity) {
@@ -62,9 +63,17 @@ public class EntityAPI<T extends Entity> {
     protected final void checkEntity() {
         if (entity.isRemoved() || entity.level != Minecraft.getInstance().level) {
             T newEntityInstance = (T) EntityUtils.getEntityByUUID(entityUUID);
-            if (newEntityInstance != null)
+            thingy = newEntityInstance != null;
+            if (thingy)
                 entity = newEntityInstance;
         }
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(description = "entity.is_loaded")
+    public boolean isLoaded() {
+        checkEntity();
+        return thingy;
     }
 
     @LuaWhitelist
