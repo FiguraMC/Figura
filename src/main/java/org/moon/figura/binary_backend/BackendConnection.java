@@ -4,10 +4,13 @@ import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.binary_backend.handlers.MessageHandlerV0;
+import org.moon.figura.binary_backend.packets.AbstractPacket;
 import org.moon.figura.binary_backend.packets.server2client.S2CConnectedPacket;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.utils.FiguraText;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
@@ -15,7 +18,7 @@ import java.util.Map;
 
 public class BackendConnection extends WebSocketClient {
 
-    private ConnectionInfo connectionInfo;
+    private ConnectionInfo connectionInfo = new ConnectionInfo();
     public final NewMessageHandler messageHandler = MessageHandlerV0.get();
 
     public BackendConnection(URI serverUri) {
@@ -24,9 +27,9 @@ public class BackendConnection extends WebSocketClient {
 
     @Override
     public void onOpen(ServerHandshake handshakedata) {
-//        String backendAddress = NewNetworkManager.getBackendAddress();
-//        FiguraMod.LOGGER.info("Connecting to " + FiguraMod.MOD_NAME + " ws backend (" + backendAddress + ")");
-//        send(NetworkManager.authToken);
+        String backendAddress = NewNetworkManager.getBackendAddress();
+        FiguraMod.LOGGER.info("Connecting to " + FiguraMod.MOD_NAME + " ws backend (" + backendAddress + ")");
+//        send(NewNetworkManager.authToken);
     }
 
     @Override
@@ -48,6 +51,21 @@ public class BackendConnection extends WebSocketClient {
         FiguraMod.LOGGER.info("Code: " + code + ", Remote: " + remote);
         FiguraToast.sendToast(FiguraText.of("backend.disconnected"), reason, FiguraToast.ToastType.ERROR);
 //        messageHandler.handleClose(code);
+    }
+
+    public void send(String text) {
+        throw new UnsupportedOperationException("Cannot send String, only byte[]");
+    }
+
+    public void sendPacket(AbstractPacket packet) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        DataOutputStream dos = new DataOutputStream(baos);
+        try {
+            packet.write(dos);
+        } catch (Exception e) {
+            FiguraMod.LOGGER.error("Packet could not be written to DataOutputStream", e);
+        }
+        send(baos.toByteArray());
     }
 
     @Override

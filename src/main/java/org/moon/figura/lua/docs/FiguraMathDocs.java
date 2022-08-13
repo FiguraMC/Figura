@@ -1,6 +1,6 @@
 package org.moon.figura.lua.docs;
 
-import org.moon.figura.math.vector.FiguraVector;
+import org.moon.figura.math.vector.*;
 
 /**
  * Adds docs for the functions added to Lua's math library.
@@ -18,10 +18,30 @@ public class FiguraMathDocs {
                             returnType = Double.class
                     ),
                     @LuaFunctionOverload(
-                            argumentTypes = {FiguraVector.class, FiguraVector.class, Double.class},
+                            argumentTypes = {FiguraVec2.class, FiguraVec2.class, Double.class},
                             argumentNames = {"a", "b", "t"},
-                            returnType = FiguraVector.class
-                    )
+                            returnType = FiguraVec2.class
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraVec3.class, FiguraVec3.class, Double.class},
+                            argumentNames = {"a", "b", "t"},
+                            returnType = FiguraVec3.class
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraVec4.class, FiguraVec4.class, Double.class},
+                            argumentNames = {"a", "b", "t"},
+                            returnType = FiguraVec4.class
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraVec5.class, FiguraVec5.class, Double.class},
+                            argumentNames = {"a", "b", "t"},
+                            returnType = FiguraVec5.class
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraVec6.class, FiguraVec6.class, Double.class},
+                            argumentNames = {"a", "b", "t"},
+                            returnType = FiguraVec6.class
+                    ),
             },
             description = "math.lerp"
     )

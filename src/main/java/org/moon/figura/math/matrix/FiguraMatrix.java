@@ -78,11 +78,11 @@ public abstract class FiguraMatrix<T extends FiguraMatrix<T, V>, V extends Figur
         cachedDeterminant = Double.NaN;
     }
 
-    protected static String getString(Double... d) {
+    protected String getString(Double... d) {
         StringBuilder sb = new StringBuilder();
         sb.append("\n[");
 
-        int mod = (int) Math.sqrt(d.length);
+        int mod = cols();
 
         for (int i = 0; i < d.length; i++) {
             if (i % mod == 0)

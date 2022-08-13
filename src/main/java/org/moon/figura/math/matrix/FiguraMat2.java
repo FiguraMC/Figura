@@ -65,7 +65,11 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(description = "matrix_n.copy")
+    @LuaMethodDoc(description = "matrix_n.copy",
+            overloads = @LuaFunctionOverload(
+                    returnType = FiguraMat2.class
+            )
+    )
     public FiguraMat2 copy() {
         return of(v11, v21, v12, v22);
     }
@@ -92,7 +96,8 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = Integer.class,
-                    argumentNames = "col"
+                    argumentNames = "col",
+                    returnType = FiguraVec2.class
             ),
             description = "matrix_n.get_column"
     )
@@ -109,7 +114,8 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = Integer.class,
-                    argumentNames = "row"
+                    argumentNames = "row",
+                    returnType = FiguraVec2.class
             ),
             description = "matrix_n.get_row"
     )
@@ -136,7 +142,8 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = FiguraMat2.class,
-                    argumentNames = "other"
+                    argumentNames = "other",
+                    returnType = FiguraMat2.class
             ),
             description = "matrix_n.set"
     )
@@ -159,7 +166,8 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = FiguraMat2.class,
-                    argumentNames = "other"
+                    argumentNames = "other",
+                    returnType = FiguraMat2.class
             ),
             description = "matrix_n.multiply"
     )
@@ -183,7 +191,8 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = FiguraMat2.class,
-                    argumentNames = "other"
+                    argumentNames = "other",
+                    returnType = FiguraMat2.class
             ),
             description = "matrix_n.right_multiply"
     )
@@ -204,7 +213,11 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(description = "matrix_n.transpose")
+    @LuaMethodDoc(description = "matrix_n.transpose",
+            overloads = @LuaFunctionOverload(
+                    returnType = FiguraMat2.class
+            )
+    )
     public FiguraMat2 transpose() {
         double temp;
         temp = v12; v12 = v21; v21 = temp;
@@ -214,14 +227,22 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(description = "matrix_n.transposed")
+    @LuaMethodDoc(description = "matrix_n.transposed",
+            overloads = @LuaFunctionOverload(
+                    returnType = FiguraMat2.class
+            )
+    )
     public FiguraMat2 transposed() {
         return super.transposed();
     }
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(description = "matrix_n.invert")
+    @LuaMethodDoc(description = "matrix_n.invert",
+            overloads = @LuaFunctionOverload(
+                    returnType = FiguraMat2.class
+            )
+    )
     public FiguraMat2 invert() {
         double det = det();
         return set(
@@ -234,7 +255,11 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(description = "matrix_n.inverted")
+    @LuaMethodDoc(description = "matrix_n.inverted",
+            overloads = @LuaFunctionOverload(
+                    returnType = FiguraMat2.class
+            )
+    )
     public FiguraMat2 inverted() {
         return super.inverted();
     }
@@ -250,7 +275,7 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
     @LuaWhitelist
     @LuaMethodDoc(description = "matrix_n.reset",
             overloads = @LuaFunctionOverload(
-                    returnType = FiguraMatrix.class
+                    returnType = FiguraMat2.class
             )
     )
     public FiguraMat2 reset() {
@@ -262,7 +287,8 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = FiguraMat2.class,
-                    argumentNames = "other"
+                    argumentNames = "other",
+                    returnType = FiguraMat2.class
             ),
             description = "matrix_n.add")
     public FiguraMat2 add(@LuaNotNil FiguraMat2 o) {
@@ -279,7 +305,8 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = FiguraMat2.class,
-                    argumentNames = "other"
+                    argumentNames = "other",
+                    returnType = FiguraMat2.class
             ),
             description = "matrix_n.sub"
     )
@@ -371,8 +398,10 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
             return this.times(mat);
         else if (o instanceof FiguraVec2 vec)
             return this.times(vec);
+        else if (o instanceof Number n)
+            return this.scale(n.doubleValue(), n.doubleValue());
 
-        throw new LuaError("Invalid types to __mul: " + o.getClass().getSimpleName());
+        throw new LuaError("Invalid types to Matrix2 __mul: " + o.getClass().getSimpleName());
     }
     @LuaWhitelist
     public boolean __eq(Object o) {
@@ -434,6 +463,6 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
             }
             return;
         }
-        throw new LuaError("Illegal arguments to FiguraMat2 __newindex: " + string + ", " + value);
+        throw new LuaError("Illegal arguments to Matrix2 __newindex: " + string + ", " + value);
     }
 }

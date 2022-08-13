@@ -45,7 +45,7 @@ public class FiguraVec6 extends FiguraVector<FiguraVec6, FiguraMatrix.DummyMatri
     @LuaMethodDoc(
             description = "vector_n.reset",
             overloads = @LuaFunctionOverload(
-                    returnType = FiguraVector.class
+                    returnType = FiguraVec6.class
             )
     )
     public FiguraVec6 reset() {
@@ -294,7 +294,8 @@ public class FiguraVec6 extends FiguraVector<FiguraVec6, FiguraMatrix.DummyMatri
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = Double.class,
-                    argumentNames = "factor"
+                    argumentNames = "factor",
+                    returnType = FiguraVec6.class
             ),
             description = "vector_n.scale"
     )
@@ -324,7 +325,11 @@ public class FiguraVec6 extends FiguraVector<FiguraVec6, FiguraMatrix.DummyMatri
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(description = "vector_n.copy")
+    @LuaMethodDoc(description = "vector_n.copy",
+            overloads = @LuaFunctionOverload(
+                    returnType = FiguraVec6.class
+            )
+    )
     public FiguraVec6 copy() {
         return of(x, y, z, w, t, h);
     }
@@ -344,14 +349,22 @@ public class FiguraVec6 extends FiguraVector<FiguraVec6, FiguraMatrix.DummyMatri
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(description = "vector_n.normalize")
+    @LuaMethodDoc(description = "vector_n.normalize",
+            overloads = @LuaFunctionOverload(
+                    returnType = FiguraVec6.class
+            )
+    )
     public FiguraVec6 normalize() {
         return super.normalize();
     }
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(description = "vector_n.normalized")
+    @LuaMethodDoc(description = "vector_n.normalized",
+            overloads = @LuaFunctionOverload(
+                    returnType = FiguraVec6.class
+            )
+    )
     public FiguraVec6 normalized() {
         return super.normalized();
     }
@@ -361,7 +374,8 @@ public class FiguraVec6 extends FiguraVector<FiguraVec6, FiguraMatrix.DummyMatri
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = {Double.class, Double.class},
-                    argumentNames = {"minLength", "maxLength"}
+                    argumentNames = {"minLength", "maxLength"},
+                    returnType = FiguraVec6.class
             ),
             description = "vector_n.clamp_length"
     )
@@ -373,7 +387,8 @@ public class FiguraVec6 extends FiguraVector<FiguraVec6, FiguraMatrix.DummyMatri
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = {Double.class, Double.class},
-                    argumentNames = {"minLength", "maxLength"}
+                    argumentNames = {"minLength", "maxLength"},
+                    returnType = FiguraVec6.class
             ),
             description = "vector_n.clamped"
     )
@@ -390,26 +405,42 @@ public class FiguraVec6 extends FiguraVector<FiguraVec6, FiguraMatrix.DummyMatri
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(description = "vector_n.to_rad")
+    @LuaMethodDoc(description = "vector_n.to_rad",
+            overloads = @LuaFunctionOverload(
+                    returnType = FiguraVec6.class
+            )
+    )
     public FiguraVec6 toRad() {
         return super.toRad();
     }
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(description = "vector_n.to_deg")
+    @LuaMethodDoc(description = "vector_n.to_deg",
+            overloads = @LuaFunctionOverload(
+                    returnType = FiguraVec6.class
+            )
+    )
     public FiguraVec6 toDeg() {
         return super.toDeg();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "vector_n.floor")
+    @LuaMethodDoc(description = "vector_n.floor",
+            overloads = @LuaFunctionOverload(
+                    returnType = FiguraVec6.class
+            )
+    )
     public FiguraVec6 floor() {
         return FiguraVec6.of(Math.floor(x), Math.floor(y), Math.floor(z), Math.floor(w), Math.floor(t), Math.floor(h));
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "vector_n.ceil")
+    @LuaMethodDoc(description = "vector_n.ceil",
+            overloads = @LuaFunctionOverload(
+                    returnType = FiguraVec6.class
+            )
+    )
     public FiguraVec6 ceil() {
         return FiguraVec6.of(Math.ceil(x), Math.ceil(y), Math.ceil(z), Math.ceil(w), Math.ceil(t), Math.ceil(h));
     }
