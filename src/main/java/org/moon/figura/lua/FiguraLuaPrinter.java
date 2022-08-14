@@ -17,7 +17,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -25,10 +27,10 @@ public class FiguraLuaPrinter {
 
     public static DecimalFormat df;
     static {
-        loadDF();
+        updateDecimalFormatting();
     }
 
-    public static void loadDF() {
+    public static void updateDecimalFormatting() {
         int config = Config.LOG_NUMBER_LENGTH.asInt();
         df = new DecimalFormat("0" + (config > 0 ? "." + "#".repeat(config) : ""));
         df.setRoundingMode(RoundingMode.DOWN);
@@ -223,22 +225,29 @@ public class FiguraLuaPrinter {
         Class<?> clazz = data.getClass();
         if (clazz.isAnnotationPresent(LuaWhitelist.class)) {
             //fields
+            Set<String> fields = new HashSet<>();
             for (Field field : clazz.getFields()) {
-                if (!field.isAnnotationPresent(LuaWhitelist.class))
+                String name = field.getName();
+                if (!field.isAnnotationPresent(LuaWhitelist.class) && fields.contains(name))
                     continue;
 
                 try {
                     Object obj = field.get(data);
-                    text.append(getTableEntry(typeManager, spacing, LuaValue.valueOf(field.getName()), typeManager.javaToLua(obj), hasTooltip, depth, indent));
+                    text.append(getTableEntry(typeManager, spacing, LuaValue.valueOf(name), typeManager.javaToLua(obj), hasTooltip, depth, indent));
+                    fields.add(name);
                 } catch (Exception e) {
                     FiguraMod.LOGGER.error("", e);
                 }
             }
 
             //methods
+            Set<String> methods = new HashSet<>();
             for (Method method : clazz.getMethods()) {
-                if (method.isAnnotationPresent(LuaWhitelist.class) && !method.getName().startsWith("__"))
-                    text.append(getTableEntry(typeManager, spacing, LuaValue.valueOf(method.getName()), typeManager.getWrapper(method), hasTooltip, depth, indent));
+                String name = method.getName();
+                if (method.isAnnotationPresent(LuaWhitelist.class) && !name.startsWith("__") && !methods.contains(name)) {
+                    text.append(getTableEntry(typeManager, spacing, LuaValue.valueOf(name), typeManager.getWrapper(method), hasTooltip, depth, indent));
+                    methods.add(name);
+                }
             }
         }
 

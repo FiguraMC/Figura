@@ -97,7 +97,7 @@ public class RendererAPI {
         this.cameraPos = x == null ? null : LuaUtils.parseVec3("setCameraPos", x, y, z);
     }
 
-    //@LuaWhitelist
+    @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload(

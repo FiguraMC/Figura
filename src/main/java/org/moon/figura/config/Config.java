@@ -63,7 +63,7 @@ public enum Config {
         @Override
         public void onChange() {
             super.onChange();
-            FiguraLuaPrinter.loadDF();
+            FiguraLuaPrinter.updateDecimalFormatting();
         }
     },
 
@@ -278,15 +278,11 @@ public enum Config {
         FLOAT(s -> s.matches("^[-+]?\\d*(\\.(\\d*)?)?$")),
         HEX_COLOR(s -> s.matches("^#?(?i)[\\da-f]{0,6}$") || ColorUtils.Colors.getColor(s) != null),
         FOLDER_PATH(s -> {
-            if (!s.isBlank()) {
-                try {
-                    return Path.of(s.trim()).toFile().isDirectory();
-                } catch (Exception ignored) {
-                    return false;
-                }
+            try {
+                return s.isBlank() || Path.of(s.trim()).toFile().isDirectory();
+            } catch (Exception ignored) {
+                return false;
             }
-
-            return true;
         }),
         IP(ServerAddress::isValidAddress);
 
