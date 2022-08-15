@@ -21,14 +21,15 @@
     "gui.SplashManagerMixin",
 
     "input.InputConstantsTypeMixin",
-    "input.KeyMappingAccessor",
     "input.KeyboardHandlerMixin",
+    "input.KeyMappingAccessor",
+    "input.KeyMappingMixin",
     "input.MouseHandlerMixin",
 
     "render.CameraMixin",
     "render.EntityRenderDispatcherMixin",
-    "render.GameRendererMixin",
     "render.GameRendererAccessor",
+    "render.GameRendererMixin",
     "render.PlayerModelMixin",
     "render.PoseStackMixin",
 
@@ -38,8 +39,8 @@
     "render.layers.ParrotOnShoulderLayerMixin",
 
     "render.layers.elytra.ElytraLayerAccessor",
-    "render.layers.elytra.ElytraModelAccessor",
     "render.layers.elytra.ElytraLayerMixin",
+    "render.layers.elytra.ElytraModelAccessor",
 
     "render.layers.items.ItemInHandLayerMixin",
     "render.layers.items.PlayerItemInHandLayerMixin",

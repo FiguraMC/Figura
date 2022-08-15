@@ -12,8 +12,9 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 @Mixin(Camera.class)
 public abstract class CameraMixin {
@@ -25,7 +26,6 @@ public abstract class CameraMixin {
 
     @Shadow protected abstract void setRotation(float yaw, float pitch);
     @Shadow protected abstract void move(double x, double y, double z);
-    @Shadow protected abstract void setPosition(double x, double y, double z);
 
     @Inject(method = "setup", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setPosition(DDD)V", shift = At.Shift.BEFORE))
     private void setupRot(BlockGetter area, Entity focusedEntity, boolean thirdPerson, boolean inverseView, float tickDelta, CallbackInfo ci) {
@@ -53,18 +53,31 @@ public abstract class CameraMixin {
         setRotation(y, x);
     }
 
-    @Redirect(method = "setup", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setPosition(DDD)V"))
-    private void setupPivot(Camera instance, double x, double y, double z) {
+    @ModifyArgs(method = "setup", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setPosition(DDD)V"))
+    private void setupPivot(Args args) {
         if (avatar != null) {
+            double x = args.get(0);
+            double y = args.get(1);
+            double z = args.get(2);
+
             FiguraVec3 piv = avatar.luaRuntime.renderer.cameraPivot;
             if (piv != null) {
-                x += piv.x;
-                y += piv.y;
-                z += piv.z;
+               x = piv.x;
+               y = piv.y;
+               z = piv.z;
             }
-        }
 
-        setPosition(x, y, z);
+            FiguraVec3 bonus = avatar.luaRuntime.renderer.cameraBonusPivot;
+            if (bonus != null) {
+                x += bonus.x;
+                y += bonus.y;
+                z += bonus.z;
+            }
+
+            args.set(0, x);
+            args.set(1, y);
+            args.set(2, z);
+        }
     }
 
     @Inject(method = "setup", at = @At(value = "RETURN"))

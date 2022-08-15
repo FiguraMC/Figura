@@ -33,6 +33,7 @@ public class RendererAPI {
 
     public FiguraVec3 cameraPos;
     public FiguraVec3 cameraPivot;
+    public FiguraVec3 cameraBonusPivot;
     public FiguraVec3 cameraRot;
     public FiguraVec3 cameraBonusRot;
     public ResourceLocation postShader;
@@ -113,6 +114,24 @@ public class RendererAPI {
     )
     public void setCameraPivot(Object x, Double y, Double z) {
         this.cameraPivot = x == null ? null : LuaUtils.parseVec3("setCameraPivot", x, y, z);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "pivot"
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"x", "y", "z"}
+                    )
+            },
+            description = "renderer.offset_camera_pivot"
+    )
+    public void offsetCameraPivot(Object x, Double y, Double z) {
+        this.cameraBonusPivot = x == null ? null : LuaUtils.parseVec3("offsetCameraPivot", x, y, z);
     }
 
     @LuaWhitelist

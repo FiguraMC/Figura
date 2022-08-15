@@ -1,12 +1,15 @@
 package org.moon.figura.avatars.model.rendering;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.floats.FloatArrayList;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.resources.ResourceLocation;
 import org.lwjgl.BufferUtils;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.model.PartCustomization;
+import org.moon.figura.avatars.model.rendering.texture.FiguraTexture;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
 import org.moon.figura.avatars.model.rendering.texture.RenderTypes;
 import org.moon.figura.math.vector.FiguraVec2;
@@ -88,10 +91,8 @@ public class FiguraImmediateBuffer {
             return;
         }
 
-        RenderTypes prt = customization.getPrimaryRenderType();
-        RenderTypes srt = customization.getSecondaryRenderType();
-        RenderType primary = prt == null ? null : prt.get(customization.primaryTexture == null ? textureSet.mainTex == null ? null : textureSet.mainTex.textureID : FiguraTextureSet.getOverrideTexture(avatar.owner, customization.primaryTexture));
-        RenderType secondary = srt == null ? null : srt.get(customization.secondaryTexture == null ? textureSet.emissiveTex == null ? null : textureSet.emissiveTex.textureID : FiguraTextureSet.getOverrideTexture(avatar.owner, customization.secondaryTexture));
+        RenderType primary = this.getTexture(avatar, customization.getPrimaryRenderType(), customization.primaryTexture, textureSet.mainTex);
+        RenderType secondary = this.getTexture(avatar, customization.getSecondaryRenderType(), customization.secondaryTexture, textureSet.emissiveTex);
 
         if (primary != null) {
             if (secondary != null)
@@ -103,6 +104,17 @@ public class FiguraImmediateBuffer {
                 resetBuffers();
             pushToConsumer(bufferSource.getBuffer(secondary), faceCount);
         }
+    }
+
+    private RenderType getTexture(Avatar avatar, RenderTypes types, Pair<String, String> texture, FiguraTexture figuraTexture) {
+        if (types == null)
+            return null;
+
+        ResourceLocation id = FiguraTextureSet.getOverrideTexture(avatar.owner, texture);
+        if (id != null)
+            return types.get(id);
+
+        return types.get(figuraTexture == null ? null : figuraTexture.textureID);
     }
 
     private void pushToConsumer(VertexConsumer consumer, int faceCount) {

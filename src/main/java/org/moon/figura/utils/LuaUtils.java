@@ -23,33 +23,33 @@ public class LuaUtils {
      * @param z The z coordinate of a vector, used if the first parameter was a number.
      * @return A FiguraVec3 representing the data passed in.
      */
-    public static FiguraVec3 parseVec3(String methodName, Object x, Double y, Double z) {
+    public static FiguraVec3 parseVec3(String methodName, Object x, Number y, Number z) {
         return parseVec3(methodName, x, y, z, 0, 0, 0);
     }
 
-    public static FiguraVec3 parseVec3(String methodName, Object x, Double y, Double z, double defaultX, double defaultY, double defaultZ) {
+    public static FiguraVec3 parseVec3(String methodName, Object x, Number y, Number z, double defaultX, double defaultY, double defaultZ) {
         if (x instanceof FiguraVec3 vec)
             return vec.copy();
         if (x == null || x instanceof Number) {
             if (x == null) x = defaultX;
             if (y == null) y = defaultY;
             if (z == null) z = defaultZ;
-            return FiguraVec3.of(((Number) x).doubleValue(), y, z);
+            return FiguraVec3.of(((Number) x).doubleValue(), y.doubleValue(), z.doubleValue());
         }
         throw new LuaError("Illegal argument to " + methodName + "(): " + x.getClass().getSimpleName());
     }
 
-    public static FiguraVec2 parseVec2(String methodName, Object x, Double y) {
+    public static FiguraVec2 parseVec2(String methodName, Object x, Number y) {
         return parseVec2(methodName, x, y, 0, 0);
     }
 
-    public static FiguraVec2 parseVec2(String methodName, Object x, Double y, double defaultX, double defaultY) {
+    public static FiguraVec2 parseVec2(String methodName, Object x, Number y, double defaultX, double defaultY) {
         if (x instanceof FiguraVec2 vec)
             return vec.copy();
         if (x == null || x instanceof Number) {
             if (x == null) x = defaultX;
             if (y == null) y = defaultY;
-            return FiguraVec2.of(((Number) x).doubleValue(), y);
+            return FiguraVec2.of(((Number) x).doubleValue(), y.doubleValue());
         }
         throw new LuaError("Illegal argument to " + methodName + "(): " + x.getClass().getSimpleName());
     }

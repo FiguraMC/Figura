@@ -71,29 +71,33 @@ public class ParticleAPI {
         FiguraVec3 pos, vel;
 
         //Parse pos and vel
-        if (x instanceof FiguraVec3) {
-            pos = ((FiguraVec3) x).copy();
-            if (y instanceof FiguraVec3) {
-                vel = ((FiguraVec3) y).copy();
-            } else if (y == null || y instanceof Double) {
-                //Intellij says: y should probably not be passed as parameter x
-                //It really doesn't like the kind of programming that happens in this function lol
-                vel = LuaUtils.parseVec3("addParticle", y, z, (Double) w);
+        if (x instanceof FiguraVec6 posVel) {
+            pos = FiguraVec3.of(posVel.x, posVel.y, posVel.z);
+            vel = FiguraVec3.of(posVel.w, posVel.t, posVel.h);
+        } else if (x instanceof FiguraVec3 vec1) {
+            pos = vec1.copy();
+            if (y instanceof FiguraVec3 vec2) {
+                vel = vec2.copy();
+            } else if (y == null || y instanceof Number) {
+                if (w == null || w instanceof Number) {
+                    //Intellij says: y should probably not be passed as parameter x
+                    //It really doesn't like the kind of programming that happens in this function lol
+                    vel = LuaUtils.parseVec3("addParticle", y, z, (Number) w);
+                } else {
+                    throw new LuaError("Illegal argument to addParticle(): " + w);
+                }
             } else {
                 throw new LuaError("Illegal argument to addParticle(): " + y);
             }
-        } else if (x == null || x instanceof Double) {
-            pos = LuaUtils.parseVec3("addParticle", x, (Double) y, z);
-            if (w instanceof FiguraVec3) {
-                vel = ((FiguraVec3) w).copy();
-            } else if (w == null || w instanceof Double) {
+        } else if (x == null || x instanceof Number && y == null || y instanceof Number) {
+            pos = LuaUtils.parseVec3("addParticle", x, (Number) y, z);
+            if (w instanceof FiguraVec3 vec1) {
+                vel = vec1.copy();
+            } else if (w == null || w instanceof Number) {
                 vel = LuaUtils.parseVec3("addParticle", w, t, h);
             } else {
                 throw new LuaError("Illegal argument to addParticle(): " + w);
             }
-        } else if (x instanceof FiguraVec6 posVel) {
-            pos = FiguraVec3.of(posVel.x, posVel.y, posVel.z);
-            vel = FiguraVec3.of(posVel.w, posVel.t, posVel.h);
         } else {
             throw new LuaError("Illegal argument to addParticle(): " + x);
         }

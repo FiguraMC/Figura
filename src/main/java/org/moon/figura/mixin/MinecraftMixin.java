@@ -17,7 +17,6 @@ import org.moon.figura.config.Config;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.PopupMenu;
 import org.moon.figura.gui.actionwheel.ActionWheel;
-import org.moon.figura.lua.api.keybind.FiguraKeybind;
 import org.moon.figura.lua.api.sound.SoundAPI;
 import org.moon.figura.utils.EntityUtils;
 import org.moon.figura.utils.FiguraText;
@@ -105,10 +104,6 @@ public abstract class MinecraftMixin {
 
         if (PopupMenu.isEnabled())
             PopupMenu.run();
-
-        Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
-        if (avatar != null && avatar.luaRuntime != null)
-            FiguraKeybind.releaseAll(avatar.luaRuntime.keybind.keyBindings);
     }
 
     @Inject(at = @At("RETURN"), method = "clearLevel(Lnet/minecraft/client/gui/screens/Screen;)V")

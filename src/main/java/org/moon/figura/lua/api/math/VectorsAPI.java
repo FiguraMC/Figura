@@ -284,16 +284,20 @@ public class VectorsAPI {
             vec = vec1.copy();
             if (y instanceof FiguraVec3 vec2) {
                 axis = vec2.copy();
-            } else if (y == null || y instanceof Double) {
-                axis = LuaUtils.parseVec3("rotateAroundAxis", y, z, (Double) w);
+            } else if (y == null || y instanceof Number) {
+                if (w == null || w instanceof Number) {
+                    axis = LuaUtils.parseVec3("rotateAroundAxis", y, z, (Number) w);
+                } else {
+                    throw new LuaError("Illegal argument to rotateAroundAxis(): " + w);
+                }
             } else {
                 throw new LuaError("Illegal argument to rotateAroundAxis(): " + y);
             }
-        } else if (x == null || x instanceof Double) {
-            vec = LuaUtils.parseVec3("rotateAroundAxis", x, (Double) y, z);
+        } else if (x == null || x instanceof Number && y == null || y instanceof Number) {
+            vec = LuaUtils.parseVec3("rotateAroundAxis", x, (Number) y, z);
             if (w instanceof FiguraVec3 vec1) {
                 axis = vec1.copy();
-            } else if (w == null || w instanceof Double) {
+            } else if (w == null || w instanceof Number) {
                 axis = LuaUtils.parseVec3("rotateAroundAxis", w, t, h);
             } else {
                 throw new LuaError("Illegal argument to rotateAroundAxis(): " + w);

@@ -1,6 +1,7 @@
 package org.moon.figura.mixin.input;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.Minecraft;
 import org.moon.figura.FiguraMod;
@@ -28,7 +29,9 @@ public class KeyboardHandlerMixin {
         if (avatar == null || avatar.luaRuntime == null)
             return;
 
-        if (FiguraKeybind.set(avatar.luaRuntime.keybind.keyBindings, InputConstants.getKey(key, scancode), action != 0))
+        if (FiguraKeybind.set(avatar.luaRuntime.keybind.keyBindings, InputConstants.getKey(key, scancode), action != 0)) {
+            KeyMapping.setAll();
             ci.cancel();
+        }
     }
 }
