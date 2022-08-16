@@ -111,7 +111,7 @@ public class FiguraKeybind {
     public static void updateAll(List<FiguraKeybind> bindings) {
         for (FiguraKeybind keybind : bindings) {
             int value = keybind.key.getValue();
-            if (keybind.key.getType() == InputConstants.Type.KEYSYM && value != InputConstants.UNKNOWN.getValue())
+            if (keybind.enabled && keybind.key.getType() == InputConstants.Type.KEYSYM && value != InputConstants.UNKNOWN.getValue())
                 keybind.setDown(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), value));
         }
     }

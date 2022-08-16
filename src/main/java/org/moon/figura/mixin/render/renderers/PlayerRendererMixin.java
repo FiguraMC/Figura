@@ -177,7 +177,9 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
 
         float delta = Minecraft.getInstance().getFrameTime();
         int overlay = getOverlayCoords(player, getWhiteOverlayProgress(player, delta));
+        avatar.renderEvent(delta);
         avatar.firstPersonRender(stack, multiBufferSource, player, (PlayerRenderer) (Object) this, arm, light, overlay, delta);
+        avatar.postRenderEvent(delta);
 
         if (avatar.luaRuntime != null)
             avatar.luaRuntime.vanilla_model.PLAYER.restore(this.getModel());

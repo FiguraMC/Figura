@@ -47,6 +47,7 @@ import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.EntityUtils;
 import org.moon.figura.utils.RefilledNumber;
+import org.moon.figura.utils.ui.UIHelper;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -213,7 +214,7 @@ public class Avatar {
     //Calling with maxInstructions as -1 will not set the max instructions, and instead keep them as they are.
     //returns whatever if it succeeded or not calling the function
     public void tryCall(Object toRun, int maxInstructions, Object... args) {
-        if (scriptError || luaRuntime == null)
+        if (scriptError || luaRuntime == null || UIHelper.paperdoll)
             return;
 
         try {
@@ -352,7 +353,7 @@ public class Avatar {
 
     // -- rendering events -- //
 
-    public void render(Entity entity, float yaw, float delta, float alpha, PoseStack matrices, MultiBufferSource bufferSource, int light, int overlay, LivingEntityRenderer<?, ?> entityRenderer, PartFilterScheme filter) {
+    public void render(Entity entity, float yaw, float delta, float alpha, PoseStack matrices, MultiBufferSource bufferSource, int light, int overlay, LivingEntityRenderer<?, ?> entityRenderer, PartFilterScheme filter, boolean translucent, boolean glowing) {
         if (renderer == null)
             return;
 
@@ -366,6 +367,8 @@ public class Avatar {
         renderer.light = light;
         renderer.overlay = overlay;
         renderer.entityRenderer = entityRenderer;
+        renderer.translucent = translucent;
+        renderer.glowing = glowing;
 
         renderer.render();
     }
@@ -394,6 +397,8 @@ public class Avatar {
         renderer.light = light;
         renderer.alpha = 1f;
         renderer.overlay = OverlayTexture.NO_OVERLAY;
+        renderer.translucent = false;
+        renderer.glowing = false;
 
         matrices.pushPose();
         matrices.translate(-camX, -camY, -camZ);
@@ -416,8 +421,6 @@ public class Avatar {
         if (renderer == null)
             return;
 
-//        int oldComplexity = remainingComplexity;
-//        remainingComplexity = trust.get(TrustContainer.Trust.COMPLEXITY);
         int oldComplexity = complexity;
 
         PartFilterScheme filter = arm == playerRenderer.getModel().leftArm ? PartFilterScheme.LEFT_ARM : PartFilterScheme.RIGHT_ARM;
@@ -430,11 +433,10 @@ public class Avatar {
             stack.mulPose(Vector3f.YP.rotation(arm.yRot));
             stack.mulPose(Vector3f.XP.rotation(arm.xRot));
         }
-        render(player, 0f, tickDelta, 1f, stack, bufferSource, light, overlay, playerRenderer, filter);
+        render(player, 0f, tickDelta, 1f, stack, bufferSource, light, overlay, playerRenderer, filter, false, false);
         stack.popPose();
 
         renderer.allowHiddenTransforms = true;
-//        remainingComplexity = oldComplexity;
         complexity = oldComplexity;
     }
 
@@ -451,6 +453,8 @@ public class Avatar {
         renderer.alpha = 1f;
         renderer.matrices = stack;
         renderer.bufferSource = bufferSource;
+        renderer.translucent = false;
+        renderer.glowing = false;
 
         Lighting.setupForFlatItems();
 
@@ -483,6 +487,8 @@ public class Avatar {
         renderer.alpha = 1f;
         renderer.matrices = stack;
         renderer.bufferSource = bufferSource;
+        renderer.translucent = false;
+        renderer.glowing = false;
 
         stack.pushPose();
 

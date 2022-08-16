@@ -457,6 +457,7 @@
   "figura.docs.action_wheel.create_page": "Creates a new Page for the action wheel. A Title can be given to store this page internally. If no Title is given, the Page will just be returned from this function.",
   "figura.docs.action_wheel.set_page": "Sets the Page of the action wheel to the given Title or Page.",
   "figura.docs.action_wheel.get_page": "Returns an stored Page by the given title.",
+  "figura.docs.action_wheel.get_current_page": "Returns the current set Page from the Action Wheel, or NIL if no Page has been set.",
 
   "figura.docs.wheel_page": "An Action Wheel container which is used to store up to 8 actions.",
   "figura.docs.wheel_page.new_action": "Adds a new Click Action on the selected Page's index. If no index is given it is added in the first available index.",

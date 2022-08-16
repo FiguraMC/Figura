@@ -295,7 +295,7 @@ public class Animation {
             ),
             description = "animation.loop"
     )
-    public Animation override(@LuaNotNil String loop) {
+    public Animation loop(@LuaNotNil String loop) {
         try {
             this.loop = LoopMode.valueOf(loop.toUpperCase());
             return this;

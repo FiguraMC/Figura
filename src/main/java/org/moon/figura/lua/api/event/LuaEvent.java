@@ -66,7 +66,7 @@ public class LuaEvent {
     public void runOnce(@LuaNotNil LuaFunction predicate, @LuaNotNil LuaFunction toRun) {
         //Hey, if users want to "abuse" this somehow, then go ahead.
         //Very low chance of anyone randomly using this name anyway, and nothing bad even happens if they do use it intentionally.
-        final String uniqueName = "FIGURA_GENERATED_" + (namesGenerated++);
+        final String uniqueName = "figura$GENERATED_" + (namesGenerated++);
         VarArgFunction wrappedInPredicate = new VarArgFunction() {
             @Override
             public Varargs invoke(Varargs args) {

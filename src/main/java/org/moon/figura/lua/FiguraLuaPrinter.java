@@ -228,7 +228,7 @@ public class FiguraLuaPrinter {
             Set<String> fields = new HashSet<>();
             for (Field field : clazz.getFields()) {
                 String name = field.getName();
-                if (!field.isAnnotationPresent(LuaWhitelist.class) && fields.contains(name))
+                if (!field.isAnnotationPresent(LuaWhitelist.class) || fields.contains(name))
                     continue;
 
                 try {

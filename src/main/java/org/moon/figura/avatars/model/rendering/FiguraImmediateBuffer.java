@@ -3,11 +3,9 @@ package org.moon.figura.avatars.model.rendering;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.floats.FloatArrayList;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import org.lwjgl.BufferUtils;
-import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.model.PartCustomization;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTexture;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
@@ -80,7 +78,7 @@ public class FiguraImmediateBuffer {
         remainingComplexity[0] += faceCount;
     }
 
-    public void pushVertices(MultiBufferSource bufferSource, int faceCount, int[] remainingComplexity, Avatar avatar) {
+    public void pushVertices(AvatarRenderer renderer, int faceCount, int[] remainingComplexity) {
         //Handle cases that we can quickly
         if (faceCount == 0)
             return;
@@ -91,30 +89,36 @@ public class FiguraImmediateBuffer {
             return;
         }
 
-        RenderType primary = this.getTexture(avatar, customization.getPrimaryRenderType(), customization.primaryTexture, textureSet.mainTex);
-        RenderType secondary = this.getTexture(avatar, customization.getSecondaryRenderType(), customization.secondaryTexture, textureSet.emissiveTex);
+        RenderType primary = this.getTexture(renderer, customization.getPrimaryRenderType(), customization.primaryTexture, textureSet.mainTex);
+        RenderType secondary = this.getTexture(renderer, customization.getSecondaryRenderType(), customization.secondaryTexture, textureSet.emissiveTex);
 
         if (primary != null) {
             if (secondary != null)
                 markBuffers();
-            pushToConsumer(bufferSource.getBuffer(primary), faceCount);
+            pushToConsumer(renderer.bufferSource.getBuffer(primary), faceCount);
         }
         if (secondary != null) {
             if (primary != null)
                 resetBuffers();
-            pushToConsumer(bufferSource.getBuffer(secondary), faceCount);
+            pushToConsumer(renderer.bufferSource.getBuffer(secondary), faceCount);
         }
     }
 
-    private RenderType getTexture(Avatar avatar, RenderTypes types, Pair<String, String> texture, FiguraTexture figuraTexture) {
-        if (types == null)
-            return null;
+    private RenderType getTexture(AvatarRenderer renderer, RenderTypes types, Pair<String, String> texture, FiguraTexture figuraTexture) {
+        //get texture
+        ResourceLocation id = FiguraTextureSet.getOverrideTexture(renderer.avatar.owner, texture);
+        if (id == null)
+            id = figuraTexture == null ? null : figuraTexture.textureID;
 
-        ResourceLocation id = FiguraTextureSet.getOverrideTexture(avatar.owner, texture);
-        if (id != null)
-            return types.get(id);
+        //get render type
+        if (id != null) {
+            if (renderer.translucent)
+                return RenderType.itemEntityTranslucentCull(id);
+            if (renderer.glowing)
+                return RenderType.outline(id);
+        }
 
-        return types.get(figuraTexture == null ? null : figuraTexture.textureID);
+        return types == null ? null : types.get(id);
     }
 
     private void pushToConsumer(VertexConsumer consumer, int faceCount) {

@@ -48,7 +48,6 @@ public class StackAvatarRenderer extends ImmediateAvatarRenderer {
             VIEW_TO_WORLD_MATRIX.set(AvatarRenderer.worldToViewMatrix().invert());
 
         //Render all model parts
-//        int prev = avatar.remainingComplexity;
         int prev = avatar.trust.get(TrustContainer.Trust.COMPLEXITY) - avatar.complexity;
         int[] remainingComplexity = new int[] {prev};
         Boolean initialValue = currentFilterScheme.initialValue(root);
@@ -56,7 +55,6 @@ public class StackAvatarRenderer extends ImmediateAvatarRenderer {
             renderPart(root, remainingComplexity, initialValue);
 
         avatar.complexity += prev - Math.max(remainingComplexity[0], 0);
-//        avatar.remainingComplexity = remainingComplexity[0];
 
         customizationStack.pop();
         checkEmpty();
@@ -74,11 +72,9 @@ public class StackAvatarRenderer extends ImmediateAvatarRenderer {
 
         //calculate part transforms
 
-        if (thisPassedPredicate) {
-            //calculate vanilla parent
-            part.applyVanillaTransforms(entityRenderer);
-            part.applyExtraTransforms(customizationStack.peek().positionMatrix);
-        }
+        //calculate vanilla parent
+        part.applyVanillaTransforms(entityRenderer);
+        part.applyExtraTransforms(customizationStack.peek().positionMatrix);
 
         //push customization stack
         //that's right, check only for previous predicate

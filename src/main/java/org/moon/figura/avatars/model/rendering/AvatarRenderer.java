@@ -37,6 +37,7 @@ public abstract class AvatarRenderer {
     public int light;
     public int overlay;
     public float alpha;
+    public boolean translucent, glowing;
 
     //matrices
     public PoseStack matrices;

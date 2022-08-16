@@ -269,6 +269,6 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
     }
 
     public void pushFaces(int texIndex, int faceCount, int[] remainingComplexity) {
-        buffers.get(texIndex).pushVertices(bufferSource, faceCount, remainingComplexity, avatar);
+        buffers.get(texIndex).pushVertices(this, faceCount, remainingComplexity);
     }
 }

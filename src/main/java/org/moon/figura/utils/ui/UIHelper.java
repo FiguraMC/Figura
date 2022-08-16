@@ -44,6 +44,7 @@ public class UIHelper extends GuiComponent {
     //Used for GUI rendering
     private static final CustomFramebuffer FIGURA_FRAMEBUFFER = new CustomFramebuffer();
     private static int previousFBO = -1;
+    public static boolean paperdoll = false;
 
     // -- Functions -- //
 
@@ -99,7 +100,7 @@ public class UIHelper extends GuiComponent {
         stack.scale(scale, scale, scale);
         stack.last().pose().multiply(Matrix4f.createScaleMatrix(1f, 1f, -1f)); //Scale ONLY THE POSITIONS! Inverted normals don't work for whatever reason
 
-        Quaternion quaternion2 = null;
+        Quaternion quaternion2;
         if (paperdoll) {
             Quaternion quaternion = Vector3f.ZP.rotationDegrees(180f);
             quaternion2 = Vector3f.XP.rotationDegrees(pitch);
@@ -117,7 +118,6 @@ public class UIHelper extends GuiComponent {
             quaternion2.conj();
         }
 
-
         //backup entity variables
         float bodyYaw = entity.yBodyRot;
         float entityYaw = entity.getYRot();
@@ -131,6 +131,7 @@ public class UIHelper extends GuiComponent {
         entity.setInvisible(false);
         UIHelper.forceNameplate = !paperdoll;
         UIHelper.forceNoFire = true;
+        UIHelper.paperdoll = true;
 
         if (paperdoll) {
             //offset
@@ -188,6 +189,7 @@ public class UIHelper extends GuiComponent {
         entity.setInvisible(invisible);
         UIHelper.forceNameplate = false;
         UIHelper.forceNoFire = false;
+        UIHelper.paperdoll = false;
 
         //pop matrix
         stack.popPose();

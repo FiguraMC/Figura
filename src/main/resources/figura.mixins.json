@@ -31,7 +31,6 @@
     "render.GameRendererAccessor",
     "render.GameRendererMixin",
     "render.PlayerModelMixin",
-    "render.PoseStackMixin",
 
     "render.layers.CapeLayerMixin",
     "render.layers.CustomHeadLayerMixin",

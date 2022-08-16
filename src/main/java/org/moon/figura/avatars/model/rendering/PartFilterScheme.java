@@ -1,6 +1,5 @@
 package org.moon.figura.avatars.model.rendering;
 
-import net.minecraft.client.model.geom.ModelPart;
 import org.moon.figura.avatars.model.FiguraModelPart;
 import org.moon.figura.avatars.model.ParentType;
 
@@ -18,7 +17,9 @@ public enum PartFilterScheme {
 
     WORLD(false, SchemeFunction.onlyThisSeparate(ParentType.World)),
     HUD(false, SchemeFunction.onlyThisSeparate(ParentType.Hud)),
-    SKULL(false, SchemeFunction.onlyThisSeparate(ParentType.Skull));
+    SKULL(false, SchemeFunction.onlyThisSeparate(ParentType.Skull)),
+
+    PIVOTS(false, SchemeFunction.onlyPivotsAndCancelOnSeparate());
 
 
     private final boolean initialValue;
@@ -77,6 +78,18 @@ public enum PartFilterScheme {
                 if (parent.isSeparate)
                     return null;
                 return prev;
+            };
+        }
+
+        static SchemeFunction onlyPivotsAndCancelOnSeparate() {
+            return (parent, prev) -> {
+                if (parent.isPivot)
+                    return true;
+                //Cancel everything if we find something that's not attached to the model itself
+                if (parent.isSeparate)
+                    return null;
+                //If the part is attached to the model, skip it.
+                return false;
             };
         }
     }

@@ -135,6 +135,12 @@ public class ActionWheelAPI {
         return this.pages.get(pageTitle);
     }
 
+    @LuaWhitelist
+    @LuaMethodDoc(description = "action_wheel.get_current_page")
+    public Page getCurrentPage() {
+        return this.currentPage;
+    }
+
     public void execute(Avatar avatar, boolean left) {
         LuaFunction function = left ? leftClick : rightClick;
 
