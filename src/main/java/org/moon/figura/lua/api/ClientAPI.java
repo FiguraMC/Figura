@@ -1,6 +1,7 @@
 package org.moon.figura.lua.api;
 
 import com.mojang.blaze3d.platform.Window;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.world.phys.Vec3;
@@ -188,18 +189,6 @@ public class ClientAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "client.get_screen")
-    public static String getScreen() {
-        if (Minecraft.getInstance().screen == null)
-            return null;
-
-        String screenTitle = Minecraft.getInstance().screen.getTitle().getString();
-        if (screenTitle.length() == 0)
-            screenTitle = Minecraft.getInstance().screen.getClass().getSimpleName();
-        return screenTitle;
-    }
-
-    @LuaWhitelist
     @LuaMethodDoc(description = "client.get_camera_pos")
     public static FiguraVec3 getCameraPos() {
         Vec3 pos = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
@@ -241,6 +230,18 @@ public class ClientAPI {
     @LuaMethodDoc(description = "client.get_active_lang")
     public static String getActiveLang() {
         return Minecraft.getInstance().options.languageCode;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(description = "client.has_iris")
+    public static boolean hasIris() {
+        return FabricLoader.getInstance().isModLoaded("iris");
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(description = "client.has_iris_shader")
+    public static boolean hasIrisShader() {
+        return hasIris() && net.irisshaders.iris.api.v0.IrisApi.getInstance().isShaderPackInUse();
     }
 
     @Override

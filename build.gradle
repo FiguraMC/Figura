@@ -13,6 +13,7 @@ fabric_api = project.fabric_api + "+" + String.valueOf(project.minecraft_version
 repositories {
 	maven { url 'https://jitpack.io' }
 	maven { url 'https://maven.terraformersmc.com/releases/' }
+	maven { url 'https://api.modrinth.com/maven' }
 }
 
 dependencies {
@@ -32,6 +33,7 @@ dependencies {
 	// Mods
 	modImplementation "net.fabricmc.fabric-api:fabric-api:$fabric_api"
 	modImplementation "com.terraformersmc:modmenu:$modmenu"
+	modCompileOnly "maven.modrinth:iris:$iris"
 }
 
 processResources {

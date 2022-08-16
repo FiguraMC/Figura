@@ -820,10 +820,11 @@
   "figura.docs.client.get_gui_scale": "Returns the current value of your Gui Scale setting. If you use auto, then it gets the actual current scale.",
   "figura.docs.client.get_camera_pos": "Returns the position of the viewer's camera.",
   "figura.docs.client.get_camera_rot": "Returns the rotation of the viewer's camera.",
-  "figura.docs.client.get_screen": "Gets the name of the screen the player is currently on. If the player is not currently in a screen, returns nil.",
   "figura.docs.client.get_text_width": "Returns the width of the given text in pixels. In case of multiple lines, return the largest width of all lines",
   "figura.docs.client.get_text_height": "Returns the height of the given text in pixels.",
   "figura.docs.client.get_active_lang": "Returns a string representation of the current game language.",
+  "figura.docs.client.has_iris": "Checks if the client has the Iris mod installed.",
+  "figura.docs.client.has_iris_shader": "Checks if the client is currently using an Iris shader.",
 
   "figura.docs.host": "A global API dedicated to specifically the host of the avatar. For other viewers, these do nothing.",
   "figura.docs.host.unlock_cursor": "Setting this value to true will unlock your cursor, letting you move it freely on the screen instead of it controlling your player's rotation.",
@@ -842,6 +843,9 @@
   "figura.docs.host.set_chat_color": "Sets the color of the text that is currently being typed into the chat window.",
   "figura.docs.host.get_chat_text": "Gets the text that is currently being typed into the chat window.",
   "figura.docs.host.set_chat_text": "Sets the text currently being typed in the chat window to the given string.",
+  "figura.docs.host.get_screen": "Gets the class name of the screen the player is currently on. If the player is not currently in a screen, returns nil.",
+  "figura.docs.host.is_chat_open": "Checks if the host has the chat screen opened.",
+  "figura.docs.host.is_container_open": "Checks if the host has a container screen opened.",
 
   "figura.docs.avatar": "A global API containing functions to interact with your avatar's metadata, and also to get information about the current script environment.",
   "figura.docs.avatar.store": "Store the given key-value pair inside your current avatar's metadata. Someone else can get this information from a different script with the playerVars() function in World. The key must be a string.",

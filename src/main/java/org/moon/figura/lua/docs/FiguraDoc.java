@@ -9,7 +9,6 @@ import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.FiguraText;
 

@@ -3,6 +3,7 @@ package org.moon.figura.lua.api;
 import com.mojang.brigadier.StringReader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ChatScreen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.commands.arguments.SlotArgument;
 import net.minecraft.world.InteractionHand;
@@ -242,6 +243,26 @@ public class HostAPI {
     public void setChatText(@LuaNotNil String text) {
         if (isHost() && Config.CHAT_MESSAGES.asBool() && Minecraft.getInstance().screen instanceof ChatScreen chat)
             ((ChatScreenAccessor) chat).getInput().setValue(text);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(description = "host.get_screen")
+    public String getScreen() {
+        if (!isHost() || Minecraft.getInstance().screen == null)
+            return null;
+        return Minecraft.getInstance().screen.getClass().getSimpleName();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(description = "host.is_chat_open")
+    public boolean isChatOpen() {
+        return isHost() && Minecraft.getInstance().screen instanceof ChatScreen;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(description = "host.is_container_open")
+    public boolean isContainerOpen() {
+        return isHost() && Minecraft.getInstance().screen instanceof AbstractContainerScreen;
     }
 
     @LuaWhitelist
