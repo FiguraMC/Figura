@@ -1,9 +1,10 @@
-package org.moon.figura.binary_backend;
+package org.moon.figura.binary_backend_wip;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 
 public class ByteStreamConverter {
 
@@ -39,6 +40,19 @@ public class ByteStreamConverter {
         } while ((nextByte & CONTINUE_BIT) != 0);
 
         return result;
+    }
+
+    public static void writeUUID(DataOutputStream dos, UUID uuid) throws IOException {
+        dos.writeLong(uuid.getMostSignificantBits());
+        dos.writeLong(uuid.getLeastSignificantBits());
+    }
+
+    public static UUID readUUID(ByteBuffer buf) throws IOException {
+        try {
+            return new UUID(buf.getLong(), buf.getLong());
+        } catch (Exception e) {
+            throw new IOException(e);
+        }
     }
 
     public static void writeString(DataOutputStream dos, String str) throws IOException {
@@ -77,5 +91,7 @@ public class ByteStreamConverter {
         if (val == 0) return false;
         throw new IOException("Attempt to read boolean failed: expected 0 or 1, got " + val);
     }
+
+
 
 }

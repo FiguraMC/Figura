@@ -43,7 +43,8 @@
   },
   "breaks": {
     "optifine": "*",
-    "optifabric": "*"
+    "optifabric": "*",
+    "minecraft": ">=1.19.1"
   },
   "custom": {
     "modmenu": {

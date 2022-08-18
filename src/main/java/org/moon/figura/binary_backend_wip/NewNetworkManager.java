@@ -1,4 +1,4 @@
-package org.moon.figura.binary_backend;
+package org.moon.figura.binary_backend_wip;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -15,16 +15,11 @@ import net.minecraft.network.protocol.handshake.ClientIntentionPacket;
 import net.minecraft.network.protocol.login.ClientboundGameProfilePacket;
 import net.minecraft.network.protocol.login.ServerboundHelloPacket;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.backend.MessageHandler;
-import org.moon.figura.backend.NetworkManager;
-import org.moon.figura.backend.WebsocketManager;
-import org.moon.figura.binary_backend.packets.AbstractPacket;
-import org.moon.figura.binary_backend.packets.server2client.S2CAuthPacket;
+import org.moon.figura.binary_backend_wip.packets.AbstractPacket;
 import org.moon.figura.config.Config;
 
 import java.net.InetSocketAddress;
 import java.net.URI;
-import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -66,11 +61,21 @@ public class NewNetworkManager {
             networkerActionQueue.poll().run();
     }
 
-    public static void disconnect(String reason) {
+    public static void disconnectAuth(String reason) {
         networkerActionQueue.add(() -> {
             if (reason != null)
                 disconnectedReason = reason;
             connectionStatus = ConnectionStatus.DISCONNECTED;
+            authConnection = null;
+        });
+    }
+
+    public static void disconnectBackend(String reason) {
+        networkerActionQueue.add(() -> {
+            if (reason != null)
+                disconnectedReason = reason;
+            connectionStatus = ConnectionStatus.DISCONNECTED;
+            currentConnection = null;
         });
     }
 
@@ -148,13 +153,13 @@ public class NewNetworkManager {
                                 //parse token
                                 String[] split = reasonStr.split("<", 2);
                                 if (split.length < 2) {
-                                    disconnect(reasonStr);
+                                    disconnectAuth(reasonStr);
                                     return;
                                 }
 
                                 split = split[1].split(">", 2);
                                 if (split.length < 2) {
-                                    disconnect(reasonStr);
+                                    disconnectAuth(reasonStr);
                                     return;
                                 }
 
@@ -172,8 +177,7 @@ public class NewNetworkManager {
                     @Override
                     public void onDisconnect(Component reason) {
                         authConnection = null;
-                        connectionStatus = ConnectionStatus.DISCONNECTED;
-                        disconnectedReason = reason.getString();
+                        disconnectAuth(reason.getString());
                     }
                 });
 
@@ -183,8 +187,7 @@ public class NewNetworkManager {
                 authConnection = connection;
             } catch (Exception e) {
                 authConnection = null;
-                connectionStatus = ConnectionStatus.DISCONNECTED;
-                disconnectedReason = e.getMessage();
+                disconnectAuth(e.getMessage());
             }
         });
     }

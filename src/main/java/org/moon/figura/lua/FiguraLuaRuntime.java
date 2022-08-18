@@ -186,12 +186,13 @@ public class FiguraLuaRuntime {
         userGlobals.set("require", getRequireFor(scripts));
 
         StringBuilder rootFunction = new StringBuilder();
+        rootFunction.append("local r = require ");
         if (autoScripts == null) {
             for (String name : scripts.keySet())
-                rootFunction.append("require(\"").append(name).append("\") ");
+                rootFunction.append("r(\"").append(name).append("\") ");
         } else {
             for (Tag scriptName : autoScripts)
-                rootFunction.append("require(\"").append(scriptName.getAsString()).append("\") ");
+                rootFunction.append("r(\"").append(scriptName.getAsString()).append("\") ");
         }
         return runScript(rootFunction.toString(), "autoScripts") != null;
     }

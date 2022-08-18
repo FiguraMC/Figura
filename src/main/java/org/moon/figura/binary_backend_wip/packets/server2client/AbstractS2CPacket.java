@@ -1,6 +1,6 @@
-package org.moon.figura.binary_backend.packets.server2client;
+package org.moon.figura.binary_backend_wip.packets.server2client;
 
-import org.moon.figura.binary_backend.packets.AbstractPacket;
+import org.moon.figura.binary_backend_wip.packets.AbstractPacket;
 
 import java.io.DataOutputStream;
 import java.io.IOException;

@@ -1,7 +1,7 @@
-package org.moon.figura.binary_backend.packets.server2client;
+package org.moon.figura.binary_backend_wip.packets.server2client;
 
-import org.moon.figura.binary_backend.ByteStreamConverter;
-import org.moon.figura.binary_backend.packets.PacketType;
+import org.moon.figura.binary_backend_wip.ByteStreamConverter;
+import org.moon.figura.binary_backend_wip.packets.PacketType;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;

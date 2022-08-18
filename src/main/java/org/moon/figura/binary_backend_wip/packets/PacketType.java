@@ -1,9 +1,9 @@
-package org.moon.figura.binary_backend.packets;
+package org.moon.figura.binary_backend_wip.packets;
 
-import org.moon.figura.binary_backend.packets.server2client.S2CAuthPacket;
-import org.moon.figura.binary_backend.packets.server2client.S2CConnectedPacket;
-import org.moon.figura.binary_backend.packets.server2client.S2CKeepalivePacket;
-import org.moon.figura.binary_backend.packets.server2client.S2CSystemMessagePacket;
+import org.moon.figura.binary_backend_wip.packets.client2server.C2SAuthTokenPacket;
+import org.moon.figura.binary_backend_wip.packets.server2client.S2CConnectedPacket;
+import org.moon.figura.binary_backend_wip.packets.server2client.S2CKeepalivePacket;
+import org.moon.figura.binary_backend_wip.packets.server2client.S2CSystemMessagePacket;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -11,7 +11,8 @@ import java.util.function.Supplier;
 
 public class PacketType<T extends AbstractPacket> {
 
-    public static final PacketType<S2CAuthPacket> S2C_AUTH = new PacketType<>(100, S2CAuthPacket::new);
+    public static final PacketType<C2SAuthTokenPacket> C2S_AUTH_TOKEN = new PacketType<>(85, C2SAuthTokenPacket::new);
+
     public static final PacketType<S2CSystemMessagePacket> S2C_SYSTEM_MESSAGE = new PacketType<>(101, S2CSystemMessagePacket::new);
     public static final PacketType<S2CConnectedPacket> S2C_CONNECTED = new PacketType<>(102, S2CConnectedPacket::new);
     public static final PacketType<S2CKeepalivePacket> S2C_KEEPALIVE = new PacketType<>(103, S2CKeepalivePacket::new);

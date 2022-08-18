@@ -1,9 +1,9 @@
-package org.moon.figura.binary_backend;
+package org.moon.figura.binary_backend_wip;
 
 import com.google.common.collect.ImmutableMap;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.binary_backend.packets.PacketType;
-import org.moon.figura.binary_backend.packets.server2client.AbstractS2CPacket;
+import org.moon.figura.binary_backend_wip.packets.PacketType;
+import org.moon.figura.binary_backend_wip.packets.server2client.AbstractS2CPacket;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;

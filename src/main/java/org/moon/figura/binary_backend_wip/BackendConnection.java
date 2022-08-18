@@ -1,11 +1,11 @@
-package org.moon.figura.binary_backend;
+package org.moon.figura.binary_backend_wip;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.binary_backend.handlers.MessageHandlerV0;
-import org.moon.figura.binary_backend.packets.AbstractPacket;
-import org.moon.figura.binary_backend.packets.server2client.S2CConnectedPacket;
+import org.moon.figura.binary_backend_wip.handlers.MessageHandlerV0;
+import org.moon.figura.binary_backend_wip.packets.AbstractPacket;
+import org.moon.figura.binary_backend_wip.packets.server2client.S2CConnectedPacket;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.utils.FiguraText;
 
@@ -29,7 +29,7 @@ public class BackendConnection extends WebSocketClient {
     public void onOpen(ServerHandshake handshakedata) {
         String backendAddress = NewNetworkManager.getBackendAddress();
         FiguraMod.LOGGER.info("Connecting to " + FiguraMod.MOD_NAME + " ws backend (" + backendAddress + ")");
-//        send(NewNetworkManager.authToken);
+
     }
 
     @Override
