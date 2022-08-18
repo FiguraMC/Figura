@@ -68,7 +68,7 @@ public class LocalAvatarFetcher {
      * Saves the folder data to disk
      */
     public static void save() {
-        IOUtils.readCacheFile("folders", nbt -> {
+        IOUtils.saveCacheFile("folders", nbt -> {
             ListTag list = new ListTag();
 
             for (Map.Entry<String, Boolean> entry : FOLDER_DATA.entrySet()) {
