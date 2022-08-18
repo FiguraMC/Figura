@@ -14,7 +14,7 @@ public class FiguraLinkCommand {
         WIKI("[Wiki]", "https://github.com/Kingdom-Of-The-Moon/FiguraRewriteRewrite/wiki/", ColorUtils.Colors.FRAN_PINK.style),
         KOFI("[Ko-fi]", "https://ko-fi.com/francy_chan", 0x27AAE0),
         Space1,
-        DISCORD("[Discord]", "https://discord.gg/ekHGHcH8Af", 0x5865F2),
+        DISCORD("[Discord]", "https://discord.gg/ekHGHcH8Af", ColorUtils.Colors.DISCORD.style),
         REDDIT("[Reddit]", "https://www.reddit.com/r/Figura", 0xFF4400),
         Space2,
         MODRINTH("[Modrinth]", "https://modrinth.com/mod/figura/", 0x1BD96A),

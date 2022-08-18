@@ -21,7 +21,7 @@ public class TextUtils {
     public static final Component ELLIPSIS = FiguraText.of("ellipsis");
 
     public static Component noBadges4U(Component text) {
-        return replaceInText(text, "[❗❌\uD83C\uDF54\uD83E\uDD90\uD83C\uDF19\uD83C\uDF00❤☆★]", Component.literal("�").withStyle(Style.EMPTY.withFont(Style.DEFAULT_FONT)));
+        return replaceInText(text, "[❗❌\uD83C\uDF54\uD83E\uDD90\uD83C\uDF19\uD83C\uDF00☄❤☆★]", Component.literal("�").withStyle(Style.EMPTY.withFont(Style.DEFAULT_FONT)));
     }
 
     public static List<Component> splitText(Component text, String regex) {

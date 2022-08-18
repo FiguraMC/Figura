@@ -93,13 +93,19 @@ public enum MessageHandler {
     USERINFO(json -> {
         json = json.getAsJsonObject("user");
         UUID uuid = UUID.fromString(json.get("uuid").getAsString());
-        JsonArray array = json.get("allowedBadges").getAsJsonArray();
+        JsonObject badges = json.getAsJsonObject("allowedBadges");
 
-        BitSet bitSet = new BitSet(Badges.count());
-        for (int i = 0; i < array.size(); i++)
-            bitSet.set(i, array.get(i).getAsInt() >= 1);
+        JsonArray pride = badges.getAsJsonArray("pride");
+        BitSet prideSet = new BitSet();
+        for (int i = 0; i < pride.size(); i++)
+            prideSet.set(i, pride.get(i).getAsInt() >= 1);
 
-        Badges.load(uuid, bitSet);
+        JsonArray special = badges.getAsJsonArray("special");
+        BitSet specialSet = new BitSet();
+        for (int i = 0; i < special.size(); i++)
+            specialSet.set(i, special.get(i).getAsInt() >= 1);
+
+        Badges.load(uuid, prideSet, specialSet);
     }),
     EVENT(json -> {
         UUID owner = UUID.fromString(json.get("uuid").getAsString());

@@ -27,8 +27,6 @@ import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.TextUtils;
 
-import java.util.BitSet;
-
 @LuaWhitelist
 @LuaTypeDoc(
         name = "HostAPI",
@@ -195,13 +193,11 @@ public class HostAPI {
     }
 
     @LuaWhitelist
-    public void setBadge(int index, boolean value) {
+    public void setBadge(int index, boolean value, boolean pride) {
         if (!isHost()) return;
         if (!FiguraMod.DEBUG_MODE)
             throw new LuaError("Congrats, you found this debug easter egg!");
-        BitSet set = new BitSet(Badges.count());
-        set.set(index, value);
-        Badges.load(owner.owner, set);
+        Badges.set(owner.owner, index, value, pride);
     }
 
     @LuaWhitelist

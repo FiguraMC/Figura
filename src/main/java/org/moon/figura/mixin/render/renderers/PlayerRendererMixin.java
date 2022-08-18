@@ -25,6 +25,7 @@ import org.moon.figura.lua.api.nameplate.EntityNameplateCustomization;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.utils.TextUtils;
+import org.moon.figura.utils.ui.UIHelper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -61,7 +62,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
         EntityNameplateCustomization custom = avatar.luaRuntime == null ? null : avatar.luaRuntime.nameplate.ENTITY;
 
         //enabled
-        if (custom != null && !custom.isVisible()) {
+        if (custom != null && !custom.visible) {
             ci.cancel();
             return;
         }
@@ -83,7 +84,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
 
         //scale
         float scale = 0.025f;
-        FiguraVec3 scaleVec = FiguraVec3.of(-scale, -scale, scale);
+        FiguraVec3 scaleVec = FiguraVec3.of(-scale, -scale, -scale);
         if (custom != null && custom.getScale() != null && trust)
             scaleVec.multiply(custom.getScale());
 
@@ -106,10 +107,13 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
 
         // * variables * //
         boolean isSneaking = player.isDiscrete();
-        boolean deadmau = "deadmau5".equals(text.getString());
+        boolean deadmau = text.getString().equals("deadmau5");
 
         float bgOpacity = Minecraft.getInstance().options.getBackgroundOpacity(0.25f);
-        int bgColor = (int) (bgOpacity * 0xFF) << 24;
+        int bgColor = trust && custom != null && custom.background ? (int) (bgOpacity * 0xFF) << 24 : 0;
+
+        boolean outline = trust && custom != null && custom.outline;
+        boolean shadow = trust && custom != null && custom.shadow;
 
         Matrix4f matrix4f = stack.last().pose();
         Font font = this.getFont();
@@ -131,8 +135,12 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
                 float y = deadmau ? -10f : 0f;
 
                 font.drawInBatch(text1, x, y, 0x20FFFFFF, false, matrix4f, multiBufferSource, !isSneaking, bgColor, light);
-                if (!isSneaking)
-                    font.drawInBatch(text1, x, y, -1, false, matrix4f, multiBufferSource, false, 0, light);
+                if (!isSneaking) {
+                    if (outline)
+                        UIHelper.renderOutlineText(stack, font, text1, (int) x, (int) y, -1, 0x202020);
+                    else
+                        font.drawInBatch(text1, x, y, -1, shadow, matrix4f, multiBufferSource, false, 0, light);
+                }
             }
         }
 
@@ -151,8 +159,12 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
             float y = (deadmau ? -10f : 0f) + (font.lineHeight + 1.5f) * line;
 
             font.drawInBatch(text1, x, y, 0x20FFFFFF, false, matrix4f, multiBufferSource, !isSneaking, bgColor, light);
-            if (!isSneaking)
-                font.drawInBatch(text1, x, y, -1, false, matrix4f, multiBufferSource, false, 0, light);
+            if (!isSneaking) {
+                if (outline)
+                    UIHelper.renderOutlineText(stack, font, text1, (int) x, (int) y, -1, 0x202020);
+                else
+                    font.drawInBatch(text1, x, y, -1, shadow, matrix4f, multiBufferSource, false, 0, light);
+            }
         }
 
         stack.popPose();

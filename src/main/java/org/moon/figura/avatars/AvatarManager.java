@@ -10,6 +10,7 @@ import org.moon.figura.backend.NetworkManager;
 import org.moon.figura.config.Config;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.widgets.lists.AvatarList;
+import org.moon.figura.lua.api.nameplate.Badges;
 import org.moon.figura.utils.FiguraText;
 
 import java.nio.file.Path;
@@ -214,6 +215,7 @@ public class AvatarManager {
                 if (LOADED_AVATARS.containsKey(id))
                     LOADED_AVATARS.remove(id).clean();
                 FETCHED_AVATARS.remove(id);
+                Badges.clear(id);
             }),
             SET(event -> {
                 UUID id = event.owner;

@@ -1,6 +1,7 @@
 package org.moon.figura.lua.api.nameplate;
 
 import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
@@ -16,7 +17,19 @@ public class EntityNameplateCustomization extends NameplateCustomization {
 
     private FiguraVec3 position;
     private FiguraVec3 scale;
-    private boolean visible = true;
+
+    @LuaWhitelist
+    @LuaFieldDoc(description = "nameplate_entity.visible")
+    public boolean visible = true;
+    @LuaWhitelist
+    @LuaFieldDoc(description = "nameplate_entity.background")
+    public boolean background = true;
+    @LuaWhitelist
+    @LuaFieldDoc(description = "nameplate_entity.shadow")
+    public boolean shadow;
+    @LuaWhitelist
+    @LuaFieldDoc(description = "nameplate_entity.outline")
+    public boolean outline;
 
     @LuaWhitelist
     @LuaMethodDoc(description = "nameplate_entity.get_pos")
@@ -67,21 +80,26 @@ public class EntityNameplateCustomization extends NameplateCustomization {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "nameplate_entity.is_visible")
-    public boolean isVisible() {
-        return this.visible;
+    public Object __index(String arg) {
+        if (arg == null) return null;
+        return switch (arg) {
+            case "visible" -> visible;
+            case "background" -> background;
+            case "shadow" -> shadow;
+            case "outline" -> outline;
+            default -> null;
+        };
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = Boolean.class,
-                    argumentNames = "visible"
-            ),
-            description = "nameplate_entity.set_visible"
-    )
-    public void setVisible(boolean visible) {
-        this.visible = visible;
+    public void __newindex(String key, boolean value) {
+        if (key == null) return;
+        switch (key) {
+            case "visible" -> visible = value;
+            case "background" -> background = value;
+            case "shadow" -> shadow = value;
+            case "outline" -> outline = value;
+        }
     }
 
     @Override

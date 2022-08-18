@@ -1,13 +1,16 @@
 package org.moon.figura.lua.api.nameplate;
 
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.config.Config;
 import org.moon.figura.utils.ColorUtils;
+import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.TextUtils;
 
 import java.util.BitSet;
@@ -16,27 +19,23 @@ import java.util.UUID;
 
 public class Badges {
 
-    private static final HashMap<UUID, BitSet> badgesMap = new HashMap<>();
+    private static final HashMap<UUID, Pair<BitSet, BitSet>> badgesMap = new HashMap<>();
 
     public static Component fetchBadges(Avatar avatar) {
         if (avatar == null)
             return Component.empty();
 
-        MutableComponent badges = Component.literal(" ").withStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT).withColor(ChatFormatting.WHITE));
+        MutableComponent badges = Component.literal(" ");
 
         UUID id = avatar.owner;
-        BitSet badgesSet = badgesMap.get(id);
-        if (badgesSet == null) {
-            badgesSet = new BitSet(count());
-            badgesMap.put(id, badgesSet);
-        }
+        Pair<BitSet, BitSet> pair = badgesMap.get(id);
+        if (pair == null)
+            badgesMap.put(id, pair = empty());
 
         // -- loading -- //
 
-        if (!avatar.loaded) {
-            badges.append(Integer.toHexString(Math.abs(FiguraMod.ticks) % 16));
-            return badges;
-        }
+        if (!avatar.loaded)
+            return badges.append(Integer.toHexString(Math.abs(FiguraMod.ticks) % 16));
 
         // -- mark -- //
 
@@ -46,23 +45,28 @@ public class Badges {
         if (avatar.scriptError)
             badges.append(Default.ERROR.badge);
 
-            //easter egg
+        //version
+        else if (avatar.versionStatus == 1)
+            badges.append(Default.WARNING.badge);
+
+        //egg
         else if (FiguraMod.CHEESE_DAY && Config.EASTER_EGGS.asBool())
             badges.append(Default.CHEESE.badge);
 
-            //mark
+        //mark
         else if (avatar.nbt != null) {
             mark: {
                 //pride (mark skins)
+                BitSet prideSet = pair.getFirst();
                 for (int i = pride.length - 1; i >= 0; i--) {
-                    if (badgesSet.get(i)) {
+                    if (prideSet.get(i)) {
                         badges.append(pride[i].badge);
                         break mark;
                     }
                 }
 
                 //mark fallback
-                badges.append(Component.literal(Default.DEFAULT.badge).withStyle(Style.EMPTY.withColor(ColorUtils.userInputHex(avatar.color))));
+                badges.append(Default.DEFAULT.badge.copy().withStyle(Style.EMPTY.withColor(ColorUtils.userInputHex(avatar.color))));
             }
         }
 
@@ -70,23 +74,35 @@ public class Badges {
 
         Special[] special = Special.values();
 
-        //special badge
-        for (int i = 0; i < special.length; i++) {
-            if (badgesSet.get(i + pride.length))
-                badges.append(Component.literal(special[i].badge).withStyle(Style.EMPTY.withColor(special[i].color())));
+        //special badges
+        BitSet specialSet = pair.getSecond();
+        for (int i = special.length - 1; i >= 0; i--) {
+            if (specialSet.get(i))
+                badges.append(special[i].badge);
         }
 
         return badges.getString().isBlank() ? Component.empty() : badges;
     }
 
-    public static void load(UUID id, BitSet bitSet) {
-        BitSet set = badgesMap.getOrDefault(id, new BitSet(count()));
-        set.or(bitSet);
-        badgesMap.put(id, set);
+    public static void load(UUID id, BitSet pride, BitSet special) {
+        badgesMap.put(id, Pair.of(pride, special));
     }
 
-    public static int count() {
-        return Pride.values().length + Special.values().length;
+    public static void set(UUID id, int index, boolean value, boolean pride) {
+        Pair<BitSet, BitSet> pair = badgesMap.get(id);
+        if (pair == null)
+            badgesMap.put(id, pair = empty());
+
+        BitSet set = pride ? pair.getFirst() : pair.getSecond();
+        set.set(index, value);
+    }
+
+    public static void clear(UUID id) {
+        badgesMap.remove(id);
+    }
+
+    public static Pair<BitSet, BitSet> empty() {
+        return Pair.of(new BitSet(Pride.values().length), new BitSet(Special.values().length));
     }
 
     private enum Default {
@@ -95,57 +111,79 @@ public class Badges {
         WARNING("❗"),
         ERROR("❌");
 
-        public final String badge;
+        public final Component badge;
 
         Default(String unicode) {
-            this.badge = unicode;
+            this.badge = Component.literal(unicode).withStyle(Style.EMPTY
+                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, FiguraText.of("badges.standard." + this.name().toLowerCase())))
+                    .withFont(TextUtils.FIGURA_FONT)
+                    .withColor(ChatFormatting.WHITE)
+            );
         }
     }
 
     private enum Pride {
-        PRIDE("\uD83D\uDFE5"),
-        TRANS("\uD83D\uDFE7"),
-        PAN("\uD83D\uDFE8"),
-        ENBY("\uD83D\uDFE9"),
-        PLURAL("\uD83D\uDFE6"),
-        BI("\uD83D\uDFEA"),
-        ACE("\uD83D\uDFEB"),
-        LESBIAN("⬜"),
-        FLUID("⬛");
+        AGENDER("ᚠ"),
+        AROACE("ᚡ"),
+        AROMANTIC("ᚢ"),
+        ASEXUAL("ᚣ"),
+        BIGENDER("ᚤ"),
+        BISEXUAL("ᚥ"),
+        DEMIBOY("ᚦ"),
+        DEMIGENDER("ᚧ"),
+        DEMIGIRL("ᚨ"),
+        DEMIROMANTIC("ᚩ"),
+        DEMISEXUAL("ᚪ"),
+        DISABILITY("ᚫ"),
+        FINSEXUAL("ᚬ"),
+        GAYMEN("ᚭ"),
+        GENDERFAE("ᚮ"),
+        GENDERFLUID("ᚯ"),
+        GENDERQUEER("ᚰ"),
+        INTERSEX("ᚱ"),
+        LESBIAN("ᚲ"),
+        NONBINARY("ᚳ"),
+        PANSEXUAL("ᚴ"),
+        PLURAL("ᚵ"),
+        POLYSEXUAL("ᚶ"),
+        PRIDE("ᚷ"),
+        TRANSGENDER("ᚸ");
 
-        public final String badge;
+        public final Component badge;
 
         Pride(String unicode) {
-            this.badge = unicode;
+            this.badge = Component.literal(unicode).withStyle(Style.EMPTY
+                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, FiguraText.of("badges.pride." + this.name().toLowerCase())))
+                    .withFont(TextUtils.FIGURA_FONT)
+                    .withColor(ChatFormatting.WHITE)
+            );
         }
     }
 
     private enum Special {
-        BURGER("\uD83C\uDF54"),
-        SHRIMP("\uD83E\uDD90"),
-        MOON("\uD83C\uDF19"),
-        SHADOW("\uD83C\uDF00"),
-
-        DONATOR("❤", ColorUtils.Colors.FRAN_PINK.hex),
+        DEV("★"),
+        DISCORD_STAFF("☆", ColorUtils.Colors.DISCORD.hex),
         CONTEST("☆", ColorUtils.Colors.FRAN_PINK.hex),
-        DISCORD_MOD("☆", ColorUtils.Colors.DISCORD_MOD.hex),
-        DISCORD_ADMIN("☆", ColorUtils.Colors.DISCORD_ADMIN.hex),
-        DEV("★");
+        DONATOR("❤", ColorUtils.Colors.FRAN_PINK.hex),
+        TRANSLATOR("☄"),
 
-        public final String badge;
-        private final Integer color;
+        SHADOW("\uD83C\uDF00"),
+        MOON("\uD83C\uDF19"),
+        SHRIMP("\uD83E\uDD90"),
+        BURGER("\uD83C\uDF54");
+
+        public final Component badge;
 
         Special(String unicode) {
             this(unicode, null);
         }
 
         Special(String unicode, Integer color) {
-            this.badge = unicode;
-            this.color = color;
-        }
-
-        public int color() {
-            return this.color == null ? 0xFFFFFF : this.color;
+            this.badge = Component.literal(unicode).withStyle(Style.EMPTY
+                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, FiguraText.of("badges.special." + this.name().toLowerCase())))
+                    .withFont(TextUtils.FIGURA_FONT)
+                    .withColor(color == null ? 0xFFFFFF : color)
+            );
         }
     }
 }

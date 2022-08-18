@@ -332,7 +332,7 @@ public class UIHelper extends GuiComponent {
         }
 
         stack.pushPose();
-        stack.translate(0f, 0f, 0.1f);
+        stack.translate(0f, 0f, 0.001f);
         textRenderer.draw(stack, text, x, y, color);
         stack.popPose();
     }

@@ -97,7 +97,7 @@ public enum Config {
     EASTER_EGGS(true),
 
     Dev {{this.name = FiguraText.of("config.dev").withStyle(ChatFormatting.RED);}},
-    RENDER_DEBUG_PARTS_PIVOT(2, 3) {{
+    RENDER_DEBUG_PARTS_PIVOT(1, 3) {{
         String tooltip = "config.render_debug_parts_pivot.tooltip";
         this.tooltip = FiguraText.of(tooltip,
                 FiguraText.of(tooltip + ".cubes").setStyle(ColorUtils.Colors.FRAN_PINK.style),

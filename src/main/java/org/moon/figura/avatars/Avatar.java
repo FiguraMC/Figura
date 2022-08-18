@@ -93,6 +93,7 @@ public class Avatar {
     //runtime status
     public boolean hasTexture = false;
     public boolean scriptError = false;
+    public int versionStatus = 0;
 
     public int complexity = 0;
     public int animationComplexity;
@@ -144,6 +145,7 @@ public class Avatar {
                 version = metadata.getString("ver");
                 color = metadata.getString("color");
                 fileSize = getFileSize();
+                versionStatus = checkVersion();
             } catch (Exception e) {
                 FiguraMod.LOGGER.error("", e);
             }
@@ -405,7 +407,6 @@ public class Avatar {
         matrices.scale(-1, -1, 1);
         renderer.renderSpecialParts();
         matrices.popPose();
-
     }
 
     public void firstPersonWorldRender(Entity watcher, MultiBufferSource bufferSource, PoseStack matrices, Camera camera, float tickDelta) {
@@ -596,6 +597,14 @@ public class Avatar {
             return baos.size();
         } catch (Exception e) {
             FiguraMod.LOGGER.warn("Failed to generate file size for model " + this.name, e);
+            return 0;
+        }
+    }
+
+    private int checkVersion() {
+        try {
+            return FiguraMod.compareVersions(version, FiguraMod.VERSION);
+        } catch (Exception ignored) {
             return 0;
         }
     }

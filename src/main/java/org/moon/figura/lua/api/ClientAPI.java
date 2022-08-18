@@ -5,6 +5,9 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.world.phys.Vec3;
+import org.luaj.vm2.LuaError;
+import org.moon.figura.FiguraMod;
+import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
@@ -242,6 +245,27 @@ public class ClientAPI {
     @LuaMethodDoc(description = "client.has_iris_shader")
     public static boolean hasIrisShader() {
         return hasIris() && net.irisshaders.iris.api.v0.IrisApi.getInstance().isShaderPackInUse();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(description = "client.get_figura_version")
+    public static String getFiguraVersion() {
+        return FiguraMod.VERSION;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = {String.class, String.class},
+                    argumentNames = {"version1", "version2"}
+            ),
+            description = "client.compare_versions")
+    public static int compareVersions(@LuaNotNil String ver1, @LuaNotNil String ver2) {
+        try {
+            return FiguraMod.compareVersions(ver1, ver2);
+        } catch (Exception e) {
+            throw new LuaError(e.getMessage());
+        }
     }
 
     @Override

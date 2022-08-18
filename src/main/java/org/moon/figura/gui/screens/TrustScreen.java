@@ -213,23 +213,19 @@ public class TrustScreen extends AbstractPanelScreen {
         boolean showingInst = false;
         if (expandButton.isToggled() && playerList.selectedEntry instanceof PlayerElement player && (avatar = AvatarManager.getAvatarForPlayer(player.getOwner())) != null && avatar.nbt != null) {
             Style style = FiguraMod.getAccentColor();
-            String complexity = avatar.complexity + "";
-            String tick1 = avatar.worldTickInstructions + "";
-            String tick2 = avatar.entityTickInstructions + "";
-            String render1 = avatar.worldRenderInstructions + "";
-            String render2 = avatar.entityRenderInstructions + "";
-            String render3 = avatar.postEntityRenderInstructions + "";
-            String render4 = avatar.postWorldRenderInstructions + "";
             instructions.setText(Component.empty()
-                    .append(FiguraText.of("gui.trust.complexity", Component.literal(complexity).withStyle(style)))
+                    .append(FiguraText.of("gui.trust.complexity", Component.literal(String.valueOf(avatar.complexity)).withStyle(style)))
                     .append("\n")
-                    .append(FiguraText.of("gui.trust.tick", Component.literal(tick1).withStyle(style), Component.literal(tick2).withStyle(style)))
+                    .append(FiguraText.of("gui.trust.tick",
+                            Component.literal(String.valueOf(avatar.worldTickInstructions)).withStyle(style),
+                            Component.literal(String.valueOf(avatar.entityTickInstructions)).withStyle(style)
+                    ))
                     .append("\n")
                     .append(FiguraText.of("gui.trust.render",
-                            Component.literal(render1).withStyle(style),
-                            Component.literal(render2).withStyle(style),
-                            Component.literal(render3).withStyle(style),
-                            Component.literal(render4).withStyle(style)
+                            Component.literal(String.valueOf(avatar.worldRenderInstructions)).withStyle(style),
+                            Component.literal(String.valueOf(avatar.entityRenderInstructions)).withStyle(style),
+                            Component.literal(String.valueOf(avatar.postEntityRenderInstructions)).withStyle(style),
+                            Component.literal(String.valueOf(avatar.postWorldRenderInstructions)).withStyle(style)
                     ))
             );
             showingInst = true;

@@ -4,10 +4,12 @@ import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.world.entity.Entity;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
@@ -21,6 +23,7 @@ import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.MathUtils;
+import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.ui.UIHelper;
 
 import java.util.List;
@@ -31,6 +34,13 @@ public class PopupMenu {
 
     private static final FiguraIdentifier BACKGROUND = new FiguraIdentifier("textures/gui/popup.png");
     private static final FiguraIdentifier ICONS = new FiguraIdentifier("textures/gui/popup_icons.png");
+
+    private static final MutableComponent VERSION_WARN = Component.empty()
+            .append(Component.literal("❗ ").withStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT)))
+            .append(FiguraText.of("badges.warning").withStyle(ChatFormatting.YELLOW));
+    private static final MutableComponent ERROR_WARN = Component.empty()
+            .append(Component.literal("❌ ").withStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT)))
+            .append(FiguraText.of("badges.error").withStyle(ChatFormatting.RED));
 
     private static final List<Pair<Component, Consumer<UUID>>> BUTTONS = List.of(
             Pair.of(FiguraText.of("popup_menu.cancel"), id -> {}),
@@ -112,17 +122,29 @@ public class PopupMenu {
         MutableComponent trust = tc.getGroupName();
 
         MutableComponent name = entity.getName().copy();
+
+        Component warn = null;
+
         Avatar avatar = AvatarManager.getAvatarForPlayer(id);
-        if (avatar != null)
+        if (avatar != null) {
             name.append(Badges.fetchBadges(avatar));
+            if (avatar.scriptError)
+                warn = ERROR_WARN;
+            else if (avatar.versionStatus == 1)
+                warn = VERSION_WARN;
+        }
 
         //render texts
         UIHelper.renderOutlineText(stack, font, name, -font.width(name) / 2, -36, 0xFFFFFF, 0x202020);
 
         stack.scale(0.5f, 0.5f, 0.5f);
         stack.translate(0f, 0f, -1f);
+
         UIHelper.renderOutlineText(stack, font, trust, -font.width(trust) / 2, -54, 0xFFFFFF, 0x202020);
         font.draw(stack, title, -width + 4, -12, 0xFFFFFF);
+
+        if (warn != null)
+            UIHelper.renderOutlineText(stack, font, warn, -font.width(warn) / 2, 0, 0xFFFFFF, 0x202020);
 
         //finish rendering
         stack.popPose();
