@@ -162,7 +162,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
     @Deprecated
     //Method is only kept for reference of how it used to work, this impl no longer works with new system.
     protected void renderPart(FiguraModelPart part, int[] remainingComplexity, boolean parentPassedPredicate) {
-        part.applyVanillaTransforms(entityRenderer);
+        part.applyVanillaTransforms(vanillaModelData);
 
         part.applyExtraTransforms(customizationStack.peek().positionMatrix);
 

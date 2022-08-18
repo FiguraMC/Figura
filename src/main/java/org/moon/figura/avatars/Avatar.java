@@ -359,6 +359,7 @@ public class Avatar {
         if (renderer == null)
             return;
 
+        renderer.vanillaModelData.update(entityRenderer);
         renderer.currentFilterScheme = filter;
         renderer.entity = entity;
         renderer.yaw = yaw;
@@ -368,7 +369,6 @@ public class Avatar {
         renderer.bufferSource = bufferSource;
         renderer.light = light;
         renderer.overlay = overlay;
-        renderer.entityRenderer = entityRenderer;
         renderer.translucent = translucent;
         renderer.glowing = glowing;
 

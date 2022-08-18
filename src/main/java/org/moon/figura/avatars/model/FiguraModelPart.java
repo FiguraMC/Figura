@@ -1,10 +1,7 @@
 package org.moon.figura.avatars.model;
 
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import org.luaj.vm2.LuaError;
 import org.moon.figura.avatars.model.rendering.ImmediateAvatarRenderer;
 import org.moon.figura.avatars.model.rendering.texture.RenderTypes;
@@ -12,7 +9,6 @@ import org.moon.figura.avatars.model.rendertasks.BlockTask;
 import org.moon.figura.avatars.model.rendertasks.ItemTask;
 import org.moon.figura.avatars.model.rendertasks.RenderTask;
 import org.moon.figura.avatars.model.rendertasks.TextTask;
-import org.moon.figura.ducks.LivingEntityRendererAccessor;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
@@ -73,31 +69,22 @@ public class FiguraModelPart {
         }
     }
 
-    public void applyVanillaTransforms(LivingEntityRenderer<?, ?> entityRenderer) {
-        if (entityRenderer == null)
+    public void applyVanillaTransforms(VanillaModelData vanillaModelData) {
+        if (vanillaModelData == null)
             return;
 
-        //get model
-        EntityModel<?> vanillaModel;
-        if (parentType == ParentType.LeftElytra || parentType == ParentType.RightElytra)
-            vanillaModel = ((LivingEntityRendererAccessor<?>) entityRenderer).figura$getElytraModel();
-        else
-            vanillaModel = entityRenderer.getModel();
-
-        if (vanillaModel == null || parentType.provider == null)
-            return;
-
-        ModelPart part = parentType.provider.func.apply(vanillaModel);
-        if (part == null)
+        //get part data
+        VanillaModelData.PartData partData = vanillaModelData.partMap.get(this.parentType);
+        if (partData == null)
             return;
 
         //apply vanilla transforms
         FiguraVec3 defaultPivot = parentType.offset.copy();
 
-        defaultPivot.subtract(part.x, part.y, part.z);
+        defaultPivot.subtract(partData.pos);
 
         if ((animationOverride & 4) != 4)
-            defaultPivot.multiply(part.xScale, part.yScale, -part.zScale);
+            defaultPivot.multiply(partData.scale);
 
         if ((animationOverride & 2) != 2) {
             customization.offsetPivot(defaultPivot);
@@ -106,7 +93,7 @@ public class FiguraModelPart {
 
         //customization.offsetPivot(pivot);
         if ((animationOverride & 1) != 1)
-            customization.offsetRot(Math.toDegrees(-part.xRot), Math.toDegrees(-part.yRot), Math.toDegrees(part.zRot));
+            customization.offsetRot(partData.rot);
 
         defaultPivot.free();
     }

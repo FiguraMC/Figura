@@ -6,7 +6,6 @@ import com.mojang.math.Matrix3f;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -14,6 +13,7 @@ import net.minecraft.world.phys.Vec3;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.model.FiguraModelPart;
 import org.moon.figura.avatars.model.ParentType;
+import org.moon.figura.avatars.model.VanillaModelData;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 
@@ -42,7 +42,7 @@ public abstract class AvatarRenderer {
     //matrices
     public PoseStack matrices;
     public MultiBufferSource bufferSource;
-    public LivingEntityRenderer<?, ?> entityRenderer;
+    public VanillaModelData vanillaModelData = new VanillaModelData();
     public boolean allowMatrixUpdate = false;
 
     public PartFilterScheme currentFilterScheme;

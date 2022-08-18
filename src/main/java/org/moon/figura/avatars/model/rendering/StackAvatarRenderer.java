@@ -73,7 +73,7 @@ public class StackAvatarRenderer extends ImmediateAvatarRenderer {
         //calculate part transforms
 
         //calculate vanilla parent
-        part.applyVanillaTransforms(entityRenderer);
+        part.applyVanillaTransforms(vanillaModelData);
         part.applyExtraTransforms(customizationStack.peek().positionMatrix);
 
         //push customization stack
