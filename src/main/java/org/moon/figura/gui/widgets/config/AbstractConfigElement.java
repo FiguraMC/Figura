@@ -4,6 +4,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import org.moon.figura.config.Config;
 import org.moon.figura.gui.widgets.AbstractContainerElement;
 import org.moon.figura.gui.widgets.TexturedButton;
@@ -12,7 +14,7 @@ import org.moon.figura.utils.ui.UIHelper;
 
 public abstract class AbstractConfigElement extends AbstractContainerElement {
 
-    public static final Component HOVERED_ARROW = Component.literal("•");
+    public static final Component HOVERED_ARROW = new TextComponent("•");
 
     protected final Config config;
     protected final ConfigList parent;
@@ -30,7 +32,7 @@ public abstract class AbstractConfigElement extends AbstractContainerElement {
         this.initValue = config.value;
 
         //reset button
-        children.add(resetButton = new ParentedButton(x + width - 60, y, 60, 20, Component.translatable("controls.reset"), this, button -> config.tempValue = config.defaultValue));
+        children.add(resetButton = new ParentedButton(x + width - 60, y, 60, 20, new TranslatableComponent("controls.reset"), this, button -> config.tempValue = config.defaultValue));
     }
 
     @Override

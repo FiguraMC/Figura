@@ -3,7 +3,7 @@ package org.moon.figura.gui.screens;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import org.lwjgl.glfw.GLFW;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.gui.widgets.Label;
@@ -31,7 +31,7 @@ public class GameScreen extends AbstractPanelScreen {
     private String egg = EGG;
 
     protected GameScreen(Screen parentScreen) {
-        super(parentScreen, Component.empty(), 2);
+        super(parentScreen, TextComponent.EMPTY.copy(), 2);
     }
 
     protected void init() {
@@ -41,23 +41,23 @@ public class GameScreen extends AbstractPanelScreen {
         addRenderableOnly(grid = new Grid(width, height));
 
         //back button
-        addRenderableWidget(new TexturedButton(this.width - 28, 4, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/back.png"), 72, 24, FiguraText.of("gui.done"),
+        addRenderableWidget(new TexturedButton(this.width - 28, 4, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/back.png"), 72, 24, new FiguraText("gui.done"),
             bx -> this.minecraft.setScreen(parentScreen)
         ));
 
         //text
         addRenderableOnly(keys = new Label(
-                Component.empty()
-                        .append(Component.literal("[R]").withStyle(FiguraMod.getAccentColor()))
+                TextComponent.EMPTY.copy()
+                        .append(new TextComponent("[R]").withStyle(FiguraMod.getAccentColor()))
                         .append(" restart, ")
-                        .append(Component.literal("[P]").withStyle(FiguraMod.getAccentColor()))
+                        .append(new TextComponent("[P]").withStyle(FiguraMod.getAccentColor()))
                         .append(" pause, ")
-                        .append(Component.literal("[SPACE]").withStyle(FiguraMod.getAccentColor()))
+                        .append(new TextComponent("[SPACE]").withStyle(FiguraMod.getAccentColor()))
                         .append(" step")
                         .append("\n")
-                        .append(Component.literal("[F1]").withStyle(FiguraMod.getAccentColor()))
+                        .append(new TextComponent("[F1]").withStyle(FiguraMod.getAccentColor()))
                         .append(" hide text, ")
-                        .append(Component.literal("[Scroll]").withStyle(FiguraMod.getAccentColor()))
+                        .append(new TextComponent("[Scroll]").withStyle(FiguraMod.getAccentColor()))
                         .append(" scale (restarts)"),
                 4, 4, false, 0)
         );
@@ -69,10 +69,10 @@ public class GameScreen extends AbstractPanelScreen {
         super.tick();
         if (!paused) grid.tick();
         stats.setText(
-                Component.literal("Generation")
-                        .append(Component.literal(" " + grid.gen).withStyle(FiguraMod.getAccentColor()))
+                new TextComponent("Generation")
+                        .append(new TextComponent(" " + grid.gen).withStyle(FiguraMod.getAccentColor()))
                         .append(", Scale")
-                        .append(Component.literal(" " + scale).withStyle(FiguraMod.getAccentColor()))
+                        .append(new TextComponent(" " + scale).withStyle(FiguraMod.getAccentColor()))
         );
     }
 

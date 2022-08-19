@@ -9,8 +9,8 @@ import org.moon.figura.utils.FiguraText;
 
 public class BooleanElement extends AbstractConfigElement {
 
-    private static final Component ON = FiguraText.of("gui.on");
-    private static final Component OFF = FiguraText.of("gui.off");
+    private static final Component ON = new FiguraText("gui.on");
+    private static final Component OFF = new FiguraText("gui.off");
 
     private final ParentedButton button;
 

@@ -1,18 +1,16 @@
 package org.moon.figura.utils;
 
 import com.mojang.brigadier.StringReader;
-import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.arguments.blocks.BlockStateArgument;
 import net.minecraft.commands.arguments.item.ItemArgument;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import org.luaj.vm2.LuaError;
-import org.moon.figura.math.vector.FiguraVec2;
-import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.lua.api.world.BlockStateAPI;
 import org.moon.figura.lua.api.world.ItemStackAPI;
+import org.moon.figura.math.vector.FiguraVec2;
+import org.moon.figura.math.vector.FiguraVec3;
 
 public class LuaUtils {
 
@@ -61,7 +59,7 @@ public class LuaUtils {
             return wrapper.itemStack;
         else if (item instanceof String string) {
             try {
-                return ItemArgument.item(new CommandBuildContext(RegistryAccess.BUILTIN.get())).parse(new StringReader(string)).createItemStack(1, false);
+                return new ItemArgument().parse(new StringReader(string)).createItemStack(1, false);
             } catch (Exception e) {
                 throw new LuaError("Could not parse item stack from string: " + string);
             }
@@ -77,7 +75,7 @@ public class LuaUtils {
             return wrapper.blockState;
         else if (block instanceof String string) {
             try {
-                return BlockStateArgument.block(new CommandBuildContext(RegistryAccess.BUILTIN.get())).parse(new StringReader(string)).getState();
+                return new BlockStateArgument().parse(new StringReader(string)).getState();
             } catch (Exception e) {
                 throw new LuaError("Could not parse block state from string: " + string);
             }

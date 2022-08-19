@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.moon.figura.utils.FiguraIdentifier;
@@ -31,7 +31,7 @@ public class ScrollBarWidget extends AbstractWidget {
     // -- constructors -- //
 
     public ScrollBarWidget(int x, int y, int width, int height, double initialValue) {
-        super(x, y, width, height, Component.empty());
+        super(x, y, width, height, TextComponent.EMPTY.copy());
         scrollPrecise = initialValue;
         scrollPos = initialValue;
     }

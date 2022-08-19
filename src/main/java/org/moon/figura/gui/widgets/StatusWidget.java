@@ -8,6 +8,7 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
@@ -68,7 +69,7 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
         status += (byte) (backend << 6);
 
         String dc = NetworkManager.disconnectedReason;
-        disconnectedReason = backend == 1 && dc != null && !dc.isBlank() ? Component.literal(dc) : null;
+        disconnectedReason = backend == 1 && dc != null && !dc.isBlank() ? new TextComponent(dc) : null;
     }
 
     @Override
@@ -104,11 +105,11 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
             if (mouseX >= x && mouseX <= x + size) {
                 //get name and color
                 int color = status >> (i * 2) & 3;
-                text = FiguraText.of(part += STATUS_NAMES.get(i)).append("\n• ").append(FiguraText.of(part + "." + color)).setStyle(TEXT_COLORS.get(color));
+                text = new FiguraText(part += STATUS_NAMES.get(i)).append("\n• ").append(new FiguraText(part + "." + color)).setStyle(TEXT_COLORS.get(color));
 
                 //get backend disconnect reason
                 if (i == 3 && disconnectedReason != null)
-                    text.append("\n\n").append(FiguraText.of(part + ".reason")).append("\n• ").append(disconnectedReason);
+                    text.append("\n\n").append(new FiguraText(part + ".reason")).append("\n• ").append(disconnectedReason);
 
                 break;
             }
@@ -121,7 +122,7 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
     }
 
     private MutableComponent getStatus(int type) {
-        return Component.literal(String.valueOf(STATUS_INDICATORS.charAt(status >> (type * 2) & 3))).setStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT));
+        return new TextComponent(String.valueOf(STATUS_INDICATORS.charAt(status >> (type * 2) & 3))).setStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT));
     }
 
     @Override

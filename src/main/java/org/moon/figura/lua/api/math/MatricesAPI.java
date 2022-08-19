@@ -1,7 +1,6 @@
 package org.moon.figura.lua.api.math;
 
 import org.luaj.vm2.LuaError;
-import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;

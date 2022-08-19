@@ -5,7 +5,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import org.luaj.vm2.LuaError;
 import org.moon.figura.avatars.model.PartCustomization;
@@ -16,6 +15,8 @@ import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.utils.LuaUtils;
+
+import java.util.Random;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -69,7 +70,7 @@ public class ItemTask extends RenderTask {
     public RenderTask item(Object item) {
         this.item = LuaUtils.parseItemStack("item", item);
         Minecraft client = Minecraft.getInstance();
-        RandomSource random = client.level != null ? client.level.random : RandomSource.create();
+        Random random = client.level != null ? client.level.random : new Random();
         cachedComplexity = client.getItemRenderer().getModel(this.item, null, null, 0).getQuads(null, null, random).size();
         return this;
     }

@@ -83,9 +83,6 @@ public class FiguraModelPart {
 
         defaultPivot.subtract(partData.pos);
 
-        if ((animationOverride & 4) != 4)
-            defaultPivot.multiply(partData.scale);
-
         if ((animationOverride & 2) != 2) {
             customization.offsetPivot(defaultPivot);
             customization.offsetPos(defaultPivot);

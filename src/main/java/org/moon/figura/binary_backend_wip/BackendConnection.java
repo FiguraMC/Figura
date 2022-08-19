@@ -49,7 +49,7 @@ public class BackendConnection extends WebSocketClient {
             reason = connectionInfo.getError(code);
         FiguraMod.LOGGER.info("Closed connection: " + reason);
         FiguraMod.LOGGER.info("Code: " + code + ", Remote: " + remote);
-        FiguraToast.sendToast(FiguraText.of("backend.disconnected"), reason, FiguraToast.ToastType.ERROR);
+        FiguraToast.sendToast(new FiguraText("backend.disconnected"), reason, FiguraToast.ToastType.ERROR);
 //        messageHandler.handleClose(code);
     }
 
@@ -71,7 +71,7 @@ public class BackendConnection extends WebSocketClient {
     @Override
     public void onError(Exception ex) {
         FiguraMod.LOGGER.warn("", ex);
-        FiguraToast.sendToast(FiguraText.of("backend.disconnected"), FiguraToast.ToastType.ERROR);
+        FiguraToast.sendToast(new FiguraText("backend.disconnected"), FiguraToast.ToastType.ERROR);
     }
 
     public void createConnectionInfo(S2CConnectedPacket packet) {

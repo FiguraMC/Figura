@@ -6,7 +6,6 @@ import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
 import org.moon.figura.avatars.model.PartCustomization;
 import org.moon.figura.lua.LuaWhitelist;
@@ -15,6 +14,8 @@ import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.utils.LuaUtils;
+
+import java.util.Random;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -62,7 +63,7 @@ public class BlockTask extends RenderTask {
     public RenderTask block(Object block) {
         this.block = LuaUtils.parseBlockState("block", block);
         Minecraft client = Minecraft.getInstance();
-        RandomSource random = client.level != null ? client.level.random : RandomSource.create();
+        Random random = client.level != null ? client.level.random : new Random();
 
         BakedModel blockModel = client.getBlockRenderer().getBlockModel(this.block);
         cachedComplexity = blockModel.getQuads(this.block, null, random).size();

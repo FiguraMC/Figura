@@ -60,7 +60,7 @@ public class InteractableEntity extends AbstractContainerElement {
                 0, 0, 16,
                 new FiguraIdentifier("textures/gui/expand.png"),
                 48, 32,
-                FiguraText.of("gui.expand"),
+                new FiguraText("gui.expand"),
                 bx -> {
                     if (button.isToggled()) {
                         //backup pos to fix model pos
@@ -73,7 +73,7 @@ public class InteractableEntity extends AbstractContainerElement {
                         //update button
                         button.x = this.x + 4;
                         button.y = this.y + 28;
-                        button.setTooltip(FiguraText.of("gui.minimise"));
+                        button.setTooltip(new FiguraText("gui.minimise"));
 
                         //update entity
                         this.modelX += oldX - this.x;

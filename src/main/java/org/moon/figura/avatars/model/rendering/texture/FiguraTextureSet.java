@@ -78,7 +78,7 @@ public class FiguraTextureSet {
             case "resource" -> {
                 try {
                     ResourceLocation resource = new ResourceLocation(pair.getSecond());
-                    yield Minecraft.getInstance().getResourceManager().getResource(resource).isPresent() ? resource : MissingTextureAtlasSprite.getLocation();
+                    yield Minecraft.getInstance().getResourceManager().hasResource(resource) ? resource : MissingTextureAtlasSprite.getLocation();
                 } catch (Exception ignored) {
                     yield MissingTextureAtlasSprite.getLocation();
                 }

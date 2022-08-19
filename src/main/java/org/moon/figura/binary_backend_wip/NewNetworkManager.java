@@ -183,7 +183,7 @@ public class NewNetworkManager {
                 });
 
                 connection.send(new ClientIntentionPacket(inetSocketAddress.getHostName(), inetSocketAddress.getPort(), ConnectionProtocol.LOGIN));
-                connection.send(new ServerboundHelloPacket(minecraft.getUser().getName(), minecraft.getProfileKeyPairManager().preparePublicKey().join(), Optional.ofNullable(minecraft.getUser().getProfileId())));
+                connection.send(new ServerboundHelloPacket(minecraft.getUser().getGameProfile()));
 
                 authConnection = connection;
             } catch (Exception e) {

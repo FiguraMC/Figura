@@ -7,7 +7,7 @@ import org.moon.figura.utils.FiguraText;
 
 public class AvatarScreen extends AbstractPanelScreen {
 
-    public static final Component TITLE = FiguraText.of("gui.panels.title.avatar");
+    public static final Component TITLE = new FiguraText("gui.panels.title.avatar");
     private final InteractableEntity entityWidget;
 
     public AvatarScreen(AbstractPanelScreen parentScreen, InteractableEntity entityWidget) {

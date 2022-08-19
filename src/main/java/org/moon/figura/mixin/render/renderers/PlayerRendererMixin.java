@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.Score;
 import net.minecraft.world.scores.Scoreboard;
@@ -95,7 +96,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
         if (custom != null && custom.getText() != null && trust) {
             replacement = NameplateCustomization.applyCustomization(custom.getText());
         } else {
-            replacement = Component.literal(player.getName().getString());
+            replacement = new TextComponent(player.getName().getString());
         }
 
         if (config > 1) {
@@ -130,7 +131,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
                 //render scoreboard
                 Score score = scoreboard.getOrCreatePlayerScore(player.getScoreboardName(), scoreboardObjective);
 
-                Component text1 = Component.literal(Integer.toString(score.getScore())).append(" ").append(scoreboardObjective.getDisplayName());
+                Component text1 = new TextComponent(Integer.toString(score.getScore())).append(" ").append(scoreboardObjective.getDisplayName());
                 float x = -font.width(text1) / 2f;
                 float y = deadmau ? -10f : 0f;
 

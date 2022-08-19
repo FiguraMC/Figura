@@ -4,7 +4,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.config.Config;
 import org.moon.figura.gui.widgets.lists.ConfigList;
@@ -23,7 +24,7 @@ public class KeybindElement extends AbstractConfigElement {
 
         //overwrite reset button to update the keybind
         children.remove(resetButton);
-        children.add(resetButton = new ParentedButton(x + width - 60, y, 60, 20, Component.translatable("controls.reset"), this, button -> binding.setKey(binding.getDefaultKey())));
+        children.add(resetButton = new ParentedButton(x + width - 60, y, 60, 20, new TranslatableComponent("controls.reset"), this, button -> binding.setKey(binding.getDefaultKey())));
     }
 
     @Override
@@ -38,7 +39,7 @@ public class KeybindElement extends AbstractConfigElement {
 
         //editing message
         if (parent.focusedBinding == this.binding) {
-            button.setMessage(Component.literal("> ").setStyle(FiguraMod.getAccentColor()).append(button.getMessage()).append(" <"));
+            button.setMessage(new TextComponent("> ").setStyle(FiguraMod.getAccentColor()).append(button.getMessage()).append(" <"));
         }
         //conflict check
         else if (!this.binding.isUnbound()) {

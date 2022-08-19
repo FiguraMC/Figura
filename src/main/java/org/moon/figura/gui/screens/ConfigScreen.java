@@ -20,7 +20,7 @@ import java.util.Map;
 
 public class ConfigScreen extends AbstractPanelScreen {
 
-    public static final Component TITLE = FiguraText.of("gui.panels.title.settings");
+    public static final Component TITLE = new FiguraText("gui.panels.title.settings");
 
     public static final Map<Config, Boolean> CATEGORY_DATA = new HashMap<>();
 
@@ -50,13 +50,13 @@ public class ConfigScreen extends AbstractPanelScreen {
         // -- bottom buttons -- //
 
         //cancel
-        this.addRenderableWidget(cancel = new TexturedButton(width / 2 - 122, height - 24, 120, 20, FiguraText.of("gui.cancel"), null, button -> {
+        this.addRenderableWidget(cancel = new TexturedButton(width / 2 - 122, height - 24, 120, 20, new FiguraText("gui.cancel"), null, button -> {
             ConfigManager.discardConfig();
             list.updateList();
         }));
 
         //done
-        addRenderableWidget(new TexturedButton(width / 2 + 4, height - 24, 120, 20, FiguraText.of("gui.done"), null,
+        addRenderableWidget(new TexturedButton(width / 2 + 4, height - 24, 120, 20, new FiguraText("gui.done"), null,
                 button -> this.minecraft.setScreen(parentScreen)
         ));
 

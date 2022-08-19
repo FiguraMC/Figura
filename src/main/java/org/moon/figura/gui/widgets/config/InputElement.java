@@ -3,6 +3,7 @@ package org.moon.figura.gui.widgets.config;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
+import net.minecraft.network.chat.TranslatableComponent;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.config.Config;
 import org.moon.figura.gui.widgets.TextField;
@@ -38,7 +39,7 @@ public class InputElement extends AbstractConfigElement {
 
         //overwrite reset button to update the text field
         children.remove(resetButton);
-        children.add(resetButton = new ParentedButton(x + width - 60, y, 60, 20, Component.translatable("controls.reset"), this, button -> {
+        children.add(resetButton = new ParentedButton(x + width - 60, y, 60, 20, new TranslatableComponent("controls.reset"), this, button -> {
             config.tempValue = config.defaultValue;
             updateTextFieldText(formatText(config.tempValue));
         }));

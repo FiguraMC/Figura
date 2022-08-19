@@ -1,7 +1,7 @@
 package org.moon.figura.backend;
 
 import net.minecraft.client.multiplayer.resolver.ServerAddress;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.moon.figura.FiguraMod;
@@ -79,14 +79,14 @@ public class WebsocketManager extends WebSocketClient {
     @Override
     public void onMessage(String message) {
         if (NetworkManager.websocketDebug)
-            FiguraMod.sendChatMessage(Component.literal("Received message: " + message));
+            FiguraMod.sendChatMessage(new TextComponent("Received message: " + message));
         MessageHandler.handleMessage(message);
     }
 
     @Override
     public void onMessage(ByteBuffer bytes) {
         if (NetworkManager.websocketDebug)
-            FiguraMod.sendChatMessage(Component.literal("Received raw message [" + bytes.remaining() + "b]"));
+            FiguraMod.sendChatMessage(new TextComponent("Received raw message [" + bytes.remaining() + "b]"));
         //MessageHandler.handleMessage(bytes);
     }
 
@@ -96,7 +96,7 @@ public class WebsocketManager extends WebSocketClient {
 
         FiguraMod.LOGGER.info("Closed connection: " + reason);
         FiguraMod.LOGGER.info("Code: " + code + ", Remote: " + remote);
-        FiguraToast.sendToast(FiguraText.of("backend.disconnected"), reason, FiguraToast.ToastType.ERROR);
+        FiguraToast.sendToast(new FiguraText("backend.disconnected"), reason, FiguraToast.ToastType.ERROR);
 
         NetworkManager.backendStatus = 1;
         NetworkManager.disconnectedReason = reason + (FiguraMod.DEBUG_MODE ? "\n\nCode: " + code + "\nRemote: " + remote : "");
@@ -108,7 +108,7 @@ public class WebsocketManager extends WebSocketClient {
     @Override
     public void onError(Exception e) {
         FiguraMod.LOGGER.warn("", e);
-        FiguraToast.sendToast(FiguraText.of("backend.disconnected"), FiguraToast.ToastType.ERROR);
+        FiguraToast.sendToast(new FiguraText("backend.disconnected"), FiguraToast.ToastType.ERROR);
 
         NetworkManager.backendStatus = 1;
         NetworkManager.disconnectedReason = e.getMessage();
@@ -118,14 +118,14 @@ public class WebsocketManager extends WebSocketClient {
     @Override
     public void send(String text) {
         if (NetworkManager.websocketDebug)
-            FiguraMod.sendChatMessage(Component.literal("Sending message: " + text));
+            FiguraMod.sendChatMessage(new TextComponent("Sending message: " + text));
         super.send(text);
     }
 
     @Override
     public void send(byte[] data) {
         if (NetworkManager.websocketDebug)
-            FiguraMod.sendChatMessage(Component.literal("Sending raw message [" + data.length + "b]"));
+            FiguraMod.sendChatMessage(new TextComponent("Sending raw message [" + data.length + "b]"));
         super.send(data);
     }
 

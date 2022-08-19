@@ -4,7 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
@@ -45,19 +45,19 @@ public class PlayerElement extends AbstractTrustElement {
 
     private void generateContext() {
         //name uuid
-        context.addAction(FiguraText.of("gui.context.copy_name"), button -> {
+        context.addAction(new FiguraText("gui.context.copy_name"), button -> {
             Minecraft.getInstance().keyboardHandler.setClipboard(this.getName());
-            FiguraToast.sendToast(FiguraText.of("toast.clipboard"));
+            FiguraToast.sendToast(new FiguraText("toast.clipboard"));
         });
-        context.addAction(FiguraText.of("gui.context.copy_uuid"), button -> {
+        context.addAction(new FiguraText("gui.context.copy_uuid"), button -> {
             Minecraft.getInstance().keyboardHandler.setClipboard(this.getOwner().toString());
-            FiguraToast.sendToast(FiguraText.of("toast.clipboard"));
+            FiguraToast.sendToast(new FiguraText("toast.clipboard"));
         });
 
         //reload
-        context.addAction(FiguraText.of("gui.context.reload"), button -> {
+        context.addAction(new FiguraText("gui.context.reload"), button -> {
             AvatarManager.reloadAvatar(owner);
-            FiguraToast.sendToast(FiguraText.of("toast.reload"));
+            FiguraToast.sendToast(new FiguraText("toast.reload"));
         });
 
         //trust
@@ -72,10 +72,10 @@ public class PlayerElement extends AbstractTrustElement {
                     parent.parent.updateTrustData(trust);
             });
         }
-        context.addTab(FiguraText.of("gui.context.set_trust"), trustContext);
+        context.addTab(new FiguraText("gui.context.set_trust"), trustContext);
 
         if (FiguraMod.DEBUG_MODE) {
-            context.addAction(Component.literal("yoink to cache"), button -> {
+            context.addAction(new TextComponent("yoink to cache"), button -> {
                 Avatar a = AvatarManager.getAvatarForPlayer(owner);
                 if (a != null) {
                     if (a.nbt != null) {
@@ -121,11 +121,11 @@ public class PlayerElement extends AbstractTrustElement {
         //name
         Font font = Minecraft.getInstance().font;
         Avatar avatar = AvatarManager.getAvatarForPlayer(owner);
-        UIHelper.renderOutlineText(stack, font, Component.literal(this.name).append(Badges.fetchBadges(avatar)), x + 40, y + 4, 0xFFFFFF, 0);
+        UIHelper.renderOutlineText(stack, font, new TextComponent(this.name).append(Badges.fetchBadges(avatar)), x + 40, y + 4, 0xFFFFFF, 0);
 
         //size
         if (avatar != null && avatar.nbt != null)
-            drawString(stack, font, FiguraText.of("gui.trust.avatar_size", MathUtils.asFileSize(avatar.fileSize)), x + 40, y + 6 + font.lineHeight, 0x888888);
+            drawString(stack, font, new FiguraText("gui.trust.avatar_size", MathUtils.asFileSize(avatar.fileSize)), x + 40, y + 6 + font.lineHeight, 0x888888);
 
         //trust
         drawString(stack, font, trust.getGroupName(), x + 40, y + height - font.lineHeight - 4, 0xFFFFFF);

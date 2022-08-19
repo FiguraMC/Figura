@@ -5,7 +5,7 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
-import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.ClientTelemetryManager;
 import net.minecraft.client.Minecraft;
@@ -16,6 +16,7 @@ import net.minecraft.nbt.NbtIo;
 import net.minecraft.network.Connection;
 import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.handshake.ClientIntentionPacket;
 import net.minecraft.network.protocol.login.ClientboundGameProfilePacket;
 import net.minecraft.network.protocol.login.ServerboundHelloPacket;
@@ -26,7 +27,10 @@ import org.moon.figura.lua.api.ping.PingArg;
 
 import java.io.ByteArrayOutputStream;
 import java.net.InetSocketAddress;
-import java.util.*;
+import java.util.Base64;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public class NetworkManager {
@@ -150,7 +154,7 @@ public class NetworkManager {
                 });
 
                 connection.send(new ClientIntentionPacket(inetSocketAddress.getHostName(), inetSocketAddress.getPort(), ConnectionProtocol.LOGIN));
-                connection.send(new ServerboundHelloPacket(minecraft.getUser().getName(), minecraft.getProfileKeyPairManager().preparePublicKey().join(), Optional.ofNullable(minecraft.getUser().getProfileId())));
+                connection.send(new ServerboundHelloPacket(minecraft.getUser().getGameProfile()));
 
                 authConnection = connection;
             } catch (Exception e) {
@@ -365,14 +369,14 @@ public class NetworkManager {
         LiteralArgumentBuilder<FabricClientCommandSource> debug = LiteralArgumentBuilder.literal("debug");
         debug.executes(context -> {
             websocketDebug = !websocketDebug;
-            FiguraMod.sendChatMessage(Component.literal("Backend Debug Mode set to: " + websocketDebug).withStyle(websocketDebug ? ChatFormatting.GREEN : ChatFormatting.RED));
+            FiguraMod.sendChatMessage(new TextComponent("Backend Debug Mode set to: " + websocketDebug).withStyle(websocketDebug ? ChatFormatting.GREEN : ChatFormatting.RED));
             return 1;
         });
 
         RequiredArgumentBuilder<FabricClientCommandSource, Boolean> bool = RequiredArgumentBuilder.argument("bool", BoolArgumentType.bool());
         bool.executes(context -> {
             websocketDebug = BoolArgumentType.getBool(context, "bool");
-            FiguraMod.sendChatMessage(Component.literal("Backend Debug Mode set to: " + websocketDebug).withStyle(websocketDebug ? ChatFormatting.GREEN : ChatFormatting.RED));
+            FiguraMod.sendChatMessage(new TextComponent("Backend Debug Mode set to: " + websocketDebug).withStyle(websocketDebug ? ChatFormatting.GREEN : ChatFormatting.RED));
             return 1;
         });
 

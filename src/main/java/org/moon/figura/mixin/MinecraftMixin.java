@@ -42,7 +42,7 @@ public abstract class MinecraftMixin {
     private void handleKeybinds(CallbackInfo ci) {
         if (Config.PANIC_BUTTON.keyBind.consumeClick()) {
             AvatarManager.panic = !AvatarManager.panic;
-            FiguraToast.sendToast(FiguraText.of(AvatarManager.panic ? "toast.panic_enabled" : "toast.panic_disabled"), FiguraToast.ToastType.WARNING);
+            FiguraToast.sendToast(new FiguraText(AvatarManager.panic ? "toast.panic_enabled" : "toast.panic_disabled"), FiguraToast.ToastType.WARNING);
             SoundAPI.getSoundEngine().figura$stopAllSounds();
             return;
         }
@@ -53,7 +53,7 @@ public abstract class MinecraftMixin {
 
         if (Config.RELOAD_BUTTON.keyBind.consumeClick()) {
             AvatarManager.reloadAvatar(FiguraMod.getLocalPlayerUUID());
-            FiguraToast.sendToast(FiguraText.of("toast.reload"));
+            FiguraToast.sendToast(new FiguraText("toast.reload"));
         }
 
         if (Config.ACTION_WHEEL_BUTTON.keyBind.isDown()) {

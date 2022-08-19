@@ -8,6 +8,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.Mth;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
@@ -35,8 +37,8 @@ public class KeybindList extends AbstractList {
         updateList();
 
         Label noOwner, noKeys;
-        this.children.add(noOwner = new Label(FiguraText.of("gui.error.no_avatar").withStyle(ChatFormatting.YELLOW), x + width / 2, y + height / 2, true, 0));
-        this.children.add(noKeys = new Label(FiguraText.of("gui.error.no_keybinds").withStyle(ChatFormatting.YELLOW), x + width / 2, y + height / 2, true, 0));
+        this.children.add(noOwner = new Label(new FiguraText("gui.error.no_avatar").withStyle(ChatFormatting.YELLOW), x + width / 2, y + height / 2, true, 0));
+        this.children.add(noKeys = new Label(new FiguraText("gui.error.no_keybinds").withStyle(ChatFormatting.YELLOW), x + width / 2, y + height / 2, true, 0));
 
         noOwner.setVisible(owner == null);
         noKeys.setVisible(!noOwner.isVisible() && keybinds.isEmpty());
@@ -94,7 +96,7 @@ public class KeybindList extends AbstractList {
 
     private static class KeybindElement extends AbstractContainerElement {
 
-        private static final Component HOVERED_ARROW = Component.literal(">").setStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT));
+        private static final Component HOVERED_ARROW = new TextComponent(">").setStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT));
 
         private final FiguraKeybind keybind;
         private final KeybindList parent;
@@ -112,7 +114,7 @@ public class KeybindList extends AbstractList {
             children.add(0, keybindButton = new ParentedButton(0, 0, 90, 20, keybind.getTranslatedKeyMessage(), this, button -> parent.focusedKeybind = keybind));
 
             //reset button
-            children.add(resetButton = new ParentedButton(x + width - 60, y, 60, 20, Component.translatable("controls.reset"), this, button -> keybind.resetDefaultKey()));
+            children.add(resetButton = new ParentedButton(x + width - 60, y, 60, 20, new TranslatableComponent("controls.reset"), this, button -> keybind.resetDefaultKey()));
         }
 
         @Override
@@ -127,7 +129,7 @@ public class KeybindList extends AbstractList {
 
             //editing message
             if (parent.focusedKeybind == this.keybind) {
-                keybindButton.setMessage(Component.literal("> ").setStyle(FiguraMod.getAccentColor()).append(keybindButton.getMessage()).append(" <"));
+                keybindButton.setMessage(new TextComponent("> ").setStyle(FiguraMod.getAccentColor()).append(keybindButton.getMessage()).append(" <"));
             }
             //conflict check
             else {

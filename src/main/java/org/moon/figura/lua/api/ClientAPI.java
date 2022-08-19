@@ -162,7 +162,7 @@ public class ClientAPI {
     @LuaWhitelist
     @LuaMethodDoc(description = "client.get_fov")
     public static double getFOV() {
-        return Minecraft.getInstance().options.fov().get();
+        return Minecraft.getInstance().options.fov;
     }
 
     @LuaWhitelist

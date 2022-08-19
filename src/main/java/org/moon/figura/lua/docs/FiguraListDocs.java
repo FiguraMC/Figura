@@ -4,12 +4,13 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Pose;
 import org.moon.figura.FiguraMod;
@@ -34,9 +35,9 @@ public class FiguraListDocs {
     public static final LinkedHashSet<String> KEYBINDS = new LinkedHashSet<>();
     private static final LinkedHashSet<Component> PARENT_TYPES = new LinkedHashSet<>() {{
         for (ParentType value : ParentType.values()) {
-            add(Component.literal(value.name()).withStyle(ChatFormatting.WHITE));
+            add(new TextComponent(value.name()).withStyle(ChatFormatting.WHITE));
             for (String alias : value.aliases) {
-                add(Component.literal(alias).withStyle(ChatFormatting.GRAY));
+                add(new TextComponent(alias).withStyle(ChatFormatting.GRAY));
             }
         }
     }};
@@ -108,7 +109,7 @@ public class FiguraListDocs {
 
             //list properties
             object.addProperty("name", name);
-            object.addProperty("description", translate ? Language.getInstance().getOrDefault(FiguraText.of("docs.enum." + id).getString()) : FiguraMod.MOD_ID + "." + "docs.enum." + id);
+            object.addProperty("description", translate ? Language.getInstance().getOrDefault(new FiguraText("docs.enum." + id).getString()) : FiguraMod.MOD_ID + "." + "docs.enum." + id);
 
             //list entries
             LinkedHashSet<?> coll = supplier.get();
@@ -132,31 +133,31 @@ public class FiguraListDocs {
                 LinkedHashSet<?> coll = supplier.get();
 
                 if (coll.size() == 0) {
-                    FiguraMod.sendChatMessage(FiguraText.of("docs.enum.empty"));
+                    FiguraMod.sendChatMessage(new FiguraText("docs.enum.empty"));
                     return 0;
                 }
 
                 MutableComponent text = FiguraDoc.HEADER.copy()
                         .append("\n\n")
-                        .append(Component.literal("• ")
-                                .append(FiguraText.of("docs.text.description"))
+                        .append(new TextComponent("• ")
+                                .append(new FiguraText("docs.text.description"))
                                 .append(":")
                                 .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
                         .append("\n\t")
-                        .append(Component.literal("• ")
-                                .append(FiguraText.of("docs.enum." + id))
+                        .append(new TextComponent("• ")
+                                .append(new FiguraText("docs.enum." + id))
                                 .withStyle(ColorUtils.Colors.MAYA_BLUE.style))
                         .append("\n\n")
-                        .append(Component.literal("• ")
-                                .append(FiguraText.of("docs.text.entries"))
+                        .append(new TextComponent("• ")
+                                .append(new FiguraText("docs.text.entries"))
                                 .append(":")
                                 .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style));
 
                 int i = 0;
                 for (Object element : coll) {
-                    Component component = element instanceof Component c ? c : Component.literal(element.toString()).withStyle(ChatFormatting.WHITE);
+                    Component component = element instanceof Component c ? c : new TextComponent(element.toString()).withStyle(ChatFormatting.WHITE);
                     text.append(i % split == 0 ? "\n\t" : "\t");
-                    text.append(Component.literal("• ").withStyle(ChatFormatting.YELLOW)).append(component);
+                    text.append(new TextComponent("• ").withStyle(ChatFormatting.YELLOW)).append(component);
                     i++;
                 }
 
@@ -169,7 +170,7 @@ public class FiguraListDocs {
                 String text = element instanceof Component c ? c.getString() : element.toString();
                 LiteralArgumentBuilder<FabricClientCommandSource> child = LiteralArgumentBuilder.literal(text);
                 child.executes(context -> {
-                    FiguraMod.sendChatMessage(Component.literal(text).withStyle(ColorUtils.Colors.FRAN_PINK.style));
+                    FiguraMod.sendChatMessage(new TextComponent(text).withStyle(ColorUtils.Colors.FRAN_PINK.style));
                     return 1;
                 });
                 command.then(child);
@@ -188,23 +189,23 @@ public class FiguraListDocs {
         root.executes(context -> {
             FiguraMod.sendChatMessage(FiguraDoc.HEADER.copy()
                     .append("\n\n")
-                    .append(Component.literal("• ")
-                            .append(FiguraText.of("docs.text.type"))
+                    .append(new TextComponent("• ")
+                            .append(new FiguraText("docs.text.type"))
                             .append(":")
                             .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
                     .append("\n\t")
-                    .append(Component.literal("• ")
-                            .append(Component.literal("enumerators"))
+                    .append(new TextComponent("• ")
+                            .append(new TextComponent("enumerators"))
                             .withStyle(ColorUtils.Colors.MAYA_BLUE.style))
 
                     .append("\n\n")
-                    .append(Component.literal("• ")
-                            .append(FiguraText.of("docs.text.description"))
+                    .append(new TextComponent("• ")
+                            .append(new FiguraText("docs.text.description"))
                             .append(":")
                             .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
                     .append("\n\t")
-                    .append(Component.literal("• ")
-                            .append(FiguraText.of("docs.enum"))
+                    .append(new TextComponent("• ")
+                            .append(new FiguraText("docs.enum"))
                             .withStyle(ColorUtils.Colors.MAYA_BLUE.style))
             );
             return 1;

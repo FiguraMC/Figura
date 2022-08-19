@@ -1,12 +1,11 @@
 package org.moon.figura.mixin.gui;
 
-import net.minecraft.client.GuiMessageTag;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.ChatComponent;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MessageSignature;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
@@ -30,14 +29,14 @@ public class ChatComponentMixin {
 
     @Shadow @Final private Minecraft minecraft;
 
-    @Inject(at = @At("HEAD"), method = "addMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/MessageSignature;ILnet/minecraft/client/GuiMessageTag;Z)V")
-    private void addMessageEvent(Component component, MessageSignature messageSignature, int i, GuiMessageTag guiMessageTag, boolean bl, CallbackInfo ci) {
+    @Inject(at = @At("HEAD"), method = "addMessage(Lnet/minecraft/network/chat/Component;IIZ)V")
+    private void addMessageEvent(Component message, int messageId, int timestamp, boolean refresh, CallbackInfo ci) {
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
         if (avatar != null)
-            avatar.chatReceivedMessageEvent(component.getString());
+            avatar.chatReceivedMessageEvent(message.getString());
     }
 
-    @ModifyVariable(at = @At("HEAD"), method = "addMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/MessageSignature;ILnet/minecraft/client/GuiMessageTag;Z)V", argsOnly = true)
+    @ModifyVariable(at = @At("HEAD"), method = "addMessage(Lnet/minecraft/network/chat/Component;IIZ)V", argsOnly = true)
     private Component addMessageName(Component message) {
         //get config
         int config = Config.CHAT_NAMEPLATE.asInt();
@@ -63,7 +62,7 @@ public class ChatComponentMixin {
             if (custom != null && custom.getText() != null && avatar.trust.get(TrustContainer.Trust.NAMEPLATE_EDIT) == 1) {
                 replacement = NameplateCustomization.applyCustomization(custom.getText().replaceAll("\n|\\\\n", ""));
             } else {
-                replacement = Component.literal(player.getProfile().getName());
+                replacement = new TextComponent(player.getProfile().getName());
             }
 
             //apply nameplate

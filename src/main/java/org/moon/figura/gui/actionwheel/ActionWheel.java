@@ -102,7 +102,7 @@ public class ActionWheel {
         stack.popPose(); //previous stack
 
         //warning text
-        Component component = FiguraText.of("gui.error." + (avatar ? "no_avatar" : "no_wheel_page")).withStyle(ChatFormatting.YELLOW);
+        Component component = new FiguraText("gui.error." + (avatar ? "no_avatar" : "no_wheel_page")).withStyle(ChatFormatting.YELLOW);
         Font font = minecraft.font;
 
         UIHelper.renderOutlineText(stack, font, component, (int) (x - font.width(component) / 2), (int) (y - font.lineHeight / 2), 0xFFFFFF, 0);

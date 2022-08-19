@@ -1,7 +1,7 @@
 package org.moon.figura.backend;
 
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.utils.FiguraText;
 
@@ -22,8 +22,8 @@ public enum Response {
 
     Response(FiguraToast.ToastType type, String title, String sub) {
         TYPE = type;
-        TITLE = FiguraText.of("backend." + title);
-        SUBTITLE = sub == null ? Component.empty() : FiguraText.of("backend." + sub);
+        TITLE = new FiguraText("backend." + title);
+        SUBTITLE = sub == null ? TextComponent.EMPTY.copy() : new FiguraText("backend." + sub);
     }
 }
 

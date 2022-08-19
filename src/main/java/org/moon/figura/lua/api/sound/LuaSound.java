@@ -6,11 +6,9 @@ import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.RandomSource;
 import org.luaj.vm2.LuaError;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.lua.LuaWhitelist;
-import org.moon.figura.lua.api.world.WorldAPI;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
@@ -101,7 +99,6 @@ public class LuaSound {
                 SimpleSoundInstance instance = new SimpleSoundInstance(
                         event, SoundSource.PLAYERS,
                         volume, pitch,
-                        RandomSource.create(WorldAPI.getCurrentWorld().random.nextLong()),
                         pos.x, pos.y, pos.z);
 
                 SoundAPI.getSoundEngine().figura$playSound(

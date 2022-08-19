@@ -104,7 +104,8 @@ public class CustomFramebuffer {
         bufferBuilder.vertex(viewWidth, viewHeight, 0d).uv(1f, 0f).color(0xFF, 0xFF, 0xFF, 0xFF).endVertex();
         bufferBuilder.vertex(viewWidth, 0d, 0d).uv(1f, 1f).color(0xFF, 0xFF, 0xFF, 0xFF).endVertex();
         bufferBuilder.vertex(0d, 0d, 0d).uv(0f, 1f).color(0xFF, 0xFF, 0xFF, 0xFF).endVertex();
-        BufferUploader.draw(bufferBuilder.end());
+        bufferBuilder.end();
+        BufferUploader._endInternal(bufferBuilder);
         shader.clear();
         GlStateManager._depthMask(true);
         GlStateManager._colorMask(true, true, true, true);

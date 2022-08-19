@@ -2,6 +2,7 @@ package org.moon.figura.gui.widgets.config;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.config.Config;
 import org.moon.figura.gui.screens.ConfigScreen;
 import org.moon.figura.gui.widgets.AbstractContainerElement;
@@ -22,7 +23,7 @@ public class ConfigWidget extends AbstractContainerElement {
         super(0, 0, width, 20);
         this.parent = parent;
 
-        this.parentConfig = new ContainerButton(parent, x, y, width, 20, config == null ? Component.empty() : config.name, config == null ? null : config.tooltip, button -> {
+        this.parentConfig = new ContainerButton(parent, x, y, width, 20, config == null ? TextComponent.EMPTY.copy() : config.name, config == null ? null : config.tooltip, button -> {
             boolean toggled = this.parentConfig.isToggled();
             setShowChildren(toggled);
             ConfigScreen.CATEGORY_DATA.put(config, toggled);

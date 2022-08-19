@@ -10,6 +10,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.Entity;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
@@ -35,28 +36,28 @@ public class PopupMenu {
     private static final FiguraIdentifier BACKGROUND = new FiguraIdentifier("textures/gui/popup.png");
     private static final FiguraIdentifier ICONS = new FiguraIdentifier("textures/gui/popup_icons.png");
 
-    private static final MutableComponent VERSION_WARN = Component.empty()
-            .append(Component.literal("❗ ").withStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT)))
-            .append(FiguraText.of("badges.warning").withStyle(ChatFormatting.YELLOW));
-    private static final MutableComponent ERROR_WARN = Component.empty()
-            .append(Component.literal("❌ ").withStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT)))
-            .append(FiguraText.of("badges.error").withStyle(ChatFormatting.RED));
+    private static final MutableComponent VERSION_WARN = TextComponent.EMPTY.copy()
+            .append(new TextComponent("❗ ").withStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT)))
+            .append(new FiguraText("badges.warning").withStyle(ChatFormatting.YELLOW));
+    private static final MutableComponent ERROR_WARN = TextComponent.EMPTY.copy()
+            .append(new TextComponent("❌ ").withStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT)))
+            .append(new FiguraText("badges.error").withStyle(ChatFormatting.RED));
 
     private static final List<Pair<Component, Consumer<UUID>>> BUTTONS = List.of(
-            Pair.of(FiguraText.of("popup_menu.cancel"), id -> {}),
-            Pair.of(FiguraText.of("popup_menu.reload"), id -> {
+            Pair.of(new FiguraText("popup_menu.cancel"), id -> {}),
+            Pair.of(new FiguraText("popup_menu.reload"), id -> {
                 AvatarManager.reloadAvatar(id);
-                FiguraToast.sendToast(FiguraText.of("toast.reload"));
+                FiguraToast.sendToast(new FiguraText("toast.reload"));
             }),
-            Pair.of(FiguraText.of("popup_menu.increase_trust"), id -> {
+            Pair.of(new FiguraText("popup_menu.increase_trust"), id -> {
                 TrustContainer trust = TrustManager.get(id);
                 if (TrustManager.increaseTrust(trust))
-                    FiguraToast.sendToast(FiguraText.of("toast.trust_change"), trust.getGroupName());
+                    FiguraToast.sendToast(new FiguraText("toast.trust_change"), trust.getGroupName());
             }),
-            Pair.of(FiguraText.of("popup_menu.decrease_trust"), id -> {
+            Pair.of(new FiguraText("popup_menu.decrease_trust"), id -> {
                 TrustContainer trust = TrustManager.get(id);
                 if (TrustManager.decreaseTrust(trust))
-                    FiguraToast.sendToast(FiguraText.of("toast.trust_change"), trust.getGroupName());
+                    FiguraToast.sendToast(new FiguraText("toast.trust_change"), trust.getGroupName());
             })
     );
     private static final int LENGTH = BUTTONS.size();

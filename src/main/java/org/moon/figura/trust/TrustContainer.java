@@ -139,7 +139,7 @@ public class TrustContainer {
         if (parentID != null)
             return TrustManager.get(parentID).getGroupName(changed || !getSettings().isEmpty());
 
-        MutableComponent text = FiguraText.of("trust.group." + name).withStyle(Style.EMPTY.withColor(getGroupColor()));
+        MutableComponent text = new FiguraText("trust.group." + name).withStyle(Style.EMPTY.withColor(getGroupColor()));
         if (changed)
             text.append("*");
 
