@@ -231,9 +231,6 @@
   "figura.config.allow_fp_hands": "First Person Hands",
   "figura.config.allow_fp_hands.tooltip": "Toggles if scripts can move around, rotate or scale the First Person Hands",
 
-  "figura.config.chat_messages": "Chat Messages",
-  "figura.config.chat_messages.tooltip": "Toggles if scripts can change and/or send chat messages for you",
-
   "figura.config.log_number_length": "Print Number Length",
   "figura.config.log_number_length.tooltip": "Changes the length of the decimal places that will be displayed within print functions",
 
@@ -347,6 +344,11 @@
   "figura.config.sync_pings": "Sync Pings",
   "figura.config.sync_pings.tooltip.1": "Toggles if local pings should run only when received from the backend",
   "figura.config.sync_pings.tooltip.2": "Note that: no backend means no pings!",
+
+  "figura.config.chat_messages": "Chat Messages",
+  "figura.config.chat_messages.tooltip.1": "Toggles if scripts can change and/or send chat messages for you",
+  "figura.config.chat_messages.tooltip.2": "This is a dangerous option, as the chat messages will still be signed",
+  "figura.config.chat_messages.tooltip.3": "Figura do not take any responsibility for the usage of this feature",
 
   "figura.config.main_dir": "Figura Folder Location",
   "figura.config.main_dir.tooltip": "Changes the location of the Figura folder",
@@ -821,6 +823,7 @@
 
   "figura.docs.events": "A global API that contains all of the figura Events. Accessed using the name \"events\".",
 
+  "figura.docs.events.entity_init": "The ENTITY_INIT event is run once this avatar's entity exists.",
   "figura.docs.events.tick": "The TICK event is run every tick in-game if this avatar's entity exists.",
   "figura.docs.events.world_tick": "The WORLD_TICK event is run every in-game tick.",
   "figura.docs.events.render": "The RENDER event is run every frame, before the avatar is rendered. Takes a parameter delta, which is a number from 0 to 1 indicating the proportion of the way the game is between ticks.",
@@ -832,7 +835,6 @@
   "figura.docs.events.skull_render": "Called between POST_RENDER and POST_WORLD_RENDER, on every one of your skull blocks placed in the world. The arguments are the tick delta and the position of the skull as a vector.",
 
   "figura.docs.event": "A hook for a certain event in Minecraft. You may register functions to one, and those functions will be called when the event occurs.",
-  "figura.docs.event.run_once": "Waits until the predicate function returns true, then calls the toRun function. The predicate is checked based on this event activation.",
   "figura.docs.event.register": "Registers the given function to the given event. When the event occurs, the function will be run. Functions are run in the order they were registered. The optional name parameter is used when you wish to later remove a function from the event.",
   "figura.docs.event.clear": "Clears the given event of all its functions.",
   "figura.docs.event.remove": "Removes all functions with the given name from the event. Returns the number of functions that were removed.",
@@ -907,6 +909,7 @@
   "figura.docs.avatar.has_texture": "Gets whether or not this avatar has a texture.",
   "figura.docs.avatar.has_script_error": "Gets whether this script currently has stopped due to an error (kinda useless lmao).",
   "figura.docs.avatar.get_init_count": "Gets the number of initialization instructions of this avatar.",
+  "figura.docs.avatar.get_entity_init_count": "Gets the number of Events.ENTITY_INIT instructions of this avatar.",
   "figura.docs.avatar.get_max_init_count": "Gets the maximum allowed instructions during initialization in the trust settings of the viewer.",
   "figura.docs.avatar.get_tick_count": "Gets the number of Events.TICK instructions of this avatar last tick.",
   "figura.docs.avatar.get_max_tick_count": "Gets the maximum allowed instructions in Events.TICK in the trust settings of the viewer.",

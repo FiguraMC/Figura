@@ -58,7 +58,6 @@ public enum Config {
     Script,
     LOG_LOCATION(0, 2),
     ALLOW_FP_HANDS(false),
-    CHAT_MESSAGES(false),
     LOG_NUMBER_LENGTH(5, InputType.POSITIVE_INT) {
         @Override
         public void onChange() {
@@ -96,7 +95,7 @@ public enum Config {
     BUTTON_LOCATION(0, 5),
     EASTER_EGGS(true),
 
-    Dev {{this.name = new FiguraText("config.dev").withStyle(ChatFormatting.RED);}},
+    Dev {{this.name = this.name.copy().withStyle(ChatFormatting.RED);}},
     RENDER_DEBUG_PARTS_PIVOT(1, 3) {{
         String tooltip = "config.render_debug_parts_pivot.tooltip";
         this.tooltip = new FiguraText(tooltip,
@@ -110,6 +109,15 @@ public enum Config {
         this.tooltip = new FiguraText(tooltip + "1")
                 .append("\n")
                 .append(new FiguraText(tooltip + "2").withStyle(ChatFormatting.RED));
+    }},
+    CHAT_MESSAGES(false) {{
+        this.name = this.name.copy().withStyle(ChatFormatting.RED);
+        String tooltip = "config.chat_messages.tooltip.";
+        this.tooltip = FiguraText.of(tooltip + "1")
+                .append("\n\n")
+                .append(FiguraText.of(tooltip + "2").withStyle(ChatFormatting.RED))
+                .append("\n\n")
+                .append(FiguraText.of(tooltip + "3").withStyle(ChatFormatting.RED, ChatFormatting.BOLD));
     }},
     MAIN_DIR("", InputType.FOLDER_PATH),
     AUTH_SERVER_IP("figura.moonlight-devs.org:25565", InputType.IP) {

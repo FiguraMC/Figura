@@ -88,7 +88,7 @@ public class Avatar {
     public final Map<String, SoundBuffer> customSounds = new HashMap<>();
     public final Map<Integer, Animation> animations = new ConcurrentHashMap<>();
 
-    private int worldRenderLimit;
+    private int initLimit, worldRenderLimit;
 
     //runtime status
     public boolean hasTexture = false;
@@ -99,11 +99,11 @@ public class Avatar {
     public int animationComplexity;
     public int complexityLimit;
 
-    public int initInstructions;
+    public int initInstructions, entityInitInstructions;
     public int entityTickInstructions, worldTickInstructions;
 
     public int worldRenderInstructions, entityRenderInstructions, postEntityRenderInstructions, postWorldRenderInstructions;
-    public int accumulatedTickInstructions, accumulatedEntityRenderInstructions, accumulatedWorldRenderInstructions;
+    public int accumulatedInitInstructions, accumulatedTickInstructions, accumulatedEntityRenderInstructions, accumulatedWorldRenderInstructions;
 
     public final RefilledNumber particlesRemaining, soundsRemaining;
 
@@ -174,6 +174,7 @@ public class Avatar {
             if (entity != null) {
                 luaRuntime.setUser(entity);
                 this.entityName = entity.getName().getString();
+                entityInitEvent();
             }
         }
     }
@@ -250,12 +251,23 @@ public class Avatar {
         }
     }
 
+    public void entityInitEvent() {
+        if (scriptError || luaRuntime == null)
+            return;
+
+        tryCall(luaRuntime.events.ENTITY_INIT, Math.max(initLimit - initInstructions, 1));
+        if (luaRuntime != null) {
+            entityInitInstructions = luaRuntime.getInstructions();
+            accumulatedInitInstructions += entityInitInstructions;
+        }
+    }
+
     public void tickEvent() {
         if (scriptError || luaRuntime == null || luaRuntime.user == null)
             return;
 
         int entityTickLimit = trust.get(TrustContainer.Trust.TICK_INST);
-        tryCall(luaRuntime.events.TICK, entityTickLimit, LuaValue.NONE);
+        tryCall(luaRuntime.events.TICK, entityTickLimit);
         if (luaRuntime != null) {
             entityTickInstructions = luaRuntime.getInstructions();
             accumulatedTickInstructions += entityTickInstructions;
@@ -267,7 +279,7 @@ public class Avatar {
             return;
 
         int worldTickLimit = trust.get(TrustContainer.Trust.WORLD_TICK_INST);
-        tryCall(luaRuntime.events.WORLD_TICK, worldTickLimit, LuaValue.NONE);
+        tryCall(luaRuntime.events.WORLD_TICK, worldTickLimit);
         if (luaRuntime != null) {
             worldTickInstructions = luaRuntime.getInstructions();
             accumulatedTickInstructions = worldTickInstructions;
@@ -275,7 +287,7 @@ public class Avatar {
     }
 
     public void renderEvent(float delta) {
-        if (scriptError || luaRuntime == null)
+        if (scriptError || luaRuntime == null || luaRuntime.user == null)
             return;
 
         int entityRenderLimit = trust.get(TrustContainer.Trust.RENDER_INST);
@@ -624,16 +636,16 @@ public class Avatar {
         if (renderer != null && renderer.root != null)
             luaRuntime.setGlobal("models", renderer.root);
 
-        int initLimit = trust.get(TrustContainer.Trust.INIT_INST);
+        initLimit = trust.get(TrustContainer.Trust.INIT_INST);
         luaRuntime.setInstructionLimit(initLimit);
         this.luaRuntime = luaRuntime;
 
-        checkUser();
         boolean error = !luaRuntime.init(scripts, autoScripts);
         if (error) {
             this.luaRuntime = null;
         } else {
             initInstructions = luaRuntime.getInstructions();
+            accumulatedInitInstructions = initInstructions;
         }
     }
 

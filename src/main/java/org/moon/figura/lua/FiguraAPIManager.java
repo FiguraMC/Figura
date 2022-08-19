@@ -154,7 +154,4 @@ public class FiguraAPIManager {
         for (Map.Entry<String, Function<FiguraLuaRuntime, Object>> entry : API_GETTERS.entrySet())
             runtime.setGlobal(entry.getKey(), entry.getValue().apply(runtime));
     }
-
-
-
 }
