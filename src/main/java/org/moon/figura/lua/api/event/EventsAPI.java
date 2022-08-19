@@ -13,6 +13,7 @@ import org.moon.figura.lua.docs.LuaTypeDoc;
 public class EventsAPI {
 
     public EventsAPI() {
+        ENTITY_INIT = new LuaEvent();
         TICK = new LuaEvent();
         WORLD_TICK = new LuaEvent();
         RENDER = new LuaEvent();
@@ -28,6 +29,9 @@ public class EventsAPI {
     //whitelisted and accessed automatically?
     //Maybe in the __index comment we give a docs list of the events?
 
+    @LuaWhitelist
+    @LuaFieldDoc(description = "events.entity_init")
+    public final LuaEvent ENTITY_INIT;
     @LuaWhitelist
     @LuaFieldDoc(description = "events.tick")
     public final LuaEvent TICK;
@@ -64,6 +68,7 @@ public class EventsAPI {
     public Object __index(String key) {
         if (key == null) return null;
         return switch (key) {
+            case "ENTITY_INIT" -> ENTITY_INIT;
             case "TICK" -> TICK;
             case "WORLD_TICK" -> WORLD_TICK;
             case "RENDER" -> RENDER;

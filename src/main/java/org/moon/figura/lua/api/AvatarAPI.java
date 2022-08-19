@@ -115,6 +115,12 @@ public class AvatarAPI {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc(description = "avatar.get_entity_init_count")
+    public int getEntityInitCount() {
+        return avatar.entityInitInstructions;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc(description = "avatar.get_max_init_count")
     public int getMaxInitCount() {
         return avatar.trust.get(TrustContainer.Trust.INIT_INST);

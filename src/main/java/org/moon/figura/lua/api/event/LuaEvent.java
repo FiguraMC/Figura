@@ -1,7 +1,9 @@
 package org.moon.figura.lua.api.event;
 
-import org.luaj.vm2.*;
-import org.luaj.vm2.lib.VarArgFunction;
+import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaFunction;
+import org.luaj.vm2.LuaTable;
+import org.luaj.vm2.Varargs;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
@@ -15,8 +17,6 @@ import org.moon.figura.lua.docs.LuaTypeDoc;
         description = "event"
 )
 public class LuaEvent {
-
-    static long namesGenerated = 0;
 
     private static final int MAX_FUNCTIONS = 1000;
 
@@ -53,38 +53,6 @@ public class LuaEvent {
         for (int i = 1; i <= len; i++)
             args = functionList.get(i).invoke(args);
         return args;
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = {LuaFunction.class, LuaFunction.class},
-                    argumentNames = {"predicate", "toRun"}
-            ),
-            description = "event.run_once"
-    )
-    public void runOnce(@LuaNotNil LuaFunction predicate, @LuaNotNil LuaFunction toRun) {
-        //Hey, if users want to "abuse" this somehow, then go ahead.
-        //Very low chance of anyone randomly using this name anyway, and nothing bad even happens if they do use it intentionally.
-        final String uniqueName = "figura$GENERATED_" + (namesGenerated++);
-        VarArgFunction wrappedInPredicate = new VarArgFunction() {
-            @Override
-            public Varargs invoke(Varargs args) {
-                LuaValue predicateResult = predicate.invoke(args).arg1();
-                Varargs result = LuaValue.NIL;
-                if (predicateResult.toboolean()) {
-                    result = toRun.invoke(args);
-                    remove(uniqueName);
-                }
-                return result;
-            }
-
-            @Override
-            public String tojstring() {
-                return "function: " + uniqueName;
-            }
-        };
-        register(wrappedInPredicate, uniqueName);
     }
 
     @LuaWhitelist

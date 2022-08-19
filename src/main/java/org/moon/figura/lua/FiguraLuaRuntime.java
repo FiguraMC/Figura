@@ -15,14 +15,12 @@ import org.moon.figura.lua.api.AvatarAPI;
 import org.moon.figura.lua.api.HostAPI;
 import org.moon.figura.lua.api.RendererAPI;
 import org.moon.figura.lua.api.entity.EntityAPI;
-import org.moon.figura.lua.api.entity.PlayerAPI;
 import org.moon.figura.lua.api.event.EventsAPI;
 import org.moon.figura.lua.api.keybind.KeybindAPI;
 import org.moon.figura.lua.api.nameplate.NameplateAPI;
 import org.moon.figura.lua.api.ping.PingAPI;
 import org.moon.figura.lua.api.vanilla_model.VanillaModelAPI;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
@@ -39,7 +37,6 @@ public class FiguraLuaRuntime {
     //---------------------------------
     public Entity user;
     public EntityAPI<?> entityAPI;
-    @Nullable public PlayerAPI playerAPI;
     public EventsAPI events;
     public VanillaModelAPI vanilla_model;
     public KeybindAPI keybind;
@@ -100,9 +97,7 @@ public class FiguraLuaRuntime {
     public void setUser(Entity user) {
         this.user = user;
         entityAPI = EntityAPI.wrap(user);
-        if (entityAPI instanceof PlayerAPI playerAPI)
-            this.playerAPI = playerAPI;
-        setGlobal("user", entityAPI);
+        userGlobals.set("user", typeManager.javaToLua(entityAPI));
         userGlobals.set("player", userGlobals.get("user"));
     }
 
