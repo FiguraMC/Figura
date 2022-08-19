@@ -6,6 +6,7 @@ import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.commands.arguments.SlotArgument;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import org.luaj.vm2.LuaError;
@@ -141,20 +142,28 @@ public class HostAPI {
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = String.class,
-                    argumentNames = "text"
+                    argumentNames = "message"
             ),
             description = "host.send_chat_message"
     )
-    public void sendChatMessage(@LuaNotNil String text) {
+    public void sendChatMessage(@LuaNotNil String message) {
         if (!isHost() || !Config.CHAT_MESSAGES.asBool()) return;
         LocalPlayer player = Minecraft.getInstance().player;
-        if (player != null) {
-            if (text.startsWith("/")) {
-                player.command(text.substring(1));
-            } else {
-                player.chat(text);
-            }
-        }
+        if (player != null) player.chatSigned(message, Component.literal(message));
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = String.class,
+                    argumentNames = "command"
+            ),
+            description = "host.send_chat_command"
+    )
+    public void sendChatCommand(@LuaNotNil String command) {
+        if (!isHost() || !Config.CHAT_MESSAGES.asBool()) return;
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player != null) player.commandUnsigned(command.startsWith("/") ? command.substring(1) : command);
     }
 
     @LuaWhitelist

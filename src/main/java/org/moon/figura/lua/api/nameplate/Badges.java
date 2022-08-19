@@ -35,7 +35,7 @@ public class Badges {
         // -- loading -- //
 
         if (!avatar.loaded)
-            return badges.append(Integer.toHexString(Math.abs(FiguraMod.ticks) % 16));
+            return badges.append(Component.literal(Integer.toHexString(Math.abs(FiguraMod.ticks) % 16)).withStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT)));
 
         // -- mark -- //
 

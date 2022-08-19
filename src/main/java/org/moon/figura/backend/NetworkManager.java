@@ -26,10 +26,7 @@ import org.moon.figura.lua.api.ping.PingArg;
 
 import java.io.ByteArrayOutputStream;
 import java.net.InetSocketAddress;
-import java.util.Base64;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 public class NetworkManager {
@@ -153,7 +150,7 @@ public class NetworkManager {
                 });
 
                 connection.send(new ClientIntentionPacket(inetSocketAddress.getHostName(), inetSocketAddress.getPort(), ConnectionProtocol.LOGIN));
-                connection.send(new ServerboundHelloPacket(minecraft.getUser().getName(), minecraft.getProfileKeyPairManager().profilePublicKeyData()));
+                connection.send(new ServerboundHelloPacket(minecraft.getUser().getName(), minecraft.getProfileKeyPairManager().preparePublicKey().join(), Optional.ofNullable(minecraft.getUser().getProfileId())));
 
                 authConnection = connection;
             } catch (Exception e) {

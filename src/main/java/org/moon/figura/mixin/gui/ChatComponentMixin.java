@@ -1,9 +1,11 @@
 package org.moon.figura.mixin.gui;
 
+import net.minecraft.client.GuiMessageTag;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.ChatComponent;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MessageSignature;
 import net.minecraft.network.chat.MutableComponent;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
@@ -28,14 +30,14 @@ public class ChatComponentMixin {
 
     @Shadow @Final private Minecraft minecraft;
 
-    @Inject(at = @At("HEAD"), method = "addMessage(Lnet/minecraft/network/chat/Component;IIZ)V")
-    private void addMessageEvent(Component component, int messageId, int timestamp, boolean refresh, CallbackInfo ci) {
+    @Inject(at = @At("HEAD"), method = "addMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/MessageSignature;ILnet/minecraft/client/GuiMessageTag;Z)V")
+    private void addMessageEvent(Component component, MessageSignature messageSignature, int i, GuiMessageTag guiMessageTag, boolean bl, CallbackInfo ci) {
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
         if (avatar != null)
             avatar.chatReceivedMessageEvent(component.getString());
     }
 
-    @ModifyVariable(at = @At("HEAD"), method = "addMessage(Lnet/minecraft/network/chat/Component;IIZ)V", argsOnly = true)
+    @ModifyVariable(at = @At("HEAD"), method = "addMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/MessageSignature;ILnet/minecraft/client/GuiMessageTag;Z)V", argsOnly = true)
     private Component addMessageName(Component message) {
         //get config
         int config = Config.CHAT_NAMEPLATE.asInt();

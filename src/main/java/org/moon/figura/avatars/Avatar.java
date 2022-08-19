@@ -325,10 +325,8 @@ public class Avatar {
         if (!scriptError && luaRuntime != null) {
             try {
                 Varargs result = luaRuntime.events.CHAT_SEND_MESSAGE.pipedCall(LuaString.valueOf(message));
-                if (Config.CHAT_MESSAGES.asBool()) {
-                    LuaValue value = result.arg(1);
-                    return value.isnil() ? null : value.tojstring();
-                }
+                LuaValue value = result.arg(1);
+                return value.isnil() ? null : Config.CHAT_MESSAGES.asBool() ? value.tojstring() : message;
             } catch (Exception ex) {
                 FiguraLuaPrinter.sendLuaError(ex, entityName, owner);
                 scriptError = true;

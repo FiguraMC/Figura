@@ -20,6 +20,7 @@ import org.moon.figura.config.Config;
 
 import java.net.InetSocketAddress;
 import java.net.URI;
+import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -182,7 +183,7 @@ public class NewNetworkManager {
                 });
 
                 connection.send(new ClientIntentionPacket(inetSocketAddress.getHostName(), inetSocketAddress.getPort(), ConnectionProtocol.LOGIN));
-                connection.send(new ServerboundHelloPacket(minecraft.getUser().getName(), minecraft.getProfileKeyPairManager().profilePublicKeyData()));
+                connection.send(new ServerboundHelloPacket(minecraft.getUser().getName(), minecraft.getProfileKeyPairManager().preparePublicKey().join(), Optional.ofNullable(minecraft.getUser().getProfileId())));
 
                 authConnection = connection;
             } catch (Exception e) {

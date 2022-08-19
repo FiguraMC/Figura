@@ -18,19 +18,19 @@ public class ChatScreenMixin {
 
     @Shadow protected EditBox input;
 
-    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/ChatScreen;handleChatInput(Ljava/lang/String;Z)V"), method = "keyPressed")
-    private void keyPressed(ChatScreen instance, String text, boolean bl) {
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/ChatScreen;handleChatInput(Ljava/lang/String;Z)Z"), method = "keyPressed")
+    private boolean keyPressed(ChatScreen instance, String text, boolean bl) {
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
         if (avatar != null && !text.isBlank()) {
             String str = avatar.chatSendMessageEvent(text);
 
             if (str == null)
-                return;
+                return true;
 
             text = str;
         }
 
-        instance.handleChatInput(text, bl);
+        return instance.handleChatInput(text, bl);
     }
 
     @Inject(at = @At("HEAD"), method = "render")
