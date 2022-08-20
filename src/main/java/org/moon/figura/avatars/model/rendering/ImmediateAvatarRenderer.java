@@ -155,14 +155,16 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         return customization;
     }
 
-    protected void renderPart(FiguraModelPart part, int[] remainingComplexity, boolean prevPredicate) {
+    protected boolean renderPart(FiguraModelPart part, int[] remainingComplexity, boolean prevPredicate) {
         PartCustomization custom = part.customization;
 
         //Store old visibility, but overwrite it in case we only want to render certain parts
         Boolean storedVisibility = custom.visible;
         Boolean thisPassedPredicate = currentFilterScheme.test(part.parentType, prevPredicate);
-        if (thisPassedPredicate == null)
-            return;
+        if (thisPassedPredicate == null) {
+            part.advanceVerticesImmediate(this);
+            return true;
+        }
 
         //calculate part transforms
 
@@ -187,7 +189,10 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         if (reset) custom.needsMatrixRecalculation = true;
 
         //render this
-        part.pushVerticesImmediate(this, remainingComplexity);
+        if (!part.pushVerticesImmediate(this, remainingComplexity)) {
+            customizationStack.pop();
+            return false;
+        }
 
         //render extras
         if (thisPassedPredicate) {
@@ -241,13 +246,16 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
         //render children
         for (FiguraModelPart child : part.children)
-            renderPart(child, remainingComplexity, thisPassedPredicate);
+            if (!renderPart(child, remainingComplexity, thisPassedPredicate))
+                return false;
 
         //reset the parent
-        part.resetVanillaTransforms();
+        //part.resetVanillaTransforms();
 
         //pop
         customizationStack.pop();
+
+        return true;
     }
 
     protected void renderPivot(FiguraModelPart part) {
@@ -291,5 +299,9 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
     public void pushFaces(int texIndex, int faceCount, int[] remainingComplexity) {
         buffers.get(texIndex).pushVertices(this, faceCount, remainingComplexity);
+    }
+
+    public void advanceFaces(int texIndex, int faceCount) {
+        buffers.get(texIndex).advanceBuffers(faceCount);
     }
 }

@@ -60,13 +60,22 @@ public class FiguraModelPart {
             child.parent = this;
     }
 
-    public void pushVerticesImmediate(ImmediateAvatarRenderer avatarRenderer, int[] remainingComplexity) {
+    public boolean pushVerticesImmediate(ImmediateAvatarRenderer avatarRenderer, int[] remainingComplexity) {
         for (int i = 0; i < facesByTexture.size(); i++) {
             if (remainingComplexity[0] <= 0)
-                return;
+                return false;
             remainingComplexity[0] -= facesByTexture.get(i);
             avatarRenderer.pushFaces(i, facesByTexture.get(i) + Math.min(remainingComplexity[0], 0), remainingComplexity);
         }
+        return true;
+    }
+
+    public void advanceVerticesImmediate(ImmediateAvatarRenderer avatarRenderer) {
+        for (int i = 0; i < facesByTexture.size(); i++)
+            avatarRenderer.advanceFaces(i, facesByTexture.get(i));
+
+        for (FiguraModelPart child : this.children)
+            child.advanceVerticesImmediate(avatarRenderer);
     }
 
     public void applyVanillaTransforms(VanillaModelData vanillaModelData) {
