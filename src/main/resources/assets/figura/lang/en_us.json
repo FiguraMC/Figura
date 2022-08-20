@@ -355,7 +355,7 @@
   "figura.config.chat_messages": "Chat Messages",
   "figura.config.chat_messages.tooltip.1": "Toggles if scripts can change and/or send chat messages for you",
   "figura.config.chat_messages.tooltip.2": "This is a dangerous option, as the chat messages will still be signed",
-  "figura.config.chat_messages.tooltip.3": "Figura do not take any responsibility for the usage of this feature",
+  "figura.config.chat_messages.tooltip.3": "Figura does not take any responsibility for the usage of this feature",
 
   "figura.config.main_dir": "Figura Folder Location",
   "figura.config.main_dir.tooltip": "Changes the location of the Figura folder",

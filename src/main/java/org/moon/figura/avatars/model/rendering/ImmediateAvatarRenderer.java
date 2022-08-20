@@ -15,6 +15,7 @@ import org.moon.figura.avatars.model.ParentType;
 import org.moon.figura.avatars.model.PartCustomization;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
 import org.moon.figura.avatars.model.rendering.texture.RenderTypes;
+import org.moon.figura.avatars.model.rendertasks.RenderTask;
 import org.moon.figura.config.Config;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
@@ -31,8 +32,8 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
     protected final List<FiguraImmediateBuffer> buffers = new ArrayList<>(0);
     protected final PartCustomization.Stack customizationStack = new PartCustomization.Stack();
 
-    protected static final PoseStack VIEW_MATRICES = new PoseStack();
     public static final FiguraMat4 VIEW_TO_WORLD_MATRIX = FiguraMat4.of();
+    private static final PartCustomization pivotOffsetter = PartCustomization.of();
 
     public ImmediateAvatarRenderer(Avatar avatar) {
         super(avatar);
@@ -87,12 +88,8 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         commonRender(0);
     }
 
-    @Deprecated
     protected void commonRender(double vertOffset) {
-        //clear pivot list
-        pivotCustomizations.clear();
-
-        //Push position and normal matrices
+        //setup root customizations
         PartCustomization customization = setupRootCustomization(vertOffset);
 
         //Push transform
@@ -113,19 +110,18 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         //Free customization after use
         customization.free();
 
-        //Render all model parts
+        //world matrices
         if (allowMatrixUpdate)
             VIEW_TO_WORLD_MATRIX.set(AvatarRenderer.worldToViewMatrix().invert());
 
-//        int prev = avatar.remainingComplexity;
+        //Render all model parts
         int prev = avatar.trust.get(TrustContainer.Trust.COMPLEXITY) - avatar.complexity;
         int[] remainingComplexity = new int[] {prev};
         Boolean initialValue = currentFilterScheme.initialValue(root);
         if (initialValue != null)
             renderPart(root, remainingComplexity, initialValue);
 
-        avatar.complexity += prev - remainingComplexity[0];
-//        avatar.remainingComplexity = remainingComplexity[0];
+        avatar.complexity += prev - Math.max(remainingComplexity[0], 0);
 
         customizationStack.pop();
         checkEmpty();
@@ -159,62 +155,99 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         return customization;
     }
 
-    @Deprecated
-    //Method is only kept for reference of how it used to work, this impl no longer works with new system.
-    protected void renderPart(FiguraModelPart part, int[] remainingComplexity, boolean parentPassedPredicate) {
-        part.applyVanillaTransforms(vanillaModelData);
-
-        part.applyExtraTransforms(customizationStack.peek().positionMatrix);
-
-        part.customization.recalculate();
+    protected void renderPart(FiguraModelPart part, int[] remainingComplexity, boolean prevPredicate) {
+        PartCustomization custom = part.customization;
 
         //Store old visibility, but overwrite it in case we only want to render certain parts
-        Boolean storedVisibility = part.customization.visible;
-        Boolean thisPassedPredicate = currentFilterScheme.test(part.parentType, parentPassedPredicate);
+        Boolean storedVisibility = custom.visible;
+        Boolean thisPassedPredicate = currentFilterScheme.test(part.parentType, prevPredicate);
         if (thisPassedPredicate == null)
-            thisPassedPredicate = false;
+            return;
 
-        part.customization.visible = part.getVisible() && thisPassedPredicate;
-        customizationStack.push(part.customization);
-        part.customization.visible = storedVisibility;
+        //calculate part transforms
 
-        PartCustomization peek = customizationStack.peek();
+        //calculate vanilla parent
+        part.applyVanillaTransforms(vanillaModelData);
+        part.applyExtraTransforms(customizationStack.peek().positionMatrix);
 
-        //Right now, part.customization.positionMatrix contains a transformation from part space to view space.
-        if (thisPassedPredicate && allowMatrixUpdate) {
-            FiguraMat4 matrices = partToWorldMatrices(part.customization);
-            part.savedPartToWorldMat.set(matrices);
-            matrices.free();
+        //push customization stack
+        //that's right, check only for previous predicate
+        boolean reset = !allowHiddenTransforms && !prevPredicate;
+        if (reset) {
+            custom.positionMatrix.reset();
+            custom.normalMatrix.reset();
+            custom.needsMatrixRecalculation = false;
         }
 
-        if (thisPassedPredicate) {
-            calculateWorldMatrices(part);
+        custom.visible = part.getVisible() && thisPassedPredicate;
+        custom.recalculate();
+        customizationStack.push(custom);
+        custom.visible = storedVisibility;
 
-            //pivots
+        if (reset) custom.needsMatrixRecalculation = true;
+
+        //render this
+        part.pushVerticesImmediate(this, remainingComplexity);
+
+        //render extras
+        if (thisPassedPredicate) {
+            //part to world matrices
+            if (allowMatrixUpdate) {
+                FiguraMat4 mat = partToWorldMatrices(custom);
+                part.savedPartToWorldMat.set(mat);
+                mat.free();
+            }
+
+//            calculateWorldMatrices(part); //FOR DEBUG TESTING!
+
+            PartCustomization peek = customizationStack.peek();
+
+            //fix pivots
+            FiguraVec3 pivot = custom.getPivot();
+            FiguraVec3 offsetPivot = custom.getOffsetPivot();
+            pivotOffsetter.setPos(pivot.add(offsetPivot));
+            pivotOffsetter.recalculate();
+            customizationStack.push(pivotOffsetter);
+            pivot.free();
+            offsetPivot.free();
+
+            //render pivot indicators
             if (shouldRenderPivots > 1 || shouldRenderPivots == 1 && peek.visible)
-//                renderPivot(part, VIEW_MATRICES);
                 renderPivot(part);
 
-//            if (peek.visible) {
-//                //tasks
-//                int light = peek.light;
-//                int overlay = peek.overlay;
-//                for (RenderTask task : part.renderTasks.values())
-//                    task.render(VIEW_MATRICES, bufferSource, light, overlay);
-//
-//                //pivot parts
-//                if (part.parentType.isPivot)
-//                    savePivotTransform(part.parentType, VIEW_MATRICES);
-//            }
+            if (peek.visible) {
+                //render tasks
+                if (allowRenderTasks) {
+                    int light = peek.light;
+                    int overlay = peek.overlay;
+                    allowSkullRendering = false;
+                    for (RenderTask task : part.renderTasks.values()) {
+                        int neededComplexity = task.getComplexity();
+                        if (neededComplexity > remainingComplexity[0])
+                            continue;
+                        if (task.render(customizationStack, bufferSource, light, overlay))
+                            remainingComplexity[0] -= neededComplexity;
+                    }
+                    allowSkullRendering = true;
+                }
+
+                //render pivot parts
+                if (part.parentType.isPivot && allowPivotParts)
+                    savePivotTransform(part.parentType);
+            }
+
+            customizationStack.pop();
         }
 
-        part.pushVerticesImmediate(this, remainingComplexity);
+        //render children
         for (FiguraModelPart child : part.children)
             renderPart(child, remainingComplexity, thisPassedPredicate);
 
-        customizationStack.pop();
-
+        //reset the parent
         part.resetVanillaTransforms();
+
+        //pop
+        customizationStack.pop();
     }
 
     protected void renderPivot(FiguraModelPart part) {
@@ -229,18 +262,6 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
                 -boxSize, -boxSize, -boxSize,
                 boxSize, boxSize, boxSize,
                 (float) color.x, (float) color.y, (float) color.z, 1f);
-    }
-
-    protected void calculateWorldMatrices(FiguraModelPart part) {
-        VIEW_MATRICES.setIdentity();
-
-        FiguraMat4 posMat = part.savedPartToWorldMat.copy();
-        FiguraMat4 worldToView = AvatarRenderer.worldToViewMatrix();
-        VIEW_MATRICES.mulPoseMatrix(worldToView.toMatrix4f());
-        VIEW_MATRICES.mulPoseMatrix(posMat.toMatrix4f());
-
-        worldToView.free();
-        posMat.free();
     }
 
     protected void savePivotTransform(ParentType parentType) {

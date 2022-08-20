@@ -31,8 +31,8 @@ import org.moon.figura.animation.AnimationPlayer;
 import org.moon.figura.avatars.model.ParentType;
 import org.moon.figura.avatars.model.PartCustomization;
 import org.moon.figura.avatars.model.rendering.AvatarRenderer;
+import org.moon.figura.avatars.model.rendering.ImmediateAvatarRenderer;
 import org.moon.figura.avatars.model.rendering.PartFilterScheme;
-import org.moon.figura.avatars.model.rendering.StackAvatarRenderer;
 import org.moon.figura.config.Config;
 import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.lua.FiguraLuaRuntime;
@@ -152,7 +152,7 @@ public class Avatar {
         }).thenRun(() -> { //animations and models
             try {
                 loadAnimations();
-                renderer = new StackAvatarRenderer(this);
+                renderer = new ImmediateAvatarRenderer(this);
             } catch (Exception e) {
                 FiguraMod.LOGGER.error("", e);
             }

@@ -153,8 +153,10 @@ public class LocalAvatarLoader {
             for (File file : subFiles) {
                 if (file.isDirectory()) {
                     CompoundTag subfolder = loadModels(file.toPath(), parser, textures, animations);
-                    subfolder.putString("name", file.getName());
-                    children.add(subfolder);
+                    if (!subfolder.isEmpty()) {
+                        subfolder.putString("name", file.getName());
+                        children.add(subfolder);
+                    }
                 } else if (file.toString().toLowerCase().endsWith(".bbmodel")) {
                     BlockbenchModelParser.ModelData data = parser.parseModel(IOUtils.readFile(file), file.getName().substring(0, file.getName().length() - 8));
                     children.add(data.modelNbt());
