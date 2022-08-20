@@ -65,17 +65,13 @@ public class FiguraImmediateBuffer {
     }
 
     /**
-     * Advances the buffers without drawing those vertices. Also refunds complexity for those faces.
+     * Advances the buffers without drawing those vertices.
      * @param faceCount The number of faces to skip
-     * @param remainingComplexity The complexity holder, so the value can update
      */
-    public void advanceBuffers(int faceCount, int[] remainingComplexity) {
+    public void advanceBuffers(int faceCount) {
         positions.position(positions.position() + faceCount * 12);
         uvs.position(uvs.position() + faceCount * 8);
         normals.position(normals.position() + faceCount * 12);
-
-        //Refund complexity for invisible parts
-        remainingComplexity[0] += faceCount;
     }
 
     public void pushVertices(AvatarRenderer renderer, int faceCount, int[] remainingComplexity) {
@@ -85,7 +81,9 @@ public class FiguraImmediateBuffer {
 
         PartCustomization customization = customizationStack.peek();
         if (!customization.visible) {
-            advanceBuffers(faceCount, remainingComplexity);
+            advanceBuffers(faceCount);
+            //Refund complexity for invisible parts
+            remainingComplexity[0] += faceCount;
             return;
         }
 
