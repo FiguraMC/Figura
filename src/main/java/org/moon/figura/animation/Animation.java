@@ -38,6 +38,7 @@ public class Animation {
 
     private final TimeController controller = new TimeController();
     protected PlayState playState = PlayState.STOPPED;
+    private boolean gamePaused = false;
     private float time = 0f;
     private boolean inverted = false;
     private float lastTime = 0f;
@@ -114,6 +115,20 @@ public class Animation {
         for (Float codeTime : codeFrames.keySet()) {
             if (codeTime >= minTime && codeTime < maxTime && !owner.scriptError && owner.luaRuntime != null)
                 owner.luaRuntime.runScript(codeFrames.get(codeTime), "animation (" + this.name + ")");
+        }
+    }
+
+    public void gamePause() {
+        if (playState == PlayState.PLAYING) {
+            gamePaused = true;
+            pause();
+        }
+    }
+
+    public void gameResume() {
+        if (gamePaused) {
+            gamePaused = false;
+            play();
         }
     }
 

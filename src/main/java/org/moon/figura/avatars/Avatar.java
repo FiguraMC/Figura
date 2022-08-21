@@ -582,6 +582,16 @@ public class Avatar {
             AnimationPlayer.clear(animation);
     }
 
+    public void pauseAnimations() {
+        for (Animation animation : animations.values())
+            animation.gamePause();
+    }
+
+    public void resumeAnimations() {
+        for (Animation animation : animations.values())
+            animation.gameResume();
+    }
+
     // -- functions -- //
 
     /**
