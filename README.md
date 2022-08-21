@@ -59,6 +59,23 @@ you can filter those people and tweak their avatar available resources using a s
 > 
 > "`animationName`" is, as the name says, the animation name
 
+### • What are Pings and how do I use them?
+> Pings are lua functions that are sent through the backend to be executed in other people seeing your avatar, they are meant a way to sync data that only your client have
+> 
+> Some things, like your keybind presses or action wheel actions, they are not sent to other clients, so they have no idea if you have executed it or not, so pings are used to sent this information to them
+> 
+> An example of creating a ping is:
+> ```lua
+> function pings.myPing(arg1, arg2)
+>   -- code to run once the ping is called
+> end
+> ```
+> And to actually execute them, and send it to the backend, it's as shrimple as calling a lua function:
+> ```lua
+> pings.myPing("Hello", "World")
+> ```
+> Note that pings are limited in its contents, size, and how many you can sent per second
+
 ### • How can I add an emissive texture?
 > Simple, just name the texture, the same as the non-emissive counterpart, but then adding `_e` in the end
 > 
