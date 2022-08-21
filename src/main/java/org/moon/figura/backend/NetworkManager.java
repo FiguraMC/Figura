@@ -206,10 +206,6 @@ public class NetworkManager {
         if (hasBackend()) backend.send(message);
     }
 
-    public static void clearRequests() {
-        REQUEST_QUEUE.clear();
-    }
-
     public static void clearRequestsFor(UUID id) {
         REQUEST_QUEUE.removeIf(request -> request.id.equals(id));
     }

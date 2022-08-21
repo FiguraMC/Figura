@@ -29,6 +29,8 @@ public abstract class AvatarRenderer {
     protected final Avatar avatar;
     public FiguraModelPart root;
 
+    protected boolean isRendering, dirty;
+
     // -- rendering data -- //
 
     //entity
@@ -59,8 +61,14 @@ public abstract class AvatarRenderer {
 
     public abstract void render();
     public abstract void renderSpecialParts();
-    public void clean() {
+    protected void clean() {
         root.clean();
+    }
+
+    public void invalidate() {
+        this.dirty = true;
+        if (!this.isRendering)
+            clean();
     }
 
     /**

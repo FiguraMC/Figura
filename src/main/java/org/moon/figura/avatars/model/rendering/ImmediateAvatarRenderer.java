@@ -66,7 +66,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
     }
 
     @Override
-    public void clean() {
+    protected void clean() {
         super.clean();
         customizationStack.fullClear();
         for (FiguraImmediateBuffer buffer : buffers)
@@ -89,6 +89,9 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
     }
 
     protected void commonRender(double vertOffset) {
+        //flag rendering state
+        this.isRendering = true;
+
         //setup root customizations
         PartCustomization customization = setupRootCustomization(vertOffset);
 
@@ -125,6 +128,10 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
         customizationStack.pop();
         checkEmpty();
+
+        this.isRendering = false;
+        if (this.dirty)
+            clean();
     }
 
     protected PartCustomization setupRootCustomization(double vertOffset) {
@@ -162,7 +169,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         Boolean storedVisibility = custom.visible;
         Boolean thisPassedPredicate = currentFilterScheme.test(part.parentType, prevPredicate);
         if (thisPassedPredicate == null) {
-            part.advanceVerticesImmediate(this);
+            part.advanceVerticesImmediate(this); //stinky
             return true;
         }
 
@@ -262,7 +269,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         boolean group = part.customization.partType == PartCustomization.PartType.GROUP;
         FiguraVec3 color = group ? ColorUtils.Colors.MAYA_BLUE.vec : ColorUtils.Colors.FRAN_PINK.vec;
         double boxSize = group ? 1 / 16d : 1 / 32d;
-        boxSize /= Math.cbrt(part.savedPartToWorldMat.det());
+        boxSize /= Math.max(Math.cbrt(part.savedPartToWorldMat.det()), 0.02);
 
         PoseStack stack = customizationStack.peek().copyIntoGlobalPoseStack();
 

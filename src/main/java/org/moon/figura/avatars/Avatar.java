@@ -592,7 +592,7 @@ public class Avatar {
      */
     public void clean() {
         if (renderer != null)
-            renderer.clean();
+            renderer.invalidate();
 
         SoundAPI.getSoundEngine().figura$stopSound(owner, null);
         for (SoundBuffer value : customSounds.values())
