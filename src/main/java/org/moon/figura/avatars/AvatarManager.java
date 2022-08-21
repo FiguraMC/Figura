@@ -90,6 +90,22 @@ public class AvatarManager {
             avatar.clearAnimations();
     }
 
+    public static void pauseAnimations() {
+        if (panic)
+            return;
+
+        for (Avatar avatar : LOADED_AVATARS.values())
+            avatar.pauseAnimations();
+    }
+
+    public static void resumeAnimations() {
+        if (panic)
+            return;
+
+        for (Avatar avatar : LOADED_AVATARS.values())
+            avatar.resumeAnimations();
+    }
+
     // -- avatar getters -- //
 
     //player will also attempt to load from network, if possible

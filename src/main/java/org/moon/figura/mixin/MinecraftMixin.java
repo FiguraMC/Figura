@@ -117,13 +117,22 @@ public abstract class MinecraftMixin {
     }
 
     @Inject(at = @At("HEAD"), method = "runTick")
-    public void preTick(boolean tick, CallbackInfo ci) {
+    private void preTick(boolean tick, CallbackInfo ci) {
         AvatarManager.applyAnimations();
     }
 
     @Inject(at = @At("RETURN"), method = "runTick")
-    public void afterTick(boolean tick, CallbackInfo ci) {
+    private void afterTick(boolean tick, CallbackInfo ci) {
         AvatarManager.clearAnimations();
     }
 
+    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/sounds/SoundManager;pause()V"), method = "pauseGame")
+    private void pauseGame(boolean pause, CallbackInfo ci) {
+        AvatarManager.pauseAnimations();
+    }
+
+    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/sounds/SoundManager;resume()V"), method = "setScreen")
+    private void resumeGame(Screen screen, CallbackInfo ci) {
+        AvatarManager.resumeAnimations();
+    }
 }
