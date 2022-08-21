@@ -107,17 +107,6 @@ public class FiguraModelPart {
         defaultPivot.free();
     }
 
-    public void resetVanillaTransforms() {
-        if (parentType.provider != null) {
-            if ((animationOverride & 2) != 2) {
-                customization.offsetPivot(0, 0, 0);
-                customization.offsetPos(0, 0, 0);
-            }
-            if ((animationOverride & 1) != 1)
-                customization.offsetRot(0, 0, 0);
-        }
-    }
-
     public void applyExtraTransforms(FiguraMat4 currentTransforms) {
         if (parentType == ParentType.Camera) {
             if ((animationOverride & 1) != 1) {
