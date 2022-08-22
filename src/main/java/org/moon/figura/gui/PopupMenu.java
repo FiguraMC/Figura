@@ -131,7 +131,7 @@ public class PopupMenu {
             name.append(Badges.fetchBadges(avatar));
             if (avatar.scriptError)
                 warn = ERROR_WARN;
-            else if (avatar.versionStatus == 1)
+            else if (avatar.versionStatus > 0)
                 warn = VERSION_WARN;
         }
 

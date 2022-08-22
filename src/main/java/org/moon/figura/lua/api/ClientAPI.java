@@ -16,6 +16,7 @@ import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.MathUtils;
 import org.moon.figura.utils.TextUtils;
+import org.moon.figura.utils.Version;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -25,6 +26,7 @@ import org.moon.figura.utils.TextUtils;
 public class ClientAPI {
 
     public static final ClientAPI INSTANCE = new ClientAPI();
+    private static final boolean hasIris = FabricLoader.getInstance().isModLoaded("iris");
 
     @LuaWhitelist
     @LuaMethodDoc(description = "client.get_fps")
@@ -238,13 +240,13 @@ public class ClientAPI {
     @LuaWhitelist
     @LuaMethodDoc(description = "client.has_iris")
     public static boolean hasIris() {
-        return FabricLoader.getInstance().isModLoaded("iris");
+        return hasIris;
     }
 
     @LuaWhitelist
     @LuaMethodDoc(description = "client.has_iris_shader")
     public static boolean hasIrisShader() {
-        return hasIris() && net.irisshaders.iris.api.v0.IrisApi.getInstance().isShaderPackInUse();
+        return hasIris && net.irisshaders.iris.api.v0.IrisApi.getInstance().isShaderPackInUse();
     }
 
     @LuaWhitelist
@@ -262,7 +264,7 @@ public class ClientAPI {
             description = "client.compare_versions")
     public static int compareVersions(@LuaNotNil String ver1, @LuaNotNil String ver2) {
         try {
-            return FiguraMod.compareVersions(ver1, ver2);
+            return Version.of(ver1).compareTo(Version.of(ver2));
         } catch (Exception e) {
             throw new LuaError(e.getMessage());
         }

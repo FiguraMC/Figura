@@ -46,6 +46,7 @@ import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.EntityUtils;
+import org.moon.figura.utils.Version;
 import org.moon.figura.utils.RefilledNumber;
 import org.moon.figura.utils.ui.UIHelper;
 
@@ -623,7 +624,7 @@ public class Avatar {
 
     private int checkVersion() {
         try {
-            return FiguraMod.compareVersions(version, FiguraMod.VERSION);
+            return Version.of(version).compareTo(Version.VERSION);
         } catch (Exception ignored) {
             return 0;
         }

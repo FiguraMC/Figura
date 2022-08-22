@@ -43,7 +43,7 @@ public class Badges {
             badges.append(Default.ERROR.badge);
 
         //version
-        else if (avatar.versionStatus == 1)
+        else if (avatar.versionStatus > 0)
             badges.append(Default.WARNING.badge);
 
         //egg
