@@ -175,11 +175,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
     @Inject(at = @At(value = "INVOKE", shift = At.Shift.AFTER, target = "Lnet/minecraft/client/model/PlayerModel;setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V"), method = "renderHand")
     private void onRenderHand(PoseStack stack, MultiBufferSource multiBufferSource, int light, AbstractClientPlayer player, ModelPart arm, ModelPart sleeve, CallbackInfo ci) {
         avatar = AvatarManager.getAvatarForPlayer(player.getUUID());
-        if (avatar == null || avatar.luaRuntime == null)
-            return;
-
-        avatar.luaRuntime.vanilla_model.PLAYER.store(this.getModel());
-        if (avatar.trust.get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 1)
+        if (avatar != null && avatar.luaRuntime != null && avatar.trust.get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 1)
             avatar.luaRuntime.vanilla_model.PLAYER.alter(this.getModel());
     }
 
@@ -190,11 +186,6 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
 
         float delta = Minecraft.getInstance().getFrameTime();
         int overlay = getOverlayCoords(player, getWhiteOverlayProgress(player, delta));
-        avatar.renderEvent(delta);
         avatar.firstPersonRender(stack, multiBufferSource, player, (PlayerRenderer) (Object) this, arm, light, overlay, delta);
-        avatar.postRenderEvent(delta);
-
-        if (avatar.luaRuntime != null)
-            avatar.luaRuntime.vanilla_model.PLAYER.restore(this.getModel());
     }
 }

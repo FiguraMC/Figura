@@ -45,6 +45,8 @@
     "render.layers.items.PlayerItemInHandLayerMixin",
 
     "render.renderers.EntityRendererMixin",
+    "render.renderers.HandRenderSelectionAccessor",
+    "render.renderers.ItemInHandRendererMixin",
     "render.renderers.LevelRendererMixin",
     "render.renderers.LivingEntityRendererMixin",
     "render.renderers.PlayerRendererMixin",
