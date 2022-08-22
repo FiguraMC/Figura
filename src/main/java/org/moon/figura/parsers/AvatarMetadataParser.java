@@ -9,6 +9,7 @@ import net.minecraft.nbt.Tag;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.model.ParentType;
 import org.moon.figura.avatars.model.rendering.texture.RenderTypes;
+import org.moon.figura.utils.Version;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -33,8 +34,16 @@ public class AvatarMetadataParser {
         //nbt
         CompoundTag nbt = new CompoundTag();
 
+        //version
+        String version;
+        try {
+            version = Version.of(metadata.version).toString();
+        } catch (Exception ignored) {
+            version = FiguraMod.VERSION;
+        }
+
         nbt.putString("name", metadata.name == null || metadata.name.isBlank() ? filename : metadata.name);
-        nbt.putString("ver", metadata.version == null || metadata.version.isBlank() ? FiguraMod.VERSION : metadata.version);
+        nbt.putString("ver", version);
         nbt.putString("color", metadata.color == null ? "default" : metadata.color);
         nbt.putString("bg", metadata.background == null ? "default" : metadata.background);
 

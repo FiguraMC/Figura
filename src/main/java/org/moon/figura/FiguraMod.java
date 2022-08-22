@@ -8,8 +8,6 @@ import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.VersionParsingException;
-import net.fabricmc.loader.impl.util.version.SemanticVersionImpl;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -167,12 +165,5 @@ public class FiguraMod implements ClientModInitializer {
         Avatar avatar = AvatarManager.getAvatarForPlayer(getLocalPlayerUUID());
         int color = avatar != null ? ColorUtils.userInputHex(avatar.color, ColorUtils.Colors.FRAN_PINK.vec) : ColorUtils.Colors.FRAN_PINK.hex;
         return Style.EMPTY.withColor(color);
-    }
-
-    //converts and compare two string versions
-    public static int compareVersions(String version1, String version2) throws VersionParsingException {
-        SemanticVersionImpl a = new SemanticVersionImpl(version1, true);
-        SemanticVersionImpl b = new SemanticVersionImpl(version2, true);
-        return a.compareTo(b);
     }
 }

@@ -36,6 +36,7 @@ import org.moon.figura.utils.TextUtils;
 public class HostAPI {
 
     private final Avatar owner;
+    private final boolean isHost;
     private final Minecraft minecraft;
 
     @LuaWhitelist
@@ -46,12 +47,13 @@ public class HostAPI {
     public HostAPI(Avatar owner) {
         this.owner = owner;
         this.minecraft = Minecraft.getInstance();
+        this.isHost = FiguraMod.isLocal(this.owner.owner);
     }
 
     @LuaWhitelist
     @LuaMethodDoc(description = "host.is_host")
     public boolean isHost() {
-        return FiguraMod.isLocal(this.owner.owner);
+        return isHost;
     }
 
     @LuaWhitelist
