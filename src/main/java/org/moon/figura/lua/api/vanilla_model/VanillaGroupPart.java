@@ -51,8 +51,8 @@ public class VanillaGroupPart extends VanillaPart {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
-                    argumentTypes = {VanillaGroupPart.class, Boolean.class},
-                    argumentNames = {"vanillaGroup", "visible"}
+                    argumentTypes = Boolean.class,
+                    argumentNames = "visible"
             ),
             description = "vanilla_group.set_visible"
     )
