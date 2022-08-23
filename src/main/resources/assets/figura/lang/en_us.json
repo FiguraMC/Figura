@@ -465,6 +465,7 @@
   "figura.docs.wheel_page.new_toggle": "Adds a new Toggle Action on the selected Page's index. If no index is given it is added in the first available index.",
   "figura.docs.wheel_page.new_scroll": "Adds a new Scroll Action on the selected Page's index. If no index is given it is added in the first available index.",
   "figura.docs.wheel_page.get_action": "Gets an Action from the Page's given index.",
+  "figura.docs.wheel_page.set_action": "Sets an Action in the Page's given index.",
 
   "figura.docs.wheel_action": "An action in the Figura Action Wheel. An abstract superclass of ClickAction, ToggleAction, and ScrollAction.",
   "figura.docs.wheel_action.title": "Sets the title of the Action. Returns the Action for function chaining.",

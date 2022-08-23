@@ -1,7 +1,6 @@
 package org.moon.figura.gui.actionwheel;
 
 import org.luaj.vm2.LuaError;
-import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
@@ -117,10 +116,24 @@ public class Page {
             ),
             description = "wheel_page.get_action"
     )
-    public Action getAction(@LuaNotNil Integer index) {
+    public Action getAction(int index) {
         if (index < 1 || index > 8)
             throw new LuaError("Index must be between 1 and 8!");
         return this.actions[index - 1];
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = {Integer.class, Action.class},
+                    argumentNames = {"index", "action"}
+            ),
+            description = "wheel_page.set_action"
+    )
+    public void setAction(int index, Action action) {
+        if (index < 1 || index > 8)
+            throw new LuaError("Index must be between 1 and 8!");
+        this.actions[index - 1] = action;
     }
 
     @Override
