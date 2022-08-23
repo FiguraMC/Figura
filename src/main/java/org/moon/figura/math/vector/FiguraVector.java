@@ -17,6 +17,7 @@ public abstract class FiguraVector<T extends FiguraVector<T, M>, M extends Figur
     public abstract T set(T other);
     public abstract T add(T other);
     public abstract T subtract(T other);
+    public abstract T offset(double factor);
     public abstract T multiply(T other);
     public abstract T transform(M mat);
     public abstract T divide(T other);
@@ -55,6 +56,10 @@ public abstract class FiguraVector<T extends FiguraVector<T, M>, M extends Figur
 
     public T minus(T other) {
         return copy().subtract(other);
+    }
+
+    public T offseted(double factor) {
+        return copy().offset(factor);
     }
 
     public T times(T other) {
