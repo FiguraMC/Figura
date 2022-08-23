@@ -714,6 +714,7 @@
   "figura.docs.events.chat_send_message": "The CHAT_SEND_MESSAGE event is run every time you send a message in chat. A string parameter is passed in, which contains the message that was sent.",
   "figura.docs.events.chat_receive_message": "The CHAT_RECEIVE_MESSAGE event is run every time a message is received in chat. A string parameter is passed in, which contains the message you received.",
   "figura.docs.events.skull_render": "Called between POST_RENDER and POST_WORLD_RENDER, on every one of your skull blocks placed in the world. The arguments are the tick delta and the position of the skull as a vector.",
+  "figura.docs.events.mouse_scroll": "The MOUSE_SCROLL event runs every time the mouse is scrolled. Takes a parameter delta, which is the direction of the scroll.",
 
   "figura.docs.event": "A hook for a certain event in Minecraft. You may register functions to one, and those functions will be called when the event occurs.",
   "figura.docs.event.register": "Registers the given function to the given event. When the event occurs, the function will be run. Functions are run in the order they were registered. The optional name parameter is used when you wish to later remove a function from the event.",

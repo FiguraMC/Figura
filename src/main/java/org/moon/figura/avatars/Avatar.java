@@ -46,8 +46,8 @@ import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.EntityUtils;
-import org.moon.figura.utils.Version;
 import org.moon.figura.utils.RefilledNumber;
+import org.moon.figura.utils.Version;
 import org.moon.figura.utils.ui.UIHelper;
 
 import java.io.ByteArrayInputStream;
@@ -72,6 +72,7 @@ public class Avatar {
     public final UUID owner;
     public CompoundTag nbt;
     public boolean loaded = true;
+    public final boolean isHost;
 
     //metadata
     public String name, entityName;
@@ -110,6 +111,7 @@ public class Avatar {
 
     public Avatar(UUID owner) {
         this.owner = owner;
+        this.isHost = FiguraMod.isLocal(owner);
         this.trust = TrustManager.get(owner);
         this.particlesRemaining = new RefilledNumber(trust.get(TrustContainer.Trust.PARTICLES));
         this.soundsRemaining = new RefilledNumber(trust.get(TrustContainer.Trust.SOUNDS));
@@ -337,7 +339,7 @@ public class Avatar {
     public String chatSendMessageEvent(String message) {
         if (!scriptError && luaRuntime != null) {
             try {
-                Varargs result = luaRuntime.events.CHAT_SEND_MESSAGE.pipedCall(LuaString.valueOf(message));
+                Varargs result = luaRuntime.events.CHAT_SEND_MESSAGE.pipedCall(LuaValue.valueOf(message));
                 LuaValue value = result.arg(1);
                 return value.isnil() ? null : Config.CHAT_MESSAGES.asBool() ? value.tojstring() : message;
             } catch (Exception ex) {
@@ -351,7 +353,7 @@ public class Avatar {
 
     public void chatReceivedMessageEvent(String message) {
         if (!scriptError && luaRuntime != null)
-            tryCall(luaRuntime.events.CHAT_RECEIVE_MESSAGE, -1, LuaString.valueOf(message));
+            tryCall(luaRuntime.events.CHAT_RECEIVE_MESSAGE, -1, LuaValue.valueOf(message));
     }
 
     public void skullRenderEvent(SkullBlockEntity skullBlockEntity, float delta) {
@@ -362,6 +364,11 @@ public class Avatar {
             postEntityRenderInstructions = luaRuntime.getInstructions();
             accumulatedEntityRenderInstructions = postEntityRenderInstructions + entityRenderInstructions;
         }
+    }
+
+    public void mouseScrollEvent(double delta) {
+        if (!scriptError && luaRuntime != null)
+            tryCall(luaRuntime.events.MOUSE_SCROLL, -1, LuaValue.valueOf(delta));
     }
 
     // -- rendering events -- //

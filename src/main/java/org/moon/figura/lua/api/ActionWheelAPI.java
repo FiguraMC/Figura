@@ -2,7 +2,6 @@ package org.moon.figura.lua.api;
 
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
-import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.gui.actionwheel.ActionWheel;
 import org.moon.figura.gui.actionwheel.Page;
@@ -14,7 +13,6 @@ import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 
 import java.util.HashMap;
-import java.util.UUID;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -37,8 +35,8 @@ public class ActionWheelAPI {
     @LuaFieldDoc(description = "action_wheel.scroll")
     public LuaFunction scroll;
 
-    public ActionWheelAPI(UUID owner) {
-        this.isHost = FiguraMod.isLocal(owner);
+    public ActionWheelAPI(Avatar owner) {
+        this.isHost = owner.isHost;
     }
 
     @LuaWhitelist
