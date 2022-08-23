@@ -2,6 +2,7 @@ package org.moon.figura.avatars.model;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
+import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
 import org.moon.figura.avatars.model.rendering.texture.RenderTypes;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
@@ -48,8 +49,8 @@ public class PartCustomization implements CachedType<PartCustomization> {
     public Integer overlay = null;
 
     private RenderTypes primaryRenderType, secondaryRenderType;
-    public Pair<String, String> primaryTexture = Pair.of(null, null);
-    public Pair<String, String> secondaryTexture = Pair.of(null, null);
+    public Pair<FiguraTextureSet.OverrideType, String> primaryTexture = Pair.of(null, null);
+    public Pair<FiguraTextureSet.OverrideType, String> secondaryTexture = Pair.of(null, null);
 
     public void applyToStack(PoseStack stack) {
         stack.mulPoseMatrix(positionMatrix.toMatrix4f());
