@@ -2,15 +2,16 @@ package org.moon.figura.gui.screens;
 
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextComponent;
-import org.moon.figura.gui.FiguraToast;
+import org.moon.figura.FiguraMod;
+import org.moon.figura.avatars.Avatar;
+import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.gui.widgets.TexturedButton;
+import org.moon.figura.gui.widgets.lists.SoundsList;
 import org.moon.figura.utils.FiguraText;
 
 public class SoundScreen extends AbstractPanelScreen {
 
-    public static final Component TITLE = new FiguraText("gui.panels.title.sound");
+    public static final Component TITLE = FiguraText.of("gui.panels.title.sound");
 
     public SoundScreen(Screen parentScreen) {
         super(parentScreen, TITLE, 2);
@@ -20,10 +21,15 @@ public class SoundScreen extends AbstractPanelScreen {
     protected void init() {
         super.init();
 
-        FiguraToast.sendToast(new TextComponent("lol nope").setStyle(Style.EMPTY.withColor(0xFFADAD)), FiguraToast.ToastType.DEFAULT);
+        Avatar owner = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
 
-        this.addRenderableWidget(new TexturedButton(width / 2 - 30, height / 2 - 30, 60, 20, new TextComponent("test2"), new TextComponent("test2"), button -> {
-            FiguraToast.sendToast("test2", "test2", FiguraToast.ToastType.DEFAULT);
-        }));
+        //list
+        int listWidth = Math.min(this.width - 8, 420);
+        this.addRenderableWidget(new SoundsList((this.width - listWidth) / 2, 28, listWidth, height - 56, owner));
+
+        //back
+        addRenderableWidget(new TexturedButton(width / 2 - 60, height - 24, 120, 20, FiguraText.of("gui.done"), null,
+                bx -> this.minecraft.setScreen(parentScreen)
+        ));
     }
 }

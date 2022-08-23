@@ -122,7 +122,6 @@ public class WardrobeScreen extends AbstractPanelScreen {
         TexturedButton sounds = new TexturedButton(this.width - rightSide / 2 - 16, 32, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/sound.png"), 72, 24, new FiguraText("gui.wardrobe.sound.tooltip"), button -> {
             Minecraft.getInstance().setScreen(new SoundScreen(this));
         });
-        sounds.active = false; //TODO
         addRenderableWidget(sounds);
 
         //keybinds

@@ -7,6 +7,7 @@ import net.minecraft.client.gui.components.events.AbstractContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.network.chat.Component;
 import org.moon.figura.utils.ui.UIHelper;
 
 import java.util.ArrayList;
@@ -14,11 +15,14 @@ import java.util.List;
 
 public abstract class AbstractContainerElement extends AbstractContainerEventHandler implements FiguraTickable, FiguraWidget, NarratableEntry {
 
+    public static final Component HOVERED_ARROW = Component.literal("•");
+
     protected final List<GuiEventListener> children = new ArrayList<>();
 
     public int x, y;
     public int width, height;
 
+    private boolean hovered = false;
     private boolean visible = true;
 
     public AbstractContainerElement(int x, int y, int width, int height) {
@@ -81,6 +85,14 @@ public abstract class AbstractContainerElement extends AbstractContainerEventHan
                 ret = ret || child.mouseScrolled(mouseX, mouseY, amount);
         }
         return ret;
+    }
+
+    public void setHovered(boolean hovered) {
+        this.hovered = hovered;
+    }
+
+    public boolean isHovered() {
+        return hovered;
     }
 
     @Override

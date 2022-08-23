@@ -8,6 +8,7 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.config.Config;
+import org.moon.figura.gui.widgets.ParentedButton;
 import org.moon.figura.gui.widgets.lists.ConfigList;
 
 public class KeybindElement extends AbstractConfigElement {
