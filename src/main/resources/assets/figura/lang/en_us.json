@@ -1063,6 +1063,7 @@
   "figura.docs.vector_n.set": "Sets this vector to have the given values. Nil values are treated as zero. Returns self for chaining.",
   "figura.docs.vector_n.add": "Adds the given vector or values to this one, and returns self for chaining.",
   "figura.docs.vector_n.sub": "Subtracts the given vector or values from this one, and returns self for chaining.",
+  "figura.docs.vector_n.offset": "Offsets this vector by the given factor, adding the factor to all components, and returns self for chaining.",
   "figura.docs.vector_n.mul": "Multiplies the given vector or values into this one, and returns self for chaining.",
   "figura.docs.vector_n.div": "Divides this vector by the given vector or values, and returns self for chaining.",
   "figura.docs.vector_n.reduce": "Reduces this vector modulo the given vector or values, and returns self for chaining.",
