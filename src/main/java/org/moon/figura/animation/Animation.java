@@ -23,7 +23,7 @@ import java.util.Map;
 public class Animation {
 
     private final Avatar owner;
-    private final String modelName;
+    public final String modelName;
 
     @LuaWhitelist
     @LuaFieldDoc(description = "animation.name")

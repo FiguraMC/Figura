@@ -375,6 +375,8 @@
   "figura.command.docs_export.success": "Exported Figura docs into the Figura directory",
   "figura.command.docs_export.error": "Failed to export Figura docs!",
   "figura.command.docs_type_hover": "Click to show %s docs",
+  "figura.command.debug.success": "Saved debug data into the Figura directory",
+  "figura.command.debug.error": "Failed to save debug data!",
 
 
   "figura.docs": "The \"/figura docs\" command allows you to access documentation for all types and functions Figura adds to its Lua scripting environment.",
