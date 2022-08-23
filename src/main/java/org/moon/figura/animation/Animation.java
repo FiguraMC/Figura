@@ -158,6 +158,7 @@ public class Animation {
                 controller.init();
                 time = inverted ? (length + startDelay) : (offset - startDelay);
                 lastTime = time;
+                frameTime = 0f;
             }
             default -> {return;}
         }
