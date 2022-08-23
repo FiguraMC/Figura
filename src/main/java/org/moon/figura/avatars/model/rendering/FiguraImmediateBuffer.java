@@ -102,7 +102,7 @@ public class FiguraImmediateBuffer {
         }
     }
 
-    private RenderType getTexture(AvatarRenderer renderer, RenderTypes types, Pair<String, String> texture, FiguraTexture figuraTexture) {
+    private RenderType getTexture(AvatarRenderer renderer, RenderTypes types, Pair<FiguraTextureSet.OverrideType, String> texture, FiguraTexture figuraTexture) {
         //get texture
         ResourceLocation id = FiguraTextureSet.getOverrideTexture(renderer.avatar.owner, texture);
         if (id == null)

@@ -4,6 +4,7 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.renderer.LightTexture;
 import org.luaj.vm2.LuaError;
 import org.moon.figura.avatars.model.rendering.ImmediateAvatarRenderer;
+import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
 import org.moon.figura.avatars.model.rendering.texture.RenderTypes;
 import org.moon.figura.avatars.model.rendertasks.BlockTask;
 import org.moon.figura.avatars.model.rendertasks.ItemTask;
@@ -473,7 +474,11 @@ public class FiguraModelPart {
             description = "model_part.set_primary_texture"
     )
     public void setPrimaryTexture(String type, String path) {
-        this.customization.primaryTexture = Pair.of(type, path);
+        try {
+            this.customization.primaryTexture = Pair.of(FiguraTextureSet.OverrideType.valueOf(type.toUpperCase()), path);
+        } catch (Exception ignored) {
+            throw new LuaError("Invalid texture override type: " + type);
+        }
     }
 
     @LuaWhitelist
@@ -491,7 +496,11 @@ public class FiguraModelPart {
             description = "model_part.set_secondary_texture"
     )
     public void setSecondaryTexture(String type, String path) {
-        this.customization.secondaryTexture = Pair.of(type, path);
+        try {
+            this.customization.secondaryTexture = Pair.of(FiguraTextureSet.OverrideType.valueOf(type.toUpperCase()), path);
+        } catch (Exception ignored) {
+            throw new LuaError("Invalid texture override type: " + type);
+        }
     }
 
     @LuaWhitelist

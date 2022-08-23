@@ -5,7 +5,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
-import org.luaj.vm2.LuaError;
 import org.moon.figura.mixin.render.layers.elytra.ElytraLayerAccessor;
 
 import java.util.UUID;
@@ -53,15 +52,14 @@ public class FiguraTextureSet {
             return -1;
     }
 
-    public static ResourceLocation getOverrideTexture(UUID owner, Pair<String, String> pair) {
-        String type = pair.getFirst();
+    public static ResourceLocation getOverrideTexture(UUID owner, Pair<OverrideType, String> pair) {
+        OverrideType type = pair.getFirst();
 
         if (type == null)
             return null;
 
-        type = type.toLowerCase();
         return switch (type) {
-            case "skin", "cape", "elytra" -> {
+            case SKIN, CAPE, ELYTRA -> {
                 if (Minecraft.getInstance().player == null)
                     yield null;
 
@@ -70,12 +68,12 @@ public class FiguraTextureSet {
                     yield null;
 
                 yield switch (type) {
-                    case "cape" -> info.getCapeLocation();
-                    case "elytra" -> info.getElytraLocation() == null ? ElytraLayerAccessor.getWingsLocation() : info.getElytraLocation();
+                    case CAPE -> info.getCapeLocation();
+                    case ELYTRA -> info.getElytraLocation() == null ? ElytraLayerAccessor.getWingsLocation() : info.getElytraLocation();
                     default -> info.getSkinLocation();
                 };
             }
-            case "resource" -> {
+            case RESOURCE -> {
                 try {
                     ResourceLocation resource = new ResourceLocation(pair.getSecond());
                     yield Minecraft.getInstance().getResourceManager().hasResource(resource) ? resource : MissingTextureAtlasSprite.getLocation();
@@ -83,8 +81,15 @@ public class FiguraTextureSet {
                     yield MissingTextureAtlasSprite.getLocation();
                 }
             }
-            case "texture" -> null;
-            default -> throw new LuaError("Invalid texture override type: " + type);
+            default -> null;
         };
+    }
+
+    public enum OverrideType {
+        SKIN,
+        CAPE,
+        ELYTRA,
+        RESOURCE,
+        TEXTURE
     }
 }
