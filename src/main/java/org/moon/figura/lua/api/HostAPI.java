@@ -47,7 +47,7 @@ public class HostAPI {
     public HostAPI(Avatar owner) {
         this.owner = owner;
         this.minecraft = Minecraft.getInstance();
-        this.isHost = FiguraMod.isLocal(this.owner.owner);
+        this.isHost = owner.isHost;
     }
 
     @LuaWhitelist

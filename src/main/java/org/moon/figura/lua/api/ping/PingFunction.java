@@ -3,7 +3,6 @@ package org.moon.figura.lua.api.ping;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
-import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.backend.NetworkManager;
 import org.moon.figura.config.Config;
@@ -25,7 +24,7 @@ public class PingFunction extends LuaFunction {
     public PingFunction(int id, Avatar owner, LuaFunction func) {
         this.id = id;
         this.owner = owner;
-        this.isHost = FiguraMod.isLocal(owner.owner);
+        this.isHost = owner.isHost;
         this.func = func;
     }
 

@@ -132,8 +132,8 @@ public class FiguraAPIManager {
         put("keybind", r -> r.keybind = new KeybindAPI(r.owner));
         put("host", r -> r.host = new HostAPI(r.owner));
         put("nameplate", r -> r.nameplate = new NameplateAPI());
-        put("renderer", r -> r.renderer = new RendererAPI(r.owner.owner));
-        put("action_wheel", r -> r.action_wheel = new ActionWheelAPI(r.owner.owner));
+        put("renderer", r -> r.renderer = new RendererAPI(r.owner));
+        put("action_wheel", r -> r.action_wheel = new ActionWheelAPI(r.owner));
         put("animations", r -> Animation.getTableForAnimations(r.owner));
         put("client", r -> ClientAPI.INSTANCE);
         put("particles", r -> new ParticleAPI(r.owner));

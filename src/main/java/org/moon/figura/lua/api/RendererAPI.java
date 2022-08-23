@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import org.moon.figura.avatars.Avatar;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
@@ -38,8 +39,8 @@ public class RendererAPI {
     public FiguraVec3 cameraBonusRot;
     public ResourceLocation postShader;
 
-    public RendererAPI(UUID owner) {
-        this.owner = owner;
+    public RendererAPI(Avatar owner) {
+        this.owner = owner.owner;
     }
 
     private static boolean checkCameraOwner(UUID entity) {
