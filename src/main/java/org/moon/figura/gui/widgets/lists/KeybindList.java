@@ -7,16 +7,15 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
 import net.minecraft.util.Mth;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.gui.widgets.AbstractContainerElement;
 import org.moon.figura.gui.widgets.Label;
+import org.moon.figura.gui.widgets.ParentedButton;
 import org.moon.figura.gui.widgets.TexturedButton;
 import org.moon.figura.lua.api.keybind.FiguraKeybind;
 import org.moon.figura.utils.FiguraText;
-import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.ui.UIHelper;
 
 import java.util.ArrayList;
@@ -94,14 +93,10 @@ public class KeybindList extends AbstractList {
 
     private static class KeybindElement extends AbstractContainerElement {
 
-        private static final Component HOVERED_ARROW = Component.literal(">").setStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT));
-
         private final FiguraKeybind keybind;
         private final KeybindList parent;
         private final TexturedButton resetButton;
         private final TexturedButton keybindButton;
-
-        private boolean hovered = false;
 
         public KeybindElement(int width, FiguraKeybind keybind, KeybindList parent) {
             super(0, 0, width, 20);
@@ -112,7 +107,7 @@ public class KeybindList extends AbstractList {
             children.add(0, keybindButton = new ParentedButton(0, 0, 90, 20, keybind.getTranslatedKeyMessage(), this, button -> parent.focusedKeybind = keybind));
 
             //reset button
-            children.add(resetButton = new ParentedButton(x + width - 60, y, 60, 20, Component.translatable("controls.reset"), this, button -> keybind.resetDefaultKey()));
+            children.add(resetButton = new ParentedButton(0, 0, 60, 20, Component.translatable("controls.reset"), this, button -> keybind.resetDefaultKey()));
         }
 
         @Override
@@ -155,8 +150,8 @@ public class KeybindList extends AbstractList {
             int textY = y + height / 2 - font.lineHeight / 2;
 
             //hovered arrow
-            this.hovered = isMouseOver(mouseX, mouseY);
-            if (this.hovered) font.draw(stack, HOVERED_ARROW, x + 4, textY, 0xFFFFFF);
+            setHovered(isMouseOver(mouseX, mouseY));
+            if (isHovered()) font.draw(stack, HOVERED_ARROW, x + 4, textY, 0xFFFFFF);
 
             //render name
             font.draw(stack, this.keybind.getName(), x + 16, textY, 0xFFFFFF);
@@ -179,21 +174,6 @@ public class KeybindList extends AbstractList {
 
             keybindButton.x = x + width - 154;
             keybindButton.y = y;
-        }
-    }
-
-    private static class ParentedButton extends TexturedButton {
-
-        private final KeybindElement parent;
-
-        public ParentedButton(int x, int y, int width, int height, Component text, KeybindElement parent, OnPress pressAction) {
-            super(x, y, width, height, text, null, pressAction);
-            this.parent = parent;
-        }
-
-        @Override
-        public boolean isMouseOver(double mouseX, double mouseY) {
-            return this.parent.hovered && super.isMouseOver(mouseX, mouseY);
         }
     }
 }

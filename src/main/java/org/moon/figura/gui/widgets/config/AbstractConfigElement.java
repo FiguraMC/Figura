@@ -6,13 +6,12 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import org.moon.figura.config.Config;
 import org.moon.figura.gui.widgets.AbstractContainerElement;
+import org.moon.figura.gui.widgets.ParentedButton;
 import org.moon.figura.gui.widgets.TexturedButton;
 import org.moon.figura.gui.widgets.lists.ConfigList;
 import org.moon.figura.utils.ui.UIHelper;
 
 public abstract class AbstractConfigElement extends AbstractContainerElement {
-
-    public static final Component HOVERED_ARROW = Component.literal("•");
 
     protected final Config config;
     protected final ConfigList parent;
@@ -20,8 +19,6 @@ public abstract class AbstractConfigElement extends AbstractContainerElement {
     protected TexturedButton resetButton;
 
     protected Object initValue;
-
-    private boolean hovered = false;
 
     public AbstractConfigElement(int width, Config config, ConfigList parent) {
         super(0, 0, width, 20);
@@ -42,8 +39,8 @@ public abstract class AbstractConfigElement extends AbstractContainerElement {
         int textY = y + height / 2 - font.lineHeight / 2;
 
         //hovered arrow
-        hovered = isMouseOver(mouseX, mouseY);
-        if (hovered) font.draw(stack, HOVERED_ARROW, x + 8 - font.width(HOVERED_ARROW) / 2, textY, 0xFFFFFF);
+        setHovered(isMouseOver(mouseX, mouseY));
+        if (isHovered()) font.draw(stack, HOVERED_ARROW, x + 8 - font.width(HOVERED_ARROW) / 2, textY, 0xFFFFFF);
 
         //render name
         font.draw(stack, config.name, x + 16, textY, 0xFFFFFF);
@@ -76,24 +73,5 @@ public abstract class AbstractConfigElement extends AbstractContainerElement {
 
         resetButton.x = x + width - 60;
         resetButton.y = y;
-    }
-
-    public boolean isHovered() {
-        return hovered;
-    }
-
-    protected static class ParentedButton extends TexturedButton {
-
-        private final AbstractConfigElement parent;
-
-        public ParentedButton(int x, int y, int width, int height, Component text, AbstractConfigElement parent, OnPress pressAction) {
-            super(x, y, width, height, text, null, pressAction);
-            this.parent = parent;
-        }
-
-        @Override
-        public boolean isMouseOver(double mouseX, double mouseY) {
-            return this.parent.isHovered() && super.isMouseOver(mouseX, mouseY);
-        }
     }
 }

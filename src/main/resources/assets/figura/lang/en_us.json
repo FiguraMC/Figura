@@ -132,6 +132,7 @@
 
   "figura.gui.error.no_avatar": "No Avatar selected!",
   "figura.gui.error.no_keybinds": "Avatar does not have keybinds!",
+  "figura.gui.error.no_sounds": "Avatar does not have custom sounds!",
   "figura.gui.error.no_wheel_page": "Action Wheel has no active Page!",
 
   "figura.gui.context.set_trust": "Set Trust",
@@ -160,6 +161,9 @@
   "figura.gui.wardrobe.keybind.tooltip": "Avatar Keybinds",
   "figura.gui.wardrobe.folder.tooltip": "Open avatars root folder",
   "figura.gui.wardrobe.unselect": "Unselect",
+
+  "figura.gui.sound.play": "Play sound",
+  "figura.gui.sound.stop": "Stop sound",
 
   "figura.gui.trust.reset": "Reset All",
   "figura.gui.trust.reload_all": "Reload All",

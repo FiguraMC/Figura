@@ -10,6 +10,7 @@ import net.minecraft.network.chat.Style;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.config.Config;
 import org.moon.figura.gui.widgets.ContextMenu;
+import org.moon.figura.gui.widgets.ParentedButton;
 import org.moon.figura.gui.widgets.TexturedButton;
 import org.moon.figura.gui.widgets.lists.ConfigList;
 import org.moon.figura.utils.TextUtils;
