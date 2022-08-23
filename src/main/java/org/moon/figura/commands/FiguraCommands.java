@@ -26,6 +26,9 @@ public class FiguraCommands {
         //load
         root.then(FiguraLoadCommand.getCommand());
 
+        //debug
+        root.then(FiguraDebugCommand.getCommand());
+
         //backend debug
         if (FiguraMod.DEBUG_MODE)
             root.then(NetworkManager.getCommand());
