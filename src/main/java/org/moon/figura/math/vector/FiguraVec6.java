@@ -180,6 +180,26 @@ public class FiguraVec6 extends FiguraVector<FiguraVec6, FiguraMatrix.DummyMatri
     }
 
     @Override
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = Double.class,
+                    argumentNames = "factor",
+                    returnType = FiguraVec6.class
+            ),
+            description = "vector_n.offset"
+    )
+    public FiguraVec6 offset(double factor) {
+        this.x += factor;
+        this.y += factor;
+        this.z += factor;
+        this.w += factor;
+        this.t += factor;
+        this.h += factor;
+        return this;
+    }
+
+    @Override
     public FiguraVec6 multiply(FiguraVec6 other) {
         return multiply(other.x, other.y, other.z, other.w, other.t, other.h);
     }
@@ -515,22 +535,54 @@ public class FiguraVec6 extends FiguraVector<FiguraVec6, FiguraMatrix.DummyMatri
 
     @LuaWhitelist
     @LuaMetamethodDoc(
-            overloads = @LuaMetamethodDoc.LuaMetamethodOverload(
-                    types = {FiguraVec6.class, FiguraVec6.class, FiguraVec6.class}
-            )
+            overloads = {
+                    @LuaMetamethodDoc.LuaMetamethodOverload(
+                            types = {FiguraVec6.class, FiguraVec6.class, FiguraVec6.class}
+                    ),
+                    @LuaMetamethodDoc.LuaMetamethodOverload(
+                            types = {FiguraVec6.class, FiguraVec6.class, Double.class}
+                    ),
+                    @LuaMetamethodDoc.LuaMetamethodOverload(
+                            types = {FiguraVec6.class, Double.class, FiguraVec6.class}
+                    )
+            }
     )
-    public FiguraVec6 __add(@LuaNotNil FiguraVec6 other) {
-        return plus(other);
+    public static FiguraVec6 __add(@LuaNotNil Object a, @LuaNotNil Object b) {
+        if (a instanceof FiguraVec6 vec) {
+            if (b instanceof FiguraVec6 vec2)
+                return vec.plus(vec2);
+            else if (b instanceof Number d)
+                return vec.offseted(d.doubleValue());
+        } else if (a instanceof Number d && b instanceof FiguraVec6 vec) {
+            return vec.offseted(d.doubleValue());
+        }
+        throw new LuaError("Invalid types to __add: " + a.getClass().getSimpleName() + ", " + b.getClass().getSimpleName());
     }
 
     @LuaWhitelist
     @LuaMetamethodDoc(
-            overloads = @LuaMetamethodDoc.LuaMetamethodOverload(
-                    types = {FiguraVec6.class, FiguraVec6.class, FiguraVec6.class}
-            )
+            overloads = {
+                    @LuaMetamethodDoc.LuaMetamethodOverload(
+                            types = {FiguraVec6.class, FiguraVec6.class, FiguraVec6.class}
+                    ),
+                    @LuaMetamethodDoc.LuaMetamethodOverload(
+                            types = {FiguraVec6.class, FiguraVec6.class, Double.class}
+                    ),
+                    @LuaMetamethodDoc.LuaMetamethodOverload(
+                            types = {FiguraVec6.class, Double.class, FiguraVec6.class}
+                    )
+            }
     )
-    public FiguraVec6 __sub(@LuaNotNil FiguraVec6 other) {
-        return minus(other);
+    public static FiguraVec6 __sub(@LuaNotNil Object a, @LuaNotNil Object b) {
+        if (a instanceof FiguraVec6 vec) {
+            if (b instanceof FiguraVec6 vec2)
+                return vec.minus(vec2);
+            else if (b instanceof Number d)
+                return vec.offseted(-d.doubleValue());
+        } else if (a instanceof Number d && b instanceof FiguraVec6 vec) {
+            return vec.scaled(-1).offset(d.doubleValue());
+        }
+        throw new LuaError("Invalid types to __sub: " + a.getClass().getSimpleName() + ", " + b.getClass().getSimpleName());
     }
 
     @LuaWhitelist

@@ -154,6 +154,23 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
     }
 
     @Override
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = Double.class,
+                    argumentNames = "factor",
+                    returnType = FiguraVec3.class
+            ),
+            description = "vector_n.offset"
+    )
+    public FiguraVec3 offset(double factor) {
+        this.x += factor;
+        this.y += factor;
+        this.z += factor;
+        return this;
+    }
+
+    @Override
     public FiguraVec3 multiply(FiguraVec3 other) {
         return multiply(other.x, other.y, other.z);
     }
@@ -519,22 +536,54 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
 
     @LuaWhitelist
     @LuaMetamethodDoc(
-            overloads = @LuaMetamethodDoc.LuaMetamethodOverload(
-                    types = {FiguraVec3.class, FiguraVec3.class, FiguraVec3.class}
-            )
+            overloads = {
+                    @LuaMetamethodDoc.LuaMetamethodOverload(
+                            types = {FiguraVec3.class, FiguraVec3.class, FiguraVec3.class}
+                    ),
+                    @LuaMetamethodDoc.LuaMetamethodOverload(
+                            types = {FiguraVec3.class, FiguraVec3.class, Double.class}
+                    ),
+                    @LuaMetamethodDoc.LuaMetamethodOverload(
+                            types = {FiguraVec3.class, Double.class, FiguraVec3.class}
+                    )
+            }
     )
-    public FiguraVec3 __add(@LuaNotNil FiguraVec3 other) {
-        return plus(other);
+    public static FiguraVec3 __add(@LuaNotNil Object a, @LuaNotNil Object b) {
+        if (a instanceof FiguraVec3 vec) {
+            if (b instanceof FiguraVec3 vec2)
+                return vec.plus(vec2);
+            else if (b instanceof Number d)
+                return vec.offseted(d.doubleValue());
+        } else if (a instanceof Number d && b instanceof FiguraVec3 vec) {
+            return vec.offseted(d.doubleValue());
+        }
+        throw new LuaError("Invalid types to __add: " + a.getClass().getSimpleName() + ", " + b.getClass().getSimpleName());
     }
 
     @LuaWhitelist
     @LuaMetamethodDoc(
-            overloads = @LuaMetamethodDoc.LuaMetamethodOverload(
-                    types = {FiguraVec3.class, FiguraVec3.class, FiguraVec3.class}
-            )
+            overloads = {
+                    @LuaMetamethodDoc.LuaMetamethodOverload(
+                            types = {FiguraVec3.class, FiguraVec3.class, FiguraVec3.class}
+                    ),
+                    @LuaMetamethodDoc.LuaMetamethodOverload(
+                            types = {FiguraVec3.class, FiguraVec3.class, Double.class}
+                    ),
+                    @LuaMetamethodDoc.LuaMetamethodOverload(
+                            types = {FiguraVec3.class, Double.class, FiguraVec3.class}
+                    )
+            }
     )
-    public FiguraVec3 __sub(@LuaNotNil FiguraVec3 other) {
-        return minus(other);
+    public static FiguraVec3 __sub(@LuaNotNil Object a, @LuaNotNil Object b) {
+        if (a instanceof FiguraVec3 vec) {
+            if (b instanceof FiguraVec3 vec2)
+                return vec.minus(vec2);
+            else if (b instanceof Number d)
+                return vec.offseted(-d.doubleValue());
+        } else if (a instanceof Number d && b instanceof FiguraVec3 vec) {
+            return vec.scaled(-1).offset(d.doubleValue());
+        }
+        throw new LuaError("Invalid types to __sub: " + a.getClass().getSimpleName() + ", " + b.getClass().getSimpleName());
     }
 
     @LuaWhitelist
