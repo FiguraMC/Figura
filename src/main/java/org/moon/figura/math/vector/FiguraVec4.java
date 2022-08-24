@@ -395,6 +395,7 @@ public class FiguraVec4 extends FiguraVector<FiguraVec4, FiguraMat4> {
         return super.clampLength(min, max);
     }
 
+    @Override
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
@@ -438,21 +439,13 @@ public class FiguraVec4 extends FiguraVector<FiguraVec4, FiguraMat4> {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "vector_n.floor",
-            overloads = @LuaFunctionOverload(
-                    returnType = FiguraVec4.class
-            )
-    )
+    @LuaMethodDoc(description = "vector_n.floor")
     public FiguraVec4 floor() {
         return FiguraVec4.of(Math.floor(x), Math.floor(y), Math.floor(z), Math.floor(w));
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "vector_n.ceil",
-            overloads = @LuaFunctionOverload(
-                    returnType = FiguraVec4.class
-            )
-    )
+    @LuaMethodDoc(description = "vector_n.ceil")
     public FiguraVec4 ceil() {
         return FiguraVec4.of(Math.ceil(x), Math.ceil(y), Math.ceil(z), Math.ceil(w));
     }

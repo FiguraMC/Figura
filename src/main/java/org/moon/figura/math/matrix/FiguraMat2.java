@@ -7,8 +7,6 @@ import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec2;
-import org.moon.figura.math.vector.FiguraVec5;
-import org.moon.figura.math.vector.FiguraVector;
 import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.caching.CacheStack;
 import org.moon.figura.utils.caching.CacheUtils;
@@ -380,6 +378,38 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
         FiguraMat3 result = FiguraMat3.of();
         result.set(v11, v21, 0, v12, v22, 0, 0, 0, 1);
         return result;
+    }
+
+    public double apply(FiguraVec2 vec) {
+        FiguraVec2 result = this.times(vec);
+        double ret = result.x;
+        vec.free();
+        result.free();
+        return ret;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = Double.class,
+                    argumentNames = "x"
+            ),
+            description = "matrix_n.apply"
+    )
+    public double apply(double x) {
+        return apply(FiguraVec2.of(x, 1));
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = Double.class,
+                    argumentNames = "x"
+            ),
+            description = "matrix_n.apply_dir"
+    )
+    public double applyDir(double x) {
+        return apply(FiguraVec2.of(x, 0));
     }
 
     //-----------------------------METAMETHODS-----------------------------------//
