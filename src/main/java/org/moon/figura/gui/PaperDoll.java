@@ -3,6 +3,8 @@ package org.moon.figura.gui;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
+import org.moon.figura.avatars.Avatar;
+import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.config.Config;
 import org.moon.figura.utils.ui.UIHelper;
 
@@ -12,7 +14,8 @@ public class PaperDoll {
 
     public static void render(PoseStack stack) {
         Minecraft minecraft = Minecraft.getInstance();
-        Player player = minecraft.player;
+        Player player = minecraft.getCameraEntity() instanceof Player p ? p : null;
+        Avatar avatar;
 
         if (!Config.HAS_PAPERDOLL.asBool() ||
                 player == null ||
@@ -23,7 +26,7 @@ public class PaperDoll {
             return;
 
         //check if should stay always on
-        if (!Config.PAPERDOLL_ALWAYS_ON.asBool()) {
+        if (!Config.PAPERDOLL_ALWAYS_ON.asBool() && (avatar = AvatarManager.getAvatarForPlayer(player.getUUID())) != null && avatar.luaRuntime != null && !avatar.luaRuntime.renderer.forcePaperdoll) {
             //if action - reset activity time and enable can draw
             if (player.isSprinting() ||
                     player.isCrouching() ||
@@ -36,7 +39,7 @@ public class PaperDoll {
                 lastActivityTime = System.currentTimeMillis();
 
             //if activity time is greater than duration - return
-            else if(System.currentTimeMillis() - lastActivityTime > 1000L)
+            else if (System.currentTimeMillis() - lastActivityTime > 1000L)
                 return;
         }
 
