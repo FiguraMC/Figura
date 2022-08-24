@@ -253,8 +253,10 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
         //render children
         for (FiguraModelPart child : part.children)
-            if (!renderPart(child, remainingComplexity, thisPassedPredicate))
+            if (!renderPart(child, remainingComplexity, thisPassedPredicate)) {
+                customizationStack.pop();
                 return false;
+            }
 
         //reset the parent
         //part.resetVanillaTransforms();
