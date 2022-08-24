@@ -16,6 +16,7 @@ import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.avatars.providers.LocalAvatarFetcher;
 import org.moon.figura.backend.NetworkManager;
+import org.moon.figura.config.Config;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.FiguraText;
@@ -85,6 +86,15 @@ public class FiguraDebugCommand {
         meta.addProperty("panicMode", AvatarManager.panic);
 
         root.add("meta", meta);
+
+        //config
+        JsonObject config = new JsonObject();
+
+        for (Config value : Config.values())
+            if (value.value != null)
+                config.addProperty(value.name(), value.value.toString());
+
+        root.add("config", config);
 
         //trust groups
         JsonObject trust = new JsonObject();
