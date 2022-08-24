@@ -6,7 +6,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
@@ -53,15 +53,15 @@ public class FiguraDebugCommand {
 
             //feedback
             context.getSource().sendFeedback(
-                    FiguraText.of("command.debug.success")
+                    new FiguraText("command.debug.success")
                             .append(" ")
-                            .append(FiguraText.of("command.click_to_open")
+                            .append(new FiguraText("command.click_to_open")
                                     .setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, targetPath.toFile().toString())).withUnderlined(true))
                             )
             );
             return 1;
         } catch (Exception e) {
-            context.getSource().sendError(FiguraText.of("command.debug.error"));
+            context.getSource().sendError(new FiguraText("command.debug.error"));
             FiguraMod.LOGGER.error("Failed to save Figura debug data!", e);
             return 0;
         }

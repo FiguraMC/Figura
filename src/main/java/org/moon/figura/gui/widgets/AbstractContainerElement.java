@@ -8,6 +8,7 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.utils.ui.UIHelper;
 
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ import java.util.List;
 
 public abstract class AbstractContainerElement extends AbstractContainerEventHandler implements FiguraTickable, FiguraWidget, NarratableEntry {
 
-    public static final Component HOVERED_ARROW = Component.literal("•");
+    public static final Component HOVERED_ARROW = new TextComponent("•");
 
     protected final List<GuiEventListener> children = new ArrayList<>();
 

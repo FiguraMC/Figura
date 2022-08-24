@@ -11,7 +11,7 @@ import org.moon.figura.utils.FiguraText;
 
 public class SoundScreen extends AbstractPanelScreen {
 
-    public static final Component TITLE = FiguraText.of("gui.panels.title.sound");
+    public static final Component TITLE = new FiguraText("gui.panels.title.sound");
 
     public SoundScreen(Screen parentScreen) {
         super(parentScreen, TITLE, 2);
@@ -28,7 +28,7 @@ public class SoundScreen extends AbstractPanelScreen {
         this.addRenderableWidget(new SoundsList((this.width - listWidth) / 2, 28, listWidth, height - 56, owner));
 
         //back
-        addRenderableWidget(new TexturedButton(width / 2 - 60, height - 24, 120, 20, FiguraText.of("gui.done"), null,
+        addRenderableWidget(new TexturedButton(width / 2 - 60, height - 24, 120, 20, new FiguraText("gui.done"), null,
                 bx -> this.minecraft.setScreen(parentScreen)
         ));
     }

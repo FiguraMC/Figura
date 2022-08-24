@@ -113,11 +113,11 @@ public enum Config {
     CHAT_MESSAGES(false) {{
         this.name = this.name.copy().withStyle(ChatFormatting.RED);
         String tooltip = "config.chat_messages.tooltip.";
-        this.tooltip = FiguraText.of(tooltip + "1")
+        this.tooltip = new FiguraText(tooltip + "1")
                 .append("\n\n")
-                .append(FiguraText.of(tooltip + "2").withStyle(ChatFormatting.RED))
+                .append(new FiguraText(tooltip + "2").withStyle(ChatFormatting.RED))
                 .append("\n\n")
-                .append(FiguraText.of(tooltip + "3").withStyle(ChatFormatting.RED, ChatFormatting.BOLD));
+                .append(new FiguraText(tooltip + "3").withStyle(ChatFormatting.RED, ChatFormatting.BOLD));
     }},
     MAIN_DIR("", InputType.FOLDER_PATH),
     AUTH_SERVER_IP("figura.moonlight-devs.org:25565", InputType.IP) {

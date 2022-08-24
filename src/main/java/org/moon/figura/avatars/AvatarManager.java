@@ -184,7 +184,7 @@ public class AvatarManager {
             FiguraMod.LOGGER.debug("Loaded local avatar from " + path);
         } catch (Exception e) {
             FiguraMod.LOGGER.error("Failed to load avatar from " + path, e);
-            FiguraToast.sendToast(FiguraText.of("toast.load_error"), FiguraText.of("toast.load_error.2"), FiguraToast.ToastType.ERROR);
+            FiguraToast.sendToast(new FiguraText("toast.load_error"), new FiguraText("toast.load_error.2"), FiguraToast.ToastType.ERROR);
         }
 
         //mark as not uploaded

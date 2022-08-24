@@ -7,6 +7,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.moon.figura.avatars.Avatar;
@@ -35,8 +36,8 @@ public class SoundsList extends AbstractList {
         updateList();
 
         Label noOwner, noSounds;
-        this.children.add(noOwner = new Label(FiguraText.of("gui.error.no_avatar").withStyle(ChatFormatting.YELLOW), x + width / 2, y + height / 2, true, 0));
-        this.children.add(noSounds = new Label(FiguraText.of("gui.error.no_sounds").withStyle(ChatFormatting.YELLOW), x + width / 2, y + height / 2, true, 0));
+        this.children.add(noOwner = new Label(new FiguraText("gui.error.no_avatar").withStyle(ChatFormatting.YELLOW), x + width / 2, y + height / 2, true, 0));
+        this.children.add(noSounds = new Label(new FiguraText("gui.error.no_sounds").withStyle(ChatFormatting.YELLOW), x + width / 2, y + height / 2, true, 0));
 
         noOwner.setVisible(owner == null);
         noSounds.setVisible(!noOwner.isVisible() && sounds.isEmpty());
@@ -108,16 +109,16 @@ public class SoundsList extends AbstractList {
             this.parent = parent;
 
             int len = owner.nbt.getCompound("sounds").getByteArray(name).length;
-            this.size = Component.literal("(" + MathUtils.asFileSize(len) + ")").withStyle(ChatFormatting.GRAY);
+            this.size = new TextComponent("(" + MathUtils.asFileSize(len) + ")").withStyle(ChatFormatting.GRAY);
 
             //play button
-            children.add(0, play = new ParentedButton(0, 0, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/play.png"), 60, 20, FiguraText.of("gui.sound.play"), this, button -> {
+            children.add(0, play = new ParentedButton(0, 0, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/play.png"), 60, 20, new FiguraText("gui.sound.play"), this, button -> {
                 Vec3 vec =  Minecraft.getInstance().player == null ? new Vec3(0, 0, 0) : Minecraft.getInstance().player.position();
                 SoundAPI.getSoundEngine().figura$playCustomSound(owner.owner, name, sound, vec.x, vec.y, vec.z, 1, 1, false);
             }));
 
             //stop button
-            children.add(stop = new ParentedButton(0, 0, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/stop.png"), 60, 20, FiguraText.of("gui.sound.stop"), this,
+            children.add(stop = new ParentedButton(0, 0, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/stop.png"), 60, 20, new FiguraText("gui.sound.stop"), this,
                     button -> SoundAPI.getSoundEngine().figura$stopSound(owner.owner, name))
             );
         }

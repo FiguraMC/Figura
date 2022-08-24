@@ -3,8 +3,6 @@ package org.moon.figura.gui.widgets.config;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import org.moon.figura.config.Config;
 import org.moon.figura.gui.widgets.AbstractContainerElement;
