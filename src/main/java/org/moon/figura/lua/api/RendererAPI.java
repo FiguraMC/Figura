@@ -31,6 +31,9 @@ public class RendererAPI {
     @LuaWhitelist
     @LuaFieldDoc(description = "renderer.render_vehicle")
     public boolean renderVehicle = true;
+    @LuaWhitelist
+    @LuaFieldDoc(description = "renderer.render_crosshair")
+    public boolean renderCrosshair = true;
 
     public FiguraVec3 cameraPos;
     public FiguraVec3 cameraPivot;
@@ -189,6 +192,7 @@ public class RendererAPI {
         return switch (arg) {
             case "renderFire" -> renderFire;
             case "renderVehicle" -> renderVehicle;
+            case "renderCrosshair" -> renderCrosshair;
             default -> null;
         };
     }
@@ -199,6 +203,7 @@ public class RendererAPI {
         switch (key) {
             case "renderFire" -> renderFire = value;
             case "renderVehicle" -> renderVehicle = value;
+            case "renderCrosshair" -> renderCrosshair = value;
         }
     }
 

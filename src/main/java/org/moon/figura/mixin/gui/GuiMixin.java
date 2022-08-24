@@ -33,5 +33,10 @@ public class GuiMixin {
     private void renderCrosshair(PoseStack stack, CallbackInfo ci) {
         if (ActionWheel.isEnabled())
             ci.cancel();
+
+        Entity entity = this.minecraft.getCameraEntity();
+        Avatar avatar;
+        if (entity != null && (avatar = AvatarManager.getAvatar(entity)) != null && avatar.luaRuntime != null && !avatar.luaRuntime.renderer.renderCrosshair)
+            ci.cancel();
     }
 }
