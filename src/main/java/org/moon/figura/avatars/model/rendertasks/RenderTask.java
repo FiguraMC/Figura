@@ -35,6 +35,12 @@ public abstract class RenderTask {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc(description = "render_task.is_enabled")
+    public boolean isEnabled() {
+        return this.enabled;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = Boolean.class,
@@ -48,6 +54,12 @@ public abstract class RenderTask {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc(description = "render_task.is_emissive")
+    public boolean isEmissive() {
+        return this.emissive;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = Boolean.class,
@@ -58,6 +70,12 @@ public abstract class RenderTask {
     public RenderTask emissive(boolean emissive) {
         this.emissive = emissive;
         return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(description = "render_task.get_pos")
+    public FiguraVec3 getPos() {
+        return this.pos;
     }
 
     @LuaWhitelist
@@ -82,6 +100,12 @@ public abstract class RenderTask {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc(description = "render_task.get_rot")
+    public FiguraVec3 getRot() {
+        return this.rot;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload(
@@ -100,6 +124,12 @@ public abstract class RenderTask {
         rot.set(vec);
         vec.free();
         return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(description = "render_task.get_scale")
+    public FiguraVec3 getScale() {
+        return this.scale;
     }
 
     @LuaWhitelist

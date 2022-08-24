@@ -28,6 +28,12 @@ public abstract class Action {
     public void mouseScroll(Avatar avatar, double delta) {}
 
     @LuaWhitelist
+    @LuaMethodDoc(description = "wheel_action.get_title")
+    public String getTitle() {
+        return this.title;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload,
@@ -41,6 +47,12 @@ public abstract class Action {
     public Action title(String title) {
         this.title = title;
         return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(description = "wheel_action.get_color")
+    public FiguraVec3 getColor() {
+        return this.color;
     }
 
     @LuaWhitelist
@@ -60,6 +72,12 @@ public abstract class Action {
     public Action color(Object x, Double y, Double z) {
         this.color = x == null ? null : LuaUtils.parseVec3("color", x, y, z);
         return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(description = "wheel_action.get_hover_color")
+    public FiguraVec3 getHoverColor() {
+        return this.hoverColor;
     }
 
     @LuaWhitelist
@@ -117,10 +135,6 @@ public abstract class Action {
     public Action hoverItem(Object item) {
         this.hoverItem = LuaUtils.parseItemStack("hoverItem", item);
         return this;
-    }
-
-    public String getTitle() {
-        return title;
     }
 
     public ItemStack getItem(boolean selected) {

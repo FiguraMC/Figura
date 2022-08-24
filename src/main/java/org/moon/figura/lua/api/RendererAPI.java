@@ -41,9 +41,9 @@ public class RendererAPI {
 
     public FiguraVec3 cameraPos;
     public FiguraVec3 cameraPivot;
-    public FiguraVec3 cameraBonusPivot;
+    public FiguraVec3 cameraOffsetPivot;
     public FiguraVec3 cameraRot;
-    public FiguraVec3 cameraBonusRot;
+    public FiguraVec3 cameraOffsetRot;
     public ResourceLocation postShader;
 
     public RendererAPI(Avatar owner) {
@@ -89,6 +89,12 @@ public class RendererAPI {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc(description = "renderer.get_camera_pos")
+    public FiguraVec3 getCameraPos() {
+        return this.cameraPos;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload(
@@ -104,6 +110,12 @@ public class RendererAPI {
     )
     public void setCameraPos(Object x, Double y, Double z) {
         this.cameraPos = x == null ? null : LuaUtils.parseVec3("setCameraPos", x, y, z);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(description = "renderer.get_camera_pivot")
+    public FiguraVec3 getCameraPivot() {
+        return this.cameraPivot;
     }
 
     @LuaWhitelist
@@ -125,6 +137,12 @@ public class RendererAPI {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc(description = "renderer.get_camera_offset_pivot")
+    public FiguraVec3 getCameraOffsetPivot() {
+        return this.cameraOffsetPivot;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload(
@@ -139,7 +157,13 @@ public class RendererAPI {
             description = "renderer.offset_camera_pivot"
     )
     public void offsetCameraPivot(Object x, Double y, Double z) {
-        this.cameraBonusPivot = x == null ? null : LuaUtils.parseVec3("offsetCameraPivot", x, y, z);
+        this.cameraOffsetPivot = x == null ? null : LuaUtils.parseVec3("offsetCameraPivot", x, y, z);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(description = "renderer.get_camera_rot")
+    public FiguraVec3 getCameraRot() {
+        return this.cameraRot;
     }
 
     @LuaWhitelist
@@ -161,6 +185,12 @@ public class RendererAPI {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc(description = "renderer.get_camera_offset_rot")
+    public FiguraVec3 getCameraOffsetRot() {
+        return this.cameraOffsetRot;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload(
@@ -175,7 +205,7 @@ public class RendererAPI {
             description = "renderer.offset_camera_rot"
     )
     public void offsetCameraRot(Object x, Double y, Double z) {
-        this.cameraBonusRot = x == null ? null : LuaUtils.parseVec3("offsetCameraRot", x, y, z);
+        this.cameraOffsetRot = x == null ? null : LuaUtils.parseVec3("offsetCameraRot", x, y, z);
     }
 
     @LuaWhitelist

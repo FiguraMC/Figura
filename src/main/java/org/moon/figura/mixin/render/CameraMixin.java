@@ -44,10 +44,10 @@ public abstract class CameraMixin {
             y = (float) rot.y;
         }
 
-        FiguraVec3 bonus = avatar.luaRuntime.renderer.cameraBonusRot;
-        if (bonus != null) {
-            x += (float) bonus.x;
-            y += (float) bonus.y;
+        FiguraVec3 offset = avatar.luaRuntime.renderer.cameraOffsetRot;
+        if (offset != null) {
+            x += (float) offset.x;
+            y += (float) offset.y;
         }
 
         setRotation(y, x);
@@ -67,11 +67,11 @@ public abstract class CameraMixin {
                z = piv.z;
             }
 
-            FiguraVec3 bonus = avatar.luaRuntime.renderer.cameraBonusPivot;
-            if (bonus != null) {
-                x += bonus.x;
-                y += bonus.y;
-                z += bonus.z;
+            FiguraVec3 offset = avatar.luaRuntime.renderer.cameraOffsetPivot;
+            if (offset != null) {
+                x += offset.x;
+                y += offset.y;
+                z += offset.z;
             }
 
             args.set(0, x);

@@ -226,6 +226,12 @@ public class Animation {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc(description = "animation.get_blend")
+    public float getBlend() {
+        return this.blend;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = Float.class,
@@ -236,6 +242,12 @@ public class Animation {
     public Animation blend(float blend) {
         this.blend = blend;
         return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(description = "animation.get_offset")
+    public float getOffset() {
+        return this.offset;
     }
 
     @LuaWhitelist
@@ -252,6 +264,12 @@ public class Animation {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc(description = "animation.get_start_delay")
+    public float getStartDelay() {
+        return this.startDelay;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = Float.class,
@@ -262,6 +280,12 @@ public class Animation {
     public Animation startDelay(float delay) {
         this.startDelay = delay;
         return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(description = "animation.get_loop_delay")
+    public float getLoopDelay() {
+        return this.loopDelay;
     }
 
     @LuaWhitelist
@@ -278,6 +302,12 @@ public class Animation {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc(description = "animation.get_length")
+    public float getLength() {
+        return this.length;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = Float.class,
@@ -291,6 +321,12 @@ public class Animation {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc(description = "animation.get_override")
+    public boolean getOverride() {
+        return this.override;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = Boolean.class,
@@ -301,6 +337,12 @@ public class Animation {
     public Animation override(boolean override) {
         this.override = override;
         return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(description = "animation.get_loop")
+    public String getLoop() {
+        return this.loop.name();
     }
 
     @LuaWhitelist
@@ -321,6 +363,12 @@ public class Animation {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc(description = "animation.get_priority")
+    public int getPriority() {
+        return this.priority;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = Integer.class,
@@ -331,6 +379,12 @@ public class Animation {
     public Animation priority(int priority) {
         this.priority = priority;
         return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(description = "animation.get_speed")
+    public float getSpeed() {
+        return this.speed;
     }
 
     @LuaWhitelist

@@ -211,6 +211,15 @@ public class HostAPI {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc(description = "host.get_chat_color")
+    public Integer getChatColor() {
+        if (isHost())
+            return this.chatColor;
+
+        return null;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload(

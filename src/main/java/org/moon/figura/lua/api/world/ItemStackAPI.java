@@ -47,7 +47,7 @@ public class ItemStackAPI {
     @LuaFieldDoc(description = "itemstack.tag")
     public final LuaTable tag;
 
-    private ItemStackAPI(ItemStack itemStack) {
+    public ItemStackAPI(ItemStack itemStack) {
         this.itemStack = itemStack;
         this.id = Registry.ITEM.getKey(itemStack.getItem()).toString();
         this.tag = (LuaTable) NbtToLua.convert(itemStack.getTag() != null ? itemStack.getTag() : null);

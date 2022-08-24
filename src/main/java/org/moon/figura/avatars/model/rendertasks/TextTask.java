@@ -84,6 +84,12 @@ public class TextTask extends RenderTask {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc(description = "text_task.is_centred")
+    public boolean isCentred() {
+        return this.centered;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload(
@@ -96,6 +102,12 @@ public class TextTask extends RenderTask {
     public RenderTask centered(boolean centered) {
         this.centered = centered;
         return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(description = "text_task.has_shadow")
+    public boolean hasShadow() {
+        return this.shadow;
     }
 
     @LuaWhitelist
@@ -114,6 +126,12 @@ public class TextTask extends RenderTask {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc(description = "text_task.has_outline")
+    public boolean hasOutline() {
+        return this.outline;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload(
@@ -126,6 +144,12 @@ public class TextTask extends RenderTask {
     public RenderTask outline(boolean outline) {
         this.outline = outline;
         return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(description = "text_task.get_outline_color")
+    public FiguraVec3 getOutlineColor() {
+        return this.outlineColor;
     }
 
     @LuaWhitelist
