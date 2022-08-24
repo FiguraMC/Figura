@@ -1,5 +1,6 @@
 package org.moon.figura.avatars.providers;
 
+import net.minecraft.nbt.ByteArrayTag;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtIo;
@@ -8,7 +9,6 @@ import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.parsers.AvatarMetadataParser;
 import org.moon.figura.parsers.BlockbenchModelParser;
-import org.moon.figura.parsers.LuaScriptParser;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FiguraResourceListener;
 import org.moon.figura.utils.IOUtils;
@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -126,7 +127,7 @@ public class LocalAvatarLoader {
                 String pathStr = script.toPath().toString();
                 String name = pathStr.replaceFirst(pathRegex, "");
                 name = name.replace(File.separatorChar, '/');
-                scriptsNbt.put(name.substring(0, name.length() - 4), LuaScriptParser.parse(IOUtils.readFile(script)));
+                scriptsNbt.put(name.substring(0, name.length() - 4), new ByteArrayTag(IOUtils.readFile(script).getBytes(StandardCharsets.UTF_8)));
             }
 
             nbt.put("scripts", scriptsNbt);
