@@ -52,6 +52,7 @@ import org.moon.figura.utils.ui.UIHelper;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
@@ -643,7 +644,11 @@ public class Avatar {
         if (!nbt.contains("scripts"))
             return;
 
-        Map<String, String> scripts = parseScripts(nbt.getCompound("scripts"));
+        Map<String, String> scripts = new HashMap<>();
+        CompoundTag scriptsNbt = nbt.getCompound("scripts");
+        for (String s : scriptsNbt.getAllKeys())
+            scripts.put(s, new String(scriptsNbt.getByteArray(s), StandardCharsets.UTF_8));
+
         CompoundTag metadata = nbt.getCompound("metadata");
         ListTag autoScripts = null;
 
@@ -721,17 +726,5 @@ public class Avatar {
             SoundBuffer sound = new SoundBuffer(oggAudioStream.readAll(), oggAudioStream.getFormat());
             this.customSounds.put(name, sound);
         }
-    }
-
-    private static Map<String, String> parseScripts(CompoundTag scripts) {
-        Map<String, String> result = new HashMap<>();
-        for (String s : scripts.getAllKeys()) {
-            StringBuilder builder = new StringBuilder();
-            ListTag list = scripts.getList(s, Tag.TAG_STRING);
-            for (Tag tag : list)
-                builder.append(tag.getAsString());
-            result.put(s, builder.toString());
-        }
-        return result;
     }
 }
