@@ -259,7 +259,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
             }
 
         //reset the parent
-        //part.resetVanillaTransforms();
+        part.resetVanillaTransforms();
 
         //pop
         customizationStack.pop();
