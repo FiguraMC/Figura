@@ -126,6 +126,8 @@ public class FiguraDebugCommand {
         //trust
         JsonObject aTrust = new JsonObject();
 
+        aTrust.addProperty("parentTrust", avatar.trust.getParentGroup().name);
+
         for (Map.Entry<TrustContainer.Trust, Integer> entry : avatar.trust.getSettings().entrySet())
             aTrust.addProperty(entry.getKey().toString(), entry.getValue());
 
