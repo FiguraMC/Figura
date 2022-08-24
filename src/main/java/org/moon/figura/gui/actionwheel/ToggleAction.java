@@ -60,6 +60,12 @@ public class ToggleAction extends Action {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc(description = "toggle_action.get_toggle_title")
+    public String getToggleTitle() {
+        return this.toggleTitle;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc(
             description = "toggle_action.toggle_title",
             overloads = @LuaFunctionOverload(
@@ -70,6 +76,12 @@ public class ToggleAction extends Action {
     public Action toggleTitle(String title) {
         this.toggleTitle = title;
         return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(description = "toggle_action.get_toggle_color")
+    public FiguraVec3 getToggleColor() {
+        return this.toggleColor;
     }
 
     @LuaWhitelist
@@ -111,6 +123,12 @@ public class ToggleAction extends Action {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc(description = "toggle_action.is_toggled")
+    public boolean isToggled() {
+        return this.toggled;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = Boolean.class,
@@ -121,12 +139,6 @@ public class ToggleAction extends Action {
     public Action toggled(boolean bool) {
         this.toggled = bool;
         return this;
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc(description = "toggle_action.is_toggled")
-    public boolean isToggled() {
-        return this.toggled;
     }
 
     @Override

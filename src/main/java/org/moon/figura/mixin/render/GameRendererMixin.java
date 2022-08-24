@@ -44,9 +44,9 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
         if (rot != null)
             z = (float) rot.z;
 
-        FiguraVec3 bonus = avatar.luaRuntime.renderer.cameraBonusRot;
-        if (bonus != null)
-            z += (float) bonus.z;
+        FiguraVec3 offset = avatar.luaRuntime.renderer.cameraOffsetRot;
+        if (offset != null)
+            z += (float) offset.z;
 
         matrix.mulPose(Vector3f.ZP.rotationDegrees(z));
     }

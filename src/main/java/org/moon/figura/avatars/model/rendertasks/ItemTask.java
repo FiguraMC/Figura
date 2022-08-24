@@ -75,6 +75,12 @@ public class ItemTask extends RenderTask {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc(description = "item_task.get_render_type")
+    public String getRenderType() {
+        return this.renderType.name();
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                         argumentTypes = String.class,

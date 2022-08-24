@@ -1,11 +1,18 @@
 package org.moon.figura.lua.api.world;
 
+import com.mojang.brigadier.StringReader;
 import net.minecraft.client.Minecraft;
+import net.minecraft.commands.CommandBuildContext;
+import net.minecraft.commands.arguments.blocks.BlockStateArgument;
+import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaTable;
 import org.moon.figura.avatars.Avatar;
@@ -322,6 +329,64 @@ public class WorldAPI {
             playerList.put(player.getName().getString(), tbl);
         }
         return playerList;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = String.class,
+                            argumentNames = "block"
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {String.class, FiguraVec3.class},
+                            argumentNames = {"block", "pos"}
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {String.class, Double.class, Double.class, Double.class},
+                            argumentNames = {"block", "x", "y", "z"}
+                    )
+            },
+            description = "world.new_block"
+    )
+    public static BlockStateAPI newBlock(@LuaNotNil String string, Object x, Double y, Double z) {
+        try {
+            BlockState block = BlockStateArgument.block(new CommandBuildContext(RegistryAccess.BUILTIN.get())).parse(new StringReader(string)).getState();
+            return new BlockStateAPI(block, LuaUtils.parseVec3("newBlock", x, y, z).asBlockPos());
+        } catch (Exception e) {
+            throw new LuaError("Could not parse block state from string: " + string);
+        }
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = String.class,
+                            argumentNames = "item"
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {String.class, Integer.class},
+                            argumentNames = {"item", "count"}
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {String.class, Integer.class, Integer.class},
+                            argumentNames = {"item", "count", "damage"}
+                    )
+            },
+            description = "world.new_item"
+    )
+    public static ItemStackAPI newItem(@LuaNotNil String string, Integer count, Integer damage) {
+        try {
+            ItemStack item = ItemArgument.item(new CommandBuildContext(RegistryAccess.BUILTIN.get())).parse(new StringReader(string)).createItemStack(1, false);
+            if (count != null)
+                item.setCount(count);
+            if (damage != null)
+                item.setDamageValue(damage);
+            return new ItemStackAPI(item);
+        } catch (Exception e) {
+            throw new LuaError("Could not parse item stack from string: " + string);
+        }
     }
 
     @LuaWhitelist
