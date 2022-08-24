@@ -11,7 +11,6 @@ import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec4;
-import org.moon.figura.math.vector.FiguraVec5;
 import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.caching.CacheStack;
 import org.moon.figura.utils.caching.CacheUtils;
@@ -810,6 +809,52 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
         v44 *= f;
         invalidate();
         return this;
+    }
+
+    public FiguraVec3 apply(FiguraVec4 vec) {
+        FiguraVec4 result = this.times(vec);
+        FiguraVec3 ret = FiguraVec3.of(result.x, result.y, result.z);
+        vec.free();
+        result.free();
+        return ret;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "vec"
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"x", "y", "z"}
+                    )
+            },
+            description = "matrix_n.apply"
+    )
+    public FiguraVec3 apply(Object x, Double y, Double z) {
+        FiguraVec3 vec = LuaUtils.parseVec3("apply", x, y, z);
+        return apply(FiguraVec4.of(vec.x, vec.y, vec.z, 1));
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "vec"
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"x", "y", "z"}
+                    )
+            },
+            description = "matrix_n.apply_dir"
+    )
+    public FiguraVec3 applyDir(Object x, Double y, Double z) {
+        FiguraVec3 vec = LuaUtils.parseVec3("applyDir", x, y, z);
+        return apply(FiguraVec4.of(vec.x, vec.y, vec.z, 0));
     }
 
     //-----------------------------METAMETHODS-----------------------------------//

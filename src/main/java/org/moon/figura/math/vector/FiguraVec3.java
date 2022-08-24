@@ -6,7 +6,6 @@ import net.minecraft.world.phys.Vec3;
 import org.luaj.vm2.LuaDouble;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
-import org.moon.figura.config.Config;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.*;
@@ -364,6 +363,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
         return super.clampLength(min, max);
     }
 
+    @Override
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
@@ -407,21 +407,13 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "vector_n.floor",
-            overloads = @LuaFunctionOverload(
-                    returnType = FiguraVec3.class
-            )
-    )
+    @LuaMethodDoc(description = "vector_n.floor")
     public FiguraVec3 floor() {
         return FiguraVec3.of(Math.floor(x), Math.floor(y), Math.floor(z));
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "vector_n.ceil",
-            overloads = @LuaFunctionOverload(
-                    returnType = FiguraVec3.class
-            )
-    )
+    @LuaMethodDoc(description = "vector_n.ceil")
     public FiguraVec3 ceil() {
         return FiguraVec3.of(Math.ceil(x), Math.ceil(y), Math.ceil(z));
     }

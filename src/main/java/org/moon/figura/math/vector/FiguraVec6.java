@@ -403,6 +403,7 @@ public class FiguraVec6 extends FiguraVector<FiguraVec6, FiguraMatrix.DummyMatri
         return super.clampLength(min, max);
     }
 
+    @Override
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
@@ -446,21 +447,13 @@ public class FiguraVec6 extends FiguraVector<FiguraVec6, FiguraMatrix.DummyMatri
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "vector_n.floor",
-            overloads = @LuaFunctionOverload(
-                    returnType = FiguraVec6.class
-            )
-    )
+    @LuaMethodDoc(description = "vector_n.floor")
     public FiguraVec6 floor() {
         return FiguraVec6.of(Math.floor(x), Math.floor(y), Math.floor(z), Math.floor(w), Math.floor(t), Math.floor(h));
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "vector_n.ceil",
-            overloads = @LuaFunctionOverload(
-                    returnType = FiguraVec6.class
-            )
-    )
+    @LuaMethodDoc(description = "vector_n.ceil")
     public FiguraVec6 ceil() {
         return FiguraVec6.of(Math.ceil(x), Math.ceil(y), Math.ceil(z), Math.ceil(w), Math.ceil(t), Math.ceil(h));
     }

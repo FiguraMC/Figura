@@ -838,6 +838,8 @@
   "figura.docs.matrix_n.rotate": "Rotates this matrix by the specified amount, changing the values inside. Angles are given in degrees. Returns self for chaining.",
   "figura.docs.matrix_n.deaugmented": "Deaugments this matrix, removing a row and column.",
   "figura.docs.matrix_n.augmented": "Augments this matrix, adding an additional row and column. Puts a 1 along the diagonal in the new spot, and the rest are zero.",
+  "figura.docs.matrix_n.apply": "Treats the given values as a vector, augments this vector with a 1, multiplies it against the matrix, and returns a deaugmented vector of the first values.",
+  "figura.docs.matrix_n.apply_dir": "Treats the given values as a vector, augments this vector with a 0, multiplies it against the matrix, and returns a deaugmented vector of the first values.",
 
 
   "figura.docs.model_part": "Represents a node in the model tree, basically a group/cube/mesh in Blockbench. Each bbmodel file is itself a ModelPart, and all of your models are contained in a global ModelPart called \"models\".",
