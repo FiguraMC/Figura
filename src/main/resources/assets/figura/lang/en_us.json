@@ -953,6 +953,7 @@
   "figura.docs.renderer.render_fire": "Whether or not you should visually have the fire effect while on fire. True by default.",
   "figura.docs.renderer.render_vehicle": "Whether or not your vehicle (boat, minecart, horse, whatever) will be rendered. True by default.",
   "figura.docs.renderer.render_crosshair": "Toggles whether or not if your crosshair should render. True by default.",
+  "figura.docs.renderer.force_paperdoll": "Toggles if the paperdoll should render regardless of the player doing an action. If the paperdoll is disabled, or set to always render, nothing will change. False by default.",
   "figura.docs.renderer.set_shadow_radius": "Sets the radius of your shadow. The default value is nil, which means to use the vanilla default of 0.5 for players. The maximum value is 12.",
   "figura.docs.renderer.get_shadow_radius": "Gets the radius of your shadow. The default value is nil, which means to use the vanilla default of 0.5 for players.",
   "figura.docs.renderer.is_first_person": "Checks if your camera is in the first person view.",

@@ -23,6 +23,7 @@ import java.util.UUID;
 public class RendererAPI {
 
     private final UUID owner;
+
     public Float shadowRadius;
 
     @LuaWhitelist
@@ -34,6 +35,9 @@ public class RendererAPI {
     @LuaWhitelist
     @LuaFieldDoc(description = "renderer.render_crosshair")
     public boolean renderCrosshair = true;
+    @LuaWhitelist
+    @LuaFieldDoc(description = "renderer.force_paperdoll")
+    public boolean forcePaperdoll;
 
     public FiguraVec3 cameraPos;
     public FiguraVec3 cameraPivot;
@@ -193,6 +197,7 @@ public class RendererAPI {
             case "renderFire" -> renderFire;
             case "renderVehicle" -> renderVehicle;
             case "renderCrosshair" -> renderCrosshair;
+            case "forcePaperdoll" -> forcePaperdoll;
             default -> null;
         };
     }
@@ -204,6 +209,7 @@ public class RendererAPI {
             case "renderFire" -> renderFire = value;
             case "renderVehicle" -> renderVehicle = value;
             case "renderCrosshair" -> renderCrosshair = value;
+            case "forcePaperdoll" -> forcePaperdoll = value;
         }
     }
 
