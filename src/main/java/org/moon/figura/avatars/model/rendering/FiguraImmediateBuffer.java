@@ -89,6 +89,12 @@ public class FiguraImmediateBuffer {
         RenderType primary = this.getTexture(renderer, customization.getPrimaryRenderType(), customization.primaryTexture, textureSet);
         RenderType secondary = this.getTexture(renderer, customization.getSecondaryRenderType(), customization.secondaryTexture, textureSet);
 
+        if (primary == null && secondary == null) {
+            advanceBuffers(faceCount);
+            remainingComplexity[0] += faceCount;
+            return;
+        }
+
         if (primary != null) {
             if (secondary != null)
                 markBuffers();

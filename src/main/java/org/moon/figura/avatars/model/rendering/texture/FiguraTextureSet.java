@@ -53,9 +53,9 @@ public class FiguraTextureSet {
     }
 
     public ResourceLocation getOverrideTexture(UUID owner, Pair<OverrideType, String> pair) {
-        OverrideType type = pair.getFirst();
+        OverrideType type;
 
-        if (type == null)
+        if (pair == null || (type = pair.getFirst()) == null)
             return null;
 
         return switch (type) {

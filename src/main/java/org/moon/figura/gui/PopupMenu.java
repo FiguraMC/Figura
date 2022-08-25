@@ -37,10 +37,10 @@ public class PopupMenu {
 
     private static final MutableComponent VERSION_WARN = Component.empty()
             .append(Component.literal("❗ ").withStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT)))
-            .append(FiguraText.of("badges.warning").withStyle(ChatFormatting.YELLOW));
+            .append(FiguraText.of("badges.standard.warning").withStyle(ChatFormatting.YELLOW));
     private static final MutableComponent ERROR_WARN = Component.empty()
             .append(Component.literal("❌ ").withStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT)))
-            .append(FiguraText.of("badges.error").withStyle(ChatFormatting.RED));
+            .append(FiguraText.of("badges.standard.error").withStyle(ChatFormatting.RED));
 
     private static final List<Pair<Component, Consumer<UUID>>> BUTTONS = List.of(
             Pair.of(FiguraText.of("popup_menu.cancel"), id -> {}),

@@ -489,7 +489,7 @@ public class FiguraModelPart {
     )
     public void setPrimaryTexture(String type, String path) {
         try {
-            this.customization.primaryTexture = Pair.of(FiguraTextureSet.OverrideType.valueOf(type.toUpperCase()), path);
+            this.customization.primaryTexture = type == null ? null : Pair.of(FiguraTextureSet.OverrideType.valueOf(type.toUpperCase()), path);
         } catch (Exception ignored) {
             throw new LuaError("Invalid texture override type: " + type);
         }
@@ -511,7 +511,7 @@ public class FiguraModelPart {
     )
     public void setSecondaryTexture(String type, String path) {
         try {
-            this.customization.secondaryTexture = Pair.of(FiguraTextureSet.OverrideType.valueOf(type.toUpperCase()), path);
+            this.customization.secondaryTexture = type == null ? null : Pair.of(FiguraTextureSet.OverrideType.valueOf(type.toUpperCase()), path);
         } catch (Exception ignored) {
             throw new LuaError("Invalid texture override type: " + type);
         }
