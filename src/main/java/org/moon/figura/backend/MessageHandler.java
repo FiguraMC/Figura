@@ -7,6 +7,7 @@ import net.minecraft.nbt.NbtIo;
 import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.AvatarManager;
+import org.moon.figura.config.Config;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.lua.api.nameplate.Badges;
 import org.moon.figura.utils.ColorUtils;
@@ -39,7 +40,8 @@ public enum MessageHandler {
     }),
     CONNECTED(json -> {
         NetworkManager.backendStatus = 3;
-        FiguraToast.sendToast(new FiguraText("backend.connected"));
+        if (Config.CONNECTION_TOASTS.asBool())
+            FiguraToast.sendToast(new FiguraText("backend.connected"));
 
         JsonObject limits = json.get("limits").getAsJsonObject();
         WebsocketManager backend = NetworkManager.backend;
