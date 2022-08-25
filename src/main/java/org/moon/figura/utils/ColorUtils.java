@@ -15,7 +15,7 @@ public class ColorUtils {
         SKYE_BLUE(0x99BBEE, "sky", "skye", "skylar"),
         LILY_RED(0xFF2400, "lily", "foxes", "fox"),
 
-        CHEESE(0xF8C53A, "cheese", "largecheese", "large cheese"),
+        CHEESE(0xF8C53A, "largecheese", "large cheese"),
 
         LUA_LOG(0x5555FF),
         LUA_ERROR(0xFF5555),
@@ -27,7 +27,7 @@ public class ColorUtils {
         public final int hex;
         public final FiguraVec3 vec;
         public final Style style;
-        private final String[] alias;
+        public final String[] alias;
 
         Colors(int hex, String... alias) {
             this.hex = hex;
@@ -41,6 +41,8 @@ public class ColorUtils {
                 return null;
 
             for (Colors value : Colors.values()) {
+                if (s.equalsIgnoreCase(value.name()))
+                    return value;
                 for (String alias : value.alias) {
                     if (s.equalsIgnoreCase(alias))
                         return value;

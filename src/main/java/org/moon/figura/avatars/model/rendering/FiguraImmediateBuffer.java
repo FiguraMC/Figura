@@ -7,7 +7,6 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import org.lwjgl.BufferUtils;
 import org.moon.figura.avatars.model.PartCustomization;
-import org.moon.figura.avatars.model.rendering.texture.FiguraTexture;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
 import org.moon.figura.avatars.model.rendering.texture.RenderTypes;
 import org.moon.figura.math.vector.FiguraVec2;
@@ -87,8 +86,8 @@ public class FiguraImmediateBuffer {
             return;
         }
 
-        RenderType primary = this.getTexture(renderer, customization.getPrimaryRenderType(), customization.primaryTexture, textureSet.mainTex);
-        RenderType secondary = this.getTexture(renderer, customization.getSecondaryRenderType(), customization.secondaryTexture, textureSet.emissiveTex);
+        RenderType primary = this.getTexture(renderer, customization.getPrimaryRenderType(), customization.primaryTexture, textureSet);
+        RenderType secondary = this.getTexture(renderer, customization.getSecondaryRenderType(), customization.secondaryTexture, textureSet);
 
         if (primary != null) {
             if (secondary != null)
@@ -102,11 +101,9 @@ public class FiguraImmediateBuffer {
         }
     }
 
-    private RenderType getTexture(AvatarRenderer renderer, RenderTypes types, Pair<FiguraTextureSet.OverrideType, String> texture, FiguraTexture figuraTexture) {
+    private RenderType getTexture(AvatarRenderer renderer, RenderTypes types, Pair<FiguraTextureSet.OverrideType, String> texture, FiguraTextureSet textureSet) {
         //get texture
-        ResourceLocation id = FiguraTextureSet.getOverrideTexture(renderer.avatar.owner, texture);
-        if (id == null)
-            id = figuraTexture == null ? null : figuraTexture.textureID;
+        ResourceLocation id = textureSet.getOverrideTexture(renderer.avatar.owner, texture);
 
         //get render type
         if (id != null) {

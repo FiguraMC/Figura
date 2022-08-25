@@ -52,7 +52,7 @@ public class FiguraTextureSet {
             return -1;
     }
 
-    public static ResourceLocation getOverrideTexture(UUID owner, Pair<OverrideType, String> pair) {
+    public ResourceLocation getOverrideTexture(UUID owner, Pair<OverrideType, String> pair) {
         OverrideType type = pair.getFirst();
 
         if (type == null)
@@ -81,7 +81,8 @@ public class FiguraTextureSet {
                     yield MissingTextureAtlasSprite.getLocation();
                 }
             }
-            default -> null;
+            case PRIMARY -> mainTex == null ? null : mainTex.textureID;
+            case SECONDARY -> emissiveTex == null ? null : emissiveTex.textureID;
         };
     }
 
@@ -90,6 +91,7 @@ public class FiguraTextureSet {
         CAPE,
         ELYTRA,
         RESOURCE,
-        TEXTURE
+        PRIMARY,
+        SECONDARY
     }
 }

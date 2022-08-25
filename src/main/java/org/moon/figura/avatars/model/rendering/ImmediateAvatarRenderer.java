@@ -159,6 +159,10 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         customization.light = light;
         customization.alpha = alpha;
         customization.overlay = overlay;
+
+        customization.primaryTexture = Pair.of(FiguraTextureSet.OverrideType.PRIMARY, null);
+        customization.secondaryTexture = Pair.of(FiguraTextureSet.OverrideType.SECONDARY, null);
+
         return customization;
     }
 

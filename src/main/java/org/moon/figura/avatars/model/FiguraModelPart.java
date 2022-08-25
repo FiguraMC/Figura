@@ -451,7 +451,7 @@ public class FiguraModelPart {
     )
     public void setPrimaryRenderType(String type) {
         try {
-            this.customization.setPrimaryRenderType(type == null ? null : RenderTypes.valueOf(type));
+            this.customization.setPrimaryRenderType(type == null ? null : RenderTypes.valueOf(type.toUpperCase()));
         } catch (Exception ignored) {
             throw new LuaError("Illegal RenderType: \"" + type + "\".");
         }
@@ -467,7 +467,7 @@ public class FiguraModelPart {
     )
     public void setSecondaryRenderType(String type) {
         try {
-            this.customization.setSecondaryRenderType(type == null ? null : RenderTypes.valueOf(type));
+            this.customization.setSecondaryRenderType(type == null ? null : RenderTypes.valueOf(type.toUpperCase()));
         } catch (Exception ignored) {
             throw new LuaError("Illegal RenderType: \"" + type + "\".");
         }
