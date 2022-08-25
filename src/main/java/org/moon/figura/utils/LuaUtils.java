@@ -11,8 +11,22 @@ import org.moon.figura.lua.api.world.BlockStateAPI;
 import org.moon.figura.lua.api.world.ItemStackAPI;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.math.vector.FiguraVec4;
 
 public class LuaUtils {
+
+    public static FiguraVec4 parseVec4(String methodName, Object x, Number y, Number z, Number w, double defaultX, double defaultY, double defaultZ, double defaultW) {
+        if (x instanceof FiguraVec4 vec)
+            return vec.copy();
+        if (x == null || x instanceof Number) {
+            if (x == null) x = defaultX;
+            if (y == null) y = defaultY;
+            if (z == null) z = defaultZ;
+            if (w == null) w = defaultW;
+            return FiguraVec4.of(((Number) x).doubleValue(), y.doubleValue(), z.doubleValue(), w.doubleValue());
+        }
+        throw new LuaError("Illegal argument to " + methodName + "(): " + x.getClass().getSimpleName());
+    }
 
     /**
      * This code gets repeated SO MUCH that I decided to put it in the utils class.

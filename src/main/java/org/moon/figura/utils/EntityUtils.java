@@ -1,6 +1,8 @@
 package org.moon.figura.utils;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.ClipContext;
@@ -44,4 +46,18 @@ public class EntityUtils {
         return null;
     }
 
+    public static String getNameForUUID(UUID uuid) {
+        ClientPacketListener con = Minecraft.getInstance().getConnection();
+        if (con != null) {
+            PlayerInfo player = con.getPlayerInfo(uuid);
+            if (player != null)
+                return player.getProfile().getName();
+        }
+
+        Entity e = getEntityByUUID(uuid);
+        if (e != null)
+            return e.getName().getString();
+
+        return null;
+    }
 }

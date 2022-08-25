@@ -117,6 +117,7 @@ public class Avatar {
         this.particlesRemaining = new RefilledNumber(trust.get(TrustContainer.Trust.PARTICLES));
         this.soundsRemaining = new RefilledNumber(trust.get(TrustContainer.Trust.SOUNDS));
         complexityLimit = trust.get(TrustContainer.Trust.COMPLEXITY);
+        entityName = EntityUtils.getNameForUUID(owner);
     }
 
     private static CompletableFuture<Void> run(Runnable toRun) {
@@ -144,12 +145,14 @@ public class Avatar {
         future.thenRun(() -> { //metadata
             try {
                 CompoundTag metadata = nbt.getCompound("metadata");
-                name = entityName = metadata.getString("name");
+                name = metadata.getString("name");
                 authors = metadata.getString("authors");
                 version = metadata.getString("ver");
                 color = metadata.getString("color");
                 fileSize = getFileSize();
                 versionStatus = checkVersion();
+                if (entityName == null)
+                    entityName = name;
             } catch (Exception e) {
                 FiguraMod.LOGGER.error("", e);
             }
@@ -177,7 +180,6 @@ public class Avatar {
             Entity entity = EntityUtils.getEntityByUUID(owner);
             if (entity != null) {
                 luaRuntime.setUser(entity);
-                this.entityName = entity.getName().getString();
                 entityInitEvent();
             }
         }
