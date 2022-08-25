@@ -335,6 +335,9 @@
   "figura.config.dev": "Dev",
   "figura.config.dev.tooltip": "Developer/Experimental settings",
 
+  "figura.config.connection_toasts": "Backend Connection Toasts",
+  "figura.config.connection_toasts.tooltip": "Toggles if the game should show up toasts related with the backend connection status",
+
   "figura.config.render_debug_parts_pivot": "Render Parts Pivot",
   "figura.config.render_debug_parts_pivot.tooltip": "Render the Pivots from %d and %d when the hitbox debug rendering is enabled",
   "figura.config.render_debug_parts_pivot.tooltip.cubes": "cubes",

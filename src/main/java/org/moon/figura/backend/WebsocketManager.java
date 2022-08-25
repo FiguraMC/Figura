@@ -96,7 +96,8 @@ public class WebsocketManager extends WebSocketClient {
 
         FiguraMod.LOGGER.info("Closed connection: " + reason);
         FiguraMod.LOGGER.info("Code: " + code + ", Remote: " + remote);
-        FiguraToast.sendToast(FiguraText.of("backend.disconnected"), reason, FiguraToast.ToastType.ERROR);
+        if (Config.CONNECTION_TOASTS.asBool())
+            FiguraToast.sendToast(FiguraText.of("backend.disconnected"), reason, FiguraToast.ToastType.ERROR);
 
         NetworkManager.backendStatus = 1;
         NetworkManager.disconnectedReason = reason + (FiguraMod.DEBUG_MODE ? "\n\nCode: " + code + "\nRemote: " + remote : "");
@@ -108,7 +109,8 @@ public class WebsocketManager extends WebSocketClient {
     @Override
     public void onError(Exception e) {
         FiguraMod.LOGGER.warn("", e);
-        FiguraToast.sendToast(FiguraText.of("backend.disconnected"), FiguraToast.ToastType.ERROR);
+        if (Config.CONNECTION_TOASTS.asBool())
+            FiguraToast.sendToast(FiguraText.of("backend.disconnected"), FiguraToast.ToastType.ERROR);
 
         NetworkManager.backendStatus = 1;
         NetworkManager.disconnectedReason = e.getMessage();
