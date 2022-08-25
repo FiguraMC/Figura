@@ -148,7 +148,8 @@ public class Avatar {
                 name = metadata.getString("name");
                 authors = metadata.getString("authors");
                 version = metadata.getString("ver");
-                color = metadata.getString("color");
+                if (metadata.contains("color"))
+                    color = metadata.getString("color");
                 fileSize = getFileSize();
                 versionStatus = checkVersion();
                 if (entityName == null)
