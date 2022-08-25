@@ -6,6 +6,8 @@ import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.math.vector.FiguraVec4;
+import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.LuaUtils;
 
 @LuaWhitelist
@@ -17,13 +19,12 @@ public class EntityNameplateCustomization extends NameplateCustomization {
 
     private FiguraVec3 position;
     private FiguraVec3 scale;
+    public Integer background;
+    public Double alpha;
 
     @LuaWhitelist
     @LuaFieldDoc(description = "nameplate_entity.visible")
     public boolean visible = true;
-    @LuaWhitelist
-    @LuaFieldDoc(description = "nameplate_entity.background")
-    public boolean background = true;
     @LuaWhitelist
     @LuaFieldDoc(description = "nameplate_entity.shadow")
     public boolean shadow;
@@ -80,11 +81,50 @@ public class EntityNameplateCustomization extends NameplateCustomization {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "rgb"
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = FiguraVec4.class,
+                            argumentNames = "rgba"
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {FiguraVec3.class, Double.class},
+                            argumentNames = {"rgb", "a"}
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"r", "g", "b"}
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {Double.class, Double.class, Double.class, Double.class},
+                            argumentNames = {"r", "g", "b", "a"}
+                    )
+            },
+            description = "nameplate_entity.set_background_color"
+    )
+    public void setBackgroundColor(Object r, Double g, Double b, Double a) {
+        if (r == null) {
+            this.background = null;
+            this.alpha = null;
+        } else if (r instanceof FiguraVec3 vec) {
+            this.background = ColorUtils.rgbToInt(vec);
+            this.alpha = g;
+        } else {
+            FiguraVec4 vec = LuaUtils.parseVec4("setBackgroundColor", r, g, b, a, 0, 0, 0, 1);
+            this.background = ColorUtils.rgbToInt(FiguraVec3.of(vec.x, vec.y, vec.z));
+            this.alpha = a == null ? null : vec.w;
+        }
+    }
+
+    @LuaWhitelist
     public Object __index(String arg) {
         if (arg == null) return null;
         return switch (arg) {
             case "visible" -> visible;
-            case "background" -> background;
             case "shadow" -> shadow;
             case "outline" -> outline;
             default -> null;
@@ -96,7 +136,6 @@ public class EntityNameplateCustomization extends NameplateCustomization {
         if (key == null) return;
         switch (key) {
             case "visible" -> visible = value;
-            case "background" -> background = value;
             case "shadow" -> shadow = value;
             case "outline" -> outline = value;
         }

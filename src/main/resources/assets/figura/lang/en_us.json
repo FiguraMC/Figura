@@ -923,13 +923,13 @@
 
   "figura.docs.nameplate_entity": "A nameplate customization that is specialized for entities.",
   "figura.docs.nameplate_entity.visible": "Whether or not should the nameplate be rendered.",
-  "figura.docs.nameplate_entity.background": "Whether or not should the nameplate have a background.",
   "figura.docs.nameplate_entity.shadow": "Whether or not should the nameplate have shadow. Incompatible with \"outline\".",
   "figura.docs.nameplate_entity.outline": "Whether or not should the nameplate have outline. Incompatible with \"shadow\".",
   "figura.docs.nameplate_entity.get_pos": "Gets the position offset of the nameplate, in world coordinates.",
   "figura.docs.nameplate_entity.set_pos": "Sets the position offset of the nameplate, in world coordinates.",
   "figura.docs.nameplate_entity.get_scale": "Gets scale factor of the nameplate.",
   "figura.docs.nameplate_entity.set_scale": "Sets the scale factor of the nameplate.",
+  "figura.docs.nameplate_entity.set_background_color": "Sets the color of the nameplate background. If the alpha value is not given, it will uses the vanilla value (from the accessibility settings) for it.",
 
   "figura.docs.nameplate_group": "A customization that holds another nameplate customizations.",
   "figura.docs.nameplate_group.set_text": "Sets the text for all its children customizations.",

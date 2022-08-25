@@ -109,8 +109,8 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
         boolean isSneaking = player.isDiscrete();
         boolean deadmau = text.getString().equals("deadmau5");
 
-        float bgOpacity = Minecraft.getInstance().options.getBackgroundOpacity(0.25f);
-        int bgColor = trust && custom != null && custom.background ? (int) (bgOpacity * 0xFF) << 24 : 0;
+        double bgOpacity = trust && custom != null && custom.alpha != null ? custom.alpha : Minecraft.getInstance().options.getBackgroundOpacity(0.25f);
+        int bgColor = (trust && custom != null && custom.background != null ? custom.background : 0) + ((int) (bgOpacity * 0xFF) << 24);
 
         boolean outline = trust && custom != null && custom.outline;
         boolean shadow = trust && custom != null && custom.shadow;
