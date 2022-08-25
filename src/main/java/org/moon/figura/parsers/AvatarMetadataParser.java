@@ -44,8 +44,8 @@ public class AvatarMetadataParser {
 
         nbt.putString("name", metadata.name == null || metadata.name.isBlank() ? filename : metadata.name);
         nbt.putString("ver", version);
-        nbt.putString("color", metadata.color == null ? "default" : metadata.color);
-        nbt.putString("bg", metadata.background == null ? "default" : metadata.background);
+        if (metadata.color != null) nbt.putString("color", metadata.color);
+        if (metadata.background != null) nbt.putString("bg", metadata.background);
 
         if (metadata.authors != null) {
             StringBuilder authors = new StringBuilder();
