@@ -408,6 +408,7 @@
   "figura.docs.enum.post_effects": "List of valid PostEffects. Used within the RendererAPI.",
   "figura.docs.enum.play_states": "List of valid PlayStates. Used within Blockbench animations.",
   "figura.docs.enum.loop_modes": "List of valid LoopModes. Used within Blockbench animations.",
+  "figura.docs.enum.colors": "List of custom colors. Used anywhere you can input a hex color.",
 
 
   "figura.docs.globals": "Documentation for the various things Figura adds to the global lua state.",
