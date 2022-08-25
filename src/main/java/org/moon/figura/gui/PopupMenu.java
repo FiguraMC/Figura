@@ -38,10 +38,10 @@ public class PopupMenu {
 
     private static final MutableComponent VERSION_WARN = TextComponent.EMPTY.copy()
             .append(new TextComponent("❗ ").withStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT)))
-            .append(new FiguraText("badges.warning").withStyle(ChatFormatting.YELLOW));
+            .append(new FiguraText("badges.standard.warning").withStyle(ChatFormatting.YELLOW));
     private static final MutableComponent ERROR_WARN = TextComponent.EMPTY.copy()
             .append(new TextComponent("❌ ").withStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT)))
-            .append(new FiguraText("badges.error").withStyle(ChatFormatting.RED));
+            .append(new FiguraText("badges.standard.error").withStyle(ChatFormatting.RED));
 
     private static final List<Pair<Component, Consumer<UUID>>> BUTTONS = List.of(
             Pair.of(new FiguraText("popup_menu.cancel"), id -> {}),

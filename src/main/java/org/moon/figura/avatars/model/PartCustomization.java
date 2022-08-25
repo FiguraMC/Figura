@@ -49,8 +49,7 @@ public class PartCustomization implements CachedType<PartCustomization> {
     public Integer overlay = null;
 
     private RenderTypes primaryRenderType, secondaryRenderType;
-    public Pair<FiguraTextureSet.OverrideType, String> primaryTexture = Pair.of(null, null);
-    public Pair<FiguraTextureSet.OverrideType, String> secondaryTexture = Pair.of(null, null);
+    public Pair<FiguraTextureSet.OverrideType, String> primaryTexture, secondaryTexture;
 
     public void applyToStack(PoseStack stack) {
         stack.mulPoseMatrix(positionMatrix.toMatrix4f());
@@ -295,8 +294,8 @@ public class PartCustomization implements CachedType<PartCustomization> {
         light = null;
         needsMatrixRecalculation = false;
         visible = null;
-        primaryTexture = Pair.of(null, null);
-        secondaryTexture = Pair.of(null, null);
+        primaryTexture = null;
+        secondaryTexture = null;
         return this;
     }
     public void free() {
@@ -383,9 +382,9 @@ public class PartCustomization implements CachedType<PartCustomization> {
 
         color.multiply(other.color);
 
-        if (other.primaryTexture.getFirst() != null)
+        if (other.primaryTexture != null)
             primaryTexture = other.primaryTexture;
-        if (other.secondaryTexture.getFirst() != null)
+        if (other.secondaryTexture != null)
             secondaryTexture = other.secondaryTexture;
     }
 
