@@ -49,8 +49,10 @@ public class Label implements FiguraWidget, GuiEventListener {
 
             int x = this.x;
             int y = this.y + font.lineHeight * i;
+            int width = font.width(line);
+
             if (centred) {
-                x -= font.width(line) / 2;
+                x -= width / 2;
                 y -= font.lineHeight / 2;
             }
 
@@ -58,6 +60,9 @@ public class Label implements FiguraWidget, GuiEventListener {
                 UIHelper.renderOutlineText(stack, font, line, x, y, 0xFFFFFF, outlineColor);
             else
                 font.drawShadow(stack, line, x, y, 0xFFFFFF);
+
+            if (mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + font.lineHeight)
+                UIHelper.setTooltip(font.getSplitter().componentStyleAtWidth(line, mouseX - x));
         }
     }
 

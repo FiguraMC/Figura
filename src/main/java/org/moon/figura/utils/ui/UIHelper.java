@@ -16,6 +16,7 @@ import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
@@ -386,5 +387,14 @@ public class UIHelper extends GuiComponent {
     public static void setTooltip(Component text) {
         if (Minecraft.getInstance().screen instanceof AbstractPanelScreen panelScreen)
             panelScreen.tooltip = text;
+    }
+
+    public static void setTooltip(Style style) {
+        if (style == null || style.getHoverEvent() == null)
+            return;
+
+        Component text = style.getHoverEvent().getValue(HoverEvent.Action.SHOW_TEXT);
+        if (text != null)
+            setTooltip(text);
     }
 }

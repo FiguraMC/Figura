@@ -92,8 +92,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
         // -- bottom -- //
 
         //version
-        Label version = new Label(new FiguraText().append(" " + FiguraMod.VERSION).withStyle(ChatFormatting.ITALIC, ChatFormatting.DARK_GRAY), middle, this.height - 5, true);
-        addRenderableOnly(version);
+        addRenderableOnly(new Label(new FiguraText().append(" " + FiguraMod.VERSION).withStyle(ChatFormatting.ITALIC, ChatFormatting.DARK_GRAY), middle, this.height - 5, true));
 
         int rightSide = Math.min(third, 134);
 

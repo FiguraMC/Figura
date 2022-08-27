@@ -135,8 +135,8 @@ public class HostAPI {
             description = "host.set_actionbar"
     )
     public void setActionbar(@LuaNotNil String text, boolean animated) {
-        if (!isHost()) return;
-        this.minecraft.gui.setOverlayMessage(TextUtils.tryParseJson(text), animated);
+        if (isHost())
+            this.minecraft.gui.setOverlayMessage(TextUtils.tryParseJson(text), animated);
     }
 
     @LuaWhitelist
@@ -165,6 +165,19 @@ public class HostAPI {
         if (!isHost() || !Config.CHAT_MESSAGES.asBool()) return;
         LocalPlayer player = Minecraft.getInstance().player;
         if (player != null) player.chat(command.startsWith("/") ? command : "/" + command);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = String.class,
+                    argumentNames = "message"
+            ),
+            description = "host.append_chat_history"
+    )
+    public void appendChatHistory(@LuaNotNil String message) {
+        if (isHost() && Config.CHAT_MESSAGES.asBool())
+            this.minecraft.gui.getChat().addRecentChat(message);
     }
 
     @LuaWhitelist
