@@ -34,7 +34,7 @@
   "figura.toast.panic_disabled": "Panic mode disabled!",
   "figura.toast.clipboard": "Copied to clipboard!",
   "figura.toast.load_error": "Failed to load avatar!",
-  "figura.toast.load_error_l2": "Often from avatar.json",
+  "figura.toast.load_error.2": "Check out \"avatar.json\"",
   "figura.toast.trust_change": "Trust changed to",
 
 
@@ -169,10 +169,20 @@
   "figura.gui.trust.reload_all": "Reload All",
   "figura.gui.trust.expand_trust.tooltip": "Expand advanced trust menu",
   "figura.gui.trust.minimize_trust.tooltip": "Minimize advanced trust menu",
-  "figura.gui.trust.avatar_size": "Size: %s",
-  "figura.gui.trust.complexity": "Complexity: %s",
-  "figura.gui.trust.tick": "Tick W: %s E: %s",
-  "figura.gui.trust.render": "Render W: %s E: %s PE: %s PW: %s",
+
+  "figura.gui.trust.size": "Avatar Size",
+  "figura.gui.trust.complexity": "Model Complexity",
+  "figura.gui.trust.init": "Init Instructions",
+  "figura.gui.trust.init.root": "Root: %s",
+  "figura.gui.trust.init.entity": "Entity: %s",
+  "figura.gui.trust.tick": "Tick Instructions",
+  "figura.gui.trust.tick.world": "World: %s",
+  "figura.gui.trust.tick.entity": "Entity: %s",
+  "figura.gui.trust.render": "Render Instructions",
+  "figura.gui.trust.render.world": "World: %s",
+  "figura.gui.trust.render.entity": "Entity: %s",
+  "figura.gui.trust.render.post_entity": "Post Entity: %s",
+  "figura.gui.trust.render.post_world": "Post World: %s",
 
   "figura.gui.status.size": "Size",
   "figura.gui.status.size.0": "none",

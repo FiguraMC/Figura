@@ -100,7 +100,6 @@ public class Avatar {
 
     public int complexity = 0;
     public int animationComplexity;
-    public int complexityLimit;
 
     public int initInstructions, entityInitInstructions;
     public int entityTickInstructions, worldTickInstructions;
@@ -116,7 +115,6 @@ public class Avatar {
         this.trust = TrustManager.get(owner);
         this.particlesRemaining = new RefilledNumber(trust.get(TrustContainer.Trust.PARTICLES));
         this.soundsRemaining = new RefilledNumber(trust.get(TrustContainer.Trust.SOUNDS));
-        complexityLimit = trust.get(TrustContainer.Trust.COMPLEXITY);
         entityName = EntityUtils.getNameForUUID(owner);
     }
 

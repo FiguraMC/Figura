@@ -92,7 +92,9 @@ public class WardrobeScreen extends AbstractPanelScreen {
         // -- bottom -- //
 
         //version
-        addRenderableOnly(new Label(FiguraText.of().append(" " + FiguraMod.VERSION).withStyle(ChatFormatting.ITALIC, ChatFormatting.DARK_GRAY), middle, this.height - 5, true));
+        Label version = new Label(FiguraText.of().append(" " + FiguraMod.VERSION).withStyle(ChatFormatting.ITALIC), middle, this.height - 5, true);
+        addRenderableOnly(version);
+        version.setColor(0x33FFFFFF);
 
         int rightSide = Math.min(third, 134);
 
@@ -118,15 +120,15 @@ public class WardrobeScreen extends AbstractPanelScreen {
         ));
 
         //sounds
-        TexturedButton sounds = new TexturedButton(this.width - rightSide / 2 - 16, 32, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/sound.png"), 72, 24, FiguraText.of("gui.wardrobe.sound.tooltip"), button -> {
-            Minecraft.getInstance().setScreen(new SoundScreen(this));
-        });
+        TexturedButton sounds = new TexturedButton(this.width - rightSide / 2 - 16, 32, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/sound.png"), 72, 24, FiguraText.of("gui.wardrobe.sound.tooltip"),
+                button -> Minecraft.getInstance().setScreen(new SoundScreen(this))
+        );
         addRenderableWidget(sounds);
 
         //keybinds
-        TexturedButton keybinds = new TexturedButton(this.width - 28, 32, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/keybind.png"), 72, 24, FiguraText.of("gui.wardrobe.keybind.tooltip"), button -> {
-            Minecraft.getInstance().setScreen(new KeybindScreen(this));
-        });
+        TexturedButton keybinds = new TexturedButton(this.width - 28, 32, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/keybind.png"), 72, 24, FiguraText.of("gui.wardrobe.keybind.tooltip"),
+                button -> Minecraft.getInstance().setScreen(new KeybindScreen(this))
+        );
         addRenderableWidget(keybinds);
 
         //avatar metadata

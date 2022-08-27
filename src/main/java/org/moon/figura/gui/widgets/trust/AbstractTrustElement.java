@@ -35,7 +35,15 @@ public class AbstractTrustElement extends AbstractButton implements Comparable<A
 
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
-        return this.parent.isInsideScissors(mouseX, mouseY) && super.isMouseOver(mouseX, mouseY);
+        float dw = (width * scale - width) / 2f;
+        float dh = (height * scale - height) / 2f;
+        return parent.isInsideScissors(mouseX, mouseY) && active && visible &&
+                mouseX >= x - dw && mouseX < x + width + dw && mouseY >= y - dh && mouseY < y + height + dh;
+    }
+
+    @Override
+    protected boolean clicked(double mouseX, double mouseY) {
+        return isMouseOver(mouseX, mouseY);
     }
 
     @Override

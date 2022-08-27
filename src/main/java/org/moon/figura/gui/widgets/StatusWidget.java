@@ -32,19 +32,26 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
     public static final int SIZE_LARGE = 100_000;
 
     private final Font font;
-    private byte status = 0;
+    protected final int count;
+    protected int status = 0;
     private Component disconnectedReason;
 
     public int x, y;
     public int width, height;
     private boolean visible = true;
+    private boolean background = true;
 
     public StatusWidget(int x, int y, int width) {
+        this(x, y, width, STATUS_NAMES.size());
+    }
+
+    protected StatusWidget(int x, int y, int width, int count) {
         this.x = x;
         this.y = y;
         this.font = Minecraft.getInstance().font;
         this.width = width;
         this.height = font.lineHeight + 5;
+        this.count = count;
     }
 
     @Override
@@ -55,17 +62,16 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
         boolean empty = avatar == null || avatar.nbt == null;
 
-        int size = empty ? 0 : avatar.fileSize > SIZE_LARGE ? 1 : avatar.fileSize > SIZE_WARNING ? 2 : 3;
-        status = (byte) size;
+        status = empty ? 0 : avatar.fileSize > SIZE_LARGE ? 1 : avatar.fileSize > SIZE_WARNING ? 2 : 3;
 
         int texture = empty || !avatar.hasTexture ? 0 : 3;
-        status += (byte) (texture << 2);
+        status += texture << 2;
 
         int script = empty ? 0 : avatar.scriptError ? 1 : avatar.luaRuntime == null ? 0 : avatar.versionStatus > 0 ? 2 : 3;
-        status += (byte) (script << 4);
+        status += script << 4;
 
         int backend = NetworkManager.backendStatus;
-        status += (byte) (backend << 6);
+        status += backend << 6;
 
         String dc = NetworkManager.disconnectedReason;
         disconnectedReason = backend == 1 && dc != null && !dc.isBlank() ? Component.literal(dc) : null;
@@ -76,52 +82,46 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
         if (!visible) return;
 
         //background
-        UIHelper.renderSliced(stack, x, y, width, height, UIHelper.OUTLINE);
+        if (background)
+            UIHelper.renderSliced(stack, x, y, width, height, UIHelper.OUTLINE);
 
-        //text
-        float size = (width - 44) / 3f + 10;
-        for (int i = 0; i < 4; i++) {
+        //hover
+        boolean hovered = this.isMouseOver(mouseX, mouseY);
+
+        //text and tooltip
+        float spacing = (width - (background ? 13 : 11)) / (count - 1f);
+        float hSpacing = spacing / 2;
+        for (int i = 0; i < count; i++) {
+            int x = (int) (this.x + spacing * i + (background ? 1 : 0));
+
             Component text = getStatus(i);
-            UIHelper.drawString(stack, font, text, (int) (x + size * i + 2), y + 3, 0xFFFFFF);
+            UIHelper.drawString(stack, font, text, x, y + (background ? 3 : 0), 0xFFFFFF);
+
+            if (hovered && mouseX >= x - hSpacing + 6 && mouseX < x + hSpacing + 6 && mouseY >= y && mouseY < y + (background ? 14 : 11))
+                UIHelper.setTooltip(getTooltipFor(i));
         }
-
-        //mouse over
-        this.isMouseOver(mouseX, mouseY);
-    }
-
-    @Override
-    public boolean isMouseOver(double mouseX, double mouseY) {
-        if (!UIHelper.isMouseOver(x, y, width, height, mouseX, mouseY))
-            return false;
-
-        //get status text tooltip
-        MutableComponent text = null;
-        String part = "gui.status.";
-
-        float size = (width - 44) / 3f + 10;
-        for (int i = 0; i < 4; i++) {
-            double x = this.x + 7 + size * i - size / 2f; //x + 2 spacing + 5 half icon + size - half size
-            if (mouseX >= x && mouseX <= x + size) {
-                //get name and color
-                int color = status >> (i * 2) & 3;
-                text = FiguraText.of(part += STATUS_NAMES.get(i)).append("\n• ").append(FiguraText.of(part + "." + color)).setStyle(TEXT_COLORS.get(color));
-
-                //get backend disconnect reason
-                if (i == 3 && disconnectedReason != null)
-                    text.append("\n\n").append(FiguraText.of(part + ".reason")).append("\n• ").append(disconnectedReason);
-
-                break;
-            }
-        }
-
-        //set tooltip
-        UIHelper.setTooltip(text);
-
-        return true;
     }
 
     private MutableComponent getStatus(int type) {
         return Component.literal(String.valueOf(STATUS_INDICATORS.charAt(status >> (type * 2) & 3))).setStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT));
+    }
+
+    public Component getTooltipFor(int i) {
+        //get name and color
+        int color = status >> (i * 2) & 3;
+        String part = "gui.status.";
+        MutableComponent text = FiguraText.of(part += STATUS_NAMES.get(i)).append("\n• ").append(FiguraText.of(part + "." + color)).setStyle(TEXT_COLORS.get(color));
+
+        //get backend disconnect reason
+        if (i == 3 && disconnectedReason != null)
+            text.append("\n\n").append(FiguraText.of(part + ".reason")).append("\n• ").append(disconnectedReason);
+
+        return text;
+    }
+
+    @Override
+    public boolean isMouseOver(double mouseX, double mouseY) {
+        return UIHelper.isMouseOver(x, y, width, height, mouseX, mouseY);
     }
 
     @Override
@@ -132,5 +132,9 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
     @Override
     public void setVisible(boolean visible) {
         this.visible = visible;
+    }
+
+    public void setBackground(boolean background) {
+        this.background = background;
     }
 }

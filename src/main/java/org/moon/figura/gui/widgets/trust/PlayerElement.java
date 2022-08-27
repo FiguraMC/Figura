@@ -5,6 +5,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
@@ -12,13 +14,15 @@ import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.avatars.providers.LocalAvatarLoader;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.widgets.ContextMenu;
+import org.moon.figura.gui.widgets.Label;
 import org.moon.figura.gui.widgets.lists.PlayerList;
 import org.moon.figura.lua.api.nameplate.Badges;
+import org.moon.figura.lua.api.nameplate.NameplateCustomization;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FiguraText;
-import org.moon.figura.utils.MathUtils;
+import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.ui.UIHelper;
 
 import java.util.ArrayList;
@@ -30,6 +34,8 @@ public class PlayerElement extends AbstractTrustElement {
     private final ResourceLocation skin;
     private final UUID owner;
     private final ContextMenu context;
+    private final Label nameLabel;
+    private final PlayerStatusWidget status;
 
     private static final ResourceLocation BACKGROUND = new FiguraIdentifier("textures/gui/player_trust.png");
 
@@ -39,6 +45,9 @@ public class PlayerElement extends AbstractTrustElement {
         this.skin = skin;
         this.owner = owner;
         this.context = new ContextMenu(this);
+
+        this.nameLabel = new Label(name, 0, 0, false, 0);
+        this.status = new PlayerStatusWidget(0, 0, 70, owner);
 
         generateContext();
     }
@@ -92,14 +101,20 @@ public class PlayerElement extends AbstractTrustElement {
     @Override
     public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
         stack.pushPose();
-        stack.translate(x + width / 2f, y + height / 2f, 100);
+
+        float tx = x + width / 2f;
+        float ty = y + height / 2f;
+
+        stack.translate(tx, ty, 100);
         stack.scale(scale, scale, scale);
 
         animate(mouseX, mouseY, delta);
 
-        //fix x, y
+        //fix x, y, mouse
         int x = -width / 2;
         int y = -height / 2;
+        mouseX = (int) ((mouseX - tx) / scale);
+        mouseY = (int) ((mouseY - ty) / scale);
 
         //selected overlay
         if (this.parent.selectedEntry == this) {
@@ -120,12 +135,35 @@ public class PlayerElement extends AbstractTrustElement {
 
         //name
         Font font = Minecraft.getInstance().font;
-        Avatar avatar = AvatarManager.getAvatarForPlayer(owner);
-        UIHelper.renderOutlineText(stack, font, Component.literal(this.name).append(Badges.fetchBadges(avatar)), x + 40, y + 4, 0xFFFFFF, 0);
+        Component name = null;
 
-        //size
-        if (avatar != null && avatar.nbt != null)
-            drawString(stack, font, FiguraText.of("gui.trust.avatar_size", MathUtils.asFileSize(avatar.fileSize)), x + 40, y + 6 + font.lineHeight, 0x888888);
+        Avatar avatar = AvatarManager.getAvatarForPlayer(owner);
+        if (avatar != null) {
+            NameplateCustomization custom = avatar.luaRuntime == null ? null : avatar.luaRuntime.nameplate.LIST;
+            if (custom != null && custom.getText() != null && avatar.trust.get(TrustContainer.Trust.NAMEPLATE_EDIT) == 1)
+                name = NameplateCustomization.applyCustomization(custom.getText());
+        }
+
+        if (name == null)
+            name = Component.literal(this.name);
+
+        name = Component.empty()
+                .append(name.copy().withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(this.name + "\n" + this.owner)))))
+                .append(Badges.fetchBadges(avatar));
+
+        nameLabel.setText(TextUtils.trimToWidthEllipsis(font, name, width - 40, TextUtils.ELLIPSIS));
+        nameLabel.x = x + 40;
+        nameLabel.y = y + 4;
+        //nameLabel.setOutlineColor(ColorUtils.rgbToInt(ColorUtils.rainbow(2, 1, 0.5)) + ((int) (0.5f * 0xFF) << 24));
+        nameLabel.render(stack, mouseX, mouseY, delta);
+
+        //status
+        if (avatar != null && avatar.nbt != null) {
+            status.tick(); //yes I know
+            status.x = x + 40;
+            status.y = y + 6 + font.lineHeight;
+            status.render(stack, mouseX, mouseY, delta);
+        }
 
         //trust
         drawString(stack, font, trust.getGroupName(), x + 40, y + height - font.lineHeight - 4, 0xFFFFFF);
