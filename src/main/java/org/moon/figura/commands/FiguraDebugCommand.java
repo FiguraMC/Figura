@@ -159,7 +159,6 @@ public class FiguraDebugCommand {
 
         inst.addProperty("animationComplexity", avatar.animationComplexity);
         inst.addProperty("complexity", avatar.complexity);
-        inst.addProperty("complexityLimit", avatar.complexityLimit);
         inst.addProperty("entityInitInstructions", avatar.entityInitInstructions);
         inst.addProperty("entityRenderInstructions", avatar.entityRenderInstructions);
         inst.addProperty("entityTickInstructions", avatar.entityTickInstructions);

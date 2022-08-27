@@ -14,6 +14,8 @@ import java.util.List;
 public class Label implements FiguraWidget, GuiEventListener {
 
     private Component text;
+    private Integer outlineColor;
+    private int color = 0xFFFFFFFF;
 
     public int x, y;
     public int width = 0;
@@ -22,19 +24,18 @@ public class Label implements FiguraWidget, GuiEventListener {
 
     private final Font font;
     private final boolean centred;
-    private final Integer outlineColor;
 
     public Label(Object text, int x, int y, boolean centred) {
-        this(text, x, y, centred, null);
-    }
-
-    public Label(Object text, int x, int y, boolean centred, Integer outlineColor) {
         this.font = Minecraft.getInstance().font;
         this.x = x;
         this.y = y;
         this.centred = centred;
-        this.outlineColor = outlineColor;
         setText(text);
+    }
+
+    public Label(Object text, int x, int y, boolean centred, Integer outlineColor) {
+        this(text, x, y, centred);
+        setOutlineColor(outlineColor);
     }
 
     @Override
@@ -57,11 +58,11 @@ public class Label implements FiguraWidget, GuiEventListener {
             }
 
             if (outlineColor != null)
-                UIHelper.renderOutlineText(stack, font, line, x, y, 0xFFFFFF, outlineColor);
+                UIHelper.renderOutlineText(stack, font, line, x, y, color, outlineColor);
             else
-                font.drawShadow(stack, line, x, y, 0xFFFFFF);
+                font.drawShadow(stack, line, x, y, color);
 
-            if (mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + font.lineHeight)
+            if (mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + font.lineHeight)
                 UIHelper.setTooltip(font.getSplitter().componentStyleAtWidth(line, mouseX - x));
         }
     }
@@ -89,5 +90,13 @@ public class Label implements FiguraWidget, GuiEventListener {
     public void setText(Object text) {
         this.text = text instanceof Component c ? c : new TextComponent(text.toString());
         calculateDimensions();
+    }
+
+    public void setColor(int color) {
+        this.color = color;
+    }
+
+    public void setOutlineColor(Integer outlineColor) {
+        this.outlineColor = outlineColor;
     }
 }

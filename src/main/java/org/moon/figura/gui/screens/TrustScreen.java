@@ -5,7 +5,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -43,7 +42,6 @@ public class TrustScreen extends AbstractPanelScreen {
     private TexturedButton reloadAll;
     private TexturedButton back;
     private TexturedButton resetButton;
-    private Label instructions;
 
     // -- debug -- //
     private TextField uuid;
@@ -53,7 +51,6 @@ public class TrustScreen extends AbstractPanelScreen {
     private float listYPrecise;
     private float expandYPrecise;
     private float resetYPrecise;
-    private float playerYPrecise, playerHeightPrecise;
 
     public TrustScreen(Screen parentScreen) {
         super(parentScreen, TITLE, 3);
@@ -93,12 +90,9 @@ public class TrustScreen extends AbstractPanelScreen {
                 stack.popPose();
             }
         };
-        trustList = new TrustList(middle + 2, height, listWidth, height - 60);
+        trustList = new TrustList(middle + 2, height, listWidth, height - 54);
 
         // -- left -- //
-
-        //labels
-        addRenderableOnly(instructions = new Label("", middle - listWidth - 2, 28, false));
 
         //player list
         addRenderableWidget(playerList = new PlayerList(middle - listWidth - 2, 28, listWidth, height - 32, this));
@@ -195,8 +189,6 @@ public class TrustScreen extends AbstractPanelScreen {
         listYPrecise = trustList.y;
         expandYPrecise = expandButton.y;
         resetYPrecise = resetButton.y;
-        playerYPrecise = playerList.y;
-        playerHeightPrecise = playerList.height;
     }
 
     @Override
@@ -209,34 +201,10 @@ public class TrustScreen extends AbstractPanelScreen {
         else
             entityWidget.setEntity(null);
 
-        //label text
-        Avatar avatar;
-        boolean showingInst = false;
-        if (expandButton.isToggled() && playerList.selectedEntry instanceof PlayerElement player && (avatar = AvatarManager.getAvatarForPlayer(player.getOwner())) != null && avatar.nbt != null) {
-            Style style = FiguraMod.getAccentColor();
-            instructions.setText(TextComponent.EMPTY.copy()
-                    .append(new FiguraText("gui.trust.complexity", new TextComponent(String.valueOf(avatar.complexity)).withStyle(style)))
-                    .append("\n")
-                    .append(new FiguraText("gui.trust.tick",
-                            new TextComponent(String.valueOf(avatar.worldTickInstructions)).withStyle(style),
-                            new TextComponent(String.valueOf(avatar.entityTickInstructions)).withStyle(style)
-                    ))
-                    .append("\n")
-                    .append(new FiguraText("gui.trust.render",
-                            new TextComponent(String.valueOf(avatar.worldRenderInstructions)).withStyle(style),
-                            new TextComponent(String.valueOf(avatar.entityRenderInstructions)).withStyle(style),
-                            new TextComponent(String.valueOf(avatar.postEntityRenderInstructions)).withStyle(style),
-                            new TextComponent(String.valueOf(avatar.postWorldRenderInstructions)).withStyle(style)
-                    ))
-            );
-            showingInst = true;
-        }
-        instructions.setVisible(showingInst);
-
         //expand animation
         float lerpDelta = (float) (1f - Math.pow(0.6f, delta));
 
-        listYPrecise = Mth.lerp(lerpDelta, listYPrecise, expandButton.isToggled() ? 56f : height + 1);
+        listYPrecise = Mth.lerp(lerpDelta, listYPrecise, expandButton.isToggled() ? 50f : height + 1);
         this.trustList.y = (int) listYPrecise;
 
         expandYPrecise = Mth.lerp(lerpDelta, expandYPrecise, listYPrecise - 24f);
@@ -244,12 +212,6 @@ public class TrustScreen extends AbstractPanelScreen {
 
         resetYPrecise = Mth.lerp(lerpDelta, resetYPrecise, expandButton.isToggled() ? listYPrecise - 22f : height);
         this.resetButton.y = (int) resetYPrecise;
-
-        playerYPrecise = Mth.lerp(lerpDelta, playerYPrecise, showingInst ? 30f + instructions.height : 28);
-        this.playerList.setY((int) playerYPrecise);
-
-        playerHeightPrecise = Mth.lerp(lerpDelta, playerHeightPrecise, showingInst ? height - 34 - instructions.height : height - 32);
-        this.playerList.updateHeight((int) playerHeightPrecise);
 
         //render
         super.render(stack, mouseX, mouseY, delta);
@@ -270,11 +232,6 @@ public class TrustScreen extends AbstractPanelScreen {
         }
 
         return super.keyPressed(keyCode, scanCode, modifiers);
-    }
-
-    @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
-        return super.mouseScrolled(mouseX, mouseY, amount) || (slider.visible && slider.mouseScrolled(mouseX, mouseY, amount));
     }
 
     public void updateTrustData(TrustContainer trust) {

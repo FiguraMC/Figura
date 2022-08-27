@@ -239,15 +239,8 @@ public class InteractableEntity extends AbstractContainerElement {
             float y = (float) (mouseY - dragDeltaY);
 
             //move it
-            if (modelX >= 0 && modelX <= this.width)
-                modelX = (int) (dragAnchorX + x);
-            if (modelY >= 0 && modelY <= this.height)
-                modelY = (int) (dragAnchorY + y);
-
-            //if out of range - move it back
-            //can't be "elsed" because it needs to be checked after the move
-            modelX = modelX < 0 ? 0 : Math.min(modelX, this.width);
-            modelY = modelY < 0 ? 0 : Math.min(modelY, this.height);
+            modelX = (int) (dragAnchorX + x);
+            modelY = (int) (dragAnchorY + y);
 
             return true;
         }
@@ -270,10 +263,6 @@ public class InteractableEntity extends AbstractContainerElement {
 
         //determine scale
         scaledValue = ((scale + scaledValue) * scaleDir) - scale;
-
-        //limit scale
-        if (scaledValue <= -35) scaledValue = -35.0F;
-        if (scaledValue >= 250) scaledValue = 250.0F;
 
         return true;
     }
