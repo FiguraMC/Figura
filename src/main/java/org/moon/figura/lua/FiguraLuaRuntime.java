@@ -206,6 +206,16 @@ public class FiguraLuaRuntime {
         return null;
     }
 
+    public int runCommand(String code) {
+        try {
+            userGlobals.load(code, "runCommand", userGlobals).call();
+            return 1;
+        } catch (LuaError e) {
+            FiguraLuaPrinter.sendLuaError(e, owner.entityName, owner.owner);
+            return 0;
+        }
+    }
+
     /**
      * Generates a require() function that can work with the given set of scripts.
      * @param scripts A map from string paths to scripts -> source code of those scripts

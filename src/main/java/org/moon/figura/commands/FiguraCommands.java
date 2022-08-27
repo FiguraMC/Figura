@@ -26,6 +26,9 @@ public class FiguraCommands {
         //load
         root.then(FiguraLoadCommand.getCommand());
 
+        //load
+        root.then(FiguraReloadCommand.getCommand());
+
         //debug
         root.then(FiguraDebugCommand.getCommand());
 

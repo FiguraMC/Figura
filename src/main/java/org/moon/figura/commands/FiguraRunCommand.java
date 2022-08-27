@@ -31,7 +31,7 @@ public class FiguraRunCommand {
             context.getSource().sendError(FiguraText.of("command.run.no_script_error"));
             return 0;
         }
-        localAvatar.luaRuntime.runScript(lua, "runCommand");
-        return 1;
+
+        return localAvatar.luaRuntime.runCommand(lua);
     }
 }
