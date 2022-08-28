@@ -174,7 +174,13 @@ public class AvatarManager {
         UUID id = FiguraMod.getLocalPlayerUUID();
 
         //clear
-        clearAvatar(id);
+        Avatar av = LOADED_AVATARS.remove(id);
+        if (av != null)
+            av.clean();
+
+        Badges.clear(id);
+        NetworkManager.clearRequestsFor(id);
+        NetworkManager.unsubscribe(id);
 
         //load
         try {

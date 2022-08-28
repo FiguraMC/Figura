@@ -5,6 +5,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.*;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
+import org.moon.figura.backend.NetworkManager;
 import org.moon.figura.config.Config;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.FiguraText;
@@ -26,8 +27,10 @@ public class Badges {
 
         UUID id = avatar.owner;
         Pair<BitSet, BitSet> pair = badgesMap.get(id);
-        if (pair == null)
+        if (pair == null) {
             badgesMap.put(id, pair = empty());
+            NetworkManager.fetchUserdata(id);
+        }
 
         // -- loading -- //
 

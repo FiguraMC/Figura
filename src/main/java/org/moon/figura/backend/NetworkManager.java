@@ -300,6 +300,13 @@ public class NetworkManager {
         return data;
     }
 
+    public static void fetchUserdata(UUID id) {
+        JsonObject json = new JsonObject();
+        json.addProperty("type", "getUser");
+        json.addProperty("uuid", id.toString());
+        NetworkManager.sendMessage(NetworkManager.GSON.toJson(json));
+    }
+
     // -- backend command -- //
 
     public static LiteralArgumentBuilder<FabricClientCommandSource> getCommand() {
