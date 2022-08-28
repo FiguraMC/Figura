@@ -17,18 +17,18 @@ import org.moon.figura.utils.caching.CacheUtils;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "Vector3",
-        description = "vector3"
+        value = "vector3"
 )
 public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
 
     @LuaWhitelist
-    @LuaFieldDoc(description = "vector_n.x")
+    @LuaFieldDoc("vector_n.x")
     public double x;
     @LuaWhitelist
-    @LuaFieldDoc(description = "vector_n.y")
+    @LuaFieldDoc("vector_n.y")
     public double y;
     @LuaWhitelist
-    @LuaFieldDoc(description = "vector_n.z")
+    @LuaFieldDoc("vector_n.z")
     public double z;
 
     // -- cache -- //
@@ -37,10 +37,11 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(description = "vector_n.reset",
+    @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     returnType = FiguraVec3.class
-            )
+            ),
+            value = "vector_n.reset"
     )
     public FiguraVec3 reset() {
         x = y = z = 0;
@@ -86,7 +87,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
                             argumentNames = {"x", "y", "z"}
                     )
             },
-            description = "vector_n.set"
+            value = "vector_n.set"
     )
     public FiguraVec3 set(Object x, double y, double z) {
         return set(LuaUtils.parseVec3("set", x, y, z));
@@ -116,7 +117,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
                             argumentNames = {"x", "y", "z"}
                     )
             },
-            description = "vector_n.add"
+            value = "vector_n.add"
     )
     public FiguraVec3 add(Object x, double y, double z) {
         return add(LuaUtils.parseVec3("add", x, y, z));
@@ -146,7 +147,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
                             argumentNames = {"x", "y", "z"}
                     )
             },
-            description = "vector_n.sub"
+            value = "vector_n.sub"
     )
     public FiguraVec3 sub(Object x, double y, double z) {
         return subtract(LuaUtils.parseVec3("sub", x, y, z));
@@ -160,7 +161,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
                     argumentNames = "factor",
                     returnType = FiguraVec3.class
             ),
-            description = "vector_n.offset"
+            value = "vector_n.offset"
     )
     public FiguraVec3 offset(double factor) {
         this.x += factor;
@@ -193,7 +194,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
                             argumentNames = {"x", "y", "z"}
                     )
             },
-            description = "vector_n.mul"
+            value = "vector_n.mul"
     )
     public FiguraVec3 mul(Object x, double y, double z) {
         return multiply(LuaUtils.parseVec3("mul", x, y, z));
@@ -223,7 +224,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
                             argumentNames = {"x", "y", "z"}
                     )
             },
-            description = "vector_n.div"
+            value = "vector_n.div"
     )
     public FiguraVec3 div(Object x, double y, double z) {
         return divide(LuaUtils.parseVec3("div", x, y, z));
@@ -253,7 +254,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
                             argumentNames = {"x", "y", "z"}
                     )
             },
-            description = "vector_n.reduce"
+            value = "vector_n.reduce"
     )
     public FiguraVec3 reduce(Object x, double y, double z) {
         return reduce(LuaUtils.parseVec3("reduce", x, y, z));
@@ -267,7 +268,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
                     argumentNames = "factor",
                     returnType = FiguraVec3.class
             ),
-            description = "vector_n.scale"
+            value = "vector_n.scale"
     )
     public FiguraVec3 scale(double factor) {
         this.x *= factor;
@@ -286,7 +287,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
                     argumentNames = "mat",
                     returnType = FiguraVec3.class
             ),
-            description = "vector_n.transform"
+            value = "vector_n.transform"
     )
     public FiguraVec3 transform(@LuaNotNil FiguraMat3 mat) {
         return set(
@@ -298,17 +299,18 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(description = "vector_n.length_squared")
+    @LuaMethodDoc("vector_n.length_squared")
     public double lengthSquared() {
         return x * x + y * y + z * z;
     }
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(description = "vector_n.copy",
+    @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     returnType = FiguraVec3.class
-            )
+            ),
+            value = "vector_n.copy"
     )
     public FiguraVec3 copy() {
         return of(x, y, z);
@@ -321,7 +323,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
                     argumentTypes = FiguraVec3.class,
                     argumentNames = "vec"
             ),
-            description = "vector_n.dot"
+            value = "vector_n.dot"
     )
     public double dot(@LuaNotNil FiguraVec3 other) {
         return x * other.x + y * other.y + z * other.z;
@@ -329,10 +331,11 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(description = "vector_n.normalize",
+    @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     returnType = FiguraVec3.class
-            )
+            ),
+            value = "vector_n.normalize"
     )
     public FiguraVec3 normalize() {
         return super.normalize();
@@ -340,10 +343,11 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(description = "vector_n.normalized",
+    @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     returnType = FiguraVec3.class
-            )
+            ),
+            value = "vector_n.normalized"
     )
     public FiguraVec3 normalized() {
         return super.normalized();
@@ -357,7 +361,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
                     argumentNames = {"minLength", "maxLength"},
                     returnType = FiguraVec3.class
             ),
-            description = "vector_n.clamp_length"
+            value = "vector_n.clamp_length"
     )
     public FiguraVec3 clampLength(Double min, Double max) {
         return super.clampLength(min, max);
@@ -371,7 +375,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
                     argumentNames = {"minLength", "maxLength"},
                     returnType = FiguraVec3.class
             ),
-            description = "vector_n.clamped"
+            value = "vector_n.clamped"
     )
     public FiguraVec3 clamped(Double min, Double max) {
         return super.clamped(min, max);
@@ -379,17 +383,18 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(description = "vector_n.length")
+    @LuaMethodDoc("vector_n.length")
     public double length() {
         return super.length();
     }
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(description = "vector_n.to_rad",
+    @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     returnType = FiguraVec3.class
-            )
+            ),
+            value = "vector_n.to_rad"
     )
     public FiguraVec3 toRad() {
         return super.toRad();
@@ -397,23 +402,24 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(description = "vector_n.to_deg",
+    @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     returnType = FiguraVec3.class
-            )
+            ),
+            value = "vector_n.to_deg"
     )
     public FiguraVec3 toDeg() {
         return super.toDeg();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "vector_n.floor")
+    @LuaMethodDoc("vector_n.floor")
     public FiguraVec3 floor() {
         return FiguraVec3.of(Math.floor(x), Math.floor(y), Math.floor(z));
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "vector_n.ceil")
+    @LuaMethodDoc("vector_n.ceil")
     public FiguraVec3 ceil() {
         return FiguraVec3.of(Math.ceil(x), Math.ceil(y), Math.ceil(z));
     }
@@ -424,7 +430,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
                     argumentTypes = LuaFunction.class,
                     argumentNames = "func"
             ),
-            description = "vector_n.apply_func"
+            value = "vector_n.apply_func"
     )
     public FiguraVec3 applyFunc(@LuaNotNil LuaFunction function) {
         x = function.call(LuaDouble.valueOf(x)).todouble();
@@ -477,7 +483,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
                     argumentTypes = FiguraVec3.class,
                     argumentNames = "other"
             ),
-            description = "vector3.cross"
+            value = "vector3.cross"
     )
     public FiguraVec3 cross(@LuaNotNil FiguraVec3 other) {
         double nx = y * other.z - z * other.y;
@@ -493,7 +499,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
                     argumentTypes = FiguraVec3.class,
                     argumentNames = "other"
             ),
-            description = "vector3.crossed"
+            value = "vector3.crossed"
     )
     public FiguraVec3 crossed(@LuaNotNil FiguraVec3 other) {
         double nx = y * other.z - z * other.y;
@@ -503,7 +509,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "vector3.augmented")
+    @LuaMethodDoc("vector3.augmented")
     public FiguraVec4 augmented() {
         return FiguraVec4.of(x, y, z, 1);
     }

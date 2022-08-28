@@ -12,7 +12,7 @@ import org.moon.figura.utils.TextUtils;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "NameplateCustomization",
-        description = "nameplate_customization"
+        value = "nameplate_customization"
 )
 public class NameplateCustomization {
 
@@ -23,7 +23,7 @@ public class NameplateCustomization {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "nameplate_customization.get_text")
+    @LuaMethodDoc("nameplate_customization.get_text")
     public String getText() {
         return this.text;
     }
@@ -34,7 +34,7 @@ public class NameplateCustomization {
                     argumentTypes = String.class,
                     argumentNames = "text"
             ),
-            description = "nameplate_customization.set_text"
+            value = "nameplate_customization.set_text"
     )
     public void setText(@LuaNotNil String text) {
         if (TextUtils.tryParseJson(text).getString().length() > 256)

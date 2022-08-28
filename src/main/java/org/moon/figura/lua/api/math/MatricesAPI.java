@@ -16,7 +16,7 @@ import org.moon.figura.utils.LuaUtils;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "MatricesAPI",
-        description = "matrices"
+        value = "matrices"
 )
 public class MatricesAPI {
 
@@ -31,7 +31,7 @@ public class MatricesAPI {
                             argumentNames = {"col1", "col2"}
                     )
             },
-            description = "matrices.mat2"
+            value = "matrices.mat2"
     )
     public static FiguraMat2 mat2(FiguraVec2 col1, FiguraVec2 col2) {
         if (col1 == null && col2 == null)
@@ -53,7 +53,7 @@ public class MatricesAPI {
                             argumentNames = {"col1", "col2", "col3"}
                     )
             },
-            description = "matrices.mat3"
+            value = "matrices.mat3"
     )
     public static FiguraMat3 mat3(FiguraVec3 col1, FiguraVec3 col2, FiguraVec3 col3) {
         if (col1 == null && col2 == null && col3 == null)
@@ -76,7 +76,7 @@ public class MatricesAPI {
                             argumentNames = {"col1", "col2", "col3", "col4"}
                     )
             },
-            description = "matrices.mat4"
+            value = "matrices.mat4"
     )
     public static FiguraMat4 mat4(FiguraVec4 col1, FiguraVec4 col2, FiguraVec4 col3, FiguraVec4 col4) {
         if (col1 == null && col2 == null && col3 == null && col4 == null)
@@ -98,7 +98,7 @@ public class MatricesAPI {
                     argumentTypes = Double.class,
                     argumentNames = "angle"
             ),
-            description = "matrices.rotation2"
+            value = "matrices.rotation2"
     )
     public static FiguraMat2 rotation2(double degrees) {
         FiguraMat2 mat = FiguraMat2.of();
@@ -118,7 +118,7 @@ public class MatricesAPI {
                             argumentNames = {"x", "y", "z"}
                     )
             },
-            description = "matrices.rotation3"
+            value = "matrices.rotation3"
     )
     public static FiguraMat3 rotation3(Object x, Double y, Double z) {
         FiguraVec3 angles = LuaUtils.parseVec3("rotation3", x, y, z);
@@ -134,7 +134,7 @@ public class MatricesAPI {
                     argumentTypes = Double.class,
                     argumentNames = "angle"
             ),
-            description = "matrices.x_rotation3"
+            value = "matrices.x_rotation3"
     )
     public static FiguraMat3 xRotation3(double degrees) {
         FiguraMat3 result = FiguraMat3.of();
@@ -148,7 +148,7 @@ public class MatricesAPI {
                     argumentTypes = Double.class,
                     argumentNames = "angle"
             ),
-            description = "matrices.y_rotation3"
+            value = "matrices.y_rotation3"
     )
     public static FiguraMat3 yRotation3(double degrees) {
         FiguraMat3 result = FiguraMat3.of();
@@ -162,7 +162,7 @@ public class MatricesAPI {
                     argumentTypes = Double.class,
                     argumentNames = "angle"
             ),
-            description = "matrices.z_rotation3"
+            value = "matrices.z_rotation3"
     )
     public static FiguraMat3 zRotation3(double degrees) {
         FiguraMat3 result = FiguraMat3.of();
@@ -182,7 +182,7 @@ public class MatricesAPI {
                             argumentNames = {"x", "y", "z"}
                     )
             },
-            description = "matrices.rotation4"
+            value = "matrices.rotation4"
     )
     public static FiguraMat4 rotation4(Object x, Double y, Double z) {
         FiguraVec3 angles = LuaUtils.parseVec3("rotation4", x, y, z);
@@ -198,7 +198,7 @@ public class MatricesAPI {
                     argumentTypes = Double.class,
                     argumentNames = "angle"
             ),
-            description = "matrices.x_rotation4"
+            value = "matrices.x_rotation4"
     )
     public static FiguraMat4 xRotation4(double degrees) {
         FiguraMat4 result = FiguraMat4.of();
@@ -212,7 +212,7 @@ public class MatricesAPI {
                     argumentTypes = Double.class,
                     argumentNames = "angle"
             ),
-            description = "matrices.y_rotation4"
+            value = "matrices.y_rotation4"
     )
     public static FiguraMat4 yRotation4(double degrees) {
         FiguraMat4 result = FiguraMat4.of();
@@ -226,7 +226,7 @@ public class MatricesAPI {
                     argumentTypes = Double.class,
                     argumentNames = "angle"
             ),
-            description = "matrices.z_rotation4"
+            value = "matrices.z_rotation4"
     )
     public static FiguraMat4 zRotation4(double degrees) {
         FiguraMat4 result = FiguraMat4.of();
@@ -247,7 +247,7 @@ public class MatricesAPI {
                             argumentNames = {"x", "y"}
                     )
             },
-            description = "matrices.scale2"
+            value = "matrices.scale2"
     )
     public static FiguraMat2 scale2(Object x, Double y) {
         FiguraVec2 vec = LuaUtils.parseVec2("scale2", x, y, 1, 1);
@@ -269,7 +269,7 @@ public class MatricesAPI {
                             argumentNames = {"x", "y", "z"}
                     )
             },
-            description = "matrices.scale3"
+            value = "matrices.scale3"
     )
     public static FiguraMat3 scale3(Object x, Double y, Double z) {
         FiguraVec3 scale = LuaUtils.parseVec3("scale3", x, y, z, 1, 1, 1);
@@ -291,7 +291,7 @@ public class MatricesAPI {
                             argumentNames = {"x", "y", "z"}
                     )
             },
-            description = "matrices.scale4"
+            value = "matrices.scale4"
     )
     public static FiguraMat4 scale4(Object x, Double y, Double z) {
         FiguraVec3 scale = LuaUtils.parseVec3("scale4", x, y, z, 1, 1, 1);
@@ -314,7 +314,7 @@ public class MatricesAPI {
                             argumentNames = {"x", "y"}
                     )
             },
-            description = "matrices.translate3"
+            value = "matrices.translate3"
     )
     public static FiguraMat3 translate3(Object x, Double y) {
         FiguraVec2 offset = LuaUtils.parseVec2("translate3", x, y);
@@ -335,7 +335,7 @@ public class MatricesAPI {
                             argumentNames = {"x", "y", "z"}
                     )
             },
-            description = "matrices.translate4"
+            value = "matrices.translate4"
     )
     public static FiguraMat4 translate4(Object x, Double y, Double z) {
         FiguraVec3 offset = LuaUtils.parseVec3("translate4", x, y, z);

@@ -13,27 +13,27 @@ import org.moon.figura.utils.caching.CacheUtils;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "Vector6",
-        description = "vector6"
+        value = "vector6"
 )
 public class FiguraVec6 extends FiguraVector<FiguraVec6, FiguraMatrix.DummyMatrix<FiguraVec6>> {
 
     @LuaWhitelist
-    @LuaFieldDoc(description = "vector_n.x")
+    @LuaFieldDoc("vector_n.x")
     public double x;
     @LuaWhitelist
-    @LuaFieldDoc(description = "vector_n.y")
+    @LuaFieldDoc("vector_n.y")
     public double y;
     @LuaWhitelist
-    @LuaFieldDoc(description = "vector_n.z")
+    @LuaFieldDoc("vector_n.z")
     public double z;
     @LuaWhitelist
-    @LuaFieldDoc(description = "vector_n.w")
+    @LuaFieldDoc("vector_n.w")
     public double w;
     @LuaWhitelist
-    @LuaFieldDoc(description = "vector_n.t")
+    @LuaFieldDoc("vector_n.t")
     public double t;
     @LuaWhitelist
-    @LuaFieldDoc(description = "vector_n.h")
+    @LuaFieldDoc("vector_n.h")
     public double h;
 
     // -- cache -- //
@@ -43,10 +43,10 @@ public class FiguraVec6 extends FiguraVector<FiguraVec6, FiguraMatrix.DummyMatri
     @Override
     @LuaWhitelist
     @LuaMethodDoc(
-            description = "vector_n.reset",
             overloads = @LuaFunctionOverload(
                     returnType = FiguraVec6.class
-            )
+            ),
+            value = "vector_n.reset"
     )
     public FiguraVec6 reset() {
         x = y = z = w = t = h = 0;
@@ -95,7 +95,7 @@ public class FiguraVec6 extends FiguraVector<FiguraVec6, FiguraMatrix.DummyMatri
                             argumentNames = {"x", "y", "z", "w", "t", "h"}
                     )
             },
-            description = "vector_n.set"
+            value = "vector_n.set"
     )
     public FiguraVec6 set(@LuaNotNil Object x, double y, double z, double w, double t, double h) {
         if (x instanceof FiguraVec6 vec)
@@ -132,7 +132,7 @@ public class FiguraVec6 extends FiguraVector<FiguraVec6, FiguraMatrix.DummyMatri
                             argumentNames = {"x", "y", "z", "w", "t", "h"}
                     )
             },
-            description = "vector_n.add"
+            value = "vector_n.add"
     )
     public FiguraVec6 add(@LuaNotNil Object x, double y, double z, double w, double t, double h) {
         if (x instanceof FiguraVec6 vec)
@@ -169,7 +169,7 @@ public class FiguraVec6 extends FiguraVector<FiguraVec6, FiguraMatrix.DummyMatri
                             argumentNames = {"x", "y", "z", "w", "t", "h"}
                     )
             },
-            description = "vector_n.sub"
+            value = "vector_n.sub"
     )
     public FiguraVec6 sub(@LuaNotNil Object x, double y, double z, double w, double t, double h) {
         if (x instanceof FiguraVec6 vec)
@@ -187,7 +187,7 @@ public class FiguraVec6 extends FiguraVector<FiguraVec6, FiguraMatrix.DummyMatri
                     argumentNames = "factor",
                     returnType = FiguraVec6.class
             ),
-            description = "vector_n.offset"
+            value = "vector_n.offset"
     )
     public FiguraVec6 offset(double factor) {
         this.x += factor;
@@ -225,7 +225,7 @@ public class FiguraVec6 extends FiguraVector<FiguraVec6, FiguraMatrix.DummyMatri
                             argumentNames = {"x", "y", "z", "w", "t", "h"}
                     )
             },
-            description = "vector_n.mul"
+            value = "vector_n.mul"
     )
     public FiguraVec6 mul(@LuaNotNil Object x, double y, double z, double w, double t, double h) {
         if (x instanceof FiguraVec6 vec)
@@ -262,7 +262,7 @@ public class FiguraVec6 extends FiguraVector<FiguraVec6, FiguraMatrix.DummyMatri
                             argumentNames = {"x", "y", "z", "w", "t", "h"}
                     )
             },
-            description = "vector_n.div"
+            value = "vector_n.div"
     )
     public FiguraVec6 div(@LuaNotNil Object x, double y, double z, double w, double t, double h) {
         if (x instanceof FiguraVec6 vec)
@@ -299,7 +299,7 @@ public class FiguraVec6 extends FiguraVector<FiguraVec6, FiguraMatrix.DummyMatri
                             argumentNames = {"x", "y", "z", "w", "t", "h"}
                     )
             },
-            description = "vector_n.reduce"
+            value = "vector_n.reduce"
     )
     public FiguraVec6 reduce(@LuaNotNil Object x, double y, double z, double w, double t, double h) {
         if (x instanceof FiguraVec6 vec)
@@ -317,7 +317,7 @@ public class FiguraVec6 extends FiguraVector<FiguraVec6, FiguraMatrix.DummyMatri
                     argumentNames = "factor",
                     returnType = FiguraVec6.class
             ),
-            description = "vector_n.scale"
+            value = "vector_n.scale"
     )
     public FiguraVec6 scale(double factor) {
         this.x *= factor;
@@ -338,17 +338,18 @@ public class FiguraVec6 extends FiguraVector<FiguraVec6, FiguraMatrix.DummyMatri
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(description = "vector_n.length_squared")
+    @LuaMethodDoc("vector_n.length_squared")
     public double lengthSquared() {
         return x * x + y * y + z * z + w * w + t * t + h * h;
     }
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(description = "vector_n.copy",
+    @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     returnType = FiguraVec6.class
-            )
+            ),
+            value = "vector_n.copy"
     )
     public FiguraVec6 copy() {
         return of(x, y, z, w, t, h);
@@ -361,7 +362,7 @@ public class FiguraVec6 extends FiguraVector<FiguraVec6, FiguraMatrix.DummyMatri
                     argumentTypes = FiguraVec6.class,
                     argumentNames = "vec"
             ),
-            description = "vector_n.dot"
+            value = "vector_n.dot"
     )
     public double dot(@LuaNotNil FiguraVec6 other) {
         return x * other.x + y * other.y + z * other.z + w * other.w + t * other.t + h * other.h;
@@ -369,10 +370,11 @@ public class FiguraVec6 extends FiguraVector<FiguraVec6, FiguraMatrix.DummyMatri
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(description = "vector_n.normalize",
+    @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     returnType = FiguraVec6.class
-            )
+            ),
+            value = "vector_n.normalize"
     )
     public FiguraVec6 normalize() {
         return super.normalize();
@@ -380,10 +382,11 @@ public class FiguraVec6 extends FiguraVector<FiguraVec6, FiguraMatrix.DummyMatri
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(description = "vector_n.normalized",
+    @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     returnType = FiguraVec6.class
-            )
+            ),
+            value = "vector_n.normalized"
     )
     public FiguraVec6 normalized() {
         return super.normalized();
@@ -397,7 +400,7 @@ public class FiguraVec6 extends FiguraVector<FiguraVec6, FiguraMatrix.DummyMatri
                     argumentNames = {"minLength", "maxLength"},
                     returnType = FiguraVec6.class
             ),
-            description = "vector_n.clamp_length"
+            value = "vector_n.clamp_length"
     )
     public FiguraVec6 clampLength(Double min, Double max) {
         return super.clampLength(min, max);
@@ -411,7 +414,7 @@ public class FiguraVec6 extends FiguraVector<FiguraVec6, FiguraMatrix.DummyMatri
                     argumentNames = {"minLength", "maxLength"},
                     returnType = FiguraVec6.class
             ),
-            description = "vector_n.clamped"
+            value = "vector_n.clamped"
     )
     public FiguraVec6 clamped(Double min, Double max) {
         return super.clamped(min, max);
@@ -419,17 +422,18 @@ public class FiguraVec6 extends FiguraVector<FiguraVec6, FiguraMatrix.DummyMatri
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(description = "vector_n.length")
+    @LuaMethodDoc("vector_n.length")
     public double length() {
         return super.length();
     }
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(description = "vector_n.to_rad",
+    @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     returnType = FiguraVec6.class
-            )
+            ),
+            value = "vector_n.to_rad"
     )
     public FiguraVec6 toRad() {
         return super.toRad();
@@ -437,23 +441,24 @@ public class FiguraVec6 extends FiguraVector<FiguraVec6, FiguraMatrix.DummyMatri
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(description = "vector_n.to_deg",
+    @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     returnType = FiguraVec6.class
-            )
+            ),
+            value = "vector_n.to_deg"
     )
     public FiguraVec6 toDeg() {
         return super.toDeg();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "vector_n.floor")
+    @LuaMethodDoc("vector_n.floor")
     public FiguraVec6 floor() {
         return FiguraVec6.of(Math.floor(x), Math.floor(y), Math.floor(z), Math.floor(w), Math.floor(t), Math.floor(h));
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "vector_n.ceil")
+    @LuaMethodDoc("vector_n.ceil")
     public FiguraVec6 ceil() {
         return FiguraVec6.of(Math.ceil(x), Math.ceil(y), Math.ceil(z), Math.ceil(w), Math.ceil(t), Math.ceil(h));
     }
@@ -464,7 +469,7 @@ public class FiguraVec6 extends FiguraVector<FiguraVec6, FiguraMatrix.DummyMatri
                     argumentTypes = LuaFunction.class,
                     argumentNames = "func"
             ),
-            description = "vector_n.apply_func"
+            value = "vector_n.apply_func"
     )
     public FiguraVec6 applyFunc(@LuaNotNil LuaFunction function) {
         x = function.call(LuaDouble.valueOf(x)).todouble();

@@ -72,7 +72,7 @@ public abstract class FiguraDoc {
         }
 
         public ClassDoc(Class<?> clazz, LuaTypeDoc typeDoc, Map<String, List<FiguraDoc>> children) {
-            super(typeDoc.name(), typeDoc.description());
+            super(typeDoc.name(), typeDoc.value());
 
             if (clazz.getSuperclass().isAnnotationPresent(LuaTypeDoc.class))
                 superclass = clazz.getSuperclass();
@@ -198,7 +198,7 @@ public abstract class FiguraDoc {
         public final List<FiguraDoc> children;
 
         public MethodDoc(Method method, LuaMethodDoc methodDoc, List<FiguraDoc> children, String typeName) {
-            super(method.getName(), methodDoc.description());
+            super(method.getName(), methodDoc.value());
 
             LuaFunctionOverload[] overloads = methodDoc.overloads();
             parameterTypes = new Class[overloads.length][];
@@ -332,7 +332,7 @@ public abstract class FiguraDoc {
         public final List<FiguraDoc> children;
 
         public FieldDoc(Field field, LuaFieldDoc luaFieldDoc, List<FiguraDoc> children) {
-            super(field.getName(), luaFieldDoc.description());
+            super(field.getName(), luaFieldDoc.value());
             type = field.getType();
             editable = !Modifier.isFinal(field.getModifiers());
             this.children = children;

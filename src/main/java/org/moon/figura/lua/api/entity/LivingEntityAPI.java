@@ -18,7 +18,7 @@ import java.util.Map;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "LivingEntityAPI",
-        description = "living_entity"
+        value = "living_entity"
 )
 public class LivingEntityAPI<T extends LivingEntity> extends EntityAPI<T> {
 
@@ -35,7 +35,7 @@ public class LivingEntityAPI<T extends LivingEntity> extends EntityAPI<T> {
                             argumentNames = "delta"
                     )
             },
-            description = "living_entity.get_body_yaw"
+            value = "living_entity.get_body_yaw"
     )
     public double getBodyYaw(Float delta) {
         checkEntity();
@@ -52,7 +52,7 @@ public class LivingEntityAPI<T extends LivingEntity> extends EntityAPI<T> {
                             argumentNames = "offhand"
                     )
             },
-            description = "living_entity.get_held_item"
+            value = "living_entity.get_held_item"
     )
     public ItemStackAPI getHeldItem(boolean offhand) {
         checkEntity();
@@ -60,42 +60,42 @@ public class LivingEntityAPI<T extends LivingEntity> extends EntityAPI<T> {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "living_entity.get_active_item")
+    @LuaMethodDoc("living_entity.get_active_item")
     public ItemStackAPI getActiveItem() {
         checkEntity();
         return ItemStackAPI.verify(entity.getUseItem());
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "living_entity.get_health")
+    @LuaMethodDoc("living_entity.get_health")
     public float getHealth() {
         checkEntity();
         return entity.getHealth();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "living_entity.get_max_health")
+    @LuaMethodDoc("living_entity.get_max_health")
     public float getMaxHealth() {
         checkEntity();
         return entity.getMaxHealth();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "living_entity.get_armor")
+    @LuaMethodDoc("living_entity.get_armor")
     public float getArmor() {
         checkEntity();
         return entity.getArmorValue();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "living_entity.get_death_time")
+    @LuaMethodDoc("living_entity.get_death_time")
     public float getDeathTime() {
         checkEntity();
         return entity.deathTime;
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "living_entity.get_status_effects")
+    @LuaMethodDoc("living_entity.get_status_effects")
     public List<Map<String, Object>> getStatusEffects() {
         checkEntity();
         List<Map<String, Object>> list = new ArrayList<>();
@@ -114,42 +114,42 @@ public class LivingEntityAPI<T extends LivingEntity> extends EntityAPI<T> {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "living_entity.get_arrow_count")
+    @LuaMethodDoc("living_entity.get_arrow_count")
     public int getArrowCount() {
         checkEntity();
         return entity.getArrowCount();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "living_entity.get_stinger_count")
+    @LuaMethodDoc("living_entity.get_stinger_count")
     public int getStingerCount() {
         checkEntity();
         return entity.getStingerCount();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "living_entity.is_left_handed")
+    @LuaMethodDoc("living_entity.is_left_handed")
     public boolean isLeftHanded() {
         checkEntity();
         return entity.getMainArm() == HumanoidArm.LEFT;
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "living_entity.is_using_item")
+    @LuaMethodDoc("living_entity.is_using_item")
     public boolean isUsingItem() {
         checkEntity();
         return entity.isUsingItem();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "living_entity.get_active_hand")
+    @LuaMethodDoc("living_entity.get_active_hand")
     public String getActiveHand() {
         checkEntity();
         return entity.getUsedItemHand().toString();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "living_entity.is_climbing")
+    @LuaMethodDoc("living_entity.is_climbing")
     public boolean isClimbing() {
         checkEntity();
         return entity.onClimbable();

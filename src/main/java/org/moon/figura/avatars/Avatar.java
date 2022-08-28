@@ -400,7 +400,6 @@ public class Avatar {
             return;
 
         complexity = 0;
-//        remainingComplexity = trust.get(TrustContainer.Trust.COMPLEXITY);
 
         for (Queue<Pair<FiguraMat4, FiguraMat3>> queue : renderer.pivotCustomizations.values()) {
             while (!queue.isEmpty()) {
@@ -496,7 +495,6 @@ public class Avatar {
         if (renderer == null || !renderer.allowSkullRendering)
             return false;
 
-//        int prevComplexity = remainingComplexity;
         int oldComplexity = complexity;
 
         renderer.allowPivotParts = false;
@@ -524,7 +522,6 @@ public class Avatar {
         renderer.renderSpecialParts();
 
         //hacky
-//        if (prevComplexity > remainingComplexity) {
         if (complexity > oldComplexity) {
             renderer.allowPivotParts = true;
             renderer.allowRenderTasks = true;
@@ -547,7 +544,6 @@ public class Avatar {
 
         //hacky 2
         stack.popPose();
-//        return prevComplexity > remainingComplexity && luaRuntime != null && !luaRuntime.vanilla_model.HEAD.getVisible();
         return complexity > oldComplexity && luaRuntime != null && !luaRuntime.vanilla_model.HEAD.getVisible();
     }
 

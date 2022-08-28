@@ -14,7 +14,7 @@ import java.util.ArrayList;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "KeybindAPI",
-        description = "keybind_api"
+        value = "keybind_api"
 )
 public class KeybindAPI {
 
@@ -41,7 +41,7 @@ public class KeybindAPI {
                             argumentNames = {"name", "key", "gui", "override"}
                     )
             },
-            description = "keybind_api.create"
+            value = "keybind_api.create"
     )
     public FiguraKeybind create(@LuaNotNil String name, @LuaNotNil String key, boolean gui, boolean override) {
         this.keyBindings.removeIf(binding -> binding.getName().equals(name));
@@ -60,7 +60,7 @@ public class KeybindAPI {
                     argumentTypes = String.class,
                     argumentNames = "id"
             ),
-            description = "keybind_api.get_vanilla_key"
+            value = "keybind_api.get_vanilla_key"
     )
     public String getVanillaKey(@LuaNotNil String id) {
         KeyMapping key = KeyMappingAccessor.getAll().get(id);

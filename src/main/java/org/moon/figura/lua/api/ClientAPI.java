@@ -21,7 +21,7 @@ import org.moon.figura.utils.Version;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "ClientAPI",
-        description = "client"
+        value = "client"
 )
 public class ClientAPI {
 
@@ -29,7 +29,7 @@ public class ClientAPI {
     private static final boolean hasIris = FabricLoader.getInstance().isModLoaded("iris");
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "client.get_fps")
+    @LuaMethodDoc("client.get_fps")
     public static int getFPS() {
         String s = getFPSString();
         if (s.length() == 0)
@@ -38,31 +38,31 @@ public class ClientAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "client.get_fps_string")
+    @LuaMethodDoc("client.get_fps_string")
     public static String getFPSString() {
         return Minecraft.getInstance().fpsString;
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "client.is_paused")
+    @LuaMethodDoc("client.is_paused")
     public static boolean isPaused() {
         return Minecraft.getInstance().isPaused();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "client.get_version")
+    @LuaMethodDoc("client.get_version")
     public static String getVersion() {
         return Minecraft.getInstance().getLaunchedVersion();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "client.get_version_type")
+    @LuaMethodDoc("client.get_version_type")
     public static String getVersionType() {
         return Minecraft.getInstance().getVersionType();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "client.get_server_brand")
+    @LuaMethodDoc("client.get_server_brand")
     public static String getServerBrand() {
         if (Minecraft.getInstance().player == null)
             return null;
@@ -71,25 +71,25 @@ public class ClientAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "client.get_chunk_statistics")
+    @LuaMethodDoc("client.get_chunk_statistics")
     public static String getChunkStatistics() {
         return Minecraft.getInstance().levelRenderer.getChunkStatistics();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "client.get_entity_statistics")
+    @LuaMethodDoc("client.get_entity_statistics")
     public static String getEntityStatistics() {
         return Minecraft.getInstance().levelRenderer.getEntityStatistics();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "client.get_sound_statistics")
+    @LuaMethodDoc("client.get_sound_statistics")
     public static String getSoundStatistics() {
         return Minecraft.getInstance().getSoundManager().getDebugString();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "client.get_entity_count")
+    @LuaMethodDoc("client.get_entity_count")
     public static int getEntityCount() {
         if (Minecraft.getInstance().level == null)
             return 0;
@@ -98,13 +98,13 @@ public class ClientAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "client.get_particle_count")
+    @LuaMethodDoc("client.get_particle_count")
     public static String getParticleCount() {
         return Minecraft.getInstance().particleEngine.countParticles();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "client.get_current_effect")
+    @LuaMethodDoc("client.get_current_effect")
     public static String getCurrentEffect() {
         if (Minecraft.getInstance().gameRenderer.currentEffect() == null)
             return null;
@@ -113,95 +113,95 @@ public class ClientAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "client.get_java_version")
+    @LuaMethodDoc("client.get_java_version")
     public static String getJavaVersion() {
         return System.getProperty("java.version");
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "client.get_used_memory")
+    @LuaMethodDoc("client.get_used_memory")
     public static long getUsedMemory() {
         return Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "client.get_max_memory")
+    @LuaMethodDoc("client.get_max_memory")
     public static long getMaxMemory() {
         return Runtime.getRuntime().maxMemory();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "client.get_allocated_memory")
+    @LuaMethodDoc("client.get_allocated_memory")
     public static long getAllocatedMemory() {
         return Runtime.getRuntime().totalMemory();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "client.is_window_focused")
+    @LuaMethodDoc("client.is_window_focused")
     public static boolean isWindowFocused() {
         return Minecraft.getInstance().isWindowActive();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "client.is_hud_enabled")
+    @LuaMethodDoc("client.is_hud_enabled")
     public static boolean isHudEnabled() {
         return Minecraft.renderNames();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "client.is_debug_overlay_enabled")
+    @LuaMethodDoc("client.is_debug_overlay_enabled")
     public static boolean isDebugOverlayEnabled() {
         return Minecraft.getInstance().options.renderDebug;
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "client.get_window_size")
+    @LuaMethodDoc("client.get_window_size")
     public static FiguraVec2 getWindowSize() {
         Window window = Minecraft.getInstance().getWindow();
         return FiguraVec2.of(window.getWidth(), window.getHeight());
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "client.get_fov")
+    @LuaMethodDoc("client.get_fov")
     public static double getFOV() {
         return Minecraft.getInstance().options.fov;
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "client.get_system_time")
+    @LuaMethodDoc("client.get_system_time")
     public static long getSystemTime() {
         return System.currentTimeMillis();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "client.get_mouse_pos")
+    @LuaMethodDoc("client.get_mouse_pos")
     public static FiguraVec2 getMousePos() {
         MouseHandler mouse = Minecraft.getInstance().mouseHandler;
         return FiguraVec2.of(mouse.xpos(), mouse.ypos());
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "client.get_scaled_window_size")
+    @LuaMethodDoc("client.get_scaled_window_size")
     public static FiguraVec2 getScaledWindowSize() {
         Window window = Minecraft.getInstance().getWindow();
         return FiguraVec2.of(window.getGuiScaledWidth(), window.getGuiScaledHeight());
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "client.get_gui_scale")
+    @LuaMethodDoc("client.get_gui_scale")
     public static double getGuiScale() {
         return Minecraft.getInstance().getWindow().getGuiScale();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "client.get_camera_pos")
+    @LuaMethodDoc("client.get_camera_pos")
     public static FiguraVec3 getCameraPos() {
         Vec3 pos = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
-        return FiguraVec3.of(pos.x, pos.y, pos.z);
+        return FiguraVec3.fromVec3(pos);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "client.get_camera_rot")
+    @LuaMethodDoc("client.get_camera_rot")
     public static FiguraVec3 getCameraRot() {
         double f = 180d / Math.PI;
         return MathUtils.quaternionToYXZ(Minecraft.getInstance().gameRenderer.getMainCamera().rotation()).multiply(f, -f, f); //degrees, and negate y
@@ -213,7 +213,7 @@ public class ClientAPI {
                     argumentTypes = String.class,
                     argumentNames = "text"
             ),
-            description = "client.get_text_width"
+            value = "client.get_text_width"
     )
     public static int getTextWidth(String text) {
         return TextUtils.getWidth(TextUtils.splitText(TextUtils.tryParseJson(text), "\n"), Minecraft.getInstance().font);
@@ -225,32 +225,32 @@ public class ClientAPI {
                     argumentTypes = String.class,
                     argumentNames = "text"
             ),
-            description = "client.get_text_height"
+            value = "client.get_text_height"
     )
     public static int getTextHeight(String text) {
         return Minecraft.getInstance().font.lineHeight * TextUtils.splitText(TextUtils.tryParseJson(text), "\n").size();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "client.get_active_lang")
+    @LuaMethodDoc("client.get_active_lang")
     public static String getActiveLang() {
         return Minecraft.getInstance().options.languageCode;
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "client.has_iris")
+    @LuaMethodDoc("client.has_iris")
     public static boolean hasIris() {
         return hasIris;
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "client.has_iris_shader")
+    @LuaMethodDoc("client.has_iris_shader")
     public static boolean hasIrisShader() {
         return hasIris && net.irisshaders.iris.api.v0.IrisApi.getInstance().isShaderPackInUse();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "client.get_figura_version")
+    @LuaMethodDoc("client.get_figura_version")
     public static String getFiguraVersion() {
         return FiguraMod.VERSION;
     }
@@ -261,7 +261,7 @@ public class ClientAPI {
                     argumentTypes = {String.class, String.class},
                     argumentNames = {"version1", "version2"}
             ),
-            description = "client.compare_versions")
+            value = "client.compare_versions")
     public static int compareVersions(@LuaNotNil String ver1, @LuaNotNil String ver2) {
         try {
             return Version.of(ver1).compareTo(Version.of(ver2));

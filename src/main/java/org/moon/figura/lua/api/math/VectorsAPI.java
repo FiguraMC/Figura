@@ -14,7 +14,7 @@ import org.moon.figura.utils.MathUtils;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "VectorsAPI",
-        description = "vectors"
+        value = "vectors"
 )
 public class VectorsAPI {
 
@@ -49,7 +49,7 @@ public class VectorsAPI {
                             returnType = FiguraVec6.class
                     )
             },
-            description = "vectors.vec"
+            value = "vectors.vec"
     )
     public static Object vec(Double x, Double y, Double z, Double w, Double t, Double h) {
         if (h != null)
@@ -71,7 +71,7 @@ public class VectorsAPI {
                     argumentTypes = {Double.class, Double.class},
                     argumentNames = {"x", "y"}
             ),
-            description = "vectors.vec2"
+            value = "vectors.vec2"
     )
     public static FiguraVec2 vec2(double x, double y) {
         return FiguraVec2.of(x, y);
@@ -83,7 +83,7 @@ public class VectorsAPI {
                     argumentTypes = {Double.class, Double.class, Double.class},
                     argumentNames = {"x", "y", "z"}
             ),
-            description = "vectors.vec3"
+            value = "vectors.vec3"
     )
     public static FiguraVec3 vec3(double x, double y, double z) {
         return FiguraVec3.of(x, y, z);
@@ -95,7 +95,7 @@ public class VectorsAPI {
                     argumentTypes = {Double.class, Double.class, Double.class, Double.class},
                     argumentNames = {"x", "y", "z", "w"}
             ),
-            description = "vectors.vec4"
+            value = "vectors.vec4"
     )
     public static FiguraVec4 vec4(double x, double y, double z, double w) {
         return FiguraVec4.of(x, y, z, w);
@@ -107,7 +107,7 @@ public class VectorsAPI {
                     argumentTypes = {Double.class, Double.class, Double.class, Double.class, Double.class},
                     argumentNames = {"x", "y", "z", "w", "t"}
             ),
-            description = "vectors.vec5"
+            value = "vectors.vec5"
     )
     public static FiguraVec5 vec5(double x, double y, double z, double w, double t) {
         return FiguraVec5.of(x, y, z, w, t);
@@ -119,7 +119,7 @@ public class VectorsAPI {
                     argumentTypes = {Double.class, Double.class, Double.class, Double.class, Double.class, Double.class},
                     argumentNames = {"x", "y", "z", "w", "t", "h"}
             ),
-            description = "vectors.vec6"
+            value = "vectors.vec6"
     )
     public static FiguraVec6 vec6(double x, double y, double z, double w, double t, double h) {
         return FiguraVec6.of(x, y, z, w, t, h);
@@ -139,7 +139,7 @@ public class VectorsAPI {
                             argumentNames = {"r", "g", "b"}
                     )
             },
-            description = "vectors.rgb_to_int"
+            value = "vectors.rgb_to_int"
     )
     public static int rgbToInt(Object r, Double g, Double b) {
         FiguraVec3 rgb = LuaUtils.parseVec3("rgbToInt", r, g, b);
@@ -152,7 +152,7 @@ public class VectorsAPI {
                     argumentTypes = Integer.class,
                     argumentNames = "color"
             ),
-            description = "vectors.int_to_rgb"
+            value = "vectors.int_to_rgb"
     )
     public static FiguraVec3 intToRGB(int color) {
         return ColorUtils.intToRGB(color);
@@ -164,7 +164,7 @@ public class VectorsAPI {
                     argumentTypes = String.class,
                     argumentNames = "hex"
             ),
-            description = "vectors.hex_to_rgb"
+            value = "vectors.hex_to_rgb"
     )
     public static FiguraVec3 hexToRGB(@LuaNotNil String hex) {
         return ColorUtils.intToRGB(ColorUtils.userInputHex(hex, FiguraVec3.of()));
@@ -182,7 +182,7 @@ public class VectorsAPI {
                             argumentNames = {"h", "s", "v"}
                     )
             },
-            description = "vectors.hsv_to_rgb"
+            value = "vectors.hsv_to_rgb"
     )
     public static FiguraVec3 hsvToRGB(Object h, Double s, Double v) {
         FiguraVec3 hsv = LuaUtils.parseVec3("hsvToRGB", h, s, v);
@@ -201,7 +201,7 @@ public class VectorsAPI {
                             argumentNames = {"r", "g", "b"}
                     )
             },
-            description = "vectors.rgb_to_hsv"
+            value = "vectors.rgb_to_hsv"
     )
     public static FiguraVec3 rgbToHSV(Object r, Double g, Double b) {
         FiguraVec3 rgb = LuaUtils.parseVec3("rgbToHSV", r, g, b);
@@ -220,7 +220,7 @@ public class VectorsAPI {
                             argumentNames = {"r", "g", "b"}
                     )
             },
-            description = "vectors.rgb_to_hex"
+            value = "vectors.rgb_to_hex"
     )
     public static String rgbToHex(Object r, Double g, Double b) {
         FiguraVec3 rgb = LuaUtils.parseVec3("rgbToHex", r, g, b);
@@ -243,7 +243,7 @@ public class VectorsAPI {
                             argumentNames = {"speed", "offset", "saturation", "light"}
                     )
             },
-            description = "vectors.rainbow"
+            value = "vectors.rainbow"
     )
     public static FiguraVec3 rainbow(Double speed, double offset, Double saturation, Double light) {
         if (speed == null) speed = 1d;
@@ -274,7 +274,7 @@ public class VectorsAPI {
                             argumentNames = {"angle", "x", "y", "z", "axisX", "axisY", "axisZ"}
                     )
             },
-            description = "vectors.rotate_around_axis"
+            value = "vectors.rotate_around_axis"
     )
     public static FiguraVec3 rotateAroundAxis(double angle, Object x, Object y, Double z, Object w, Double t, Double h) {
         FiguraVec3 vec, axis;
@@ -306,13 +306,12 @@ public class VectorsAPI {
             throw new LuaError("Illegal argument to rotateAroundAxis(): " + x);
         }
 
-        FiguraVec3 result = MathUtils.rotateAroundAxis(FiguraVec3.of(vec.x, vec.y, vec.z), FiguraVec3.of(axis.x, axis.y, axis.z), angle);
-        FiguraVec3 ret = FiguraVec3.of(result.x, result.y, result.z);
+        FiguraVec3 result = MathUtils.rotateAroundAxis(vec, axis, angle);
 
         vec.free();
         axis.free();
 
-        return ret;
+        return result;
     }
 
     @LuaWhitelist
@@ -327,12 +326,10 @@ public class VectorsAPI {
                             argumentNames = {"x", "y", "z"}
                     )
             },
-            description = "vectors.to_camera_space"
+            value = "vectors.to_camera_space"
     )
     public static FiguraVec3 toCameraSpace(Object x, Double y, Double z) {
-        FiguraVec3 vec = LuaUtils.parseVec3("toCameraSpace", x, y, z);
-        FiguraVec3 result = MathUtils.toCameraSpace(FiguraVec3.of(vec.x, vec.y, vec.z));
-        return FiguraVec3.of(result.x, result.y, result.z);
+        return MathUtils.toCameraSpace(LuaUtils.parseVec3("toCameraSpace", x, y, z));
     }
 
     @LuaWhitelist
@@ -347,12 +344,10 @@ public class VectorsAPI {
                             argumentNames = {"x", "y", "z"}
                     )
             },
-            description = "vectors.world_to_screen_space"
+            value = "vectors.world_to_screen_space"
     )
     public static FiguraVec4 worldToScreenSpace(Object x, Double y, Double z) {
-        FiguraVec3 vec = LuaUtils.parseVec3("worldToScreenSpace", x, y, z);
-        FiguraVec4 result = MathUtils.worldToScreenSpace(FiguraVec3.of(vec.x, vec.y, vec.z));
-        return FiguraVec4.of(result.x, result.y, result.z, result.w);
+        return MathUtils.worldToScreenSpace(LuaUtils.parseVec3("worldToScreenSpace", x, y, z));
     }
 
     @Override

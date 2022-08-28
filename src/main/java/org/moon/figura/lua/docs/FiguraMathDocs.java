@@ -7,9 +7,15 @@ import org.moon.figura.math.vector.*;
  */
 @LuaTypeDoc(
         name = "math",
-        description = "math"
+        value = "math"
 )
 public class FiguraMathDocs {
+
+    @LuaFieldDoc("math.player_scale")
+    public double playerScale;
+    @LuaFieldDoc("math.world_scale")
+    public double worldScale;
+
     @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload(
@@ -43,7 +49,7 @@ public class FiguraMathDocs {
                             returnType = FiguraVec6.class
                     ),
             },
-            description = "math.lerp"
+            value = "math.lerp"
     )
     public static Object lerp() {return null;}
 
@@ -52,7 +58,7 @@ public class FiguraMathDocs {
                     argumentTypes = {Double.class, Double.class, Double.class},
                     argumentNames = {"value", "min", "max"}
             ),
-            description = "math.clamp"
+            value = "math.clamp"
     )
     public static Double clamp() {return null;}
 
@@ -61,7 +67,7 @@ public class FiguraMathDocs {
                     argumentTypes = Double.class,
                     argumentNames = "value"
             ),
-            description = "math.round"
+            value = "math.round"
     )
     public static Double round() {return null;}
 
@@ -70,7 +76,7 @@ public class FiguraMathDocs {
                     argumentTypes = {Double.class, Double.class, Double.class, Double.class, Double.class},
                     argumentNames = {"value", "oldMin", "oldMax", "newMin", "newMax"}
             ),
-            description = "math.map"
+            value = "math.map"
     )
     public static Double map() {return null;}
 
@@ -79,7 +85,7 @@ public class FiguraMathDocs {
                     argumentTypes = {Double.class, Double.class},
                     argumentNames = {"from", "to"}
             ),
-            description = "math.short_angle"
+            value = "math.short_angle"
     )
     public static Double shortAngle() {return null;}
 
@@ -88,7 +94,7 @@ public class FiguraMathDocs {
                     argumentTypes = {Double.class, Double.class, Double.class},
                     argumentNames = {"a", "b", "t"}
             ),
-            description = "math.lerp_angle"
+            value = "math.lerp_angle"
     )
     public static Double lerpAngle() {return null;}
 
@@ -97,7 +103,7 @@ public class FiguraMathDocs {
                     argumentTypes = Double.class,
                     argumentNames = "value"
             ),
-            description = "math.sign"
+            value = "math.sign"
     )
     public static Double sign() {return null;}
 }

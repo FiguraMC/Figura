@@ -13,7 +13,7 @@ import org.moon.figura.utils.LuaUtils;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "EntityNameplateCustomization",
-        description = "nameplate_entity"
+        value = "nameplate_entity"
 )
 public class EntityNameplateCustomization extends NameplateCustomization {
 
@@ -23,17 +23,17 @@ public class EntityNameplateCustomization extends NameplateCustomization {
     public Double alpha;
 
     @LuaWhitelist
-    @LuaFieldDoc(description = "nameplate_entity.visible")
+    @LuaFieldDoc("nameplate_entity.visible")
     public boolean visible = true;
     @LuaWhitelist
-    @LuaFieldDoc(description = "nameplate_entity.shadow")
+    @LuaFieldDoc("nameplate_entity.shadow")
     public boolean shadow;
     @LuaWhitelist
-    @LuaFieldDoc(description = "nameplate_entity.outline")
+    @LuaFieldDoc("nameplate_entity.outline")
     public boolean outline;
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "nameplate_entity.get_pos")
+    @LuaMethodDoc("nameplate_entity.get_pos")
     public FiguraVec3 getPos() {
         return this.position;
     }
@@ -50,14 +50,14 @@ public class EntityNameplateCustomization extends NameplateCustomization {
                             argumentNames = {"x", "y", "z"}
                     )
             },
-            description = "nameplate_entity.set_pos"
+            value = "nameplate_entity.set_pos"
     )
     public void setPos(Object x, Double y, Double z) {
         this.position = x == null ? null : LuaUtils.parseVec3("setPosition", x, y, z);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "nameplate_entity.get_scale")
+    @LuaMethodDoc("nameplate_entity.get_scale")
     public FiguraVec3 getScale() {
         return this.scale;
     }
@@ -74,7 +74,7 @@ public class EntityNameplateCustomization extends NameplateCustomization {
                             argumentNames = {"x", "y", "z"}
                     )
             },
-            description = "nameplate_entity.set_scale"
+            value = "nameplate_entity.set_scale"
     )
     public void setScale(Object x, Double y, Double z) {
         this.scale = x == null ? null : LuaUtils.parseVec3("setScale", x, y, z, 1, 1, 1);
@@ -104,7 +104,7 @@ public class EntityNameplateCustomization extends NameplateCustomization {
                             argumentNames = {"r", "g", "b", "a"}
                     )
             },
-            description = "nameplate_entity.set_background_color"
+            value = "nameplate_entity.set_background_color"
     )
     public void setBackgroundColor(Object r, Double g, Double b, Double a) {
         if (r == null) {

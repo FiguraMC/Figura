@@ -15,7 +15,7 @@ import org.moon.figura.utils.LuaUtils;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "ToggleAction",
-        description = "toggle_action"
+        value = "toggle_action"
 )
 public class ToggleAction extends Action {
 
@@ -27,10 +27,10 @@ public class ToggleAction extends Action {
     protected FiguraVec3 toggleColor;
 
     @LuaWhitelist
-    @LuaFieldDoc(description = "toggle_action.toggle")
+    @LuaFieldDoc("toggle_action.toggle")
     private LuaFunction toggle;
     @LuaWhitelist
-    @LuaFieldDoc(description = "toggle_action.untoggle")
+    @LuaFieldDoc("toggle_action.untoggle")
     private LuaFunction untoggle;
 
     @LuaWhitelist
@@ -39,7 +39,7 @@ public class ToggleAction extends Action {
                     argumentTypes = LuaFunction.class,
                     argumentNames = "leftFunction"
             ),
-            description = "toggle_action.on_toggle"
+            value = "toggle_action.on_toggle"
     )
     public Action onToggle(LuaFunction function) {
         this.toggle = function;
@@ -52,7 +52,7 @@ public class ToggleAction extends Action {
                     argumentTypes = LuaFunction.class,
                     argumentNames = "rightFunction"
             ),
-            description = "toggle_action.on_untoggle"
+            value = "toggle_action.on_untoggle"
     )
     public Action onUntoggle(LuaFunction function) {
         this.untoggle = function;
@@ -60,14 +60,14 @@ public class ToggleAction extends Action {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "toggle_action.get_toggle_title")
+    @LuaMethodDoc("toggle_action.get_toggle_title")
     public String getToggleTitle() {
         return this.toggleTitle;
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
-            description = "toggle_action.toggle_title",
+            value = "toggle_action.toggle_title",
             overloads = @LuaFunctionOverload(
                     argumentTypes = String.class,
                     argumentNames = "title"
@@ -79,7 +79,7 @@ public class ToggleAction extends Action {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "toggle_action.get_toggle_color")
+    @LuaMethodDoc("toggle_action.get_toggle_color")
     public FiguraVec3 getToggleColor() {
         return this.toggleColor;
     }
@@ -96,7 +96,7 @@ public class ToggleAction extends Action {
                             argumentNames = {"r", "g", "b"}
                     )
             },
-            description = "toggle_action.toggle_color"
+            value = "toggle_action.toggle_color"
     )
     public Action toggleColor(Object x, Double y, Double z) {
         this.toggleColor = x == null ? null : LuaUtils.parseVec3("toggleColor", x, y, z);
@@ -115,7 +115,7 @@ public class ToggleAction extends Action {
                             argumentNames = "item"
                     )
             },
-            description = "toggle_action.toggle_item"
+            value = "toggle_action.toggle_item"
     )
     public Action toggleItem(Object item) {
         this.toggleItem = LuaUtils.parseItemStack("toggleItem", item);
@@ -123,7 +123,7 @@ public class ToggleAction extends Action {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "toggle_action.is_toggled")
+    @LuaMethodDoc("toggle_action.is_toggled")
     public boolean isToggled() {
         return this.toggled;
     }
@@ -134,7 +134,7 @@ public class ToggleAction extends Action {
                     argumentTypes = Boolean.class,
                     argumentNames = "bool"
             ),
-            description = "toggle_action.toggled"
+            value = "toggle_action.toggled"
     )
     public Action toggled(boolean bool) {
         this.toggled = bool;

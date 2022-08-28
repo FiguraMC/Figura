@@ -9,7 +9,7 @@ import org.moon.figura.lua.docs.LuaTypeDoc;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "Page",
-        description = "wheel_page"
+        value = "wheel_page"
 )
 public class Page {
 
@@ -57,7 +57,7 @@ public class Page {
                             argumentNames = "index"
                     )
             },
-            description = "wheel_page.new_action"
+            value = "wheel_page.new_action"
     )
     public Action newAction(Integer index) {
         //set the action
@@ -77,7 +77,7 @@ public class Page {
                             argumentNames = "index"
                     )
             },
-            description = "wheel_page.new_toggle"
+            value = "wheel_page.new_toggle"
     )
     public Action newToggle(Integer index) {
         //set the action
@@ -97,7 +97,7 @@ public class Page {
                             argumentNames = "index"
                     )
             },
-            description = "wheel_page.new_scroll"
+            value = "wheel_page.new_scroll"
     )
     public Action newScroll(Integer index) {
         //set the action
@@ -114,7 +114,7 @@ public class Page {
                     argumentTypes = Integer.class,
                     argumentNames = "index"
             ),
-            description = "wheel_page.get_action"
+            value = "wheel_page.get_action"
     )
     public Action getAction(int index) {
         if (index < 1 || index > 8)
@@ -128,7 +128,7 @@ public class Page {
                     argumentTypes = {Integer.class, Action.class},
                     argumentNames = {"index", "action"}
             ),
-            description = "wheel_page.set_action"
+            value = "wheel_page.set_action"
     )
     public void setAction(int index, Action action) {
         if (index < 1 || index > 8)

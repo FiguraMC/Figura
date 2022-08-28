@@ -18,7 +18,7 @@ import java.util.UUID;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "RendererAPI",
-        description = "renderer"
+        value = "renderer"
 )
 public class RendererAPI {
 
@@ -27,16 +27,16 @@ public class RendererAPI {
     public Float shadowRadius;
 
     @LuaWhitelist
-    @LuaFieldDoc(description = "renderer.render_fire")
+    @LuaFieldDoc("renderer.render_fire")
     public boolean renderFire = true;
     @LuaWhitelist
-    @LuaFieldDoc(description = "renderer.render_vehicle")
+    @LuaFieldDoc("renderer.render_vehicle")
     public boolean renderVehicle = true;
     @LuaWhitelist
-    @LuaFieldDoc(description = "renderer.render_crosshair")
+    @LuaFieldDoc("renderer.render_crosshair")
     public boolean renderCrosshair = true;
     @LuaWhitelist
-    @LuaFieldDoc(description = "renderer.force_paperdoll")
+    @LuaFieldDoc("renderer.force_paperdoll")
     public boolean forcePaperdoll;
 
     public FiguraVec3 cameraPos;
@@ -64,32 +64,32 @@ public class RendererAPI {
                             argumentNames = "radius"
                     )
             },
-            description = "renderer.set_shadow_radius"
+            value = "renderer.set_shadow_radius"
     )
     public void setShadowRadius(Float shadowRadius) {
         this.shadowRadius = shadowRadius == null ? null : Mth.clamp(shadowRadius, 0f, 12f);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "renderer.get_shadow_radius")
+    @LuaMethodDoc("renderer.get_shadow_radius")
     public Float getShadowRadius() {
         return this.shadowRadius;
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "renderer.is_first_person")
+    @LuaMethodDoc("renderer.is_first_person")
     public boolean isFirstPerson() {
         return checkCameraOwner(this.owner) && Minecraft.getInstance().options.getCameraType().isFirstPerson();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "renderer.is_camera_backwards")
+    @LuaMethodDoc("renderer.is_camera_backwards")
     public boolean isCameraBackwards() {
         return checkCameraOwner(this.owner) && Minecraft.getInstance().options.getCameraType().isMirrored();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "renderer.get_camera_pos")
+    @LuaMethodDoc("renderer.get_camera_pos")
     public FiguraVec3 getCameraPos() {
         return this.cameraPos;
     }
@@ -106,14 +106,14 @@ public class RendererAPI {
                             argumentNames = {"x", "y", "z"}
                     )
             },
-            description = "renderer.set_camera_pos"
+            value = "renderer.set_camera_pos"
     )
     public void setCameraPos(Object x, Double y, Double z) {
         this.cameraPos = x == null ? null : LuaUtils.parseVec3("setCameraPos", x, y, z);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "renderer.get_camera_pivot")
+    @LuaMethodDoc("renderer.get_camera_pivot")
     public FiguraVec3 getCameraPivot() {
         return this.cameraPivot;
     }
@@ -130,14 +130,14 @@ public class RendererAPI {
                             argumentNames = {"x", "y", "z"}
                     )
             },
-            description = "renderer.set_camera_pivot"
+            value = "renderer.set_camera_pivot"
     )
     public void setCameraPivot(Object x, Double y, Double z) {
         this.cameraPivot = x == null ? null : LuaUtils.parseVec3("setCameraPivot", x, y, z);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "renderer.get_camera_offset_pivot")
+    @LuaMethodDoc("renderer.get_camera_offset_pivot")
     public FiguraVec3 getCameraOffsetPivot() {
         return this.cameraOffsetPivot;
     }
@@ -154,14 +154,14 @@ public class RendererAPI {
                             argumentNames = {"x", "y", "z"}
                     )
             },
-            description = "renderer.offset_camera_pivot"
+            value = "renderer.offset_camera_pivot"
     )
     public void offsetCameraPivot(Object x, Double y, Double z) {
         this.cameraOffsetPivot = x == null ? null : LuaUtils.parseVec3("offsetCameraPivot", x, y, z);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "renderer.get_camera_rot")
+    @LuaMethodDoc("renderer.get_camera_rot")
     public FiguraVec3 getCameraRot() {
         return this.cameraRot;
     }
@@ -178,14 +178,14 @@ public class RendererAPI {
                             argumentNames = {"x", "y", "z"}
                     )
             },
-            description = "renderer.set_camera_rot"
+            value = "renderer.set_camera_rot"
     )
     public void setCameraRot(Object x, Double y, Double z) {
         this.cameraRot = x == null ? null : LuaUtils.parseVec3("setCameraRot", x, y, z);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "renderer.get_camera_offset_rot")
+    @LuaMethodDoc("renderer.get_camera_offset_rot")
     public FiguraVec3 getCameraOffsetRot() {
         return this.cameraOffsetRot;
     }
@@ -202,7 +202,7 @@ public class RendererAPI {
                             argumentNames = {"x", "y", "z"}
                     )
             },
-            description = "renderer.offset_camera_rot"
+            value = "renderer.offset_camera_rot"
     )
     public void offsetCameraRot(Object x, Double y, Double z) {
         this.cameraOffsetRot = x == null ? null : LuaUtils.parseVec3("offsetCameraRot", x, y, z);
@@ -214,7 +214,7 @@ public class RendererAPI {
                     argumentTypes = String.class,
                     argumentNames = "effect"
             ),
-            description = "renderer.set_post_effect"
+            value = "renderer.set_post_effect"
     )
     public void setPostEffect(String effect) {
         this.postShader = effect == null ? null : new ResourceLocation("shaders/post/" + effect.toLowerCase() + ".json");

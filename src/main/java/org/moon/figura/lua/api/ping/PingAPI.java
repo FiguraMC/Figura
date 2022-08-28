@@ -10,7 +10,7 @@ import java.util.HashMap;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "PingAPI",
-        description = "pings"
+        value = "pings"
 )
 public class PingAPI {
 

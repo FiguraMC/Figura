@@ -22,7 +22,7 @@ import java.util.Optional;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "ItemStack",
-        description = "itemstack"
+        value = "itemstack"
 )
 public class ItemStackAPI {
 
@@ -41,10 +41,10 @@ public class ItemStackAPI {
     }
 
     @LuaWhitelist
-    @LuaFieldDoc(description = "itemstack.id")
+    @LuaFieldDoc("itemstack.id")
     public final String id;
     @LuaWhitelist
-    @LuaFieldDoc(description = "itemstack.tag")
+    @LuaFieldDoc("itemstack.tag")
     public final LuaTable tag;
 
     public ItemStackAPI(ItemStack itemStack) {
@@ -54,31 +54,31 @@ public class ItemStackAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "itemstack.get_count")
+    @LuaMethodDoc("itemstack.get_count")
     public int getCount() {
         return itemStack.getCount();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "itemstack.get_damage")
+    @LuaMethodDoc("itemstack.get_damage")
     public int getDamage() {
         return itemStack.getDamageValue();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "itemstack.get_cooldown")
+    @LuaMethodDoc("itemstack.get_cooldown")
     public int getCooldown() {
         return itemStack.getPopTime();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "itemstack.has_glint")
+    @LuaMethodDoc("itemstack.has_glint")
     public boolean hasGlint() {
         return itemStack.hasFoil();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "itemstack.get_tags")
+    @LuaMethodDoc("itemstack.get_tags")
     public List<String> getTags() {
         List<String> list = new ArrayList<>();
 
@@ -95,79 +95,79 @@ public class ItemStackAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "itemstack.is_block_item")
+    @LuaMethodDoc("itemstack.is_block_item")
     public boolean isBlockItem() {
         return itemStack.getItem() instanceof BlockItem;
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "itemstack.is_food")
+    @LuaMethodDoc("itemstack.is_food")
     public boolean isFood() {
         return itemStack.isEdible();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "itemstack.get_use_action")
+    @LuaMethodDoc("itemstack.get_use_action")
     public String getUseAction() {
         return itemStack.getUseAnimation().toString();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "itemstack.get_name")
+    @LuaMethodDoc("itemstack.get_name")
     public String getName() {
         return itemStack.getHoverName().getString();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "itemstack.get_max_count")
+    @LuaMethodDoc("itemstack.get_max_count")
     public int getMaxCount() {
         return itemStack.getMaxStackSize();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "itemstack.get_rarity")
+    @LuaMethodDoc("itemstack.get_rarity")
     public String getRarity() {
         return itemStack.getRarity().name();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "itemstack.is_enchantable")
+    @LuaMethodDoc("itemstack.is_enchantable")
     public boolean isEnchantable() {
         return itemStack.isEnchantable();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "itemstack.get_max_damage")
+    @LuaMethodDoc("itemstack.get_max_damage")
     public int getMaxDamage() {
         return itemStack.getMaxDamage();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "itemstack.is_damageable")
+    @LuaMethodDoc("itemstack.is_damageable")
     public boolean isDamageable() {
         return itemStack.isDamageableItem();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "itemstack.is_stackable")
+    @LuaMethodDoc("itemstack.is_stackable")
     public boolean isStackable() {
         return itemStack.isStackable();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "itemstack.get_repair_cost")
+    @LuaMethodDoc("itemstack.get_repair_cost")
     public int getRepairCost() {
         return itemStack.getBaseRepairCost();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "itemstack.get_use_duration")
+    @LuaMethodDoc("itemstack.get_use_duration")
     public int getUseDuration() {
         return itemStack.getUseDuration();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "itemstack.to_stack_string")
+    @LuaMethodDoc("itemstack.to_stack_string")
     public String toStackString() {
         ItemStack stack = itemStack;
         String ret = Registry.ITEM.getKey(stack.getItem()).toString();

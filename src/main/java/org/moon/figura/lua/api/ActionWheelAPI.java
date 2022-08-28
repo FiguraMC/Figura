@@ -17,7 +17,7 @@ import java.util.HashMap;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "ActionWheelAPI",
-        description = "action_wheel"
+        value = "action_wheel"
 )
 public class ActionWheelAPI {
 
@@ -26,13 +26,13 @@ public class ActionWheelAPI {
     private final boolean isHost;
 
     @LuaWhitelist
-    @LuaFieldDoc(description = "action_wheel.left_click")
+    @LuaFieldDoc("action_wheel.left_click")
     public LuaFunction leftClick;
     @LuaWhitelist
-    @LuaFieldDoc(description = "action_wheel.right_click")
+    @LuaFieldDoc("action_wheel.right_click")
     public LuaFunction rightClick;
     @LuaWhitelist
-    @LuaFieldDoc(description = "action_wheel.scroll")
+    @LuaFieldDoc("action_wheel.scroll")
     public LuaFunction scroll;
 
     public ActionWheelAPI(Avatar owner) {
@@ -52,7 +52,7 @@ public class ActionWheelAPI {
                             argumentNames = {"index", "rightClick"}
                     )
             },
-            description = "action_wheel.execute"
+            value = "action_wheel.execute"
     )
     public void execute(Integer index, boolean right) {
         if (index != null && (index < 1 || index > 8))
@@ -61,13 +61,13 @@ public class ActionWheelAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "action_wheel.is_enabled")
+    @LuaMethodDoc("action_wheel.is_enabled")
     public boolean isEnabled() {
         return this.isHost && ActionWheel.isEnabled();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "action_wheel.get_selected")
+    @LuaMethodDoc("action_wheel.get_selected")
     public int getSelected() {
         return this.isHost ? ActionWheel.getSelected() + 1 : 0;
     }
@@ -81,7 +81,7 @@ public class ActionWheelAPI {
                             argumentNames = "title"
                     )
             },
-            description = "action_wheel.create_page"
+            value = "action_wheel.create_page"
     )
     public Page createPage(String title) {
         Page page = new Page();
@@ -101,7 +101,7 @@ public class ActionWheelAPI {
                             argumentNames = "page"
                     )
             },
-            description = "action_wheel.set_page"
+            value = "action_wheel.set_page"
     )
     public void setPage(Object page) {
         Page currentPage;
@@ -127,14 +127,14 @@ public class ActionWheelAPI {
                     argumentTypes = String.class,
                     argumentNames = "pageTitle"
             ),
-            description = "action_wheel.get_page"
+            value = "action_wheel.get_page"
     )
     public Page getPage(@LuaNotNil String pageTitle) {
         return this.pages.get(pageTitle);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "action_wheel.get_current_page")
+    @LuaMethodDoc("action_wheel.get_current_page")
     public Page getCurrentPage() {
         return this.currentPage;
     }

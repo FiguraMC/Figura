@@ -33,7 +33,7 @@ import java.util.UUID;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "WorldAPI",
-        description = "world"
+        value = "world"
 )
 public class WorldAPI {
 
@@ -55,7 +55,7 @@ public class WorldAPI {
                             argumentNames = {"x", "y", "z"}
                     )
             },
-            description = "world.get_biome"
+            value = "world.get_biome"
     )
     public static BiomeAPI getBiome(Object x, Double y, Double z) {
         FiguraVec3 pos = LuaUtils.parseVec3("getBiome", x, y, z);
@@ -76,7 +76,7 @@ public class WorldAPI {
                             argumentNames = {"x", "y", "z"}
                     )
             },
-            description = "world.get_blockstate"
+            value = "world.get_blockstate"
     )
     public static BlockStateAPI getBlockState(Object x, Double y, Double z) {
         FiguraVec3 pos = LuaUtils.parseVec3("getBlockState", x, y, z);
@@ -100,7 +100,7 @@ public class WorldAPI {
                             argumentNames = {"x", "y", "z"}
                     )
             },
-            description = "world.get_redstone_power"
+            value = "world.get_redstone_power"
     )
     public static int getRedstonePower(Object x, Double y, Double z) {
         FiguraVec3 pos = LuaUtils.parseVec3("getRedstonePower", x, y, z);
@@ -123,7 +123,7 @@ public class WorldAPI {
                             argumentNames = {"x", "y", "z"}
                     )
             },
-            description = "world.get_strong_redstone_power"
+            value = "world.get_strong_redstone_power"
     )
     public static int getStrongRedstonePower(Object x, Double y, Double z) {
         FiguraVec3 pos = LuaUtils.parseVec3("getStrongRedstonePower", x, y, z);
@@ -143,7 +143,7 @@ public class WorldAPI {
                             argumentNames = "delta"
                     )
             },
-            description = "world.get_time"
+            value = "world.get_time"
     )
     public static double getTime(double delta) {
         return getCurrentWorld().getGameTime() + delta;
@@ -158,7 +158,7 @@ public class WorldAPI {
                             argumentNames = "delta"
                     )
             },
-            description = "world.get_time_of_day"
+            value = "world.get_time_of_day"
     )
     public static double getTimeOfDay(double delta) {
         return getCurrentWorld().getDayTime() + delta;
@@ -167,7 +167,7 @@ public class WorldAPI {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload,
-            description = "world.get_moon_phase"
+            value = "world.get_moon_phase"
     )
     public static int getMoonPhase() {
         return getCurrentWorld().getMoonPhase();
@@ -182,7 +182,7 @@ public class WorldAPI {
                             argumentNames = "delta"
                     )
             },
-            description = "world.get_rain_gradient"
+            value = "world.get_rain_gradient"
     )
     public static double getRainGradient(Float delta) {
         if (delta == null) delta = 1f;
@@ -190,7 +190,7 @@ public class WorldAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "world.is_thundering")
+    @LuaMethodDoc("world.is_thundering")
     public static boolean isThundering() {
         return getCurrentWorld().isThundering();
     }
@@ -207,7 +207,7 @@ public class WorldAPI {
                             argumentNames = {"x", "y", "z"}
                     )
             },
-            description = "world.get_light_level"
+            value = "world.get_light_level"
     )
     public static Integer getLightLevel(Object x, Double y, Double z) {
         FiguraVec3 pos = LuaUtils.parseVec3("getLightLevel", x, y, z);
@@ -232,7 +232,7 @@ public class WorldAPI {
                             argumentNames = {"x", "y", "z"}
                     )
             },
-            description = "world.get_sky_light_level"
+            value = "world.get_sky_light_level"
     )
     public static Integer getSkyLightLevel(Object x, Double y, Double z) {
         FiguraVec3 pos = LuaUtils.parseVec3("getSkyLightLevel", x, y, z);
@@ -256,7 +256,7 @@ public class WorldAPI {
                             argumentNames = {"x", "y", "z"}
                     )
             },
-            description = "world.get_block_light_level"
+            value = "world.get_block_light_level"
     )
     public static Integer getBlockLightLevel(Object x, Double y, Double z) {
         FiguraVec3 pos = LuaUtils.parseVec3("getBlockLightLevel", x, y, z);
@@ -280,7 +280,7 @@ public class WorldAPI {
                             argumentNames = {"x", "y", "z"}
                     )
             },
-            description = "world.is_open_sky"
+            value = "world.is_open_sky"
     )
     public static Boolean isOpenSky(Object x, Double y, Double z) {
         FiguraVec3 pos = LuaUtils.parseVec3("isOpenSky", x, y, z);
@@ -293,7 +293,7 @@ public class WorldAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "world.get_players")
+    @LuaMethodDoc("world.get_players")
     public static Map<String, EntityAPI<?>> getPlayers() {
         HashMap<String, EntityAPI<?>> playerList = new HashMap<>();
         for (Player player : getCurrentWorld().players())
@@ -307,7 +307,7 @@ public class WorldAPI {
                     argumentTypes = String.class,
                     argumentNames = "UUID"
             ),
-            description = "world.get_entity"
+            value = "world.get_entity"
     )
     public static EntityAPI<?> getEntity(@LuaNotNil String uuid) {
         try {
@@ -318,7 +318,7 @@ public class WorldAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "world.player_vars")
+    @LuaMethodDoc("world.player_vars")
     public static Map<String, LuaTable> playerVars() {
         HashMap<String, LuaTable> playerList = new HashMap<>();
         for (Player player : getCurrentWorld().players()) {
@@ -345,7 +345,7 @@ public class WorldAPI {
                             argumentNames = {"block", "x", "y", "z"}
                     )
             },
-            description = "world.new_block"
+            value = "world.new_block"
     )
     public static BlockStateAPI newBlock(@LuaNotNil String string, Object x, Double y, Double z) {
         try {
@@ -372,7 +372,7 @@ public class WorldAPI {
                             argumentNames = {"item", "count", "damage"}
                     )
             },
-            description = "world.new_item"
+            value = "world.new_item"
     )
     public static ItemStackAPI newItem(@LuaNotNil String string, Integer count, Integer damage) {
         try {
@@ -388,7 +388,7 @@ public class WorldAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "world.exists")
+    @LuaMethodDoc("world.exists")
     public static boolean exists() {
         return getCurrentWorld() != null;
     }

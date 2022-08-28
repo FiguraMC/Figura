@@ -14,7 +14,7 @@ import org.moon.figura.utils.LuaUtils;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "Biome",
-        description = "biome"
+        value = "biome"
 )
 public class BiomeAPI {
 
@@ -36,10 +36,9 @@ public class BiomeAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "biome.get_pos")
+    @LuaMethodDoc("biome.get_pos")
     public FiguraVec3 getPos() {
-        BlockPos pos = getBlockPos();
-        return FiguraVec3.of(pos.getX(), pos.getY(), pos.getZ());
+        return FiguraVec3.fromBlockPos(getBlockPos());
     }
 
     @LuaWhitelist
@@ -54,7 +53,7 @@ public class BiomeAPI {
                             argumentNames = {"x", "y", "z"}
                     )
             },
-            description = "biome.set_pos"
+            value = "biome.set_pos"
     )
     public void setPos(Object x, Double y, Double z) {
         FiguraVec3 newPos = LuaUtils.parseVec3("setPos", x, y, z);
@@ -63,74 +62,74 @@ public class BiomeAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "biome.get_temperature")
+    @LuaMethodDoc("biome.get_temperature")
     public float getTemperature() {
         return biome.getBaseTemperature();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "biome.get_precipitation")
+    @LuaMethodDoc("biome.get_precipitation")
     public String getPrecipitation() {
         return biome.getPrecipitation().name();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "biome.get_sky_color")
+    @LuaMethodDoc("biome.get_sky_color")
     public FiguraVec3 getSkyColor() {
         return ColorUtils.intToRGB(biome.getSkyColor());
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "biome.get_foliage_color")
+    @LuaMethodDoc("biome.get_foliage_color")
     public FiguraVec3 getFoliageColor() {
         return ColorUtils.intToRGB(biome.getFoliageColor());
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "biome.get_grass_color")
+    @LuaMethodDoc("biome.get_grass_color")
     public FiguraVec3 getGrassColor() {
         BlockPos pos = getBlockPos();
         return ColorUtils.intToRGB(biome.getGrassColor(pos.getX(), pos.getY()));
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "biome.get_fog_color")
+    @LuaMethodDoc("biome.get_fog_color")
     public FiguraVec3 getFogColor() {
         return ColorUtils.intToRGB(biome.getFogColor());
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "biome.get_water_color")
+    @LuaMethodDoc("biome.get_water_color")
     public FiguraVec3 getWaterColor() {
         return ColorUtils.intToRGB(biome.getWaterColor());
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "biome.get_water_fog_color")
+    @LuaMethodDoc("biome.get_water_fog_color")
     public FiguraVec3 getWaterFogColor() {
         return ColorUtils.intToRGB(biome.getWaterFogColor());
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "biome.get_downfall")
+    @LuaMethodDoc("biome.get_downfall")
     public float getDownfall() {
         return biome.getDownfall();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "biome.is_hot")
+    @LuaMethodDoc("biome.is_hot")
     public boolean isHot() {
         return biome.shouldSnowGolemBurn(getBlockPos());
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "biome.is_cold")
+    @LuaMethodDoc("biome.is_cold")
     public boolean isCold() {
         return biome.coldEnoughToSnow(getBlockPos());
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "biome.get_name")
+    @LuaMethodDoc("biome.get_name")
     public String getName() {
         return name;
     }

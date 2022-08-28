@@ -8,7 +8,7 @@ import org.moon.figura.lua.docs.LuaTypeDoc;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "EventsAPI",
-        description = "events"
+        value = "events"
 )
 public class EventsAPI {
 
@@ -31,37 +31,37 @@ public class EventsAPI {
     //Maybe in the __index comment we give a docs list of the events?
 
     @LuaWhitelist
-    @LuaFieldDoc(description = "events.entity_init")
+    @LuaFieldDoc("events.entity_init")
     public final LuaEvent ENTITY_INIT;
     @LuaWhitelist
-    @LuaFieldDoc(description = "events.tick")
+    @LuaFieldDoc("events.tick")
     public final LuaEvent TICK;
     @LuaWhitelist
-    @LuaFieldDoc(description = "events.world_tick")
+    @LuaFieldDoc("events.world_tick")
     public final LuaEvent WORLD_TICK;
     @LuaWhitelist
-    @LuaFieldDoc(description = "events.render")
+    @LuaFieldDoc("events.render")
     public final LuaEvent RENDER;
     @LuaWhitelist
-    @LuaFieldDoc(description = "events.post_render")
+    @LuaFieldDoc("events.post_render")
     public final LuaEvent POST_RENDER;
     @LuaWhitelist
-    @LuaFieldDoc(description = "events.world_render")
+    @LuaFieldDoc("events.world_render")
     public final LuaEvent WORLD_RENDER;
     @LuaWhitelist
-    @LuaFieldDoc(description = "events.post_world_render")
+    @LuaFieldDoc("events.post_world_render")
     public final LuaEvent POST_WORLD_RENDER;
     @LuaWhitelist
-    @LuaFieldDoc(description = "events.chat_send_message")
+    @LuaFieldDoc("events.chat_send_message")
     public final LuaEvent CHAT_SEND_MESSAGE;
     @LuaWhitelist
-    @LuaFieldDoc(description = "events.chat_receive_message")
+    @LuaFieldDoc("events.chat_receive_message")
     public final LuaEvent CHAT_RECEIVE_MESSAGE;
     @LuaWhitelist
-    @LuaFieldDoc(description = "events.skull_render")
+    @LuaFieldDoc("events.skull_render")
     public final LuaEvent SKULL_RENDER;
     @LuaWhitelist
-    @LuaFieldDoc(description = "events.mouse_scroll")
+    @LuaFieldDoc("events.mouse_scroll")
     public final LuaEvent MOUSE_SCROLL;
 
     @LuaWhitelist

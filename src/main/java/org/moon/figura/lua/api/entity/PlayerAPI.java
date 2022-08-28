@@ -10,7 +10,7 @@ import org.moon.figura.lua.docs.LuaTypeDoc;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "PlayerAPI",
-        description = "player"
+        value = "player"
 )
 public class PlayerAPI extends LivingEntityAPI<Player> {
     public PlayerAPI(Player entity) {
@@ -20,42 +20,42 @@ public class PlayerAPI extends LivingEntityAPI<Player> {
     private String cachedModelType;
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "player.get_food")
+    @LuaMethodDoc("player.get_food")
     public int getFood() {
         checkEntity();
         return entity.getFoodData().getFoodLevel();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "player.get_saturation")
+    @LuaMethodDoc("player.get_saturation")
     public float getSaturation() {
         checkEntity();
         return entity.getFoodData().getSaturationLevel();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "player.get_experience_progress")
+    @LuaMethodDoc("player.get_experience_progress")
     public float getExperienceProgress() {
         checkEntity();
         return entity.experienceProgress;
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "player.get_experience_level")
+    @LuaMethodDoc("player.get_experience_level")
     public float getExperienceLevel() {
         checkEntity();
         return entity.experienceLevel;
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "player.is_flying")
+    @LuaMethodDoc("player.is_flying")
     public boolean isFlying() {
         checkEntity();
         return entity.getAbilities().flying;
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "player.get_model_type")
+    @LuaMethodDoc("player.get_model_type")
     public String getModelType() {
         checkEntity();
         if (cachedModelType == null) {
@@ -72,7 +72,7 @@ public class PlayerAPI extends LivingEntityAPI<Player> {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "player.get_gamemode")
+    @LuaMethodDoc("player.get_gamemode")
     public String getGamemode() {
         checkEntity();
         if (Minecraft.getInstance().player == null)
