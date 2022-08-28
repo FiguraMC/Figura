@@ -12,7 +12,7 @@ import java.util.List;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "NameplateCustomizationGroup",
-        description = "nameplate_group"
+        value = "nameplate_group"
 )
 public class NameplateCustomizationGroup {
 
@@ -28,7 +28,7 @@ public class NameplateCustomizationGroup {
                     argumentTypes = String.class,
                     argumentNames = "text"
             ),
-            description = "nameplate_group.set_text"
+            value = "nameplate_group.set_text"
     )
     public void setText(@LuaNotNil String text) {
         for (NameplateCustomization customization : customizations)

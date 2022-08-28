@@ -11,12 +11,12 @@ import org.moon.figura.lua.docs.LuaTypeDoc;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "ScrollAction",
-        description = "scroll_action"
+        value = "scroll_action"
 )
 public class ScrollAction extends Action {
 
     @LuaWhitelist
-    @LuaFieldDoc(description = "scroll_action.scroll")
+    @LuaFieldDoc("scroll_action.scroll")
     public LuaFunction scroll;
 
     @LuaWhitelist
@@ -25,7 +25,7 @@ public class ScrollAction extends Action {
                     argumentTypes = LuaFunction.class,
                     argumentNames = "scrollFunction"
             ),
-            description = "scroll_action.on_scroll"
+            value = "scroll_action.on_scroll"
     )
     public Action onScroll(LuaFunction function) {
         this.scroll = function;

@@ -22,7 +22,7 @@ import java.util.List;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "TextTask",
-        description = "text_task"
+        value = "text_task"
 )
 public class TextTask extends RenderTask {
 
@@ -74,7 +74,7 @@ public class TextTask extends RenderTask {
                             argumentNames = "text"
                     )
             },
-            description = "text_task.text"
+            value = "text_task.text"
     )
     public RenderTask text(String text) {
         this.text = text == null ? null : TextUtils.splitText(TextUtils.noBadges4U(TextUtils.tryParseJson(text)), "\n");
@@ -84,7 +84,7 @@ public class TextTask extends RenderTask {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "text_task.is_centred")
+    @LuaMethodDoc("text_task.is_centred")
     public boolean isCentred() {
         return this.centered;
     }
@@ -97,7 +97,7 @@ public class TextTask extends RenderTask {
                             argumentNames = "centered"
                     )
             },
-            description = "text_task.centered"
+            value = "text_task.centered"
     )
     public RenderTask centered(boolean centered) {
         this.centered = centered;
@@ -105,7 +105,7 @@ public class TextTask extends RenderTask {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "text_task.has_shadow")
+    @LuaMethodDoc("text_task.has_shadow")
     public boolean hasShadow() {
         return this.shadow;
     }
@@ -118,7 +118,7 @@ public class TextTask extends RenderTask {
                             argumentNames = "shadow"
                     )
             },
-            description = "text_task.shadow"
+            value = "text_task.shadow"
     )
     public RenderTask shadow(boolean shadow) {
         this.shadow = shadow;
@@ -126,7 +126,7 @@ public class TextTask extends RenderTask {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "text_task.has_outline")
+    @LuaMethodDoc("text_task.has_outline")
     public boolean hasOutline() {
         return this.outline;
     }
@@ -139,7 +139,7 @@ public class TextTask extends RenderTask {
                             argumentNames = "outline"
                     )
             },
-            description = "text_task.outline"
+            value = "text_task.outline"
     )
     public RenderTask outline(boolean outline) {
         this.outline = outline;
@@ -147,7 +147,7 @@ public class TextTask extends RenderTask {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "text_task.get_outline_color")
+    @LuaMethodDoc("text_task.get_outline_color")
     public FiguraVec3 getOutlineColor() {
         return this.outlineColor;
     }
@@ -164,7 +164,7 @@ public class TextTask extends RenderTask {
                             argumentNames = {"r", "g", "b"}
                     )
             },
-            description = "text_task.outline_color"
+            value = "text_task.outline_color"
     )
     public TextTask outlineColor(Object x, Double y, Double z) {
         this.outlineColor = LuaUtils.parseVec3("outlineColor", x, y, z);

@@ -19,7 +19,7 @@ import org.moon.figura.utils.LuaUtils;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "BlockTask",
-        description = "block_task"
+        value = "block_task"
 )
 public class BlockTask extends RenderTask {
 
@@ -57,7 +57,7 @@ public class BlockTask extends RenderTask {
                             argumentNames = "block"
                     )
             },
-            description = "block_task.block"
+            value = "block_task.block"
     )
     public RenderTask block(Object block) {
         this.block = LuaUtils.parseBlockState("block", block);

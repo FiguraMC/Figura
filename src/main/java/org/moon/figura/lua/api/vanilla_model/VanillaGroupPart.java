@@ -12,7 +12,7 @@ import java.util.HashMap;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "VanillaModelGroup",
-        description = "vanilla_group"
+        value = "vanilla_group"
 )
 public class VanillaGroupPart extends VanillaPart {
 
@@ -54,7 +54,7 @@ public class VanillaGroupPart extends VanillaPart {
                     argumentTypes = Boolean.class,
                     argumentNames = "visible"
             ),
-            description = "vanilla_group.set_visible"
+            value = "vanilla_group.set_visible"
     )
     public void setVisible(boolean visible) {
         this.visible = visible;
@@ -64,7 +64,7 @@ public class VanillaGroupPart extends VanillaPart {
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(description = "vanilla_group.get_visible")
+    @LuaMethodDoc("vanilla_group.get_visible")
     public boolean getVisible() {
         return this.visible;
     }

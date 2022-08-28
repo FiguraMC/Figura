@@ -12,7 +12,7 @@ import org.moon.figura.lua.docs.LuaTypeDoc;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "PingFunction",
-        description = "ping_function"
+        value = "ping_function"
 )
 public class PingFunction extends LuaFunction {
 

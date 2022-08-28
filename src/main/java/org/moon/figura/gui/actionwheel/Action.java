@@ -13,7 +13,7 @@ import org.moon.figura.utils.LuaUtils;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "Action",
-        description = "wheel_action"
+        value = "wheel_action"
 )
 public abstract class Action {
 
@@ -28,7 +28,7 @@ public abstract class Action {
     public void mouseScroll(Avatar avatar, double delta) {}
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "wheel_action.get_title")
+    @LuaMethodDoc("wheel_action.get_title")
     public String getTitle() {
         return this.title;
     }
@@ -42,7 +42,7 @@ public abstract class Action {
                             argumentNames = "title"
                     )
             },
-            description = "wheel_action.title"
+            value = "wheel_action.title"
     )
     public Action title(String title) {
         this.title = title;
@@ -50,7 +50,7 @@ public abstract class Action {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "wheel_action.get_color")
+    @LuaMethodDoc("wheel_action.get_color")
     public FiguraVec3 getColor() {
         return this.color;
     }
@@ -67,7 +67,7 @@ public abstract class Action {
                             argumentNames = {"r", "g", "b"}
                     )
             },
-            description = "wheel_action.color"
+            value = "wheel_action.color"
     )
     public Action color(Object x, Double y, Double z) {
         this.color = x == null ? null : LuaUtils.parseVec3("color", x, y, z);
@@ -75,7 +75,7 @@ public abstract class Action {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "wheel_action.get_hover_color")
+    @LuaMethodDoc("wheel_action.get_hover_color")
     public FiguraVec3 getHoverColor() {
         return this.hoverColor;
     }
@@ -92,7 +92,7 @@ public abstract class Action {
                             argumentNames = {"r", "g", "b"}
                     )
             },
-            description = "wheel_action.hover_color"
+            value = "wheel_action.hover_color"
     )
     public Action hoverColor(Object x, Double y, Double z) {
         this.hoverColor = x == null ? null : LuaUtils.parseVec3("hoverColor", x, y, z);
@@ -111,7 +111,7 @@ public abstract class Action {
                             argumentNames = "item"
                     )
             },
-            description = "wheel_action.item"
+            value = "wheel_action.item"
     )
     public Action item(Object item) {
         this.item = LuaUtils.parseItemStack("item", item);
@@ -130,7 +130,7 @@ public abstract class Action {
                             argumentNames = "item"
                     )
             },
-            description = "wheel_action.hover_item"
+            value = "wheel_action.hover_item"
     )
     public Action hoverItem(Object item) {
         this.hoverItem = LuaUtils.parseItemStack("hoverItem", item);

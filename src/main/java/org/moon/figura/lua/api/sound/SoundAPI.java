@@ -21,7 +21,7 @@ import java.util.Map;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "SoundAPI",
-        description = "sounds"
+        value = "sounds"
 )
 public class SoundAPI {
 
@@ -67,7 +67,7 @@ public class SoundAPI {
                             argumentNames = {"sound", "posX", "posY", "posZ", "volume", "pitch", "loop"}
                     )
             },
-            description = "sounds.play_sound"
+            value = "sounds.play_sound"
     )
     public void playSound(@LuaNotNil String id, Object x, Double y, Double z, Object w, Double t, Boolean bl) {
         __index(id).play(x, y, z, w, t, bl);
@@ -82,7 +82,7 @@ public class SoundAPI {
                             argumentNames = "id"
                     )
             },
-            description = "sounds.stop_sound"
+            value = "sounds.stop_sound"
     )
     public void stopSound(String id) {
         getSoundEngine().figura$stopSound(owner.owner, id);
@@ -100,7 +100,7 @@ public class SoundAPI {
                             argumentNames = {"name", "base64Text"}
                     )
             },
-            description = "sounds.add_sound"
+            value = "sounds.add_sound"
     )
     public void addSound(@LuaNotNil String name, @LuaNotNil Object object) {
         byte[] bytes;

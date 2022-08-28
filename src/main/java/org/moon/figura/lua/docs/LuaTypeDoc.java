@@ -20,6 +20,6 @@ public @interface LuaTypeDoc {
     /**
      * Returns a translation key for the description of this type.
      */
-    String description();
+    String value();
 
 }

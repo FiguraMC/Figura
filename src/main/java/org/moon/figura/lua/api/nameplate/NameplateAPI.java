@@ -7,21 +7,21 @@ import org.moon.figura.lua.docs.LuaTypeDoc;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "NameplateAPI",
-        description = "nameplate"
+        value = "nameplate"
 )
 public class NameplateAPI {
 
     @LuaWhitelist
-    @LuaFieldDoc(description = "nameplate.chat")
+    @LuaFieldDoc("nameplate.chat")
     public final NameplateCustomization CHAT;
     @LuaWhitelist
-    @LuaFieldDoc(description = "nameplate.entity")
+    @LuaFieldDoc("nameplate.entity")
     public final EntityNameplateCustomization ENTITY;
     @LuaWhitelist
-    @LuaFieldDoc(description = "nameplate.list")
+    @LuaFieldDoc("nameplate.list")
     public final NameplateCustomization LIST;
     @LuaWhitelist
-    @LuaFieldDoc(description = "nameplate.all")
+    @LuaFieldDoc("nameplate.all")
     public final NameplateCustomizationGroup ALL;
 
     public NameplateAPI() {

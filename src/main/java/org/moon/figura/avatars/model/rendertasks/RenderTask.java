@@ -12,7 +12,7 @@ import org.moon.figura.utils.LuaUtils;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "RenderTask",
-        description = "render_task"
+        value = "render_task"
 )
 public abstract class RenderTask {
 
@@ -35,7 +35,7 @@ public abstract class RenderTask {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "render_task.is_enabled")
+    @LuaMethodDoc("render_task.is_enabled")
     public boolean isEnabled() {
         return this.enabled;
     }
@@ -46,7 +46,7 @@ public abstract class RenderTask {
                     argumentTypes = Boolean.class,
                     argumentNames = "bool"
             ),
-            description = "render_task.enabled"
+            value = "render_task.enabled"
     )
     public RenderTask enabled(boolean enabled) {
         this.enabled = enabled;
@@ -54,7 +54,7 @@ public abstract class RenderTask {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "render_task.is_emissive")
+    @LuaMethodDoc("render_task.is_emissive")
     public boolean isEmissive() {
         return this.emissive;
     }
@@ -65,7 +65,7 @@ public abstract class RenderTask {
                     argumentTypes = Boolean.class,
                     argumentNames = "bool"
             ),
-            description = "render_task.emissive"
+            value = "render_task.emissive"
     )
     public RenderTask emissive(boolean emissive) {
         this.emissive = emissive;
@@ -73,7 +73,7 @@ public abstract class RenderTask {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "render_task.get_pos")
+    @LuaMethodDoc("render_task.get_pos")
     public FiguraVec3 getPos() {
         return this.pos;
     }
@@ -90,7 +90,7 @@ public abstract class RenderTask {
                             argumentNames = {"x", "y", "z"}
                     )
             },
-            description = "render_task.pos"
+            value = "render_task.pos"
     )
     public RenderTask pos(Object x, Double y, Double z) {
         FiguraVec3 vec = LuaUtils.parseVec3("pos", x, y, z);
@@ -100,7 +100,7 @@ public abstract class RenderTask {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "render_task.get_rot")
+    @LuaMethodDoc("render_task.get_rot")
     public FiguraVec3 getRot() {
         return this.rot;
     }
@@ -117,7 +117,7 @@ public abstract class RenderTask {
                             argumentNames = {"x", "y", "z"}
                     )
             },
-            description = "render_task.rot"
+            value = "render_task.rot"
     )
     public RenderTask rot(Object x, Double y, Double z) {
         FiguraVec3 vec = LuaUtils.parseVec3("rot", x, y, z);
@@ -127,7 +127,7 @@ public abstract class RenderTask {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "render_task.get_scale")
+    @LuaMethodDoc("render_task.get_scale")
     public FiguraVec3 getScale() {
         return this.scale;
     }
@@ -144,7 +144,7 @@ public abstract class RenderTask {
                             argumentNames = {"x", "y", "z"}
                     )
             },
-            description = "render_task.scale"
+            value = "render_task.scale"
     )
     public RenderTask scale(Object x, Double y, Double z) {
         FiguraVec3 vec = LuaUtils.parseVec3("scale", x, y, z, 1, 1, 1);

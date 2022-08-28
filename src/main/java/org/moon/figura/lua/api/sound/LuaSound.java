@@ -21,7 +21,7 @@ import org.moon.figura.utils.LuaUtils;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "Sound",
-        description = "sound"
+        value = "sound"
 )
 public class LuaSound {
 
@@ -53,7 +53,7 @@ public class LuaSound {
                             argumentNames = {"posX", "posY", "posZ", "volume", "pitch", "loop"}
                     )
             },
-            description = "sound.play"
+            value = "sound.play"
     )
     public void play(Object x, Double y, Double z, Object w, Double t, Boolean bl) {
         if (!owner.soundsRemaining.use())

@@ -20,7 +20,7 @@ import org.moon.figura.utils.LuaUtils;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "ItemTask",
-        description = "item_task"
+        value = "item_task"
 )
 public class ItemTask extends RenderTask {
 
@@ -64,7 +64,7 @@ public class ItemTask extends RenderTask {
                             argumentNames = "item"
                     )
             },
-            description = "item_task.item"
+            value = "item_task.item"
     )
     public RenderTask item(Object item) {
         this.item = LuaUtils.parseItemStack("item", item);
@@ -75,7 +75,7 @@ public class ItemTask extends RenderTask {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "item_task.get_render_type")
+    @LuaMethodDoc("item_task.get_render_type")
     public String getRenderType() {
         return this.renderType.name();
     }
@@ -86,7 +86,7 @@ public class ItemTask extends RenderTask {
                         argumentTypes = String.class,
                         argumentNames = "renderType"
             ),
-            description = "item_task.render_type"
+            value = "item_task.render_type"
     )
     public RenderTask renderType(@LuaNotNil String type) {
         try {

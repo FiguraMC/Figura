@@ -25,53 +25,53 @@ import org.moon.figura.lua.api.world.WorldAPI;
  */
 @LuaTypeDoc(
         name = "globals",
-        description = "globals"
+        value = "globals"
 )
 public abstract class FiguraGlobalsDocs {
 
-    @LuaFieldDoc(description = "globals.vec")
+    @LuaFieldDoc("globals.vec")
     public LuaFunction vec;
-    @LuaFieldDoc(description = "globals.action_wheel")
+    @LuaFieldDoc("globals.action_wheel")
     public ActionWheelAPI action_wheel;
-    @LuaFieldDoc(description = "globals.animations")
+    @LuaFieldDoc("globals.animations")
     public LuaTable animations;
-    @LuaFieldDoc(description = "globals.figura_metatables")
+    @LuaFieldDoc("globals.figura_metatables")
     public LuaTable figuraMetatables;
-    @LuaFieldDoc(description = "globals.nameplate")
+    @LuaFieldDoc("globals.nameplate")
     public NameplateAPI nameplate;
-    @LuaFieldDoc(description = "globals.world")
+    @LuaFieldDoc("globals.world")
     public WorldAPI world;
-    @LuaFieldDoc(description = "globals.vanilla_model")
+    @LuaFieldDoc("globals.vanilla_model")
     public VanillaModelAPI vanilla_model;
-    @LuaFieldDoc(description = "globals.models")
+    @LuaFieldDoc("globals.models")
     public FiguraModelPart models;
-    @LuaFieldDoc(description = "globals.player")
+    @LuaFieldDoc("globals.player")
     public PlayerAPI player;
-    @LuaFieldDoc(description = "globals.events")
+    @LuaFieldDoc("globals.events")
     public EventsAPI events;
-    @LuaFieldDoc(description = "globals.keybind")
+    @LuaFieldDoc("globals.keybind")
     public KeybindAPI keybind;
-    @LuaFieldDoc(description = "globals.vectors")
+    @LuaFieldDoc("globals.vectors")
     public VectorsAPI vectors;
-    @LuaFieldDoc(description = "globals.matrices")
+    @LuaFieldDoc("globals.matrices")
     public MatricesAPI matrices;
-    @LuaFieldDoc(description = "globals.client")
+    @LuaFieldDoc("globals.client")
     public ClientAPI client;
-    @LuaFieldDoc(description = "globals.host")
+    @LuaFieldDoc("globals.host")
     public HostAPI host;
-    @LuaFieldDoc(description = "globals.avatar")
+    @LuaFieldDoc("globals.avatar")
     public AvatarAPI avatar;
-    @LuaFieldDoc(description = "globals.particles")
+    @LuaFieldDoc("globals.particles")
     public ParticleAPI particles;
-    @LuaFieldDoc(description = "globals.sounds")
+    @LuaFieldDoc("globals.sounds")
     public SoundAPI sounds;
-    @LuaFieldDoc(description = "globals.renderer")
+    @LuaFieldDoc("globals.renderer")
     public RendererAPI renderer;
-    @LuaFieldDoc(description = "globals.user")
+    @LuaFieldDoc("globals.user")
     public EntityAPI<?> user;
-    @LuaFieldDoc(description = "globals.pings")
+    @LuaFieldDoc("globals.pings")
     public PingAPI pings;
-    @LuaFieldDoc(description = "globals.type")
+    @LuaFieldDoc("globals.type")
     public LuaFunction type;
 
     @LuaMethodDoc(
@@ -79,7 +79,7 @@ public abstract class FiguraGlobalsDocs {
                     argumentTypes = String.class,
                     argumentNames = "scriptName"
             ),
-            description = "globals.require"
+            value = "globals.require"
     )
     public static Object require() {return null;}
 
@@ -88,7 +88,7 @@ public abstract class FiguraGlobalsDocs {
                     argumentTypes = Object.class,
                     argumentNames = "arg"
             ),
-            description = "globals.print"
+            value = "globals.print"
     )
     public static void print() {}
 
@@ -97,7 +97,7 @@ public abstract class FiguraGlobalsDocs {
                     argumentTypes = Object.class,
                     argumentNames = "arg"
             ),
-            description = "globals.log"
+            value = "globals.log"
     )
     public static void log() {}
 
@@ -120,7 +120,7 @@ public abstract class FiguraGlobalsDocs {
                             argumentNames = {"javaObject", "maxDepth"}
                     )
             },
-            description = "globals.print_table"
+            value = "globals.print_table"
     )
     public static void printTable() {}
 
@@ -143,7 +143,7 @@ public abstract class FiguraGlobalsDocs {
                             argumentNames = {"javaObject", "maxDepth"}
                     )
             },
-            description = "globals.log_table"
+            value = "globals.log_table"
     )
     public static void logTable() {}
 
@@ -152,7 +152,7 @@ public abstract class FiguraGlobalsDocs {
                     argumentTypes = String.class,
                     argumentNames = "json"
             ),
-            description = "globals.print_json"
+            value = "globals.print_json"
     )
     public static void printJson() {}
 
@@ -161,7 +161,7 @@ public abstract class FiguraGlobalsDocs {
                     argumentTypes = String.class,
                     argumentNames = "json"
             ),
-            description = "globals.log_json"
+            value = "globals.log_json"
     )
     public static void logJson() {}
 

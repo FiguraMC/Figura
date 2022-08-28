@@ -18,7 +18,7 @@ import java.util.List;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "Keybind",
-        description = "keybind"
+        value = "keybind"
 )
 public class FiguraKeybind {
 
@@ -30,23 +30,23 @@ public class FiguraKeybind {
     private boolean isDown = false;
 
     @LuaWhitelist
-    @LuaFieldDoc(description = "keybind.on_press")
+    @LuaFieldDoc("keybind.on_press")
     public LuaFunction onPress;
 
     @LuaWhitelist
-    @LuaFieldDoc(description = "keybind.on_release")
+    @LuaFieldDoc("keybind.on_release")
     public LuaFunction onRelease;
 
     @LuaWhitelist
-    @LuaFieldDoc(description = "keybind.enabled")
+    @LuaFieldDoc("keybind.enabled")
     public boolean enabled = true;
 
     @LuaWhitelist
-    @LuaFieldDoc(description = "keybind.gui")
+    @LuaFieldDoc("keybind.gui")
     public boolean gui;
 
     @LuaWhitelist
-    @LuaFieldDoc(description = "keybind.override")
+    @LuaFieldDoc("keybind.override")
     public boolean override;
 
     public FiguraKeybind(Avatar owner, String name, InputConstants.Key key) {
@@ -129,38 +129,38 @@ public class FiguraKeybind {
                     argumentTypes = String.class,
                     argumentNames = "key"
             ),
-            description = "keybind.set_key"
+            value = "keybind.set_key"
     )
     public void setKey(@LuaNotNil String key) {
         this.key = parseStringKey(key);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "keybind.is_default")
+    @LuaMethodDoc("keybind.is_default")
     public boolean isDefault() {
         return this.key.equals(this.defaultKey);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "keybind.get_key")
+    @LuaMethodDoc("keybind.get_key")
     public String getKey() {
         return this.key.getName();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "keybind.get_key_name")
+    @LuaMethodDoc("keybind.get_key_name")
     public String getKeyName() {
         return this.key.getDisplayName().getString();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "keybind.get_name")
+    @LuaMethodDoc("keybind.get_name")
     public String getName() {
         return this.name;
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "keybind.is_pressed")
+    @LuaMethodDoc("keybind.is_pressed")
     public boolean isPressed() {
         return (this.gui || Minecraft.getInstance().screen == null) && this.isDown;
     }

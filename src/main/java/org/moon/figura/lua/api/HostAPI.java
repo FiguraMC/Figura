@@ -31,7 +31,7 @@ import org.moon.figura.utils.TextUtils;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "HostAPI",
-        description = "host"
+        value = "host"
 )
 public class HostAPI {
 
@@ -40,7 +40,7 @@ public class HostAPI {
     private final Minecraft minecraft;
 
     @LuaWhitelist
-    @LuaFieldDoc(description = "host.unlock_cursor")
+    @LuaFieldDoc("host.unlock_cursor")
     public boolean unlockCursor = false;
     public Integer chatColor;
 
@@ -51,13 +51,13 @@ public class HostAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "host.is_host")
+    @LuaMethodDoc("host.is_host")
     public boolean isHost() {
         return isHost;
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "host.get_targeted_entity")
+    @LuaMethodDoc("host.get_targeted_entity")
     public EntityAPI<?> getTargetedEntity() {
         if (!isHost()) return null;
 
@@ -80,7 +80,7 @@ public class HostAPI {
                             argumentNames = {"fadeInTime", "stayTime", "fadeOutTime"}
                     )
             },
-            description = "host.set_title_times"
+            value = "host.set_title_times"
     )
     public void setTitleTimes(Object x, Double y, Double z) {
         if (!isHost()) return;
@@ -89,7 +89,7 @@ public class HostAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "host.clear_title")
+    @LuaMethodDoc("host.clear_title")
     public void clearTitle() {
         if (isHost())
             this.minecraft.gui.clear();
@@ -101,7 +101,7 @@ public class HostAPI {
                     argumentTypes = String.class,
                     argumentNames = "text"
             ),
-            description = "host.set_title"
+            value = "host.set_title"
     )
     public void setTitle(@LuaNotNil String text) {
         if (isHost())
@@ -114,7 +114,7 @@ public class HostAPI {
                     argumentTypes = String.class,
                     argumentNames = "text"
             ),
-            description = "host.set_subtitle"
+            value = "host.set_subtitle"
     )
     public void setSubtitle(@LuaNotNil String text) {
         if (isHost())
@@ -133,7 +133,7 @@ public class HostAPI {
                             argumentNames = {"text", "animated"}
                     )
             },
-            description = "host.set_actionbar"
+            value = "host.set_actionbar"
     )
     public void setActionbar(@LuaNotNil String text, boolean animated) {
         if (isHost())
@@ -146,7 +146,7 @@ public class HostAPI {
                     argumentTypes = String.class,
                     argumentNames = "message"
             ),
-            description = "host.send_chat_message"
+            value = "host.send_chat_message"
     )
     public void sendChatMessage(@LuaNotNil String message) {
         if (!isHost() || !Config.CHAT_MESSAGES.asBool()) return;
@@ -160,7 +160,7 @@ public class HostAPI {
                     argumentTypes = String.class,
                     argumentNames = "command"
             ),
-            description = "host.send_chat_command"
+            value = "host.send_chat_command"
     )
     public void sendChatCommand(@LuaNotNil String command) {
         if (!isHost() || !Config.CHAT_MESSAGES.asBool()) return;
@@ -174,7 +174,7 @@ public class HostAPI {
                     argumentTypes = String.class,
                     argumentNames = "message"
             ),
-            description = "host.append_chat_history"
+            value = "host.append_chat_history"
     )
     public void appendChatHistory(@LuaNotNil String message) {
         if (isHost() && Config.CHAT_MESSAGES.asBool())
@@ -190,7 +190,7 @@ public class HostAPI {
                             argumentNames = "offhand"
                     )
             },
-            description = "host.swing_arm"
+            value = "host.swing_arm"
     )
     public void swingArm(boolean offhand) {
         if (isHost() && Minecraft.getInstance().player != null)
@@ -203,7 +203,7 @@ public class HostAPI {
                     argumentTypes = String.class,
                     argumentNames = "slot"
             ),
-            description = "host.get_slot"
+            value = "host.get_slot"
     )
     public ItemStackAPI getSlot(@LuaNotNil String slot) {
         if (!isHost()) return null;
@@ -225,7 +225,7 @@ public class HostAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "host.get_chat_color")
+    @LuaMethodDoc("host.get_chat_color")
     public Integer getChatColor() {
         if (isHost())
             return this.chatColor;
@@ -245,7 +245,7 @@ public class HostAPI {
                             argumentNames = {"r", "g", "b"}
                     )
             },
-            description = "host.set_chat_color"
+            value = "host.set_chat_color"
     )
     public void setChatColor(Object x, Double y, Double z) {
         if (isHost())
@@ -253,7 +253,7 @@ public class HostAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "host.get_chat_text")
+    @LuaMethodDoc("host.get_chat_text")
     public String getChatText() {
         if (isHost() && Minecraft.getInstance().screen instanceof ChatScreen chat)
             return ((ChatScreenAccessor) chat).getInput().getValue();
@@ -267,7 +267,7 @@ public class HostAPI {
                     argumentTypes = String.class,
                     argumentNames = "text"
             ),
-            description = "host.set_chat_text"
+            value = "host.set_chat_text"
     )
     public void setChatText(@LuaNotNil String text) {
         if (isHost() && Config.CHAT_MESSAGES.asBool() && Minecraft.getInstance().screen instanceof ChatScreen chat)
@@ -275,7 +275,7 @@ public class HostAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "host.get_screen")
+    @LuaMethodDoc("host.get_screen")
     public String getScreen() {
         if (!isHost() || Minecraft.getInstance().screen == null)
             return null;
@@ -283,13 +283,13 @@ public class HostAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "host.is_chat_open")
+    @LuaMethodDoc("host.is_chat_open")
     public boolean isChatOpen() {
         return isHost() && Minecraft.getInstance().screen instanceof ChatScreen;
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "host.is_container_open")
+    @LuaMethodDoc("host.is_container_open")
     public boolean isContainerOpen() {
         return isHost() && Minecraft.getInstance().screen instanceof AbstractContainerScreen;
     }

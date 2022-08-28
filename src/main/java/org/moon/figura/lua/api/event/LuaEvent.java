@@ -14,7 +14,7 @@ import org.moon.figura.lua.docs.LuaTypeDoc;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "Event",
-        description = "event"
+        value = "event"
 )
 public class LuaEvent {
 
@@ -67,7 +67,7 @@ public class LuaEvent {
                             argumentNames = {"func", "name"}
                     )
             },
-            description = "event.register"
+            value = "event.register"
     )
     public void register(@LuaNotNil LuaFunction func, String name) {
         if (functionList.rawlen() + queuedFunctions.rawlen() >= MAX_FUNCTIONS)
@@ -79,7 +79,7 @@ public class LuaEvent {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "event.clear")
+    @LuaMethodDoc("event.clear")
     public void clear() {
         functionList = new LuaTable();
         nameList = new LuaTable();
@@ -93,7 +93,7 @@ public class LuaEvent {
                     argumentTypes = String.class,
                     argumentNames = "name"
             ),
-            description = "event.remove"
+            value = "event.remove"
     )
     public int remove(@LuaNotNil String name) {
         flushQueue();

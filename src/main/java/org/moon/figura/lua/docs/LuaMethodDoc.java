@@ -21,7 +21,7 @@ public @interface LuaMethodDoc {
     /**
      * A translation key for the description of what this method does with its parameters.
      */
-    String description();
+    String value();
 
 }
 

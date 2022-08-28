@@ -20,7 +20,7 @@ import java.nio.FloatBuffer;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "Matrix4",
-        description = "matrix4"
+        value = "matrix4"
 )
 public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
 
@@ -116,10 +116,11 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(description = "matrix_n.copy",
+    @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     returnType = FiguraMat4.class
-            )
+            ),
+            value = "matrix_n.copy"
     )
     public FiguraMat4 copy() {
         return of(v11, v21, v31, v41, v12, v22, v32, v42, v13, v23, v33, v43, v14, v24, v34, v44);
@@ -150,7 +151,7 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
                     argumentNames = "col",
                     returnType = FiguraVec4.class
             ),
-            description = "matrix_n.get_column"
+            value = "matrix_n.get_column"
     )
     public FiguraVec4 getColumn(int col) {
         return switch (col) {
@@ -170,7 +171,7 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
                     argumentNames = "row",
                     returnType = FiguraVec4.class
             ),
-            description = "matrix_n.get_row"
+            value = "matrix_n.get_row"
     )
     public FiguraVec4 getRow(int row) {
         return switch (row) {
@@ -200,7 +201,7 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
                     argumentNames = "other",
                     returnType = FiguraMat4.class
             ),
-            description = "matrix_n.set"
+            value = "matrix_n.set"
     )
     public FiguraMat4 set(@LuaNotNil FiguraMat4 o) {
         return set(o.v11, o.v21, o.v31, o.v41, o.v12, o.v22, o.v32, o.v42, o.v13, o.v23, o.v33, o.v43, o.v14, o.v24, o.v34, o.v44);
@@ -238,7 +239,7 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
                     argumentNames = "other",
                     returnType = FiguraMat4.class
             ),
-            description = "matrix_n.multiply"
+            value = "matrix_n.multiply"
     )
     public FiguraMat4 multiply(@LuaNotNil FiguraMat4 o) {
         double nv11 = o.v11 * v11 + o.v12 * v21 + o.v13 * v31 + o.v14 * v41;
@@ -288,7 +289,7 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
                     argumentNames = "other",
                     returnType = FiguraMat4.class
             ),
-            description = "matrix_n.right_multiply"
+            value = "matrix_n.right_multiply"
     )
     public FiguraMat4 rightMultiply(@LuaNotNil FiguraMat4 o) {
         double nv11 = v11 * o.v11 + v12 * o.v21 + v13 * o.v31 + v14 * o.v41;
@@ -332,10 +333,11 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(description = "matrix_n.transpose",
+    @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     returnType = FiguraMat4.class
-            )
+            ),
+            value = "matrix_n.transpose"
     )
     public FiguraMat4 transpose() {
         double temp;
@@ -351,10 +353,11 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(description = "matrix_n.transposed",
+    @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     returnType = FiguraMat4.class
-            )
+            ),
+            value = "matrix_n.transposed"
     )
     public FiguraMat4 transposed() {
         return super.transposed();
@@ -362,10 +365,11 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(description = "matrix_n.invert",
+    @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     returnType = FiguraMat4.class
-            )
+            ),
+            value = "matrix_n.invert"
     )
     public FiguraMat4 invert() {
         FiguraMat4 capture = copy();
@@ -430,10 +434,11 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(description = "matrix_n.inverted",
+    @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     returnType = FiguraMat4.class
-            )
+            ),
+            value = "matrix_n.inverted"
     )
     public FiguraMat4 inverted() {
         return super.inverted();
@@ -441,17 +446,18 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(description = "matrix_n.det")
+    @LuaMethodDoc("matrix_n.det")
     public double det() {
         return super.det();
     }
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(description = "matrix_n.reset",
+    @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     returnType = FiguraMat4.class
-            )
+            ),
+            value = "matrix_n.reset"
     )
     public FiguraMat4 reset() {
         return super.reset();
@@ -465,7 +471,7 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
                     argumentNames = "other",
                     returnType = FiguraMat4.class
             ),
-            description = "matrix_n.add"
+            value = "matrix_n.add"
     )
     public FiguraMat4 add(@LuaNotNil FiguraMat4 o) {
         v11 += o.v11;
@@ -496,7 +502,7 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
                     argumentNames = "other",
                     returnType = FiguraMat4.class
             ),
-            description = "matrix_n.sub"
+            value = "matrix_n.sub"
     )
     public FiguraMat4 sub(@LuaNotNil FiguraMat4 o) {
         v11 -= o.v11;
@@ -553,7 +559,7 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
                             argumentNames = {"x", "y", "z"}
                     )
             },
-            description = "matrix_n.scale"
+            value = "matrix_n.scale"
     )
     public FiguraMat4 scale(Object x, Double y, Double z) {
         return scale(LuaUtils.parseVec3("scale", x, y, z, 1, 1, 1));
@@ -597,7 +603,7 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
                             argumentNames = {"x", "y", "z"}
                     )
             },
-            description = "matrix_n.translate"
+            value = "matrix_n.translate"
     )
     public FiguraMat4 translate(Object x, Double y, Double z) {
         return translate(LuaUtils.parseVec3("translate", x, y, z));
@@ -619,7 +625,7 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
                     argumentTypes = Double.class,
                     argumentNames = "degrees"
             ),
-            description = "matrix_n.rotate_x"
+            value = "matrix_n.rotate_x"
     )
     public FiguraMat4 rotateX(double degrees) {
         degrees = Math.toRadians(degrees);
@@ -650,7 +656,7 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
                     argumentTypes = Double.class,
                     argumentNames = "degrees"
             ),
-            description = "matrix_n.rotate_y"
+            value = "matrix_n.rotate_y"
     )
     public FiguraMat4 rotateY(double degrees) {
         degrees = Math.toRadians(degrees);
@@ -681,7 +687,7 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
                     argumentTypes = Double.class,
                     argumentNames = "degrees"
             ),
-            description = "matrix_n.rotate_z"
+            value = "matrix_n.rotate_z"
     )
     public FiguraMat4 rotateZ(double degrees) {
         degrees = Math.toRadians(degrees);
@@ -774,7 +780,7 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
                             argumentNames = {"x", "y", "z"}
                     )
             },
-            description = "matrix_n.rotate"
+            value = "matrix_n.rotate"
     )
     public FiguraMat4 rotate(Object x, Double y, Double z) {
         rotateZYX(LuaUtils.parseVec3("rotate", x, y, z));
@@ -783,7 +789,7 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
 
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "matrix_n.deaugmented")
+    @LuaMethodDoc("matrix_n.deaugmented")
     public FiguraMat3 deaugmented() {
         FiguraMat3 result = FiguraMat3.of();
         result.set(v11, v21, v31, v12, v22, v32, v13, v23, v33);
@@ -831,7 +837,7 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
                             argumentNames = {"x", "y", "z"}
                     )
             },
-            description = "matrix_n.apply"
+            value = "matrix_n.apply"
     )
     public FiguraVec3 apply(Object x, Double y, Double z) {
         FiguraVec3 vec = LuaUtils.parseVec3("apply", x, y, z);
@@ -850,7 +856,7 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
                             argumentNames = {"x", "y", "z"}
                     )
             },
-            description = "matrix_n.apply_dir"
+            value = "matrix_n.apply_dir"
     )
     public FiguraVec3 applyDir(Object x, Double y, Double z) {
         FiguraVec3 vec = LuaUtils.parseVec3("applyDir", x, y, z);

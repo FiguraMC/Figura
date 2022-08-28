@@ -9,124 +9,124 @@ import org.moon.figura.lua.docs.LuaTypeDoc;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "VanillaModelAPI",
-        description = "vanilla_model"
+        value = "vanilla_model"
 )
 public class VanillaModelAPI {
 
     // -- body -- //
 
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.head")
+    @LuaFieldDoc("vanilla_model.head")
     public final VanillaModelPart HEAD;
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.body")
+    @LuaFieldDoc("vanilla_model.body")
     public final VanillaModelPart BODY;
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.left_arm")
+    @LuaFieldDoc("vanilla_model.left_arm")
     public final VanillaModelPart LEFT_ARM;
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.right_arm")
+    @LuaFieldDoc("vanilla_model.right_arm")
     public final VanillaModelPart RIGHT_ARM;
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.left_leg")
+    @LuaFieldDoc("vanilla_model.left_leg")
     public final VanillaModelPart LEFT_LEG;
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.right_leg")
+    @LuaFieldDoc("vanilla_model.right_leg")
     public final VanillaModelPart RIGHT_LEG;
 
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.hat")
+    @LuaFieldDoc("vanilla_model.hat")
     public final VanillaModelPart HAT;
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.jacket")
+    @LuaFieldDoc("vanilla_model.jacket")
     public final VanillaModelPart JACKET;
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.left_sleeve")
+    @LuaFieldDoc("vanilla_model.left_sleeve")
     public final VanillaModelPart LEFT_SLEEVE;
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.right_sleeve")
+    @LuaFieldDoc("vanilla_model.right_sleeve")
     public final VanillaModelPart RIGHT_SLEEVE;
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.left_pants")
+    @LuaFieldDoc("vanilla_model.left_pants")
     public final VanillaModelPart LEFT_PANTS;
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.right_pants")
+    @LuaFieldDoc("vanilla_model.right_pants")
     public final VanillaModelPart RIGHT_PANTS;
 
     // -- cape -- //
 
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.cape_model")
+    @LuaFieldDoc("vanilla_model.cape_model")
     public final VanillaModelPart CAPE_MODEL;
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.fake_cape")
+    @LuaFieldDoc("vanilla_model.fake_cape")
     public final VanillaModelPart FAKE_CAPE;
 
     // -- armor -- //
 
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.helmet_item")
+    @LuaFieldDoc("vanilla_model.helmet_item")
     public final VanillaModelPart HELMET_ITEM;
 
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.helmet_head")
+    @LuaFieldDoc("vanilla_model.helmet_head")
     public final VanillaModelPart HELMET_HEAD;
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.helmet_hat")
+    @LuaFieldDoc("vanilla_model.helmet_hat")
     public final VanillaModelPart HELMET_HAT;
 
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.chestplate_body")
+    @LuaFieldDoc("vanilla_model.chestplate_body")
     public final VanillaModelPart CHESTPLATE_BODY;
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.chestplate_left_arm")
+    @LuaFieldDoc("vanilla_model.chestplate_left_arm")
     public final VanillaModelPart CHESTPLATE_LEFT_ARM;
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.chestplate_right_arm")
+    @LuaFieldDoc("vanilla_model.chestplate_right_arm")
     public final VanillaModelPart CHESTPLATE_RIGHT_ARM;
 
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.leggings_body")
+    @LuaFieldDoc("vanilla_model.leggings_body")
     public final VanillaModelPart LEGGINGS_BODY;
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.leggings_left_leg")
+    @LuaFieldDoc("vanilla_model.leggings_left_leg")
     public final VanillaModelPart LEGGINGS_LEFT_LEG;
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.leggings_right_leg")
+    @LuaFieldDoc("vanilla_model.leggings_right_leg")
     public final VanillaModelPart LEGGINGS_RIGHT_LEG;
 
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.boots_left_leg")
+    @LuaFieldDoc("vanilla_model.boots_left_leg")
     public final VanillaModelPart BOOTS_LEFT_LEG;
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.boots_right_leg")
+    @LuaFieldDoc("vanilla_model.boots_right_leg")
     public final VanillaModelPart BOOTS_RIGHT_LEG;
 
     // -- elytra -- //
 
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.left_elytra")
+    @LuaFieldDoc("vanilla_model.left_elytra")
     public final VanillaModelPart LEFT_ELYTRA;
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.right_elytra")
+    @LuaFieldDoc("vanilla_model.right_elytra")
     public final VanillaModelPart RIGHT_ELYTRA;
 
     // -- held items -- //
 
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.left_item")
+    @LuaFieldDoc("vanilla_model.left_item")
     public final VanillaModelPart LEFT_ITEM;
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.right_item")
+    @LuaFieldDoc("vanilla_model.right_item")
     public final VanillaModelPart RIGHT_ITEM;
 
     // -- parrots -- //
 
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.left_parrot")
+    @LuaFieldDoc("vanilla_model.left_parrot")
     public final VanillaModelPart LEFT_PARROT;
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.right_parrot")
+    @LuaFieldDoc("vanilla_model.right_parrot")
     public final VanillaModelPart RIGHT_PARROT;
 
 
@@ -134,49 +134,49 @@ public class VanillaModelAPI {
 
 
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.all")
+    @LuaFieldDoc("vanilla_model.all")
     public final VanillaGroupPart ALL;
 
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.player")
+    @LuaFieldDoc("vanilla_model.player")
     public final VanillaGroupPart PLAYER;
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.outer_layer")
+    @LuaFieldDoc("vanilla_model.outer_layer")
     public final VanillaGroupPart OUTER_LAYER;
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.inner_layer")
+    @LuaFieldDoc("vanilla_model.inner_layer")
     public final VanillaGroupPart INNER_LAYER;
 
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.cape")
+    @LuaFieldDoc("vanilla_model.cape")
     public final VanillaGroupPart CAPE;
 
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.armor")
+    @LuaFieldDoc("vanilla_model.armor")
     public final VanillaGroupPart ARMOR;
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.helmet")
+    @LuaFieldDoc("vanilla_model.helmet")
     public final VanillaGroupPart HELMET;
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.chestplate")
+    @LuaFieldDoc("vanilla_model.chestplate")
     public final VanillaGroupPart CHESTPLATE;
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.leggings")
+    @LuaFieldDoc("vanilla_model.leggings")
     public final VanillaGroupPart LEGGINGS;
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.boots")
+    @LuaFieldDoc("vanilla_model.boots")
     public final VanillaGroupPart BOOTS;
 
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.elytra")
+    @LuaFieldDoc("vanilla_model.elytra")
     public final VanillaGroupPart ELYTRA;
 
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.held_items")
+    @LuaFieldDoc("vanilla_model.held_items")
     public final VanillaGroupPart HELD_ITEMS;
 
     @LuaWhitelist
-    @LuaFieldDoc(description = "vanilla_model.parrots")
+    @LuaFieldDoc("vanilla_model.parrots")
     public final VanillaGroupPart PARROTS;
 
     public VanillaModelAPI() {

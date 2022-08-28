@@ -14,7 +14,7 @@ import java.util.function.Function;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "VanillaModelPart",
-        description = "vanilla_part"
+        value = "vanilla_part"
 )
 public class VanillaModelPart extends VanillaPart {
 
@@ -72,7 +72,7 @@ public class VanillaModelPart extends VanillaPart {
                     argumentTypes = Boolean.class,
                     argumentNames = "visible"
             ),
-            description = "vanilla_part.set_visible"
+            value = "vanilla_part.set_visible"
     )
     public void setVisible(boolean visible) {
         this.visible = visible;
@@ -80,19 +80,19 @@ public class VanillaModelPart extends VanillaPart {
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc(description = "vanilla_part.get_visible")
+    @LuaMethodDoc("vanilla_part.get_visible")
     public boolean getVisible() {
         return this.visible;
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "vanilla_part.get_origin_rot")
+    @LuaMethodDoc("vanilla_part.get_origin_rot")
     public FiguraVec3 getOriginRot() {
         return this.savedOriginRot.copy();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "vanilla_part.get_origin_pos")
+    @LuaMethodDoc("vanilla_part.get_origin_pos")
     public FiguraVec3 getOriginPos() {
         return this.savedOriginPos.copy();
     }

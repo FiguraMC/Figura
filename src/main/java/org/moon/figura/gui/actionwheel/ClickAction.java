@@ -11,16 +11,16 @@ import org.moon.figura.lua.docs.LuaTypeDoc;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "ClickAction",
-        description = "click_action"
+        value = "click_action"
 )
 public class ClickAction extends Action {
 
     // fields for funni lua syntax
     @LuaWhitelist
-    @LuaFieldDoc(description = "click_action.left_click")
+    @LuaFieldDoc("click_action.left_click")
     public LuaFunction leftClick;
     @LuaWhitelist
-    @LuaFieldDoc(description = "click_action.right_click")
+    @LuaFieldDoc("click_action.right_click")
     public LuaFunction rightClick;
 
     @LuaWhitelist
@@ -29,7 +29,7 @@ public class ClickAction extends Action {
                     argumentTypes = LuaFunction.class,
                     argumentNames = "leftFunction"
             ),
-            description = "click_action.on_left_click"
+            value = "click_action.on_left_click"
     )
     public Action onLeftClick(LuaFunction function) {
         this.leftClick = function;
@@ -42,7 +42,7 @@ public class ClickAction extends Action {
                     argumentTypes = LuaFunction.class,
                     argumentNames = "rightFunction"
             ),
-            description = "click_action.on_right_click"
+            value = "click_action.on_right_click"
     )
     public Action onRightClick(LuaFunction function) {
         this.rightClick = function;

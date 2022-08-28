@@ -30,3 +30,5 @@ function math.sign(x)
 end
 
 vec = vectors.vec
+math.playerScale = 0.9375
+math.worldScale = 1.0666666667

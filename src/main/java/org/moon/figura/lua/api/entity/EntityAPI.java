@@ -35,7 +35,7 @@ import java.util.UUID;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "EntityAPI",
-        description = "entity"
+        value = "entity"
 )
 public class EntityAPI<T extends Entity> {
 
@@ -70,7 +70,7 @@ public class EntityAPI<T extends Entity> {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "entity.is_loaded")
+    @LuaMethodDoc("entity.is_loaded")
     public boolean isLoaded() {
         checkEntity();
         return thingy;
@@ -85,13 +85,12 @@ public class EntityAPI<T extends Entity> {
                             argumentNames = "delta"
                     )
             },
-            description = "entity.get_pos"
+            value = "entity.get_pos"
     )
     public FiguraVec3 getPos(Float delta) {
         checkEntity();
         if (delta == null) delta = 1f;
-        Vec3 pos = entity.getPosition(delta);
-        return FiguraVec3.of(pos.x, pos.y, pos.z);
+        return FiguraVec3.fromVec3(entity.getPosition(delta));
     }
 
     @LuaWhitelist
@@ -103,7 +102,7 @@ public class EntityAPI<T extends Entity> {
                             argumentNames = "delta"
                     )
             },
-            description = "entity.get_rot"
+            value = "entity.get_rot"
     )
     public FiguraVec2 getRot(Float delta) {
         checkEntity();
@@ -112,13 +111,13 @@ public class EntityAPI<T extends Entity> {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "entity.get_uuid")
+    @LuaMethodDoc("entity.get_uuid")
     public String getUUID() {
         return entityUUID.toString();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "entity.get_type")
+    @LuaMethodDoc("entity.get_type")
     public String getType() {
         checkEntity();
         return cacheType != null ? cacheType : (cacheType = Registry.ENTITY_TYPE.getKey(entity.getType()).toString());
@@ -126,91 +125,91 @@ public class EntityAPI<T extends Entity> {
 
     public static final UUID hambrgr = UUID.fromString("66a6c5c4-963b-4b73-a0d9-162faedd8b7f");
     @LuaWhitelist
-    @LuaMethodDoc(description = "entity.is_hamburger")
+    @LuaMethodDoc("entity.is_hamburger")
     public boolean isHamburger() {
         checkEntity();
         return entityUUID.equals(hambrgr);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "entity.get_velocity")
+    @LuaMethodDoc("entity.get_velocity")
     public FiguraVec3 getVelocity() {
         checkEntity();
         return FiguraVec3.of(entity.getX() - entity.xOld, entity.getY() - entity.yOld, entity.getZ() - entity.zOld);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "entity.get_look_dir")
+    @LuaMethodDoc("entity.get_look_dir")
     public FiguraVec3 getLookDir() {
         checkEntity();
         return FiguraVec3.fromVec3(entity.getLookAngle());
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "entity.get_fire_ticks")
+    @LuaMethodDoc("entity.get_fire_ticks")
     public int getFireTicks() {
         checkEntity();
         return entity.getRemainingFireTicks();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "entity.get_frozen_ticks")
+    @LuaMethodDoc("entity.get_frozen_ticks")
     public int getFrozenTicks() {
         checkEntity();
         return entity.getTicksFrozen();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "entity.get_air")
+    @LuaMethodDoc("entity.get_air")
     public int getAir() {
         checkEntity();
         return entity.getAirSupply();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "entity.get_max_air")
+    @LuaMethodDoc("entity.get_max_air")
     public int getMaxAir() {
         checkEntity();
         return entity.getMaxAirSupply();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "entity.get_dimension_name")
+    @LuaMethodDoc("entity.get_dimension_name")
     public String getDimensionName() {
         checkEntity();
         return entity.level.dimension().location().toString();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "entity.get_pose")
+    @LuaMethodDoc("entity.get_pose")
     public String getPose() {
         checkEntity();
         return entity.getPose().toString();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "entity.get_vehicle")
+    @LuaMethodDoc("entity.get_vehicle")
     public EntityAPI<?> getVehicle() {
         checkEntity();
         return wrap(entity.getVehicle());
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "entity.is_on_ground")
+    @LuaMethodDoc("entity.is_on_ground")
     public boolean isOnGround() {
         checkEntity();
         return entity.isOnGround();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "entity.get_eye_height")
+    @LuaMethodDoc("entity.get_eye_height")
     public float getEyeHeight() {
         checkEntity();
         return entity.getEyeHeight(entity.getPose());
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "entity.get_bounding_box")
+    @LuaMethodDoc("entity.get_bounding_box")
     public FiguraVec3 getBoundingBox() {
         checkEntity();
         EntityDimensions dim = entity.getDimensions(entity.getPose());
@@ -218,42 +217,42 @@ public class EntityAPI<T extends Entity> {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "entity.get_name")
+    @LuaMethodDoc("entity.get_name")
     public String getName() {
         checkEntity();
         return entity.getName().getString();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "entity.is_wet")
+    @LuaMethodDoc("entity.is_wet")
     public boolean isWet() {
         checkEntity();
         return entity.isInWaterRainOrBubble();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "entity.is_in_water")
+    @LuaMethodDoc("entity.is_in_water")
     public boolean isInWater() {
         checkEntity();
         return entity.isInWater();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "entity.is_underwater")
+    @LuaMethodDoc("entity.is_underwater")
     public boolean isUnderwater() {
         checkEntity();
         return entity.isUnderWater();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "entity.is_in_lava")
+    @LuaMethodDoc("entity.is_in_lava")
     public boolean isInLava() {
         checkEntity();
         return entity.isInLava();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "entity.is_in_rain")
+    @LuaMethodDoc("entity.is_in_rain")
     public boolean isInRain() {
         checkEntity();
         BlockPos blockPos = entity.blockPosition();
@@ -261,49 +260,49 @@ public class EntityAPI<T extends Entity> {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "entity.has_avatar")
+    @LuaMethodDoc("entity.has_avatar")
     public boolean hasAvatar() {
         checkEntity();
         return AvatarManager.getAvatar(entity) != null;
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "entity.is_sprinting")
+    @LuaMethodDoc("entity.is_sprinting")
     public boolean isSprinting() {
         checkEntity();
         return entity.isSprinting();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "entity.get_eye_y")
+    @LuaMethodDoc("entity.get_eye_y")
     public double getEyeY() {
         checkEntity();
         return entity.getEyeY();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "entity.is_glowing")
+    @LuaMethodDoc("entity.is_glowing")
     public boolean isGlowing() {
         checkEntity();
         return entity.isCurrentlyGlowing();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "entity.is_invisible")
+    @LuaMethodDoc("entity.is_invisible")
     public boolean isInvisible() {
         checkEntity();
         return entity.isInvisible();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "entity.is_silent")
+    @LuaMethodDoc("entity.is_silent")
     public boolean isSilent() {
         checkEntity();
         return entity.isSilent();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "entity.is_sneaking")
+    @LuaMethodDoc("entity.is_sneaking")
     public boolean isSneaking() {
         checkEntity();
         return entity.isDiscrete();
@@ -315,7 +314,7 @@ public class EntityAPI<T extends Entity> {
                     argumentTypes = int.class,
                     argumentNames = "index"
             ),
-            description = "entity.get_item"
+            value = "entity.get_item"
     )
     public ItemStackAPI getItem(int index) {
         checkEntity();
@@ -333,7 +332,7 @@ public class EntityAPI<T extends Entity> {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "entity.get_nbt")
+    @LuaMethodDoc("entity.get_nbt")
     public LuaTable getNbt() {
         checkEntity();
         CompoundTag tag = new CompoundTag();
@@ -342,7 +341,7 @@ public class EntityAPI<T extends Entity> {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(description = "entity.is_on_fire")
+    @LuaMethodDoc("entity.is_on_fire")
     public boolean isOnFire() {
         checkEntity();
         return entity.displayFireAnimation();
@@ -361,7 +360,7 @@ public class EntityAPI<T extends Entity> {
                             argumentNames = {"ignoreLiquids", "distance"}
                     )
             },
-            description = "entity.get_targeted_block"
+            value = "entity.get_targeted_block"
     )
     public BlockStateAPI getTargetedBlock(boolean ignoreLiquids, Double distance) {
         checkEntity();
@@ -381,7 +380,7 @@ public class EntityAPI<T extends Entity> {
                     argumentTypes = String.class,
                     argumentNames = "key"
             ),
-            description = "entity.get_variable"
+            value = "entity.get_variable"
     )
     public LuaValue getVariable(String key) {
         checkEntity();
