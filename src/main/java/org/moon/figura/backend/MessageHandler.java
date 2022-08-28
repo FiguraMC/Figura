@@ -13,6 +13,7 @@ import org.moon.figura.lua.api.nameplate.Badges;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.TextUtils;
+import org.moon.figura.utils.Version;
 
 import java.io.ByteArrayInputStream;
 import java.util.Base64;
@@ -56,6 +57,16 @@ public enum MessageHandler {
         backend.equip.set(limits.get("equip").getAsFloat());
         backend.upload.set(limits.get("upload").getAsFloat());
         backend.download.set(limits.get("download").getAsFloat());
+
+        int config = Config.UPDATE_CHANNEL.asInt();
+        if (config != 0) {
+            try {
+                String key = config == 1 ? "latestRelease" : "latestPreRelease";
+                String version = json.get(key).getAsString();
+                if (Version.of(version).compareTo(Version.VERSION) > 0)
+                    FiguraToast.sendToast(FiguraText.of("toast.new_version"), version);
+            } catch (Exception ignored) {}
+        }
     }),
     KEEPALIVE(json -> NetworkManager.sendMessage(NetworkManager.GSON.toJson(json))),
     TOAST(json -> {
@@ -96,7 +107,7 @@ public enum MessageHandler {
     USERINFO(json -> {
         json = json.getAsJsonObject("user");
         UUID uuid = UUID.fromString(json.get("uuid").getAsString());
-        JsonObject badges = json.getAsJsonObject("allowedBadges");
+        JsonObject badges = json.getAsJsonObject("equippedBadges");
 
         JsonArray pride = badges.getAsJsonArray("pride");
         BitSet prideSet = new BitSet();

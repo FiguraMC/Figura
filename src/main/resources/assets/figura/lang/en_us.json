@@ -36,6 +36,7 @@
   "figura.toast.load_error": "Failed to load avatar!",
   "figura.toast.load_error.2": "Check out \"avatar.json\"",
   "figura.toast.trust_change": "Trust changed to",
+  "figura.toast.new_version": "New version available!",
 
 
   "figura.trust.group.blocked": "Blocked",
@@ -337,6 +338,12 @@
   "figura.config.button_location.5": "Bottom Right",
   "figura.config.button_location.6": "Entity Left",
   "figura.config.button_location.7": "Entity Right",
+
+  "figura.config.update_channel": "Update Type",
+  "figura.config.update_channel.tooltip": "Changes the version type when looking for new Figura updates",
+  "figura.config.update_channel.1": "None",
+  "figura.config.update_channel.2": "Releases (Stable)",
+  "figura.config.update_channel.3": "Pre-releases (Unstable)",
 
   "figura.config.easter_eggs": "Enable Easter eggs",
   "figura.config.easter_eggs.tooltip": "Toggles fun and unexpected aspects of Figura (boring!)",

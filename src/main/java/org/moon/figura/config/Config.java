@@ -93,6 +93,7 @@ public enum Config {
     RELOAD_BUTTON("key.keyboard.unknown"),
     PANIC_BUTTON("key.keyboard.unknown"),
     BUTTON_LOCATION(0, 5),
+    UPDATE_CHANNEL(1, 3),
     EASTER_EGGS(true),
 
     Dev {{this.name = this.name.copy().withStyle(ChatFormatting.RED);}},
