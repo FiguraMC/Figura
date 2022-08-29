@@ -1,4 +1,4 @@
-package org.moon.figura.gui.actionwheel;
+package org.moon.figura.lua.api.action_wheel;
 
 import org.luaj.vm2.LuaFunction;
 import org.moon.figura.avatars.Avatar;

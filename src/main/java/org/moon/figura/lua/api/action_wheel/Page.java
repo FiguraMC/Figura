@@ -1,4 +1,4 @@
-package org.moon.figura.gui.actionwheel;
+package org.moon.figura.lua.api.action_wheel;
 
 import org.luaj.vm2.LuaError;
 import org.moon.figura.lua.LuaWhitelist;
@@ -13,7 +13,7 @@ import org.moon.figura.lua.docs.LuaTypeDoc;
 )
 public class Page {
 
-    Action[] actions = new Action[8]; //max 8 actions per page
+    public Action[] actions = new Action[8]; //max 8 actions per page
 
     public int getSize() {
         int i = actions.length;
