@@ -41,7 +41,7 @@ public class AnimationPlayer {
                 float timeDiff = anim.frameTime - current.getTime();
                 float delta = Math.min(Math.max(timeDiff / (next.getTime() - current.getTime()), 0), 1);
 
-                FiguraVec3 transform = next.getInterpolation().generate(keyframes, currentIndex, nextIndex, anim.blend, delta);
+                FiguraVec3 transform = current.getInterpolation().generate(keyframes, currentIndex, nextIndex, anim.blend, delta);
                 channel.type().apply(part, transform, merge);
 
                 if (anim.override) {
