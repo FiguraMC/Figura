@@ -203,7 +203,8 @@ public class Animation {
     )
     public void setTime(float time) {
         this.time = time;
-        tick();
+        this.lastTime = time;
+        this.frameTime = Math.max(time, this.offset);
     }
 
     @LuaWhitelist
