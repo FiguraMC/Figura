@@ -20,7 +20,7 @@ import org.moon.figura.avatars.model.rendertasks.BlockTask;
 import org.moon.figura.avatars.model.rendertasks.ItemTask;
 import org.moon.figura.avatars.model.rendertasks.RenderTask;
 import org.moon.figura.avatars.model.rendertasks.TextTask;
-import org.moon.figura.gui.actionwheel.*;
+import org.moon.figura.lua.api.action_wheel.*;
 import org.moon.figura.lua.api.nameplate.EntityNameplateCustomization;
 import org.moon.figura.lua.api.nameplate.NameplateCustomizationGroup;
 import org.moon.figura.lua.api.particle.ParticleAPI;

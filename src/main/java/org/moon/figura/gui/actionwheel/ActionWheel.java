@@ -13,6 +13,10 @@ import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.config.Config;
+import org.moon.figura.lua.api.action_wheel.Action;
+import org.moon.figura.lua.api.action_wheel.Page;
+import org.moon.figura.lua.api.action_wheel.ScrollAction;
+import org.moon.figura.lua.api.action_wheel.ToggleAction;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FiguraText;
@@ -33,14 +37,15 @@ public class ActionWheel {
     private static Minecraft minecraft;
     private static int slots, leftSlots, rightSlots;
     private static float scale;
-    private static double x, y, mouseX, mouseY;
+    private static int x, y;
+    private static double mouseX, mouseY;
 
     public static void render(PoseStack stack) {
         if (!isEnabled()) return;
 
         minecraft = Minecraft.getInstance();
-        x = minecraft.getWindow().getGuiScaledWidth() / 2d;
-        y = minecraft.getWindow().getGuiScaledHeight() / 2d;
+        x = (int) (minecraft.getWindow().getGuiScaledWidth() / 2d);
+        y = (int) (minecraft.getWindow().getGuiScaledHeight() / 2d);
 
         //rendering
         stack.pushPose();
@@ -105,7 +110,7 @@ public class ActionWheel {
         Component component = FiguraText.of("gui.error." + (avatar ? "no_avatar" : "no_wheel_page")).withStyle(ChatFormatting.YELLOW);
         Font font = minecraft.font;
 
-        UIHelper.renderOutlineText(stack, font, component, (int) (x - font.width(component) / 2), (int) (y - font.lineHeight / 2), 0xFFFFFF, 0);
+        UIHelper.renderOutlineText(stack, font, component, x - font.width(component) / 2, y - font.lineHeight / 2, 0xFFFFFF, 0);
     }
 
     private static void calculateSelected() {
@@ -235,7 +240,7 @@ public class ActionWheel {
 
         for (int i = 0; i < list.size(); i++) {
             Component component = list.get(i);
-            font.drawShadow(stack, component, (int) (x - font.width(component) / 2), (int) (yOff + font.lineHeight * i), 0xFFFFFF);
+            font.drawShadow(stack, component, x - font.width(component) / 2, (int) (yOff + font.lineHeight * i), 0xFFFFFF);
         }
 
         stack.popPose();

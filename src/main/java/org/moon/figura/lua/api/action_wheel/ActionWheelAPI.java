@@ -1,10 +1,9 @@
-package org.moon.figura.lua.api;
+package org.moon.figura.lua.api.action_wheel;
 
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.gui.actionwheel.ActionWheel;
-import org.moon.figura.gui.actionwheel.Page;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;

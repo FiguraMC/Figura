@@ -1,4 +1,4 @@
-package org.moon.figura.gui.actionwheel;
+package org.moon.figura.lua.api.action_wheel;
 
 import net.minecraft.world.item.ItemStack;
 import org.moon.figura.avatars.Avatar;
