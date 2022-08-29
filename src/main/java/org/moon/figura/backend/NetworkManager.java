@@ -135,6 +135,7 @@ public class NetworkManager {
                                 JsonObject token = new JsonObject();
                                 token.addProperty("type", "auth");
                                 token.addProperty("token", split[0]);
+                                token.addProperty("version", FiguraMod.VERSION);
 
                                 MessageHandler.handleMessage(GSON.toJson(token));
                             }
