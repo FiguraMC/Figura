@@ -107,7 +107,7 @@ public class FiguraLuaRuntime {
             if (inputStream == null) throw new IOException("Failed to load sandbox.lua");
             runScript(new String(inputStream.readAllBytes()), "figura_sandbox");
         } catch (Exception e) {
-            FiguraLuaPrinter.sendLuaError(e, owner.entityName, owner.owner);
+            FiguraLuaPrinter.sendLuaError(new LuaError(e), owner.entityName, owner.owner);
         }
     }
 
@@ -141,7 +141,7 @@ public class FiguraLuaRuntime {
             if (inputStream == null) throw new IOException("Failed to load math.lua");
             runScript(new String(inputStream.readAllBytes()), "math");
         } catch (Exception e) {
-            FiguraLuaPrinter.sendLuaError(e, owner.entityName, owner.owner);
+            FiguraLuaPrinter.sendLuaError(new LuaError(e), owner.entityName, owner.owner);
         }
 
         //Change the type() function
