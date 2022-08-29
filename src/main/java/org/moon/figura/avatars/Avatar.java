@@ -249,7 +249,7 @@ public class Avatar {
                 func.invoke(val);
             else
                 throw new LuaError("Invalid type to run!");
-        } catch (Exception ex) {
+        } catch (LuaError ex) {
             FiguraLuaPrinter.sendLuaError(ex, entityName, owner);
             scriptError = true;
             luaRuntime = null;
@@ -344,7 +344,7 @@ public class Avatar {
                 Varargs result = luaRuntime.events.CHAT_SEND_MESSAGE.pipedCall(LuaValue.valueOf(message));
                 LuaValue value = result.arg(1);
                 return value.isnil() ? null : Config.CHAT_MESSAGES.asBool() ? value.tojstring() : message;
-            } catch (Exception ex) {
+            } catch (LuaError ex) {
                 FiguraLuaPrinter.sendLuaError(ex, entityName, owner);
                 scriptError = true;
                 luaRuntime = null;

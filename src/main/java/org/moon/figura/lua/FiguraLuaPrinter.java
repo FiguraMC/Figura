@@ -66,7 +66,7 @@ public class FiguraLuaPrinter {
     }
 
     //print an error, errors should always show up on chat
-    public static void sendLuaError(Exception error, String name, UUID owner) {
+    public static void sendLuaError(LuaError error, String name, UUID owner) {
         if (!Config.LOG_OTHERS.asBool() && !FiguraMod.isLocal(owner))
             return;
 
@@ -77,6 +77,23 @@ public class FiguraLuaPrinter {
 
         message = message.replace("autoScripts:1 [string ", "Script [");
         message = message.replace(": syntax error\nstack traceback:", ": syntax error");
+
+        /*
+        if (src != null) {
+            try {
+                String[] split = message.split(":", 2);
+                if (split.length > 1) {
+                    int line = Integer.parseInt(split[1].split("\\D", 2)[0]);
+
+                    String str = src.split("\n")[line - 1].trim();
+                    if (str.length() > 96)
+                        str = str.substring(0, 96) + " [...]";
+
+                    message += "\nscript:\n\t" + str;
+                }
+            } catch (Exception ignored) {}
+        }
+         */
 
         MutableComponent component = Component.empty()
                 .append(Component.literal("[error] ").withStyle(ColorUtils.Colors.LUA_ERROR.style))
