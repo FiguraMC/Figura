@@ -7,7 +7,10 @@ import org.moon.figura.avatars.model.rendertasks.BlockTask;
 import org.moon.figura.avatars.model.rendertasks.ItemTask;
 import org.moon.figura.avatars.model.rendertasks.RenderTask;
 import org.moon.figura.avatars.model.rendertasks.TextTask;
-import org.moon.figura.lua.api.*;
+import org.moon.figura.lua.api.AvatarAPI;
+import org.moon.figura.lua.api.ClientAPI;
+import org.moon.figura.lua.api.HostAPI;
+import org.moon.figura.lua.api.RendererAPI;
 import org.moon.figura.lua.api.action_wheel.*;
 import org.moon.figura.lua.api.entity.EntityAPI;
 import org.moon.figura.lua.api.entity.LivingEntityAPI;
@@ -18,9 +21,9 @@ import org.moon.figura.lua.api.keybind.FiguraKeybind;
 import org.moon.figura.lua.api.keybind.KeybindAPI;
 import org.moon.figura.lua.api.math.MatricesAPI;
 import org.moon.figura.lua.api.math.VectorsAPI;
+import org.moon.figura.lua.api.nameplate.EntityNameplateCustomization;
 import org.moon.figura.lua.api.nameplate.NameplateAPI;
 import org.moon.figura.lua.api.nameplate.NameplateCustomization;
-import org.moon.figura.lua.api.nameplate.EntityNameplateCustomization;
 import org.moon.figura.lua.api.nameplate.NameplateCustomizationGroup;
 import org.moon.figura.lua.api.particle.ParticleAPI;
 import org.moon.figura.lua.api.ping.PingAPI;
@@ -38,6 +41,7 @@ import org.moon.figura.math.matrix.FiguraMat2;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.*;
+import org.moon.figura.utils.IOUtils;
 
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -144,8 +148,14 @@ public class FiguraAPIManager {
         put("pings", r -> r.ping = new PingAPI(r.owner));
     }};
 
+    private static final Set<FiguraAPI> ENTRYPOINTS = new HashSet<>();
+
     static {
         LuaString.s_metatable = new ReadOnlyLuaTable(LuaString.s_metatable);
+    }
+
+    public static void init() {
+        ENTRYPOINTS.addAll(IOUtils.loadEntryPoints("figura_api", FiguraAPI.class));
     }
 
     public static void setupTypesAndAPIs(FiguraLuaRuntime runtime) {
@@ -153,5 +163,8 @@ public class FiguraAPIManager {
             runtime.registerClass(clazz);
         for (Map.Entry<String, Function<FiguraLuaRuntime, Object>> entry : API_GETTERS.entrySet())
             runtime.setGlobal(entry.getKey(), entry.getValue().apply(runtime));
+        for (FiguraAPI api : ENTRYPOINTS) {
+            runtime.setGlobal(api.getName(), api.build(runtime.owner));
+        }
     }
 }

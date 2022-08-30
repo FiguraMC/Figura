@@ -90,7 +90,7 @@ public class ItemTask extends RenderTask {
     )
     public RenderTask renderType(@LuaNotNil String type) {
         try {
-            this.renderType = ItemTransforms.TransformType.valueOf(type);
+            this.renderType = ItemTransforms.TransformType.valueOf(type.toUpperCase());
             this.left = this.renderType == ItemTransforms.TransformType.FIRST_PERSON_LEFT_HAND || this.renderType == ItemTransforms.TransformType.THIRD_PERSON_LEFT_HAND;
             return this;
         } catch (Exception ignored) {
