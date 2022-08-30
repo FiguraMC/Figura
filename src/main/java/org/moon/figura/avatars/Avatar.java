@@ -327,6 +327,8 @@ public class Avatar {
     }
 
     public void postWorldRenderEvent(float delta) {
+        renderer.allowMatrixUpdate = false;
+
         if (scriptError || luaRuntime == null || worldRenderLimit == 0)
             return;
 
@@ -335,7 +337,6 @@ public class Avatar {
             postWorldRenderInstructions = luaRuntime.getInstructions();
             accumulatedWorldRenderInstructions += postWorldRenderInstructions;
         }
-        renderer.allowMatrixUpdate = false;
     }
 
     public String chatSendMessageEvent(String message) {
@@ -531,6 +532,7 @@ public class Avatar {
 
         //otherwise render head parts
         stack.translate(0d, 24d / 16d, 0d);
+        boolean oldMat = renderer.allowMatrixUpdate;
         renderer.allowMatrixUpdate = false;
         renderer.allowHiddenTransforms = false;
         renderer.allowPivotParts = false;
@@ -538,6 +540,7 @@ public class Avatar {
         renderer.currentFilterScheme = PartFilterScheme.HEAD;
         renderer.renderSpecialParts();
 
+        renderer.allowMatrixUpdate = oldMat;
         renderer.allowHiddenTransforms = true;
         renderer.allowRenderTasks = true;
         renderer.allowPivotParts = true;

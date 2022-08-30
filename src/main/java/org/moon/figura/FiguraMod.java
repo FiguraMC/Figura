@@ -25,6 +25,7 @@ import org.moon.figura.config.ConfigManager;
 import org.moon.figura.gui.PaperDoll;
 import org.moon.figura.gui.PopupMenu;
 import org.moon.figura.gui.actionwheel.ActionWheel;
+import org.moon.figura.lua.FiguraAPIManager;
 import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.lua.docs.FiguraDocsManager;
 import org.moon.figura.mixin.SkullBlockEntityAccessor;
@@ -59,6 +60,7 @@ public class FiguraMod implements ClientModInitializer {
         ConfigManager.init();
         TrustManager.init();
         LocalAvatarFetcher.init();
+        FiguraAPIManager.init();
         FiguraDocsManager.init();
         FiguraCommands.init();
 
