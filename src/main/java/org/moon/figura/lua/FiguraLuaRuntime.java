@@ -109,6 +109,9 @@ public class FiguraLuaRuntime {
         } catch (Exception e) {
             FiguraLuaPrinter.sendLuaError(new LuaError(e), owner.entityName, owner.owner);
         }
+
+        //read only string metatable
+        LuaString.s_metatable = new ReadOnlyLuaTable(LuaString.s_metatable);
     }
 
     private static final Function<FiguraLuaRuntime, LuaValue> LOADSTRING_FUNC = runtime -> new VarArgFunction() {
