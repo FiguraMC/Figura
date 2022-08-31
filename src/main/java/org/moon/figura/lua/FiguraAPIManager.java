@@ -155,7 +155,11 @@ public class FiguraAPIManager {
     }
 
     public static void init() {
-        ENTRYPOINTS.addAll(IOUtils.loadEntryPoints("figura_api", FiguraAPI.class));
+        Set<FiguraAPI> set = IOUtils.loadEntryPoints("figura_api", FiguraAPI.class);
+        for (FiguraAPI api : set) {
+            ENTRYPOINTS.add(api);
+            WHITELISTED_CLASSES.add(api.getClass());
+        }
     }
 
     public static void setupTypesAndAPIs(FiguraLuaRuntime runtime) {
