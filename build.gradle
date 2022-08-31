@@ -53,7 +53,7 @@ processResources {
 
 tasks.withType(JavaCompile) {
 	it.options.encoding = "UTF-8"
-	it.options.release = 17
+	it.options.release = Integer.valueOf(java_version)
 }
 
 java {
