@@ -1,6 +1,5 @@
 package org.moon.figura.lua;
 
-import org.luaj.vm2.LuaString;
 import org.moon.figura.animation.Animation;
 import org.moon.figura.avatars.model.FiguraModelPart;
 import org.moon.figura.avatars.model.rendertasks.BlockTask;
@@ -149,10 +148,6 @@ public class FiguraAPIManager {
     }};
 
     private static final Set<FiguraAPI> ENTRYPOINTS = new HashSet<>();
-
-    static {
-        LuaString.s_metatable = new ReadOnlyLuaTable(LuaString.s_metatable);
-    }
 
     public static void init() {
         Set<FiguraAPI> set = IOUtils.loadEntryPoints("figura_api", FiguraAPI.class);
