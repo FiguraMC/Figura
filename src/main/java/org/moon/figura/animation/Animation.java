@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -31,7 +32,7 @@ public class Animation {
 
     // -- keyframes -- //
 
-    protected final Map<FiguraModelPart, List<AnimationChannel>> animationParts = new HashMap<>();
+    protected final Map<FiguraModelPart, List<AnimationChannel>> animationParts = new ConcurrentHashMap<>();
     private final Map<Float, String> codeFrames = new HashMap<>();
 
     // -- player variables -- //
