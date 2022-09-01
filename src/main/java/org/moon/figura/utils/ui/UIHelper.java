@@ -25,6 +25,8 @@ import net.minecraft.world.entity.LivingEntity;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import org.moon.figura.FiguraMod;
+import org.moon.figura.avatars.Avatar;
+import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.gui.screens.AbstractPanelScreen;
 import org.moon.figura.gui.widgets.ContextMenu;
 import org.moon.figura.utils.FiguraIdentifier;
@@ -40,7 +42,7 @@ public class UIHelper extends GuiComponent {
     public static final ResourceLocation TOOLTIP = new FiguraIdentifier("textures/gui/tooltip.png");
 
     public static boolean forceNameplate = false;
-    public static boolean forceNoFire = false;
+    public static boolean forceFire = false;
 
     //Used for GUI rendering
     private static final CustomFramebuffer FIGURA_FRAMEBUFFER = new CustomFramebuffer();
@@ -94,31 +96,13 @@ public class UIHelper extends GuiComponent {
         RenderSystem.enableBlend();
     }
 
-    public static void drawEntity(float x, float y, float scale, float pitch, float yaw, LivingEntity entity, PoseStack stack, boolean paperdoll) {
-        //apply matrix transformers
-        stack.pushPose();
-        stack.translate(x, y, 0f);
-        stack.scale(scale, scale, scale);
-        stack.last().pose().multiply(Matrix4f.createScaleMatrix(1f, 1f, -1f)); //Scale ONLY THE POSITIONS! Inverted normals don't work for whatever reason
+    public enum EntityRenderMode {
+        NONE,
+        PAPERDOLL,
+        HUD
+    }
 
-        Quaternion quaternion2;
-        if (paperdoll) {
-            Quaternion quaternion = Vector3f.ZP.rotationDegrees(180f);
-            quaternion2 = Vector3f.XP.rotationDegrees(pitch);
-            Quaternion quaternion3 = Vector3f.YP.rotationDegrees(yaw);
-            quaternion3.mul(quaternion2);
-            quaternion.mul(quaternion3);
-            stack.mulPose(quaternion);
-            quaternion3.conj();
-            quaternion2 = quaternion3;
-        } else {
-            Quaternion quaternion = Vector3f.ZP.rotationDegrees(180f);
-            quaternion2 = Vector3f.XP.rotationDegrees(pitch);
-            quaternion.mul(quaternion2);
-            stack.mulPose(quaternion);
-            quaternion2.conj();
-        }
-
+    public static void drawEntity(float x, float y, float scale, float pitch, float yaw, LivingEntity entity, PoseStack stack, EntityRenderMode renderMode) {
         //backup entity variables
         float bodyYaw = entity.yBodyRot;
         float entityYaw = entity.getYRot();
@@ -127,39 +111,97 @@ public class UIHelper extends GuiComponent {
         float headYaw = entity.yHeadRot;
         boolean invisible = entity.isInvisible();
 
-        //apply entity rotation
-        entity.yBodyRot = paperdoll ? 180f : 180f - yaw;
         entity.setInvisible(false);
-        UIHelper.forceNameplate = !paperdoll;
-        UIHelper.forceNoFire = true;
-        UIHelper.paperdoll = true;
+        UIHelper.forceNameplate = true;
+        UIHelper.forceFire = true;
 
-        if (paperdoll) {
-            //offset
-            if (entity.isFallFlying())
-                stack.translate(Mth.triangleWave((float) Math.toRadians(270), Mth.TWO_PI), 0d, 0d);
+        //apply matrix transformers
+        stack.pushPose();
+        stack.translate(x, y, renderMode == EntityRenderMode.HUD ? 2050d : 0d); //2050K full HD
+        stack.scale(scale, scale, scale);
+        stack.last().pose().multiply(Matrix4f.createScaleMatrix(1f, 1f, -1f)); //Scale ONLY THE POSITIONS! Inverted normals don't work for whatever reason
 
-            if (entity.isAutoSpinAttack() || entity.isVisuallySwimming() || entity.isFallFlying()) {
-                stack.translate(0d, 1d, 0d);
-                entity.setXRot(0f);
+        Quaternion quaternion = Vector3f.ZP.rotationDegrees(180f);
+
+        double finalY;
+        Quaternion quaternion2;
+        switch (renderMode) {
+            case PAPERDOLL -> {
+                quaternion2 = Vector3f.XP.rotationDegrees(pitch);
+                Quaternion quaternion3 = Vector3f.YP.rotationDegrees(yaw);
+                quaternion3.mul(quaternion2);
+                quaternion.mul(quaternion3);
+                stack.mulPose(quaternion);
+                quaternion3.conj();
+                quaternion2 = quaternion3;
+
+                //apply rotations
+
+                entity.yBodyRot = 180f;
+
+                //offset
+                if (entity.isFallFlying())
+                    stack.translate(Mth.triangleWave((float) Math.toRadians(270), Mth.TWO_PI), 0d, 0d);
+
+                if (entity.isAutoSpinAttack() || entity.isVisuallySwimming() || entity.isFallFlying()) {
+                    stack.translate(0d, 1d, 0d);
+                    entity.setXRot(0f);
+                }
+
+                //head rot
+                float rot = entity.yHeadRot - bodyYaw + 180f;
+                entity.yHeadRot = rot;
+                entity.yHeadRotO = rot;
+
+                //lightning
+                Lighting.setupForEntityInInventory();
+
+                finalY = -1d;
             }
+            case NONE -> {
+                quaternion2 = Vector3f.XP.rotationDegrees(pitch);
+                quaternion.mul(quaternion2);
+                stack.mulPose(quaternion);
+                quaternion2.conj();
 
-            //head rot
-            float rot = entity.yHeadRot - bodyYaw + 180f;
-            entity.yHeadRot = rot;
-            entity.yHeadRotO = rot;
+                //rotations
 
-            //lightning
-            Lighting.setupForEntityInInventory();
-        } else {
-            entity.setXRot(0f);
-            entity.setYRot(180f - yaw);
-            entity.yHeadRot = entity.getYRot();
-            entity.yHeadRotO = entity.getYRot();
+                entity.yBodyRot = 180f - yaw;
+                entity.setXRot(0f);
+                entity.setYRot(180f - yaw);
+                entity.yHeadRot = entity.getYRot();
+                entity.yHeadRotO = entity.getYRot();
 
-            //set up lighting
-            Lighting.setupForFlatItems();
-            RenderSystem.setShaderLights(Util.make(new Vector3f(-0.2f, -1f, -1f), Vector3f::normalize), Util.make(new Vector3f(-0.2f, 0.4f, -0.3f), Vector3f::normalize));
+                //set up lighting
+                Lighting.setupForFlatItems();
+                RenderSystem.setShaderLights(Util.make(new Vector3f(-0.2f, -1f, -1f), Vector3f::normalize), Util.make(new Vector3f(-0.2f, 0.4f, -0.3f), Vector3f::normalize));
+
+                yaw = 0f;
+                finalY = -1d;
+            }
+            default -> {
+                float angle = (float) Math.atan(pitch / 40f);
+                float angle2 = (float) (Math.atan(yaw / 40f) * 20f);
+
+                quaternion2 = Vector3f.XP.rotationDegrees(angle2);
+                quaternion.mul(quaternion2);
+                stack.mulPose(quaternion);
+                quaternion2.conj();
+
+                //rotations
+
+                entity.yBodyRot = 180f + angle * 20f;
+                entity.setYRot(180f + angle * 40f);
+                entity.setXRot(-angle2);
+                entity.yHeadRot = entity.getYRot();
+                entity.yHeadRotO = entity.getYRot();
+
+                //lightning
+                Lighting.setupForEntityInInventory();
+
+                yaw = 0f;
+                finalY = 0d;
+            }
         }
 
         //setup entity renderer
@@ -171,11 +213,16 @@ public class UIHelper extends GuiComponent {
         MultiBufferSource.BufferSource immediate = Minecraft.getInstance().renderBuffers().bufferSource();
 
         //render
-        if (paperdoll)
-            RenderSystem.runAsFancy(() -> dispatcher.render(entity, 0d, -1d, 0d, yaw, 1f, stack, immediate, LightTexture.FULL_BRIGHT));
-        else
-            RenderSystem.runAsFancy(() -> dispatcher.render(entity, 0d, -1d, 0d, 0f, 1f, stack, immediate, LightTexture.FULL_BRIGHT));
+        Avatar avatar = AvatarManager.getAvatar(entity);
+        if (avatar != null) avatar.previewRenderEvent();
+        UIHelper.paperdoll = true;
+
+        float finalYaw = yaw;
+        RenderSystem.runAsFancy(() -> dispatcher.render(entity, 0d, finalY, 0d, finalYaw, 1f, stack, immediate, LightTexture.FULL_BRIGHT));
         immediate.endBatch();
+
+        UIHelper.paperdoll = false;
+        if (avatar != null) avatar.postPreviewRenderEvent();
 
         //restore entity rendering data
         dispatcher.setRenderHitBoxes(renderHitboxes);
@@ -189,8 +236,7 @@ public class UIHelper extends GuiComponent {
         entity.yHeadRot = headYaw;
         entity.setInvisible(invisible);
         UIHelper.forceNameplate = false;
-        UIHelper.forceNoFire = false;
-        UIHelper.paperdoll = false;
+        UIHelper.forceFire = false;
 
         //pop matrix
         stack.popPose();

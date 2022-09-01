@@ -375,6 +375,16 @@ public class Avatar {
             tryCall(luaRuntime.events.MOUSE_SCROLL, -1, LuaValue.valueOf(delta));
     }
 
+    public void previewRenderEvent() {
+        if (!scriptError && luaRuntime != null)
+            tryCall(luaRuntime.events.PREVIEW_RENDER, trust.get(TrustContainer.Trust.RENDER_INST));
+    }
+
+    public void postPreviewRenderEvent() {
+        if (!scriptError && luaRuntime != null)
+            tryCall(luaRuntime.events.POST_PREVIEW_RENDER, -1);
+    }
+
     // -- rendering events -- //
 
     public void render(Entity entity, float yaw, float delta, float alpha, PoseStack matrices, MultiBufferSource bufferSource, int light, int overlay, LivingEntityRenderer<?, ?> entityRenderer, PartFilterScheme filter, boolean translucent, boolean glowing) {

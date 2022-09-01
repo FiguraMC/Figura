@@ -1,8 +1,8 @@
 package org.moon.figura.lua.api.event;
 
+import com.google.common.collect.HashMultimap;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
-import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.Varargs;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
@@ -11,6 +11,10 @@ import org.moon.figura.lua.docs.LuaMetamethodDoc;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.Set;
+
 @LuaWhitelist
 @LuaTypeDoc(
         name = "Event",
@@ -18,40 +22,37 @@ import org.moon.figura.lua.docs.LuaTypeDoc;
 )
 public class LuaEvent {
 
-    private static final int MAX_FUNCTIONS = 1000;
+    private static final int MAX_FUNCTIONS = 1024;
 
-    LuaTable functionList = new LuaTable();
-    LuaTable nameList = new LuaTable();
-    LuaTable queuedFunctions = new LuaTable();
-    LuaTable queuedNames = new LuaTable();
+    private final Deque<LuaFunction> functions = new ArrayDeque<>();
+    private final Deque<LuaFunction> queue = new ArrayDeque<>();
+    private final Deque<LuaFunction> removalQueue = new ArrayDeque<>();
+    private final HashMultimap<String, LuaFunction> names = HashMultimap.create();
 
+    //Add all waiting functions from the queues
     protected void flushQueue() {
-        //Add all waiting functions from the queue
-        int nQueued = queuedFunctions.rawlen();
-        int nAdded = functionList.rawlen();
-        for (int i = 1; i <= nQueued; i++) {
-            functionList.set(nAdded + i, queuedFunctions.get(i));
-            nameList.set(nAdded + i, queuedNames.get(i));
-        }
-        queuedNames = new LuaTable();
-        queuedFunctions = new LuaTable();
+        for (LuaFunction function : removalQueue)
+            functions.removeFirstOccurrence(function);
+        removalQueue.clear();
+
+        for (LuaFunction function : queue)
+            functions.addLast(function);
+        queue.clear();
     }
 
     //Calls all the functions in the order they were registered, using the given args for all calls.
     public void call(Varargs args) {
         flushQueue();
-        int len = functionList.rawlen();
-        for (int i = 1; i <= len; i++)
-            functionList.get(i).invoke(args);
+        for (LuaFunction function : functions)
+            function.invoke(args);
     }
 
     //The result of one function is passed through to the next, repeatedly, eventually returning the result.
     //Used for CHAT_SEND_MESSAGE.
     public Varargs pipedCall(Varargs args) {
         flushQueue();
-        int len = functionList.rawlen();
-        for (int i = 1; i <= len; i++)
-            args = functionList.get(i).invoke(args);
+        for (LuaFunction function : functions)
+            args = function.invoke(args);
         return args;
     }
 
@@ -70,21 +71,20 @@ public class LuaEvent {
             value = "event.register"
     )
     public void register(@LuaNotNil LuaFunction func, String name) {
-        if (functionList.rawlen() + queuedFunctions.rawlen() >= MAX_FUNCTIONS)
+        if (__len() >= MAX_FUNCTIONS)
             throw new LuaError("Reached maximum limit of " + MAX_FUNCTIONS + " functions in one event!");
-        if (name == null)
-            name = "";
-        queuedFunctions.set(queuedFunctions.rawlen() + 1, func);
-        queuedNames.set(queuedNames.rawlen() + 1, name);
+        queue.addLast(func);
+        if (name != null)
+            names.put(name, func);
     }
 
     @LuaWhitelist
     @LuaMethodDoc("event.clear")
     public void clear() {
-        functionList = new LuaTable();
-        nameList = new LuaTable();
-        queuedFunctions = new LuaTable();
-        queuedNames = new LuaTable();
+        functions.clear();
+        queue.clear();
+        removalQueue.clear();
+        names.clear();
     }
 
     @LuaWhitelist
@@ -97,24 +97,16 @@ public class LuaEvent {
     )
     public int remove(@LuaNotNil String name) {
         flushQueue();
-        LuaTable newFunctions = new LuaTable();
-        LuaTable newNames = new LuaTable();
-        int numRemoved = 0;
 
-        int funcCount = functionList.rawlen();
-        for (int i = 1; i <= funcCount; i++) {
-            String funcName = nameList.get(i).checkjstring();
-            if (funcName.equals(name)) {
-                numRemoved++;
-            } else {
-                newFunctions.set(i - numRemoved, functionList.get(i));
-                newNames.set(i - numRemoved, funcName);
-            }
+        int removed = 0;
+
+        Set<LuaFunction> set = names.removeAll(name);
+        for (LuaFunction function : set) {
+            if (removalQueue.add(function))
+                removed++;
         }
 
-        functionList = newFunctions;
-        nameList = newNames;
-        return numRemoved;
+        return removed;
     }
 
     @LuaWhitelist
@@ -124,7 +116,7 @@ public class LuaEvent {
             )
     })
     public int __len() {
-        return functionList.rawlen() + queuedFunctions.rawlen();
+        return functions.size() + queue.size();
     }
 
     @Override

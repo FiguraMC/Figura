@@ -58,7 +58,7 @@ public class PaperDoll {
                 x, y,
                 scale * 30f,
                 Config.PAPERDOLL_PITCH.asFloat(), Config.PAPERDOLL_YAW.asFloat(),
-                player, stack, true
+                player, stack, UIHelper.EntityRenderMode.PAPERDOLL
         );
     }
 }

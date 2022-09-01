@@ -16,6 +16,7 @@
     "gui.ChatScreenMixin",
     "gui.DebugScreenOverlayMixin",
     "gui.GuiMixin",
+    "gui.InventoryScreenMixin",
     "gui.PauseScreenMixin",
     "gui.PlayerTabOverlayMixin",
     "gui.SplashManagerMixin",
