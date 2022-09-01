@@ -48,7 +48,7 @@ public abstract class FiguraMatrix<T extends FiguraMatrix<T, V>, V extends Figur
         return copy().add(o);
     }
     public T minus(T o) {
-        return copy().add(o);
+        return copy().sub(o);
     }
 
     public T reset() {
