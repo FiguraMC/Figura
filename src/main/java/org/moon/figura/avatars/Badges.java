@@ -1,4 +1,4 @@
-package org.moon.figura.lua.api.nameplate;
+package org.moon.figura.avatars;
 
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.ChatFormatting;
@@ -7,7 +7,6 @@ import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.avatars.Avatar;
 import org.moon.figura.backend.NetworkManager;
 import org.moon.figura.config.Config;
 import org.moon.figura.utils.ColorUtils;
@@ -26,7 +25,7 @@ public class Badges {
         if (avatar == null)
             return Component.empty();
 
-        MutableComponent badges = Component.literal(" ");
+        MutableComponent badges = Component.literal(" ").withStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT).withColor(ChatFormatting.WHITE));
 
         UUID id = avatar.owner;
         Pair<BitSet, BitSet> pair = badgesMap.get(id);
@@ -38,7 +37,7 @@ public class Badges {
         // -- loading -- //
 
         if (!avatar.loaded)
-            return badges.append(Component.literal(Integer.toHexString(Math.abs(FiguraMod.ticks) % 16)).withStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT)));
+            return badges.append(Component.literal(Integer.toHexString(Math.abs(FiguraMod.ticks) % 16)));
 
         // -- mark -- //
 
@@ -117,11 +116,7 @@ public class Badges {
         public final Component badge;
 
         Default(String unicode) {
-            this.badge = Component.literal(unicode).withStyle(Style.EMPTY
-                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, FiguraText.of("badges.standard." + this.name().toLowerCase())))
-                    .withFont(TextUtils.FIGURA_FONT)
-                    .withColor(ChatFormatting.WHITE)
-            );
+            this.badge = Component.literal(unicode).withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, FiguraText.of("badges.standard." + this.name().toLowerCase()))));
         }
     }
 
@@ -155,11 +150,7 @@ public class Badges {
         public final Component badge;
 
         Pride(String unicode) {
-            this.badge = Component.literal(unicode).withStyle(Style.EMPTY
-                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, FiguraText.of("badges.pride." + this.name().toLowerCase())))
-                    .withFont(TextUtils.FIGURA_FONT)
-                    .withColor(ChatFormatting.WHITE)
-            );
+            this.badge = Component.literal(unicode).withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, FiguraText.of("badges.pride." + this.name().toLowerCase()))));
         }
     }
 
@@ -182,11 +173,9 @@ public class Badges {
         }
 
         Special(String unicode, Integer color) {
-            this.badge = Component.literal(unicode).withStyle(Style.EMPTY
-                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, FiguraText.of("badges.special." + this.name().toLowerCase())))
-                    .withFont(TextUtils.FIGURA_FONT)
-                    .withColor(color == null ? 0xFFFFFF : color)
-            );
+            Style style = Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, FiguraText.of("badges.special." + this.name().toLowerCase())));
+            if (color != null) style = style.withColor(color);
+            this.badge = Component.literal(unicode).withStyle(style);
         }
     }
 }

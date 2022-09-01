@@ -153,7 +153,7 @@ public class FiguraAPIManager {
         Set<FiguraAPI> set = IOUtils.loadEntryPoints("figura_api", FiguraAPI.class);
         for (FiguraAPI api : set) {
             ENTRYPOINTS.add(api);
-            WHITELISTED_CLASSES.add(api.getClass());
+            WHITELISTED_CLASSES.addAll(api.getWhitelistedClasses());
         }
     }
 
@@ -163,7 +163,9 @@ public class FiguraAPIManager {
         for (Map.Entry<String, Function<FiguraLuaRuntime, Object>> entry : API_GETTERS.entrySet())
             runtime.setGlobal(entry.getKey(), entry.getValue().apply(runtime));
         for (FiguraAPI api : ENTRYPOINTS) {
-            runtime.setGlobal(api.getName(), api.build(runtime.owner));
+            String name = api.getName();
+            if (name != null)
+                runtime.setGlobal(name, api.build(runtime.owner));
         }
     }
 }

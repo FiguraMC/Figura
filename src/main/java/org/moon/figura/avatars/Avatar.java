@@ -327,7 +327,8 @@ public class Avatar {
     }
 
     public void postWorldRenderEvent(float delta) {
-        renderer.allowMatrixUpdate = false;
+        if (renderer != null)
+            renderer.allowMatrixUpdate = false;
 
         if (scriptError || luaRuntime == null || worldRenderLimit == 0)
             return;

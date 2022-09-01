@@ -10,7 +10,6 @@ import org.moon.figura.backend.NetworkManager;
 import org.moon.figura.config.Config;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.widgets.lists.AvatarList;
-import org.moon.figura.lua.api.nameplate.Badges;
 import org.moon.figura.utils.FiguraText;
 
 import java.nio.file.Path;
@@ -222,6 +221,9 @@ public class AvatarManager {
         if (FETCHED_AVATARS.contains(id))
             return;
 
+        FiguraMod.LOGGER.debug("Getting avatar for " + id);
+
+        LOADED_AVATARS.put(id, new Avatar(id));
         FETCHED_AVATARS.add(id);
 
         //egg

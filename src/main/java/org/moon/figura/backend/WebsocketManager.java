@@ -1,7 +1,6 @@
 package org.moon.figura.backend;
 
 import net.minecraft.client.multiplayer.resolver.ServerAddress;
-import net.minecraft.network.chat.Component;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.moon.figura.FiguraMod;
@@ -79,14 +78,14 @@ public class WebsocketManager extends WebSocketClient {
     @Override
     public void onMessage(String message) {
         if (NetworkManager.websocketDebug)
-            FiguraMod.sendChatMessage(Component.literal("Received message: " + message));
+            FiguraMod.LOGGER.warn("RECEIVE: " + message);
         MessageHandler.handleMessage(message);
     }
 
     @Override
     public void onMessage(ByteBuffer bytes) {
         if (NetworkManager.websocketDebug)
-            FiguraMod.sendChatMessage(Component.literal("Received raw message [" + bytes.remaining() + "b]"));
+            FiguraMod.LOGGER.warn("RAW RECEIVE [" + bytes.remaining() + "b]");
         //MessageHandler.handleMessage(bytes);
     }
 
@@ -120,14 +119,14 @@ public class WebsocketManager extends WebSocketClient {
     @Override
     public void send(String text) {
         if (NetworkManager.websocketDebug)
-            FiguraMod.sendChatMessage(Component.literal("Sending message: " + text));
+            FiguraMod.LOGGER.warn("SENT: " + text);
         super.send(text);
     }
 
     @Override
     public void send(byte[] data) {
         if (NetworkManager.websocketDebug)
-            FiguraMod.sendChatMessage(Component.literal("Sending raw message [" + data.length + "b]"));
+            FiguraMod.LOGGER.warn("RAW SENT [" + data.length + "b]");
         super.send(data);
     }
 

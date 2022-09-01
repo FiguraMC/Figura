@@ -45,6 +45,8 @@ public class DownloadRequest {
         @Override
         public Runnable function() {
             return () -> {
+                super.function().run();
+
                 if (!NetworkManager.hasBackend())
                     return;
 

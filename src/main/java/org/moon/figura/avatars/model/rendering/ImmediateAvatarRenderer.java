@@ -214,8 +214,6 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
                 mat.free();
             }
 
-//            calculateWorldMatrices(part); //FOR DEBUG TESTING!
-
             PartCustomization peek = customizationStack.peek();
 
             //fix pivots
