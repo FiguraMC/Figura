@@ -1,7 +1,7 @@
 package org.moon.figura.commands;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.gui.FiguraToast;
@@ -13,7 +13,7 @@ public class FiguraReloadCommand {
         LiteralArgumentBuilder<FabricClientCommandSource> cmd = LiteralArgumentBuilder.literal("reload");
         cmd.executes(context -> {
             AvatarManager.reloadAvatar(FiguraMod.getLocalPlayerUUID());
-            FiguraToast.sendToast(FiguraText.of("toast.reload"));
+            FiguraToast.sendToast(new FiguraText("toast.reload"));
             return 1;
         });
         return cmd;

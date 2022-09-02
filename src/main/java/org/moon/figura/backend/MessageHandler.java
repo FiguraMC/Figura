@@ -63,7 +63,7 @@ public enum MessageHandler {
                 String key = config == 1 ? "latestRelease" : "latestPreRelease";
                 String version = json.get(key).getAsString();
                 if (Version.of(version).compareTo(Version.VERSION) > 0)
-                    FiguraToast.sendToast(FiguraText.of("toast.new_version"), version);
+                    FiguraToast.sendToast(new FiguraText("toast.new_version"), version);
             } catch (Exception ignored) {}
         }
     }),

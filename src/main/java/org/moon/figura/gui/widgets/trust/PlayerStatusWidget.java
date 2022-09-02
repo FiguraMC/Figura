@@ -16,21 +16,21 @@ import java.util.function.Function;
 public class PlayerStatusWidget extends StatusWidget {
 
     private static final List<Function<Avatar, MutableComponent>> HOVER_TEXT = List.of(
-            avatar -> FiguraText.of("gui.trust.size")
+            avatar -> new FiguraText("gui.trust.size")
                     .append("\n• ").append(MathUtils.asFileSize(avatar.fileSize)),
-            avatar -> FiguraText.of("gui.trust.complexity")
+            avatar -> new FiguraText("gui.trust.complexity")
                     .append("\n• ").append(String.valueOf(avatar.complexity)),
-            avatar -> FiguraText.of("gui.trust.init")
-                    .append("\n• ").append(FiguraText.of("gui.trust.init.root", avatar.initInstructions))
-                    .append("\n• ").append(FiguraText.of("gui.trust.init.entity", avatar.entityInitInstructions)),
-            avatar -> FiguraText.of("gui.trust.tick")
-                    .append("\n• ").append(FiguraText.of("gui.trust.tick.world", avatar.worldTickInstructions))
-                    .append("\n• ").append(FiguraText.of("gui.trust.tick.entity", avatar.entityTickInstructions)),
-            avatar -> FiguraText.of("gui.trust.render")
-                    .append("\n• ").append(FiguraText.of("gui.trust.render.world", avatar.worldRenderInstructions))
-                    .append("\n• ").append(FiguraText.of("gui.trust.render.entity", avatar.entityRenderInstructions))
-                    .append("\n• ").append(FiguraText.of("gui.trust.render.post_entity", avatar.postEntityRenderInstructions))
-                    .append("\n• ").append(FiguraText.of("gui.trust.render.post_world", avatar.postWorldRenderInstructions))
+            avatar -> new FiguraText("gui.trust.init")
+                    .append("\n• ").append(new FiguraText("gui.trust.init.root", avatar.initInstructions))
+                    .append("\n• ").append(new FiguraText("gui.trust.init.entity", avatar.entityInitInstructions)),
+            avatar -> new FiguraText("gui.trust.tick")
+                    .append("\n• ").append(new FiguraText("gui.trust.tick.world", avatar.worldTickInstructions))
+                    .append("\n• ").append(new FiguraText("gui.trust.tick.entity", avatar.entityTickInstructions)),
+            avatar -> new FiguraText("gui.trust.render")
+                    .append("\n• ").append(new FiguraText("gui.trust.render.world", avatar.worldRenderInstructions))
+                    .append("\n• ").append(new FiguraText("gui.trust.render.entity", avatar.entityRenderInstructions))
+                    .append("\n• ").append(new FiguraText("gui.trust.render.post_entity", avatar.postEntityRenderInstructions))
+                    .append("\n• ").append(new FiguraText("gui.trust.render.post_world", avatar.postWorldRenderInstructions))
     );
 
     private final UUID owner;
