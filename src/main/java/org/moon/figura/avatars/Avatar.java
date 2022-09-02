@@ -296,7 +296,7 @@ public class Avatar {
             return;
 
         int entityRenderLimit = trust.get(TrustContainer.Trust.RENDER_INST);
-        tryCall(luaRuntime.events.RENDER, entityRenderLimit, LuaDouble.valueOf(delta));
+        tryCall(luaRuntime.events.RENDER, entityRenderLimit, delta);
         if (luaRuntime != null) {
             entityRenderInstructions = luaRuntime.getInstructions();
             accumulatedEntityRenderInstructions = entityRenderInstructions;
@@ -307,7 +307,7 @@ public class Avatar {
         if (scriptError || luaRuntime == null)
             return;
 
-        tryCall(luaRuntime.events.POST_RENDER, -1, LuaDouble.valueOf(delta));
+        tryCall(luaRuntime.events.POST_RENDER, -1, delta);
         if (luaRuntime != null) {
             postEntityRenderInstructions = luaRuntime.getInstructions() - entityRenderInstructions;
             accumulatedEntityRenderInstructions += postEntityRenderInstructions;
@@ -319,7 +319,7 @@ public class Avatar {
             return;
 
         worldRenderLimit = trust.get(TrustContainer.Trust.WORLD_RENDER_INST);
-        tryCall(luaRuntime.events.WORLD_RENDER, worldRenderLimit, LuaDouble.valueOf(delta));
+        tryCall(luaRuntime.events.WORLD_RENDER, worldRenderLimit, delta);
         if (luaRuntime != null) {
             worldRenderInstructions = luaRuntime.getInstructions();
             accumulatedWorldRenderInstructions = worldRenderInstructions;
@@ -333,7 +333,7 @@ public class Avatar {
         if (scriptError || luaRuntime == null || worldRenderLimit == 0)
             return;
 
-        tryCall(luaRuntime.events.POST_WORLD_RENDER, Math.max(worldRenderLimit - worldRenderInstructions, 1), LuaDouble.valueOf(delta));
+        tryCall(luaRuntime.events.POST_WORLD_RENDER, Math.max(worldRenderLimit - worldRenderInstructions, 1), delta);
         if (luaRuntime != null) {
             postWorldRenderInstructions = luaRuntime.getInstructions();
             accumulatedWorldRenderInstructions += postWorldRenderInstructions;
@@ -357,7 +357,7 @@ public class Avatar {
 
     public void chatReceivedMessageEvent(String message) {
         if (!scriptError && luaRuntime != null)
-            tryCall(luaRuntime.events.CHAT_RECEIVE_MESSAGE, -1, LuaValue.valueOf(message));
+            tryCall(luaRuntime.events.CHAT_RECEIVE_MESSAGE, -1, message);
     }
 
     public void skullRenderEvent(SkullBlockEntity skullBlockEntity, float delta) {
@@ -372,17 +372,17 @@ public class Avatar {
 
     public void mouseScrollEvent(double delta) {
         if (!scriptError && luaRuntime != null)
-            tryCall(luaRuntime.events.MOUSE_SCROLL, -1, LuaValue.valueOf(delta));
+            tryCall(luaRuntime.events.MOUSE_SCROLL, -1, delta);
     }
 
-    public void previewRenderEvent() {
+    public void previewRenderEvent(String renderMode) {
         if (!scriptError && luaRuntime != null)
-            tryCall(luaRuntime.events.PREVIEW_RENDER, trust.get(TrustContainer.Trust.RENDER_INST));
+            tryCall(luaRuntime.events.PREVIEW_RENDER, trust.get(TrustContainer.Trust.RENDER_INST), renderMode);
     }
 
-    public void postPreviewRenderEvent() {
+    public void postPreviewRenderEvent(String renderMode) {
         if (!scriptError && luaRuntime != null)
-            tryCall(luaRuntime.events.POST_PREVIEW_RENDER, -1);
+            tryCall(luaRuntime.events.POST_PREVIEW_RENDER, -1, renderMode);
     }
 
     // -- rendering events -- //
