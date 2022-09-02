@@ -97,9 +97,9 @@ public class UIHelper extends GuiComponent {
     }
 
     public enum EntityRenderMode {
-        NONE,
+        FIGURA_GUI,
         PAPERDOLL,
-        HUD
+        MINECRAFT_GUI
     }
 
     public static void drawEntity(float x, float y, float scale, float pitch, float yaw, LivingEntity entity, PoseStack stack, EntityRenderMode renderMode) {
@@ -117,7 +117,7 @@ public class UIHelper extends GuiComponent {
 
         //apply matrix transformers
         stack.pushPose();
-        stack.translate(x, y, renderMode == EntityRenderMode.HUD ? 2050d : 0d); //2050K full HD
+        stack.translate(x, y, 200d);
         stack.scale(scale, scale, scale);
         stack.last().pose().multiply(Matrix4f.createScaleMatrix(1f, 1f, -1f)); //Scale ONLY THE POSITIONS! Inverted normals don't work for whatever reason
 
@@ -158,7 +158,7 @@ public class UIHelper extends GuiComponent {
 
                 finalY = -1d;
             }
-            case NONE -> {
+            case FIGURA_GUI -> {
                 quaternion2 = Vector3f.XP.rotationDegrees(pitch);
                 quaternion.mul(quaternion2);
                 stack.mulPose(quaternion);
@@ -214,7 +214,7 @@ public class UIHelper extends GuiComponent {
 
         //render
         Avatar avatar = AvatarManager.getAvatar(entity);
-        if (avatar != null) avatar.previewRenderEvent();
+        if (avatar != null) avatar.previewRenderEvent(renderMode.name());
         UIHelper.paperdoll = true;
 
         float finalYaw = yaw;
@@ -222,7 +222,7 @@ public class UIHelper extends GuiComponent {
         immediate.endBatch();
 
         UIHelper.paperdoll = false;
-        if (avatar != null) avatar.postPreviewRenderEvent();
+        if (avatar != null) avatar.postPreviewRenderEvent(renderMode.name());
 
         //restore entity rendering data
         dispatcher.setRenderHitBoxes(renderHitboxes);
