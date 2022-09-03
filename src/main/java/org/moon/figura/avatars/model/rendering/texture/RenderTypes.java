@@ -6,6 +6,14 @@ import net.minecraft.resources.ResourceLocation;
 import java.util.function.Function;
 
 public enum RenderTypes {
+    NONE(null) {
+        //dummy proof
+        @Override
+        public RenderType get(ResourceLocation id) {
+            return null;
+        }
+    },
+
     CUTOUT(RenderType::entityCutoutNoCull),
     CUTOUT_CULL(RenderType::entityCutout),
     TRANSLUCENT(RenderType::entityTranslucent),
