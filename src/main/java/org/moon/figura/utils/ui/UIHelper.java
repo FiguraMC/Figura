@@ -117,7 +117,7 @@ public class UIHelper extends GuiComponent {
 
         //apply matrix transformers
         stack.pushPose();
-        stack.translate(x, y, 200d);
+        stack.translate(x, y, renderMode == EntityRenderMode.MINECRAFT_GUI ? 200d : 0d);
         stack.scale(scale, scale, scale);
         stack.last().pose().multiply(Matrix4f.createScaleMatrix(1f, 1f, -1f)); //Scale ONLY THE POSITIONS! Inverted normals don't work for whatever reason
 

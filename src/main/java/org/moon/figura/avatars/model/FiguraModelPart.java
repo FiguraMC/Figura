@@ -51,7 +51,7 @@ public class FiguraModelPart {
     public int animationOverride = 0;
     public int lastAnimationPriority = Integer.MIN_VALUE;
 
-    public final FiguraMat4 savedPartToWorldMat = FiguraMat4.of().scale(1d/16, 1d/16, 1d/16);
+    public final FiguraMat4 savedPartToWorldMat = FiguraMat4.of().scale(1 / 16d, 1 / 16d, 1 / 16d);
 
     public FiguraModelPart(String name, PartCustomization customization, List<FiguraModelPart> children) {
         this.name = name;
@@ -120,22 +120,21 @@ public class FiguraModelPart {
     }
 
     public void applyExtraTransforms(FiguraMat4 currentTransforms) {
-        if (parentType == ParentType.Camera) {
-            if ((animationOverride & 1) != 1) {
-                FiguraMat4 prevPartToView = currentTransforms.inverted();
-                prevPartToView.rightMultiply(FiguraMat4.of().rotateY(180));
-                prevPartToView.scale(1d/16, 1d/16, 1d/16);
-                FiguraVec3 piv = customization.getPivot();
-                FiguraVec3 piv2 = customization.getOffsetPivot().add(piv);
-                prevPartToView.v14 = prevPartToView.v24 = prevPartToView.v34 = 0;
-                prevPartToView.translateFirst(-piv2.x, -piv2.y, -piv2.z);
-                prevPartToView.translate(piv2.x, piv2.y, piv2.z);
-                customization.setMatrix(prevPartToView);
-                prevPartToView.free();
-                piv.free();
-                piv2.free();
-            }
-        }
+        if (parentType != ParentType.Camera)
+            return;
+
+        FiguraMat4 prevPartToView = currentTransforms.inverted();
+        prevPartToView.rightMultiply(FiguraMat4.of().rotateY(180));
+        prevPartToView.scale(1 / 16d, 1 / 16d, 1 / 16d);
+        FiguraVec3 piv = customization.getPivot();
+        FiguraVec3 piv2 = customization.getOffsetPivot().add(piv);
+        prevPartToView.v14 = prevPartToView.v24 = prevPartToView.v34 = 0;
+        prevPartToView.translateFirst(-piv2.x, -piv2.y, -piv2.z);
+        prevPartToView.translate(piv2.x, piv2.y, piv2.z);
+        customization.setMatrix(prevPartToView);
+        prevPartToView.free();
+        piv.free();
+        piv2.free();
     }
 
     public void clean() {
