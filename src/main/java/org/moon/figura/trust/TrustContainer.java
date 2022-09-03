@@ -34,6 +34,7 @@ public class TrustContainer {
         COMPLEXITY(0, 8191),
         PARTICLES(0, 63),
         SOUNDS(0, 63),
+        VOLUME(0, 99),
         BB_ANIMATIONS(0, 255),
         VANILLA_MODEL_EDIT,
         NAMEPLATE_EDIT,
@@ -63,7 +64,7 @@ public class TrustContainer {
 
         //infinity check :p
         public boolean checkInfinity(int value) {
-            return max != null && value > max;
+            return max != null && value > max && this != VOLUME;
         }
 
         //transform to boolean

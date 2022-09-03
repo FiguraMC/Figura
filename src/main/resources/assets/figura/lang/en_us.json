@@ -57,6 +57,7 @@
   "figura.trust.complexity": "Max Complexity",
   "figura.trust.particles": "Max Particles",
   "figura.trust.sounds": "Max Sounds",
+  "figura.trust.volume": "Avatar Sounds Volume",
   "figura.trust.bb_animations": "Animation Complexity",
   "figura.trust.vanilla_model_edit": "Vanilla Model Change",
   "figura.trust.nameplate_edit": "Nameplate Change",
