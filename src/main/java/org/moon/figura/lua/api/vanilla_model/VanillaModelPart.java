@@ -86,6 +86,12 @@ public class VanillaModelPart extends VanillaPart {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("vanilla_part.get_origin_visible")
+    public boolean getOriginVisible() {
+        return this.storedVisibility;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc("vanilla_part.get_origin_rot")
     public FiguraVec3 getOriginRot() {
         return this.savedOriginRot.copy();

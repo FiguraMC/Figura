@@ -429,6 +429,7 @@
   "figura.docs.enum.play_states": "List of valid PlayStates. Used within Blockbench animations.",
   "figura.docs.enum.loop_modes": "List of valid LoopModes. Used within Blockbench animations.",
   "figura.docs.enum.colors": "List of custom colors. Used anywhere you can input a hex color.",
+  "figura.docs.enum.player_model_parts": "List of valid PlayerModelParts. Used within the PlayerAPI.",
 
 
   "figura.docs.globals": "Documentation for the various things Figura adds to the global lua state.",
@@ -742,9 +743,10 @@
   "figura.docs.player.get_saturation": "Gets the current saturation level of the player.",
   "figura.docs.player.get_experience_progress": "Gets the progress of the way towards the player's next level, as a value from 0 to 1.",
   "figura.docs.player.get_experience_level": "Gets the player's current level.",
+  "figura.docs.player.is_flying": "Returns whether the player is currently flying.",
   "figura.docs.player.get_model_type": "Returns \"SLIM\" or \"DEFAULT\", depending on the player's model type.",
   "figura.docs.player.get_gamemode": "Returns \"SURVIVAL\", \"CREATIVE\", \"ADVENTURE\", or \"SPECTATOR\" depending on the player's gamemode. If the gamemode is unknown, returns nil.",
-  "figura.docs.player.is_flying": "Returns whether the player is currently flying.",
+  "figura.docs.player.is_skin_layer_visible": "Returns whether the specified skin layer, from the Skin Customizations settings, is currently visible.",
 
 
   "figura.docs.events": "A global API that contains all of the figura Events. Accessed using the name \"events\".",
@@ -1080,6 +1082,7 @@
   "figura.docs.vanilla_part": "Represents a model part in a vanilla model. Can be set visible and invisible, and queried for rotation and position offsets.",
   "figura.docs.vanilla_part.set_visible": "Sets this part to be visible or invisible.",
   "figura.docs.vanilla_part.get_visible": "Gets whether you have set this part to be visible or invisible. Only responds to your own changes in script, not anything done by Minecraft.",
+  "figura.docs.vanilla_part.get_origin_visible": "Gets if this vanilla model part is visible or not, without interference from your script.",
   "figura.docs.vanilla_part.get_origin_rot": "Gets the rotation to this vanilla model part currently applied by Minecraft.",
   "figura.docs.vanilla_part.get_origin_pos": "Gets the position offset to this vanilla model part currently applied by Minecraft.",
 
