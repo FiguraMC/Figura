@@ -24,7 +24,7 @@ import org.moon.figura.config.Config;
 import org.moon.figura.config.ConfigManager;
 import org.moon.figura.gui.PaperDoll;
 import org.moon.figura.gui.PopupMenu;
-import org.moon.figura.gui.actionwheel.ActionWheel;
+import org.moon.figura.gui.ActionWheel;
 import org.moon.figura.lua.FiguraAPIManager;
 import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.lua.docs.FiguraDocsManager;

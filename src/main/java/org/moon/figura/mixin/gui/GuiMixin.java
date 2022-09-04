@@ -6,7 +6,7 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.world.entity.Entity;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
-import org.moon.figura.gui.actionwheel.ActionWheel;
+import org.moon.figura.gui.ActionWheel;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;

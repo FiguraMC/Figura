@@ -20,6 +20,7 @@ import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.LuaUtils;
+import org.moon.figura.utils.ui.UIHelper;
 
 import java.util.HashMap;
 import java.util.List;
@@ -125,7 +126,8 @@ public class FiguraModelPart {
 
         FiguraMat4 prevPartToView = currentTransforms.inverted();
         prevPartToView.rightMultiply(FiguraMat4.of().rotateY(180));
-        prevPartToView.scale(1 / 16d, 1 / 16d, 1 / 16d);
+        double s = UIHelper.paperdoll ?  1 / 16d * UIHelper.dollScale : 1 / 16d;
+        prevPartToView.scale(s, s, s);
         FiguraVec3 piv = customization.getPivot();
         FiguraVec3 piv2 = customization.getOffsetPivot().add(piv);
         prevPartToView.v14 = prevPartToView.v24 = prevPartToView.v34 = 0;

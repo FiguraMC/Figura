@@ -41,13 +41,11 @@ public class UIHelper extends GuiComponent {
     public static final ResourceLocation OUTLINE = new FiguraIdentifier("textures/gui/outline.png");
     public static final ResourceLocation TOOLTIP = new FiguraIdentifier("textures/gui/tooltip.png");
 
-    public static boolean forceNameplate = false;
-    public static boolean forceFire = false;
-
     //Used for GUI rendering
     private static final CustomFramebuffer FIGURA_FRAMEBUFFER = new CustomFramebuffer();
     private static int previousFBO = -1;
     public static boolean paperdoll = false;
+    public static float dollScale = 1f;
 
     // -- Functions -- //
 
@@ -112,8 +110,6 @@ public class UIHelper extends GuiComponent {
         boolean invisible = entity.isInvisible();
 
         entity.setInvisible(false);
-        UIHelper.forceNameplate = true;
-        UIHelper.forceFire = true;
 
         //apply matrix transformers
         stack.pushPose();
@@ -216,6 +212,7 @@ public class UIHelper extends GuiComponent {
         Avatar avatar = AvatarManager.getAvatar(entity);
         if (avatar != null) avatar.previewRenderEvent(renderMode.name());
         UIHelper.paperdoll = true;
+        UIHelper.dollScale = scale;
 
         float finalYaw = yaw;
         RenderSystem.runAsFancy(() -> dispatcher.render(entity, 0d, finalY, 0d, finalYaw, 1f, stack, immediate, LightTexture.FULL_BRIGHT));
@@ -235,8 +232,6 @@ public class UIHelper extends GuiComponent {
         entity.yHeadRotO = prevHeadYaw;
         entity.yHeadRot = headYaw;
         entity.setInvisible(invisible);
-        UIHelper.forceNameplate = false;
-        UIHelper.forceFire = false;
 
         //pop matrix
         stack.popPose();

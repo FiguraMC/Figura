@@ -1,7 +1,6 @@
 package org.moon.figura.mixin.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Camera;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.world.entity.Entity;
@@ -9,12 +8,10 @@ import net.minecraft.world.level.LevelReader;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.trust.TrustContainer;
-import org.moon.figura.utils.ui.UIHelper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(EntityRenderDispatcher.class)
@@ -28,11 +25,6 @@ public class EntityRenderDispatcherMixin {
 
         if (!avatar.luaRuntime.renderer.renderFire)
             ci.cancel();
-    }
-
-    @Redirect(method = "renderFlame", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;getYRot()F"))
-    private float renderFlameRot(Camera instance) {
-        return UIHelper.forceFire ? 0 : instance.getYRot();
     }
 
     @ModifyVariable(method = "renderShadow", at = @At("HEAD"), ordinal = 2, argsOnly = true)
