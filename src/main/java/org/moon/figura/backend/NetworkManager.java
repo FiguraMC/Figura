@@ -215,6 +215,10 @@ public class NetworkManager {
         return hasBackend() && backend.upload.check();
     }
 
+    public static int getSizeLimit() {
+        return hasBackend() ? backend.maxAvatarSize : Integer.MAX_VALUE;
+    }
+
     // -- avatar management -- //
 
     public static void uploadAvatar(Avatar avatar, UUID id) {

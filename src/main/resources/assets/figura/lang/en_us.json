@@ -188,8 +188,8 @@
 
   "figura.gui.status.size": "Size",
   "figura.gui.status.size.0": "none",
-  "figura.gui.status.size.1": "100kb+",
-  "figura.gui.status.size.2": "75kb+",
+  "figura.gui.status.size.1": "Avatar size is greater than %s",
+  "figura.gui.status.size.2": "Avatar size is greater than %s",
   "figura.gui.status.size.3": "ok",
 
   "figura.gui.status.texture": "Texture",
@@ -198,15 +198,15 @@
 
   "figura.gui.status.script": "Script",
   "figura.gui.status.script.0": "none",
-  "figura.gui.status.script.1": "error",
-  "figura.gui.status.script.2": "newer",
+  "figura.gui.status.script.1": "This Avatar script contains an error",
+  "figura.gui.status.script.2": "This Avatar script targets a newer version of Figura",
   "figura.gui.status.script.3": "ok",
 
   "figura.gui.status.backend": "Backend",
   "figura.gui.status.backend.reason": "Reason",
-  "figura.gui.status.backend.1": "disconnected",
-  "figura.gui.status.backend.2": "connecting",
-  "figura.gui.status.backend.3": "connected",
+  "figura.gui.status.backend.1": "Disconnected",
+  "figura.gui.status.backend.2": "Connecting",
+  "figura.gui.status.backend.3": "Connected",
 
 
   "figura.config.input.any": "Text...",
@@ -718,7 +718,7 @@
   "figura.docs.entity.is_invisible": "Returns true if this entity is invisible, for one reason or another.",
   "figura.docs.entity.is_silent": "Returns true if this entity is silent.",
   "figura.docs.entity.is_sneaking": "Returns true if this entity is sneaking.",
-  "figura.docs.entity.get_item": "Gets an ItemStack for the item in the given slot. For the player, slots are indexed with 1 as the main hand, 2 as the off hand, and 3,4,5,6 as the 4 armor slots from the boots to the helmet. If an invalid slot number is given, or if the entity has no item in that slot, this will return nil.",
+  "figura.docs.entity.get_item": "Gets an ItemStack for the item in the given slot. For the player, slots are indexed with 1 as the main hand, 2 as the off hand, and 3,4,5,6 as the 4 armor slots from the boots to the helmet. If an invalid slot number is given, this will return nil.",
   "figura.docs.entity.get_nbt": "Gets a table containing the NBT of this entity. Please note that not all values in the entity's NBT may be synced, as some are handled only on server side.",
   "figura.docs.entity.is_on_fire": "Returns true if this entity is currently on fire.",
   "figura.docs.entity.get_targeted_block": "Returns a proxy for your currently targeted BlockState. This BlockState appears on the F3 screen. Maximum and Default distance is 20, Minimum is -20",

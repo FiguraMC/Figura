@@ -4,6 +4,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
+import org.moon.figura.backend.NetworkManager;
 import org.moon.figura.gui.widgets.StatusWidget;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.utils.FiguraText;
@@ -52,22 +53,22 @@ public class PlayerStatusWidget extends StatusWidget {
         }
 
         //size
-        status = avatar.fileSize > SIZE_LARGE ? 1 : avatar.fileSize > SIZE_WARNING ? 2 : 3;
+        status = avatar.fileSize > NetworkManager.getSizeLimit() ? 1 : avatar.fileSize > NetworkManager.getSizeLimit() * 0.75 ? 2 : 3;
 
         //complexity
         int complexity = avatar.renderer == null ? 0 : avatar.complexity >= avatar.trust.get(TrustContainer.Trust.COMPLEXITY) ? 1 : 3;
         status += complexity << 2;
 
         //script init
-        int init = avatar.scriptError ? 1 : avatar.luaRuntime == null ? 0 : avatar.accumulatedInitInstructions >= avatar.trust.get(TrustContainer.Trust.INIT_INST) - 100 ? 2 : 3;
+        int init = avatar.scriptError ? 1 : avatar.luaRuntime == null ? 0 : avatar.accumulatedInitInstructions >= avatar.trust.get(TrustContainer.Trust.INIT_INST) * 0.75 ? 2 : 3;
         status += init << 4;
 
         //script tick
-        int tick = avatar.scriptError ? 1 : avatar.luaRuntime == null ? 0 : avatar.entityTickInstructions >= avatar.trust.get(TrustContainer.Trust.TICK_INST) - 100 || avatar.worldTickInstructions >= avatar.trust.get(TrustContainer.Trust.WORLD_TICK_INST) - 100 ? 2 : 3;
+        int tick = avatar.scriptError ? 1 : avatar.luaRuntime == null ? 0 : avatar.entityTickInstructions >= avatar.trust.get(TrustContainer.Trust.TICK_INST) * 0.75 || avatar.worldTickInstructions >= avatar.trust.get(TrustContainer.Trust.WORLD_TICK_INST) * 0.75 ? 2 : 3;
         status += tick << 6;
 
         //script render
-        int render = avatar.scriptError ? 1 : avatar.luaRuntime == null ? 0 : avatar.accumulatedEntityRenderInstructions >= avatar.trust.get(TrustContainer.Trust.RENDER_INST) - 100 || avatar.accumulatedWorldRenderInstructions >= avatar.trust.get(TrustContainer.Trust.WORLD_RENDER_INST) - 100 ? 2 : 3;
+        int render = avatar.scriptError ? 1 : avatar.luaRuntime == null ? 0 : avatar.accumulatedEntityRenderInstructions >= avatar.trust.get(TrustContainer.Trust.RENDER_INST) * 0.75 || avatar.accumulatedWorldRenderInstructions >= avatar.trust.get(TrustContainer.Trust.WORLD_RENDER_INST) * 0.75 ? 2 : 3;
         status += render << 8;
     }
 
