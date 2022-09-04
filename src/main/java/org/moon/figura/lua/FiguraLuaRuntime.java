@@ -235,7 +235,6 @@ public class FiguraLuaRuntime {
 
                 if (!scripts.containsKey(scriptName)) {
                     if (!previouslyRun.contains(scriptName))
-                        //TODO: translation key
                         throw new LuaError("Tried to require nonexistent script \"" + scriptName + "\"!");
                     return requireResults.get(scriptName);
                 }
@@ -260,18 +259,12 @@ public class FiguraLuaRuntime {
         };
     }
 
-
     private final ZeroArgFunction onReachedLimit = new ZeroArgFunction() {
         @Override
         public LuaValue call() {
-            //TODO: translation key for this // cant unless if we do it in a cursed way
-            if (!owner.scriptError) {
-                FiguraLuaPrinter.sendLuaError(new LuaError("Script overran resource limits!"), owner.entityName, owner.owner);
-                owner.scriptError = true;
-                owner.luaRuntime = null;
-            }
+            LuaError error = new LuaError("Script overran resource limits!");
             setInstructionLimit(1);
-            return LuaValue.NIL;
+            throw error;
         }
     };
 
