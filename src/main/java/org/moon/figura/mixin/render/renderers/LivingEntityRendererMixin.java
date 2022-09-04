@@ -117,7 +117,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
 
     @Inject(method = "shouldShowName(Lnet/minecraft/world/entity/LivingEntity;)Z", at = @At("HEAD"), cancellable = true)
     public void shouldShowName(T livingEntity, CallbackInfoReturnable<Boolean> cir) {
-        if (UIHelper.forceNameplate)
+        if (UIHelper.paperdoll)
             cir.setReturnValue(Config.PREVIEW_NAMEPLATE.asBool());
         else if (!Minecraft.renderNames())
             cir.setReturnValue(false);

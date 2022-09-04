@@ -16,7 +16,7 @@ import org.moon.figura.backend.NetworkManager;
 import org.moon.figura.config.Config;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.PopupMenu;
-import org.moon.figura.gui.actionwheel.ActionWheel;
+import org.moon.figura.gui.ActionWheel;
 import org.moon.figura.lua.api.sound.SoundAPI;
 import org.moon.figura.utils.EntityUtils;
 import org.moon.figura.utils.FiguraText;
