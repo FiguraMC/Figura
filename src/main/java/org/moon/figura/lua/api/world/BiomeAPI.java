@@ -2,6 +2,8 @@ package org.moon.figura.lua.api.world;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.biome.Biome;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFunctionOverload;
@@ -10,6 +12,10 @@ import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.LuaUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -59,6 +65,23 @@ public class BiomeAPI {
         FiguraVec3 newPos = LuaUtils.parseVec3("setPos", x, y, z);
         pos = newPos.asBlockPos();
         newPos.free();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("biome.get_tags")
+    public List<String> getTags() {
+        List<String> list = new ArrayList<>();
+
+        Registry<Biome> registry = WorldAPI.getCurrentWorld().registryAccess().registryOrThrow(Registry.BIOME_REGISTRY);
+        Optional<ResourceKey<Biome>> key = registry.getResourceKey(biome);
+
+        if (key.isEmpty())
+            return list;
+
+        for (TagKey<Biome> biomeTagKey : registry.getHolderOrThrow(key.get()).tags().toList())
+            list.add(biomeTagKey.location().toString());
+
+        return list;
     }
 
     @LuaWhitelist
