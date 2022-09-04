@@ -36,7 +36,7 @@ public class ScrollAction extends Action {
     public void mouseScroll(Avatar avatar, double delta) {
         //execute
         if (scroll != null)
-            avatar.tryCall(scroll, -1, delta);
+            avatar.tryCall(scroll, -1, delta, this);
     }
 
     @LuaWhitelist
