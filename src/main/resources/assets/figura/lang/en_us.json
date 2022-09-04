@@ -602,6 +602,7 @@
   "figura.docs.biome.get_name": "Returns the name of the biome, according to the registry.",
   "figura.docs.biome.get_pos": "Returns the saved position for this Biome's proxy. The saved position is used in Biome functions that require a position.",
   "figura.docs.biome.set_pos": "Sets the saved position for this Biome's proxy. The saved position is used in Biome functions that require a position.",
+  "figura.docs.biome.get_tags": "Gets the worldgen related tags from this Biome.",
   "figura.docs.biome.get_temperature": "Gets the temperature of this biome.",
   "figura.docs.biome.get_precipitation": "Gets the rain type of this biome. The type can be \"NONE\", \"RAIN\" or \"SNOW\".",
   "figura.docs.biome.get_sky_color": "Gets this biome's sky color as a RGB vector.",
