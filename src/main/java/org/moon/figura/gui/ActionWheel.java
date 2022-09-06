@@ -1,4 +1,4 @@
-package org.moon.figura.gui.actionwheel;
+package org.moon.figura.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;

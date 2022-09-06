@@ -1,6 +1,6 @@
 package org.moon.figura.mixin.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.world.entity.LivingEntity;
 import org.moon.figura.utils.ui.UIHelper;
@@ -14,7 +14,7 @@ public class InventoryScreenMixin {
 
     @Inject(method = "renderEntityInInventory", at = @At("HEAD"), cancellable = true)
     private static void renderEntityInInventory(int x, int y, int size, float mouseX, float mouseY, LivingEntity entity, CallbackInfo ci) {
-        UIHelper.drawEntity(x, y, size, mouseX, mouseY, entity, RenderSystem.getModelViewStack(), UIHelper.EntityRenderMode.HUD);
+        UIHelper.drawEntity(x, y, size, mouseX, mouseY, entity, new PoseStack(), UIHelper.EntityRenderMode.MINECRAFT_GUI);
         ci.cancel();
     }
 }

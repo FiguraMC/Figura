@@ -7,7 +7,7 @@ import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.gui.PopupMenu;
-import org.moon.figura.gui.actionwheel.ActionWheel;
+import org.moon.figura.gui.ActionWheel;
 import org.moon.figura.lua.api.keybind.FiguraKeybind;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

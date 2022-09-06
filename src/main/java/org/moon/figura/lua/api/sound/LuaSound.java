@@ -86,6 +86,8 @@ public class LuaSound {
             throw new LuaError("Illegal argument to playSound(): " + x);
         }
 
+        volume *= (owner.trust.get(TrustContainer.Trust.VOLUME) / 100f);
+
         SoundBuffer buffer = owner.customSounds.get(id);
         if (buffer != null && owner.trust.get(TrustContainer.Trust.CUSTOM_SOUNDS) == 1) {
             SoundAPI.getSoundEngine().figura$playCustomSound(

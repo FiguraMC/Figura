@@ -41,13 +41,11 @@ public class UIHelper extends GuiComponent {
     public static final ResourceLocation OUTLINE = new FiguraIdentifier("textures/gui/outline.png");
     public static final ResourceLocation TOOLTIP = new FiguraIdentifier("textures/gui/tooltip.png");
 
-    public static boolean forceNameplate = false;
-    public static boolean forceFire = false;
-
     //Used for GUI rendering
     private static final CustomFramebuffer FIGURA_FRAMEBUFFER = new CustomFramebuffer();
     private static int previousFBO = -1;
     public static boolean paperdoll = false;
+    public static float dollScale = 1f;
 
     // -- Functions -- //
 
@@ -97,9 +95,9 @@ public class UIHelper extends GuiComponent {
     }
 
     public enum EntityRenderMode {
-        NONE,
+        FIGURA_GUI,
         PAPERDOLL,
-        HUD
+        MINECRAFT_GUI
     }
 
     public static void drawEntity(float x, float y, float scale, float pitch, float yaw, LivingEntity entity, PoseStack stack, EntityRenderMode renderMode) {
@@ -112,12 +110,10 @@ public class UIHelper extends GuiComponent {
         boolean invisible = entity.isInvisible();
 
         entity.setInvisible(false);
-        UIHelper.forceNameplate = true;
-        UIHelper.forceFire = true;
 
         //apply matrix transformers
         stack.pushPose();
-        stack.translate(x, y, renderMode == EntityRenderMode.HUD ? 2050d : 0d); //2050K full HD
+        stack.translate(x, y, renderMode == EntityRenderMode.MINECRAFT_GUI ? 200d : 0d);
         stack.scale(scale, scale, scale);
         stack.last().pose().multiply(Matrix4f.createScaleMatrix(1f, 1f, -1f)); //Scale ONLY THE POSITIONS! Inverted normals don't work for whatever reason
 
@@ -158,7 +154,7 @@ public class UIHelper extends GuiComponent {
 
                 finalY = -1d;
             }
-            case NONE -> {
+            case FIGURA_GUI -> {
                 quaternion2 = Vector3f.XP.rotationDegrees(pitch);
                 quaternion.mul(quaternion2);
                 stack.mulPose(quaternion);
@@ -214,15 +210,16 @@ public class UIHelper extends GuiComponent {
 
         //render
         Avatar avatar = AvatarManager.getAvatar(entity);
-        if (avatar != null) avatar.previewRenderEvent();
+        if (avatar != null) avatar.previewRenderEvent(renderMode.name());
         UIHelper.paperdoll = true;
+        UIHelper.dollScale = scale;
 
         float finalYaw = yaw;
         RenderSystem.runAsFancy(() -> dispatcher.render(entity, 0d, finalY, 0d, finalYaw, 1f, stack, immediate, LightTexture.FULL_BRIGHT));
         immediate.endBatch();
 
         UIHelper.paperdoll = false;
-        if (avatar != null) avatar.postPreviewRenderEvent();
+        if (avatar != null) avatar.postPreviewRenderEvent(renderMode.name());
 
         //restore entity rendering data
         dispatcher.setRenderHitBoxes(renderHitboxes);
@@ -235,8 +232,6 @@ public class UIHelper extends GuiComponent {
         entity.yHeadRotO = prevHeadYaw;
         entity.yHeadRot = headYaw;
         entity.setInvisible(invisible);
-        UIHelper.forceNameplate = false;
-        UIHelper.forceFire = false;
 
         //pop matrix
         stack.popPose();

@@ -298,7 +298,7 @@ public class FiguraLuaPrinter {
         //format value
         if (!(value instanceof LuaString) && value.isnumber()) {
             Double d = value.checkdouble();
-            ret = d == Math.rint(d) ? String.valueOf(d.longValue()) : df.format(d);
+            ret = d == Math.rint(d) ? value.tojstring() : df.format(d);
         } else {
             ret = value.tojstring();
             if (value.isstring() && quoteStrings)

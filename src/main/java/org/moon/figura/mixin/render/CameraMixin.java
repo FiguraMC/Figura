@@ -7,6 +7,7 @@ import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.trust.TrustContainer;
+import org.moon.figura.utils.ui.UIHelper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -14,6 +15,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 @Mixin(Camera.class)
@@ -89,5 +91,17 @@ public abstract class CameraMixin {
 
             avatar = null;
         }
+    }
+
+    @Inject(method = "getXRot", at = @At("HEAD"), cancellable = true)
+    private void getXRot(CallbackInfoReturnable<Float> cir) {
+        if (UIHelper.paperdoll)
+            cir.setReturnValue(0f);
+    }
+
+    @Inject(method = "getYRot", at = @At("HEAD"), cancellable = true)
+    private void getYRot(CallbackInfoReturnable<Float> cir) {
+        if (UIHelper.paperdoll)
+            cir.setReturnValue(0f);
     }
 }

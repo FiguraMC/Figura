@@ -3,7 +3,11 @@ package org.moon.figura.lua.api.entity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.PlayerModelPart;
+import org.luaj.vm2.LuaError;
+import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 
@@ -83,6 +87,23 @@ public class PlayerAPI extends LivingEntityAPI<Player> {
             return null;
 
         return info.getGameMode() == null ? null : info.getGameMode().getName().toUpperCase();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = String.class,
+                    argumentNames = "part"
+            ),
+            value = "player.is_skin_layer_visible"
+    )
+    public boolean isSkinLayerVisible(@LuaNotNil String part) {
+        checkEntity();
+        try {
+            return entity.isModelPartShown(PlayerModelPart.valueOf(part.toUpperCase()));
+        } catch (Exception ignored) {
+            throw new LuaError("Invalid player model part: " + part);
+        }
     }
 
     @Override

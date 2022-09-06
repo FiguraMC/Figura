@@ -13,6 +13,7 @@ import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.backend.NetworkManager;
 import org.moon.figura.utils.FiguraText;
+import org.moon.figura.utils.MathUtils;
 import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.ui.UIHelper;
 
@@ -28,8 +29,6 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
             Style.EMPTY.withColor(ChatFormatting.YELLOW),
             Style.EMPTY.withColor(ChatFormatting.GREEN)
     );
-    public static final int SIZE_WARNING = 75_000;
-    public static final int SIZE_LARGE = 100_000;
 
     private final Font font;
     protected final int count;
@@ -62,7 +61,7 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
         boolean empty = avatar == null || avatar.nbt == null;
 
-        status = empty ? 0 : avatar.fileSize > SIZE_LARGE ? 1 : avatar.fileSize > SIZE_WARNING ? 2 : 3;
+        status = empty ? 0 : avatar.fileSize > NetworkManager.getSizeLimit() ? 1 : avatar.fileSize > NetworkManager.getSizeLimit() * 0.75 ? 2 : 3;
 
         int texture = empty || !avatar.hasTexture ? 0 : 3;
         status += texture << 2;
@@ -109,8 +108,17 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
     public Component getTooltipFor(int i) {
         //get name and color
         int color = status >> (i * 2) & 3;
-        String part = "gui.status.";
-        MutableComponent text = FiguraText.of(part += STATUS_NAMES.get(i)).append("\n• ").append(FiguraText.of(part + "." + color)).setStyle(TEXT_COLORS.get(color));
+        String part = "gui.status." + STATUS_NAMES.get(i);
+
+        MutableComponent info;
+        if (i == 0) {
+            double size = color == 1 ? NetworkManager.getSizeLimit() : NetworkManager.getSizeLimit() * 0.75;
+            info = FiguraText.of(part + "." + color, MathUtils.asFileSize(size));
+        } else {
+            info = FiguraText.of(part + "." + color);
+        }
+
+        MutableComponent text = FiguraText.of(part).append("\n• ").append(info).setStyle(TEXT_COLORS.get(color));
 
         //get backend disconnect reason
         if (i == 3 && disconnectedReason != null)

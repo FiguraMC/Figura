@@ -57,6 +57,7 @@
   "figura.trust.complexity": "Max Complexity",
   "figura.trust.particles": "Max Particles",
   "figura.trust.sounds": "Max Sounds",
+  "figura.trust.volume": "Avatar Sounds Volume",
   "figura.trust.bb_animations": "Animation Complexity",
   "figura.trust.vanilla_model_edit": "Vanilla Model Change",
   "figura.trust.nameplate_edit": "Nameplate Change",
@@ -187,8 +188,8 @@
 
   "figura.gui.status.size": "Size",
   "figura.gui.status.size.0": "none",
-  "figura.gui.status.size.1": "100kb+",
-  "figura.gui.status.size.2": "75kb+",
+  "figura.gui.status.size.1": "Avatar size is greater than %s",
+  "figura.gui.status.size.2": "Avatar size is greater than %s",
   "figura.gui.status.size.3": "ok",
 
   "figura.gui.status.texture": "Texture",
@@ -197,15 +198,15 @@
 
   "figura.gui.status.script": "Script",
   "figura.gui.status.script.0": "none",
-  "figura.gui.status.script.1": "error",
-  "figura.gui.status.script.2": "newer",
+  "figura.gui.status.script.1": "This Avatar script contains an error",
+  "figura.gui.status.script.2": "This Avatar script targets a newer version of Figura",
   "figura.gui.status.script.3": "ok",
 
   "figura.gui.status.backend": "Backend",
   "figura.gui.status.backend.reason": "Reason",
-  "figura.gui.status.backend.1": "disconnected",
-  "figura.gui.status.backend.2": "connecting",
-  "figura.gui.status.backend.3": "connected",
+  "figura.gui.status.backend.1": "Disconnected",
+  "figura.gui.status.backend.2": "Connecting",
+  "figura.gui.status.backend.3": "Connected",
 
 
   "figura.config.input.any": "Text...",
@@ -429,6 +430,7 @@
   "figura.docs.enum.play_states": "List of valid PlayStates. Used within Blockbench animations.",
   "figura.docs.enum.loop_modes": "List of valid LoopModes. Used within Blockbench animations.",
   "figura.docs.enum.colors": "List of custom colors. Used anywhere you can input a hex color.",
+  "figura.docs.enum.player_model_parts": "List of valid PlayerModelParts. Used within the PlayerAPI.",
 
 
   "figura.docs.globals": "Documentation for the various things Figura adds to the global lua state.",
@@ -600,6 +602,7 @@
   "figura.docs.biome.get_name": "Returns the name of the biome, according to the registry.",
   "figura.docs.biome.get_pos": "Returns the saved position for this Biome's proxy. The saved position is used in Biome functions that require a position.",
   "figura.docs.biome.set_pos": "Sets the saved position for this Biome's proxy. The saved position is used in Biome functions that require a position.",
+  "figura.docs.biome.get_tags": "Gets the worldgen related tags from this Biome.",
   "figura.docs.biome.get_temperature": "Gets the temperature of this biome.",
   "figura.docs.biome.get_precipitation": "Gets the rain type of this biome. The type can be \"NONE\", \"RAIN\" or \"SNOW\".",
   "figura.docs.biome.get_sky_color": "Gets this biome's sky color as a RGB vector.",
@@ -715,7 +718,7 @@
   "figura.docs.entity.is_invisible": "Returns true if this entity is invisible, for one reason or another.",
   "figura.docs.entity.is_silent": "Returns true if this entity is silent.",
   "figura.docs.entity.is_sneaking": "Returns true if this entity is sneaking.",
-  "figura.docs.entity.get_item": "Gets an ItemStack for the item in the given slot. For the player, slots are indexed with 1 as the main hand, 2 as the off hand, and 3,4,5,6 as the 4 armor slots from the boots to the helmet. If an invalid slot number is given, or if the entity has no item in that slot, this will return nil.",
+  "figura.docs.entity.get_item": "Gets an ItemStack for the item in the given slot. For the player, slots are indexed with 1 as the main hand, 2 as the off hand, and 3,4,5,6 as the 4 armor slots from the boots to the helmet. If an invalid slot number is given, this will return nil.",
   "figura.docs.entity.get_nbt": "Gets a table containing the NBT of this entity. Please note that not all values in the entity's NBT may be synced, as some are handled only on server side.",
   "figura.docs.entity.is_on_fire": "Returns true if this entity is currently on fire.",
   "figura.docs.entity.get_targeted_block": "Returns a proxy for your currently targeted BlockState. This BlockState appears on the F3 screen. Maximum and Default distance is 20, Minimum is -20",
@@ -742,9 +745,10 @@
   "figura.docs.player.get_saturation": "Gets the current saturation level of the player.",
   "figura.docs.player.get_experience_progress": "Gets the progress of the way towards the player's next level, as a value from 0 to 1.",
   "figura.docs.player.get_experience_level": "Gets the player's current level.",
+  "figura.docs.player.is_flying": "Returns whether the player is currently flying.",
   "figura.docs.player.get_model_type": "Returns \"SLIM\" or \"DEFAULT\", depending on the player's model type.",
   "figura.docs.player.get_gamemode": "Returns \"SURVIVAL\", \"CREATIVE\", \"ADVENTURE\", or \"SPECTATOR\" depending on the player's gamemode. If the gamemode is unknown, returns nil.",
-  "figura.docs.player.is_flying": "Returns whether the player is currently flying.",
+  "figura.docs.player.is_skin_layer_visible": "Returns whether the specified skin layer, from the Skin Customizations settings, is currently visible.",
 
 
   "figura.docs.events": "A global API that contains all of the figura Events. Accessed using the name \"events\".",
@@ -1080,6 +1084,7 @@
   "figura.docs.vanilla_part": "Represents a model part in a vanilla model. Can be set visible and invisible, and queried for rotation and position offsets.",
   "figura.docs.vanilla_part.set_visible": "Sets this part to be visible or invisible.",
   "figura.docs.vanilla_part.get_visible": "Gets whether you have set this part to be visible or invisible. Only responds to your own changes in script, not anything done by Minecraft.",
+  "figura.docs.vanilla_part.get_origin_visible": "Gets if this vanilla model part is visible or not, without interference from your script.",
   "figura.docs.vanilla_part.get_origin_rot": "Gets the rotation to this vanilla model part currently applied by Minecraft.",
   "figura.docs.vanilla_part.get_origin_pos": "Gets the position offset to this vanilla model part currently applied by Minecraft.",
 

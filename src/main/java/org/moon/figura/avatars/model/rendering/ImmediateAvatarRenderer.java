@@ -294,15 +294,12 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         FiguraMat4 customizePeek = customizationStack.peek().positionMatrix.copy();
         customizePeek.multiply(VIEW_TO_WORLD_MATRIX);
         FiguraVec3 piv = cust.getPivot();
-        FiguraVec3 pos = cust.getPos();
-        piv.subtract(pos);
 
         FiguraMat4 translation = FiguraMat4.of();
         translation.translate(piv);
         customizePeek.rightMultiply(translation);
 
         piv.free();
-        pos.free();
         translation.free();
 
         return customizePeek;

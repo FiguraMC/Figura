@@ -6,6 +6,8 @@ import net.minecraft.resources.ResourceLocation;
 import java.util.function.Function;
 
 public enum RenderTypes {
+    NONE(null),
+
     CUTOUT(RenderType::entityCutoutNoCull),
     CUTOUT_CULL(RenderType::entityCutout),
     TRANSLUCENT(RenderType::entityTranslucent),
@@ -37,6 +39,6 @@ public enum RenderTypes {
         if (force)
             return func.apply(id);
 
-        return id == null ? null : func.apply(id);
+        return id == null || func == null ? null : func.apply(id);
     }
 }
