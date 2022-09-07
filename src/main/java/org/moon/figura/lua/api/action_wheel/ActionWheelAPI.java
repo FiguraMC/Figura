@@ -143,12 +143,12 @@ public class ActionWheelAPI {
 
         //execute
         if (function != null)
-            avatar.tryCall(function, -1);
+            avatar.run(function, avatar.tick);
     }
 
     public void mouseScroll(Avatar avatar, double delta) {
         if (scroll != null)
-            avatar.tryCall(scroll, -1, delta);
+            avatar.run(scroll, avatar.tick, delta);
     }
 
     @LuaWhitelist

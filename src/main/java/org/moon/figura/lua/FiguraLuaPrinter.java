@@ -68,12 +68,9 @@ public class FiguraLuaPrinter {
             return;
 
         //Jank as hell
-        String message = error.toString().replace("org.luaj.vm2.LuaError: ", "");
-        message = message.replace("\n\tautoScripts:1: in main chunk", "");
-        message = message.replace("\n\t[Java]: in ?", "");
-
-        message = message.replace("autoScripts:1 [string ", "Script [");
-        message = message.replace(": syntax error\nstack traceback:", ": syntax error");
+        String message = error.toString().replace("org.luaj.vm2.LuaError: ", "")
+                .replace("\n\t[Java]: in ?", "")
+                .replace("'<eos>' expected", "Expected end of script");
 
         /*
         if (src != null) {

@@ -12,7 +12,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.moon.figura.avatars.Avatar;
@@ -67,6 +66,10 @@ public class EntityAPI<T extends Entity> {
             if (thingy)
                 entity = newEntityInstance;
         }
+    }
+
+    public T getEntity() {
+        return entity;
     }
 
     @LuaWhitelist

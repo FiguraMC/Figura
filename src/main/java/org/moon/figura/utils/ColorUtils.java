@@ -127,14 +127,13 @@ public class ColorUtils {
         StringBuilder hex = new StringBuilder(string);
 
         if (hex.toString().startsWith("#")) hex = new StringBuilder(hex.substring(1));
-        if (hex.length() < 6) {
-            char[] bgChar = hex.toString().toCharArray();
 
-            //special catch for 3
-            if (hex.length() == 3)
-                hex = new StringBuilder(String.valueOf(bgChar[0] + bgChar[0] + bgChar[1] + bgChar[1] + bgChar[2] + bgChar[2]));
-            else
-                hex.append("0".repeat(6 - hex.toString().length()));
+        //short hex
+        if (hex.length() == 3) {
+            char[] bgChar = hex.toString().toCharArray();
+            hex = new StringBuilder("" + bgChar[0] + bgChar[0] + bgChar[1] + bgChar[1] + bgChar[2] + bgChar[2]);
+        } else {
+            hex.append("0".repeat(6 - hex.length()));
         }
 
         //return

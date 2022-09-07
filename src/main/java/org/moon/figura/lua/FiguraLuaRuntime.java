@@ -10,10 +10,10 @@ import org.luaj.vm2.lib.jse.JseBaseLib;
 import org.luaj.vm2.lib.jse.JseMathLib;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
-import org.moon.figura.lua.api.action_wheel.ActionWheelAPI;
 import org.moon.figura.lua.api.AvatarAPI;
 import org.moon.figura.lua.api.HostAPI;
 import org.moon.figura.lua.api.RendererAPI;
+import org.moon.figura.lua.api.action_wheel.ActionWheelAPI;
 import org.moon.figura.lua.api.entity.EntityAPI;
 import org.moon.figura.lua.api.event.EventsAPI;
 import org.moon.figura.lua.api.keybind.KeybindAPI;
@@ -23,9 +23,8 @@ import org.moon.figura.lua.api.vanilla_model.VanillaModelAPI;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
 
 /**
@@ -35,7 +34,6 @@ public class FiguraLuaRuntime {
 
     //Global API instances
     //---------------------------------
-    public Entity user;
     public EntityAPI<?> entityAPI;
     public EventsAPI events;
     public VanillaModelAPI vanilla_model;
@@ -51,26 +49,28 @@ public class FiguraLuaRuntime {
     //---------------------------------
 
     public final Avatar owner;
-    private final Globals userGlobals;
+    private final Globals userGlobals = new Globals();
     private final LuaValue setHookFunction;
-    private final LuaTable requireResults = new LuaTable();
+    private final Map<String, String> scripts = new HashMap<>();
+    private final Map<String, LuaValue> loadedScripts = new HashMap<>();
     public final LuaTypeManager typeManager = new LuaTypeManager();
 
-    public FiguraLuaRuntime(Avatar avatar) {
-        owner = avatar;
+    public FiguraLuaRuntime(Avatar avatar, Map<String, String> scripts) {
+        this.owner = avatar;
+        this.scripts.putAll(scripts);
+
         //Each user gets their own set of globals as well.
-        userGlobals = new Globals();
         userGlobals.load(new JseBaseLib());
         userGlobals.load(new Bit32Lib());
         userGlobals.load(new TableLib());
         userGlobals.load(new StringLib());
         userGlobals.load(new JseMathLib());
 
+        LoadState.install(userGlobals);
         LuaC.install(userGlobals);
 
         userGlobals.load(new DebugLib());
         setHookFunction = userGlobals.get("debug").get("sethook");
-        userGlobals.set("debug", LuaValue.NIL);
 
         setupFiguraSandbox();
 
@@ -83,39 +83,59 @@ public class FiguraLuaRuntime {
         setGlobal("figuraMetatables", figuraMetatables);
     }
 
+    public int run(String name, String src) {
+        try {
+            userGlobals.load(src, name, userGlobals).call();
+            return 1;
+        } catch (LuaError e) {
+            FiguraLuaPrinter.sendLuaError(e, owner.entityName, owner.owner);
+            return 0;
+        }
+    }
+
     public void registerClass(Class<?> clazz) {
         typeManager.generateMetatableFor(clazz);
     }
 
     public void setGlobal(String name, Object obj) {
-        if (obj instanceof LuaValue val)
-            userGlobals.set(name, val);
-        else
-            userGlobals.set(name, typeManager.javaToLua(obj));
+        userGlobals.set(name, typeManager.javaToLua(obj));
     }
 
     public void setUser(Entity user) {
-        this.user = user;
         entityAPI = EntityAPI.wrap(user);
         userGlobals.set("user", typeManager.javaToLua(entityAPI));
         userGlobals.set("player", userGlobals.get("user"));
     }
 
+    public Entity getUser() {
+        return entityAPI == null ? null : entityAPI.getEntity();
+    }
+
     private void setupFiguraSandbox() {
         //actual sandbox file
         try (InputStream inputStream = FiguraMod.class.getResourceAsStream("/assets/" + FiguraMod.MOD_ID + "/scripts/sandbox.lua")) {
-            if (inputStream == null) throw new IOException("Failed to load sandbox.lua");
-            runScript(new String(inputStream.readAllBytes()), "figura_sandbox");
+            if (inputStream == null) throw new IOException("Unable to get resource");
+            userGlobals.load(new String(inputStream.readAllBytes()), "sandbox").call();
         } catch (Exception e) {
-            FiguraLuaPrinter.sendLuaError(new LuaError(e), owner.entityName, owner.owner);
+            error(new LuaError("Failed to load builtin sandbox script:\n" + e.getMessage()));
         }
 
         //read only string metatable
         LuaString.s_metatable = new ReadOnlyLuaTable(LuaString.s_metatable);
     }
 
-    private static final Function<FiguraLuaRuntime, LuaValue> LOADSTRING_FUNC = runtime -> new VarArgFunction() {
+    private final OneArgFunction requireFunction = new OneArgFunction() {
+        @Override
+        public LuaValue call(LuaValue arg) {
+            return INIT_SCRIPT.apply(arg.checkjstring());
+        }
 
+        @Override
+        public String tojstring() {
+            return "function: require";
+        }
+    };
+    private static final Function<FiguraLuaRuntime, LuaValue> LOADSTRING_FUNC = runtime -> new VarArgFunction() {
         @Override
         public Varargs invoke(Varargs args) {
             try {
@@ -131,6 +151,9 @@ public class FiguraLuaRuntime {
         }
     };
     private void loadExtraLibraries() {
+        //require
+        userGlobals.set("require", requireFunction);
+
         //load print functions
         FiguraLuaPrinter.loadPrintFunctions(this);
 
@@ -141,10 +164,10 @@ public class FiguraLuaRuntime {
 
         //load math library
         try (InputStream inputStream = FiguraMod.class.getResourceAsStream("/assets/" + FiguraMod.MOD_ID + "/scripts/math.lua")) {
-            if (inputStream == null) throw new IOException("Failed to load math.lua");
-            runScript(new String(inputStream.readAllBytes()), "math");
+            if (inputStream == null) throw new IOException("Unable to get resource");
+            userGlobals.load(new String(inputStream.readAllBytes()), "math").call();
         } catch (Exception e) {
-            FiguraLuaPrinter.sendLuaError(new LuaError(e), owner.entityName, owner.owner);
+            error(new LuaError("Failed to load builtin math script:\n" + e.getMessage()));
         }
 
         //Change the type() function
@@ -163,100 +186,55 @@ public class FiguraLuaRuntime {
         });
     }
 
-    /**
-     * Writing documentation of this function, just because I don't
-     * want to go insane debugging this I'm going to take it slowly.
-     *
-     * If there are no scripts: stop, return false to indicate failure.
-     * If autoScripts is null: Run ALL scripts.
-     * If autoScripts is non-null: Run only the scripts inside of autoScripts.
-     * This means if autoScripts is empty, then no scripts will be run. You can run them
-     * via the command /figura run, however, so this isn't a useless situation.
-     * require() is thrown into the mix as well, just to make it extra spicy.
-     *
-     * The method works by creating a new script, which just require()s everything in
-     * autoScripts, then running this new script.
-     */
-    public boolean init(Map<String, String> scripts, ListTag autoScripts) {
+    private final Function<String, LuaValue> INIT_SCRIPT = name -> {
+        //format name
+        if (name.endsWith(".lua"))
+            name = name.substring(0, name.length() - 4);
+
+        //already loaded
+        LuaValue val = loadedScripts.get(name);
+        if (val != null)
+            return val;
+
+        //not found
+        String src = scripts.get(name);
+        if (src == null)
+            throw new LuaError("Tried to require nonexistent script \"" + name + "\"!");
+
+        //load
+        LuaValue value = userGlobals.load(src, name).call(name);
+        if (value == LuaValue.NIL)
+            value = LuaValue.TRUE;
+
+        //cache and return
+        loadedScripts.put(name, value);
+        return value;
+    };
+    public boolean init(ListTag autoScripts) {
         if (scripts.size() == 0)
             return false;
 
-        userGlobals.set("require", getRequireFor(scripts));
-
-        StringBuilder rootFunction = new StringBuilder();
-        rootFunction.append("local r = require ");
-        if (autoScripts == null) {
-            for (String name : scripts.keySet())
-                rootFunction.append("r(\"").append(name).append("\") ");
-        } else {
-            for (Tag scriptName : autoScripts)
-                rootFunction.append("r(\"").append(scriptName.getAsString()).append("\") ");
-        }
-        return runScript(rootFunction.toString(), "autoScripts") != null;
-    }
-
-    //In the case of an error, this will return null.
-    //If there is no error, it returns the LuaValue that the script does.
-    public LuaValue runScript(String script, String name) {
-        LuaValue chunk = userGlobals.load(script, name);
         try {
-            return chunk.call();
-        } catch (LuaError e) {
-            FiguraLuaPrinter.sendLuaError(e, owner.entityName, owner.owner);
-            owner.scriptError = true;
-            owner.luaRuntime = null;
-        }
-        return null;
-    }
-
-    public int runCommand(String code) {
-        try {
-            userGlobals.load(code, "runCommand", userGlobals).call();
-            return 1;
-        } catch (LuaError e) {
-            FiguraLuaPrinter.sendLuaError(e, owner.entityName, owner.owner);
-            return 0;
-        }
-    }
-
-    /**
-     * Generates a require() function that can work with the given set of scripts.
-     * @param scripts A map from string paths to scripts -> source code of those scripts
-     * @return The require() function itself.
-     */
-    private OneArgFunction getRequireFor(Map<String, String> scripts) {
-        return new OneArgFunction() {
-            private final Set<String> previouslyRun = new HashSet<>();
-            @Override
-            public LuaValue call(LuaValue arg) {
-                String scriptName = arg.checkjstring();
-
-                if (scriptName.endsWith(".lua")) scriptName = scriptName.substring(0, scriptName.length() - 4);
-
-                if (!scripts.containsKey(scriptName)) {
-                    if (!previouslyRun.contains(scriptName))
-                        throw new LuaError("Tried to require nonexistent script \"" + scriptName + "\"!");
-                    return requireResults.get(scriptName);
-                }
-
-                String src = scripts.get(scriptName);
-                scripts.remove(scriptName);
-                previouslyRun.add(scriptName);
-
-                LuaValue retVal = runScript(src, scriptName);
-                if (retVal == null) {
-                    //throw new LuaError("Error running required script " + scriptName);
-                    return FALSE;
-                }
-
-                //If luaState didn't return anything, we want the function to return true
-                if (retVal == LuaValue.NIL)
-                    retVal = LuaValue.TRUE;
-
-                requireResults.set(scriptName, retVal);
-                return retVal;
+            if (autoScripts == null) {
+                for (String name : scripts.keySet())
+                    INIT_SCRIPT.apply(name);
+            } else {
+                for (Tag name : autoScripts)
+                    INIT_SCRIPT.apply(name.getAsString());
             }
-        };
+        } catch (LuaError e) {
+            error(e);
+            return false;
+        }
+
+        return true;
+    }
+
+    public void error(Exception e) {
+        LuaError err = e instanceof LuaError lua ? lua : new LuaError(e.getMessage());
+        FiguraLuaPrinter.sendLuaError(err, owner.entityName, owner.owner);
+        owner.scriptError = true;
+        owner.luaRuntime = null;
     }
 
     private final ZeroArgFunction onReachedLimit = new ZeroArgFunction() {
@@ -267,7 +245,6 @@ public class FiguraLuaRuntime {
             throw error;
         }
     };
-
     public void setInstructionLimit(int limit) {
         userGlobals.running.state.bytecodes = 0;
         setHookFunction.invoke(LuaValue.varargsOf(onReachedLimit, LuaValue.EMPTYSTRING, LuaValue.valueOf(Math.max(limit, 1))));

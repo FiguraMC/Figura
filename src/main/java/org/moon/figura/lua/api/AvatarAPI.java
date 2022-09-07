@@ -111,13 +111,13 @@ public class AvatarAPI {
     @LuaWhitelist
     @LuaMethodDoc("avatar.get_init_count")
     public int getInitCount() {
-        return avatar.initInstructions;
+        return avatar.init.pre;
     }
 
     @LuaWhitelist
     @LuaMethodDoc("avatar.get_entity_init_count")
     public int getEntityInitCount() {
-        return avatar.entityInitInstructions;
+        return avatar.init.post;
     }
 
     @LuaWhitelist
@@ -129,7 +129,7 @@ public class AvatarAPI {
     @LuaWhitelist
     @LuaMethodDoc("avatar.get_tick_count")
     public int getTickCount() {
-        return avatar.entityTickInstructions;
+        return avatar.tick.pre;
     }
 
     @LuaWhitelist
@@ -141,7 +141,7 @@ public class AvatarAPI {
     @LuaWhitelist
     @LuaMethodDoc("avatar.get_render_count")
     public int getRenderCount() {
-        return avatar.entityRenderInstructions;
+        return avatar.render.getTotal();
     }
 
     @LuaWhitelist
@@ -153,7 +153,7 @@ public class AvatarAPI {
     @LuaWhitelist
     @LuaMethodDoc("avatar.get_world_tick_count")
     public int getWorldTickCount() {
-        return avatar.worldTickInstructions;
+        return avatar.worldTick.pre;
     }
 
     @LuaWhitelist
@@ -165,7 +165,7 @@ public class AvatarAPI {
     @LuaWhitelist
     @LuaMethodDoc("avatar.get_world_render_count")
     public int getWorldRenderCount() {
-        return avatar.worldRenderInstructions;
+        return avatar.worldRender.getTotal();
     }
 
     @LuaWhitelist
@@ -208,6 +208,12 @@ public class AvatarAPI {
     @LuaMethodDoc("avatar.get_max_sounds")
     public int getMaxSounds() {
         return avatar.trust.get(TrustContainer.Trust.SOUNDS);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("avatar.get_volume")
+    public int getVolume() {
+        return avatar.trust.get(TrustContainer.Trust.VOLUME);
     }
 
     @LuaWhitelist

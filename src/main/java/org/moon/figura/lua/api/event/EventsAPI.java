@@ -77,7 +77,7 @@ public class EventsAPI {
             types = {LuaEvent.class, EventsAPI.class, String.class},
             comment = "events.__index.comment1"
     ))
-    public Object __index(String key) {
+    public LuaEvent __index(String key) {
         if (key == null) return null;
         return switch (key) {
             case "ENTITY_INIT" -> ENTITY_INIT;

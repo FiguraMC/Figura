@@ -33,6 +33,7 @@ public class LocalAvatarLoader {
     private static WatchService watcher;
     private static final HashMap<Path, WatchKey> KEYS = new HashMap<>();
     private static Path lastLoadedPath;
+    private static int loadState;
 
     public static CompoundTag cheese;
     public static final ArrayList<CompoundTag> SERVER_AVATARS = new ArrayList<>();
@@ -72,6 +73,7 @@ public class LocalAvatarLoader {
      * @return the NbtCompound from this path
      */
     public static CompoundTag loadAvatar(Path path) throws IOException {
+        loadState = 0;
         resetWatchKeys();
         lastLoadedPath = path;
         addWatchKey(path);
@@ -80,6 +82,7 @@ public class LocalAvatarLoader {
             return null;
 
         //load as nbt (.moon)
+        loadState++;
         if (path.toString().endsWith(".moon")) {
             //NbtIo already closes the file stream
             return NbtIo.readCompressed(new FileInputStream(path.toFile()));
@@ -89,19 +92,24 @@ public class LocalAvatarLoader {
         CompoundTag nbt = new CompoundTag();
 
         //Load metadata first!
+        loadState++;
         String metadata = IOUtils.readFile(path.resolve("avatar.json").toFile());
         nbt.put("metadata", AvatarMetadataParser.parse(metadata, path.getFileName().toString()));
 
         //scripts
+        loadState++;
         loadScripts(path, nbt);
 
         //custom sounds
+        loadState++;
         loadSounds(path, nbt);
 
+        //models
         ListTag textures = new ListTag();
         ListTag animations = new ListTag();
         BlockbenchModelParser parser = new BlockbenchModelParser();
 
+        loadState++;
         CompoundTag models = loadModels(path, parser, textures, animations);
         models.putString("name", "models");
 
@@ -261,5 +269,9 @@ public class LocalAvatarLoader {
 
     public static Path getLastLoadedPath() {
         return lastLoadedPath;
+    }
+
+    public static int getLoadState() {
+        return loadState;
     }
 }

@@ -32,6 +32,6 @@ public class FiguraRunCommand {
             return 0;
         }
 
-        return localAvatar.luaRuntime.runCommand(lua);
+        return localAvatar.luaRuntime.run("runCommand", lua);
     }
 }

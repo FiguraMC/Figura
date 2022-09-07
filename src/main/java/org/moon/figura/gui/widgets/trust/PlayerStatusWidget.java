@@ -22,16 +22,16 @@ public class PlayerStatusWidget extends StatusWidget {
             avatar -> new FiguraText("gui.trust.complexity")
                     .append("\n• ").append(String.valueOf(avatar.complexity)),
             avatar -> new FiguraText("gui.trust.init")
-                    .append("\n• ").append(new FiguraText("gui.trust.init.root", avatar.initInstructions))
-                    .append("\n• ").append(new FiguraText("gui.trust.init.entity", avatar.entityInitInstructions)),
+                    .append("\n• ").append(new FiguraText("gui.trust.init.root", avatar.init.pre))
+                    .append("\n• ").append(new FiguraText("gui.trust.init.entity", avatar.init.post)),
             avatar -> new FiguraText("gui.trust.tick")
-                    .append("\n• ").append(new FiguraText("gui.trust.tick.world", avatar.worldTickInstructions))
-                    .append("\n• ").append(new FiguraText("gui.trust.tick.entity", avatar.entityTickInstructions)),
+                    .append("\n• ").append(new FiguraText("gui.trust.tick.world", avatar.worldTick.pre))
+                    .append("\n• ").append(new FiguraText("gui.trust.tick.entity", avatar.tick.pre)),
             avatar -> new FiguraText("gui.trust.render")
-                    .append("\n• ").append(new FiguraText("gui.trust.render.world", avatar.worldRenderInstructions))
-                    .append("\n• ").append(new FiguraText("gui.trust.render.entity", avatar.entityRenderInstructions))
-                    .append("\n• ").append(new FiguraText("gui.trust.render.post_entity", avatar.postEntityRenderInstructions))
-                    .append("\n• ").append(new FiguraText("gui.trust.render.post_world", avatar.postWorldRenderInstructions))
+                    .append("\n• ").append(new FiguraText("gui.trust.render.world", avatar.worldRender.pre))
+                    .append("\n• ").append(new FiguraText("gui.trust.render.entity", avatar.render.pre))
+                    .append("\n• ").append(new FiguraText("gui.trust.render.post_entity", avatar.render.post))
+                    .append("\n• ").append(new FiguraText("gui.trust.render.post_world", avatar.worldRender.post))
     );
 
     private final UUID owner;
@@ -60,15 +60,15 @@ public class PlayerStatusWidget extends StatusWidget {
         status += complexity << 2;
 
         //script init
-        int init = avatar.scriptError ? 1 : avatar.luaRuntime == null ? 0 : avatar.accumulatedInitInstructions >= avatar.trust.get(TrustContainer.Trust.INIT_INST) * 0.75 ? 2 : 3;
+        int init = avatar.scriptError ? 1 : avatar.luaRuntime == null ? 0 : avatar.init.getTotal() >= avatar.trust.get(TrustContainer.Trust.INIT_INST) * 0.75 ? 2 : 3;
         status += init << 4;
 
         //script tick
-        int tick = avatar.scriptError ? 1 : avatar.luaRuntime == null ? 0 : avatar.entityTickInstructions >= avatar.trust.get(TrustContainer.Trust.TICK_INST) * 0.75 || avatar.worldTickInstructions >= avatar.trust.get(TrustContainer.Trust.WORLD_TICK_INST) * 0.75 ? 2 : 3;
+        int tick = avatar.scriptError ? 1 : avatar.luaRuntime == null ? 0 : avatar.tick.getTotal() >= avatar.trust.get(TrustContainer.Trust.TICK_INST) * 0.75 || avatar.worldTick.getTotal() >= avatar.trust.get(TrustContainer.Trust.WORLD_TICK_INST) * 0.75 ? 2 : 3;
         status += tick << 6;
 
         //script render
-        int render = avatar.scriptError ? 1 : avatar.luaRuntime == null ? 0 : avatar.accumulatedEntityRenderInstructions >= avatar.trust.get(TrustContainer.Trust.RENDER_INST) * 0.75 || avatar.accumulatedWorldRenderInstructions >= avatar.trust.get(TrustContainer.Trust.WORLD_RENDER_INST) * 0.75 ? 2 : 3;
+        int render = avatar.scriptError ? 1 : avatar.luaRuntime == null ? 0 : avatar.render.getTotal() >= avatar.trust.get(TrustContainer.Trust.RENDER_INST) * 0.75 || avatar.worldRender.getTotal() >= avatar.trust.get(TrustContainer.Trust.WORLD_RENDER_INST) * 0.75 ? 2 : 3;
         status += render << 8;
     }
 

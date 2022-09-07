@@ -114,8 +114,8 @@ public class Animation {
         }
 
         for (Float codeTime : codeFrames.keySet()) {
-            if (codeTime >= minTime && codeTime < maxTime && !owner.scriptError && owner.luaRuntime != null)
-                owner.luaRuntime.runScript(codeFrames.get(codeTime), "animation (" + this.name + ")");
+            if (codeTime >= minTime && codeTime < maxTime)
+                owner.run(codeFrames.get(codeTime), owner.tick, this);
         }
     }
 

@@ -65,9 +65,9 @@ public class FiguraKeybind {
         if (isDown != bl) {
             if (bl) {
                 if (onPress != null)
-                    owner.tryCall(onPress, -1, this);
+                    owner.run(onPress, owner.tick, this);
             } else if (onRelease != null) {
-                owner.tryCall(onRelease, -1, this);
+                owner.run(onRelease, owner.tick, this);
             }
         }
 

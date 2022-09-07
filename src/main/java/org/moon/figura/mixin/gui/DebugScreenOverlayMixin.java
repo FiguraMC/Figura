@@ -37,14 +37,10 @@ public class DebugScreenOverlayMixin {
 
             //has script
             if (avatar.luaRuntime != null) {
-                lines.add(++i, String.format("Init instructions: %d (W: %d E: %d)", avatar.accumulatedInitInstructions, avatar.initInstructions, avatar.entityInitInstructions));
-                lines.add(++i, String.format("Tick instructions: %d (W: %d E: %d)", avatar.accumulatedTickInstructions, avatar.worldTickInstructions, avatar.entityTickInstructions));
+                lines.add(++i, String.format("Init instructions: %d (W: %d E: %d)", avatar.init.getTotal(), avatar.init.pre, avatar.init.post));
+                lines.add(++i, String.format("Tick instructions: %d (W: %d E: %d)", avatar.tick.getTotal() + avatar.worldTick.getTotal(), avatar.worldTick.pre, avatar.tick.pre));
                 lines.add(++i, String.format("Render instructions: %d (W: %d E: %d PE: %d PW: %d)",
-                        avatar.accumulatedEntityRenderInstructions + avatar.accumulatedWorldRenderInstructions,
-                        avatar.worldRenderInstructions,
-                        avatar.entityRenderInstructions,
-                        avatar.postEntityRenderInstructions,
-                        avatar.postWorldRenderInstructions)
+                        avatar.render.getTotal() + avatar.worldRender.getTotal(), avatar.worldRender.pre, avatar.render.pre, avatar.render.post, avatar.worldRender.post)
                 );
             }
         }
