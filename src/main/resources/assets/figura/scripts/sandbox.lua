@@ -1,9 +1,9 @@
 -- sandbox --
 
 -- yeet FileIO and gc globals
+debug = nil
 dofile = nil
 loadfile = nil
-load = nil
 
 _VERSION = "Lua 5.2 - Figura"
 collectgarbage = nil

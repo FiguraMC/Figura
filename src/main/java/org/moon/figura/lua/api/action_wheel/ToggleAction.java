@@ -151,7 +151,7 @@ public class ToggleAction extends Action {
 
         //execute
         if (function != null)
-            avatar.tryCall(function, -1, toggled, this);
+            avatar.run(function, avatar.tick, toggled, this);
     }
 
     @Override

@@ -85,62 +85,57 @@ public class Avatar {
     //Runtime data
     public AvatarRenderer renderer;
     public FiguraLuaRuntime luaRuntime;
+    private CompletableFuture<Void> events;
 
     public final TrustContainer trust;
 
     public final Map<String, SoundBuffer> customSounds = new HashMap<>();
     public final Map<Integer, Animation> animations = new ConcurrentHashMap<>();
 
-    private int initLimit, worldRenderLimit;
-
     //runtime status
     public boolean hasTexture = false;
     public boolean scriptError = false;
     public int versionStatus = 0;
 
-    public int complexity = 0;
-    public int animationComplexity;
-
-    public int initInstructions, entityInitInstructions;
-    public int entityTickInstructions, worldTickInstructions;
-
-    public int worldRenderInstructions, entityRenderInstructions, postEntityRenderInstructions, postWorldRenderInstructions;
-    public int accumulatedInitInstructions, accumulatedTickInstructions, accumulatedEntityRenderInstructions, accumulatedWorldRenderInstructions;
-
+    //limits
+    public int complexity, animationComplexity;
+    public final Instructions init, render, worldRender, tick, worldTick;
     public final RefilledNumber particlesRemaining, soundsRemaining;
 
     public Avatar(UUID owner) {
         this.owner = owner;
         this.isHost = FiguraMod.isLocal(owner);
         this.trust = TrustManager.get(owner);
+        this.init = new Instructions(trust.get(TrustContainer.Trust.INIT_INST));
+        this.render = new Instructions(trust.get(TrustContainer.Trust.RENDER_INST));
+        this.worldRender = new Instructions(trust.get(TrustContainer.Trust.WORLD_RENDER_INST));
+        this.tick = new Instructions(trust.get(TrustContainer.Trust.TICK_INST));
+        this.worldTick = new Instructions(trust.get(TrustContainer.Trust.WORLD_TICK_INST));
         this.particlesRemaining = new RefilledNumber(trust.get(TrustContainer.Trust.PARTICLES));
         this.soundsRemaining = new RefilledNumber(trust.get(TrustContainer.Trust.SOUNDS));
         entityName = EntityUtils.getNameForUUID(owner);
     }
 
-    private static CompletableFuture<Void> run(Runnable toRun) {
+    public void load(CompoundTag nbt) {
+        Runnable toRun = () -> {
+            this.nbt = nbt;
+            loaded = false;
+        };
+
         if (tasks == null || tasks.isDone()) {
             tasks = CompletableFuture.runAsync(toRun);
         } else {
             tasks.thenRun(toRun);
         }
-        return tasks;
-    }
 
-    public void load(CompoundTag nbt) {
-        CompletableFuture<Void> future = run(() -> {
-            this.nbt = nbt;
-            loaded = false;
-        });
-
-        future.join();
+        tasks.join();
 
         if (nbt == null) {
             loaded = true;
             return;
         }
 
-        future.thenRun(() -> { //metadata
+        tasks.thenRun(() -> { //metadata
             try {
                 CompoundTag metadata = nbt.getCompound("metadata");
                 name = metadata.getString("name");
@@ -175,11 +170,11 @@ public class Avatar {
     }
 
     private void checkUser() {
-        if (luaRuntime != null && luaRuntime.user == null) {
+        if (luaRuntime != null && luaRuntime.getUser() == null) {
             Entity entity = EntityUtils.getEntityByUUID(owner);
             if (entity != null) {
                 luaRuntime.setUser(entity);
-                entityInitEvent();
+                run("ENTITY_INIT", init.post());
             }
         }
     }
@@ -199,190 +194,135 @@ public class Avatar {
         soundsRemaining.tick();
 
         //call events
-        worldTickEvent();
+        worldTick.reset(trust.get(TrustContainer.Trust.WORLD_TICK_INST));
+        run("WORLD_TICK", worldTick);
+
+        tick.reset(trust.get(TrustContainer.Trust.TICK_INST));
         tickEvent();
     }
 
-    public void runPing(int id, byte[] data) {
+    public void render(float delta) {
         if (scriptError || luaRuntime == null)
             return;
 
-        Varargs args = PingArg.fromByteArray(data, this);
-        String name = luaRuntime.ping.getName(id);
-        PingFunction function = luaRuntime.ping.get(name);
-        if (args == null || function == null)
+        render.reset(trust.get(TrustContainer.Trust.RENDER_INST));
+        worldRender.reset(trust.get(TrustContainer.Trust.WORLD_RENDER_INST));
+        run("WORLD_RENDER", worldRender, delta);
+    }
+
+    public void runPing(int id, byte[] data) {
+        runAsync(() -> {
+            if (scriptError || luaRuntime == null)
+                return;
+
+            Varargs args = PingArg.fromByteArray(data, this);
+            String name = luaRuntime.ping.getName(id);
+            PingFunction function = luaRuntime.ping.get(name);
+            if (args == null || function == null)
+                return;
+
+            FiguraLuaPrinter.sendPingMessage(this, name, data.length, args);
+
+            try {
+                function.func.invoke(args);
+            } catch (Exception e) {
+                luaRuntime.error(e);
+            }
+        });
+    }
+
+    private void runAsync(Runnable run) {
+        if (events == null || events.isDone()) {
+            events = CompletableFuture.runAsync(run);
+        } else {
+            events.thenRun(run);
+        }
+    }
+
+    public void run(Object toRun, Instructions limit, Object... args) {
+        if (UIHelper.paperdoll)
             return;
 
-        FiguraLuaPrinter.sendPingMessage(this, name, data.length, args);
-        function.func.invoke(args);
+        runAsync(() -> {
+            if (scriptError || luaRuntime == null)
+                return;
+
+            //parse args
+            LuaValue[] values = new LuaValue[args.length];
+            for (int i = 0; i < values.length; i++)
+                values[i] = luaRuntime.typeManager.javaToLua(args[i]);
+
+            Varargs val = LuaValue.varargsOf(values);
+
+            //instructions limit
+            luaRuntime.setInstructionLimit(limit.remaining);
+
+            //get and call event
+            try {
+                if (toRun instanceof LuaEvent event)
+                    event.call(val);
+                else if (toRun instanceof String event)
+                    luaRuntime.events.__index(event).call(val);
+                else if (toRun instanceof LuaFunction func)
+                    func.invoke(val);
+                else
+                    throw new LuaError("Invalid type to run!");
+
+                limit.use(luaRuntime.getInstructions());
+            } catch (Exception e) {
+                luaRuntime.error(e);
+            }
+        });
     }
 
     // -- script events -- //
 
-    //Calling with maxInstructions as -1 will not set the max instructions, and instead keep them as they are.
-    //returns whatever if it succeeded or not calling the function
-    public void tryCall(Object toRun, int maxInstructions, Object... args) {
-        if (scriptError || luaRuntime == null || UIHelper.paperdoll)
-            return;
-
-        try {
-            Varargs val = switch (args.length) {
-                case 0 -> LuaValue.NONE;
-                case 1 -> luaRuntime.typeManager.javaToLua(args[0]);
-                case 2 -> LuaValue.varargsOf(
-                        luaRuntime.typeManager.javaToLua(args[0]),
-                        luaRuntime.typeManager.javaToLua(args[1])
-                );
-                default -> {
-                    LuaValue[] values = new LuaValue[args.length];
-                    for (int i = 0; i < values.length; i++)
-                        values[i] = luaRuntime.typeManager.javaToLua(args[i]);
-                    yield LuaValue.varargsOf(values);
-                }
-            };
-
-            if (maxInstructions != -1)
-                luaRuntime.setInstructionLimit(maxInstructions);
-            if (toRun instanceof LuaEvent event)
-                event.call(val);
-            else if (toRun instanceof LuaFunction func)
-                func.invoke(val);
-            else
-                throw new LuaError("Invalid type to run!");
-        } catch (LuaError ex) {
-            FiguraLuaPrinter.sendLuaError(ex, entityName, owner);
-            scriptError = true;
-            luaRuntime = null;
-        }
-    }
-
-    public void entityInitEvent() {
-        if (scriptError || luaRuntime == null)
-            return;
-
-        tryCall(luaRuntime.events.ENTITY_INIT, Math.max(initLimit - initInstructions, 1));
-        if (luaRuntime != null) {
-            entityInitInstructions = luaRuntime.getInstructions();
-            accumulatedInitInstructions += entityInitInstructions;
-        }
-    }
-
     public void tickEvent() {
-        if (scriptError || luaRuntime == null || luaRuntime.user == null)
-            return;
-
-        int entityTickLimit = trust.get(TrustContainer.Trust.TICK_INST);
-        tryCall(luaRuntime.events.TICK, entityTickLimit);
-        if (luaRuntime != null) {
-            entityTickInstructions = luaRuntime.getInstructions();
-            accumulatedTickInstructions += entityTickInstructions;
-        }
-    }
-
-    public void worldTickEvent() {
-        if (scriptError || luaRuntime == null)
-            return;
-
-        int worldTickLimit = trust.get(TrustContainer.Trust.WORLD_TICK_INST);
-        tryCall(luaRuntime.events.WORLD_TICK, worldTickLimit);
-        if (luaRuntime != null) {
-            worldTickInstructions = luaRuntime.getInstructions();
-            accumulatedTickInstructions = worldTickInstructions;
-        }
+        System.out.println(tick.remaining);
+        if (luaRuntime != null && luaRuntime.getUser() != null)
+            run("TICK", tick);
     }
 
     public void renderEvent(float delta) {
-        if (scriptError || luaRuntime == null || luaRuntime.user == null)
-            return;
-
-        int entityRenderLimit = trust.get(TrustContainer.Trust.RENDER_INST);
-        tryCall(luaRuntime.events.RENDER, entityRenderLimit, delta);
-        if (luaRuntime != null) {
-            entityRenderInstructions = luaRuntime.getInstructions();
-            accumulatedEntityRenderInstructions = entityRenderInstructions;
-        }
+        if (luaRuntime != null && luaRuntime.getUser() != null)
+            run("RENDER", render, delta);
     }
 
     public void postRenderEvent(float delta) {
-        if (scriptError || luaRuntime == null)
-            return;
-
-        tryCall(luaRuntime.events.POST_RENDER, -1, delta);
-        if (luaRuntime != null) {
-            postEntityRenderInstructions = luaRuntime.getInstructions() - entityRenderInstructions;
-            accumulatedEntityRenderInstructions += postEntityRenderInstructions;
-        }
-    }
-
-    public void worldRenderEvent(float delta) {
-        if (scriptError || luaRuntime == null)
-            return;
-
-        worldRenderLimit = trust.get(TrustContainer.Trust.WORLD_RENDER_INST);
-        tryCall(luaRuntime.events.WORLD_RENDER, worldRenderLimit, delta);
-        if (luaRuntime != null) {
-            worldRenderInstructions = luaRuntime.getInstructions();
-            accumulatedWorldRenderInstructions = worldRenderInstructions;
-        }
+        if (luaRuntime != null && luaRuntime.getUser() != null)
+            run("POST_RENDER", render.post(), delta);
     }
 
     public void postWorldRenderEvent(float delta) {
-        if (renderer != null)
-            renderer.allowMatrixUpdate = false;
-
-        if (scriptError || luaRuntime == null || worldRenderLimit == 0)
-            return;
-
-        tryCall(luaRuntime.events.POST_WORLD_RENDER, Math.max(worldRenderLimit - worldRenderInstructions, 1), delta);
-        if (luaRuntime != null) {
-            postWorldRenderInstructions = luaRuntime.getInstructions();
-            accumulatedWorldRenderInstructions += postWorldRenderInstructions;
-        }
-    }
-
-    public String chatSendMessageEvent(String message) {
-        if (!scriptError && luaRuntime != null) {
-            try {
-                Varargs result = luaRuntime.events.CHAT_SEND_MESSAGE.pipedCall(LuaValue.valueOf(message));
-                LuaValue value = result.arg(1);
-                return value.isnil() ? null : Config.CHAT_MESSAGES.asBool() ? value.tojstring() : message;
-            } catch (LuaError ex) {
-                FiguraLuaPrinter.sendLuaError(ex, entityName, owner);
-                scriptError = true;
-                luaRuntime = null;
-            }
-        }
-        return message;
-    }
-
-    public void chatReceivedMessageEvent(String message) {
-        if (!scriptError && luaRuntime != null)
-            tryCall(luaRuntime.events.CHAT_RECEIVE_MESSAGE, -1, message);
+        run("POST_WORLD_RENDER", worldRender.post(), delta);
     }
 
     public void skullRenderEvent(SkullBlockEntity skullBlockEntity, float delta) {
-        if (scriptError || luaRuntime == null || renderer == null || !renderer.allowSkullRendering)
-            return;
-        tryCall(luaRuntime.events.SKULL_RENDER, -1, delta, FiguraVec3.fromBlockPos(skullBlockEntity.getBlockPos()));
-        if (luaRuntime != null) {
-            postEntityRenderInstructions = luaRuntime.getInstructions();
-            accumulatedEntityRenderInstructions = postEntityRenderInstructions + entityRenderInstructions;
-        }
-    }
-
-    public void mouseScrollEvent(double delta) {
-        if (!scriptError && luaRuntime != null)
-            tryCall(luaRuntime.events.MOUSE_SCROLL, -1, delta);
+        if (renderer != null && renderer.allowSkullRendering)
+            run("SKULL_RENDER", render, delta, FiguraVec3.fromBlockPos(skullBlockEntity.getBlockPos()));
     }
 
     public void previewRenderEvent(String renderMode) {
-        if (!scriptError && luaRuntime != null)
-            tryCall(luaRuntime.events.PREVIEW_RENDER, trust.get(TrustContainer.Trust.RENDER_INST), renderMode);
+        run("PREVIEW_RENDER", render, renderMode);
     }
 
     public void postPreviewRenderEvent(String renderMode) {
-        if (!scriptError && luaRuntime != null)
-            tryCall(luaRuntime.events.POST_PREVIEW_RENDER, -1, renderMode);
+        run("POST_PREVIEW_RENDER", render.post(), renderMode);
+    }
+
+    // -- host only events -- //
+
+    public String chatSendMessageEvent(String message) {
+        run("CHAT_SEND_MESSAGE", tick, message);
+        return /*value.isnil() ? null : Config.CHAT_MESSAGES.asBool() ? value.tojstring() :*/ message;
+    }
+
+    public void chatReceivedMessageEvent(String message) {
+        run("CHAT_RECEIVE_MESSAGE", tick, message);
+    }
+
+    public void mouseScrollEvent(double delta) {
+        run("MOUSE_SCROLL", tick, delta);
     }
 
     // -- rendering events -- //
@@ -661,26 +601,28 @@ public class Avatar {
             scripts.put(s, new String(scriptsNbt.getByteArray(s), StandardCharsets.UTF_8));
 
         CompoundTag metadata = nbt.getCompound("metadata");
-        ListTag autoScripts = null;
 
+        ListTag autoScripts;
         if (metadata.contains("autoScripts"))
             autoScripts = metadata.getList("autoScripts", Tag.TAG_STRING);
+        else
+            autoScripts = null;
 
-        FiguraLuaRuntime luaRuntime = new FiguraLuaRuntime(this);
+        FiguraLuaRuntime luaRuntime = new FiguraLuaRuntime(this, scripts);
         if (renderer != null && renderer.root != null)
             luaRuntime.setGlobal("models", renderer.root);
 
-        initLimit = trust.get(TrustContainer.Trust.INIT_INST);
-        luaRuntime.setInstructionLimit(initLimit);
-        this.luaRuntime = luaRuntime;
+        init.reset(trust.get(TrustContainer.Trust.INIT_INST));
+        luaRuntime.setInstructionLimit(init.remaining);
 
-        boolean error = !luaRuntime.init(scripts, autoScripts);
-        if (error) {
-            this.luaRuntime = null;
-        } else {
-            initInstructions = luaRuntime.getInstructions();
-            accumulatedInitInstructions = initInstructions;
-        }
+        runAsync(() -> {
+            if (luaRuntime.init(autoScripts)) {
+                init.use(luaRuntime.getInstructions());
+                this.luaRuntime = luaRuntime;
+            } else {
+                this.luaRuntime = null;
+            }
+        });
     }
 
     private void loadAnimations() {
@@ -736,6 +678,42 @@ public class Avatar {
         try (ByteArrayInputStream inputStream = new ByteArrayInputStream(data); OggAudioStream oggAudioStream = new OggAudioStream(inputStream)) {
             SoundBuffer sound = new SoundBuffer(oggAudioStream.readAll(), oggAudioStream.getFormat());
             this.customSounds.put(name, sound);
+        }
+    }
+
+    public static class Instructions {
+
+        public int max, remaining;
+        public int pre, post;
+        private boolean inverted;
+
+        public Instructions(int remaining) {
+            reset(remaining);
+        }
+
+        public Instructions post() {
+            inverted = true;
+            return this;
+        }
+
+        public int getTotal() {
+            return pre + post;
+        }
+
+        public void reset(int remaining) {
+            this.max = this.remaining = remaining;
+            pre = post = 0;
+        }
+
+        public void use(int amount) {
+            this.remaining -= amount;
+
+            if (!inverted) {
+                this.pre += amount;
+            } else {
+                this.post += amount;
+                inverted = false;
+            }
         }
     }
 }

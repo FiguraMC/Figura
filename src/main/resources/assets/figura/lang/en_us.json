@@ -33,10 +33,15 @@
   "figura.toast.panic_enabled": "Panic mode enabled!",
   "figura.toast.panic_disabled": "Panic mode disabled!",
   "figura.toast.clipboard": "Copied to clipboard!",
-  "figura.toast.load_error": "Failed to load avatar!",
-  "figura.toast.load_error.2": "Check out \"avatar.json\"",
   "figura.toast.trust_change": "Trust changed to",
   "figura.toast.new_version": "New version available!",
+
+  "figura.toast.load_error": "Failed to load avatar!",
+  "figura.toast.load_error.1": "invalid moon file",
+  "figura.toast.load_error.2": "invalid \"avatar.json\"",
+  "figura.toast.load_error.3": "invalid script",
+  "figura.toast.load_error.4": "invalid custom sound",
+  "figura.toast.load_error.5": "invalid model",
 
 
   "figura.trust.group.blocked": "Blocked",
@@ -113,7 +118,7 @@
   "figura.badges.special.donator": "Thank you for supporting the Figura mod!",
   "figura.badges.special.contest": "GG!",
   "figura.badges.special.discord_staff": "Official Figura Discord Staff!",
-  "figura.badges.special.dev": "Figura Creator!",
+  "figura.badges.special.dev": "Figura Developer!",
 
 
   "figura.gui.on": "ON",
@@ -726,7 +731,7 @@
 
   "figura.docs.living_entity": "Acts as a proxy for a living entity in the Minecraft world.",
   "figura.docs.living_entity.get_body_yaw": "Gets the yaw of this entity's body in degrees. If delta is passed in, then it will be used to linearly interpolate the rotation of the body between the previous tick and the current tick. The default value of delta is 1.",
-  "figura.docs.living_entity.get_held_item": "Returns an ItemStack representing the item in this entity's main hand. If true is passed in for \"offhand\", then it will instead look at the item in the entity's offhand. If the entity isn't holding an item in that hand, returns nil.",
+  "figura.docs.living_entity.get_held_item": "Returns an ItemStack representing the item in this entity's main hand. If true is passed in for \"offhand\", then it will instead look at the item in the entity's offhand. If the entity isn't holding an item in that hand, returns air.",
   "figura.docs.living_entity.get_health": "Returns the amount of health this entity has remaining.",
   "figura.docs.living_entity.get_max_health": "Returns the maximum amount of health this entity can have.",
   "figura.docs.living_entity.get_armor": "Returns the amount of armor points this entity has.",
@@ -737,7 +742,7 @@
   "figura.docs.living_entity.is_left_handed": "Returns true if the entity's main hand is its left.",
   "figura.docs.living_entity.is_using_item": "Returns true if the entity is currently using an item.",
   "figura.docs.living_entity.get_active_hand": "Returns \"OFF_HAND\" or \"MAIN_HAND\", depending on which hand this entity uses an item with.",
-  "figura.docs.living_entity.get_active_item": "Returns an ItemStack representing the item the entity is currently using. If they're not using any item, returns nil.",
+  "figura.docs.living_entity.get_active_item": "Returns an ItemStack representing the item the entity is currently using. If they're not using any item, returns air.",
   "figura.docs.living_entity.is_climbing": "Returns true if the entity is currently using a climbable block, like a ladder or vine.",
 
   "figura.docs.player": "Acts as a proxy for a player entity in the Minecraft world. A global instance exists for the avatar's user, under the name \"player\".",
@@ -787,7 +792,7 @@
   "figura.docs.host.swing_arm": "Animates swinging the player's arm. If the boolean is true, then the offhand is the one that swings.",
   "figura.docs.host.is_first_person": "Returns true if the camera is in first person mode.",
   "figura.docs.host.is_camera_backwards": "Returns true if the camera is facing backwards.",
-  "figura.docs.host.get_slot": "Gets an ItemStack for the item in the given slot. Should use the same syntax for slots as the /item command.",
+  "figura.docs.host.get_slot": "Gets an ItemStack for the item in the given slot. The slot is either their numerical id (0 indexed) or the slot string, as used in the /item command.",
   "figura.docs.host.get_chat_color": "Gets the chat window text color.",
   "figura.docs.host.set_chat_color": "Sets the color of the text that is currently being typed into the chat window.",
   "figura.docs.host.get_chat_text": "Gets the text that is currently being typed into the chat window.",

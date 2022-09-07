@@ -62,7 +62,7 @@ public class AvatarManager {
             return;
 
         for (Avatar avatar : LOADED_AVATARS.values())
-            avatar.worldRenderEvent(tickDelta);
+            avatar.render(tickDelta);
     }
 
     public static void afterWorldRender(float tickDelta) {
@@ -189,7 +189,7 @@ public class AvatarManager {
             FiguraMod.LOGGER.debug("Loaded local avatar from " + path);
         } catch (Exception e) {
             FiguraMod.LOGGER.error("Failed to load avatar from " + path, e);
-            FiguraToast.sendToast(FiguraText.of("toast.load_error"), FiguraText.of("toast.load_error.2"), FiguraToast.ToastType.ERROR);
+            FiguraToast.sendToast(FiguraText.of("toast.load_error"), FiguraText.of("toast.load_error." + LocalAvatarLoader.getLoadState()), FiguraToast.ToastType.ERROR);
         }
 
         //mark as not uploaded

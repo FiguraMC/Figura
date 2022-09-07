@@ -199,21 +199,36 @@ public class HostAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = String.class,
-                    argumentNames = "slot"
-            ),
+            overloads = {
+                    @LuaFunctionOverload(
+                            argumentTypes = String.class,
+                            argumentNames = "slot"
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = Integer.class,
+                            argumentNames = "slot"
+                    )
+            },
             value = "host.get_slot"
     )
-    public ItemStackAPI getSlot(@LuaNotNil String slot) {
+    public ItemStackAPI getSlot(@LuaNotNil Object slot) {
         if (!isHost()) return null;
-        try {
-            Entity e = this.owner.luaRuntime.user;
-            Integer index = SlotArgument.slot().parse(new StringReader(slot));
-            return ItemStackAPI.verify(e.getSlot(index).get());
-        } catch (Exception e) {
-            throw new LuaError("Unable to get slot \"" + slot + "\"");
+
+        Integer index;
+        if (slot instanceof String s) {
+            try {
+                index = SlotArgument.slot().parse(new StringReader(s));
+            } catch (Exception e) {
+                throw new LuaError("Unable to get slot \"" + slot + "\"");
+            }
+        } else if (slot instanceof Integer i)
+            index = i;
+        else {
+            throw new LuaError("Invalid type for getSlot: " + slot.getClass().getSimpleName());
         }
+
+        Entity e = this.owner.luaRuntime.getUser();
+        return ItemStackAPI.verify(e.getSlot(index).get());
     }
 
     @LuaWhitelist
