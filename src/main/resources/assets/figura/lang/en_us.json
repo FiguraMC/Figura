@@ -161,9 +161,9 @@
 
   "figura.gui.wardrobe.expand_wardrobe.tooltip": "Expand wardrobe list",
   "figura.gui.wardrobe.minimize_wardrobe.tooltip": "Minimize wardrobe list",
-  "figura.gui.wardrobe.upload.tooltip": "Upload avatar to Figura server",
-  "figura.gui.wardrobe.reload.tooltip": "Reload avatar",
-  "figura.gui.wardrobe.delete.tooltip": "Delete avatar from Figura server",
+  "figura.gui.wardrobe.upload.tooltip": "Upload avatar to the Figura server. Other players will see you as the uploaded avatar",
+  "figura.gui.wardrobe.reload.tooltip": "Reload avatar from the Figura server",
+  "figura.gui.wardrobe.delete.tooltip": "Delete avatar from the Figura server",
   "figura.gui.wardrobe.sound.tooltip": "Avatar Sounds",
   "figura.gui.wardrobe.keybind.tooltip": "Avatar Keybinds",
   "figura.gui.wardrobe.folder.tooltip": "Open avatars root folder",
