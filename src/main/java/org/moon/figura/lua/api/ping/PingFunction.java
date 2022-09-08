@@ -58,7 +58,9 @@ public class PingFunction extends LuaFunction {
             return NIL;
 
         boolean sync = Config.SYNC_PINGS.asBool();
-        byte[] data = NetworkManager.sendPing(id, sync, new PingArg(args));
+        byte[] data = new PingArg(args).toByteArray();
+
+        NetworkManager.sendPing(id, sync, data);
         if (!sync) owner.runPing(id, data);
 
         return NIL;

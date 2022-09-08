@@ -51,7 +51,7 @@ public class FiguraLuaRuntime {
     public final Avatar owner;
     private final Globals userGlobals = new Globals();
     private final LuaValue setHookFunction;
-    private final Map<String, String> scripts = new HashMap<>();
+    protected final Map<String, String> scripts = new HashMap<>();
     private final Map<String, LuaValue> loadedScripts = new HashMap<>();
     public final LuaTypeManager typeManager = new LuaTypeManager();
 
@@ -66,7 +66,6 @@ public class FiguraLuaRuntime {
         userGlobals.load(new StringLib());
         userGlobals.load(new JseMathLib());
 
-        LoadState.install(userGlobals);
         LuaC.install(userGlobals);
 
         userGlobals.load(new DebugLib());
@@ -88,7 +87,7 @@ public class FiguraLuaRuntime {
             userGlobals.load(src, name, userGlobals).call();
             return 1;
         } catch (LuaError e) {
-            FiguraLuaPrinter.sendLuaError(e, owner.entityName, owner.owner);
+            FiguraLuaPrinter.sendLuaError(e, owner);
             return 0;
         }
     }
@@ -232,7 +231,7 @@ public class FiguraLuaRuntime {
 
     public void error(Exception e) {
         LuaError err = e instanceof LuaError lua ? lua : new LuaError(e.getMessage());
-        FiguraLuaPrinter.sendLuaError(err, owner.entityName, owner.owner);
+        FiguraLuaPrinter.sendLuaError(err, owner);
         owner.scriptError = true;
         owner.luaRuntime = null;
     }

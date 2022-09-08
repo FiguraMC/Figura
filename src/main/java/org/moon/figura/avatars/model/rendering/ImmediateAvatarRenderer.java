@@ -20,7 +20,6 @@ import org.moon.figura.config.Config;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec3;
-import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.utils.ColorUtils;
 
 import java.util.ArrayList;
@@ -79,16 +78,16 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
     }
 
     @Override
-    public void render() {
-        commonRender(1.5d);
+    public int render() {
+        return commonRender(1.5d);
     }
 
     @Override
-    public void renderSpecialParts() {
-        commonRender(0);
+    public int renderSpecialParts() {
+        return commonRender(0);
     }
 
-    protected void commonRender(double vertOffset) {
+    protected int commonRender(double vertOffset) {
         //flag rendering state
         this.isRendering = true;
 
@@ -118,13 +117,11 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
             VIEW_TO_WORLD_MATRIX.set(AvatarRenderer.worldToViewMatrix().invert());
 
         //Render all model parts
-        int prev = avatar.trust.get(TrustContainer.Trust.COMPLEXITY) - avatar.complexity;
+        int prev = avatar.complexity.remaining;
         int[] remainingComplexity = new int[] {prev};
         Boolean initialValue = currentFilterScheme.initialValue(root);
         if (initialValue != null)
             renderPart(root, remainingComplexity, initialValue);
-
-        avatar.complexity += prev - Math.max(remainingComplexity[0], 0);
 
         customizationStack.pop();
         checkEmpty();
@@ -132,6 +129,8 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         this.isRendering = false;
         if (this.dirty)
             clean();
+
+        return prev - Math.max(remainingComplexity[0], 0);
     }
 
     protected PartCustomization setupRootCustomization(double vertOffset) {

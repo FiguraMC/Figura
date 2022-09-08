@@ -59,8 +59,8 @@ public abstract class AvatarRenderer {
         this.avatar = avatar;
     }
 
-    public abstract void render();
-    public abstract void renderSpecialParts();
+    public abstract int render();
+    public abstract int renderSpecialParts();
     protected void clean() {
         root.clean();
     }

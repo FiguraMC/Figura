@@ -206,4 +206,23 @@ public class TextUtils {
         }, Style.EMPTY);
         return builder;
     }
+
+    public static Component substring(Component text, int beginIndex, int endIndex) {
+        StringBuilder counter = new StringBuilder();
+        MutableComponent builder = Component.empty();
+        text.visit((style, string) -> {
+            int index = counter.length();
+            int len = string.length();
+
+            if (index <= endIndex && index + len >= beginIndex) {
+                int sub = Math.max(beginIndex - index, 0);
+                int top = Math.min(endIndex - index, len);
+                builder.append(Component.literal(string.substring(sub, top)).withStyle(style));
+            }
+
+            counter.append(string);
+            return counter.length() > endIndex ? FormattedText.STOP_ITERATION : Optional.empty();
+        }, Style.EMPTY);
+        return builder;
+    }
 }

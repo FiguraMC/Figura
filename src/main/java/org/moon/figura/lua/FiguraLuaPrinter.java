@@ -17,7 +17,6 @@ import java.text.DecimalFormat;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
-import java.util.UUID;
 import java.util.function.Function;
 
 public class FiguraLuaPrinter {
@@ -63,8 +62,8 @@ public class FiguraLuaPrinter {
     }
 
     //print an error, errors should always show up on chat
-    public static void sendLuaError(LuaError error, String name, UUID owner) {
-        if (!Config.LOG_OTHERS.asBool() && !FiguraMod.isLocal(owner))
+    public static void sendLuaError(LuaError error, Avatar owner) {
+        if (!Config.LOG_OTHERS.asBool() && !FiguraMod.isLocal(owner.owner))
             return;
 
         //Jank as hell
@@ -72,11 +71,21 @@ public class FiguraLuaPrinter {
                 .replace("\n\t[Java]: in ?", "")
                 .replace("'<eos>' expected", "Expected end of script");
 
-        /*
-        if (src != null) {
+        //get script line
+        line: {
             try {
                 String[] split = message.split(":", 2);
                 if (split.length > 1) {
+                    //name
+                    String left = "[string \"";
+                    int sub = split[0].indexOf(left);
+
+                    String name = sub == -1 ? split[0] : split[0].substring(sub + left.length(), split[0].indexOf("\"]"));
+                    String src = owner.luaRuntime.scripts.get(name);
+                    if (src == null)
+                        break line;
+
+                    //line
                     int line = Integer.parseInt(split[1].split("\\D", 2)[0]);
 
                     String str = src.split("\n")[line - 1].trim();
@@ -87,15 +96,14 @@ public class FiguraLuaPrinter {
                 }
             } catch (Exception ignored) {}
         }
-         */
 
         MutableComponent component = TextComponent.EMPTY.copy()
                 .append(new TextComponent("[error] ").withStyle(ColorUtils.Colors.LUA_ERROR.style))
-                .append(new TextComponent(name))
+                .append(new TextComponent(owner.entityName))
                 .append(new TextComponent(" : " + message).withStyle(ColorUtils.Colors.LUA_ERROR.style))
                 .append(new TextComponent("\n"));
 
-        sendLuaChatMessage(component);
+        chatQueue.offer(component); //bypass the char limit filter
         FiguraMod.LOGGER.error("", error);
     }
 
@@ -332,73 +340,50 @@ public class FiguraLuaPrinter {
     //-- SLOW PRINTING OF LOG --//
 
     //Log safety
-    private static final LinkedList<MutableComponent> chatQueue = new LinkedList<>();
-    private static final int MAX_CHARS_QUEUED = 10000000;
+    private static final LinkedList<Component> chatQueue = new LinkedList<>();
+    private static final int MAX_CHARS_QUEUED = 10_000_000;
     private static int charsQueued = 0;
-    private static final int MAX_CHARS_PER_TICK = 10000;
+    private static final int MAX_CHARS_PER_TICK = 10_000;
 
     /**
      * Sends a message making use of the queue
      * @param message to send
      * @throws org.luaj.vm2.LuaError if the message could not fit in the queue
      */
-    private static void sendLuaChatMessage(MutableComponent message) throws LuaError {
-        if (message.getSiblings().isEmpty()) {
-            charsQueued += message.getString().length();
-            if (charsQueued > MAX_CHARS_QUEUED) {
-                chatQueue.clear();
-                charsQueued = 0;
-                throw new LuaError("Chat overflow: printing too much!");
-            }
-            chatQueue.offer(message);
-        } else {
-            MutableComponent withoutSiblings = message.plainCopy().withStyle(message.getStyle());
-            sendLuaChatMessage(withoutSiblings);
-            for (Component sibling : message.getSiblings()) {
-                ((MutableComponent) sibling).setStyle(sibling.getStyle().applyTo(message.getStyle()));
-                sendLuaChatMessage((MutableComponent) sibling);
-            }
-
+    private static void sendLuaChatMessage(Component message) throws LuaError {
+        charsQueued += message.getString().length();
+        if (charsQueued > MAX_CHARS_QUEUED) {
+            chatQueue.clear();
+            charsQueued = 0;
+            throw new LuaError("Chat overflow: printing too much!");
         }
+        chatQueue.offer(message);
     }
 
     public static void printChatFromQueue() {
+        if (chatQueue.isEmpty())
+            return;
+
+        MutableComponent toPrint = TextComponent.EMPTY.copy();
         int i = MAX_CHARS_PER_TICK;
-        int totalLen = 0;
-        MutableComponent bigComponent = chatQueue.poll();
-        while (chatQueue.size() > 1) {
-            MutableComponent smallComponent = TextComponent.EMPTY.copy();
 
-            int len = 0;
-            MutableComponent smallerComponent = chatQueue.poll();
-            while (chatQueue.size() > 1 && !smallerComponent.getString().equals("\n")) {
-                smallComponent.append(smallerComponent);
-                len += smallerComponent.getString().length();
-                smallerComponent = chatQueue.poll();
-            }
-            smallComponent.append(smallerComponent);
-            len++;
-
-            i -= len;
-            if (i < 0) {
-                charsQueued -= len;
-                if (len > MAX_CHARS_PER_TICK) {
-                    String s = "[Component too big, not printing]";
-                    chatQueue.addFirst(new TextComponent(s));
-                    charsQueued += s.length();
-                } else {
-                    chatQueue.addFirst(smallComponent);
-                }
+        while (i > 0) {
+            Component text = chatQueue.poll();
+            if (text == null)
                 break;
+
+            int len = text.getString().length();
+            if (len <= i) {
+                i -= len;
+                toPrint.append(text);
+            } else {
+                chatQueue.offerFirst(TextUtils.substring(text, i, len));
+                chatQueue.offerFirst(TextUtils.substring(text, 0, i));
             }
-            bigComponent.append(smallComponent);
-            totalLen += len;
         }
-        if (chatQueue.size() == 1)
-            chatQueue.clear();
-        if (bigComponent != null) {
-            FiguraMod.sendChatMessage(bigComponent);
-            charsQueued -= totalLen;
-        }
+
+        String print = toPrint.getString();
+        if (!print.isEmpty())
+            FiguraMod.sendChatMessage(print.endsWith("\n") ? TextUtils.substring(toPrint, 0, print.length() - 1) : toPrint);
     }
 }

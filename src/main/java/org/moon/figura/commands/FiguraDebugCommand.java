@@ -158,7 +158,7 @@ public class FiguraDebugCommand {
         JsonObject inst = new JsonObject();
 
         inst.addProperty("animationComplexity", avatar.animationComplexity);
-        inst.addProperty("complexity", avatar.complexity);
+        inst.addProperty("complexity", avatar.complexity.pre);
         inst.addProperty("entityInitInstructions", avatar.init.post);
         inst.addProperty("entityRenderInstructions", avatar.render.pre);
         inst.addProperty("entityTickInstructions", avatar.tick.pre);

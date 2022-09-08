@@ -129,7 +129,7 @@ public class AvatarAPI {
     @LuaWhitelist
     @LuaMethodDoc("avatar.get_tick_count")
     public int getTickCount() {
-        return avatar.tick.pre;
+        return avatar.tick.getTotal();
     }
 
     @LuaWhitelist
@@ -153,7 +153,7 @@ public class AvatarAPI {
     @LuaWhitelist
     @LuaMethodDoc("avatar.get_world_tick_count")
     public int getWorldTickCount() {
-        return avatar.worldTick.pre;
+        return avatar.worldTick.getTotal();
     }
 
     @LuaWhitelist
@@ -177,7 +177,7 @@ public class AvatarAPI {
     @LuaWhitelist
     @LuaMethodDoc("avatar.get_complexity")
     public int getComplexity() {
-        return avatar.complexity;
+        return avatar.complexity.pre;
     }
 
     @LuaWhitelist
