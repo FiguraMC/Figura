@@ -98,7 +98,8 @@ public class Avatar {
     public int versionStatus = 0;
 
     //limits
-    public int complexity, animationComplexity;
+    public int animationComplexity;
+    public final Instructions complexity;
     public final Instructions init, render, worldRender, tick, worldTick;
     public final RefilledNumber particlesRemaining, soundsRemaining;
 
@@ -106,6 +107,7 @@ public class Avatar {
         this.owner = owner;
         this.isHost = FiguraMod.isLocal(owner);
         this.trust = TrustManager.get(owner);
+        this.complexity = new Instructions(trust.get(TrustContainer.Trust.COMPLEXITY));
         this.init = new Instructions(trust.get(TrustContainer.Trust.INIT_INST));
         this.render = new Instructions(trust.get(TrustContainer.Trust.RENDER_INST));
         this.worldRender = new Instructions(trust.get(TrustContainer.Trust.WORLD_RENDER_INST));
@@ -202,6 +204,8 @@ public class Avatar {
     }
 
     public void render(float delta) {
+        complexity.reset(trust.get(TrustContainer.Trust.COMPLEXITY));
+
         if (scriptError || luaRuntime == null)
             return;
 
@@ -278,7 +282,6 @@ public class Avatar {
     // -- script events -- //
 
     public void tickEvent() {
-        System.out.println(tick.remaining);
         if (luaRuntime != null && luaRuntime.getUser() != null)
             run("TICK", tick);
     }
@@ -344,14 +347,19 @@ public class Avatar {
         renderer.translucent = translucent;
         renderer.glowing = glowing;
 
-        renderer.render();
+        if (UIHelper.paperdoll) {
+            int prev = complexity.remaining;
+            complexity.remaining = trust.get(TrustContainer.Trust.COMPLEXITY);
+            renderer.render();
+            complexity.remaining = prev;
+        } else {
+            complexity.use(renderer.render());
+        }
     }
 
     public synchronized void worldRender(Entity entity, double camX, double camY, double camZ, PoseStack matrices, MultiBufferSource bufferSource, int light, float tickDelta) {
         if (renderer == null)
             return;
-
-        complexity = 0;
 
         for (Queue<Pair<FiguraMat4, FiguraMat3>> queue : renderer.pivotCustomizations.values()) {
             while (!queue.isEmpty()) {
@@ -376,7 +384,7 @@ public class Avatar {
         matrices.pushPose();
         matrices.translate(-camX, -camY, -camZ);
         matrices.scale(-1, -1, 1);
-        renderer.renderSpecialParts();
+        complexity.use(renderer.renderSpecialParts());
         matrices.popPose();
     }
 
@@ -393,8 +401,6 @@ public class Avatar {
         if (renderer == null)
             return;
 
-        int oldComplexity = complexity;
-
         PartFilterScheme filter = arm == playerRenderer.getModel().leftArm ? PartFilterScheme.LEFT_ARM : PartFilterScheme.RIGHT_ARM;
         boolean config = Config.ALLOW_FP_HANDS.asBool();
         renderer.allowHiddenTransforms = config;
@@ -409,14 +415,12 @@ public class Avatar {
         stack.popPose();
 
         renderer.allowHiddenTransforms = true;
-        complexity = oldComplexity;
     }
 
     public void hudRender(PoseStack stack, MultiBufferSource bufferSource, Entity entity, float tickDelta) {
         if (renderer == null)
             return;
 
-        //renderer.allowMatrixUpdate = true;
         renderer.currentFilterScheme = PartFilterScheme.HUD;
         renderer.entity = entity;
         renderer.tickDelta = tickDelta;
@@ -433,21 +437,17 @@ public class Avatar {
         stack.pushPose();
         stack.scale(16, 16, -16);
         RenderSystem.disableDepthTest();
-        renderer.renderSpecialParts();
+        complexity.use(renderer.renderSpecialParts());
         ((MultiBufferSource.BufferSource) renderer.bufferSource).endBatch();
         RenderSystem.enableDepthTest();
         stack.popPose();
 
         Lighting.setupFor3DItems();
-
-        //renderer.allowMatrixUpdate = false;
     }
 
     public boolean skullRender(PoseStack stack, MultiBufferSource bufferSource, int light, Direction direction, float yaw) {
         if (renderer == null || !renderer.allowSkullRendering)
             return false;
-
-        int oldComplexity = complexity;
 
         renderer.allowPivotParts = false;
         renderer.allowRenderTasks = false;
@@ -471,10 +471,11 @@ public class Avatar {
         stack.scale(-1f, -1f, 1f);
         stack.mulPose(Vector3f.YP.rotationDegrees(yaw));
 
-        renderer.renderSpecialParts();
+        int comp = renderer.renderSpecialParts();
+        complexity.use(comp);
 
         //hacky
-        if (complexity > oldComplexity) {
+        if (comp > 0) {
             renderer.allowPivotParts = true;
             renderer.allowRenderTasks = true;
             stack.popPose();
@@ -489,7 +490,8 @@ public class Avatar {
         renderer.allowPivotParts = false;
         renderer.allowRenderTasks = false;
         renderer.currentFilterScheme = PartFilterScheme.HEAD;
-        renderer.renderSpecialParts();
+
+        comp = renderer.renderSpecialParts();
 
         renderer.allowMatrixUpdate = oldMat;
         renderer.allowHiddenTransforms = true;
@@ -498,7 +500,7 @@ public class Avatar {
 
         //hacky 2
         stack.popPose();
-        return complexity > oldComplexity && luaRuntime != null && !luaRuntime.vanilla_model.HEAD.getVisible();
+        return comp > 0 && luaRuntime != null && !luaRuntime.vanilla_model.HEAD.getVisible();
     }
 
     private static final PartCustomization PIVOT_PART_RENDERING_CUSTOMIZATION = PartCustomization.of();
@@ -608,7 +610,7 @@ public class Avatar {
         else
             autoScripts = null;
 
-        FiguraLuaRuntime luaRuntime = new FiguraLuaRuntime(this, scripts);
+        luaRuntime = new FiguraLuaRuntime(this, scripts);
         if (renderer != null && renderer.root != null)
             luaRuntime.setGlobal("models", renderer.root);
 
@@ -618,7 +620,6 @@ public class Avatar {
         runAsync(() -> {
             if (luaRuntime.init(autoScripts)) {
                 init.use(luaRuntime.getInstructions());
-                this.luaRuntime = luaRuntime;
             } else {
                 this.luaRuntime = null;
             }
@@ -706,12 +707,12 @@ public class Avatar {
         }
 
         public void use(int amount) {
-            this.remaining -= amount;
+            remaining -= amount;
 
             if (!inverted) {
-                this.pre += amount;
+                pre += amount;
             } else {
-                this.post += amount;
+                post += amount;
                 inverted = false;
             }
         }

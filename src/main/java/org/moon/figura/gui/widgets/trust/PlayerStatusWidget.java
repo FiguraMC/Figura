@@ -20,7 +20,7 @@ public class PlayerStatusWidget extends StatusWidget {
             avatar -> FiguraText.of("gui.trust.size")
                     .append("\n• ").append(MathUtils.asFileSize(avatar.fileSize)),
             avatar -> FiguraText.of("gui.trust.complexity")
-                    .append("\n• ").append(String.valueOf(avatar.complexity)),
+                    .append("\n• ").append(String.valueOf(avatar.complexity.pre)),
             avatar -> FiguraText.of("gui.trust.init")
                     .append("\n• ").append(FiguraText.of("gui.trust.init.root", avatar.init.pre))
                     .append("\n• ").append(FiguraText.of("gui.trust.init.entity", avatar.init.post)),
@@ -56,7 +56,7 @@ public class PlayerStatusWidget extends StatusWidget {
         status = avatar.fileSize > NetworkManager.getSizeLimit() ? 1 : avatar.fileSize > NetworkManager.getSizeLimit() * 0.75 ? 2 : 3;
 
         //complexity
-        int complexity = avatar.renderer == null ? 0 : avatar.complexity >= avatar.trust.get(TrustContainer.Trust.COMPLEXITY) ? 1 : 3;
+        int complexity = avatar.renderer == null ? 0 : avatar.complexity.pre >= avatar.trust.get(TrustContainer.Trust.COMPLEXITY) ? 1 : 3;
         status += complexity << 2;
 
         //script init

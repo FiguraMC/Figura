@@ -21,8 +21,8 @@ import net.minecraft.network.protocol.login.ClientboundGameProfilePacket;
 import net.minecraft.network.protocol.login.ServerboundHelloPacket;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
+import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.config.Config;
-import org.moon.figura.lua.api.ping.PingArg;
 
 import java.io.ByteArrayOutputStream;
 import java.net.InetSocketAddress;
@@ -280,10 +280,9 @@ public class NetworkManager {
         NetworkManager.sendMessage(NetworkManager.GSON.toJson(sub));
     }
 
-    public static byte[] sendPing(int id, boolean sync, PingArg arg) {
-        byte[] data = arg.toByteArray();
-        if (data == null)
-            return null;
+    public static void sendPing(int id, boolean sync, byte[] data) {
+        if (!AvatarManager.localUploaded)
+            return;
 
         JsonObject json = new JsonObject();
         json.addProperty("type", "sendPing");
@@ -297,8 +296,6 @@ public class NetworkManager {
         NetworkManager.sendMessage(NetworkManager.GSON.toJson(json));
         pingsSent++;
         if (lastPing == 0) lastPing = FiguraMod.ticks;
-
-        return data;
     }
 
     public static void fetchUserdata(UUID id) {
