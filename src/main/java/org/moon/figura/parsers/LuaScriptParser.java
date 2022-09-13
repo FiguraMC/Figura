@@ -1,11 +1,14 @@
 package org.moon.figura.parsers;
 
 import net.minecraft.nbt.ByteArrayTag;
+import org.moon.figura.config.Config;
 
 import java.nio.charset.StandardCharsets;
 
 public class LuaScriptParser {
   public ByteArrayTag parseScript(String script) {
+    if (!Config.FORMAT_SCRIPT.asBool())
+      return new ByteArrayTag(script.getBytes(StandardCharsets.UTF_8));
     StringBuilder string = new StringBuilder(script);
     for (int i = 0; i < string.length(); i++) {
       int parseStart = i;
@@ -52,7 +55,7 @@ public class LuaScriptParser {
               return new ByteArrayTag(script.getBytes(StandardCharsets.UTF_8));
             }
             if (end != 0) {
-              //count newlines so that they can be reinserted
+              // count newlines so that they can be reinserted
               int newLines = 0;
               for (int o = parseStart; o < end; o++)
                 if (string.charAt(o) == '\n')
@@ -76,7 +79,7 @@ public class LuaScriptParser {
         case '\t':
         case '\r':
         case '\n': {
-          //count newlines so that they can be reinserted
+          // count newlines so that they can be reinserted
           int newLines = 0;
           while (true) {
             if (i >= string.length())
