@@ -215,7 +215,7 @@ public class ClientAPI {
             ),
             value = "client.get_text_width"
     )
-    public static int getTextWidth(String text) {
+    public static int getTextWidth(@LuaNotNil String text) {
         return TextUtils.getWidth(TextUtils.splitText(TextUtils.tryParseJson(text), "\n"), Minecraft.getInstance().font);
     }
 
@@ -227,7 +227,7 @@ public class ClientAPI {
             ),
             value = "client.get_text_height"
     )
-    public static int getTextHeight(String text) {
+    public static int getTextHeight(@LuaNotNil String text) {
         return Minecraft.getInstance().font.lineHeight * TextUtils.splitText(TextUtils.tryParseJson(text), "\n").size();
     }
 

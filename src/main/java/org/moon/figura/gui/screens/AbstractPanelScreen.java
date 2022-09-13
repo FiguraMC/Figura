@@ -1,6 +1,7 @@
 package org.moon.figura.gui.screens;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -25,6 +26,10 @@ public abstract class AbstractPanelScreen extends Screen {
     //overlays
     public ContextMenu contextMenu;
     public Component tooltip;
+
+    //stuff :3
+    private static final String EGG = "ĉĉĈĈćĆćĆBAā";
+    private String egg = EGG;
 
     protected AbstractPanelScreen(Screen parentScreen, Component title, int index) {
         super(title);
@@ -153,5 +158,17 @@ public abstract class AbstractPanelScreen extends Screen {
                 ret = ret || child.mouseScrolled(mouseX, mouseY, amount);
         }
         return ret;
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        egg += (char) keyCode;
+        egg = egg.substring(1);
+        if (EGG.equals(egg)) {
+            Minecraft.getInstance().setScreen(new GameScreen(this, index));
+            return true;
+        } else {
+            return super.keyPressed(keyCode, scanCode, modifiers);
+        }
     }
 }

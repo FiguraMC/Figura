@@ -52,7 +52,7 @@ public class RendererAPI {
 
     private static boolean checkCameraOwner(UUID entity) {
         Entity e = Minecraft.getInstance().getCameraEntity();
-        return e != null && e.getUUID().compareTo(entity) == 0;
+        return e != null && e.getUUID().equals(entity);
     }
 
     @LuaWhitelist

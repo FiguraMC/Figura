@@ -176,7 +176,9 @@
   "figura.gui.trust.reload_all": "Reload All",
   "figura.gui.trust.expand_trust.tooltip": "Expand advanced trust menu",
   "figura.gui.trust.minimize_trust.tooltip": "Minimize advanced trust menu",
+  "figura.gui.trust.disconnected.tooltip": "Show disconnected avatars",
 
+  "figura.gui.trust.disconnected": "(disconnected)",
   "figura.gui.trust.size": "Avatar Size",
   "figura.gui.trust.complexity": "Model Complexity",
   "figura.gui.trust.init": "Init Instructions",
