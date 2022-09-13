@@ -21,8 +21,6 @@ import org.moon.figura.utils.FiguraText;
 public class WardrobeScreen extends AbstractPanelScreen {
 
     public static final Component TITLE = FiguraText.of("gui.panels.title.wardrobe");
-    private static final String EGG = "ĉĉĈĈćĆćĆBAā";
-    private String egg = EGG;
 
     private StatusWidget statusWidget;
     private AvatarInfoWidget avatarInfo;
@@ -162,17 +160,5 @@ public class WardrobeScreen extends AbstractPanelScreen {
     public void removed() {
         LocalAvatarFetcher.save();
         super.removed();
-    }
-
-    @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        egg += (char) keyCode;
-        egg = egg.substring(1);
-        if (EGG.equals(egg)) {
-            Minecraft.getInstance().setScreen(new GameScreen(this));
-            return true;
-        } else {
-            return super.keyPressed(keyCode, scanCode, modifiers);
-        }
     }
 }

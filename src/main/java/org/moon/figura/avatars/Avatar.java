@@ -85,7 +85,6 @@ public class Avatar {
     //Runtime data
     public AvatarRenderer renderer;
     public FiguraLuaRuntime luaRuntime;
-    private CompletableFuture<Void> events;
 
     public final TrustContainer trust;
 
@@ -215,68 +214,57 @@ public class Avatar {
     }
 
     public void runPing(int id, byte[] data) {
-        runAsync(() -> {
-            if (scriptError || luaRuntime == null)
-                return;
+        if (scriptError || luaRuntime == null)
+            return;
 
-            Varargs args = PingArg.fromByteArray(data, this);
-            String name = luaRuntime.ping.getName(id);
-            PingFunction function = luaRuntime.ping.get(name);
-            if (args == null || function == null)
-                return;
+        Varargs args = PingArg.fromByteArray(data, this);
+        String name = luaRuntime.ping.getName(id);
+        PingFunction function = luaRuntime.ping.get(name);
+        if (args == null || function == null)
+            return;
 
-            FiguraLuaPrinter.sendPingMessage(this, name, data.length, args);
+        FiguraLuaPrinter.sendPingMessage(this, name, data.length, args);
 
-            try {
-                function.func.invoke(args);
-            } catch (Exception e) {
-                luaRuntime.error(e);
-            }
-        });
-    }
-
-    private void runAsync(Runnable run) {
-        if (events == null || events.isDone()) {
-            events = CompletableFuture.runAsync(run);
-        } else {
-            events.thenRun(run);
+        try {
+            function.func.invoke(args);
+        } catch (Exception e) {
+            luaRuntime.error(e);
         }
     }
 
-    public void run(Object toRun, Instructions limit, Object... args) {
-        if (UIHelper.paperdoll)
-            return;
+    public Varargs run(Object toRun, Instructions limit, Object... args) {
+        if (UIHelper.paperdoll || scriptError || luaRuntime == null)
+            return null;
 
-        runAsync(() -> {
-            if (scriptError || luaRuntime == null)
-                return;
+        //parse args
+        LuaValue[] values = new LuaValue[args.length];
+        for (int i = 0; i < values.length; i++)
+            values[i] = luaRuntime.typeManager.javaToLua(args[i]);
 
-            //parse args
-            LuaValue[] values = new LuaValue[args.length];
-            for (int i = 0; i < values.length; i++)
-                values[i] = luaRuntime.typeManager.javaToLua(args[i]);
+        Varargs val = LuaValue.varargsOf(values);
 
-            Varargs val = LuaValue.varargsOf(values);
+        //instructions limit
+        luaRuntime.setInstructionLimit(limit.remaining);
 
-            //instructions limit
-            luaRuntime.setInstructionLimit(limit.remaining);
+        //get and call event
+        try {
+            Varargs ret;
+            if (toRun instanceof LuaEvent event)
+                ret = event.call(val);
+            else if (toRun instanceof String event)
+                ret = luaRuntime.events.__index(event).call(val);
+            else if (toRun instanceof LuaFunction func)
+                ret = func.invoke(val);
+            else
+                throw new LuaError("Invalid type to run!");
 
-            //get and call event
-            try {
-                if (toRun instanceof LuaEvent event)
-                    event.call(val);
-                else if (toRun instanceof String event)
-                    luaRuntime.events.__index(event).call(val);
-                else if (toRun instanceof LuaFunction func)
-                    func.invoke(val);
-                else
-                    throw new LuaError("Invalid type to run!");
+            limit.use(luaRuntime.getInstructions());
+            return ret;
+        } catch (Exception e) {
+            luaRuntime.error(e);
+        }
 
-                limit.use(luaRuntime.getInstructions());
-            } catch (Exception e) {
-                luaRuntime.error(e);
-            }
-        });
+        return LuaValue.NIL;
     }
 
     // -- script events -- //
@@ -316,8 +304,8 @@ public class Avatar {
     // -- host only events -- //
 
     public String chatSendMessageEvent(String message) {
-        run("CHAT_SEND_MESSAGE", tick, message);
-        return /*value.isnil() ? null : Config.CHAT_MESSAGES.asBool() ? value.tojstring() :*/ message;
+        Varargs val = run("CHAT_SEND_MESSAGE", tick, message);
+        return val == null || (!val.isnil(1) && !Config.CHAT_MESSAGES.asBool()) ? message : val.isnil(1) ? null : val.arg(1).tojstring();
     }
 
     public void chatReceivedMessageEvent(String message) {
@@ -474,7 +462,6 @@ public class Avatar {
         int comp = renderer.renderSpecialParts();
         complexity.use(comp);
 
-        //hacky
         if (comp > 0) {
             renderer.allowPivotParts = true;
             renderer.allowRenderTasks = true;
@@ -482,23 +469,45 @@ public class Avatar {
             return true;
         }
 
-        //otherwise render head parts
+        //head
+        boolean bool = headRender(stack, bufferSource, light);
+
+        stack.popPose();
+        return bool;
+    }
+
+    public boolean headRender(PoseStack stack, MultiBufferSource bufferSource, int light) {
+        if (renderer == null)
+            return false;
+
+        stack.pushPose();
         stack.translate(0d, 24d / 16d, 0d);
         boolean oldMat = renderer.allowMatrixUpdate;
-        renderer.allowMatrixUpdate = false;
-        renderer.allowHiddenTransforms = false;
+
+        //pre render
         renderer.allowPivotParts = false;
         renderer.allowRenderTasks = false;
         renderer.currentFilterScheme = PartFilterScheme.HEAD;
+        renderer.tickDelta = 1f;
+        renderer.overlay = OverlayTexture.NO_OVERLAY;
+        renderer.light = light;
+        renderer.alpha = 1f;
+        renderer.matrices = stack;
+        renderer.bufferSource = bufferSource;
+        renderer.translucent = false;
+        renderer.glowing = false;
+        renderer.allowHiddenTransforms = false;
+        renderer.allowMatrixUpdate = false;
 
-        comp = renderer.renderSpecialParts();
+        //render
+        int comp = renderer.renderSpecialParts();
 
+        //pos render
         renderer.allowMatrixUpdate = oldMat;
         renderer.allowHiddenTransforms = true;
         renderer.allowRenderTasks = true;
         renderer.allowPivotParts = true;
 
-        //hacky 2
         stack.popPose();
         return comp > 0 && luaRuntime != null && !luaRuntime.vanilla_model.HEAD.getVisible();
     }
@@ -571,6 +580,10 @@ public class Avatar {
             value.releaseAlBuffer();
     }
 
+    public MultiBufferSource getBufferSource() {
+        return renderer != null && renderer.bufferSource != null ? renderer.bufferSource : Minecraft.getInstance().renderBuffers().bufferSource();
+    }
+
     private int getFileSize() {
         try {
             //get size
@@ -617,13 +630,11 @@ public class Avatar {
         init.reset(trust.get(TrustContainer.Trust.INIT_INST));
         luaRuntime.setInstructionLimit(init.remaining);
 
-        runAsync(() -> {
-            if (luaRuntime.init(autoScripts)) {
-                init.use(luaRuntime.getInstructions());
-            } else {
-                this.luaRuntime = null;
-            }
-        });
+        if (luaRuntime.init(autoScripts)) {
+            init.use(luaRuntime.getInstructions());
+        } else {
+            this.luaRuntime = null;
+        }
     }
 
     private void loadAnimations() {

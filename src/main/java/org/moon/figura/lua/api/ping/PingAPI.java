@@ -18,8 +18,6 @@ public class PingAPI {
     private final HashMap<Integer, String> idMap = new HashMap<>();
     private final Avatar owner;
 
-    private int id = 0;
-
     public PingAPI(Avatar owner) {
         this.owner = owner;
     }
@@ -40,10 +38,10 @@ public class PingAPI {
     @LuaWhitelist
     public void __newindex(String key, LuaFunction value) {
         if (key == null) return;
+        int id = (key.hashCode() + 1) * 31;
         PingFunction func = new PingFunction(id, owner, value);
         map.put(key, func);
         idMap.put(id, key);
-        id++;
     }
 
     @Override

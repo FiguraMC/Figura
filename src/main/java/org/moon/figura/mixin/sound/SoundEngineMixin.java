@@ -179,7 +179,7 @@ public abstract class SoundEngineMixin implements SoundEngineAccessor {
 
         for (ChannelAccess.ChannelHandle channelHandle : figuraHandlers.keySet()) {
             ChannelHandleAccessor accessor = (ChannelHandleAccessor) channelHandle;
-            if (owner == null || (accessor.getOwner().compareTo(owner) == 0 && (name == null || accessor.getName().equals(name))))
+            if (owner == null || (accessor.getOwner().equals(owner) && (name == null || accessor.getName().equals(name))))
                 channelHandle.execute(Channel::stop);
         }
     }

@@ -72,6 +72,9 @@ public class TextUtils {
     }
 
     public static Component tryParseJson(String text) {
+        if (text == null)
+            return Component.empty();
+
         //text to return
         Component finalText;
 

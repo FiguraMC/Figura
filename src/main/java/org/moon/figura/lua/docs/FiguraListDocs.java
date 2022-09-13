@@ -74,8 +74,10 @@ public class FiguraListDocs {
             put(value.name(), Arrays.asList(value.alias));
     }};
     private static final LinkedHashSet<String> PLAYER_MODEL_PARTS = new LinkedHashSet<>() {{
-        for (PlayerModelPart value : PlayerModelPart.values())
-            add(value.name());
+        for (PlayerModelPart value : PlayerModelPart.values()) {
+            String name = value.name();
+            add(name.endsWith("_LEG") ? name.substring(0, name.length() - 4) : name);
+        }
     }};
 
     private enum ListDoc {

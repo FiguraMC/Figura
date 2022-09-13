@@ -100,6 +100,8 @@ public class PlayerAPI extends LivingEntityAPI<Player> {
     public boolean isSkinLayerVisible(@LuaNotNil String part) {
         checkEntity();
         try {
+            if (part.equalsIgnoreCase("left_pants") || part.equalsIgnoreCase("right_pants"))
+                part += "_leg";
             return entity.isModelPartShown(PlayerModelPart.valueOf(part.toUpperCase()));
         } catch (Exception ignored) {
             throw new LuaError("Invalid player model part: " + part);

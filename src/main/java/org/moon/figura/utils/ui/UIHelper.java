@@ -29,6 +29,7 @@ import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.gui.screens.AbstractPanelScreen;
 import org.moon.figura.gui.widgets.ContextMenu;
+import org.moon.figura.math.vector.FiguraVec4;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.TextUtils;
 
@@ -46,6 +47,7 @@ public class UIHelper extends GuiComponent {
     private static int previousFBO = -1;
     public static boolean paperdoll = false;
     public static float dollScale = 1f;
+    public static FiguraVec4 scissors = FiguraVec4.of();
 
     // -- Functions -- //
 
@@ -352,6 +354,8 @@ public class UIHelper extends GuiComponent {
     }
 
     public static void setupScissor(int x, int y, int width, int height) {
+        scissors.set(x, y, width, height);
+
         double scale = Minecraft.getInstance().getWindow().getGuiScale();
         int screenY = Minecraft.getInstance().getWindow().getHeight();
 
