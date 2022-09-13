@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(InventoryScreen.class)
+@Mixin(value = InventoryScreen.class, priority = 1)
 public class InventoryScreenMixin {
 
     @Inject(method = "renderEntityInInventory", at = @At("HEAD"), cancellable = true)

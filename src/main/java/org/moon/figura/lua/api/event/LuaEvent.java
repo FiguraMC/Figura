@@ -24,10 +24,20 @@ public class LuaEvent {
 
     private static final int MAX_FUNCTIONS = 1024;
 
+    private final boolean piped;
+
     private final Deque<LuaFunction> functions = new ArrayDeque<>();
     private final Deque<LuaFunction> queue = new ArrayDeque<>();
     private final Deque<LuaFunction> removalQueue = new ArrayDeque<>();
     private final HashMultimap<String, LuaFunction> names = HashMultimap.create();
+
+    public LuaEvent() {
+        this(false);
+    }
+
+    public LuaEvent(boolean piped) {
+        this.piped = piped;
+    }
 
     //Add all waiting functions from the queues
     protected void flushQueue() {
@@ -41,19 +51,13 @@ public class LuaEvent {
     }
 
     //Calls all the functions in the order they were registered, using the given args for all calls.
-    public void call(Varargs args) {
+    //If piped, the result of one function is passed through to the next, repeatedly, eventually returning the result.
+    public Varargs call(Varargs args) {
         flushQueue();
+        Varargs vars = args;
         for (LuaFunction function : functions)
-            function.invoke(args);
-    }
-
-    //The result of one function is passed through to the next, repeatedly, eventually returning the result.
-    //Used for CHAT_SEND_MESSAGE.
-    public Varargs pipedCall(Varargs args) {
-        flushQueue();
-        for (LuaFunction function : functions)
-            args = function.invoke(args);
-        return args;
+            vars = function.invoke(piped ? vars : args);
+        return vars;
     }
 
     @LuaWhitelist
