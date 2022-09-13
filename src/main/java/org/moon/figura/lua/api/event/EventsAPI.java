@@ -1,5 +1,6 @@
 package org.moon.figura.lua.api.event;
 
+import org.luaj.vm2.LuaFunction;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaMetamethodDoc;
@@ -20,7 +21,7 @@ public class EventsAPI {
         POST_RENDER = new LuaEvent();
         WORLD_RENDER = new LuaEvent();
         POST_WORLD_RENDER = new LuaEvent();
-        CHAT_SEND_MESSAGE = new LuaEvent();
+        CHAT_SEND_MESSAGE = new LuaEvent(true);
         CHAT_RECEIVE_MESSAGE = new LuaEvent();
         SKULL_RENDER = new LuaEvent();
         MOUSE_SCROLL = new LuaEvent();
@@ -95,6 +96,16 @@ public class EventsAPI {
             case "POST_PREVIEW_RENDER" -> POST_PREVIEW_RENDER;
             default -> null;
         };
+    }
+
+    @LuaWhitelist
+    public void __newindex(String key, LuaFunction func) {
+        if (key == null)
+            return;
+
+        LuaEvent event = __index(key.toUpperCase());
+        if (event != null)
+            event.register(func, null);
     }
 
     @Override

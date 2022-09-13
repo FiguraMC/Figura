@@ -13,10 +13,7 @@ import org.moon.figura.gui.widgets.lists.AvatarList;
 import org.moon.figura.utils.FiguraText;
 
 import java.nio.file.Path;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -132,6 +129,14 @@ public class AvatarManager {
         //TODO
         //otherwise, returns the avatar from the entity pool (cem)
         return null;
+    }
+
+    public static List<Avatar> getLoadedAvatars() {
+        List<Avatar> list = new ArrayList<>();
+        for (Avatar avatar : LOADED_AVATARS.values())
+            if (avatar.nbt != null)
+                list.add(avatar);
+        return list;
     }
 
     // -- avatar management -- //

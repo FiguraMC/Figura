@@ -1,10 +1,14 @@
 package org.moon.figura.gui.widgets.trust;
 
+import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
@@ -19,6 +23,7 @@ import org.moon.figura.gui.widgets.ContextMenu;
 import org.moon.figura.gui.widgets.Label;
 import org.moon.figura.gui.widgets.lists.PlayerList;
 import org.moon.figura.lua.api.nameplate.NameplateCustomization;
+import org.moon.figura.math.vector.FiguraVec4;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.FiguraIdentifier;
@@ -31,6 +36,10 @@ import java.util.UUID;
 
 public class PlayerElement extends AbstractTrustElement {
 
+    public static final ResourceLocation UNKNOWN = new FiguraIdentifier("textures/gui/unknown_portrait.png");
+    private static final ResourceLocation BACKGROUND = new FiguraIdentifier("textures/gui/player_trust.png");
+    private static final Component DC_TEXT = new FiguraText("gui.trust.disconnected").withStyle(ChatFormatting.RED);
+
     private final String name;
     private final ResourceLocation skin;
     private final UUID owner;
@@ -38,7 +47,7 @@ public class PlayerElement extends AbstractTrustElement {
     private final Label nameLabel;
     private final PlayerStatusWidget status;
 
-    private static final ResourceLocation BACKGROUND = new FiguraIdentifier("textures/gui/player_trust.png");
+    public boolean disconnected = false;
 
     public PlayerElement(String name, TrustContainer trust, ResourceLocation skin, UUID owner, PlayerList parent) {
         super(40, trust, parent);
@@ -126,24 +135,56 @@ public class PlayerElement extends AbstractTrustElement {
         UIHelper.renderTexture(stack, x, y, width, height, BACKGROUND);
 
         //head
-        UIHelper.setupTexture(this.skin);
-        blit(stack, x + 4, y + 4, 32, 32, 8f, 8f, 8, 8, 64, 64);
-
-        //hat
-        RenderSystem.enableBlend();
-        blit(stack, x + 4, y + 4, 32, 32, 40f, 8f, 8, 8, 64, 64);
-        RenderSystem.disableBlend();
-
-        //name
-        Font font = Minecraft.getInstance().font;
         Component name = null;
 
+        boolean head = false;
         Avatar avatar = AvatarManager.getAvatarForPlayer(owner);
         if (avatar != null) {
             NameplateCustomization custom = avatar.luaRuntime == null ? null : avatar.luaRuntime.nameplate.LIST;
             if (custom != null && custom.getText() != null && avatar.trust.get(TrustContainer.Trust.NAMEPLATE_EDIT) == 1)
                 name = NameplateCustomization.applyCustomization(custom.getText());
+
+            stack.pushPose();
+            float s = 16 * 4;
+            stack.translate(x + 20, y + 36, 0);
+            stack.scale(s, -s, s);
+            stack.mulPose(Vector3f.XP.rotationDegrees(180f));
+
+            FiguraVec4 oldScissors = UIHelper.scissors.copy();
+
+            int xx = Math.round(tx + x * scale + 4);
+            int yy = Math.round(ty + y * scale + 4);
+            int endX = Math.round(xx + 32 * scale);
+            int endY = Math.round(yy + 32 * scale);
+            xx = (int) Math.max(xx, oldScissors.x);
+            yy = (int) Math.max(yy, oldScissors.y);
+
+            UIHelper.setupScissor(xx, yy, endX - xx, endY - yy);
+
+            Lighting.setupForFlatItems();
+            head = avatar.headRender(stack, avatar.getBufferSource(), LightTexture.FULL_BRIGHT);
+
+            UIHelper.setupScissor((int) oldScissors.x, (int) oldScissors.y, (int) oldScissors.z, (int) oldScissors.w);
+            stack.popPose();
         }
+
+        if (!head) {
+            if (this.skin != null) {
+                //head
+                UIHelper.setupTexture(this.skin);
+                blit(stack, x + 4, y + 4, 32, 32, 8f, 8f, 8, 8, 64, 64);
+
+                //hat
+                RenderSystem.enableBlend();
+                blit(stack, x + 4, y + 4, 32, 32, 40f, 8f, 8, 8, 64, 64);
+                RenderSystem.disableBlend();
+            } else {
+                UIHelper.renderTexture(stack, x + 4, y + 4, 32, 32, UNKNOWN);
+            }
+        }
+
+        //name
+        Font font = Minecraft.getInstance().font;
 
         if (name == null)
             name = new TextComponent(this.name);
@@ -167,7 +208,12 @@ public class PlayerElement extends AbstractTrustElement {
         }
 
         //trust
-        drawString(stack, font, trust.getGroupName(), x + 40, y + height - font.lineHeight - 4, 0xFFFFFF);
+        int textY = y + height - font.lineHeight - 4;
+        drawString(stack, font, trust.getGroupName(), x + 40, textY, 0xFFFFFF);
+
+        //disconnected
+        if (disconnected)
+            drawString(stack, font, DC_TEXT, x + width - font.width(DC_TEXT) - 4, textY, 0xFFFFFF);
 
         stack.popPose();
     }

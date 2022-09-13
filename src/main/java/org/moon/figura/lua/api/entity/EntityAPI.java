@@ -16,6 +16,7 @@ import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
+import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.NbtToLua;
 import org.moon.figura.lua.api.world.BlockStateAPI;
@@ -385,7 +386,7 @@ public class EntityAPI<T extends Entity> {
             ),
             value = "entity.get_variable"
     )
-    public LuaValue getVariable(String key) {
+    public LuaValue getVariable(@LuaNotNil String key) {
         checkEntity();
         Avatar a = AvatarManager.getAvatar(entity);
         if (a == null || a.luaRuntime == null)

@@ -134,7 +134,7 @@ public class FiguraMod implements ClientModInitializer {
     }
 
     public static boolean isLocal(UUID other) {
-        return getLocalPlayerUUID().compareTo(other) == 0;
+        return getLocalPlayerUUID().equals(other);
     }
 
     /**

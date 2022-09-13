@@ -7,13 +7,17 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import org.moon.figura.avatars.Avatar;
+import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.gui.screens.TrustScreen;
+import org.moon.figura.gui.widgets.SwitchButton;
 import org.moon.figura.gui.widgets.TextField;
 import org.moon.figura.gui.widgets.trust.AbstractTrustElement;
 import org.moon.figura.gui.widgets.trust.GroupElement;
 import org.moon.figura.gui.widgets.trust.PlayerElement;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
+import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.ui.UIHelper;
 
@@ -28,6 +32,7 @@ public class PlayerList extends AbstractList {
 
     public final TrustScreen parent;
     private final TextField searchBar;
+    private final SwitchButton showDisconnected;
 
     private int totalHeight = 0;
     public AbstractTrustElement selectedEntry;
@@ -44,7 +49,10 @@ public class PlayerList extends AbstractList {
         scrollBar.setHeight(height - 32);
 
         //search bar
-        children.add(searchBar = new TextField(x + 4, y + 4, width - 8, 20, new FiguraText("gui.search"), s -> filter = s));
+        children.add(searchBar = new TextField(x + 4, y + 4, width - 32, 20, new FiguraText("gui.search"), s -> filter = s));
+
+        //show disconnected button
+        children.add(showDisconnected = new SwitchButton(width - 20, y + 4, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/show_disconnected.png"), 60, 40, new FiguraText("gui.trust.disconnected.tooltip"), button -> {}));
 
         //initial load
         loadGroups();
@@ -127,7 +135,8 @@ public class PlayerList extends AbstractList {
         missingPlayers.addAll(players.keySet());
 
         //for all players
-        for (UUID uuid : new ArrayList<>(Minecraft.getInstance().player == null ? Collections.emptyList() : Minecraft.getInstance().player.connection.getOnlinePlayerIds())) {
+        List<UUID> playerList = new ArrayList<>(Minecraft.getInstance().player == null ? Collections.emptyList() : Minecraft.getInstance().player.connection.getOnlinePlayerIds());
+        for (UUID uuid : playerList) {
             //get player
             PlayerInfo player = Minecraft.getInstance().player.connection.getPlayerInfo(uuid);
             if (player == null)
@@ -145,14 +154,36 @@ public class PlayerList extends AbstractList {
             //player is not missing
             missingPlayers.remove(id);
 
-            players.computeIfAbsent(id, uuid1 -> {
-                PlayerElement entry = new PlayerElement(name, TrustManager.get(id), skin, id, this);
+            PlayerElement element = players.computeIfAbsent(id, uuid1 -> {
+                PlayerElement entry = new PlayerElement(name, TrustManager.get(uuid1), skin, uuid1, this);
 
                 trustList.add(entry);
                 children.add(entry);
 
                 return entry;
             });
+            element.disconnected = false;
+        }
+
+        if (filter.isEmpty() && showDisconnected.isToggled()) {
+            for (Avatar avatar : AvatarManager.getLoadedAvatars()) {
+                UUID id = avatar.owner;
+
+                if (playerList.contains(id))
+                    continue;
+
+                missingPlayers.remove(id);
+
+                PlayerElement element = players.computeIfAbsent(id, uuid -> {
+                    PlayerElement entry = new PlayerElement(avatar.entityName, TrustManager.get(uuid), null, uuid, this);
+
+                    trustList.add(entry);
+                    children.add(entry);
+
+                    return entry;
+                });
+                element.disconnected = true;
+            }
         }
 
         //remove missing players
@@ -193,6 +224,7 @@ public class PlayerList extends AbstractList {
         this.y = y;
         scrollBar.y = y + 28;
         searchBar.setPos(searchBar.x, y + 4);
+        showDisconnected.y = y + 4;
     }
 
     public void updateHeight(int height) {
