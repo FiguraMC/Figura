@@ -71,7 +71,7 @@ public class AvatarList extends AbstractList {
         this.scrollBar.setHeight(height - 32);
 
         //scissors
-        this.updateScissors(1, 24, -2, -27);
+        this.updateScissors(1, 24, -2, -25);
 
         //initial load
         LocalAvatarFetcher.load();
