@@ -1,13 +1,10 @@
 package org.moon.figura.gui.widgets.trust;
 
-import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
@@ -22,7 +19,6 @@ import org.moon.figura.gui.widgets.ContextMenu;
 import org.moon.figura.gui.widgets.Label;
 import org.moon.figura.gui.widgets.lists.PlayerList;
 import org.moon.figura.lua.api.nameplate.NameplateCustomization;
-import org.moon.figura.math.vector.FiguraVec4;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.FiguraIdentifier;
@@ -143,28 +139,7 @@ public class PlayerElement extends AbstractTrustElement {
             if (custom != null && custom.getText() != null && avatar.trust.get(TrustContainer.Trust.NAMEPLATE_EDIT) == 1)
                 name = NameplateCustomization.applyCustomization(custom.getText());
 
-            stack.pushPose();
-            float s = 16 * 4;
-            stack.translate(x + 20, y + 36, 0);
-            stack.scale(s, -s, s);
-            stack.mulPose(Vector3f.XP.rotationDegrees(180f));
-
-            FiguraVec4 oldScissors = UIHelper.scissors.copy();
-
-            int xx = Math.round(tx + x * scale + 4);
-            int yy = Math.round(ty + y * scale + 4);
-            int endX = Math.round(xx + 32 * scale);
-            int endY = Math.round(yy + 32 * scale);
-            xx = (int) Math.max(xx, oldScissors.x);
-            yy = (int) Math.max(yy, oldScissors.y);
-
-            UIHelper.setupScissor(xx, yy, endX - xx, endY - yy);
-
-            Lighting.setupForFlatItems();
-            head = avatar.headRender(stack, avatar.getBufferSource(), LightTexture.FULL_BRIGHT);
-
-            UIHelper.setupScissor((int) oldScissors.x, (int) oldScissors.y, (int) oldScissors.z, (int) oldScissors.w);
-            stack.popPose();
+            head = avatar.renderHeadOnHud(stack, x + 4, y + 4, Math.round(32 * scale), 64, true);
         }
 
         if (!head) {

@@ -171,8 +171,7 @@ public class FiguraLuaPrinter {
             for (int i = 0; i < args.narg(); i++)
                 text.append(TextUtils.tryParseJson(args.arg(i + 1).tojstring()));
 
-            sendLuaMessage(text, runtime.owner.entityName);
-
+            sendLuaChatMessage(text);
             return NIL;
         }
 

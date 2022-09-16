@@ -40,7 +40,7 @@ public class PlayerList extends AbstractList {
 
     public PlayerList(int x, int y, int width, int height, TrustScreen parent) {
         super(x, y, width, height);
-        updateScissors(1, 24, -2, -27);
+        updateScissors(1, 24, -2, -25);
 
         this.parent = parent;
 
@@ -52,7 +52,7 @@ public class PlayerList extends AbstractList {
         children.add(searchBar = new TextField(x + 4, y + 4, width - 32, 20, FiguraText.of("gui.search"), s -> filter = s));
 
         //show disconnected button
-        children.add(showDisconnected = new SwitchButton(width - 20, y + 4, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/show_disconnected.png"), 60, 40, FiguraText.of("gui.trust.disconnected.tooltip"), button -> {}));
+        children.add(showDisconnected = new SwitchButton(x + width - 24, y + 4, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/show_disconnected.png"), 60, 40, FiguraText.of("gui.trust.disconnected.tooltip"), button -> {}));
 
         //initial load
         loadGroups();

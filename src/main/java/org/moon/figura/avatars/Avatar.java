@@ -43,6 +43,7 @@ import org.moon.figura.lua.api.sound.SoundAPI;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.math.vector.FiguraVec4;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.EntityUtils;
@@ -510,6 +511,47 @@ public class Avatar {
 
         stack.popPose();
         return comp > 0 && luaRuntime != null && !luaRuntime.vanilla_model.HEAD.getVisible();
+    }
+
+    public boolean renderHeadOnHud(PoseStack stack, int x, int y, int screenSize, float modelScale, boolean scissors) {
+        //matrices
+        stack.pushPose();
+        stack.translate(x, y, 0d);
+        stack.scale(modelScale, -modelScale, modelScale);
+        stack.mulPose(Vector3f.XP.rotationDegrees(180f));
+
+        //scissors
+        FiguraVec4 oldScissors = UIHelper.scissors.copy();
+        FiguraVec3 pos = FiguraMat4.fromMatrix4f(stack.last().pose()).apply(0d, 0d, 0d);
+
+        int x1 = (int) pos.x;
+        int y1 = (int) pos.y;
+        int x2 = (int) pos.x + screenSize;
+        int y2 = (int) pos.y + screenSize;
+
+        if (scissors) {
+            x1 = (int) Math.round(Math.max(x1, oldScissors.x));
+            y1 = (int) Math.round(Math.max(y1, oldScissors.y));
+            x2 = (int) Math.round(Math.min(x2, oldScissors.x + oldScissors.z));
+            y2 = (int) Math.round(Math.min(y2, oldScissors.y + oldScissors.w));
+        }
+
+        UIHelper.setupScissor(x1, y1, x2 - x1, y2 - y1);
+
+        //render
+        Lighting.setupForFlatItems();
+        stack.translate(4d / 16d, 8d / 16d, 0d);
+        //boolean ret = skullRender(stack, getBufferSource(), LightTexture.FULL_BRIGHT, null, 0);
+        boolean ret = headRender(stack, getBufferSource(), LightTexture.FULL_BRIGHT);
+
+        //return
+        if (scissors)
+            UIHelper.setupScissor((int) oldScissors.x, (int) oldScissors.y, (int) oldScissors.z, (int) oldScissors.w);
+        else
+            RenderSystem.disableScissor();
+
+        stack.popPose();
+        return ret;
     }
 
     private static final PartCustomization PIVOT_PART_RENDERING_CUSTOMIZATION = PartCustomization.of();
