@@ -738,7 +738,7 @@ public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
         else if (o instanceof FiguraVec3 vec)
             return this.times(vec);
         else if (o instanceof Number n)
-            return this.scale(n.doubleValue(), n.doubleValue(), n.doubleValue());
+            return this.copy().scale(n.doubleValue(), n.doubleValue(), n.doubleValue());
 
         throw new LuaError("Invalid types to Matrix3 __mul: " + o.getClass().getSimpleName());
     }

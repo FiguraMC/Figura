@@ -880,7 +880,7 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
         else if (o instanceof FiguraVec4 vec)
             return this.times(vec);
         else if (o instanceof Number n)
-            return this.rawScale(n.doubleValue());
+            return this.copy().rawScale(n.doubleValue());
 
         throw new LuaError("Invalid types to Matrix4 __mul: " + o.getClass().getSimpleName());
     }

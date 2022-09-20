@@ -256,10 +256,14 @@ public class Avatar {
                 ret = luaRuntime.events.__index(event).call(val);
             else if (toRun instanceof LuaFunction func)
                 ret = func.invoke(val);
+            else if (toRun instanceof Pair<?, ?> pair)
+                ret = luaRuntime.run(pair.getFirst().toString(), pair.getSecond().toString());
             else
-                throw new LuaError("Invalid type to run!");
+                throw new IllegalArgumentException("Invalid type to run!");
 
             limit.use(luaRuntime.getInstructions());
+            luaRuntime.restoreInstructions();
+
             return ret;
         } catch (Exception e) {
             luaRuntime.error(e);
@@ -665,17 +669,16 @@ public class Avatar {
         else
             autoScripts = null;
 
-        luaRuntime = new FiguraLuaRuntime(this, scripts);
+        FiguraLuaRuntime runtime = new FiguraLuaRuntime(this, scripts);
         if (renderer != null && renderer.root != null)
-            luaRuntime.setGlobal("models", renderer.root);
+            runtime.setGlobal("models", renderer.root);
 
         init.reset(trust.get(TrustContainer.Trust.INIT_INST));
-        luaRuntime.setInstructionLimit(init.remaining);
+        runtime.setInstructionLimit(init.remaining);
 
-        if (luaRuntime.init(autoScripts)) {
-            init.use(luaRuntime.getInstructions());
-        } else {
-            this.luaRuntime = null;
+        if (runtime.init(autoScripts)) {
+            init.use(runtime.getInstructions());
+            this.luaRuntime = runtime;
         }
     }
 
