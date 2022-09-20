@@ -123,15 +123,14 @@ public class PopupMenu {
 
         MutableComponent name = entity.getName().copy();
 
-        Component warn = null;
+        boolean error = false;
+        boolean version = false;
 
         Avatar avatar = AvatarManager.getAvatarForPlayer(id);
         if (avatar != null) {
             name.append(Badges.fetchBadges(avatar));
-            if (avatar.scriptError)
-                warn = ERROR_WARN;
-            else if (avatar.versionStatus > 0)
-                warn = VERSION_WARN;
+            error = avatar.scriptError;
+            version = avatar.versionStatus > 0;
         }
 
         //render texts
@@ -143,8 +142,10 @@ public class PopupMenu {
         UIHelper.renderOutlineText(stack, font, trust, -font.width(trust) / 2, -54, 0xFFFFFF, 0x202020);
         font.draw(stack, title, -width + 4, -12, 0xFFFFFF);
 
-        if (warn != null)
-            UIHelper.renderOutlineText(stack, font, warn, -font.width(warn) / 2, 0, 0xFFFFFF, 0x202020);
+        if (error)
+            UIHelper.renderOutlineText(stack, font, ERROR_WARN, -font.width(ERROR_WARN) / 2, 0, 0xFFFFFF, 0x202020);
+        if (version)
+            UIHelper.renderOutlineText(stack, font, VERSION_WARN, -font.width(VERSION_WARN) / 2, error ? font.lineHeight : 0, 0xFFFFFF, 0x202020);
 
         //finish rendering
         stack.popPose();

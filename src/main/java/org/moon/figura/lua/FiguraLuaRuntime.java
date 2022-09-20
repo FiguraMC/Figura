@@ -82,14 +82,8 @@ public class FiguraLuaRuntime {
         setGlobal("figuraMetatables", figuraMetatables);
     }
 
-    public int run(String name, String src) {
-        try {
-            userGlobals.load(src, name, userGlobals).call();
-            return 1;
-        } catch (LuaError e) {
-            FiguraLuaPrinter.sendLuaError(e, owner);
-            return 0;
-        }
+    public LuaValue run(String name, String src) {
+        return userGlobals.load(src, name, userGlobals).call();
     }
 
     public void registerClass(Class<?> clazz) {
@@ -109,6 +103,8 @@ public class FiguraLuaRuntime {
     public Entity getUser() {
         return entityAPI == null ? null : entityAPI.getEntity();
     }
+
+    // init runtime //
 
     private void setupFiguraSandbox() {
         //actual sandbox file
@@ -185,6 +181,8 @@ public class FiguraLuaRuntime {
         });
     }
 
+    // init event //
+
     private final Function<String, LuaValue> INIT_SCRIPT = name -> {
         //format name
         if (name.endsWith(".lua"))
@@ -229,6 +227,8 @@ public class FiguraLuaRuntime {
         return true;
     }
 
+    // error ^-^ //
+
     public void error(Exception e) {
         LuaError err = e instanceof LuaError lua ? lua : new LuaError(e.getMessage());
         FiguraLuaPrinter.sendLuaError(err, owner);
@@ -236,6 +236,11 @@ public class FiguraLuaRuntime {
         owner.luaRuntime = null;
     }
 
+    // avatar limiting //
+
+    private int oldBytecode = 0;
+    private LuaValue oldLimit = LuaValue.valueOf(1);
+    private LuaValue currentLimit = LuaValue.valueOf(1);
     private final ZeroArgFunction onReachedLimit = new ZeroArgFunction() {
         @Override
         public LuaValue call() {
@@ -245,11 +250,20 @@ public class FiguraLuaRuntime {
         }
     };
     public void setInstructionLimit(int limit) {
+        oldBytecode = getInstructions();
+        oldLimit = currentLimit;
+
         userGlobals.running.state.bytecodes = 0;
-        setHookFunction.invoke(LuaValue.varargsOf(onReachedLimit, LuaValue.EMPTYSTRING, LuaValue.valueOf(Math.max(limit, 1))));
+        currentLimit = LuaValue.valueOf(Math.max(limit, 1));
+        setHookFunction.invoke(LuaValue.varargsOf(onReachedLimit, LuaValue.EMPTYSTRING, currentLimit));
     }
 
     public int getInstructions() {
         return userGlobals.running.state.bytecodes;
+    }
+
+    public void restoreInstructions() {
+        userGlobals.running.state.bytecodes = oldBytecode;
+        setHookFunction.invoke(LuaValue.varargsOf(onReachedLimit, LuaValue.EMPTYSTRING, oldLimit));
     }
 }

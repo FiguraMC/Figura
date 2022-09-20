@@ -79,10 +79,10 @@
   "figura.popup_menu.trust_menu": "Open Trust Menu",
 
 
-  "figura.badges.standard.default": "Default Figura Mark!",
-  "figura.badges.standard.cheese": "LARGECHEESE!",
-  "figura.badges.standard.warning": "This Avatar targets a newer version of Figura, compatibility might be limited!",
-  "figura.badges.standard.error": "Avatar Script contains an error!",
+  "figura.badges.system.default": "Default Figura Mark!",
+  "figura.badges.system.cheese": "LARGECHEESE!",
+  "figura.badges.system.warning": "This Avatar targets a newer version of Figura, compatibility might be limited!",
+  "figura.badges.system.error": "Avatar Script contains an error!",
 
   "figura.badges.pride.agender": "Agender Mark!",
   "figura.badges.pride.aroace": "Aroace Mark!",

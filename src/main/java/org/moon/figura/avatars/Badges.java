@@ -45,15 +45,15 @@ public class Badges {
 
         //error
         if (avatar.scriptError)
-            badges.append(Default.ERROR.badge);
+            badges.append(System.ERROR.badge);
 
         //version
-        else if (avatar.versionStatus > 0)
-            badges.append(Default.WARNING.badge);
+        if (avatar.versionStatus > 0)
+            badges.append(System.WARNING.badge);
 
         //egg
-        else if (FiguraMod.CHEESE_DAY && Config.EASTER_EGGS.asBool())
-            badges.append(Default.CHEESE.badge);
+        if (FiguraMod.CHEESE_DAY && Config.EASTER_EGGS.asBool())
+            badges.append(System.CHEESE.badge);
 
         //mark
         else if (avatar.nbt != null) {
@@ -68,7 +68,7 @@ public class Badges {
                 }
 
                 //mark fallback
-                badges.append(Default.DEFAULT.badge.copy().withStyle(Style.EMPTY.withColor(ColorUtils.userInputHex(avatar.color))));
+                badges.append(System.DEFAULT.badge.copy().withStyle(Style.EMPTY.withColor(ColorUtils.userInputHex(avatar.color))));
             }
         }
 
@@ -107,7 +107,7 @@ public class Badges {
         return Pair.of(new BitSet(Pride.values().length), new BitSet(Special.values().length));
     }
 
-    private enum Default {
+    private enum System {
         DEFAULT("△"),
         CHEESE("\uD83E\uDDC0"),
         WARNING("❗"),
@@ -115,8 +115,8 @@ public class Badges {
 
         public final Component badge;
 
-        Default(String unicode) {
-            this.badge = Component.literal(unicode).withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, FiguraText.of("badges.standard." + this.name().toLowerCase()))));
+        System(String unicode) {
+            this.badge = Component.literal(unicode).withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, FiguraText.of("badges.system." + this.name().toLowerCase()))));
         }
     }
 

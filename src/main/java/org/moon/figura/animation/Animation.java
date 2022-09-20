@@ -1,5 +1,6 @@
 package org.moon.figura.animation;
 
+import com.mojang.datafixers.util.Pair;
 import org.luaj.vm2.LuaError;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.model.FiguraModelPart;
@@ -115,7 +116,7 @@ public class Animation {
 
         for (Float codeTime : codeFrames.keySet()) {
             if (codeTime >= minTime && codeTime < maxTime)
-                owner.run(codeFrames.get(codeTime), owner.tick, this);
+                owner.run(Pair.of("animations." + modelName + "." + name, codeFrames.get(codeTime)), owner.tick, this);
         }
     }
 
