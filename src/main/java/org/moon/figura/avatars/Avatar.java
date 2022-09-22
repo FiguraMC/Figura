@@ -218,19 +218,14 @@ public class Avatar {
         if (scriptError || luaRuntime == null)
             return;
 
-        Varargs args = PingArg.fromByteArray(data, this);
+        LuaValue[] args = PingArg.fromByteArray(data, this);
         String name = luaRuntime.ping.getName(id);
         PingFunction function = luaRuntime.ping.get(name);
         if (args == null || function == null)
             return;
 
         FiguraLuaPrinter.sendPingMessage(this, name, data.length, args);
-
-        try {
-            function.func.invoke(args);
-        } catch (Exception e) {
-            luaRuntime.error(e);
-        }
+        run(function.func, tick, (Object[]) args);
     }
 
     public Varargs run(Object toRun, Instructions limit, Object... args) {
@@ -266,7 +261,8 @@ public class Avatar {
 
             return ret;
         } catch (Exception e) {
-            luaRuntime.error(e);
+            if (luaRuntime != null)
+                luaRuntime.error(e);
         }
 
         return LuaValue.NIL;
@@ -597,16 +593,6 @@ public class Avatar {
     public void clearAnimations() {
         for (Animation animation : animations.values())
             AnimationPlayer.clear(animation);
-    }
-
-    public void pauseAnimations() {
-        for (Animation animation : animations.values())
-            animation.gamePause();
-    }
-
-    public void resumeAnimations() {
-        for (Animation animation : animations.values())
-            animation.gameResume();
     }
 
     // -- functions -- //

@@ -105,7 +105,7 @@ public class PingArg {
 
     // -- reading -- //
 
-    public static Varargs fromByteArray(byte[] bytes, Avatar owner) {
+    public static LuaValue[] fromByteArray(byte[] bytes, Avatar owner) {
         try {
             DataInputStream dis = new DataInputStream(new ByteArrayInputStream(bytes));
 
@@ -113,7 +113,7 @@ public class PingArg {
             while (dis.available() > 0)
                 luaValues.add(readArg(dis, owner));
 
-            return LuaValue.varargsOf(luaValues.toArray(new LuaValue[0]));
+            return luaValues.toArray(new LuaValue[0]);
         } catch (Exception e) {
             FiguraMod.LOGGER.warn("Failed to read ping!", e);
             return null;

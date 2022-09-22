@@ -1,6 +1,7 @@
 package org.moon.figura.animation;
 
 import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
 
 public class TimeController {
 
@@ -32,6 +33,6 @@ public class TimeController {
     }
 
     public float getDiff() {
-        return (time - lastTime) / 1000f;
+        return Minecraft.getInstance().isPaused() ? 0 : (time - lastTime) / 1000f;
     }
 }

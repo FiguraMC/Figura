@@ -130,7 +130,7 @@ public class LocalAvatarLoader {
             for (File script : scripts) {
                 String pathStr = script.toPath().toString();
                 String name = pathStr.replaceFirst(pathRegex, "");
-                name = name.replace(File.separatorChar, '/');
+                name = name.replace(File.separatorChar, '.');
                 scriptsNbt.put(name.substring(0, name.length() - 4), new ByteArrayTag(IOUtils.readFile(script).getBytes(StandardCharsets.UTF_8)));
             }
 

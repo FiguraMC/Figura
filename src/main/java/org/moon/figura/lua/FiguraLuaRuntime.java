@@ -183,10 +183,9 @@ public class FiguraLuaRuntime {
 
     // init event //
 
-    private final Function<String, LuaValue> INIT_SCRIPT = name -> {
+    private final Function<String, LuaValue> INIT_SCRIPT = str -> {
         //format name
-        if (name.endsWith(".lua"))
-            name = name.substring(0, name.length() - 4);
+        String name = str.replaceAll("[/\\\\]", ".");
 
         //already loaded
         LuaValue val = loadedScripts.get(name);
@@ -196,7 +195,7 @@ public class FiguraLuaRuntime {
         //not found
         String src = scripts.get(name);
         if (src == null)
-            throw new LuaError("Tried to require nonexistent script \"" + name + "\"!");
+            throw new LuaError("Tried to require nonexistent script \"" + str + "\"!");
 
         //load
         LuaValue value = userGlobals.load(src, name).call(name);
