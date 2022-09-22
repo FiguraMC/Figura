@@ -431,7 +431,7 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
     @LuaWhitelist
     public Object __mul(@LuaNotNil Object o) {
         if (o instanceof FiguraMat2 mat)
-            return this.times(mat);
+            return mat.times(this);
         else if (o instanceof FiguraVec2 vec)
             return this.times(vec);
         else if (o instanceof Number n)

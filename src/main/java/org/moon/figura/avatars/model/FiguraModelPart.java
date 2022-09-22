@@ -550,6 +550,12 @@ public class FiguraModelPart {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("model_part.get_uv")
+    public FiguraVec2 getUV() {
+        return this.customization.uvMatrix.apply(0d, 0d);
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
                     @LuaFunctionOverload(
@@ -563,14 +569,31 @@ public class FiguraModelPart {
             },
             value = "model_part.set_uv_pixels")
     public void setUVPixels(Object x, Double y) {
-        if (this.textureWidth == -1 || this.textureHeight == -1)
-            throw new LuaError("Cannot call setUVPixels on a part with multiple texture sizes!");
+        if (this.textureWidth == -1 || this.textureHeight == -1) {
+            if (this.customization.partType == PartCustomization.PartType.GROUP)
+                throw new LuaError("Cannot call setUVPixels on groups!");
+            else
+                throw new LuaError("Cannot call setUVPixels on parts with multiple texture sizes!");
+        }
 
         this.customization.uvMatrix.reset();
         FiguraVec2 uv = LuaUtils.parseVec2("setUVPixels", x, y);
         uv.divide(this.textureWidth, this.textureHeight);
         this.customization.uvMatrix.translate(uv.x, uv.y);
         uv.free();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("model_part.get_uv_pixels")
+    public FiguraVec2 getUVPixels() {
+        if (this.textureWidth == -1 || this.textureHeight == -1) {
+            if (this.customization.partType == PartCustomization.PartType.GROUP)
+                throw new LuaError("Cannot call getUVPixels on groups!");
+            else
+                throw new LuaError("Cannot call getUVPixels on parts with multiple texture sizes!");
+        }
+
+        return getUV().multiply(this.textureWidth, this.textureHeight);
     }
 
     @LuaWhitelist
@@ -582,6 +605,12 @@ public class FiguraModelPart {
             value = "model_part.set_uv_matrix")
     public void setUVMatrix(@LuaNotNil FiguraMat3 matrix) {
         this.customization.uvMatrix.set(matrix);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("model_part.get_uv_matrix")
+    public FiguraMat3 getUVMatrix() {
+        return this.customization.uvMatrix;
     }
 
     @LuaWhitelist

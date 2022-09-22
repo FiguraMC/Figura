@@ -84,8 +84,8 @@ public class TextTask extends RenderTask {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("text_task.is_centred")
-    public boolean isCentred() {
+    @LuaMethodDoc("text_task.is_centered")
+    public boolean isCentered() {
         return this.centered;
     }
 

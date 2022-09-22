@@ -75,25 +75,26 @@ public class FiguraLuaPrinter {
         line: {
             try {
                 String[] split = message.split(":", 2);
-                if (split.length > 1) {
-                    //name
-                    String left = "[string \"";
-                    int sub = split[0].indexOf(left);
+                if (split.length <= 1 || owner.luaRuntime == null)
+                    break line;
 
-                    String name = sub == -1 ? split[0] : split[0].substring(sub + left.length(), split[0].indexOf("\"]"));
-                    String src = owner.luaRuntime.scripts.get(name);
-                    if (src == null)
-                        break line;
+                //name
+                String left = "[string \"";
+                int sub = split[0].indexOf(left);
 
-                    //line
-                    int line = Integer.parseInt(split[1].split("\\D", 2)[0]);
+                String name = sub == -1 ? split[0] : split[0].substring(sub + left.length(), split[0].indexOf("\"]"));
+                String src = owner.luaRuntime.scripts.get(name);
+                if (src == null)
+                    break line;
 
-                    String str = src.split("\n")[line - 1].trim();
-                    if (str.length() > 96)
-                        str = str.substring(0, 96) + " [...]";
+                //line
+                int line = Integer.parseInt(split[1].split("\\D", 2)[0]);
 
-                    message += "\nscript:\n\t" + str;
-                }
+                String str = src.split("\n")[line - 1].trim();
+                if (str.length() > 96)
+                    str = str.substring(0, 96) + " [...]";
+
+                message += "\nscript:\n\t" + str;
             } catch (Exception ignored) {}
         }
 
@@ -108,7 +109,7 @@ public class FiguraLuaPrinter {
     }
 
     //print an ping!
-    public static void sendPingMessage(Avatar owner, String ping, int size, Varargs args) {
+    public static void sendPingMessage(Avatar owner, String ping, int size, LuaValue[] args) {
         int config = Config.LOG_PINGS.asInt();
 
         //no ping? *megamind.png*
@@ -124,8 +125,8 @@ public class FiguraLuaPrinter {
                 .append(size + " bytes")
                 .append(new TextComponent(" :: ").withStyle(ColorUtils.Colors.LUA_PING.style));
 
-        for (int i = 0; i < args.narg(); i++)
-            text.append(getPrintText(owner.luaRuntime.typeManager, args.arg(i + 1), true, false)).append("\t");
+        for (LuaValue arg : args)
+            text.append(getPrintText(owner.luaRuntime.typeManager, arg, true, false)).append("\t");
 
         text.append(new TextComponent("\n"));
 

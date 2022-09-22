@@ -71,7 +71,7 @@ public class LuaSound {
                     throw new LuaError("Illegal argument to play(): " + w);
                 loop = (boolean) w;
             }
-        } else if (x == null || x instanceof Double) {
+        } else if (x == null || x instanceof Number) {
             pos = LuaUtils.parseVec3("play", x, y, z);
             if (w != null) {
                 if (!(w instanceof Double))

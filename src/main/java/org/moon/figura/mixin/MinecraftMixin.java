@@ -125,14 +125,4 @@ public abstract class MinecraftMixin {
     private void afterTick(boolean tick, CallbackInfo ci) {
         AvatarManager.clearAnimations();
     }
-
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/sounds/SoundManager;pause()V"), method = "pauseGame")
-    private void pauseGame(boolean pause, CallbackInfo ci) {
-        AvatarManager.pauseAnimations();
-    }
-
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/sounds/SoundManager;resume()V"), method = "setScreen")
-    private void resumeGame(Screen screen, CallbackInfo ci) {
-        AvatarManager.resumeAnimations();
-    }
 }
