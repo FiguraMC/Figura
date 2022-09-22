@@ -527,8 +527,13 @@ public class FiguraModelPart {
     @LuaWhitelist
     @LuaMethodDoc("model_part.get_texture_size")
     public FiguraVec2 getTextureSize() {
-        if (this.textureWidth == -1 || this.textureHeight == -1)
-            throw new LuaError("Cannot get texture size of part, it has multiple different-sized textures!");
+        if (this.textureWidth == -1 || this.textureHeight == -1) {
+            if (this.customization.partType == PartCustomization.PartType.GROUP)
+                throw new LuaError("Cannot get the texture size of groups!");
+            else
+                throw new LuaError("Cannot get texture size of part, it has multiple different-sized textures!");
+        }
+
         return FiguraVec2.of(this.textureWidth, this.textureHeight);
     }
 
