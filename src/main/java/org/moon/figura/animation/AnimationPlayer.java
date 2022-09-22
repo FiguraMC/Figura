@@ -1,6 +1,5 @@
 package org.moon.figura.animation;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import org.moon.figura.avatars.model.FiguraModelPart;
 import org.moon.figura.math.vector.FiguraVec3;
