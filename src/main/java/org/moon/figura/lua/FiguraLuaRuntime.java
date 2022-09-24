@@ -229,7 +229,7 @@ public class FiguraLuaRuntime {
     // error ^-^ //
 
     public void error(Exception e) {
-        LuaError err = e instanceof LuaError lua ? lua : new LuaError(e.getMessage());
+        LuaError err = e instanceof LuaError lua ? lua : new LuaError(e);
         FiguraLuaPrinter.sendLuaError(err, owner);
         owner.scriptError = true;
         owner.luaRuntime = null;

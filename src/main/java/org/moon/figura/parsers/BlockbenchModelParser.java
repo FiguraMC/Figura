@@ -23,7 +23,7 @@ public class BlockbenchModelParser {
     private final HashMap<Integer, String> textureIdMap = new HashMap<>();
 
     //parser
-    public ModelData parseModel(String json, String modelName) {
+    public ModelData parseModel(String json, String modelName, String folders) {
         //parse json -> object
         Gson gson = new GsonBuilder().create();
         BlockbenchModel model = gson.fromJson(json, BlockbenchModel.class);
@@ -49,7 +49,7 @@ public class BlockbenchModelParser {
         //parse animations
         //add the animation metadata to the animation list
         //but return a map with the group animation, as we will store it on the groups themselves
-        parseAnimations(animationList, gson, model.animations, modelName);
+        parseAnimations(animationList, gson, model.animations, modelName, folders);
 
         //add and parse the outliner
         nbt.put("chld", parseOutliner(gson, model.outliner, null));
@@ -350,7 +350,7 @@ public class BlockbenchModelParser {
         return t1.dot(t2) < 0;
     }
 
-    private void parseAnimations(List<CompoundTag> list, Gson gson, BlockbenchModel.Animation[] animations, String modelName) {
+    private void parseAnimations(List<CompoundTag> list, Gson gson, BlockbenchModel.Animation[] animations, String modelName, String folders) {
         if (animations == null)
             return;
 
@@ -359,7 +359,7 @@ public class BlockbenchModelParser {
             CompoundTag animNbt = new CompoundTag();
 
             //animation metadata
-            animNbt.putString("mdl", modelName);
+            animNbt.putString("mdl", folders.isBlank() ? modelName : folders + modelName);
             animNbt.putString("name", animation.name);
             animNbt.putString("loop", animation.loop);
             if (animation.override != null && animation.override)

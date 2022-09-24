@@ -104,20 +104,22 @@ public class Badges {
         return Pair.of(new BitSet(Pride.values().length), new BitSet(Special.values().length));
     }
 
-    private enum System {
+    public enum System {
         DEFAULT("△"),
         CHEESE("\uD83E\uDDC0"),
         WARNING("❗"),
         ERROR("❌");
 
         public final Component badge;
+        public final Component desc;
 
         System(String unicode) {
-            this.badge = new TextComponent(unicode).withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new FiguraText("badges.system." + this.name().toLowerCase()))));
+            this.desc = new FiguraText("badges.system." + this.name().toLowerCase());
+            this.badge = new TextComponent(unicode).withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, desc)));
         }
     }
 
-    private enum Pride {
+    public enum Pride {
         AGENDER("ᚠ"),
         AROACE("ᚡ"),
         AROMANTIC("ᚢ"),
@@ -145,13 +147,15 @@ public class Badges {
         TRANSGENDER("ᚸ");
 
         public final Component badge;
+        public final Component desc;
 
         Pride(String unicode) {
-            this.badge = new TextComponent(unicode).withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new FiguraText("badges.pride." + this.name().toLowerCase()))));
+            this.desc = new FiguraText("badges.pride." + this.name().toLowerCase());
+            this.badge = new TextComponent(unicode).withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, desc)));
         }
     }
 
-    private enum Special {
+    public enum Special {
         DEV("★"),
         DISCORD_STAFF("☆", ColorUtils.Colors.DISCORD.hex),
         CONTEST("☆", ColorUtils.Colors.FRAN_PINK.hex),
@@ -164,13 +168,15 @@ public class Badges {
         BURGER("\uD83C\uDF54");
 
         public final Component badge;
+        public final Component desc;
 
         Special(String unicode) {
             this(unicode, null);
         }
 
         Special(String unicode, Integer color) {
-            Style style = Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new FiguraText("badges.special." + this.name().toLowerCase())));
+            this.desc = new FiguraText("badges.special." + this.name().toLowerCase());
+            Style style = Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, desc));
             if (color != null) style = style.withColor(color);
             this.badge = new TextComponent(unicode).withStyle(style);
         }

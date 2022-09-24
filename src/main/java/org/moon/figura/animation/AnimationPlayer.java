@@ -40,6 +40,8 @@ public class AnimationPlayer {
 
                 float timeDiff = anim.frameTime - current.getTime();
                 float delta = Math.min(Math.max(timeDiff / (next.getTime() - current.getTime()), 0), 1);
+                if (Float.isNaN(delta))
+                    delta = 0;
 
                 FiguraVec3 transform = current.getInterpolation().generate(keyframes, currentIndex, nextIndex, anim.blend, delta);
                 channel.type().apply(part, transform, merge);
