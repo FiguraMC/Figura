@@ -11,9 +11,9 @@ import org.moon.figura.lua.docs.LuaMetamethodDoc;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 
-import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -26,9 +26,9 @@ public class LuaEvent {
 
     private final boolean piped;
 
-    private final Deque<LuaFunction> functions = new ArrayDeque<>();
-    private final Deque<LuaFunction> queue = new ArrayDeque<>();
-    private final Deque<LuaFunction> removalQueue = new ArrayDeque<>();
+    private final Deque<LuaFunction> functions = new ConcurrentLinkedDeque<>();
+    private final Deque<LuaFunction> queue = new ConcurrentLinkedDeque<>();
+    private final Deque<LuaFunction> removalQueue = new ConcurrentLinkedDeque<>();
     private final HashMultimap<String, LuaFunction> names = HashMultimap.create();
 
     public LuaEvent() {

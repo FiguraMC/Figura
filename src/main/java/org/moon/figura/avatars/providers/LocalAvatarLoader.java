@@ -106,7 +106,7 @@ public class LocalAvatarLoader {
         BlockbenchModelParser parser = new BlockbenchModelParser();
 
         loadState++;
-        CompoundTag models = loadModels(path, parser, textures, animations);
+        CompoundTag models = loadModels(path, parser, textures, animations, "");
         models.putString("name", "models");
 
         AvatarMetadataParser.injectToModels(metadata, models);
@@ -133,7 +133,6 @@ public class LocalAvatarLoader {
                 name = name.replace(File.separatorChar, '.');
                 scriptsNbt.put(name.substring(0, name.length() - 4), new ByteArrayTag(IOUtils.readFile(script).getBytes(StandardCharsets.UTF_8)));
             }
-
             nbt.put("scripts", scriptsNbt);
         }
     }
@@ -142,28 +141,32 @@ public class LocalAvatarLoader {
         List<File> sounds = IOUtils.getFilesByExtension(path, ".ogg");
         if (sounds.size() > 0) {
             CompoundTag soundsNbt = new CompoundTag();
+            String pathRegex = Pattern.quote(path + File.separator);
             for (File sound : sounds) {
-                String name = sound.getName();
+                String pathStr = sound.toPath().toString();
+                String name = pathStr.replaceFirst(pathRegex, "");
+                name = name.replace(File.separatorChar, '.');
                 soundsNbt.putByteArray(name.substring(0, name.length() - 4), IOUtils.readFileBytes(sound));
             }
             nbt.put("sounds", soundsNbt);
         }
     }
 
-    private static CompoundTag loadModels(Path path, BlockbenchModelParser parser, ListTag textures, ListTag animations) throws IOException {
+    private static CompoundTag loadModels(Path path, BlockbenchModelParser parser, ListTag textures, ListTag animations, String folders) throws IOException {
         CompoundTag result = new CompoundTag();
         File[] subFiles = path.toFile().listFiles(f -> !f.isHidden() && !f.getName().startsWith("."));
         ListTag children = new ListTag();
         if (subFiles != null)
             for (File file : subFiles) {
+                String name = file.getName();
                 if (file.isDirectory()) {
-                    CompoundTag subfolder = loadModels(file.toPath(), parser, textures, animations);
+                    CompoundTag subfolder = loadModels(file.toPath(), parser, textures, animations, folders + name + ".");
                     if (!subfolder.isEmpty()) {
-                        subfolder.putString("name", file.getName());
+                        subfolder.putString("name", name);
                         children.add(subfolder);
                     }
                 } else if (file.toString().toLowerCase().endsWith(".bbmodel")) {
-                    BlockbenchModelParser.ModelData data = parser.parseModel(IOUtils.readFile(file), file.getName().substring(0, file.getName().length() - 8));
+                    BlockbenchModelParser.ModelData data = parser.parseModel(IOUtils.readFile(file), name.substring(0, name.length() - 8), folders);
                     children.add(data.modelNbt());
                     textures.addAll(data.textureList());
                     animations.addAll(data.animationList());
