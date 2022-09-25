@@ -133,7 +133,7 @@ public class ColorUtils {
             char[] bgChar = hex.toString().toCharArray();
             hex = new StringBuilder("" + bgChar[0] + bgChar[0] + bgChar[1] + bgChar[1] + bgChar[2] + bgChar[2]);
         } else {
-            hex.append("0".repeat(6 - hex.length()));
+            hex.append("0".repeat(Math.max(6 - hex.length(), 0)));
         }
 
         //return
