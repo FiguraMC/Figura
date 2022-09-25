@@ -237,9 +237,6 @@ public class FiguraLuaRuntime {
 
     // avatar limiting //
 
-    private int oldBytecode = 0;
-    private LuaValue oldLimit = LuaValue.valueOf(1);
-    private LuaValue currentLimit = LuaValue.valueOf(1);
     private final ZeroArgFunction onReachedLimit = new ZeroArgFunction() {
         @Override
         public LuaValue call() {
@@ -249,20 +246,11 @@ public class FiguraLuaRuntime {
         }
     };
     public void setInstructionLimit(int limit) {
-        oldBytecode = getInstructions();
-        oldLimit = currentLimit;
-
         userGlobals.running.state.bytecodes = 0;
-        currentLimit = LuaValue.valueOf(Math.max(limit, 1));
-        setHookFunction.invoke(LuaValue.varargsOf(onReachedLimit, LuaValue.EMPTYSTRING, currentLimit));
+        setHookFunction.invoke(LuaValue.varargsOf(onReachedLimit, LuaValue.EMPTYSTRING, LuaValue.valueOf(Math.max(limit, 1))));
     }
 
     public int getInstructions() {
         return userGlobals.running.state.bytecodes;
-    }
-
-    public void restoreInstructions() {
-        userGlobals.running.state.bytecodes = oldBytecode;
-        setHookFunction.invoke(LuaValue.varargsOf(onReachedLimit, LuaValue.EMPTYSTRING, oldLimit));
     }
 }

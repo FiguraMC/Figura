@@ -105,6 +105,9 @@ public enum MessageHandler {
         }
     }),
     USERINFO(json -> {
+        if (json.get("user").isJsonNull())
+            return;
+
         json = json.getAsJsonObject("user");
         UUID uuid = UUID.fromString(json.get("uuid").getAsString());
         JsonObject badges = json.getAsJsonObject("equippedBadges");
