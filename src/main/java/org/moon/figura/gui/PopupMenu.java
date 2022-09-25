@@ -187,4 +187,8 @@ public class PopupMenu {
     public static void setEntity(Entity entity) {
         PopupMenu.entity = entity;
     }
+
+    public static UUID getEntityId() {
+        return id;
+    }
 }

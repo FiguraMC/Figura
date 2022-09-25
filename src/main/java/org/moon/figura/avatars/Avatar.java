@@ -24,7 +24,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.SkullBlockEntity;
 import net.minecraft.world.phys.Vec3;
-import org.luaj.vm2.*;
+import org.luaj.vm2.LuaFunction;
+import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.Varargs;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.animation.Animation;
 import org.moon.figura.animation.AnimationPlayer;
@@ -58,8 +60,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
 import java.util.UUID;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 //the avatar class
 //contains all things related to the avatar
@@ -82,7 +87,7 @@ public class Avatar {
     public String color;
 
     //Runtime data
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final Queue<Supplier<Varargs>> events = new ConcurrentLinkedQueue<>();
 
     public AvatarRenderer renderer;
     public FiguraLuaRuntime luaRuntime;
@@ -215,23 +220,23 @@ public class Avatar {
     }
 
     public void runPing(int id, byte[] data) {
-        executor.submit(() -> {
+        events.offer(() -> {
             if (scriptError || luaRuntime == null)
-                return;
+                return null;
 
             LuaValue[] args = PingArg.fromByteArray(data, this);
             String name = luaRuntime.ping.getName(id);
             PingFunction function = luaRuntime.ping.get(name);
             if (args == null || function == null)
-                return;
+                return null;
 
             FiguraLuaPrinter.sendPingMessage(this, name, data.length, args);
-            run(function.func, tick, (Object[]) args);
+            return run(function.func, tick, (Object[]) args);
         });
     }
 
-    public Future<Varargs> run(Object toRun, Instructions limit, Object... args) {
-        return executor.submit(() -> {
+    public Varargs run(Object toRun, Instructions limit, Object... args) {
+        events.offer(() -> {
             if (scriptError || luaRuntime == null)
                 return null;
 
@@ -268,6 +273,12 @@ public class Avatar {
 
             return LuaValue.NIL;
         });
+
+        Varargs val = null;
+        while (!events.isEmpty())
+            val = events.poll().get();
+
+        return val;
     }
 
     // -- script events -- //
@@ -310,14 +321,8 @@ public class Avatar {
     // -- host only events -- //
 
     public String chatSendMessageEvent(String message) {
-        try {
-            Future<Varargs> future = run("CHAT_SEND_MESSAGE", tick, message);
-            Varargs val = future == null ? null : future.get();
-            return val == null || (!val.isnil(1) && !Config.CHAT_MESSAGES.asBool()) ? message : val.isnil(1) ? null : val.arg(1).tojstring();
-        } catch (InterruptedException | ExecutionException e) {
-            FiguraMod.LOGGER.warn("", e);
-            return message;
-        }
+        Varargs val = run("CHAT_SEND_MESSAGE", tick, message);
+        return val == null || (!val.isnil(1) && !Config.CHAT_MESSAGES.asBool()) ? message : val.isnil(1) ? null : val.arg(1).tojstring();
     }
 
     public void chatReceivedMessageEvent(String message) {
@@ -625,7 +630,7 @@ public class Avatar {
         for (SoundBuffer value : customSounds.values())
             value.releaseAlBuffer();
 
-        executor.shutdownNow();
+        events.clear();
     }
 
     public MultiBufferSource getBufferSource() {
@@ -678,11 +683,12 @@ public class Avatar {
         init.reset(trust.get(TrustContainer.Trust.INIT_INST));
         runtime.setInstructionLimit(init.remaining);
 
-        executor.execute(() -> {
+        events.offer(() -> {
             if (runtime.init(autoScripts)) {
                 init.use(runtime.getInstructions());
                 this.luaRuntime = runtime;
             }
+            return null;
         });
     }
 
