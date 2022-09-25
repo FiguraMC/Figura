@@ -70,7 +70,7 @@ public class TextUtils {
 
     public static Component tryParseJson(String text) {
         if (text == null)
-            return Component.empty();
+            return TextComponent.EMPTY.copy();
 
         //text to return
         Component finalText;
@@ -212,7 +212,7 @@ public class TextUtils {
 
     public static Component substring(Component text, int beginIndex, int endIndex) {
         StringBuilder counter = new StringBuilder();
-        MutableComponent builder = Component.empty();
+        MutableComponent builder = TextComponent.EMPTY.copy();
         text.visit((style, string) -> {
             int index = counter.length();
             int len = string.length();
@@ -220,7 +220,7 @@ public class TextUtils {
             if (index <= endIndex && index + len >= beginIndex) {
                 int sub = Math.max(beginIndex - index, 0);
                 int top = Math.min(endIndex - index, len);
-                builder.append(Component.literal(string.substring(sub, top)).withStyle(style));
+                builder.append(new TextComponent(string.substring(sub, top)).withStyle(style));
             }
 
             counter.append(string);
