@@ -232,7 +232,7 @@ public class Avatar {
 
     public Future<Varargs> run(Object toRun, Instructions limit, Object... args) {
         return executor.submit(() -> {
-            if (UIHelper.paperdoll || scriptError || luaRuntime == null)
+            if (scriptError || luaRuntime == null)
                 return null;
 
             //parse args
@@ -278,16 +278,19 @@ public class Avatar {
     }
 
     public void renderEvent(float delta) {
-        if (luaRuntime != null && luaRuntime.getUser() != null)
+        if (!UIHelper.paperdoll && luaRuntime != null && luaRuntime.getUser() != null)
             run("RENDER", render, delta);
     }
 
     public void postRenderEvent(float delta) {
-        if (luaRuntime != null && luaRuntime.getUser() != null)
+        if (!UIHelper.paperdoll && luaRuntime != null && luaRuntime.getUser() != null)
             run("POST_RENDER", render.post(), delta);
     }
 
     public void postWorldRenderEvent(float delta) {
+        if (renderer != null)
+            renderer.allowMatrixUpdate = false;
+
         run("POST_WORLD_RENDER", worldRender.post(), delta);
     }
 
