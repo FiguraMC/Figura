@@ -88,7 +88,7 @@ public class Label implements FiguraWidget, GuiEventListener {
     }
 
     public void setText(Object text) {
-        this.text = text instanceof Component c ? c : new TextComponent(text.toString());
+        this.text = text instanceof Component c ? c : new TextComponent(String.valueOf(text));
         calculateDimensions();
     }
 

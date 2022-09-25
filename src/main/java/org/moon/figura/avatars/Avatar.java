@@ -58,9 +58,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.*;
 import java.util.function.Consumer;
 
 //the avatar class
@@ -84,6 +82,8 @@ public class Avatar {
     public String color;
 
     //Runtime data
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+
     public AvatarRenderer renderer;
     public FiguraLuaRuntime luaRuntime;
 
@@ -215,57 +215,59 @@ public class Avatar {
     }
 
     public void runPing(int id, byte[] data) {
-        if (scriptError || luaRuntime == null)
-            return;
+        executor.submit(() -> {
+            if (scriptError || luaRuntime == null)
+                return;
 
-        LuaValue[] args = PingArg.fromByteArray(data, this);
-        String name = luaRuntime.ping.getName(id);
-        PingFunction function = luaRuntime.ping.get(name);
-        if (args == null || function == null)
-            return;
+            LuaValue[] args = PingArg.fromByteArray(data, this);
+            String name = luaRuntime.ping.getName(id);
+            PingFunction function = luaRuntime.ping.get(name);
+            if (args == null || function == null)
+                return;
 
-        FiguraLuaPrinter.sendPingMessage(this, name, data.length, args);
-        run(function.func, tick, (Object[]) args);
+            FiguraLuaPrinter.sendPingMessage(this, name, data.length, args);
+            run(function.func, tick, (Object[]) args);
+        });
     }
 
-    public Varargs run(Object toRun, Instructions limit, Object... args) {
-        if (UIHelper.paperdoll || scriptError || luaRuntime == null)
-            return null;
+    public Future<Varargs> run(Object toRun, Instructions limit, Object... args) {
+        return executor.submit(() -> {
+            if (UIHelper.paperdoll || scriptError || luaRuntime == null)
+                return null;
 
-        //parse args
-        LuaValue[] values = new LuaValue[args.length];
-        for (int i = 0; i < values.length; i++)
-            values[i] = luaRuntime.typeManager.javaToLua(args[i]);
+            //parse args
+            LuaValue[] values = new LuaValue[args.length];
+            for (int i = 0; i < values.length; i++)
+                values[i] = luaRuntime.typeManager.javaToLua(args[i]);
 
-        Varargs val = LuaValue.varargsOf(values);
+            Varargs val = LuaValue.varargsOf(values);
 
-        //instructions limit
-        luaRuntime.setInstructionLimit(limit.remaining);
+            //instructions limit
+            luaRuntime.setInstructionLimit(limit.remaining);
 
-        //get and call event
-        try {
-            Varargs ret;
-            if (toRun instanceof LuaEvent event)
-                ret = event.call(val);
-            else if (toRun instanceof String event)
-                ret = luaRuntime.events.__index(event).call(val);
-            else if (toRun instanceof LuaFunction func)
-                ret = func.invoke(val);
-            else if (toRun instanceof Pair<?, ?> pair)
-                ret = luaRuntime.run(pair.getFirst().toString(), pair.getSecond().toString());
-            else
-                throw new IllegalArgumentException("Invalid type to run!");
+            //get and call event
+            try {
+                Varargs ret;
+                if (toRun instanceof LuaEvent event)
+                    ret = event.call(val);
+                else if (toRun instanceof String event)
+                    ret = luaRuntime.events.__index(event).call(val);
+                else if (toRun instanceof LuaFunction func)
+                    ret = func.invoke(val);
+                else if (toRun instanceof Pair<?, ?> pair)
+                    ret = luaRuntime.run(pair.getFirst().toString(), pair.getSecond().toString());
+                else
+                    throw new IllegalArgumentException("Invalid type to run!");
 
-            limit.use(luaRuntime.getInstructions());
-            luaRuntime.restoreInstructions();
+                limit.use(luaRuntime.getInstructions());
+                return ret;
+            } catch (Exception e) {
+                if (luaRuntime != null)
+                    luaRuntime.error(e);
+            }
 
-            return ret;
-        } catch (Exception e) {
-            if (luaRuntime != null)
-                luaRuntime.error(e);
-        }
-
-        return LuaValue.NIL;
+            return LuaValue.NIL;
+        });
     }
 
     // -- script events -- //
@@ -305,8 +307,14 @@ public class Avatar {
     // -- host only events -- //
 
     public String chatSendMessageEvent(String message) {
-        Varargs val = run("CHAT_SEND_MESSAGE", tick, message);
-        return val == null || (!val.isnil(1) && !Config.CHAT_MESSAGES.asBool()) ? message : val.isnil(1) ? null : val.arg(1).tojstring();
+        try {
+            Future<Varargs> future = run("CHAT_SEND_MESSAGE", tick, message);
+            Varargs val = future == null ? null : future.get();
+            return val == null || (!val.isnil(1) && !Config.CHAT_MESSAGES.asBool()) ? message : val.isnil(1) ? null : val.arg(1).tojstring();
+        } catch (InterruptedException | ExecutionException e) {
+            FiguraMod.LOGGER.warn("", e);
+            return message;
+        }
     }
 
     public void chatReceivedMessageEvent(String message) {
@@ -537,6 +545,8 @@ public class Avatar {
         }
 
         UIHelper.setupScissor(x1, y1, x2 - x1, y2 - y1);
+        UIHelper.paperdoll = true;
+        UIHelper.dollScale = 16f;
 
         //render
         Lighting.setupForFlatItems();
@@ -550,6 +560,7 @@ public class Avatar {
         else
             RenderSystem.disableScissor();
 
+        UIHelper.paperdoll = false;
         stack.popPose();
         return ret;
     }
@@ -610,6 +621,8 @@ public class Avatar {
         SoundAPI.getSoundEngine().figura$stopSound(owner, null);
         for (SoundBuffer value : customSounds.values())
             value.releaseAlBuffer();
+
+        executor.shutdownNow();
     }
 
     public MultiBufferSource getBufferSource() {
@@ -662,10 +675,12 @@ public class Avatar {
         init.reset(trust.get(TrustContainer.Trust.INIT_INST));
         runtime.setInstructionLimit(init.remaining);
 
-        if (runtime.init(autoScripts)) {
-            init.use(runtime.getInstructions());
-            this.luaRuntime = runtime;
-        }
+        executor.execute(() -> {
+            if (runtime.init(autoScripts)) {
+                init.use(runtime.getInstructions());
+                this.luaRuntime = runtime;
+            }
+        });
     }
 
     private void loadAnimations() {
