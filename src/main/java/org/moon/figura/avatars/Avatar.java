@@ -333,6 +333,10 @@ public class Avatar {
         run("MOUSE_SCROLL", tick, delta);
     }
 
+    public void armSwingEvent(String interactionHand) {
+      run("ARM_SWING", tick, interactionHand);
+  }
+
     // -- rendering events -- //
 
     public void render(Entity entity, float yaw, float delta, float alpha, PoseStack matrices, MultiBufferSource bufferSource, int light, int overlay, LivingEntityRenderer<?, ?> entityRenderer, PartFilterScheme filter, boolean translucent, boolean glowing) {

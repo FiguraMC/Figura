@@ -8,6 +8,7 @@
   "client": [
     "BlockBehaviourAccessor",
     "ClientLevelInvoker",
+    "LocalPlayerMixin",
     "MinecraftMixin",
     "SkullBlockEntityAccessor",
 
