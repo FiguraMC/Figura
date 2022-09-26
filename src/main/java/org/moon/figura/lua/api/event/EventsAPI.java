@@ -25,7 +25,6 @@ public class EventsAPI {
         CHAT_RECEIVE_MESSAGE = new LuaEvent();
         SKULL_RENDER = new LuaEvent();
         MOUSE_SCROLL = new LuaEvent();
-        ARM_SWING = new LuaEvent();
         PREVIEW_RENDER = new LuaEvent();
         POST_PREVIEW_RENDER = new LuaEvent();
     }
@@ -68,9 +67,6 @@ public class EventsAPI {
     @LuaFieldDoc("events.mouse_scroll")
     public final LuaEvent MOUSE_SCROLL;
     @LuaWhitelist
-    @LuaFieldDoc("events.arm_swing")
-    public final LuaEvent ARM_SWING;
-    @LuaWhitelist
     @LuaFieldDoc("events.preview_render")
     public final LuaEvent PREVIEW_RENDER;
     @LuaWhitelist
@@ -96,7 +92,6 @@ public class EventsAPI {
             case "CHAT_RECEIVE_MESSAGE" -> CHAT_RECEIVE_MESSAGE;
             case "SKULL_RENDER" -> SKULL_RENDER;
             case "MOUSE_SCROLL" -> MOUSE_SCROLL;
-            case "ARM_SWING" -> ARM_SWING;
             case "PREVIEW_RENDER" -> PREVIEW_RENDER;
             case "POST_PREVIEW_RENDER" -> POST_PREVIEW_RENDER;
             default -> null;

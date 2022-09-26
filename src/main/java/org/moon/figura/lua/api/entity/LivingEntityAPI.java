@@ -155,6 +155,27 @@ public class LivingEntityAPI<T extends LivingEntity> extends EntityAPI<T> {
         return entity.onClimbable();
     }
 
+    @LuaWhitelist
+    @LuaMethodDoc("living_entity.get_swing_time")
+    public int getSwingTime(){
+      checkEntity();
+      return entity.swingTime;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("living_entity.is_swinging")
+    public boolean isSwinging(){
+      checkEntity();
+      return entity.swinging;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("living_entity.get_swing_arm")
+    public String getSwingArm(){
+      checkEntity();
+      return entity.swinging?entity.swingingArm.toString():null;
+    }
+
     @Override
     public String toString() {
         checkEntity();
