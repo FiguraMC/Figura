@@ -530,6 +530,9 @@ public class Avatar {
     }
 
     public boolean renderHeadOnHud(PoseStack stack, int x, int y, int screenSize, float modelScale, boolean scissors) {
+        if (!Config.AVATAR_HEADS.asBool())
+            return false;
+
         //matrices
         stack.pushPose();
         stack.translate(x, y, 0d);
