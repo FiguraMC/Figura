@@ -62,7 +62,7 @@ public class FiguraDebugCommand {
             return 1;
         } catch (Exception e) {
             context.getSource().sendError(FiguraText.of("command.debug.error"));
-            FiguraMod.LOGGER.error("Failed to save Figura debug data!", e);
+            FiguraMod.LOGGER.error("Failed to save " + FiguraMod.MOD_NAME + " debug data!", e);
             return 0;
         }
     }
