@@ -92,11 +92,6 @@ public class LocalAvatarLoader {
         //load as folder
         CompoundTag nbt = new CompoundTag();
 
-        //Load metadata first!
-        loadState++;
-        String metadata = IOUtils.readFile(path.resolve("avatar.json").toFile());
-        nbt.put("metadata", AvatarMetadataParser.parse(metadata, path.getFileName().toString()));
-
         //scripts
         loadState++;
         loadScripts(path, nbt);
@@ -114,6 +109,10 @@ public class LocalAvatarLoader {
         CompoundTag models = loadModels(path, parser, textures, animations, "");
         models.putString("name", "models");
 
+        //metadata
+        loadState++;
+        String metadata = IOUtils.readFile(path.resolve("avatar.json").toFile());
+        nbt.put("metadata", AvatarMetadataParser.parse(metadata, path.getFileName().toString()));
         AvatarMetadataParser.injectToModels(metadata, models);
 
         //return :3

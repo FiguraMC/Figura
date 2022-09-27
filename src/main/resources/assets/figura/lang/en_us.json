@@ -38,10 +38,10 @@
 
   "figura.toast.load_error": "Failed to load avatar!",
   "figura.toast.load_error.1": "invalid moon file",
-  "figura.toast.load_error.2": "invalid \"avatar.json\"",
-  "figura.toast.load_error.3": "invalid script",
-  "figura.toast.load_error.4": "invalid custom sound",
-  "figura.toast.load_error.5": "invalid model",
+  "figura.toast.load_error.2": "invalid script",
+  "figura.toast.load_error.3": "invalid custom sound",
+  "figura.toast.load_error.4": "invalid model",
+  "figura.toast.load_error.5": "invalid \"avatar.json\"",
 
 
   "figura.trust.group.blocked": "Blocked",
