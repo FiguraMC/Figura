@@ -1,5 +1,6 @@
 package org.moon.figura.avatars.providers;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.ByteArrayTag;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -187,7 +188,7 @@ public class LocalAvatarLoader {
      * Saves the loaded NBT into a folder inside the avatar list
      */
     public static void saveNbt(CompoundTag nbt) {
-        Path directory = LocalAvatarFetcher.getLocalAvatarDirectory().resolve("[§9" + FiguraMod.MOD_NAME + "§r] Cached Avatars");
+        Path directory = LocalAvatarFetcher.getLocalAvatarDirectory().resolve("[" + ChatFormatting.BLUE + FiguraMod.MOD_NAME + ChatFormatting.RESET + "] Cached Avatars");
         Path file = directory.resolve("cache-" + new SimpleDateFormat("yyyy_MM_dd-HH_mm_ss").format(new Date()) + ".moon");
         try {
             Files.createDirectories(directory);
