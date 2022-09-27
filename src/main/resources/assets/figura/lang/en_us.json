@@ -296,6 +296,12 @@
   "figura.config.popup_max_size": "Player Popup Max Size",
   "figura.config.popup_max_size.tooltip": "Maximum size of player popup as you get closer to the person",
 
+  "figura.config.avatar_heads": "Avatar Heads",
+  "figura.config.avatar_heads.tooltip": "Toggles if the player lists should render their avatars instead of the player skin",
+
+  "figura.config.figura_inventory": "Figura Inventory",
+  "figura.config.figura_inventory.tooltip": "Toggles between vanilla and Figura's paperdoll rendering for the player inventory",
+
 
   "figura.config.paperdoll": "Paperdoll",
   "figura.config.paperdoll.tooltip": "Paperdoll settings",
@@ -443,6 +449,7 @@
   "figura.docs.globals": "Documentation for the various things Figura adds to the global lua state.",
   "figura.docs.globals.vec": "An alias for \"vectors.vec\", since it's used so often.",
   "figura.docs.globals.require": "The require() function takes the name of one of your scripts, without the .lua extension. If this script has not been already run before, it will run that script and return the value that script returns. If it has been run before, then it will not run the file again, but it will return the same thing as the first time. If a required script has no returns, then require() will return true. If the name you give isn't any of your scripts, it will error.",
+  "figura.docs.globals.list_files": "A function that returns a table with all script file names from the specified path. If no path is specified, it will fetch from the root folder. A second argument, boolean, can be given to also list files inside subfolders.",
   "figura.docs.globals.type": "Figura overrides lua's type() function. When used on Figura types, returns the type's name as seen in the docs and in the figuraMetatables global. When called on a table that has a metatable with a __type key, returns the corresponding value.",
   "figura.docs.globals.print": "A function that writes its arguments to chat. Even though the syntax says only one argument, you can put as many as you want. All of them will print, and they'll be separated by some spaces.",
   "figura.docs.globals.log": "An alias for print().",
@@ -946,8 +953,8 @@
   "figura.docs.model_part.add_text": "Adds a new Text Render Task on this part.",
   "figura.docs.model_part.add_item": "Adds a new Item Render Task on this part.",
   "figura.docs.model_part.add_block": "Adds a new Block Render Task on this part.",
-  "figura.docs.model_part.get_task": "Gets the Render Task with the given name from this part.",
-  "figura.docs.model_part.remove_task": "Removes the Task with the given name from this part.",
+  "figura.docs.model_part.get_task": "Gets the Render Task with the given name from this part. Returns a table with all tasks if a name is not given.",
+  "figura.docs.model_part.remove_task": "Removes the Task with the given name from this part. Removes ALL tasks if a name is not given.",
 
 
   "figura.docs.nameplate": "A global API which is used for customizing your player's nameplate in chat, above your head, and in the tab list.",

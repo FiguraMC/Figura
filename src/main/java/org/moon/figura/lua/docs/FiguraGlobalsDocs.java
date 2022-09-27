@@ -85,6 +85,22 @@ public abstract class FiguraGlobalsDocs {
     public static Object require() {return null;}
 
     @LuaMethodDoc(
+            overloads = {
+                    @LuaFunctionOverload,
+                    @LuaFunctionOverload(
+                            argumentTypes = String.class,
+                            argumentNames = "folder"
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {String.class, Boolean.class},
+                            argumentNames = {"folder", "subFolders"}
+                    )
+            },
+            value = "globals.list_files"
+    )
+    public static LuaTable listFiles(String folder, boolean subFolders) {return null;}
+
+    @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
                     argumentTypes = Object.class,
                     argumentNames = "arg"

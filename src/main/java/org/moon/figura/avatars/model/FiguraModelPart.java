@@ -773,13 +773,19 @@ public class FiguraModelPart {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = String.class,
-                    argumentNames = "taskName"
-            ),
+            overloads = {
+                    @LuaFunctionOverload,
+                    @LuaFunctionOverload(
+                            argumentTypes = String.class,
+                            argumentNames = "taskName"
+                    )
+            },
             value = "model_part.remove_task")
-    public void removeTask(@LuaNotNil String name) {
-        this.renderTasks.remove(name);
+    public void removeTask(String name) {
+        if (name != null)
+            this.renderTasks.remove(name);
+        else
+            this.renderTasks.clear();
     }
 
     //-- METAMETHODS --//
