@@ -3,6 +3,7 @@ package org.moon.figura.utils;
 import net.minecraft.network.chat.Style;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.math.vector.FiguraVec4;
 
 import java.awt.*;
 
@@ -183,5 +184,18 @@ public class ColorUtils {
     }
     public static FiguraVec3 rainbow(double speed, double offset, double saturation, double light) {
         return hsvToRGB(FiguraVec3.of(((FiguraMod.ticks * speed) + offset) % 255 / 255f, saturation, light));
+    }
+
+    public static int rgbaToIntABGR(FiguraVec4 rgba) {
+        int hex = (int) (rgba.w * 0xFF);
+        hex = (hex << 8) + (int) (rgba.z * 0xFF);
+        hex = (hex << 8) + (int) (rgba.y * 0xFF);
+        hex = (hex << 8) + (int) (rgba.x * 0xFF);
+        return hex;
+    }
+
+    public static FiguraVec4 abgrToRGBA(int color) {
+        int[] rgb = ColorUtils.split(color, 4);
+        return FiguraVec4.of(rgb[3] / 255f, rgb[2] / 255f, rgb[1] / 255f, rgb[0] / 255f);
     }
 }

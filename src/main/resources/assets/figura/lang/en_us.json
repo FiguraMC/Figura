@@ -479,6 +479,7 @@
   "figura.docs.globals.renderer": "The global instance of RendererAPI.",
   "figura.docs.globals.user": "An alias for player, just in case the user of your avatar isn't a player. (Foreshadowing?)",
   "figura.docs.globals.pings": "The global instance of PingAPI.",
+  "figura.docs.globals.textures": "The global instance of the TextureAPI.",
 
 
   "figura.docs.math": "Contains functions which Figura adds to the default Lua \"math\" library table.",
@@ -931,8 +932,10 @@
   "figura.docs.model_part.get_secondary_render_type": "Gets the current secondary render type of this model part. Nil by default, meaning the part copies the secondary render type of its parent.",
   "figura.docs.model_part.set_primary_render_type": "Sets the current primary render type of this model part. Nil by default, meaning the part copies the primary render type of its parent during rendering. Check the docs list command for all render types.",
   "figura.docs.model_part.set_secondary_render_type": "Sets the current secondary render type of this model part. Nil by default, meaning the part copies the secondary render type of its parent during rendering. Check the docs list command for all render types.",
-  "figura.docs.model_part.set_primary_texture": "Sets the primary texture override of this part. Check the TextureType types in the list docs. If using \"resource\", the second parameter should indicate the path to the Minecraft texture you want to use.",
-  "figura.docs.model_part.set_secondary_texture": "Sets the secondary texture override of this part. Check the TextureType types in the list docs. If using \"resource\", the second parameter should indicate the path to the Minecraft texture you want to use.",
+  "figura.docs.model_part.set_primary_texture": "Sets the primary texture override of this part. Check the TextureType types in the list docs. If using \"resource\", the second parameter should indicate the path to the Minecraft texture you want to use. If using \"custom\", the second parameter should indicate a texture reference or name",
+  "figura.docs.model_part.set_secondary_texture": "Sets the secondary texture override of this part. Check the TextureType types in the list docs. If using \"resource\", the second parameter should indicate the path to the Minecraft texture you want to use. If using \"custom\", the second parameter should indicate a texture reference or name",
+  "figura.docs.model_part.get_primary_textures": "Returns a table with all primary textures used by this part. Do not include children textures, so groups usually will return an empty table.",
+  "figura.docs.model_part.get_secondary_textures": "Returns a table with all secondary textures used by this part. Do not include children textures, so groups usually will return an empty table.",
   "figura.docs.model_part.part_to_world_matrix": "Gets a matrix which transforms a point from this part's position to a world location. Recommended to use this in POST_RENDER, as by then the matrix is updated. In RENDER it will be 1 frame behind the part's visual position for that frame. Also, if the model is not rendered in-world, the part's matrix will not be updated. Paperdoll rendering and other UI rendering will not affect this matrix.",
   "figura.docs.model_part.get_texture_size": "Gets the width, height of this part's texture in pixels. Throws an error if this part has multiple different-sized textures on it, or if the part is a Group.",
   "figura.docs.model_part.set_uv": "Sets the UV of this part. This function is normalized, meaning it works with values 0 to 1. If you say setUV(0.5, 0.25), for example, it will scroll by half of your texture width to the right, and one fourth of the texture width downwards.",
@@ -981,7 +984,7 @@
   "figura.docs.nameplate_group.set_text": "Sets the text for all its children customizations.",
 
 
-  "figura.docs.particles": "A global API which is used for dealing with Minecraft's particles. Can currently only be used to summon a particle. Accessed using the name \"particle\".",
+  "figura.docs.particles": "A global API which is used for dealing with Minecraft's particles. Can currently only be used to summon a particle. Accessed using the name \"particles\".",
   "figura.docs.particles.add_particle": "Creates a particle with the given name at the specified position, with the given velocity. Some particles have special properties, like the \"dust\" particle. For these particles, the special properties can be put into the \"name\" parameter, the same way as it works for commands.",
 
 
@@ -1050,6 +1053,18 @@
 
   "figura.docs.sound": "Represents a sound that can be played. Obtained by indexing the SoundAPI. Exists as an object-oriented alternative to sounds:playSound().",
   "figura.docs.sound.play": "Plays this sound with the given parameters. Volume in Minecraft refers to how far away people can hear from, not the actual loudness. The defaults for volume and pitch are 1.",
+
+
+  "figura.docs.textures": "A global API which allows for creating textures at runtime.",
+  "figura.docs.textures.register": "Creates a new texture with the given name, width and height. The texture is filled with a solid color. Returns the texture.",
+  "figura.docs.textures.get": "Gets a registered texture based on its name, or nil if no texture was found with that name.",
+
+  "figura.docs.texture": "A texture object, either generated by the model or created with the TextureAPI.",
+  "figura.docs.texture.get_name": "Returns this texture name.",
+  "figura.docs.texture.get_dimensions": "Returns a vector of this texture width and height.",
+  "figura.docs.texture.get_pixel": "Gets the RGBA color from the specified pixel.",
+  "figura.docs.texture.set_pixel": "Sets the RGBA color of the specified pixel.",
+  "figura.docs.texture.fill": "Sets the RGBA color of the entire specified region.",
 
 
   "figura.docs.vanilla_model": "A global API that provides functions to interact with the vanilla player model and its parts. Accessed using the name \"vanilla_model\".",

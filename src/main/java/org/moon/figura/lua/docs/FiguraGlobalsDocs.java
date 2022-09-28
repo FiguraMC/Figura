@@ -16,6 +16,7 @@ import org.moon.figura.lua.api.nameplate.NameplateAPI;
 import org.moon.figura.lua.api.particle.ParticleAPI;
 import org.moon.figura.lua.api.ping.PingAPI;
 import org.moon.figura.lua.api.sound.SoundAPI;
+import org.moon.figura.lua.api.TextureAPI;
 import org.moon.figura.lua.api.vanilla_model.VanillaModelAPI;
 import org.moon.figura.lua.api.world.WorldAPI;
 
@@ -72,6 +73,8 @@ public abstract class FiguraGlobalsDocs {
     public EntityAPI<?> user;
     @LuaFieldDoc("globals.pings")
     public PingAPI pings;
+    @LuaFieldDoc("globals.textures")
+    public TextureAPI textures;
     @LuaFieldDoc("globals.type")
     public LuaFunction type;
 
