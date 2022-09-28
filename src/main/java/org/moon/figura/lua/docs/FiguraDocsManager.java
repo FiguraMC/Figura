@@ -16,6 +16,7 @@ import org.luaj.vm2.LuaValue;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.animation.Animation;
 import org.moon.figura.avatars.model.FiguraModelPart;
+import org.moon.figura.avatars.model.rendering.texture.FiguraTexture;
 import org.moon.figura.avatars.model.rendertasks.BlockTask;
 import org.moon.figura.avatars.model.rendertasks.ItemTask;
 import org.moon.figura.avatars.model.rendertasks.RenderTask;
@@ -28,6 +29,7 @@ import org.moon.figura.lua.api.ping.PingAPI;
 import org.moon.figura.lua.api.ping.PingFunction;
 import org.moon.figura.lua.api.sound.LuaSound;
 import org.moon.figura.lua.api.sound.SoundAPI;
+import org.moon.figura.lua.api.TextureAPI;
 import org.moon.figura.math.matrix.FiguraMat2;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
@@ -209,6 +211,11 @@ public class FiguraDocsManager {
         put("pings", List.of(
                 PingAPI.class,
                 PingFunction.class
+        ));
+
+        put("textures", List.of(
+                TextureAPI.class,
+                FiguraTexture.class
         ));
     }};
     private static final Map<String, List<FiguraDoc>> GENERATED_CHILDREN = new HashMap<>();

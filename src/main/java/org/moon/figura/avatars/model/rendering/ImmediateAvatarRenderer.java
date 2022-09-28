@@ -13,6 +13,7 @@ import org.moon.figura.avatars.model.FiguraModelPart;
 import org.moon.figura.avatars.model.FiguraModelPartReader;
 import org.moon.figura.avatars.model.ParentType;
 import org.moon.figura.avatars.model.PartCustomization;
+import org.moon.figura.avatars.model.rendering.texture.FiguraTexture;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
 import org.moon.figura.avatars.model.rendering.texture.RenderTypes;
 import org.moon.figura.avatars.model.rendertasks.RenderTask;
@@ -104,6 +105,10 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
             //Upload texture if necessary
             buffer.uploadTexIfNeeded();
         }
+
+        //custom textures
+        for (FiguraTexture texture : customTextures.values())
+            texture.registerAndUpload();
 
         //Set shouldRenderPivots
         int config = Config.RENDER_DEBUG_PARTS_PIVOT.asInt();

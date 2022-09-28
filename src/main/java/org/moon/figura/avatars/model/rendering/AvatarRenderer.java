@@ -14,6 +14,7 @@ import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.model.FiguraModelPart;
 import org.moon.figura.avatars.model.ParentType;
 import org.moon.figura.avatars.model.VanillaModelData;
+import org.moon.figura.avatars.model.rendering.texture.FiguraTexture;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 
@@ -49,6 +50,7 @@ public abstract class AvatarRenderer {
 
     public PartFilterScheme currentFilterScheme;
     public final HashMap<ParentType, ConcurrentLinkedQueue<Pair<FiguraMat4, FiguraMat3>>> pivotCustomizations = new HashMap<>();
+    public final HashMap<String, FiguraTexture> customTextures = new HashMap<>();
     protected static int shouldRenderPivots;
     public boolean allowHiddenTransforms = true;
     public boolean allowRenderTasks = true;
@@ -63,6 +65,8 @@ public abstract class AvatarRenderer {
     public abstract int renderSpecialParts();
     protected void clean() {
         root.clean();
+        for (FiguraTexture texture : customTextures.values())
+            texture.close();
     }
 
     public void invalidate() {

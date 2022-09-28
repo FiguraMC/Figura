@@ -113,10 +113,13 @@ public class EntityNameplateCustomization extends NameplateCustomization {
         } else if (r instanceof FiguraVec3 vec) {
             this.background = ColorUtils.rgbToInt(vec);
             this.alpha = g;
-        } else {
-            FiguraVec4 vec = LuaUtils.parseVec4("setBackgroundColor", r, g, b, a, 0, 0, 0, 1);
+        } else if (r instanceof FiguraVec4 vec) {
             this.background = ColorUtils.rgbToInt(FiguraVec3.of(vec.x, vec.y, vec.z));
-            this.alpha = a == null ? null : vec.w;
+            this.alpha = vec.w;
+        } else {
+            FiguraVec3 vec = LuaUtils.parseVec3("setBackgroundColor", r, g, b);
+            this.background = ColorUtils.rgbToInt(vec);
+            this.alpha = a;
         }
     }
 
