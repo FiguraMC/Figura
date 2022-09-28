@@ -245,16 +245,21 @@ public class TrustScreen extends AbstractPanelScreen {
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-        if (dragged != null)
-            dragged.index = playerList.getTrustAt(mouseY);
+        boolean bool = false;
 
         if (playerList.selectedEntry instanceof PlayerElement element && element.isMouseOver(mouseX, mouseY)) {
             dragged = element;
             dragged.dragged = true;
-            return true;
+            dragged.index = playerList.getTrustAt(mouseY);
+            bool = true;
         }
 
-        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+        if (dragged != null) {
+            dragged.index = playerList.getTrustAt(mouseY);
+            bool = true;
+        }
+
+        return bool || super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
     }
 
     @Override

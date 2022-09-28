@@ -230,7 +230,7 @@ public class PlayerList extends AbstractList {
     public int getTrustAt(double y) {
         int ret = -1;
         for (AbstractTrustElement element : trustList)
-            if (element instanceof GroupElement group && y >= group.y)
+            if (element instanceof GroupElement group && group.visible && y >= group.y)
                 ret++;
         return Math.max(ret, 0);
     }
