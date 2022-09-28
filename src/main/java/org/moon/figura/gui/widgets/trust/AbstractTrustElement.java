@@ -73,13 +73,13 @@ public class AbstractTrustElement extends AbstractButton implements Comparable<A
         ArrayList<TrustContainer> list = new ArrayList<>(TrustManager.GROUPS.values());
 
         int i;
-        if (this instanceof PlayerElement player && player.index > -1)
+        if (this instanceof PlayerElement player && player.dragged)
             i = Math.min(player.index, list.size() - (TrustManager.isLocal(this.trust) ? 1 : 2));
         else
             i = list.indexOf(this.trust.getParentGroup());
 
         int j;
-        if (other instanceof PlayerElement player && player.index > -1)
+        if (other instanceof PlayerElement player && player.dragged)
             j = Math.min(player.index, list.size() - (TrustManager.isLocal(other.trust) ? 1 : 2));
         else
             j = list.indexOf(other.trust.getParentGroup());

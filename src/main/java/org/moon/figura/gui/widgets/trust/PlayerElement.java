@@ -121,9 +121,7 @@ public class PlayerElement extends AbstractTrustElement {
         int oY = y;
         x = mouseX - 20;
         y = mouseY - height / 2;
-        dragged = false;
-        render(stack, mouseX, mouseY, delta);
-        dragged = true;
+        super.render(stack, mouseX, mouseY, delta);
         x = oX;
         y = oY;
     }
@@ -148,7 +146,9 @@ public class PlayerElement extends AbstractTrustElement {
 
         //selected overlay
         if (this.parent.selectedEntry == this) {
-            UIHelper.fillRounded(stack, x - 1, y - 1, width + 2, height + 2, 0xFFFFFFFF);
+            ArrayList<TrustContainer> list = new ArrayList<>(TrustManager.GROUPS.values());
+            int color = (dragged ? list.get(Math.min(index, list.size() - (TrustManager.isLocal(trust) ? 1 : 2))) : trust).getGroupColor();
+            UIHelper.fillRounded(stack, x - 1, y - 1, width + 2, height + 2, color + (0xFF << 24));
         }
 
         //background
