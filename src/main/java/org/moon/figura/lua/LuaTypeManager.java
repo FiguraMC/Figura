@@ -11,6 +11,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -161,7 +162,7 @@ public class LuaTypeManager {
                                 case "org.luaj.vm2.LuaFunction" -> args.checkfunction(argIndex);
                                 case "org.luaj.vm2.LuaValue" -> args.arg(argIndex);
                                 case "java.lang.Object" -> luaToJava(args.arg(argIndex));
-                                default -> args.checkuserdata(argIndex, argumentTypes[i]);
+                                default -> argumentTypes[i].getName().startsWith("[") ? luaVarargToJava(args, argIndex, argumentTypes[i]) : args.checkuserdata(argIndex, argumentTypes[i]);
                             };
                         } catch (LuaError err) {
                             String expectedType = FiguraDocsManager.getNameFor(argumentTypes[i]);
@@ -237,6 +238,32 @@ public class LuaTypeManager {
             table.set(i + 1, javaToLua(list.get(i)));
 
         return table;
+    }
+
+    public Object luaVarargToJava(Varargs args, int argIndex, Class<?> argumentType){
+        if(args.arg(argIndex).istable()){
+            return luaVarargToJava(args.checktable(argIndex).unpack(), 1, argumentType);
+        } else {
+            var varg = new Object[args.narg() - argIndex + 1];
+            var start = argIndex;
+            while (argIndex <= args.narg()) {
+                varg[argIndex - start] = switch (argumentType.getName()) {
+                    case "[Ljava.lang.Number;", "[Ljava.lang.Double;", "[D" -> args.checkdouble(argIndex);
+                    case "[Ljava.lang.String;" -> args.checkjstring(argIndex);
+                    case "[Ljava.lang.Boolean;", "[B" -> args.toboolean(argIndex);
+                    case "[Ljava.lang.Float;", "[F" -> (float) args.checkdouble(argIndex);
+                    case "[Ljava.lang.Integer;", "[I" -> args.checkint(argIndex);
+                    case "[Ljava.lang.Long;", "[J" -> args.checklong(argIndex);
+                    case "[Lorg.luaj.vm2.LuaTable;" -> args.checktable(argIndex);
+                    case "[Lorg.luaj.vm2.LuaFunction;" -> args.checkfunction(argIndex);
+                    case "[Lorg.luaj.vm2.LuaValue;" -> args.arg(argIndex);
+                    case "[Ljava.lang.Object;" -> luaToJava(args.arg(argIndex));
+                    default -> args.checkuserdata(argIndex, argumentType);
+                };
+                argIndex += 1;
+            }
+            return Arrays.copyOf(varg, varg.length, (Class<? extends Object[]>) argumentType);
+        }
     }
 
     //we need to allow string being numbers here
