@@ -12,6 +12,7 @@ import org.luaj.vm2.LuaError;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.Badges;
+import org.moon.figura.avatars.model.rendering.texture.FiguraTexture;
 import org.moon.figura.config.Config;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
@@ -306,6 +307,23 @@ public class HostAPI {
     @LuaMethodDoc("host.is_container_open")
     public boolean isContainerOpen() {
         return isHost() && Minecraft.getInstance().screen instanceof AbstractContainerScreen;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaFunctionOverload(
+                    argumentTypes = FiguraTexture.class,
+                    argumentNames = "texture"
+            ),
+            value = "host.save_texture")
+    public void saveTexture(@LuaNotNil FiguraTexture texture) {
+        if (isHost()) {
+            try {
+                texture.saveCache();
+            } catch (Exception e) {
+                throw new LuaError(e.getMessage());
+            }
+        }
     }
 
     @LuaWhitelist
