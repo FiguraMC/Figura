@@ -13,15 +13,32 @@ import java.lang.annotation.Target;
 public @interface LuaMethodDoc {
 
     /**
-     * Each LuaFunctionOverload should indicate one set of variable types that can
+     * Each {@link LuaMethodOverload} should indicate one set of variable types that can
      * be used to call this method in a valid way.
      */
-    LuaFunctionOverload[] overloads() default @LuaFunctionOverload;
+    LuaMethodOverload[] overloads() default @LuaMethodOverload;
 
     /**
      * A translation key for the description of what this method does with its parameters.
      */
     String value();
 
+    @Retention(RetentionPolicy.RUNTIME)
+    @interface LuaMethodOverload {
+
+        /**
+         * The types of the arguments in this overload.
+         */
+        Class<?>[] argumentTypes() default {};
+
+        /**
+         * The names to give to the arguments in this overload.
+         */
+        String[] argumentNames() default {};
+
+        Class<?> returnType() default DEFAULT.class;
+
+        final class DEFAULT {}
+    }
 }
 

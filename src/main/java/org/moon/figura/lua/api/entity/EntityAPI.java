@@ -22,9 +22,10 @@ import org.moon.figura.lua.NbtToLua;
 import org.moon.figura.lua.api.world.BlockStateAPI;
 import org.moon.figura.lua.api.world.ItemStackAPI;
 import org.moon.figura.lua.api.world.WorldAPI;
-import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMetamethodDoc;
+import org.moon.figura.lua.docs.LuaMetamethodDoc.LuaMetamethodOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
+import org.moon.figura.lua.docs.LuaMethodDoc.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
@@ -83,8 +84,8 @@ public class EntityAPI<T extends Entity> {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload,
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload,
+                    @LuaMethodOverload(
                             argumentTypes = Float.class,
                             argumentNames = "delta"
                     )
@@ -100,8 +101,8 @@ public class EntityAPI<T extends Entity> {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload,
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload,
+                    @LuaMethodOverload(
                             argumentTypes = Float.class,
                             argumentNames = "delta"
                     )
@@ -314,7 +315,7 @@ public class EntityAPI<T extends Entity> {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = int.class,
                     argumentNames = "index"
             ),
@@ -354,12 +355,12 @@ public class EntityAPI<T extends Entity> {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload,
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload,
+                    @LuaMethodOverload(
                             argumentTypes = Boolean.class,
                             argumentNames = "ignoreLiquids"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Boolean.class, Double.class},
                             argumentNames = {"ignoreLiquids", "distance"}
                     )
@@ -380,7 +381,7 @@ public class EntityAPI<T extends Entity> {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = String.class,
                     argumentNames = "key"
             ),
@@ -396,7 +397,7 @@ public class EntityAPI<T extends Entity> {
 
     @LuaWhitelist
     @LuaMetamethodDoc(
-            overloads = @LuaMetamethodDoc.LuaMetamethodOverload(
+            overloads = @LuaMetamethodOverload(
                     types = {boolean.class, EntityAPI.class, EntityAPI.class}
             )
     )
@@ -406,7 +407,7 @@ public class EntityAPI<T extends Entity> {
 
     @LuaWhitelist
     @LuaMetamethodDoc(
-            overloads = @LuaMetamethodDoc.LuaMetamethodOverload(
+            overloads = @LuaMetamethodOverload(
                     types = {String.class, EntityAPI.class}
             )
     )

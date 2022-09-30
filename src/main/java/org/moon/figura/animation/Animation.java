@@ -7,8 +7,8 @@ import org.moon.figura.avatars.model.FiguraModelPart;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
-import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
+import org.moon.figura.lua.docs.LuaMethodDoc.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 
 import java.util.ArrayList;
@@ -182,7 +182,7 @@ public class Animation {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = Float.class,
                     argumentNames = "time"
             ),
@@ -202,7 +202,7 @@ public class Animation {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = {Float.class, String.class},
                     argumentNames = {"time", "code"}
             ),
@@ -221,7 +221,7 @@ public class Animation {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = Float.class,
                     argumentNames = "blend"
             ),
@@ -240,7 +240,7 @@ public class Animation {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = Float.class,
                     argumentNames = "offset"
             ),
@@ -259,7 +259,7 @@ public class Animation {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = Float.class,
                     argumentNames = "delay"
             ),
@@ -278,7 +278,7 @@ public class Animation {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = Float.class,
                     argumentNames = "delay"
             ),
@@ -297,7 +297,7 @@ public class Animation {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = Float.class,
                     argumentNames = "length"
             ),
@@ -316,7 +316,7 @@ public class Animation {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = Boolean.class,
                     argumentNames = "override"
             ),
@@ -335,7 +335,7 @@ public class Animation {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = String.class,
                     argumentNames = "loop"
             ),
@@ -358,7 +358,7 @@ public class Animation {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = Integer.class,
                     argumentNames = "priority"
             ),
@@ -377,7 +377,7 @@ public class Animation {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = Float.class,
                     argumentNames = "speed"
             ),

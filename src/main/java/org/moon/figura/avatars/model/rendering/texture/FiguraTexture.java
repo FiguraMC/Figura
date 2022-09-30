@@ -11,8 +11,8 @@ import org.luaj.vm2.LuaError;
 import org.lwjgl.BufferUtils;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.lua.LuaWhitelist;
-import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
+import org.moon.figura.lua.docs.LuaMethodDoc.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
@@ -139,7 +139,7 @@ public class FiguraTexture extends AbstractTexture implements Closeable {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = {Integer.class, Integer.class},
                     argumentNames = {"x", "y"}
             ),
@@ -155,15 +155,15 @@ public class FiguraTexture extends AbstractTexture implements Closeable {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Integer.class, Integer.class, FiguraVec3.class},
                             argumentNames = {"x", "y", "rgb"}
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Integer.class, Integer.class, FiguraVec4.class},
                             argumentNames = {"x", "y", "rgba"}
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Integer.class, Integer.class, Double.class, Double.class, Double.class, Double.class},
                             argumentNames = {"x", "y", "r", "g", "b", "a"}
                     )
@@ -181,15 +181,15 @@ public class FiguraTexture extends AbstractTexture implements Closeable {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Integer.class, Integer.class, Integer.class, Integer.class, FiguraVec3.class},
                             argumentNames = {"x", "y", "width", "height", "rgb"}
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Integer.class, Integer.class, Integer.class, Integer.class, FiguraVec4.class},
                             argumentNames = {"x", "y", "width", "height", "rgba"}
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Integer.class, Integer.class, Integer.class, Integer.class, Double.class, Double.class, Double.class, Double.class},
                             argumentNames = {"x", "y", "width", "height", "r", "g", "b", "a"}
                     )

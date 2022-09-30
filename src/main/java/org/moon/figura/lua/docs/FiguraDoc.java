@@ -9,6 +9,7 @@ import net.minecraft.locale.Language;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.FiguraMod;
+import org.moon.figura.lua.docs.LuaMethodDoc.LuaMethodOverload;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.FiguraText;
 
@@ -200,7 +201,7 @@ public abstract class FiguraDoc {
         public MethodDoc(Method method, LuaMethodDoc methodDoc, List<FiguraDoc> children, String typeName) {
             super(method.getName(), methodDoc.value());
 
-            LuaFunctionOverload[] overloads = methodDoc.overloads();
+            LuaMethodOverload[] overloads = methodDoc.overloads();
             parameterTypes = new Class[overloads.length][];
             parameterNames = new String[overloads.length][];
             returnTypes = new Class[overloads.length];
@@ -212,7 +213,7 @@ public abstract class FiguraDoc {
                 parameterTypes[i] = overloads[i].argumentTypes();
                 parameterNames[i] = overloads[i].argumentNames();
 
-                if (overloads[i].returnType() == LuaFunctionOverload.DEFAULT.class)
+                if (overloads[i].returnType() == LuaMethodOverload.DEFAULT.class)
                     returnTypes[i] = method.getReturnType();
                 else
                     returnTypes[i] = overloads[i].returnType();

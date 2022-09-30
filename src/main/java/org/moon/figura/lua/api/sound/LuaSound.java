@@ -6,11 +6,13 @@ import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import org.luaj.vm2.LuaError;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.lua.LuaWhitelist;
-import org.moon.figura.lua.docs.LuaFunctionOverload;
+import org.moon.figura.lua.api.world.WorldAPI;
 import org.moon.figura.lua.docs.LuaMethodDoc;
+import org.moon.figura.lua.docs.LuaMethodDoc.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.trust.TrustContainer;
@@ -34,19 +36,19 @@ public class LuaSound {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = FiguraVec3.class,
                             argumentNames = "pos"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
                             argumentNames = {"posX", "posY", "posZ"}
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {FiguraVec3.class, Double.class, Double.class, Boolean.class},
                             argumentNames = {"pos", "volume", "pitch", "loop"}
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Double.class, Double.class, Double.class, Double.class, Double.class, Boolean.class},
                             argumentNames = {"posX", "posY", "posZ", "volume", "pitch", "loop"}
                     )
@@ -101,6 +103,7 @@ public class LuaSound {
                 SimpleSoundInstance instance = new SimpleSoundInstance(
                         event, SoundSource.PLAYERS,
                         volume, pitch,
+                        RandomSource.create(WorldAPI.getCurrentWorld().random.nextLong()),
                         pos.x, pos.y, pos.z);
 
                 SoundAPI.getSoundEngine().figura$playSound(
