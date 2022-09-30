@@ -100,9 +100,6 @@ public class FiguraAPIManager {
         add(ActionWheelAPI.class);
         add(Page.class);
         add(Action.class);
-        add(ClickAction.class);
-        add(ScrollAction.class);
-        add(ToggleAction.class);
 
         add(VectorsAPI.class);
         add(MatricesAPI.class);
