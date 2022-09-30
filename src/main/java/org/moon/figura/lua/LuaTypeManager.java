@@ -194,7 +194,7 @@ public class LuaTypeManager {
                 }
 
                 //Convert the return value
-                return javaToLua(result);
+                return result instanceof Varargs v? v : javaToLua(result);
             }
 
             @Override
