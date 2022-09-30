@@ -2,8 +2,8 @@ package org.moon.figura.lua.api.action_wheel;
 
 import org.luaj.vm2.LuaError;
 import org.moon.figura.lua.LuaWhitelist;
-import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
+import org.moon.figura.lua.docs.LuaMethodDoc.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 
 @LuaWhitelist
@@ -51,8 +51,8 @@ public class Page {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload,
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload,
+                    @LuaMethodOverload(
                             argumentTypes = Integer.class,
                             argumentNames = "index"
                     )
@@ -71,8 +71,8 @@ public class Page {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload,
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload,
+                    @LuaMethodOverload(
                             argumentTypes = Integer.class,
                             argumentNames = "index"
                     )
@@ -91,8 +91,8 @@ public class Page {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload,
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload,
+                    @LuaMethodOverload(
                             argumentTypes = Integer.class,
                             argumentNames = "index"
                     )
@@ -110,7 +110,7 @@ public class Page {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = Integer.class,
                     argumentNames = "index"
             ),
@@ -124,7 +124,7 @@ public class Page {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = {Integer.class, Action.class},
                     argumentNames = {"index", "action"}
             ),

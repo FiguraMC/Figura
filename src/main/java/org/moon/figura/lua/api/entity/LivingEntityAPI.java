@@ -6,8 +6,8 @@ import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.world.ItemStackAPI;
-import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
+import org.moon.figura.lua.docs.LuaMethodDoc.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 
 import java.util.ArrayList;
@@ -29,8 +29,8 @@ public class LivingEntityAPI<T extends LivingEntity> extends EntityAPI<T> {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload,
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload,
+                    @LuaMethodOverload(
                             argumentTypes = Float.class,
                             argumentNames = "delta"
                     )
@@ -46,8 +46,8 @@ public class LivingEntityAPI<T extends LivingEntity> extends EntityAPI<T> {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload,
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload,
+                    @LuaMethodOverload(
                             argumentTypes = Boolean.class,
                             argumentNames = "offhand"
                     )

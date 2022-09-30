@@ -4,8 +4,8 @@ import org.luaj.vm2.LuaFunction;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
-import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
+import org.moon.figura.lua.docs.LuaMethodDoc.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 
 @LuaWhitelist
@@ -25,7 +25,7 @@ public class ClickAction extends Action {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = LuaFunction.class,
                     argumentNames = "leftFunction"
             ),
@@ -38,7 +38,7 @@ public class ClickAction extends Action {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = LuaFunction.class,
                     argumentNames = "rightFunction"
             ),

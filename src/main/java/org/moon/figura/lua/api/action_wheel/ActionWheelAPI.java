@@ -7,8 +7,8 @@ import org.moon.figura.gui.ActionWheel;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
-import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
+import org.moon.figura.lua.docs.LuaMethodDoc.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 
 import java.util.HashMap;
@@ -41,12 +41,12 @@ public class ActionWheelAPI {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload,
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload,
+                    @LuaMethodOverload(
                             argumentTypes = Integer.class,
                             argumentNames = "index"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Integer.class, Boolean.class},
                             argumentNames = {"index", "rightClick"}
                     )
@@ -74,8 +74,8 @@ public class ActionWheelAPI {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload,
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload,
+                    @LuaMethodOverload(
                             argumentTypes = String.class,
                             argumentNames = "title"
                     )
@@ -91,11 +91,11 @@ public class ActionWheelAPI {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = String.class,
                             argumentNames = "pageTitle"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = Page.class,
                             argumentNames = "page"
                     )
@@ -122,7 +122,7 @@ public class ActionWheelAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = String.class,
                     argumentNames = "pageTitle"
             ),

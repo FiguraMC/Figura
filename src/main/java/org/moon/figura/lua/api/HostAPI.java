@@ -19,8 +19,8 @@ import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.entity.EntityAPI;
 import org.moon.figura.lua.api.world.ItemStackAPI;
 import org.moon.figura.lua.docs.LuaFieldDoc;
-import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
+import org.moon.figura.lua.docs.LuaMethodDoc.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.mixin.gui.ChatScreenAccessor;
@@ -71,11 +71,11 @@ public class HostAPI {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = FiguraVec3.class,
                             argumentNames = "timesData"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Integer.class, Integer.class, Integer.class},
                             argumentNames = {"fadeInTime", "stayTime", "fadeOutTime"}
                     )
@@ -97,7 +97,7 @@ public class HostAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = String.class,
                     argumentNames = "text"
             ),
@@ -110,7 +110,7 @@ public class HostAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = String.class,
                     argumentNames = "text"
             ),
@@ -124,11 +124,11 @@ public class HostAPI {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = String.class,
                             argumentNames = "text"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {String.class, boolean.class},
                             argumentNames = {"text", "animated"}
                     )
@@ -142,7 +142,7 @@ public class HostAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = String.class,
                     argumentNames = "message"
             ),
@@ -156,7 +156,7 @@ public class HostAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = String.class,
                     argumentNames = "command"
             ),
@@ -170,7 +170,7 @@ public class HostAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = String.class,
                     argumentNames = "message"
             ),
@@ -184,8 +184,8 @@ public class HostAPI {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload,
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload,
+                    @LuaMethodOverload(
                             argumentTypes = Boolean.class,
                             argumentNames = "offhand"
                     )
@@ -200,11 +200,11 @@ public class HostAPI {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = String.class,
                             argumentNames = "slot"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = Integer.class,
                             argumentNames = "slot"
                     )
@@ -251,11 +251,11 @@ public class HostAPI {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = FiguraVec3.class,
                             argumentNames = "color"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
                             argumentNames = {"r", "g", "b"}
                     )
@@ -278,7 +278,7 @@ public class HostAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = String.class,
                     argumentNames = "text"
             ),
