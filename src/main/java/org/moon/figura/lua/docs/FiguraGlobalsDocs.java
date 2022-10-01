@@ -110,7 +110,9 @@ public abstract class FiguraGlobalsDocs {
             ),
             value = "globals.print"
     )
-    public static void print() {}
+    public static String print() {
+        return null;
+    }
 
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
@@ -119,7 +121,9 @@ public abstract class FiguraGlobalsDocs {
             ),
             value = "globals.log"
     )
-    public static void log() {}
+    public static String log() {
+        return null;
+    }
 
     @LuaMethodDoc(
             overloads = {
@@ -138,11 +142,21 @@ public abstract class FiguraGlobalsDocs {
                     @LuaFunctionOverload(
                             argumentTypes = {LuaUserdata.class, Integer.class},
                             argumentNames = {"javaObject", "maxDepth"}
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {LuaTable.class, Integer.class, Boolean.class},
+                            argumentNames = {"table", "maxDepth", "silent"}
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {LuaUserdata.class, Integer.class, Boolean.class},
+                            argumentNames = {"javaObject", "maxDepth", "silent"}
                     )
             },
             value = "globals.print_table"
     )
-    public static void printTable() {}
+    public static String printTable() {
+        return null;
+    }
 
     @LuaMethodDoc(
             overloads = {
@@ -161,11 +175,21 @@ public abstract class FiguraGlobalsDocs {
                     @LuaFunctionOverload(
                             argumentTypes = {LuaUserdata.class, Integer.class},
                             argumentNames = {"javaObject", "maxDepth"}
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {LuaTable.class, Integer.class, Boolean.class},
+                            argumentNames = {"table", "maxDepth", "silent"}
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {LuaUserdata.class, Integer.class, Boolean.class},
+                            argumentNames = {"javaObject", "maxDepth", "silent"}
                     )
             },
             value = "globals.log_table"
     )
-    public static void logTable() {}
+    public static String logTable() {
+        return null;
+    }
 
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
@@ -174,7 +198,9 @@ public abstract class FiguraGlobalsDocs {
             ),
             value = "globals.print_json"
     )
-    public static void printJson() {}
+    public static String printJson() {
+        return null;
+    }
 
     @LuaMethodDoc(
             overloads = @LuaFunctionOverload(
@@ -183,6 +209,8 @@ public abstract class FiguraGlobalsDocs {
             ),
             value = "globals.log_json"
     )
-    public static void logJson() {}
+    public static String logJson() {
+        return null;
+    }
 
 }

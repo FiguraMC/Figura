@@ -153,7 +153,7 @@ public class FiguraLuaPrinter {
             //prints the value, either on chat or console
             sendLuaMessage(text, runtime.owner.entityName);
 
-            return NIL;
+            return LuaValue.valueOf(text.getString());
         }
 
         @Override
@@ -173,7 +173,7 @@ public class FiguraLuaPrinter {
                 text.append(TextUtils.tryParseJson(args.arg(i + 1).tojstring()));
 
             sendLuaChatMessage(text);
-            return NIL;
+            return LuaValue.valueOf(text.getString());
         }
 
         @Override
@@ -188,16 +188,19 @@ public class FiguraLuaPrinter {
             if (!Config.LOG_OTHERS.asBool() && !FiguraMod.isLocal(runtime.owner.owner))
                 return NIL;
 
+            boolean silent = false;
             MutableComponent text = Component.empty();
 
             if (args.narg() > 0) {
                 int depth = args.arg(2).isnumber() ? args.arg(2).checkint() : 1;
                 text.append(tableToText(runtime.typeManager, args.arg(1), depth, 1, true));
+                silent = args.arg(3).isboolean() && args.arg(3).checkboolean();
             }
 
-            sendLuaMessage(text, runtime.owner.entityName);
+            if (!silent)
+                sendLuaMessage(text, runtime.owner.entityName);
 
-            return NIL;
+            return LuaValue.valueOf(text.getString());
         }
 
         @Override
