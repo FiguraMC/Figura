@@ -451,11 +451,11 @@
   "figura.docs.globals.require": "The require() function takes the name of one of your scripts, without the .lua extension. If this script has not been already run before, it will run that script and return the value that script returns. If it has been run before, then it will not run the file again, but it will return the same thing as the first time. If a required script has no returns, then require() will return true. If the name you give isn't any of your scripts, it will error.",
   "figura.docs.globals.list_files": "A function that returns a table with all script file names from the specified path. If no path is specified, it will fetch from the root folder. A second argument, boolean, can be given to also list files inside subfolders.",
   "figura.docs.globals.type": "Figura overrides lua's type() function. When used on Figura types, returns the type's name as seen in the docs and in the figuraMetatables global. When called on a table that has a metatable with a __type key, returns the corresponding value.",
-  "figura.docs.globals.print": "A function that writes its arguments to chat. Even though the syntax says only one argument, you can put as many as you want. All of them will print, and they'll be separated by some spaces.",
+  "figura.docs.globals.print": "A function that writes its arguments to chat. Even though the syntax says only one argument, you can put as many as you want. All of them will print, and they'll be separated by a tab space. Returns the string representation of all values.",
   "figura.docs.globals.log": "An alias for print().",
-  "figura.docs.globals.print_table": "The first argument is either a Table, or it's a Userdata, which refers to any of the added Figura types. Prints the table out to chat, specially formatted. If userdata is passed in, it is automatically converted to a table or string, and displayed. In the case of tables inside of tables, the \"maxDepth\" parameter will be used to determine how far to go. BE CAREFUL WITH RECURSIVE TABLES! If you try to print a table too deeply, then your game may freeze while it calculates everything to print, and you may have to restart your client if you go too crazy with it. Default value for maxDepth is 1.",
+  "figura.docs.globals.print_table": "The first argument is either a Table, or it's a Userdata, which refers to any of the added Figura types. Prints the table out to chat, specially formatted. If userdata is passed in, it is automatically converted to a table or string, and displayed. In the case of tables inside of tables, the \"maxDepth\" parameter will be used to determine how far to go. Default value for maxDepth is 1. Third argument, \"silent\", will skip the chat print and will only return the string.",
   "figura.docs.globals.log_table": "An alias for printTable().",
-  "figura.docs.globals.print_json": "Takes a Minecraft json string as an argument, and prints it to the chat formatted.",
+  "figura.docs.globals.print_json": "Takes a Minecraft json string as an argument, and prints it to the chat formatted, without the lua print header. Even though the syntax says only one argument, you can put as many as you want. All of them will print, and they'll be appended in the end of the previous argument. Returns the formatted string.",
   "figura.docs.globals.log_json": "An alias for printJson().",
 
 
@@ -507,13 +507,16 @@
   "figura.docs.action_wheel.get_current_page": "Returns the current set Page from the Action Wheel, or NIL if no Page has been set.",
 
   "figura.docs.wheel_page": "An Action Wheel container which is used to store up to 8 actions.",
-  "figura.docs.wheel_page.new_action": "Adds a new Click Action on the selected Page's index. If no index is given it is added in the first available index.",
-  "figura.docs.wheel_page.new_toggle": "Adds a new Toggle Action on the selected Page's index. If no index is given it is added in the first available index.",
-  "figura.docs.wheel_page.new_scroll": "Adds a new Scroll Action on the selected Page's index. If no index is given it is added in the first available index.",
+  "figura.docs.wheel_page.new_action": "Adds a new Action on the selected Page's index. If no index is given it is added in the first available index.",
   "figura.docs.wheel_page.get_action": "Gets an Action from the Page's given index.",
   "figura.docs.wheel_page.set_action": "Sets an Action in the Page's given index.",
 
-  "figura.docs.wheel_action": "An action in the Figura Action Wheel. An abstract superclass of ClickAction, ToggleAction, and ScrollAction.",
+  "figura.docs.wheel_action": "An action in the Figura Action Wheel. Actions are either interacted by clicking and scrolling, which also being able to be toggleable.",
+  "figura.docs.wheel_action.left_click": "Function that is executed when the left mouse button is clicked.",
+  "figura.docs.wheel_action.right_click": "Function that is executed when the right mouse button is clicked.",
+  "figura.docs.wheel_action.toggle": "Function that is executed when the Action is toggled.",
+  "figura.docs.wheel_action.untoggle": "Function that is executed when the Action is untoggled.",
+  "figura.docs.wheel_action.scroll": "Function that is executed when the mouse is scrolled.",
   "figura.docs.wheel_action.get_title": "Gets this Action title.",
   "figura.docs.wheel_action.title": "Sets the title of the Action. Returns the Action for function chaining.",
   "figura.docs.wheel_action.get_color": "Gets this Action color.",
@@ -522,29 +525,18 @@
   "figura.docs.wheel_action.hover_color": "Sets the color of the Action when it is being hovered. Returns the Action for function chaining.",
   "figura.docs.wheel_action.item": "Sets the item of the Action. Returns the Action for function chaining.",
   "figura.docs.wheel_action.hover_item": "Sets the item of the Action when it is being hovered. Returns the Action for function chaining.",
-
-  "figura.docs.click_action": "An Action that is executed when clicked.",
-  "figura.docs.click_action.left_click": "Function that is executed when the left mouse button is clicked.",
-  "figura.docs.click_action.right_click": "Function that is executed when the right mouse button is clicked.",
-  "figura.docs.click_action.on_left_click": "Sets the function that is executed when the left mouse button is clicked. Returns the Action for function chaining.",
-  "figura.docs.click_action.on_right_click": "Sets the function that is executed when the right mouse button is clicked. Returns the Action for function chaining.",
-
-  "figura.docs.toggle_action": "An Action that is executed when toggled.",
-  "figura.docs.toggle_action.toggle": "Function that is executed when the Action is toggled.",
-  "figura.docs.toggle_action.untoggle": "Function that is executed when the Action is untoggled.",
-  "figura.docs.toggle_action.on_toggle": "Sets the function that is executed when the Action is toggled. Returns the Action for function chaining.",
-  "figura.docs.toggle_action.on_untoggle": "Sets the function that is executed when the Action is untoggled. Returns the Action for function chaining.",
-  "figura.docs.toggle_action.get_toggle_title": "Gets this Action toggled title.",
-  "figura.docs.toggle_action.toggle_title": "Sets the title of the Action when it is toggled. Returns the Action for function chaining.",
-  "figura.docs.toggle_action.get_toggle_color": "Gets this Action toggled color.",
-  "figura.docs.toggle_action.toggle_color": "Sets the color of the Action when it is toggled. Returns the Action for function chaining.",
-  "figura.docs.toggle_action.toggle_item": "Sets the item of the Action when it is toggled. Returns the Action for function chaining.",
-  "figura.docs.toggle_action.is_toggled": "Checks if the Action is toggled or not.",
-  "figura.docs.toggle_action.toggled": "Sets the toggle state of the Action. Returns the Action for function chaining.",
-
-  "figura.docs.scroll_action": "An Action that is executed when the mouse is scrolled.",
-  "figura.docs.scroll_action.scroll": "Function that is executed when the mouse is scrolled.",
-  "figura.docs.scroll_action.on_scroll": "Sets the function that is executed when the mouse is scrolled. Returns the Action for function chaining.",
+  "figura.docs.wheel_action.on_left_click": "Sets the function that is executed when the left mouse button is clicked. Returns the Action for function chaining.",
+  "figura.docs.wheel_action.on_right_click": "Sets the function that is executed when the right mouse button is clicked. Returns the Action for function chaining.",
+  "figura.docs.wheel_action.on_toggle": "Sets the function that is executed when the Action is toggled. Returns the Action for function chaining.",
+  "figura.docs.wheel_action.on_untoggle": "Sets the function that is executed when the Action is untoggled. Returns the Action for function chaining.",
+  "figura.docs.wheel_action.on_scroll": "Sets the function that is executed when the mouse is scrolled. Returns the Action for function chaining.",
+  "figura.docs.wheel_action.get_toggle_title": "Gets this Action toggled title.",
+  "figura.docs.wheel_action.toggle_title": "Sets the title of the Action when it is toggled. Returns the Action for function chaining.",
+  "figura.docs.wheel_action.get_toggle_color": "Gets this Action toggled color.",
+  "figura.docs.wheel_action.toggle_color": "Sets the color of the Action when it is toggled. Returns the Action for function chaining.",
+  "figura.docs.wheel_action.toggle_item": "Sets the item of the Action when it is toggled. Returns the Action for function chaining.",
+  "figura.docs.wheel_action.is_toggled": "Checks if the Action is toggled or not.",
+  "figura.docs.wheel_action.toggled": "Sets the toggle state of the Action. Returns the Action for function chaining.",
 
 
   "figura.docs.animation": "A blockbench animation.",
@@ -754,6 +746,9 @@
   "figura.docs.living_entity.get_active_hand": "Returns \"OFF_HAND\" or \"MAIN_HAND\", depending on which hand this entity uses an item with.",
   "figura.docs.living_entity.get_active_item": "Returns an ItemStack representing the item the entity is currently using. If they're not using any item, returns air.",
   "figura.docs.living_entity.is_climbing": "Returns true if the entity is currently using a climbable block, like a ladder or vine.",
+  "figura.docs.living_entity.get_swing_time": "Returns the number of ticks this entity has the arm swinging.",
+  "figura.docs.living_entity.is_swinging_arm": "Returns true if the entity is currently swinging its arm.",
+  "figura.docs.living_entity.get_swing_arm": "Returns \"OFF_HAND\" or \"MAIN_HAND\", based on the arm this entity is currently swinging.",
 
   "figura.docs.player": "Acts as a proxy for a player entity in the Minecraft world. A global instance exists for the avatar's user, under the name \"player\".",
   "figura.docs.player.get_food": "Gets the current food level of the player, from 0 to 20.",
@@ -810,6 +805,7 @@
   "figura.docs.host.get_screen": "Gets the class name of the screen the player is currently on. If the player is not currently in a screen, returns nil.",
   "figura.docs.host.is_chat_open": "Checks if the host has the chat screen opened.",
   "figura.docs.host.is_container_open": "Checks if the host has a container screen opened.",
+  "figura.docs.host.save_texture": "A debug function, saves the texture on the cache directory as png.",
 
 
   "figura.docs.itemstack": "A proxy for an item stack from Minecraft.",
@@ -1057,7 +1053,10 @@
 
   "figura.docs.textures": "A global API which allows for creating textures at runtime.",
   "figura.docs.textures.register": "Creates a new texture with the given name, width and height. The texture is filled with a solid color. Returns the texture.",
+  "figura.docs.textures.read": "Reads a texture from a base64 string.",
   "figura.docs.textures.get": "Gets a registered texture based on its name, or nil if no texture was found with that name.",
+  "figura.docs.textures.get_primary_textures": "Returns a table with all primary textures used by this avatar.",
+  "figura.docs.textures.get_secondary_textures": "Returns a table with all secondary textures used by this avatar.",
 
   "figura.docs.texture": "A texture object, either generated by the model or created with the TextureAPI.",
   "figura.docs.texture.get_name": "Returns this texture name.",
@@ -1065,6 +1064,9 @@
   "figura.docs.texture.get_pixel": "Gets the RGBA color from the specified pixel.",
   "figura.docs.texture.set_pixel": "Sets the RGBA color of the specified pixel.",
   "figura.docs.texture.fill": "Sets the RGBA color of the entire specified region.",
+  "figura.docs.texture.update": "Updates the texture to the gpu, applying all the changes.",
+  "figura.docs.texture.restore": "Restores the texture to its original state, before any modifications.",
+  "figura.docs.texture.save": "Returns a base64 string representation of this texture.",
 
 
   "figura.docs.vanilla_model": "A global API that provides functions to interact with the vanilla player model and its parts. Accessed using the name \"vanilla_model\".",

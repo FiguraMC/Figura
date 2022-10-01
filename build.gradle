@@ -1,7 +1,8 @@
 plugins {
 	id 'maven-publish'
-	id 'fabric-loom' version '0.12-SNAPSHOT'
+	id 'fabric-loom' version '1.0-SNAPSHOT'
 	id 'org.quiltmc.quilt-mappings-on-loom' version '4.2.0'
+	id "io.github.juuxel.loom-quiltflower" version "1.+"
 }
 
 java_version = project.java_version

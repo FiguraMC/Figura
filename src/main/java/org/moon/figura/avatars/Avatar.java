@@ -120,7 +120,9 @@ public class Avatar {
         this.worldTick = new Instructions(trust.get(TrustContainer.Trust.WORLD_TICK_INST));
         this.particlesRemaining = new RefilledNumber(trust.get(TrustContainer.Trust.PARTICLES));
         this.soundsRemaining = new RefilledNumber(trust.get(TrustContainer.Trust.SOUNDS));
-        entityName = EntityUtils.getNameForUUID(owner);
+
+        String name = EntityUtils.getNameForUUID(owner);
+        this.entityName = name == null ? "" : name;
     }
 
     public void load(CompoundTag nbt) {
@@ -152,7 +154,7 @@ public class Avatar {
                     color = metadata.getString("color");
                 fileSize = getFileSize();
                 versionStatus = checkVersion();
-                if (entityName == null)
+                if (entityName.isBlank())
                     entityName = name;
             } catch (Exception e) {
                 FiguraMod.LOGGER.error("", e);
