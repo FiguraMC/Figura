@@ -145,7 +145,7 @@ public class LivingEntityAPI<T extends LivingEntity> extends EntityAPI<T> {
     @LuaMethodDoc("living_entity.get_active_hand")
     public String getActiveHand() {
         checkEntity();
-        return entity.getUsedItemHand().toString();
+        return entity.getUsedItemHand().name();
     }
 
     @LuaWhitelist
@@ -157,23 +157,23 @@ public class LivingEntityAPI<T extends LivingEntity> extends EntityAPI<T> {
 
     @LuaWhitelist
     @LuaMethodDoc("living_entity.get_swing_time")
-    public int getSwingTime(){
+    public int getSwingTime() {
       checkEntity();
       return entity.swingTime;
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("living_entity.is_swinging")
-    public boolean isSwinging(){
+    @LuaMethodDoc("living_entity.is_swinging_arm")
+    public boolean isSwingingArm() {
       checkEntity();
       return entity.swinging;
     }
 
     @LuaWhitelist
     @LuaMethodDoc("living_entity.get_swing_arm")
-    public String getSwingArm(){
+    public String getSwingArm() {
       checkEntity();
-      return entity.swinging?entity.swingingArm.toString():null;
+      return entity.swinging ? entity.swingingArm.name() : null;
     }
 
     @Override

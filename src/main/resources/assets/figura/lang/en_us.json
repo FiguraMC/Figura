@@ -746,6 +746,9 @@
   "figura.docs.living_entity.get_active_hand": "Returns \"OFF_HAND\" or \"MAIN_HAND\", depending on which hand this entity uses an item with.",
   "figura.docs.living_entity.get_active_item": "Returns an ItemStack representing the item the entity is currently using. If they're not using any item, returns air.",
   "figura.docs.living_entity.is_climbing": "Returns true if the entity is currently using a climbable block, like a ladder or vine.",
+  "figura.docs.living_entity.get_swing_time": "Returns the number of ticks this entity has the arm swinging.",
+  "figura.docs.living_entity.is_swinging_arm": "Returns true if the entity is currently swinging its arm.",
+  "figura.docs.living_entity.get_swing_arm": "Returns \"OFF_HAND\" or \"MAIN_HAND\", based on the arm this entity is currently swinging.",
 
   "figura.docs.player": "Acts as a proxy for a player entity in the Minecraft world. A global instance exists for the avatar's user, under the name \"player\".",
   "figura.docs.player.get_food": "Gets the current food level of the player, from 0 to 20.",
