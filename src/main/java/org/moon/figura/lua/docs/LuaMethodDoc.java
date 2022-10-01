@@ -23,22 +23,5 @@ public @interface LuaMethodDoc {
      */
     String value();
 
-    @Retention(RetentionPolicy.RUNTIME)
-    @interface LuaMethodOverload {
-
-        /**
-         * The types of the arguments in this overload.
-         */
-        Class<?>[] argumentTypes() default {};
-
-        /**
-         * The names to give to the arguments in this overload.
-         */
-        String[] argumentNames() default {};
-
-        Class<?> returnType() default DEFAULT.class;
-
-        final class DEFAULT {}
-    }
 }
 

@@ -19,7 +19,6 @@ import org.moon.figura.lua.api.sound.SoundAPI;
 import org.moon.figura.lua.api.TextureAPI;
 import org.moon.figura.lua.api.vanilla_model.VanillaModelAPI;
 import org.moon.figura.lua.api.world.WorldAPI;
-import org.moon.figura.lua.docs.LuaMethodDoc.LuaMethodOverload;
 
 /**
  * Class only exists to have docs for the global figura
@@ -144,11 +143,11 @@ public abstract class FiguraGlobalsDocs {
                             argumentTypes = {LuaUserdata.class, Integer.class},
                             argumentNames = {"javaObject", "maxDepth"}
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {LuaTable.class, Integer.class, Boolean.class},
                             argumentNames = {"table", "maxDepth", "silent"}
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {LuaUserdata.class, Integer.class, Boolean.class},
                             argumentNames = {"javaObject", "maxDepth", "silent"}
                     )
@@ -177,11 +176,11 @@ public abstract class FiguraGlobalsDocs {
                             argumentTypes = {LuaUserdata.class, Integer.class},
                             argumentNames = {"javaObject", "maxDepth"}
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {LuaTable.class, Integer.class, Boolean.class},
                             argumentNames = {"table", "maxDepth", "silent"}
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {LuaUserdata.class, Integer.class, Boolean.class},
                             argumentNames = {"javaObject", "maxDepth", "silent"}
                     )

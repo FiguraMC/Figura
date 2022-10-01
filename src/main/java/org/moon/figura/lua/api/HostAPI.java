@@ -21,7 +21,7 @@ import org.moon.figura.lua.api.entity.EntityAPI;
 import org.moon.figura.lua.api.world.ItemStackAPI;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaMethodDoc;
-import org.moon.figura.lua.docs.LuaMethodDoc.LuaMethodOverload;
+import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.mixin.gui.ChatScreenAccessor;
@@ -312,7 +312,7 @@ public class HostAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = FiguraTexture.class,
                     argumentNames = "texture"
             ),
