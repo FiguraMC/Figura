@@ -7,8 +7,8 @@ import org.moon.figura.avatars.model.rendering.texture.FiguraTexture;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
-import org.moon.figura.lua.docs.LuaMethodDoc.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.utils.ColorUtils;
 
@@ -50,7 +50,7 @@ public class TextureAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaMethodOverload(
+            overloads = @LuaFunctionOverload(
                     argumentTypes = {String.class, Integer.class, Integer.class},
                     argumentNames = {"name", "width", "height"}
             ),
@@ -87,7 +87,7 @@ public class TextureAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaMethodOverload(
+            overloads = @LuaFunctionOverload(
                     argumentTypes = String.class,
                     argumentNames = "name"
             ),

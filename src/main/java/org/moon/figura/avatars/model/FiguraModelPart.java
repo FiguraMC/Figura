@@ -13,8 +13,8 @@ import org.moon.figura.avatars.model.rendertasks.RenderTask;
 import org.moon.figura.avatars.model.rendertasks.TextTask;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
-import org.moon.figura.lua.docs.LuaMethodDoc.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
@@ -96,6 +96,9 @@ public class FiguraModelPart {
         FiguraVec3 defaultPivot = parentType.offset.copy();
 
         defaultPivot.subtract(partData.pos);
+
+        if ((animationOverride & 4) != 4)
+            defaultPivot.multiply(partData.scale);
 
         if ((animationOverride & 2) != 2) {
             customization.offsetPivot(defaultPivot);
@@ -210,11 +213,11 @@ public class FiguraModelPart {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaMethodOverload(
+                    @LuaFunctionOverload(
                             argumentTypes = FiguraVec3.class,
                             argumentNames = "pos"
                     ),
-                    @LuaMethodOverload(
+                    @LuaFunctionOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
                             argumentNames = {"x", "y", "z"}
                     )
@@ -241,11 +244,11 @@ public class FiguraModelPart {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaMethodOverload(
+                    @LuaFunctionOverload(
                             argumentTypes = FiguraVec3.class,
                             argumentNames = "rot"
                     ),
-                    @LuaMethodOverload(
+                    @LuaFunctionOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
                             argumentNames = {"x", "y", "z"}
                     )
@@ -266,11 +269,11 @@ public class FiguraModelPart {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaMethodOverload(
+                    @LuaFunctionOverload(
                             argumentTypes = FiguraVec3.class,
                             argumentNames = "offsetRot"
                     ),
-                    @LuaMethodOverload(
+                    @LuaFunctionOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
                             argumentNames = {"x", "y", "z"}
                     )
@@ -297,11 +300,11 @@ public class FiguraModelPart {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaMethodOverload(
+                    @LuaFunctionOverload(
                             argumentTypes = FiguraVec3.class,
                             argumentNames = "scale"
                     ),
-                    @LuaMethodOverload(
+                    @LuaFunctionOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
                             argumentNames = {"x", "y", "z"}
                     )
@@ -328,11 +331,11 @@ public class FiguraModelPart {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaMethodOverload(
+                    @LuaFunctionOverload(
                             argumentTypes = FiguraVec3.class,
                             argumentNames = "pivot"
                     ),
-                    @LuaMethodOverload(
+                    @LuaFunctionOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
                             argumentNames = {"x", "y", "z"}
                     )
@@ -353,11 +356,11 @@ public class FiguraModelPart {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaMethodOverload(
+                    @LuaFunctionOverload(
                             argumentTypes = FiguraVec3.class,
                             argumentNames = "offsetPivot"
                     ),
-                    @LuaMethodOverload(
+                    @LuaFunctionOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
                             argumentNames = {"x", "y", "z"}
                     )
@@ -397,7 +400,7 @@ public class FiguraModelPart {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaMethodOverload(
+            overloads = @LuaFunctionOverload(
                     argumentTypes = FiguraMat4.class,
                     argumentNames = "matrix"
             ),
@@ -418,7 +421,7 @@ public class FiguraModelPart {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaMethodOverload(
+            overloads = @LuaFunctionOverload(
                     argumentTypes = Boolean.class,
                     argumentNames = "visible"
             ),
@@ -444,7 +447,7 @@ public class FiguraModelPart {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaMethodOverload(
+            overloads = @LuaFunctionOverload(
                     argumentTypes = String.class,
                     argumentNames = "renderType"
             ),
@@ -460,7 +463,7 @@ public class FiguraModelPart {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaMethodOverload(
+            overloads = @LuaFunctionOverload(
                     argumentTypes = String.class,
                     argumentNames = "renderType"
             ),
@@ -477,19 +480,19 @@ public class FiguraModelPart {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaMethodOverload(
+                    @LuaFunctionOverload(
                             argumentTypes = String.class,
                             argumentNames = "textureType"
                     ),
-                    @LuaMethodOverload(
+                    @LuaFunctionOverload(
                             argumentTypes = {String.class, String.class},
                             argumentNames = {"resource", "path"}
                     ),
-                    @LuaMethodOverload(
+                    @LuaFunctionOverload(
                             argumentTypes = {String.class, String.class},
                             argumentNames = {"custom", "textureName"}
                     ),
-                    @LuaMethodOverload(
+                    @LuaFunctionOverload(
                             argumentTypes = {String.class, FiguraTexture.class},
                             argumentNames = {"custom", "texture"}
                     )
@@ -507,19 +510,19 @@ public class FiguraModelPart {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaMethodOverload(
+                    @LuaFunctionOverload(
                             argumentTypes = String.class,
                             argumentNames = "textureType"
                     ),
-                    @LuaMethodOverload(
+                    @LuaFunctionOverload(
                             argumentTypes = {String.class, String.class},
                             argumentNames = {"resource", "path"}
                     ),
-                    @LuaMethodOverload(
+                    @LuaFunctionOverload(
                             argumentTypes = {String.class, String.class},
                             argumentNames = {"custom", "textureName"}
                     ),
-                    @LuaMethodOverload(
+                    @LuaFunctionOverload(
                             argumentTypes = {String.class, FiguraTexture.class},
                             argumentNames = {"custom", "texture"}
                     )
@@ -584,11 +587,11 @@ public class FiguraModelPart {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaMethodOverload(
+                    @LuaFunctionOverload(
                             argumentTypes = FiguraVec2.class,
                             argumentNames = "uv"
                     ),
-                    @LuaMethodOverload(
+                    @LuaFunctionOverload(
                             argumentTypes = {Double.class, Double.class},
                             argumentNames = {"u", "v"}
                     )
@@ -610,11 +613,11 @@ public class FiguraModelPart {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaMethodOverload(
+                    @LuaFunctionOverload(
                             argumentTypes = FiguraVec2.class,
                             argumentNames = "uv"
                     ),
-                    @LuaMethodOverload(
+                    @LuaFunctionOverload(
                             argumentTypes = {Double.class, Double.class},
                             argumentNames = {"u", "v"}
                     )
@@ -650,7 +653,7 @@ public class FiguraModelPart {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaMethodOverload(
+            overloads = @LuaFunctionOverload(
                     argumentTypes = FiguraMat3.class,
                     argumentNames = "matrix"
             ),
@@ -668,11 +671,11 @@ public class FiguraModelPart {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaMethodOverload(
+                    @LuaFunctionOverload(
                             argumentTypes = FiguraVec3.class,
                             argumentNames = "color"
                     ),
-                    @LuaMethodOverload(
+                    @LuaFunctionOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
                             argumentNames = {"r", "g", "b"}
                     )
@@ -690,7 +693,7 @@ public class FiguraModelPart {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaMethodOverload(
+            overloads = @LuaFunctionOverload(
                     argumentTypes = Float.class,
                     argumentNames = "opacity"
             ),
@@ -708,11 +711,11 @@ public class FiguraModelPart {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaMethodOverload(
+                    @LuaFunctionOverload(
                             argumentTypes = FiguraVec2.class,
                             argumentNames = "light"
                     ),
-                    @LuaMethodOverload(
+                    @LuaFunctionOverload(
                             argumentTypes = {Integer.class, Integer.class},
                             argumentNames = {"blockLight", "skyLight"}
                     )
@@ -737,7 +740,7 @@ public class FiguraModelPart {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaMethodOverload(
+            overloads = @LuaFunctionOverload(
                     argumentTypes = String.class,
                     argumentNames = "parentType"
             ),
@@ -760,7 +763,7 @@ public class FiguraModelPart {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaMethodOverload(
+            overloads = @LuaFunctionOverload(
                     argumentTypes = String.class,
                     argumentNames = "taskName"
             ),
@@ -773,7 +776,7 @@ public class FiguraModelPart {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaMethodOverload(
+            overloads = @LuaFunctionOverload(
                     argumentTypes = String.class,
                     argumentNames = "taskName"
             ),
@@ -786,7 +789,7 @@ public class FiguraModelPart {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaMethodOverload(
+            overloads = @LuaFunctionOverload(
                     argumentTypes = String.class,
                     argumentNames = "taskName"
             ),
@@ -800,8 +803,8 @@ public class FiguraModelPart {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaMethodOverload(returnType = Map.class),
-                    @LuaMethodOverload(
+                    @LuaFunctionOverload(returnType = Map.class),
+                    @LuaFunctionOverload(
                             argumentTypes = String.class,
                             argumentNames = "taskName",
                             returnType = RenderTask.class
@@ -818,8 +821,8 @@ public class FiguraModelPart {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaMethodOverload,
-                    @LuaMethodOverload(
+                    @LuaFunctionOverload,
+                    @LuaFunctionOverload(
                             argumentTypes = String.class,
                             argumentNames = "taskName"
                     )
