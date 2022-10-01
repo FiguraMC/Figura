@@ -7,9 +7,10 @@ import org.moon.figura.avatars.Avatar;
 import org.moon.figura.ducks.SoundEngineAccessor;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
-import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMetamethodDoc;
+import org.moon.figura.lua.docs.LuaMetamethodDoc.LuaMetamethodOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
+import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.mixin.sound.SoundManagerAccessor;
@@ -39,7 +40,7 @@ public class SoundAPI {
 
     @LuaWhitelist
     @LuaMetamethodDoc(
-            overloads = @LuaMetamethodDoc.LuaMetamethodOverload(
+            overloads = @LuaMetamethodOverload(
                     types = {LuaSound.class, String.class}
             )
     )
@@ -50,19 +51,19 @@ public class SoundAPI {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {String.class, FiguraVec3.class},
                             argumentNames = {"sound", "pos"}
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {String.class, Double.class, Double.class, Double.class},
                             argumentNames = {"sound", "posX", "posY", "posZ"}
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {String.class, FiguraVec3.class, Double.class, Double.class, Boolean.class},
                             argumentNames = {"sound", "pos", "volume", "pitch", "loop"}
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {String.class, Double.class, Double.class, Double.class, Double.class, Double.class, Boolean.class},
                             argumentNames = {"sound", "posX", "posY", "posZ", "volume", "pitch", "loop"}
                     )
@@ -76,8 +77,8 @@ public class SoundAPI {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload,
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload,
+                    @LuaMethodOverload(
                             argumentTypes = String.class,
                             argumentNames = "id"
                     )
@@ -91,11 +92,11 @@ public class SoundAPI {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {String.class, LuaTable.class},
                             argumentNames = {"name", "byteArray"}
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {String.class, String.class},
                             argumentNames = {"name", "base64Text"}
                     )

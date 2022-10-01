@@ -2,8 +2,8 @@ package org.moon.figura.lua.api.nameplate;
 
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
-import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
+import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec4;
@@ -41,11 +41,11 @@ public class EntityNameplateCustomization extends NameplateCustomization {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = FiguraVec3.class,
                             argumentNames = "pos"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
                             argumentNames = {"x", "y", "z"}
                     )
@@ -65,11 +65,11 @@ public class EntityNameplateCustomization extends NameplateCustomization {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = FiguraVec3.class,
                             argumentNames = "scale"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
                             argumentNames = {"x", "y", "z"}
                     )
@@ -83,23 +83,23 @@ public class EntityNameplateCustomization extends NameplateCustomization {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = FiguraVec3.class,
                             argumentNames = "rgb"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = FiguraVec4.class,
                             argumentNames = "rgba"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {FiguraVec3.class, Double.class},
                             argumentNames = {"rgb", "a"}
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
                             argumentNames = {"r", "g", "b"}
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Double.class, Double.class, Double.class, Double.class},
                             argumentNames = {"r", "g", "b", "a"}
                     )

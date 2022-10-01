@@ -4,8 +4,8 @@ import net.minecraft.client.KeyMapping;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
-import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
+import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.mixin.input.KeyMappingAccessor;
 
@@ -28,15 +28,15 @@ public class KeybindAPI {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {String.class, String.class},
                             argumentNames = {"name", "key"}
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {String.class, String.class, Boolean.class},
                             argumentNames = {"name", "key", "gui"}
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {String.class, String.class, Boolean.class, Boolean.class},
                             argumentNames = {"name", "key", "gui", "override"}
                     )
@@ -56,7 +56,7 @@ public class KeybindAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = String.class,
                     argumentNames = "id"
             ),

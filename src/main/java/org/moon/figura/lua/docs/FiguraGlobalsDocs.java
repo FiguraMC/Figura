@@ -79,7 +79,7 @@ public abstract class FiguraGlobalsDocs {
     public LuaFunction type;
 
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = String.class,
                     argumentNames = "scriptName"
             ),
@@ -89,12 +89,12 @@ public abstract class FiguraGlobalsDocs {
 
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload,
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload,
+                    @LuaMethodOverload(
                             argumentTypes = String.class,
                             argumentNames = "folder"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {String.class, Boolean.class},
                             argumentNames = {"folder", "subFolders"}
                     )
@@ -104,7 +104,7 @@ public abstract class FiguraGlobalsDocs {
     public static LuaTable listFiles(String folder, boolean subFolders) {return null;}
 
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = Object.class,
                     argumentNames = "arg"
             ),
@@ -115,7 +115,7 @@ public abstract class FiguraGlobalsDocs {
     }
 
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = Object.class,
                     argumentNames = "arg"
             ),
@@ -127,27 +127,27 @@ public abstract class FiguraGlobalsDocs {
 
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = LuaTable.class,
                             argumentNames = "table"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = LuaUserdata.class,
                             argumentNames = "javaObject"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {LuaTable.class, Integer.class},
                             argumentNames = {"table", "maxDepth"}
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {LuaUserdata.class, Integer.class},
                             argumentNames = {"javaObject", "maxDepth"}
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {LuaTable.class, Integer.class, Boolean.class},
                             argumentNames = {"table", "maxDepth", "silent"}
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {LuaUserdata.class, Integer.class, Boolean.class},
                             argumentNames = {"javaObject", "maxDepth", "silent"}
                     )
@@ -160,27 +160,27 @@ public abstract class FiguraGlobalsDocs {
 
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = LuaTable.class,
                             argumentNames = "table"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = LuaUserdata.class,
                             argumentNames = "javaObject"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {LuaTable.class, Integer.class},
                             argumentNames = {"table", "maxDepth"}
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {LuaUserdata.class, Integer.class},
                             argumentNames = {"javaObject", "maxDepth"}
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {LuaTable.class, Integer.class, Boolean.class},
                             argumentNames = {"table", "maxDepth", "silent"}
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {LuaUserdata.class, Integer.class, Boolean.class},
                             argumentNames = {"javaObject", "maxDepth", "silent"}
                     )
@@ -192,7 +192,7 @@ public abstract class FiguraGlobalsDocs {
     }
 
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = String.class,
                     argumentNames = "json"
             ),
@@ -203,7 +203,7 @@ public abstract class FiguraGlobalsDocs {
     }
 
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = String.class,
                     argumentNames = "json"
             ),

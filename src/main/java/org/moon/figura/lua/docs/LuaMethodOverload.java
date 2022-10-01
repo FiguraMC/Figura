@@ -4,7 +4,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
-public @interface LuaFunctionOverload {
+public @interface LuaMethodOverload {
 
     /**
      * The types of the arguments in this overload.
@@ -18,5 +18,6 @@ public @interface LuaFunctionOverload {
 
     Class<?> returnType() default DEFAULT.class;
 
-    final class DEFAULT {}
+    final class DEFAULT {
+    }
 }
