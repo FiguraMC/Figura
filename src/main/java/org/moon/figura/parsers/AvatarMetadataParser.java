@@ -81,7 +81,7 @@ public class AvatarMetadataParser {
     }
 
     private static void injectCustomization(String path, Customization customization, CompoundTag models) throws IOException {
-        CompoundTag modelPart = getTag(models, path);
+        CompoundTag modelPart = getTag(models, path, false);
 
         //Add more of these later
         if (customization.primaryRenderType != null) {
@@ -106,26 +106,42 @@ public class AvatarMetadataParser {
             else
                 modelPart.putString("pt", type.name());
         }
+        if (customization.moveTo != null) {
+            modelPart = getTag(models, path, true); //yeet the part
+            CompoundTag targetPart = getTag(models, customization.moveTo, false);
+
+            ListTag list = !targetPart.contains("chld") ? new ListTag() : targetPart.getList("chld", Tag.TAG_COMPOUND);
+            list.add(modelPart);
+            targetPart.put("chld", list);
+        }
     }
 
-    private static CompoundTag getTag(CompoundTag models, String path) throws IOException {
+    private static CompoundTag getTag(CompoundTag models, String path, boolean remove) throws IOException {
         String[] keys = path.split(SEPARATOR_REGEX);
         CompoundTag current = models;
-        for (String key : keys) {
-            if (current.contains("chld")) {
-                ListTag children = current.getList("chld", Tag.TAG_COMPOUND);
-                for (int j = 0; j < children.size(); j++) {
-                    CompoundTag child = children.getCompound(j);
-                    if (child.getString("name").equals(key)) {
-                        current = child;
-                        break;
-                    }
-                    if (j == children.size() - 1)
-                        throw new IOException("Invalid part path: \"" + path + "\".");
-                }
-            } else
+
+        for (int i = 0; i < keys.length; i++) {
+            if (!current.contains("chld"))
                 throw new IOException("Invalid part path: \"" + path + "\".");
+
+            ListTag children = current.getList("chld", Tag.TAG_COMPOUND);
+            int j = 0;
+            for (; j < children.size(); j++) {
+                CompoundTag child = children.getCompound(j);
+
+                if (child.getString("name").equals(keys[i])) {
+                    current = child;
+                    break;
+                }
+
+                if (j == children.size() - 1)
+                    throw new IOException("Invalid part path: \"" + path + "\".");
+            }
+
+            if (remove && i == keys.length - 1)
+                children.remove(j);
         }
+
         return current;
     }
 
@@ -144,5 +160,6 @@ public class AvatarMetadataParser {
     public static class Customization {
         public String primaryRenderType, secondaryRenderType;
         public String parentType;
+        public String moveTo;
     }
 }

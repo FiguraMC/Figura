@@ -49,7 +49,7 @@ public class PartCustomization implements CachedType<PartCustomization> {
     public Integer overlay = null;
 
     private RenderTypes primaryRenderType, secondaryRenderType;
-    public Pair<FiguraTextureSet.OverrideType, String> primaryTexture, secondaryTexture;
+    public Pair<FiguraTextureSet.OverrideType, Object> primaryTexture, secondaryTexture;
 
     public void applyToStack(PoseStack stack) {
         stack.mulPoseMatrix(positionMatrix.toMatrix4f());

@@ -227,8 +227,11 @@ public class PlayerList extends AbstractList {
         showDisconnected.y = y + 4;
     }
 
-    public void updateHeight(int height) {
-        this.height = height;
-        scrollBar.setHeight(height - 32);
+    public int getTrustAt(double y) {
+        int ret = -1;
+        for (AbstractTrustElement element : trustList)
+            if (element instanceof GroupElement group && group.visible && y >= group.y)
+                ret++;
+        return Math.max(ret, 0);
     }
 }

@@ -2,14 +2,12 @@ package org.moon.figura.lua;
 
 import org.moon.figura.animation.Animation;
 import org.moon.figura.avatars.model.FiguraModelPart;
+import org.moon.figura.avatars.model.rendering.texture.FiguraTexture;
 import org.moon.figura.avatars.model.rendertasks.BlockTask;
 import org.moon.figura.avatars.model.rendertasks.ItemTask;
 import org.moon.figura.avatars.model.rendertasks.RenderTask;
 import org.moon.figura.avatars.model.rendertasks.TextTask;
-import org.moon.figura.lua.api.AvatarAPI;
-import org.moon.figura.lua.api.ClientAPI;
-import org.moon.figura.lua.api.HostAPI;
-import org.moon.figura.lua.api.RendererAPI;
+import org.moon.figura.lua.api.*;
 import org.moon.figura.lua.api.action_wheel.*;
 import org.moon.figura.lua.api.entity.EntityAPI;
 import org.moon.figura.lua.api.entity.LivingEntityAPI;
@@ -102,9 +100,6 @@ public class FiguraAPIManager {
         add(ActionWheelAPI.class);
         add(Page.class);
         add(Action.class);
-        add(ClickAction.class);
-        add(ScrollAction.class);
-        add(ToggleAction.class);
 
         add(VectorsAPI.class);
         add(MatricesAPI.class);
@@ -116,6 +111,9 @@ public class FiguraAPIManager {
 
         add(PingAPI.class);
         add(PingFunction.class);
+
+        add(TextureAPI.class);
+        add(FiguraTexture.class);
 
         add(Animation.class);
 
@@ -145,6 +143,7 @@ public class FiguraAPIManager {
         put("matrices", r -> MatricesAPI.INSTANCE);
         put("world", r -> WorldAPI.INSTANCE);
         put("pings", r -> r.ping = new PingAPI(r.owner));
+        put("textures", r -> new TextureAPI(r.owner));
     }};
 
     private static final Set<FiguraAPI> ENTRYPOINTS = new HashSet<>();

@@ -61,47 +61,7 @@ public class Page {
     )
     public Action newAction(Integer index) {
         //set the action
-        Action action = new ClickAction();
-        this.actions[this.checkIndex(index)] = action;
-
-        //return the action
-        return action;
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = {
-                    @LuaFunctionOverload,
-                    @LuaFunctionOverload(
-                            argumentTypes = Integer.class,
-                            argumentNames = "index"
-                    )
-            },
-            value = "wheel_page.new_toggle"
-    )
-    public Action newToggle(Integer index) {
-        //set the action
-        Action action = new ToggleAction();
-        this.actions[this.checkIndex(index)] = action;
-
-        //return the action
-        return action;
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = {
-                    @LuaFunctionOverload,
-                    @LuaFunctionOverload(
-                            argumentTypes = Integer.class,
-                            argumentNames = "index"
-                    )
-            },
-            value = "wheel_page.new_scroll"
-    )
-    public Action newScroll(Integer index) {
-        //set the action
-        Action action = new ScrollAction();
+        Action action = new Action();
         this.actions[this.checkIndex(index)] = action;
 
         //return the action

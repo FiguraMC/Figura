@@ -4,6 +4,7 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.renderer.LightTexture;
 import org.luaj.vm2.LuaError;
 import org.moon.figura.avatars.model.rendering.ImmediateAvatarRenderer;
+import org.moon.figura.avatars.model.rendering.texture.FiguraTexture;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
 import org.moon.figura.avatars.model.rendering.texture.RenderTypes;
 import org.moon.figura.avatars.model.rendertasks.BlockTask;
@@ -22,6 +23,7 @@ import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.ui.UIHelper;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +48,7 @@ public class FiguraModelPart {
 
     public Map<String, RenderTask> renderTasks = new HashMap<>();
 
+    public List<FiguraTextureSet> textures;
     public int textureWidth, textureHeight; //If the part has multiple textures, then these are -1.
 
     public boolean animated = false;
@@ -484,13 +487,21 @@ public class FiguraModelPart {
                     @LuaFunctionOverload(
                             argumentTypes = {String.class, String.class},
                             argumentNames = {"resource", "path"}
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {String.class, String.class},
+                            argumentNames = {"custom", "textureName"}
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {String.class, FiguraTexture.class},
+                            argumentNames = {"custom", "texture"}
                     )
             },
             value = "model_part.set_primary_texture"
     )
-    public void setPrimaryTexture(String type, String path) {
+    public void setPrimaryTexture(String type, Object x) {
         try {
-            this.customization.primaryTexture = type == null ? null : Pair.of(FiguraTextureSet.OverrideType.valueOf(type.toUpperCase()), path);
+            this.customization.primaryTexture = type == null ? null : Pair.of(FiguraTextureSet.OverrideType.valueOf(type.toUpperCase()), x);
         } catch (Exception ignored) {
             throw new LuaError("Invalid texture override type: " + type);
         }
@@ -506,16 +517,52 @@ public class FiguraModelPart {
                     @LuaFunctionOverload(
                             argumentTypes = {String.class, String.class},
                             argumentNames = {"resource", "path"}
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {String.class, String.class},
+                            argumentNames = {"custom", "textureName"}
+                    ),
+                    @LuaFunctionOverload(
+                            argumentTypes = {String.class, FiguraTexture.class},
+                            argumentNames = {"custom", "texture"}
                     )
             },
             value = "model_part.set_secondary_texture"
     )
-    public void setSecondaryTexture(String type, String path) {
+    public void setSecondaryTexture(String type, Object x) {
         try {
-            this.customization.secondaryTexture = type == null ? null : Pair.of(FiguraTextureSet.OverrideType.valueOf(type.toUpperCase()), path);
+            this.customization.secondaryTexture = type == null ? null : Pair.of(FiguraTextureSet.OverrideType.valueOf(type.toUpperCase()), x);
         } catch (Exception ignored) {
             throw new LuaError("Invalid texture override type: " + type);
         }
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("model_part.get_primary_textures")
+    public List<FiguraTexture> getPrimaryTextures() {
+        List<FiguraTexture> list = new ArrayList<>();
+
+        for (FiguraTextureSet set : textures) {
+            FiguraTexture texture = set.mainTex;
+            if (texture != null)
+                list.add(texture);
+        }
+
+        return list;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("model_part.get_secondary_textures")
+    public List<FiguraTexture> getSecondaryTextures() {
+        List<FiguraTexture> list = new ArrayList<>();
+
+        for (FiguraTextureSet set : textures) {
+            FiguraTexture texture = set.emissiveTex;
+            if (texture != null)
+                list.add(texture);
+        }
+
+        return list;
     }
 
     @LuaWhitelist
@@ -773,13 +820,19 @@ public class FiguraModelPart {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = String.class,
-                    argumentNames = "taskName"
-            ),
+            overloads = {
+                    @LuaFunctionOverload,
+                    @LuaFunctionOverload(
+                            argumentTypes = String.class,
+                            argumentNames = "taskName"
+                    )
+            },
             value = "model_part.remove_task")
-    public void removeTask(@LuaNotNil String name) {
-        this.renderTasks.remove(name);
+    public void removeTask(String name) {
+        if (name != null)
+            this.renderTasks.remove(name);
+        else
+            this.renderTasks.clear();
     }
 
     //-- METAMETHODS --//

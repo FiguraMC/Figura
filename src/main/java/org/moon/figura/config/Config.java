@@ -77,6 +77,8 @@ public enum Config {
     POPUP_SCALE(1f, InputType.FLOAT),
     POPUP_MIN_SIZE(1f, InputType.FLOAT),
     POPUP_MAX_SIZE(6f, InputType.FLOAT),
+    AVATAR_HEADS(false),
+    FIGURA_INVENTORY(true),
 
     Paperdoll,
     HAS_PAPERDOLL(false),

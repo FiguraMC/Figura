@@ -51,6 +51,8 @@ public class TrustScreen extends AbstractPanelScreen {
     private float expandYPrecise;
     private float resetYPrecise;
 
+    private PlayerElement dragged = null;
+
     public TrustScreen(Screen parentScreen) {
         super(parentScreen, TITLE, 3);
     }
@@ -217,6 +219,14 @@ public class TrustScreen extends AbstractPanelScreen {
     }
 
     @Override
+    public void renderOverlays(PoseStack stack, int mouseX, int mouseY, float delta) {
+        if (dragged != null)
+            dragged.renderDragged(stack, mouseX, mouseY, delta);
+
+        super.renderOverlays(stack, mouseX, mouseY, delta);
+    }
+
+    @Override
     public void removed() {
         TrustManager.saveToDisk();
         super.removed();
@@ -231,6 +241,42 @@ public class TrustScreen extends AbstractPanelScreen {
         }
 
         return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        boolean bool = false;
+
+        if (playerList.selectedEntry instanceof PlayerElement element && element.isMouseOver(mouseX, mouseY)) {
+            dragged = element;
+            dragged.dragged = true;
+            dragged.index = playerList.getTrustAt(mouseY);
+            bool = true;
+        }
+
+        if (dragged != null) {
+            dragged.index = playerList.getTrustAt(mouseY);
+            bool = true;
+        }
+
+        return bool || super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (dragged == null)
+            return super.mouseReleased(mouseX, mouseY, button);
+
+        TrustContainer trust = dragged.getTrust();
+        ArrayList<ResourceLocation> list = new ArrayList<>(TrustManager.GROUPS.keySet());
+        ResourceLocation id = list.get(Math.min(dragged.index, list.size() - (TrustManager.isLocal(trust) ? 1 : 2)));
+
+        trust.setParent(id);
+        updateTrustData(trust);
+
+        dragged.dragged = false;
+        dragged = null;
+        return true;
     }
 
     public void updateTrustData(TrustContainer trust) {

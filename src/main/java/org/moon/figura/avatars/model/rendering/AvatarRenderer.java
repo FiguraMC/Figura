@@ -6,6 +6,9 @@ import com.mojang.math.Matrix3f;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -14,10 +17,14 @@ import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.model.FiguraModelPart;
 import org.moon.figura.avatars.model.ParentType;
 import org.moon.figura.avatars.model.VanillaModelData;
+import org.moon.figura.avatars.model.rendering.texture.FiguraTexture;
+import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -49,6 +56,8 @@ public abstract class AvatarRenderer {
 
     public PartFilterScheme currentFilterScheme;
     public final HashMap<ParentType, ConcurrentLinkedQueue<Pair<FiguraMat4, FiguraMat3>>> pivotCustomizations = new HashMap<>();
+    public final List<FiguraTextureSet> textureSets = new ArrayList<>();
+    public final HashMap<String, FiguraTexture> customTextures = new HashMap<>();
     protected static int shouldRenderPivots;
     public boolean allowHiddenTransforms = true;
     public boolean allowRenderTasks = true;
@@ -57,12 +66,32 @@ public abstract class AvatarRenderer {
 
     public AvatarRenderer(Avatar avatar) {
         this.avatar = avatar;
+
+        //Textures
+        ListTag texturesList = avatar.nbt.getList("textures", Tag.TAG_COMPOUND);
+        for (int i = 0; i < texturesList.size(); i++) {
+            CompoundTag tag = texturesList.getCompound(i);
+
+            String name = tag.getString("name");
+
+            byte[] mainData = tag.getByteArray("default");
+            mainData = mainData.length == 0 ? null : mainData;
+
+            byte[] emissiveData = tag.getByteArray("emissive");
+            emissiveData = emissiveData.length == 0 ? null : emissiveData;
+
+            textureSets.add(new FiguraTextureSet(name, mainData, emissiveData));
+        }
+
+        avatar.hasTexture = !texturesList.isEmpty();
     }
 
     public abstract int render();
     public abstract int renderSpecialParts();
     protected void clean() {
         root.clean();
+        for (FiguraTexture texture : customTextures.values())
+            texture.close();
     }
 
     public void invalidate() {

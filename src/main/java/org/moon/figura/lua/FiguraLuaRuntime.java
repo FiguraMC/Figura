@@ -157,6 +157,9 @@ public class FiguraLuaRuntime {
         this.setGlobal("load", loadstring);
         this.setGlobal("loadstring", loadstring);
 
+        //listFiles
+        this.setGlobal("listFiles", listFiles);
+
         //load math library
         try (InputStream inputStream = FiguraMod.class.getResourceAsStream("/assets/" + FiguraMod.MOD_ID + "/scripts/math.lua")) {
             if (inputStream == null) throw new IOException("Unable to get resource");
@@ -180,6 +183,35 @@ public class FiguraLuaRuntime {
             }
         });
     }
+
+    private final TwoArgFunction listFiles = new TwoArgFunction() {
+        @Override
+        public LuaValue call(LuaValue arg1, LuaValue arg2) {
+            //format path
+            String path = arg1.isnil() ? "" : arg1.checkjstring();
+            path = path.replaceAll("[/\\\\]", ".");
+
+            //max depth
+            int depth = path.isBlank() ? 1 : path.split("\\.").length + 1;
+
+            //subfolder
+            boolean subFolders = !arg2.isnil() && arg2.checkboolean();
+
+            //iterate over all script names and add them if their name starts with the path query
+            int i = 1;
+            LuaTable table = new LuaTable();
+            for (String s : scripts.keySet()) {
+                String[] split = s.split("\\.");
+
+                if (!s.startsWith(path) || split.length > depth && !subFolders)
+                    continue;
+
+                table.set(i++, LuaValue.valueOf(s));
+            }
+
+            return table;
+        }
+    };
 
     // init event //
 
