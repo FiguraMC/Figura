@@ -143,11 +143,11 @@ public abstract class FiguraGlobalsDocs {
                             argumentTypes = {LuaUserdata.class, Integer.class},
                             argumentNames = {"javaObject", "maxDepth"}
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {LuaTable.class, Integer.class, Boolean.class},
                             argumentNames = {"table", "maxDepth", "silent"}
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {LuaUserdata.class, Integer.class, Boolean.class},
                             argumentNames = {"javaObject", "maxDepth", "silent"}
                     )
@@ -176,11 +176,11 @@ public abstract class FiguraGlobalsDocs {
                             argumentTypes = {LuaUserdata.class, Integer.class},
                             argumentNames = {"javaObject", "maxDepth"}
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {LuaTable.class, Integer.class, Boolean.class},
                             argumentNames = {"table", "maxDepth", "silent"}
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {LuaUserdata.class, Integer.class, Boolean.class},
                             argumentNames = {"javaObject", "maxDepth", "silent"}
                     )

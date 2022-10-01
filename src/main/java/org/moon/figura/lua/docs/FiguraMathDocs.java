@@ -1,6 +1,5 @@
 package org.moon.figura.lua.docs;
 
-import org.moon.figura.lua.docs.LuaMethodDoc.LuaMethodOverload;
 import org.moon.figura.math.vector.*;
 
 /**
