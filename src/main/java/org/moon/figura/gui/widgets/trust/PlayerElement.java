@@ -1,13 +1,10 @@
 package org.moon.figura.gui.widgets.trust;
 
-import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
@@ -22,7 +19,6 @@ import org.moon.figura.gui.widgets.ContextMenu;
 import org.moon.figura.gui.widgets.Label;
 import org.moon.figura.gui.widgets.lists.PlayerList;
 import org.moon.figura.lua.api.nameplate.NameplateCustomization;
-import org.moon.figura.math.vector.FiguraVec4;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.FiguraIdentifier;
@@ -47,6 +43,10 @@ public class PlayerElement extends AbstractTrustElement {
     private final PlayerStatusWidget status;
 
     public boolean disconnected = false;
+
+    //drag
+    public boolean dragged = false;
+    public int index = -1;
 
     public PlayerElement(String name, TrustContainer trust, ResourceLocation skin, UUID owner, PlayerList parent) {
         super(40, trust, parent);
@@ -108,6 +108,24 @@ public class PlayerElement extends AbstractTrustElement {
     }
 
     @Override
+    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
+        if (dragged)
+            UIHelper.fillRounded(stack, x - 1, y - 1, width + 2, height + 2, 0x40FFFFFF);
+        else
+            super.render(stack, mouseX, mouseY, delta);
+    }
+
+    public void renderDragged(PoseStack stack, int mouseX, int mouseY, float delta) {
+        int oX = x;
+        int oY = y;
+        x = mouseX - 20;
+        y = mouseY - height / 2;
+        super.render(stack, mouseX, mouseY, delta);
+        x = oX;
+        y = oY;
+    }
+
+    @Override
     public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
         stack.pushPose();
 
@@ -127,7 +145,9 @@ public class PlayerElement extends AbstractTrustElement {
 
         //selected overlay
         if (this.parent.selectedEntry == this) {
-            UIHelper.fillRounded(stack, x - 1, y - 1, width + 2, height + 2, 0xFFFFFFFF);
+            ArrayList<TrustContainer> list = new ArrayList<>(TrustManager.GROUPS.values());
+            int color = (dragged ? list.get(Math.min(index, list.size() - (TrustManager.isLocal(trust) ? 1 : 2))) : trust).getGroupColor();
+            UIHelper.fillRounded(stack, x - 1, y - 1, width + 2, height + 2, color + (0xFF << 24));
         }
 
         //background
@@ -143,28 +163,7 @@ public class PlayerElement extends AbstractTrustElement {
             if (custom != null && custom.getText() != null && avatar.trust.get(TrustContainer.Trust.NAMEPLATE_EDIT) == 1)
                 name = NameplateCustomization.applyCustomization(custom.getText());
 
-            stack.pushPose();
-            float s = 16 * 4;
-            stack.translate(x + 20, y + 36, 0);
-            stack.scale(s, -s, s);
-            stack.mulPose(Vector3f.XP.rotationDegrees(180f));
-
-            FiguraVec4 oldScissors = UIHelper.scissors.copy();
-
-            int xx = Math.round(tx + x * scale + 4);
-            int yy = Math.round(ty + y * scale + 4);
-            int endX = Math.round(xx + 32 * scale);
-            int endY = Math.round(yy + 32 * scale);
-            xx = (int) Math.max(xx, oldScissors.x);
-            yy = (int) Math.max(yy, oldScissors.y);
-
-            UIHelper.setupScissor(xx, yy, endX - xx, endY - yy);
-
-            Lighting.setupForFlatItems();
-            head = avatar.headRender(stack, avatar.getBufferSource(), LightTexture.FULL_BRIGHT);
-
-            UIHelper.setupScissor((int) oldScissors.x, (int) oldScissors.y, (int) oldScissors.z, (int) oldScissors.w);
-            stack.popPose();
+            head = !dragged && avatar.renderHeadOnHud(stack, x + 4, y + 4, Math.round(32 * scale), 64, true);
         }
 
         if (!head) {
@@ -235,6 +234,11 @@ public class PlayerElement extends AbstractTrustElement {
         }
 
         return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean isMouseOver(double mouseX, double mouseY) {
+        return !dragged && super.isMouseOver(mouseX, mouseY);
     }
 
     public String getName() {

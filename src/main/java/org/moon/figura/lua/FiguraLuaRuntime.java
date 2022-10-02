@@ -82,14 +82,8 @@ public class FiguraLuaRuntime {
         setGlobal("figuraMetatables", figuraMetatables);
     }
 
-    public int run(String name, String src) {
-        try {
-            userGlobals.load(src, name, userGlobals).call();
-            return 1;
-        } catch (LuaError e) {
-            FiguraLuaPrinter.sendLuaError(e, owner);
-            return 0;
-        }
+    public LuaValue run(String name, String src) {
+        return userGlobals.load(src, name, userGlobals).call();
     }
 
     public void registerClass(Class<?> clazz) {
@@ -109,6 +103,8 @@ public class FiguraLuaRuntime {
     public Entity getUser() {
         return entityAPI == null ? null : entityAPI.getEntity();
     }
+
+    // init runtime //
 
     private void setupFiguraSandbox() {
         //actual sandbox file
@@ -161,6 +157,9 @@ public class FiguraLuaRuntime {
         this.setGlobal("load", loadstring);
         this.setGlobal("loadstring", loadstring);
 
+        //listFiles
+        this.setGlobal("listFiles", listFiles);
+
         //load math library
         try (InputStream inputStream = FiguraMod.class.getResourceAsStream("/assets/" + FiguraMod.MOD_ID + "/scripts/math.lua")) {
             if (inputStream == null) throw new IOException("Unable to get resource");
@@ -185,10 +184,40 @@ public class FiguraLuaRuntime {
         });
     }
 
-    private final Function<String, LuaValue> INIT_SCRIPT = name -> {
+    private final TwoArgFunction listFiles = new TwoArgFunction() {
+        @Override
+        public LuaValue call(LuaValue arg1, LuaValue arg2) {
+            //format path
+            String path = arg1.isnil() ? "" : arg1.checkjstring();
+            path = path.replaceAll("[/\\\\]", ".");
+
+            //max depth
+            int depth = path.isBlank() ? 1 : path.split("\\.").length + 1;
+
+            //subfolder
+            boolean subFolders = !arg2.isnil() && arg2.checkboolean();
+
+            //iterate over all script names and add them if their name starts with the path query
+            int i = 1;
+            LuaTable table = new LuaTable();
+            for (String s : scripts.keySet()) {
+                String[] split = s.split("\\.");
+
+                if (!s.startsWith(path) || split.length > depth && !subFolders)
+                    continue;
+
+                table.set(i++, LuaValue.valueOf(s));
+            }
+
+            return table;
+        }
+    };
+
+    // init event //
+
+    private final Function<String, LuaValue> INIT_SCRIPT = str -> {
         //format name
-        if (name.endsWith(".lua"))
-            name = name.substring(0, name.length() - 4);
+        String name = str.replaceAll("[/\\\\]", ".");
 
         //already loaded
         LuaValue val = loadedScripts.get(name);
@@ -198,7 +227,7 @@ public class FiguraLuaRuntime {
         //not found
         String src = scripts.get(name);
         if (src == null)
-            throw new LuaError("Tried to require nonexistent script \"" + name + "\"!");
+            throw new LuaError("Tried to require nonexistent script \"" + str + "\"!");
 
         //load
         LuaValue value = userGlobals.load(src, name).call(name);
@@ -229,12 +258,16 @@ public class FiguraLuaRuntime {
         return true;
     }
 
+    // error ^-^ //
+
     public void error(Exception e) {
-        LuaError err = e instanceof LuaError lua ? lua : new LuaError(e.getMessage());
+        LuaError err = e instanceof LuaError lua ? lua : new LuaError(e);
         FiguraLuaPrinter.sendLuaError(err, owner);
         owner.scriptError = true;
         owner.luaRuntime = null;
     }
+
+    // avatar limiting //
 
     private final ZeroArgFunction onReachedLimit = new ZeroArgFunction() {
         @Override

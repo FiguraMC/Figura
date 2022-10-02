@@ -76,7 +76,7 @@ public class FiguraModelPartReader {
 
         FiguraModelPart result = new FiguraModelPart(name, customization, children);
         result.facesByTexture = facesByTexture;
-        storeTexSize(result, textureSets);
+        storeTextures(result, textureSets);
         if (partCompound.contains("pt"))
             result.parentType = ParentType.valueOf(partCompound.getString("pt"));
 
@@ -126,7 +126,14 @@ public class FiguraModelPartReader {
      * There's a lot of obscure cases to test this on, so... something might go wrong with it, and I can't test everything.
      * Obviously I *think* it should work, and it has so far, but I still might be missing something.
      */
-    private static void storeTexSize(FiguraModelPart modelPart, List<FiguraTextureSet> textureSets) {
+    private static void storeTextures(FiguraModelPart modelPart, List<FiguraTextureSet> textureSets) {
+        //textures
+        List<FiguraTextureSet> list = new ArrayList<>();
+        for (int j = 0; j < modelPart.facesByTexture.size(); j++)
+            list.add(textureSets.get(j));
+        modelPart.textures = list;
+
+        //size
         int w = -1, h = -1;
         for (FiguraModelPart child : modelPart.children) {
             //If any child has multiple textures, then we know this parent must as well.

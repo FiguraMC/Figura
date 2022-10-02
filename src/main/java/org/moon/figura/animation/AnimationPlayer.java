@@ -40,12 +40,15 @@ public class AnimationPlayer {
 
                 float timeDiff = anim.frameTime - current.getTime();
                 float delta = Math.min(Math.max(timeDiff / (next.getTime() - current.getTime()), 0), 1);
+                if (Float.isNaN(delta))
+                    delta = 0;
 
-                FiguraVec3 transform = current.getInterpolation().generate(keyframes, currentIndex, nextIndex, anim.blend, delta);
-                channel.type().apply(part, transform, merge);
+                TransformType type = channel.type();
+                FiguraVec3 transform = current.getInterpolation().generate(keyframes, currentIndex, nextIndex, anim.blend, delta, type);
+                type.apply(part, transform, merge);
 
                 if (anim.override) {
-                    switch (channel.type()) {
+                    switch (type) {
                         case ROTATION -> part.animationOverride |= 1;
                         case POSITION -> part.animationOverride |= 2;
                         case SCALE -> part.animationOverride |= 4;

@@ -211,10 +211,11 @@ public class UIHelper extends GuiComponent {
         MultiBufferSource.BufferSource immediate = Minecraft.getInstance().renderBuffers().bufferSource();
 
         //render
-        Avatar avatar = AvatarManager.getAvatar(entity);
-        if (avatar != null) avatar.previewRenderEvent(renderMode.name());
         UIHelper.paperdoll = true;
         UIHelper.dollScale = scale;
+
+        Avatar avatar = AvatarManager.getAvatar(entity);
+        if (avatar != null) avatar.previewRenderEvent(renderMode.name());
 
         float finalYaw = yaw;
         RenderSystem.runAsFancy(() -> dispatcher.render(entity, 0d, finalY, 0d, finalYaw, 1f, stack, immediate, LightTexture.FULL_BRIGHT));

@@ -45,15 +45,15 @@ public class Badges {
 
         //error
         if (avatar.scriptError)
-            badges.append(Default.ERROR.badge);
+            badges.append(System.ERROR.badge);
 
         //version
-        else if (avatar.versionStatus > 0)
-            badges.append(Default.WARNING.badge);
+        if (avatar.versionStatus > 0)
+            badges.append(System.WARNING.badge);
 
         //egg
-        else if (FiguraMod.CHEESE_DAY && Config.EASTER_EGGS.asBool())
-            badges.append(Default.CHEESE.badge);
+        if (FiguraMod.CHEESE_DAY && Config.EASTER_EGGS.asBool())
+            badges.append(System.CHEESE.badge);
 
         //mark
         else if (avatar.nbt != null) {
@@ -68,7 +68,7 @@ public class Badges {
                 }
 
                 //mark fallback
-                badges.append(Default.DEFAULT.badge.copy().withStyle(Style.EMPTY.withColor(ColorUtils.userInputHex(avatar.color))));
+                badges.append(System.DEFAULT.badge.copy().withStyle(Style.EMPTY.withColor(ColorUtils.userInputHex(avatar.color))));
             }
         }
 
@@ -107,20 +107,22 @@ public class Badges {
         return Pair.of(new BitSet(Pride.values().length), new BitSet(Special.values().length));
     }
 
-    private enum Default {
+    public enum System {
         DEFAULT("△"),
         CHEESE("\uD83E\uDDC0"),
         WARNING("❗"),
         ERROR("❌");
 
         public final Component badge;
+        public final Component desc;
 
-        Default(String unicode) {
-            this.badge = Component.literal(unicode).withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, FiguraText.of("badges.standard." + this.name().toLowerCase()))));
+        System(String unicode) {
+            this.desc = FiguraText.of("badges.system." + this.name().toLowerCase());
+            this.badge = Component.literal(unicode).withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, desc)));
         }
     }
 
-    private enum Pride {
+    public enum Pride {
         AGENDER("ᚠ"),
         AROACE("ᚡ"),
         AROMANTIC("ᚢ"),
@@ -148,13 +150,15 @@ public class Badges {
         TRANSGENDER("ᚸ");
 
         public final Component badge;
+        public final Component desc;
 
         Pride(String unicode) {
-            this.badge = Component.literal(unicode).withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, FiguraText.of("badges.pride." + this.name().toLowerCase()))));
+            this.desc = FiguraText.of("badges.pride." + this.name().toLowerCase());
+            this.badge = Component.literal(unicode).withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, desc)));
         }
     }
 
-    private enum Special {
+    public enum Special {
         DEV("★"),
         DISCORD_STAFF("☆", ColorUtils.Colors.DISCORD.hex),
         CONTEST("☆", ColorUtils.Colors.FRAN_PINK.hex),
@@ -167,13 +171,15 @@ public class Badges {
         BURGER("\uD83C\uDF54");
 
         public final Component badge;
+        public final Component desc;
 
         Special(String unicode) {
             this(unicode, null);
         }
 
         Special(String unicode, Integer color) {
-            Style style = Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, FiguraText.of("badges.special." + this.name().toLowerCase())));
+            this.desc = FiguraText.of("badges.special." + this.name().toLowerCase());
+            Style style = Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, desc));
             if (color != null) style = style.withColor(color);
             this.badge = Component.literal(unicode).withStyle(style);
         }

@@ -8,8 +8,8 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import org.moon.figura.avatars.model.PartCustomization;
 import org.moon.figura.lua.LuaWhitelist;
-import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
+import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.ColorUtils;
@@ -69,7 +69,7 @@ public class TextTask extends RenderTask {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = String.class,
                             argumentNames = "text"
                     )
@@ -84,15 +84,15 @@ public class TextTask extends RenderTask {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("text_task.is_centred")
-    public boolean isCentred() {
+    @LuaMethodDoc("text_task.is_centered")
+    public boolean isCentered() {
         return this.centered;
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = Boolean.class,
                             argumentNames = "centered"
                     )
@@ -113,7 +113,7 @@ public class TextTask extends RenderTask {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = Boolean.class,
                             argumentNames = "shadow"
                     )
@@ -134,7 +134,7 @@ public class TextTask extends RenderTask {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = Boolean.class,
                             argumentNames = "outline"
                     )
@@ -155,11 +155,11 @@ public class TextTask extends RenderTask {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = FiguraVec3.class,
                             argumentNames = "color"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
                             argumentNames = {"r", "g", "b"}
                     )

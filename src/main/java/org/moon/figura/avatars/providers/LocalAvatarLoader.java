@@ -86,11 +86,6 @@ public class LocalAvatarLoader {
         //load as folder
         CompoundTag nbt = new CompoundTag();
 
-        //Load metadata first!
-        loadState++;
-        String metadata = IOUtils.readFile(path.resolve("avatar.json").toFile());
-        nbt.put("metadata", AvatarMetadataParser.parse(metadata, path.getFileName().toString()));
-
         //scripts
         LuaScriptParser scriptParser=new LuaScriptParser();
 
@@ -107,9 +102,13 @@ public class LocalAvatarLoader {
         BlockbenchModelParser modelParser = new BlockbenchModelParser();
 
         loadState++;
-        CompoundTag models = loadModels(path, modelParser, textures, animations);
+        CompoundTag models = loadModels(path, modelParser, textures, animations, "");
         models.putString("name", "models");
 
+        //metadata
+        loadState++;
+        String metadata = IOUtils.readFile(path.resolve("avatar.json").toFile());
+        nbt.put("metadata", AvatarMetadataParser.parse(metadata, path.getFileName().toString()));
         AvatarMetadataParser.injectToModels(metadata, models);
 
         //return :3
@@ -132,9 +131,8 @@ public class LocalAvatarLoader {
                 String pathStr = script.toPath().toString();
                 String name = pathStr.replaceFirst(pathRegex, "");
                 name = name.replace(File.separatorChar, '/');
-                scriptsNbt.put(name.substring(0, name.length() - 4), parser.parseScript(IOUtils.readFile(script)));
+                scriptsNbt.put(name.substring(0, name.length() - 4), new ByteArrayTag(IOUtils.readFile(script).getBytes(StandardCharsets.UTF_8)));
             }
-
             nbt.put("scripts", scriptsNbt);
         }
     }
@@ -143,28 +141,32 @@ public class LocalAvatarLoader {
         List<File> sounds = IOUtils.getFilesByExtension(path, ".ogg");
         if (sounds.size() > 0) {
             CompoundTag soundsNbt = new CompoundTag();
+            String pathRegex = Pattern.quote(path + File.separator);
             for (File sound : sounds) {
-                String name = sound.getName();
+                String pathStr = sound.toPath().toString();
+                String name = pathStr.replaceFirst(pathRegex, "");
+                name = name.replace(File.separatorChar, '.');
                 soundsNbt.putByteArray(name.substring(0, name.length() - 4), IOUtils.readFileBytes(sound));
             }
             nbt.put("sounds", soundsNbt);
         }
     }
 
-    private static CompoundTag loadModels(Path path, BlockbenchModelParser parser, ListTag textures, ListTag animations) throws IOException {
+    private static CompoundTag loadModels(Path path, BlockbenchModelParser parser, ListTag textures, ListTag animations, String folders) throws IOException {
         CompoundTag result = new CompoundTag();
         File[] subFiles = path.toFile().listFiles(f -> !f.isHidden() && !f.getName().startsWith("."));
         ListTag children = new ListTag();
         if (subFiles != null)
             for (File file : subFiles) {
+                String name = file.getName();
                 if (file.isDirectory()) {
-                    CompoundTag subfolder = loadModels(file.toPath(), parser, textures, animations);
+                    CompoundTag subfolder = loadModels(file.toPath(), parser, textures, animations, folders + name + ".");
                     if (!subfolder.isEmpty()) {
-                        subfolder.putString("name", file.getName());
+                        subfolder.putString("name", name);
                         children.add(subfolder);
                     }
                 } else if (file.toString().toLowerCase().endsWith(".bbmodel")) {
-                    BlockbenchModelParser.ModelData data = parser.parseModel(IOUtils.readFile(file), file.getName().substring(0, file.getName().length() - 8));
+                    BlockbenchModelParser.ModelData data = parser.parseModel(IOUtils.readFile(file), name.substring(0, name.length() - 8), folders);
                     children.add(data.modelNbt());
                     textures.addAll(data.textureList());
                     animations.addAll(data.animationList());
@@ -181,7 +183,7 @@ public class LocalAvatarLoader {
      * Saves the loaded NBT into a folder inside the avatar list
      */
     public static void saveNbt(CompoundTag nbt) {
-        Path directory = LocalAvatarFetcher.getLocalAvatarDirectory().resolve("[§9" + FiguraMod.MOD_NAME + "§r] Cached Avatars");
+        Path directory = LocalAvatarFetcher.getLocalAvatarDirectory().resolve("[" + ChatFormatting.BLUE + FiguraMod.MOD_NAME + ChatFormatting.RESET + "] Cached Avatars");
         Path file = directory.resolve("cache-" + new SimpleDateFormat("yyyy_MM_dd-HH_mm_ss").format(new Date()) + ".moon");
         try {
             Files.createDirectories(directory);

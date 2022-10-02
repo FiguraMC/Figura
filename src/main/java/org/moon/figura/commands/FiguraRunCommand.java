@@ -5,9 +5,11 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import org.luaj.vm2.LuaError;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.avatars.AvatarManager;
+import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.utils.FiguraText;
 
 public class FiguraRunCommand {
@@ -32,6 +34,12 @@ public class FiguraRunCommand {
             return 0;
         }
 
-        return localAvatar.luaRuntime.run("runCommand", lua);
+        try {
+            localAvatar.luaRuntime.run("runCommand", lua);
+            return 1;
+        } catch (LuaError e) {
+            FiguraLuaPrinter.sendLuaError(e, localAvatar);
+            return 0;
+        }
     }
 }

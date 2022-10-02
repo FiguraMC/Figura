@@ -24,7 +24,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.SkullBlockEntity;
 import net.minecraft.world.phys.Vec3;
-import org.luaj.vm2.*;
+import org.luaj.vm2.LuaFunction;
+import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.Varargs;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.animation.Animation;
 import org.moon.figura.animation.AnimationPlayer;
@@ -43,6 +45,7 @@ import org.moon.figura.lua.api.sound.SoundAPI;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.math.vector.FiguraVec4;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.EntityUtils;
@@ -61,6 +64,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 //the avatar class
 //contains all things related to the avatar
@@ -83,6 +87,8 @@ public class Avatar {
     public String color;
 
     //Runtime data
+    private final Queue<Supplier<Varargs>> events = new ConcurrentLinkedQueue<>();
+
     public AvatarRenderer renderer;
     public FiguraLuaRuntime luaRuntime;
 
@@ -114,7 +120,9 @@ public class Avatar {
         this.worldTick = new Instructions(trust.get(TrustContainer.Trust.WORLD_TICK_INST));
         this.particlesRemaining = new RefilledNumber(trust.get(TrustContainer.Trust.PARTICLES));
         this.soundsRemaining = new RefilledNumber(trust.get(TrustContainer.Trust.SOUNDS));
-        entityName = EntityUtils.getNameForUUID(owner);
+
+        String name = EntityUtils.getNameForUUID(owner);
+        this.entityName = name == null ? "" : name;
     }
 
     public void load(CompoundTag nbt) {
@@ -146,7 +154,7 @@ public class Avatar {
                     color = metadata.getString("color");
                 fileSize = getFileSize();
                 versionStatus = checkVersion();
-                if (entityName == null)
+                if (entityName.isBlank())
                     entityName = name;
             } catch (Exception e) {
                 FiguraMod.LOGGER.error("", e);
@@ -214,57 +222,78 @@ public class Avatar {
     }
 
     public void runPing(int id, byte[] data) {
-        if (scriptError || luaRuntime == null)
-            return;
+        events.offer(() -> {
+            if (scriptError || luaRuntime == null)
+                return null;
 
-        Varargs args = PingArg.fromByteArray(data, this);
-        String name = luaRuntime.ping.getName(id);
-        PingFunction function = luaRuntime.ping.get(name);
-        if (args == null || function == null)
-            return;
+            LuaValue[] args = PingArg.fromByteArray(data, this);
+            String name = luaRuntime.ping.getName(id);
+            PingFunction function = luaRuntime.ping.get(name);
+            if (args == null || function == null)
+                return null;
 
-        FiguraLuaPrinter.sendPingMessage(this, name, data.length, args);
-
-        try {
-            function.func.invoke(args);
-        } catch (Exception e) {
-            luaRuntime.error(e);
-        }
+            FiguraLuaPrinter.sendPingMessage(this, name, data.length, args);
+            return run(function.func, tick, (Object[]) args);
+        });
     }
 
     public Varargs run(Object toRun, Instructions limit, Object... args) {
-        if (UIHelper.paperdoll || scriptError || luaRuntime == null)
-            return null;
+        //create event
+        Supplier<Varargs> ev = () -> {
+            if (scriptError || luaRuntime == null)
+                return null;
 
-        //parse args
-        LuaValue[] values = new LuaValue[args.length];
-        for (int i = 0; i < values.length; i++)
-            values[i] = luaRuntime.typeManager.javaToLua(args[i]);
+            //parse args
+            LuaValue[] values = new LuaValue[args.length];
+            for (int i = 0; i < values.length; i++)
+                values[i] = luaRuntime.typeManager.javaToLua(args[i]);
 
-        Varargs val = LuaValue.varargsOf(values);
+            Varargs val = LuaValue.varargsOf(values);
 
-        //instructions limit
-        luaRuntime.setInstructionLimit(limit.remaining);
+            //instructions limit
+            luaRuntime.setInstructionLimit(limit.remaining);
 
-        //get and call event
-        try {
-            Varargs ret;
-            if (toRun instanceof LuaEvent event)
-                ret = event.call(val);
-            else if (toRun instanceof String event)
-                ret = luaRuntime.events.__index(event).call(val);
-            else if (toRun instanceof LuaFunction func)
-                ret = func.invoke(val);
-            else
-                throw new LuaError("Invalid type to run!");
+            //get and call event
+            try {
+                Varargs ret;
+                if (toRun instanceof LuaEvent event)
+                    ret = event.call(val);
+                else if (toRun instanceof String event)
+                    ret = luaRuntime.events.__index(event).call(val);
+                else if (toRun instanceof LuaFunction func)
+                    ret = func.invoke(val);
+                else if (toRun instanceof Pair<?, ?> pair)
+                    ret = luaRuntime.run(pair.getFirst().toString(), pair.getSecond().toString());
+                else
+                    throw new IllegalArgumentException("Invalid type to run!");
 
-            limit.use(luaRuntime.getInstructions());
-            return ret;
-        } catch (Exception e) {
-            luaRuntime.error(e);
+                limit.use(luaRuntime.getInstructions());
+                return ret;
+            } catch (Exception e) {
+                if (luaRuntime != null)
+                    luaRuntime.error(e);
+            }
+
+            return LuaValue.NIL;
+        };
+
+        //add event to the queue
+        events.offer(ev);
+
+        Varargs val = null;
+
+        //run all queued events
+        while (!events.isEmpty()) {
+            Supplier<Varargs> e = events.poll();
+            Varargs result = e.get();
+
+            //if the event is the same the one created, set the return value to it
+            if (e == ev)
+                val = result;
         }
 
-        return LuaValue.NIL;
+        //return the new event result
+        return val;
     }
 
     // -- script events -- //
@@ -275,16 +304,19 @@ public class Avatar {
     }
 
     public void renderEvent(float delta) {
-        if (luaRuntime != null && luaRuntime.getUser() != null)
+        if (!UIHelper.paperdoll && luaRuntime != null && luaRuntime.getUser() != null)
             run("RENDER", render, delta);
     }
 
     public void postRenderEvent(float delta) {
-        if (luaRuntime != null && luaRuntime.getUser() != null)
+        if (!UIHelper.paperdoll && luaRuntime != null && luaRuntime.getUser() != null)
             run("POST_RENDER", render.post(), delta);
     }
 
     public void postWorldRenderEvent(float delta) {
+        if (renderer != null)
+            renderer.allowMatrixUpdate = false;
+
         run("POST_WORLD_RENDER", worldRender.post(), delta);
     }
 
@@ -512,6 +544,53 @@ public class Avatar {
         return comp > 0 && luaRuntime != null && !luaRuntime.vanilla_model.HEAD.getVisible();
     }
 
+    public boolean renderHeadOnHud(PoseStack stack, int x, int y, int screenSize, float modelScale, boolean scissors) {
+        if (!Config.AVATAR_HEADS.asBool())
+            return false;
+
+        //matrices
+        stack.pushPose();
+        stack.translate(x, y, 0d);
+        stack.scale(modelScale, -modelScale, modelScale);
+        stack.mulPose(Vector3f.XP.rotationDegrees(180f));
+
+        //scissors
+        FiguraVec4 oldScissors = UIHelper.scissors.copy();
+        FiguraVec3 pos = FiguraMat4.fromMatrix4f(stack.last().pose()).apply(0d, 0d, 0d);
+
+        int x1 = (int) pos.x;
+        int y1 = (int) pos.y;
+        int x2 = (int) pos.x + screenSize;
+        int y2 = (int) pos.y + screenSize;
+
+        if (scissors) {
+            x1 = (int) Math.round(Math.max(x1, oldScissors.x));
+            y1 = (int) Math.round(Math.max(y1, oldScissors.y));
+            x2 = (int) Math.round(Math.min(x2, oldScissors.x + oldScissors.z));
+            y2 = (int) Math.round(Math.min(y2, oldScissors.y + oldScissors.w));
+        }
+
+        UIHelper.setupScissor(x1, y1, x2 - x1, y2 - y1);
+        UIHelper.paperdoll = true;
+        UIHelper.dollScale = 16f;
+
+        //render
+        Lighting.setupForFlatItems();
+        stack.translate(4d / 16d, 8d / 16d, 0d);
+        //boolean ret = skullRender(stack, getBufferSource(), LightTexture.FULL_BRIGHT, null, 0);
+        boolean ret = headRender(stack, getBufferSource(), LightTexture.FULL_BRIGHT);
+
+        //return
+        if (scissors)
+            UIHelper.setupScissor((int) oldScissors.x, (int) oldScissors.y, (int) oldScissors.z, (int) oldScissors.w);
+        else
+            RenderSystem.disableScissor();
+
+        UIHelper.paperdoll = false;
+        stack.popPose();
+        return ret;
+    }
+
     private static final PartCustomization PIVOT_PART_RENDERING_CUSTOMIZATION = PartCustomization.of();
     public synchronized boolean pivotPartRender(ParentType parent, Consumer<PoseStack> consumer) {
         if (renderer == null || !parent.isPivot)
@@ -553,16 +632,6 @@ public class Avatar {
             AnimationPlayer.clear(animation);
     }
 
-    public void pauseAnimations() {
-        for (Animation animation : animations.values())
-            animation.gamePause();
-    }
-
-    public void resumeAnimations() {
-        for (Animation animation : animations.values())
-            animation.gameResume();
-    }
-
     // -- functions -- //
 
     /**
@@ -578,6 +647,8 @@ public class Avatar {
         SoundAPI.getSoundEngine().figura$stopSound(owner, null);
         for (SoundBuffer value : customSounds.values())
             value.releaseAlBuffer();
+
+        events.clear();
     }
 
     public MultiBufferSource getBufferSource() {
@@ -623,18 +694,20 @@ public class Avatar {
         else
             autoScripts = null;
 
-        luaRuntime = new FiguraLuaRuntime(this, scripts);
+        FiguraLuaRuntime runtime = new FiguraLuaRuntime(this, scripts);
         if (renderer != null && renderer.root != null)
-            luaRuntime.setGlobal("models", renderer.root);
+            runtime.setGlobal("models", renderer.root);
 
         init.reset(trust.get(TrustContainer.Trust.INIT_INST));
-        luaRuntime.setInstructionLimit(init.remaining);
+        runtime.setInstructionLimit(init.remaining);
 
-        if (luaRuntime.init(autoScripts)) {
-            init.use(luaRuntime.getInstructions());
-        } else {
-            this.luaRuntime = null;
-        }
+        events.offer(() -> {
+            if (runtime.init(autoScripts)) {
+                init.use(runtime.getInstructions());
+                this.luaRuntime = runtime;
+            }
+            return null;
+        });
     }
 
     private void loadAnimations() {
@@ -696,6 +769,7 @@ public class Avatar {
     public static class Instructions {
 
         public int max, remaining;
+        private int currPre, currPost;
         public int pre, post;
         private boolean inverted;
 
@@ -714,16 +788,18 @@ public class Avatar {
 
         public void reset(int remaining) {
             this.max = this.remaining = remaining;
-            pre = post = 0;
+            currPre = currPost = 0;
         }
 
         public void use(int amount) {
             remaining -= amount;
 
             if (!inverted) {
-                pre += amount;
+                currPre += amount;
+                pre = currPre;
             } else {
-                post += amount;
+                currPost += amount;
+                post = currPost;
                 inverted = false;
             }
         }

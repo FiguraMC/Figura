@@ -13,15 +13,17 @@ import net.minecraft.util.FormattedCharSequence;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiPredicate;
 
 public class TextUtils {
 
     public static final ResourceLocation FIGURA_FONT = new FiguraIdentifier("default");
     public static final Component TAB = FiguraText.of("tab");
     public static final Component ELLIPSIS = FiguraText.of("ellipsis");
+    public static final Component UNKNOWN = Component.literal("�").withStyle(Style.EMPTY.withFont(Style.DEFAULT_FONT));
 
     public static Component noBadges4U(Component text) {
-        return replaceInText(text, "[❗❌\uD83C\uDF54\uD83E\uDD90\uD83C\uDF19\uD83C\uDF00☄❤☆★]", Component.literal("�").withStyle(Style.EMPTY.withFont(Style.DEFAULT_FONT)));
+        return replaceInText(text, "[❗❌\uD83C\uDF54\uD83E\uDD90\uD83C\uDF19\uD83C\uDF00☄❤☆★]", UNKNOWN, (s, style) -> style.getFont().equals(FIGURA_FONT));
     }
 
     public static List<Component> splitText(Component text, String regex) {
@@ -55,20 +57,12 @@ public class TextUtils {
     }
 
     public static Component removeClickableObjects(Component text) {
-        //text to return
-        MutableComponent finalText = Component.empty();
-
-        //iterate over the text
-        for (Component entry : text.toFlatList(text.getStyle())) {
-            //remove click events
-            Component removed = Component.literal(entry.getString()).setStyle(entry.getStyle().withClickEvent(null));
-
-            //append text to return
-            finalText.append(removed);
-        }
-
-        //return text
-        return finalText;
+        MutableComponent ret = Component.empty();
+        text.visit((style, string) -> {
+            ret.append(Component.literal(string).withStyle(style.withClickEvent(null)));
+            return Optional.empty();
+        }, Style.EMPTY);
+        return ret;
     }
 
     public static Component tryParseJson(String text) {
@@ -95,30 +89,34 @@ public class TextUtils {
     }
 
     public static Component replaceInText(Component text, String regex, Object replacement) {
+        return replaceInText(text, regex, replacement, (s, style) -> true);
+    }
+
+    public static Component replaceInText(Component text, String regex, Object replacement, BiPredicate<String, Style> predicate) {
         //fix replacement object
         Component replace = replacement instanceof Component c ? c : Component.literal(replacement.toString());
-
-        //text to return
         MutableComponent ret = Component.empty();
 
-        //iterate over the initial text
-        List<Component> list = text.toFlatList(text.getStyle());
-        for (Component component : list) {
-            //get the text raw string
-            String textString = component.getString();
+        text.visit((style, string) -> {
+            //test predicate
+            if (!predicate.test(string, style)) {
+                ret.append(Component.literal(string).withStyle(style));
+                return Optional.empty();
+            }
 
-            //split the string keeping the split text
-            String[] split = textString.split("((?<=" + regex + ")|(?=" + regex + "))");
+            //split
+            String[] split = string.split("((?<=" + regex + ")|(?=" + regex + "))");
             for (String s : split) {
                 //append the text if it does not match the split, otherwise append the replacement instead
                 if (!s.matches(regex))
-                    ret.append(Component.literal(s).withStyle(component.getStyle()));
+                    ret.append(Component.literal(s).withStyle(style));
                 else
-                    ret.append(Component.empty().withStyle(component.getStyle()).append(replace));
+                    ret.append(Component.empty().withStyle(style).append(replace));
             }
-        }
 
-        //return
+            return Optional.empty();
+        }, Style.EMPTY);
+
         return ret;
     }
 

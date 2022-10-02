@@ -21,6 +21,7 @@ import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.avatars.model.rendering.PartFilterScheme;
 import org.moon.figura.config.Config;
 import org.moon.figura.ducks.LivingEntityRendererAccessor;
+import org.moon.figura.gui.PopupMenu;
 import org.moon.figura.mixin.render.layers.elytra.ElytraLayerAccessor;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.utils.ui.UIHelper;
@@ -120,6 +121,8 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
         if (UIHelper.paperdoll)
             cir.setReturnValue(Config.PREVIEW_NAMEPLATE.asBool());
         else if (!Minecraft.renderNames())
+            cir.setReturnValue(false);
+        else if (livingEntity.getUUID().equals(PopupMenu.getEntityId()))
             cir.setReturnValue(false);
         else if (Config.SELF_NAMEPLATE.asBool() && livingEntity == Minecraft.getInstance().player)
             cir.setReturnValue(true);

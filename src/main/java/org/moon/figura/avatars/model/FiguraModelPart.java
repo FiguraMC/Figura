@@ -4,6 +4,7 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.renderer.LightTexture;
 import org.luaj.vm2.LuaError;
 import org.moon.figura.avatars.model.rendering.ImmediateAvatarRenderer;
+import org.moon.figura.avatars.model.rendering.texture.FiguraTexture;
 import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
 import org.moon.figura.avatars.model.rendering.texture.RenderTypes;
 import org.moon.figura.avatars.model.rendertasks.BlockTask;
@@ -12,8 +13,8 @@ import org.moon.figura.avatars.model.rendertasks.RenderTask;
 import org.moon.figura.avatars.model.rendertasks.TextTask;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
-import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
+import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
@@ -22,6 +23,7 @@ import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.ui.UIHelper;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +48,7 @@ public class FiguraModelPart {
 
     public Map<String, RenderTask> renderTasks = new HashMap<>();
 
+    public List<FiguraTextureSet> textures;
     public int textureWidth, textureHeight; //If the part has multiple textures, then these are -1.
 
     public boolean animated = false;
@@ -210,11 +213,11 @@ public class FiguraModelPart {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = FiguraVec3.class,
                             argumentNames = "pos"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
                             argumentNames = {"x", "y", "z"}
                     )
@@ -241,11 +244,11 @@ public class FiguraModelPart {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = FiguraVec3.class,
                             argumentNames = "rot"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
                             argumentNames = {"x", "y", "z"}
                     )
@@ -266,11 +269,11 @@ public class FiguraModelPart {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = FiguraVec3.class,
                             argumentNames = "offsetRot"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
                             argumentNames = {"x", "y", "z"}
                     )
@@ -297,11 +300,11 @@ public class FiguraModelPart {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = FiguraVec3.class,
                             argumentNames = "scale"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
                             argumentNames = {"x", "y", "z"}
                     )
@@ -328,11 +331,11 @@ public class FiguraModelPart {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = FiguraVec3.class,
                             argumentNames = "pivot"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
                             argumentNames = {"x", "y", "z"}
                     )
@@ -353,11 +356,11 @@ public class FiguraModelPart {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = FiguraVec3.class,
                             argumentNames = "offsetPivot"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
                             argumentNames = {"x", "y", "z"}
                     )
@@ -397,7 +400,7 @@ public class FiguraModelPart {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = FiguraMat4.class,
                     argumentNames = "matrix"
             ),
@@ -418,7 +421,7 @@ public class FiguraModelPart {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = Boolean.class,
                     argumentNames = "visible"
             ),
@@ -444,7 +447,7 @@ public class FiguraModelPart {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = String.class,
                     argumentNames = "renderType"
             ),
@@ -460,7 +463,7 @@ public class FiguraModelPart {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = String.class,
                     argumentNames = "renderType"
             ),
@@ -477,20 +480,28 @@ public class FiguraModelPart {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = String.class,
                             argumentNames = "textureType"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {String.class, String.class},
                             argumentNames = {"resource", "path"}
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {String.class, String.class},
+                            argumentNames = {"custom", "textureName"}
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {String.class, FiguraTexture.class},
+                            argumentNames = {"custom", "texture"}
                     )
             },
             value = "model_part.set_primary_texture"
     )
-    public void setPrimaryTexture(String type, String path) {
+    public void setPrimaryTexture(String type, Object x) {
         try {
-            this.customization.primaryTexture = type == null ? null : Pair.of(FiguraTextureSet.OverrideType.valueOf(type.toUpperCase()), path);
+            this.customization.primaryTexture = type == null ? null : Pair.of(FiguraTextureSet.OverrideType.valueOf(type.toUpperCase()), x);
         } catch (Exception ignored) {
             throw new LuaError("Invalid texture override type: " + type);
         }
@@ -499,23 +510,59 @@ public class FiguraModelPart {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = String.class,
                             argumentNames = "textureType"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {String.class, String.class},
                             argumentNames = {"resource", "path"}
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {String.class, String.class},
+                            argumentNames = {"custom", "textureName"}
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {String.class, FiguraTexture.class},
+                            argumentNames = {"custom", "texture"}
                     )
             },
             value = "model_part.set_secondary_texture"
     )
-    public void setSecondaryTexture(String type, String path) {
+    public void setSecondaryTexture(String type, Object x) {
         try {
-            this.customization.secondaryTexture = type == null ? null : Pair.of(FiguraTextureSet.OverrideType.valueOf(type.toUpperCase()), path);
+            this.customization.secondaryTexture = type == null ? null : Pair.of(FiguraTextureSet.OverrideType.valueOf(type.toUpperCase()), x);
         } catch (Exception ignored) {
             throw new LuaError("Invalid texture override type: " + type);
         }
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("model_part.get_primary_textures")
+    public List<FiguraTexture> getPrimaryTextures() {
+        List<FiguraTexture> list = new ArrayList<>();
+
+        for (FiguraTextureSet set : textures) {
+            FiguraTexture texture = set.mainTex;
+            if (texture != null)
+                list.add(texture);
+        }
+
+        return list;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("model_part.get_secondary_textures")
+    public List<FiguraTexture> getSecondaryTextures() {
+        List<FiguraTexture> list = new ArrayList<>();
+
+        for (FiguraTextureSet set : textures) {
+            FiguraTexture texture = set.emissiveTex;
+            if (texture != null)
+                list.add(texture);
+        }
+
+        return list;
     }
 
     @LuaWhitelist
@@ -527,19 +574,24 @@ public class FiguraModelPart {
     @LuaWhitelist
     @LuaMethodDoc("model_part.get_texture_size")
     public FiguraVec2 getTextureSize() {
-        if (this.textureWidth == -1 || this.textureHeight == -1)
-            throw new LuaError("Cannot get texture size of part, it has multiple different-sized textures!");
+        if (this.textureWidth == -1 || this.textureHeight == -1) {
+            if (this.customization.partType == PartCustomization.PartType.GROUP)
+                throw new LuaError("Cannot get the texture size of groups!");
+            else
+                throw new LuaError("Cannot get texture size of part, it has multiple different-sized textures!");
+        }
+
         return FiguraVec2.of(this.textureWidth, this.textureHeight);
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = FiguraVec2.class,
                             argumentNames = "uv"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Double.class, Double.class},
                             argumentNames = {"u", "v"}
                     )
@@ -553,21 +605,31 @@ public class FiguraModelPart {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("model_part.get_uv")
+    public FiguraVec2 getUV() {
+        return this.customization.uvMatrix.apply(0d, 0d);
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = FiguraVec2.class,
                             argumentNames = "uv"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Double.class, Double.class},
                             argumentNames = {"u", "v"}
                     )
             },
             value = "model_part.set_uv_pixels")
     public void setUVPixels(Object x, Double y) {
-        if (this.textureWidth == -1 || this.textureHeight == -1)
-            throw new LuaError("Cannot call setUVPixels on a part with multiple texture sizes!");
+        if (this.textureWidth == -1 || this.textureHeight == -1) {
+            if (this.customization.partType == PartCustomization.PartType.GROUP)
+                throw new LuaError("Cannot call setUVPixels on groups!");
+            else
+                throw new LuaError("Cannot call setUVPixels on parts with multiple texture sizes!");
+        }
 
         this.customization.uvMatrix.reset();
         FiguraVec2 uv = LuaUtils.parseVec2("setUVPixels", x, y);
@@ -577,8 +639,21 @@ public class FiguraModelPart {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("model_part.get_uv_pixels")
+    public FiguraVec2 getUVPixels() {
+        if (this.textureWidth == -1 || this.textureHeight == -1) {
+            if (this.customization.partType == PartCustomization.PartType.GROUP)
+                throw new LuaError("Cannot call getUVPixels on groups!");
+            else
+                throw new LuaError("Cannot call getUVPixels on parts with multiple texture sizes!");
+        }
+
+        return getUV().multiply(this.textureWidth, this.textureHeight);
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = FiguraMat3.class,
                     argumentNames = "matrix"
             ),
@@ -588,13 +663,19 @@ public class FiguraModelPart {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("model_part.get_uv_matrix")
+    public FiguraMat3 getUVMatrix() {
+        return this.customization.uvMatrix;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = FiguraVec3.class,
                             argumentNames = "color"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
                             argumentNames = {"r", "g", "b"}
                     )
@@ -612,7 +693,7 @@ public class FiguraModelPart {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = Float.class,
                     argumentNames = "opacity"
             ),
@@ -630,11 +711,11 @@ public class FiguraModelPart {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = FiguraVec2.class,
                             argumentNames = "light"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Integer.class, Integer.class},
                             argumentNames = {"blockLight", "skyLight"}
                     )
@@ -659,7 +740,7 @@ public class FiguraModelPart {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = String.class,
                     argumentNames = "parentType"
             ),
@@ -682,7 +763,7 @@ public class FiguraModelPart {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = String.class,
                     argumentNames = "taskName"
             ),
@@ -695,7 +776,7 @@ public class FiguraModelPart {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = String.class,
                     argumentNames = "taskName"
             ),
@@ -708,7 +789,7 @@ public class FiguraModelPart {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = String.class,
                     argumentNames = "taskName"
             ),
@@ -722,8 +803,8 @@ public class FiguraModelPart {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(returnType = Map.class),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(returnType = Map.class),
+                    @LuaMethodOverload(
                             argumentTypes = String.class,
                             argumentNames = "taskName",
                             returnType = RenderTask.class
@@ -739,13 +820,19 @@ public class FiguraModelPart {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
-                    argumentTypes = String.class,
-                    argumentNames = "taskName"
-            ),
+            overloads = {
+                    @LuaMethodOverload,
+                    @LuaMethodOverload(
+                            argumentTypes = String.class,
+                            argumentNames = "taskName"
+                    )
+            },
             value = "model_part.remove_task")
-    public void removeTask(@LuaNotNil String name) {
-        this.renderTasks.remove(name);
+    public void removeTask(String name) {
+        if (name != null)
+            this.renderTasks.remove(name);
+        else
+            this.renderTasks.clear();
     }
 
     //-- METAMETHODS --//

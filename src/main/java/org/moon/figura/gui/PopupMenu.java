@@ -36,11 +36,13 @@ public class PopupMenu {
     private static final FiguraIdentifier ICONS = new FiguraIdentifier("textures/gui/popup_icons.png");
 
     private static final MutableComponent VERSION_WARN = Component.empty()
-            .append(Component.literal("❗ ").withStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT)))
-            .append(FiguraText.of("badges.standard.warning").withStyle(ChatFormatting.YELLOW));
+            .append(Badges.System.WARNING.badge.copy().withStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT)))
+            .append(" ")
+            .append(Badges.System.WARNING.desc.copy().withStyle(ChatFormatting.YELLOW));
     private static final MutableComponent ERROR_WARN = Component.empty()
-            .append(Component.literal("❌ ").withStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT)))
-            .append(FiguraText.of("badges.standard.error").withStyle(ChatFormatting.RED));
+            .append(Badges.System.ERROR.badge.copy().withStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT)))
+            .append(" ")
+            .append(Badges.System.ERROR.desc.copy().withStyle(ChatFormatting.RED));
 
     private static final List<Pair<Component, Consumer<UUID>>> BUTTONS = List.of(
             Pair.of(FiguraText.of("popup_menu.cancel"), id -> {}),
@@ -123,15 +125,14 @@ public class PopupMenu {
 
         MutableComponent name = entity.getName().copy();
 
-        Component warn = null;
+        boolean error = false;
+        boolean version = false;
 
         Avatar avatar = AvatarManager.getAvatarForPlayer(id);
         if (avatar != null) {
             name.append(Badges.fetchBadges(avatar));
-            if (avatar.scriptError)
-                warn = ERROR_WARN;
-            else if (avatar.versionStatus > 0)
-                warn = VERSION_WARN;
+            error = avatar.scriptError;
+            version = avatar.versionStatus > 0;
         }
 
         //render texts
@@ -143,8 +144,10 @@ public class PopupMenu {
         UIHelper.renderOutlineText(stack, font, trust, -font.width(trust) / 2, -54, 0xFFFFFF, 0x202020);
         font.draw(stack, title, -width + 4, -12, 0xFFFFFF);
 
-        if (warn != null)
-            UIHelper.renderOutlineText(stack, font, warn, -font.width(warn) / 2, 0, 0xFFFFFF, 0x202020);
+        if (error)
+            UIHelper.renderOutlineText(stack, font, ERROR_WARN, -font.width(ERROR_WARN) / 2, 0, 0xFFFFFF, 0x202020);
+        if (version)
+            UIHelper.renderOutlineText(stack, font, VERSION_WARN, -font.width(VERSION_WARN) / 2, error ? font.lineHeight : 0, 0xFFFFFF, 0x202020);
 
         //finish rendering
         stack.popPose();
@@ -183,5 +186,9 @@ public class PopupMenu {
 
     public static void setEntity(Entity entity) {
         PopupMenu.entity = entity;
+    }
+
+    public static UUID getEntityId() {
+        return id;
     }
 }
