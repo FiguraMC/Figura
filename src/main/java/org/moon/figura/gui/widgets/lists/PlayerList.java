@@ -49,10 +49,10 @@ public class PlayerList extends AbstractList {
         scrollBar.setHeight(height - 32);
 
         //search bar
-        children.add(searchBar = new TextField(x + 4, y + 4, width - 32, 20, new FiguraText("gui.search"), s -> filter = s));
+        children.add(searchBar = new TextField(x + 4, y + 4, width - 32, 20, FiguraText.of("gui.search"), s -> filter = s));
 
         //show disconnected button
-        children.add(showDisconnected = new SwitchButton(x + width - 24, y + 4, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/show_disconnected.png"), 60, 40, new FiguraText("gui.trust.disconnected.tooltip"), button -> {}));
+        children.add(showDisconnected = new SwitchButton(x + width - 24, y + 4, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/show_disconnected.png"), 60, 40, FiguraText.of("gui.trust.disconnected.tooltip"), button -> {}));
 
         //initial load
         loadGroups();

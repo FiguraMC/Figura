@@ -1,7 +1,5 @@
 package org.moon.figura.avatars.providers;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.nbt.ByteArrayTag;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtIo;
@@ -10,6 +8,7 @@ import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.parsers.AvatarMetadataParser;
 import org.moon.figura.parsers.BlockbenchModelParser;
+import org.moon.figura.parsers.LuaScriptParser;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FiguraResourceListener;
 import org.moon.figura.utils.IOUtils;
@@ -18,7 +17,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -40,7 +38,7 @@ public class LocalAvatarLoader {
     public static final ArrayList<CompoundTag> SERVER_AVATARS = new ArrayList<>();
     private static final BiFunction<String, ResourceManager, CompoundTag> LOAD_AVATAR = (name, manager) -> {
         try {
-            return NbtIo.readCompressed(manager.getResource(new FiguraIdentifier("avatars/" + name + ".moon")).getInputStream());
+            return NbtIo.readCompressed(manager.getResource(new FiguraIdentifier("avatars/" + name + ".moon")).get().open());
         } catch (Exception e) {
             FiguraMod.LOGGER.error("Failed to load the " + name + " avatar", e);
             return null;
@@ -49,15 +47,11 @@ public class LocalAvatarLoader {
     public static final FiguraResourceListener AVATAR_LISTENER = new FiguraResourceListener("avatars", manager -> {
         cheese = LOAD_AVATAR.apply("cheese", manager);
 
-        /*
-
         SERVER_AVATARS.clear();
         manager.listResources("avatars/server", resource -> resource.getNamespace().equals(FiguraMod.MOD_ID) && resource.getPath().endsWith(".moon")).forEach((location, resource) -> {
             String name = location.getPath().substring(8, location.getPath().length() - 5);
             SERVER_AVATARS.add(LOAD_AVATAR.apply(name, manager));
         });
-
-         */
     });
 
     static {
@@ -93,8 +87,10 @@ public class LocalAvatarLoader {
         CompoundTag nbt = new CompoundTag();
 
         //scripts
+        LuaScriptParser scriptParser=new LuaScriptParser();
+
         loadState++;
-        loadScripts(path, nbt);
+        loadScripts(path,scriptParser, nbt);
 
         //custom sounds
         loadState++;
@@ -103,10 +99,10 @@ public class LocalAvatarLoader {
         //models
         ListTag textures = new ListTag();
         ListTag animations = new ListTag();
-        BlockbenchModelParser parser = new BlockbenchModelParser();
+        BlockbenchModelParser modelParser = new BlockbenchModelParser();
 
         loadState++;
-        CompoundTag models = loadModels(path, parser, textures, animations, "");
+        CompoundTag models = loadModels(path, modelParser, textures, animations, "");
         models.putString("name", "models");
 
         //metadata
@@ -126,7 +122,7 @@ public class LocalAvatarLoader {
         return nbt;
     }
 
-    private static void loadScripts(Path path, CompoundTag nbt) throws IOException {
+    private static void loadScripts(Path path,LuaScriptParser parser, CompoundTag nbt) throws IOException {
         List<File> scripts = IOUtils.getFilesByExtension(path, ".lua");
         if (scripts.size() > 0) {
             CompoundTag scriptsNbt = new CompoundTag();
@@ -134,7 +130,7 @@ public class LocalAvatarLoader {
             for (File script : scripts) {
                 String pathStr = script.toPath().toString();
                 String name = pathStr.replaceFirst(pathRegex, "");
-                name = name.replace(File.separatorChar, '.');
+                name = name.replace(File.separatorChar, '/');
                 scriptsNbt.put(name.substring(0, name.length() - 4), new ByteArrayTag(IOUtils.readFile(script).getBytes(StandardCharsets.UTF_8)));
             }
             nbt.put("scripts", scriptsNbt);
