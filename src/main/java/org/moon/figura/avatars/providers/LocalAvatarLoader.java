@@ -1,5 +1,6 @@
 package org.moon.figura.avatars.providers;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtIo;
@@ -131,7 +132,7 @@ public class LocalAvatarLoader {
                 String pathStr = script.toPath().toString();
                 String name = pathStr.replaceFirst(pathRegex, "");
                 name = name.replace(File.separatorChar, '/');
-                scriptsNbt.put(name.substring(0, name.length() - 4), new ByteArrayTag(IOUtils.readFile(script).getBytes(StandardCharsets.UTF_8)));
+                scriptsNbt.put(name.substring(0, name.length() - 4), parser.parseScript(IOUtils.readFile(script)));
             }
             nbt.put("scripts", scriptsNbt);
         }
