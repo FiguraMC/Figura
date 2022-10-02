@@ -72,6 +72,12 @@ public class ActionWheelAPI {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("action_wheel.create_action")
+    public Action createAction() {
+        return new Action();
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
                     @LuaMethodOverload,
