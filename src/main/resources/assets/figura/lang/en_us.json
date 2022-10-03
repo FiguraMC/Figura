@@ -444,6 +444,7 @@
   "figura.docs.enum.loop_modes": "List of valid LoopModes. Used within Blockbench animations.",
   "figura.docs.enum.colors": "List of custom colors. Used anywhere you can input a hex color.",
   "figura.docs.enum.player_model_parts": "List of valid PlayerModelParts. Used within the PlayerAPI.",
+  "figura.docs.enum.use_actions": "List of valid UseActions. Used within the ItemStackAPI.",
 
 
   "figura.docs.globals": "Documentation for the various things Figura adds to the global lua state.",
@@ -847,7 +848,6 @@
   "figura.docs.keybind.on_release": "A function that runs when the key is released.",
   "figura.docs.keybind.enabled": "Toggles if this keybind should be processed or not.",
   "figura.docs.keybind.gui": "Whenever or not this keybind should run when a GUI is open.",
-  "figura.docs.keybind.override": "Toggles if this keybind should stop vanilla keys from running.",
 
 
   "figura.docs.matrices": "A global API which provides functions dedicated to creating and otherwise manipulating matrices. Accessed using the name \"matrices\".",
