@@ -22,7 +22,7 @@ import java.util.List;
 )
 public class TextureAPI {
 
-    private static final int TEXTURE_LIMIT = 100;
+    private static final int TEXTURE_LIMIT = 128;
 
     private final Avatar owner;
 
