@@ -65,6 +65,7 @@ public class LocalAvatarLoader {
 
     /**
      * Loads an NbtCompound from the specified path
+     *
      * @param path - the file/folder for loading the avatar
      * @return the NbtCompound from this path
      */
@@ -88,10 +89,10 @@ public class LocalAvatarLoader {
         CompoundTag nbt = new CompoundTag();
 
         //scripts
-        LuaScriptParser scriptParser=new LuaScriptParser();
+        LuaScriptParser scriptParser = new LuaScriptParser();
 
         loadState++;
-        loadScripts(path,scriptParser, nbt);
+        loadScripts(path, scriptParser, nbt);
 
         //custom sounds
         loadState++;
@@ -123,7 +124,7 @@ public class LocalAvatarLoader {
         return nbt;
     }
 
-    private static void loadScripts(Path path,LuaScriptParser parser, CompoundTag nbt) throws IOException {
+    private static void loadScripts(Path path, LuaScriptParser parser, CompoundTag nbt) throws IOException {
         List<File> scripts = IOUtils.getFilesByExtension(path, ".lua");
         if (scripts.size() > 0) {
             CompoundTag scriptsNbt = new CompoundTag();
@@ -242,6 +243,7 @@ public class LocalAvatarLoader {
 
     /**
      * register new watch keys
+     *
      * @param path the path to register the watch key
      */
     private static void addWatchKey(Path path) {
