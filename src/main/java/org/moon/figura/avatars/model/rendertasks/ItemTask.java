@@ -12,8 +12,8 @@ import org.moon.figura.avatars.model.PartCustomization;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.world.ItemStackAPI;
-import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
+import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.utils.LuaUtils;
 
@@ -55,11 +55,11 @@ public class ItemTask extends RenderTask {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = String.class,
                             argumentNames = "item"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = ItemStackAPI.class,
                             argumentNames = "item"
                     )
@@ -82,7 +82,7 @@ public class ItemTask extends RenderTask {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                         argumentTypes = String.class,
                         argumentNames = "renderType"
             ),

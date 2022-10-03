@@ -4,6 +4,7 @@ import org.luaj.vm2.LuaFunction;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaMetamethodDoc;
+import org.moon.figura.lua.docs.LuaMetamethodDoc.LuaMetamethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 
 @LuaWhitelist
@@ -74,7 +75,7 @@ public class EventsAPI {
     public final LuaEvent POST_PREVIEW_RENDER;
 
     @LuaWhitelist
-    @LuaMetamethodDoc(overloads = @LuaMetamethodDoc.LuaMetamethodOverload(
+    @LuaMetamethodDoc(overloads = @LuaMetamethodOverload(
             types = {LuaEvent.class, EventsAPI.class, String.class},
             comment = "events.__index.comment1"
     ))

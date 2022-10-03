@@ -9,6 +9,8 @@ import org.luaj.vm2.LuaFunction;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.*;
+import org.moon.figura.lua.docs.LuaMetamethodDoc.LuaMetamethodOverload;
+import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.MathUtils;
@@ -38,7 +40,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
     @Override
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     returnType = FiguraVec3.class
             ),
             value = "vector_n.reset"
@@ -78,11 +80,11 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = FiguraVec3.class,
                             argumentNames = "vec"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
                             argumentNames = {"x", "y", "z"}
                     )
@@ -108,11 +110,11 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = FiguraVec3.class,
                             argumentNames = "vec"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
                             argumentNames = {"x", "y", "z"}
                     )
@@ -138,11 +140,11 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = FiguraVec3.class,
                             argumentNames = "vec"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
                             argumentNames = {"x", "y", "z"}
                     )
@@ -156,7 +158,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
     @Override
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = Double.class,
                     argumentNames = "factor",
                     returnType = FiguraVec3.class
@@ -185,11 +187,11 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = FiguraVec3.class,
                             argumentNames = "vec"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
                             argumentNames = {"x", "y", "z"}
                     )
@@ -215,11 +217,11 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = FiguraVec3.class,
                             argumentNames = "vec"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
                             argumentNames = {"x", "y", "z"}
                     )
@@ -245,11 +247,11 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = FiguraVec3.class,
                             argumentNames = "vec"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
                             argumentNames = {"x", "y", "z"}
                     )
@@ -263,7 +265,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
     @Override
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = Double.class,
                     argumentNames = "factor",
                     returnType = FiguraVec3.class
@@ -282,7 +284,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
     @Override
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = FiguraMat3.class,
                     argumentNames = "mat",
                     returnType = FiguraVec3.class
@@ -307,7 +309,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
     @Override
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     returnType = FiguraVec3.class
             ),
             value = "vector_n.copy"
@@ -319,7 +321,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
     @Override
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = FiguraVec3.class,
                     argumentNames = "vec"
             ),
@@ -332,7 +334,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
     @Override
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     returnType = FiguraVec3.class
             ),
             value = "vector_n.normalize"
@@ -344,7 +346,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
     @Override
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     returnType = FiguraVec3.class
             ),
             value = "vector_n.normalized"
@@ -356,7 +358,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
     @Override
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = {Double.class, Double.class},
                     argumentNames = {"minLength", "maxLength"},
                     returnType = FiguraVec3.class
@@ -370,7 +372,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
     @Override
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = {Double.class, Double.class},
                     argumentNames = {"minLength", "maxLength"},
                     returnType = FiguraVec3.class
@@ -391,7 +393,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
     @Override
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     returnType = FiguraVec3.class
             ),
             value = "vector_n.to_rad"
@@ -403,7 +405,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
     @Override
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     returnType = FiguraVec3.class
             ),
             value = "vector_n.to_deg"
@@ -426,7 +428,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = LuaFunction.class,
                     argumentNames = "func"
             ),
@@ -479,7 +481,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = FiguraVec3.class,
                     argumentNames = "other"
             ),
@@ -495,7 +497,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = FiguraVec3.class,
                     argumentNames = "other"
             ),
@@ -535,13 +537,13 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
     @LuaWhitelist
     @LuaMetamethodDoc(
             overloads = {
-                    @LuaMetamethodDoc.LuaMetamethodOverload(
+                    @LuaMetamethodOverload(
                             types = {FiguraVec3.class, FiguraVec3.class, FiguraVec3.class}
                     ),
-                    @LuaMetamethodDoc.LuaMetamethodOverload(
+                    @LuaMetamethodOverload(
                             types = {FiguraVec3.class, FiguraVec3.class, Double.class}
                     ),
-                    @LuaMetamethodDoc.LuaMetamethodOverload(
+                    @LuaMetamethodOverload(
                             types = {FiguraVec3.class, Double.class, FiguraVec3.class}
                     )
             }
@@ -561,13 +563,13 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
     @LuaWhitelist
     @LuaMetamethodDoc(
             overloads = {
-                    @LuaMetamethodDoc.LuaMetamethodOverload(
+                    @LuaMetamethodOverload(
                             types = {FiguraVec3.class, FiguraVec3.class, FiguraVec3.class}
                     ),
-                    @LuaMetamethodDoc.LuaMetamethodOverload(
+                    @LuaMetamethodOverload(
                             types = {FiguraVec3.class, FiguraVec3.class, Double.class}
                     ),
-                    @LuaMetamethodDoc.LuaMetamethodOverload(
+                    @LuaMetamethodOverload(
                             types = {FiguraVec3.class, Double.class, FiguraVec3.class}
                     )
             }
@@ -587,16 +589,16 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
     @LuaWhitelist
     @LuaMetamethodDoc(
             overloads = {
-                    @LuaMetamethodDoc.LuaMetamethodOverload(
+                    @LuaMetamethodOverload(
                             types = {FiguraVec3.class, FiguraVec3.class, FiguraVec3.class}
                     ),
-                    @LuaMetamethodDoc.LuaMetamethodOverload(
+                    @LuaMetamethodOverload(
                             types = {FiguraVec3.class, FiguraVec3.class, Double.class}
                     ),
-                    @LuaMetamethodDoc.LuaMetamethodOverload(
+                    @LuaMetamethodOverload(
                             types = {FiguraVec3.class, FiguraVec3.class, FiguraMat3.class}
                     ),
-                    @LuaMetamethodDoc.LuaMetamethodOverload(
+                    @LuaMetamethodOverload(
                             types = {FiguraVec3.class, Double.class, FiguraVec3.class}
                     )
             }
@@ -618,10 +620,10 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
     @LuaWhitelist
     @LuaMetamethodDoc(
             overloads = {
-                    @LuaMetamethodDoc.LuaMetamethodOverload(
+                    @LuaMetamethodOverload(
                             types = {FiguraVec3.class, FiguraVec3.class, FiguraVec3.class}
                     ),
-                    @LuaMetamethodDoc.LuaMetamethodOverload(
+                    @LuaMetamethodOverload(
                             types = {FiguraVec3.class, FiguraVec3.class, Double.class}
                     )
             }
@@ -641,10 +643,10 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
     @LuaWhitelist
     @LuaMetamethodDoc(
             overloads = {
-                    @LuaMetamethodDoc.LuaMetamethodOverload(
+                    @LuaMetamethodOverload(
                             types = {FiguraVec3.class, FiguraVec3.class, FiguraVec3.class}
                     ),
-                    @LuaMetamethodDoc.LuaMetamethodOverload(
+                    @LuaMetamethodOverload(
                             types = {FiguraVec3.class, FiguraVec3.class, Double.class}
                     )
             }
@@ -666,7 +668,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
 
     @LuaWhitelist
     @LuaMetamethodDoc(
-            overloads = @LuaMetamethodDoc.LuaMetamethodOverload(
+            overloads = @LuaMetamethodOverload(
                     types = {Boolean.class, FiguraVec3.class, FiguraVec3.class}
             )
     )
@@ -676,7 +678,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
 
     @LuaWhitelist
     @LuaMetamethodDoc(
-            overloads = @LuaMetamethodDoc.LuaMetamethodOverload(
+            overloads = @LuaMetamethodOverload(
                     types = {FiguraVec3.class, FiguraVec3.class}
             )
     )
@@ -686,7 +688,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
 
     @LuaWhitelist
     @LuaMetamethodDoc(
-            overloads = @LuaMetamethodDoc.LuaMetamethodOverload(
+            overloads = @LuaMetamethodOverload(
                     types = {Integer.class, FiguraVec3.class}
             )
     )
@@ -696,7 +698,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
 
     @LuaWhitelist
     @LuaMetamethodDoc(
-            overloads = @LuaMetamethodDoc.LuaMetamethodOverload(
+            overloads = @LuaMetamethodOverload(
                     types = {Boolean.class, FiguraVec3.class, FiguraVec3.class}
             )
     )
@@ -706,7 +708,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
 
     @LuaWhitelist
     @LuaMetamethodDoc(
-            overloads = @LuaMetamethodDoc.LuaMetamethodOverload(
+            overloads = @LuaMetamethodOverload(
                     types = {Boolean.class, FiguraVec3.class, FiguraVec3.class}
             )
     )
@@ -716,7 +718,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
 
     @LuaWhitelist
     @LuaMetamethodDoc(
-            overloads = @LuaMetamethodDoc.LuaMetamethodOverload(
+            overloads = @LuaMetamethodOverload(
                     types = {String.class, FiguraVec3.class}
             )
     )
@@ -727,13 +729,13 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
     @LuaWhitelist
     @LuaMetamethodDoc(
             overloads = {
-                    @LuaMetamethodDoc.LuaMetamethodOverload(
+                    @LuaMetamethodOverload(
                             types = {Double.class, FiguraVec3.class, Integer.class}
                     ),
-                    @LuaMetamethodDoc.LuaMetamethodOverload(
+                    @LuaMetamethodOverload(
                             types = {Double.class, FiguraVec3.class, String.class}
                     ),
-                    @LuaMetamethodDoc.LuaMetamethodOverload(
+                    @LuaMetamethodOverload(
                             types = {FiguraVector.class, FiguraVec3.class, String.class},
                             comment = "vector_n.comments.swizzle"
                     )
@@ -770,13 +772,13 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
     @LuaWhitelist
     @LuaMetamethodDoc(
             overloads = {
-                    @LuaMetamethodDoc.LuaMetamethodOverload(
+                    @LuaMetamethodOverload(
                             types = {void.class, FiguraVec3.class, Integer.class, Double.class}
                     ),
-                    @LuaMetamethodDoc.LuaMetamethodOverload(
+                    @LuaMetamethodOverload(
                             types = {void.class, FiguraVec3.class, String.class, Double.class}
                     ),
-                    @LuaMetamethodDoc.LuaMetamethodOverload(
+                    @LuaMetamethodOverload(
                             types = {void.class, FiguraVec3.class, String.class, FiguraVector.class}
                     )
             }

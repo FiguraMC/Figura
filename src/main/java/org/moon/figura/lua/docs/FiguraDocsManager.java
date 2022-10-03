@@ -113,10 +113,7 @@ public class FiguraDocsManager {
         put("action_wheel", List.of(
                 ActionWheelAPI.class,
                 Page.class,
-                Action.class,
-                ClickAction.class,
-                ToggleAction.class,
-                ScrollAction.class
+                Action.class
         ));
 
         put("animations", List.of(

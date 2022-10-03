@@ -10,8 +10,8 @@ import org.moon.figura.avatars.Avatar;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.world.WorldAPI;
-import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
+import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec6;
@@ -33,31 +33,31 @@ public class ParticleAPI {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {String.class, FiguraVec6.class},
                             argumentNames = {"name", "posVel"}
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {String.class, FiguraVec3.class},
                             argumentNames = {"name", "pos"}
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {String.class, FiguraVec3.class, FiguraVec3.class},
                             argumentNames = {"name", "pos", "vel"}
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {String.class, Double.class, Double.class, Double.class},
                             argumentNames = {"name", "posX", "posY", "posZ"}
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {String.class, FiguraVec3.class, Double.class, Double.class, Double.class},
                             argumentNames = {"name", "pos", "velX", "velY", "velZ"}
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {String.class, Double.class, Double.class, Double.class, FiguraVec3.class},
                             argumentNames = {"name", "posX", "posY", "posZ", "vel"}
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {String.class, Double.class, Double.class, Double.class, Double.class, Double.class, Double.class},
                             argumentNames = {"name", "posX", "posY", "posZ", "velX", "velY", "velZ"}
                     )

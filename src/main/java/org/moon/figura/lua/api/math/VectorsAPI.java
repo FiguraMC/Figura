@@ -3,8 +3,8 @@ package org.moon.figura.lua.api.math;
 import org.luaj.vm2.LuaError;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
-import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
+import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.*;
 import org.moon.figura.utils.ColorUtils;
@@ -23,27 +23,27 @@ public class VectorsAPI {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Double.class, Double.class},
                             argumentNames = {"x", "y"},
                             returnType = FiguraVec2.class
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
                             argumentNames = {"x", "y", "z"},
                             returnType = FiguraVec3.class
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Double.class, Double.class, Double.class, Double.class},
                             argumentNames = {"x", "y", "z", "w"},
                             returnType = FiguraVec4.class
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Double.class, Double.class, Double.class, Double.class, Double.class},
                             argumentNames = {"x", "y", "z", "w", "t"},
                             returnType = FiguraVec5.class
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Double.class, Double.class, Double.class, Double.class, Double.class, Double.class},
                             argumentNames = {"x", "y", "z", "w", "t", "h"},
                             returnType = FiguraVec6.class
@@ -67,7 +67,7 @@ public class VectorsAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = {Double.class, Double.class},
                     argumentNames = {"x", "y"}
             ),
@@ -79,7 +79,7 @@ public class VectorsAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = {Double.class, Double.class, Double.class},
                     argumentNames = {"x", "y", "z"}
             ),
@@ -91,7 +91,7 @@ public class VectorsAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = {Double.class, Double.class, Double.class, Double.class},
                     argumentNames = {"x", "y", "z", "w"}
             ),
@@ -103,7 +103,7 @@ public class VectorsAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = {Double.class, Double.class, Double.class, Double.class, Double.class},
                     argumentNames = {"x", "y", "z", "w", "t"}
             ),
@@ -115,7 +115,7 @@ public class VectorsAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = {Double.class, Double.class, Double.class, Double.class, Double.class, Double.class},
                     argumentNames = {"x", "y", "z", "w", "t", "h"}
             ),
@@ -130,11 +130,11 @@ public class VectorsAPI {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = FiguraVec3.class,
                             argumentNames = "rgb"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
                             argumentNames = {"r", "g", "b"}
                     )
@@ -148,7 +148,7 @@ public class VectorsAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = Integer.class,
                     argumentNames = "color"
             ),
@@ -160,7 +160,7 @@ public class VectorsAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = String.class,
                     argumentNames = "hex"
             ),
@@ -173,11 +173,11 @@ public class VectorsAPI {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = FiguraVec3.class,
                             argumentNames = "hsv"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
                             argumentNames = {"h", "s", "v"}
                     )
@@ -192,11 +192,11 @@ public class VectorsAPI {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = FiguraVec3.class,
                             argumentNames = "rgb"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
                             argumentNames = {"r", "g", "b"}
                     )
@@ -211,11 +211,11 @@ public class VectorsAPI {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = FiguraVec3.class,
                             argumentNames = "rgb"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
                             argumentNames = {"r", "g", "b"}
                     )
@@ -230,15 +230,15 @@ public class VectorsAPI {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = Double.class,
                             argumentNames = "speed"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Double.class, Double.class},
                             argumentNames = {"speed", "offset"}
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Double.class, Double.class, Double.class, Double.class},
                             argumentNames = {"speed", "offset", "saturation", "light"}
                     )
@@ -257,19 +257,19 @@ public class VectorsAPI {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Double.class, FiguraVec3.class, FiguraVec3.class},
                             argumentNames = {"angle", "vec", "axis"}
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Double.class, Double.class, Double.class, Double.class, FiguraVec3.class},
                             argumentNames = {"angle", "x", "y", "z", "axis"}
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Double.class, FiguraVec3.class, Double.class, Double.class, Double.class},
                             argumentNames = {"angle", "vec", "axisX", "axisY", "axisZ"}
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Double.class, Double.class, Double.class, Double.class, Double.class, Double.class, Double.class},
                             argumentNames = {"angle", "x", "y", "z", "axisX", "axisY", "axisZ"}
                     )
@@ -317,11 +317,11 @@ public class VectorsAPI {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = FiguraVec3.class,
                             argumentNames = "vec"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
                             argumentNames = {"x", "y", "z"}
                     )
@@ -335,11 +335,11 @@ public class VectorsAPI {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = FiguraVec3.class,
                             argumentNames = "vec"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
                             argumentNames = {"x", "y", "z"}
                     )

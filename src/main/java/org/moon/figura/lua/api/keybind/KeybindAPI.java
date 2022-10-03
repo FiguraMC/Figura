@@ -4,8 +4,8 @@ import net.minecraft.client.KeyMapping;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
-import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
+import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.mixin.input.KeyMappingAccessor;
 
@@ -28,27 +28,22 @@ public class KeybindAPI {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {String.class, String.class},
                             argumentNames = {"name", "key"}
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {String.class, String.class, Boolean.class},
                             argumentNames = {"name", "key", "gui"}
-                    ),
-                    @LuaFunctionOverload(
-                            argumentTypes = {String.class, String.class, Boolean.class, Boolean.class},
-                            argumentNames = {"name", "key", "gui", "override"}
                     )
             },
             value = "keybind_api.create"
     )
-    public FiguraKeybind create(@LuaNotNil String name, @LuaNotNil String key, boolean gui, boolean override) {
+    public FiguraKeybind create(@LuaNotNil String name, @LuaNotNil String key, boolean gui) {
         this.keyBindings.removeIf(binding -> binding.getName().equals(name));
 
         FiguraKeybind binding = new FiguraKeybind(this.owner, name, FiguraKeybind.parseStringKey(key));
         binding.gui = gui;
-        binding.override = override;
 
         this.keyBindings.add(binding);
         return binding;
@@ -56,7 +51,7 @@ public class KeybindAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = String.class,
                     argumentNames = "id"
             ),

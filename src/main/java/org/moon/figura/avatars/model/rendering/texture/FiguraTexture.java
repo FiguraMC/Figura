@@ -11,8 +11,8 @@ import org.luaj.vm2.LuaError;
 import org.lwjgl.BufferUtils;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.lua.LuaWhitelist;
-import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
+import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
@@ -24,6 +24,8 @@ import org.moon.figura.utils.LuaUtils;
 import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.file.Path;
+import java.util.Base64;
 import java.util.UUID;
 
 @LuaWhitelist
@@ -45,6 +47,7 @@ public class FiguraTexture extends AbstractTexture implements Closeable {
      * Native image holding the texture data for this texture.
      */
     private final NativeImage texture;
+    private NativeImage backup;
     private boolean isClosed = false;
 
     public FiguraTexture(String name, byte[] data) {
@@ -113,10 +116,17 @@ public class FiguraTexture extends AbstractTexture implements Closeable {
         RenderSystem.recordRenderCall(() -> TextureUtil.releaseTextureId(this.id));
     }
 
-    public void dirty() {
-        this.dirty = true;
+    public void saveCache() throws IOException {
+        Path path = FiguraMod.getCacheDirectory().resolve("saved_texture.png");
+        texture.writeToFile(path);
     }
 
+    private void backupImage() {
+        if (this.backup == null) {
+            backup = new NativeImage(texture.format(), texture.getWidth(), texture.getHeight(), true);
+            backup.copyFrom(texture);
+        }
+    }
 
     // -- lua stuff -- //
 
@@ -126,20 +136,20 @@ public class FiguraTexture extends AbstractTexture implements Closeable {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(value = "texture.get_name")
+    @LuaMethodDoc("texture.get_name")
     public String getName() {
         return name;
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(value = "texture.get_dimensions")
+    @LuaMethodDoc("texture.get_dimensions")
     public FiguraVec2 getDimensions() {
         return FiguraVec2.of(getWidth(), getHeight());
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = {Integer.class, Integer.class},
                     argumentNames = {"x", "y"}
             ),
@@ -155,15 +165,15 @@ public class FiguraTexture extends AbstractTexture implements Closeable {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Integer.class, Integer.class, FiguraVec3.class},
                             argumentNames = {"x", "y", "rgb"}
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Integer.class, Integer.class, FiguraVec4.class},
                             argumentNames = {"x", "y", "rgba"}
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Integer.class, Integer.class, Double.class, Double.class, Double.class, Double.class},
                             argumentNames = {"x", "y", "r", "g", "b", "a"}
                     )
@@ -171,8 +181,8 @@ public class FiguraTexture extends AbstractTexture implements Closeable {
             value = "texture.set_pixel")
     public void setPixel(int x, int y, Object r, Double g, Double b, Double a) {
         try {
+            backupImage();
             texture.setPixelRGBA(x, y, ColorUtils.rgbaToIntABGR(parseColor("setPixel", r, g, b, a)));
-            dirty();
         } catch (Exception e) {
             throw new LuaError(e.getMessage());
         }
@@ -181,15 +191,15 @@ public class FiguraTexture extends AbstractTexture implements Closeable {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Integer.class, Integer.class, Integer.class, Integer.class, FiguraVec3.class},
                             argumentNames = {"x", "y", "width", "height", "rgb"}
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Integer.class, Integer.class, Integer.class, Integer.class, FiguraVec4.class},
                             argumentNames = {"x", "y", "width", "height", "rgba"}
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Integer.class, Integer.class, Integer.class, Integer.class, Double.class, Double.class, Double.class, Double.class},
                             argumentNames = {"x", "y", "width", "height", "r", "g", "b", "a"}
                     )
@@ -197,8 +207,34 @@ public class FiguraTexture extends AbstractTexture implements Closeable {
             value = "texture.fill")
     public void fill(int x, int y, int width, int height, Object r, Double g, Double b, Double a) {
         try {
+            backupImage();
             texture.fillRect(x, y, width, height, ColorUtils.rgbaToIntABGR(parseColor("fill", r, g, b, a)));
-            dirty();
+        } catch (Exception e) {
+            throw new LuaError(e.getMessage());
+        }
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("texture.update")
+    public void update() {
+        this.dirty = true;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("texture.restore")
+    public void restore() {
+        if (backup == null)
+            return;
+
+        this.texture.copyFrom(backup);
+        backup = null;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("texture.save")
+    public String save() {
+        try {
+            return Base64.getEncoder().encodeToString(texture.asByteArray());
         } catch (Exception e) {
             throw new LuaError(e.getMessage());
         }
@@ -206,6 +242,6 @@ public class FiguraTexture extends AbstractTexture implements Closeable {
 
     @Override
     public String toString() {
-        return name.isBlank() ? "Texture" : name + " (Texture)";
+        return name + " (" + getWidth() + "x" + getHeight() + ") (Texture)";
     }
 }

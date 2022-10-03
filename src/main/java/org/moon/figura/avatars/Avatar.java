@@ -120,7 +120,9 @@ public class Avatar {
         this.worldTick = new Instructions(trust.get(TrustContainer.Trust.WORLD_TICK_INST));
         this.particlesRemaining = new RefilledNumber(trust.get(TrustContainer.Trust.PARTICLES));
         this.soundsRemaining = new RefilledNumber(trust.get(TrustContainer.Trust.SOUNDS));
-        entityName = EntityUtils.getNameForUUID(owner);
+
+        String name = EntityUtils.getNameForUUID(owner);
+        this.entityName = name == null ? "" : name;
     }
 
     public void load(CompoundTag nbt) {
@@ -152,7 +154,7 @@ public class Avatar {
                     color = metadata.getString("color");
                 fileSize = getFileSize();
                 versionStatus = checkVersion();
-                if (entityName == null)
+                if (entityName.isBlank())
                     entityName = name;
             } catch (Exception e) {
                 FiguraMod.LOGGER.error("", e);
@@ -236,7 +238,8 @@ public class Avatar {
     }
 
     public Varargs run(Object toRun, Instructions limit, Object... args) {
-        events.offer(() -> {
+        //create event
+        Supplier<Varargs> ev = () -> {
             if (scriptError || luaRuntime == null)
                 return null;
 
@@ -272,12 +275,24 @@ public class Avatar {
             }
 
             return LuaValue.NIL;
-        });
+        };
+
+        //add event to the queue
+        events.offer(ev);
 
         Varargs val = null;
-        while (!events.isEmpty())
-            val = events.poll().get();
 
+        //run all queued events
+        while (!events.isEmpty()) {
+            Supplier<Varargs> e = events.poll();
+            Varargs result = e.get();
+
+            //if the event is the same the one created, set the return value to it
+            if (e == ev)
+                val = result;
+        }
+
+        //return the new event result
         return val;
     }
 
@@ -754,6 +769,7 @@ public class Avatar {
     public static class Instructions {
 
         public int max, remaining;
+        private int currPre, currPost;
         public int pre, post;
         private boolean inverted;
 
@@ -772,16 +788,18 @@ public class Avatar {
 
         public void reset(int remaining) {
             this.max = this.remaining = remaining;
-            pre = post = 0;
+            currPre = currPost = 0;
         }
 
         public void use(int amount) {
             remaining -= amount;
 
             if (!inverted) {
-                pre += amount;
+                currPre += amount;
+                pre = currPre;
             } else {
-                post += amount;
+                currPost += amount;
+                post = currPost;
                 inverted = false;
             }
         }

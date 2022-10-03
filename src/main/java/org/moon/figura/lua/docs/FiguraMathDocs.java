@@ -18,32 +18,32 @@ public class FiguraMathDocs {
 
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
                             argumentNames = {"a", "b", "t"},
                             returnType = Double.class
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {FiguraVec2.class, FiguraVec2.class, Double.class},
                             argumentNames = {"a", "b", "t"},
                             returnType = FiguraVec2.class
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {FiguraVec3.class, FiguraVec3.class, Double.class},
                             argumentNames = {"a", "b", "t"},
                             returnType = FiguraVec3.class
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {FiguraVec4.class, FiguraVec4.class, Double.class},
                             argumentNames = {"a", "b", "t"},
                             returnType = FiguraVec4.class
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {FiguraVec5.class, FiguraVec5.class, Double.class},
                             argumentNames = {"a", "b", "t"},
                             returnType = FiguraVec5.class
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {FiguraVec6.class, FiguraVec6.class, Double.class},
                             argumentNames = {"a", "b", "t"},
                             returnType = FiguraVec6.class
@@ -54,7 +54,7 @@ public class FiguraMathDocs {
     public static Object lerp() {return null;}
 
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = {Double.class, Double.class, Double.class},
                     argumentNames = {"value", "min", "max"}
             ),
@@ -63,7 +63,7 @@ public class FiguraMathDocs {
     public static Double clamp() {return null;}
 
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = Double.class,
                     argumentNames = "value"
             ),
@@ -72,7 +72,7 @@ public class FiguraMathDocs {
     public static Double round() {return null;}
 
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = {Double.class, Double.class, Double.class, Double.class, Double.class},
                     argumentNames = {"value", "oldMin", "oldMax", "newMin", "newMax"}
             ),
@@ -81,7 +81,7 @@ public class FiguraMathDocs {
     public static Double map() {return null;}
 
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = {Double.class, Double.class},
                     argumentNames = {"from", "to"}
             ),
@@ -90,7 +90,7 @@ public class FiguraMathDocs {
     public static Double shortAngle() {return null;}
 
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = {Double.class, Double.class, Double.class},
                     argumentNames = {"a", "b", "t"}
             ),
@@ -99,7 +99,7 @@ public class FiguraMathDocs {
     public static Double lerpAngle() {return null;}
 
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = Double.class,
                     argumentNames = "value"
             ),
