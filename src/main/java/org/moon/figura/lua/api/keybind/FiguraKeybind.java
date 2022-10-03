@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
+import org.luaj.vm2.Varargs;
 import org.moon.figura.avatars.Avatar;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
@@ -27,7 +28,7 @@ public class FiguraKeybind {
     private final InputConstants.Key defaultKey;
 
     private InputConstants.Key key;
-    private boolean isDown = false;
+    private boolean isDown, override;
 
     @LuaWhitelist
     @LuaFieldDoc("keybind.on_press")
@@ -45,10 +46,6 @@ public class FiguraKeybind {
     @LuaFieldDoc("keybind.gui")
     public boolean gui;
 
-    @LuaWhitelist
-    @LuaFieldDoc("keybind.override")
-    public boolean override;
-
     public FiguraKeybind(Avatar owner, String name, InputConstants.Key key) {
         this.owner = owner;
         this.name = name;
@@ -60,18 +57,23 @@ public class FiguraKeybind {
         this.key = this.defaultKey;
     }
 
-    public void setDown(boolean bl) {
+    public boolean setDown(boolean bl) {
         //events
         if (isDown != bl) {
+            Varargs result = null;
+
             if (bl) {
                 if (onPress != null)
-                    owner.run(onPress, owner.tick, this);
+                    result = owner.run(onPress, owner.tick, this);
             } else if (onRelease != null) {
-                owner.run(onRelease, owner.tick, this);
+                result = owner.run(onRelease, owner.tick, this);
             }
+
+            override = result != null && result.arg(1).isboolean() && result.checkboolean(1);
         }
 
         this.isDown = bl;
+        return override;
     }
 
     public void setKey(InputConstants.Key key) {
@@ -95,10 +97,8 @@ public class FiguraKeybind {
     public static boolean set(List<FiguraKeybind> bindings, InputConstants.Key key, boolean pressed) {
         boolean overrided = false;
         for (FiguraKeybind keybind : bindings) {
-            if (keybind.key == key && keybind.enabled && (keybind.gui || Minecraft.getInstance().screen == null)) {
-                keybind.setDown(pressed);
-                overrided = overrided || keybind.override;
-            }
+            if (keybind.key == key && keybind.enabled && (keybind.gui || Minecraft.getInstance().screen == null))
+                overrided = keybind.setDown(pressed) || overrided;
         }
         return overrided;
     }
@@ -173,7 +173,6 @@ public class FiguraKeybind {
             case "onRelease" -> onRelease;
             case "enabled" -> enabled;
             case "gui" -> gui;
-            case "override" -> override;
             default -> null;
         };
     }
@@ -188,7 +187,6 @@ public class FiguraKeybind {
             case "onRelease" -> onRelease = func;
             case "enabled" -> enabled = bool;
             case "gui" -> gui = bool;
-            case "override" -> override = bool;
         }
     }
 

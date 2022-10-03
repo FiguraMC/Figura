@@ -35,20 +35,15 @@ public class KeybindAPI {
                     @LuaMethodOverload(
                             argumentTypes = {String.class, String.class, Boolean.class},
                             argumentNames = {"name", "key", "gui"}
-                    ),
-                    @LuaMethodOverload(
-                            argumentTypes = {String.class, String.class, Boolean.class, Boolean.class},
-                            argumentNames = {"name", "key", "gui", "override"}
                     )
             },
             value = "keybind_api.create"
     )
-    public FiguraKeybind create(@LuaNotNil String name, @LuaNotNil String key, boolean gui, boolean override) {
+    public FiguraKeybind create(@LuaNotNil String name, @LuaNotNil String key, boolean gui) {
         this.keyBindings.removeIf(binding -> binding.getName().equals(name));
 
         FiguraKeybind binding = new FiguraKeybind(this.owner, name, FiguraKeybind.parseStringKey(key));
         binding.gui = gui;
-        binding.override = override;
 
         this.keyBindings.add(binding);
         return binding;

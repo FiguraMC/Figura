@@ -54,20 +54,24 @@ public class Action {
 
 
     public void execute(Avatar avatar, boolean left) {
+        //click action
         LuaFunction function = left ? leftClick : rightClick;
         if (function != null)
             avatar.run(function, avatar.tick, this);
 
-        if (!left) return;
-        toggled = !toggled;
-        function = !toggled ? untoggle == null ? toggle : untoggle : toggle;
+        if (!left)
+            return;
 
-        //execute
-        if (function != null)
+        //toggle action
+        function = toggled ? untoggle == null ? toggle : untoggle : toggle;
+        if (function != null) {
+            toggled = !toggled;
             avatar.run(function, avatar.tick, toggled, this);
+        }
     }
 
     public void mouseScroll(Avatar avatar, double delta) {
+        //scroll action
         if (scroll != null)
             avatar.run(scroll, avatar.tick, delta, this);
     }
