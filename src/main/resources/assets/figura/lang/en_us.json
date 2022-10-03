@@ -259,6 +259,11 @@
   "figura.config.log_number_length": "Print Number Length",
   "figura.config.log_number_length.tooltip": "Changes the length of the decimal places that will be displayed within print functions",
 
+  "figura.config.format_script.1":"Do Not Touch",
+  "figura.config.format_script.2":"Lightly",
+  "figura.config.format_script.3":"Heavily",
+  "figura.config.format_script.tooltip.1":"Toggles if scripts will be stripped of comments and whitespace before being loaded.",
+  "figura.config.format_script.tooltip.2":"Requires reselecting/reuploading the avatar to take effect.",
 
   "figura.config.actionwheel": "Action Wheel",
   "figura.config.actionwheel.tooltip": "Action Wheel settings",
@@ -444,7 +449,6 @@
   "figura.docs.enum.loop_modes": "List of valid LoopModes. Used within Blockbench animations.",
   "figura.docs.enum.colors": "List of custom colors. Used anywhere you can input a hex color.",
   "figura.docs.enum.player_model_parts": "List of valid PlayerModelParts. Used within the PlayerAPI.",
-  "figura.docs.enum.use_actions": "List of valid UseActions. Used within the ItemStackAPI.",
 
 
   "figura.docs.globals": "Documentation for the various things Figura adds to the global lua state.",
@@ -502,7 +506,6 @@
   "figura.docs.action_wheel.execute": "Executes the action of the given index. If the index is null, it will execute the last selected action. A second parameter can be given to specify if it should be executed the left or right action.",
   "figura.docs.action_wheel.is_enabled": "Returns if the Action Wheel is being currently rendered or not.",
   "figura.docs.action_wheel.get_selected": "Returns the index of the currently selected action.",
-  "figura.docs.action_wheel.create_action": "Creates a new Action that is not automatically asigned to a Page.",
   "figura.docs.action_wheel.create_page": "Creates a new Page for the action wheel. A Title can be given to store this page internally. If no Title is given, the Page will just be returned from this function.",
   "figura.docs.action_wheel.set_page": "Sets the Page of the action wheel to the given Title or Page.",
   "figura.docs.action_wheel.get_page": "Returns an stored Page by the given title.",
@@ -848,6 +851,7 @@
   "figura.docs.keybind.on_release": "A function that runs when the key is released.",
   "figura.docs.keybind.enabled": "Toggles if this keybind should be processed or not.",
   "figura.docs.keybind.gui": "Whenever or not this keybind should run when a GUI is open.",
+  "figura.docs.keybind.override": "Toggles if this keybind should stop vanilla keys from running.",
 
 
   "figura.docs.matrices": "A global API which provides functions dedicated to creating and otherwise manipulating matrices. Accessed using the name \"matrices\".",
