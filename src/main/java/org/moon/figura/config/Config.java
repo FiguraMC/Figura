@@ -65,7 +65,7 @@ public enum Config {
             FiguraLuaPrinter.updateDecimalFormatting();
         }
     },
-    FORMAT_SCRIPT(true){{
+    FORMAT_SCRIPT(1, 3){{
       String tooltip = "config.format_script.tooltip.";
       this.tooltip = FiguraText.of(tooltip + "1")
               .append("\n")

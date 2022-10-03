@@ -1,137 +1,164 @@
 package org.moon.figura.parsers;
 
 import net.minecraft.nbt.ByteArrayTag;
+import org.moon.figura.FiguraMod;
 import org.moon.figura.config.Config;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class LuaScriptParser {
-    public static ByteArrayTag parseScript(String script) {
-        if (!Config.FORMAT_SCRIPT.asBool())
-            return new ByteArrayTag(script.getBytes(StandardCharsets.UTF_8));
-        StringBuilder string = new StringBuilder(script);
-        for (int i = 0; i < string.length(); i++) {
-            int parseStart = i;
-            switch (string.charAt(i)) {
-                // parse through single line strings and ignore them
-                case '\'':
-                case '"': {
-                    char stringChar = string.charAt(i++);
-                    while (i < string.length() && string.charAt(i) != stringChar) {
-                        // should there be a newline, assume improper formatting.
-                        if (string.charAt(i) == '\n')
-                            return new ByteArrayTag(script.getBytes(StandardCharsets.UTF_8));
-                        // increase i an extra time to ignore escaped characters.
-                        else if (string.charAt(i) == '\\')
-                            i++;
-                        i++;
-                    }
-                    break;
-                }
-                // parse through long multiline strings and ignore them
-                case '[': {
-                    int end = parseLongString(string, i);
-                    // should the long string run until the end of the file, assume improper
-                    // formatting.
-                    if (end == -1)
-                        return new ByteArrayTag(script.getBytes(StandardCharsets.UTF_8));
-                    // if this bracket isnt a long string
-                    if (end == 0)
-                        break;
-                    i = end;
-                    break;
-                }
-                // parse through comments
-                case '-': {
-                    if (++i >= string.length())
-                        return new ByteArrayTag(script.getBytes(StandardCharsets.UTF_8));
-                    if (string.charAt(i) != '-')
-                        break;
-                    // parse through long comments
-                    if (++i < string.length() && string.charAt(i) == '[') {
-                        int end = parseLongString(string, i);
-                        // if long comment reaches until end of file, return original string
-                        if (end == -1) {
-                            return new ByteArrayTag(script.getBytes(StandardCharsets.UTF_8));
-                        }
-                        if (end != 0) {
-                            // count newlines so that they can be reinserted
-                            int newLines = 0;
-                            for (int o = parseStart; o < end; o++)
-                                if (string.charAt(o) == '\n')
-                                    newLines++;
-                            string.delete(parseStart, end + 1);
-                            string.insert(parseStart, "\n".repeat(newLines));
-                            i = parseStart + newLines - 1;
-                            break;
-                        }
-                        // if valid long comment not found, fall through to regular comment
-                    }
-                    // parse comment until next newline
-                    while (i < string.length() && string.charAt(i) != '\n')
-                        i++;
-                    string.delete(parseStart, i);
-                    i = parseStart - 1;
-                    break;
-                }
-                // parse whitespace and remove excess, while retaining newlines.
-                case ' ':
-                case '\t':
-                case '\r':
-                case '\n': {
-                    // count newlines so that they can be reinserted
-                    int newLines = 0;
-                    while (true) {
-                        if (i >= string.length())
-                            break;
-                        char c = string.charAt(i);
-                        if (c == '\n')
-                            newLines++;
-                        if (c == ' ' || c == '\t' || c == '\r' || c == '\n')
-                            i++;
-                        else
-                            break;
-                    }
-                    string.delete(parseStart, i);
-                    String insert = newLines > 0 ? "\n".repeat(newLines) : " ";
-                    string.insert(parseStart, insert);
-                    i = parseStart + insert.length() - 1;
-                    break;
-                }
-            }
+
+    Boolean error = false;
+
+    // regex minify constants
+
+    @SuppressWarnings("RegExpRedundantEscape")
+    private static final Pattern string = Pattern.compile("\"(\\\\|\\\"|[^\"\n\r])*?\"|'(\\\\|\\'|[^'\n\r])*?'".stripIndent(), Pattern.MULTILINE);
+    private static final Pattern multilineString = Pattern.compile("\\[(?<s>=*)\\[.*?](\\k<s>)]", Pattern.MULTILINE | Pattern.DOTALL);
+    @SuppressWarnings("RegExpRedundantEscape")
+    private static final Pattern comments = Pattern.compile("--[^\n]*$", Pattern.MULTILINE);
+    private static final Pattern multilineComment = Pattern.compile("--\\[(?<s>=*)\\[.*?](\\k<s>)]", Pattern.MULTILINE | Pattern.DOTALL);
+    private static final Pattern newlines = Pattern.compile("^[\t ]*((\n|\n\r|\r\n)[\t ]*)?");
+    private static final Pattern words = Pattern.compile("[a-zA-Z_][a-zA-Z0-9_]*");
+    private static final Pattern trailingNewlines = Pattern.compile("\n*$");
+    private static final Pattern sheBangs = Pattern.compile("^#![^\n]*");
+
+    // aggressive minify constants
+
+    @SuppressWarnings("RegExpRedundantEscape")
+    private static final Pattern allStrings = Pattern.compile(string.pattern() + "|" + multilineString.pattern());
+    private static final Pattern whitespacePlus = Pattern.compile(" (\n+)?");
+
+    public ByteArrayTag parseScript(String script) {
+        if(FiguraMod.DEBUG_MODE) {
+            String regexMinify = regexMinify(script);
+            String agressiveMinify = aggressiveMinify(script);
+            FiguraMod.LOGGER.info("Minified {} to {}, and {}", script.length(), regexMinify.length(), agressiveMinify.length());
         }
-        return new ByteArrayTag(string.toString().getBytes(StandardCharsets.UTF_8));
+        error = true;
+        var out = new ByteArrayTag((switch (Config.FORMAT_SCRIPT.asInt()){
+            case 0 -> noMinifier(script);
+            case 1 -> regexMinify(script);
+            case 2 -> aggressiveMinify(script);
+            default -> throw new IllegalStateException("Format_SCRIPT should not be %d, expecting 0 to %d".formatted(Config.FORMAT_SCRIPT.asInt(), Config.FORMAT_SCRIPT.enumList.size() - 1));
+        }).getBytes(StandardCharsets.UTF_8));
+        if (error) {
+            FiguraMod.LOGGER.error("Failed to minify the script, likely to be syntax error");
+        }
+        return out;
     }
 
-    // parse a Lua long string/comment from a StringBuilder.
-    // `startIndex` is expected to be the the index of the first left square bracket
-    // returns 0 if there is no long string/comment,
-    // returns -1 if the long string/comment reaches the end of file before closing.
-    // otherwise, returns the index of the closing bracket.
-    static int parseLongString(StringBuilder string, int startIndex) {
-        if (string.charAt(startIndex) != '[')
-            return 0;
-        int i = startIndex;
-        int commentDepth = 0;
-        while (++i < string.length() && string.charAt(i) == '=')
-            commentDepth++;
-        if (i >= string.length() || string.charAt(i) != '[')
-            return 0;
-        for (i++; i < string.length(); i++) {
-            int parseStart = i;
-            if (string.charAt(i) == ']') {
-                int depth = 0;
-                while (++i < string.length() && string.charAt(i) == '=')
-                    depth++;
-                if (i >= string.length())
-                    return -1;
-                if (string.charAt(i) != ']')
-                    continue;
-                if (depth == commentDepth)
-                    return i;
-                i = parseStart;
+    String noMinifier(String script) {
+        error = false;
+        return script;
+    }
+
+    String regexMinify(String script) {
+
+        StringBuilder builder = new StringBuilder(script);
+        for (int i = 0; i < builder.length(); i++) {
+            switch (builder.charAt(i)) {
+                case '#' -> {
+                    if (i > 0)
+                        continue;
+                    Matcher matcher = sheBangs.matcher(builder);
+                    if(matcher.find()){
+                        builder.delete(0, matcher.end());
+                    }
+                }
+                case '\'', '"' -> {
+                    Matcher matcher = string.matcher(builder);
+                    if (!matcher.find(i) || !(matcher.start() == i)) return script;
+                    i = matcher.end() - 1;
+                }
+
+                case '[' -> {
+                    Matcher matcher = multilineString.matcher(builder);
+                    if (matcher.find(i) && matcher.start() == i)
+                        i = matcher.end() - 1;
+                }
+
+                case '-' -> {
+                    if (i == builder.length() - 1) return script;
+                    Matcher multiline = multilineComment.matcher(builder);
+                    if (multiline.find(i) && multiline.start() == i) {
+                        var breaks = builder.substring(i, multiline.end()).split("\n").length - 1;
+                        builder.delete(i, multiline.end()).insert(i, "\n".repeat(breaks));
+                        i--;
+                        continue;
+                    }
+                    Matcher comment = comments.matcher(builder);
+                    if (comment.find(i) && comment.start() == i) {
+                        builder.delete(comment.start(), comment.end());
+                        i--;
+                    }
+                }
+
+                case ' ', '\t', '\n', '\r' -> {
+                    Matcher newline = newlines.matcher(builder.substring(i));
+                    if (newline.find())
+                        if (newline.start() == 0)
+                            builder.delete(i, i + newline.end()).insert(i, Optional.ofNullable(newline.group(1)).map(t -> "\n").orElse(" "));
+                        else
+                            FiguraMod.LOGGER.warn("script TODO appears to have invalid new line configuration");
+                }
+
+                default -> {
+                    Matcher word = words.matcher(builder);
+                    if (word.find(i) && word.start() == i)
+                        i = word.end() - 1;
+                }
             }
         }
-        return -1;
+        Matcher trailingNewline = trailingNewlines.matcher(builder);
+        if(trailingNewline.find()){
+            builder.replace(trailingNewline.start(), trailingNewline.end(), "\n");
+        }
+        error = false;
+        return builder.toString();
+    }
+
+
+    String aggressiveMinify(String script){
+        String start = regexMinify(script);
+        StringBuilder builder = new StringBuilder(start);
+
+        for (int i = 0; i < builder.length(); i++) {
+            switch (builder.charAt(i)){
+                case '\'', '"', '[' -> {
+                    Matcher matcher = allStrings.matcher(builder);
+                    if (matcher.find(i) && matcher.start() == i)
+                        i = matcher.end() - 1;
+
+                }
+                case ' ', '\n' -> {
+                    if(builder.charAt(i) == '\n')
+                        builder.insert(i, ' ');
+                    Matcher matcher = whitespacePlus.matcher(builder);
+                    if(matcher.find(i) && matcher.start() == i) {
+                        var al = matcher.start() > 0 && matcher.end() < builder.length() - 1 &&
+                                words.matcher("a" + builder.substring(matcher.start() - 1, matcher.start())).matches() &&
+                                words.matcher(builder.substring(matcher.end(), matcher.end() + 1)).matches();
+//                        String group = matcher.group(1);
+//                        builder.delete(i, matcher.end()).insert(i, Optional.ofNullable(group).map(l -> "\n").orElse(al ? " " : ""));
+                        builder.delete(i, matcher.end()).insert(i, al ? " " : "");
+                    }
+                }
+
+                default -> {
+                    Matcher word = words.matcher(builder);
+                    if (word.find(i) && word.start() == i)
+                        i = word.end() - 1;
+                }
+            }
+        }
+        return builder.toString();
+    }
+
+    enum TokenType {
+
     }
 }
