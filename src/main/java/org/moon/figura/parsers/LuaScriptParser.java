@@ -6,7 +6,7 @@ import org.moon.figura.config.Config;
 import java.nio.charset.StandardCharsets;
 
 public class LuaScriptParser {
-    public ByteArrayTag parseScript(String script) {
+    public static ByteArrayTag parseScript(String script) {
         if (!Config.FORMAT_SCRIPT.asBool())
             return new ByteArrayTag(script.getBytes(StandardCharsets.UTF_8));
         StringBuilder string = new StringBuilder(script);
@@ -108,7 +108,7 @@ public class LuaScriptParser {
     // returns 0 if there is no long string/comment,
     // returns -1 if the long string/comment reaches the end of file before closing.
     // otherwise, returns the index of the closing bracket.
-    int parseLongString(StringBuilder string, int startIndex) {
+    static int parseLongString(StringBuilder string, int startIndex) {
         if (string.charAt(startIndex) != '[')
             return 0;
         int i = startIndex;
