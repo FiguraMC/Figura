@@ -504,6 +504,7 @@
   "figura.docs.action_wheel.execute": "Executes the action of the given index. If the index is null, it will execute the last selected action. A second parameter can be given to specify if it should be executed the left or right action.",
   "figura.docs.action_wheel.is_enabled": "Returns if the Action Wheel is being currently rendered or not.",
   "figura.docs.action_wheel.get_selected": "Returns the index of the currently selected action.",
+  "figura.docs.action_wheel.create_action": "Creates a new Action that is not automatically asigned to a Page.",
   "figura.docs.action_wheel.create_page": "Creates a new Page for the action wheel. A Title can be given to store this page internally. If no Title is given, the Page will just be returned from this function.",
   "figura.docs.action_wheel.set_page": "Sets the Page of the action wheel to the given Title or Page.",
   "figura.docs.action_wheel.get_page": "Returns an stored Page by the given title.",
