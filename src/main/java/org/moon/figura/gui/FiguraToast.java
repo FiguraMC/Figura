@@ -7,8 +7,6 @@ import net.minecraft.client.gui.components.toasts.Toast;
 import net.minecraft.client.gui.components.toasts.ToastComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.config.Config;
@@ -18,27 +16,33 @@ import org.moon.figura.utils.ui.UIHelper;
 
 public class FiguraToast implements Toast {
 
-    private final Component title;
-    private final Component message;
     private final ToastType type;
+    private Component title, message;
 
     private long startTime;
-    private boolean justUpdated;
+    private boolean update;
 
     public FiguraToast(Component title, Component message, ToastType type) {
-        this.title = TextComponent.EMPTY.copy().setStyle(type.style).append(title);
-        this.message = message;
         this.type = type;
+        update(title, message, false);
+    }
+
+    public void update(Component title, Component message, boolean update) {
+        this.title = Component.empty().setStyle(type.style).append(title);
+        this.message = message;
+        this.update = update;
     }
 
     @Override
     public Visibility render(PoseStack stack, ToastComponent component, long startTime) {
-        long timeDiff = startTime - this.startTime;
-
-        if (this.justUpdated) {
+        if (this.update) {
+            if (startTime - this.startTime < 5000)
+                Visibility.SHOW.playSound(component.getMinecraft().getSoundManager());
             this.startTime = startTime;
-            this.justUpdated = false;
+            this.update = false;
         }
+
+        long timeDiff = startTime - this.startTime;
 
         UIHelper.setupTexture(type.texture);
         UIHelper.blit(stack, 0, 0, 0f, (int) ((FiguraMod.ticks / 5f) % type.frames + 1) * 32f, width(), height(), 160, 32 * type.frames);
@@ -51,16 +55,21 @@ public class FiguraToast implements Toast {
             font.draw(stack, this.message, 31, 18, 0xFFFFFF);
         }
 
-        return timeDiff < 5000 ? Toast.Visibility.SHOW : Toast.Visibility.HIDE;
+        return timeDiff < 5000 ? Visibility.SHOW : Visibility.HIDE;
+    }
+
+    @Override
+    public Object getToken() {
+        return this.type;
     }
 
     //new toast
     public static void sendToast(Object title) {
-        sendToast(title, TextComponent.EMPTY.copy());
+        sendToast(title, Component.empty());
     }
 
     public static void sendToast(Object title, ToastType type) {
-        sendToast(title, TextComponent.EMPTY.copy(), type);
+        sendToast(title, Component.empty(), type);
     }
 
     public static void sendToast(Object title, Object message) {
@@ -68,8 +77,8 @@ public class FiguraToast implements Toast {
     }
 
     public static void sendToast(Object title, Object message, ToastType type) {
-        Component text = title instanceof Component t ? t : new TranslatableComponent(title.toString());
-        Component text2 = message instanceof Component m ? m : new TranslatableComponent(message.toString());
+        Component text = title instanceof Component t ? t : Component.translatable(title.toString());
+        Component text2 = message instanceof Component m ? m : Component.translatable(message.toString());
 
         if (type == ToastType.DEFAULT && Config.EASTER_EGGS.asBool()) {
             if (FiguraMod.CHEESE_DAY || Math.random() < 0.0001)
@@ -79,8 +88,12 @@ public class FiguraToast implements Toast {
         }
 
         ToastComponent toasts = Minecraft.getInstance().getToasts();
-        toasts.clear();
-        toasts.addToast(new FiguraToast(text, text2, type));
+        FiguraToast toast = toasts.getToast(FiguraToast.class, type);
+
+        if (toast != null)
+            toast.update(text, text2, true);
+        else
+            toasts.addToast(new FiguraToast(text, text2, type));
     }
 
     public enum ToastType {
