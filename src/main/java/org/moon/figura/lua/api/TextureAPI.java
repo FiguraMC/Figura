@@ -43,7 +43,7 @@ public class TextureAPI {
         if (owner.renderer.customTextures.size() > TEXTURE_LIMIT)
             throw new LuaError("Maximum amount of textures reached!");
 
-        FiguraTexture texture = new FiguraTexture(owner.owner, image, name);
+        FiguraTexture texture = new FiguraTexture(owner, name, image);
         owner.renderer.customTextures.put(name, texture);
         return texture;
     }

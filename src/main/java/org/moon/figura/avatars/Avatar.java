@@ -303,14 +303,14 @@ public class Avatar {
             run("TICK", tick);
     }
 
-    public void renderEvent(float delta) {
-        if (!UIHelper.paperdoll && luaRuntime != null && luaRuntime.getUser() != null)
-            run("RENDER", render, delta);
+    public void renderEvent(float delta, String context) {
+        if (luaRuntime != null && luaRuntime.getUser() != null)
+            run("RENDER", render, delta, context);
     }
 
-    public void postRenderEvent(float delta) {
-        if (!UIHelper.paperdoll && luaRuntime != null && luaRuntime.getUser() != null)
-            run("POST_RENDER", render.post(), delta);
+    public void postRenderEvent(float delta, String context) {
+        if (luaRuntime != null && luaRuntime.getUser() != null)
+            run("POST_RENDER", render.post(), delta, context);
     }
 
     public void postWorldRenderEvent(float delta) {
@@ -323,14 +323,6 @@ public class Avatar {
     public void skullRenderEvent(SkullBlockEntity skullBlockEntity, float delta) {
         if (renderer != null && renderer.allowSkullRendering)
             run("SKULL_RENDER", render, delta, FiguraVec3.fromBlockPos(skullBlockEntity.getBlockPos()));
-    }
-
-    public void previewRenderEvent(String renderMode) {
-        run("PREVIEW_RENDER", render, renderMode);
-    }
-
-    public void postPreviewRenderEvent(String renderMode) {
-        run("POST_PREVIEW_RENDER", render.post(), renderMode);
     }
 
     // -- host only events -- //

@@ -5,7 +5,6 @@ import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
-import org.moon.figura.utils.ui.UIHelper;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -38,9 +37,6 @@ public class VanillaGroupPart extends VanillaPart {
 
     @Override
     public void store(EntityModel<?> model) {
-        if (UIHelper.paperdoll)
-            return;
-
         for (VanillaPart part : cachedParts)
             part.store(model);
     }

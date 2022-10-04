@@ -23,6 +23,7 @@ import org.moon.figura.mixin.input.KeyMappingAccessor;
 import org.moon.figura.mixin.render.GameRendererAccessor;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.FiguraText;
+import org.moon.figura.utils.ui.UIHelper;
 
 import java.util.*;
 import java.util.function.Supplier;
@@ -84,6 +85,10 @@ public class FiguraListDocs {
         for (UseAnim value : UseAnim.values())
             add(value.name());
     }};
+    private static final LinkedHashSet<String> RENDER_MODES = new LinkedHashSet<>() {{
+        for (UIHelper.EntityRenderMode value : UIHelper.EntityRenderMode.values())
+            add(value.name());
+    }};
 
     private enum ListDoc {
         KEYBINDS(() -> FiguraListDocs.KEYBINDS, "Keybinds", "keybinds", 2),
@@ -98,7 +103,8 @@ public class FiguraListDocs {
         LOOP_MODES(() -> FiguraListDocs.LOOP_MODES, "LoopModes", "loop_modes", 1),
         COLORS(() -> FiguraListDocs.COLORS, "Colors", "colors", 1),
         PLAYER_MODEL_PARTS(() -> FiguraListDocs.PLAYER_MODEL_PARTS, "PlayerModelParts", "player_model_parts", 1),
-        USE_ACTIONS(() -> FiguraListDocs.USE_ACTIONS, "UseActions", "use_actions", 1);
+        USE_ACTIONS(() -> FiguraListDocs.USE_ACTIONS, "UseActions", "use_actions", 1),
+        RENDER_MODES(() -> FiguraListDocs.RENDER_MODES, "RenderModes", "render_modes", 1);
 
         private final Supplier<Object> supplier;
         private final String name, id;

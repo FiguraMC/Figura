@@ -8,8 +8,12 @@ import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaFunction;
+import org.luaj.vm2.LuaValue;
 import org.lwjgl.BufferUtils;
 import org.moon.figura.FiguraMod;
+import org.moon.figura.avatars.Avatar;
+import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
@@ -42,6 +46,7 @@ public class FiguraTexture extends AbstractTexture implements Closeable {
     private boolean registered = false;
     private boolean dirty = true;
     private final String name;
+    private final Avatar owner;
 
     /**
      * Native image holding the texture data for this texture.
@@ -50,7 +55,7 @@ public class FiguraTexture extends AbstractTexture implements Closeable {
     private NativeImage backup;
     private boolean isClosed = false;
 
-    public FiguraTexture(String name, byte[] data) {
+    public FiguraTexture(Avatar owner, String name, byte[] data) {
         //Read image from wrapper
         NativeImage image;
         try {
@@ -64,14 +69,16 @@ public class FiguraTexture extends AbstractTexture implements Closeable {
         }
 
         this.texture = image;
-        this.textureID = new FiguraIdentifier("avatar_tex/" + UUID.randomUUID());
+        this.textureID = new FiguraIdentifier("avatar_tex/" + owner.owner + "/" + UUID.randomUUID());
         this.name = name;
+        this.owner = owner;
     }
 
-    public FiguraTexture(UUID owner, NativeImage image, String name) {
+    public FiguraTexture(Avatar owner, String name, NativeImage image) {
         this.texture = image;
-        this.textureID = new FiguraIdentifier("avatar_tex/" + owner + "/" + name);
+        this.textureID = new FiguraIdentifier("avatar_tex/" + owner.owner + "/custom/" + name);
         this.name = name;
+        this.owner = owner;
     }
 
     @Override
@@ -237,6 +244,25 @@ public class FiguraTexture extends AbstractTexture implements Closeable {
             return Base64.getEncoder().encodeToString(texture.asByteArray());
         } catch (Exception e) {
             throw new LuaError(e.getMessage());
+        }
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = {Integer.class, Integer.class, Integer.class, Integer.class, LuaFunction.class},
+                    argumentNames = {"x", "y", "width", "height", "func"}
+            ),
+            value = "texture.apply_func"
+    )
+    public void applyFunc(int x, int y, int width, int height, @LuaNotNil LuaFunction function) {
+        for (int i = y; i < y + height; i++) {
+            for (int j = x; j < x + width; j++) {
+                FiguraVec4 color = getPixel(j, i);
+                LuaValue result = function.call(owner.luaRuntime.typeManager.javaToLua(color));
+                if (!result.isnil() && result.isuserdata(FiguraVec4.class))
+                    setPixel(j, i, result.checkuserdata(FiguraVec4.class), null, null, null);
+            }
         }
     }
 

@@ -33,6 +33,7 @@ public abstract class SkullBlockRendererMixin implements BlockEntityRenderer<Sku
 
         Avatar localAvatar = avatar;
         avatar = null;
+
         //render skull :3
         if (localAvatar.skullRender(stack, bufferSource, light, direction, yaw))
             ci.cancel();
@@ -40,10 +41,8 @@ public abstract class SkullBlockRendererMixin implements BlockEntityRenderer<Sku
 
     @Inject(at=@At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/blockentity/SkullBlockRenderer;renderSkull(Lnet/minecraft/core/Direction;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/model/SkullModelBase;Lnet/minecraft/client/renderer/RenderType;)V"), method = "render(Lnet/minecraft/world/level/block/entity/SkullBlockEntity;FLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;II)V")
     public void render(SkullBlockEntity skullBlockEntity, float f, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, int j, CallbackInfo ci) {
-        if (avatar == null || avatar.trust.get(TrustContainer.Trust.CUSTOM_HEADS) == 0)
-            return;
-
-        avatar.skullRenderEvent(skullBlockEntity, f);
+        if (avatar != null && avatar.trust.get(TrustContainer.Trust.CUSTOM_HEADS) == 1)
+            avatar.skullRenderEvent(skullBlockEntity, f);
     }
 
     @Override
