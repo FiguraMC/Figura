@@ -132,7 +132,7 @@ public class LocalAvatarLoader {
             for (File script : scripts) {
                 String pathStr = script.toPath().toString();
                 String name = pathStr.replaceFirst(pathRegex, "");
-                name = name.replace(File.separatorChar, '/');
+                name = name.replaceAll("[/\\\\]", ".");
                 scriptsNbt.put(name.substring(0, name.length() - 4), parser.parseScript(IOUtils.readFile(script)));
             }
             nbt.put("scripts", scriptsNbt);
@@ -147,7 +147,7 @@ public class LocalAvatarLoader {
             for (File sound : sounds) {
                 String pathStr = sound.toPath().toString();
                 String name = pathStr.replaceFirst(pathRegex, "");
-                name = name.replace(File.separatorChar, '.');
+                name = name.replaceAll("[/\\\\]", ".");
                 soundsNbt.putByteArray(name.substring(0, name.length() - 4), IOUtils.readFileBytes(sound));
             }
             nbt.put("sounds", soundsNbt);
