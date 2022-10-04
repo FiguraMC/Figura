@@ -445,6 +445,7 @@
   "figura.docs.enum.colors": "List of custom colors. Used anywhere you can input a hex color.",
   "figura.docs.enum.player_model_parts": "List of valid PlayerModelParts. Used within the PlayerAPI.",
   "figura.docs.enum.use_actions": "List of valid UseActions. Used within the ItemStackAPI.",
+  "figura.docs.enum.render_modes": "List of valid RenderModes. Used within the RENDER event.",
 
 
   "figura.docs.globals": "Documentation for the various things Figura adds to the global lua state.",
@@ -767,7 +768,7 @@
   "figura.docs.events.entity_init": "The ENTITY_INIT event is run once this avatar's entity exists.",
   "figura.docs.events.tick": "The TICK event is run every tick in-game if this avatar's entity exists.",
   "figura.docs.events.world_tick": "The WORLD_TICK event is run every in-game tick.",
-  "figura.docs.events.render": "The RENDER event is run every frame, before the avatar is rendered. Takes a parameter delta, which is a number from 0 to 1 indicating the proportion of the way the game is between ticks.",
+  "figura.docs.events.render": "The RENDER event is run every frame, before the avatar is rendered. Takes a parameter delta, which is a number from 0 to 1 indicating the proportion of the way the game is between ticks. And also a second context parameter, which is a string of the current RenderMode, with the source of this render event.",
   "figura.docs.events.post_render": "The POST_RENDER event runs every frame, after the avatar is rendered. Takes a parameter delta, which is a number from 0 to 1 indicating the proportion of the way the game is between ticks.",
   "figura.docs.events.world_render": "The WORLD_RENDER event is run every frame, before the world is rendered. Always runs when a world is visible, even when the avatar itself is not, so this runs even in first person. Takes a parameter delta, which is a number from 0 to 1 indicating the proportion of the way the game is between ticks.",
   "figura.docs.events.post_world_render": "The POST_WORLD_RENDER event runs every frame, after the world is rendered. Always runs when a world is visible, even when the avatar itself is not, so this runs even in first person. Takes a parameter delta, which is a number from 0 to 1 indicating the proportion of the way the game is between ticks.",
@@ -775,8 +776,6 @@
   "figura.docs.events.chat_receive_message": "The CHAT_RECEIVE_MESSAGE event is run every time a message is received in chat. A string parameter is passed in, which contains the message you received.",
   "figura.docs.events.skull_render": "Called between POST_RENDER and POST_WORLD_RENDER, on every one of your skull blocks placed in the world. The arguments are the tick delta and the position of the skull as a vector.",
   "figura.docs.events.mouse_scroll": "The MOUSE_SCROLL event runs every time the mouse is scrolled. Takes a parameter delta, which is the direction of the scroll.",
-  "figura.docs.events.preview_render": "The PREVIEW_RENDER event runs every frame an avatar preview is being rendered, either be it by the paperdoll, Figura Wardrobe or Inventory.",
-  "figura.docs.events.post_preview_render": "The POST_PREVIEW_RENDER event runs every frame, after the avatar preview is being rendered, either be it by the paperdoll, Figura Wardrobe or Inventory.",
 
   "figura.docs.event": "A hook for a certain event in Minecraft. You may register functions to one, and those functions will be called when the event occurs.",
   "figura.docs.event.register": "Registers the given function to the given event. When the event occurs, the function will be run. Functions are run in the order they were registered. The optional name parameter is used when you wish to later remove a function from the event.",
@@ -1068,6 +1067,7 @@
   "figura.docs.texture.update": "Updates the texture to the gpu, applying all the changes.",
   "figura.docs.texture.restore": "Restores the texture to its original state, before any modifications.",
   "figura.docs.texture.save": "Returns a base64 string representation of this texture.",
+  "figura.docs.texture.apply_func": "Calls the given function on the specified area of this texture, it will iterate over each pixel, and their color will be given as argument, in a RGBA vec4 format, and the return value will set that pixel color. Invalid return values or nil takes no effects.",
 
 
   "figura.docs.vanilla_model": "A global API that provides functions to interact with the vanilla player model and its parts. Accessed using the name \"vanilla_model\".",

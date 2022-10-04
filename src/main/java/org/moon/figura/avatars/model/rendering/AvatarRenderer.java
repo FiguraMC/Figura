@@ -80,7 +80,7 @@ public abstract class AvatarRenderer {
             byte[] emissiveData = tag.getByteArray("emissive");
             emissiveData = emissiveData.length == 0 ? null : emissiveData;
 
-            textureSets.add(new FiguraTextureSet(name, mainData, emissiveData));
+            textureSets.add(new FiguraTextureSet(avatar, name, mainData, emissiveData));
         }
 
         avatar.hasTexture = !texturesList.isEmpty();

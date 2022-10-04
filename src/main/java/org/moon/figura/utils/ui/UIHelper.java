@@ -25,8 +25,6 @@ import net.minecraft.world.entity.LivingEntity;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.avatars.Avatar;
-import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.gui.screens.AbstractPanelScreen;
 import org.moon.figura.gui.widgets.ContextMenu;
 import org.moon.figura.math.vector.FiguraVec4;
@@ -46,6 +44,7 @@ public class UIHelper extends GuiComponent {
     private static final CustomFramebuffer FIGURA_FRAMEBUFFER = new CustomFramebuffer();
     private static int previousFBO = -1;
     public static boolean paperdoll = false;
+    public static EntityRenderMode renderMode = EntityRenderMode.RENDER;
     public static float dollScale = 1f;
     public static FiguraVec4 scissors = FiguraVec4.of();
 
@@ -99,15 +98,15 @@ public class UIHelper extends GuiComponent {
     public enum EntityRenderMode {
         FIGURA_GUI,
         PAPERDOLL,
-        MINECRAFT_GUI
+        MINECRAFT_GUI,
+        RENDER
     }
 
     public static void drawEntity(float x, float y, float scale, float pitch, float yaw, LivingEntity entity, PoseStack stack, EntityRenderMode renderMode) {
         //backup entity variables
-        float bodyYaw = entity.yBodyRot;
-        float entityYaw = entity.getYRot();
         float entityPitch = entity.getXRot();
-        float prevHeadYaw = entity.yHeadRotO;
+        float entityYaw = entity.getYRot();
+        float bodyYaw = entity.yBodyRot;
         float headYaw = entity.yHeadRot;
         boolean invisible = entity.isInvisible();
 
@@ -125,17 +124,14 @@ public class UIHelper extends GuiComponent {
         Quaternion quaternion2;
         switch (renderMode) {
             case PAPERDOLL -> {
+                //stack rotations
                 quaternion2 = Vector3f.XP.rotationDegrees(pitch);
-                Quaternion quaternion3 = Vector3f.YP.rotationDegrees(yaw);
+                Quaternion quaternion3 = Vector3f.YP.rotationDegrees(yaw + 180);
                 quaternion3.mul(quaternion2);
                 quaternion.mul(quaternion3);
                 stack.mulPose(quaternion);
                 quaternion3.conj();
                 quaternion2 = quaternion3;
-
-                //apply rotations
-
-                entity.yBodyRot = 180f;
 
                 //offset
                 if (entity.isFallFlying())
@@ -146,10 +142,9 @@ public class UIHelper extends GuiComponent {
                     entity.setXRot(0f);
                 }
 
-                //head rot
-                float rot = entity.yHeadRot - bodyYaw + 180f;
-                entity.yHeadRot = rot;
-                entity.yHeadRotO = rot;
+                //rotations
+                entity.yBodyRot = 0;
+                entity.yHeadRot = headYaw - bodyYaw;
 
                 //lightning
                 Lighting.setupForEntityInInventory();
@@ -164,11 +159,11 @@ public class UIHelper extends GuiComponent {
 
                 //rotations
 
-                entity.yBodyRot = 180f - yaw;
+                float rot = 180f - yaw;
                 entity.setXRot(0f);
-                entity.setYRot(180f - yaw);
-                entity.yHeadRot = entity.getYRot();
-                entity.yHeadRotO = entity.getYRot();
+                entity.setYRot(rot);
+                entity.yBodyRot = rot;
+                entity.yHeadRot = rot;
 
                 //set up lighting
                 Lighting.setupForFlatItems();
@@ -188,11 +183,10 @@ public class UIHelper extends GuiComponent {
 
                 //rotations
 
-                entity.yBodyRot = 180f + angle * 20f;
-                entity.setYRot(180f + angle * 40f);
                 entity.setXRot(-angle2);
+                entity.setYRot(180f + angle * 40f);
+                entity.yBodyRot = 180f + angle * 20f;
                 entity.yHeadRot = entity.getYRot();
-                entity.yHeadRotO = entity.getYRot();
 
                 //lightning
                 Lighting.setupForEntityInInventory();
@@ -213,26 +207,22 @@ public class UIHelper extends GuiComponent {
         //render
         UIHelper.paperdoll = true;
         UIHelper.dollScale = scale;
-
-        Avatar avatar = AvatarManager.getAvatar(entity);
-        if (avatar != null) avatar.previewRenderEvent(renderMode.name());
+        UIHelper.renderMode = renderMode;
 
         float finalYaw = yaw;
         RenderSystem.runAsFancy(() -> dispatcher.render(entity, 0d, finalY, 0d, finalYaw, 1f, stack, immediate, LightTexture.FULL_BRIGHT));
         immediate.endBatch();
 
         UIHelper.paperdoll = false;
-        if (avatar != null) avatar.postPreviewRenderEvent(renderMode.name());
 
         //restore entity rendering data
         dispatcher.setRenderHitBoxes(renderHitboxes);
         dispatcher.setRenderShadow(true);
 
         //restore entity data
-        entity.yBodyRot = bodyYaw;
-        entity.setYRot(entityYaw);
         entity.setXRot(entityPitch);
-        entity.yHeadRotO = prevHeadYaw;
+        entity.setYRot(entityYaw);
+        entity.yBodyRot = bodyYaw;
         entity.yHeadRot = headYaw;
         entity.setInvisible(invisible);
 
