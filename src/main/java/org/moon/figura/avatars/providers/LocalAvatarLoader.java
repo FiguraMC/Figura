@@ -1,6 +1,7 @@
 package org.moon.figura.avatars.providers;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.nbt.ByteArrayTag;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtIo;
@@ -9,7 +10,6 @@ import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.AvatarManager;
 import org.moon.figura.parsers.AvatarMetadataParser;
 import org.moon.figura.parsers.BlockbenchModelParser;
-import org.moon.figura.parsers.LuaScriptParser;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FiguraResourceListener;
 import org.moon.figura.utils.IOUtils;
@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -65,7 +66,6 @@ public class LocalAvatarLoader {
 
     /**
      * Loads an NbtCompound from the specified path
-     *
      * @param path - the file/folder for loading the avatar
      * @return the NbtCompound from this path
      */
@@ -89,10 +89,8 @@ public class LocalAvatarLoader {
         CompoundTag nbt = new CompoundTag();
 
         //scripts
-        LuaScriptParser scriptParser = new LuaScriptParser();
-
         loadState++;
-        loadScripts(path, scriptParser, nbt);
+        loadScripts(path, nbt);
 
         //custom sounds
         loadState++;
@@ -101,10 +99,10 @@ public class LocalAvatarLoader {
         //models
         ListTag textures = new ListTag();
         ListTag animations = new ListTag();
-        BlockbenchModelParser modelParser = new BlockbenchModelParser();
+        BlockbenchModelParser parser = new BlockbenchModelParser();
 
         loadState++;
-        CompoundTag models = loadModels(path, modelParser, textures, animations, "");
+        CompoundTag models = loadModels(path, parser, textures, animations, "");
         models.putString("name", "models");
 
         //metadata
@@ -124,7 +122,7 @@ public class LocalAvatarLoader {
         return nbt;
     }
 
-    private static void loadScripts(Path path, LuaScriptParser parser, CompoundTag nbt) throws IOException {
+    private static void loadScripts(Path path, CompoundTag nbt) throws IOException {
         List<File> scripts = IOUtils.getFilesByExtension(path, ".lua");
         if (scripts.size() > 0) {
             CompoundTag scriptsNbt = new CompoundTag();
@@ -132,8 +130,8 @@ public class LocalAvatarLoader {
             for (File script : scripts) {
                 String pathStr = script.toPath().toString();
                 String name = pathStr.replaceFirst(pathRegex, "");
-                name = name.replace(File.separatorChar, '/');
-                scriptsNbt.put(name.substring(0, name.length() - 4), parser.parseScript(IOUtils.readFile(script)));
+                name = name.replaceAll("[/\\\\]", ".");
+                scriptsNbt.put(name.substring(0, name.length() - 4), new ByteArrayTag(IOUtils.readFile(script).getBytes(StandardCharsets.UTF_8)));
             }
             nbt.put("scripts", scriptsNbt);
         }
@@ -147,7 +145,7 @@ public class LocalAvatarLoader {
             for (File sound : sounds) {
                 String pathStr = sound.toPath().toString();
                 String name = pathStr.replaceFirst(pathRegex, "");
-                name = name.replace(File.separatorChar, '.');
+                name = name.replaceAll("[/\\\\]", ".");
                 soundsNbt.putByteArray(name.substring(0, name.length() - 4), IOUtils.readFileBytes(sound));
             }
             nbt.put("sounds", soundsNbt);
@@ -243,7 +241,6 @@ public class LocalAvatarLoader {
 
     /**
      * register new watch keys
-     *
      * @param path the path to register the watch key
      */
     private static void addWatchKey(Path path) {

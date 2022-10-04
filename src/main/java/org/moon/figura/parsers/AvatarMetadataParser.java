@@ -20,7 +20,6 @@ import java.util.Map;
 public class AvatarMetadataParser {
 
     private static final Gson GSON = new GsonBuilder().create();
-    private static final String SEPARATOR_REGEX = "\\.";
 
     public static Metadata read(String json) {
         Metadata metadata = GSON.fromJson(json, Metadata.class);
@@ -65,8 +64,10 @@ public class AvatarMetadataParser {
 
         if (metadata.autoScripts != null) {
             ListTag autoScripts = new ListTag();
-            for (String scriptName : metadata.autoScripts)
-                autoScripts.add(StringTag.valueOf(scriptName.replace(".lua", "")));
+            for (String name : metadata.autoScripts) {
+                name = name.replaceAll(".lua$", "").replaceAll("[/\\\\]", ".");
+                autoScripts.add(StringTag.valueOf(name));
+            }
             nbt.put("autoScripts", autoScripts);
         }
 
@@ -117,7 +118,7 @@ public class AvatarMetadataParser {
     }
 
     private static CompoundTag getTag(CompoundTag models, String path, boolean remove) throws IOException {
-        String[] keys = path.split(SEPARATOR_REGEX);
+        String[] keys = path.split("\\.");
         CompoundTag current = models;
 
         for (int i = 0; i < keys.length; i++) {
