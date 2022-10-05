@@ -89,10 +89,8 @@ public class LocalAvatarLoader {
         CompoundTag nbt = new CompoundTag();
 
         //scripts
-        LuaScriptParser scriptParser = new LuaScriptParser();
-
         loadState++;
-        loadScripts(path, scriptParser, nbt);
+        loadScripts(path, nbt);
 
         //custom sounds
         loadState++;
@@ -124,7 +122,7 @@ public class LocalAvatarLoader {
         return nbt;
     }
 
-    private static void loadScripts(Path path, LuaScriptParser parser, CompoundTag nbt) throws IOException {
+    private static void loadScripts(Path path, CompoundTag nbt) throws IOException {
         List<File> scripts = IOUtils.getFilesByExtension(path, ".lua");
         if (scripts.size() > 0) {
             CompoundTag scriptsNbt = new CompoundTag();
@@ -133,7 +131,7 @@ public class LocalAvatarLoader {
                 String pathStr = script.toPath().toString();
                 String name = pathStr.replaceFirst(pathRegex, "");
                 name = name.replaceAll("[/\\\\]", ".");
-                scriptsNbt.put(name.substring(0, name.length() - 4), parser.parseScript(IOUtils.readFile(script)));
+                scriptsNbt.put(name.substring(0, name.length() - 4), LuaScriptParser.parseScript(IOUtils.readFile(script)));
             }
             nbt.put("scripts", scriptsNbt);
         }
