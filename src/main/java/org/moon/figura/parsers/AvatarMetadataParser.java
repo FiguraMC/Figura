@@ -9,6 +9,7 @@ import net.minecraft.nbt.Tag;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatars.model.ParentType;
 import org.moon.figura.avatars.model.rendering.texture.RenderTypes;
+import org.moon.figura.config.Config;
 import org.moon.figura.utils.Version;
 
 import java.io.IOException;
@@ -70,6 +71,9 @@ public class AvatarMetadataParser {
             }
             nbt.put("autoScripts", autoScripts);
         }
+
+        if (Config.FORMAT_SCRIPT.asInt() == 2)
+            nbt.putBoolean("minify", true);
 
         return nbt;
     }

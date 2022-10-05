@@ -76,6 +76,11 @@ public class FiguraLuaPrinter {
 
         //get script line
         line: {
+            if (owner.minify) {
+                message += "\nscript:\n\tscript heavily minified! - cannot look for line numbers!";
+                break line;
+            }
+
             try {
                 String[] split = message.split(":", 2);
                 if (split.length <= 1 || owner.luaRuntime == null)
