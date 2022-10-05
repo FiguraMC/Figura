@@ -135,7 +135,7 @@ public class LuaScriptParser {
                 case ' ', '\n' -> {
                     Matcher matcher = whitespacePlus.matcher(builder);
                     if(matcher.find(i) && matcher.start() == i)
-                        builder.delete(i, matcher.end()).insert(i, matcher.start() > 0 && matcher.end() < builder.length() - 1 && nameOops.matcher("" + builder.charAt(matcher.start() - 1) + builder.charAt(matcher.end() - 1)).matches() ? " " : "");
+                        builder.delete(i, matcher.end()).insert(i, matcher.start() > 0 && matcher.start() + 1 < builder.length() && nameOops.matcher(builder.substring(matcher.start() - 1, matcher.start() + 1)).matches() ? " " : "");
                 }
                 default -> {
                     Matcher word = words.matcher(builder);
