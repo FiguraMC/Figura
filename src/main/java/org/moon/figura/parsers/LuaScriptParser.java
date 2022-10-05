@@ -25,7 +25,8 @@ public class LuaScriptParser {
     // aggressive minify constants
 
     private static final Pattern allStrings = Pattern.compile(string.pattern() + "|" + multilineString.pattern());
-    private static final Pattern whitespacePlus = Pattern.compile(" (\n+)?");
+    private static final Pattern whitespacePlus = Pattern.compile("[ \n]+");
+    private static final Pattern nameOops = Pattern.compile("\\w{2}");
 
     //parsing data
     private static boolean error;
@@ -132,17 +133,9 @@ public class LuaScriptParser {
                         i = matcher.end() - 1;
                 }
                 case ' ', '\n' -> {
-                    if (builder.charAt(i) == '\n')
-                        builder.insert(i, ' ');
                     Matcher matcher = whitespacePlus.matcher(builder);
-                    if (matcher.find(i) && matcher.start() == i) {
-                        boolean al = matcher.start() > 0 && matcher.end() < builder.length() - 1 &&
-                                words.matcher("a" + builder.substring(matcher.start() - 1, matcher.start())).matches() &&
-                                words.matcher(builder.substring(matcher.end(), matcher.end() + 1)).matches();
-//                        String group = matcher.group(1);
-//                        builder.delete(i, matcher.end()).insert(i, Optional.ofNullable(group).map(l -> "\n").orElse(al ? " " : ""));
-                        builder.delete(i, matcher.end()).insert(i, al ? " " : "");
-                    }
+                    if(matcher.find(i) && matcher.start() == i)
+                        builder.delete(i, matcher.end()).insert(i, matcher.start() > 0 && matcher.end() < builder.length() - 1 && nameOops.matcher("" + builder.charAt(matcher.start() - 1) + builder.charAt(matcher.end() - 1)).matches() ? " " : "");
                 }
                 default -> {
                     Matcher word = words.matcher(builder);
