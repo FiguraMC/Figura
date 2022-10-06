@@ -65,6 +65,12 @@ public enum Config {
             FiguraLuaPrinter.updateDecimalFormatting();
         }
     },
+    FORMAT_SCRIPT(1, 3){{
+      String tooltip = "config.format_script.tooltip.";
+      this.tooltip = FiguraText.of(tooltip + "1")
+              .append("\n")
+              .append(FiguraText.of(tooltip + "2").withStyle(ChatFormatting.RED));
+    }},
 
     ActionWheel,
     ACTION_WHEEL_BUTTON("key.keyboard.b"),

@@ -259,6 +259,12 @@
   "figura.config.log_number_length": "Print Number Length",
   "figura.config.log_number_length.tooltip": "Changes the length of the decimal places that will be displayed within print functions",
 
+  "figura.config.format_script": "Format Script",
+  "figura.config.format_script.tooltip.1":"Toggles if scripts will be stripped of comments and whitespace before being loaded.",
+  "figura.config.format_script.tooltip.2":"Requires reselecting the avatar to take effect.",
+  "figura.config.format_script.1":"Disabled",
+  "figura.config.format_script.2":"Light",
+  "figura.config.format_script.3":"Heavy",
 
   "figura.config.actionwheel": "Action Wheel",
   "figura.config.actionwheel.tooltip": "Action Wheel settings",

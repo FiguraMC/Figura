@@ -85,6 +85,7 @@ public class Avatar {
     public String version;
     public int fileSize;
     public String color;
+    public boolean minify;
 
     //Runtime data
     private final Queue<Supplier<Varargs>> events = new ConcurrentLinkedQueue<>();
@@ -152,6 +153,8 @@ public class Avatar {
                 version = metadata.getString("ver");
                 if (metadata.contains("color"))
                     color = metadata.getString("color");
+                if (metadata.contains("minify"))
+                    minify = metadata.getBoolean("minify");
                 fileSize = getFileSize();
                 versionStatus = checkVersion();
                 if (entityName.isBlank())
