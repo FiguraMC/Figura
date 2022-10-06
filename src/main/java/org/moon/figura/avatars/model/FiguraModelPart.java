@@ -747,6 +747,7 @@ public class FiguraModelPart {
             value = "model_part.set_parent_type")
     public void setParentType(@LuaNotNil String parent) {
         this.parentType = ParentType.get(parent);
+        this.customization.needsMatrixRecalculation = true;
     }
 
     @LuaWhitelist

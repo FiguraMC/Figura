@@ -2,9 +2,11 @@ package org.moon.figura.lua.api.world;
 
 import com.mojang.brigadier.StringReader;
 import net.minecraft.client.Minecraft;
+import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.arguments.blocks.BlockStateArgument;
 import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -348,9 +350,10 @@ public class WorldAPI {
             value = "world.new_block"
     )
     public static BlockStateAPI newBlock(@LuaNotNil String string, Object x, Double y, Double z) {
+        BlockPos pos = LuaUtils.parseVec3("newBlock", x, y, z).asBlockPos();
         try {
-            BlockState block = new BlockStateArgument().parse(new StringReader(string)).getState();
-            return new BlockStateAPI(block, LuaUtils.parseVec3("newBlock", x, y, z).asBlockPos());
+            BlockState block = BlockStateArgument.block(new CommandBuildContext(RegistryAccess.BUILTIN.get())).parse(new StringReader(string)).getState();
+            return new BlockStateAPI(block, pos);
         } catch (Exception e) {
             throw new LuaError("Could not parse block state from string: " + string);
         }
@@ -376,7 +379,7 @@ public class WorldAPI {
     )
     public static ItemStackAPI newItem(@LuaNotNil String string, Integer count, Integer damage) {
         try {
-            ItemStack item = new ItemArgument().parse(new StringReader(string)).createItemStack(1, false);
+            ItemStack item = ItemArgument.item(new CommandBuildContext(RegistryAccess.BUILTIN.get())).parse(new StringReader(string)).createItemStack(1, false);
             if (count != null)
                 item.setCount(count);
             if (damage != null)
