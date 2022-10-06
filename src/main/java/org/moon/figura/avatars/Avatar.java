@@ -41,6 +41,7 @@ import org.moon.figura.lua.api.event.LuaEvent;
 import org.moon.figura.lua.api.ping.PingArg;
 import org.moon.figura.lua.api.ping.PingFunction;
 import org.moon.figura.lua.api.sound.SoundAPI;
+import org.moon.figura.lua.api.world.ItemStackAPI;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec3;
@@ -322,6 +323,11 @@ public class Avatar {
     public void skullRenderEvent(float delta, FiguraVec3 pos) {
         if (renderer != null && renderer.allowSkullRendering)
             run("SKULL_RENDER", render, delta, pos);
+    }
+
+    public boolean useItemEvent(ItemStackAPI stack, String type, int particleCount) {
+        Varargs result = run("USE_ITEM", tick, stack, type, particleCount);
+        return result != null && result.arg(1).isboolean() && result.arg(1).checkboolean();
     }
 
     // -- host only events -- //

@@ -350,9 +350,10 @@ public class WorldAPI {
             value = "world.new_block"
     )
     public static BlockStateAPI newBlock(@LuaNotNil String string, Object x, Double y, Double z) {
+        BlockPos pos = LuaUtils.parseVec3("newBlock", x, y, z).asBlockPos();
         try {
             BlockState block = BlockStateArgument.block(new CommandBuildContext(RegistryAccess.BUILTIN.get())).parse(new StringReader(string)).getState();
-            return new BlockStateAPI(block, LuaUtils.parseVec3("newBlock", x, y, z).asBlockPos());
+            return new BlockStateAPI(block, pos);
         } catch (Exception e) {
             throw new LuaError("Could not parse block state from string: " + string);
         }
