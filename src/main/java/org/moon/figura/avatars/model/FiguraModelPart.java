@@ -97,16 +97,16 @@ public class FiguraModelPart {
 
         defaultPivot.subtract(partData.pos);
 
-        if ((animationOverride & 4) != 4)
+        if (!overrideVanillaScale())
             defaultPivot.multiply(partData.scale);
 
-        if ((animationOverride & 2) != 2) {
+        if (!overrideVanillaPos()) {
             customization.offsetPivot(defaultPivot);
             customization.offsetPos(defaultPivot);
         }
 
         //customization.offsetPivot(pivot);
-        if ((animationOverride & 1) != 1)
+        if (!overrideVanillaRot())
             customization.offsetRot(partData.rot);
 
         defaultPivot.free();
@@ -114,11 +114,11 @@ public class FiguraModelPart {
 
     public void resetVanillaTransforms() {
         if (parentType.provider != null) {
-            if ((animationOverride & 2) != 2) {
+            if (!overrideVanillaPos()) {
                 customization.offsetPivot(0, 0, 0);
                 customization.offsetPos(0, 0, 0);
             }
-            if ((animationOverride & 1) != 1)
+            if (!overrideVanillaRot())
                 customization.offsetRot(0, 0, 0);
         }
     }
@@ -760,6 +760,24 @@ public class FiguraModelPart {
     @LuaMethodDoc("model_part.get_type")
     public String getType() {
         return this.customization.partType.name();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("model_part.override_vanilla_rot")
+    public boolean overrideVanillaRot() {
+        return (animationOverride & 1) == 1;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("model_part.override_vanilla_pos")
+    public boolean overrideVanillaPos() {
+        return (animationOverride & 2) == 2;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("model_part.override_vanilla_scale")
+    public boolean overrideVanillaScale() {
+        return (animationOverride & 4) == 4;
     }
 
     @LuaWhitelist
