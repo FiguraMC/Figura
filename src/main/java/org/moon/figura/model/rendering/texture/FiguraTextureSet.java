@@ -1,11 +1,11 @@
-package org.moon.figura.avatars.model.rendering.texture;
+package org.moon.figura.model.rendering.texture;
 
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
-import org.moon.figura.avatars.Avatar;
+import org.moon.figura.avatar.Avatar;
 import org.moon.figura.mixin.render.layers.elytra.ElytraLayerAccessor;
 import org.moon.figura.utils.FiguraIdentifier;
 

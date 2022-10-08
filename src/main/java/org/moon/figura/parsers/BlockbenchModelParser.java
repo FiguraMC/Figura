@@ -2,7 +2,7 @@ package org.moon.figura.parsers;
 
 import com.google.gson.*;
 import net.minecraft.nbt.*;
-import org.moon.figura.avatars.model.ParentType;
+import org.moon.figura.model.ParentType;
 import org.moon.figura.math.vector.FiguraVec3;
 
 import java.util.*;

@@ -1,16 +1,16 @@
-package org.moon.figura.avatars.model;
+package org.moon.figura.model;
 
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.renderer.LightTexture;
 import org.luaj.vm2.LuaError;
-import org.moon.figura.avatars.model.rendering.ImmediateAvatarRenderer;
-import org.moon.figura.avatars.model.rendering.texture.FiguraTexture;
-import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
-import org.moon.figura.avatars.model.rendering.texture.RenderTypes;
-import org.moon.figura.avatars.model.rendertasks.BlockTask;
-import org.moon.figura.avatars.model.rendertasks.ItemTask;
-import org.moon.figura.avatars.model.rendertasks.RenderTask;
-import org.moon.figura.avatars.model.rendertasks.TextTask;
+import org.moon.figura.model.rendering.ImmediateAvatarRenderer;
+import org.moon.figura.model.rendering.texture.FiguraTexture;
+import org.moon.figura.model.rendering.texture.FiguraTextureSet;
+import org.moon.figura.model.rendering.texture.RenderTypes;
+import org.moon.figura.model.rendertasks.BlockTask;
+import org.moon.figura.model.rendertasks.ItemTask;
+import org.moon.figura.model.rendertasks.RenderTask;
+import org.moon.figura.model.rendertasks.TextTask;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaMethodDoc;

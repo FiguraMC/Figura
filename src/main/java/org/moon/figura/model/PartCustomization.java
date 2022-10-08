@@ -1,9 +1,9 @@
-package org.moon.figura.avatars.model;
+package org.moon.figura.model;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
-import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
-import org.moon.figura.avatars.model.rendering.texture.RenderTypes;
+import org.moon.figura.model.rendering.texture.FiguraTextureSet;
+import org.moon.figura.model.rendering.texture.RenderTypes;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec3;

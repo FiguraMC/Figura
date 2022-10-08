@@ -5,7 +5,7 @@ import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.avatars.Avatar;
+import org.moon.figura.avatar.Avatar;
 import org.moon.figura.math.matrix.FiguraMatrix;
 import org.moon.figura.math.vector.FiguraVector;
 import org.moon.figura.utils.MathUtils;

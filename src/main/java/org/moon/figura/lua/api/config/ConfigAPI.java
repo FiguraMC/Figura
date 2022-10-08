@@ -1,7 +1,7 @@
 package org.moon.figura.lua.api.config;
 
 import org.moon.figura.FiguraMod;
-import org.moon.figura.avatars.Avatar;
+import org.moon.figura.avatar.Avatar;
 
 public class ConfigAPI {
 

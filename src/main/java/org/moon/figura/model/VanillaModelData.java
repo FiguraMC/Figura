@@ -1,4 +1,4 @@
-package org.moon.figura.avatars.model;
+package org.moon.figura.model;
 
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;

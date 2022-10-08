@@ -1,4 +1,4 @@
-package org.moon.figura.avatars;
+package org.moon.figura.avatar;
 
 import com.mojang.blaze3d.audio.OggAudioStream;
 import com.mojang.blaze3d.audio.SoundBuffer;
@@ -29,11 +29,11 @@ import org.luaj.vm2.Varargs;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.animation.Animation;
 import org.moon.figura.animation.AnimationPlayer;
-import org.moon.figura.avatars.model.ParentType;
-import org.moon.figura.avatars.model.PartCustomization;
-import org.moon.figura.avatars.model.rendering.AvatarRenderer;
-import org.moon.figura.avatars.model.rendering.ImmediateAvatarRenderer;
-import org.moon.figura.avatars.model.rendering.PartFilterScheme;
+import org.moon.figura.model.ParentType;
+import org.moon.figura.model.PartCustomization;
+import org.moon.figura.model.rendering.AvatarRenderer;
+import org.moon.figura.model.rendering.ImmediateAvatarRenderer;
+import org.moon.figura.model.rendering.PartFilterScheme;
 import org.moon.figura.config.Config;
 import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.lua.FiguraLuaRuntime;

@@ -1,4 +1,4 @@
-package org.moon.figura.avatars.model;
+package org.moon.figura.model;
 
 import org.moon.figura.math.vector.FiguraVec3;
 

@@ -1,4 +1,4 @@
-package org.moon.figura.avatars.providers;
+package org.moon.figura.avatar.local;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;

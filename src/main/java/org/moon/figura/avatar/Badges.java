@@ -1,4 +1,4 @@
-package org.moon.figura.avatars;
+package org.moon.figura.avatar;
 
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.ChatFormatting;
