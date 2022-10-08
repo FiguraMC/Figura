@@ -1,12 +1,12 @@
 package org.moon.figura.lua;
 
 import org.moon.figura.animation.Animation;
-import org.moon.figura.avatars.model.FiguraModelPart;
-import org.moon.figura.avatars.model.rendering.texture.FiguraTexture;
-import org.moon.figura.avatars.model.rendertasks.BlockTask;
-import org.moon.figura.avatars.model.rendertasks.ItemTask;
-import org.moon.figura.avatars.model.rendertasks.RenderTask;
-import org.moon.figura.avatars.model.rendertasks.TextTask;
+import org.moon.figura.model.FiguraModelPart;
+import org.moon.figura.model.rendering.texture.FiguraTexture;
+import org.moon.figura.model.rendertasks.BlockTask;
+import org.moon.figura.model.rendertasks.ItemTask;
+import org.moon.figura.model.rendertasks.RenderTask;
+import org.moon.figura.model.rendertasks.TextTask;
 import org.moon.figura.lua.api.*;
 import org.moon.figura.lua.api.action_wheel.*;
 import org.moon.figura.lua.api.entity.EntityAPI;

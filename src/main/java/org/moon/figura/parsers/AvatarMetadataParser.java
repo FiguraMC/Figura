@@ -7,8 +7,8 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.avatars.model.ParentType;
-import org.moon.figura.avatars.model.rendering.texture.RenderTypes;
+import org.moon.figura.model.ParentType;
+import org.moon.figura.model.rendering.texture.RenderTypes;
 import org.moon.figura.config.Config;
 import org.moon.figura.utils.Version;
 

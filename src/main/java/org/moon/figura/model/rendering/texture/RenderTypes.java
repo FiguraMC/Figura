@@ -1,4 +1,4 @@
-package org.moon.figura.avatars.model.rendering.texture;
+package org.moon.figura.model.rendering.texture;
 
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;

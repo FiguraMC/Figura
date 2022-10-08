@@ -1,4 +1,4 @@
-package org.moon.figura.avatars.model;
+package org.moon.figura.model;
 
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.nbt.ByteTag;
@@ -10,10 +10,10 @@ import org.moon.figura.animation.Animation;
 import org.moon.figura.animation.Interpolation;
 import org.moon.figura.animation.Keyframe;
 import org.moon.figura.animation.TransformType;
-import org.moon.figura.avatars.Avatar;
-import org.moon.figura.avatars.model.rendering.FiguraImmediateBuffer;
-import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
-import org.moon.figura.avatars.model.rendering.texture.RenderTypes;
+import org.moon.figura.avatar.Avatar;
+import org.moon.figura.model.rendering.FiguraImmediateBuffer;
+import org.moon.figura.model.rendering.texture.FiguraTextureSet;
+import org.moon.figura.model.rendering.texture.RenderTypes;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec4;

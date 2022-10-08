@@ -3,7 +3,7 @@ package org.moon.figura.lua.api.sound;
 import net.minecraft.client.Minecraft;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaTable;
-import org.moon.figura.avatars.Avatar;
+import org.moon.figura.avatar.Avatar;
 import org.moon.figura.ducks.SoundEngineAccessor;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;

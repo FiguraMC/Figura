@@ -1,7 +1,7 @@
-package org.moon.figura.avatars.model.rendering;
+package org.moon.figura.model.rendering;
 
-import org.moon.figura.avatars.model.FiguraModelPart;
-import org.moon.figura.avatars.model.ParentType;
+import org.moon.figura.model.FiguraModelPart;
+import org.moon.figura.model.ParentType;
 
 public enum PartFilterScheme {
 

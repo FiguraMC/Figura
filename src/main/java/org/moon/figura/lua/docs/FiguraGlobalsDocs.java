@@ -3,7 +3,7 @@ package org.moon.figura.lua.docs;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaUserdata;
-import org.moon.figura.avatars.model.FiguraModelPart;
+import org.moon.figura.model.FiguraModelPart;
 import org.moon.figura.lua.api.*;
 import org.moon.figura.lua.api.action_wheel.ActionWheelAPI;
 import org.moon.figura.lua.api.entity.EntityAPI;

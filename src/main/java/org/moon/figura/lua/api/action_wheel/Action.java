@@ -2,7 +2,7 @@ package org.moon.figura.lua.api.action_wheel;
 
 import net.minecraft.world.item.ItemStack;
 import org.luaj.vm2.LuaFunction;
-import org.moon.figura.avatars.Avatar;
+import org.moon.figura.avatar.Avatar;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.world.ItemStackAPI;
 import org.moon.figura.lua.docs.LuaFieldDoc;

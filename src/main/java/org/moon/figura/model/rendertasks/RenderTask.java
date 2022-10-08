@@ -1,7 +1,7 @@
-package org.moon.figura.avatars.model.rendertasks;
+package org.moon.figura.model.rendertasks;
 
 import net.minecraft.client.renderer.MultiBufferSource;
-import org.moon.figura.avatars.model.PartCustomization;
+import org.moon.figura.model.PartCustomization;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;

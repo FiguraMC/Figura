@@ -2,8 +2,8 @@ package org.moon.figura.animation;
 
 import com.mojang.datafixers.util.Pair;
 import org.luaj.vm2.LuaError;
-import org.moon.figura.avatars.Avatar;
-import org.moon.figura.avatars.model.FiguraModelPart;
+import org.moon.figura.avatar.Avatar;
+import org.moon.figura.model.FiguraModelPart;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;

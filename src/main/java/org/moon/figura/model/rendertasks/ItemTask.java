@@ -1,4 +1,4 @@
-package org.moon.figura.avatars.model.rendertasks;
+package org.moon.figura.model.rendertasks;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
@@ -7,7 +7,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.world.item.ItemStack;
 import org.luaj.vm2.LuaError;
-import org.moon.figura.avatars.model.PartCustomization;
+import org.moon.figura.model.PartCustomization;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.world.ItemStackAPI;

@@ -1,6 +1,6 @@
 package org.moon.figura.lua;
 
-import org.moon.figura.avatars.Avatar;
+import org.moon.figura.avatar.Avatar;
 
 import java.util.Collection;
 

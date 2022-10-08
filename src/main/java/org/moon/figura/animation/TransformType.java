@@ -1,6 +1,6 @@
 package org.moon.figura.animation;
 
-import org.moon.figura.avatars.model.FiguraModelPart;
+import org.moon.figura.model.FiguraModelPart;
 import org.moon.figura.math.vector.FiguraVec3;
 
 public enum TransformType {

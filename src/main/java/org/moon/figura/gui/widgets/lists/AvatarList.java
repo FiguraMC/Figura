@@ -8,7 +8,7 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.avatars.providers.LocalAvatarFetcher;
+import org.moon.figura.avatar.local.LocalAvatarFetcher;
 import org.moon.figura.gui.widgets.TextField;
 import org.moon.figura.gui.widgets.TexturedButton;
 import org.moon.figura.gui.widgets.avatar.AbstractAvatarWidget;

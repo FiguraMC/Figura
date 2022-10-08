@@ -1,4 +1,4 @@
-package org.moon.figura.avatars.providers;
+package org.moon.figura.avatar.local;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
@@ -6,7 +6,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.avatars.AvatarManager;
+import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.parsers.AvatarMetadataParser;
 import org.moon.figura.parsers.BlockbenchModelParser;
 import org.moon.figura.parsers.LuaScriptParser;

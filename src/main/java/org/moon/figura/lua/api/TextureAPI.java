@@ -2,9 +2,9 @@ package org.moon.figura.lua.api;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import org.luaj.vm2.LuaError;
-import org.moon.figura.avatars.Avatar;
-import org.moon.figura.avatars.model.rendering.texture.FiguraTexture;
-import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
+import org.moon.figura.avatar.Avatar;
+import org.moon.figura.model.rendering.texture.FiguraTexture;
+import org.moon.figura.model.rendering.texture.FiguraTextureSet;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaMethodDoc;

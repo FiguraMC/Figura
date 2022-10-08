@@ -1,11 +1,11 @@
-package org.moon.figura.avatars;
+package org.moon.figura.avatar;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.avatars.providers.LocalAvatarLoader;
+import org.moon.figura.avatar.local.LocalAvatarLoader;
 import org.moon.figura.backend.NetworkManager;
 import org.moon.figura.config.Config;
 import org.moon.figura.gui.FiguraToast;

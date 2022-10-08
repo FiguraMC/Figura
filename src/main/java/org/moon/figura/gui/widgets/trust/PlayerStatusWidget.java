@@ -2,8 +2,8 @@ package org.moon.figura.gui.widgets.trust;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import org.moon.figura.avatars.Avatar;
-import org.moon.figura.avatars.AvatarManager;
+import org.moon.figura.avatar.Avatar;
+import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.backend.NetworkManager;
 import org.moon.figura.gui.widgets.StatusWidget;
 import org.moon.figura.trust.TrustContainer;
