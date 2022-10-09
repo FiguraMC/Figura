@@ -498,7 +498,7 @@
   "figura.docs.math.round": "Rounds the given number to the nearest whole integer.",
   "figura.docs.math.map": "Maps the given value from one range to another. For example, if you have a value of 20 in the range 0-200, and you want to map it to the range 100-200, the result will be 110.",
   "figura.docs.math.short_angle": "Returns the shortest angle between two angles. For example, if you have an angle of 350 degrees and you want to get the shortest angle between it and 0 degrees, the result will be 10 degrees.",
-  "figura.docs.math.lerp_angle": "Similar to the default lerp function, but numbers are limited to the range of 0-360. Lerp is done towards the shortest angle. For example, a lerp of 340 and 20, with factor of 0.75, will return 310.",
+  "figura.docs.math.lerp_angle": "Similar to the default lerp function, but numbers are limited to the range of 0-360. Lerp is done towards the shortest angle. For example, a lerp of 340 and 20, with factor of 0.75, will return 10.",
   "figura.docs.math.sign": "Returns the sign of the given number. Returns 1 if the number is positive, -1 if it's negative, and 0 if it's 0.",
 
 
