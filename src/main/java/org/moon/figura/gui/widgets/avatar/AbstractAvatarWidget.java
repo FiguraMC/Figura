@@ -1,5 +1,6 @@
 package org.moon.figura.gui.widgets.avatar;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -39,6 +40,14 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
             Minecraft.getInstance().keyboardHandler.setClipboard(avatar.getPath().toString());
             FiguraToast.sendToast(FiguraText.of("toast.clipboard"));
         });
+    }
+
+    @Override
+    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
+        if (UIHelper.getContext() == this.context && this.context.isVisible())
+            this.button.setHovered(true);
+
+        super.render(stack, mouseX, mouseY, delta);
     }
 
     @Override

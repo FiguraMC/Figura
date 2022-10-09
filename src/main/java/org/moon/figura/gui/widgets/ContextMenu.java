@@ -167,9 +167,13 @@ public class ContextMenu extends AbstractContainerElement {
 
         @Override
         public boolean isMouseOver(double mouseX, double mouseY) {
-            boolean ret = super.isMouseOver(mouseX, mouseY);
-            if (ret) parent.clearNest();
-            return ret;
+            if (UIHelper.isMouseOver(x, y, width, height, mouseX, mouseY, true)) {
+                UIHelper.setTooltip(this.tooltip);
+                parent.clearNest();
+                return true;
+            }
+
+            return false;
         }
     }
 
@@ -223,9 +227,13 @@ public class ContextMenu extends AbstractContainerElement {
 
         @Override
         public boolean isMouseOver(double mouseX, double mouseY) {
-            boolean ret = super.isMouseOver(mouseX, mouseY);
-            if (ret) parent.nestedContext = context;
-            return ret;
+            if (UIHelper.isMouseOver(x, y, width, height, mouseX, mouseY, true)) {
+                UIHelper.setTooltip(this.tooltip);
+                parent.nestedContext = context;
+                return true;
+            }
+
+            return false;
         }
     }
 }

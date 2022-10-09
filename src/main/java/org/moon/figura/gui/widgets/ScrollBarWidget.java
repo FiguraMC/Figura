@@ -107,6 +107,11 @@ public class ScrollBarWidget extends AbstractWidget {
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
+    @Override
+    public boolean isMouseOver(double mouseX, double mouseY) {
+        return UIHelper.isMouseOver(x, y, width, height, mouseX, mouseY);
+    }
+
     //apply scroll value
     protected void scroll(double amount) {
         scrollPrecise += amount / ((vertical ? height - headHeight : width - headWidth) + 2d);
@@ -116,6 +121,15 @@ public class ScrollBarWidget extends AbstractWidget {
     //animate scroll head
     protected void lerpPos(double delta) {
         scrollPos = Mth.lerp(1 - Math.pow(0.2d, delta), scrollPos, getScrollProgress());
+    }
+
+    @Override
+    public void render(PoseStack matrices, int mouseX, int mouseY, float delta) {
+        if (!visible)
+            return;
+
+        isHovered = this.isMouseOver(mouseX, mouseY);
+        renderButton(matrices, mouseX, mouseY, delta);
     }
 
     //render the scroll

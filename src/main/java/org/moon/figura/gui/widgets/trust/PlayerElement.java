@@ -135,7 +135,7 @@ public class PlayerElement extends AbstractTrustElement {
         stack.translate(tx, ty, 100);
         stack.scale(scale, scale, scale);
 
-        animate(mouseX, mouseY, delta);
+        animate(delta, (UIHelper.getContext() == this.context && this.context.isVisible()) || this.isMouseOver(mouseX, mouseY) || this.isFocused());
 
         //fix x, y, mouse
         int x = -width / 2;

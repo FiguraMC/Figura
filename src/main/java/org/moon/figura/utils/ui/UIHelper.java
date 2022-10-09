@@ -357,7 +357,12 @@ public class UIHelper extends GuiComponent {
 
     //widget.isMouseOver() returns false if the widget is disabled or invisible
     public static boolean isMouseOver(int x, int y, int width, int height, double mouseX, double mouseY) {
-        return mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height;
+        return isMouseOver(x, y, width, height, mouseX, mouseY, false);
+    }
+
+    public static boolean isMouseOver(int x, int y, int width, int height, double mouseX, double mouseY, boolean force) {
+        ContextMenu context = force ? null : getContext();
+        return (context == null || !context.isVisible()) && mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height;
     }
 
     public static void renderOutlineText(PoseStack stack, Font textRenderer, Component text, int x, int y, int color, int outline) {
