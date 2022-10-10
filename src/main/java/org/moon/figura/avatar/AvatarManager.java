@@ -115,6 +115,11 @@ public class AvatarManager {
         return null;
     }
 
+    //get a loaded avatar without fetching backend or creating a new one
+    public static Avatar getLoadedAvatar(UUID owner) {
+        return panic || Minecraft.getInstance().level == null ? null : LOADED_AVATARS.get(owner);
+    }
+
     public static List<Avatar> getLoadedAvatars() {
         List<Avatar> list = new ArrayList<>();
         for (Avatar avatar : LOADED_AVATARS.values())

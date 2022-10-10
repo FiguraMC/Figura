@@ -177,7 +177,7 @@ public class FiguraLuaPrinter {
             for (int i = 0; i < args.narg(); i++)
                 text.append(TextUtils.tryParseJson(args.arg(i + 1).tojstring()));
 
-            sendLuaChatMessage(text);
+            sendLuaChatMessage(TextUtils.removeClickableObjects(text));
             return LuaValue.valueOf(text.getString());
         }
 
