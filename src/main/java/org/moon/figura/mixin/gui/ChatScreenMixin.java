@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ChatScreen.class)
@@ -18,17 +18,13 @@ public class ChatScreenMixin {
 
     @Shadow protected EditBox input;
 
-    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/ChatScreen;sendMessage(Ljava/lang/String;)V"), method = "keyPressed")
-    private void keyPressed(ChatScreen instance, String text) {
+    @ModifyVariable(at = @At("HEAD"), method = "handleChatInput", argsOnly = true)
+    private String handleChatInput(String text) {
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
-        if (avatar != null && !text.isBlank()) {
-            String str = avatar.chatSendMessageEvent(text);
-            if (str == null)
-                return;
-            text = str;
-        }
+        if (avatar != null && !text.isBlank())
+            text = avatar.chatSendMessageEvent(text);
 
-        instance.sendMessage(text);
+        return text;
     }
 
     @Inject(at = @At("HEAD"), method = "render")

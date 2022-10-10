@@ -337,7 +337,7 @@ public class Avatar {
 
     public String chatSendMessageEvent(String message) {
         Varargs val = run("CHAT_SEND_MESSAGE", tick, message);
-        return val == null || (!val.isnil(1) && !Config.CHAT_MESSAGES.asBool()) ? message : val.isnil(1) ? null : val.arg(1).tojstring();
+        return val == null || (!val.isnil(1) && !Config.CHAT_MESSAGES.asBool()) ? message : val.isnil(1) ? "" : val.arg(1).tojstring();
     }
 
     public void chatReceivedMessageEvent(String message) {
