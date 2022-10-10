@@ -24,7 +24,7 @@ public enum EventHandler {
 
     }),
     PING((owner, json) -> {
-        Avatar avatar = AvatarManager.getAvatarForPlayer(owner);
+        Avatar avatar = AvatarManager.getLoadedAvatar(owner);
         if (avatar == null)
             return;
 
