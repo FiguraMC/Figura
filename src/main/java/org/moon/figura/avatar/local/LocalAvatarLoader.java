@@ -226,8 +226,8 @@ public class LocalAvatarLoader {
 
         //reload avatar
         if (reload) {
-            FiguraMod.LOGGER.debug("Local avatar files changed - Reloading!");
-            FiguraMod.LOGGER.debug(event.context().toString());
+            FiguraMod.debug("Local avatar files changed - Reloading!");
+            FiguraMod.debug(event.context().toString());
             AvatarManager.loadLocalAvatar(lastLoadedPath);
         }
     }

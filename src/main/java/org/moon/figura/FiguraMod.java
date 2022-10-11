@@ -101,6 +101,12 @@ public class FiguraMod implements ClientModInitializer {
 
     // -- Helper Functions -- //
 
+    //debug print
+    public static void debug(String str, Object... args) {
+        if (DEBUG_MODE) LOGGER.info(str, args);
+        else LOGGER.debug(str, args);
+    }
+
     //mod root directory
     public static Path getFiguraDirectory() {
         String config = Config.MAIN_DIR.asString();

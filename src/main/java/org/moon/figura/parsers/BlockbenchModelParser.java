@@ -89,8 +89,7 @@ public class BlockbenchModelParser {
                 if (!f.exists()) throw new Exception("File do not exists!");
                 source = IOUtils.readFileBytes(f);
 
-                if (FiguraMod.DEBUG_MODE)
-                    FiguraMod.LOGGER.info("Loaded Texture \"{}\" from \"{}\"", textures[i].name, textures[i].path);
+                FiguraMod.debug("Loaded Texture \"{}\" from {}", textures[i].name, textures[i].path);
             } catch (Exception ignored) {
                 source = Base64.getDecoder().decode(textures[i].source.substring("data:image/png;base64,".length()));
             }
