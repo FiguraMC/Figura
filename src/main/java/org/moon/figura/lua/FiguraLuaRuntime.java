@@ -23,8 +23,7 @@ import org.moon.figura.lua.api.vanilla_model.VanillaModelAPI;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 /**
@@ -53,6 +52,7 @@ public class FiguraLuaRuntime {
     private final LuaValue setHookFunction;
     protected final Map<String, String> scripts = new HashMap<>();
     private final Map<String, LuaValue> loadedScripts = new HashMap<>();
+    private final Stack<String> loadingScripts = new Stack<>();
     public final LuaTypeManager typeManager = new LuaTypeManager();
 
     public FiguraLuaRuntime(Avatar avatar, Map<String, String> scripts) {
@@ -122,7 +122,10 @@ public class FiguraLuaRuntime {
     private final OneArgFunction requireFunction = new OneArgFunction() {
         @Override
         public LuaValue call(LuaValue arg) {
-            return INIT_SCRIPT.apply(arg.checkjstring());
+            String name = arg.checkjstring().replaceAll("[/\\\\]", ".");
+            if(loadingScripts.contains(name))
+                throw new LuaError("Detected circular dependency in script %s".formatted(loadingScripts.peek()));
+            return INIT_SCRIPT.apply(name);
         }
 
         @Override
@@ -229,6 +232,8 @@ public class FiguraLuaRuntime {
         if (src == null)
             throw new LuaError("Tried to require nonexistent script \"" + str + "\"!");
 
+        this.loadingScripts.push(name);
+
         //load
         LuaValue value = userGlobals.load(src, name).call(name);
         if (value == LuaValue.NIL)
@@ -236,6 +241,7 @@ public class FiguraLuaRuntime {
 
         //cache and return
         loadedScripts.put(name, value);
+        loadingScripts.pop();
         return value;
     };
     public boolean init(ListTag autoScripts) {
