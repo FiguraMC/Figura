@@ -163,7 +163,7 @@ public class PlayerElement extends AbstractTrustElement {
             if (custom != null && custom.getText() != null && avatar.trust.get(TrustContainer.Trust.NAMEPLATE_EDIT) == 1)
                 name = NameplateCustomization.applyCustomization(custom.getText());
 
-            head = !dragged && avatar.renderHeadOnHud(stack, x + 4, y + 4, Math.round(32 * scale), 64, true);
+            head = !dragged && avatar.renderPortrait(stack, x + 4, y + 4, Math.round(32 * scale), 64, true);
         }
 
         if (!head) {

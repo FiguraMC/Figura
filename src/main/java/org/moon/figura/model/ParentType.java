@@ -21,6 +21,7 @@ public enum ParentType {
     Hud(true, false, "HUD", "Gui", "GUI"),
     Camera("CAMERA"),
     Skull(true, false, "SKULL", "☠"),
+    Portrait(true, false, "PORTRAIT"),
 
     LeftItemPivot(false, true,"LEFT_ITEM_PIVOT"),
     RightItemPivot(false, true,"RIGHT_ITEM_PIVOT"),

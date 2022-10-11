@@ -302,8 +302,8 @@
   "figura.config.popup_max_size": "Player Popup Max Size",
   "figura.config.popup_max_size.tooltip": "Maximum size of player popup as you get closer to the person",
 
-  "figura.config.avatar_heads": "Avatar Heads",
-  "figura.config.avatar_heads.tooltip": "Toggles if the player lists should render their avatars instead of the player skin",
+  "figura.config.avatar_portraits": "Avatar Portraits",
+  "figura.config.avatar_portraits.tooltip": "Toggles if the player lists should render a portrait of their avatar instead of the player skin",
 
   "figura.config.figura_inventory": "Figura Inventory",
   "figura.config.figura_inventory.tooltip": "Toggles between vanilla and Figura's paperdoll rendering for the player inventory",

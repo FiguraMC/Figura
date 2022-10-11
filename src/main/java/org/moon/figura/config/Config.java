@@ -83,7 +83,9 @@ public enum Config {
     POPUP_SCALE(1f, InputType.FLOAT),
     POPUP_MIN_SIZE(1f, InputType.FLOAT),
     POPUP_MAX_SIZE(6f, InputType.FLOAT),
-    AVATAR_HEADS(false),
+    AVATAR_PORTRAITS(false) {{
+        this.disabled = true;
+    }},
     FIGURA_INVENTORY(true),
 
     Paperdoll,
@@ -182,6 +184,7 @@ public enum Config {
     public List<Component> enumList;
     public ConfigKeyBind keyBind;
     public final InputType inputType;
+    public boolean disabled;
 
     //type constructors
     Config() {
@@ -318,7 +321,9 @@ public enum Config {
         public ConfigKeyBind(String translationKey, InputConstants.Key key, Config config) {
             super(translationKey, key.getType(), key.getValue(), FiguraMod.MOD_ID);
             this.config = config;
-            KeyBindingRegistryImpl.registerKeyBinding(this);
+
+            if (FiguraMod.DEBUG_MODE || !config.disabled)
+                KeyBindingRegistryImpl.registerKeyBinding(this);
         }
 
         @Override

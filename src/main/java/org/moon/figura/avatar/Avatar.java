@@ -544,8 +544,8 @@ public class Avatar {
         return comp > 0 && luaRuntime != null && !luaRuntime.vanilla_model.HEAD.getVisible();
     }
 
-    public boolean renderHeadOnHud(PoseStack stack, int x, int y, int screenSize, float modelScale, boolean scissors) {
-        if (!Config.AVATAR_HEADS.asBool())
+    public boolean renderPortrait(PoseStack stack, int x, int y, int screenSize, float modelScale, boolean scissors) {
+        if (!Config.AVATAR_PORTRAITS.asBool())
             return false;
 
         //matrices
@@ -574,11 +574,27 @@ public class Avatar {
         UIHelper.paperdoll = true;
         UIHelper.dollScale = 16f;
 
-        //render
+        //setup render
         Lighting.setupForFlatItems();
+
+        renderer.allowPivotParts = false;
+        renderer.allowRenderTasks = false;
+        renderer.currentFilterScheme = PartFilterScheme.PORTRAIT;
+        renderer.tickDelta = 1f;
+        renderer.overlay = OverlayTexture.NO_OVERLAY;
+        int light = renderer.light = LightTexture.FULL_BRIGHT;
+        renderer.alpha = 1f;
+        renderer.matrices = stack;
+        MultiBufferSource buffer = renderer.bufferSource = getBufferSource();
+        renderer.translucent = false;
+        renderer.glowing = false;
+
         stack.translate(4d / 16d, 8d / 16d, 0d);
-        //boolean ret = skullRender(stack, getBufferSource(), LightTexture.FULL_BRIGHT, null, 0);
-        boolean ret = headRender(stack, getBufferSource(), LightTexture.FULL_BRIGHT);
+
+        //render
+        int comp = renderer.renderSpecialParts();
+        complexity.use(comp);
+        boolean ret = comp > 0 || headRender(stack, buffer, light);
 
         //return
         if (scissors)
@@ -587,6 +603,8 @@ public class Avatar {
             RenderSystem.disableScissor();
 
         UIHelper.paperdoll = false;
+        renderer.allowPivotParts = true;
+        renderer.allowRenderTasks = true;
         stack.popPose();
         return ret;
     }

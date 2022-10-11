@@ -53,7 +53,7 @@ public abstract class AbstractContainerElement extends AbstractContainerEventHan
         //fix mojang focusing for text fields
         for (GuiEventListener listener : this.children) {
             if (listener instanceof TextField field)
-                field.getField().setFocus(field.isMouseOver(mouseX, mouseY));
+                field.getField().setFocus(field.isEnabled() && field.isMouseOver(mouseX, mouseY));
         }
 
         return super.mouseClicked(mouseX, mouseY, button);

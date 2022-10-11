@@ -16,10 +16,13 @@ import java.util.function.Consumer;
 public class TextField extends AbstractContainerElement {
 
     private static final ResourceLocation BACKGROUND = new FiguraIdentifier("textures/gui/text_field.png");
+    private static final int ENABLED_COLOR = ChatFormatting.WHITE.getColor();
+    private static final int DISABLED_COLOR = ChatFormatting.DARK_GRAY.getColor();
 
     private final Component hint;
     private final EditBox field;
     private int borderColour = 0xFFFFFFFF;
+    private boolean enabled = true;
 
     public TextField(int x, int y, int width, int height, Component hint, Consumer<String> changedListener) {
         super(x, y, width, height);
@@ -43,10 +46,10 @@ public class TextField extends AbstractContainerElement {
         if (!isVisible()) return;
 
         //render background
-        UIHelper.renderSliced(stack, x, y, width, height, this.isMouseOver(mouseX, mouseY) ? 16f : 0f, 0f, 16, 16, 32, 16, BACKGROUND);
+        UIHelper.renderSliced(stack, x, y, width, height, !isEnabled() ? 0f : this.isMouseOver(mouseX, mouseY) ? 32f : 16f, 0f, 16, 16, 48, 16, BACKGROUND);
 
         //render outline
-        if (field.isFocused())
+        if (isFocused())
             UIHelper.fillOutline(stack, x, y, width, height, borderColour);
 
         //hint text
@@ -65,7 +68,7 @@ public class TextField extends AbstractContainerElement {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         //mouse over check
-        if (!this.isMouseOver(mouseX, mouseY))
+        if (!isEnabled() || !this.isMouseOver(mouseX, mouseY))
             return false;
 
         //hacky
@@ -108,5 +111,22 @@ public class TextField extends AbstractContainerElement {
     public void setVisible(boolean visible) {
         super.setVisible(visible);
         this.field.setFocus(false);
+    }
+
+    public void setColor(int color) {
+        this.field.setTextColor(enabled ? color : DISABLED_COLOR);
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+        setColor(ENABLED_COLOR);
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public boolean isFocused() {
+        return isEnabled() && field.isFocused();
     }
 }

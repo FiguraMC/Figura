@@ -21,7 +21,7 @@ import java.util.List;
 public class EnumElement extends AbstractConfigElement {
 
     private final List<Component> names;
-    private final TexturedButton button;
+    private final ParentedButton button;
     private ContextMenu context;
 
     public EnumElement(int width, Config config, ConfigList parent) {
@@ -53,6 +53,7 @@ public class EnumElement extends AbstractConfigElement {
                 );
             }
         });
+        button.active = FiguraMod.DEBUG_MODE || !config.disabled;
 
         //context menu
         context = new ContextMenu(button, button.getWidth());
