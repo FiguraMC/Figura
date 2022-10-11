@@ -131,7 +131,7 @@ public class LocalAvatarLoader {
                 String pathStr = script.toPath().toString();
                 String name = pathStr.replaceFirst(pathRegex, "");
                 name = name.replaceAll("[/\\\\]", ".");
-                scriptsNbt.put(name.substring(0, name.length() - 4), LuaScriptParser.parseScript(IOUtils.readFile(script)));
+                scriptsNbt.put(name.substring(0, name.length() - 4), LuaScriptParser.parseScript(name, IOUtils.readFile(script)));
             }
             nbt.put("scripts", scriptsNbt);
         }
