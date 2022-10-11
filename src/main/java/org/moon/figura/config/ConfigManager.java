@@ -60,7 +60,7 @@ public final class ConfigManager {
 
                 br.close();
             }
-            FiguraMod.LOGGER.debug("Successfully loaded config file");
+            FiguraMod.debug("Successfully loaded config file");
         } catch (Exception e) {
             FiguraMod.LOGGER.warn("Failed to load config file! Generating a new one...", e);
             setDefaults();
@@ -89,7 +89,7 @@ public final class ConfigManager {
             fileWriter.write(jsonString);
             fileWriter.close();
 
-            FiguraMod.LOGGER.debug("Successfully saved config file");
+            FiguraMod.debug("Successfully saved config file");
         } catch (Exception e) {
             FiguraMod.LOGGER.error("Failed to save config file!", e);
         }
@@ -125,7 +125,7 @@ public final class ConfigManager {
             Config.valueOf(config.getKey().toString()).setValue(jsonValue);
         }
 
-        FiguraMod.LOGGER.debug("Config updated from version " + version);
+        FiguraMod.debug("Config updated from version " + version);
     }
 
     //returns true if modmenu shifts other buttons on the game menu screen

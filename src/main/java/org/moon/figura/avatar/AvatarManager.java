@@ -142,7 +142,7 @@ public class AvatarManager {
         NetworkManager.clearRequestsFor(id);
         NetworkManager.unsubscribe(id);
 
-        FiguraMod.LOGGER.debug("Cleared avatar for " + id);
+        FiguraMod.debug("Cleared avatar for " + id);
     }
 
     //clears ALL loaded avatars, including local
@@ -180,7 +180,7 @@ public class AvatarManager {
             Avatar avatar = new Avatar(id);
             LOADED_AVATARS.put(id, avatar);
             avatar.load(LocalAvatarLoader.loadAvatar(path));
-            FiguraMod.LOGGER.debug("Loaded local avatar from " + path);
+            FiguraMod.debug("Loaded local avatar from " + path);
         } catch (Exception e) {
             FiguraMod.LOGGER.error("Failed to load avatar from " + path, e);
             FiguraToast.sendToast(FiguraText.of("toast.load_error"), FiguraText.of("toast.load_error." + LocalAvatarLoader.getLoadState()), FiguraToast.ToastType.ERROR);
@@ -203,7 +203,7 @@ public class AvatarManager {
             Avatar avatar = new Avatar(id);
             LOADED_AVATARS.put(id, avatar);
             avatar.load(nbt);
-            FiguraMod.LOGGER.debug("Set avatar for " + id);
+            FiguraMod.debug("Set avatar for " + id);
         } catch (Exception e) {
             FiguraMod.LOGGER.error("Failed to set avatar for " + id, e);
         }
@@ -215,7 +215,7 @@ public class AvatarManager {
         if (FETCHED_AVATARS.contains(id))
             return;
 
-        FiguraMod.LOGGER.debug("Getting avatar for " + id);
+        FiguraMod.debug("Getting avatar for " + id);
 
         LOADED_AVATARS.put(id, new Avatar(id));
         FETCHED_AVATARS.add(id);

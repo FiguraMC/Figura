@@ -111,8 +111,7 @@ public class LuaScriptParser {
         if (trailingNewline.find())
             builder.replace(trailingNewline.start(), trailingNewline.end(), "\n");
 
-        if (FiguraMod.DEBUG_MODE)
-            FiguraMod.LOGGER.info("Script \"{}\" minified from {} to {} using LIGHT mode", name, script.length(), builder.length());
+        FiguraMod.debug("Script \"{}\" minified from {} to {} using LIGHT mode", name, script.length(), builder.length());
 
         error = false;
         return builder.toString();
@@ -142,9 +141,7 @@ public class LuaScriptParser {
             }
         }
 
-        if (FiguraMod.DEBUG_MODE)
-            FiguraMod.LOGGER.info("Script \"{}\" minified from {} to {} using HEAVY mode", name, script.length(), builder.length());
-
+        FiguraMod.debug("Script \"{}\" minified from {} to {} using HEAVY mode", name, script.length(), builder.length());
         return builder.toString();
     }
 }
