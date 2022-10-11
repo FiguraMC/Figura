@@ -78,7 +78,7 @@ public class PlayerTabOverlayMixin {
     private void drawPlayerFace(PoseStack matrices, int i, int j, int k, boolean bl, boolean bl2) {
         if (uuid != null) {
             Avatar avatar = AvatarManager.getAvatarForPlayer(uuid);
-            if (avatar != null && avatar.renderHeadOnHud(matrices, i, j, k, 16, false))
+            if (avatar != null && avatar.renderPortrait(matrices, i, j, k, 16, false))
                 return;
         }
 

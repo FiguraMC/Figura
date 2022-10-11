@@ -20,6 +20,7 @@ public class BooleanElement extends AbstractConfigElement {
 
         //button
         children.add(0, button = new ParentedButton(0, 0, 90, 20, (boolean) config.tempValue ? ON : OFF, this, button -> config.tempValue = !(boolean) config.tempValue));
+        button.active = FiguraMod.DEBUG_MODE || !config.disabled;
     }
 
     @Override

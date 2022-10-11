@@ -18,6 +18,7 @@ public enum PartFilterScheme {
     WORLD(false, SchemeFunction.onlyThisSeparate(ParentType.World)),
     HUD(false, SchemeFunction.onlyThisSeparate(ParentType.Hud)),
     SKULL(false, SchemeFunction.onlyThisSeparate(ParentType.Skull)),
+    PORTRAIT(false, SchemeFunction.onlyThisSeparate(ParentType.Portrait)),
 
     PIVOTS(false, SchemeFunction.onlyPivotsAndCancelOnSeparate());
 
