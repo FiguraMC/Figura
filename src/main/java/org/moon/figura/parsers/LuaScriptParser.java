@@ -31,18 +31,12 @@ public class LuaScriptParser {
     //parsing data
     private static boolean error;
 
-    public static ByteArrayTag parseScript(String script) {
-        if (FiguraMod.DEBUG_MODE) {
-            String regexMinify = regexMinify(script);
-            String agressiveMinify = aggressiveMinify(script);
-            FiguraMod.LOGGER.info("Minified {} to {}, and {}", script.length(), regexMinify.length(), agressiveMinify.length());
-        }
-
+    public static ByteArrayTag parseScript(String name, String script) {
         error = true;
         ByteArrayTag out = new ByteArrayTag((switch (Config.FORMAT_SCRIPT.asInt()) {
             case 0 -> noMinifier(script);
-            case 1 -> regexMinify(script);
-            case 2 -> aggressiveMinify(script);
+            case 1 -> regexMinify(name, script);
+            case 2 -> aggressiveMinify(name, script);
             default -> throw new IllegalStateException("Format_SCRIPT should not be %d, expecting 0 to %d".formatted(Config.FORMAT_SCRIPT.asInt(), Config.FORMAT_SCRIPT.enumList.size() - 1));
         }).getBytes(StandardCharsets.UTF_8));
 
@@ -55,7 +49,7 @@ public class LuaScriptParser {
         return script;
     }
 
-    private static String regexMinify(String script) {
+    private static String regexMinify(String name, String script) {
         StringBuilder builder = new StringBuilder(script);
         for (int i = 0; i < builder.length(); i++) {
             switch (builder.charAt(i)) {
@@ -117,12 +111,15 @@ public class LuaScriptParser {
         if (trailingNewline.find())
             builder.replace(trailingNewline.start(), trailingNewline.end(), "\n");
 
+        if (FiguraMod.DEBUG_MODE)
+            FiguraMod.LOGGER.info("Script \"{}\" minified from {} to {} using LIGHT mode", name, script.length(), builder.length());
+
         error = false;
         return builder.toString();
     }
 
-    private static String aggressiveMinify(String script) {
-        String start = regexMinify(script);
+    private static String aggressiveMinify(String name, String script) {
+        String start = regexMinify(name, script);
         StringBuilder builder = new StringBuilder(start);
 
         for (int i = 0; i < builder.length(); i++) {
@@ -134,7 +131,7 @@ public class LuaScriptParser {
                 }
                 case ' ', '\n' -> {
                     Matcher matcher = whitespacePlus.matcher(builder);
-                    if(matcher.find(i) && matcher.start() == i)
+                    if (matcher.find(i) && matcher.start() == i)
                         builder.delete(i, matcher.end()).insert(i, matcher.start() > 0 && matcher.start() + 1 < builder.length() && nameOops.matcher(builder.substring(matcher.start() - 1, matcher.start() + 1)).matches() ? " " : "");
                 }
                 default -> {
@@ -144,6 +141,9 @@ public class LuaScriptParser {
                 }
             }
         }
+
+        if (FiguraMod.DEBUG_MODE)
+            FiguraMod.LOGGER.info("Script \"{}\" minified from {} to {} using HEAVY mode", name, script.length(), builder.length());
 
         return builder.toString();
     }

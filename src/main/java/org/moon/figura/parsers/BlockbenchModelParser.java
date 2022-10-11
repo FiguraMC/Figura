@@ -2,9 +2,12 @@ package org.moon.figura.parsers;
 
 import com.google.gson.*;
 import net.minecraft.nbt.*;
-import org.moon.figura.model.ParentType;
+import org.moon.figura.FiguraMod;
 import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.model.ParentType;
+import org.moon.figura.utils.IOUtils;
 
+import java.io.File;
 import java.util.*;
 
 //main class to convert a blockbench model (json) into nbt
@@ -80,7 +83,18 @@ public class BlockbenchModelParser {
 
         //read textures
         for (int i = 0; i < textures.length; i++) {
-            byte[] source = Base64.getDecoder().decode(textures[i].source.replace("data:image/png;base64,", ""));
+            byte[] source;
+            try {
+                File f = new File(textures[i].path);
+                if (!f.exists()) throw new Exception("File do not exists!");
+                source = IOUtils.readFileBytes(f);
+
+                if (FiguraMod.DEBUG_MODE)
+                    FiguraMod.LOGGER.info("Loaded Texture \"{}\" from \"{}\"", textures[i].name, textures[i].path);
+            } catch (Exception ignored) {
+                source = Base64.getDecoder().decode(textures[i].source.substring("data:image/png;base64,".length()));
+            }
+
             String renderType = textures[i].render_mode;
 
             //name
