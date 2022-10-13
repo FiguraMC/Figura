@@ -8,7 +8,9 @@ import org.moon.figura.model.ParentType;
 import org.moon.figura.utils.IOUtils;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.*;
+import java.util.regex.Pattern;
 
 //main class to convert a blockbench model (json) into nbt
 //default fields are omitted from the nbt to save up space
@@ -26,13 +28,13 @@ public class BlockbenchModelParser {
     private final HashMap<Integer, String> textureIdMap = new HashMap<>();
 
     //parser
-    public ModelData parseModel(File sourceFile, String json, String modelName, String folders) {
+    public ModelData parseModel(Path avatarFolder, File sourceFile, String json, String modelName, String folders) {
         //parse json -> object
         Gson gson = new GsonBuilder().create();
         BlockbenchModel model = gson.fromJson(json, BlockbenchModel.class);
 
         //return lists
-        List<CompoundTag> textureList = new ArrayList<>();
+        CompoundTag textures = new CompoundTag();
         List<CompoundTag> animationList = new ArrayList<>();
 
         //object -> nbt
@@ -43,7 +45,7 @@ public class BlockbenchModelParser {
         //we want to save the textures in a separated list
         //we also want to fix the UV mismatch from the resolution and the texture
         //emissive textures are not put into the texture map, so we need to fix parts texture ids
-        parseTextures(sourceFile, folders, textureList, model.textures, model.resolution);
+        parseTextures(avatarFolder, sourceFile, folders, modelName, textures, model.textures, model.resolution);
 
         //parse elements into a map of UUID (String) -> NbtCompound (the element)
         //later when parsing the outliner, we fetch the elements from this map
@@ -64,30 +66,35 @@ public class BlockbenchModelParser {
         textureIdMap.clear();
 
         //return the parsed data
-        return new ModelData(textureList, animationList, nbt);
+        return new ModelData(textures, animationList, nbt);
     }
 
     // -- internal functions -- //
 
-    private void parseTextures(File sourceFile, String folders, List<CompoundTag> list, BlockbenchModel.Texture[] textures, BlockbenchModel.Resolution resolution) {
+    private void parseTextures(Path avatar, File sourceFile, String folders, String modelName, CompoundTag texturesNbt, BlockbenchModel.Texture[] textures, BlockbenchModel.Resolution resolution) {
         if (textures == null)
             return;
+
+        String pathRegex = Pattern.quote(avatar + File.separator);
 
         //temp lists
 
         //used for retrieving texture data by name, so we can expand the same data
-        LinkedHashMap<String, CompoundTag> texturesNbt = new LinkedHashMap<>();
+        LinkedHashMap<String, CompoundTag> texturesTemp = new LinkedHashMap<>();
 
         //used for storing the index of the specific texture name
         List<String> textureIndex = new ArrayList<>();
+
+        //nbt stuff
+        CompoundTag src = new CompoundTag();
+        ListTag data = new ListTag();
 
         //read textures
         for (int i = 0; i < textures.length; i++) {
             //name
             String name = folders + textures[i].name;
-            if (name.endsWith(".png")) {
+            if (name.endsWith(".png"))
                 name = name.substring(0, name.length() - 4);
-            }
 
             //render type
             String renderType = textures[i].render_mode;
@@ -99,33 +106,43 @@ public class BlockbenchModelParser {
                 renderType = "default";
 
             //parse the texture data
+            String path;
             byte[] source;
             try {
                 //check the file to load
-                File f = sourceFile.toPath().resolve(textures[i].relative_path).toFile();
+                Path p = sourceFile.toPath().resolve(textures[i].relative_path);
+                File f = p.toFile();
                 if (!f.exists()) throw new Exception("File do not exists!");
+                if (!p.startsWith(avatar)) throw new Exception("File from outside the avatar folder!");
 
                 //load texture
                 source = IOUtils.readFileBytes(f);
+                path = f.getCanonicalPath()
+                        .replaceFirst(pathRegex, "")
+                        .replaceAll("[/\\\\]", ".");
+                path = path.substring(0, path.length() - 4);
 
                 //feedback
                 FiguraMod.debug("Loaded Texture \"{}\" from {}", name, f);
             } catch (Exception ignored) {
                 //otherwise, load from the source stored in the model
                 source = Base64.getDecoder().decode(textures[i].source.substring("data:image/png;base64,".length()));
+                path = folders + modelName + "." + name;
             }
 
+            //add source nbt
+            src.putByteArray(path, source);
+
             //add textures nbt
-            if (texturesNbt.containsKey(name)) {
-                texturesNbt.get(name).putByteArray(renderType, source);
+            if (texturesTemp.containsKey(name)) {
+                texturesTemp.get(name).putString(renderType, path);
             } else {
                 //create nbt
                 CompoundTag compound = new CompoundTag();
-                compound.putString("name", name);
-                compound.putByteArray(renderType, source);
+                compound.putString(renderType, path);
 
                 //add to temp lists
-                texturesNbt.put(name, compound);
+                texturesTemp.put(name, compound);
                 textureIndex.add(name);
             }
 
@@ -146,10 +163,12 @@ public class BlockbenchModelParser {
             }
         }
 
-        for (Map.Entry<String, CompoundTag> entry : texturesNbt.entrySet())
-            list.add(entry.getValue());
+        for (Map.Entry<String, CompoundTag> entry : texturesTemp.entrySet())
+            data.add(entry.getValue());
 
-        textureOffset += list.size();
+        textureOffset += data.size();
+        texturesNbt.put("src", src);
+        texturesNbt.put("data", data);
     }
 
     private void parseElements(Gson gson, BlockbenchModel.Element[] elements) {
@@ -641,5 +660,5 @@ public class BlockbenchModelParser {
     private record TextureData(int id, float[] fixedSize) {}
 
     //dummy class containing the return object of the parser
-    public record ModelData(List<CompoundTag> textureList, List<CompoundTag> animationList, CompoundTag modelNbt) {}
+    public record ModelData(CompoundTag textures, List<CompoundTag> animationList, CompoundTag modelNbt) {}
 }

@@ -23,6 +23,7 @@ import java.util.List;
 public class TextureAPI {
 
     private static final int TEXTURE_LIMIT = 128;
+    private static final int MAX_SIZE = 128;
 
     private final Avatar owner;
 
@@ -36,7 +37,10 @@ public class TextureAPI {
     }
 
     private FiguraTexture register(String name, NativeImage image) {
-        FiguraTexture oldText = __index(name);
+        if (image.getWidth() > MAX_SIZE || image.getHeight() > MAX_SIZE)
+            throw new LuaError("Texture exceeded max size of " + MAX_SIZE + " x " + MAX_SIZE + " resolution, got " + image.getWidth() + " x " + image.getHeight());
+
+        FiguraTexture oldText = get(name);
         if (oldText != null)
             oldText.close();
 
@@ -59,12 +63,13 @@ public class TextureAPI {
         NativeImage image;
         try {
             image = new NativeImage(width, height, true);
-            image.fillRect(0, 0, width, height, ColorUtils.rgbaToIntABGR(ColorUtils.Colors.FRAN_PINK.vec.augmented()));
         } catch (Exception e) {
             throw new LuaError(e.getMessage());
         }
 
-        return register(name, image);
+        FiguraTexture texture = register(name, image);
+        texture.fill(0, 0, width, height, ColorUtils.Colors.FRAN_PINK.vec.augmented(), null, null, null);
+        return texture;
     }
 
     @LuaWhitelist
@@ -98,8 +103,8 @@ public class TextureAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("textures.get_primary_textures")
-    public List<FiguraTexture> getPrimaryTextures() {
+    @LuaMethodDoc("textures.get_textures")
+    public List<FiguraTexture> getTextures() {
         check();
         List<FiguraTexture> list = new ArrayList<>();
 
@@ -107,19 +112,8 @@ public class TextureAPI {
             FiguraTexture texture = set.mainTex;
             if (texture != null)
                 list.add(texture);
-        }
 
-        return list;
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc("textures.get_secondary_textures")
-    public List<FiguraTexture> getSecondaryTextures() {
-        check();
-        List<FiguraTexture> list = new ArrayList<>();
-
-        for (FiguraTextureSet set : owner.renderer.textureSets) {
-            FiguraTexture texture = set.emissiveTex;
+            texture = set.emissiveTex;
             if (texture != null)
                 list.add(texture);
         }
@@ -129,7 +123,20 @@ public class TextureAPI {
 
     @LuaWhitelist
     public FiguraTexture __index(@LuaNotNil String name) {
-        return get(name);
+        check();
+
+        FiguraTexture texture = get(name);
+        if (texture != null)
+            return texture;
+
+        for (FiguraTextureSet set : owner.renderer.textureSets) {
+            if (set.mainTex != null && set.mainTex.getName().equals(name))
+                return set.mainTex;
+            if (set.emissiveTex != null && set.emissiveTex.getName().equals(name))
+                return set.emissiveTex;
+        }
+
+        return null;
     }
 
     @Override
