@@ -9,6 +9,7 @@ import org.moon.figura.lua.api.world.ItemStackAPI;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.mixin.LivingEntityAccessor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -174,6 +175,13 @@ public class LivingEntityAPI<T extends LivingEntity> extends EntityAPI<T> {
     public String getSwingArm() {
       checkEntity();
       return entity.swinging ? entity.swingingArm.name() : null;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("living_entity.get_swing_duration")
+    public int getSwingDuration() {
+      checkEntity();
+      return ((LivingEntityAccessor) entity).getSwingDuration();
     }
 
     @Override

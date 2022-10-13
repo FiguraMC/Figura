@@ -615,7 +615,7 @@
 
 
   "figura.docs.biome": "A proxy for a Minecraft biome. Instances are obtained through the WorldAPI. This proxy also contains a saved position for the Biome.",
-  "figura.docs.biome.get_name": "Returns the name of the biome, according to the registry.",
+  "figura.docs.biome.name": "The name of this biome, according to the registry.",
   "figura.docs.biome.get_pos": "Returns the saved position for this Biome's proxy. The saved position is used in Biome functions that require a position.",
   "figura.docs.biome.set_pos": "Sets the saved position for this Biome's proxy. The saved position is used in Biome functions that require a position.",
   "figura.docs.biome.get_tags": "Gets the worldgen related tags from this Biome.",
@@ -758,6 +758,7 @@
   "figura.docs.living_entity.get_swing_time": "Returns the number of ticks this entity has the arm swinging.",
   "figura.docs.living_entity.is_swinging_arm": "Returns true if the entity is currently swinging its arm.",
   "figura.docs.living_entity.get_swing_arm": "Returns \"OFF_HAND\" or \"MAIN_HAND\", based on the arm this entity is currently swinging.",
+  "figura.docs.living_entity.get_swing_duration": "Returns the number of ticks this entity will have while swinging its arms.",
 
   "figura.docs.player": "Acts as a proxy for a player entity in the Minecraft world. A global instance exists for the avatar's user, under the name \"player\".",
   "figura.docs.player.get_food": "Gets the current food level of the player, from 0 to 20.",
