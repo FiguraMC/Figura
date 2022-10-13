@@ -3,17 +3,17 @@ package org.moon.figura.lua.api;
 import com.mojang.blaze3d.platform.NativeImage;
 import org.luaj.vm2.LuaError;
 import org.moon.figura.avatar.Avatar;
-import org.moon.figura.model.rendering.texture.FiguraTexture;
-import org.moon.figura.model.rendering.texture.FiguraTextureSet;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.model.rendering.texture.FiguraTexture;
 import org.moon.figura.utils.ColorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -106,19 +106,7 @@ public class TextureAPI {
     @LuaMethodDoc("textures.get_textures")
     public List<FiguraTexture> getTextures() {
         check();
-        List<FiguraTexture> list = new ArrayList<>();
-
-        for (FiguraTextureSet set : owner.renderer.textureSets) {
-            FiguraTexture texture = set.mainTex;
-            if (texture != null)
-                list.add(texture);
-
-            texture = set.emissiveTex;
-            if (texture != null)
-                list.add(texture);
-        }
-
-        return list;
+        return new ArrayList<>(owner.renderer.textures.values());
     }
 
     @LuaWhitelist
@@ -129,11 +117,9 @@ public class TextureAPI {
         if (texture != null)
             return texture;
 
-        for (FiguraTextureSet set : owner.renderer.textureSets) {
-            if (set.mainTex != null && set.mainTex.getName().equals(name))
-                return set.mainTex;
-            if (set.emissiveTex != null && set.emissiveTex.getName().equals(name))
-                return set.emissiveTex;
+        for (Map.Entry<String, FiguraTexture> entry : owner.renderer.textures.entrySet()) {
+            if (entry.getKey().equals(name))
+                return entry.getValue();
         }
 
         return null;

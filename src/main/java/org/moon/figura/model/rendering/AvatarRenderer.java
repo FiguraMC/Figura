@@ -56,7 +56,8 @@ public abstract class AvatarRenderer {
 
     public PartFilterScheme currentFilterScheme;
     public final HashMap<ParentType, ConcurrentLinkedQueue<Pair<FiguraMat4, FiguraMat3>>> pivotCustomizations = new HashMap<>();
-    public final List<FiguraTextureSet> textureSets = new ArrayList<>();
+    protected final List<FiguraTextureSet> textureSets = new ArrayList<>();
+    public final HashMap<String, FiguraTexture> textures = new HashMap<>();
     public final HashMap<String, FiguraTexture> customTextures = new HashMap<>();
     protected static int shouldRenderPivots;
     public boolean allowHiddenTransforms = true;
@@ -67,22 +68,23 @@ public abstract class AvatarRenderer {
     public AvatarRenderer(Avatar avatar) {
         this.avatar = avatar;
 
-        //Textures
+        //textures
+
         CompoundTag nbt = avatar.nbt.getCompound("textures");
         CompoundTag src = nbt.getCompound("src");
+
+        //src files
+        for (String key : src.getAllKeys()) {
+            byte[] data = src.getByteArray(key);
+            if (data.length != 0)
+                textures.put(key, new FiguraTexture(avatar, key, data));
+        }
+
+        //data files
         ListTag texturesList = nbt.getList("data", Tag.TAG_COMPOUND);
         for (Tag t : texturesList) {
             CompoundTag tag = (CompoundTag) t;
-            String def = tag.getString("default");
-            String emi = tag.getString("emissive");
-
-            byte[] mainData = src.getByteArray(def);
-            Pair<String, byte[]> main = mainData.length == 0 ? null : Pair.of(def, mainData);
-
-            byte[] emissiveData = tag.getByteArray(emi);
-            Pair<String, byte[]> emissive = emissiveData.length == 0 ? null : Pair.of(emi + "_e", emissiveData);
-
-            textureSets.add(new FiguraTextureSet(avatar, main, emissive));
+            textureSets.add(new FiguraTextureSet(textures.get(tag.getString("default")), textures.get(tag.getString("emissive"))));
         }
 
         avatar.hasTexture = !texturesList.isEmpty();
