@@ -51,7 +51,7 @@ public class FiguraToast implements Toast {
         long timeDiff = startTime - this.startTime;
 
         UIHelper.setupTexture(type.texture);
-        UIHelper.blit(stack, 0, 0, 0f, (int) ((FiguraMod.ticks / 5f) % type.frames + 1) * 32f, width(), height(), type.width, 32 * type.frames);
+        UIHelper.blit(stack, 0, 0, 0f, (int) ((FiguraMod.ticks / 5f) % type.frames + 1) * height(), width(), height(), width(), height() * type.frames);
 
         Font font = component.getMinecraft().font;
         if (this.message.getString().isBlank()) {
@@ -59,8 +59,8 @@ public class FiguraToast implements Toast {
         } else if (this.title.getString().isBlank()) {
             renderText(this.message, font, stack, 0xFF);
         } else {
-            List<FormattedCharSequence> a = font.split(this.title, type.width - 32);
-            List<FormattedCharSequence> b = font.split(this.message, type.width - 32);
+            List<FormattedCharSequence> a = font.split(this.title, width() - 32);
+            List<FormattedCharSequence> b = font.split(this.message, width() - 32);
 
             if (a.size() == 1 && b.size() == 1) {
                 font.draw(stack, this.title, 31, 7, 0xFFFFFF);
@@ -76,9 +76,9 @@ public class FiguraToast implements Toast {
     }
 
     public void renderText(Component text, Font font, PoseStack stack, int alpha) {
-        List<FormattedCharSequence> list = font.split(text, type.width - 32);
+        List<FormattedCharSequence> list = font.split(text, width() - 32);
         if (list.size() == 1)
-            font.draw(stack, text, 31, 16 - font.lineHeight / 2, 0xFFFFFF + (alpha << 24));
+            font.draw(stack, text, 31, Math.round(16 - font.lineHeight / 2f), 0xFFFFFF + (alpha << 24));
         else
             for (int i = 0; i < list.size(); i++)
                 font.draw(stack, list.get(i), 31, (16 - font.lineHeight - 1) * (i + 1) + 4 * i, 0xFFFFFF + (alpha << 24));
@@ -87,6 +87,16 @@ public class FiguraToast implements Toast {
     @Override
     public Object getToken() {
         return this.type;
+    }
+
+    @Override
+    public int width() {
+        return type.width;
+    }
+
+    @Override
+    public int height() {
+        return 32;
     }
 
     //new toast
