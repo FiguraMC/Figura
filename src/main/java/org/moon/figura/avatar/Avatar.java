@@ -82,7 +82,7 @@ public class Avatar {
     //metadata
     public String name, entityName;
     public String authors;
-    public String version;
+    public Version version;
     public int fileSize;
     public String color;
     public boolean minify;
@@ -150,13 +150,13 @@ public class Avatar {
                 CompoundTag metadata = nbt.getCompound("metadata");
                 name = metadata.getString("name");
                 authors = metadata.getString("authors");
-                version = metadata.getString("ver");
+                version = new Version(metadata.getString("ver"));
                 if (metadata.contains("color"))
                     color = metadata.getString("color");
                 if (metadata.contains("minify"))
                     minify = metadata.getBoolean("minify");
                 fileSize = getFileSize();
-                versionStatus = checkVersion();
+                versionStatus = version.compareTo(Version.VERSION);
                 if (entityName.isBlank())
                     entityName = name;
             } catch (Exception e) {
@@ -681,14 +681,6 @@ public class Avatar {
             return baos.size();
         } catch (Exception e) {
             FiguraMod.LOGGER.warn("Failed to generate file size for model " + this.name, e);
-            return 0;
-        }
-    }
-
-    private int checkVersion() {
-        try {
-            return Version.of(version).compareTo(Version.VERSION);
-        } catch (Exception ignored) {
             return 0;
         }
     }

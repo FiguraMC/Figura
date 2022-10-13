@@ -74,7 +74,7 @@ public class AvatarAPI {
     @LuaWhitelist
     @LuaMethodDoc("avatar.get_version")
     public String getVersion() {
-        return avatar.version;
+        return avatar.version.toString();
     }
 
     @LuaWhitelist

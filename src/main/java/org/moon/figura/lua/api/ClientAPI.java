@@ -263,11 +263,15 @@ public class ClientAPI {
             ),
             value = "client.compare_versions")
     public static int compareVersions(@LuaNotNil String ver1, @LuaNotNil String ver2) {
-        try {
-            return Version.of(ver1).compareTo(Version.of(ver2));
-        } catch (Exception e) {
-            throw new LuaError(e.getMessage());
-        }
+        Version v1 = new Version(ver1);
+        Version v2 = new Version(ver2);
+
+        if (v1.invalid)
+            throw new LuaError("Cannot parse version " + "\"" + ver1 + "\"");
+        if (v2.invalid)
+            throw new LuaError("Cannot parse version " + "\"" + ver1 + "\"");
+
+        return v1.compareTo(v2);
     }
 
     @Override

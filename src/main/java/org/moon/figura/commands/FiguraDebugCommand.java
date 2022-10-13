@@ -136,7 +136,7 @@ public class FiguraDebugCommand {
         //avatar metadata
         JsonObject aMeta = new JsonObject();
 
-        aMeta.addProperty("version", avatar.version);
+        aMeta.addProperty("version", avatar.version.toString());
         aMeta.addProperty("versionStatus", avatar.versionStatus);
         aMeta.addProperty("color", avatar.color);
         aMeta.addProperty("authors", avatar.authors);

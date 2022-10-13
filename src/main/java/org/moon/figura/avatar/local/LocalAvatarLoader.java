@@ -166,7 +166,7 @@ public class LocalAvatarLoader {
                         children.add(subfolder);
                     }
                 } else if (file.toString().toLowerCase().endsWith(".bbmodel")) {
-                    BlockbenchModelParser.ModelData data = parser.parseModel(IOUtils.readFile(file), name.substring(0, name.length() - 8), folders);
+                    BlockbenchModelParser.ModelData data = parser.parseModel(file, IOUtils.readFile(file), name.substring(0, name.length() - 8), folders);
                     children.add(data.modelNbt());
                     textures.addAll(data.textureList());
                     animations.addAll(data.animationList());

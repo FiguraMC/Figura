@@ -60,12 +60,10 @@ public enum MessageHandler {
 
         int config = Config.UPDATE_CHANNEL.asInt();
         if (config != 0) {
-            try {
-                String key = config == 1 ? "latestRelease" : "latestPreRelease";
-                String version = json.get(key).getAsString();
-                if (Version.of(version).compareTo(Version.VERSION) > 0)
-                    FiguraToast.sendToast(FiguraText.of("toast.new_version"), version);
-            } catch (Exception ignored) {}
+            String key = config == 1 ? "latestRelease" : "latestPreRelease";
+            String version = json.get(key).getAsString();
+            if (new Version(version).compareTo(Version.VERSION) > 0)
+                FiguraToast.sendToast(FiguraText.of("toast.new_version"), version);
         }
     }),
     KEEPALIVE(json -> NetworkManager.sendMessage(NetworkManager.GSON.toJson(json))),

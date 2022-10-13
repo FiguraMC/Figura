@@ -35,15 +35,12 @@ public class AvatarMetadataParser {
         CompoundTag nbt = new CompoundTag();
 
         //version
-        String version;
-        try {
-            version = Version.of(metadata.version).toString();
-        } catch (Exception ignored) {
-            version = FiguraMod.VERSION;
-        }
+        Version version = new Version(metadata.version);
+        if (version.invalid)
+            version = Version.VERSION;
 
         nbt.putString("name", metadata.name == null || metadata.name.isBlank() ? filename : metadata.name);
-        nbt.putString("ver", version);
+        nbt.putString("ver", version.toString());
         if (metadata.color != null) nbt.putString("color", metadata.color);
         if (metadata.background != null) nbt.putString("bg", metadata.background);
 
