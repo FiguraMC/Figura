@@ -145,8 +145,9 @@ public class Avatar {
             return;
         }
 
-        tasks.thenRun(() -> { //metadata
+        tasks.thenRun(() -> {
             try {
+                //metadata
                 CompoundTag metadata = nbt.getCompound("metadata");
                 name = metadata.getString("name");
                 authors = metadata.getString("authors");
@@ -159,22 +160,20 @@ public class Avatar {
                 versionStatus = version.compareTo(Version.VERSION);
                 if (entityName.isBlank())
                     entityName = name;
-            } catch (Exception e) {
-                FiguraMod.LOGGER.error("", e);
-            }
-        }).thenRun(() -> { //animations and models
-            try {
+
+                //animations and models
                 loadAnimations();
                 renderer = new ImmediateAvatarRenderer(this);
-            } catch (Exception e) {
-                FiguraMod.LOGGER.error("", e);
-            }
-        }).thenRun(() -> { //sounds and script
-            try {
+
+                //sounds and script
                 loadCustomSounds();
                 createLuaRuntime();
             } catch (Exception e) {
                 FiguraMod.LOGGER.error("", e);
+                clean();
+                this.nbt = null;
+                this.renderer = null;
+                this.luaRuntime = null;
             }
 
             loaded = true;
