@@ -87,6 +87,8 @@ public enum Config {
         this.disabled = true;
     }},
     FIGURA_INVENTORY(true),
+    TOAST_TIME(5f, InputType.FLOAT),
+    TOAST_TITLE_TIME(2f, InputType.FLOAT),
 
     Paperdoll,
     HAS_PAPERDOLL(false),
