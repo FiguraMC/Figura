@@ -2,48 +2,57 @@ package org.moon.figura.utils;
 
 import org.moon.figura.FiguraMod;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class Version implements Comparable<Version> {
 
+    //slightly modified regex of semver
+    //difference only is that build metadata can be anything
+    private static final Pattern PATTERN = Pattern.compile("^(?<major>0|[1-9]\\d*)\\.(?<minor>0|[1-9]\\d*)\\.(?<patch>0|[1-9]\\d*)(?:-(?<pre>(?:0|[1-9]\\d*|\\d*[a-zA-Z-][\\da-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][\\da-zA-Z-]*))*))?(\\+(?<build>.*))*$");
     public static final Version VERSION = new Version(FiguraMod.VERSION);
 
+    private final String src;
+
     public final int major, minor, patch;
-    private final String pre, build;
+    public final String pre, build;
+    public final boolean invalid;
 
-    private Version(String version) throws IllegalArgumentException {
-        String build = "";
-        String pre = "";
+    public Version(String version) {
+        //temp vars
+        int major = 0, minor = 0, patch = 0;
+        String pre = null, build = null;
+        boolean invalid = true;
 
-        String[] buildSplit = version.split("\\+", 2);
-        if (buildSplit.length > 1)
-            build = buildSplit[1];
-
-        String[] preSplit = buildSplit[0].split("-", 2);
-        if (preSplit.length > 1)
-            pre = preSplit[1];
-
-        String[] ver = preSplit[0].split("\\.");
-
-        int len = ver.length;
-        if (len > 3 || len < 1)
-            throw new IllegalArgumentException("Cannot parse version " + "\"" + version + "\"");
-
+        //try parse version
         try {
-            this.major = Integer.parseInt(ver[0]);
-            this.minor = len > 1 ? Integer.parseInt(ver[1]) : 0;
-            this.patch = len > 2 ? Integer.parseInt(ver[2]) : 0;
-            this.pre = pre;
-            this.build = build;
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Cannot parse version " + "\"" + version + "\"");
-        }
-    }
+            Matcher matcher = PATTERN.matcher(version);
+            if (matcher.matches()) {
+                major = Integer.parseInt(matcher.group("major"));
+                minor = Integer.parseInt(matcher.group("minor"));
+                patch = Integer.parseInt(matcher.group("patch"));
+                pre = matcher.group("pre");
+                build = matcher.group("build");
+                invalid = false;
+            }
+        } catch (Exception ignored) {}
 
-    public static Version of(Object version) throws IllegalArgumentException {
-        return version instanceof Version v ? v : new Version(version.toString());
+        //store vars
+        this.src = version;
+
+        this.major = major;
+        this.minor = minor;
+        this.patch = patch;
+        this.pre = pre == null ? "" : pre;
+        this.build = build == null ? "" : build;
+        this.invalid = invalid;
     }
 
     @Override
     public int compareTo(Version o) {
+        if (this.invalid || o.invalid)
+            return 0;
+
         int ret;
 
         if (major != o.major)
@@ -93,6 +102,9 @@ public class Version implements Comparable<Version> {
 
     @Override
     public String toString() {
+        if (invalid)
+            return src;
+
         String ver = major + "." + minor + "." + patch;
         if (!pre.isBlank())
             ver += "-" + pre;

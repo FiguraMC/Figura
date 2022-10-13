@@ -4,7 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.avatar.Badges;
@@ -36,13 +36,14 @@ public enum MessageHandler {
     SYSTEM(json -> {
         if (FiguraMod.DEBUG_MODE || (json.has("force") && json.get("force").getAsBoolean())) {
             String message = json.get("message").getAsString();
-            FiguraMod.sendChatMessage(TextComponent.EMPTY.copy().append(new TextComponent("-- " + FiguraMod.MOD_NAME + " backend message --\n\n").withStyle(ColorUtils.Colors.SKYE_BLUE.style)).append(message));
+            FiguraMod.sendChatMessage(Component.empty().append(Component.literal("-- " + FiguraMod.MOD_NAME + " backend message --\n\n").withStyle(ColorUtils.Colors.SKYE_BLUE.style)).append(message));
         }
     }),
     CONNECTED(json -> {
         NetworkManager.backendStatus = 3;
+
         if (Config.CONNECTION_TOASTS.asBool())
-            FiguraToast.sendToast(new FiguraText("backend.connected"));
+            FiguraToast.sendToast(FiguraText.of("backend.connected"));
 
         JsonObject limits = json.get("limits").getAsJsonObject();
         WebsocketManager backend = NetworkManager.backend;
@@ -59,12 +60,10 @@ public enum MessageHandler {
 
         int config = Config.UPDATE_CHANNEL.asInt();
         if (config != 0) {
-            try {
-                String key = config == 1 ? "latestRelease" : "latestPreRelease";
-                String version = json.get(key).getAsString();
-                if (Version.of(version).compareTo(Version.VERSION) > 0)
-                    FiguraToast.sendToast(new FiguraText("toast.new_version"), version);
-            } catch (Exception ignored) {}
+            String key = config == 1 ? "latestRelease" : "latestPreRelease";
+            String version = json.get(key).getAsString();
+            if (new Version(version).compareTo(Version.VERSION) > 0)
+                FiguraToast.sendToast(FiguraText.of("toast.new_version"), version);
         }
     }),
     KEEPALIVE(json -> NetworkManager.sendMessage(NetworkManager.GSON.toJson(json))),
@@ -85,7 +84,7 @@ public enum MessageHandler {
         if (json.has("raw") && json.get("raw").getAsBoolean())
             FiguraToast.sendToast(TextUtils.tryParseJson(message), TextUtils.tryParseJson(message2), type);
         else
-            FiguraToast.sendToast(message.isBlank() ? "" : new FiguraText("backend." + message), message2.isBlank() ? "" : new FiguraText("backend." + message2), type);
+            FiguraToast.sendToast(message.isBlank() ? "" : FiguraText.of("backend." + message), message2.isBlank() ? "" : FiguraText.of("backend." + message2), type);
     }),
     AVATAR(json -> {
         json = json.get("avatar").getAsJsonObject();

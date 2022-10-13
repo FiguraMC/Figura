@@ -26,7 +26,7 @@ public class BlockbenchModelParser {
     private final HashMap<Integer, String> textureIdMap = new HashMap<>();
 
     //parser
-    public ModelData parseModel(String json, String modelName, String folders) {
+    public ModelData parseModel(File sourceFile, String json, String modelName, String folders) {
         //parse json -> object
         Gson gson = new GsonBuilder().create();
         BlockbenchModel model = gson.fromJson(json, BlockbenchModel.class);
@@ -43,7 +43,7 @@ public class BlockbenchModelParser {
         //we want to save the textures in a separated list
         //we also want to fix the UV mismatch from the resolution and the texture
         //emissive textures are not put into the texture map, so we need to fix parts texture ids
-        parseTextures(textureList, model.textures, model.resolution);
+        parseTextures(sourceFile, folders, textureList, model.textures, model.resolution);
 
         //parse elements into a map of UUID (String) -> NbtCompound (the element)
         //later when parsing the outliner, we fetch the elements from this map
@@ -69,7 +69,7 @@ public class BlockbenchModelParser {
 
     // -- internal functions -- //
 
-    private void parseTextures(List<CompoundTag> list, BlockbenchModel.Texture[] textures, BlockbenchModel.Resolution resolution) {
+    private void parseTextures(File sourceFile, String folders, List<CompoundTag> list, BlockbenchModel.Texture[] textures, BlockbenchModel.Resolution resolution) {
         if (textures == null)
             return;
 
@@ -83,32 +83,37 @@ public class BlockbenchModelParser {
 
         //read textures
         for (int i = 0; i < textures.length; i++) {
-            byte[] source;
-            try {
-                File f = new File(textures[i].path);
-                if (!f.exists()) throw new Exception("File do not exists!");
-                source = IOUtils.readFileBytes(f);
-
-                FiguraMod.debug("Loaded Texture \"{}\" from {}", textures[i].name, textures[i].path);
-            } catch (Exception ignored) {
-                source = Base64.getDecoder().decode(textures[i].source.substring("data:image/png;base64,".length()));
-            }
-
-            String renderType = textures[i].render_mode;
-
             //name
-            String name = textures[i].name;
+            String name = folders + textures[i].name;
             if (name.endsWith(".png")) {
                 name = name.substring(0, name.length() - 4);
             }
 
-            //emissive fallback
+            //render type
+            String renderType = textures[i].render_mode;
             if (name.endsWith("_e")) {
                 renderType = "emissive";
                 name = name.substring(0, name.length() - 2);
             }
             if (!renderType.equals("emissive"))
                 renderType = "default";
+
+            //parse the texture data
+            byte[] source;
+            try {
+                //check the file to load
+                File f = sourceFile.toPath().resolve(textures[i].relative_path).toFile();
+                if (!f.exists()) throw new Exception("File do not exists!");
+
+                //load texture
+                source = IOUtils.readFileBytes(f);
+
+                //feedback
+                FiguraMod.debug("Loaded Texture \"{}\" from {}", name, f);
+            } catch (Exception ignored) {
+                //otherwise, load from the source stored in the model
+                source = Base64.getDecoder().decode(textures[i].source.substring("data:image/png;base64,".length()));
+            }
 
             //add textures nbt
             if (texturesNbt.containsKey(name)) {
@@ -143,6 +148,7 @@ public class BlockbenchModelParser {
 
         for (Map.Entry<String, CompoundTag> entry : texturesNbt.entrySet())
             list.add(entry.getValue());
+
         textureOffset += list.size();
     }
 
