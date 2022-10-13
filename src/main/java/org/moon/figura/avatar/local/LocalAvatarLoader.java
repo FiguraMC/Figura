@@ -4,6 +4,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtIo;
+import net.minecraft.nbt.Tag;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.AvatarManager;
@@ -97,7 +98,7 @@ public class LocalAvatarLoader {
         loadSounds(path, nbt);
 
         //models
-        ListTag textures = new ListTag();
+        CompoundTag textures = new CompoundTag();
         ListTag animations = new ListTag();
         BlockbenchModelParser modelParser = new BlockbenchModelParser();
 
@@ -128,10 +129,11 @@ public class LocalAvatarLoader {
             CompoundTag scriptsNbt = new CompoundTag();
             String pathRegex = Pattern.quote(path + File.separator);
             for (File script : scripts) {
-                String pathStr = script.toPath().toString();
-                String name = pathStr.replaceFirst(pathRegex, "");
-                name = name.replaceAll("[/\\\\]", ".");
-                scriptsNbt.put(name.substring(0, name.length() - 4), LuaScriptParser.parseScript(name, IOUtils.readFile(script)));
+                String name = script.toPath().toString()
+                        .replaceFirst(pathRegex, "")
+                        .replaceAll("[/\\\\]", ".");
+                name = name.substring(0, name.length() - 4);
+                scriptsNbt.put(name, LuaScriptParser.parseScript(name, IOUtils.readFile(script)));
             }
             nbt.put("scripts", scriptsNbt);
         }
@@ -143,16 +145,17 @@ public class LocalAvatarLoader {
             CompoundTag soundsNbt = new CompoundTag();
             String pathRegex = Pattern.quote(path + File.separator);
             for (File sound : sounds) {
-                String pathStr = sound.toPath().toString();
-                String name = pathStr.replaceFirst(pathRegex, "");
-                name = name.replaceAll("[/\\\\]", ".");
-                soundsNbt.putByteArray(name.substring(0, name.length() - 4), IOUtils.readFileBytes(sound));
+                String name = sound.toPath().toString()
+                        .replaceFirst(pathRegex, "")
+                        .replaceAll("[/\\\\]", ".");
+                name = name.substring(0, name.length() - 4);
+                soundsNbt.putByteArray(name, IOUtils.readFileBytes(sound));
             }
             nbt.put("sounds", soundsNbt);
         }
     }
 
-    private static CompoundTag loadModels(Path path, BlockbenchModelParser parser, ListTag textures, ListTag animations, String folders) throws IOException {
+    private static CompoundTag loadModels(Path path, BlockbenchModelParser parser, CompoundTag textures, ListTag animations, String folders) throws IOException {
         CompoundTag result = new CompoundTag();
         File[] subFiles = path.toFile().listFiles(f -> !f.isHidden() && !f.getName().startsWith("."));
         ListTag children = new ListTag();
@@ -166,10 +169,21 @@ public class LocalAvatarLoader {
                         children.add(subfolder);
                     }
                 } else if (file.toString().toLowerCase().endsWith(".bbmodel")) {
-                    BlockbenchModelParser.ModelData data = parser.parseModel(file, IOUtils.readFile(file), name.substring(0, name.length() - 8), folders);
+                    BlockbenchModelParser.ModelData data = parser.parseModel(path, file, IOUtils.readFile(file), name.substring(0, name.length() - 8), folders);
                     children.add(data.modelNbt());
-                    textures.addAll(data.textureList());
                     animations.addAll(data.animationList());
+
+                    CompoundTag dataTag = data.textures();
+                    if (dataTag.isEmpty())
+                        continue;
+
+                    if (textures.isEmpty()) {
+                        textures.put("data", new ListTag());
+                        textures.put("src", new CompoundTag());
+                    }
+
+                    textures.getList("data", Tag.TAG_COMPOUND).addAll(dataTag.getList("data", Tag.TAG_COMPOUND));
+                    textures.getCompound("src").merge(dataTag.getCompound("src"));
                 }
             }
 

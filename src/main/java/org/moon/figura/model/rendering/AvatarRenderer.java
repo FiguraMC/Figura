@@ -68,19 +68,21 @@ public abstract class AvatarRenderer {
         this.avatar = avatar;
 
         //Textures
-        ListTag texturesList = avatar.nbt.getList("textures", Tag.TAG_COMPOUND);
-        for (int i = 0; i < texturesList.size(); i++) {
-            CompoundTag tag = texturesList.getCompound(i);
+        CompoundTag nbt = avatar.nbt.getCompound("textures");
+        CompoundTag src = nbt.getCompound("src");
+        ListTag texturesList = nbt.getList("data", Tag.TAG_COMPOUND);
+        for (Tag t : texturesList) {
+            CompoundTag tag = (CompoundTag) t;
+            String def = tag.getString("default");
+            String emi = tag.getString("emissive");
 
-            String name = tag.getString("name");
+            byte[] mainData = src.getByteArray(def);
+            Pair<String, byte[]> main = mainData.length == 0 ? null : Pair.of(def, mainData);
 
-            byte[] mainData = tag.getByteArray("default");
-            mainData = mainData.length == 0 ? null : mainData;
+            byte[] emissiveData = tag.getByteArray(emi);
+            Pair<String, byte[]> emissive = emissiveData.length == 0 ? null : Pair.of(emi + "_e", emissiveData);
 
-            byte[] emissiveData = tag.getByteArray("emissive");
-            emissiveData = emissiveData.length == 0 ? null : emissiveData;
-
-            textureSets.add(new FiguraTextureSet(avatar, name, mainData, emissiveData));
+            textureSets.add(new FiguraTextureSet(avatar, main, emissive));
         }
 
         avatar.hasTexture = !texturesList.isEmpty();

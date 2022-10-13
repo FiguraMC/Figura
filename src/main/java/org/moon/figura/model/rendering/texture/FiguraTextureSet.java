@@ -12,14 +12,11 @@ import org.moon.figura.utils.FiguraIdentifier;
 import java.util.UUID;
 
 public class FiguraTextureSet {
-
-    public final String name;
     public final FiguraTexture mainTex, emissiveTex;
 
-    public FiguraTextureSet(Avatar owner, String name, byte[] mainData, byte[] emissiveData) {
-        this.name = name;
-        mainTex = mainData == null ? null : new FiguraTexture(owner, name, mainData);
-        emissiveTex = emissiveData == null ? null : new FiguraTexture(owner, name, emissiveData);
+    public FiguraTextureSet(Avatar owner, Pair<String, byte[]> mainData, Pair<String, byte[]> emissiveData) {
+        mainTex = mainData == null ? null : new FiguraTexture(owner, mainData.getFirst(), mainData.getSecond());
+        emissiveTex = emissiveData == null ? null : new FiguraTexture(owner, emissiveData.getFirst(), emissiveData.getSecond());
     }
 
     public void clean() {

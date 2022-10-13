@@ -538,26 +538,16 @@ public class FiguraModelPart {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("model_part.get_primary_textures")
-    public List<FiguraTexture> getPrimaryTextures() {
+    @LuaMethodDoc("model_part.get_textures")
+    public List<FiguraTexture> getTextures() {
         List<FiguraTexture> list = new ArrayList<>();
 
         for (FiguraTextureSet set : textures) {
             FiguraTexture texture = set.mainTex;
             if (texture != null)
                 list.add(texture);
-        }
 
-        return list;
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc("model_part.get_secondary_textures")
-    public List<FiguraTexture> getSecondaryTextures() {
-        List<FiguraTexture> list = new ArrayList<>();
-
-        for (FiguraTextureSet set : textures) {
-            FiguraTexture texture = set.emissiveTex;
+            texture = set.emissiveTex;
             if (texture != null)
                 list.add(texture);
         }
