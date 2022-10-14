@@ -4,13 +4,13 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.ChatScreen;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.avatars.Avatar;
-import org.moon.figura.avatars.AvatarManager;
+import org.moon.figura.avatar.Avatar;
+import org.moon.figura.avatar.AvatarManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ChatScreen.class)
@@ -18,19 +18,13 @@ public class ChatScreenMixin {
 
     @Shadow protected EditBox input;
 
-    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/ChatScreen;handleChatInput(Ljava/lang/String;Z)Z"), method = "keyPressed")
-    private boolean keyPressed(ChatScreen instance, String text, boolean bl) {
+    @ModifyVariable(at = @At("HEAD"), method = "handleChatInput", argsOnly = true)
+    private String handleChatInput(String text) {
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
-        if (avatar != null && !text.isBlank()) {
-            String str = avatar.chatSendMessageEvent(text);
+        if (avatar != null && !text.isBlank())
+            text = avatar.chatSendMessageEvent(text);
 
-            if (str == null)
-                return true;
-
-            text = str;
-        }
-
-        return instance.handleChatInput(text, bl);
+        return text;
     }
 
     @Inject(at = @At("HEAD"), method = "render")

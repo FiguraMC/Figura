@@ -7,8 +7,9 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.avatars.model.ParentType;
-import org.moon.figura.avatars.model.rendering.texture.RenderTypes;
+import org.moon.figura.model.ParentType;
+import org.moon.figura.model.rendering.texture.RenderTypes;
+import org.moon.figura.config.Config;
 import org.moon.figura.utils.Version;
 
 import java.io.IOException;
@@ -20,7 +21,6 @@ import java.util.Map;
 public class AvatarMetadataParser {
 
     private static final Gson GSON = new GsonBuilder().create();
-    private static final String SEPARATOR_REGEX = "\\.";
 
     public static Metadata read(String json) {
         Metadata metadata = GSON.fromJson(json, Metadata.class);
@@ -35,15 +35,12 @@ public class AvatarMetadataParser {
         CompoundTag nbt = new CompoundTag();
 
         //version
-        String version;
-        try {
-            version = Version.of(metadata.version).toString();
-        } catch (Exception ignored) {
-            version = FiguraMod.VERSION;
-        }
+        Version version = new Version(metadata.version);
+        if (version.invalid)
+            version = Version.VERSION;
 
         nbt.putString("name", metadata.name == null || metadata.name.isBlank() ? filename : metadata.name);
-        nbt.putString("ver", version);
+        nbt.putString("ver", version.toString());
         if (metadata.color != null) nbt.putString("color", metadata.color);
         if (metadata.background != null) nbt.putString("bg", metadata.background);
 
@@ -65,10 +62,15 @@ public class AvatarMetadataParser {
 
         if (metadata.autoScripts != null) {
             ListTag autoScripts = new ListTag();
-            for (String scriptName : metadata.autoScripts)
-                autoScripts.add(StringTag.valueOf(scriptName.replace(".lua", "")));
+            for (String name : metadata.autoScripts) {
+                name = name.replaceAll(".lua$", "").replaceAll("[/\\\\]", ".");
+                autoScripts.add(StringTag.valueOf(name));
+            }
             nbt.put("autoScripts", autoScripts);
         }
+
+        if (Config.FORMAT_SCRIPT.asInt() == 2)
+            nbt.putBoolean("minify", true);
 
         return nbt;
     }
@@ -117,7 +119,7 @@ public class AvatarMetadataParser {
     }
 
     private static CompoundTag getTag(CompoundTag models, String path, boolean remove) throws IOException {
-        String[] keys = path.split(SEPARATOR_REGEX);
+        String[] keys = path.split("\\.");
         CompoundTag current = models;
 
         for (int i = 0; i < keys.length; i++) {

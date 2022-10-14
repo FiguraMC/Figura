@@ -3,7 +3,7 @@ package org.moon.figura.commands;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.avatars.AvatarManager;
+import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.utils.FiguraText;
 

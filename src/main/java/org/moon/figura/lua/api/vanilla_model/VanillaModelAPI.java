@@ -1,7 +1,7 @@
 package org.moon.figura.lua.api.vanilla_model;
 
-import org.moon.figura.avatars.model.ParentType;
-import org.moon.figura.avatars.model.VanillaModelProvider;
+import org.moon.figura.model.ParentType;
+import org.moon.figura.model.VanillaModelProvider;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;

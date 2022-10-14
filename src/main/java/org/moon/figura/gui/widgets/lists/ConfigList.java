@@ -6,6 +6,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.util.Mth;
 import org.moon.figura.config.Config;
+import org.moon.figura.gui.widgets.TextField;
 import org.moon.figura.gui.widgets.config.ConfigWidget;
 import org.moon.figura.gui.widgets.config.InputElement;
 import org.moon.figura.utils.ui.UIHelper;
@@ -60,8 +61,10 @@ public class ConfigList extends AbstractList {
         //fix mojang focusing for text fields
         for (ConfigWidget configWidget : configs) {
             for (GuiEventListener children : configWidget.children()) {
-                if (children instanceof InputElement inputElement)
-                    inputElement.getTextField().getField().setFocus(inputElement.getTextField().isMouseOver(mouseX, mouseY));
+                if (children instanceof InputElement inputElement) {
+                    TextField field = inputElement.getTextField();
+                    field.getField().setFocus(field.isEnabled() && field.isMouseOver(mouseX, mouseY));
+                }
             }
         }
 

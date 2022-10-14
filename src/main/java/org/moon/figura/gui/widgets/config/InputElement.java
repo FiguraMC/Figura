@@ -34,6 +34,7 @@ public class InputElement extends AbstractConfigElement {
         });
         updateTextFieldText(formatText(config.tempValue));
         textField.getField().moveCursorToStart();
+        textField.setEnabled(FiguraMod.DEBUG_MODE || !config.disabled);
 
         children.add(0, textField);
 
@@ -67,7 +68,7 @@ public class InputElement extends AbstractConfigElement {
         }
 
         //set text colour
-        textField.getField().setTextColor(color);
+        textField.setColor(color);
         textField.setBorderColour(0xFF000000 + color);
 
         //super render
@@ -76,7 +77,7 @@ public class InputElement extends AbstractConfigElement {
         //hex colour preview
         if (isHex) {
             //border
-            UIHelper.fillRounded(stack, x + width - 178, y, 20, 20, getTextField().getField().isFocused() ? getTextField().getBorderColour() : 0xFF404040);
+            UIHelper.fillRounded(stack, x + width - 178, y, 20, 20, getTextField().isFocused() ? getTextField().getBorderColour() : 0xFF404040);
             //inside
             UIHelper.fillRounded(stack, x + width - 177, y + 1, 18, 18, 0xFF000000 + (int) config.tempValue);
         }

@@ -15,12 +15,12 @@ import org.luaj.vm2.LuaUserdata;
 import org.luaj.vm2.LuaValue;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.animation.Animation;
-import org.moon.figura.avatars.model.FiguraModelPart;
-import org.moon.figura.avatars.model.rendering.texture.FiguraTexture;
-import org.moon.figura.avatars.model.rendertasks.BlockTask;
-import org.moon.figura.avatars.model.rendertasks.ItemTask;
-import org.moon.figura.avatars.model.rendertasks.RenderTask;
-import org.moon.figura.avatars.model.rendertasks.TextTask;
+import org.moon.figura.model.FiguraModelPart;
+import org.moon.figura.model.rendering.texture.FiguraTexture;
+import org.moon.figura.model.rendertasks.BlockTask;
+import org.moon.figura.model.rendertasks.ItemTask;
+import org.moon.figura.model.rendertasks.RenderTask;
+import org.moon.figura.model.rendertasks.TextTask;
 import org.moon.figura.lua.api.action_wheel.*;
 import org.moon.figura.lua.api.nameplate.EntityNameplateCustomization;
 import org.moon.figura.lua.api.nameplate.NameplateCustomizationGroup;
@@ -113,10 +113,7 @@ public class FiguraDocsManager {
         put("action_wheel", List.of(
                 ActionWheelAPI.class,
                 Page.class,
-                Action.class,
-                ClickAction.class,
-                ToggleAction.class,
-                ScrollAction.class
+                Action.class
         ));
 
         put("animations", List.of(

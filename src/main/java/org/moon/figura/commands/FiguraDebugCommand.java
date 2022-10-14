@@ -12,9 +12,9 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.animation.Animation;
-import org.moon.figura.avatars.Avatar;
-import org.moon.figura.avatars.AvatarManager;
-import org.moon.figura.avatars.providers.LocalAvatarFetcher;
+import org.moon.figura.avatar.Avatar;
+import org.moon.figura.avatar.AvatarManager;
+import org.moon.figura.avatar.local.LocalAvatarFetcher;
 import org.moon.figura.backend.NetworkManager;
 import org.moon.figura.config.Config;
 import org.moon.figura.trust.TrustContainer;
@@ -136,7 +136,7 @@ public class FiguraDebugCommand {
         //avatar metadata
         JsonObject aMeta = new JsonObject();
 
-        aMeta.addProperty("version", avatar.version);
+        aMeta.addProperty("version", avatar.version.toString());
         aMeta.addProperty("versionStatus", avatar.versionStatus);
         aMeta.addProperty("color", avatar.color);
         aMeta.addProperty("authors", avatar.authors);

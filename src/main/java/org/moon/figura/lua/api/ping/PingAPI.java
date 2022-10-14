@@ -1,7 +1,7 @@
 package org.moon.figura.lua.api.ping;
 
 import org.luaj.vm2.LuaFunction;
-import org.moon.figura.avatars.Avatar;
+import org.moon.figura.avatar.Avatar;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 

@@ -9,8 +9,8 @@ import org.luaj.vm2.LuaError;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
-import org.moon.figura.lua.docs.LuaFunctionOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
+import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
@@ -209,7 +209,7 @@ public class ClientAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = String.class,
                     argumentNames = "text"
             ),
@@ -221,7 +221,7 @@ public class ClientAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = String.class,
                     argumentNames = "text"
             ),
@@ -257,17 +257,21 @@ public class ClientAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = {String.class, String.class},
                     argumentNames = {"version1", "version2"}
             ),
             value = "client.compare_versions")
     public static int compareVersions(@LuaNotNil String ver1, @LuaNotNil String ver2) {
-        try {
-            return Version.of(ver1).compareTo(Version.of(ver2));
-        } catch (Exception e) {
-            throw new LuaError(e.getMessage());
-        }
+        Version v1 = new Version(ver1);
+        Version v2 = new Version(ver2);
+
+        if (v1.invalid)
+            throw new LuaError("Cannot parse version " + "\"" + ver1 + "\"");
+        if (v2.invalid)
+            throw new LuaError("Cannot parse version " + "\"" + ver1 + "\"");
+
+        return v1.compareTo(v2);
     }
 
     @Override

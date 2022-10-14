@@ -10,13 +10,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.avatars.Avatar;
-import org.moon.figura.avatars.AvatarManager;
+import org.moon.figura.avatar.Avatar;
+import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.config.Config;
 import org.moon.figura.lua.api.action_wheel.Action;
 import org.moon.figura.lua.api.action_wheel.Page;
-import org.moon.figura.lua.api.action_wheel.ScrollAction;
-import org.moon.figura.lua.api.action_wheel.ToggleAction;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FiguraText;
@@ -169,7 +167,7 @@ public class ActionWheel {
             UIHelper.blit(stack,
                     (int) Math.round(x), (int) Math.round(y),
                     8, 8,
-                    action instanceof ScrollAction ? 24f : action instanceof ToggleAction toggle ? toggle.isToggled() ? 16f : 8f : 0f, color == null ? 0f : 8f,
+                    action.scroll != null ? 24f : action.toggle != null ? action.isToggled() ? 16f : 8f : 0f, color == null ? 0f : 8f,
                     8, 8,
                     32, 16
             );

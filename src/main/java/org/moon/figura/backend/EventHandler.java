@@ -2,8 +2,8 @@ package org.moon.figura.backend;
 
 import com.google.gson.JsonObject;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.avatars.Avatar;
-import org.moon.figura.avatars.AvatarManager;
+import org.moon.figura.avatar.Avatar;
+import org.moon.figura.avatar.AvatarManager;
 
 import java.util.Base64;
 import java.util.UUID;
@@ -24,7 +24,7 @@ public enum EventHandler {
 
     }),
     PING((owner, json) -> {
-        Avatar avatar = AvatarManager.getAvatarForPlayer(owner);
+        Avatar avatar = AvatarManager.getLoadedAvatar(owner);
         if (avatar == null)
             return;
 

@@ -3,8 +3,8 @@ package org.moon.figura.mixin.gui;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.DebugScreenOverlay;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.avatars.Avatar;
-import org.moon.figura.avatars.AvatarManager;
+import org.moon.figura.avatar.Avatar;
+import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.backend.NetworkManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -37,11 +37,13 @@ public class DebugScreenOverlayMixin {
             lines.add(++i, String.format("Animations Complexity: %d", avatar.animationComplexity));
 
             //has script
-            if (avatar.luaRuntime != null) {
-                lines.add(++i, String.format("Init instructions: %d (W: %d E: %d)", avatar.init.getTotal(), avatar.init.pre, avatar.init.post));
-                lines.add(++i, String.format("Tick instructions: %d (W: %d E: %d)", avatar.tick.getTotal() + avatar.worldTick.getTotal(), avatar.worldTick.pre, avatar.tick.pre));
-                lines.add(++i, String.format("Render instructions: %d (W: %d E: %d PE: %d PW: %d)",
+            if (avatar.luaRuntime != null || avatar.scriptError) {
+                String color = (avatar.scriptError ? ChatFormatting.RED : ChatFormatting.WHITE).toString();
+                lines.add(++i, color + String.format("Init instructions: %d (W: %d E: %d)", avatar.init.getTotal(), avatar.init.pre, avatar.init.post) + ChatFormatting.RESET);
+                lines.add(++i, color + String.format("Tick instructions: %d (W: %d E: %d)", avatar.tick.getTotal() + avatar.worldTick.getTotal(), avatar.worldTick.pre, avatar.tick.pre)  + ChatFormatting.RESET);
+                lines.add(++i, color + String.format("Render instructions: %d (W: %d E: %d PE: %d PW: %d)",
                         avatar.render.getTotal() + avatar.worldRender.getTotal(), avatar.worldRender.pre, avatar.render.pre, avatar.render.post, avatar.worldRender.post)
+                        + ChatFormatting.RESET
                 );
             }
         }

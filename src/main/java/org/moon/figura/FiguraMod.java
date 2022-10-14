@@ -14,10 +14,10 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.players.GameProfileCache;
 import net.minecraft.world.entity.Entity;
-import org.moon.figura.avatars.Avatar;
-import org.moon.figura.avatars.AvatarManager;
-import org.moon.figura.avatars.providers.LocalAvatarFetcher;
-import org.moon.figura.avatars.providers.LocalAvatarLoader;
+import org.moon.figura.avatar.Avatar;
+import org.moon.figura.avatar.AvatarManager;
+import org.moon.figura.avatar.local.LocalAvatarFetcher;
+import org.moon.figura.avatar.local.LocalAvatarLoader;
 import org.moon.figura.backend.NetworkManager;
 import org.moon.figura.commands.FiguraCommands;
 import org.moon.figura.config.Config;
@@ -100,6 +100,12 @@ public class FiguraMod implements ClientModInitializer {
     }
 
     // -- Helper Functions -- //
+
+    //debug print
+    public static void debug(String str, Object... args) {
+        if (DEBUG_MODE) LOGGER.info(str, args);
+        else LOGGER.debug(str, args);
+    }
 
     //mod root directory
     public static Path getFiguraDirectory() {

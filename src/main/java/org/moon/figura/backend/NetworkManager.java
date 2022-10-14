@@ -20,8 +20,8 @@ import net.minecraft.network.protocol.handshake.ClientIntentionPacket;
 import net.minecraft.network.protocol.login.ClientboundGameProfilePacket;
 import net.minecraft.network.protocol.login.ServerboundHelloPacket;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.avatars.Avatar;
-import org.moon.figura.avatars.AvatarManager;
+import org.moon.figura.avatar.Avatar;
+import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.config.Config;
 
 import java.io.ByteArrayOutputStream;

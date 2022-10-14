@@ -8,7 +8,7 @@ import net.minecraft.network.chat.Style;
 import org.luaj.vm2.*;
 import org.luaj.vm2.lib.VarArgFunction;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.avatars.Avatar;
+import org.moon.figura.avatar.Avatar;
 import org.moon.figura.config.Config;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.TextUtils;
@@ -76,6 +76,11 @@ public class FiguraLuaPrinter {
 
         //get script line
         line: {
+            if (owner.minify) {
+                message += "\nscript:\n\tscript heavily minified! - cannot look for line numbers!";
+                break line;
+            }
+
             try {
                 String[] split = message.split(":", 2);
                 if (split.length <= 1 || owner.luaRuntime == null)
@@ -153,7 +158,7 @@ public class FiguraLuaPrinter {
             //prints the value, either on chat or console
             sendLuaMessage(text, runtime.owner.entityName);
 
-            return NIL;
+            return LuaValue.valueOf(text.getString());
         }
 
         @Override
@@ -172,8 +177,8 @@ public class FiguraLuaPrinter {
             for (int i = 0; i < args.narg(); i++)
                 text.append(TextUtils.tryParseJson(args.arg(i + 1).tojstring()));
 
-            sendLuaChatMessage(text);
-            return NIL;
+            sendLuaChatMessage(TextUtils.removeClickableObjects(text));
+            return LuaValue.valueOf(text.getString());
         }
 
         @Override
@@ -188,16 +193,19 @@ public class FiguraLuaPrinter {
             if (!Config.LOG_OTHERS.asBool() && !FiguraMod.isLocal(runtime.owner.owner))
                 return NIL;
 
+            boolean silent = false;
             MutableComponent text = Component.empty();
 
             if (args.narg() > 0) {
                 int depth = args.arg(2).isnumber() ? args.arg(2).checkint() : 1;
                 text.append(tableToText(runtime.typeManager, args.arg(1), depth, 1, true));
+                silent = args.arg(3).isboolean() && args.arg(3).checkboolean();
             }
 
-            sendLuaMessage(text, runtime.owner.entityName);
+            if (!silent)
+                sendLuaMessage(text, runtime.owner.entityName);
 
-            return NIL;
+            return LuaValue.valueOf(text.getString());
         }
 
         @Override

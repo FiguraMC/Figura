@@ -107,7 +107,7 @@ public abstract class AbstractPanelScreen extends Screen {
         //fix mojang focusing for text fields
         for (GuiEventListener listener : this.children()) {
             if (listener instanceof TextField field)
-                field.getField().setFocus(field.isMouseOver(mouseX, mouseY));
+                field.getField().setFocus(field.isEnabled() && field.isMouseOver(mouseX, mouseY));
         }
 
         return this.contextMenuClick(mouseX, mouseY, button) || super.mouseClicked(mouseX, mouseY, button);

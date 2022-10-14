@@ -65,6 +65,12 @@ public enum Config {
             FiguraLuaPrinter.updateDecimalFormatting();
         }
     },
+    FORMAT_SCRIPT(1, 3){{
+      String tooltip = "config.format_script.tooltip.";
+      this.tooltip = FiguraText.of(tooltip + "1")
+              .append("\n")
+              .append(FiguraText.of(tooltip + "2").withStyle(ChatFormatting.RED));
+    }},
 
     ActionWheel,
     ACTION_WHEEL_BUTTON("key.keyboard.b"),
@@ -77,8 +83,12 @@ public enum Config {
     POPUP_SCALE(1f, InputType.FLOAT),
     POPUP_MIN_SIZE(1f, InputType.FLOAT),
     POPUP_MAX_SIZE(6f, InputType.FLOAT),
-    AVATAR_HEADS(false),
+    AVATAR_PORTRAITS(false) {{
+        this.disabled = true;
+    }},
     FIGURA_INVENTORY(true),
+    TOAST_TIME(5f, InputType.FLOAT),
+    TOAST_TITLE_TIME(2f, InputType.FLOAT),
 
     Paperdoll,
     HAS_PAPERDOLL(false),
@@ -176,6 +186,7 @@ public enum Config {
     public List<Component> enumList;
     public ConfigKeyBind keyBind;
     public final InputType inputType;
+    public boolean disabled;
 
     //type constructors
     Config() {
@@ -312,7 +323,9 @@ public enum Config {
         public ConfigKeyBind(String translationKey, InputConstants.Key key, Config config) {
             super(translationKey, key.getType(), key.getValue(), FiguraMod.MOD_ID);
             this.config = config;
-            KeyBindingRegistryImpl.registerKeyBinding(this);
+
+            if (FiguraMod.DEBUG_MODE || !config.disabled)
+                KeyBindingRegistryImpl.registerKeyBinding(this);
         }
 
         @Override

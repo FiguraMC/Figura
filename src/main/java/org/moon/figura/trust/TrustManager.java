@@ -61,7 +61,7 @@ public class TrustManager {
                 GROUPS.put(new ResourceLocation("group", name), parent);
             }
 
-            FiguraMod.LOGGER.debug("Loaded trust presets from assets");
+            FiguraMod.debug("Loaded trust presets from assets");
         } catch (Exception e) {
             FiguraMod.LOGGER.error("Could not load presets from assets", e);
         }
@@ -144,7 +144,7 @@ public class TrustManager {
         if (DEFAULT_GROUPS.containsKey(id))
             return DEFAULT_GROUPS.get(id);
 
-        FiguraMod.LOGGER.debug("Created trust for: " + id.toString());
+        FiguraMod.debug("Created trust for: " + id.toString());
         return create(id);
     }
 

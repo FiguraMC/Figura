@@ -26,7 +26,7 @@ public class GroupElement extends AbstractTrustElement {
         stack.translate(x + width / 2f, y + height / 2f, 100);
         stack.scale(scale, scale, scale);
 
-        animate(mouseX, mouseY, delta);
+        animate(delta, this.isMouseOver(mouseX, mouseY) || this.isFocused());
 
         //fix x, y
         int x = -width / 2;

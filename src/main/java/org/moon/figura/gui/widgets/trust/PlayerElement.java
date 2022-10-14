@@ -10,10 +10,10 @@ import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.avatars.Avatar;
-import org.moon.figura.avatars.AvatarManager;
-import org.moon.figura.avatars.Badges;
-import org.moon.figura.avatars.providers.LocalAvatarLoader;
+import org.moon.figura.avatar.Avatar;
+import org.moon.figura.avatar.AvatarManager;
+import org.moon.figura.avatar.Badges;
+import org.moon.figura.avatar.local.LocalAvatarLoader;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.widgets.ContextMenu;
 import org.moon.figura.gui.widgets.Label;
@@ -135,7 +135,7 @@ public class PlayerElement extends AbstractTrustElement {
         stack.translate(tx, ty, 100);
         stack.scale(scale, scale, scale);
 
-        animate(mouseX, mouseY, delta);
+        animate(delta, (UIHelper.getContext() == this.context && this.context.isVisible()) || this.isMouseOver(mouseX, mouseY) || this.isFocused());
 
         //fix x, y, mouse
         int x = -width / 2;
@@ -163,7 +163,7 @@ public class PlayerElement extends AbstractTrustElement {
             if (custom != null && custom.getText() != null && avatar.trust.get(TrustContainer.Trust.NAMEPLATE_EDIT) == 1)
                 name = NameplateCustomization.applyCustomization(custom.getText());
 
-            head = !dragged && avatar.renderHeadOnHud(stack, x + 4, y + 4, Math.round(32 * scale), 64, true);
+            head = !dragged && avatar.renderPortrait(stack, x + 4, y + 4, Math.round(32 * scale), 64, true);
         }
 
         if (!head) {

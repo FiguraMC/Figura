@@ -8,6 +8,8 @@
   "client": [
     "BlockBehaviourAccessor",
     "ClientLevelInvoker",
+    "LivingEntityAccessor",
+    "LivingEntityMixin",
     "MinecraftMixin",
     "SkullBlockEntityAccessor",
 

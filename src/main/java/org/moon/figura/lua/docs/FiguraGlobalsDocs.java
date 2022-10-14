@@ -3,7 +3,7 @@ package org.moon.figura.lua.docs;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaUserdata;
-import org.moon.figura.avatars.model.FiguraModelPart;
+import org.moon.figura.model.FiguraModelPart;
 import org.moon.figura.lua.api.*;
 import org.moon.figura.lua.api.action_wheel.ActionWheelAPI;
 import org.moon.figura.lua.api.entity.EntityAPI;
@@ -79,7 +79,7 @@ public abstract class FiguraGlobalsDocs {
     public LuaFunction type;
 
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = String.class,
                     argumentNames = "scriptName"
             ),
@@ -89,12 +89,12 @@ public abstract class FiguraGlobalsDocs {
 
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload,
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload,
+                    @LuaMethodOverload(
                             argumentTypes = String.class,
                             argumentNames = "folder"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {String.class, Boolean.class},
                             argumentNames = {"folder", "subFolders"}
                     )
@@ -104,85 +104,113 @@ public abstract class FiguraGlobalsDocs {
     public static LuaTable listFiles(String folder, boolean subFolders) {return null;}
 
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = Object.class,
                     argumentNames = "arg"
             ),
             value = "globals.print"
     )
-    public static void print() {}
+    public static String print() {
+        return null;
+    }
 
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = Object.class,
                     argumentNames = "arg"
             ),
             value = "globals.log"
     )
-    public static void log() {}
+    public static String log() {
+        return null;
+    }
 
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = LuaTable.class,
                             argumentNames = "table"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = LuaUserdata.class,
                             argumentNames = "javaObject"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {LuaTable.class, Integer.class},
                             argumentNames = {"table", "maxDepth"}
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {LuaUserdata.class, Integer.class},
                             argumentNames = {"javaObject", "maxDepth"}
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {LuaTable.class, Integer.class, Boolean.class},
+                            argumentNames = {"table", "maxDepth", "silent"}
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {LuaUserdata.class, Integer.class, Boolean.class},
+                            argumentNames = {"javaObject", "maxDepth", "silent"}
                     )
             },
             value = "globals.print_table"
     )
-    public static void printTable() {}
+    public static String printTable() {
+        return null;
+    }
 
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = LuaTable.class,
                             argumentNames = "table"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = LuaUserdata.class,
                             argumentNames = "javaObject"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {LuaTable.class, Integer.class},
                             argumentNames = {"table", "maxDepth"}
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {LuaUserdata.class, Integer.class},
                             argumentNames = {"javaObject", "maxDepth"}
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {LuaTable.class, Integer.class, Boolean.class},
+                            argumentNames = {"table", "maxDepth", "silent"}
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {LuaUserdata.class, Integer.class, Boolean.class},
+                            argumentNames = {"javaObject", "maxDepth", "silent"}
                     )
             },
             value = "globals.log_table"
     )
-    public static void logTable() {}
+    public static String logTable() {
+        return null;
+    }
 
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = String.class,
                     argumentNames = "json"
             ),
             value = "globals.print_json"
     )
-    public static void printJson() {}
+    public static String printJson() {
+        return null;
+    }
 
     @LuaMethodDoc(
-            overloads = @LuaFunctionOverload(
+            overloads = @LuaMethodOverload(
                     argumentTypes = String.class,
                     argumentNames = "json"
             ),
             value = "globals.log_json"
     )
-    public static void logJson() {}
+    public static String logJson() {
+        return null;
+    }
 
 }

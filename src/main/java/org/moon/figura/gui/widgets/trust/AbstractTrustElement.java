@@ -4,11 +4,12 @@ import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
-import org.moon.figura.avatars.Avatar;
-import org.moon.figura.avatars.AvatarManager;
+import org.moon.figura.avatar.Avatar;
+import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.gui.widgets.lists.PlayerList;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
+import org.moon.figura.utils.ui.UIHelper;
 
 import java.util.ArrayList;
 
@@ -25,8 +26,8 @@ public class AbstractTrustElement extends AbstractButton implements Comparable<A
         this.trust = container;
     }
 
-    protected void animate(int mouseX, int mouseY, float delta) {
-        if (this.isMouseOver(mouseX, mouseY) || this.isFocused()) {
+    protected void animate(float delta, boolean anim) {
+        if (anim) {
             scale = (float) Mth.lerp(1 - Math.pow(0.2, delta), scale, 1.2f);
         } else {
             scale = (float) Mth.lerp(1 - Math.pow(0.3, delta), scale, 1f);
@@ -35,10 +36,9 @@ public class AbstractTrustElement extends AbstractButton implements Comparable<A
 
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
-        float dw = (width * scale - width) / 2f;
-        float dh = (height * scale - height) / 2f;
-        return parent.isInsideScissors(mouseX, mouseY) && active && visible &&
-                mouseX >= x - dw && mouseX < x + width + dw && mouseY >= y - dh && mouseY < y + height + dh;
+        int dw = (int) ((width * scale - width) / 2f);
+        int dh = (int) ((height * scale - height) / 2f);
+        return parent.isInsideScissors(mouseX, mouseY) && active && visible && UIHelper.isMouseOver(x - dw, y - dh, width + dw, height + dh, mouseX, mouseY);
     }
 
     @Override

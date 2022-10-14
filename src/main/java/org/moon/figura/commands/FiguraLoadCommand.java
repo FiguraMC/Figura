@@ -5,8 +5,8 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
-import org.moon.figura.avatars.AvatarManager;
-import org.moon.figura.avatars.providers.LocalAvatarFetcher;
+import org.moon.figura.avatar.AvatarManager;
+import org.moon.figura.avatar.local.LocalAvatarFetcher;
 import org.moon.figura.utils.FiguraText;
 
 import java.nio.file.Path;

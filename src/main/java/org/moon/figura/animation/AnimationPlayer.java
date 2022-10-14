@@ -1,7 +1,7 @@
 package org.moon.figura.animation;
 
 import net.minecraft.util.Mth;
-import org.moon.figura.avatars.model.FiguraModelPart;
+import org.moon.figura.model.FiguraModelPart;
 import org.moon.figura.math.vector.FiguraVec3;
 
 import java.util.List;
@@ -43,11 +43,12 @@ public class AnimationPlayer {
                 if (Float.isNaN(delta))
                     delta = 0;
 
-                FiguraVec3 transform = current.getInterpolation().generate(keyframes, currentIndex, nextIndex, anim.blend, delta);
-                channel.type().apply(part, transform, merge);
+                TransformType type = channel.type();
+                FiguraVec3 transform = current.getInterpolation().generate(keyframes, currentIndex, nextIndex, anim.blend, delta, type);
+                type.apply(part, transform, merge);
 
                 if (anim.override) {
-                    switch (channel.type()) {
+                    switch (type) {
                         case ROTATION -> part.animationOverride |= 1;
                         case POSITION -> part.animationOverride |= 2;
                         case SCALE -> part.animationOverride |= 4;

@@ -11,14 +11,13 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.Scoreboard;
-import org.moon.figura.avatars.Avatar;
-import org.moon.figura.avatars.AvatarManager;
-import org.moon.figura.avatars.Badges;
+import org.moon.figura.avatar.Avatar;
+import org.moon.figura.avatar.AvatarManager;
+import org.moon.figura.avatar.Badges;
 import org.moon.figura.config.Config;
 import org.moon.figura.lua.api.nameplate.NameplateCustomization;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.utils.TextUtils;
-import org.moon.figura.utils.ui.UIHelper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -79,7 +78,7 @@ public class PlayerTabOverlayMixin {
     private void drawPlayerFace(PoseStack matrices, int i, int j, int k, boolean bl, boolean bl2) {
         if (uuid != null) {
             Avatar avatar = AvatarManager.getAvatarForPlayer(uuid);
-            if (avatar != null && avatar.renderHeadOnHud(matrices, i, j, k, 16, false))
+            if (avatar != null && avatar.renderPortrait(matrices, i, j, k, 16, false))
                 return;
         }
 

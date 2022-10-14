@@ -7,9 +7,10 @@ import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.avatars.Avatar;
-import org.moon.figura.avatars.AvatarManager;
-import org.moon.figura.avatars.providers.LocalAvatarFetcher;
+import org.moon.figura.avatar.Avatar;
+import org.moon.figura.avatar.AvatarManager;
+import org.moon.figura.avatar.local.LocalAvatarFetcher;
+import org.moon.figura.avatar.local.LocalAvatarLoader;
 import org.moon.figura.backend.NetworkManager;
 import org.moon.figura.commands.FiguraLinkCommand;
 import org.moon.figura.config.Config;
@@ -65,6 +66,9 @@ public class WardrobeScreen extends AbstractPanelScreen {
         //upload
         addRenderableWidget(upload = new TexturedButton(buttX - 48, buttY, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/upload.png"), 72, 24, FiguraText.of("gui.wardrobe.upload.tooltip"), button -> {
             Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
+            try {
+                LocalAvatarLoader.loadAvatar(null);
+            } catch (Exception ignored) {}
             NetworkManager.uploadAvatar(avatar, null);
             AvatarList.selectedEntry = null;
         }));

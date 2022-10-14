@@ -3,8 +3,8 @@ package org.moon.figura.gui;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
-import org.moon.figura.avatars.Avatar;
-import org.moon.figura.avatars.AvatarManager;
+import org.moon.figura.avatar.Avatar;
+import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.config.Config;
 import org.moon.figura.utils.ui.UIHelper;
 

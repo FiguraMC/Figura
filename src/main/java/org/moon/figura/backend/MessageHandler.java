@@ -6,8 +6,8 @@ import com.google.gson.JsonParser;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.network.chat.Component;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.avatars.AvatarManager;
-import org.moon.figura.avatars.Badges;
+import org.moon.figura.avatar.AvatarManager;
+import org.moon.figura.avatar.Badges;
 import org.moon.figura.config.Config;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.utils.ColorUtils;
@@ -60,12 +60,10 @@ public enum MessageHandler {
 
         int config = Config.UPDATE_CHANNEL.asInt();
         if (config != 0) {
-            try {
-                String key = config == 1 ? "latestRelease" : "latestPreRelease";
-                String version = json.get(key).getAsString();
-                if (Version.of(version).compareTo(Version.VERSION) > 0)
-                    FiguraToast.sendToast(FiguraText.of("toast.new_version"), version);
-            } catch (Exception ignored) {}
+            String key = config == 1 ? "latestRelease" : "latestPreRelease";
+            String version = json.get(key).getAsString();
+            if (new Version(version).compareTo(Version.VERSION) > 0)
+                FiguraToast.sendToast(FiguraText.of("toast.new_version"), version);
         }
     }),
     KEEPALIVE(json -> NetworkManager.sendMessage(NetworkManager.GSON.toJson(json))),

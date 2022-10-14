@@ -109,7 +109,7 @@ public class ItemStackAPI {
     @LuaWhitelist
     @LuaMethodDoc("itemstack.get_use_action")
     public String getUseAction() {
-        return itemStack.getUseAnimation().toString();
+        return itemStack.getUseAnimation().name();
     }
 
     @LuaWhitelist

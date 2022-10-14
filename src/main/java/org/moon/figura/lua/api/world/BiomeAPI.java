@@ -6,8 +6,9 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.biome.Biome;
 import org.moon.figura.lua.LuaWhitelist;
-import org.moon.figura.lua.docs.LuaFunctionOverload;
+import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaMethodDoc;
+import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.ColorUtils;
@@ -27,8 +28,8 @@ public class BiomeAPI {
     private final Biome biome;
     private BlockPos pos;
 
-//    @LuaWhitelist
-//    @LuaFieldDoc(description = "biome.name")
+    @LuaWhitelist
+    @LuaFieldDoc("biome.name")
     public final String name;
 
     public BiomeAPI(Biome biome, BlockPos pos) {
@@ -50,11 +51,11 @@ public class BiomeAPI {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = FiguraVec3.class,
                             argumentNames = "pos"
                     ),
-                    @LuaFunctionOverload(
+                    @LuaMethodOverload(
                             argumentTypes = {Double.class, Double.class, Double.class},
                             argumentNames = {"x", "y", "z"}
                     )
@@ -152,9 +153,8 @@ public class BiomeAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("biome.get_name")
-    public String getName() {
-        return name;
+    public Object __index(String arg) {
+        return "name".equals(arg) ? name : null;
     }
 
     @Override
