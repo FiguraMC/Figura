@@ -153,6 +153,11 @@ public class BiomeAPI {
     }
 
     @LuaWhitelist
+    public boolean __eq(BiomeAPI other) {
+        return this.biome.equals(other.biome);
+    }
+
+    @LuaWhitelist
     public Object __index(String arg) {
         return "name".equals(arg) ? name : null;
     }
