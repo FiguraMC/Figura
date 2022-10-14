@@ -287,6 +287,11 @@ public class BlockStateAPI {
     }
 
     @LuaWhitelist
+    public boolean __eq(BlockStateAPI other) {
+        return this.blockState.equals(other.blockState);
+    }
+
+    @LuaWhitelist
     public Object __index(String arg) {
         if (arg == null) return null;
         return switch (arg) {

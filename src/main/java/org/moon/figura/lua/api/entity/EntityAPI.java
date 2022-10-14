@@ -402,7 +402,7 @@ public class EntityAPI<T extends Entity> {
             )
     )
     public boolean __eq(EntityAPI<?> rhs) {
-        return equals(rhs);
+        return this.entity.equals(rhs.entity);
     }
 
     @LuaWhitelist

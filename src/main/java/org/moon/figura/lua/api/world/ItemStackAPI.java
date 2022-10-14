@@ -180,6 +180,11 @@ public class ItemStackAPI {
     }
 
     @LuaWhitelist
+    public boolean __eq(ItemStackAPI other) {
+        return ItemStack.matches(this.itemStack, other.itemStack);
+    }
+
+    @LuaWhitelist
     public Object __index(String arg) {
         if (arg == null) return null;
         return switch (arg) {
