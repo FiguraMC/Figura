@@ -61,6 +61,8 @@ public class PlayerList extends AbstractList {
         //select self
         PlayerElement local = Minecraft.getInstance().player != null ? players.get(Minecraft.getInstance().player.getUUID()) : null;
         if (local != null) local.onPress();
+
+        scrollToSelected();
     }
 
     @Override
@@ -234,4 +236,24 @@ public class PlayerList extends AbstractList {
                 ret++;
         return Math.max(ret, 0);
     }
+
+    public void scrollToSelected() {
+        double y = 0;
+
+        //get height
+        totalHeight = 0;
+        for (AbstractTrustElement trustEntry : trustList) {
+            if (trustEntry instanceof PlayerElement && !trustEntry.isVisible())
+                continue;
+
+            if (trustEntry == selectedEntry)
+                y = totalHeight;
+            else
+                totalHeight += trustEntry.getHeight() + 8;
+        }
+
+        //set scroll
+        scrollBar.setScrollProgress(y / totalHeight);
+    }
+
 }
