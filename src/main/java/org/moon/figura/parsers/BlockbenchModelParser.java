@@ -123,11 +123,11 @@ public class BlockbenchModelParser {
                 path = path.substring(0, path.length() - 4);
 
                 //feedback
-                FiguraMod.debug("Loaded Texture \"{}\" from {}", name, f);
+                FiguraMod.debug("Loaded " + (renderType.equals("emissive") ? "Emissive" : "") + " Texture \"{}\" from {}", name, f);
             } catch (Exception ignored) {
                 //otherwise, load from the source stored in the model
                 source = Base64.getDecoder().decode(textures[i].source.substring("data:image/png;base64,".length()));
-                path = folders + modelName + "." + name;
+                path = folders + modelName + "." + name + (renderType.equals("emissive") ? "_e" : "");
             }
 
             //add source nbt

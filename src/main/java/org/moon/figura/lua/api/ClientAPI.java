@@ -4,6 +4,8 @@ import com.mojang.blaze3d.platform.Window;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.world.phys.Vec3;
 import org.luaj.vm2.LuaError;
 import org.moon.figura.FiguraMod;
@@ -17,6 +19,9 @@ import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.MathUtils;
 import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.Version;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -247,6 +252,34 @@ public class ClientAPI {
     @LuaMethodDoc("client.has_iris_shader")
     public static boolean hasIrisShader() {
         return hasIris && net.irisshaders.iris.api.v0.IrisApi.getInstance().isShaderPackInUse();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = String.class,
+                    argumentNames = "path"
+            ),
+            value = "client.has_resource"
+    )
+    public static boolean hasResource(@LuaNotNil String path) {
+        try {
+            ResourceLocation resource = new ResourceLocation(path);
+            return Minecraft.getInstance().getResourceManager().getResource(resource).isPresent();
+        } catch (Exception ignored) {
+            return false;
+        }
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("client.get_active_resource_packs")
+    public static List<String> getActiveResourcePacks() {
+        List<String> list = new ArrayList<>();
+
+        for (Pack pack : Minecraft.getInstance().getResourcePackRepository().getSelectedPacks())
+            list.add(pack.getTitle().getString());
+
+        return list;
     }
 
     @LuaWhitelist

@@ -42,10 +42,10 @@ public abstract class SkullBlockRendererMixin implements BlockEntityRenderer<Sku
         block = null;
 
         //event
-        localAvatar.skullRenderEvent(Minecraft.getInstance().getFrameTime(), localBlock == null ? null : FiguraVec3.fromBlockPos(localBlock.getBlockPos()));
+        boolean bool = localAvatar.skullRenderEvent(Minecraft.getInstance().getFrameTime(), localBlock == null ? null : FiguraVec3.fromBlockPos(localBlock.getBlockPos()));
 
         //render skull :3
-        if (localAvatar.skullRender(stack, bufferSource, light, direction, yaw))
+        if (bool || localAvatar.skullRender(stack, bufferSource, light, direction, yaw))
             ci.cancel();
     }
 
