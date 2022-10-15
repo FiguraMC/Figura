@@ -322,9 +322,11 @@ public class Avatar {
         run("POST_WORLD_RENDER", worldRender.post(), delta);
     }
 
-    public void skullRenderEvent(float delta, FiguraVec3 pos) {
+    public boolean skullRenderEvent(float delta, FiguraVec3 pos) {
+        Varargs result = null;
         if (renderer != null && renderer.allowSkullRendering)
-            run("SKULL_RENDER", render, delta, pos);
+            result = run("SKULL_RENDER", render, delta, pos);
+        return result != null && result.arg(1).isboolean() && result.arg(1).checkboolean();
     }
 
     public boolean useItemEvent(ItemStackAPI stack, String type, int particleCount) {

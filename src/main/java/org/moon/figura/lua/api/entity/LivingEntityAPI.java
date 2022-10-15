@@ -68,6 +68,13 @@ public class LivingEntityAPI<T extends LivingEntity> extends EntityAPI<T> {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("living_entity.get_active_item_time")
+    public int getActiveItemTime() {
+        checkEntity();
+        return entity.getTicksUsingItem();
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc("living_entity.get_health")
     public float getHealth() {
         checkEntity();

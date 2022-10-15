@@ -41,34 +41,36 @@ public class Badges {
 
         // -- mark -- //
 
-        Pride[] pride = Pride.values();
+        if (avatar.nbt != null) {
+            Pride[] pride = Pride.values();
 
-        //error
-        if (avatar.scriptError)
-            badges.append(System.ERROR.badge);
+            //error
+            if (avatar.scriptError)
+                badges.append(System.ERROR.badge);
 
-        //version
-        if (avatar.versionStatus > 0)
-            badges.append(System.WARNING.badge);
+            //version
+            if (avatar.versionStatus > 0)
+                badges.append(System.WARNING.badge);
 
-        //egg
-        if (FiguraMod.CHEESE_DAY && Config.EASTER_EGGS.asBool())
-            badges.append(System.CHEESE.badge);
+            //egg
+            if (FiguraMod.CHEESE_DAY && Config.EASTER_EGGS.asBool())
+                badges.append(System.CHEESE.badge);
 
-        //mark
-        else if (avatar.nbt != null) {
-            mark: {
-                //pride (mark skins)
-                BitSet prideSet = pair.getFirst();
-                for (int i = pride.length - 1; i >= 0; i--) {
-                    if (prideSet.get(i)) {
-                        badges.append(pride[i].badge);
-                        break mark;
+                //mark
+            else {
+                mark: {
+                    //pride (mark skins)
+                    BitSet prideSet = pair.getFirst();
+                    for (int i = pride.length - 1; i >= 0; i--) {
+                        if (prideSet.get(i)) {
+                            badges.append(pride[i].badge);
+                            break mark;
+                        }
                     }
-                }
 
-                //mark fallback
-                badges.append(System.DEFAULT.badge.copy().withStyle(Style.EMPTY.withColor(ColorUtils.userInputHex(avatar.color))));
+                    //mark fallback
+                    badges.append(System.DEFAULT.badge.copy().withStyle(Style.EMPTY.withColor(ColorUtils.userInputHex(avatar.color))));
+                }
             }
         }
 

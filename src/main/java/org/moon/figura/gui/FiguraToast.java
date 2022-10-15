@@ -59,12 +59,13 @@ public class FiguraToast implements Toast {
         } else if (this.title.getString().isBlank()) {
             renderText(this.message, font, stack, 0xFF);
         } else {
-            List<FormattedCharSequence> a = font.split(this.title, width() - 32);
-            List<FormattedCharSequence> b = font.split(this.message, width() - 32);
+            List<FormattedCharSequence> a = font.split(this.title, width() - type.spacing - 1);
+            List<FormattedCharSequence> b = font.split(this.message, width() - type.spacing - 1);
 
             if (a.size() == 1 && b.size() == 1) {
-                font.draw(stack, this.title, 31, 7, 0xFFFFFF);
-                font.draw(stack, this.message, 31, 18, 0xFFFFFF);
+                int y = Math.round(height() / 2f - font.lineHeight - 1);
+                font.draw(stack, this.title, type.spacing, y, 0xFFFFFF);
+                font.draw(stack, this.message, type.spacing, y * 2 + 4, 0xFFFFFF);
             } else if (timeDiff < titleTime) {
                 renderText(this.title, font, stack, Math.round(Math.min(Math.max((titleTime - timeDiff) / 300f, 0), 1) * 255));
             } else {
@@ -76,12 +77,14 @@ public class FiguraToast implements Toast {
     }
 
     public void renderText(Component text, Font font, PoseStack stack, int alpha) {
-        List<FormattedCharSequence> list = font.split(text, width() - 32);
+        List<FormattedCharSequence> list = font.split(text, width() - type.spacing - 1);
         if (list.size() == 1)
-            font.draw(stack, text, 31, Math.round(16 - font.lineHeight / 2f), 0xFFFFFF + (alpha << 24));
-        else
+            font.draw(stack, text, type.spacing, Math.round(height() / 2f - font.lineHeight / 2f), 0xFFFFFF + (alpha << 24));
+        else {
+            int y = Math.round(height() / 2f - font.lineHeight - 1);
             for (int i = 0; i < list.size(); i++)
-                font.draw(stack, list.get(i), 31, (16 - font.lineHeight - 1) * (i + 1) + 4 * i, 0xFFFFFF + (alpha << 24));
+                font.draw(stack, list.get(i), type.spacing, y * (i + 1) + 4 * i, 0xFFFFFF + (alpha << 24));
+        }
     }
 
     @Override
@@ -133,21 +136,22 @@ public class FiguraToast implements Toast {
     }
 
     public enum ToastType {
-        DEFAULT(new FiguraIdentifier("textures/gui/toast/default.png"), 4, 160, 0x55FFFF),
-        WARNING(new FiguraIdentifier("textures/gui/toast/warning.png"), 4, 160, 0xFFFF00),
-        ERROR(new FiguraIdentifier("textures/gui/toast/error.png"), 4, 160, 0xFF0000),
-        CHEESE(new FiguraIdentifier("textures/gui/toast/cheese.png"), 1, 160, ColorUtils.Colors.CHEESE.hex),
-        FRAN(new FiguraIdentifier("textures/gui/toast/fran.png"), 4, 160, ColorUtils.Colors.FRAN_PINK.hex);
+        DEFAULT(new FiguraIdentifier("textures/gui/toast/default.png"), 4, 160, 31, 0x55FFFF),
+        WARNING(new FiguraIdentifier("textures/gui/toast/warning.png"), 4, 160, 31, 0xFFFF00),
+        ERROR(new FiguraIdentifier("textures/gui/toast/error.png"), 4, 160, 31, 0xFF0000),
+        CHEESE(new FiguraIdentifier("textures/gui/toast/cheese.png"), 1, 160, 31, ColorUtils.Colors.CHEESE.hex),
+        FRAN(new FiguraIdentifier("textures/gui/toast/fran.png"), 4, 160, 31, ColorUtils.Colors.FRAN_PINK.hex);
 
         private final ResourceLocation texture;
         private final int frames;
         private final Style style;
-        private final int width;
+        private final int width, spacing;
 
-        ToastType(ResourceLocation texture, int frames, int width, int color) {
+        ToastType(ResourceLocation texture, int frames, int width, int spacing, int color) {
             this.texture = texture;
             this.frames = frames;
             this.width = width;
+            this.spacing = spacing;
             this.style = Style.EMPTY.withColor(color);
         }
     }
