@@ -110,4 +110,9 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
         //then compare names
         else return this.getName().getString().toLowerCase().compareTo(other.getName().getString().toLowerCase());
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj == this || obj instanceof AbstractAvatarWidget other && other.avatar != null && this.avatar != null && this.avatar.getPath().equals(other.avatar.getPath());
+    }
 }

@@ -27,8 +27,7 @@ public class AvatarWidget extends AbstractAvatarWidget {
                 super.renderButton(stack, mouseX, mouseY, delta);
 
                 //selected border
-                AvatarWidget sel = AvatarList.selectedEntry;
-                if (instance.avatar != null && sel != null && sel.avatar != null && sel.avatar.getPath().equals(instance.avatar.getPath()))
+                if (instance.equals(AvatarList.selectedEntry))
                     UIHelper.fillOutline(stack, x - 1, y - 1, width + 2, height + 2, 0xFFFFFFFF);
             }
 

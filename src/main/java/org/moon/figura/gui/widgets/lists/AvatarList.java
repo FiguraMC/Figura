@@ -75,6 +75,9 @@ public class AvatarList extends AbstractList {
 
         //initial load
         LocalAvatarFetcher.load();
+        loadContents();
+
+        scrollToSelected();
     }
 
     // -- Functions -- //
@@ -192,6 +195,22 @@ public class AvatarList extends AbstractList {
 
         //set new scroll percentage
         scrollBar.setScrollProgress(pastScroll / (totalHeight - height));
+    }
+
+    public void scrollToSelected() {
+        double y = 0;
+
+        //get height
+        totalHeight = 2;
+        for (AbstractAvatarWidget avatar : avatarList) {
+            if (avatar.equals(selectedEntry))
+                y = totalHeight;
+            else
+                totalHeight += avatar.height + 2;
+        }
+
+        //set scroll
+        scrollBar.setScrollProgress(y / totalHeight);
     }
 
     @Override
