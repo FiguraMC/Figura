@@ -139,7 +139,7 @@ public class FiguraTexture extends AbstractTexture implements Closeable {
 
 
     private FiguraVec4 parseColor(String method, Object r, Double g, Double b, Double a) {
-        return r instanceof FiguraVec3 vec3 ? vec3.augmented() : LuaUtils.parseVec4(method, r, g, b, a, 0, 0, 0, 1);
+        return LuaUtils.parseVec4(method, r, g, b, a, 0, 0, 0, 1);
     }
 
     @LuaWhitelist

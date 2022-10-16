@@ -17,6 +17,7 @@ import org.moon.figura.config.Config;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.PopupMenu;
 import org.moon.figura.gui.ActionWheel;
+import org.moon.figura.lua.api.particle.ParticleAPI;
 import org.moon.figura.lua.api.sound.SoundAPI;
 import org.moon.figura.utils.EntityUtils;
 import org.moon.figura.utils.FiguraText;
@@ -44,6 +45,7 @@ public abstract class MinecraftMixin {
             AvatarManager.panic = !AvatarManager.panic;
             FiguraToast.sendToast(new FiguraText(AvatarManager.panic ? "toast.panic_enabled" : "toast.panic_disabled"), FiguraToast.ToastType.WARNING);
             SoundAPI.getSoundEngine().figura$stopAllSounds();
+            ParticleAPI.getParticleEngine().figura$clearAllParticles();
             return;
         }
 

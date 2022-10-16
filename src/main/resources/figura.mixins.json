@@ -29,6 +29,9 @@
     "input.KeyMappingMixin",
     "input.MouseHandlerMixin",
 
+    "particle.ParticleAccessor",
+    "particle.ParticleEngineMixin",
+
     "render.CameraMixin",
     "render.EntityRenderDispatcherMixin",
     "render.GameRendererAccessor",

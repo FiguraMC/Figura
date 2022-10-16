@@ -1,6 +1,7 @@
 package org.moon.figura.lua;
 
 import org.moon.figura.animation.Animation;
+import org.moon.figura.lua.api.particle.LuaParticle;
 import org.moon.figura.model.FiguraModelPart;
 import org.moon.figura.model.rendering.texture.FiguraTexture;
 import org.moon.figura.model.rendertasks.BlockTask;
@@ -84,6 +85,7 @@ public class FiguraAPIManager {
         add(LuaSound.class);
 
         add(ParticleAPI.class);
+        add(LuaParticle.class);
 
         add(VanillaModelAPI.class);
         add(VanillaGroupPart.class);

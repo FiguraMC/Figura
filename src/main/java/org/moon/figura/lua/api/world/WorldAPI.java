@@ -19,6 +19,7 @@ import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.lua.ReadOnlyLuaTable;
 import org.moon.figura.lua.api.entity.EntityAPI;
 import org.moon.figura.lua.api.entity.PlayerAPI;
 import org.moon.figura.lua.docs.LuaMethodDoc;
@@ -326,7 +327,7 @@ public class WorldAPI {
         for (Player player : getCurrentWorld().players()) {
             Avatar avatar = AvatarManager.getAvatarForPlayer(player.getUUID());
             LuaTable tbl = avatar == null || avatar.luaRuntime == null ? new LuaTable() : avatar.luaRuntime.avatar_meta.storedStuff;
-            playerList.put(player.getName().getString(), tbl);
+            playerList.put(player.getName().getString(), new ReadOnlyLuaTable(tbl));
         }
         return playerList;
     }
