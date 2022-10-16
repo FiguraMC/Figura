@@ -23,6 +23,7 @@ public abstract class FiguraVector<T extends FiguraVector<T, M>, M extends Figur
     public abstract T divide(T other);
     public abstract T reduce(T other);
     public abstract T scale(double factor);
+    public abstract double[] unpack();
 
     @SuppressWarnings("unchecked")
     public T normalize() {

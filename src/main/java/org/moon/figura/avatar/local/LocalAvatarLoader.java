@@ -240,8 +240,7 @@ public class LocalAvatarLoader {
 
         //reload avatar
         if (reload) {
-            FiguraMod.debug("Local avatar files changed - Reloading!");
-            FiguraMod.debug(event.context().toString());
+            FiguraMod.debug("Detected file changes in the Avatar directory (" + event.context().toString() + "), reloading!");
             AvatarManager.loadLocalAvatar(lastLoadedPath);
         }
     }

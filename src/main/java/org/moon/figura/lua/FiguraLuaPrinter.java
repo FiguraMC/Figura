@@ -263,7 +263,7 @@ public class FiguraLuaPrinter {
 
                 try {
                     Object obj = field.get(data);
-                    text.append(getTableEntry(typeManager, spacing, LuaValue.valueOf(name), typeManager.javaToLua(obj), hasTooltip, depth, indent));
+                    text.append(getTableEntry(typeManager, spacing, LuaValue.valueOf(name), typeManager.javaToLua(obj).arg1(), hasTooltip, depth, indent));
                     fields.add(name);
                 } catch (Exception e) {
                     FiguraMod.LOGGER.error("", e);
