@@ -53,7 +53,7 @@ public class EntityNameplateCustomization extends NameplateCustomization {
             value = "nameplate_entity.set_pos"
     )
     public void setPos(Object x, Double y, Double z) {
-        this.position = x == null ? null : LuaUtils.parseVec3("setPosition", x, y, z);
+        this.position = x == null ? null : LuaUtils.parseVec3("setPos", x, y, z);
     }
 
     @LuaWhitelist

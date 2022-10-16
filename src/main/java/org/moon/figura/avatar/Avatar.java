@@ -29,6 +29,7 @@ import org.luaj.vm2.Varargs;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.animation.Animation;
 import org.moon.figura.animation.AnimationPlayer;
+import org.moon.figura.lua.api.particle.ParticleAPI;
 import org.moon.figura.model.ParentType;
 import org.moon.figura.model.PartCustomization;
 import org.moon.figura.model.rendering.AvatarRenderer;
@@ -666,6 +667,8 @@ public class Avatar {
         SoundAPI.getSoundEngine().figura$stopSound(owner, null);
         for (SoundBuffer value : customSounds.values())
             value.releaseAlBuffer();
+
+        ParticleAPI.getParticleEngine().figura$clearParticles(owner);
 
         events.clear();
     }

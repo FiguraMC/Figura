@@ -15,6 +15,7 @@ import org.luaj.vm2.LuaUserdata;
 import org.luaj.vm2.LuaValue;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.animation.Animation;
+import org.moon.figura.lua.api.particle.LuaParticle;
 import org.moon.figura.model.FiguraModelPart;
 import org.moon.figura.model.rendering.texture.FiguraTexture;
 import org.moon.figura.model.rendertasks.BlockTask;
@@ -193,7 +194,8 @@ public class FiguraDocsManager {
         ));
 
         put("particles", List.of(
-                ParticleAPI.class
+                ParticleAPI.class,
+                LuaParticle.class
         ));
 
         put("sounds", List.of(

@@ -999,8 +999,23 @@
   "figura.docs.nameplate_group.set_text": "Sets the text for all its children customizations.",
 
 
-  "figura.docs.particles": "A global API which is used for dealing with Minecraft's particles. Can currently only be used to summon a particle. Accessed using the name \"particles\".",
+  "figura.docs.particles": "A global API which is used for dealing with Minecraft's particles. Particles instances are created when indexing their id. Accessed using the name \"particles\".",
   "figura.docs.particles.add_particle": "Creates a particle with the given name at the specified position, with the given velocity. Some particles have special properties, like the \"dust\" particle. For these particles, the special properties can be put into the \"name\" parameter, the same way as it works for commands.",
+  "figura.docs.particles.remove_particles": "Removes all particles spawned from this avatar.",
+
+  "figura.docs.particle": "Represents a particle that can be spawned and modified. Obtained by indexing the ParticleAPI. Exists as an object-oriented alternative to particles:addParticle().",
+  "figura.docs.particle.spawn": "Spawns this particle with the current properties.",
+  "figura.docs.particle.remove": "Removes this particle from the world.",
+  "figura.docs.particle.is_alive": "Checks if this particle is not flagged for removal.",
+  "figura.docs.particle.get_lifetime": "Gets this particle current lifetime.",
+  "figura.docs.particle.pos": "Sets this particle position. The position is given in world coordinates. Returns this particle for method chaining.",
+  "figura.docs.particle.velocity": "Sets the velocity of this particle. The velocity is given in world coordinates. Returns this particle for method chaining.",
+  "figura.docs.particle.color": "Sets this particle color. Accepts and alpha value, but most particles do not supports it. Default rgba of 1. Returns this particle for method chaining.",
+  "figura.docs.particle.lifetime": "Sets this particle lifetime, which is how many ticks this particle should stay in the world. Returns this particle for method chaining.",
+  "figura.docs.particle.power": "Sets this particle power. Returns this particle for method chaining.",
+  "figura.docs.particle.scale": "Sets this particle scale. Returns this particle for method chaining.",
+  "figura.docs.particle.gravity": "Sets this particle gravity. Returns this particle for method chaining.",
+  "figura.docs.particle.physics": "Sets if this particle has physics. Returns this particle for method chaining.",
 
 
   "figura.docs.pings": "A global API dedicated to register and call pings.",
