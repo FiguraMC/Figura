@@ -7,7 +7,6 @@ import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.*;
 import org.moon.figura.lua.docs.LuaMetamethodDoc.LuaMetamethodOverload;
-import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.math.matrix.FiguraMat2;
 import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.MathUtils;
@@ -263,6 +262,13 @@ public class FiguraVec2 extends FiguraVector<FiguraVec2, FiguraMat2> {
         this.x *= factor;
         this.y *= factor;
         return this;
+    }
+
+    @Override
+    @LuaWhitelist
+    @LuaMethodDoc("vector_n.unpack")
+    public double[] unpack() {
+        return new double[]{x, y};
     }
 
     // -- utility methods -- //

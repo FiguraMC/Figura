@@ -151,6 +151,7 @@ public class AvatarManager {
             clearAvatar(id);
 
         localUploaded = true;
+        AvatarList.selectedEntry = null;
         FiguraMod.LOGGER.info("Cleared all avatars");
     }
 

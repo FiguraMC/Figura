@@ -1186,6 +1186,7 @@
   "figura.docs.vector_n.div": "Divides this vector by the given vector or values, and returns self for chaining.",
   "figura.docs.vector_n.reduce": "Reduces this vector modulo the given vector or values, and returns self for chaining.",
   "figura.docs.vector_n.scale": "Scales this vector by the given factor, and returns self for chaining.",
+  "figura.docs.vector_n.unpack": "Returns each of this vector values as argument.",
 
   "figura.docs.vector_n.transform": "Transforms this vector by the given matrix, and returns self for chaining.",
   "figura.docs.vector_n.length_squared": "Returns the length of this vector squared. Suitable when you only care about relative lengths, because it avoids a square root.",

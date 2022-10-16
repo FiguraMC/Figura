@@ -129,8 +129,8 @@ public class PingArg {
             case DOUBLE -> LuaValue.valueOf(dis.readDouble());
             case STRING -> LuaValue.valueOf(dis.readUTF());
             case TABLE -> readTable(dis, owner);
-            case VECTOR -> owner.luaRuntime.typeManager.javaToLua(readVec(dis));
-            case MATRIX -> owner.luaRuntime.typeManager.javaToLua(readMat(dis));
+            case VECTOR -> owner.luaRuntime.typeManager.javaToLua(readVec(dis)).arg1();
+            case MATRIX -> owner.luaRuntime.typeManager.javaToLua(readMat(dis)).arg1();
             default -> LuaValue.NIL;
         };
     }

@@ -7,10 +7,7 @@ import org.luaj.vm2.lib.VarArgFunction;
 import org.moon.figura.lua.docs.FiguraDocsManager;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.Parameter;
+import java.lang.reflect.*;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -194,7 +191,7 @@ public class LuaTypeManager {
                 }
 
                 //Convert the return value
-                return result instanceof Varargs v? v : javaToLua(result);
+                return result instanceof Varargs v ? v : javaToLua(result);
             }
 
             @Override
@@ -223,8 +220,8 @@ public class LuaTypeManager {
         LuaTable table = new LuaTable();
 
         for (Map.Entry<?, ?> entry : map.entrySet()) {
-            LuaValue key = javaToLua(entry.getKey());
-            LuaValue val = javaToLua(entry.getValue());
+            LuaValue key = javaToLua(entry.getKey()).arg1();
+            LuaValue val = javaToLua(entry.getValue()).arg1();
             table.set(key, val);
         }
 
@@ -235,19 +232,28 @@ public class LuaTypeManager {
         LuaTable table = new LuaTable();
 
         for (int i = 0; i < list.size(); i++)
-            table.set(i + 1, javaToLua(list.get(i)));
+            table.set(i + 1, javaToLua(list.get(i)).arg1());
 
         return table;
     }
 
-    public Object luaVarargToJava(Varargs args, int argIndex, Class<?> argumentType){
-        if(args.arg(argIndex).istable()){
+    private Varargs wrapArray(Object array) {
+        int len = Array.getLength(array);
+        LuaValue[] args = new LuaValue[len];
+
+        for (int i = 0; i < len; i++)
+            args[i] = javaToLua(Array.get(array, i)).arg1();
+
+        return LuaValue.varargsOf(args);
+    }
+
+    public Object luaVarargToJava(Varargs args, int argIndex, Class<?> argumentType) {
+        if (args.arg(argIndex).istable()) {
             return luaVarargToJava(args.checktable(argIndex).unpack(), 1, argumentType);
         } else {
-            var varg = new Object[args.narg() - argIndex + 1];
-            var start = argIndex;
-            while (argIndex <= args.narg()) {
-                varg[argIndex - start] = switch (argumentType.getName()) {
+            Object[] obj = new Object[args.narg() - argIndex + 1];
+            for (int start = argIndex; argIndex <= args.narg(); argIndex++) {
+                obj[argIndex - start] = switch (argumentType.getName()) {
                     case "[Ljava.lang.Number;", "[Ljava.lang.Double;", "[D" -> args.checkdouble(argIndex);
                     case "[Ljava.lang.String;" -> args.checkjstring(argIndex);
                     case "[Ljava.lang.Boolean;", "[B" -> args.toboolean(argIndex);
@@ -260,9 +266,8 @@ public class LuaTypeManager {
                     case "[Ljava.lang.Object;" -> luaToJava(args.arg(argIndex));
                     default -> args.checkuserdata(argIndex, argumentType);
                 };
-                argIndex += 1;
             }
-            return Arrays.copyOf(varg, varg.length, (Class<? extends Object[]>) argumentType);
+            return Arrays.copyOf(obj, obj.length, (Class<? extends Object[]>) argumentType);
         }
     }
 
@@ -290,7 +295,7 @@ public class LuaTypeManager {
             return null;
     }
 
-    public LuaValue javaToLua(Object val) {
+    public Varargs javaToLua(Object val) {
         if (val == null)
             return LuaValue.NIL;
         else if (val instanceof LuaValue l)
@@ -317,6 +322,8 @@ public class LuaTypeManager {
             return wrapMap(map);
         else if (val instanceof List<?> list)
             return wrapList(list);
+        else if (val.getClass().isArray())
+            return wrapArray(val);
         else
             return wrap(val);
     }
