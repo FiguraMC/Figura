@@ -69,6 +69,11 @@ public class LuaParticle {
     public LuaParticle pos(Object x, Double y, Double z) {
         FiguraVec3 vec = LuaUtils.parseVec3("pos", x, y, z);
         particle.setPos(vec.x, vec.y, vec.z);
+
+        ParticleAccessor p = (ParticleAccessor) particle;
+        p.setXo(vec.x);
+        p.setYo(vec.y);
+        p.setZo(vec.z);
         return this;
     }
 

@@ -18,6 +18,18 @@ public interface ParticleAccessor {
     void setHasPhysics(boolean physics);
 
     @Intrinsic
+    @Accessor
+    void setXo(double xo);
+
+    @Intrinsic
+    @Accessor
+    void setYo(double yo);
+
+    @Intrinsic
+    @Accessor
+    void setZo(double zo);
+
+    @Intrinsic
     @Invoker("setAlpha")
     void setParticleAlpha(float alpha);
 }
