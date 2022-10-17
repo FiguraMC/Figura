@@ -37,7 +37,7 @@ public abstract class ParticleEngineMixin implements ParticleEngineAccessor {
     @Override @Intrinsic
     public void figura$clearParticles(UUID owner) {
         for (Map.Entry<Particle, UUID> entry : particleMap.entrySet()) {
-            if (entry.getValue().equals(owner))
+            if (entry.getValue().equals(owner) && entry.getKey() != null)
                 entry.getKey().remove();
         }
     }
@@ -45,6 +45,7 @@ public abstract class ParticleEngineMixin implements ParticleEngineAccessor {
     @Override @Intrinsic
     public void figura$clearAllParticles() {
         for (Particle particle : particleMap.keySet())
-            particle.remove();
+            if (particle != null)
+                particle.remove();
     }
 }
