@@ -38,6 +38,7 @@ public class ParticleAPI {
         try {
             ParticleOptions options = ParticleArgument.readParticle(new StringReader(id));
             Particle p = getParticleEngine().figura$makeParticle(options, x, y, z, w, t, h);
+            if (p == null) throw new LuaError("Could not parse particle \"" + id + "\"");
             return new LuaParticle(p, owner);
         } catch (Exception e) {
             throw new LuaError(e.getMessage());
