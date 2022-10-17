@@ -547,7 +547,7 @@ public class Avatar {
     }
 
     public boolean renderPortrait(PoseStack stack, int x, int y, int screenSize, float modelScale, boolean scissors) {
-        if (!Config.AVATAR_PORTRAITS.asBool())
+        if (!Config.AVATAR_PORTRAITS.asBool() || renderer == null)
             return false;
 
         //matrices
