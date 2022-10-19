@@ -14,7 +14,7 @@ import net.minecraft.world.level.block.entity.SkullBlockEntity;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.math.vector.FiguraVec3;
-import org.moon.figura.trust.TrustContainer;
+import org.moon.figura.trust.Trust;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -32,7 +32,7 @@ public abstract class SkullBlockRendererMixin implements BlockEntityRenderer<Sku
 
     @Inject(at = @At("HEAD"), method = "renderSkull", cancellable = true)
     private static void renderSkull(Direction direction, float yaw, float animationProgress, PoseStack stack, MultiBufferSource bufferSource, int light, SkullModelBase model, RenderType renderLayer, CallbackInfo ci) {
-        if (avatar == null || avatar.trust.get(TrustContainer.Trust.CUSTOM_HEADS) == 0)
+        if (avatar == null || avatar.trust.get(Trust.CUSTOM_HEADS) == 0)
             return;
 
         Avatar localAvatar = avatar;
@@ -51,7 +51,7 @@ public abstract class SkullBlockRendererMixin implements BlockEntityRenderer<Sku
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/blockentity/SkullBlockRenderer;renderSkull(Lnet/minecraft/core/Direction;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/model/SkullModelBase;Lnet/minecraft/client/renderer/RenderType;)V"), method = "render(Lnet/minecraft/world/level/block/entity/SkullBlockEntity;FLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;II)V")
     public void render(SkullBlockEntity skullBlockEntity, float f, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, int j, CallbackInfo ci) {
-        if (avatar != null && avatar.trust.get(TrustContainer.Trust.CUSTOM_HEADS) == 1)
+        if (avatar != null && avatar.trust.get(Trust.CUSTOM_HEADS) == 1)
             block = skullBlockEntity;
     }
 

@@ -5,8 +5,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import org.moon.figura.FiguraMod;
@@ -18,18 +16,18 @@ import org.moon.figura.gui.widgets.lists.PlayerList;
 import org.moon.figura.gui.widgets.lists.TrustList;
 import org.moon.figura.gui.widgets.trust.AbstractTrustElement;
 import org.moon.figura.gui.widgets.trust.PlayerElement;
+import org.moon.figura.trust.Trust;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.ui.UIHelper;
 
-import java.util.ArrayList;
 import java.util.UUID;
 
 public class TrustScreen extends AbstractPanelScreen {
 
-    public static final Component TITLE = new FiguraText("gui.panels.title.trust");
+    public static final Component TITLE = FiguraText.of("gui.panels.title.trust");
 
     // -- widgets -- //
     private PlayerList playerList;
@@ -111,19 +109,19 @@ public class TrustScreen extends AbstractPanelScreen {
 
         //reload all
         int bottomButtonsWidth = (listWidth - 24) / 2 - 2;
-        addRenderableWidget(reloadAll = new TexturedButton(middle + 2, height - 24, bottomButtonsWidth, 20, new FiguraText("gui.trust.reload_all"), null, bx -> {
+        addRenderableWidget(reloadAll = new TexturedButton(middle + 2, height - 24, bottomButtonsWidth, 20, FiguraText.of("gui.trust.reload_all"), null, bx -> {
             AvatarManager.clearAllAvatars();
-            FiguraToast.sendToast(new FiguraText("toast.reload_all"));
+            FiguraToast.sendToast(FiguraText.of("toast.reload_all"));
         }));
 
         //back button
-        addRenderableWidget(back = new TexturedButton(middle + 6 + bottomButtonsWidth, height - 24, bottomButtonsWidth, 20, new FiguraText("gui.done"), null,
+        addRenderableWidget(back = new TexturedButton(middle + 6 + bottomButtonsWidth, height - 24, bottomButtonsWidth, 20, FiguraText.of("gui.done"), null,
                 bx -> this.minecraft.setScreen(parentScreen)
         ));
 
         //debug buttons
-        uuid = new TextField(middle + 2, back.y - 24, listWidth - 24, 20, new TextComponent("Name/UUID"), s -> yoink.active = !s.isBlank());
-        yoink = new TexturedButton(middle + listWidth - 18, back.y - 24, 20, 20, new TextComponent("yoink"), new TextComponent("Set the selected player's avatar"), button -> {
+        uuid = new TextField(middle + 2, back.y - 24, listWidth - 24, 20, Component.literal("Name/UUID"), s -> yoink.active = !s.isBlank());
+        yoink = new TexturedButton(middle + listWidth - 18, back.y - 24, 20, 20, Component.literal("yoink"), Component.literal("Set the selected player's avatar"), button -> {
             String text = uuid.getField().getValue();
             UUID id;
 
@@ -159,29 +157,30 @@ public class TrustScreen extends AbstractPanelScreen {
         }
 
         //expand button
-        addRenderableWidget(expandButton = new SwitchButton( middle + listWidth - 18, height - 24, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/expand_v.png"), 60, 40, new FiguraText("gui.trust.expand_trust.tooltip"), btn -> {
+        addRenderableWidget(expandButton = new SwitchButton( middle + listWidth - 18, height - 24, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/expand_v.png"), 60, 40, FiguraText.of("gui.trust.expand_trust.tooltip"), btn -> {
             boolean expanded = expandButton.isToggled();
 
             //hide widgets
             entityWidget.setVisible(!expanded);
             slider.visible = !expanded;
+            slider.active = !expanded;
             reloadAll.visible = !expanded;
             back.visible = !expanded;
             uuid.setVisible(!expanded);
             yoink.visible = !expanded;
 
             //update expand button
-            expandButton.setTooltip(expanded ? new FiguraText("gui.trust.minimize_trust.tooltip") : new FiguraText("gui.trust.expand_trust.tooltip"));
+            expandButton.setTooltip(expanded ? FiguraText.of("gui.trust.minimize_trust.tooltip") : FiguraText.of("gui.trust.expand_trust.tooltip"));
 
             //set reset button activeness
             resetButton.active = expanded;
         }));
 
         //reset all button
-        addRenderableWidget(resetButton = new TexturedButton(middle + 2, height, 60, 20, new FiguraText("gui.trust.reset"), null, btn -> {
+        addRenderableWidget(resetButton = new TexturedButton(middle + 2, height, 60, 20, FiguraText.of("gui.trust.reset"), null, btn -> {
             //clear trust
             TrustContainer trust = playerList.selectedEntry.getTrust();
-            trust.getSettings().clear();
+            trust.clear();
             updateTrustData(trust);
         }));
 
@@ -269,10 +268,9 @@ public class TrustScreen extends AbstractPanelScreen {
             return super.mouseReleased(mouseX, mouseY, button);
 
         TrustContainer trust = dragged.getTrust();
-        ArrayList<ResourceLocation> list = new ArrayList<>(TrustManager.GROUPS.keySet());
-        ResourceLocation id = list.get(Math.min(dragged.index, list.size() - (TrustManager.isLocal(trust) ? 1 : 2)));
+        Trust.Group group = Trust.Group.indexOf(Math.min(dragged.index, Trust.Group.values().length - (TrustManager.isLocal(trust) ? 1 : 2)));
 
-        trust.setParent(id);
+        trust.setParent(TrustManager.GROUPS.get(group));
         updateTrustData(trust);
 
         dragged.dragged = false;
@@ -285,22 +283,20 @@ public class TrustScreen extends AbstractPanelScreen {
         slider.setAction(null);
 
         //set slider active only for players
-        boolean group = TrustManager.GROUPS.containsValue(trust);
-        slider.active = !group;
-
-        ArrayList<ResourceLocation> groupList = new ArrayList<>(TrustManager.GROUPS.keySet());
+        slider.active = trust instanceof TrustContainer.PlayerContainer;
 
         //set step sizes
-        slider.setMax(TrustManager.isLocal(trust) ? groupList.size() : groupList.size() - 1);
+        int len = Trust.Group.values().length;
+        slider.setMax(TrustManager.isLocal(trust) ? len : len - 1);
 
         //set slider progress
-        slider.setScrollProgress(groupList.indexOf(group ? new ResourceLocation("group", trust.name) : trust.getParentID()) / (slider.getMax() - 1d));
+        slider.setScrollProgress(trust.getGroup().index / (slider.getMax() - 1d));
 
         //set new slider action
         slider.setAction(scroll -> {
             //set new trust parent
-            ResourceLocation newTrust = groupList.get(((SliderWidget) scroll).getIntValue());
-            trust.setParent(newTrust);
+            Trust.Group group = Trust.Group.indexOf(((SliderWidget) scroll).getIntValue());
+            trust.setParent(TrustManager.GROUPS.get(group));
 
             //and update the advanced trust
             trustList.updateList(trust);

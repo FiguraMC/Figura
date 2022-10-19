@@ -9,7 +9,6 @@ import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.animation.Animation;
 import org.moon.figura.avatar.Avatar;
@@ -17,6 +16,7 @@ import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.avatar.local.LocalAvatarFetcher;
 import org.moon.figura.backend.NetworkManager;
 import org.moon.figura.config.Config;
+import org.moon.figura.trust.Trust;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.FiguraText;
@@ -99,13 +99,13 @@ public class FiguraDebugCommand {
         //trust groups
         JsonObject trust = new JsonObject();
 
-        for (Map.Entry<ResourceLocation, TrustContainer> entry : TrustManager.GROUPS.entrySet()) {
+        for (TrustContainer.GroupContainer group : TrustManager.GROUPS.values()) {
             JsonObject t = new JsonObject();
 
-            for (Map.Entry<TrustContainer.Trust, Integer> entry1 : entry.getValue().getSettings().entrySet())
-                t.addProperty(entry1.getKey().toString(), entry1.getValue());
+            for (Map.Entry<Trust, Integer> entry1 : group.trustSettings.entrySet())
+                t.addProperty(entry1.getKey().name, entry1.getValue());
 
-            trust.add(entry.getKey().toString(), t);
+            trust.add(group.name, t);
         }
 
         root.add("trust", trust);
@@ -126,10 +126,10 @@ public class FiguraDebugCommand {
         //trust
         JsonObject aTrust = new JsonObject();
 
-        aTrust.addProperty("parentTrust", avatar.trust.getParentGroup().name);
+        aTrust.addProperty("parentTrust", avatar.trust.parent.name);
 
-        for (Map.Entry<TrustContainer.Trust, Integer> entry : avatar.trust.getSettings().entrySet())
-            aTrust.addProperty(entry.getKey().toString(), entry.getValue());
+        for (Map.Entry<Trust, Integer> entry : avatar.trust.trustSettings.entrySet())
+            aTrust.addProperty(entry.getKey().name, entry.getValue());
 
         a.add("trust", aTrust);
 

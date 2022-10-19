@@ -12,7 +12,7 @@ import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.ducks.GameRendererAccessor;
 import org.moon.figura.math.vector.FiguraVec3;
-import org.moon.figura.trust.TrustContainer;
+import org.moon.figura.trust.Trust;
 import org.moon.figura.utils.ui.UIHelper;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
@@ -39,7 +39,7 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
     @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setup(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/world/entity/Entity;ZZF)V", shift = At.Shift.BEFORE))
     private void onCameraRotation(float tickDelta, long limitTime, PoseStack matrix, CallbackInfo ci) {
         Avatar avatar = AvatarManager.getAvatar(this.minecraft.getCameraEntity() == null ? this.minecraft.player : this.minecraft.getCameraEntity());
-        if (avatar == null || avatar.luaRuntime == null || avatar.trust.get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 0)
+        if (avatar == null || avatar.luaRuntime == null || avatar.trust.get(Trust.VANILLA_MODEL_EDIT) == 0)
             return;
 
         float z = 0f;
@@ -59,7 +59,7 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
     private void render(float tickDelta, long startTime, boolean tick, CallbackInfo ci) {
         Entity entity = this.minecraft.getCameraEntity();
         Avatar avatar = AvatarManager.getAvatar(entity);
-        if (avatar == null || avatar.luaRuntime == null || avatar.trust.get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 0) {
+        if (avatar == null || avatar.luaRuntime == null || avatar.trust.get(Trust.VANILLA_MODEL_EDIT) == 0) {
             if (avatarPostShader) {
                 avatarPostShader = false;
                 this.checkEntityPostEffect(entity);

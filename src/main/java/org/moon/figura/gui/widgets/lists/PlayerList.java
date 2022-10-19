@@ -94,7 +94,7 @@ public class PlayerList extends AbstractList {
         boolean hidden = false;
 
         for (AbstractTrustElement trust : trustList) {
-            if (hidden || !trust.isVisible()) {
+            if ((hidden || !trust.isVisible()) && (trust instanceof PlayerElement p && !p.dragged)) {
                 trust.visible = false;
                 continue;
             }

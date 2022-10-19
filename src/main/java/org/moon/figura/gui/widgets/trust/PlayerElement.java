@@ -19,6 +19,7 @@ import org.moon.figura.gui.widgets.ContextMenu;
 import org.moon.figura.gui.widgets.Label;
 import org.moon.figura.gui.widgets.lists.PlayerList;
 import org.moon.figura.lua.api.nameplate.NameplateCustomization;
+import org.moon.figura.trust.Trust;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.FiguraIdentifier;
@@ -80,12 +81,11 @@ public class PlayerElement extends AbstractTrustElement {
 
         //trust
         ContextMenu trustContext = new ContextMenu();
-        ArrayList<ResourceLocation> groupList = new ArrayList<>(TrustManager.GROUPS.keySet());
-        for (int i = 0; i < (TrustManager.isLocal(trust) ? groupList.size() : groupList.size() - 1); i++) {
-            ResourceLocation parentID = groupList.get(i);
-            TrustContainer container = TrustManager.get(parentID);
+        int size = Trust.Group.values().length;
+        for (int i = 0; i < (TrustManager.isLocal(trust) ? size : size - 1); i++) {
+            TrustContainer.GroupContainer container = TrustManager.GROUPS.get(Trust.Group.indexOf(i));
             trustContext.addAction(container.getGroupName(), button -> {
-                trust.setParent(parentID);
+                trust.setParent(container);
                 if (parent.selectedEntry == this)
                     parent.parent.updateTrustData(trust);
             });
@@ -146,7 +146,7 @@ public class PlayerElement extends AbstractTrustElement {
         //selected overlay
         if (this.parent.selectedEntry == this) {
             ArrayList<TrustContainer> list = new ArrayList<>(TrustManager.GROUPS.values());
-            int color = (dragged ? list.get(Math.min(index, list.size() - (TrustManager.isLocal(trust) ? 1 : 2))) : trust).getGroupColor();
+            int color = (dragged ? list.get(Math.min(index, list.size() - (TrustManager.isLocal(trust) ? 1 : 2))) : trust).getColor();
             UIHelper.fillRounded(stack, x - 1, y - 1, width + 2, height + 2, color + (0xFF << 24));
         }
 
@@ -160,7 +160,7 @@ public class PlayerElement extends AbstractTrustElement {
         Avatar avatar = AvatarManager.getAvatarForPlayer(owner);
         if (avatar != null) {
             NameplateCustomization custom = avatar.luaRuntime == null ? null : avatar.luaRuntime.nameplate.LIST;
-            if (custom != null && custom.getText() != null && avatar.trust.get(TrustContainer.Trust.NAMEPLATE_EDIT) == 1)
+            if (custom != null && custom.getText() != null && avatar.trust.get(Trust.NAMEPLATE_EDIT) == 1)
                 name = NameplateCustomization.applyCustomization(custom.getText());
 
             head = !dragged && avatar.renderPortrait(stack, x + 4, y + 4, Math.round(32 * scale), 64, true);
@@ -207,7 +207,7 @@ public class PlayerElement extends AbstractTrustElement {
 
         //trust
         int textY = y + height - font.lineHeight - 4;
-        drawString(stack, font, trust.getGroupName(), x + 40, textY, 0xFFFFFF);
+        drawString(stack, font, trust.getGroupName().append(trust.hasChanges() ? "*" : ""), x + 40, textY, 0xFFFFFF);
 
         //disconnected
         if (disconnected)

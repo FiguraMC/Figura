@@ -15,7 +15,7 @@ import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
-import org.moon.figura.trust.TrustContainer;
+import org.moon.figura.trust.Trust;
 import org.moon.figura.utils.LuaUtils;
 
 @LuaWhitelist
@@ -86,10 +86,10 @@ public class LuaSound {
             throw new LuaError("Illegal argument to playSound(): " + x);
         }
 
-        volume *= (owner.trust.get(TrustContainer.Trust.VOLUME) / 100f);
+        volume *= (owner.trust.get(Trust.VOLUME) / 100f);
 
         SoundBuffer buffer = owner.customSounds.get(id);
-        if (buffer != null && owner.trust.get(TrustContainer.Trust.CUSTOM_SOUNDS) == 1) {
+        if (buffer != null && owner.trust.get(Trust.CUSTOM_SOUNDS) == 1) {
             SoundAPI.getSoundEngine().figura$playCustomSound(
                     owner.owner,
                     id,

@@ -17,7 +17,7 @@ public class GroupElement extends AbstractTrustElement {
 
     public GroupElement(TrustContainer container, PlayerList parent) {
         super(20, container, parent);
-        this.enabled = container.visible;
+        this.enabled = container.isVisible();
     }
 
     @Override
@@ -42,7 +42,7 @@ public class GroupElement extends AbstractTrustElement {
         blit(stack, x, y, width, height, 0f, enabled ? 20f : 0f, 174, 20, 174, 40);
 
         //name
-        Component text = trust.getGroupName();
+        Component text = trust.getGroupName().append(trust.hasChanges() ? "*" : "");
         Font font = Minecraft.getInstance().font;
         UIHelper.renderOutlineText(stack, font, text, x + width / 2 - font.width(text) / 2, y + height / 2 - font.lineHeight / 2, 0xFFFFFF, 0);
 
@@ -58,7 +58,7 @@ public class GroupElement extends AbstractTrustElement {
     public void onPress() {
         if (parent.selectedEntry == this) {
             enabled = !enabled;
-            trust.visible = enabled;
+            trust.setVisible(enabled);
 
             parent.updateScroll();
         }

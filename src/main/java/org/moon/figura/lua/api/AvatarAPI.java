@@ -9,7 +9,7 @@ import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
-import org.moon.figura.trust.TrustContainer;
+import org.moon.figura.trust.Trust;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.LuaUtils;
 
@@ -123,7 +123,7 @@ public class AvatarAPI {
     @LuaWhitelist
     @LuaMethodDoc("avatar.get_max_init_count")
     public int getMaxInitCount() {
-        return avatar.trust.get(TrustContainer.Trust.INIT_INST);
+        return avatar.trust.get(Trust.INIT_INST);
     }
 
     @LuaWhitelist
@@ -135,7 +135,7 @@ public class AvatarAPI {
     @LuaWhitelist
     @LuaMethodDoc("avatar.get_max_tick_count")
     public int getMaxTickCount() {
-        return avatar.trust.get(TrustContainer.Trust.TICK_INST);
+        return avatar.trust.get(Trust.TICK_INST);
     }
 
     @LuaWhitelist
@@ -147,7 +147,7 @@ public class AvatarAPI {
     @LuaWhitelist
     @LuaMethodDoc("avatar.get_max_render_count")
     public int getMaxRenderCount() {
-        return avatar.trust.get(TrustContainer.Trust.RENDER_INST);
+        return avatar.trust.get(Trust.RENDER_INST);
     }
 
     @LuaWhitelist
@@ -159,7 +159,7 @@ public class AvatarAPI {
     @LuaWhitelist
     @LuaMethodDoc("avatar.get_max_world_tick_count")
     public int getMaxWorldTickCount() {
-        return avatar.trust.get(TrustContainer.Trust.WORLD_TICK_INST);
+        return avatar.trust.get(Trust.WORLD_TICK_INST);
     }
 
     @LuaWhitelist
@@ -171,7 +171,7 @@ public class AvatarAPI {
     @LuaWhitelist
     @LuaMethodDoc("avatar.get_max_world_render_count")
     public int getMaxWorldRenderCount() {
-        return avatar.trust.get(TrustContainer.Trust.WORLD_RENDER_INST);
+        return avatar.trust.get(Trust.WORLD_RENDER_INST);
     }
 
     @LuaWhitelist
@@ -183,7 +183,7 @@ public class AvatarAPI {
     @LuaWhitelist
     @LuaMethodDoc("avatar.get_max_complexity")
     public int getMaxComplexity() {
-        return avatar.trust.get(TrustContainer.Trust.COMPLEXITY);
+        return avatar.trust.get(Trust.COMPLEXITY);
     }
 
     @LuaWhitelist
@@ -195,7 +195,7 @@ public class AvatarAPI {
     @LuaWhitelist
     @LuaMethodDoc("avatar.get_max_particles")
     public int getMaxParticles() {
-        return avatar.trust.get(TrustContainer.Trust.PARTICLES);
+        return avatar.trust.get(Trust.PARTICLES);
     }
 
     @LuaWhitelist
@@ -207,13 +207,13 @@ public class AvatarAPI {
     @LuaWhitelist
     @LuaMethodDoc("avatar.get_max_sounds")
     public int getMaxSounds() {
-        return avatar.trust.get(TrustContainer.Trust.SOUNDS);
+        return avatar.trust.get(Trust.SOUNDS);
     }
 
     @LuaWhitelist
     @LuaMethodDoc("avatar.get_volume")
     public int getVolume() {
-        return avatar.trust.get(TrustContainer.Trust.VOLUME);
+        return avatar.trust.get(Trust.VOLUME);
     }
 
     @LuaWhitelist
@@ -225,34 +225,34 @@ public class AvatarAPI {
     @LuaWhitelist
     @LuaMethodDoc("avatar.get_max_animation_complexity")
     public int getMaxAnimationComplexity() {
-        return avatar.trust.get(TrustContainer.Trust.BB_ANIMATIONS);
+        return avatar.trust.get(Trust.BB_ANIMATIONS);
     }
 
     @LuaWhitelist
     @LuaMethodDoc("avatar.can_edit_vanilla_model")
     public boolean canEditVanillaModel() {
-        TrustContainer.Trust trust = TrustContainer.Trust.VANILLA_MODEL_EDIT;
+        Trust trust = Trust.VANILLA_MODEL_EDIT;
         return trust.asBoolean(avatar.trust.get(trust));
     }
 
     @LuaWhitelist
     @LuaMethodDoc("avatar.can_edit_nameplate")
     public boolean canEditNameplate() {
-        TrustContainer.Trust trust = TrustContainer.Trust.NAMEPLATE_EDIT;
+        Trust trust = Trust.NAMEPLATE_EDIT;
         return trust.asBoolean(avatar.trust.get(trust));
     }
 
     @LuaWhitelist
     @LuaMethodDoc("avatar.can_render_offscreen")
     public boolean canRenderOffscreen() {
-        TrustContainer.Trust trust = TrustContainer.Trust.OFFSCREEN_RENDERING;
+        Trust trust = Trust.OFFSCREEN_RENDERING;
         return trust.asBoolean(avatar.trust.get(trust));
     }
 
     @LuaWhitelist
     @LuaMethodDoc("avatar.can_use_custom_sounds")
     public boolean canUseCustomSounds() {
-        TrustContainer.Trust trust = TrustContainer.Trust.CUSTOM_SOUNDS;
+        Trust trust = Trust.CUSTOM_SOUNDS;
         return trust.asBoolean(avatar.trust.get(trust));
     }
 

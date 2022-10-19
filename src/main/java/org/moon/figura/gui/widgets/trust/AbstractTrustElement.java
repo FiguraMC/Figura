@@ -7,11 +7,10 @@ import net.minecraft.util.Mth;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.gui.widgets.lists.PlayerList;
+import org.moon.figura.trust.Trust;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.ui.UIHelper;
-
-import java.util.ArrayList;
 
 public class AbstractTrustElement extends AbstractButton implements Comparable<AbstractTrustElement> {
 
@@ -60,7 +59,7 @@ public class AbstractTrustElement extends AbstractButton implements Comparable<A
     }
 
     public boolean isVisible() {
-        return trust.getParentGroup().visible;
+        return trust.isVisible();
     }
 
     public TrustContainer getTrust() {
@@ -70,19 +69,21 @@ public class AbstractTrustElement extends AbstractButton implements Comparable<A
     @Override
     public int compareTo(AbstractTrustElement other) {
         //compare trust levels first
-        ArrayList<TrustContainer> list = new ArrayList<>(TrustManager.GROUPS.values());
+        int len = Trust.Group.values().length;
 
         int i;
-        if (this instanceof PlayerElement player && player.dragged)
-            i = Math.min(player.index, list.size() - (TrustManager.isLocal(this.trust) ? 1 : 2));
-        else
-            i = list.indexOf(this.trust.getParentGroup());
+        if (this instanceof PlayerElement p && p.dragged) {
+            i = Math.min(p.index, len - (TrustManager.isLocal(p.trust) ? 1 : 2));
+        } else {
+            i = this.trust.getGroup().index;
+        }
 
         int j;
-        if (other instanceof PlayerElement player && player.dragged)
-            j = Math.min(player.index, list.size() - (TrustManager.isLocal(other.trust) ? 1 : 2));
-        else
-            j = list.indexOf(other.trust.getParentGroup());
+        if (other instanceof PlayerElement p && p.dragged) {
+            j = Math.min(p.index, len - (TrustManager.isLocal(p.trust) ? 1 : 2));
+        } else {
+            j = other.trust.getGroup().index;
+        }
 
         int comp = Integer.compare(i, j);
         if (comp == 0) {
