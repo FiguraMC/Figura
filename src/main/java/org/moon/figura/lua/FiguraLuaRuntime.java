@@ -279,6 +279,7 @@ public class FiguraLuaRuntime {
     private final ZeroArgFunction onReachedLimit = new ZeroArgFunction() {
         @Override
         public LuaValue call() {
+            FiguraMod.debug("Avatar {} bypassed resource limits with {} instructions", owner.owner, getInstructions());
             LuaError error = new LuaError("Script overran resource limits!");
             setInstructionLimit(1);
             throw error;

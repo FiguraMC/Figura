@@ -10,6 +10,7 @@ import net.minecraft.util.Mth;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.gui.widgets.SliderWidget;
 import org.moon.figura.gui.widgets.SwitchButton;
+import org.moon.figura.trust.Trust;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.ui.UIHelper;
@@ -73,7 +74,7 @@ public class TrustList extends AbstractList {
         switches.clear();
 
         //add new sliders
-        for (TrustContainer.Trust trust : TrustContainer.Trust.values()) {
+        for (Trust trust : Trust.DEFAULT) {
             int lineHeight = Minecraft.getInstance().font.lineHeight;
             if (!trust.isToggle) {
                 TrustSlider slider = new TrustSlider(x + 8, y, width - 30, 11 + lineHeight, container, trust, this);
@@ -92,26 +93,26 @@ public class TrustList extends AbstractList {
         private static final Component INFINITY = FiguraText.of("trust.infinity");
 
         private final TrustContainer container;
-        private final TrustContainer.Trust trust;
+        private final Trust trust;
         private final TrustList parent;
         private Component value;
         private boolean changed;
 
-        public TrustSlider(int x, int y, int width, int height, TrustContainer container, TrustContainer.Trust trust, TrustList parent) {
+        public TrustSlider(int x, int y, int width, int height, TrustContainer container, Trust trust, TrustList parent) {
             super(x, y, width, height, Mth.clamp(container.get(trust) / (trust.max + 1d), 0d, 1d), trust.max, false);
             this.container = container;
             this.trust = trust;
             this.parent = parent;
             this.value = trust.checkInfinity(container.get(trust)) ? INFINITY : Component.literal(String.valueOf(container.get(trust)));
-            this.changed = container.getSettings().containsKey(trust);
+            this.changed = container.isChanged(trust);
 
             setAction(slider -> {
                 //update trust
                 int value = (int) ((trust.max + 1d) * slider.getScrollProgress());
                 boolean infinity = trust.checkInfinity(value);
 
-                container.getSettings().put(trust, infinity ? Integer.MAX_VALUE : value);
-                changed = true;
+                container.trustSettings.put(trust, infinity ? Integer.MAX_VALUE : value);
+                changed = container.isChanged(trust);
 
                 //update text
                 this.value = infinity ? INFINITY : Component.literal(String.valueOf(value));
@@ -129,7 +130,7 @@ public class TrustList extends AbstractList {
             stack.popPose();
 
             //texts
-            MutableComponent name = FiguraText.of("trust." + trust.name().toLowerCase());
+            MutableComponent name = FiguraText.of("trust." + trust.name.toLowerCase());
             if (changed) name = Component.literal("*").setStyle(FiguraMod.getAccentColor()).append(name).append("*");
 
             font.draw(stack, name, x + 1, y + 1, 0xFFFFFF);
@@ -142,7 +143,7 @@ public class TrustList extends AbstractList {
                 return false;
 
             if (button == 1) {
-                container.getSettings().remove(trust);
+                container.reset(trust);
                 this.parent.updateList(container);
                 playDownSound(Minecraft.getInstance().getSoundManager());
                 return true;
@@ -160,17 +161,17 @@ public class TrustList extends AbstractList {
     private static class TrustSwitch extends SwitchButton {
 
         private final TrustContainer container;
-        private final TrustContainer.Trust trust;
+        private final Trust trust;
         private final TrustList parent;
         private Component value;
         private boolean changed;
 
-        public TrustSwitch(int x, int y, int width, int height, TrustContainer container, TrustContainer.Trust trust, TrustList parent) {
+        public TrustSwitch(int x, int y, int width, int height, TrustContainer container, Trust trust, TrustList parent) {
             super(x, y, width, height, trust.asBoolean(container.get(trust)));
             this.container = container;
             this.trust = trust;
             this.parent = parent;
-            this.changed = container.getSettings().containsKey(trust);
+            this.changed = container.isChanged(trust);
             this.value = FiguraText.of("trust." + (toggled ? "enabled" : "disabled"));
         }
 
@@ -179,8 +180,8 @@ public class TrustList extends AbstractList {
             //update trust
             boolean value = !this.isToggled();
 
-            this.container.getSettings().put(trust, value ? 1 : 0);
-            this.changed = true;
+            this.container.trustSettings.put(trust, value ? 1 : 0);
+            this.changed = container.isChanged(trust);
 
             //update text
             this.value = FiguraText.of("trust." + (value ? "enabled" : "disabled"));
@@ -199,7 +200,7 @@ public class TrustList extends AbstractList {
             stack.popPose();
 
             //texts
-            MutableComponent name = FiguraText.of("trust." + trust.name().toLowerCase());
+            MutableComponent name = FiguraText.of("trust." + trust.name.toLowerCase());
             if (changed) name = Component.literal("*").setStyle(FiguraMod.getAccentColor()).append(name).append("*");
 
             font.draw(stack, name, x + 1, y + 1, 0xFFFFFF);
@@ -212,7 +213,7 @@ public class TrustList extends AbstractList {
                 return false;
 
             if (button == 1) {
-                container.getSettings().remove(trust);
+                container.reset(trust);
                 this.parent.updateList(container);
                 playDownSound(Minecraft.getInstance().getSoundManager());
                 return true;

@@ -121,7 +121,7 @@ public class PopupMenu {
         Component title = BUTTONS.get(index).getFirst();
 
         TrustContainer tc = TrustManager.get(id);
-        MutableComponent trust = tc.getGroupName();
+        MutableComponent trust = tc.getGroupName().append(tc.hasChanges() ? "*" : "");
 
         MutableComponent name = entity.getName().copy();
 

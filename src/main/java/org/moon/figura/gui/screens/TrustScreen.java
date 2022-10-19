@@ -5,7 +5,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import org.moon.figura.FiguraMod;
@@ -17,13 +16,13 @@ import org.moon.figura.gui.widgets.lists.PlayerList;
 import org.moon.figura.gui.widgets.lists.TrustList;
 import org.moon.figura.gui.widgets.trust.AbstractTrustElement;
 import org.moon.figura.gui.widgets.trust.PlayerElement;
+import org.moon.figura.trust.Trust;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.ui.UIHelper;
 
-import java.util.ArrayList;
 import java.util.UUID;
 
 public class TrustScreen extends AbstractPanelScreen {
@@ -164,6 +163,7 @@ public class TrustScreen extends AbstractPanelScreen {
             //hide widgets
             entityWidget.setVisible(!expanded);
             slider.visible = !expanded;
+            slider.active = !expanded;
             reloadAll.visible = !expanded;
             back.visible = !expanded;
             uuid.setVisible(!expanded);
@@ -180,7 +180,7 @@ public class TrustScreen extends AbstractPanelScreen {
         addRenderableWidget(resetButton = new TexturedButton(middle + 2, height, 60, 20, FiguraText.of("gui.trust.reset"), null, btn -> {
             //clear trust
             TrustContainer trust = playerList.selectedEntry.getTrust();
-            trust.getSettings().clear();
+            trust.clear();
             updateTrustData(trust);
         }));
 
@@ -268,10 +268,9 @@ public class TrustScreen extends AbstractPanelScreen {
             return super.mouseReleased(mouseX, mouseY, button);
 
         TrustContainer trust = dragged.getTrust();
-        ArrayList<ResourceLocation> list = new ArrayList<>(TrustManager.GROUPS.keySet());
-        ResourceLocation id = list.get(Math.min(dragged.index, list.size() - (TrustManager.isLocal(trust) ? 1 : 2)));
+        Trust.Group group = Trust.Group.indexOf(Math.min(dragged.index, Trust.Group.values().length - (TrustManager.isLocal(trust) ? 1 : 2)));
 
-        trust.setParent(id);
+        trust.setParent(TrustManager.GROUPS.get(group));
         updateTrustData(trust);
 
         dragged.dragged = false;
@@ -284,22 +283,20 @@ public class TrustScreen extends AbstractPanelScreen {
         slider.setAction(null);
 
         //set slider active only for players
-        boolean group = TrustManager.GROUPS.containsValue(trust);
-        slider.active = !group;
-
-        ArrayList<ResourceLocation> groupList = new ArrayList<>(TrustManager.GROUPS.keySet());
+        slider.active = trust instanceof TrustContainer.PlayerContainer;
 
         //set step sizes
-        slider.setMax(TrustManager.isLocal(trust) ? groupList.size() : groupList.size() - 1);
+        int len = Trust.Group.values().length;
+        slider.setMax(TrustManager.isLocal(trust) ? len : len - 1);
 
         //set slider progress
-        slider.setScrollProgress(groupList.indexOf(group ? new ResourceLocation("group", trust.name) : trust.getParentID()) / (slider.getMax() - 1d));
+        slider.setScrollProgress(trust.getGroup().index / (slider.getMax() - 1d));
 
         //set new slider action
         slider.setAction(scroll -> {
             //set new trust parent
-            ResourceLocation newTrust = groupList.get(((SliderWidget) scroll).getIntValue());
-            trust.setParent(newTrust);
+            Trust.Group group = Trust.Group.indexOf(((SliderWidget) scroll).getIntValue());
+            trust.setParent(TrustManager.GROUPS.get(group));
 
             //and update the advanced trust
             trustList.updateList(trust);

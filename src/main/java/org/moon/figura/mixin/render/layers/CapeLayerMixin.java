@@ -12,7 +12,7 @@ import net.minecraft.util.Mth;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.ducks.PlayerModelAccessor;
-import org.moon.figura.trust.TrustContainer;
+import org.moon.figura.trust.Trust;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -87,7 +87,7 @@ public abstract class CapeLayerMixin extends RenderLayer<AbstractClientPlayer, P
         avatar.luaRuntime.vanilla_model.CAPE.store(getParentModel());
 
         //Setup visibility for real cloak
-        if (avatar.trust.get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 1)
+        if (avatar.trust.get(Trust.VANILLA_MODEL_EDIT) == 1)
             avatar.luaRuntime.vanilla_model.CAPE.alter(getParentModel());
     }
 

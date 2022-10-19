@@ -18,12 +18,12 @@ import net.minecraft.world.entity.player.Player;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
-import org.moon.figura.model.rendering.PartFilterScheme;
 import org.moon.figura.config.Config;
 import org.moon.figura.ducks.LivingEntityRendererAccessor;
 import org.moon.figura.gui.PopupMenu;
 import org.moon.figura.mixin.render.layers.elytra.ElytraLayerAccessor;
-import org.moon.figura.trust.TrustContainer;
+import org.moon.figura.model.rendering.PartFilterScheme;
+import org.moon.figura.trust.Trust;
 import org.moon.figura.utils.ui.UIHelper;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -86,7 +86,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
 
         if (currentAvatar.luaRuntime != null && getModel() instanceof PlayerModel<?> playerModel && entity instanceof Player) {
             currentAvatar.luaRuntime.vanilla_model.PLAYER.store(playerModel);
-            if (currentAvatar.trust.get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 1)
+            if (currentAvatar.trust.get(Trust.VANILLA_MODEL_EDIT) == 1)
                 currentAvatar.luaRuntime.vanilla_model.PLAYER.alter(playerModel);
         }
 
@@ -111,7 +111,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
 
         //Render avatar with params
         EntityModel<?> model = this.getModel();
-        if (model instanceof PlayerModel<?> playerModel && entity instanceof Player && currentAvatar.luaRuntime != null && currentAvatar.trust.get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 1)
+        if (model instanceof PlayerModel<?> playerModel && entity instanceof Player && currentAvatar.luaRuntime != null && currentAvatar.trust.get(Trust.VANILLA_MODEL_EDIT) == 1)
             currentAvatar.luaRuntime.vanilla_model.PLAYER.restore(playerModel);
 
         currentAvatar = null;

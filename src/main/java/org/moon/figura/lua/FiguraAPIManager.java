@@ -39,12 +39,10 @@ import org.moon.figura.math.matrix.FiguraMat2;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.*;
+import org.moon.figura.trust.Trust;
 import org.moon.figura.utils.IOUtils;
 
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 
 /**
@@ -155,6 +153,7 @@ public class FiguraAPIManager {
         for (FiguraAPI api : set) {
             ENTRYPOINTS.add(api);
             WHITELISTED_CLASSES.addAll(api.getWhitelistedClasses());
+            Trust.register(api);
         }
     }
 

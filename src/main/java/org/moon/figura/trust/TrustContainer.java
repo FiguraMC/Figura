@@ -1,117 +1,87 @@
 package org.moon.figura.trust;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.IntTag;
-import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
-import org.moon.figura.utils.ColorUtils;
-import org.moon.figura.utils.FiguraText;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TrustContainer {
+public abstract class TrustContainer {
 
     //fields :p
-    public String name;
-    private ResourceLocation parentID;
-    public boolean visible = true; //used on UI
+    public String name; //uuid
+    private boolean visible = true; //used on UI
 
     //trust -> value map
-    private final Map<Trust, Integer> trustSettings;
-
-    //the trust themselves
-    public enum Trust {
-        //trust list
-        INIT_INST(0, 32767),
-        WORLD_TICK_INST(0, 32767),
-        TICK_INST(0, 32767),
-        WORLD_RENDER_INST(0, 32767),
-        RENDER_INST(0, 32767),
-        COMPLEXITY(0, 8191),
-        PARTICLES(0, 63),
-        SOUNDS(0, 63),
-        VOLUME(0, 99),
-        BB_ANIMATIONS(0, 255),
-        VANILLA_MODEL_EDIT,
-        NAMEPLATE_EDIT,
-        OFFSCREEN_RENDERING,
-        //CUSTOM_RENDER_LAYER,
-        CUSTOM_SOUNDS,
-        CUSTOM_HEADS;
-
-        //toggle check
-        public final boolean isToggle;
-
-        //used only for sliders
-        public final Integer min;
-        public final Integer max;
-
-        //toggle constructor
-        Trust() {
-            this(null, null);
-        }
-
-        //slider constructor
-        Trust(Integer min, Integer max) {
-            this.isToggle = min == null || max == null;
-            this.min = min;
-            this.max = max;
-        }
-
-        //infinity check :p
-        public boolean checkInfinity(int value) {
-            return max != null && value > max && this != VOLUME;
-        }
-
-        //transform to boolean
-        public boolean asBoolean(int value) {
-            return value >= 1;
-        }
-    }
+    public final Map<Trust, Integer> trustSettings = new HashMap<>();
+    public final Map<String, Map<Trust, Integer>> customTrusts = new HashMap<>();
 
     // constructors //
 
-    public TrustContainer(String name, ResourceLocation parentID, CompoundTag nbt) {
+    public TrustContainer(String name) {
         this.name = name;
-        this.parentID = parentID;
-
-        this.trustSettings = new HashMap<>();
-        setTrustFromNbt(nbt);
-    }
-
-    public TrustContainer(String name, ResourceLocation parentID, Map<Trust, Integer> trust) {
-        this.name = name;
-        this.parentID = parentID;
-        this.trustSettings = new HashMap<>(trust);
     }
 
     // functions //
 
-    //read nbt
-    private void setTrustFromNbt(CompoundTag nbt) {
-        for (Trust setting : Trust.values()) {
-            String trustName = setting.name();
+    public abstract MutableComponent getGroupName();
+    public abstract int getColor();
+    public abstract Trust.Group getGroup();
+    public abstract void setParent(GroupContainer newParent);
 
-            if (nbt.contains(trustName))
-                trustSettings.put(setting, nbt.getInt(trustName));
+    //read nbt
+    public void loadNbt(CompoundTag nbt) {
+        //default trust
+        for (Trust setting : Trust.DEFAULT) {
+            if (nbt.contains(setting.name))
+                trustSettings.put(setting, nbt.getInt(setting.name));
+        }
+
+        //custom trust
+        if (!nbt.contains("custom"))
+            return;
+
+        CompoundTag custom = nbt.getCompound("custom");
+        for (Map.Entry<String, Collection<Trust>> entry : Trust.CUSTOM_TRUST.entrySet()) {
+            String key = entry.getKey();
+            if (!custom.contains(key))
+                continue;
+
+            Map<Trust, Integer> map = new HashMap<>();
+            CompoundTag customNbt = custom.getCompound(key);
+
+            for (Trust trust : entry.getValue()) {
+                if (customNbt.contains(trust.name))
+                    map.put(trust, nbt.getInt(trust.name));
+            }
+
+            customTrusts.put(key, map);
         }
     }
 
     //write nbt
     public void writeNbt(CompoundTag nbt) {
-        //container properties
-        nbt.put("name", StringTag.valueOf(this.name));
-
-        if (this.parentID != null)
-            nbt.put("parent", StringTag.valueOf(this.parentID.toString()));
+        //name
+        nbt.putString("name", this.name);
 
         //trust values
         CompoundTag trust = new CompoundTag();
-        this.trustSettings.forEach((key, value) -> trust.put(key.name(), IntTag.valueOf(value)));
+        for (Map.Entry<Trust, Integer> entry : this.trustSettings.entrySet())
+            trust.putInt(entry.getKey().name, entry.getValue());
+
+        //custom trust
+        CompoundTag custom = new CompoundTag();
+        for (Map.Entry<String, Map<Trust, Integer>> entry : this.customTrusts.entrySet()) {
+            CompoundTag customNbt = new CompoundTag();
+
+            for (Map.Entry<Trust, Integer> entry2 : entry.getValue().entrySet())
+                trust.putInt(entry2.getKey().name, entry2.getValue());
+
+            custom.put(entry.getKey(), customNbt);
+        }
+
+        trust.put("custom", custom);
 
         //add to nbt
         nbt.put("trust", trust);
@@ -124,60 +94,144 @@ public class TrustContainer {
         if (setting != null)
             return setting;
 
-        //if not, then get from parent
-        if (parentID != null && TrustManager.get(parentID) != null)
-            return TrustManager.get(parentID).get(trust);
+        for (Map<Trust, Integer> value : this.customTrusts.values()) {
+            setting = value.get(trust);
+            if (setting != null)
+                return setting;
+        }
 
         //if no trust found, return -1
         return -1;
     }
 
-    public MutableComponent getGroupName() {
-        return getGroupName(false);
+    public boolean hasChanges() {
+        boolean bool = !trustSettings.isEmpty();
+
+        if (!bool) {
+            for (Map<Trust, Integer> value : customTrusts.values()) {
+                if (!value.isEmpty())
+                    return true;
+            }
+        }
+
+        return bool;
     }
 
-    private MutableComponent getGroupName(boolean changed) {
-        if (parentID != null)
-            return TrustManager.get(parentID).getGroupName(changed || !getSettings().isEmpty());
+    public boolean isChanged(Trust trust) {
+        if (trustSettings.containsKey(trust))
+            return true;
 
-        MutableComponent text = FiguraText.of("trust.group." + name).withStyle(Style.EMPTY.withColor(getGroupColor()));
-        if (changed)
-            text.append("*");
+        for (Map<Trust, Integer> map : customTrusts.values()) {
+            if (map.containsKey(trust))
+                return true;
+        }
 
-        return text;
+        return false;
     }
 
-    public int getGroupColor() {
-        if (parentID != null)
-            return TrustManager.get(parentID).getGroupColor();
-
-        return switch (name) {
-            case "blocked" -> ChatFormatting.RED.getColor();
-            //case "untrusted" -> ChatFormatting.YELLOW.getColorValue();
-            case "trusted" -> ChatFormatting.GREEN.getColor();
-            case "friend" -> ColorUtils.Colors.FRAN_PINK.hex;
-            case "local" -> ChatFormatting.AQUA.getColor();
-            default -> ChatFormatting.WHITE.getColor();
-        };
+    public void reset(Trust trust) {
+        trustSettings.remove(trust);
+        for (Map<Trust, Integer> map : customTrusts.values())
+            map.remove(trust);
     }
 
-    public TrustContainer getParentGroup() {
-        return parentID == null || !parentID.getNamespace().equals("group") ? this : TrustManager.get(parentID).getParentGroup();
+    //clear trust settings
+    public void clear() {
+        trustSettings.clear();
+        customTrusts.clear();
     }
 
-    // getters //
-
-    public Map<Trust, Integer> getSettings() {
-        return this.trustSettings;
+    public boolean isVisible() {
+        return visible;
     }
 
-    public ResourceLocation getParentID() {
-        return this.parentID;
+    public void setVisible(boolean visible) {
+        this.visible = visible;
     }
 
-    // setters //
+    // -- types -- //
 
-    public void setParent(ResourceLocation parent) {
-        this.parentID = parent;
+    public static class GroupContainer extends TrustContainer {
+
+        public final Trust.Group group;
+
+        public GroupContainer(Trust.Group group) {
+            super(group.name());
+            this.group = group;
+        }
+
+        @Override
+        public MutableComponent getGroupName() {
+            return group.text.copy();
+        }
+
+        @Override
+        public int getColor() {
+            return group.color;
+        }
+
+        @Override
+        public Trust.Group getGroup() {
+            return group;
+        }
+
+        @Override
+        public void setParent(GroupContainer newParent) {
+            //do nothing
+        }
+
+        @Override
+        public int get(Trust trust) {
+            int result = super.get(trust);
+            return result != -1 ? result : trust.getDefault(getGroup());
+        }
+    }
+
+    public static class PlayerContainer extends TrustContainer {
+
+        public GroupContainer parent;
+
+        public PlayerContainer(GroupContainer parent, String name) {
+            super(name);
+            this.parent = parent;
+        }
+
+        @Override
+        public MutableComponent getGroupName() {
+            return parent.getGroupName();
+        }
+
+        @Override
+        public int getColor() {
+            return parent.getColor();
+        }
+
+        @Override
+        public Trust.Group getGroup() {
+            return parent.getGroup();
+        }
+
+        @Override
+        public void setParent(GroupContainer newParent) {
+            this.parent = newParent;
+        }
+
+        @Override
+        public void writeNbt(CompoundTag nbt) {
+            super.writeNbt(nbt);
+            //parent
+            nbt.putString("parent", parent.name);
+        }
+
+        @Override
+        public int get(Trust trust) {
+            int result = super.get(trust);
+            return result != -1 ? result : parent.get(trust);
+        }
+
+        @Override
+        public boolean isVisible() {
+            return parent.isVisible();
+        }
     }
 }

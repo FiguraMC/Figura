@@ -29,16 +29,11 @@ import org.luaj.vm2.Varargs;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.animation.Animation;
 import org.moon.figura.animation.AnimationPlayer;
-import org.moon.figura.lua.api.particle.ParticleAPI;
-import org.moon.figura.model.ParentType;
-import org.moon.figura.model.PartCustomization;
-import org.moon.figura.model.rendering.AvatarRenderer;
-import org.moon.figura.model.rendering.ImmediateAvatarRenderer;
-import org.moon.figura.model.rendering.PartFilterScheme;
 import org.moon.figura.config.Config;
 import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.lua.FiguraLuaRuntime;
 import org.moon.figura.lua.api.event.LuaEvent;
+import org.moon.figura.lua.api.particle.ParticleAPI;
 import org.moon.figura.lua.api.ping.PingArg;
 import org.moon.figura.lua.api.ping.PingFunction;
 import org.moon.figura.lua.api.sound.SoundAPI;
@@ -47,6 +42,12 @@ import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec4;
+import org.moon.figura.model.ParentType;
+import org.moon.figura.model.PartCustomization;
+import org.moon.figura.model.rendering.AvatarRenderer;
+import org.moon.figura.model.rendering.ImmediateAvatarRenderer;
+import org.moon.figura.model.rendering.PartFilterScheme;
+import org.moon.figura.trust.Trust;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.EntityUtils;
@@ -94,7 +95,7 @@ public class Avatar {
     public AvatarRenderer renderer;
     public FiguraLuaRuntime luaRuntime;
 
-    public final TrustContainer trust;
+    public final TrustContainer.PlayerContainer trust;
 
     public final Map<String, SoundBuffer> customSounds = new HashMap<>();
     public final Map<Integer, Animation> animations = new ConcurrentHashMap<>();
@@ -114,14 +115,14 @@ public class Avatar {
         this.owner = owner;
         this.isHost = FiguraMod.isLocal(owner);
         this.trust = TrustManager.get(owner);
-        this.complexity = new Instructions(trust.get(TrustContainer.Trust.COMPLEXITY));
-        this.init = new Instructions(trust.get(TrustContainer.Trust.INIT_INST));
-        this.render = new Instructions(trust.get(TrustContainer.Trust.RENDER_INST));
-        this.worldRender = new Instructions(trust.get(TrustContainer.Trust.WORLD_RENDER_INST));
-        this.tick = new Instructions(trust.get(TrustContainer.Trust.TICK_INST));
-        this.worldTick = new Instructions(trust.get(TrustContainer.Trust.WORLD_TICK_INST));
-        this.particlesRemaining = new RefilledNumber(trust.get(TrustContainer.Trust.PARTICLES));
-        this.soundsRemaining = new RefilledNumber(trust.get(TrustContainer.Trust.SOUNDS));
+        this.complexity = new Instructions(trust.get(Trust.COMPLEXITY));
+        this.init = new Instructions(trust.get(Trust.INIT_INST));
+        this.render = new Instructions(trust.get(Trust.RENDER_INST));
+        this.worldRender = new Instructions(trust.get(Trust.WORLD_RENDER_INST));
+        this.tick = new Instructions(trust.get(Trust.TICK_INST));
+        this.worldTick = new Instructions(trust.get(Trust.WORLD_TICK_INST));
+        this.particlesRemaining = new RefilledNumber(trust.get(Trust.PARTICLES));
+        this.soundsRemaining = new RefilledNumber(trust.get(Trust.SOUNDS));
 
         String name = EntityUtils.getNameForUUID(owner);
         this.entityName = name == null ? "" : name;
@@ -198,29 +199,29 @@ public class Avatar {
         checkUser();
 
         //sound
-        particlesRemaining.set(trust.get(TrustContainer.Trust.PARTICLES));
+        particlesRemaining.set(trust.get(Trust.PARTICLES));
         particlesRemaining.tick();
 
         //particles
-        soundsRemaining.set(trust.get(TrustContainer.Trust.SOUNDS));
+        soundsRemaining.set(trust.get(Trust.SOUNDS));
         soundsRemaining.tick();
 
         //call events
-        worldTick.reset(trust.get(TrustContainer.Trust.WORLD_TICK_INST));
+        worldTick.reset(trust.get(Trust.WORLD_TICK_INST));
         run("WORLD_TICK", worldTick);
 
-        tick.reset(trust.get(TrustContainer.Trust.TICK_INST));
+        tick.reset(trust.get(Trust.TICK_INST));
         tickEvent();
     }
 
     public void render(float delta) {
-        complexity.reset(trust.get(TrustContainer.Trust.COMPLEXITY));
+        complexity.reset(trust.get(Trust.COMPLEXITY));
 
         if (scriptError || luaRuntime == null)
             return;
 
-        render.reset(trust.get(TrustContainer.Trust.RENDER_INST));
-        worldRender.reset(trust.get(TrustContainer.Trust.WORLD_RENDER_INST));
+        render.reset(trust.get(Trust.RENDER_INST));
+        worldRender.reset(trust.get(Trust.WORLD_RENDER_INST));
         run("WORLD_RENDER", worldRender, delta);
     }
 
@@ -371,7 +372,7 @@ public class Avatar {
 
         if (UIHelper.paperdoll) {
             int prev = complexity.remaining;
-            complexity.remaining = trust.get(TrustContainer.Trust.COMPLEXITY);
+            complexity.remaining = trust.get(Trust.COMPLEXITY);
             renderer.render();
             complexity.remaining = prev;
         } else {
@@ -640,7 +641,7 @@ public class Avatar {
     // -- animations -- //
 
     public void applyAnimations() {
-        int animationsLimit = trust.get(TrustContainer.Trust.BB_ANIMATIONS);
+        int animationsLimit = trust.get(Trust.BB_ANIMATIONS);
         int limit = animationsLimit;
         for (Animation animation : animations.values())
             limit = AnimationPlayer.tick(animation, limit);
@@ -712,7 +713,7 @@ public class Avatar {
         if (renderer != null && renderer.root != null)
             runtime.setGlobal("models", renderer.root);
 
-        init.reset(trust.get(TrustContainer.Trust.INIT_INST));
+        init.reset(trust.get(Trust.INIT_INST));
         runtime.setInstructionLimit(init.remaining);
 
         events.offer(() -> {

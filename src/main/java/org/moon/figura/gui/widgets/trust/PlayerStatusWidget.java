@@ -6,7 +6,7 @@ import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.backend.NetworkManager;
 import org.moon.figura.gui.widgets.StatusWidget;
-import org.moon.figura.trust.TrustContainer;
+import org.moon.figura.trust.Trust;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.MathUtils;
 
@@ -56,19 +56,19 @@ public class PlayerStatusWidget extends StatusWidget {
         status = avatar.fileSize > NetworkManager.getSizeLimit() ? 1 : avatar.fileSize > NetworkManager.getSizeLimit() * 0.75 ? 2 : 3;
 
         //complexity
-        int complexity = avatar.renderer == null ? 0 : avatar.complexity.pre >= avatar.trust.get(TrustContainer.Trust.COMPLEXITY) ? 1 : 3;
+        int complexity = avatar.renderer == null ? 0 : avatar.complexity.pre >= avatar.trust.get(Trust.COMPLEXITY) ? 1 : 3;
         status += complexity << 2;
 
         //script init
-        int init = avatar.scriptError ? 1 : avatar.luaRuntime == null ? 0 : avatar.init.getTotal() >= avatar.trust.get(TrustContainer.Trust.INIT_INST) * 0.75 ? 2 : 3;
+        int init = avatar.scriptError ? 1 : avatar.luaRuntime == null ? 0 : avatar.init.getTotal() >= avatar.trust.get(Trust.INIT_INST) * 0.75 ? 2 : 3;
         status += init << 4;
 
         //script tick
-        int tick = avatar.scriptError ? 1 : avatar.luaRuntime == null ? 0 : avatar.tick.getTotal() >= avatar.trust.get(TrustContainer.Trust.TICK_INST) * 0.75 || avatar.worldTick.getTotal() >= avatar.trust.get(TrustContainer.Trust.WORLD_TICK_INST) * 0.75 ? 2 : 3;
+        int tick = avatar.scriptError ? 1 : avatar.luaRuntime == null ? 0 : avatar.tick.getTotal() >= avatar.trust.get(Trust.TICK_INST) * 0.75 || avatar.worldTick.getTotal() >= avatar.trust.get(Trust.WORLD_TICK_INST) * 0.75 ? 2 : 3;
         status += tick << 6;
 
         //script render
-        int render = avatar.scriptError ? 1 : avatar.luaRuntime == null ? 0 : avatar.render.getTotal() >= avatar.trust.get(TrustContainer.Trust.RENDER_INST) * 0.75 || avatar.worldRender.getTotal() >= avatar.trust.get(TrustContainer.Trust.WORLD_RENDER_INST) * 0.75 ? 2 : 3;
+        int render = avatar.scriptError ? 1 : avatar.luaRuntime == null ? 0 : avatar.render.getTotal() >= avatar.trust.get(Trust.RENDER_INST) * 0.75 || avatar.worldRender.getTotal() >= avatar.trust.get(Trust.WORLD_RENDER_INST) * 0.75 ? 2 : 3;
         status += render << 8;
     }
 
