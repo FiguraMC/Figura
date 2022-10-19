@@ -69,15 +69,15 @@ public class Trust {
     public final Integer stepSize;
 
     //toggle constructor
-    Trust(String name, int blocked, int untrusted, int trusted, int friend, int local) {
+    public Trust(String name, int blocked, int untrusted, int trusted, int friend, int local) {
         this(name, null, null, blocked, untrusted, trusted, friend, local);
     }
 
     //slider constructor
-    Trust(String name, Integer min, Integer max, int blocked, int untrusted, int trusted, int friend, int local) {
+    public Trust(String name, Integer min, Integer max, int blocked, int untrusted, int trusted, int friend, int local) {
         this(name, min, max, 1, blocked, untrusted, trusted, friend, local);
     }
-    Trust(String name, Integer min, Integer max, Integer stepSize, int blocked, int untrusted, int trusted, int friend, int local) {
+    public Trust(String name, Integer min, Integer max, Integer stepSize, int blocked, int untrusted, int trusted, int friend, int local) {
         this.name = name;
         this.isToggle = min == null || max == null;
         this.min = min;
