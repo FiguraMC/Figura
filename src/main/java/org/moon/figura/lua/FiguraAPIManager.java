@@ -1,15 +1,10 @@
 package org.moon.figura.lua;
 
 import org.moon.figura.animation.Animation;
-import org.moon.figura.lua.api.particle.LuaParticle;
-import org.moon.figura.model.FiguraModelPart;
-import org.moon.figura.model.rendering.texture.FiguraTexture;
-import org.moon.figura.model.rendertasks.BlockTask;
-import org.moon.figura.model.rendertasks.ItemTask;
-import org.moon.figura.model.rendertasks.RenderTask;
-import org.moon.figura.model.rendertasks.TextTask;
 import org.moon.figura.lua.api.*;
-import org.moon.figura.lua.api.action_wheel.*;
+import org.moon.figura.lua.api.action_wheel.Action;
+import org.moon.figura.lua.api.action_wheel.ActionWheelAPI;
+import org.moon.figura.lua.api.action_wheel.Page;
 import org.moon.figura.lua.api.entity.EntityAPI;
 import org.moon.figura.lua.api.entity.LivingEntityAPI;
 import org.moon.figura.lua.api.entity.PlayerAPI;
@@ -23,6 +18,7 @@ import org.moon.figura.lua.api.nameplate.EntityNameplateCustomization;
 import org.moon.figura.lua.api.nameplate.NameplateAPI;
 import org.moon.figura.lua.api.nameplate.NameplateCustomization;
 import org.moon.figura.lua.api.nameplate.NameplateCustomizationGroup;
+import org.moon.figura.lua.api.particle.LuaParticle;
 import org.moon.figura.lua.api.particle.ParticleAPI;
 import org.moon.figura.lua.api.ping.PingAPI;
 import org.moon.figura.lua.api.ping.PingFunction;
@@ -39,10 +35,19 @@ import org.moon.figura.math.matrix.FiguraMat2;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.*;
+import org.moon.figura.model.FiguraModelPart;
+import org.moon.figura.model.rendering.texture.FiguraTexture;
+import org.moon.figura.model.rendertasks.BlockTask;
+import org.moon.figura.model.rendertasks.ItemTask;
+import org.moon.figura.model.rendertasks.RenderTask;
+import org.moon.figura.model.rendertasks.TextTask;
 import org.moon.figura.trust.Trust;
 import org.moon.figura.utils.IOUtils;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 /**
