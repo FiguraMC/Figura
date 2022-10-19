@@ -15,22 +15,22 @@ public class Trust {
 
     //default trusts
     public static final Trust
-            INIT_INST = new Trust("INIT_INST", 0, 32767, List.of(0, 4096, 16384, Integer.MAX_VALUE, Integer.MAX_VALUE)),
-            WORLD_TICK_INST = new Trust("WORLD_TICK_INST", 0, 32767, List.of(0, 128, 256, Integer.MAX_VALUE, Integer.MAX_VALUE)),
-            TICK_INST = new Trust("TICK_INST", 0, 32767, List.of(0, 4096, 16384, Integer.MAX_VALUE, Integer.MAX_VALUE)),
-            WORLD_RENDER_INST = new Trust("WORLD_RENDER_INST", 0, 32767, List.of(0, 32, 64, Integer.MAX_VALUE, Integer.MAX_VALUE)),
-            RENDER_INST = new Trust("RENDER_INST", 0, 32767, List.of(0, 4096, 16384, Integer.MAX_VALUE, Integer.MAX_VALUE)),
-            COMPLEXITY = new Trust("COMPLEXITY", 0, 8191, List.of(0, 512, 2048, Integer.MAX_VALUE, Integer.MAX_VALUE)),
-            PARTICLES = new Trust("PARTICLES", 0, 63, List.of(0, 4, 32, Integer.MAX_VALUE, Integer.MAX_VALUE)),
-            SOUNDS = new Trust("SOUNDS", 0, 63, List.of(0, 4, 32, Integer.MAX_VALUE, Integer.MAX_VALUE)),
-            VOLUME = new Trust("VOLUME", 0, 99, List.of(0, 100, 100, 100, 100)),
-            BB_ANIMATIONS = new Trust("BB_ANIMATIONS", 0, 255, List.of(0, 32, 128, Integer.MAX_VALUE, Integer.MAX_VALUE)),
-            VANILLA_MODEL_EDIT = new Trust("VANILLA_MODEL_EDIT", List.of(0, 0, 1, 1, 1)),
-            NAMEPLATE_EDIT = new Trust("NAMEPLATE_EDIT", List.of(0, 0, 1, 1, 1)),
-            OFFSCREEN_RENDERING = new Trust("OFFSCREEN_RENDERING", List.of(0, 0, 1, 1, 1)),
+            INIT_INST = new Trust("INIT_INST", 0, 32767, 0, 4096, 16384, Integer.MAX_VALUE, Integer.MAX_VALUE),
+            WORLD_TICK_INST = new Trust("WORLD_TICK_INST", 0, 32767, 0, 128, 256, Integer.MAX_VALUE, Integer.MAX_VALUE),
+            TICK_INST = new Trust("TICK_INST", 0, 32767, 0, 4096, 16384, Integer.MAX_VALUE, Integer.MAX_VALUE),
+            WORLD_RENDER_INST = new Trust("WORLD_RENDER_INST", 0, 32767, 0, 32, 64, Integer.MAX_VALUE, Integer.MAX_VALUE),
+            RENDER_INST = new Trust("RENDER_INST", 0, 32767, 0, 4096, 16384, Integer.MAX_VALUE, Integer.MAX_VALUE),
+            COMPLEXITY = new Trust("COMPLEXITY", 0, 8191, 0, 512, 2048, Integer.MAX_VALUE, Integer.MAX_VALUE),
+            PARTICLES = new Trust("PARTICLES", 0, 63, 0, 4, 32, Integer.MAX_VALUE, Integer.MAX_VALUE),
+            SOUNDS = new Trust("SOUNDS", 0, 63, 0, 4, 32, Integer.MAX_VALUE, Integer.MAX_VALUE),
+            VOLUME = new Trust("VOLUME", 0, 99, 0, 100, 100, 100, 100),
+            BB_ANIMATIONS = new Trust("BB_ANIMATIONS", 0, 255, 0, 32, 128, Integer.MAX_VALUE, Integer.MAX_VALUE),
+            VANILLA_MODEL_EDIT = new Trust("VANILLA_MODEL_EDIT", 0, 0, 1, 1, 1),
+            NAMEPLATE_EDIT = new Trust("NAMEPLATE_EDIT", 0, 0, 1, 1, 1),
+            OFFSCREEN_RENDERING = new Trust("OFFSCREEN_RENDERING", 0, 0, 1, 1, 1),
             //CUSTOM_RENDER_LAYER = new Trust("CUSTOM_RENDER_LAYER", List.of(0, 0, 1, 1, 1)),
-            CUSTOM_SOUNDS = new Trust("CUSTOM_SOUNDS", List.of(0, 0, 1, 1, 1)),
-            CUSTOM_HEADS = new Trust("CUSTOM_HEADS", List.of(0, 0, 1, 1, 1));
+            CUSTOM_SOUNDS = new Trust("CUSTOM_SOUNDS", 0, 0, 1, 1, 1),
+            CUSTOM_HEADS = new Trust("CUSTOM_HEADS", 0, 0, 1, 1, 1);
 
     public static final HashMap<String, Collection<Trust>> CUSTOM_TRUST = new HashMap<>();
 
@@ -69,21 +69,21 @@ public class Trust {
     public final Integer stepSize;
 
     //toggle constructor
-    Trust(String name, List<Integer> defaults) {
-        this(name, null, null, defaults);
+    Trust(String name, int blocked, int untrusted, int trusted, int friend, int local) {
+        this(name, null, null, blocked, untrusted, trusted, friend, local);
     }
 
     //slider constructor
-    Trust(String name, Integer min, Integer max, List<Integer> defaults) {
-        this(name, min, max, 1, defaults);
+    Trust(String name, Integer min, Integer max, int blocked, int untrusted, int trusted, int friend, int local) {
+        this(name, min, max, 1, blocked, untrusted, trusted, friend, local);
     }
-    Trust(String name, Integer min, Integer max, Integer stepSize, List<Integer> defaults) {
+    Trust(String name, Integer min, Integer max, Integer stepSize, int blocked, int untrusted, int trusted, int friend, int local) {
         this.name = name;
         this.isToggle = min == null || max == null;
         this.min = min;
         this.max = max;
         this.stepSize = stepSize;
-        this.defaults = defaults;
+        this.defaults = List.of(blocked, untrusted, trusted, friend, local);
     }
 
     //infinity check :p
@@ -97,11 +97,9 @@ public class Trust {
     }
 
     public int getDefault(Group group) {
-        try {
+        if (group.index >= 0 && group.index < defaults.size())
             return defaults.get(group.index);
-        } catch (Exception ignored) {
-            return -1;
-        }
+        return -1;
     }
 
     public static void register(FiguraAPI api) {
