@@ -50,6 +50,7 @@ public class TrustScreen extends AbstractPanelScreen {
     private float expandYPrecise;
     private float resetYPrecise;
 
+    private boolean expanded;
     private PlayerElement dragged = null;
 
     public TrustScreen(Screen parentScreen) {
@@ -158,7 +159,7 @@ public class TrustScreen extends AbstractPanelScreen {
 
         //expand button
         addRenderableWidget(expandButton = new SwitchButton( middle + listWidth - 18, height - 24, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/expand_v.png"), 60, 40, FiguraText.of("gui.trust.expand_trust.tooltip"), btn -> {
-            boolean expanded = expandButton.isToggled();
+            expanded = expandButton.isToggled();
 
             //hide widgets
             entityWidget.setVisible(!expanded);
@@ -283,7 +284,7 @@ public class TrustScreen extends AbstractPanelScreen {
         slider.setAction(null);
 
         //set slider active only for players
-        slider.active = trust instanceof TrustContainer.PlayerContainer;
+        slider.active = trust instanceof TrustContainer.PlayerContainer && !expanded;
 
         //set step sizes
         int len = Trust.Group.values().length;
