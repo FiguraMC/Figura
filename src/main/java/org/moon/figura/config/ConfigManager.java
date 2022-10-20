@@ -26,6 +26,8 @@ public final class ConfigManager {
         }
     }};
 
+    private static boolean initializing = false;
+
     public static void init() {
         loadConfig();
         saveConfig();
@@ -34,6 +36,7 @@ public final class ConfigManager {
     public static void loadConfig() {
         try {
             if (FILE.exists()) {
+                initializing = true;
                 BufferedReader br = new BufferedReader(new FileReader(FILE));
                 JsonObject json = JsonParser.parseReader(br).getAsJsonObject();
 
@@ -59,15 +62,20 @@ public final class ConfigManager {
                 }
 
                 br.close();
+                FiguraMod.debug("Successfully loaded config file");
             }
-            FiguraMod.debug("Successfully loaded config file");
         } catch (Exception e) {
-            FiguraMod.LOGGER.warn("Failed to load config file! Generating a new one...", e);
+            FiguraMod.LOGGER.warn("Failed to load config file! Resetting all settings...", e);
             setDefaults();
         }
+
+        initializing = false;
     }
 
     public static void saveConfig() {
+        if (initializing)
+            return;
+
         try {
             JsonObject configJson = new JsonObject();
             configJson.addProperty("CONFIG_VERSION", Config.CONFIG_VERSION);

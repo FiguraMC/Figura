@@ -20,11 +20,15 @@ public class ChatScreenMixin {
 
     @ModifyVariable(at = @At("HEAD"), method = "handleChatInput", argsOnly = true)
     private String handleChatInput(String text) {
+        String s = text;
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
         if (avatar != null && !text.isBlank())
-            text = avatar.chatSendMessageEvent(text);
+            s = avatar.chatSendMessageEvent(text);
 
-        return text;
+        if (!text.equals(s))
+            FiguraMod.LOGGER.info("Changed chat message from \"{}\" to \"{}\"", text, s);
+
+        return s;
     }
 
     @Inject(at = @At("HEAD"), method = "render")

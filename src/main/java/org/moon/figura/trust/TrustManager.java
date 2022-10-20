@@ -6,16 +6,16 @@ import net.minecraft.nbt.Tag;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.utils.IOUtils;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class TrustManager {
 
-    //trust maps
+    //container maps
     public static final Map<Trust.Group, TrustContainer.GroupContainer> GROUPS = new LinkedHashMap<>();
-    public static final Map<UUID, TrustContainer.PlayerContainer> PLAYERS = new HashMap<>();
+    private static final Map<UUID, TrustContainer.PlayerContainer> PLAYERS = new HashMap<>();
+
+    //custom trusts
+    public static final List<FiguraTrust> CUSTOM_TRUST = new ArrayList<>();
 
     //main method for loading trust
     public static void init() {
@@ -27,6 +27,9 @@ public class TrustManager {
 
         //then load nbt
         IOUtils.readCacheFile("trust", TrustManager::readNbt);
+
+        //custom trust
+        CUSTOM_TRUST.addAll(IOUtils.loadEntryPoints("figura_trust", FiguraTrust.class));
     }
 
     //read trust from nbt, adding them into the hash maps

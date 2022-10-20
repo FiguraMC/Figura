@@ -41,7 +41,6 @@ import org.moon.figura.model.rendertasks.BlockTask;
 import org.moon.figura.model.rendertasks.ItemTask;
 import org.moon.figura.model.rendertasks.RenderTask;
 import org.moon.figura.model.rendertasks.TextTask;
-import org.moon.figura.trust.Trust;
 import org.moon.figura.utils.IOUtils;
 
 import java.util.HashSet;
@@ -154,11 +153,9 @@ public class FiguraAPIManager {
     private static final Set<FiguraAPI> ENTRYPOINTS = new HashSet<>();
 
     public static void init() {
-        Set<FiguraAPI> set = IOUtils.loadEntryPoints("figura_api", FiguraAPI.class);
-        for (FiguraAPI api : set) {
+        for (FiguraAPI api : IOUtils.loadEntryPoints("figura_api", FiguraAPI.class)) {
             ENTRYPOINTS.add(api);
             WHITELISTED_CLASSES.addAll(api.getWhitelistedClasses());
-            Trust.register(api);
         }
     }
 

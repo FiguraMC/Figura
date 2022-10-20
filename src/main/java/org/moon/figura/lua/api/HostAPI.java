@@ -12,7 +12,6 @@ import org.luaj.vm2.LuaError;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.Badges;
-import org.moon.figura.model.rendering.texture.FiguraTexture;
 import org.moon.figura.config.Config;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
@@ -24,6 +23,7 @@ import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.mixin.gui.ChatScreenAccessor;
+import org.moon.figura.model.rendering.texture.FiguraTexture;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.TextUtils;
@@ -151,7 +151,7 @@ public class HostAPI {
     public void sendChatMessage(@LuaNotNil String message) {
         if (!isHost() || !Config.CHAT_MESSAGES.asBool()) return;
         LocalPlayer player = Minecraft.getInstance().player;
-        if (player != null) player.chat(message.startsWith("/") ? message.substring(1) : message);
+        if (player != null) player.chatSigned(message, null);
     }
 
     @LuaWhitelist
@@ -165,7 +165,7 @@ public class HostAPI {
     public void sendChatCommand(@LuaNotNil String command) {
         if (!isHost() || !Config.CHAT_MESSAGES.asBool()) return;
         LocalPlayer player = Minecraft.getInstance().player;
-        if (player != null) player.chat(command.startsWith("/") ? command : "/" + command);
+        if (player != null) player.commandSigned(command.startsWith("/") ? command.substring(1) : command, null);
     }
 
     @LuaWhitelist
