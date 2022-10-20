@@ -3,12 +3,9 @@ package org.moon.figura.trust;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import org.moon.figura.lua.FiguraAPI;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.FiguraText;
 
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 
 public class Trust {
@@ -31,8 +28,6 @@ public class Trust {
             //CUSTOM_RENDER_LAYER = new Trust("CUSTOM_RENDER_LAYER", List.of(0, 0, 1, 1, 1)),
             CUSTOM_SOUNDS = new Trust("CUSTOM_SOUNDS", 0, 0, 1, 1, 1),
             CUSTOM_HEADS = new Trust("CUSTOM_HEADS", 0, 0, 1, 1, 1);
-
-    public static final HashMap<String, Collection<Trust>> CUSTOM_TRUST = new HashMap<>();
 
     public static final List<Trust> DEFAULT = List.of(
             INIT_INST,
@@ -100,11 +95,6 @@ public class Trust {
         if (group.index >= 0 && group.index < defaults.size())
             return defaults.get(group.index);
         return -1;
-    }
-
-    public static void register(FiguraAPI api) {
-        Collection<Trust> c = api.customTrust();
-        if (c != null) CUSTOM_TRUST.put(api.getName(), c);
     }
 
     public enum Group {

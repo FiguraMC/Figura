@@ -3,7 +3,6 @@ package org.moon.figura.trust;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.MutableComponent;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,15 +42,13 @@ public abstract class TrustContainer {
             return;
 
         CompoundTag custom = nbt.getCompound("custom");
-        for (Map.Entry<String, Collection<Trust>> entry : Trust.CUSTOM_TRUST.entrySet()) {
-            String key = entry.getKey();
-            if (!custom.contains(key))
-                continue;
+        for (FiguraTrust figuraTrust : TrustManager.CUSTOM_TRUST) {
+            String key = figuraTrust.getTitle();
 
             Map<Trust, Integer> map = new HashMap<>();
             CompoundTag customNbt = custom.getCompound(key);
 
-            for (Trust trust : entry.getValue()) {
+            for (Trust trust : figuraTrust.getTrusts()) {
                 if (customNbt.contains(trust.name))
                     map.put(trust, nbt.getInt(trust.name));
             }

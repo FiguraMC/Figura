@@ -124,9 +124,6 @@ public class SliderWidget extends ScrollBarWidget {
         //set steps data
         this.max = maxValue;
         this.stepSize = 1d / (maxValue - 1);
-
-        //update scroll
-        scroll(0d);
     }
 
     public int getIntValue() {

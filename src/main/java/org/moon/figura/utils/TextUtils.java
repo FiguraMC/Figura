@@ -1,5 +1,6 @@
 package org.moon.figura.utils;
 
+import com.google.gson.JsonParser;
 import net.minecraft.client.gui.Font;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
@@ -72,11 +73,11 @@ public class TextUtils {
         Component finalText;
 
         try {
-            char c = text.charAt(0);
-            String json = c == '"' || c == '{' || c == '[' ? text : "\"" + text + "\""; //hacky, ugly
+            //check if its valid json text
+            JsonParser.parseString(text);
 
             //attempt to parse json
-            finalText = Component.Serializer.fromJsonLenient(json);
+            finalText = Component.Serializer.fromJsonLenient(text);
 
             //if failed, throw a dummy exception
             if (finalText == null)

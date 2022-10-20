@@ -4,24 +4,25 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.gui.widgets.SliderWidget;
 import org.moon.figura.gui.widgets.SwitchButton;
+import org.moon.figura.trust.FiguraTrust;
 import org.moon.figura.trust.Trust;
 import org.moon.figura.trust.TrustContainer;
+import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.ui.UIHelper;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class TrustList extends AbstractList {
 
-    private final List<TrustSlider> sliders = new ArrayList<>();
-    private final List<TrustSwitch> switches = new ArrayList<>();
+    private final Map<String, List<AbstractWidget>> trusts = new LinkedHashMap<>();
 
     public TrustList(int x, int y, int width, int height) {
         super(x, y, width, height);
@@ -34,27 +35,40 @@ public class TrustList extends AbstractList {
         UIHelper.setupScissor(x + scissorsX, y + scissorsY, width + scissorsWidth, height + scissorsHeight);
 
         //scrollbar
-        int lineHeight = Minecraft.getInstance().font.lineHeight;
+        Font font = Minecraft.getInstance().font;
+        int lineHeight = font.lineHeight;
         int entryHeight = 27 + lineHeight; //11 (slider) + font height + 16 (padding)
-        int totalHeight = (sliders.size() + switches.size()) * entryHeight;
+        int titleHeight = 16 + lineHeight;
+
+        int size = 0;
+        for (List<AbstractWidget> value : trusts.values())
+            size += value.size();
+        int totalHeight = size * entryHeight;
+
+        boolean titles = trusts.size() > 1;
+        if (titles) totalHeight += trusts.size() * titleHeight;
+
         scrollBar.y = y + 4;
         scrollBar.visible = totalHeight > height;
         scrollBar.setScrollRatio(entryHeight, totalHeight - height);
 
-        //render sliders
+        //render
         int xOffset = scrollBar.visible ? 8 : 15;
         int yOffset = scrollBar.visible ? (int) -(Mth.lerp(scrollBar.getScrollProgress(), -16, totalHeight - height)) : 16;
-        for (TrustSlider slider : sliders) {
-            slider.x = x + xOffset;
-            slider.y = y + yOffset;
-            yOffset += 27 + lineHeight;
-        }
 
-        //render switches
-        for (TrustSwitch trustSwitch : switches) {
-            trustSwitch.x = x + xOffset;
-            trustSwitch.y = y + yOffset;
-            yOffset += 27 + lineHeight;
+        for (Map.Entry<String, List<AbstractWidget>> entry : trusts.entrySet()) {
+            //titles
+            if (titles) {
+                UIHelper.drawCenteredString(stack, font, Component.translatable(entry.getKey()), x + (width - xOffset) / 2, y + yOffset, 0xFFFFFF);
+                yOffset += titleHeight;
+            }
+
+            //elements
+            for (AbstractWidget widget : entry.getValue()) {
+                widget.x = x + xOffset;
+                widget.y = y + yOffset;
+                yOffset += entryHeight;
+            }
         }
 
         //render children
@@ -66,26 +80,38 @@ public class TrustList extends AbstractList {
 
     public void updateList(TrustContainer container) {
         //clear old widgets
-        sliders.forEach(children::remove);
-        sliders.clear();
+        for (List<AbstractWidget> list : trusts.values())
+            list.forEach(children::remove);
+        trusts.clear();
 
-        //clear old switches
-        switches.forEach(children::remove);
-        switches.clear();
+        //add new trusts
 
-        //add new sliders
-        for (Trust trust : Trust.DEFAULT) {
+        //defaults
+        trusts.put(FiguraMod.MOD_ID, generateWidgets(container, Trust.DEFAULT, "figura"));
+
+        //custom
+        for (FiguraTrust trust : TrustManager.CUSTOM_TRUST)
+            trusts.put(trust.getTitle(), generateWidgets(container, trust.getTrusts(), trust.getTitle()));
+    }
+
+    private List<AbstractWidget> generateWidgets(TrustContainer container, Collection<Trust> coll, String id) {
+        List<AbstractWidget> list = new ArrayList<>();
+
+        for (Trust trust : coll) {
             int lineHeight = Minecraft.getInstance().font.lineHeight;
+
+            AbstractWidget widget;
             if (!trust.isToggle) {
-                TrustSlider slider = new TrustSlider(x + 8, y, width - 30, 11 + lineHeight, container, trust, this);
-                sliders.add(slider);
-                children.add(slider);
+                widget = new TrustSlider(x + 8, y, width - 30, 11 + lineHeight, container, trust, this, id);
             } else {
-                TrustSwitch trustSwitch = new TrustSwitch(x + 8, y, width - 30, 20 + lineHeight, container, trust, this);
-                switches.add(trustSwitch);
-                children.add(trustSwitch);
+                widget = new TrustSwitch(x + 8, y, width - 30, 20 + lineHeight, container, trust, this, id);
             }
+
+            list.add(widget);
+            children.add(widget);
         }
+
+        return list;
     }
 
     private static class TrustSlider extends SliderWidget {
@@ -95,20 +121,22 @@ public class TrustList extends AbstractList {
         private final TrustContainer container;
         private final Trust trust;
         private final TrustList parent;
+        private final String id;
         private Component value;
         private boolean changed;
 
-        public TrustSlider(int x, int y, int width, int height, TrustContainer container, Trust trust, TrustList parent) {
-            super(x, y, width, height, Mth.clamp(container.get(trust) / (trust.max + 1d), 0d, 1d), trust.max, false);
+        public TrustSlider(int x, int y, int width, int height, TrustContainer container, Trust trust, TrustList parent, String id) {
+            super(x, y, width, height, Mth.clamp(container.get(trust) / (trust.max + 1d), 0d, 1d), trust.max / trust.stepSize + 1, trust.stepSize > 1);
             this.container = container;
             this.trust = trust;
             this.parent = parent;
+            this.id = id;
             this.value = trust.checkInfinity(container.get(trust)) ? INFINITY : Component.literal(String.valueOf(container.get(trust)));
             this.changed = container.isChanged(trust);
 
             setAction(slider -> {
                 //update trust
-                int value = (int) ((trust.max + 1d) * slider.getScrollProgress());
+                int value = this.showSteps ? ((SliderWidget) slider).getIntValue() * trust.stepSize : (int) ((trust.max + 1d) * slider.getScrollProgress());
                 boolean infinity = trust.checkInfinity(value);
 
                 container.trustSettings.put(trust, infinity ? Integer.MAX_VALUE : value);
@@ -130,7 +158,7 @@ public class TrustList extends AbstractList {
             stack.popPose();
 
             //texts
-            MutableComponent name = FiguraText.of("trust." + trust.name.toLowerCase());
+            MutableComponent name = Component.translatable(id + ".trust.value." + trust.name.toLowerCase());
             if (changed) name = Component.literal("*").setStyle(FiguraMod.getAccentColor()).append(name).append("*");
 
             font.draw(stack, name, x + 1, y + 1, 0xFFFFFF);
@@ -163,14 +191,16 @@ public class TrustList extends AbstractList {
         private final TrustContainer container;
         private final Trust trust;
         private final TrustList parent;
+        private final String id;
         private Component value;
         private boolean changed;
 
-        public TrustSwitch(int x, int y, int width, int height, TrustContainer container, Trust trust, TrustList parent) {
+        public TrustSwitch(int x, int y, int width, int height, TrustContainer container, Trust trust, TrustList parent, String id) {
             super(x, y, width, height, trust.asBoolean(container.get(trust)));
             this.container = container;
             this.trust = trust;
             this.parent = parent;
+            this.id = id;
             this.changed = container.isChanged(trust);
             this.value = FiguraText.of("trust." + (toggled ? "enabled" : "disabled"));
         }
@@ -200,7 +230,7 @@ public class TrustList extends AbstractList {
             stack.popPose();
 
             //texts
-            MutableComponent name = FiguraText.of("trust." + trust.name.toLowerCase());
+            MutableComponent name = Component.translatable(id + ".trust.value." + trust.name.toLowerCase());
             if (changed) name = Component.literal("*").setStyle(FiguraMod.getAccentColor()).append(name).append("*");
 
             font.draw(stack, name, x + 1, y + 1, 0xFFFFFF);
