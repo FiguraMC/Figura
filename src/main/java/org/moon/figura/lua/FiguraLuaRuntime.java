@@ -74,6 +74,7 @@ public class FiguraLuaRuntime {
         setupFiguraSandbox();
 
         FiguraAPIManager.setupTypesAndAPIs(this);
+        setUser(null);
 
         loadExtraLibraries();
 
@@ -95,8 +96,15 @@ public class FiguraLuaRuntime {
     }
 
     public void setUser(Entity user) {
-        entityAPI = EntityAPI.wrap(user);
-        userGlobals.set("user", typeManager.javaToLua(entityAPI).arg1());
+        Object val;
+        if (user == null) {
+            entityAPI = null;
+            val = EntityAPI.EMPTY_ENTITY;
+        } else {
+            val = entityAPI = EntityAPI.wrap(user);
+        }
+
+        userGlobals.set("user", typeManager.javaToLua(val).arg1());
         userGlobals.set("player", userGlobals.get("user"));
     }
 
@@ -267,7 +275,7 @@ public class FiguraLuaRuntime {
 
     // error ^-^ //
 
-    public void error(Exception e) {
+    public void error(Throwable e) {
         LuaError err = e instanceof LuaError lua ? lua : new LuaError(e);
         FiguraLuaPrinter.sendLuaError(err, owner);
         owner.scriptError = true;

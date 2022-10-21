@@ -371,6 +371,10 @@ public class FiguraLuaPrinter {
         chatQueue.offer(message);
     }
 
+    public static void clearPrintQueue() {
+        chatQueue.clear();
+    }
+
     public static void printChatFromQueue() {
         if (chatQueue.isEmpty())
             return;
@@ -394,7 +398,9 @@ public class FiguraLuaPrinter {
         }
 
         String print = toPrint.getString();
-        if (!print.isEmpty())
+        if (!print.isEmpty()) {
+            charsQueued -= print.length();
             FiguraMod.sendChatMessage(print.endsWith("\n") ? TextUtils.substring(toPrint, 0, print.length() - 1) : toPrint);
+        }
     }
 }

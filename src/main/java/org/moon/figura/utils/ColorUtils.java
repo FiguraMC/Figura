@@ -183,7 +183,7 @@ public class ColorUtils {
         return rainbow(speed, 0d, saturation, light);
     }
     public static FiguraVec3 rainbow(double speed, double offset, double saturation, double light) {
-        return hsvToRGB(FiguraVec3.of(((FiguraMod.ticks * speed) + offset) % 255 / 255f, saturation, light));
+        return hsvToRGB(FiguraVec3.of(((FiguraMod.getCommonTick() * speed) + offset) % 255 / 255f, saturation, light));
     }
 
     public static int rgbaToIntABGR(FiguraVec4 rgba) {

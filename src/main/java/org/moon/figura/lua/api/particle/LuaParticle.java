@@ -2,6 +2,7 @@ package org.moon.figura.lua.api.particle;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
+import net.minecraft.client.particle.WakeParticle;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaMethodDoc;
@@ -128,7 +129,7 @@ public class LuaParticle {
             ),
             value = "particle.lifetime")
     public LuaParticle lifetime(int age) {
-        particle.setLifetime(age);
+        particle.setLifetime(Math.max(particle instanceof WakeParticle ? Math.min(age, 60) : age, 0));
         return this;
     }
 

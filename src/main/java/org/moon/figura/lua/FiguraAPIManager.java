@@ -70,6 +70,7 @@ public class FiguraAPIManager {
         add(FiguraMat3.class);
         add(FiguraMat4.class);
 
+        add(EntityAPI.NullEntity.class);
         add(EntityAPI.class);
         add(LivingEntityAPI.class);
         add(PlayerAPI.class);

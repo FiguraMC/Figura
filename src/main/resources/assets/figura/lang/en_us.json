@@ -708,6 +708,7 @@
   "figura.docs.client.get_active_resource_packs": "Returns a table with the active resource pack names.",
   "figura.docs.client.get_figura_version": "Gets the client Figura version.",
   "figura.docs.client.compare_versions": "Compares two versions if they are less than (-1), equals (0) or greater than (1).",
+  "figura.docs.client.int_uuid_to_string": "Converts an int array UUID (as 4 separated arguments) into its hexadecimal string representation.",
 
 
   "figura.docs.entity": "Acts as a proxy for an entity in the Minecraft world.",
