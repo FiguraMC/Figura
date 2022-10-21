@@ -273,7 +273,7 @@ public class Avatar {
 
                 limit.use(luaRuntime.getInstructions());
                 return ret;
-            } catch (Exception e) {
+            } catch (Exception | StackOverflowError e) {
                 if (luaRuntime != null)
                     luaRuntime.error(e);
             }

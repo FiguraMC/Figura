@@ -100,12 +100,9 @@ public class TrustManager {
             }
 
             //get players nbt
-            for (Map.Entry<UUID, TrustContainer.PlayerContainer> entry : PLAYERS.entrySet()) {
-                UUID uuid = entry.getKey();
-                TrustContainer trust = entry.getValue();
-
+            for (TrustContainer.PlayerContainer trust : PLAYERS.values()) {
                 //dont save local or unchanged trusts
-                if (FiguraMod.isLocal(uuid) || trust.getGroup() == Trust.Group.LOCAL || !trust.hasChanges())
+                if (isLocal(trust) || (!trust.hasChanges() && trust.getGroup() == Trust.Group.UNTRUSTED))
                     continue;
 
                 CompoundTag container = new CompoundTag();

@@ -12,6 +12,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
+import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.moon.figura.avatar.Avatar;
@@ -39,6 +40,8 @@ import java.util.UUID;
         value = "entity"
 )
 public class EntityAPI<T extends Entity> {
+
+    public static final NullEntity EMPTY_ENTITY = new NullEntity();
 
     protected final UUID entityUUID;
     protected T entity; //We just do not care about memory anymore so, just have something not wrapped in a WeakReference
@@ -419,5 +422,25 @@ public class EntityAPI<T extends Entity> {
     public String toString() {
         checkEntity();
         return (entity.hasCustomName() ? entity.getCustomName().getString() + " (" + getType() + ")" : getType() ) + " (Entity)";
+    }
+
+    @LuaWhitelist
+    @LuaTypeDoc(
+            name = "NullEntity",
+            value = ""
+    )
+    public static final class NullEntity {
+
+        private NullEntity() {}
+
+        @LuaWhitelist
+        public Object __index(Object o) {
+            throw new LuaError("Tried to access the Entity API before its initialization in the ENTITY_INIT event");
+        }
+
+        @Override
+        public String toString() {
+            return "Uninitialized Entity API";
+        }
     }
 }

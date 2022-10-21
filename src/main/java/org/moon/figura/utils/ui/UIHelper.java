@@ -112,6 +112,14 @@ public class UIHelper extends GuiComponent {
 
         entity.setInvisible(false);
 
+        //vehicle
+        LivingEntity vehicle = null;
+        float vBodyYaw = 0f;
+        if (entity.getVehicle() instanceof LivingEntity l) {
+            vehicle = l;
+            vBodyYaw = l.yBodyRot;
+        }
+
         //apply matrix transformers
         stack.pushPose();
         stack.translate(x, y, renderMode == EntityRenderMode.MINECRAFT_GUI ? 200d : 0d);
@@ -146,6 +154,9 @@ public class UIHelper extends GuiComponent {
                 entity.yBodyRot = 0;
                 entity.yHeadRot = headYaw - bodyYaw;
 
+                if (vehicle != null)
+                    vehicle.yBodyRot = vBodyYaw - bodyYaw;
+
                 //lightning
                 Lighting.setupForEntityInInventory();
 
@@ -158,12 +169,14 @@ public class UIHelper extends GuiComponent {
                 quaternion2.conj();
 
                 //rotations
-
                 float rot = 180f - yaw;
                 entity.setXRot(0f);
                 entity.setYRot(rot);
                 entity.yBodyRot = rot;
                 entity.yHeadRot = rot;
+
+                if (vehicle != null)
+                    vehicle.yBodyRot = rot;
 
                 //set up lighting
                 Lighting.setupForFlatItems();
@@ -182,7 +195,6 @@ public class UIHelper extends GuiComponent {
                 quaternion2.conj();
 
                 //rotations
-
                 entity.setXRot(-angle2);
                 entity.setYRot(180f + angle * 40f);
                 entity.yBodyRot = 180f + angle * 20f;
@@ -197,12 +209,13 @@ public class UIHelper extends GuiComponent {
         }
 
         //setup entity renderer
-        EntityRenderDispatcher dispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
+        Minecraft minecraft = Minecraft.getInstance();
+        EntityRenderDispatcher dispatcher = minecraft.getEntityRenderDispatcher();
         boolean renderHitboxes = dispatcher.shouldRenderHitBoxes();
         dispatcher.setRenderHitBoxes(false);
         dispatcher.setRenderShadow(false);
         dispatcher.overrideCameraOrientation(quaternion2);
-        MultiBufferSource.BufferSource immediate = Minecraft.getInstance().renderBuffers().bufferSource();
+        MultiBufferSource.BufferSource immediate = minecraft.renderBuffers().bufferSource();
 
         //render
         UIHelper.paperdoll = true;
@@ -225,6 +238,10 @@ public class UIHelper extends GuiComponent {
         entity.yBodyRot = bodyYaw;
         entity.yHeadRot = headYaw;
         entity.setInvisible(invisible);
+
+        //vehicle
+        if (vehicle != null)
+            vehicle.yBodyRot = vBodyYaw;
 
         //pop matrix
         stack.popPose();

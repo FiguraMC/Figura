@@ -174,4 +174,10 @@ public class FiguraMod implements ClientModInitializer {
         int color = avatar != null ? ColorUtils.userInputHex(avatar.color, ColorUtils.Colors.FRAN_PINK.vec) : ColorUtils.Colors.FRAN_PINK.hex;
         return Style.EMPTY.withColor(color);
     }
+
+    public static long getCommonTick() {
+        if (Minecraft.getInstance().level != null)
+            return Minecraft.getInstance().level.getGameTime();
+        return ticks;
+    }
 }

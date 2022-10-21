@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.Window;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.world.phys.Vec3;
@@ -22,6 +23,7 @@ import org.moon.figura.utils.Version;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -305,6 +307,22 @@ public class ClientAPI {
             throw new LuaError("Cannot parse version " + "\"" + ver1 + "\"");
 
         return v1.compareTo(v2);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = {Integer.class, Integer.class, Integer.class, Integer.class},
+                    argumentNames = {"a", "b", "c", "d"}
+            ),
+            value = "client.int_uuid_to_string")
+    public static String intUUIDToString(int a, int b, int c, int d) {
+        try {
+            UUID uuid = UUIDUtil.uuidFromIntArray(new int[]{a, b, c, d});
+            return uuid.toString();
+        } catch (Exception ignored) {
+            throw new LuaError("Failed to parse uuid");
+        }
     }
 
     @Override

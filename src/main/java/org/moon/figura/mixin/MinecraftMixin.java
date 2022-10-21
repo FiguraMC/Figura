@@ -17,6 +17,7 @@ import org.moon.figura.config.Config;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.PopupMenu;
 import org.moon.figura.gui.ActionWheel;
+import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.lua.api.particle.ParticleAPI;
 import org.moon.figura.lua.api.sound.SoundAPI;
 import org.moon.figura.utils.EntityUtils;
@@ -111,6 +112,7 @@ public abstract class MinecraftMixin {
     @Inject(at = @At("RETURN"), method = "clearLevel(Lnet/minecraft/client/gui/screens/Screen;)V")
     private void clearLevel(Screen screen, CallbackInfo ci) {
         AvatarManager.clearAllAvatars();
+        FiguraLuaPrinter.clearPrintQueue();
     }
 
     @Inject(at = @At("RETURN"), method = "setLevel")
