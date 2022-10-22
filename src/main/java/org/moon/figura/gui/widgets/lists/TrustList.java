@@ -126,7 +126,7 @@ public class TrustList extends AbstractList {
         private boolean changed;
 
         public TrustSlider(int x, int y, int width, int height, TrustContainer container, Trust trust, TrustList parent, String id) {
-            super(x, y, width, height, Mth.clamp(container.get(trust) / (trust.max + 1d), 0d, 1d), trust.max / trust.stepSize + 1, trust.stepSize > 1);
+            super(x, y, width, height, Mth.clamp(container.get(trust) / (trust.max + 1d), 0d, 1d), trust.max / trust.stepSize + 1, trust.showSteps());
             this.container = container;
             this.trust = trust;
             this.parent = parent;

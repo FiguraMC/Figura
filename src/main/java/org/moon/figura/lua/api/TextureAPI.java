@@ -9,6 +9,7 @@ import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.model.rendering.texture.FiguraTexture;
+import org.moon.figura.trust.Trust;
 import org.moon.figura.utils.ColorUtils;
 
 import java.util.ArrayList;
@@ -23,7 +24,6 @@ import java.util.Map;
 public class TextureAPI {
 
     private static final int TEXTURE_LIMIT = 128;
-    private static final int MAX_SIZE = 128;
 
     private final Avatar owner;
 
@@ -37,8 +37,9 @@ public class TextureAPI {
     }
 
     private FiguraTexture register(String name, NativeImage image) {
-        if (image.getWidth() > MAX_SIZE || image.getHeight() > MAX_SIZE)
-            throw new LuaError("Texture exceeded max size of " + MAX_SIZE + " x " + MAX_SIZE + " resolution, got " + image.getWidth() + " x " + image.getHeight());
+        int max = owner.trust.get(Trust.TEXTURE_SIZE);
+        if (image.getWidth() > max || image.getHeight() > max)
+            throw new LuaError("Texture exceeded max size of " + max + " x " + max + " resolution, got " + image.getWidth() + " x " + image.getHeight());
 
         FiguraTexture oldText = get(name);
         if (oldText != null)

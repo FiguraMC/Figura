@@ -20,8 +20,14 @@ public class Trust {
             COMPLEXITY = new Trust("COMPLEXITY", 0, 8191, 0, 512, 2048, Integer.MAX_VALUE, Integer.MAX_VALUE),
             PARTICLES = new Trust("PARTICLES", 0, 63, 0, 4, 32, Integer.MAX_VALUE, Integer.MAX_VALUE),
             SOUNDS = new Trust("SOUNDS", 0, 63, 0, 4, 32, Integer.MAX_VALUE, Integer.MAX_VALUE),
-            VOLUME = new Trust("VOLUME", 0, 99, 0, 100, 100, 100, 100),
+            VOLUME = new Trust("VOLUME", 0, 99, 0, 100, 100, 100, 100) {
+                @Override
+                public boolean checkInfinity(int value) {
+                    return false;
+                }
+            },
             BB_ANIMATIONS = new Trust("BB_ANIMATIONS", 0, 255, 0, 32, 128, Integer.MAX_VALUE, Integer.MAX_VALUE),
+            TEXTURE_SIZE = new Trust("TEXTURE_SIZE", 0, 2048, 64, 0, 128, 512, 2048, 2048),
             VANILLA_MODEL_EDIT = new Trust("VANILLA_MODEL_EDIT", 0, 0, 1, 1, 1),
             NAMEPLATE_EDIT = new Trust("NAMEPLATE_EDIT", 0, 0, 1, 1, 1),
             OFFSCREEN_RENDERING = new Trust("OFFSCREEN_RENDERING", 0, 0, 1, 1, 1),
@@ -40,6 +46,7 @@ public class Trust {
             SOUNDS,
             VOLUME,
             BB_ANIMATIONS,
+            TEXTURE_SIZE,
             VANILLA_MODEL_EDIT,
             NAMEPLATE_EDIT,
             OFFSCREEN_RENDERING,
@@ -61,7 +68,7 @@ public class Trust {
     //used only for sliders
     public final Integer min;
     public final Integer max;
-    public final Integer stepSize;
+    public final int stepSize;
 
     //toggle constructor
     public Trust(String name, int blocked, int untrusted, int trusted, int friend, int local) {
@@ -72,7 +79,7 @@ public class Trust {
     public Trust(String name, Integer min, Integer max, int blocked, int untrusted, int trusted, int friend, int local) {
         this(name, min, max, 1, blocked, untrusted, trusted, friend, local);
     }
-    public Trust(String name, Integer min, Integer max, Integer stepSize, int blocked, int untrusted, int trusted, int friend, int local) {
+    public Trust(String name, Integer min, Integer max, int stepSize, int blocked, int untrusted, int trusted, int friend, int local) {
         this.name = name;
         this.isToggle = min == null || max == null;
         this.min = min;
@@ -83,7 +90,12 @@ public class Trust {
 
     //infinity check :p
     public boolean checkInfinity(int value) {
-        return max != null && value > max && this != VOLUME;
+        return max != null && value > max;
+    }
+
+    //if this slider should show the steps
+    public boolean showSteps() {
+        return stepSize > 1;
     }
 
     //transform to boolean
