@@ -29,7 +29,7 @@ public class SwitchButton extends TexturedButton {
 
     //default texture constructor
     public SwitchButton(int x, int y, int width, int height, boolean toggled) {
-        super(x, y, width, height, 0, 0, 10, SWITCH_TEXTURE, 20, 40, null, button -> {});
+        super(x, y, width, height, 0, 0, 10, SWITCH_TEXTURE, 30, 40, null, button -> {});
         this.toggled = toggled;
         this.headPos = toggled ? 20f : 0f;
         defaultTexture = true;
@@ -66,11 +66,11 @@ public class SwitchButton extends TexturedButton {
         UIHelper.setupTexture(SWITCH_TEXTURE);
 
         //render switch
-        blit(stack, x + 5, y + 5, 20, 10, 0f, this.isHoveredOrFocused() ? 10f : 0f, 20, 10, 20, 40);
+        blit(stack, x + 5, y + 5, 20, 10, 10f, (this.toggled ? 20f : 0f) + (this.isHoveredOrFocused() ? 10f : 0f), 20, 10, 30, 40);
 
         //render head
         headPos = (float) Mth.lerp(1f - Math.pow(0.2f, delta), headPos, this.toggled ? 20f : 0f);
-        blit(stack, Math.round(x + headPos), y, 10, 20, this.isHoveredOrFocused() ? 10f : 0f, 20f, 10, 20, 20, 40);
+        blit(stack, Math.round(x + headPos), y, 10, 20, 0f, this.isHoveredOrFocused() ? 20f : 0f, 10, 20, 30, 40);
     }
 
     public boolean isToggled() {

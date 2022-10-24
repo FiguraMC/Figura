@@ -11,6 +11,7 @@ import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -26,6 +27,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.gui.screens.AbstractPanelScreen;
+import org.moon.figura.gui.widgets.AbstractContainerElement;
 import org.moon.figura.gui.widgets.ContextMenu;
 import org.moon.figura.math.vector.FiguraVec4;
 import org.moon.figura.utils.FiguraIdentifier;
@@ -372,7 +374,35 @@ public class UIHelper extends GuiComponent {
         RenderSystem.enableScissor((int) (x * scale), (int) (screenY - y * scale - scaledHeight), scaledWidth, scaledHeight);
     }
 
-    public static void highlight(PoseStack stack, int x, int y, int width, int height, int screenW, int screenH) {
+    public static void highlight(PoseStack stack, Object component, Component text) {
+        //object
+        int x, y, width, height;
+        if (component instanceof AbstractWidget w) {
+            x = w.x; y = w.y;
+            width = w.getWidth();
+            height = w.getHeight();
+        } else if (component instanceof AbstractContainerElement c) {
+            x = c.x; y = c.y;
+            width = c.width;
+            height = c.height;
+        } else {
+            return;
+        }
+
+        //screen
+        int screenW, screenH;
+        if (Minecraft.getInstance().screen instanceof AbstractPanelScreen panel) {
+            screenW = panel.width;
+            screenH = panel.height;
+
+            if (text != null)
+                panel.tooltip = text;
+        } else {
+            return;
+        }
+
+        //draw
+
         //left
         fill(stack, 0, 0, x, y + height, 0xBB000000);
         //right
@@ -383,7 +413,7 @@ public class UIHelper extends GuiComponent {
         fill(stack, 0, y + height, x + width, screenH, 0xBB000000);
 
         //outline
-        fillOutline(stack, x - 1, y - 1, width + 2, height + 2, 0xFFFFFFFF);
+        fillOutline(stack, Math.max(x - 1, 0), Math.max(y - 1, 0), Math.min(width + 2, screenW), Math.min(height + 2, screenH), 0xFFFFFFFF);
     }
 
     //widget.isMouseOver() returns false if the widget is disabled or invisible

@@ -10,6 +10,7 @@ import org.luaj.vm2.lib.VarArgFunction;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.config.Config;
+import org.moon.figura.trust.Trust;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.TextUtils;
 
@@ -66,7 +67,7 @@ public class FiguraLuaPrinter {
 
     //print an error, errors should always show up on chat
     public static void sendLuaError(LuaError error, Avatar owner) {
-        if (!Config.LOG_OTHERS.asBool() && !FiguraMod.isLocal(owner.owner))
+        if ((!Config.LOG_OTHERS.asBool() && !FiguraMod.isLocal(owner.owner)) || owner.trust.getGroup() == Trust.Group.BLOCKED)
             return;
 
         //Jank as hell

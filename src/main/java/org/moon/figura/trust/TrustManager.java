@@ -50,7 +50,6 @@ public class TrustManager {
                 TrustContainer trust = GROUPS.get(group);
                 trust.loadNbt(compound.getCompound("trust"));
             } catch (Exception ignored) {
-                ignored.printStackTrace();
                 FiguraMod.LOGGER.warn("Failed to load trust for \"{}\"", name);
             }
         }
@@ -76,7 +75,6 @@ public class TrustManager {
 
                 PLAYERS.put(uuid, trust);
             } catch (Exception ignored) {
-                ignored.printStackTrace();
                 FiguraMod.LOGGER.warn("Failed to load trust for \"{}\"", name);
             }
         }
@@ -91,7 +89,7 @@ public class TrustManager {
 
             //get groups nbt
             for (TrustContainer group : GROUPS.values()) {
-                if (group.getGroup() == Trust.Group.LOCAL || !group.hasChanges())
+                if (group.getGroup() == Trust.Group.LOCAL || group.getGroup() == Trust.Group.BLOCKED || !group.hasChanges())
                     continue;
 
                 CompoundTag container = new CompoundTag();

@@ -303,9 +303,30 @@ public enum Config {
 
     public enum InputType {
         ANY(s -> true),
-        INT(s -> s.matches("^[-+]?\\d*$")),
-        POSITIVE_INT(s -> s.matches("^\\+?\\d*$")),
-        FLOAT(s -> s.matches("^[-+]?\\d*(\\.(\\d*)?)?$")),
+        INT(s -> {
+            try {
+                Integer.parseInt(s);
+                return true;
+            } catch (Exception ignored) {
+                return false;
+            }
+        }),
+        POSITIVE_INT(s -> {
+            try {
+                Integer i = Integer.parseInt(s);
+                return i >= 0;
+            } catch (Exception ignored) {
+                return false;
+            }
+        }),
+        FLOAT(s -> {
+            try {
+                Float f = Float.parseFloat(s);
+                return !f.isInfinite();
+            } catch (Exception ignored) {
+                return false;
+            }
+        }),
         HEX_COLOR(s -> s.matches("^#?(?i)[\\da-f]{0,6}$") || ColorUtils.Colors.getColor(s) != null),
         FOLDER_PATH(s -> {
             try {

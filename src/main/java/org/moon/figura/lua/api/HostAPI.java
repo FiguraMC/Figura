@@ -294,7 +294,7 @@ public class HostAPI {
     public String getScreen() {
         if (!isHost() || Minecraft.getInstance().screen == null)
             return null;
-        return Minecraft.getInstance().screen.getClass().getSimpleName();
+        return Minecraft.getInstance().screen.getClass().getName();
     }
 
     @LuaWhitelist

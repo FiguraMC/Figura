@@ -12,6 +12,8 @@ import org.luaj.vm2.LuaError;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.lua.api.entity.EntityAPI;
+import org.moon.figura.lua.api.entity.PlayerAPI;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
@@ -323,6 +325,12 @@ public class ClientAPI {
         } catch (Exception ignored) {
             throw new LuaError("Failed to parse uuid");
         }
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("client.get_viewer")
+    public static EntityAPI<?> getViewer() {
+        return PlayerAPI.wrap(Minecraft.getInstance().player);
     }
 
     @Override
