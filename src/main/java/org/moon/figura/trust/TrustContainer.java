@@ -215,7 +215,12 @@ public abstract class TrustContainer {
 
         @Override
         public void writeNbt(CompoundTag nbt) {
-            super.writeNbt(nbt);
+            if (this.getGroup() != Trust.Group.BLOCKED) {
+                super.writeNbt(nbt);
+            } else {
+                nbt.putString("name", this.name);
+            }
+
             //parent
             nbt.putString("parent", parent.name);
         }

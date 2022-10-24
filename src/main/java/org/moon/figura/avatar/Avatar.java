@@ -717,10 +717,8 @@ public class Avatar {
         runtime.setInstructionLimit(init.remaining);
 
         events.offer(() -> {
-            if (runtime.init(autoScripts)) {
+            if (runtime.init(autoScripts))
                 init.use(runtime.getInstructions());
-                this.luaRuntime = runtime;
-            }
             return null;
         });
     }

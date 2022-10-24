@@ -40,7 +40,7 @@ public class ProfileScreen extends AbstractPanelScreen {
 
     @Override
     public void renderOverlays(PoseStack stack, int mouseX, int mouseY, float delta) {
-        UIHelper.highlight(stack, button.x, button.y ,button.getWidth(), button.getHeight(), this.width, this.height);
+        UIHelper.highlight(stack, button, TextUtils.tryParseJson("{\"text\":\"🦐🦐🦐🦐\",\"font\":\"figura:default\"}"));
         super.renderOverlays(stack, mouseX, mouseY, delta);
     }
 }

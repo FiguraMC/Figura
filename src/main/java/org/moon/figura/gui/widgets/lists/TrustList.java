@@ -5,24 +5,31 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.util.Mth;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.gui.widgets.SliderWidget;
 import org.moon.figura.gui.widgets.SwitchButton;
+import org.moon.figura.gui.widgets.TextField;
 import org.moon.figura.trust.FiguraTrust;
 import org.moon.figura.trust.Trust;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
+import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.ui.UIHelper;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 public class TrustList extends AbstractList {
 
-    private final Map<String, List<AbstractWidget>> trusts = new LinkedHashMap<>();
+    public boolean precise = false;
+
+    private final Map<String, List<GuiEventListener>> trusts = new LinkedHashMap<>();
 
     public TrustList(int x, int y, int width, int height) {
         super(x, y, width, height);
@@ -41,7 +48,7 @@ public class TrustList extends AbstractList {
         int titleHeight = 16 + lineHeight;
 
         int size = 0;
-        for (List<AbstractWidget> value : trusts.values())
+        for (List<GuiEventListener> value : trusts.values())
             size += value.size();
         int totalHeight = size * entryHeight;
 
@@ -56,7 +63,7 @@ public class TrustList extends AbstractList {
         int xOffset = scrollBar.visible ? 8 : 15;
         int yOffset = scrollBar.visible ? (int) -(Mth.lerp(scrollBar.getScrollProgress(), -16, totalHeight - height)) : 16;
 
-        for (Map.Entry<String, List<AbstractWidget>> entry : trusts.entrySet()) {
+        for (Map.Entry<String, List<GuiEventListener>> entry : trusts.entrySet()) {
             //titles
             if (titles) {
                 UIHelper.drawCenteredString(stack, font, Component.translatable(entry.getKey()), x + (width - xOffset) / 2, y + yOffset, 0xFFFFFF);
@@ -64,9 +71,13 @@ public class TrustList extends AbstractList {
             }
 
             //elements
-            for (AbstractWidget widget : entry.getValue()) {
-                widget.x = x + xOffset;
-                widget.y = y + yOffset;
+            for (GuiEventListener widget : entry.getValue()) {
+                if (widget instanceof AbstractWidget w) {
+                    w.x = x + xOffset;
+                    w.y = y + yOffset;
+                } else if (widget instanceof TextField t) {
+                    t.setPos(x + xOffset, y + yOffset);
+                }
                 yOffset += entryHeight;
             }
         }
@@ -80,7 +91,7 @@ public class TrustList extends AbstractList {
 
     public void updateList(TrustContainer container) {
         //clear old widgets
-        for (List<AbstractWidget> list : trusts.values())
+        for (List<GuiEventListener> list : trusts.values())
             list.forEach(children::remove);
         trusts.clear();
 
@@ -94,15 +105,18 @@ public class TrustList extends AbstractList {
             trusts.put(trust.getTitle(), generateWidgets(container, trust.getTrusts(), trust.getTitle()));
     }
 
-    private List<AbstractWidget> generateWidgets(TrustContainer container, Collection<Trust> coll, String id) {
-        List<AbstractWidget> list = new ArrayList<>();
+    private List<GuiEventListener> generateWidgets(TrustContainer container, Collection<Trust> coll, String id) {
+        List<GuiEventListener> list = new ArrayList<>();
 
         for (Trust trust : coll) {
             int lineHeight = Minecraft.getInstance().font.lineHeight;
 
-            AbstractWidget widget;
+            GuiEventListener widget;
             if (!trust.isToggle) {
-                widget = new TrustSlider(x + 8, y, width - 30, 11 + lineHeight, container, trust, this, id);
+                if (!precise)
+                    widget = new TrustSlider(x + 8, y, width - 30, 11 + lineHeight, container, trust, this, id);
+                else
+                    widget = new TrustField(x + 8, y, width - 30, 11 + lineHeight, container, trust, this, id);
             } else {
                 widget = new TrustSwitch(x + 8, y, width - 30, 20 + lineHeight, container, trust, this, id);
             }
@@ -246,6 +260,107 @@ public class TrustList extends AbstractList {
                 container.reset(trust);
                 this.parent.updateList(container);
                 playDownSound(Minecraft.getInstance().getSoundManager());
+                return true;
+            }
+
+            return super.mouseClicked(mouseX, mouseY, button);
+        }
+
+        @Override
+        public boolean isMouseOver(double mouseX, double mouseY) {
+            return this.parent.isInsideScissors(mouseX, mouseY) && super.isMouseOver(mouseX, mouseY);
+        }
+    }
+
+    private static class TrustField extends TextField {
+
+        private final static Predicate<String> validator = s -> {
+            try {
+                Integer i = Integer.parseInt(s);
+                return i >= 0;
+            } catch (Exception ignored) {
+                return false;
+            }
+        };
+
+        private final TrustContainer container;
+        private final Trust trust;
+        private final TrustList parent;
+        private final String id;
+        private Component value;
+        private boolean changed;
+
+        public TrustField(int x, int y, int width, int height, TrustContainer container, Trust trust, TrustList parent, String id) {
+            super(x, y, width, height, null, null);
+
+            this.container = container;
+            this.trust = trust;
+            this.parent = parent;
+            this.id = id;
+            String val = String.valueOf(container.get(trust));
+            this.value = Component.literal(val);
+            this.changed = container.isChanged(trust);
+
+            this.getField().setValue(val);
+            this.getField().setResponder(text -> {
+                if (!validator.test(text))
+                    return;
+
+                int value = Integer.parseInt(text);
+
+                container.trustSettings.put(trust, value);
+                changed = container.isChanged(trust);
+
+                //update text
+                this.value = Component.literal(String.valueOf(value));
+            });
+        }
+
+        @Override
+        public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
+            Font font = Minecraft.getInstance().font;
+
+            //text colour
+            int color = 0xFFFFFF;
+
+            //invalid value
+            String text = getField().getValue();
+            if (!validator.test(text)) {
+                color = 0xFF5555;
+            }
+            //changed value
+            else if (changed) {
+                TextColor textColor = FiguraMod.getAccentColor().getColor();
+                color = textColor == null ? ColorUtils.Colors.FRAN_PINK.hex : textColor.getValue();
+            }
+
+            //set text colour
+            setColor(color);
+            setBorderColour(0xFF000000 + color);
+
+            //field
+            stack.pushPose();
+            //stack.translate(0f, font.lineHeight, 0f);
+            super.render(stack, mouseX, mouseY, delta);
+            stack.popPose();
+
+            //texts
+            MutableComponent name = Component.translatable(id + ".trust.value." + trust.name.toLowerCase());
+            if (changed) name = Component.literal("*").setStyle(FiguraMod.getAccentColor()).append(name).append("*");
+
+            font.draw(stack, name, x + 1, y + 1 - font.lineHeight, 0xFFFFFF);
+            font.draw(stack, value.copy().setStyle(FiguraMod.getAccentColor()), x + width - font.width(value) - 1, y + 1 - font.lineHeight, 0xFFFFFF);
+        }
+
+        @Override
+        public boolean mouseClicked(double mouseX, double mouseY, int button) {
+            if (!this.isEnabled() || !this.isMouseOver(mouseX, mouseY))
+                return false;
+
+            if (button == 1) {
+                container.reset(trust);
+                this.parent.updateList(container);
+                this.getField().playDownSound(Minecraft.getInstance().getSoundManager());
                 return true;
             }
 

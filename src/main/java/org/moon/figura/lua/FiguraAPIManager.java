@@ -7,6 +7,7 @@ import org.moon.figura.lua.api.action_wheel.ActionWheelAPI;
 import org.moon.figura.lua.api.action_wheel.Page;
 import org.moon.figura.lua.api.entity.EntityAPI;
 import org.moon.figura.lua.api.entity.LivingEntityAPI;
+import org.moon.figura.lua.api.entity.NullEntity;
 import org.moon.figura.lua.api.entity.PlayerAPI;
 import org.moon.figura.lua.api.event.EventsAPI;
 import org.moon.figura.lua.api.event.LuaEvent;
@@ -70,7 +71,7 @@ public class FiguraAPIManager {
         add(FiguraMat3.class);
         add(FiguraMat4.class);
 
-        add(EntityAPI.NullEntity.class);
+        add(NullEntity.class);
         add(EntityAPI.class);
         add(LivingEntityAPI.class);
         add(PlayerAPI.class);

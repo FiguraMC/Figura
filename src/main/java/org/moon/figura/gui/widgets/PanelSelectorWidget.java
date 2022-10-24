@@ -15,7 +15,7 @@ public class PanelSelectorWidget extends AbstractContainerElement {
     private final ArrayList<SwitchButton> buttons = new ArrayList<>();
 
     public PanelSelectorWidget(Screen parentScreen, int x, int y, int width, int selected) {
-        super(x, y, width, 20);
+        super(x, y, width, 28);
 
         //buttons
         createPanelButton(() -> new ProfileScreen(parentScreen), ProfileScreen.TITLE);

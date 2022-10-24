@@ -95,11 +95,12 @@ public class ColorUtils {
      * parses a user input hex string into a color
      * checks for custom colors
      * @param hex - the hex string
+     * @param fallback - a vector, used as fallback if failed to parse the hex string
      * @return an integer
      */
-    public static int userInputHex(String hex, FiguraVec3 vec) {
+    public static int userInputHex(String hex, FiguraVec3 fallback) {
         Colors color = Colors.getColor(hex);
-        return color != null ? color.hex : rgbToInt(hexStringToRGB(hex, vec));
+        return color != null ? color.hex : rgbToInt(hexStringToRGB(hex, fallback));
     }
 
     /**

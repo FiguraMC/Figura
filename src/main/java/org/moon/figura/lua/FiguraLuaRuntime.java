@@ -15,6 +15,7 @@ import org.moon.figura.lua.api.HostAPI;
 import org.moon.figura.lua.api.RendererAPI;
 import org.moon.figura.lua.api.action_wheel.ActionWheelAPI;
 import org.moon.figura.lua.api.entity.EntityAPI;
+import org.moon.figura.lua.api.entity.NullEntity;
 import org.moon.figura.lua.api.event.EventsAPI;
 import org.moon.figura.lua.api.keybind.KeybindAPI;
 import org.moon.figura.lua.api.nameplate.NameplateAPI;
@@ -99,7 +100,7 @@ public class FiguraLuaRuntime {
         Object val;
         if (user == null) {
             entityAPI = null;
-            val = EntityAPI.EMPTY_ENTITY;
+            val = NullEntity.INSTANCE;
         } else {
             val = entityAPI = EntityAPI.wrap(user);
         }
@@ -266,10 +267,12 @@ public class FiguraLuaRuntime {
                     INIT_SCRIPT.apply(name.getAsString());
             }
         } catch (LuaError e) {
+            owner.luaRuntime = this;
             error(e);
             return false;
         }
 
+        owner.luaRuntime = this;
         return true;
     }
 
@@ -287,7 +290,7 @@ public class FiguraLuaRuntime {
     private final ZeroArgFunction onReachedLimit = new ZeroArgFunction() {
         @Override
         public LuaValue call() {
-            FiguraMod.debug("Avatar {} bypassed resource limits with {} instructions", owner.owner, getInstructions());
+            FiguraMod.LOGGER.warn("Avatar {} bypassed resource limits with {} instructions", owner.owner, getInstructions());
             LuaError error = new LuaError("Script overran resource limits!");
             setInstructionLimit(1);
             throw error;

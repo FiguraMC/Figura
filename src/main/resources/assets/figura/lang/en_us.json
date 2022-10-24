@@ -175,6 +175,7 @@
 
   "figura.gui.trust.reset": "Reset All",
   "figura.gui.trust.reload_all": "Reload All",
+  "figura.gui.trust.precise": "Precise Mode",
   "figura.gui.trust.expand_trust.tooltip": "Expand advanced trust menu",
   "figura.gui.trust.minimize_trust.tooltip": "Minimize advanced trust menu",
   "figura.gui.trust.disconnected.tooltip": "Show disconnected avatars",
@@ -714,6 +715,7 @@
   "figura.docs.client.get_figura_version": "Gets the client Figura version.",
   "figura.docs.client.compare_versions": "Compares two versions if they are less than (-1), equals (0) or greater than (1).",
   "figura.docs.client.int_uuid_to_string": "Converts an int array UUID (as 4 separated arguments) into its hexadecimal string representation.",
+  "figura.docs.client.get_viewer": "Returns the player entity from the running client.",
 
 
   "figura.docs.entity": "Acts as a proxy for an entity in the Minecraft world.",
@@ -1051,7 +1053,9 @@
   "figura.docs.text_task": "A task for rendering some Text.",
   "figura.docs.text_task.text": "Sets the Text for this task render.",
   "figura.docs.text_task.is_centered": "Checks if this task text will render centered.",
-  "figura.docs.text_task.centered": "Toggles if the Text should render centered on this task pivot point.",
+  "figura.docs.text_task.centered": "Toggles if the Text should render centered on this task pivot point. Not compatible with \"Right\" mode.",
+  "figura.docs.text_task.is_right": "Checks if this task text will render anchored to the right side.",
+  "figura.docs.text_task.right": "Toggles if the Text should render anchored to the right on this task pivot point. Not compatible with \"Centered\" mode.",
   "figura.docs.text_task.has_shadow": "Checks if this task text has shadow.",
   "figura.docs.text_task.shadow": "Toggles if the Text should render with a drop shadow. Not compatible with \"Outline\" mode",
   "figura.docs.text_task.has_outline": "Checks if this task text has outline.",

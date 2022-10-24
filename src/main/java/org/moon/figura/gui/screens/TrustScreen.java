@@ -2,6 +2,7 @@ package org.moon.figura.gui.screens;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -40,6 +41,7 @@ public class TrustScreen extends AbstractPanelScreen {
     private TexturedButton reloadAll;
     private TexturedButton back;
     private TexturedButton resetButton;
+    private SwitchButton preciseTrust;
 
     // -- debug -- //
     private TextField uuid;
@@ -185,6 +187,22 @@ public class TrustScreen extends AbstractPanelScreen {
             updateTrustData(trust);
         }));
 
+        addRenderableWidget(preciseTrust = new SwitchButton(middle + 72, height, 30, 20, false) {
+            @Override
+            public void onPress() {
+                super.onPress();
+                trustList.precise = this.isToggled();
+                trustList.updateList(playerList.selectedEntry.getTrust());
+            }
+
+            @Override
+            protected void renderText(PoseStack stack) {
+                Font font = Minecraft.getInstance().font;
+                drawString(stack, font, this.getMessage(), x + width + 4, y + height / 2 - font.lineHeight / 2, 0xFFFFFF);
+            }
+        });
+        preciseTrust.setMessage(FiguraText.of("gui.trust.precise"));
+
         //add trust list
         addRenderableWidget(trustList);
 
@@ -209,11 +227,12 @@ public class TrustScreen extends AbstractPanelScreen {
         listYPrecise = Mth.lerp(lerpDelta, listYPrecise, expandButton.isToggled() ? 50f : height + 1);
         this.trustList.y = (int) listYPrecise;
 
-        expandYPrecise = Mth.lerp(lerpDelta, expandYPrecise, listYPrecise - 24f);
+        expandYPrecise = Mth.lerp(lerpDelta, expandYPrecise, expandButton.isToggled() ? listYPrecise - 22f : listYPrecise - 24f);
         this.expandButton.y = (int) expandYPrecise;
 
         resetYPrecise = Mth.lerp(lerpDelta, resetYPrecise, expandButton.isToggled() ? listYPrecise - 22f : height);
         this.resetButton.y = (int) resetYPrecise;
+        this.preciseTrust.y = (int) resetYPrecise;
 
         //render
         super.render(stack, mouseX, mouseY, delta);
