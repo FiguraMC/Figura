@@ -100,12 +100,26 @@ public class FiguraDebugCommand {
         JsonObject trust = new JsonObject();
 
         for (TrustContainer.GroupContainer group : TrustManager.GROUPS.values()) {
-            JsonObject t = new JsonObject();
+            JsonObject allTrust = new JsonObject();
 
-            for (Map.Entry<Trust, Integer> entry1 : group.trustSettings.entrySet())
-                t.addProperty(entry1.getKey().name, entry1.getValue());
+            JsonObject standard = new JsonObject();
+            for (Map.Entry<Trust, Integer> entry : group.getTrustSettings().entrySet())
+                standard.addProperty(entry.getKey().name, entry.getValue());
 
-            trust.add(group.name, t);
+            allTrust.add("standard", standard);
+
+            JsonObject customTrust = new JsonObject();
+            for (Map.Entry<String, Map<Trust, Integer>> entry : group.getCustomTrusts().entrySet()) {
+                JsonObject obj = new JsonObject();
+                for (Map.Entry<Trust, Integer> entry1 : entry.getValue().entrySet())
+                    obj.addProperty(entry1.getKey().name, entry1.getValue());
+
+                customTrust.add(entry.getKey(), obj);
+            }
+
+            allTrust.add("custom", customTrust);
+
+            trust.add(group.name, allTrust);
         }
 
         root.add("trust", trust);
@@ -128,8 +142,22 @@ public class FiguraDebugCommand {
 
         aTrust.addProperty("parentTrust", avatar.trust.parent.name);
 
-        for (Map.Entry<Trust, Integer> entry : avatar.trust.trustSettings.entrySet())
-            aTrust.addProperty(entry.getKey().name, entry.getValue());
+        JsonObject standard = new JsonObject();
+        for (Map.Entry<Trust, Integer> entry : avatar.trust.getTrustSettings().entrySet())
+            standard.addProperty(entry.getKey().name, entry.getValue());
+
+        aTrust.add("standard", standard);
+
+        JsonObject customTrust = new JsonObject();
+        for (Map.Entry<String, Map<Trust, Integer>> entry : avatar.trust.getCustomTrusts().entrySet()) {
+            JsonObject obj = new JsonObject();
+            for (Map.Entry<Trust, Integer> entry1 : entry.getValue().entrySet())
+                obj.addProperty(entry1.getKey().name, entry1.getValue());
+
+            customTrust.add(entry.getKey(), obj);
+        }
+
+        aTrust.add("custom", customTrust);
 
         a.add("trust", aTrust);
 

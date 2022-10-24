@@ -15,10 +15,14 @@ public class TrustManager {
     private static final Map<UUID, TrustContainer.PlayerContainer> PLAYERS = new HashMap<>();
 
     //custom trusts
-    public static final List<FiguraTrust> CUSTOM_TRUST = new ArrayList<>();
+    public static final Map<String, Collection<Trust>> CUSTOM_TRUST = new HashMap<>();
 
     //main method for loading trust
     public static void init() {
+        //custom trust
+        for (FiguraTrust figuraTrust : IOUtils.loadEntryPoints("figura_trust", FiguraTrust.class))
+            CUSTOM_TRUST.put(figuraTrust.getTitle(), figuraTrust.getTrusts());
+
         //load groups
         for (Trust.Group group : Trust.Group.values()) {
             TrustContainer.GroupContainer container = new TrustContainer.GroupContainer(group);
@@ -27,9 +31,6 @@ public class TrustManager {
 
         //then load nbt
         IOUtils.readCacheFile("trust", TrustManager::readNbt);
-
-        //custom trust
-        CUSTOM_TRUST.addAll(IOUtils.loadEntryPoints("figura_trust", FiguraTrust.class));
     }
 
     //read trust from nbt, adding them into the hash maps
@@ -48,7 +49,7 @@ public class TrustManager {
             try {
                 Trust.Group group = Trust.Group.valueOf(name);
                 TrustContainer trust = GROUPS.get(group);
-                trust.loadNbt(compound.getCompound("trust"));
+                trust.loadNbt(compound);
             } catch (Exception ignored) {
                 FiguraMod.LOGGER.warn("Failed to load trust for \"{}\"", name);
             }
@@ -71,7 +72,7 @@ public class TrustManager {
 
                 TrustContainer.GroupContainer parentTrust = GROUPS.get(group);
                 TrustContainer.PlayerContainer trust = new TrustContainer.PlayerContainer(parentTrust, name);
-                trust.loadNbt(compound.getCompound("trust"));
+                trust.loadNbt(compound);
 
                 PLAYERS.put(uuid, trust);
             } catch (Exception ignored) {
