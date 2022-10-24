@@ -14,7 +14,6 @@ import org.moon.figura.FiguraMod;
 import org.moon.figura.gui.widgets.SliderWidget;
 import org.moon.figura.gui.widgets.SwitchButton;
 import org.moon.figura.gui.widgets.TextField;
-import org.moon.figura.trust.FiguraTrust;
 import org.moon.figura.trust.Trust;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
@@ -98,11 +97,11 @@ public class TrustList extends AbstractList {
         //add new trusts
 
         //defaults
-        trusts.put(FiguraMod.MOD_ID, generateWidgets(container, Trust.DEFAULT, "figura"));
+        trusts.put(FiguraMod.MOD_ID, generateWidgets(container, Trust.DEFAULT, FiguraMod.MOD_ID));
 
         //custom
-        for (FiguraTrust trust : TrustManager.CUSTOM_TRUST)
-            trusts.put(trust.getTitle(), generateWidgets(container, trust.getTrusts(), trust.getTitle()));
+        for (Map.Entry<String, Collection<Trust>> entry : TrustManager.CUSTOM_TRUST.entrySet())
+            trusts.put(entry.getKey(), generateWidgets(container, entry.getValue(), entry.getKey()));
     }
 
     private List<GuiEventListener> generateWidgets(TrustContainer container, Collection<Trust> coll, String id) {
@@ -145,7 +144,7 @@ public class TrustList extends AbstractList {
             this.trust = trust;
             this.parent = parent;
             this.id = id;
-            this.value = trust.checkInfinity(container.get(trust)) ? INFINITY : Component.literal(String.valueOf(container.get(trust)));
+            this.value = container.get(trust) == Integer.MAX_VALUE ? INFINITY : Component.literal(String.valueOf(container.get(trust)));
             this.changed = container.isChanged(trust);
 
             setAction(slider -> {
@@ -153,7 +152,7 @@ public class TrustList extends AbstractList {
                 int value = this.showSteps ? ((SliderWidget) slider).getIntValue() * trust.stepSize : (int) ((trust.max + 1d) * slider.getScrollProgress());
                 boolean infinity = trust.checkInfinity(value);
 
-                container.trustSettings.put(trust, infinity ? Integer.MAX_VALUE : value);
+                container.insert(trust, infinity ? Integer.MAX_VALUE : value, id);
                 changed = container.isChanged(trust);
 
                 //update text
@@ -224,7 +223,7 @@ public class TrustList extends AbstractList {
             //update trust
             boolean value = !this.isToggled();
 
-            this.container.trustSettings.put(trust, value ? 1 : 0);
+            container.insert(trust, value ? 1 : 0, id);
             this.changed = container.isChanged(trust);
 
             //update text
@@ -308,7 +307,7 @@ public class TrustList extends AbstractList {
 
                 int value = Integer.parseInt(text);
 
-                container.trustSettings.put(trust, value);
+                container.insert(trust, value, id);
                 changed = container.isChanged(trust);
 
                 //update text
