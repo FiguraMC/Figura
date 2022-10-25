@@ -130,7 +130,7 @@ public class PopupMenu {
 
         Avatar avatar = AvatarManager.getAvatarForPlayer(id);
         if (avatar != null) {
-            name.append(Badges.fetchBadges(avatar));
+            name.append(" ").append(Badges.fetchBadges(avatar));
             error = avatar.scriptError;
             version = avatar.versionStatus > 0;
         }

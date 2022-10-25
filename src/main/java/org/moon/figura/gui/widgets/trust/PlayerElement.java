@@ -155,13 +155,17 @@ public class PlayerElement extends AbstractTrustElement {
 
         //head
         Component name = null;
-
+        boolean replaceBadges = false;
         boolean head = false;
+
         Avatar avatar = AvatarManager.getAvatarForPlayer(owner);
         if (avatar != null) {
             NameplateCustomization custom = avatar.luaRuntime == null ? null : avatar.luaRuntime.nameplate.LIST;
-            if (custom != null && custom.getText() != null && avatar.trust.get(Trust.NAMEPLATE_EDIT) == 1)
+            if (custom != null && custom.getText() != null && avatar.trust.get(Trust.NAMEPLATE_EDIT) == 1) {
                 name = NameplateCustomization.applyCustomization(custom.getText());
+                if (custom.getText().contains("${badges}"))
+                    replaceBadges = true;
+            }
 
             head = !dragged && avatar.renderPortrait(stack, x + 4, y + 4, Math.round(32 * scale), 64, true);
         }
@@ -187,9 +191,10 @@ public class PlayerElement extends AbstractTrustElement {
         if (name == null)
             name = Component.literal(this.name);
 
-        name = Component.empty()
-                .append(name.copy().withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(this.name + "\n" + this.owner)))))
-                .append(Badges.fetchBadges(avatar));
+        name = Component.empty().append(name.copy().withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(this.name + "\n" + this.owner)))));
+
+        Component badges = Badges.fetchBadges(avatar);
+        name = replaceBadges ? TextUtils.replaceInText(name, "\\$\\{badges\\}", badges) : name.copy().append(" ").append(badges);
 
         nameLabel.setText(TextUtils.trimToWidthEllipsis(font, name, width - 40, TextUtils.ELLIPSIS));
         nameLabel.x = x + 40;
