@@ -6,10 +6,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
-import org.moon.figura.FiguraMod;
+import org.moon.figura.config.Config;
 import org.moon.figura.model.ParentType;
 import org.moon.figura.model.rendering.texture.RenderTypes;
-import org.moon.figura.config.Config;
 import org.moon.figura.utils.Version;
 
 import java.io.IOException;
@@ -21,6 +20,7 @@ import java.util.Map;
 public class AvatarMetadataParser {
 
     private static final Gson GSON = new GsonBuilder().create();
+    private static final Map<String, String> PARTS_TO_MOVE = new HashMap<>();
 
     public static Metadata read(String json) {
         Metadata metadata = GSON.fromJson(json, Metadata.class);
@@ -76,10 +76,22 @@ public class AvatarMetadataParser {
     }
 
     public static void injectToModels(String json, CompoundTag models) throws IOException {
+        PARTS_TO_MOVE.clear();
+
         Metadata metadata = GSON.fromJson(json, Metadata.class);
-        if (metadata != null && metadata.customizations != null)
+        if (metadata != null && metadata.customizations != null) {
             for (Map.Entry<String, Customization> entry : metadata.customizations.entrySet())
                 injectCustomization(entry.getKey(), entry.getValue(), models);
+        }
+
+        for (Map.Entry<String, String> entry : PARTS_TO_MOVE.entrySet()) {
+            CompoundTag modelPart = getTag(models, entry.getKey(), true);
+            CompoundTag targetPart = getTag(models, entry.getValue(), false);
+
+            ListTag list = !targetPart.contains("chld") ? new ListTag() : targetPart.getList("chld", Tag.TAG_COMPOUND);
+            list.add(modelPart);
+            targetPart.put("chld", list);
+        }
     }
 
     private static void injectCustomization(String path, Customization customization, CompoundTag models) throws IOException {
@@ -109,12 +121,14 @@ public class AvatarMetadataParser {
                 modelPart.putString("pt", type.name());
         }
         if (customization.moveTo != null) {
-            modelPart = getTag(models, path, true); //yeet the part
-            CompoundTag targetPart = getTag(models, customization.moveTo, false);
-
-            ListTag list = !targetPart.contains("chld") ? new ListTag() : targetPart.getList("chld", Tag.TAG_COMPOUND);
-            list.add(modelPart);
-            targetPart.put("chld", list);
+            PARTS_TO_MOVE.put(path, customization.moveTo);
+        }
+        if (customization.visible != null) {
+            if (customization.visible) {
+                modelPart.remove("vsb");
+            } else {
+                modelPart.putBoolean("vsb", false);
+            }
         }
     }
 
@@ -163,5 +177,6 @@ public class AvatarMetadataParser {
         public String primaryRenderType, secondaryRenderType;
         public String parentType;
         public String moveTo;
+        public Boolean visible;
     }
 }
