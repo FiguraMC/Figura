@@ -327,7 +327,7 @@ public enum Config {
                 return false;
             }
         }),
-        HEX_COLOR(s -> s.matches("^#?(?i)[\\da-f]{0,6}$") || ColorUtils.Colors.getColor(s) != null),
+        HEX_COLOR(s -> ColorUtils.userInputHex(s, null) != null),
         FOLDER_PATH(s -> {
             try {
                 return s.isBlank() || Path.of(s.trim()).toFile().isDirectory();

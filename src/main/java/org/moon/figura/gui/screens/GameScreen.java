@@ -8,6 +8,7 @@ import org.lwjgl.glfw.GLFW;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.gui.widgets.Label;
 import org.moon.figura.gui.widgets.TexturedButton;
+import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FiguraText;
@@ -160,7 +161,7 @@ public class GameScreen extends AbstractPanelScreen {
 
             for (Cell[] cells : grid) {
                 for (Cell cell : cells) {
-                    if (yes) cell.color = 0xFF000000 + ColorUtils.rgbToInt(ColorUtils.rainbow());
+                    if (yes) cell.color = 0xFF000000 + ColorUtils.rgbToInt(ColorUtils.hsvToRGB(FiguraVec3.of((FiguraMod.ticks % 360) / 360f, 1f, 1f)));
                     cell.render(stack);
                 }
             }

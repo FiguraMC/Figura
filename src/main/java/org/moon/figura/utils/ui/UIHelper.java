@@ -101,6 +101,7 @@ public class UIHelper extends GuiComponent {
         FIGURA_GUI,
         PAPERDOLL,
         MINECRAFT_GUI,
+        FIRST_PERSON,
         RENDER
     }
 
