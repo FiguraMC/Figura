@@ -22,9 +22,9 @@ import org.moon.figura.backend.NetworkManager;
 import org.moon.figura.commands.FiguraCommands;
 import org.moon.figura.config.Config;
 import org.moon.figura.config.ConfigManager;
+import org.moon.figura.gui.ActionWheel;
 import org.moon.figura.gui.PaperDoll;
 import org.moon.figura.gui.PopupMenu;
-import org.moon.figura.gui.ActionWheel;
 import org.moon.figura.lua.FiguraAPIManager;
 import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.lua.docs.FiguraDocsManager;
@@ -171,13 +171,7 @@ public class FiguraMod implements ClientModInitializer {
 
     public static Style getAccentColor() {
         Avatar avatar = AvatarManager.getAvatarForPlayer(getLocalPlayerUUID());
-        int color = avatar != null ? ColorUtils.userInputHex(avatar.color, ColorUtils.Colors.FRAN_PINK.vec) : ColorUtils.Colors.FRAN_PINK.hex;
+        int color = avatar != null ? ColorUtils.rgbToInt(ColorUtils.userInputHex(avatar.color, ColorUtils.Colors.FRAN_PINK.vec)) : ColorUtils.Colors.FRAN_PINK.hex;
         return Style.EMPTY.withColor(color);
-    }
-
-    public static long getCommonTick() {
-        if (Minecraft.getInstance().level != null)
-            return Minecraft.getInstance().level.getGameTime();
-        return ticks;
     }
 }

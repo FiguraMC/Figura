@@ -31,7 +31,7 @@ public class InputElement extends AbstractConfigElement {
         textField = new InputField(0, 0, 90, 20, inputType.hint, this, text -> {
             //only write config value if it's valid
             if (inputType.validator.test(text))
-                config.tempValue = isHex ? ColorUtils.userInputHex(text, FiguraVec3.of()) : text;
+                config.tempValue = isHex ? ColorUtils.rgbToInt(ColorUtils.userInputHex(text, FiguraVec3.of())) : text;
         });
         updateTextFieldText(formatText(config.tempValue));
         textField.getField().moveCursorToStart();

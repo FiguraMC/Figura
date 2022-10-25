@@ -98,14 +98,14 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
                     to = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;popPose()V")
             ))
     private void preRenderItemInHand(PoseStack matrices, Camera camera, float tickDelta, CallbackInfo ci) {
-        if (this.minecraft.player == null) {
+        if (this.minecraft.player == null || !this.minecraft.options.getCameraType().isFirstPerson()) {
             avatar = null;
             return;
         }
 
         avatar = AvatarManager.getAvatarForPlayer(this.minecraft.player.getUUID());
         if (avatar != null)
-            avatar.renderEvent(tickDelta, UIHelper.EntityRenderMode.RENDER.name());
+            avatar.renderEvent(tickDelta, UIHelper.EntityRenderMode.FIRST_PERSON.name());
     }
 
     @Inject(method = "renderItemInHand", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;popPose()V", shift = At.Shift.BEFORE))

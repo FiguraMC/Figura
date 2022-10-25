@@ -1,7 +1,7 @@
 package org.moon.figura.utils;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Style;
-import org.moon.figura.FiguraMod;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec4;
 
@@ -93,21 +93,31 @@ public class ColorUtils {
 
     /**
      * parses a user input hex string into a color
-     * checks for custom colors
+     * checks for custom and minecraft colors
      * @param hex - the hex string
      * @param fallback - a vector, used as fallback if failed to parse the hex string
-     * @return an integer
+     * @return a rgb vector of either the hex color or the fallback
      */
-    public static int userInputHex(String hex, FiguraVec3 fallback) {
+    public static FiguraVec3 userInputHex(String hex, FiguraVec3 fallback) {
         Colors color = Colors.getColor(hex);
-        return color != null ? color.hex : rgbToInt(hexStringToRGB(hex, fallback));
+        if (color != null)
+            return color.vec;
+
+        try {
+            ChatFormatting formatting = ChatFormatting.valueOf(hex.toUpperCase());
+            Integer i = formatting.getColor();
+            if (i != null)
+                return intToRGB(i);
+        } catch (Exception ignored) {}
+
+        return hexStringToRGB(hex, fallback);
     }
 
     /**
      * overload for {@link #userInputHex(String, FiguraVec3)}
      * fallback is the default color
      */
-    public static int userInputHex(String hex) {
+    public static FiguraVec3 userInputHex(String hex) {
         return userInputHex(hex, Colors.DEFAULT.vec);
     }
 
@@ -175,16 +185,6 @@ public class ColorUtils {
     public static String rgbToHex(FiguraVec3 rgb) {
         String color = Integer.toHexString(ColorUtils.rgbToInt(rgb));
         return "0".repeat(Math.max(6 - color.length(), 0)) + color;
-    }
-
-    public static FiguraVec3 rainbow() {
-        return rainbow(1d, 1d, 1d);
-    }
-    public static FiguraVec3 rainbow(double speed, double saturation, double light) {
-        return rainbow(speed, 0d, saturation, light);
-    }
-    public static FiguraVec3 rainbow(double speed, double offset, double saturation, double light) {
-        return hsvToRGB(FiguraVec3.of(((FiguraMod.getCommonTick() * speed) + offset) % 255 / 255f, saturation, light));
     }
 
     public static int rgbaToIntABGR(FiguraVec4 rgba) {

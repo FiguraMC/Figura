@@ -167,7 +167,7 @@ public class VectorsAPI {
             value = "vectors.hex_to_rgb"
     )
     public static FiguraVec3 hexToRGB(@LuaNotNil String hex) {
-        return ColorUtils.intToRGB(ColorUtils.userInputHex(hex, FiguraVec3.of()));
+        return ColorUtils.userInputHex(hex, FiguraVec3.of());
     }
 
     @LuaWhitelist
@@ -225,31 +225,6 @@ public class VectorsAPI {
     public static String rgbToHex(Object r, Double g, Double b) {
         FiguraVec3 rgb = LuaUtils.parseVec3("rgbToHex", r, g, b);
         return ColorUtils.rgbToHex(rgb);
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = {
-                    @LuaMethodOverload(
-                            argumentTypes = Double.class,
-                            argumentNames = "speed"
-                    ),
-                    @LuaMethodOverload(
-                            argumentTypes = {Double.class, Double.class},
-                            argumentNames = {"speed", "offset"}
-                    ),
-                    @LuaMethodOverload(
-                            argumentTypes = {Double.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"speed", "offset", "saturation", "light"}
-                    )
-            },
-            value = "vectors.rainbow"
-    )
-    public static FiguraVec3 rainbow(Double speed, double offset, Double saturation, Double light) {
-        if (speed == null) speed = 1d;
-        if (saturation == null) saturation = 1d;
-        if (light == null) light = 1d;
-        return ColorUtils.rainbow(speed, offset, saturation, light);
     }
 
     // -- math utils -- //
