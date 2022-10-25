@@ -25,7 +25,7 @@ public class Badges {
         if (avatar == null)
             return Component.empty();
 
-        MutableComponent badges = Component.literal(" ").withStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT).withColor(ChatFormatting.WHITE));
+        MutableComponent badges = Component.empty().withStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT).withColor(ChatFormatting.WHITE));
 
         UUID id = avatar.owner;
         Pair<BitSet, BitSet> pair = badgesMap.get(id);

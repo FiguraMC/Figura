@@ -51,17 +51,23 @@ public class PlayerTabOverlayMixin {
         //apply customization
         Component text = cir.getReturnValue();
         Component replacement;
+        boolean replaceBadges = false;
 
         NameplateCustomization custom = avatar.luaRuntime == null ? null : avatar.luaRuntime.nameplate.LIST;
         if (custom != null && custom.getText() != null && avatar.trust.get(Trust.NAMEPLATE_EDIT) == 1) {
             replacement = NameplateCustomization.applyCustomization(custom.getText());
+            if (custom.getText().contains("${badges}"))
+                replaceBadges = true;
         } else {
             replacement = Component.literal(playerInfo.getProfile().getName());
         }
 
-        if (config > 1) {
-            Component badges = Badges.fetchBadges(avatar);
-            ((MutableComponent) replacement).append(badges);
+        //badges
+        Component badges = config > 1 ? Badges.fetchBadges(avatar) : Component.empty();
+        if (replaceBadges) {
+            replacement = TextUtils.replaceInText(replacement, "\\$\\{badges\\}", badges);
+        } else if (config > 1) {
+            ((MutableComponent) replacement).append(" ").append(badges);
         }
 
         text = TextUtils.replaceInText(text, "\\b" + playerInfo.getProfile().getName() + "\\b", replacement);
