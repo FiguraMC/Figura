@@ -79,7 +79,7 @@ public class ParticleAPI {
             },
             value = "particles.add_particle"
     )
-    public void addParticle(@LuaNotNil String id, Object x, Object y, Double z, Object w, Double t, Double h) {
+    public LuaParticle addParticle(@LuaNotNil String id, Object x, Object y, Double z, Object w, Double t, Double h) {
         FiguraVec3 pos, vel;
 
         //Parse pos and vel
@@ -119,6 +119,8 @@ public class ParticleAPI {
 
         pos.free();
         vel.free();
+
+        return particle;
     }
 
     @LuaWhitelist
