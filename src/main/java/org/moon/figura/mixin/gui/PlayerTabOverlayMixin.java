@@ -66,7 +66,7 @@ public class PlayerTabOverlayMixin {
         Component badges = config > 1 ? Badges.fetchBadges(avatar) : Component.empty();
         if (replaceBadges) {
             replacement = TextUtils.replaceInText(replacement, "\\$\\{badges\\}", badges);
-        } else if (config > 1) {
+        } else if (badges.getString().length() > 0) {
             ((MutableComponent) replacement).append(" ").append(badges);
         }
 

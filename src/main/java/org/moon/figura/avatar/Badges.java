@@ -85,7 +85,7 @@ public class Badges {
                 badges.append(special[i].badge);
         }
 
-        return badges.getString().isBlank() ? Component.empty() : badges;
+        return badges;
     }
 
     public static void load(UUID id, BitSet pride, BitSet special) {
