@@ -1,7 +1,10 @@
 package org.moon.figura.backend2;
 
 import com.google.gson.*;
+import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Badges;
+import org.moon.figura.config.Config;
+import org.moon.figura.gui.FiguraToast;
 
 import java.io.InputStream;
 import java.net.http.HttpClient;
@@ -16,38 +19,75 @@ import java.util.function.Consumer;
 public class NetworkStuff {
 
     private static final HttpClient client = HttpClient.newHttpClient();
-    private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
+    protected static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
 
-    private static API api;
+    protected static API api;
+    private static CompletableFuture<Void> tasks;
+
+    public static int backendStatus = 1;
+    public static String disconnectedReason;
 
     public static void init() {
-        api = new API("fakeToken"); //TODO
+        //getUser(UUID.fromString("66a6c5c4-963b-4b73-a0d9-162faedd8b7f"));
+    }
 
-        //temp
+    public static void tick() {
+        AuthHandler.tick();
+    }
 
-        getUser(UUID.fromString("66a6c5c4-963b-4b73-a0d9-162faedd8b7f"));
+    protected static void async(Runnable toRun) {
+        if (tasks == null || tasks.isDone()) {
+            tasks = CompletableFuture.runAsync(toRun);
+        } else {
+            tasks.thenRun(toRun);
+        }
     }
 
     private static void runString(HttpRequest request, Consumer<String> consumer) {
-        try {
-            CompletableFuture<HttpResponse<String>> result = client.sendAsync(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
-            result.thenAccept(response -> consumer.accept(response.body()));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        async(() -> {
+            try {
+                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+                int i = response.statusCode();
+                if (i == 200) {
+                    consumer.accept(response.body());
+                } else {
+                    handleHTTPError(response.body());
+                }
+            } catch (Exception e) {
+                FiguraMod.LOGGER.error("", e);
+            }
+        });
     }
 
     private static void run(HttpRequest request, Consumer<InputStream> consumer) {
-        try {
-            CompletableFuture<HttpResponse<InputStream>> result = client.sendAsync(request, HttpResponse.BodyHandlers.ofInputStream());
-            result.thenAccept(response -> consumer.accept(response.body()));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        async(() -> {
+            try {
+                HttpResponse<InputStream> response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
+                int i = response.statusCode();
+                if (i == 200) {
+                    consumer.accept(response.body());
+                } else {
+                    handleHTTPError(new String(response.body().readAllBytes()));
+                }
+            } catch (Exception e) {
+                FiguraMod.LOGGER.error("", e);
+            }
+        });
+    }
+
+    private static void handleHTTPError(String error) {
+        if (Config.CONNECTION_TOASTS.asBool())
+            FiguraToast.sendToast(error, FiguraToast.ToastType.ERROR);
+    }
+
+    private static void ensureConnection() {
+        AuthHandler.auth(false);
     }
 
     public static void getUser(UUID id) {
+        ensureConnection();
         runString(api.getUser(id), s -> {
+            System.out.println(s);
             JsonObject json = JsonParser.parseString(s).getAsJsonObject();
 
             UUID uuid = UUID.fromString(json.get("uuid").getAsString());
