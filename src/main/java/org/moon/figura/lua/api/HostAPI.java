@@ -1,7 +1,9 @@
 package org.moon.figura.lua.api;
 
+import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.brigadier.StringReader;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.Screenshot;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.player.LocalPlayer;
@@ -324,6 +326,19 @@ public class HostAPI {
                 throw new LuaError(e.getMessage());
             }
         }
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("host.screenshot")
+    public FiguraTexture screenshot() {
+        if (!isHost())
+            return null;
+
+        String name = "screenshot";
+        NativeImage img = Screenshot.takeScreenshot(Minecraft.getInstance().getMainRenderTarget());
+        FiguraTexture texture = new FiguraTexture(owner, name, img);
+        owner.renderer.customTextures.put(name, texture);
+        return texture;
     }
 
     @LuaWhitelist

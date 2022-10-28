@@ -38,8 +38,9 @@ public class LuaParticle {
 
     @LuaWhitelist
     @LuaMethodDoc("particle.remove")
-    public void remove() {
+    public LuaParticle remove() {
         particle.remove();
+        return this;
     }
 
     @LuaWhitelist
