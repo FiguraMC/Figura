@@ -832,6 +832,7 @@
   "figura.docs.host.is_chat_open": "Checks if the host has the chat screen opened.",
   "figura.docs.host.is_container_open": "Checks if the host has a container screen opened.",
   "figura.docs.host.save_texture": "A debug function, saves the texture on the cache directory as png.",
+  "figura.docs.host.screenshot": "Takes a screenshot from the current screen and returns a Texture of it.",
 
 
   "figura.docs.itemstack": "A proxy for an item stack from Minecraft.",
