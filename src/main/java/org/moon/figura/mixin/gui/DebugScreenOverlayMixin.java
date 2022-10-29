@@ -38,7 +38,7 @@ public class DebugScreenOverlayMixin {
 
             //has script
             if (avatar.luaRuntime != null || avatar.scriptError) {
-                String color = (avatar.scriptError ? ChatFormatting.RED : ChatFormatting.WHITE).toString();
+                String color = (avatar.scriptError ? ChatFormatting.RED : "").toString();
                 lines.add(++i, color + String.format("Init instructions: %d (W: %d E: %d)", avatar.init.getTotal(), avatar.init.pre, avatar.init.post) + ChatFormatting.RESET);
                 lines.add(++i, color + String.format("Tick instructions: %d (W: %d E: %d)", avatar.tick.getTotal() + avatar.worldTick.getTotal(), avatar.worldTick.pre, avatar.tick.pre)  + ChatFormatting.RESET);
                 lines.add(++i, color + String.format("Render instructions: %d (W: %d E: %d PE: %d PW: %d)",
