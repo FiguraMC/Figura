@@ -1111,7 +1111,7 @@
   "figura.docs.texture.update": "Updates the texture to the gpu, applying all the changes.",
   "figura.docs.texture.restore": "Restores the texture to its original state, before any modifications.",
   "figura.docs.texture.save": "Returns a base64 string representation of this texture.",
-  "figura.docs.texture.apply_func": "Calls the given function on the specified area of this texture, it will iterate over each pixel, and their color will be given as argument, in a RGBA vec4 format, and the return value will set that pixel color. Invalid return values or nil takes no effects.",
+  "figura.docs.texture.apply_func": "Calls the given function on the specified area of this texture, it will iterate over each pixel, and their current x, y and color will be given as arguments, the color in a RGBA vec4 format, and the return value will set that pixel color. Invalid return values or nil takes no effects.",
 
 
   "figura.docs.vanilla_model": "A global API that provides functions to interact with the vanilla player model and its parts. Accessed using the name \"vanilla_model\".",
@@ -1226,7 +1226,7 @@
   "figura.docs.vector_n.to_deg": "Returns a copy of this vector, in degrees.",
   "figura.docs.vector_n.floor": "Returns a copy of this vector with its values rounded down.",
   "figura.docs.vector_n.ceil": "Returns a copy of this vector with its values rounded up.",
-  "figura.docs.vector_n.apply_func": "Calls the given function on each element of this vector, and sets the values of the vector to the returns. Returns self for chaining.",
+  "figura.docs.vector_n.apply_func": "Calls the given function on each element of this vector, and sets the values of the vector to the returns. The current index and its value is given as arguments of the function. Returns self for chaining.",
 
   "figura.docs.vector3.cross": "Sets this vector to the cross product of itself and the other vector. Returns self for chaining.",
   "figura.docs.vector3.crossed": "Returns a new vector which is the cross product of this and the other one.",
