@@ -3,9 +3,9 @@ package org.moon.figura.math.vector;
 import com.mojang.math.Vector3f;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
-import org.luaj.vm2.LuaDouble;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
+import org.luaj.vm2.LuaValue;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.*;
@@ -441,9 +441,9 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
             value = "vector_n.apply_func"
     )
     public FiguraVec3 applyFunc(@LuaNotNil LuaFunction function) {
-        x = function.call(LuaDouble.valueOf(x)).todouble();
-        y = function.call(LuaDouble.valueOf(y)).todouble();
-        z = function.call(LuaDouble.valueOf(z)).todouble();
+        x = function.call(LuaValue.valueOf(1), LuaValue.valueOf(x)).todouble();
+        y = function.call(LuaValue.valueOf(2), LuaValue.valueOf(y)).todouble();
+        z = function.call(LuaValue.valueOf(3), LuaValue.valueOf(z)).todouble();
         return this;
     }
 

@@ -1,8 +1,8 @@
 package org.moon.figura.math.vector;
 
-import org.luaj.vm2.LuaDouble;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
+import org.luaj.vm2.LuaValue;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.*;
@@ -469,11 +469,11 @@ public class FiguraVec5 extends FiguraVector<FiguraVec5, FiguraMatrix.DummyMatri
             value = "vector_n.apply_func"
     )
     public FiguraVec5 applyFunc(@LuaNotNil LuaFunction function) {
-        x = function.call(LuaDouble.valueOf(x)).todouble();
-        y = function.call(LuaDouble.valueOf(y)).todouble();
-        z = function.call(LuaDouble.valueOf(z)).todouble();
-        w = function.call(LuaDouble.valueOf(w)).todouble();
-        t = function.call(LuaDouble.valueOf(t)).todouble();
+        x = function.call(LuaValue.valueOf(1), LuaValue.valueOf(x)).todouble();
+        y = function.call(LuaValue.valueOf(2), LuaValue.valueOf(y)).todouble();
+        z = function.call(LuaValue.valueOf(3), LuaValue.valueOf(z)).todouble();
+        w = function.call(LuaValue.valueOf(4), LuaValue.valueOf(w)).todouble();
+        t = function.call(LuaValue.valueOf(5), LuaValue.valueOf(t)).todouble();
         return this;
     }
 
