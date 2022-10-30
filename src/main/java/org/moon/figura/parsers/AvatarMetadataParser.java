@@ -72,6 +72,13 @@ public class AvatarMetadataParser {
         if (Config.FORMAT_SCRIPT.asInt() == 2)
             nbt.putBoolean("minify", true);
 
+        if (metadata.autoAnims != null) {
+            ListTag autoAnims = new ListTag();
+            for (String name : metadata.autoAnims)
+                autoAnims.add(StringTag.valueOf(name));
+            nbt.put("autoAnims", autoAnims);
+        }
+
         return nbt;
     }
 
@@ -164,7 +171,7 @@ public class AvatarMetadataParser {
     //json object class
     public static class Metadata {
         public String name, author, version, color, background;
-        public String[] authors, autoScripts;
+        public String[] authors, autoScripts, autoAnims;
         public HashMap<String, Customization> customizations;
     }
 

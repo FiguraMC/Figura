@@ -128,8 +128,12 @@ public class FiguraModelPart {
             return;
 
         FiguraMat4 prevPartToView = currentTransforms.inverted();
-        prevPartToView.rightMultiply(FiguraMat4.of().rotateY(180));
-        double s = UIHelper.paperdoll ?  1 / 16d * UIHelper.dollScale : 1 / 16d;
+        double s = 1 / 16d;
+        if (UIHelper.paperdoll) {
+            s *= -UIHelper.dollScale;
+        } else {
+            prevPartToView.rightMultiply(FiguraMat4.of().rotateY(180));
+        }
         prevPartToView.scale(s, s, s);
         FiguraVec3 piv = customization.getPivot();
         FiguraVec3 piv2 = customization.getOffsetPivot().add(piv);
