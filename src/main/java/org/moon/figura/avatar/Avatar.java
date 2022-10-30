@@ -58,10 +58,7 @@ import org.moon.figura.utils.ui.UIHelper;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Queue;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -727,6 +724,13 @@ public class Avatar {
         if (!nbt.contains("animations"))
             return;
 
+        ArrayList<String> autoAnims = new ArrayList<>();
+        CompoundTag metadata = nbt.getCompound("metadata");
+        if (metadata.contains("autoAnims")) {
+            for (Tag name : metadata.getList("autoAnims", Tag.TAG_STRING))
+                autoAnims.add(name.getAsString());
+        }
+
         ListTag root = nbt.getList("animations", Tag.TAG_COMPOUND);
         for (int i = 0; i < root.size(); i++) {
             try {
@@ -735,8 +739,11 @@ public class Avatar {
                 if (!animNbt.contains("mdl") || !animNbt.contains("name"))
                     continue;
 
+                String mdl = animNbt.getString("mdl");
+                String name = animNbt.getString("name");
+
                 Animation animation = new Animation(this,
-                        animNbt.getString("mdl"), animNbt.getString("name"),
+                        mdl, name,
                         animNbt.contains("loop") ? Animation.LoopMode.valueOf(animNbt.getString("loop").toUpperCase()) : Animation.LoopMode.ONCE,
                         animNbt.contains("ovr") && animNbt.getBoolean("ovr"),
                         animNbt.contains("len") ? animNbt.getFloat("len") : 0f,
@@ -754,6 +761,9 @@ public class Avatar {
                 }
 
                 animations.put(i, animation);
+
+                if (autoAnims.contains(mdl + "." + name))
+                    animation.play();
             } catch (Exception ignored) {}
         }
     }

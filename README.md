@@ -12,14 +12,22 @@ you can filter those people and tweak their avatar available resources using a s
 **Note:** All avatars rights are reserved to their respective creators
 
 ## Links
+[discord]: https://discord.com/api/guilds/125227483518861312/widget.png
+[reddit]: https://img.shields.io/badge/Reddit-ff4500?logo=reddit&logoColor=ffffff&labelColor=ff4500
+[modrinth]: https://img.shields.io/badge/Modrinth-1bd96a?logo=modrinth&logoColor=1bd96a&labelColor=1bd96a
+[curseforge]: https://img.shields.io/badge/CurseForge-f16436?logo=curseforge&logoColor=ffffff&labelColor=f16436
+[kofi]: https://img.shields.io/badge/Ko--fi-00b9fe?logo=kofi&logoColor=ffffff&labelColor=00b9fe
 
-[Discord](https://discord.gg/ekHGHcH8Af)  
-[Reddit](https://www.reddit.com/r/Figura)
+Social:
+[ ![discord][] ](https://discord.gg/ekHGHcH8Af)
+[ ![reddit][] ](https://www.reddit.com/r/Figura)
 
-[Modrinth](https://modrinth.com/mod/figura)  
-[Curseforge](https://curseforge.com/minecraft/mc-mods/figura)  
+Download:
+[ ![modrinth] ](https://modrinth.com/mod/figura)
+[ ![curseforge][] ](https://curseforge.com/minecraft/mc-mods/figura)
 
-[Ko-fi](https://ko-fi.com/francy_chan)
+Donate:
+[ ![kofi][] ](https://ko-fi.com/francy_chan)
 
 ## FAQ
 

@@ -22,9 +22,8 @@ public class API {
     private HttpRequest.Builder header(String url) {
         return HttpRequest
                 .newBuilder(getUri(url))
-                .header("identification", FiguraMod.getLocalPlayerUUID().toString())
                 .header("user-agent", FiguraMod.MOD_NAME + "/" + FiguraMod.VERSION)
-                .header("authorization", token);
+                .header("token", token);
     }
 
     public HttpRequest getUser(UUID id) {
