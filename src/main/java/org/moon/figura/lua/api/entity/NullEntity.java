@@ -22,7 +22,7 @@ public class NullEntity {
 
     @LuaWhitelist
     public Object __index(Object o) {
-        throw new LuaError("Tried to access the Entity API before its initialization in the ENTITY_INIT event. To check if the entity exists, use \"isLoaded()\"");
+        throw new LuaError("Tried to access the Entity API before its initialization in the ENTITY_INIT event. To check if the entity exists, use \"<entity>:isLoaded()\"");
     }
 
     @Override

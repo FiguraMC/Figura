@@ -529,6 +529,9 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
     public static FiguraVec3 fromBlockPos(BlockPos pos) {
         return of(pos.getX(), pos.getY(), pos.getZ());
     }
+    public Vec3 asVec3() {
+        return new Vec3(x, y, z);
+    }
 
     public static FiguraVec3 fromVec3(Vec3 vec) {
         return of(vec.x, vec.y, vec.z);

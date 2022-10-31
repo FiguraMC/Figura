@@ -2,15 +2,12 @@ package org.moon.figura.mixin.sound;
 
 import com.mojang.blaze3d.audio.Channel;
 import com.mojang.blaze3d.audio.Library;
-import com.mojang.blaze3d.audio.SoundBuffer;
 import net.minecraft.client.Options;
 import net.minecraft.client.sounds.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
-import org.moon.figura.avatar.Avatar;
 import org.moon.figura.ducks.ChannelHandleAccessor;
 import org.moon.figura.ducks.SoundEngineAccessor;
 import org.moon.figura.lua.api.sound.LuaSound;
@@ -67,13 +64,8 @@ public abstract class SoundEngineMixin implements SoundEngineAccessor {
         if (!this.loaded || category != SoundSource.PLAYERS)
             return;
 
-        for (LuaSound sound : figuraHandlers) {
-            float newVol = Math.min(sound.getVolume() * this.getVolume(category), 1);
-            sound.getHandle().execute(channel -> {
-                if (newVol <= 0) channel.stop();
-                else channel.setVolume(newVol);
-            });
-        }
+        for (LuaSound sound : figuraHandlers)
+            sound.volume(sound.getVolume());
     }
 
     @Inject(at = @At("RETURN"), method = "stop(Lnet/minecraft/resources/ResourceLocation;Lnet/minecraft/sounds/SoundSource;)V")
@@ -94,8 +86,8 @@ public abstract class SoundEngineMixin implements SoundEngineAccessor {
 
         for (LuaSound sound : figuraHandlers) {
             ChannelHandleAccessor accessor = (ChannelHandleAccessor) sound.getHandle();
-            if (owner == null || (accessor.getOwner().equals(owner) && (name == null || accessor.getName().equals(name))))
-                sound.getHandle().execute(Channel::stop);
+            if (accessor != null && (owner == null || (accessor.getOwner().equals(owner) && (name == null || accessor.getName().equals(name)))))
+                sound.stop();
         }
     }
 
@@ -103,7 +95,7 @@ public abstract class SoundEngineMixin implements SoundEngineAccessor {
     public void figura$stopAllSounds() {
         if (this.loaded) {
             for (LuaSound sound : figuraHandlers)
-                sound.getHandle().execute(Channel::stop);
+                sound.stop();
             figuraHandlers.clear();
             figuraChannel.clear();
         }
@@ -121,12 +113,12 @@ public abstract class SoundEngineMixin implements SoundEngineAccessor {
     }
 
     @Override @Intrinsic
-    public SoundBuffer figura$getBuffer(ResourceLocation id) {
-        return this.soundBuffers.getCompleteBuffer(id).join();
+    public float figura$getVolume(SoundSource category) {
+        return getVolume(category);
     }
 
     @Override @Intrinsic
-    public float figura$getVolume(SoundSource category) {
-        return getVolume(category);
+    public SoundBufferLibrary figura$getSoundBuffers() {
+        return this.soundBuffers;
     }
 }
