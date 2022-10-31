@@ -1093,7 +1093,20 @@
   "figura.docs.sounds.add_sound": "Registers a new custom sound for this avatar. The first argument is the sound id while the second argument is either a byte array of the sound data, or a base64 string representation of the same.",
 
   "figura.docs.sound": "Represents a sound that can be played. Obtained by indexing the SoundAPI. Exists as an object-oriented alternative to sounds:playSound().",
-  "figura.docs.sound.play": "Plays this sound with the given parameters. Volume in Minecraft refers to how far away people can hear from, not the actual loudness. The defaults for volume and pitch are 1.",
+  "figura.docs.sound.play": "Plays this sound, or resume a paused sound.",
+  "figura.docs.sound.is_playing": "Checks if this sound is being played.",
+  "figura.docs.sound.pause": "Pauses the current playback of this sound.",
+  "figura.docs.sound.stop": "Stops the playback of this sound.",
+  "figura.docs.sound.pos": "Sets the position of this sound. Position is given in world coordinates. Default 0.",
+  "figura.docs.sound.get_pos": "Get this sound position.",
+  "figura.docs.sound.volume": "Sets the volume of this sound. Default 1.",
+  "figura.docs.sound.get_volume": "Gets this sound volume",
+  "figura.docs.sound.attenuation": "Sets the attenuation of this sound. Default 1.",
+  "figura.docs.sound.get_attenuation": "Gets this sound attenuation.",
+  "figura.docs.sound.pitch": "Sets the pitch of this sound. Default 1.",
+  "figura.docs.sound.get_pitch": "Gets this sound pitch.",
+  "figura.docs.sound.loop": "Toggles if this sound should loop. Default false.",
+  "figura.docs.sound.is_looping": "Checks if this sound is looping.",
 
 
   "figura.docs.textures": "A global API which allows for creating textures at runtime.",

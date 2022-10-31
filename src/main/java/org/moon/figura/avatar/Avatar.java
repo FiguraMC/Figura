@@ -286,7 +286,7 @@ public class Avatar {
         //run all queued events
         while (!events.isEmpty()) {
             Supplier<Varargs> e = events.poll();
-            Varargs result = e.get();
+            Varargs result = e != null ? e.get() : null;
 
             //if the event is the same the one created, set the return value to it
             if (e == ev)
