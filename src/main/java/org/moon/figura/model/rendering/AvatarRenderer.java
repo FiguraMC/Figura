@@ -14,13 +14,13 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 import org.moon.figura.avatar.Avatar;
+import org.moon.figura.math.matrix.FiguraMat3;
+import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.model.FiguraModelPart;
 import org.moon.figura.model.ParentType;
 import org.moon.figura.model.VanillaModelData;
 import org.moon.figura.model.rendering.texture.FiguraTexture;
 import org.moon.figura.model.rendering.texture.FiguraTextureSet;
-import org.moon.figura.math.matrix.FiguraMat3;
-import org.moon.figura.math.matrix.FiguraMat4;
 
 import java.util.ArrayList;
 import java.util.HashMap;

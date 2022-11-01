@@ -13,6 +13,7 @@ import org.moon.figura.avatar.Avatar;
 import org.moon.figura.lua.api.AvatarAPI;
 import org.moon.figura.lua.api.HostAPI;
 import org.moon.figura.lua.api.RendererAPI;
+import org.moon.figura.lua.api.TextureAPI;
 import org.moon.figura.lua.api.action_wheel.ActionWheelAPI;
 import org.moon.figura.lua.api.entity.EntityAPI;
 import org.moon.figura.lua.api.entity.NullEntity;
@@ -43,8 +44,8 @@ public class FiguraLuaRuntime {
     public RendererAPI renderer;
     public ActionWheelAPI action_wheel;
     public AvatarAPI avatar_meta;
-
     public PingAPI ping;
+    public TextureAPI texture;
 
     //---------------------------------
 

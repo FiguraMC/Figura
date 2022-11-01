@@ -149,7 +149,7 @@ public class FiguraAPIManager {
         put("matrices", r -> MatricesAPI.INSTANCE);
         put("world", r -> WorldAPI.INSTANCE);
         put("pings", r -> r.ping = new PingAPI(r.owner));
-        put("textures", r -> new TextureAPI(r.owner));
+        put("textures", r -> r.texture = new TextureAPI(r.owner));
     }};
 
     private static final Set<FiguraAPI> ENTRYPOINTS = new HashSet<>();

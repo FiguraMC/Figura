@@ -98,10 +98,9 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
         //When viewed 3rd person, render all non-world parts.
         PartFilterScheme filter = invisible ? PartFilterScheme.PIVOTS : entity.isSpectator() ? PartFilterScheme.HEAD : PartFilterScheme.MODEL;
         int overlay = getOverlayCoords(entity, getWhiteOverlayProgress(entity, delta));
-        UIHelper.EntityRenderMode renderMode = UIHelper.paperdoll ? UIHelper.renderMode : UIHelper.EntityRenderMode.RENDER;
-        currentAvatar.renderEvent(delta, renderMode.name());
+        currentAvatar.renderEvent(delta);
         currentAvatar.render(entity, yaw, delta, translucent ? 0.15f : 1f, matrices, bufferSource, light, overlay, (LivingEntityRenderer<?, ?>) (Object) this, filter, translucent, glowing);
-        currentAvatar.postRenderEvent(delta, renderMode.name());
+        currentAvatar.postRenderEvent(delta);
     }
 
     @Inject(at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;popPose()V"), method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V")

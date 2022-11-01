@@ -26,10 +26,13 @@ import net.minecraft.world.entity.LivingEntity;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import org.moon.figura.FiguraMod;
+import org.moon.figura.avatar.Avatar;
+import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.gui.screens.AbstractPanelScreen;
 import org.moon.figura.gui.widgets.AbstractContainerElement;
 import org.moon.figura.gui.widgets.ContextMenu;
 import org.moon.figura.math.vector.FiguraVec4;
+import org.moon.figura.model.rendering.texture.EntityRenderMode;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.TextUtils;
 
@@ -46,7 +49,6 @@ public class UIHelper extends GuiComponent {
     private static final CustomFramebuffer FIGURA_FRAMEBUFFER = new CustomFramebuffer();
     private static int previousFBO = -1;
     public static boolean paperdoll = false;
-    public static EntityRenderMode renderMode = EntityRenderMode.RENDER;
     public static float dollScale = 1f;
     public static FiguraVec4 scissors = FiguraVec4.of();
 
@@ -95,14 +97,6 @@ public class UIHelper extends GuiComponent {
         FIGURA_FRAMEBUFFER.drawToScreen(windowWidth, windowHeight);
         RenderSystem.setProjectionMatrix(mf);
         RenderSystem.enableBlend();
-    }
-
-    public enum EntityRenderMode {
-        FIGURA_GUI,
-        PAPERDOLL,
-        MINECRAFT_GUI,
-        FIRST_PERSON,
-        RENDER
     }
 
     public static void drawEntity(float x, float y, float scale, float pitch, float yaw, LivingEntity entity, PoseStack stack, EntityRenderMode renderMode) {
@@ -223,7 +217,9 @@ public class UIHelper extends GuiComponent {
         //render
         UIHelper.paperdoll = true;
         UIHelper.dollScale = scale;
-        UIHelper.renderMode = renderMode;
+
+        Avatar avatar = AvatarManager.getAvatar(entity);
+        if (avatar != null) avatar.renderMode = renderMode;
 
         float finalYaw = yaw;
         RenderSystem.runAsFancy(() -> dispatcher.render(entity, 0d, finalY, 0d, finalYaw, 1f, stack, immediate, LightTexture.FULL_BRIGHT));

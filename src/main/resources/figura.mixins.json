@@ -36,6 +36,7 @@
     "render.EntityRenderDispatcherMixin",
     "render.GameRendererAccessor",
     "render.GameRendererMixin",
+    "render.LevelRendererMixin",
     "render.PlayerModelMixin",
 
     "render.layers.CapeLayerMixin",

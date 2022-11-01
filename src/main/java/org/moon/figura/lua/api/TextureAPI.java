@@ -36,9 +36,9 @@ public class TextureAPI {
             throw new LuaError("Avatar have no active renderer!");
     }
 
-    private FiguraTexture register(String name, NativeImage image) {
+    public FiguraTexture register(String name, NativeImage image, boolean ignoreSize) {
         int max = owner.trust.get(Trust.TEXTURE_SIZE);
-        if (image.getWidth() > max || image.getHeight() > max)
+        if (!ignoreSize && (image.getWidth() > max || image.getHeight() > max))
             throw new LuaError("Texture exceeded max size of " + max + " x " + max + " resolution, got " + image.getWidth() + " x " + image.getHeight());
 
         FiguraTexture oldText = get(name);
@@ -68,7 +68,7 @@ public class TextureAPI {
             throw new LuaError(e.getMessage());
         }
 
-        FiguraTexture texture = register(name, image);
+        FiguraTexture texture = register(name, image, false);
         texture.fill(0, 0, width, height, ColorUtils.Colors.FRAN_PINK.vec.augmented(), null, null, null);
         return texture;
     }
@@ -88,7 +88,7 @@ public class TextureAPI {
             throw new LuaError(e.getMessage());
         }
 
-        return register(name, image);
+        return register(name, image, false);
     }
 
     @LuaWhitelist
