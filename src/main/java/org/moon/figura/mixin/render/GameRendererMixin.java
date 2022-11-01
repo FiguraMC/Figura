@@ -12,8 +12,8 @@ import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.ducks.GameRendererAccessor;
 import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.model.rendering.texture.EntityRenderMode;
 import org.moon.figura.trust.Trust;
-import org.moon.figura.utils.ui.UIHelper;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -104,14 +104,16 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
         }
 
         avatar = AvatarManager.getAvatarForPlayer(this.minecraft.player.getUUID());
-        if (avatar != null)
-            avatar.renderEvent(tickDelta, UIHelper.EntityRenderMode.FIRST_PERSON.name());
+        if (avatar != null) {
+            avatar.renderMode = EntityRenderMode.FIRST_PERSON;
+            avatar.renderEvent(tickDelta);
+        }
     }
 
     @Inject(method = "renderItemInHand", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;popPose()V", shift = At.Shift.BEFORE))
     private void posRenderItemInHand(PoseStack matrices, Camera camera, float tickDelta, CallbackInfo ci) {
         if (avatar != null)
-            avatar.postRenderEvent(tickDelta, UIHelper.EntityRenderMode.RENDER.name());
+            avatar.postRenderEvent(tickDelta);
     }
 
     @Override @Intrinsic

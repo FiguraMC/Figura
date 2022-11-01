@@ -340,9 +340,7 @@ public class HostAPI {
             return null;
 
         NativeImage img = Screenshot.takeScreenshot(Minecraft.getInstance().getMainRenderTarget());
-        FiguraTexture texture = new FiguraTexture(owner, name, img);
-        owner.renderer.customTextures.put(name, texture);
-        return texture;
+        return owner.luaRuntime.texture.register(name, img, true);
     }
 
     @LuaWhitelist

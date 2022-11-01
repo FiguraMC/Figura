@@ -9,6 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import org.moon.figura.gui.screens.AbstractPanelScreen;
 import org.moon.figura.gui.screens.AvatarScreen;
+import org.moon.figura.model.rendering.texture.EntityRenderMode;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.ui.UIHelper;
@@ -104,7 +105,7 @@ public class InteractableEntity extends AbstractContainerElement {
         if (entity != null) {
             stack.pushPose();
             stack.translate(0f, 0f, -400f);
-            UIHelper.drawEntity(x + modelX, y + modelY, scale + scaledValue, angleX, angleY, entity, stack, UIHelper.EntityRenderMode.FIGURA_GUI);
+            UIHelper.drawEntity(x + modelX, y + modelY, scale + scaledValue, angleX, angleY, entity, stack, EntityRenderMode.FIGURA_GUI);
             stack.popPose();
         } else {
             stack.pushPose();

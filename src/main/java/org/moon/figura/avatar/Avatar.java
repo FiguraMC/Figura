@@ -47,6 +47,7 @@ import org.moon.figura.model.PartCustomization;
 import org.moon.figura.model.rendering.AvatarRenderer;
 import org.moon.figura.model.rendering.ImmediateAvatarRenderer;
 import org.moon.figura.model.rendering.PartFilterScheme;
+import org.moon.figura.model.rendering.texture.EntityRenderMode;
 import org.moon.figura.trust.Trust;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
@@ -91,6 +92,7 @@ public class Avatar {
 
     public AvatarRenderer renderer;
     public FiguraLuaRuntime luaRuntime;
+    public EntityRenderMode renderMode = EntityRenderMode.OTHER;
 
     public final TrustContainer.PlayerContainer trust;
 
@@ -284,9 +286,9 @@ public class Avatar {
         Varargs val = null;
 
         //run all queued events
-        while (!events.isEmpty()) {
-            Supplier<Varargs> e = events.poll();
-            Varargs result = e != null ? e.get() : null;
+        Supplier<Varargs> e;
+        while ((e = events.poll()) != null) {
+            Varargs result = e.get();
 
             //if the event is the same the one created, set the return value to it
             if (e == ev)
@@ -304,14 +306,15 @@ public class Avatar {
             run("TICK", tick);
     }
 
-    public void renderEvent(float delta, String context) {
+    public void renderEvent(float delta) {
         if (luaRuntime != null && luaRuntime.getUser() != null)
-            run("RENDER", render, delta, context);
+            run("RENDER", render, delta, renderMode.name());
     }
 
-    public void postRenderEvent(float delta, String context) {
+    public void postRenderEvent(float delta) {
         if (luaRuntime != null && luaRuntime.getUser() != null)
-            run("POST_RENDER", render.post(), delta, context);
+            run("POST_RENDER", render.post(), delta, renderMode.name());
+        renderMode = EntityRenderMode.OTHER;
     }
 
     public void postWorldRenderEvent(float delta) {

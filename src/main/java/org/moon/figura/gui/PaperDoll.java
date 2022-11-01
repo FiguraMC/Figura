@@ -6,6 +6,7 @@ import net.minecraft.world.entity.player.Player;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.config.Config;
+import org.moon.figura.model.rendering.texture.EntityRenderMode;
 import org.moon.figura.utils.ui.UIHelper;
 
 public class PaperDoll {
@@ -58,7 +59,7 @@ public class PaperDoll {
                 x, y,
                 scale * 30f,
                 Config.PAPERDOLL_PITCH.asFloat(), Config.PAPERDOLL_YAW.asFloat(),
-                player, stack, UIHelper.EntityRenderMode.PAPERDOLL
+                player, stack, EntityRenderMode.PAPERDOLL
         );
     }
 }
