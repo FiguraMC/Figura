@@ -15,6 +15,7 @@ import java.util.BitSet;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class NetworkStuff {
 
@@ -28,7 +29,7 @@ public class NetworkStuff {
     public static String disconnectedReason;
 
     public static void init() {
-        //getUser(UUID.fromString("66a6c5c4-963b-4b73-a0d9-162faedd8b7f"));
+        getUser(UUID.fromString("66a6c5c4-963b-4b73-a0d9-162faedd8b7f"));
     }
 
     public static void tick() {
@@ -43,10 +44,14 @@ public class NetworkStuff {
         }
     }
 
-    private static void runString(HttpRequest request, Consumer<String> consumer) {
+    private static void runString(Supplier<HttpRequest> request, Consumer<String> consumer) {
         async(() -> {
+            if (api == null)
+                return;
+
             try {
-                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+                HttpRequest result = request.get();
+                HttpResponse<String> response = client.send(result, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
                 int i = response.statusCode();
                 if (i == 200) {
                     consumer.accept(response.body());
@@ -59,10 +64,14 @@ public class NetworkStuff {
         });
     }
 
-    private static void run(HttpRequest request, Consumer<InputStream> consumer) {
+    private static void run(Supplier<HttpRequest> request, Consumer<InputStream> consumer) {
         async(() -> {
+            if (api == null)
+                return;
+
             try {
-                HttpResponse<InputStream> response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
+                HttpRequest result = request.get();
+                HttpResponse<InputStream> response = client.send(result, HttpResponse.BodyHandlers.ofInputStream());
                 int i = response.statusCode();
                 if (i == 200) {
                     consumer.accept(response.body());
@@ -78,6 +87,8 @@ public class NetworkStuff {
     private static void handleHTTPError(String error) {
         if (Config.CONNECTION_TOASTS.asBool())
             FiguraToast.sendToast(error, FiguraToast.ToastType.ERROR);
+        else
+            FiguraMod.LOGGER.warn(error);
     }
 
     private static void ensureConnection() {
@@ -86,7 +97,7 @@ public class NetworkStuff {
 
     public static void getUser(UUID id) {
         ensureConnection();
-        runString(api.getUser(id), s -> {
+        runString(() -> api.getUser(id), s -> {
             System.out.println(s);
             JsonObject json = JsonParser.parseString(s).getAsJsonObject();
 
@@ -105,5 +116,10 @@ public class NetworkStuff {
 
             Badges.load(uuid, prideSet, specialSet);
         });
+    }
+
+    public static void getLimits() {
+        ensureConnection();
+        runString(() -> api.getLimits(), s -> {});
     }
 }

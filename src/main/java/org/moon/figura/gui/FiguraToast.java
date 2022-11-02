@@ -129,6 +129,8 @@ public class FiguraToast implements Toast {
         ToastComponent toasts = Minecraft.getInstance().getToasts();
         FiguraToast toast = toasts.getToast(FiguraToast.class, type);
 
+        FiguraMod.debug("Sent toast: \"{}\", \"{}\" of type: \"{}\"", text.getString(), text2.getString(), type.name());
+
         if (toast != null)
             toast.update(text, text2, true);
         else
