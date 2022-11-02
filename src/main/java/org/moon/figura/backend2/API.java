@@ -29,4 +29,8 @@ public class API {
     public HttpRequest getUser(UUID id) {
         return header(id.toString()).build();
     }
+
+    public HttpRequest getLimits() {
+        return header("limits").build();
+    }
 }

@@ -41,9 +41,14 @@
     "fabricloader": ">=${loader_version}",
     "fabric": ">=${fabric_api}"
   },
+  "conflicts": {
+    "iris": "*",
+    "immersive_portals": "*"
+  },
   "breaks": {
     "optifine": "*",
-    "optifabric": "*"
+    "optifabric": "*",
+    "canvas": "*"
   },
   "custom": {
     "modmenu": {
