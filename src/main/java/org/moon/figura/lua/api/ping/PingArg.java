@@ -51,7 +51,7 @@ public class PingArg {
         }
     }
 
-    private void writeArg(LuaValue val, DataOutputStream dos) throws IOException {
+    private static void writeArg(LuaValue val, DataOutputStream dos) throws IOException {
         if (val.isboolean()) {
             dos.writeByte(BOOL);
             dos.writeBoolean(val.checkboolean());
@@ -75,7 +75,7 @@ public class PingArg {
         }
     }
 
-    private void writeTable(LuaTable table, DataOutputStream dos) throws IOException {
+    private static void writeTable(LuaTable table, DataOutputStream dos) throws IOException {
         dos.writeByte(TABLE);
         dos.writeInt(table.keyCount());
 
@@ -85,7 +85,7 @@ public class PingArg {
         }
     }
 
-    private void writeVec(FiguraVector<?, ?> vector, DataOutputStream dos) throws IOException {
+    private static void writeVec(FiguraVector<?, ?> vector, DataOutputStream dos) throws IOException {
         dos.writeByte(VECTOR);
         dos.writeByte(vector.size());
 
@@ -93,7 +93,7 @@ public class PingArg {
             dos.writeDouble(vector.index(i));
     }
 
-    private void writeMat(FiguraMatrix<?, ?> matrix, DataOutputStream dos) throws IOException {
+    private static void writeMat(FiguraMatrix<?, ?> matrix, DataOutputStream dos) throws IOException {
         dos.writeByte(MATRIX);
         dos.writeByte(matrix.cols());
 
@@ -149,7 +149,7 @@ public class PingArg {
         byte size = dis.readByte();
 
         double[] array = new double[size];
-        for (byte i = 0; i < size; i++)
+        for (int i = 0; i < size; i++)
             array[i] = dis.readDouble();
 
         return MathUtils.sizedVector(array);

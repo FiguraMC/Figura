@@ -15,6 +15,7 @@ import org.luaj.vm2.LuaUserdata;
 import org.luaj.vm2.LuaValue;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.animation.Animation;
+import org.moon.figura.lua.api.ConfigAPI;
 import org.moon.figura.lua.api.particle.LuaParticle;
 import org.moon.figura.model.FiguraModelPart;
 import org.moon.figura.model.rendering.texture.FiguraTexture;
@@ -215,6 +216,10 @@ public class FiguraDocsManager {
         put("textures", List.of(
                 TextureAPI.class,
                 FiguraTexture.class
+        ));
+
+        put("config", List.of(
+                ConfigAPI.class
         ));
     }};
     private static final Map<String, List<FiguraDoc>> GENERATED_CHILDREN = new HashMap<>();

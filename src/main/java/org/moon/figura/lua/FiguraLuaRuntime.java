@@ -259,6 +259,8 @@ public class FiguraLuaRuntime {
         if (scripts.size() == 0)
             return false;
 
+        owner.luaRuntime = this;
+
         try {
             if (autoScripts == null) {
                 for (String name : scripts.keySet())
@@ -268,12 +270,10 @@ public class FiguraLuaRuntime {
                     INIT_SCRIPT.apply(name.getAsString());
             }
         } catch (LuaError e) {
-            owner.luaRuntime = this;
             error(e);
             return false;
         }
 
-        owner.luaRuntime = this;
         return true;
     }
 
