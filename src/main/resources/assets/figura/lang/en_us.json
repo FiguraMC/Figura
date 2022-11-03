@@ -178,6 +178,7 @@
   "figura.gui.trust.precise": "Precise Mode",
   "figura.gui.trust.expand_trust.tooltip": "Expand advanced trust menu",
   "figura.gui.trust.minimize_trust.tooltip": "Minimize advanced trust menu",
+  "figura.gui.trust.figura_only.tooltip": "Show only Figura players",
   "figura.gui.trust.disconnected.tooltip": "Show disconnected avatars",
 
   "figura.gui.trust.disconnected": "(disconnected)",
