@@ -48,7 +48,7 @@ public class API {
     }
 
     public HttpRequest uploadAvatar(String id, Avatar avatar) {
-        return header(id).PUT().build(); //TODO: needs BodyPublisher in PUT() function that sends the raw nbt data of an avatar, idk how to do it, sorry
+        return header(id).PUT(null).build(); //TODO: needs BodyPublisher in PUT() function that sends the raw nbt data of an avatar, idk how to do it, sorry
     }
 
     public HttpRequest deleteAvatar(String id) {
