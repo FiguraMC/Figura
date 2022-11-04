@@ -210,6 +210,10 @@ public class FiguraLuaRuntime {
                 }
                 return globalPairs.invoke(varargs);
             }
+            @Override
+            public String tojstring(){
+                return typename() + ": pairs";
+            }
         });
 
         //Change the ipairs() function
@@ -224,6 +228,10 @@ public class FiguraLuaRuntime {
                         return __ipairs.invoke(varargs);
                 }
                 return globalIPairs.invoke(varargs);
+            }
+            @Override
+            public String tojstring(){
+                return typename() + ": ipairs";
             }
         });
     }
