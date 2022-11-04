@@ -96,7 +96,8 @@ public class ConfigAPI {
         try (FileOutputStream fs = new FileOutputStream(path.toFile())) {
             fs.write(GSON.toJson(root).getBytes());
         } catch (Exception e) {
-            throw new LuaError("Failed to save avatar data file: " + e.getMessage());
+            FiguraMod.LOGGER.error("", e);
+            throw new LuaError("Failed to save avatar data file");
         }
     }
 
@@ -174,12 +175,16 @@ public class ConfigAPI {
             return;
 
         try (FileReader reader = new FileReader(path.toFile())) {
-            root = JsonParser.parseReader(reader).getAsJsonObject();
+            JsonElement element = JsonParser.parseReader(reader);
+            if (element.isJsonNull())
+                return;
 
+            root = element.getAsJsonObject();
             for (String key : root.keySet())
                 luaTable.set(key, readArg(root.get(key), owner));
         } catch (Exception e) {
-            throw new LuaError("Failed to load avatar data file: " + e.getMessage());
+            FiguraMod.LOGGER.error("", e);
+            throw new LuaError("Failed to load avatar data file");
         }
     }
 
