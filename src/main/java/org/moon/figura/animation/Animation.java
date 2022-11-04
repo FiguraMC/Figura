@@ -309,6 +309,19 @@ public class Animation {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = Boolean.class,
+                    argumentNames = "override"
+            ),
+            value = "animation.override"
+    )
+    public Animation override(boolean override) {
+        this.override = override ? 7 : 0;
+        return this;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc("animation.get_override_rot")
     public boolean getOverrideRot() {
         return (override & 1) == 1;

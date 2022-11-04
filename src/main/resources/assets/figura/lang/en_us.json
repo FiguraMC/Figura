@@ -578,6 +578,7 @@
   "figura.docs.animation.loop_delay": "Set how much time to wait in between the loops of this animation.",
   "figura.docs.animation.get_length": "Gets the animation's length.",
   "figura.docs.animation.length": "Set the animation's length, in seconds.",
+  "figura.docs.animation.override": "Set if this animation should override all of its parts vanilla transforms. Equivalent of calling \"overrideRot\", \"overridePos\" and \"overrideScale\" altogether.",
   "figura.docs.animation.get_override_rot": "Gets if this animation should override its parts vanilla rotation.",
   "figura.docs.animation.get_override_pos": "Gets if this animation should override its parts vanilla position.",
   "figura.docs.animation.get_override_scale": "Gets if this animation should override its parts vanilla scale.",
