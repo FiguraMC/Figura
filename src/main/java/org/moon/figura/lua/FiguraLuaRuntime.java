@@ -195,6 +195,10 @@ public class FiguraLuaRuntime {
                 }
                 return LuaString.valueOf(arg.typename());
             }
+            @Override
+            public String tojstring(){
+                return typename() + ": type";
+            }
         });
 
         //Change the pairs() function
