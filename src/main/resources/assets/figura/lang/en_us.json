@@ -263,8 +263,8 @@
   "figura.config.log_number_length.tooltip": "Changes the length of the decimal places that will be displayed within print functions",
 
   "figura.config.format_script": "Format Script",
-  "figura.config.format_script.tooltip.1":"Toggles if scripts will be stripped of comments and whitespace before being loaded.",
-  "figura.config.format_script.tooltip.2":"Requires reselecting the avatar to take effect.",
+  "figura.config.format_script.tooltip.1":"Selects if scripts should be compacted, removing out comments, whitespaces and/or empty lines",
+  "figura.config.format_script.tooltip.2":"Requires reselecting the avatar to take effect",
   "figura.config.format_script.1":"Disabled",
   "figura.config.format_script.2":"Light",
   "figura.config.format_script.3":"Heavy",
@@ -274,6 +274,13 @@
 
   "figura.config.action_wheel_button": "Action Wheel Button",
   "figura.config.action_wheel_button.tooltip": "Button to open the Action Wheel",
+
+  "figura.config.action_wheel_mode": "Action Wheel Mode",
+  "figura.config.action_wheel_mode.tooltip": "Changes the way to open and interact with the Action Wheel",
+  "figura.config.action_wheel_mode.1": "Hold",
+  "figura.config.action_wheel_mode.2": "Toggle",
+  "figura.config.action_wheel_mode.3": "Hold (run on release)",
+  "figura.config.action_wheel_mode.4": "Toggle (run on release)",
 
   "figura.config.action_wheel_scale": "Action Wheel Size",
   "figura.config.action_wheel_scale.tooltip": "Changes the Action Wheel size",
