@@ -81,6 +81,7 @@ public enum Config {
 
     ActionWheel,
     ACTION_WHEEL_BUTTON("key.keyboard.b"),
+    ACTION_WHEEL_MODE(0, 4),
     ACTION_WHEEL_SCALE(1f, InputType.FLOAT),
     ACTION_WHEEL_TITLE(0, 5),
     ACTION_WHEEL_DECORATIONS(true),
