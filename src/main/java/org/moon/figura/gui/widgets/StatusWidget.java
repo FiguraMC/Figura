@@ -11,7 +11,7 @@ import net.minecraft.network.chat.Style;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
-import org.moon.figura.backend.NetworkManager;
+import org.moon.figura.backend2.NetworkStuff;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.MathUtils;
 import org.moon.figura.utils.TextUtils;
@@ -61,7 +61,7 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
         boolean empty = avatar == null || avatar.nbt == null;
 
-        status = empty ? 0 : avatar.fileSize > NetworkManager.getSizeLimit() ? 1 : avatar.fileSize > NetworkManager.getSizeLimit() * 0.75 ? 2 : 3;
+        status = empty ? 0 : avatar.fileSize > NetworkStuff.getSizeLimit() ? 1 : avatar.fileSize > NetworkStuff.getSizeLimit() * 0.75 ? 2 : 3;
 
         int texture = empty || !avatar.hasTexture ? 0 : 3;
         status += texture << 2;
@@ -69,10 +69,10 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
         int script = empty ? 0 : avatar.scriptError ? 1 : avatar.luaRuntime == null ? 0 : avatar.versionStatus > 0 ? 2 : 3;
         status += script << 4;
 
-        int backend = NetworkManager.backendStatus;
+        int backend = NetworkStuff.backendStatus;
         status += backend << 6;
 
-        String dc = NetworkManager.disconnectedReason;
+        String dc = NetworkStuff.disconnectedReason;
         disconnectedReason = backend == 1 && dc != null && !dc.isBlank() ? Component.literal(dc) : null;
     }
 
@@ -112,7 +112,7 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
 
         MutableComponent info;
         if (i == 0) {
-            double size = color == 1 ? NetworkManager.getSizeLimit() : NetworkManager.getSizeLimit() * 0.75;
+            double size = color == 1 ? NetworkStuff.getSizeLimit() : NetworkStuff.getSizeLimit() * 0.75;
             info = FiguraText.of(part + "." + color, MathUtils.asFileSize(size));
         } else {
             info = FiguraText.of(part + "." + color);

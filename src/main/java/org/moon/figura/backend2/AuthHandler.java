@@ -46,8 +46,10 @@ public class AuthHandler {
             try {
                 lastAuth = (int) (Math.random() * 600) - 300; //between -15 and +15 seconds
 
-                if (!reAuth && NetworkStuff.backendStatus == 3)
+                if (!reAuth && NetworkStuff.backendStatus == 3) {
+                    NetworkStuff.checkAuth();
                     return;
+                }
 
                 if (authConnection != null && !authConnection.isConnected())
                     authConnection.handleDisconnection();
@@ -85,11 +87,7 @@ public class AuthHandler {
                                     return;
                                 }
 
-                                authConnection = null;
-                                NetworkStuff.disconnectedReason = null;
-                                NetworkStuff.api = new API(split[0]);
-                                NetworkStuff.backendStatus = 3;
-                                FiguraMod.debug("Successfully created backend Http API!");
+                                connected(new API(split[0]));
                             }
                         });
                     }
@@ -116,5 +114,16 @@ public class AuthHandler {
         NetworkStuff.backendStatus = 1;
         NetworkStuff.api = null;
         FiguraMod.debug("Failed to create the backend Http API!");
+    }
+
+    private static void connected(API api) {
+        authConnection = null;
+        NetworkStuff.disconnectedReason = null;
+        NetworkStuff.backendStatus = 3;
+        NetworkStuff.api = api;
+        FiguraMod.debug("Successfully created backend Http API!");
+
+        NetworkStuff.setLimits();
+        NetworkStuff.checkVersion();
     }
 }
