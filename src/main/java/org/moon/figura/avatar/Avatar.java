@@ -83,6 +83,7 @@ public class Avatar {
     public String name, entityName;
     public String authors;
     public Version version;
+    public String id;
     public int fileSize;
     public String color;
     public boolean minify;
@@ -153,6 +154,8 @@ public class Avatar {
                 name = metadata.getString("name");
                 authors = metadata.getString("authors");
                 version = new Version(metadata.getString("ver"));
+                if (metadata.contains("id"))
+                    id = metadata.getString("id");
                 if (metadata.contains("color"))
                     color = metadata.getString("color");
                 if (metadata.contains("minify"))

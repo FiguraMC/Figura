@@ -43,6 +43,7 @@ public class AvatarMetadataParser {
         nbt.putString("ver", version.toString());
         if (metadata.color != null) nbt.putString("color", metadata.color);
         if (metadata.background != null) nbt.putString("bg", metadata.background);
+        if (metadata.id != null) nbt.putString("id", metadata.id);
 
         if (metadata.authors != null) {
             StringBuilder authors = new StringBuilder();
@@ -170,7 +171,7 @@ public class AvatarMetadataParser {
 
     //json object class
     public static class Metadata {
-        public String name, author, version, color, background;
+        public String name, author, version, color, background, id;
         public String[] authors, autoScripts, autoAnims;
         public HashMap<String, Customization> customizations;
     }

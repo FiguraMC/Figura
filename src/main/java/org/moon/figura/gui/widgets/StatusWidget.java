@@ -8,11 +8,10 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
-import org.moon.figura.backend.NetworkManager;
+import org.moon.figura.backend2.NetworkStuff;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.MathUtils;
 import org.moon.figura.utils.TextUtils;
@@ -62,7 +61,7 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
         boolean empty = avatar == null || avatar.nbt == null;
 
-        status = empty ? 0 : avatar.fileSize > NetworkManager.getSizeLimit() ? 1 : avatar.fileSize > NetworkManager.getSizeLimit() * 0.75 ? 2 : 3;
+        status = empty ? 0 : avatar.fileSize > NetworkStuff.getSizeLimit() ? 1 : avatar.fileSize > NetworkStuff.getSizeLimit() * 0.75 ? 2 : 3;
 
         int texture = empty || !avatar.hasTexture ? 0 : 3;
         status += texture << 2;
@@ -70,11 +69,11 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
         int script = empty ? 0 : avatar.scriptError ? 1 : avatar.luaRuntime == null ? 0 : avatar.versionStatus > 0 ? 2 : 3;
         status += script << 4;
 
-        int backend = NetworkManager.backendStatus;
+        int backend = NetworkStuff.backendStatus;
         status += backend << 6;
 
-        String dc = NetworkManager.disconnectedReason;
-        disconnectedReason = backend == 1 && dc != null && !dc.isBlank() ? new TextComponent(dc) : null;
+        String dc = NetworkStuff.disconnectedReason;
+        disconnectedReason = backend == 1 && dc != null && !dc.isBlank() ? Component.literal(dc) : null;
     }
 
     @Override
@@ -103,7 +102,7 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
     }
 
     private MutableComponent getStatus(int type) {
-        return new TextComponent(String.valueOf(STATUS_INDICATORS.charAt(status >> (type * 2) & 3))).setStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT));
+        return Component.literal(String.valueOf(STATUS_INDICATORS.charAt(status >> (type * 2) & 3))).setStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT));
     }
 
     public Component getTooltipFor(int i) {
@@ -113,17 +112,17 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
 
         MutableComponent info;
         if (i == 0) {
-            double size = color == 1 ? NetworkManager.getSizeLimit() : NetworkManager.getSizeLimit() * 0.75;
-            info = new FiguraText(part + "." + color, MathUtils.asFileSize(size));
+            double size = color == 1 ? NetworkStuff.getSizeLimit() : NetworkStuff.getSizeLimit() * 0.75;
+            info = FiguraText.of(part + "." + color, MathUtils.asFileSize(size));
         } else {
-            info = new FiguraText(part + "." + color);
+            info = FiguraText.of(part + "." + color);
         }
 
-        MutableComponent text = new FiguraText(part).append("\n• ").append(info).setStyle(TEXT_COLORS.get(color));
+        MutableComponent text = FiguraText.of(part).append("\n• ").append(info).setStyle(TEXT_COLORS.get(color));
 
         //get backend disconnect reason
         if (i == 3 && disconnectedReason != null)
-            text.append("\n\n").append(new FiguraText(part + ".reason")).append("\n• ").append(disconnectedReason);
+            text.append("\n\n").append(FiguraText.of(part + ".reason")).append("\n• ").append(disconnectedReason);
 
         return text;
     }

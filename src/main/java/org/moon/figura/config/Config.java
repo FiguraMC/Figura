@@ -10,7 +10,7 @@ import net.minecraft.client.multiplayer.resolver.ServerAddress;
 import net.minecraft.network.chat.Component;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.AvatarManager;
-import org.moon.figura.backend.NetworkManager;
+import org.moon.figura.backend2.NetworkStuff;
 import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.FiguraText;
@@ -113,7 +113,13 @@ public enum Config {
     RELOAD_BUTTON("key.keyboard.unknown"),
     PANIC_BUTTON("key.keyboard.unknown"),
     BUTTON_LOCATION(0, 5),
-    UPDATE_CHANNEL(1, 3),
+    UPDATE_CHANNEL(1, 3) {
+        @Override
+        public void onChange() {
+            super.onChange();
+            NetworkStuff.checkVersion();
+        }
+    },
     EASTER_EGGS(true),
 
     Dev {{this.name = this.name.copy().withStyle(ChatFormatting.RED);}},
@@ -146,16 +152,14 @@ public enum Config {
         @Override
         public void onChange() {
             super.onChange();
-            NetworkManager.closeBackend();
-            NetworkManager.auth(true);
+            NetworkStuff.reAuth();
         }
     },
     BACKEND_IP("figura.moonlight-devs.org:25500", InputType.IP) {
         @Override
         public void onChange() {
             super.onChange();
-            NetworkManager.closeBackend();
-            NetworkManager.auth(true);
+            NetworkStuff.reAuth();
         }
     };
 

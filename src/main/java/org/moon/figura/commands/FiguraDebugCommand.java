@@ -18,7 +18,7 @@ import org.moon.figura.animation.Animation;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.avatar.local.LocalAvatarFetcher;
-import org.moon.figura.backend.NetworkManager;
+import org.moon.figura.backend2.NetworkStuff;
 import org.moon.figura.config.Config;
 import org.moon.figura.trust.Trust;
 import org.moon.figura.trust.TrustContainer;
@@ -88,9 +88,9 @@ public class FiguraDebugCommand {
         meta.addProperty("ticks", FiguraMod.ticks);
         meta.addProperty("figuraDirectory", FiguraMod.getFiguraDirectory().toString());
         meta.addProperty("figuraCacheDirectory", FiguraMod.getCacheDirectory().toString());
-        meta.addProperty("backendStatus", NetworkManager.backendStatus);
-        meta.addProperty("hasBackend", NetworkManager.hasBackend());
-        meta.addProperty("backendDisconnectedReason", NetworkManager.disconnectedReason);
+        meta.addProperty("backendStatus", NetworkStuff.backendStatus);
+        meta.addProperty("hasBackend", NetworkStuff.hasBackend());
+        meta.addProperty("backendDisconnectedReason", NetworkStuff.disconnectedReason);
         meta.addProperty("uploaded", AvatarManager.localUploaded);
         meta.addProperty("panicMode", AvatarManager.panic);
 

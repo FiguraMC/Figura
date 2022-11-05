@@ -3,10 +3,10 @@ package org.moon.figura.backend2;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.network.chat.Component;
-
-import java.util.UUID;
+import org.moon.figura.FiguraMod;
 
 public class BackendCommands {
 
@@ -20,25 +20,33 @@ public class BackendCommands {
             AuthHandler.auth(true);
             return 1;
         });
+
         backend.then(connect);
 
-        //get user
-        LiteralArgumentBuilder<FabricClientCommandSource> getUser = LiteralArgumentBuilder.literal("getUser");
-        RequiredArgumentBuilder<FabricClientCommandSource, String> user = RequiredArgumentBuilder.argument("user", StringArgumentType.greedyString());
-        user.executes(context -> {
-            try {
-                String id = StringArgumentType.getString(context, "user");
-                NetworkStuff.getUser(UUID.fromString(id));
-                return 1;
-            } catch (Exception e) {
-                context.getSource().sendError(Component.literal(e.getMessage()));
-                return 0;
-            }
-        });
-        getUser.then(user);
-        backend.then(getUser);
+        //run
+        LiteralArgumentBuilder<FabricClientCommandSource> run = LiteralArgumentBuilder.literal("run");
+        run.executes(context -> runRequest(context, ""));
+
+        RequiredArgumentBuilder<FabricClientCommandSource, String> request = RequiredArgumentBuilder.argument("request", StringArgumentType.greedyString());
+        request.executes(context -> runRequest(context, StringArgumentType.getString(context, "request")));
+
+        run.then(request);
+        backend.then(run);
 
         //return
         return backend;
+    }
+
+    private static int runRequest(CommandContext<FabricClientCommandSource> context, String request) {
+        try {
+            NetworkStuff.api.runString(
+                    NetworkStuff.api.header(request).build(),
+                    s -> FiguraMod.sendChatMessage(Component.literal(s))
+            );
+            return 1;
+        } catch (Exception e) {
+            context.getSource().sendError(Component.literal(e.getMessage()));
+            return 0;
+        }
     }
 }

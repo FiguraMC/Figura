@@ -4,7 +4,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
-import org.moon.figura.backend.NetworkManager;
+import org.moon.figura.backend2.NetworkStuff;
 import org.moon.figura.gui.widgets.StatusWidget;
 import org.moon.figura.trust.Trust;
 import org.moon.figura.utils.FiguraText;
@@ -53,7 +53,7 @@ public class PlayerStatusWidget extends StatusWidget {
         }
 
         //size
-        status = avatar.fileSize > NetworkManager.getSizeLimit() ? 1 : avatar.fileSize > NetworkManager.getSizeLimit() * 0.75 ? 2 : 3;
+        status = avatar.fileSize > NetworkStuff.getSizeLimit() ? 1 : avatar.fileSize > NetworkStuff.getSizeLimit() * 0.75 ? 2 : 3;
 
         //complexity
         int complexity = avatar.renderer == null ? 0 : avatar.complexity.pre >= avatar.trust.get(Trust.COMPLEXITY) ? 1 : 3;
