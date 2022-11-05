@@ -2,6 +2,7 @@ package org.moon.figura.lua.api;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.brigadier.StringReader;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.client.gui.screens.ChatScreen;
@@ -13,7 +14,7 @@ import net.minecraft.world.entity.Entity;
 import org.luaj.vm2.LuaError;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
-import org.moon.figura.avatar.Badges;
+import org.moon.figura.avatar.UserData;
 import org.moon.figura.config.Config;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
@@ -29,6 +30,8 @@ import org.moon.figura.model.rendering.texture.FiguraTexture;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.TextUtils;
+
+import java.util.BitSet;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -238,7 +241,13 @@ public class HostAPI {
         if (!isHost()) return;
         if (!FiguraMod.DEBUG_MODE)
             throw new LuaError("Congrats, you found this debug easter egg!");
-        Badges.set(owner.owner, index, value, pride);
+
+        Pair<BitSet, BitSet> badges = UserData.getBadges(owner.owner);
+        if (badges == null)
+            return;
+
+        BitSet set = pride ? badges.getFirst() : badges.getSecond();
+        set.set(index, value);
     }
 
     @LuaWhitelist

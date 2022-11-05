@@ -47,7 +47,8 @@ public class AnimationPlayer {
                 FiguraVec3 transform = current.getInterpolation().generate(keyframes, currentIndex, nextIndex, anim.blend, delta, type);
                 type.apply(part, transform, merge);
 
-                part.animationOverride |= anim.override;
+                if (merge) part.animationOverride |= anim.override;
+                else part.animationOverride = anim.override;
 
                 limit--;
             }

@@ -7,19 +7,17 @@ import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.backend.NetworkManager;
 import org.moon.figura.config.Config;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.TextUtils;
 
 import java.util.BitSet;
-import java.util.HashMap;
 import java.util.UUID;
 
 public class Badges {
 
-    private static final HashMap<UUID, Pair<BitSet, BitSet>> badgesMap = new HashMap<>();
+    private static final Pair<BitSet, BitSet> NO_BADGES = Pair.of(new BitSet(Pride.values().length), new BitSet(Special.values().length));
 
     public static Component fetchBadges(Avatar avatar) {
         if (avatar == null)
@@ -28,11 +26,9 @@ public class Badges {
         MutableComponent badges = Component.empty().withStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT).withColor(ChatFormatting.WHITE));
 
         UUID id = avatar.owner;
-        Pair<BitSet, BitSet> pair = badgesMap.get(id);
-        if (pair == null) {
-            badgesMap.put(id, pair = empty());
-            NetworkManager.fetchUserdata(id);
-        }
+        Pair<BitSet, BitSet> pair = UserData.getBadges(id);
+        if (pair == null)
+            pair = NO_BADGES;
 
         // -- loading -- //
 
@@ -86,27 +82,6 @@ public class Badges {
         }
 
         return badges;
-    }
-
-    public static void load(UUID id, BitSet pride, BitSet special) {
-        badgesMap.put(id, Pair.of(pride, special));
-    }
-
-    public static void set(UUID id, int index, boolean value, boolean pride) {
-        Pair<BitSet, BitSet> pair = badgesMap.get(id);
-        if (pair == null)
-            badgesMap.put(id, pair = empty());
-
-        BitSet set = pride ? pair.getFirst() : pair.getSecond();
-        set.set(index, value);
-    }
-
-    public static void clear(UUID id) {
-        badgesMap.remove(id);
-    }
-
-    public static Pair<BitSet, BitSet> empty() {
-        return Pair.of(new BitSet(Pride.values().length), new BitSet(Special.values().length));
     }
 
     public enum System {

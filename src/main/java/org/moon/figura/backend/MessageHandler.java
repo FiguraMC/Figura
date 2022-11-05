@@ -103,24 +103,7 @@ public enum MessageHandler {
         }
     }),
     USERINFO(json -> {
-        if (json.get("user").isJsonNull())
-            return;
-
-        json = json.getAsJsonObject("user");
-        UUID uuid = UUID.fromString(json.get("uuid").getAsString());
-        JsonObject badges = json.getAsJsonObject("equippedBadges");
-
-        JsonArray pride = badges.getAsJsonArray("pride");
-        BitSet prideSet = new BitSet();
-        for (int i = 0; i < pride.size(); i++)
-            prideSet.set(i, pride.get(i).getAsInt() >= 1);
-
-        JsonArray special = badges.getAsJsonArray("special");
-        BitSet specialSet = new BitSet();
-        for (int i = 0; i < special.size(); i++)
-            specialSet.set(i, special.get(i).getAsInt() >= 1);
-
-        Badges.load(uuid, prideSet, specialSet);
+        //yeeted
     }),
     EVENT(json -> {
         UUID owner = UUID.fromString(json.get("uuid").getAsString());

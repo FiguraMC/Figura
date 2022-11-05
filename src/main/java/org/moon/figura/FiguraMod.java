@@ -18,7 +18,7 @@ import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.avatar.local.LocalAvatarFetcher;
 import org.moon.figura.avatar.local.LocalAvatarLoader;
-import org.moon.figura.backend.NetworkManager;
+import org.moon.figura.backend2.NetworkStuff;
 import org.moon.figura.commands.FiguraCommands;
 import org.moon.figura.config.Config;
 import org.moon.figura.config.ConfigManager;
@@ -74,7 +74,7 @@ public class FiguraMod implements ClientModInitializer {
     }
 
     private static void tick(Minecraft client) {
-        NetworkManager.tick();
+        NetworkStuff.tick();
         LocalAvatarLoader.tickWatchedKey();
         AvatarManager.tickLoadedAvatars();
         FiguraLuaPrinter.printChatFromQueue();

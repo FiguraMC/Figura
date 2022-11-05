@@ -46,7 +46,7 @@ public class AuthHandler {
             try {
                 lastAuth = (int) (Math.random() * 600) - 300; //between -15 and +15 seconds
 
-                if (!reAuth && NetworkStuff.backendStatus != 3)
+                if (!reAuth && NetworkStuff.backendStatus == 3)
                     return;
 
                 if (authConnection != null && !authConnection.isConnected())
@@ -88,6 +88,8 @@ public class AuthHandler {
                                 authConnection = null;
                                 NetworkStuff.disconnectedReason = null;
                                 NetworkStuff.api = new API(split[0]);
+                                NetworkStuff.backendStatus = 3;
+                                FiguraMod.debug("Successfully created backend Http API!");
                             }
                         });
                     }
@@ -113,5 +115,6 @@ public class AuthHandler {
         NetworkStuff.disconnectedReason = reason;
         NetworkStuff.backendStatus = 1;
         NetworkStuff.api = null;
+        FiguraMod.debug("Failed to create the backend Http API!");
     }
 }
