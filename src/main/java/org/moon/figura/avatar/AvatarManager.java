@@ -6,7 +6,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.local.LocalAvatarLoader;
-import org.moon.figura.backend.NetworkManager;
+import org.moon.figura.backend2.NetworkStuff;
 import org.moon.figura.config.Config;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.widgets.lists.AvatarList;
@@ -138,9 +138,8 @@ public class AvatarManager {
         if (avatar != null)
             avatar.clean();
 
-        Badges.clear(id);
-        NetworkManager.clearRequestsFor(id);
-        NetworkManager.unsubscribe(id);
+        UserData.clear(id);
+        NetworkStuff.clear(id);
 
         FiguraMod.debug("Cleared avatar for " + id);
     }
@@ -172,9 +171,8 @@ public class AvatarManager {
         if (av != null)
             av.clean();
 
-        Badges.clear(id);
-        NetworkManager.clearRequestsFor(id);
-        NetworkManager.unsubscribe(id);
+        UserData.clear(id);
+        NetworkStuff.clear(id);
 
         //load
         try {
@@ -227,6 +225,6 @@ public class AvatarManager {
             return;
         }
 
-        NetworkManager.getAvatar(id);
+        NetworkStuff.getUser(id);
     }
 }
