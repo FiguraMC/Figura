@@ -53,7 +53,7 @@ public class FiguraLuaRuntime {
     private final Globals userGlobals = new Globals();
     private final LuaValue setHookFunction;
     protected final Map<String, String> scripts = new HashMap<>();
-    private final Map<String, LuaValue> loadedScripts = new HashMap<>();
+    private final Map<String, Varargs> loadedScripts = new HashMap<>();
     private final Stack<String> loadingScripts = new Stack<>();
     public final LuaTypeManager typeManager = new LuaTypeManager();
 
@@ -129,14 +129,14 @@ public class FiguraLuaRuntime {
         LuaString.s_metatable = new ReadOnlyLuaTable(LuaString.s_metatable);
     }
 
-    private final TwoArgFunction requireFunction = new TwoArgFunction() {
+    private final VarArgFunction requireFunction = new VarArgFunction() {
         @Override
-        public LuaValue call(LuaValue arg, LuaValue callback) {
-            String name = arg.checkjstring().replaceAll("[/\\\\]", ".");
+        public Varargs invoke(Varargs arg) {
+            String name = arg.checkjstring(1).replaceAll("[/\\\\]", ".");
             if (loadingScripts.contains(name))
                 throw new LuaError("Detected circular dependency in script " + loadingScripts.peek());
-            if (!callback.isnil() && scripts.get(name)==null)
-                return callback.checkfunction().call();
+            if (!arg.isnil(2) && scripts.get(name)==null)
+                return arg.checkfunction(2).call();
 
             return INIT_SCRIPT.apply(name);
         }
@@ -231,12 +231,12 @@ public class FiguraLuaRuntime {
 
     // init event //
 
-    private final Function<String, LuaValue> INIT_SCRIPT = str -> {
+    private final Function<String, Varargs> INIT_SCRIPT = str -> {
         //format name
         String name = str.replaceAll("[/\\\\]", ".");
 
         //already loaded
-        LuaValue val = loadedScripts.get(name);
+        Varargs val = loadedScripts.get(name);
         if (val != null)
             return val;
 
@@ -248,7 +248,7 @@ public class FiguraLuaRuntime {
         this.loadingScripts.push(name);
 
         //load
-        LuaValue value = userGlobals.load(src, name).call(name);
+        Varargs value = userGlobals.load(src, name).invoke(LuaValue.valueOf(name));
         if (value == LuaValue.NIL)
             value = LuaValue.TRUE;
 
