@@ -1,6 +1,8 @@
 package org.moon.figura.backend2;
 
+import net.minecraft.client.multiplayer.resolver.ServerAddress;
 import org.moon.figura.FiguraMod;
+import org.moon.figura.config.Config;
 
 import java.io.InputStream;
 import java.net.URI;
@@ -12,26 +14,24 @@ import java.util.function.BiConsumer;
 
 public class HttpAPI {
 
-    private final String token;
-
-    public HttpAPI(String token) {
-        this.token = token;
-    }
-
 
     // -- builders -- //
 
 
     private static URI getUri(String url) {
-        //TODO - from config
-        return URI.create("https://figura.moonlight-devs.org/api/" + url);
+        return URI.create(getBackendAddress() + "/" + url);
+    }
+
+    private static String getBackendAddress() {
+        ServerAddress backendIP = ServerAddress.parseString(Config.SERVER_IP.asString());
+        return "https://" + backendIP.getHost() + "/api";
     }
 
     protected HttpRequest.Builder header(String url) {
         return HttpRequest
                 .newBuilder(getUri(url))
                 .header("user-agent", FiguraMod.MOD_NAME + "/" + FiguraMod.VERSION)
-                .header("token", token);
+                .header("token", NetworkStuff.token);
     }
 
 
