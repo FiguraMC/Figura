@@ -41,7 +41,7 @@ public class BackendCommands {
         try {
             NetworkStuff.api.runString(
                     NetworkStuff.api.header(request).build(),
-                    s -> FiguraMod.sendChatMessage(Component.literal(s))
+                    (code, data) -> FiguraMod.sendChatMessage(Component.literal(data))
             );
             return 1;
         } catch (Exception e) {

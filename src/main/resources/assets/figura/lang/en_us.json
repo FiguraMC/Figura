@@ -6,26 +6,26 @@
 
   "figura.backend.connected": "Backend Connected!",
   "figura.backend.disconnected": "Backend Disconnected!",
-  "figura.backend.banned": "bananed :-)",
 
-  "figura.backend.error": "Error",
-  "figura.backend.invalid_uuid": "Invalid UUID",
-  "figura.backend.invalid_data": "Invalid data",
-
-  "figura.backend.rate_limited": "Rate Limited!",
-  "figura.backend.download": "Download",
-  "figura.backend.ping_rate": "Ping Rate",
-  "figura.backend.ping_size": "Ping Size",
-  "figura.backend.upload": "Upload",
+  "figura.backend.user_not_found": "User not found",
+  "figura.backend.avatar_not_found": "Avatar not found",
 
   "figura.backend.upload_success": "Avatar uploaded!",
-  "figura.backend.upload_error": "Upload Error",
   "figura.backend.upload_too_big": "Avatar is too big",
-  "figura.backend.upload_too_many": "You have too many avatars",
+  "figura.backend.upload_too_many": "You have too many Avatars",
+  "figura.backend.upload_error": "Error on uploading Avatar",
 
   "figura.backend.delete_success": "Avatar deleted!",
-  "figura.backend.delete_error": "Delete Error",
-  "figura.backend.delete_not_found": "Avatar not found",
+  "figura.backend.delete_error": "Error on deleting Avatar",
+
+  "figura.backend.equip_error": "Failed to set equipped Avatars",
+
+
+  "figura.backend.ws.rate_limited": "Rate Limited!",
+  "figura.backend.ws.download": "Download",
+  "figura.backend.ws.ping_rate": "Ping Rate",
+  "figura.backend.ws.ping_size": "Ping Size",
+  "figura.backend.ws.upload": "Upload",
 
 
   "figura.toast.reload": "Avatar reloaded!",

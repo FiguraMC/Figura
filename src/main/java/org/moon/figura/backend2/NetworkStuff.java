@@ -1,9 +1,6 @@
 package org.moon.figura.backend2;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
@@ -17,27 +14,24 @@ import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.Version;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.LinkedList;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 public class NetworkStuff {
 
     protected static final HttpClient client = HttpClient.newHttpClient();
+    protected static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
 
     private static final LinkedList<Request> REQUEST_QUEUE = new LinkedList<>();
 
-    protected static API api;
+    protected static HttpAPI api;
     private static CompletableFuture<Void> tasks;
 
     public static int backendStatus = 1;
@@ -77,15 +71,11 @@ public class NetworkStuff {
         }
     }
 
-    private static void queue(Supplier<HttpRequest> request) {
-        REQUEST_QUEUE.add(new Request(Util.NIL_UUID, () -> api.run(request.get())));
-    }
-
-    private static void queueString(UUID owner, Supplier<HttpRequest> request, Consumer<String> consumer) {
+    private static void queueString(UUID owner, Supplier<HttpRequest> request, BiConsumer<Integer, String> consumer) {
         REQUEST_QUEUE.add(new Request(owner, () -> api.runString(request.get(), consumer)));
     }
 
-    private static void queueStream(UUID owner, Supplier<HttpRequest> request, Consumer<InputStream> consumer) {
+    private static void queueStream(UUID owner, Supplier<HttpRequest> request, BiConsumer<Integer, InputStream> consumer) {
         REQUEST_QUEUE.add(new Request(owner, () -> api.runStream(request.get(), consumer)));
     }
 
@@ -97,12 +87,12 @@ public class NetworkStuff {
     // -- feedback -- //
 
 
-    private static void responseDebug(String msg) {
-        FiguraMod.debug("Got response:\n\t" + msg);
+    private static void responseDebug(String src, int code, String data) {
+        FiguraMod.debug("Got response of \"" + src + "\" with code " + code + ":\n\t" + data);
     }
 
 
-    // -- functions -- //
+    // -- internal functions -- //
 
 
     public static boolean hasBackend() {
@@ -140,9 +130,9 @@ public class NetworkStuff {
             if (!hasBackend())
                 return;
 
-            api.runString(api.getLimits(), s -> {
-                responseDebug(s);
-                JsonObject json = JsonParser.parseString(s).getAsJsonObject();
+            api.runString(api.getLimits(), (code, data) -> {
+                responseDebug("setLimits", code, data);
+                JsonObject json = JsonParser.parseString(data).getAsJsonObject();
                 //TODO
             });
         });
@@ -154,9 +144,9 @@ public class NetworkStuff {
             if (!hasBackend())
                 return;
 
-            api.runString(api.getVersion(), s -> {
-                responseDebug(s);
-                JsonObject json = JsonParser.parseString(s).getAsJsonObject();
+            api.runString(api.getVersion(), (code, data) -> {
+                responseDebug("checkVersion", code, data);
+                JsonObject json = JsonParser.parseString(data).getAsJsonObject();
 
                 int config = Config.UPDATE_CHANNEL.asInt();
                 if (config != 0) {
@@ -177,13 +167,24 @@ public class NetworkStuff {
     }
 
 
-    // -- user functions -- //
+    // -- api functions -- //
 
 
     public static void getUser(UUID id) {
-        queueString(id, () -> api.getUser(id), s -> {
-            responseDebug(s);
-            JsonObject json = JsonParser.parseString(s).getAsJsonObject();
+        queueString(id, () -> api.getUser(id), (code, data) -> {
+            //debug
+            responseDebug("getUser", code, data);
+
+            //error
+            if (code != 200) {
+                if (code == 404 && Config.CONNECTION_TOASTS.asBool())
+                    FiguraToast.sendToast(FiguraText.of("backend.user_not_found"), FiguraToast.ToastType.ERROR);
+                return;
+            }
+
+            //success
+
+            JsonObject json = JsonParser.parseString(data).getAsJsonObject();
 
             //id
             UUID uuid = UUID.fromString(json.get("uuid").getAsString());
@@ -224,11 +225,22 @@ public class NetworkStuff {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             NbtIo.writeCompressed(avatar.nbt, baos);
+            queueString(Util.NIL_UUID, () -> api.uploadAvatar(id, baos.toByteArray()), (code, data) -> {
+                responseDebug("uploadAvatar", code, data);
 
-            ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-            queue(() -> api.uploadAvatar(id, () -> bais));
+                if (!Config.CONNECTION_TOASTS.asBool())
+                    return;
 
-            //bais is automatically closed
+                switch (code) {
+                    case 200 -> {
+                        FiguraToast.sendToast(FiguraText.of("backend.upload_success"));
+                        equipAvatar(List.of(Pair.of(avatar.owner, id))); //TODO - profile screen
+                    }
+                    case 413 -> FiguraToast.sendToast(FiguraText.of("backend.upload_too_big"), FiguraToast.ToastType.ERROR);
+                    case 507 -> FiguraToast.sendToast(FiguraText.of("backend.upload_too_many"), FiguraToast.ToastType.ERROR);
+                    default -> FiguraToast.sendToast(FiguraText.of("backend.upload_error"), FiguraToast.ToastType.ERROR);
+                }
+            });
             baos.close();
         } catch (Exception e) {
             FiguraMod.LOGGER.error("", e);
@@ -237,11 +249,52 @@ public class NetworkStuff {
 
     public static void deleteAvatar(String avatar) {
         String id = avatar == null || true ? "avatar" : avatar; //TODO - profile screen
-        queue(() -> api.deleteAvatar(id));
+        queueString(Util.NIL_UUID, () -> api.deleteAvatar(id), (code, data) -> {
+            responseDebug("deleteAvatar", code, data);
+
+            if (!Config.CONNECTION_TOASTS.asBool())
+                return;
+
+            switch (code) {
+                case 200 -> FiguraToast.sendToast(FiguraText.of("backend.delete_success"));
+                case 404 -> FiguraToast.sendToast(FiguraText.of("backend.avatar_not_found"), FiguraToast.ToastType.ERROR);
+                default -> FiguraToast.sendToast(FiguraText.of("backend.delete_error"), FiguraToast.ToastType.ERROR);
+            }
+        });
+    }
+
+    public static void equipAvatar(List<Pair<UUID, String>> avatars) {
+        JsonArray json = new JsonArray();
+
+        for (Pair<UUID, String> avatar : avatars) {
+            JsonObject obj = new JsonObject();
+            obj.addProperty("owner", avatar.getFirst().toString());
+            obj.addProperty("id", avatar.getSecond());
+            json.add(obj);
+        }
+
+        queueString(Util.NIL_UUID, () -> api.setEquipped(GSON.toJson(json)), (code, data) -> {
+            responseDebug("equipAvatar", code, data);
+            if (code != 200 && Config.CONNECTION_TOASTS.asBool())
+                FiguraToast.sendToast(FiguraText.of("backend.equip_error"), FiguraToast.ToastType.ERROR);
+        });
     }
 
     public static void getAvatar(UUID target, UUID owner, String id) {
-        queueStream(Util.NIL_UUID, () -> api.getAvatar(owner, id), stream -> {
+        queueStream(Util.NIL_UUID, () -> api.getAvatar(owner, id), (code, stream) -> {
+            String s;
+            try {
+                s = code == 200 ? "<avatar data>" : new String(stream.readAllBytes());
+            } catch (Exception e) {
+                s = e.getMessage();
+            }
+            responseDebug("getAvatar", code, s);
+
+            //on error
+            if (code != 200)
+                return;
+
+            //success
             try {
                 CompoundTag nbt = NbtIo.readCompressed(stream);
                 AvatarManager.setAvatar(target, nbt);
@@ -250,6 +303,10 @@ public class NetworkStuff {
             }
         });
     }
+
+
+    // -- ws functions -- //
+
 
     public static void sendPing(int id, boolean sync, byte[] data) { //TODO - events
         pingsSent++;

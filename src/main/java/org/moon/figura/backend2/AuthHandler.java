@@ -87,7 +87,7 @@ public class AuthHandler {
                                     return;
                                 }
 
-                                connected(new API(split[0]));
+                                connected(new HttpAPI(split[0]));
                             }
                         });
                     }
@@ -116,7 +116,7 @@ public class AuthHandler {
         FiguraMod.debug("Failed to create the backend Http API!");
     }
 
-    private static void connected(API api) {
+    private static void connected(HttpAPI api) {
         authConnection = null;
         NetworkStuff.disconnectedReason = null;
         NetworkStuff.backendStatus = 3;
