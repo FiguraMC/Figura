@@ -148,14 +148,7 @@ public enum Config {
                 .append(FiguraText.of(tooltip + "3").withStyle(ChatFormatting.RED, ChatFormatting.BOLD));
     }},
     MAIN_DIR("", InputType.FOLDER_PATH),
-    AUTH_SERVER_IP("figura.moonlight-devs.org:25565", InputType.IP) {
-        @Override
-        public void onChange() {
-            super.onChange();
-            NetworkStuff.reAuth();
-        }
-    },
-    BACKEND_IP("figura.moonlight-devs.org:25500", InputType.IP) {
+    SERVER_IP("figura.moonlight-devs.org:25565", InputType.IP) {
         @Override
         public void onChange() {
             super.onChange();

@@ -104,7 +104,7 @@ public class NetworkManager {
                 Minecraft minecraft = Minecraft.getInstance();
                 ClientTelemetryManager telemetryManager = minecraft.createTelemetryManager();
 
-                ServerAddress authServer = ServerAddress.parseString(Config.AUTH_SERVER_IP.asString());
+                ServerAddress authServer = ServerAddress.parseString("death" /*Config.AUTH_SERVER_IP.asString()*/ );
                 InetSocketAddress inetSocketAddress = new InetSocketAddress(authServer.getHost(), authServer.getPort());
                 Connection connection = Connection.connectToServer(inetSocketAddress, minecraft.options.useNativeTransport());
 

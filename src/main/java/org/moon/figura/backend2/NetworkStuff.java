@@ -9,6 +9,7 @@ import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.avatar.UserData;
+import org.moon.figura.backend2.websocket.WebsocketThingy;
 import org.moon.figura.config.Config;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.utils.FiguraText;
@@ -30,12 +31,15 @@ public class NetworkStuff {
     protected static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
 
     private static final LinkedList<Request> REQUEST_QUEUE = new LinkedList<>();
-
-    protected static HttpAPI api;
     private static CompletableFuture<Void> tasks;
+
+    protected static String token;
+    protected static HttpAPI api;
+    protected static WebsocketThingy backend;
 
     public static int backendStatus = 1;
     public static String disconnectedReason;
+    public static boolean debug = true; //TODO - disable
 
     public static int lastPing, pingsSent, pingsReceived;
 
@@ -43,9 +47,9 @@ public class NetworkStuff {
         AuthHandler.tick();
 
         //requests
-        if (hasBackend() && !REQUEST_QUEUE.isEmpty()) {
+        if (api != null && !REQUEST_QUEUE.isEmpty()) {
             async(() -> {
-                if (!hasBackend()) //cursed
+                if (api == null) //cursed
                     return;
 
                 Request request;
@@ -88,7 +92,7 @@ public class NetworkStuff {
 
 
     private static void responseDebug(String src, int code, String data) {
-        FiguraMod.debug("Got response of \"" + src + "\" with code " + code + ":\n\t" + data);
+        if (debug) FiguraMod.debug("Got response of \"" + src + "\" with code " + code + ":\n\t" + data);
     }
 
 
@@ -96,7 +100,27 @@ public class NetworkStuff {
 
 
     public static boolean hasBackend() {
-        return api != null;
+        return api != null && backend != null && backend.isOpen();
+    }
+
+    public static void closeBackend() {
+        if (backend == null)
+            return;
+
+        backend.close();
+        backend = null;
+    }
+
+    public static void openBackend() {
+        if (backend != null)
+            backend.close();
+
+        if (token == null)
+            return;
+
+        backendStatus = 2;
+        backend = new WebsocketThingy(token);
+        backend.connect();
     }
 
     public static void ensureConnection() {
@@ -109,15 +133,18 @@ public class NetworkStuff {
 
     public static void checkAuth() {
         async(() -> {
-            if (!hasBackend()) {
+            if (api == null) {
                 AuthHandler.auth(true);
                 return;
             }
 
             try {
                 HttpResponse<Void> response = client.send(api.checkAuth(), HttpResponse.BodyHandlers.discarding());
-                if (response.statusCode() != 200)
+                if (response.statusCode() != 200) {
                     AuthHandler.auth(true);
+                } else if (backend == null || !backend.isOpen()) {
+                    openBackend();
+                }
             } catch (Exception e) {
                 FiguraMod.LOGGER.error("", e);
             }
@@ -127,7 +154,7 @@ public class NetworkStuff {
     public static void setLimits() {
         ensureConnection();
         async(() -> {
-            if (!hasBackend())
+            if (api == null)
                 return;
 
             api.runString(api.getLimits(), (code, data) -> {
@@ -141,7 +168,7 @@ public class NetworkStuff {
     public static void checkVersion() {
         ensureConnection();
         async(() -> {
-            if (!hasBackend())
+            if (api == null)
                 return;
 
             api.runString(api.getVersion(), (code, data) -> {
@@ -235,6 +262,7 @@ public class NetworkStuff {
                     case 200 -> {
                         FiguraToast.sendToast(FiguraText.of("backend.upload_success"));
                         equipAvatar(List.of(Pair.of(avatar.owner, id))); //TODO - profile screen
+                        AvatarManager.localUploaded = true; //TODO ^
                     }
                     case 413 -> FiguraToast.sendToast(FiguraText.of("backend.upload_too_big"), FiguraToast.ToastType.ERROR);
                     case 507 -> FiguraToast.sendToast(FiguraText.of("backend.upload_too_many"), FiguraToast.ToastType.ERROR);
@@ -309,6 +337,9 @@ public class NetworkStuff {
 
 
     public static void sendPing(int id, boolean sync, byte[] data) { //TODO - events
+        if (!AvatarManager.localUploaded || !hasBackend())
+            return;
+
         pingsSent++;
         if (lastPing == 0) lastPing = FiguraMod.ticks;
     }

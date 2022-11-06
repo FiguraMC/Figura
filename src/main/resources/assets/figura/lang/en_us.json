@@ -21,11 +21,11 @@
   "figura.backend.equip_error": "Failed to set equipped Avatars",
 
 
-  "figura.backend.ws.rate_limited": "Rate Limited!",
-  "figura.backend.ws.download": "Download",
-  "figura.backend.ws.ping_rate": "Ping Rate",
-  "figura.backend.ws.ping_size": "Ping Size",
-  "figura.backend.ws.upload": "Upload",
+  "figura.backend.rate_limited": "Rate Limited!",
+  "figura.backend.download": "Download",
+  "figura.backend.upload": "Upload",
+  "figura.backend.ping_rate": "Ping Rate",
+  "figura.backend.ping_size": "Ping Size",
 
 
   "figura.toast.reload": "Avatar reloaded!",
@@ -420,11 +420,8 @@
   "figura.config.main_dir": "Figura Folder Location",
   "figura.config.main_dir.tooltip": "Changes the location of the Figura folder",
 
-  "figura.config.auth_server_ip": "Auth Server IP",
-  "figura.config.auth_server_ip.tooltip": "Sets the IP of the auth server",
-
-  "figura.config.backend_ip": "Backend IP",
-  "figura.config.backend_ip.tooltip": "Sets the IP of the backend server",
+  "figura.config.server_ip": "Figura Server IP",
+  "figura.config.server_ip.tooltip": "Sets the IP of the server used for Figura's multiplayer features",
 
 
   "figura.command.click_to_open": "Click here to open",

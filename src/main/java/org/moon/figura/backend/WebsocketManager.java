@@ -53,8 +53,8 @@ public class WebsocketManager extends WebSocketClient {
     }
 
     private static String getBackendAddress() {
-        ServerAddress backendIP = ServerAddress.parseString(Config.BACKEND_IP.asString());
-        return "ws://" + backendIP.getHost() + ":" + backendIP.getPort();
+        //ServerAddress backendIP = ServerAddress.parseString(Config.BACKEND_IP.asString());
+        return "ws://death";// + backendIP.getHost() + ":" + backendIP.getPort();
     }
 
     public void tick() {
