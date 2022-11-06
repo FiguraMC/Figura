@@ -104,6 +104,6 @@ public class HttpAPI {
     }
 
     public HttpRequest setEquipped(String json) {
-        return header("equip").POST(HttpRequest.BodyPublishers.ofString(json)).build();
+        return header("equip").POST(HttpRequest.BodyPublishers.ofString(json)).header("Content-Type", "application/json").build();
     }
 }
