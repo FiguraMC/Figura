@@ -129,12 +129,14 @@ public class FiguraLuaRuntime {
         LuaString.s_metatable = new ReadOnlyLuaTable(LuaString.s_metatable);
     }
 
-    private final OneArgFunction requireFunction = new OneArgFunction() {
+    private final TwoArgFunction requireFunction = new TwoArgFunction() {
         @Override
-        public LuaValue call(LuaValue arg) {
+        public LuaValue call(LuaValue arg, LuaValue callback) {
             String name = arg.checkjstring().replaceAll("[/\\\\]", ".");
             if (loadingScripts.contains(name))
                 throw new LuaError("Detected circular dependency in script " + loadingScripts.peek());
+            if (!callback.isnil() && scripts.get(name)==null)
+                return callback.checkfunction().call();
 
             return INIT_SCRIPT.apply(name);
         }
