@@ -132,7 +132,7 @@ public class FiguraLuaRuntime {
     private final VarArgFunction requireFunction = new VarArgFunction() {
         @Override
         public Varargs invoke(Varargs arg) {
-            String name = arg.arg1().checkjstring().replaceAll("[/\\\\]", ".");
+            String name = arg.checkjstring(1).replaceAll("[/\\\\]", ".");
             if (loadingScripts.contains(name))
                 throw new LuaError("Detected circular dependency in script " + loadingScripts.peek());
 
