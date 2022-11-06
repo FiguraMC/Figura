@@ -31,8 +31,8 @@ Donate:
 
 ## FAQ
 
-### • My avatars do not appear in Figura list even if its on the correct folder?
-> Check if your avatar have a file called "avatar.json" (dont forget to check extensions)
+### • My avatars do not appear in Figura list even if it's on the correct folder?
+> Check if your avatar have a file called "avatar.json" (don't forget to check extensions)
 > 
 > The contents of the file can just be empty, as the presence of that files tells Figura that this folder is an avatar
 
@@ -70,7 +70,7 @@ Donate:
 ### • What are Pings and how do I use them?
 > Pings are lua functions that are sent through the backend to be executed in other people seeing your avatar, they are meant a way to sync data that only your client have
 > 
-> Some things, like your keybind presses or action wheel actions, they are not sent to other clients, so they have no idea if you have executed it or not, so pings are used to sent this information to them
+> Some things, like your keybind presses or action wheel actions, they are not sent to other clients, so they have no idea if you have executed it or not, so pings are used to send this information to them
 > 
 > An example of creating a ping is:
 > ```lua
@@ -82,7 +82,7 @@ Donate:
 > ```lua
 > pings.myPing("Hello", "World")
 > ```
-> Note that pings are limited in its contents, size, and how many you can sent per second
+> Note that pings are limited in its contents, size, and how many you can send per second
 
 ### • How can I add an emissive texture?
 > Simple, just name the texture, the same as the non-emissive counterpart, but then adding `_e` in the end
@@ -96,19 +96,19 @@ Donate:
 > No, however if you want to develop it yourself, feel free to do so
 
 ### • Where can I find avatars to download?
-> For now you can find avatars in the showcase channels on the official Discord server
+> For now, you can find avatars in the showcase channels on the official Discord server
 
 ### • My Minecraft is cracked (non-premium/non-original) and I cannot use Figura?
-> Non-premium Minecraft accounts cannot upload nor dowload Figura avatars
+> Non-premium Minecraft accounts cannot upload nor download Figura avatars
 > 
 > Figura uses your account UUID and your Mojang authentication as a way to prove you own that account, avoiding unwanted / malicious uploads
 
 ### • My emissive texture looks weird?
-> If youre using a custom shader (Iris), it is the shaders who controls how emissive works, however, if this still happens without shaders, try colouring the places you dont want to glow as **transparent black** (#00000000), this is due how Iris handles emissives which takes account the transparency and colour of the pixels
+> If you're using a custom shader (Iris), it is the shaders who control how emissive works, however, if this still happens without shaders, try colouring the places you don't want to glow as **transparent black** (#00000000), this is due how Iris handles emissives which takes account the transparency and colour of the pixels
 
 ## Community Resources
 
-* Wanna learn / get into Lua scripting?
+* Want to learn / get into Lua scripting?
   check out this [Lua quickstart](https://manuel-3.github.io/lua-quickstart) made by Manuel
 
 
@@ -117,4 +117,4 @@ Donate:
 
 
 * Are you new to Figura and is looking for a video tutorial about how... everything works?
-  you should probably watch Chloe's [Figura tutorial series](https://www.youtube.com/playlist?list=PLNz7v2g2SFA8lOQUDS4z4-gIDLi_dWAhl) on Youtube
+  you should probably watch Chloe's [Figura tutorial series](https://www.youtube.com/playlist?list=PLNz7v2g2SFA8lOQUDS4z4-gIDLi_dWAhl) on YouTube
