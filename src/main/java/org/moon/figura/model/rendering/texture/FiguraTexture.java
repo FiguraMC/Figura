@@ -262,7 +262,7 @@ public class FiguraTexture extends AbstractTexture implements Closeable {
         for (int i = y; i < y + height; i++) {
             for (int j = x; j < x + width; j++) {
                 FiguraVec4 color = getPixel(j, i);
-                LuaValue result = function.call(LuaValue.valueOf(j), LuaValue.valueOf(i), owner.luaRuntime.typeManager.javaToLua(color).arg1());
+                LuaValue result = function.call(owner.luaRuntime.typeManager.javaToLua(color).arg1(), LuaValue.valueOf(j), LuaValue.valueOf(i));
                 if (!result.isnil() && result.isuserdata(FiguraVec4.class))
                     setPixel(j, i, result.checkuserdata(FiguraVec4.class), null, null, null);
             }
