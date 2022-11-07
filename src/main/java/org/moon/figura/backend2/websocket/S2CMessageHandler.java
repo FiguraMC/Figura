@@ -1,6 +1,6 @@
 package org.moon.figura.backend2.websocket;
 
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
@@ -45,7 +45,7 @@ public class S2CMessageHandler {
         FiguraMod.LOGGER.info("Connected to " + FiguraMod.MOD_NAME + " ws backend");
         NetworkStuff.backendStatus = 3;
         if (Config.CONNECTION_TOASTS.asBool())
-            FiguraToast.sendToast(FiguraText.of("backend.connected"));
+            FiguraToast.sendToast(new FiguraText("backend.connected"));
     }
 
     private static void ping(ByteBuffer bytes) {
@@ -79,7 +79,7 @@ public class S2CMessageHandler {
 
     private static void chat(ByteBuffer bytes) {
         String message = StandardCharsets.UTF_8.decode(bytes).toString();
-        FiguraMod.sendChatMessage(Component.empty().append(Component.literal("-- " + FiguraMod.MOD_NAME + " backend message --\n\n").withStyle(ColorUtils.Colors.SKYE_BLUE.style)).append(message));
+        FiguraMod.sendChatMessage(TextComponent.EMPTY.copy().append(new TextComponent("-- " + FiguraMod.MOD_NAME + " backend message --\n\n").withStyle(ColorUtils.Colors.SKYE_BLUE.style)).append(message));
     }
 
     private static void notice(ByteBuffer bytes) {
@@ -88,8 +88,8 @@ public class S2CMessageHandler {
 
         byte type = bytes.get();
         switch (type) {
-            case 0 -> FiguraToast.sendToast(FiguraText.of("backend.warning"), FiguraText.of("backend.ping_size"), FiguraToast.ToastType.ERROR);
-            case 1 -> FiguraToast.sendToast(FiguraText.of("backend.warning"), FiguraText.of("backend.ping_rate"), FiguraToast.ToastType.ERROR);
+            case 0 -> FiguraToast.sendToast(new FiguraText("backend.warning"), new FiguraText("backend.ping_size"), FiguraToast.ToastType.ERROR);
+            case 1 -> FiguraToast.sendToast(new FiguraText("backend.warning"), new FiguraText("backend.ping_rate"), FiguraToast.ToastType.ERROR);
         }
     }
 }

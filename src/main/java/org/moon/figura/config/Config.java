@@ -34,25 +34,25 @@ public enum Config {
     CHAT_NAMEPLATE(2, 3) {{
         String path = "config.nameplate_level";
         this.enumList = List.of(
-                FiguraText.of(path + ".1"),
-                FiguraText.of(path + ".2"),
-                FiguraText.of(path + ".3")
+                new FiguraText(path + ".1"),
+                new FiguraText(path + ".2"),
+                new FiguraText(path + ".3")
         );
     }},
     ENTITY_NAMEPLATE(2, 3) {{
         String path = "config.nameplate_level";
         this.enumList = List.of(
-                FiguraText.of(path + ".1"),
-                FiguraText.of(path + ".2"),
-                FiguraText.of(path + ".3")
+                new FiguraText(path + ".1"),
+                new FiguraText(path + ".2"),
+                new FiguraText(path + ".3")
         );
     }},
     LIST_NAMEPLATE(2, 3) {{
         String path = "config.nameplate_level";
         this.enumList = List.of(
-                FiguraText.of(path + ".1"),
-                FiguraText.of(path + ".2"),
-                FiguraText.of(path + ".3")
+                new FiguraText(path + ".1"),
+                new FiguraText(path + ".2"),
+                new FiguraText(path + ".3")
         );
     }},
 
@@ -68,9 +68,9 @@ public enum Config {
     },
     FORMAT_SCRIPT(1, 3) {{
       String tooltip = "config.format_script.tooltip.";
-      this.tooltip = FiguraText.of(tooltip + "1")
+      this.tooltip = new FiguraText(tooltip + "1")
               .append("\n")
-              .append(FiguraText.of(tooltip + "2").withStyle(ChatFormatting.RED));
+              .append(new FiguraText(tooltip + "2").withStyle(ChatFormatting.RED));
     }
         @Override
         public void onChange() {
@@ -126,26 +126,26 @@ public enum Config {
     CONNECTION_TOASTS(true),
     RENDER_DEBUG_PARTS_PIVOT(1, 3) {{
         String tooltip = "config.render_debug_parts_pivot.tooltip";
-        this.tooltip = FiguraText.of(tooltip,
-                FiguraText.of(tooltip + ".cubes").setStyle(ColorUtils.Colors.FRAN_PINK.style),
-                FiguraText.of(tooltip + ".groups").setStyle(ColorUtils.Colors.MAYA_BLUE.style));
+        this.tooltip = new FiguraText(tooltip,
+                new FiguraText(tooltip + ".cubes").setStyle(ColorUtils.Colors.FRAN_PINK.style),
+                new FiguraText(tooltip + ".groups").setStyle(ColorUtils.Colors.MAYA_BLUE.style));
     }},
     LOG_OTHERS(false),
     LOG_PINGS(0, 3),
     SYNC_PINGS(false) {{
         String tooltip = "config.sync_pings.tooltip.";
-        this.tooltip = FiguraText.of(tooltip + "1")
+        this.tooltip = new FiguraText(tooltip + "1")
                 .append("\n")
-                .append(FiguraText.of(tooltip + "2").withStyle(ChatFormatting.RED));
+                .append(new FiguraText(tooltip + "2").withStyle(ChatFormatting.RED));
     }},
     CHAT_MESSAGES(false) {{
         this.name = this.name.copy().withStyle(ChatFormatting.RED);
         String tooltip = "config.chat_messages.tooltip.";
-        this.tooltip = FiguraText.of(tooltip + "1")
+        this.tooltip = new FiguraText(tooltip + "1")
                 .append("\n\n")
-                .append(FiguraText.of(tooltip + "2").withStyle(ChatFormatting.RED))
+                .append(new FiguraText(tooltip + "2").withStyle(ChatFormatting.RED))
                 .append("\n\n")
-                .append(FiguraText.of(tooltip + "3").withStyle(ChatFormatting.RED, ChatFormatting.BOLD));
+                .append(new FiguraText(tooltip + "3").withStyle(ChatFormatting.RED, ChatFormatting.BOLD));
     }},
     MAIN_DIR("", InputType.FOLDER_PATH),
     SERVER_IP("figura.moonlight-devs.org:25565", InputType.IP) {
@@ -223,14 +223,14 @@ public enum Config {
 
         //generate names
         String name = "config." + this.name().toLowerCase();
-        this.name = FiguraText.of(name);
-        this.tooltip = FiguraText.of(name + ".tooltip");
+        this.name = new FiguraText(name);
+        this.tooltip = new FiguraText(name + ".tooltip");
 
         //generate enum list
         if (length != null) {
             ArrayList<Component> enumList = new ArrayList<>();
             for (int i = 1; i <= length; i++)
-                enumList.add(FiguraText.of(name + "." + i));
+                enumList.add(new FiguraText(name + "." + i));
             this.enumList = enumList;
         }
     }
@@ -339,7 +339,7 @@ public enum Config {
         public final Component hint;
         InputType(Predicate<String> predicate) {
             this.validator = predicate;
-            this.hint = FiguraText.of("config.input." + this.name().toLowerCase());
+            this.hint = new FiguraText("config.input." + this.name().toLowerCase());
         }
     }
 

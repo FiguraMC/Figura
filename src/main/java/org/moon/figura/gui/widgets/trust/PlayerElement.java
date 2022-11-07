@@ -8,6 +8,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
@@ -34,7 +35,7 @@ public class PlayerElement extends AbstractTrustElement {
 
     public static final ResourceLocation UNKNOWN = new FiguraIdentifier("textures/gui/unknown_portrait.png");
     private static final ResourceLocation BACKGROUND = new FiguraIdentifier("textures/gui/player_trust.png");
-    private static final Component DC_TEXT = FiguraText.of("gui.trust.disconnected").withStyle(ChatFormatting.RED);
+    private static final Component DC_TEXT = new FiguraText("gui.trust.disconnected").withStyle(ChatFormatting.RED);
 
     private final String name;
     private final ResourceLocation skin;
@@ -65,19 +66,19 @@ public class PlayerElement extends AbstractTrustElement {
 
     private void generateContext() {
         //name uuid
-        context.addAction(FiguraText.of("gui.context.copy_name"), button -> {
+        context.addAction(new FiguraText("gui.context.copy_name"), button -> {
             Minecraft.getInstance().keyboardHandler.setClipboard(this.getName());
-            FiguraToast.sendToast(FiguraText.of("toast.clipboard"));
+            FiguraToast.sendToast(new FiguraText("toast.clipboard"));
         });
-        context.addAction(FiguraText.of("gui.context.copy_uuid"), button -> {
+        context.addAction(new FiguraText("gui.context.copy_uuid"), button -> {
             Minecraft.getInstance().keyboardHandler.setClipboard(this.getOwner().toString());
-            FiguraToast.sendToast(FiguraText.of("toast.clipboard"));
+            FiguraToast.sendToast(new FiguraText("toast.clipboard"));
         });
 
         //reload
-        context.addAction(FiguraText.of("gui.context.reload"), button -> {
+        context.addAction(new FiguraText("gui.context.reload"), button -> {
             AvatarManager.reloadAvatar(owner);
-            FiguraToast.sendToast(FiguraText.of("toast.reload"));
+            FiguraToast.sendToast(new FiguraText("toast.reload"));
         });
 
         //trust
@@ -91,10 +92,10 @@ public class PlayerElement extends AbstractTrustElement {
                     parent.parent.updateTrustData(trust);
             });
         }
-        context.addTab(FiguraText.of("gui.context.set_trust"), trustContext);
+        context.addTab(new FiguraText("gui.context.set_trust"), trustContext);
 
         if (FiguraMod.DEBUG_MODE) {
-            context.addAction(Component.literal("yoink to cache"), button -> {
+            context.addAction(new TextComponent("yoink to cache"), button -> {
                 Avatar a = AvatarManager.getAvatarForPlayer(owner);
                 if (a != null) {
                     if (a.nbt != null) {
@@ -190,9 +191,9 @@ public class PlayerElement extends AbstractTrustElement {
         Font font = Minecraft.getInstance().font;
 
         if (name == null)
-            name = Component.literal(this.name);
+            name = new TextComponent(this.name);
 
-        name = Component.empty().append(name.copy().withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(this.name + "\n" + this.owner)))));
+        name = TextComponent.EMPTY.copy().append(name.copy().withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent(this.name + "\n" + this.owner)))));
 
         Component badges = Badges.fetchBadges(avatar);
         name = replaceBadges ? TextUtils.replaceInText(name, "\\$\\{badges\\}", badges) : name.copy().append(" ").append(badges);

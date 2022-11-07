@@ -4,7 +4,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.avatar.local.LocalAvatarFetcher;
 import org.moon.figura.utils.FiguraText;
@@ -30,10 +30,10 @@ public class FiguraLoadCommand {
 
             //try to load avatar
             AvatarManager.loadLocalAvatar(p);
-            context.getSource().sendFeedback(FiguraText.of("command.load.loading"));
+            context.getSource().sendFeedback(new FiguraText("command.load.loading"));
             return 1;
         } catch (Exception e) {
-            context.getSource().sendError(FiguraText.of("command.load.invalid", str));
+            context.getSource().sendError(new FiguraText("command.load.invalid", str));
         }
 
         return 0;

@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.Window;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
-import net.minecraft.core.UUIDUtil;
+import net.minecraft.core.SerializableUUID;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.world.phys.Vec3;
@@ -269,7 +269,7 @@ public class ClientAPI {
     public static boolean hasResource(@LuaNotNil String path) {
         try {
             ResourceLocation resource = new ResourceLocation(path);
-            return Minecraft.getInstance().getResourceManager().getResource(resource).isPresent();
+            return Minecraft.getInstance().getResourceManager().hasResource(resource);
         } catch (Exception ignored) {
             return false;
         }
@@ -320,7 +320,7 @@ public class ClientAPI {
             value = "client.int_uuid_to_string")
     public static String intUUIDToString(int a, int b, int c, int d) {
         try {
-            UUID uuid = UUIDUtil.uuidFromIntArray(new int[]{a, b, c, d});
+            UUID uuid = SerializableUUID.uuidFromIntArray(new int[]{a, b, c, d});
             return uuid.toString();
         } catch (Exception ignored) {
             throw new LuaError("Failed to parse uuid");

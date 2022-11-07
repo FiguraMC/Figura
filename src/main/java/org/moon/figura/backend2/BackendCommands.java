@@ -4,9 +4,9 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.FiguraMod;
 
 public class BackendCommands {
@@ -38,7 +38,7 @@ public class BackendCommands {
         LiteralArgumentBuilder<FabricClientCommandSource> debug = LiteralArgumentBuilder.literal("debug");
         debug.executes(context -> {
             NetworkStuff.debug = !NetworkStuff.debug;
-            FiguraMod.sendChatMessage(Component.literal("Backend Debug Mode set to: " + NetworkStuff.debug).withStyle(NetworkStuff.debug ? ChatFormatting.GREEN : ChatFormatting.RED));
+            FiguraMod.sendChatMessage(new TextComponent("Backend Debug Mode set to: " + NetworkStuff.debug).withStyle(NetworkStuff.debug ? ChatFormatting.GREEN : ChatFormatting.RED));
             return 1;
         });
 
@@ -52,11 +52,11 @@ public class BackendCommands {
         try {
             NetworkStuff.api.runString(
                     NetworkStuff.api.header(request).build(),
-                    (code, data) -> FiguraMod.sendChatMessage(Component.literal(data))
+                    (code, data) -> FiguraMod.sendChatMessage(new TextComponent(data))
             );
             return 1;
         } catch (Exception e) {
-            context.getSource().sendError(Component.literal(e.getMessage()));
+            context.getSource().sendError(new TextComponent(e.getMessage()));
             return 0;
         }
     }

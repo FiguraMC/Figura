@@ -6,7 +6,7 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.*;
 import org.luaj.vm2.LuaFunction;
@@ -15,29 +15,10 @@ import org.luaj.vm2.LuaUserdata;
 import org.luaj.vm2.LuaValue;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.animation.Animation;
-import org.moon.figura.lua.api.ConfigAPI;
-import org.moon.figura.lua.api.particle.LuaParticle;
-import org.moon.figura.model.FiguraModelPart;
-import org.moon.figura.model.rendering.texture.FiguraTexture;
-import org.moon.figura.model.rendertasks.BlockTask;
-import org.moon.figura.model.rendertasks.ItemTask;
-import org.moon.figura.model.rendertasks.RenderTask;
-import org.moon.figura.model.rendertasks.TextTask;
-import org.moon.figura.lua.api.action_wheel.*;
-import org.moon.figura.lua.api.nameplate.EntityNameplateCustomization;
-import org.moon.figura.lua.api.nameplate.NameplateCustomizationGroup;
-import org.moon.figura.lua.api.particle.ParticleAPI;
-import org.moon.figura.lua.api.ping.PingAPI;
-import org.moon.figura.lua.api.ping.PingFunction;
-import org.moon.figura.lua.api.sound.LuaSound;
-import org.moon.figura.lua.api.sound.SoundAPI;
-import org.moon.figura.lua.api.TextureAPI;
-import org.moon.figura.math.matrix.FiguraMat2;
-import org.moon.figura.math.matrix.FiguraMat3;
-import org.moon.figura.math.matrix.FiguraMat4;
-import org.moon.figura.math.matrix.FiguraMatrix;
-import org.moon.figura.math.vector.*;
 import org.moon.figura.lua.api.*;
+import org.moon.figura.lua.api.action_wheel.Action;
+import org.moon.figura.lua.api.action_wheel.ActionWheelAPI;
+import org.moon.figura.lua.api.action_wheel.Page;
 import org.moon.figura.lua.api.entity.EntityAPI;
 import org.moon.figura.lua.api.entity.LivingEntityAPI;
 import org.moon.figura.lua.api.entity.PlayerAPI;
@@ -47,8 +28,16 @@ import org.moon.figura.lua.api.keybind.FiguraKeybind;
 import org.moon.figura.lua.api.keybind.KeybindAPI;
 import org.moon.figura.lua.api.math.MatricesAPI;
 import org.moon.figura.lua.api.math.VectorsAPI;
+import org.moon.figura.lua.api.nameplate.EntityNameplateCustomization;
 import org.moon.figura.lua.api.nameplate.NameplateAPI;
 import org.moon.figura.lua.api.nameplate.NameplateCustomization;
+import org.moon.figura.lua.api.nameplate.NameplateCustomizationGroup;
+import org.moon.figura.lua.api.particle.LuaParticle;
+import org.moon.figura.lua.api.particle.ParticleAPI;
+import org.moon.figura.lua.api.ping.PingAPI;
+import org.moon.figura.lua.api.ping.PingFunction;
+import org.moon.figura.lua.api.sound.LuaSound;
+import org.moon.figura.lua.api.sound.SoundAPI;
 import org.moon.figura.lua.api.vanilla_model.VanillaGroupPart;
 import org.moon.figura.lua.api.vanilla_model.VanillaModelAPI;
 import org.moon.figura.lua.api.vanilla_model.VanillaModelPart;
@@ -56,6 +45,17 @@ import org.moon.figura.lua.api.world.BiomeAPI;
 import org.moon.figura.lua.api.world.BlockStateAPI;
 import org.moon.figura.lua.api.world.ItemStackAPI;
 import org.moon.figura.lua.api.world.WorldAPI;
+import org.moon.figura.math.matrix.FiguraMat2;
+import org.moon.figura.math.matrix.FiguraMat3;
+import org.moon.figura.math.matrix.FiguraMat4;
+import org.moon.figura.math.matrix.FiguraMatrix;
+import org.moon.figura.math.vector.*;
+import org.moon.figura.model.FiguraModelPart;
+import org.moon.figura.model.rendering.texture.FiguraTexture;
+import org.moon.figura.model.rendertasks.BlockTask;
+import org.moon.figura.model.rendertasks.ItemTask;
+import org.moon.figura.model.rendertasks.RenderTask;
+import org.moon.figura.model.rendertasks.TextTask;
 import org.moon.figura.utils.FiguraText;
 
 import java.io.FileOutputStream;
@@ -276,13 +276,13 @@ public class FiguraDocsManager {
         String name = getNameFor(clazz);
         String doc = CLASS_COMMAND_MAP.get(clazz);
 
-        MutableComponent text = Component.literal(name);
+        MutableComponent text = new TextComponent(name);
         if (doc == null)
             return text;
 
         text.setStyle(
                 Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, doc))
-                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, FiguraText.of("command.docs_type_hover", Component.literal(name).withStyle(ChatFormatting.DARK_PURPLE))))
+                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new FiguraText("command.docs_type_hover", new TextComponent(name).withStyle(ChatFormatting.DARK_PURPLE))))
                 .withUnderlined(true));
         return text;
     }
@@ -337,15 +337,15 @@ public class FiguraDocsManager {
 
             //feedback
             context.getSource().sendFeedback(
-                    FiguraText.of("command.docs_export.success")
+                    new FiguraText("command.docs_export.success")
                             .append(" ")
-                            .append(FiguraText.of("command.click_to_open")
+                            .append(new FiguraText("command.click_to_open")
                                     .setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, targetPath.toFile().toString())).withUnderlined(true))
                             )
             );
             return 1;
         } catch (Exception e) {
-            context.getSource().sendError(FiguraText.of("command.docs_export.error"));
+            context.getSource().sendError(new FiguraText("command.docs_export.error"));
             FiguraMod.LOGGER.error("Failed to export docs!", e);
             return 0;
         }

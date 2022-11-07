@@ -101,7 +101,7 @@ public class WebsocketThingy extends WebSocketClient {
 
     private void handleClose(int code, String reason) {
         if (Config.CONNECTION_TOASTS.asBool())
-            FiguraToast.sendToast(FiguraText.of("backend.disconnected"), FiguraToast.ToastType.ERROR);
+            FiguraToast.sendToast(new FiguraText("backend.disconnected"), FiguraToast.ToastType.ERROR);
 
         NetworkStuff.disconnect(reason);
 

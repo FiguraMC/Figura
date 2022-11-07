@@ -6,9 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.events.GuiEventListener;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextColor;
+import net.minecraft.network.chat.*;
 import net.minecraft.util.Mth;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.gui.widgets.SliderWidget;
@@ -65,7 +63,7 @@ public class TrustList extends AbstractList {
         for (Map.Entry<String, List<GuiEventListener>> entry : trusts.entrySet()) {
             //titles
             if (titles) {
-                UIHelper.drawCenteredString(stack, font, Component.translatable(entry.getKey()), x + (width - xOffset) / 2, y + yOffset, 0xFFFFFF);
+                UIHelper.drawCenteredString(stack, font, new TranslatableComponent(entry.getKey()), x + (width - xOffset) / 2, y + yOffset, 0xFFFFFF);
                 yOffset += titleHeight;
             }
 
@@ -129,7 +127,7 @@ public class TrustList extends AbstractList {
 
     private static class TrustSlider extends SliderWidget {
 
-        private static final Component INFINITY = FiguraText.of("trust.infinity");
+        private static final Component INFINITY = new FiguraText("trust.infinity");
 
         private final TrustContainer container;
         private final Trust trust;
@@ -144,7 +142,7 @@ public class TrustList extends AbstractList {
             this.trust = trust;
             this.parent = parent;
             this.id = id;
-            this.value = container.get(trust) == Integer.MAX_VALUE ? INFINITY : Component.literal(String.valueOf(container.get(trust)));
+            this.value = container.get(trust) == Integer.MAX_VALUE ? INFINITY : new TextComponent(String.valueOf(container.get(trust)));
             this.changed = container.isChanged(trust);
 
             setAction(slider -> {
@@ -156,7 +154,7 @@ public class TrustList extends AbstractList {
                 changed = container.isChanged(trust);
 
                 //update text
-                this.value = infinity ? INFINITY : Component.literal(String.valueOf(value));
+                this.value = infinity ? INFINITY : new TextComponent(String.valueOf(value));
             });
         }
 
@@ -171,8 +169,8 @@ public class TrustList extends AbstractList {
             stack.popPose();
 
             //texts
-            MutableComponent name = Component.translatable(id + ".trust.value." + trust.name.toLowerCase());
-            if (changed) name = Component.literal("*").setStyle(FiguraMod.getAccentColor()).append(name).append("*");
+            MutableComponent name = new TranslatableComponent(id + ".trust.value." + trust.name.toLowerCase());
+            if (changed) name = new TextComponent("*").setStyle(FiguraMod.getAccentColor()).append(name).append("*");
 
             font.draw(stack, name, x + 1, y + 1, 0xFFFFFF);
             font.draw(stack, value.copy().setStyle(FiguraMod.getAccentColor()), x + width - font.width(value) - 1, y + 1, 0xFFFFFF);
@@ -215,7 +213,7 @@ public class TrustList extends AbstractList {
             this.parent = parent;
             this.id = id;
             this.changed = container.isChanged(trust);
-            this.value = FiguraText.of("trust." + (toggled ? "enabled" : "disabled"));
+            this.value = new FiguraText("trust." + (toggled ? "enabled" : "disabled"));
         }
 
         @Override
@@ -227,7 +225,7 @@ public class TrustList extends AbstractList {
             this.changed = container.isChanged(trust);
 
             //update text
-            this.value = FiguraText.of("trust." + (value ? "enabled" : "disabled"));
+            this.value = new FiguraText("trust." + (value ? "enabled" : "disabled"));
 
             super.onPress();
         }
@@ -243,8 +241,8 @@ public class TrustList extends AbstractList {
             stack.popPose();
 
             //texts
-            MutableComponent name = Component.translatable(id + ".trust.value." + trust.name.toLowerCase());
-            if (changed) name = Component.literal("*").setStyle(FiguraMod.getAccentColor()).append(name).append("*");
+            MutableComponent name = new TranslatableComponent(id + ".trust.value." + trust.name.toLowerCase());
+            if (changed) name = new TextComponent("*").setStyle(FiguraMod.getAccentColor()).append(name).append("*");
 
             font.draw(stack, name, x + 1, y + 1, 0xFFFFFF);
             font.draw(stack, value.copy().setStyle(FiguraMod.getAccentColor()), x + width - font.width(value) - 1, y + 1, 0xFFFFFF);
@@ -297,7 +295,7 @@ public class TrustList extends AbstractList {
             this.parent = parent;
             this.id = id;
             String val = String.valueOf(container.get(trust));
-            this.value = Component.literal(val);
+            this.value = new TextComponent(val);
             this.changed = container.isChanged(trust);
 
             this.getField().setValue(val);
@@ -311,7 +309,7 @@ public class TrustList extends AbstractList {
                 changed = container.isChanged(trust);
 
                 //update text
-                this.value = Component.literal(String.valueOf(value));
+                this.value = new TextComponent(String.valueOf(value));
             });
         }
 
@@ -344,8 +342,8 @@ public class TrustList extends AbstractList {
             stack.popPose();
 
             //texts
-            MutableComponent name = Component.translatable(id + ".trust.value." + trust.name.toLowerCase());
-            if (changed) name = Component.literal("*").setStyle(FiguraMod.getAccentColor()).append(name).append("*");
+            MutableComponent name = new TranslatableComponent(id + ".trust.value." + trust.name.toLowerCase());
+            if (changed) name = new TextComponent("*").setStyle(FiguraMod.getAccentColor()).append(name).append("*");
 
             font.draw(stack, name, x + 1, y + 1 - font.lineHeight, 0xFFFFFF);
             font.draw(stack, value.copy().setStyle(FiguraMod.getAccentColor()), x + width - font.width(value) - 1, y + 1 - font.lineHeight, 0xFFFFFF);

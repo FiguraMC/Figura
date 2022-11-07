@@ -3,14 +3,6 @@ package org.moon.figura.model;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.renderer.LightTexture;
 import org.luaj.vm2.LuaError;
-import org.moon.figura.model.rendering.ImmediateAvatarRenderer;
-import org.moon.figura.model.rendering.texture.FiguraTexture;
-import org.moon.figura.model.rendering.texture.FiguraTextureSet;
-import org.moon.figura.model.rendering.texture.RenderTypes;
-import org.moon.figura.model.rendertasks.BlockTask;
-import org.moon.figura.model.rendertasks.ItemTask;
-import org.moon.figura.model.rendertasks.RenderTask;
-import org.moon.figura.model.rendertasks.TextTask;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaMethodDoc;
@@ -20,6 +12,14 @@ import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.model.rendering.ImmediateAvatarRenderer;
+import org.moon.figura.model.rendering.texture.FiguraTexture;
+import org.moon.figura.model.rendering.texture.FiguraTextureSet;
+import org.moon.figura.model.rendering.texture.RenderTypes;
+import org.moon.figura.model.rendertasks.BlockTask;
+import org.moon.figura.model.rendertasks.ItemTask;
+import org.moon.figura.model.rendertasks.RenderTask;
+import org.moon.figura.model.rendertasks.TextTask;
 import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.ui.UIHelper;
 
@@ -96,9 +96,6 @@ public class FiguraModelPart {
         FiguraVec3 defaultPivot = parentType.offset.copy();
 
         defaultPivot.subtract(partData.pos);
-
-        if (!overrideVanillaScale())
-            defaultPivot.multiply(partData.scale);
 
         if (!overrideVanillaPos()) {
             customization.offsetPivot(defaultPivot);

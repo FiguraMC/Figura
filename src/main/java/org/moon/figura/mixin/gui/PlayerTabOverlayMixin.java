@@ -7,6 +7,7 @@ import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.Scoreboard;
@@ -59,11 +60,11 @@ public class PlayerTabOverlayMixin {
             if (custom.getText().contains("${badges}"))
                 replaceBadges = true;
         } else {
-            replacement = Component.literal(playerInfo.getProfile().getName());
+            replacement = new TextComponent(playerInfo.getProfile().getName());
         }
 
         //badges
-        Component badges = config > 1 ? Badges.fetchBadges(avatar) : Component.empty();
+        Component badges = config > 1 ? Badges.fetchBadges(avatar) : TextComponent.EMPTY.copy();
         if (replaceBadges) {
             replacement = TextUtils.replaceInText(replacement, "\\$\\{badges\\}", badges);
         } else if (badges.getString().length() > 0) {
@@ -80,7 +81,7 @@ public class PlayerTabOverlayMixin {
         uuid = gameProfile.getId();
     }
 
-    @ModifyArgs(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/PlayerFaceRenderer;draw(Lcom/mojang/blaze3d/vertex/PoseStack;IIIZZ)V"))
+    @ModifyArgs(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiComponent;blit(Lcom/mojang/blaze3d/vertex/PoseStack;IIIIFFIIII)V"))
     private void doNotDrawFace(Args args) {
         if (uuid != null) {
             Avatar avatar = AvatarManager.getAvatarForPlayer(uuid);

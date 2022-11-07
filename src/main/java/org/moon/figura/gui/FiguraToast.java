@@ -7,6 +7,8 @@ import net.minecraft.client.gui.components.toasts.Toast;
 import net.minecraft.client.gui.components.toasts.ToastComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import org.moon.figura.FiguraMod;
@@ -31,7 +33,7 @@ public class FiguraToast implements Toast {
     }
 
     public void update(Component title, Component message, boolean update) {
-        this.title = Component.empty().setStyle(type.style).append(title);
+        this.title = TextComponent.EMPTY.copy().setStyle(type.style).append(title);
         this.message = message;
         this.update = update;
     }
@@ -104,11 +106,11 @@ public class FiguraToast implements Toast {
 
     //new toast
     public static void sendToast(Object title) {
-        sendToast(title, Component.empty());
+        sendToast(title, TextComponent.EMPTY.copy());
     }
 
     public static void sendToast(Object title, ToastType type) {
-        sendToast(title, Component.empty(), type);
+        sendToast(title, TextComponent.EMPTY.copy(), type);
     }
 
     public static void sendToast(Object title, Object message) {
@@ -116,8 +118,8 @@ public class FiguraToast implements Toast {
     }
 
     public static void sendToast(Object title, Object message, ToastType type) {
-        Component text = title instanceof Component t ? t : Component.translatable(title.toString());
-        Component text2 = message instanceof Component m ? m : Component.translatable(message.toString());
+        Component text = title instanceof Component t ? t : new TranslatableComponent(title.toString());
+        Component text2 = message instanceof Component m ? m : new TranslatableComponent(message.toString());
 
         if (type == ToastType.DEFAULT && Config.EASTER_EGGS.asBool()) {
             if (FiguraMod.CHEESE_DAY || Math.random() < 0.0001)

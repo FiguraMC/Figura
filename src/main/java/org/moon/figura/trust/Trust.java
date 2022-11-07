@@ -123,7 +123,7 @@ public class Trust {
         Group(int index, int color) {
             this.index = index;
             this.color = color;
-            text = FiguraText.of("trust.group." + name().toLowerCase()).withStyle(Style.EMPTY.withColor(color));
+            text = new FiguraText("trust.group." + name().toLowerCase()).withStyle(Style.EMPTY.withColor(color));
         }
 
         public static Group indexOf(int i) {

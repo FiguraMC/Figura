@@ -207,7 +207,7 @@ public class NetworkStuff {
             if (config != 0) {
                 String version = json.get(config == 1 ? "release" : "prerelease").getAsString();
                 if (new Version(version).compareTo(Version.VERSION) > 0)
-                    FiguraToast.sendToast(FiguraText.of("toast.new_version"), version);
+                    FiguraToast.sendToast(new FiguraText("toast.new_version"), version);
             }
         });
     }
@@ -234,7 +234,7 @@ public class NetworkStuff {
             //error
             if (code != 200) {
                 if (code == 404 && Config.CONNECTION_TOASTS.asBool())
-                    FiguraToast.sendToast(FiguraText.of("backend.user_not_found"), FiguraToast.ToastType.ERROR);
+                    FiguraToast.sendToast(new FiguraText("backend.user_not_found"), FiguraToast.ToastType.ERROR);
                 return;
             }
 
@@ -290,15 +290,15 @@ public class NetworkStuff {
 
                 switch (code) {
                     case 200 -> {
-                        FiguraToast.sendToast(FiguraText.of("backend.upload_success"));
+                        FiguraToast.sendToast(new FiguraText("backend.upload_success"));
 
                         //TODO - profile screen
                         equipAvatar(List.of(Pair.of(avatar.owner, id)));
                         AvatarManager.localUploaded = true;
                     }
-                    case 413 -> FiguraToast.sendToast(FiguraText.of("backend.upload_too_big"), FiguraToast.ToastType.ERROR);
-                    case 507 -> FiguraToast.sendToast(FiguraText.of("backend.upload_too_many"), FiguraToast.ToastType.ERROR);
-                    default -> FiguraToast.sendToast(FiguraText.of("backend.upload_error"), FiguraToast.ToastType.ERROR);
+                    case 413 -> FiguraToast.sendToast(new FiguraText("backend.upload_too_big"), FiguraToast.ToastType.ERROR);
+                    case 507 -> FiguraToast.sendToast(new FiguraText("backend.upload_too_many"), FiguraToast.ToastType.ERROR);
+                    default -> FiguraToast.sendToast(new FiguraText("backend.upload_error"), FiguraToast.ToastType.ERROR);
                 }
             });
             uploadRate.use();
@@ -317,9 +317,9 @@ public class NetworkStuff {
                 return;
 
             switch (code) {
-                case 200 -> FiguraToast.sendToast(FiguraText.of("backend.delete_success"));
-                case 404 -> FiguraToast.sendToast(FiguraText.of("backend.avatar_not_found"), FiguraToast.ToastType.ERROR);
-                default -> FiguraToast.sendToast(FiguraText.of("backend.delete_error"), FiguraToast.ToastType.ERROR);
+                case 200 -> FiguraToast.sendToast(new FiguraText("backend.delete_success"));
+                case 404 -> FiguraToast.sendToast(new FiguraText("backend.avatar_not_found"), FiguraToast.ToastType.ERROR);
+                default -> FiguraToast.sendToast(new FiguraText("backend.delete_error"), FiguraToast.ToastType.ERROR);
             }
         });
     }
@@ -337,7 +337,7 @@ public class NetworkStuff {
         queueString(Util.NIL_UUID, api -> api.setEquipped(GSON.toJson(json)), (code, data) -> {
             responseDebug("equipAvatar", code, data);
             if (code != 200 && Config.CONNECTION_TOASTS.asBool())
-                FiguraToast.sendToast(FiguraText.of("backend.equip_error"), FiguraToast.ToastType.ERROR);
+                FiguraToast.sendToast(new FiguraText("backend.equip_error"), FiguraToast.ToastType.ERROR);
         });
     }
 

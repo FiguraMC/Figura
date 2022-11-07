@@ -70,7 +70,7 @@ public class ChatComponentMixin {
             }
 
             //badges
-            Component badges = config > 1 ? Badges.fetchBadges(avatar) : Component.empty();
+            Component badges = config > 1 ? Badges.fetchBadges(avatar) : TextComponent.EMPTY.copy();
             if (replaceBadges) {
                 replacement = TextUtils.replaceInText(replacement, "\\$\\{badges\\}", badges);
             } else if (badges.getString().length() > 0) {

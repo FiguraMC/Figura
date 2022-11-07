@@ -6,14 +6,12 @@ import net.minecraft.client.resources.sounds.Sound;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.client.sounds.WeighedSoundEvents;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.RandomSource;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaTable;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.ducks.SoundEngineAccessor;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
-import org.moon.figura.lua.api.world.WorldAPI;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
@@ -156,7 +154,7 @@ public class SoundAPI {
         try {
             WeighedSoundEvents events = Minecraft.getInstance().getSoundManager().getSoundEvent(new ResourceLocation(id));
             if (events != null) {
-                Sound sound = events.getSound(RandomSource.create(WorldAPI.getCurrentWorld().random.nextLong()));
+                Sound sound = events.getSound();
                 if (sound != SoundManager.EMPTY_SOUND)
                     return new LuaSound(sound, id, owner);
             }

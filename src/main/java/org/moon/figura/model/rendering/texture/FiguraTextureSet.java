@@ -5,7 +5,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
-import org.moon.figura.avatar.Avatar;
 import org.moon.figura.mixin.render.layers.elytra.ElytraLayerAccessor;
 import org.moon.figura.utils.FiguraIdentifier;
 
@@ -75,7 +74,7 @@ public class FiguraTextureSet {
             case RESOURCE -> {
                 try {
                     ResourceLocation resource = new ResourceLocation(String.valueOf(pair.getSecond()));
-                    yield Minecraft.getInstance().getResourceManager().getResource(resource).isPresent() ? resource : MissingTextureAtlasSprite.getLocation();
+                    yield Minecraft.getInstance().getResourceManager().hasResource(resource) ? resource : MissingTextureAtlasSprite.getLocation();
                 } catch (Exception ignored) {
                     yield MissingTextureAtlasSprite.getLocation();
                 }

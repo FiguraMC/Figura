@@ -6,6 +6,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import org.moon.figura.FiguraMod;
@@ -28,7 +29,7 @@ import java.util.UUID;
 
 public class TrustScreen extends AbstractPanelScreen {
 
-    public static final Component TITLE = FiguraText.of("gui.panels.title.trust");
+    public static final Component TITLE = new FiguraText("gui.panels.title.trust");
 
     // -- widgets -- //
     private PlayerList playerList;
@@ -112,19 +113,19 @@ public class TrustScreen extends AbstractPanelScreen {
 
         //reload all
         int bottomButtonsWidth = (listWidth - 24) / 2 - 2;
-        addRenderableWidget(reloadAll = new TexturedButton(middle + 2, height - 24, bottomButtonsWidth, 20, FiguraText.of("gui.trust.reload_all"), null, bx -> {
+        addRenderableWidget(reloadAll = new TexturedButton(middle + 2, height - 24, bottomButtonsWidth, 20, new FiguraText("gui.trust.reload_all"), null, bx -> {
             AvatarManager.clearAllAvatars();
-            FiguraToast.sendToast(FiguraText.of("toast.reload_all"));
+            FiguraToast.sendToast(new FiguraText("toast.reload_all"));
         }));
 
         //back button
-        addRenderableWidget(back = new TexturedButton(middle + 6 + bottomButtonsWidth, height - 24, bottomButtonsWidth, 20, FiguraText.of("gui.done"), null,
+        addRenderableWidget(back = new TexturedButton(middle + 6 + bottomButtonsWidth, height - 24, bottomButtonsWidth, 20, new FiguraText("gui.done"), null,
                 bx -> this.minecraft.setScreen(parentScreen)
         ));
 
         //debug buttons
-        uuid = new TextField(middle + 2, back.y - 24, listWidth - 24, 20, Component.literal("Name/UUID"), s -> yoink.active = !s.isBlank());
-        yoink = new TexturedButton(middle + listWidth - 18, back.y - 24, 20, 20, Component.literal("yoink"), Component.literal("Set the selected player's avatar"), button -> {
+        uuid = new TextField(middle + 2, back.y - 24, listWidth - 24, 20, new TextComponent("Name/UUID"), s -> yoink.active = !s.isBlank());
+        yoink = new TexturedButton(middle + listWidth - 18, back.y - 24, 20, 20, new TextComponent("yoink"), new TextComponent("Set the selected player's avatar"), button -> {
             String text = uuid.getField().getValue();
             UUID id;
 
@@ -160,7 +161,7 @@ public class TrustScreen extends AbstractPanelScreen {
         }
 
         //expand button
-        addRenderableWidget(expandButton = new SwitchButton( middle + listWidth - 18, height - 24, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/expand_v.png"), 60, 40, FiguraText.of("gui.trust.expand_trust.tooltip"), btn -> {
+        addRenderableWidget(expandButton = new SwitchButton( middle + listWidth - 18, height - 24, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/expand_v.png"), 60, 40, new FiguraText("gui.trust.expand_trust.tooltip"), btn -> {
             expanded = expandButton.isToggled();
 
             //hide widgets
@@ -173,14 +174,14 @@ public class TrustScreen extends AbstractPanelScreen {
             yoink.visible = !expanded;
 
             //update expand button
-            expandButton.setTooltip(expanded ? FiguraText.of("gui.trust.minimize_trust.tooltip") : FiguraText.of("gui.trust.expand_trust.tooltip"));
+            expandButton.setTooltip(expanded ? new FiguraText("gui.trust.minimize_trust.tooltip") : new FiguraText("gui.trust.expand_trust.tooltip"));
 
             //set reset button activeness
             resetButton.active = expanded;
         }));
 
         //reset all button
-        addRenderableWidget(resetButton = new TexturedButton(middle + 2, height, 60, 20, FiguraText.of("gui.trust.reset"), null, btn -> {
+        addRenderableWidget(resetButton = new TexturedButton(middle + 2, height, 60, 20, new FiguraText("gui.trust.reset"), null, btn -> {
             //clear trust
             TrustContainer trust = playerList.selectedEntry.getTrust();
             trust.clear();
@@ -201,7 +202,7 @@ public class TrustScreen extends AbstractPanelScreen {
                 drawString(stack, font, this.getMessage(), x + width + 4, y + height / 2 - font.lineHeight / 2, 0xFFFFFF);
             }
         });
-        preciseTrust.setMessage(FiguraText.of("gui.trust.precise"));
+        preciseTrust.setMessage(new FiguraText("gui.trust.precise"));
 
         //add trust list
         addRenderableWidget(trustList);

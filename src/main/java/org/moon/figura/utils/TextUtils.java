@@ -3,10 +3,7 @@ package org.moon.figura.utils;
 import com.google.gson.JsonParser;
 import net.minecraft.client.gui.Font;
 import net.minecraft.locale.Language;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.FormattedText;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 
@@ -18,9 +15,9 @@ import java.util.function.BiPredicate;
 public class TextUtils {
 
     public static final ResourceLocation FIGURA_FONT = new FiguraIdentifier("default");
-    public static final Component TAB = FiguraText.of("tab");
-    public static final Component ELLIPSIS = FiguraText.of("ellipsis");
-    public static final Component UNKNOWN = Component.literal("�").withStyle(Style.EMPTY.withFont(Style.DEFAULT_FONT));
+    public static final Component TAB = new FiguraText("tab");
+    public static final Component ELLIPSIS = new FiguraText("ellipsis");
+    public static final Component UNKNOWN = new TextComponent("�").withStyle(Style.EMPTY.withFont(Style.DEFAULT_FONT));
 
     public static Component noBadges4U(Component text) {
         return replaceInText(text, "[❗❌\uD83C\uDF54\uD83E\uDD90\uD83C\uDF19\uD83C\uDF00☄❤☆★]", UNKNOWN, (s, style) -> style.getFont().equals(FIGURA_FONT));
@@ -31,7 +28,7 @@ public class TextUtils {
         ArrayList<Component> textList = new ArrayList<>();
 
         //current line variable
-        MutableComponent currentText = Component.empty();
+        MutableComponent currentText = TextComponent.EMPTY.copy();
 
         //iterate over the text
         for (Component entry : text.toFlatList(text.getStyle())) {
@@ -44,11 +41,11 @@ public class TextUtils {
                 //if it is not the first iteration, add to return list and reset the line variable
                 if (i != 0) {
                     textList.add(currentText.copy());
-                    currentText = Component.empty();
+                    currentText = TextComponent.EMPTY.copy();
                 }
 
                 //append text with the line text
-                currentText.append(Component.literal(lines[i]).setStyle(entry.getStyle()));
+                currentText.append(new TextComponent(lines[i]).setStyle(entry.getStyle()));
             }
         }
         //add the last text iteration then return
@@ -57,9 +54,9 @@ public class TextUtils {
     }
 
     public static Component removeClickableObjects(Component text) {
-        MutableComponent ret = Component.empty();
+        MutableComponent ret = TextComponent.EMPTY.copy();
         text.visit((style, string) -> {
-            ret.append(Component.literal(string).withStyle(style.withClickEvent(null)));
+            ret.append(new TextComponent(string).withStyle(style.withClickEvent(null)));
             return Optional.empty();
         }, Style.EMPTY);
         return ret;
@@ -67,7 +64,7 @@ public class TextUtils {
 
     public static Component tryParseJson(String text) {
         if (text == null)
-            return Component.empty();
+            return TextComponent.EMPTY.copy();
 
         //text to return
         Component finalText;
@@ -84,7 +81,7 @@ public class TextUtils {
                 throw new Exception("Error parsing JSON string");
         } catch (Exception ignored) {
             //on any exception, make the text as-is
-            finalText = Component.literal(text);
+            finalText = new TextComponent(text);
         }
 
         //return text
@@ -97,13 +94,13 @@ public class TextUtils {
 
     public static Component replaceInText(Component text, String regex, Object replacement, BiPredicate<String, Style> predicate) {
         //fix replacement object
-        Component replace = replacement instanceof Component c ? c : Component.literal(replacement.toString());
-        MutableComponent ret = Component.empty();
+        Component replace = replacement instanceof Component c ? c : new TextComponent(replacement.toString());
+        MutableComponent ret = TextComponent.EMPTY.copy();
 
         text.visit((style, string) -> {
             //test predicate
             if (!predicate.test(string, style)) {
-                ret.append(Component.literal(string).withStyle(style));
+                ret.append(new TextComponent(string).withStyle(style));
                 return Optional.empty();
             }
 
@@ -112,9 +109,9 @@ public class TextUtils {
             for (String s : split) {
                 //append the text if it does not match the split, otherwise append the replacement instead
                 if (!s.matches(regex))
-                    ret.append(Component.literal(s).withStyle(style));
+                    ret.append(new TextComponent(s).withStyle(style));
                 else
-                    ret.append(Component.empty().withStyle(style).append(replace));
+                    ret.append(TextComponent.EMPTY.copy().withStyle(style).append(replace));
             }
 
             return Optional.empty();
@@ -181,7 +178,7 @@ public class TextUtils {
     }
 
     public static Component replaceStyle(Component text, Style newStyle) {
-        MutableComponent ret = Component.empty();
+        MutableComponent ret = TextComponent.EMPTY.copy();
 
         List<Component> list = text.toFlatList(text.getStyle());
         for (Component component : list)
@@ -197,18 +194,18 @@ public class TextUtils {
     }
 
     public static Component charSequenceToText(FormattedCharSequence charSequence) {
-        MutableComponent builder = Component.empty();
+        MutableComponent builder = TextComponent.EMPTY.copy();
         charSequence.accept((index, style, codePoint) -> {
-            builder.append(Component.literal(String.valueOf(Character.toChars(codePoint))).withStyle(style));
+            builder.append(new TextComponent(String.valueOf(Character.toChars(codePoint))).withStyle(style));
             return true;
         });
         return builder;
     }
 
     public static Component formattedTextToText(FormattedText formattedText) {
-        MutableComponent builder = Component.empty();
+        MutableComponent builder = TextComponent.EMPTY.copy();
         formattedText.visit((style, string) -> {
-            builder.append(Component.literal(string).withStyle(style));
+            builder.append(new TextComponent(string).withStyle(style));
             return Optional.empty();
         }, Style.EMPTY);
         return builder;
@@ -216,7 +213,7 @@ public class TextUtils {
 
     public static Component substring(Component text, int beginIndex, int endIndex) {
         StringBuilder counter = new StringBuilder();
-        MutableComponent builder = Component.empty();
+        MutableComponent builder = TextComponent.EMPTY.copy();
         text.visit((style, string) -> {
             int index = counter.length();
             int len = string.length();
@@ -224,7 +221,7 @@ public class TextUtils {
             if (index <= endIndex && index + len >= beginIndex) {
                 int sub = Math.max(beginIndex - index, 0);
                 int top = Math.min(endIndex - index, len);
-                builder.append(Component.literal(string.substring(sub, top)).withStyle(style));
+                builder.append(new TextComponent(string.substring(sub, top)).withStyle(style));
             }
 
             counter.append(string);

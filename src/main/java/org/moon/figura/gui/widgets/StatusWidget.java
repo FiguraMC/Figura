@@ -8,6 +8,7 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
@@ -73,7 +74,7 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
         status += backend << 6;
 
         String dc = NetworkStuff.disconnectedReason;
-        disconnectedReason = backend == 1 && dc != null && !dc.isBlank() ? Component.literal(dc) : null;
+        disconnectedReason = backend == 1 && dc != null && !dc.isBlank() ? new TextComponent(dc) : null;
     }
 
     @Override
@@ -102,7 +103,7 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
     }
 
     private MutableComponent getStatus(int type) {
-        return Component.literal(String.valueOf(STATUS_INDICATORS.charAt(status >> (type * 2) & 3))).setStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT));
+        return new TextComponent(String.valueOf(STATUS_INDICATORS.charAt(status >> (type * 2) & 3))).setStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT));
     }
 
     public Component getTooltipFor(int i) {
@@ -113,16 +114,16 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
         MutableComponent info;
         if (i == 0) {
             double size = color == 1 ? NetworkStuff.getSizeLimit() : NetworkStuff.getSizeLimit() * 0.75;
-            info = FiguraText.of(part + "." + color, MathUtils.asFileSize(size));
+            info = new FiguraText(part + "." + color, MathUtils.asFileSize(size));
         } else {
-            info = FiguraText.of(part + "." + color);
+            info = new FiguraText(part + "." + color);
         }
 
-        MutableComponent text = FiguraText.of(part).append("\n• ").append(info).setStyle(TEXT_COLORS.get(color));
+        MutableComponent text = new FiguraText(part).append("\n• ").append(info).setStyle(TEXT_COLORS.get(color));
 
         //get backend disconnect reason
         if (i == 3 && disconnectedReason != null)
-            text.append("\n\n").append(FiguraText.of(part + ".reason")).append("\n• ").append(disconnectedReason);
+            text.append("\n\n").append(new FiguraText(part + ".reason")).append("\n• ").append(disconnectedReason);
 
         return text;
     }

@@ -2,10 +2,7 @@ package org.moon.figura.avatar;
 
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.*;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.config.Config;
 import org.moon.figura.utils.ColorUtils;
@@ -21,9 +18,9 @@ public class Badges {
 
     public static Component fetchBadges(Avatar avatar) {
         if (avatar == null)
-            return Component.empty();
+            return TextComponent.EMPTY.copy();
 
-        MutableComponent badges = Component.empty().withStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT).withColor(ChatFormatting.WHITE));
+        MutableComponent badges = TextComponent.EMPTY.copy().withStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT).withColor(ChatFormatting.WHITE));
 
         UUID id = avatar.owner;
         Pair<BitSet, BitSet> pair = UserData.getBadges(id);
@@ -33,7 +30,7 @@ public class Badges {
         // -- loading -- //
 
         if (!avatar.loaded)
-            return badges.append(Component.literal(Integer.toHexString(Math.abs(FiguraMod.ticks) % 16)));
+            return badges.append(new TextComponent(Integer.toHexString(Math.abs(FiguraMod.ticks) % 16)));
 
         // -- mark -- //
 
@@ -94,8 +91,8 @@ public class Badges {
         public final Component desc;
 
         System(String unicode) {
-            this.desc = FiguraText.of("badges.system." + this.name().toLowerCase());
-            this.badge = Component.literal(unicode).withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, desc)));
+            this.desc = new FiguraText("badges.system." + this.name().toLowerCase());
+            this.badge = new TextComponent(unicode).withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, desc)));
         }
     }
 
@@ -130,8 +127,8 @@ public class Badges {
         public final Component desc;
 
         Pride(String unicode) {
-            this.desc = FiguraText.of("badges.pride." + this.name().toLowerCase());
-            this.badge = Component.literal(unicode).withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, desc)));
+            this.desc = new FiguraText("badges.pride." + this.name().toLowerCase());
+            this.badge = new TextComponent(unicode).withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, desc)));
         }
     }
 
@@ -155,10 +152,10 @@ public class Badges {
         }
 
         Special(String unicode, Integer color) {
-            this.desc = FiguraText.of("badges.special." + this.name().toLowerCase());
+            this.desc = new FiguraText("badges.special." + this.name().toLowerCase());
             Style style = Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, desc));
             if (color != null) style = style.withColor(color);
-            this.badge = Component.literal(unicode).withStyle(style);
+            this.badge = new TextComponent(unicode).withStyle(style);
         }
     }
 }

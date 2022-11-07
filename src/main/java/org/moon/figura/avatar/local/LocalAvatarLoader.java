@@ -40,7 +40,7 @@ public class LocalAvatarLoader {
     public static final ArrayList<CompoundTag> SERVER_AVATARS = new ArrayList<>();
     private static final BiFunction<String, ResourceManager, CompoundTag> LOAD_AVATAR = (name, manager) -> {
         try {
-            return NbtIo.readCompressed(manager.getResource(new FiguraIdentifier("avatars/" + name + ".moon")).get().open());
+            return NbtIo.readCompressed(manager.getResource(new FiguraIdentifier("avatars/" + name + ".moon")).getInputStream());
         } catch (Exception e) {
             FiguraMod.LOGGER.error("Failed to load the " + name + " avatar", e);
             return null;
@@ -49,11 +49,15 @@ public class LocalAvatarLoader {
     public static final FiguraResourceListener AVATAR_LISTENER = new FiguraResourceListener("avatars", manager -> {
         cheese = LOAD_AVATAR.apply("cheese", manager);
 
+        /*
+
         SERVER_AVATARS.clear();
         manager.listResources("avatars/server", resource -> resource.getNamespace().equals(FiguraMod.MOD_ID) && resource.getPath().endsWith(".moon")).forEach((location, resource) -> {
             String name = location.getPath().substring(8, location.getPath().length() - 5);
             SERVER_AVATARS.add(LOAD_AVATAR.apply(name, manager));
         });
+
+         */
     });
 
     static {

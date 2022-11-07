@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.avatar.local.LocalAvatarFetcher;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.widgets.AbstractContainerElement;
@@ -32,13 +33,13 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
         this.depth = depth;
         this.context = new ContextMenu(this);
 
-        context.addAction(FiguraText.of("gui.context.open_folder"), button -> {
+        context.addAction(new FiguraText("gui.context.open_folder"), button -> {
             File f = avatar.getPath().toFile();
             Util.getPlatform().openFile(f.isDirectory() ? f : f.getParentFile());
         });
-        context.addAction(FiguraText.of("gui.context.copy_path"), button -> {
+        context.addAction(new FiguraText("gui.context.copy_path"), button -> {
             Minecraft.getInstance().keyboardHandler.setClipboard(avatar.getPath().toString());
-            FiguraToast.sendToast(FiguraText.of("toast.clipboard"));
+            FiguraToast.sendToast(new FiguraText("toast.clipboard"));
         });
     }
 
@@ -79,7 +80,7 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
     }
 
     public Component getName() {
-        return Component.literal(avatar.getName());
+        return new TextComponent(avatar.getName());
     }
 
     public void setPos(int x, int y) {
