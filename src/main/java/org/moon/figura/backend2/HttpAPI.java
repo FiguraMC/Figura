@@ -51,7 +51,9 @@ public class HttpAPI {
         try {
             requestDebug(request);
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
-            consumer.accept(response.statusCode(), response.body());
+            int code = response.statusCode();
+            if (code == 401) NetworkStuff.reAuth();
+            consumer.accept(code, response.body());
         } catch (Exception e) {
             FiguraMod.LOGGER.error("", e);
         }
@@ -61,7 +63,9 @@ public class HttpAPI {
         try {
             requestDebug(request);
             HttpResponse<InputStream> response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
-            consumer.accept(response.statusCode(), response.body());
+            int code = response.statusCode();
+            if (code == 401) NetworkStuff.reAuth();
+            consumer.accept(code, response.body());
         } catch (Exception e) {
             FiguraMod.LOGGER.error("", e);
         }
@@ -72,7 +76,8 @@ public class HttpAPI {
 
 
     private static void requestDebug(HttpRequest msg) {
-        FiguraMod.debug( "Sent Http request:\n\t" + msg.uri().toString() + "\n\t" + msg.headers().map().toString());
+        if (NetworkStuff.debug)
+            FiguraMod.debug( "Sent Http request:\n\t" + msg.uri().toString() + "\n\t" + msg.headers().map().toString());
     }
 
 

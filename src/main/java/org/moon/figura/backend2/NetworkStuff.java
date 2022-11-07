@@ -14,6 +14,7 @@ import org.moon.figura.backend2.websocket.WebsocketThingy;
 import org.moon.figura.config.Config;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.utils.FiguraText;
+import org.moon.figura.utils.RefilledNumber;
 import org.moon.figura.utils.Version;
 
 import java.io.ByteArrayOutputStream;
@@ -32,8 +33,8 @@ public class NetworkStuff {
     protected static final HttpClient client = HttpClient.newHttpClient();
     protected static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
 
-    private static final LinkedList<HTTPRequest> API_REQUESTS = new LinkedList<>();
-    private static final LinkedList<WSRequest> WS_REQUESTS = new LinkedList<>();
+    private static final LinkedList<Request<HttpAPI>> API_REQUESTS = new LinkedList<>();
+    private static final LinkedList<Request<WebsocketThingy>> WS_REQUESTS = new LinkedList<>();
     private static CompletableFuture<Void> tasks;
 
     private static final int RECONNECT = 6000; //5 min
@@ -45,12 +46,22 @@ public class NetworkStuff {
     public static int backendStatus = 1;
     public static String disconnectedReason;
 
-    public static boolean debug = true; //TODO - disable
+    public static boolean debug = false;
 
     public static int lastPing, pingsSent, pingsReceived;
 
+    //limits
+    private static final RefilledNumber
+            uploadRate = new RefilledNumber(),
+            downloadRate = new RefilledNumber();
+    private static int maxAvatarSize = Integer.MAX_VALUE;
+
     public static void tick() {
         AuthHandler.tick();
+
+        //limits
+        uploadRate.tick();
+        downloadRate.tick();
 
         //auth check
         authCheck--;
@@ -72,17 +83,17 @@ public class NetworkStuff {
         //process requests
         if (isConnected()) {
             if (!API_REQUESTS.isEmpty()) {
-                HTTPRequest request;
+                Request<HttpAPI> request;
                 while ((request = API_REQUESTS.poll()) != null) {
-                    HTTPRequest finalRequest = request;
+                    Request<HttpAPI> finalRequest = request;
                     async(() -> finalRequest.consumer.accept(api));
                 }
             }
 
             if (!WS_REQUESTS.isEmpty()) {
-                WSRequest request;
+                Request<WebsocketThingy> request;
                 while ((request = WS_REQUESTS.poll()) != null) {
-                    WSRequest finalRequest = request;
+                    Request<WebsocketThingy> finalRequest = request;
                     async(() -> finalRequest.consumer.accept(ws));
                 }
             }
@@ -147,11 +158,11 @@ public class NetworkStuff {
 
 
     private static void queueString(UUID owner, Function<HttpAPI, HttpRequest> request, BiConsumer<Integer, String> consumer) {
-        API_REQUESTS.add(new HTTPRequest(owner, api -> api.runString(request.apply(api), consumer)));
+        API_REQUESTS.add(new Request<>(owner, api -> api.runString(request.apply(api), consumer)));
     }
 
     private static void queueStream(UUID owner, Function<HttpAPI, HttpRequest> request, BiConsumer<Integer, InputStream> consumer) {
-        API_REQUESTS.add(new HTTPRequest(owner, api -> api.runStream(request.apply(api), consumer)));
+        API_REQUESTS.add(new Request<>(owner, api -> api.runStream(request.apply(api), consumer)));
     }
 
     public static void clear(UUID requestOwner) {
@@ -205,7 +216,13 @@ public class NetworkStuff {
         queueString(Util.NIL_UUID, HttpAPI::getLimits, (code, data) -> {
             responseDebug("setLimits", code, data);
             JsonObject json = JsonParser.parseString(data).getAsJsonObject();
-            //TODO
+
+            JsonObject rate = json.getAsJsonObject("rate");
+            uploadRate.set(rate.get("upload").getAsInt() * 0.95);
+            downloadRate.set(rate.get("download").getAsInt() * 0.95);
+
+            JsonObject limits = json.getAsJsonObject("limits");
+            maxAvatarSize = limits.get("maxAvatarSize").getAsInt();
         });
     }
 
@@ -274,14 +291,17 @@ public class NetworkStuff {
                 switch (code) {
                     case 200 -> {
                         FiguraToast.sendToast(FiguraText.of("backend.upload_success"));
-                        equipAvatar(List.of(Pair.of(avatar.owner, id))); //TODO - profile screen
-                        AvatarManager.localUploaded = true; //TODO ^
+
+                        //TODO - profile screen
+                        equipAvatar(List.of(Pair.of(avatar.owner, id)));
+                        AvatarManager.localUploaded = true;
                     }
                     case 413 -> FiguraToast.sendToast(FiguraText.of("backend.upload_too_big"), FiguraToast.ToastType.ERROR);
                     case 507 -> FiguraToast.sendToast(FiguraText.of("backend.upload_too_many"), FiguraToast.ToastType.ERROR);
                     default -> FiguraToast.sendToast(FiguraText.of("backend.upload_error"), FiguraToast.ToastType.ERROR);
                 }
             });
+            uploadRate.use();
             baos.close();
         } catch (Exception e) {
             FiguraMod.LOGGER.error("", e);
@@ -343,6 +363,7 @@ public class NetworkStuff {
                 FiguraMod.LOGGER.error("", e);
             }
         });
+        downloadRate.use();
     }
 
 
@@ -380,7 +401,7 @@ public class NetworkStuff {
     }
 
     public static void subscribe(UUID id) {
-        WS_REQUESTS.add(new WSRequest(Util.NIL_UUID, client -> {
+        WS_REQUESTS.add(new Request<>(Util.NIL_UUID, client -> {
             try {
                 ByteBuffer buffer = C2SMessageHandler.sub(id);
                 client.send(buffer);
@@ -392,7 +413,7 @@ public class NetworkStuff {
     }
 
     public static void unsubscribe(UUID id) {
-        WS_REQUESTS.add(new WSRequest(Util.NIL_UUID, client -> {
+        WS_REQUESTS.add(new Request<>(Util.NIL_UUID, client -> {
             try {
                 ByteBuffer buffer = C2SMessageHandler.unsub(id);
                 client.send(buffer);
@@ -412,49 +433,22 @@ public class NetworkStuff {
     }
 
     public static boolean canUpload() {
-        return isConnected(); //TODO - limits
+        return isConnected() && uploadRate.check();
     }
 
     public static int getSizeLimit() {
-        return Integer.MAX_VALUE; //TODO - limits
+        return isConnected() ? maxAvatarSize : Integer.MAX_VALUE;
     }
 
 
     // -- request subclass -- //
 
 
-    private abstract static class Request {
-
-        public final UUID owner;
-
-        public Request(UUID owner) {
-            this.owner = owner;
-        }
-
+    private record Request<T>(UUID owner, Consumer<T> consumer) {
         @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            return o instanceof Request request && owner.equals(request.owner);
+            public boolean equals(Object o) {
+                if (this == o) return true;
+                return o instanceof Request request && owner.equals(request.owner);
+            }
         }
-    }
-
-    private static class HTTPRequest extends Request {
-
-        Consumer<HttpAPI> consumer;
-
-        public HTTPRequest(UUID owner,  Consumer<HttpAPI> consumer) {
-            super(owner);
-            this.consumer = consumer;
-        }
-    }
-
-    private static class WSRequest extends Request {
-
-        Consumer<WebsocketThingy> consumer;
-
-        public WSRequest(UUID owner,  Consumer<WebsocketThingy> consumer) {
-            super(owner);
-            this.consumer = consumer;
-        }
-    }
 }

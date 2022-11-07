@@ -33,7 +33,7 @@ public class RefilledNumber {
 
     //update the current value
     public void tick() {
-        current = Math.min(current + add, max);
+        current = Math.min(current + add, Math.ceil(max));
     }
 
     //checks if the current value can be consumed and then consumes it if it can
@@ -55,8 +55,8 @@ public class RefilledNumber {
 
     //updates the max value
     public void set(double max) {
-        this.max = Math.ceil(max);
+        this.max = max;
         this.add = max / SharedConstants.TICKS_PER_SECOND;
-        this.current = Math.min(this.current, max);
+        this.current = Math.min(this.current, Math.ceil(max));
     }
 }
