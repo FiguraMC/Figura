@@ -19,9 +19,6 @@ import java.util.Optional;
 
 public class AuthHandler {
 
-    private static final int RECONNECT = 6000; //5 min
-
-    private static int lastAuth = 0;
     private static Connection authConnection;
 
     public static void tick() {
@@ -34,22 +31,13 @@ public class AuthHandler {
                 authConnection = null;
             }
         }
-
-        //re auth
-        lastAuth++;
-        if (lastAuth >= RECONNECT)
-            auth(false);
     }
 
     public static void auth(boolean reAuth) {
         NetworkStuff.async(() -> {
             try {
-                lastAuth = (int) (Math.random() * 600) - 300; //between -15 and +15 seconds
-
-                if (!reAuth && NetworkStuff.api != null) {
-                    NetworkStuff.checkAuth();
+                if (!reAuth && NetworkStuff.isConnected())
                     return;
-                }
 
                 if (authConnection != null && !authConnection.isConnected())
                     authConnection.handleDisconnection();
@@ -110,23 +98,11 @@ public class AuthHandler {
 
     private static void handleDc(String reason) {
         authConnection = null;
-        NetworkStuff.disconnectedReason = reason;
-        NetworkStuff.backendStatus = 1;
-        NetworkStuff.token = null;
-        NetworkStuff.api = null;
-        FiguraMod.LOGGER.warn("Failed to create the backend Http API! {}", reason);
+        NetworkStuff.authFail(reason);
     }
 
     private static void connected(String token) {
         authConnection = null;
-        NetworkStuff.disconnectedReason = null;
-        NetworkStuff.token = token;
-        NetworkStuff.api = new HttpAPI();
-        FiguraMod.LOGGER.info("Successfully created backend Http API!");
-
-        NetworkStuff.setLimits();
-        NetworkStuff.checkVersion();
-
-        NetworkStuff.openBackend();
+        NetworkStuff.authSuccess(token);
     }
 }

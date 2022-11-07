@@ -103,11 +103,9 @@ public class WebsocketThingy extends WebSocketClient {
         if (Config.CONNECTION_TOASTS.asBool())
             FiguraToast.sendToast(FiguraText.of("backend.disconnected"), FiguraToast.ToastType.ERROR);
 
+        NetworkStuff.disconnect(reason);
+
         if (code == 4000)
             NetworkStuff.reAuth();
-
-        NetworkStuff.backendStatus = 1;
-        NetworkStuff.disconnectedReason = reason;
-        NetworkStuff.closeBackend();
     }
 }

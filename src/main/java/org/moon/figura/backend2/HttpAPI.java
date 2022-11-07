@@ -6,6 +6,7 @@ import org.moon.figura.config.Config;
 
 import java.io.InputStream;
 import java.net.URI;
+import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
@@ -13,6 +14,14 @@ import java.util.UUID;
 import java.util.function.BiConsumer;
 
 public class HttpAPI {
+
+    private final HttpClient client;
+    private final String token;
+
+    public HttpAPI(HttpClient client, String token) {
+        this.client = client;
+        this.token = token;
+    }
 
 
     // -- builders -- //
@@ -31,7 +40,7 @@ public class HttpAPI {
         return HttpRequest
                 .newBuilder(getUri(url))
                 .header("user-agent", FiguraMod.MOD_NAME + "/" + FiguraMod.VERSION)
-                .header("token", NetworkStuff.token);
+                .header("token", token);
     }
 
 
@@ -41,7 +50,7 @@ public class HttpAPI {
     public void runString(HttpRequest request, BiConsumer<Integer, String> consumer) {
         try {
             requestDebug(request);
-            HttpResponse<String> response = NetworkStuff.client.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
             consumer.accept(response.statusCode(), response.body());
         } catch (Exception e) {
             FiguraMod.LOGGER.error("", e);
@@ -51,7 +60,7 @@ public class HttpAPI {
     public void runStream(HttpRequest request, BiConsumer<Integer, InputStream> consumer) {
         try {
             requestDebug(request);
-            HttpResponse<InputStream> response = NetworkStuff.client.send(request, HttpResponse.BodyHandlers.ofInputStream());
+            HttpResponse<InputStream> response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
             consumer.accept(response.statusCode(), response.body());
         } catch (Exception e) {
             FiguraMod.LOGGER.error("", e);

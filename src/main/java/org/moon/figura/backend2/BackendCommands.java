@@ -18,7 +18,7 @@ public class BackendCommands {
         //force backend connection
         LiteralArgumentBuilder<FabricClientCommandSource> connect = LiteralArgumentBuilder.literal("connect");
         connect.executes(context -> {
-            AuthHandler.auth(true);
+            NetworkStuff.reAuth();
             return 1;
         });
 

@@ -20,27 +20,31 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
-import java.util.function.Supplier;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class NetworkStuff {
 
     protected static final HttpClient client = HttpClient.newHttpClient();
     protected static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
 
-    private static final LinkedList<Request> REQUEST_QUEUE = new LinkedList<>();
+    private static final LinkedList<HTTPRequest> API_REQUESTS = new LinkedList<>();
+    private static final LinkedList<WSRequest> WS_REQUESTS = new LinkedList<>();
     private static CompletableFuture<Void> tasks;
 
-    protected static String token;
+    private static final int RECONNECT = 6000; //5 min
+    private static int authCheck = RECONNECT;
+
     protected static HttpAPI api;
-    protected static WebsocketThingy backend;
+    protected static WebsocketThingy ws;
 
     public static int backendStatus = 1;
     public static String disconnectedReason;
+
     public static boolean debug = true; //TODO - disable
 
     public static int lastPing, pingsSent, pingsReceived;
@@ -48,26 +52,42 @@ public class NetworkStuff {
     public static void tick() {
         AuthHandler.tick();
 
-        //requests
-        if (hasBackend() && !REQUEST_QUEUE.isEmpty()) {
-            async(() -> {
-                if (!hasBackend()) //cursed
-                    return;
+        //auth check
+        authCheck--;
+        if (authCheck <= 0) {
+            authCheck = RECONNECT;
 
-                Request request;
-                while ((request = REQUEST_QUEUE.poll()) != null)
-                    async(request.toRun);
-            });
+            if (!isConnected())
+                reAuth();
+            else if (!checkWS())
+                reAuth();
+            else
+                checkAPI();
         }
 
         //pings counter
         if (lastPing > 0 && FiguraMod.ticks - lastPing >= 20)
             lastPing = pingsSent = pingsReceived = 0;
+
+        //process requests
+        if (isConnected()) {
+            if (!API_REQUESTS.isEmpty()) {
+                HTTPRequest request;
+                while ((request = API_REQUESTS.poll()) != null) {
+                    HTTPRequest finalRequest = request;
+                    async(() -> finalRequest.consumer.accept(api));
+                }
+            }
+
+            if (!WS_REQUESTS.isEmpty()) {
+                WSRequest request;
+                while ((request = WS_REQUESTS.poll()) != null) {
+                    WSRequest finalRequest = request;
+                    async(() -> finalRequest.consumer.accept(ws));
+                }
+            }
+        }
     }
-
-
-    // -- execute -- //
-
 
     protected static void async(Runnable toRun) {
         if (tasks == null || tasks.isDone()) {
@@ -77,131 +97,120 @@ public class NetworkStuff {
         }
     }
 
-    private static void queueString(UUID owner, Supplier<HttpRequest> request, BiConsumer<Integer, String> consumer) {
-        REQUEST_QUEUE.add(new Request(owner, () -> api.runString(request.get(), consumer)));
+
+    // -- token -- //
+
+
+    public static void auth() {
+        authCheck = RECONNECT;
+        AuthHandler.auth(false);
     }
 
-    private static void queueStream(UUID owner, Supplier<HttpRequest> request, BiConsumer<Integer, InputStream> consumer) {
-        REQUEST_QUEUE.add(new Request(owner, () -> api.runStream(request.get(), consumer)));
+    public static void reAuth() {
+        authCheck = RECONNECT;
+        AuthHandler.auth(true);
     }
 
-    public static void clear(UUID owner) {
-        REQUEST_QUEUE.removeIf(request -> request.owner().equals(owner));
-        unsubscribe(owner);
+    protected static void authSuccess(String token) {
+        FiguraMod.LOGGER.info("Successfully authed with the " + FiguraMod.MOD_NAME + " auth server!");
+        disconnectedReason = null;
+        connect(token);
+    }
+
+    protected static void authFail(String reason) {
+        FiguraMod.LOGGER.warn("Failed to auth with the " + FiguraMod.MOD_NAME + " auth server! {}", reason);
+        disconnect(reason);
     }
 
 
-    // -- feedback -- //
+    // -- connection -- //
 
+
+    public static void connect(String token) {
+        if (isConnected())
+            disconnect(null);
+
+        backendStatus = 2;
+        connectAPI(token);
+        connectWS(token);
+    }
+
+    public static void disconnect(String reason) {
+        backendStatus = 1;
+        disconnectedReason = reason;
+        disconnectAPI();
+        disconnectWS();
+    }
+
+
+    // -- api stuff -- //
+
+
+    private static void queueString(UUID owner, Function<HttpAPI, HttpRequest> request, BiConsumer<Integer, String> consumer) {
+        API_REQUESTS.add(new HTTPRequest(owner, api -> api.runString(request.apply(api), consumer)));
+    }
+
+    private static void queueStream(UUID owner, Function<HttpAPI, HttpRequest> request, BiConsumer<Integer, InputStream> consumer) {
+        API_REQUESTS.add(new HTTPRequest(owner, api -> api.runStream(request.apply(api), consumer)));
+    }
+
+    public static void clear(UUID requestOwner) {
+        API_REQUESTS.removeIf(request -> request.owner.equals(requestOwner));
+    }
 
     private static void responseDebug(String src, int code, String data) {
         if (debug) FiguraMod.debug("Got response of \"" + src + "\" with code " + code + ":\n\t" + data);
     }
 
-
-    // -- internal functions -- //
-
-
-    public static boolean hasBackend() {
-        return api != null && backend != null && backend.isOpen();
+    private static void connectAPI(String token) {
+        api = new HttpAPI(client, token);
+        checkVersion();
+        setLimits();
     }
 
-    public static void closeBackend() {
-        if (backend == null)
-            return;
-
-        backend.close();
-        backend = null;
+    private static void disconnectAPI() {
+        api = null;
+        clear(Util.NIL_UUID);
     }
 
-    public static void openBackend() {
-        if (backend != null)
-            backend.close();
-
-        if (token == null)
-            return;
-
-        backendStatus = 2;
-        backend = new WebsocketThingy(token);
-        backend.connect();
-    }
-
-    public static void ensureConnection() {
-        AuthHandler.auth(false);
-    }
-
-    public static void reAuth() {
-        AuthHandler.auth(true);
-    }
-
-    public static void checkAuth() {
+    private static void checkAPI() {
         async(() -> {
             if (api == null) {
-                AuthHandler.auth(true);
+                reAuth();
                 return;
             }
 
-            try {
-                HttpResponse<Void> response = client.send(api.checkAuth(), HttpResponse.BodyHandlers.discarding());
-                if (response.statusCode() != 200) {
-                    AuthHandler.auth(true);
-                } else if (backend == null || !backend.isOpen()) {
-                    openBackend();
-                }
-            } catch (Exception e) {
-                FiguraMod.LOGGER.error("", e);
-            }
-        });
-    }
-
-    public static void setLimits() {
-        ensureConnection();
-        async(() -> {
-            if (api == null)
-                return;
-
-            api.runString(api.getLimits(), (code, data) -> {
-                responseDebug("setLimits", code, data);
-                JsonObject json = JsonParser.parseString(data).getAsJsonObject();
-                //TODO
+            api.runString(api.checkAuth(), (code, data) -> {
+                if (code != 200)
+                    reAuth();
             });
         });
     }
 
     public static void checkVersion() {
-        ensureConnection();
-        async(() -> {
-            if (api == null)
-                return;
+        queueString(Util.NIL_UUID, HttpAPI::getVersion, (code, data) -> {
+            responseDebug("checkVersion", code, data);
+            JsonObject json = JsonParser.parseString(data).getAsJsonObject();
 
-            api.runString(api.getVersion(), (code, data) -> {
-                responseDebug("checkVersion", code, data);
-                JsonObject json = JsonParser.parseString(data).getAsJsonObject();
-
-                int config = Config.UPDATE_CHANNEL.asInt();
-                if (config != 0) {
-                    String version = json.get(config == 1 ? "release" : "prerelease").getAsString();
-                    if (new Version(version).compareTo(Version.VERSION) > 0)
-                        FiguraToast.sendToast(FiguraText.of("toast.new_version"), version);
-                }
-            });
+            int config = Config.UPDATE_CHANNEL.asInt();
+            if (config != 0) {
+                String version = json.get(config == 1 ? "release" : "prerelease").getAsString();
+                if (new Version(version).compareTo(Version.VERSION) > 0)
+                    FiguraToast.sendToast(FiguraText.of("toast.new_version"), version);
+            }
         });
     }
 
-    public static boolean canUpload() {
-        return true; //TODO - limits
+    public static void setLimits() {
+        queueString(Util.NIL_UUID, HttpAPI::getLimits, (code, data) -> {
+            responseDebug("setLimits", code, data);
+            JsonObject json = JsonParser.parseString(data).getAsJsonObject();
+            //TODO
+        });
     }
-
-    public static int getSizeLimit() {
-        return Integer.MAX_VALUE; //TODO - limits
-    }
-
-
-    // -- api functions -- //
-
 
     public static void getUser(UUID id) {
-        queueString(id, () -> api.getUser(id), (code, data) -> {
+        queueString(id, api -> api.getUser(id), (code, data) -> {
             //debug
             responseDebug("getUser", code, data);
 
@@ -256,7 +265,7 @@ public class NetworkStuff {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             NbtIo.writeCompressed(avatar.nbt, baos);
-            queueString(Util.NIL_UUID, () -> api.uploadAvatar(id, baos.toByteArray()), (code, data) -> {
+            queueString(Util.NIL_UUID, api -> api.uploadAvatar(id, baos.toByteArray()), (code, data) -> {
                 responseDebug("uploadAvatar", code, data);
 
                 if (!Config.CONNECTION_TOASTS.asBool())
@@ -281,7 +290,7 @@ public class NetworkStuff {
 
     public static void deleteAvatar(String avatar) {
         String id = avatar == null || true ? "avatar" : avatar; //TODO - profile screen
-        queueString(Util.NIL_UUID, () -> api.deleteAvatar(id), (code, data) -> {
+        queueString(Util.NIL_UUID, api -> api.deleteAvatar(id), (code, data) -> {
             responseDebug("deleteAvatar", code, data);
 
             if (!Config.CONNECTION_TOASTS.asBool())
@@ -305,7 +314,7 @@ public class NetworkStuff {
             json.add(obj);
         }
 
-        queueString(Util.NIL_UUID, () -> api.setEquipped(GSON.toJson(json)), (code, data) -> {
+        queueString(Util.NIL_UUID, api -> api.setEquipped(GSON.toJson(json)), (code, data) -> {
             responseDebug("equipAvatar", code, data);
             if (code != 200 && Config.CONNECTION_TOASTS.asBool())
                 FiguraToast.sendToast(FiguraText.of("backend.equip_error"), FiguraToast.ToastType.ERROR);
@@ -313,7 +322,7 @@ public class NetworkStuff {
     }
 
     public static void getAvatar(UUID target, UUID owner, String id) {
-        queueStream(Util.NIL_UUID, () -> api.getAvatar(owner, id), (code, stream) -> {
+        queueStream(Util.NIL_UUID, api -> api.getAvatar(owner, id), (code, stream) -> {
             String s;
             try {
                 s = code == 200 ? "<avatar data>" : new String(stream.readAllBytes());
@@ -337,16 +346,31 @@ public class NetworkStuff {
     }
 
 
-    // -- ws functions -- //
+    // -- ws stuff -- //
 
 
-    public static void sendPing(int id, byte sync, byte[] data) {
-        if (!AvatarManager.localUploaded || !hasBackend())
+    private static void connectWS(String token) {
+        if (ws != null) ws.close();
+        ws = new WebsocketThingy(token);
+        ws.connect();
+    }
+
+    private static void disconnectWS() {
+        if (ws != null) ws.close();
+        ws = null;
+    }
+
+    private static boolean checkWS() {
+        return ws != null && ws.isOpen();
+    }
+
+    public static void sendPing(int id, boolean sync, byte[] data) {
+        if (!AvatarManager.localUploaded || !isConnected())
             return;
 
         try {
             ByteBuffer buffer = C2SMessageHandler.ping(id, sync, data);
-            backend.send(buffer);
+            ws.send(buffer);
 
             pingsSent++;
             if (lastPing == 0) lastPing = FiguraMod.ticks;
@@ -356,38 +380,81 @@ public class NetworkStuff {
     }
 
     public static void subscribe(UUID id) {
-        if (!hasBackend())
-            return;
-
-        try {
-            ByteBuffer buffer = C2SMessageHandler.sub(id);
-            backend.send(buffer);
-        } catch (Exception e) {
-            FiguraMod.LOGGER.error("Failed to subscribe to " + id.toString(), e);
-        }
+        WS_REQUESTS.add(new WSRequest(Util.NIL_UUID, client -> {
+            try {
+                ByteBuffer buffer = C2SMessageHandler.sub(id);
+                client.send(buffer);
+                if (debug) FiguraMod.debug("Subbed to " + id);
+            } catch (Exception e) {
+                FiguraMod.LOGGER.error("Failed to subscribe to " + id.toString(), e);
+            }
+        }));
     }
 
     public static void unsubscribe(UUID id) {
-        if (!hasBackend())
-            return;
-
-        try {
-            ByteBuffer buffer = C2SMessageHandler.unsub(id);
-            backend.send(buffer);
-        } catch (Exception e) {
-            FiguraMod.LOGGER.error("Failed to unsubscribe to " + id.toString(), e);
-        }
+        WS_REQUESTS.add(new WSRequest(Util.NIL_UUID, client -> {
+            try {
+                ByteBuffer buffer = C2SMessageHandler.unsub(id);
+                client.send(buffer);
+                if (debug) FiguraMod.debug("Unsubbed to " + id);
+            } catch (Exception e) {
+                FiguraMod.LOGGER.error("Failed to unsubscribe to " + id.toString(), e);
+            }
+        }));
     }
 
 
-    // -- request -- //
+    // -- global functions -- //
 
 
-    private record Request(UUID owner, Runnable toRun) {
+    public static boolean isConnected() {
+        return api != null && checkWS();
+    }
+
+    public static boolean canUpload() {
+        return isConnected(); //TODO - limits
+    }
+
+    public static int getSizeLimit() {
+        return Integer.MAX_VALUE; //TODO - limits
+    }
+
+
+    // -- request subclass -- //
+
+
+    private abstract static class Request {
+
+        public final UUID owner;
+
+        public Request(UUID owner) {
+            this.owner = owner;
+        }
+
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
-            return o instanceof Request request && owner().equals(request.owner());
+            return o instanceof Request request && owner.equals(request.owner);
+        }
+    }
+
+    private static class HTTPRequest extends Request {
+
+        Consumer<HttpAPI> consumer;
+
+        public HTTPRequest(UUID owner,  Consumer<HttpAPI> consumer) {
+            super(owner);
+            this.consumer = consumer;
+        }
+    }
+
+    private static class WSRequest extends Request {
+
+        Consumer<WebsocketThingy> consumer;
+
+        public WSRequest(UUID owner,  Consumer<WebsocketThingy> consumer) {
+            super(owner);
+            this.consumer = consumer;
         }
     }
 }

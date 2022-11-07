@@ -140,6 +140,7 @@ public class AvatarManager {
 
         UserData.clear(id);
         NetworkStuff.clear(id);
+        NetworkStuff.unsubscribe(id);
 
         FiguraMod.debug("Cleared avatar for " + id);
     }
@@ -173,6 +174,7 @@ public class AvatarManager {
 
         UserData.clear(id);
         NetworkStuff.clear(id);
+        NetworkStuff.unsubscribe(id);
 
         //load
         try {

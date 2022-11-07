@@ -27,13 +27,13 @@ public class C2SMessageHandler {
         return ByteBuffer.wrap(baos.toByteArray());
     }
 
-    public static ByteBuffer ping(int id, byte sync, byte[] data) throws IOException {
+    public static ByteBuffer ping(int id, boolean sync, byte[] data) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream dos = new DataOutputStream(baos);
 
         dos.writeByte(PING);
         dos.writeInt(id);
-        dos.writeByte(sync);
+        dos.writeBoolean(sync);
         dos.write(data);
         dos.close();
 
