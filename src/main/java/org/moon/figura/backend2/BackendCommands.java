@@ -5,6 +5,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import org.moon.figura.FiguraMod;
 
@@ -32,6 +33,16 @@ public class BackendCommands {
 
         run.then(request);
         backend.then(run);
+
+        //debug mode
+        LiteralArgumentBuilder<FabricClientCommandSource> debug = LiteralArgumentBuilder.literal("debug");
+        debug.executes(context -> {
+            NetworkStuff.debug = !NetworkStuff.debug;
+            FiguraMod.sendChatMessage(Component.literal("Backend Debug Mode set to: " + NetworkStuff.debug).withStyle(NetworkStuff.debug ? ChatFormatting.GREEN : ChatFormatting.RED));
+            return 1;
+        });
+
+        backend.then(debug);
 
         //return
         return backend;

@@ -46,7 +46,7 @@ public class AuthHandler {
             try {
                 lastAuth = (int) (Math.random() * 600) - 300; //between -15 and +15 seconds
 
-                if (!reAuth && NetworkStuff.backendStatus == 3) {
+                if (!reAuth && NetworkStuff.api != null) {
                     NetworkStuff.checkAuth();
                     return;
                 }
@@ -60,7 +60,7 @@ public class AuthHandler {
                 Minecraft minecraft = Minecraft.getInstance();
                 ClientTelemetryManager telemetryManager = minecraft.createTelemetryManager();
 
-                ServerAddress authServer = ServerAddress.parseString(Config.AUTH_SERVER_IP.asString());
+                ServerAddress authServer = ServerAddress.parseString(Config.SERVER_IP.asString());
                 InetSocketAddress inetSocketAddress = new InetSocketAddress(authServer.getHost(), authServer.getPort());
                 Connection connection = Connection.connectToServer(inetSocketAddress, minecraft.options.useNativeTransport());
 
@@ -87,7 +87,7 @@ public class AuthHandler {
                                     return;
                                 }
 
-                                connected(new HttpAPI(split[0]));
+                                connected(split[0]);
                             }
                         });
                     }
@@ -112,18 +112,21 @@ public class AuthHandler {
         authConnection = null;
         NetworkStuff.disconnectedReason = reason;
         NetworkStuff.backendStatus = 1;
+        NetworkStuff.token = null;
         NetworkStuff.api = null;
-        FiguraMod.debug("Failed to create the backend Http API!");
+        FiguraMod.LOGGER.warn("Failed to create the backend Http API! {}", reason);
     }
 
-    private static void connected(HttpAPI api) {
+    private static void connected(String token) {
         authConnection = null;
         NetworkStuff.disconnectedReason = null;
-        NetworkStuff.backendStatus = 3;
-        NetworkStuff.api = api;
-        FiguraMod.debug("Successfully created backend Http API!");
+        NetworkStuff.token = token;
+        NetworkStuff.api = new HttpAPI();
+        FiguraMod.LOGGER.info("Successfully created backend Http API!");
 
         NetworkStuff.setLimits();
         NetworkStuff.checkVersion();
+
+        NetworkStuff.openBackend();
     }
 }
