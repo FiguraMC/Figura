@@ -134,7 +134,7 @@ public abstract class MinecraftMixin {
 
     @Inject(at = @At("RETURN"), method = "setLevel")
     private void setLevel(ClientLevel world, CallbackInfo ci) {
-        NetworkStuff.ensureConnection();
+        NetworkStuff.auth();
     }
 
     @Inject(at = @At("HEAD"), method = "runTick")

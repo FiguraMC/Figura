@@ -89,7 +89,7 @@ public class FiguraDebugCommand {
         meta.addProperty("figuraDirectory", FiguraMod.getFiguraDirectory().toString());
         meta.addProperty("figuraCacheDirectory", FiguraMod.getCacheDirectory().toString());
         meta.addProperty("backendStatus", NetworkStuff.backendStatus);
-        meta.addProperty("hasBackend", NetworkStuff.hasBackend());
+        meta.addProperty("backendConnected", NetworkStuff.isConnected());
         meta.addProperty("backendDisconnectedReason", NetworkStuff.disconnectedReason);
         meta.addProperty("uploaded", AvatarManager.localUploaded);
         meta.addProperty("panicMode", AvatarManager.panic);

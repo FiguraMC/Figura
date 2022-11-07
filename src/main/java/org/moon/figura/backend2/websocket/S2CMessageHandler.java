@@ -55,7 +55,10 @@ public class S2CMessageHandler {
         int id = bytes.getInt();
         bytes.get(); //sync value is ignored
 
-        avatar.runPing(id, bytes.array());
+        byte[] data = new byte[bytes.remaining()];
+        bytes.get(data);
+
+        avatar.runPing(id, data);
         NetworkStuff.pingsReceived++;
         if (NetworkStuff.lastPing == 0) NetworkStuff.lastPing = FiguraMod.ticks;
     }
