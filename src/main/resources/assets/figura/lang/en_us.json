@@ -20,12 +20,9 @@
 
   "figura.backend.equip_error": "Failed to set equipped Avatars",
 
-
-  "figura.backend.rate_limited": "Rate Limited!",
-  "figura.backend.download": "Download",
-  "figura.backend.upload": "Upload",
-  "figura.backend.ping_rate": "Ping Rate",
-  "figura.backend.ping_size": "Ping Size",
+  "figura.backend.warning": "Warning",
+  "figura.backend.ping_size": "Ping too Large",
+  "figura.backend.ping_rate": "Sending too many Pings",
 
 
   "figura.toast.reload": "Avatar reloaded!",
