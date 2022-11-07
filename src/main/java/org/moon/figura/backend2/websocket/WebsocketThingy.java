@@ -49,7 +49,7 @@ public class WebsocketThingy extends WebSocketClient {
     public void onOpen(ServerHandshake handshakedata) {
         FiguraMod.LOGGER.info("Connecting to " + FiguraMod.MOD_NAME + " ws backend (" + getBackendAddress() + ")");
         try {
-            send(C2SMessageHandler.parseAuthToken(token));
+            send(C2SMessageHandler.auth(token));
         } catch (Exception e) {
             handleClose(-1, e.getMessage());
         }
@@ -66,7 +66,11 @@ public class WebsocketThingy extends WebSocketClient {
     public void onMessage(ByteBuffer bytes) {
         if (NetworkStuff.debug)
             FiguraMod.debug("Received raw ws message of " + bytes.remaining() + "b");
-        S2CMessageHandler.handle(bytes);
+        try {
+            S2CMessageHandler.handle(bytes);
+        } catch (Exception e) {
+            FiguraMod.LOGGER.error("Failed to handle ws message", e);
+        }
     }
 
     @Override

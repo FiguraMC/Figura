@@ -408,9 +408,12 @@
   "figura.config.log_pings.2": "Chat",
   "figura.config.log_pings.3": "Logger",
 
-  "figura.config.sync_pings": "Sync Pings",
-  "figura.config.sync_pings.tooltip.1": "Toggles if local pings should run only when received from the backend",
-  "figura.config.sync_pings.tooltip.2": "Note that: no backend means no pings!",
+  "figura.config.pings_target": "Pings Target",
+  "figura.config.pings_target.tooltip.1": "Changes who you pings should be sent to",
+  "figura.config.pings_target.tooltip.2": "Note that: if using \"host\", no connection with the backend means your pings will never run!",
+  "figura.config.pings_target.1": "Viewer",
+  "figura.config.pings_target.2": "Viewer + Host",
+  "figura.config.pings_target.3": "Host",
 
   "figura.config.chat_messages": "Chat Messages",
   "figura.config.chat_messages.tooltip.1": "Toggles if scripts can change and/or send chat messages for you",

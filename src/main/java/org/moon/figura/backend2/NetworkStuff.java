@@ -9,6 +9,7 @@ import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.avatar.UserData;
+import org.moon.figura.backend2.websocket.C2SMessageHandler;
 import org.moon.figura.backend2.websocket.WebsocketThingy;
 import org.moon.figura.config.Config;
 import org.moon.figura.gui.FiguraToast;
@@ -20,6 +21,7 @@ import java.io.InputStream;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
@@ -47,9 +49,9 @@ public class NetworkStuff {
         AuthHandler.tick();
 
         //requests
-        if (api != null && !REQUEST_QUEUE.isEmpty()) {
+        if (hasBackend() && !REQUEST_QUEUE.isEmpty()) {
             async(() -> {
-                if (api == null) //cursed
+                if (!hasBackend()) //cursed
                     return;
 
                 Request request;
@@ -85,6 +87,7 @@ public class NetworkStuff {
 
     public static void clear(UUID owner) {
         REQUEST_QUEUE.removeIf(request -> request.owner().equals(owner));
+        unsubscribe(owner);
     }
 
 
@@ -240,6 +243,7 @@ public class NetworkStuff {
                 specialSet.set(i, special.get(i).getAsInt() >= 1);
 
             UserData.loadUser(uuid, avatars, Pair.of(prideSet, specialSet));
+            subscribe(uuid);
         });
     }
 
@@ -336,12 +340,43 @@ public class NetworkStuff {
     // -- ws functions -- //
 
 
-    public static void sendPing(int id, boolean sync, byte[] data) { //TODO - events
+    public static void sendPing(int id, byte sync, byte[] data) {
         if (!AvatarManager.localUploaded || !hasBackend())
             return;
 
-        pingsSent++;
-        if (lastPing == 0) lastPing = FiguraMod.ticks;
+        try {
+            ByteBuffer buffer = C2SMessageHandler.ping(id, sync, data);
+            backend.send(buffer);
+
+            pingsSent++;
+            if (lastPing == 0) lastPing = FiguraMod.ticks;
+        } catch (Exception e) {
+            FiguraMod.LOGGER.error("Failed to send ping", e);
+        }
+    }
+
+    public static void subscribe(UUID id) {
+        if (!hasBackend())
+            return;
+
+        try {
+            ByteBuffer buffer = C2SMessageHandler.sub(id);
+            backend.send(buffer);
+        } catch (Exception e) {
+            FiguraMod.LOGGER.error("Failed to subscribe to " + id.toString(), e);
+        }
+    }
+
+    public static void unsubscribe(UUID id) {
+        if (!hasBackend())
+            return;
+
+        try {
+            ByteBuffer buffer = C2SMessageHandler.unsub(id);
+            backend.send(buffer);
+        } catch (Exception e) {
+            FiguraMod.LOGGER.error("Failed to unsubscribe to " + id.toString(), e);
+        }
     }
 
 
