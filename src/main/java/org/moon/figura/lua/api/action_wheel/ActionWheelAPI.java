@@ -2,7 +2,7 @@ package org.moon.figura.lua.api.action_wheel;
 
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
-import org.moon.figura.avatars.Avatar;
+import org.moon.figura.avatar.Avatar;
 import org.moon.figura.gui.ActionWheel;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
@@ -69,6 +69,12 @@ public class ActionWheelAPI {
     @LuaMethodDoc("action_wheel.get_selected")
     public int getSelected() {
         return this.isHost ? ActionWheel.getSelected() + 1 : 0;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("action_wheel.create_action")
+    public Action createAction() {
+        return new Action();
     }
 
     @LuaWhitelist

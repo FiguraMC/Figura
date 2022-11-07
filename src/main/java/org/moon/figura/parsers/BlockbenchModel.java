@@ -23,6 +23,7 @@ public class BlockbenchModel {
 
     public static class Texture {
         String name;
+        String relative_path;
         String source;
         String render_mode;
     }

@@ -1,70 +1,36 @@
 package org.moon.figura.trust;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.utils.IOUtils;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class TrustManager {
 
-    //trust maps
-    private static final Map<ResourceLocation, TrustContainer> DEFAULT_GROUPS = new HashMap<>();
-    public static final Map<ResourceLocation, TrustContainer> GROUPS = new LinkedHashMap<>();
-    public static final Map<ResourceLocation, TrustContainer> PLAYERS = new HashMap<>();
+    //container maps
+    public static final Map<Trust.Group, TrustContainer.GroupContainer> GROUPS = new LinkedHashMap<>();
+    private static final Map<UUID, TrustContainer.PlayerContainer> PLAYERS = new HashMap<>();
+
+    //custom trusts
+    public static final Map<String, Collection<Trust>> CUSTOM_TRUST = new HashMap<>();
 
     //main method for loading trust
     public static void init() {
-        //load from presets file first then load from disk
-        loadDefaultGroups();
-        IOUtils.readCacheFile("trust_settings", TrustManager::readNbt);
-    }
+        //custom trust
+        for (FiguraTrust figuraTrust : IOUtils.loadEntryPoints("figura_trust", FiguraTrust.class))
+            CUSTOM_TRUST.put(figuraTrust.getTitle(), figuraTrust.getTrusts());
 
-    //load default groups from preset file
-    public static void loadDefaultGroups() {
-        try {
-            //load presets file from resources
-            InputStream inputStream = FiguraMod.class.getResourceAsStream("/assets/" + FiguraMod.MOD_ID + "/trust/presets.json");
-            if (inputStream == null) throw new Exception("Resource not found!");
-
-            JsonObject rootObject = (JsonObject) JsonParser.parseReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-
-            //load trust values
-            for (Map.Entry<String, JsonElement> entry : rootObject.entrySet()) {
-                String name = entry.getKey();
-
-                //add values
-                CompoundTag nbt = new CompoundTag();
-                for (Map.Entry<String, JsonElement> trust : entry.getValue().getAsJsonObject().entrySet())
-                    nbt.put(trust.getKey(), IntTag.valueOf(trust.getValue().getAsInt()));
-
-                //create container
-                ResourceLocation parentID = new ResourceLocation("default_group", name);
-                TrustContainer defaultGroup = new TrustContainer(name, null, nbt);
-                TrustContainer parent = new TrustContainer(name, parentID, new CompoundTag());
-
-                //add container to map
-                DEFAULT_GROUPS.put(parentID, defaultGroup);
-                GROUPS.put(new ResourceLocation("group", name), parent);
-            }
-
-            FiguraMod.LOGGER.debug("Loaded trust presets from assets");
-        } catch (Exception e) {
-            FiguraMod.LOGGER.error("Could not load presets from assets", e);
+        //load groups
+        for (Trust.Group group : Trust.Group.values()) {
+            TrustContainer.GroupContainer container = new TrustContainer.GroupContainer(group);
+            GROUPS.put(group, container);
         }
+
+        //then load nbt
+        IOUtils.readCacheFile("trust", TrustManager::readNbt);
     }
 
     //read trust from nbt, adding them into the hash maps
@@ -80,13 +46,13 @@ public class TrustManager {
             //parse trust
             String name = compound.getString("name");
 
-            ResourceLocation parentID = null;
-            if (compound.contains("parent")) {
-                parentID = new ResourceLocation(compound.getString("parent"));
+            try {
+                Trust.Group group = Trust.Group.valueOf(name);
+                TrustContainer trust = GROUPS.get(group);
+                trust.loadNbt(compound);
+            } catch (Exception ignored) {
+                FiguraMod.LOGGER.warn("Failed to load trust for \"{}\"", name);
             }
-
-            //add to list
-            GROUPS.put(new ResourceLocation("group", name), new TrustContainer(name, parentID, compound.getCompound("trust")));
         }
 
         //players
@@ -95,146 +61,106 @@ public class TrustManager {
 
             //parse trust
             String name = compound.getString("name");
-            ResourceLocation parentID = new ResourceLocation(compound.getString("parent"));
-            TrustContainer container = new TrustContainer(name, parentID, compound.getCompound("trust"));
 
-            //add to list
-            PLAYERS.put(new ResourceLocation("player", name), container);
+            try {
+                UUID uuid = UUID.fromString(name);
+                if (FiguraMod.isLocal(uuid)) //dont load trust for local player
+                    continue;
+
+                String parent = compound.getString("parent");
+                Trust.Group group = Trust.Group.valueOf(parent);
+
+                TrustContainer.GroupContainer parentTrust = GROUPS.get(group);
+                TrustContainer.PlayerContainer trust = new TrustContainer.PlayerContainer(parentTrust, name);
+                trust.loadNbt(compound);
+
+                PLAYERS.put(uuid, trust);
+            } catch (Exception ignored) {
+                FiguraMod.LOGGER.warn("Failed to load trust for \"{}\"", name);
+            }
         }
     }
 
     //saves a copy of trust to disk
     public static void saveToDisk() {
-        IOUtils.saveCacheFile("trust_settings", nbt -> {
+        IOUtils.saveCacheFile("trust", nbt -> {
             //create dummy lists for later
             ListTag groupList = new ListTag();
             ListTag playerList = new ListTag();
 
             //get groups nbt
-            for (Map.Entry<ResourceLocation, TrustContainer> entry : GROUPS.entrySet()) {
+            for (TrustContainer group : GROUPS.values()) {
+                if (group.getGroup() == Trust.Group.LOCAL || group.getGroup() == Trust.Group.BLOCKED || !group.hasChanges())
+                    continue;
+
                 CompoundTag container = new CompoundTag();
-                entry.getValue().writeNbt(container);
+                group.writeNbt(container);
                 groupList.add(container);
             }
 
             //get players nbt
-            for (Map.Entry<ResourceLocation, TrustContainer> entry : PLAYERS.entrySet()) {
-                TrustContainer trust = entry.getValue();
-                if (!isLocal(trust) && isTrustChanged(trust)) {
-                    CompoundTag container = new CompoundTag();
-                    trust.writeNbt(container);
-                    playerList.add(container);
-                }
+            for (TrustContainer.PlayerContainer trust : PLAYERS.values()) {
+                //dont save local or unchanged trusts
+                if (isLocal(trust) || (!trust.hasChanges() && trust.getGroup() == Trust.Group.UNTRUSTED))
+                    continue;
+
+                CompoundTag container = new CompoundTag();
+                trust.writeNbt(container);
+                playerList.add(container);
             }
 
             //add lists to nbt
             nbt.put("groups", groupList);
             nbt.put("players", playerList);
+
+            FiguraMod.debug("Saved Trust Settings");
         });
     }
 
-    //get trust from id
-    public static TrustContainer get(ResourceLocation id) {
+    //get or crate player trust
+    public static TrustContainer.PlayerContainer get(UUID id) {
         if (PLAYERS.containsKey(id))
             return PLAYERS.get(id);
 
-        if (GROUPS.containsKey(id))
-            return GROUPS.get(id);
-
-        if (DEFAULT_GROUPS.containsKey(id))
-            return DEFAULT_GROUPS.get(id);
-
-        FiguraMod.LOGGER.debug("Created trust for: " + id.toString());
-        return create(id);
-    }
-
-    //get player trust
-    public static TrustContainer get(UUID uuid) {
-        return get(new ResourceLocation("player", uuid.toString()));
-    }
-
-    //create player trust
-    private static TrustContainer create(ResourceLocation id) {
-        //create trust
-        boolean isLocal = isLocal(id.getPath());
-        ResourceLocation parentID = new ResourceLocation("group", isLocal ? "local" : "untrusted");
-        TrustContainer trust =  new TrustContainer(id.getPath(), parentID, new HashMap<>());
-
-        //add and return
+        boolean local = FiguraMod.isLocal(id);
+        TrustContainer.PlayerContainer trust = new TrustContainer.PlayerContainer(GROUPS.get(local ? Trust.Group.LOCAL : Trust.Group.UNTRUSTED), id.toString());
         PLAYERS.put(id, trust);
+
+        FiguraMod.debug("Created trust for: " + id);
         return trust;
     }
 
     //increase a container trust
-    public static boolean increaseTrust(TrustContainer tc) {
-        ResourceLocation parentID = tc.getParentID();
+    public static boolean increaseTrust(TrustContainer container) {
+        Trust.Group group = container.getGroup();
 
-        //get next group
-        int i = 0;
-        ResourceLocation nextID = null;
-        for (Map.Entry<ResourceLocation, TrustContainer> entry : GROUPS.entrySet()) {
-            //if next ID is not null, "return" it
-            if (nextID != null) {
-                nextID = entry.getKey();
-                break;
-            }
+        Trust.Group newGroup = Trust.Group.indexOf(group.index + 1);
+        UUID id = UUID.fromString(container.name); //names are uuids
 
-            //set next ID pointer
-            if (entry.getKey().equals(parentID))
-                nextID = entry.getKey();
-
-            i++;
-        }
-
-        //fail if there is no next ID, or next ID is local but it is not a local player, or if it is already the last group
-        if (nextID == null || (nextID.getPath().equals("local") && !isLocal(tc)) || i == GROUPS.size())
+        if (newGroup == null || (!FiguraMod.isLocal(id) && newGroup == Trust.Group.LOCAL))
             return false;
 
         //update trust
-        tc.setParent(nextID);
+        container.setParent(GROUPS.get(newGroup));
         saveToDisk();
         return true;
     }
 
     //decrease a container trust
-    public static boolean decreaseTrust(TrustContainer tc) {
-        ResourceLocation parentID = tc.getParentID();
+    public static boolean decreaseTrust(TrustContainer container) {
+        Trust.Group group = container.getGroup();
+        Trust.Group newGroup = Trust.Group.indexOf(group.index - 1);
 
-        //get previous group
-        int i = 0;
-        ResourceLocation prevID = null;
-        for (Map.Entry<ResourceLocation, TrustContainer> entry : GROUPS.entrySet()) {
-            //if it is already the first group, exit
-            if (entry.getKey().equals(parentID))
-                break;
-
-            //save previous ID
-            prevID = entry.getKey();
-            i++;
-        }
-
-        //fail if there is no previous ID or if it is already the first group
-        if (prevID == null || i == GROUPS.size())
+        if (newGroup == null)
             return false;
 
         //update trust
-        tc.setParent(prevID);
+        container.setParent(GROUPS.get(newGroup));
         saveToDisk();
         return true;
     }
 
-    //check if trust is from local player
-    public static boolean isLocal(TrustContainer trust) {
-        return isLocal(trust.name) || trust.name.equals("local");
-    }
-
-    //check if id is from local player
-    public static boolean isLocal(String id) {
-        return id.equals(FiguraMod.getLocalPlayerUUID().toString());
-    }
-
-    //check if trust has been changed
-    private static boolean isTrustChanged(TrustContainer trust) {
-         return !trust.getSettings().isEmpty() || !trust.getParentID().getPath().equals("untrusted");
+    public static boolean isLocal(TrustContainer container) {
+        return (container instanceof TrustContainer.PlayerContainer p && FiguraMod.isLocal(UUID.fromString(p.name))) || container.getGroup() == Trust.Group.LOCAL;
     }
 }

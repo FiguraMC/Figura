@@ -1,13 +1,12 @@
 package org.moon.figura.math.vector;
 
-import org.luaj.vm2.LuaDouble;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
+import org.luaj.vm2.LuaValue;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.*;
 import org.moon.figura.lua.docs.LuaMetamethodDoc.LuaMetamethodOverload;
-import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.math.matrix.FiguraMat2;
 import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.MathUtils;
@@ -265,6 +264,13 @@ public class FiguraVec2 extends FiguraVector<FiguraVec2, FiguraMat2> {
         return this;
     }
 
+    @Override
+    @LuaWhitelist
+    @LuaMethodDoc("vector_n.unpack")
+    public double[] unpack() {
+        return new double[]{x, y};
+    }
+
     // -- utility methods -- //
 
     @Override
@@ -420,8 +426,8 @@ public class FiguraVec2 extends FiguraVector<FiguraVec2, FiguraMat2> {
             value = "vector_n.apply_func"
     )
     public FiguraVec2 applyFunc(@LuaNotNil LuaFunction function) {
-        x = function.call(LuaDouble.valueOf(x)).todouble();
-        y = function.call(LuaDouble.valueOf(y)).todouble();
+        x = function.call(LuaValue.valueOf(x), LuaValue.valueOf(1)).todouble();
+        y = function.call(LuaValue.valueOf(y), LuaValue.valueOf(2)).todouble();
         return this;
     }
 

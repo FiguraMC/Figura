@@ -16,14 +16,14 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.Score;
 import net.minecraft.world.scores.Scoreboard;
-import org.moon.figura.avatars.Avatar;
-import org.moon.figura.avatars.AvatarManager;
-import org.moon.figura.avatars.Badges;
+import org.moon.figura.avatar.Avatar;
+import org.moon.figura.avatar.AvatarManager;
+import org.moon.figura.avatar.Badges;
 import org.moon.figura.config.Config;
 import org.moon.figura.lua.api.nameplate.EntityNameplateCustomization;
 import org.moon.figura.lua.api.nameplate.NameplateCustomization;
 import org.moon.figura.math.vector.FiguraVec3;
-import org.moon.figura.trust.TrustContainer;
+import org.moon.figura.trust.Trust;
 import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.ui.UIHelper;
 import org.spongepowered.asm.mixin.Mixin;
@@ -68,7 +68,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
         }
 
         //trust check
-        boolean trust = avatar.trust.get(TrustContainer.Trust.NAMEPLATE_EDIT) == 1;
+        boolean trust = avatar.trust.get(Trust.NAMEPLATE_EDIT) == 1;
 
         stack.pushPose();
 
@@ -92,15 +92,22 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
 
         //text
         Component replacement;
+        boolean replaceBadges = false;
+
         if (custom != null && custom.getText() != null && trust) {
             replacement = NameplateCustomization.applyCustomization(custom.getText());
+            if (custom.getText().contains("${badges}"))
+                replaceBadges = true;
         } else {
             replacement = Component.literal(player.getName().getString());
         }
 
-        if (config > 1) {
-            Component badges = Badges.fetchBadges(avatar);
-            ((MutableComponent) replacement).append(badges);
+        //badges
+        Component badges = config > 1 ? Badges.fetchBadges(avatar) : Component.empty();
+        if (replaceBadges) {
+            replacement = TextUtils.replaceInText(replacement, "\\$\\{badges\\}", badges);
+        } else if (badges.getString().length() > 0) {
+            ((MutableComponent) replacement).append(" ").append(badges);
         }
 
         text = TextUtils.replaceInText(text, "\\b" + player.getName().getString() + "\\b", replacement);
@@ -174,7 +181,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
     @Inject(at = @At(value = "INVOKE", shift = At.Shift.AFTER, target = "Lnet/minecraft/client/model/PlayerModel;setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V"), method = "renderHand")
     private void onRenderHand(PoseStack stack, MultiBufferSource multiBufferSource, int light, AbstractClientPlayer player, ModelPart arm, ModelPart sleeve, CallbackInfo ci) {
         avatar = AvatarManager.getAvatarForPlayer(player.getUUID());
-        if (avatar != null && avatar.luaRuntime != null && avatar.trust.get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 1)
+        if (avatar != null && avatar.luaRuntime != null && avatar.trust.get(Trust.VANILLA_MODEL_EDIT) == 1)
             avatar.luaRuntime.vanilla_model.PLAYER.alter(this.getModel());
     }
 

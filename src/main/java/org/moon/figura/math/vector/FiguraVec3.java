@@ -3,14 +3,13 @@ package org.moon.figura.math.vector;
 import com.mojang.math.Vector3f;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
-import org.luaj.vm2.LuaDouble;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
+import org.luaj.vm2.LuaValue;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.*;
 import org.moon.figura.lua.docs.LuaMetamethodDoc.LuaMetamethodOverload;
-import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.MathUtils;
@@ -279,6 +278,13 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
         return this;
     }
 
+    @Override
+    @LuaWhitelist
+    @LuaMethodDoc("vector_n.unpack")
+    public double[] unpack() {
+        return new double[]{x, y, z};
+    }
+
     // -- utility methods -- //
 
     @Override
@@ -435,9 +441,9 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
             value = "vector_n.apply_func"
     )
     public FiguraVec3 applyFunc(@LuaNotNil LuaFunction function) {
-        x = function.call(LuaDouble.valueOf(x)).todouble();
-        y = function.call(LuaDouble.valueOf(y)).todouble();
-        z = function.call(LuaDouble.valueOf(z)).todouble();
+        x = function.call(LuaValue.valueOf(x), LuaValue.valueOf(1)).todouble();
+        y = function.call(LuaValue.valueOf(y), LuaValue.valueOf(2)).todouble();
+        z = function.call(LuaValue.valueOf(z), LuaValue.valueOf(3)).todouble();
         return this;
     }
 
@@ -522,6 +528,9 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
 
     public static FiguraVec3 fromBlockPos(BlockPos pos) {
         return of(pos.getX(), pos.getY(), pos.getZ());
+    }
+    public Vec3 asVec3() {
+        return new Vec3(x, y, z);
     }
 
     public static FiguraVec3 fromVec3(Vec3 vec) {

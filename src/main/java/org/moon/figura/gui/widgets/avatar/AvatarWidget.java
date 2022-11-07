@@ -5,8 +5,8 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
-import org.moon.figura.avatars.AvatarManager;
-import org.moon.figura.avatars.providers.LocalAvatarFetcher;
+import org.moon.figura.avatar.AvatarManager;
+import org.moon.figura.avatar.local.LocalAvatarFetcher;
 import org.moon.figura.gui.widgets.TexturedButton;
 import org.moon.figura.gui.widgets.lists.AvatarList;
 import org.moon.figura.utils.TextUtils;
@@ -27,8 +27,7 @@ public class AvatarWidget extends AbstractAvatarWidget {
                 super.renderButton(stack, mouseX, mouseY, delta);
 
                 //selected border
-                AvatarWidget sel = AvatarList.selectedEntry;
-                if (instance.avatar != null && sel != null && sel.avatar != null && sel.avatar.getPath().equals(instance.avatar.getPath()))
+                if (instance.equals(AvatarList.selectedEntry))
                     UIHelper.fillOutline(stack, x - 1, y - 1, width + 2, height + 2, 0xFFFFFFFF);
             }
 

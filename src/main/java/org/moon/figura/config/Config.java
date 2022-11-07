@@ -9,7 +9,8 @@ import net.minecraft.client.Options;
 import net.minecraft.client.multiplayer.resolver.ServerAddress;
 import net.minecraft.network.chat.Component;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.backend.NetworkManager;
+import org.moon.figura.avatar.AvatarManager;
+import org.moon.figura.backend2.NetworkStuff;
 import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.FiguraText;
@@ -65,9 +66,22 @@ public enum Config {
             FiguraLuaPrinter.updateDecimalFormatting();
         }
     },
+    FORMAT_SCRIPT(1, 3) {{
+      String tooltip = "config.format_script.tooltip.";
+      this.tooltip = FiguraText.of(tooltip + "1")
+              .append("\n")
+              .append(FiguraText.of(tooltip + "2").withStyle(ChatFormatting.RED));
+    }
+        @Override
+        public void onChange() {
+            if (!AvatarManager.localUploaded)
+                AvatarManager.reloadAvatar(FiguraMod.getLocalPlayerUUID());
+        }
+    },
 
     ActionWheel,
     ACTION_WHEEL_BUTTON("key.keyboard.b"),
+    ACTION_WHEEL_MODE(0, 4),
     ACTION_WHEEL_SCALE(1f, InputType.FLOAT),
     ACTION_WHEEL_TITLE(0, 5),
     ACTION_WHEEL_DECORATIONS(true),
@@ -77,8 +91,12 @@ public enum Config {
     POPUP_SCALE(1f, InputType.FLOAT),
     POPUP_MIN_SIZE(1f, InputType.FLOAT),
     POPUP_MAX_SIZE(6f, InputType.FLOAT),
-    AVATAR_HEADS(false),
+    AVATAR_PORTRAITS(false) {{
+        this.disabled = true;
+    }},
     FIGURA_INVENTORY(true),
+    TOAST_TIME(5f, InputType.FLOAT),
+    TOAST_TITLE_TIME(2f, InputType.FLOAT),
 
     Paperdoll,
     HAS_PAPERDOLL(false),
@@ -95,7 +113,13 @@ public enum Config {
     RELOAD_BUTTON("key.keyboard.unknown"),
     PANIC_BUTTON("key.keyboard.unknown"),
     BUTTON_LOCATION(0, 5),
-    UPDATE_CHANNEL(1, 3),
+    UPDATE_CHANNEL(1, 3) {
+        @Override
+        public void onChange() {
+            super.onChange();
+            NetworkStuff.checkVersion();
+        }
+    },
     EASTER_EGGS(true),
 
     Dev {{this.name = this.name.copy().withStyle(ChatFormatting.RED);}},
@@ -124,20 +148,11 @@ public enum Config {
                 .append(FiguraText.of(tooltip + "3").withStyle(ChatFormatting.RED, ChatFormatting.BOLD));
     }},
     MAIN_DIR("", InputType.FOLDER_PATH),
-    AUTH_SERVER_IP("figura.moonlight-devs.org:25565", InputType.IP) {
+    SERVER_IP("figura.moonlight-devs.org:25565", InputType.IP) {
         @Override
         public void onChange() {
             super.onChange();
-            NetworkManager.closeBackend();
-            NetworkManager.auth(true);
-        }
-    },
-    BACKEND_IP("figura.moonlight-devs.org:25500", InputType.IP) {
-        @Override
-        public void onChange() {
-            super.onChange();
-            NetworkManager.closeBackend();
-            NetworkManager.auth(true);
+            NetworkStuff.reAuth();
         }
     };
 
@@ -176,6 +191,7 @@ public enum Config {
     public List<Component> enumList;
     public ConfigKeyBind keyBind;
     public final InputType inputType;
+    public boolean disabled;
 
     //type constructors
     Config() {
@@ -285,10 +301,31 @@ public enum Config {
 
     public enum InputType {
         ANY(s -> true),
-        INT(s -> s.matches("^[-+]?\\d*$")),
-        POSITIVE_INT(s -> s.matches("^\\+?\\d*$")),
-        FLOAT(s -> s.matches("^[-+]?\\d*(\\.(\\d*)?)?$")),
-        HEX_COLOR(s -> s.matches("^#?(?i)[\\da-f]{0,6}$") || ColorUtils.Colors.getColor(s) != null),
+        INT(s -> {
+            try {
+                Integer.parseInt(s);
+                return true;
+            } catch (Exception ignored) {
+                return false;
+            }
+        }),
+        POSITIVE_INT(s -> {
+            try {
+                Integer i = Integer.parseInt(s);
+                return i >= 0;
+            } catch (Exception ignored) {
+                return false;
+            }
+        }),
+        FLOAT(s -> {
+            try {
+                Float f = Float.parseFloat(s);
+                return !f.isInfinite();
+            } catch (Exception ignored) {
+                return false;
+            }
+        }),
+        HEX_COLOR(s -> ColorUtils.userInputHex(s, null) != null),
         FOLDER_PATH(s -> {
             try {
                 return s.isBlank() || Path.of(s.trim()).toFile().isDirectory();
@@ -312,7 +349,9 @@ public enum Config {
         public ConfigKeyBind(String translationKey, InputConstants.Key key, Config config) {
             super(translationKey, key.getType(), key.getValue(), FiguraMod.MOD_ID);
             this.config = config;
-            KeyBindingRegistryImpl.registerKeyBinding(this);
+
+            if (FiguraMod.DEBUG_MODE || !config.disabled)
+                KeyBindingRegistryImpl.registerKeyBinding(this);
         }
 
         @Override

@@ -8,6 +8,8 @@
   "client": [
     "BlockBehaviourAccessor",
     "ClientLevelInvoker",
+    "LivingEntityAccessor",
+    "LivingEntityMixin",
     "MinecraftMixin",
     "SkullBlockEntityAccessor",
 
@@ -27,10 +29,14 @@
     "input.KeyMappingMixin",
     "input.MouseHandlerMixin",
 
+    "particle.ParticleAccessor",
+    "particle.ParticleEngineMixin",
+
     "render.CameraMixin",
     "render.EntityRenderDispatcherMixin",
     "render.GameRendererAccessor",
     "render.GameRendererMixin",
+    "render.LevelRendererMixin",
     "render.PlayerModelMixin",
 
     "render.layers.CapeLayerMixin",

@@ -1,6 +1,6 @@
 package org.moon.figura.utils;
 
-import com.mojang.brigadier.StringReader;
+import com.google.gson.JsonParser;
 import net.minecraft.client.gui.Font;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
@@ -73,8 +73,11 @@ public class TextUtils {
         Component finalText;
 
         try {
+            //check if its valid json text
+            JsonParser.parseString(text);
+
             //attempt to parse json
-            finalText = Component.Serializer.fromJson(new StringReader(text));
+            finalText = Component.Serializer.fromJsonLenient(text);
 
             //if failed, throw a dummy exception
             if (finalText == null)

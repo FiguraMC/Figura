@@ -1,16 +1,14 @@
 package org.moon.figura.lua;
 
 import org.moon.figura.animation.Animation;
-import org.moon.figura.avatars.model.FiguraModelPart;
-import org.moon.figura.avatars.model.rendering.texture.FiguraTexture;
-import org.moon.figura.avatars.model.rendertasks.BlockTask;
-import org.moon.figura.avatars.model.rendertasks.ItemTask;
-import org.moon.figura.avatars.model.rendertasks.RenderTask;
-import org.moon.figura.avatars.model.rendertasks.TextTask;
 import org.moon.figura.lua.api.*;
-import org.moon.figura.lua.api.action_wheel.*;
+import org.moon.figura.lua.api.action_wheel.Action;
+import org.moon.figura.lua.api.action_wheel.ActionWheelAPI;
+import org.moon.figura.lua.api.action_wheel.Page;
+import org.moon.figura.lua.api.ConfigAPI;
 import org.moon.figura.lua.api.entity.EntityAPI;
 import org.moon.figura.lua.api.entity.LivingEntityAPI;
+import org.moon.figura.lua.api.entity.NullEntity;
 import org.moon.figura.lua.api.entity.PlayerAPI;
 import org.moon.figura.lua.api.event.EventsAPI;
 import org.moon.figura.lua.api.event.LuaEvent;
@@ -22,6 +20,7 @@ import org.moon.figura.lua.api.nameplate.EntityNameplateCustomization;
 import org.moon.figura.lua.api.nameplate.NameplateAPI;
 import org.moon.figura.lua.api.nameplate.NameplateCustomization;
 import org.moon.figura.lua.api.nameplate.NameplateCustomizationGroup;
+import org.moon.figura.lua.api.particle.LuaParticle;
 import org.moon.figura.lua.api.particle.ParticleAPI;
 import org.moon.figura.lua.api.ping.PingAPI;
 import org.moon.figura.lua.api.ping.PingFunction;
@@ -38,6 +37,12 @@ import org.moon.figura.math.matrix.FiguraMat2;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.*;
+import org.moon.figura.model.FiguraModelPart;
+import org.moon.figura.model.rendering.texture.FiguraTexture;
+import org.moon.figura.model.rendertasks.BlockTask;
+import org.moon.figura.model.rendertasks.ItemTask;
+import org.moon.figura.model.rendertasks.RenderTask;
+import org.moon.figura.model.rendertasks.TextTask;
 import org.moon.figura.utils.IOUtils;
 
 import java.util.HashSet;
@@ -67,6 +72,7 @@ public class FiguraAPIManager {
         add(FiguraMat3.class);
         add(FiguraMat4.class);
 
+        add(NullEntity.class);
         add(EntityAPI.class);
         add(LivingEntityAPI.class);
         add(PlayerAPI.class);
@@ -84,6 +90,7 @@ public class FiguraAPIManager {
         add(LuaSound.class);
 
         add(ParticleAPI.class);
+        add(LuaParticle.class);
 
         add(VanillaModelAPI.class);
         add(VanillaGroupPart.class);
@@ -124,6 +131,8 @@ public class FiguraAPIManager {
         add(ClientAPI.class);
 
         add(AvatarAPI.class);
+
+        add(ConfigAPI.class);
     }};
 
     public static final Map<String, Function<FiguraLuaRuntime, Object>> API_GETTERS = new LinkedHashMap<>() {{
@@ -143,14 +152,14 @@ public class FiguraAPIManager {
         put("matrices", r -> MatricesAPI.INSTANCE);
         put("world", r -> WorldAPI.INSTANCE);
         put("pings", r -> r.ping = new PingAPI(r.owner));
-        put("textures", r -> new TextureAPI(r.owner));
+        put("textures", r -> r.texture = new TextureAPI(r.owner));
+        put("config", r -> new ConfigAPI(r.owner));
     }};
 
     private static final Set<FiguraAPI> ENTRYPOINTS = new HashSet<>();
 
     public static void init() {
-        Set<FiguraAPI> set = IOUtils.loadEntryPoints("figura_api", FiguraAPI.class);
-        for (FiguraAPI api : set) {
+        for (FiguraAPI api : IOUtils.loadEntryPoints("figura_api", FiguraAPI.class)) {
             ENTRYPOINTS.add(api);
             WHITELISTED_CLASSES.addAll(api.getWhitelistedClasses());
         }

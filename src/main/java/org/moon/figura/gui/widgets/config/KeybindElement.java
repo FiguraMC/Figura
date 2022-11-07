@@ -21,6 +21,7 @@ public class KeybindElement extends AbstractConfigElement {
 
         //toggle button
         children.add(0, button = new ParentedButton(0, 0, 90, 20, this.binding.getTranslatedKeyMessage(), this, button -> parent.focusedBinding = binding));
+        button.active = FiguraMod.DEBUG_MODE || !config.disabled;
 
         //overwrite reset button to update the keybind
         children.remove(resetButton);

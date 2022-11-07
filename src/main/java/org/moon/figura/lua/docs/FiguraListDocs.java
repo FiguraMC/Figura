@@ -13,13 +13,15 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.PlayerModelPart;
+import net.minecraft.world.item.UseAnim;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.animation.Animation;
-import org.moon.figura.avatars.model.ParentType;
-import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
-import org.moon.figura.avatars.model.rendering.texture.RenderTypes;
 import org.moon.figura.mixin.input.KeyMappingAccessor;
 import org.moon.figura.mixin.render.GameRendererAccessor;
+import org.moon.figura.model.ParentType;
+import org.moon.figura.model.rendering.texture.EntityRenderMode;
+import org.moon.figura.model.rendering.texture.FiguraTextureSet;
+import org.moon.figura.model.rendering.texture.RenderTypes;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.FiguraText;
 
@@ -79,6 +81,14 @@ public class FiguraListDocs {
             add(name.endsWith("_LEG") ? name.substring(0, name.length() - 4) : name);
         }
     }};
+    private static final LinkedHashSet<String> USE_ACTIONS = new LinkedHashSet<>() {{
+        for (UseAnim value : UseAnim.values())
+            add(value.name());
+    }};
+    private static final LinkedHashSet<String> RENDER_MODES = new LinkedHashSet<>() {{
+        for (EntityRenderMode value : EntityRenderMode.values())
+            add(value.name());
+    }};
 
     private enum ListDoc {
         KEYBINDS(() -> FiguraListDocs.KEYBINDS, "Keybinds", "keybinds", 2),
@@ -92,7 +102,9 @@ public class FiguraListDocs {
         PLAY_STATES(() -> FiguraListDocs.PLAY_STATES, "PlayStates", "play_states", 1),
         LOOP_MODES(() -> FiguraListDocs.LOOP_MODES, "LoopModes", "loop_modes", 1),
         COLORS(() -> FiguraListDocs.COLORS, "Colors", "colors", 1),
-        PLAYER_MODEL_PARTS(() -> FiguraListDocs.PLAYER_MODEL_PARTS, "PlayerModelParts", "player_model_parts", 1);
+        PLAYER_MODEL_PARTS(() -> FiguraListDocs.PLAYER_MODEL_PARTS, "PlayerModelParts", "player_model_parts", 1),
+        USE_ACTIONS(() -> FiguraListDocs.USE_ACTIONS, "UseActions", "use_actions", 1),
+        RENDER_MODES(() -> FiguraListDocs.RENDER_MODES, "RenderModes", "render_modes", 1);
 
         private final Supplier<Object> supplier;
         private final String name, id;

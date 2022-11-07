@@ -9,10 +9,11 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
-import org.moon.figura.avatars.Avatar;
+import org.moon.figura.avatar.Avatar;
 import org.moon.figura.gui.widgets.AbstractContainerElement;
 import org.moon.figura.gui.widgets.Label;
 import org.moon.figura.gui.widgets.ParentedButton;
+import org.moon.figura.lua.api.sound.LuaSound;
 import org.moon.figura.lua.api.sound.SoundAPI;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FiguraText;
@@ -113,7 +114,7 @@ public class SoundsList extends AbstractList {
             //play button
             children.add(0, play = new ParentedButton(0, 0, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/play.png"), 60, 20, FiguraText.of("gui.sound.play"), this, button -> {
                 Vec3 vec =  Minecraft.getInstance().player == null ? new Vec3(0, 0, 0) : Minecraft.getInstance().player.position();
-                SoundAPI.getSoundEngine().figura$playCustomSound(owner.owner, name, sound, vec.x, vec.y, vec.z, 1, 1, false);
+                new LuaSound(sound, name, owner).pos(vec.x, vec.y, vec.z).play();
             }));
 
             //stop button

@@ -6,9 +6,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
-import org.moon.figura.FiguraMod;
-import org.moon.figura.avatars.model.ParentType;
-import org.moon.figura.avatars.model.rendering.texture.RenderTypes;
+import org.moon.figura.config.Config;
+import org.moon.figura.model.ParentType;
+import org.moon.figura.model.rendering.texture.RenderTypes;
 import org.moon.figura.utils.Version;
 
 import java.io.IOException;
@@ -20,7 +20,7 @@ import java.util.Map;
 public class AvatarMetadataParser {
 
     private static final Gson GSON = new GsonBuilder().create();
-    private static final String SEPARATOR_REGEX = "\\.";
+    private static final Map<String, String> PARTS_TO_MOVE = new HashMap<>();
 
     public static Metadata read(String json) {
         Metadata metadata = GSON.fromJson(json, Metadata.class);
@@ -35,17 +35,15 @@ public class AvatarMetadataParser {
         CompoundTag nbt = new CompoundTag();
 
         //version
-        String version;
-        try {
-            version = Version.of(metadata.version).toString();
-        } catch (Exception ignored) {
-            version = FiguraMod.VERSION;
-        }
+        Version version = new Version(metadata.version);
+        if (version.invalid)
+            version = Version.VERSION;
 
         nbt.putString("name", metadata.name == null || metadata.name.isBlank() ? filename : metadata.name);
-        nbt.putString("ver", version);
+        nbt.putString("ver", version.toString());
         if (metadata.color != null) nbt.putString("color", metadata.color);
         if (metadata.background != null) nbt.putString("bg", metadata.background);
+        if (metadata.id != null) nbt.putString("id", metadata.id);
 
         if (metadata.authors != null) {
             StringBuilder authors = new StringBuilder();
@@ -65,19 +63,43 @@ public class AvatarMetadataParser {
 
         if (metadata.autoScripts != null) {
             ListTag autoScripts = new ListTag();
-            for (String scriptName : metadata.autoScripts)
-                autoScripts.add(StringTag.valueOf(scriptName.replace(".lua", "")));
+            for (String name : metadata.autoScripts) {
+                name = name.replaceAll(".lua$", "").replaceAll("[/\\\\]", ".");
+                autoScripts.add(StringTag.valueOf(name));
+            }
             nbt.put("autoScripts", autoScripts);
+        }
+
+        if (Config.FORMAT_SCRIPT.asInt() == 2)
+            nbt.putBoolean("minify", true);
+
+        if (metadata.autoAnims != null) {
+            ListTag autoAnims = new ListTag();
+            for (String name : metadata.autoAnims)
+                autoAnims.add(StringTag.valueOf(name));
+            nbt.put("autoAnims", autoAnims);
         }
 
         return nbt;
     }
 
     public static void injectToModels(String json, CompoundTag models) throws IOException {
+        PARTS_TO_MOVE.clear();
+
         Metadata metadata = GSON.fromJson(json, Metadata.class);
-        if (metadata != null && metadata.customizations != null)
+        if (metadata != null && metadata.customizations != null) {
             for (Map.Entry<String, Customization> entry : metadata.customizations.entrySet())
                 injectCustomization(entry.getKey(), entry.getValue(), models);
+        }
+
+        for (Map.Entry<String, String> entry : PARTS_TO_MOVE.entrySet()) {
+            CompoundTag modelPart = getTag(models, entry.getKey(), true);
+            CompoundTag targetPart = getTag(models, entry.getValue(), false);
+
+            ListTag list = !targetPart.contains("chld") ? new ListTag() : targetPart.getList("chld", Tag.TAG_COMPOUND);
+            list.add(modelPart);
+            targetPart.put("chld", list);
+        }
     }
 
     private static void injectCustomization(String path, Customization customization, CompoundTag models) throws IOException {
@@ -107,17 +129,19 @@ public class AvatarMetadataParser {
                 modelPart.putString("pt", type.name());
         }
         if (customization.moveTo != null) {
-            modelPart = getTag(models, path, true); //yeet the part
-            CompoundTag targetPart = getTag(models, customization.moveTo, false);
-
-            ListTag list = !targetPart.contains("chld") ? new ListTag() : targetPart.getList("chld", Tag.TAG_COMPOUND);
-            list.add(modelPart);
-            targetPart.put("chld", list);
+            PARTS_TO_MOVE.put(path, customization.moveTo);
+        }
+        if (customization.visible != null) {
+            if (customization.visible) {
+                modelPart.remove("vsb");
+            } else {
+                modelPart.putBoolean("vsb", false);
+            }
         }
     }
 
     private static CompoundTag getTag(CompoundTag models, String path, boolean remove) throws IOException {
-        String[] keys = path.split(SEPARATOR_REGEX);
+        String[] keys = path.split("\\.");
         CompoundTag current = models;
 
         for (int i = 0; i < keys.length; i++) {
@@ -147,8 +171,8 @@ public class AvatarMetadataParser {
 
     //json object class
     public static class Metadata {
-        public String name, author, version, color, background;
-        public String[] authors, autoScripts;
+        public String name, author, version, color, background, id;
+        public String[] authors, autoScripts, autoAnims;
         public HashMap<String, Customization> customizations;
     }
 
@@ -161,5 +185,6 @@ public class AvatarMetadataParser {
         public String primaryRenderType, secondaryRenderType;
         public String parentType;
         public String moveTo;
+        public Boolean visible;
     }
 }

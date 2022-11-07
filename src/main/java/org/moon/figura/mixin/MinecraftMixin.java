@@ -8,15 +8,16 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import org.jetbrains.annotations.Nullable;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.avatars.Avatar;
-import org.moon.figura.avatars.AvatarManager;
-import org.moon.figura.backend.NetworkManager;
+import org.moon.figura.avatar.Avatar;
+import org.moon.figura.avatar.AvatarManager;
+import org.moon.figura.backend2.NetworkStuff;
 import org.moon.figura.config.Config;
+import org.moon.figura.gui.ActionWheel;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.PopupMenu;
-import org.moon.figura.gui.ActionWheel;
+import org.moon.figura.lua.FiguraLuaPrinter;
+import org.moon.figura.lua.api.particle.ParticleAPI;
 import org.moon.figura.lua.api.sound.SoundAPI;
 import org.moon.figura.utils.EntityUtils;
 import org.moon.figura.utils.FiguraText;
@@ -32,18 +33,21 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class MinecraftMixin {
 
     @Shadow @Final public MouseHandler mouseHandler;
-    @Shadow @Nullable public LocalPlayer player;
     @Shadow @Final public Options options;
+    @Shadow public LocalPlayer player;
+    @Shadow public Entity cameraEntity;
 
     @Unique
     private boolean scriptMouseUnlock = false;
 
     @Inject(at = @At("RETURN"), method = "handleKeybinds")
     private void handleKeybinds(CallbackInfo ci) {
+        //panic button
         if (Config.PANIC_BUTTON.keyBind.consumeClick()) {
             AvatarManager.panic = !AvatarManager.panic;
             FiguraToast.sendToast(FiguraText.of(AvatarManager.panic ? "toast.panic_enabled" : "toast.panic_disabled"), FiguraToast.ToastType.WARNING);
             SoundAPI.getSoundEngine().figura$stopAllSounds();
+            ParticleAPI.getParticleEngine().figura$clearAllParticles();
             return;
         }
 
@@ -51,19 +55,35 @@ public abstract class MinecraftMixin {
         if (AvatarManager.panic)
             return;
 
+        //reload avatar button
         if (Config.RELOAD_BUTTON.keyBind.consumeClick()) {
             AvatarManager.reloadAvatar(FiguraMod.getLocalPlayerUUID());
             FiguraToast.sendToast(FiguraText.of("toast.reload"));
         }
 
-        if (Config.ACTION_WHEEL_BUTTON.keyBind.isDown()) {
-            ActionWheel.setEnabled(true);
-            this.mouseHandler.releaseMouse();
+        //action wheel button
+        Boolean wheel = null;
+        if (Config.ACTION_WHEEL_MODE.asInt() % 2 == 1) {
+            if (Config.ACTION_WHEEL_BUTTON.keyBind.consumeClick())
+                wheel = !ActionWheel.isEnabled();
+        } else if (Config.ACTION_WHEEL_BUTTON.keyBind.isDown()) {
+            wheel = true;
         } else if (ActionWheel.isEnabled()) {
-            ActionWheel.setEnabled(false);
-            this.mouseHandler.grabMouse();
+            wheel = false;
+        }
+        if (wheel != null) {
+            if (wheel) {
+                ActionWheel.setEnabled(true);
+                this.mouseHandler.releaseMouse();
+            } else {
+                if (Config.ACTION_WHEEL_MODE.asInt() >= 2)
+                    ActionWheel.execute(ActionWheel.getSelected(), true);
+                ActionWheel.setEnabled(false);
+                this.mouseHandler.grabMouse();
+            }
         }
 
+        //popup menu button
         if (Config.POPUP_BUTTON.keyBind.isDown()) {
             PopupMenu.setEnabled(true);
 
@@ -72,7 +92,7 @@ public abstract class MinecraftMixin {
                 if (this.player != null && target instanceof Player && !target.isInvisibleTo(this.player)) {
                     PopupMenu.setEntity(target);
                 } else if (!this.options.getCameraType().isFirstPerson()) {
-                    PopupMenu.setEntity(this.player);
+                    PopupMenu.setEntity(this.cameraEntity);
                 }
             }
 
@@ -109,11 +129,12 @@ public abstract class MinecraftMixin {
     @Inject(at = @At("RETURN"), method = "clearLevel(Lnet/minecraft/client/gui/screens/Screen;)V")
     private void clearLevel(Screen screen, CallbackInfo ci) {
         AvatarManager.clearAllAvatars();
+        FiguraLuaPrinter.clearPrintQueue();
     }
 
     @Inject(at = @At("RETURN"), method = "setLevel")
     private void setLevel(ClientLevel world, CallbackInfo ci) {
-        NetworkManager.assertBackend();
+        NetworkStuff.auth();
     }
 
     @Inject(at = @At("HEAD"), method = "runTick")

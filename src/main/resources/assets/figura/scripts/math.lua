@@ -22,7 +22,7 @@ function math.shortAngle(a, b)
 end
 
 function math.lerpAngle(a, b, t)
-  return a + math.shortAngle(a, b) * t
+  return (a + math.shortAngle(a, b) * t) % 360
 end
 
 function math.sign(x)

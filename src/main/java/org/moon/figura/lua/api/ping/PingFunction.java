@@ -3,8 +3,8 @@ package org.moon.figura.lua.api.ping;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
-import org.moon.figura.avatars.Avatar;
-import org.moon.figura.backend.NetworkManager;
+import org.moon.figura.avatar.Avatar;
+import org.moon.figura.backend2.NetworkStuff;
 import org.moon.figura.config.Config;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaTypeDoc;
@@ -60,7 +60,7 @@ public class PingFunction extends LuaFunction {
         boolean sync = Config.SYNC_PINGS.asBool();
         byte[] data = new PingArg(args).toByteArray();
 
-        NetworkManager.sendPing(id, sync, data);
+        NetworkStuff.sendPing(id, sync, data);
         if (!sync) owner.runPing(id, data);
 
         return NIL;

@@ -25,11 +25,11 @@ public class SplashManagerMixin {
 
             switch (month) {
                 case 1 -> {
-                    if (day == 1) cir.setReturnValue(bday + "Lily!");
+                    if (day == 1) cir.setReturnValue(bday + "Foxes!");
                 }
                 case 3 -> {
                     switch (day) {
-                        case 5 -> cir.setReturnValue(bday + "Maya!");
+                        case 5 -> cir.setReturnValue(bday + "Limits!");
                         case 24 -> cir.setReturnValue(bday + FiguraMod.MOD_NAME + "!");
                     }
                 }

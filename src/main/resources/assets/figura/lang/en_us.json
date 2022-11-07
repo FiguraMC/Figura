@@ -6,26 +6,23 @@
 
   "figura.backend.connected": "Backend Connected!",
   "figura.backend.disconnected": "Backend Disconnected!",
-  "figura.backend.banned": "bananed :-)",
 
-  "figura.backend.error": "Error",
-  "figura.backend.invalid_uuid": "Invalid UUID",
-  "figura.backend.invalid_data": "Invalid data",
-
-  "figura.backend.rate_limited": "Rate Limited!",
-  "figura.backend.download": "Download",
-  "figura.backend.ping_rate": "Ping Rate",
-  "figura.backend.ping_size": "Ping Size",
-  "figura.backend.upload": "Upload",
+  "figura.backend.user_not_found": "User not found",
+  "figura.backend.avatar_not_found": "Avatar not found",
 
   "figura.backend.upload_success": "Avatar uploaded!",
-  "figura.backend.upload_error": "Upload Error",
   "figura.backend.upload_too_big": "Avatar is too big",
-  "figura.backend.upload_too_many": "You have too many avatars",
+  "figura.backend.upload_too_many": "You have too many Avatars",
+  "figura.backend.upload_error": "Error on uploading Avatar",
 
   "figura.backend.delete_success": "Avatar deleted!",
-  "figura.backend.delete_error": "Delete Error",
-  "figura.backend.delete_not_found": "Avatar not found",
+  "figura.backend.delete_error": "Error on deleting Avatar",
+
+  "figura.backend.equip_error": "Failed to set equipped Avatars",
+
+  "figura.backend.warning": "Warning",
+  "figura.backend.ping_size": "Ping too Large",
+  "figura.backend.ping_rate": "Sending too many Pings",
 
 
   "figura.toast.reload": "Avatar reloaded!",
@@ -54,22 +51,23 @@
   "figura.trust.enabled": "Enabled",
   "figura.trust.disabled": "Disabled",
 
-  "figura.trust.init_inst": "Init Instructions",
-  "figura.trust.world_tick_inst": "World Tick Instructions",
-  "figura.trust.tick_inst": "Tick Instructions",
-  "figura.trust.world_render_inst": "World Render Instructions",
-  "figura.trust.render_inst": "Render Instructions",
-  "figura.trust.complexity": "Max Complexity",
-  "figura.trust.particles": "Max Particles",
-  "figura.trust.sounds": "Max Sounds",
-  "figura.trust.volume": "Avatar Sounds Volume",
-  "figura.trust.bb_animations": "Animation Complexity",
-  "figura.trust.vanilla_model_edit": "Vanilla Model Change",
-  "figura.trust.nameplate_edit": "Nameplate Change",
-  "figura.trust.offscreen_rendering": "Render Offscreen",
-  "figura.trust.custom_render_layer": "Custom Render Layers",
-  "figura.trust.custom_sounds": "Custom Sounds",
-  "figura.trust.custom_heads": "Custom Player Heads",
+  "figura.trust.value.init_inst": "Init Instructions",
+  "figura.trust.value.world_tick_inst": "World Tick Instructions",
+  "figura.trust.value.tick_inst": "Tick Instructions",
+  "figura.trust.value.world_render_inst": "World Render Instructions",
+  "figura.trust.value.render_inst": "Render Instructions",
+  "figura.trust.value.complexity": "Max Complexity",
+  "figura.trust.value.particles": "Max Particles",
+  "figura.trust.value.sounds": "Max Sounds",
+  "figura.trust.value.volume": "Avatar Sounds Volume",
+  "figura.trust.value.bb_animations": "Animation Complexity",
+  "figura.trust.value.texture_size": "Max Texture Size",
+  "figura.trust.value.vanilla_model_edit": "Vanilla Model Change",
+  "figura.trust.value.nameplate_edit": "Nameplate Change",
+  "figura.trust.value.offscreen_rendering": "Render Offscreen",
+  "figura.trust.value.custom_render_layer": "Custom Render Layers",
+  "figura.trust.value.custom_sounds": "Custom Sounds",
+  "figura.trust.value.custom_heads": "Custom Player Heads",
 
 
   "figura.popup_menu.cancel": "Cancel",
@@ -174,8 +172,10 @@
 
   "figura.gui.trust.reset": "Reset All",
   "figura.gui.trust.reload_all": "Reload All",
+  "figura.gui.trust.precise": "Precise Mode",
   "figura.gui.trust.expand_trust.tooltip": "Expand advanced trust menu",
   "figura.gui.trust.minimize_trust.tooltip": "Minimize advanced trust menu",
+  "figura.gui.trust.figura_only.tooltip": "Show only Figura players",
   "figura.gui.trust.disconnected.tooltip": "Show disconnected avatars",
 
   "figura.gui.trust.disconnected": "(disconnected)",
@@ -259,12 +259,25 @@
   "figura.config.log_number_length": "Print Number Length",
   "figura.config.log_number_length.tooltip": "Changes the length of the decimal places that will be displayed within print functions",
 
+  "figura.config.format_script": "Format Script",
+  "figura.config.format_script.tooltip.1":"Selects if scripts should be compacted, removing out comments, whitespaces and/or empty lines",
+  "figura.config.format_script.tooltip.2":"Requires reselecting the avatar to take effect",
+  "figura.config.format_script.1":"Disabled",
+  "figura.config.format_script.2":"Light",
+  "figura.config.format_script.3":"Heavy",
 
   "figura.config.actionwheel": "Action Wheel",
   "figura.config.actionwheel.tooltip": "Action Wheel settings",
 
   "figura.config.action_wheel_button": "Action Wheel Button",
   "figura.config.action_wheel_button.tooltip": "Button to open the Action Wheel",
+
+  "figura.config.action_wheel_mode": "Action Wheel Mode",
+  "figura.config.action_wheel_mode.tooltip": "Changes the way to open and interact with the Action Wheel",
+  "figura.config.action_wheel_mode.1": "Hold",
+  "figura.config.action_wheel_mode.2": "Toggle",
+  "figura.config.action_wheel_mode.3": "Hold (run on release)",
+  "figura.config.action_wheel_mode.4": "Toggle (run on release)",
 
   "figura.config.action_wheel_scale": "Action Wheel Size",
   "figura.config.action_wheel_scale.tooltip": "Changes the Action Wheel size",
@@ -296,11 +309,17 @@
   "figura.config.popup_max_size": "Player Popup Max Size",
   "figura.config.popup_max_size.tooltip": "Maximum size of player popup as you get closer to the person",
 
-  "figura.config.avatar_heads": "Avatar Heads",
-  "figura.config.avatar_heads.tooltip": "Toggles if the player lists should render their avatars instead of the player skin",
+  "figura.config.avatar_portraits": "Avatar Portraits",
+  "figura.config.avatar_portraits.tooltip": "Toggles if the player lists should render a portrait of their avatar instead of the player skin",
 
   "figura.config.figura_inventory": "Figura Inventory",
   "figura.config.figura_inventory.tooltip": "Toggles between vanilla and Figura's paperdoll rendering for the player inventory",
+
+  "figura.config.toast_time": "Toast Length",
+  "figura.config.toast_time.tooltip": "Changes how much time (in seconds) the Figura toasts should stay on screen",
+
+  "figura.config.toast_title_time": "Long Toast Swap",
+  "figura.config.toast_title_time.tooltip": "Changes how much time (in seconds) long toasts should swap the display of its title and message",
 
 
   "figura.config.paperdoll": "Paperdoll",
@@ -387,8 +406,8 @@
   "figura.config.log_pings.3": "Logger",
 
   "figura.config.sync_pings": "Sync Pings",
-  "figura.config.sync_pings.tooltip.1": "Toggles if local pings should run only when received from the backend",
-  "figura.config.sync_pings.tooltip.2": "Note that: no backend means no pings!",
+  "figura.config.sync_pings.tooltip.1": "Toggles if host pings should be executed locally or received from the backend",
+  "figura.config.sync_pings.tooltip.2": "Note that: if toggled, no connection with the backend means your pings will never run!",
 
   "figura.config.chat_messages": "Chat Messages",
   "figura.config.chat_messages.tooltip.1": "Toggles if scripts can change and/or send chat messages for you",
@@ -398,11 +417,8 @@
   "figura.config.main_dir": "Figura Folder Location",
   "figura.config.main_dir.tooltip": "Changes the location of the Figura folder",
 
-  "figura.config.auth_server_ip": "Auth Server IP",
-  "figura.config.auth_server_ip.tooltip": "Sets the IP of the auth server",
-
-  "figura.config.backend_ip": "Backend IP",
-  "figura.config.backend_ip.tooltip": "Sets the IP of the backend server",
+  "figura.config.server_ip": "Figura Server IP",
+  "figura.config.server_ip.tooltip": "Sets the IP of the server used for Figura's multiplayer features",
 
 
   "figura.command.click_to_open": "Click here to open",
@@ -444,6 +460,8 @@
   "figura.docs.enum.loop_modes": "List of valid LoopModes. Used within Blockbench animations.",
   "figura.docs.enum.colors": "List of custom colors. Used anywhere you can input a hex color.",
   "figura.docs.enum.player_model_parts": "List of valid PlayerModelParts. Used within the PlayerAPI.",
+  "figura.docs.enum.use_actions": "List of valid UseActions. Used within the ItemStackAPI.",
+  "figura.docs.enum.render_modes": "List of valid RenderModes. Used within the RENDER event.",
 
 
   "figura.docs.globals": "Documentation for the various things Figura adds to the global lua state.",
@@ -480,6 +498,7 @@
   "figura.docs.globals.user": "An alias for player, just in case the user of your avatar isn't a player. (Foreshadowing?)",
   "figura.docs.globals.pings": "The global instance of PingAPI.",
   "figura.docs.globals.textures": "The global instance of the TextureAPI.",
+  "figura.docs.globals.config": "The global instance of the ConfigAPI.",
 
 
   "figura.docs.math": "Contains functions which Figura adds to the default Lua \"math\" library table.",
@@ -490,7 +509,7 @@
   "figura.docs.math.round": "Rounds the given number to the nearest whole integer.",
   "figura.docs.math.map": "Maps the given value from one range to another. For example, if you have a value of 20 in the range 0-200, and you want to map it to the range 100-200, the result will be 110.",
   "figura.docs.math.short_angle": "Returns the shortest angle between two angles. For example, if you have an angle of 350 degrees and you want to get the shortest angle between it and 0 degrees, the result will be 10 degrees.",
-  "figura.docs.math.lerp_angle": "Similar to the default lerp function, but numbers are limited to the range of 0-360. Lerp is done towards the shortest angle. For example, a lerp of 340 and 20, with factor of 0.75, will return 310.",
+  "figura.docs.math.lerp_angle": "Similar to the default lerp function, but numbers are limited to the range of 0-360. Lerp is done towards the shortest angle. For example, a lerp of 340 and 20, with factor of 0.75, will return 10.",
   "figura.docs.math.sign": "Returns the sign of the given number. Returns 1 if the number is positive, -1 if it's negative, and 0 if it's 0.",
 
 
@@ -501,6 +520,7 @@
   "figura.docs.action_wheel.execute": "Executes the action of the given index. If the index is null, it will execute the last selected action. A second parameter can be given to specify if it should be executed the left or right action.",
   "figura.docs.action_wheel.is_enabled": "Returns if the Action Wheel is being currently rendered or not.",
   "figura.docs.action_wheel.get_selected": "Returns the index of the currently selected action.",
+  "figura.docs.action_wheel.create_action": "Creates a new Action that is not automatically asigned to a Page.",
   "figura.docs.action_wheel.create_page": "Creates a new Page for the action wheel. A Title can be given to store this page internally. If no Title is given, the Page will just be returned from this function.",
   "figura.docs.action_wheel.set_page": "Sets the Page of the action wheel to the given Title or Page.",
   "figura.docs.action_wheel.get_page": "Returns an stored Page by the given title.",
@@ -559,8 +579,13 @@
   "figura.docs.animation.loop_delay": "Set how much time to wait in between the loops of this animation.",
   "figura.docs.animation.get_length": "Gets the animation's length.",
   "figura.docs.animation.length": "Set the animation's length, in seconds.",
-  "figura.docs.animation.get_override": "Gets the animation's override status.",
-  "figura.docs.animation.override": "Set if this animation should override its part transforms.",
+  "figura.docs.animation.override": "Set if this animation should override all of its parts vanilla transforms. Equivalent of calling \"overrideRot\", \"overridePos\" and \"overrideScale\" altogether.",
+  "figura.docs.animation.get_override_rot": "Gets if this animation should override its parts vanilla rotation.",
+  "figura.docs.animation.get_override_pos": "Gets if this animation should override its parts vanilla position.",
+  "figura.docs.animation.get_override_scale": "Gets if this animation should override its parts vanilla scale.",
+  "figura.docs.animation.override_rot": "Set if this animation should override its parts vanilla rotation.",
+  "figura.docs.animation.override_pos": "Set if this animation should override its parts vanilla position.",
+  "figura.docs.animation.override_scale": "Set if this animation should override its parts vanilla scale.",
   "figura.docs.animation.get_loop": "Gets the animation's loop mode.",
   "figura.docs.animation.loop": "Sets the animation's loop mode.",
   "figura.docs.animation.get_priority": "Gets the animation's priority.",
@@ -606,7 +631,7 @@
 
 
   "figura.docs.biome": "A proxy for a Minecraft biome. Instances are obtained through the WorldAPI. This proxy also contains a saved position for the Biome.",
-  "figura.docs.biome.get_name": "Returns the name of the biome, according to the registry.",
+  "figura.docs.biome.name": "The name of this biome, according to the registry.",
   "figura.docs.biome.get_pos": "Returns the saved position for this Biome's proxy. The saved position is used in Biome functions that require a position.",
   "figura.docs.biome.set_pos": "Sets the saved position for this Biome's proxy. The saved position is used in Biome functions that require a position.",
   "figura.docs.biome.get_tags": "Gets the worldgen related tags from this Biome.",
@@ -689,8 +714,18 @@
   "figura.docs.client.get_active_lang": "Returns a string representation of the current game language.",
   "figura.docs.client.has_iris": "Checks if the client has the Iris mod installed.",
   "figura.docs.client.has_iris_shader": "Checks if the client is currently using an Iris shader.",
+  "figura.docs.client.has_resource": "Checks if the specific resource exists withing the client resources.",
+  "figura.docs.client.get_active_resource_packs": "Returns a table with the active resource pack names.",
   "figura.docs.client.get_figura_version": "Gets the client Figura version.",
   "figura.docs.client.compare_versions": "Compares two versions if they are less than (-1), equals (0) or greater than (1).",
+  "figura.docs.client.int_uuid_to_string": "Converts an int array UUID (as 4 separated arguments) into its hexadecimal string representation.",
+  "figura.docs.client.get_viewer": "Returns the player entity from the running client.",
+
+
+  "figura.docs.config": "A global API used to save and load avatar data between game sessions.",
+  "figura.docs.config.name": "Sets the name of the destination file, data will be saved and loaded from that file. Defaults to the avatar name.",
+  "figura.docs.config.save": "Save to disk a variable under the specific key. If the value is nil, the variable is removed from the file.",
+  "figura.docs.config.load": "Loads a saved variable under the specific key. If no key is given, it will return a table with all saved variables.",
 
 
   "figura.docs.entity": "Acts as a proxy for an entity in the Minecraft world.",
@@ -734,6 +769,8 @@
   "figura.docs.living_entity": "Acts as a proxy for a living entity in the Minecraft world.",
   "figura.docs.living_entity.get_body_yaw": "Gets the yaw of this entity's body in degrees. If delta is passed in, then it will be used to linearly interpolate the rotation of the body between the previous tick and the current tick. The default value of delta is 1.",
   "figura.docs.living_entity.get_held_item": "Returns an ItemStack representing the item in this entity's main hand. If true is passed in for \"offhand\", then it will instead look at the item in the entity's offhand. If the entity isn't holding an item in that hand, returns air.",
+  "figura.docs.living_entity.get_active_item": "Returns an ItemStack representing the item the entity is currently using. If they're not using any item, returns air.",
+  "figura.docs.living_entity.get_active_item_time": "Returns the ticks this entity's active item has been used for.",
   "figura.docs.living_entity.get_health": "Returns the amount of health this entity has remaining.",
   "figura.docs.living_entity.get_max_health": "Returns the maximum amount of health this entity can have.",
   "figura.docs.living_entity.get_armor": "Returns the amount of armor points this entity has.",
@@ -744,11 +781,11 @@
   "figura.docs.living_entity.is_left_handed": "Returns true if the entity's main hand is its left.",
   "figura.docs.living_entity.is_using_item": "Returns true if the entity is currently using an item.",
   "figura.docs.living_entity.get_active_hand": "Returns \"OFF_HAND\" or \"MAIN_HAND\", depending on which hand this entity uses an item with.",
-  "figura.docs.living_entity.get_active_item": "Returns an ItemStack representing the item the entity is currently using. If they're not using any item, returns air.",
   "figura.docs.living_entity.is_climbing": "Returns true if the entity is currently using a climbable block, like a ladder or vine.",
   "figura.docs.living_entity.get_swing_time": "Returns the number of ticks this entity has the arm swinging.",
   "figura.docs.living_entity.is_swinging_arm": "Returns true if the entity is currently swinging its arm.",
   "figura.docs.living_entity.get_swing_arm": "Returns \"OFF_HAND\" or \"MAIN_HAND\", based on the arm this entity is currently swinging.",
+  "figura.docs.living_entity.get_swing_duration": "Returns the number of ticks this entity will have while swinging its arms.",
 
   "figura.docs.player": "Acts as a proxy for a player entity in the Minecraft world. A global instance exists for the avatar's user, under the name \"player\".",
   "figura.docs.player.get_food": "Gets the current food level of the player, from 0 to 20.",
@@ -765,7 +802,7 @@
   "figura.docs.events.entity_init": "The ENTITY_INIT event is run once this avatar's entity exists.",
   "figura.docs.events.tick": "The TICK event is run every tick in-game if this avatar's entity exists.",
   "figura.docs.events.world_tick": "The WORLD_TICK event is run every in-game tick.",
-  "figura.docs.events.render": "The RENDER event is run every frame, before the avatar is rendered. Takes a parameter delta, which is a number from 0 to 1 indicating the proportion of the way the game is between ticks.",
+  "figura.docs.events.render": "The RENDER event is run every frame, before the avatar is rendered. Takes a parameter delta, which is a number from 0 to 1 indicating the proportion of the way the game is between ticks. And also a second context parameter, which is a string of the current RenderMode, with the source of this render event.",
   "figura.docs.events.post_render": "The POST_RENDER event runs every frame, after the avatar is rendered. Takes a parameter delta, which is a number from 0 to 1 indicating the proportion of the way the game is between ticks.",
   "figura.docs.events.world_render": "The WORLD_RENDER event is run every frame, before the world is rendered. Always runs when a world is visible, even when the avatar itself is not, so this runs even in first person. Takes a parameter delta, which is a number from 0 to 1 indicating the proportion of the way the game is between ticks.",
   "figura.docs.events.post_world_render": "The POST_WORLD_RENDER event runs every frame, after the world is rendered. Always runs when a world is visible, even when the avatar itself is not, so this runs even in first person. Takes a parameter delta, which is a number from 0 to 1 indicating the proportion of the way the game is between ticks.",
@@ -773,8 +810,7 @@
   "figura.docs.events.chat_receive_message": "The CHAT_RECEIVE_MESSAGE event is run every time a message is received in chat. A string parameter is passed in, which contains the message you received.",
   "figura.docs.events.skull_render": "Called between POST_RENDER and POST_WORLD_RENDER, on every one of your skull blocks placed in the world. The arguments are the tick delta and the position of the skull as a vector.",
   "figura.docs.events.mouse_scroll": "The MOUSE_SCROLL event runs every time the mouse is scrolled. Takes a parameter delta, which is the direction of the scroll.",
-  "figura.docs.events.preview_render": "The PREVIEW_RENDER event runs every frame an avatar preview is being rendered, either be it by the paperdoll, Figura Wardrobe or Inventory.",
-  "figura.docs.events.post_preview_render": "The POST_PREVIEW_RENDER event runs every frame, after the avatar preview is being rendered, either be it by the paperdoll, Figura Wardrobe or Inventory.",
+  "figura.docs.events.use_item": "The USE_ITEM event is run every time the entity uses an item. The item, action and amount of particles this item would produce is given as argument.",
 
   "figura.docs.event": "A hook for a certain event in Minecraft. You may register functions to one, and those functions will be called when the event occurs.",
   "figura.docs.event.register": "Registers the given function to the given event. When the event occurs, the function will be run. Functions are run in the order they were registered. The optional name parameter is used when you wish to later remove a function from the event.",
@@ -806,6 +842,7 @@
   "figura.docs.host.is_chat_open": "Checks if the host has the chat screen opened.",
   "figura.docs.host.is_container_open": "Checks if the host has a container screen opened.",
   "figura.docs.host.save_texture": "A debug function, saves the texture on the cache directory as png.",
+  "figura.docs.host.screenshot": "Takes a screenshot from the current screen and returns a Texture of it.",
 
 
   "figura.docs.itemstack": "A proxy for an item stack from Minecraft.",
@@ -846,7 +883,6 @@
   "figura.docs.keybind.on_release": "A function that runs when the key is released.",
   "figura.docs.keybind.enabled": "Toggles if this keybind should be processed or not.",
   "figura.docs.keybind.gui": "Whenever or not this keybind should run when a GUI is open.",
-  "figura.docs.keybind.override": "Toggles if this keybind should stop vanilla keys from running.",
 
 
   "figura.docs.matrices": "A global API which provides functions dedicated to creating and otherwise manipulating matrices. Accessed using the name \"matrices\".",
@@ -930,8 +966,7 @@
   "figura.docs.model_part.set_secondary_render_type": "Sets the current secondary render type of this model part. Nil by default, meaning the part copies the secondary render type of its parent during rendering. Check the docs list command for all render types.",
   "figura.docs.model_part.set_primary_texture": "Sets the primary texture override of this part. Check the TextureType types in the list docs. If using \"resource\", the second parameter should indicate the path to the Minecraft texture you want to use. If using \"custom\", the second parameter should indicate a texture reference or name",
   "figura.docs.model_part.set_secondary_texture": "Sets the secondary texture override of this part. Check the TextureType types in the list docs. If using \"resource\", the second parameter should indicate the path to the Minecraft texture you want to use. If using \"custom\", the second parameter should indicate a texture reference or name",
-  "figura.docs.model_part.get_primary_textures": "Returns a table with all primary textures used by this part. Do not include children textures, so groups usually will return an empty table.",
-  "figura.docs.model_part.get_secondary_textures": "Returns a table with all secondary textures used by this part. Do not include children textures, so groups usually will return an empty table.",
+  "figura.docs.model_part.get_textures": "Returns a table with all textures used by this part. Do not include children textures, so groups usually will return an empty table.",
   "figura.docs.model_part.part_to_world_matrix": "Gets a matrix which transforms a point from this part's position to a world location. Recommended to use this in POST_RENDER, as by then the matrix is updated. In RENDER it will be 1 frame behind the part's visual position for that frame. Also, if the model is not rendered in-world, the part's matrix will not be updated. Paperdoll rendering and other UI rendering will not affect this matrix.",
   "figura.docs.model_part.get_texture_size": "Gets the width, height of this part's texture in pixels. Throws an error if this part has multiple different-sized textures on it, or if the part is a Group.",
   "figura.docs.model_part.set_uv": "Sets the UV of this part. This function is normalized, meaning it works with values 0 to 1. If you say setUV(0.5, 0.25), for example, it will scroll by half of your texture width to the right, and one fourth of the texture width downwards.",
@@ -949,6 +984,9 @@
   "figura.docs.model_part.set_parent_type": "Sets the parent type of the part. See the ParentType parts in the list docs for legal types.",
   "figura.docs.model_part.get_parent_type": "Returns the current parent type of the part.",
   "figura.docs.model_part.get_type": "Returns whether this part is a \"GROUP\", a \"CUBE\", or a \"MESH\".",
+  "figura.docs.model_part.override_vanilla_rot": "Returns if this part vanilla rotation is being overridden by an animation.",
+  "figura.docs.model_part.override_vanilla_pos": "Returns if this part vanilla position is being overridden by an animation",
+  "figura.docs.model_part.override_vanilla_scale": "Returns if this part vanilla scale is being overridden by an animation",
   "figura.docs.model_part.add_text": "Adds a new Text Render Task on this part.",
   "figura.docs.model_part.add_item": "Adds a new Item Render Task on this part.",
   "figura.docs.model_part.add_block": "Adds a new Block Render Task on this part.",
@@ -980,8 +1018,23 @@
   "figura.docs.nameplate_group.set_text": "Sets the text for all its children customizations.",
 
 
-  "figura.docs.particles": "A global API which is used for dealing with Minecraft's particles. Can currently only be used to summon a particle. Accessed using the name \"particles\".",
+  "figura.docs.particles": "A global API which is used for dealing with Minecraft's particles. Particles instances are created when indexing their id. Accessed using the name \"particles\".",
   "figura.docs.particles.add_particle": "Creates a particle with the given name at the specified position, with the given velocity. Some particles have special properties, like the \"dust\" particle. For these particles, the special properties can be put into the \"name\" parameter, the same way as it works for commands.",
+  "figura.docs.particles.remove_particles": "Removes all particles spawned from this avatar.",
+
+  "figura.docs.particle": "Represents a particle that can be spawned and modified. Obtained by indexing the ParticleAPI. Exists as an object-oriented alternative to particles:addParticle().",
+  "figura.docs.particle.spawn": "Spawns this particle with the current properties.",
+  "figura.docs.particle.remove": "Removes this particle from the world.",
+  "figura.docs.particle.is_alive": "Checks if this particle is not flagged for removal.",
+  "figura.docs.particle.get_lifetime": "Gets this particle current lifetime.",
+  "figura.docs.particle.pos": "Sets this particle position. The position is given in world coordinates. Returns this particle for method chaining.",
+  "figura.docs.particle.velocity": "Sets the velocity of this particle. The velocity is given in world coordinates. Returns this particle for method chaining.",
+  "figura.docs.particle.color": "Sets this particle color. Accepts and alpha value, but most particles do not supports it. Default rgba of 1. Returns this particle for method chaining.",
+  "figura.docs.particle.lifetime": "Sets this particle lifetime, which is how many ticks this particle should stay in the world. Returns this particle for method chaining.",
+  "figura.docs.particle.power": "Sets this particle power. Returns this particle for method chaining.",
+  "figura.docs.particle.scale": "Sets this particle scale. Returns this particle for method chaining.",
+  "figura.docs.particle.gravity": "Sets this particle gravity. Returns this particle for method chaining.",
+  "figura.docs.particle.physics": "Sets if this particle has physics. Returns this particle for method chaining.",
 
 
   "figura.docs.pings": "A global API dedicated to register and call pings.",
@@ -1011,7 +1064,9 @@
   "figura.docs.text_task": "A task for rendering some Text.",
   "figura.docs.text_task.text": "Sets the Text for this task render.",
   "figura.docs.text_task.is_centered": "Checks if this task text will render centered.",
-  "figura.docs.text_task.centered": "Toggles if the Text should render centered on this task pivot point.",
+  "figura.docs.text_task.centered": "Toggles if the Text should render centered on this task pivot point. Not compatible with \"Right\" mode.",
+  "figura.docs.text_task.is_right": "Checks if this task text will render anchored to the right side.",
+  "figura.docs.text_task.right": "Toggles if the Text should render anchored to the right on this task pivot point. Not compatible with \"Centered\" mode.",
   "figura.docs.text_task.has_shadow": "Checks if this task text has shadow.",
   "figura.docs.text_task.shadow": "Toggles if the Text should render with a drop shadow. Not compatible with \"Outline\" mode",
   "figura.docs.text_task.has_outline": "Checks if this task text has outline.",
@@ -1048,15 +1103,27 @@
   "figura.docs.sounds.add_sound": "Registers a new custom sound for this avatar. The first argument is the sound id while the second argument is either a byte array of the sound data, or a base64 string representation of the same.",
 
   "figura.docs.sound": "Represents a sound that can be played. Obtained by indexing the SoundAPI. Exists as an object-oriented alternative to sounds:playSound().",
-  "figura.docs.sound.play": "Plays this sound with the given parameters. Volume in Minecraft refers to how far away people can hear from, not the actual loudness. The defaults for volume and pitch are 1.",
+  "figura.docs.sound.play": "Plays this sound, or resume a paused sound.",
+  "figura.docs.sound.is_playing": "Checks if this sound is being played.",
+  "figura.docs.sound.pause": "Pauses the current playback of this sound.",
+  "figura.docs.sound.stop": "Stops the playback of this sound.",
+  "figura.docs.sound.pos": "Sets the position of this sound. Position is given in world coordinates. Default 0.",
+  "figura.docs.sound.get_pos": "Get this sound position.",
+  "figura.docs.sound.volume": "Sets the volume of this sound. Default 1.",
+  "figura.docs.sound.get_volume": "Gets this sound volume",
+  "figura.docs.sound.attenuation": "Sets the attenuation of this sound. Default 1.",
+  "figura.docs.sound.get_attenuation": "Gets this sound attenuation.",
+  "figura.docs.sound.pitch": "Sets the pitch of this sound. Default 1.",
+  "figura.docs.sound.get_pitch": "Gets this sound pitch.",
+  "figura.docs.sound.loop": "Toggles if this sound should loop. Default false.",
+  "figura.docs.sound.is_looping": "Checks if this sound is looping.",
 
 
   "figura.docs.textures": "A global API which allows for creating textures at runtime.",
   "figura.docs.textures.register": "Creates a new texture with the given name, width and height. The texture is filled with a solid color. Returns the texture.",
   "figura.docs.textures.read": "Reads a texture from a base64 string.",
   "figura.docs.textures.get": "Gets a registered texture based on its name, or nil if no texture was found with that name.",
-  "figura.docs.textures.get_primary_textures": "Returns a table with all primary textures used by this avatar.",
-  "figura.docs.textures.get_secondary_textures": "Returns a table with all secondary textures used by this avatar.",
+  "figura.docs.textures.get_textures": "Returns a table with all textures used by this avatar. Do not include generated textures from this API.",
 
   "figura.docs.texture": "A texture object, either generated by the model or created with the TextureAPI.",
   "figura.docs.texture.get_name": "Returns this texture name.",
@@ -1067,6 +1134,7 @@
   "figura.docs.texture.update": "Updates the texture to the gpu, applying all the changes.",
   "figura.docs.texture.restore": "Restores the texture to its original state, before any modifications.",
   "figura.docs.texture.save": "Returns a base64 string representation of this texture.",
+  "figura.docs.texture.apply_func": "Calls the given function on the specified area of this texture, it will iterate over each pixel, and their current x, y and color will be given as arguments, the color in a RGBA vec4 format, and the return value will set that pixel color. Invalid return values or nil takes no effects.",
 
 
   "figura.docs.vanilla_model": "A global API that provides functions to interact with the vanilla player model and its parts. Accessed using the name \"vanilla_model\".",
@@ -1134,13 +1202,12 @@
   "figura.docs.vectors.vec4": "Creates and returns a Vector4 with the given values. Nil values become zero.",
   "figura.docs.vectors.vec5": "Creates and returns a Vector5 with the given values. Nil values become zero.",
   "figura.docs.vectors.vec6": "Creates and returns a Vector6 with the given values. Nil values become zero.",
-  "figura.docs.vectors.rgb_to_int": "Converts the given color from RGB format to integer format.",
-  "figura.docs.vectors.int_to_rgb": "Converts the given color from integer format to RGB format.",
-  "figura.docs.vectors.hex_to_rgb": "Parses a hex string color into a RGB format vector. The hex \"#\" is optional, and it can have any length, however only the first 6 hex digits are evaluated, short hex (length 3) is also supported. For example, \"#42\" is the same as \"420000\", and \"F0B\" is the same as \"FF00BB\"",
+  "figura.docs.vectors.rgb_to_int": "Converts the given color from RGB format to Integer format.",
+  "figura.docs.vectors.int_to_rgb": "Converts the given color from Integer format to RGB format.",
+  "figura.docs.vectors.hex_to_rgb": "Parses a Hex string color into a RGB format vector. The hex \"#\" is optional, and it can have any length, however only the first 6 hex digits are evaluated, short hex (length 3) is also supported. For example, \"#42\" is the same as \"420000\", and \"F0B\" is the same as \"FF00BB\"",
   "figura.docs.vectors.hsv_to_rgb": "Converts the given color from HSV format to RGB format.",
   "figura.docs.vectors.rgb_to_hsv": "Converts the given color from RGB format to HSV format.",
-  "figura.docs.vectors.rgb_to_hex": "Converts the given color from RGB format to HEX format. The \"#\" is not included on the return hex.",
-  "figura.docs.vectors.rainbow": "Gets an rgb vector with a shifting hue based on the given speed value and how much time the game is opened.",
+  "figura.docs.vectors.rgb_to_hex": "Converts the given color from RGB format to Hex format. The \"#\" is not included on the return value.",
   "figura.docs.vectors.rotate_around_axis": "Rotates a vector relative to a rotation vector.",
   "figura.docs.vectors.to_camera_space": "Converts a position in the world into a position relative to the viewer's camera.",
   "figura.docs.vectors.world_to_screen_space": "Converts a position in the world into a position relative to the viewer's screen.",
@@ -1167,6 +1234,7 @@
   "figura.docs.vector_n.div": "Divides this vector by the given vector or values, and returns self for chaining.",
   "figura.docs.vector_n.reduce": "Reduces this vector modulo the given vector or values, and returns self for chaining.",
   "figura.docs.vector_n.scale": "Scales this vector by the given factor, and returns self for chaining.",
+  "figura.docs.vector_n.unpack": "Returns each of this vector values as argument.",
 
   "figura.docs.vector_n.transform": "Transforms this vector by the given matrix, and returns self for chaining.",
   "figura.docs.vector_n.length_squared": "Returns the length of this vector squared. Suitable when you only care about relative lengths, because it avoids a square root.",
@@ -1181,7 +1249,7 @@
   "figura.docs.vector_n.to_deg": "Returns a copy of this vector, in degrees.",
   "figura.docs.vector_n.floor": "Returns a copy of this vector with its values rounded down.",
   "figura.docs.vector_n.ceil": "Returns a copy of this vector with its values rounded up.",
-  "figura.docs.vector_n.apply_func": "Calls the given function on each element of this vector, and sets the values of the vector to the returns. Returns self for chaining.",
+  "figura.docs.vector_n.apply_func": "Calls the given function on each element of this vector, and sets the values of the vector to the returns. The current index and its value is given as arguments of the function. Returns self for chaining.",
 
   "figura.docs.vector3.cross": "Sets this vector to the cross product of itself and the other vector. Returns self for chaining.",
   "figura.docs.vector3.crossed": "Returns a new vector which is the cross product of this and the other one.",

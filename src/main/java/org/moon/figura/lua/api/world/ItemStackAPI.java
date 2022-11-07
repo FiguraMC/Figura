@@ -109,7 +109,7 @@ public class ItemStackAPI {
     @LuaWhitelist
     @LuaMethodDoc("itemstack.get_use_action")
     public String getUseAction() {
-        return itemStack.getUseAnimation().toString();
+        return itemStack.getUseAnimation().name();
     }
 
     @LuaWhitelist
@@ -177,6 +177,11 @@ public class ItemStackAPI {
             ret += nbt.toString();
 
         return ret;
+    }
+
+    @LuaWhitelist
+    public boolean __eq(ItemStackAPI other) {
+        return ItemStack.matches(this.itemStack, other.itemStack);
     }
 
     @LuaWhitelist

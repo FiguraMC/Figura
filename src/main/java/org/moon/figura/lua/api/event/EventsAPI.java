@@ -26,8 +26,7 @@ public class EventsAPI {
         CHAT_RECEIVE_MESSAGE = new LuaEvent();
         SKULL_RENDER = new LuaEvent();
         MOUSE_SCROLL = new LuaEvent();
-        PREVIEW_RENDER = new LuaEvent();
-        POST_PREVIEW_RENDER = new LuaEvent();
+        USE_ITEM = new LuaEvent();
     }
 
     //Unsure on how to do the docs for these fields. Maybe we keep the @LuaFieldDoc, just don't allow them to be
@@ -68,11 +67,8 @@ public class EventsAPI {
     @LuaFieldDoc("events.mouse_scroll")
     public final LuaEvent MOUSE_SCROLL;
     @LuaWhitelist
-    @LuaFieldDoc("events.preview_render")
-    public final LuaEvent PREVIEW_RENDER;
-    @LuaWhitelist
-    @LuaFieldDoc("events.post_preview_render")
-    public final LuaEvent POST_PREVIEW_RENDER;
+    @LuaFieldDoc("events.use_item")
+    public final LuaEvent USE_ITEM;
 
     @LuaWhitelist
     @LuaMetamethodDoc(overloads = @LuaMetamethodOverload(
@@ -93,8 +89,7 @@ public class EventsAPI {
             case "CHAT_RECEIVE_MESSAGE" -> CHAT_RECEIVE_MESSAGE;
             case "SKULL_RENDER" -> SKULL_RENDER;
             case "MOUSE_SCROLL" -> MOUSE_SCROLL;
-            case "PREVIEW_RENDER" -> PREVIEW_RENDER;
-            case "POST_PREVIEW_RENDER" -> POST_PREVIEW_RENDER;
+            case "USE_ITEM" -> USE_ITEM;
             default -> null;
         };
     }

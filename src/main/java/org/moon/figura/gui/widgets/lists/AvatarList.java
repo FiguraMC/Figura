@@ -8,7 +8,7 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.avatars.providers.LocalAvatarFetcher;
+import org.moon.figura.avatar.local.LocalAvatarFetcher;
 import org.moon.figura.gui.widgets.TextField;
 import org.moon.figura.gui.widgets.TexturedButton;
 import org.moon.figura.gui.widgets.avatar.AbstractAvatarWidget;
@@ -75,6 +75,9 @@ public class AvatarList extends AbstractList {
 
         //initial load
         LocalAvatarFetcher.load();
+        loadContents();
+
+        scrollToSelected();
     }
 
     // -- Functions -- //
@@ -192,6 +195,22 @@ public class AvatarList extends AbstractList {
 
         //set new scroll percentage
         scrollBar.setScrollProgress(pastScroll / (totalHeight - height));
+    }
+
+    public void scrollToSelected() {
+        double y = 0;
+
+        //get height
+        totalHeight = 2;
+        for (AbstractAvatarWidget avatar : avatarList) {
+            if (avatar.equals(selectedEntry))
+                y = totalHeight;
+            else
+                totalHeight += avatar.height + 2;
+        }
+
+        //set scroll
+        scrollBar.setScrollProgress(y / totalHeight);
     }
 
     @Override

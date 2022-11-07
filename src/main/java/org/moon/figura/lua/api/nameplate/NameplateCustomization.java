@@ -36,8 +36,8 @@ public class NameplateCustomization {
             ),
             value = "nameplate_customization.set_text"
     )
-    public void setText(@LuaNotNil String text) {
-        if (TextUtils.tryParseJson(text).getString().length() > 256)
+    public void setText(String text) {
+        if (text != null && TextUtils.tryParseJson(text).getString().length() > 256)
             throw new LuaError("Text length exceeded limit of 256 characters");
         this.text = text;
     }

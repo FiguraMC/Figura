@@ -10,15 +10,16 @@ import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.avatars.Avatar;
-import org.moon.figura.avatars.AvatarManager;
-import org.moon.figura.avatars.Badges;
-import org.moon.figura.avatars.providers.LocalAvatarLoader;
+import org.moon.figura.avatar.Avatar;
+import org.moon.figura.avatar.AvatarManager;
+import org.moon.figura.avatar.Badges;
+import org.moon.figura.avatar.local.LocalAvatarLoader;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.widgets.ContextMenu;
 import org.moon.figura.gui.widgets.Label;
 import org.moon.figura.gui.widgets.lists.PlayerList;
 import org.moon.figura.lua.api.nameplate.NameplateCustomization;
+import org.moon.figura.trust.Trust;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.FiguraIdentifier;
@@ -46,7 +47,8 @@ public class PlayerElement extends AbstractTrustElement {
 
     //drag
     public boolean dragged = false;
-    public int index = -1;
+    public int anchorX, anchorY, initialY;
+    public int index;
 
     public PlayerElement(String name, TrustContainer trust, ResourceLocation skin, UUID owner, PlayerList parent) {
         super(40, trust, parent);
@@ -80,12 +82,11 @@ public class PlayerElement extends AbstractTrustElement {
 
         //trust
         ContextMenu trustContext = new ContextMenu();
-        ArrayList<ResourceLocation> groupList = new ArrayList<>(TrustManager.GROUPS.keySet());
-        for (int i = 0; i < (TrustManager.isLocal(trust) ? groupList.size() : groupList.size() - 1); i++) {
-            ResourceLocation parentID = groupList.get(i);
-            TrustContainer container = TrustManager.get(parentID);
+        int size = Trust.Group.values().length;
+        for (int i = 0; i < (TrustManager.isLocal(trust) ? size : size - 1); i++) {
+            TrustContainer.GroupContainer container = TrustManager.GROUPS.get(Trust.Group.indexOf(i));
             trustContext.addAction(container.getGroupName(), button -> {
-                trust.setParent(parentID);
+                trust.setParent(container);
                 if (parent.selectedEntry == this)
                     parent.parent.updateTrustData(trust);
             });
@@ -118,8 +119,8 @@ public class PlayerElement extends AbstractTrustElement {
     public void renderDragged(PoseStack stack, int mouseX, int mouseY, float delta) {
         int oX = x;
         int oY = y;
-        x = mouseX - 20;
-        y = mouseY - height / 2;
+        x = mouseX - (anchorX - x);
+        y = mouseY - (anchorY - y) + (initialY - oY);
         super.render(stack, mouseX, mouseY, delta);
         x = oX;
         y = oY;
@@ -133,9 +134,9 @@ public class PlayerElement extends AbstractTrustElement {
         float ty = y + height / 2f;
 
         stack.translate(tx, ty, 100);
-        stack.scale(scale, scale, scale);
+        stack.scale(scale, scale, 1f);
 
-        animate(mouseX, mouseY, delta);
+        animate(delta, (UIHelper.getContext() == this.context && this.context.isVisible()) || this.isMouseOver(mouseX, mouseY) || this.isFocused());
 
         //fix x, y, mouse
         int x = -width / 2;
@@ -146,7 +147,7 @@ public class PlayerElement extends AbstractTrustElement {
         //selected overlay
         if (this.parent.selectedEntry == this) {
             ArrayList<TrustContainer> list = new ArrayList<>(TrustManager.GROUPS.values());
-            int color = (dragged ? list.get(Math.min(index, list.size() - (TrustManager.isLocal(trust) ? 1 : 2))) : trust).getGroupColor();
+            int color = (dragged ? list.get(Math.min(index, list.size() - (TrustManager.isLocal(trust) ? 1 : 2))) : trust).getColor();
             UIHelper.fillRounded(stack, x - 1, y - 1, width + 2, height + 2, color + (0xFF << 24));
         }
 
@@ -155,15 +156,19 @@ public class PlayerElement extends AbstractTrustElement {
 
         //head
         Component name = null;
-
+        boolean replaceBadges = false;
         boolean head = false;
+
         Avatar avatar = AvatarManager.getAvatarForPlayer(owner);
         if (avatar != null) {
             NameplateCustomization custom = avatar.luaRuntime == null ? null : avatar.luaRuntime.nameplate.LIST;
-            if (custom != null && custom.getText() != null && avatar.trust.get(TrustContainer.Trust.NAMEPLATE_EDIT) == 1)
+            if (custom != null && custom.getText() != null && avatar.trust.get(Trust.NAMEPLATE_EDIT) == 1) {
                 name = NameplateCustomization.applyCustomization(custom.getText());
+                if (custom.getText().contains("${badges}"))
+                    replaceBadges = true;
+            }
 
-            head = !dragged && avatar.renderHeadOnHud(stack, x + 4, y + 4, Math.round(32 * scale), 64, true);
+            head = !dragged && avatar.renderPortrait(stack, x + 4, y + 4, Math.round(32 * scale), 64, true);
         }
 
         if (!head) {
@@ -187,9 +192,10 @@ public class PlayerElement extends AbstractTrustElement {
         if (name == null)
             name = Component.literal(this.name);
 
-        name = Component.empty()
-                .append(name.copy().withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(this.name + "\n" + this.owner)))))
-                .append(Badges.fetchBadges(avatar));
+        name = Component.empty().append(name.copy().withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(this.name + "\n" + this.owner)))));
+
+        Component badges = Badges.fetchBadges(avatar);
+        name = replaceBadges ? TextUtils.replaceInText(name, "\\$\\{badges\\}", badges) : name.copy().append(" ").append(badges);
 
         nameLabel.setText(TextUtils.trimToWidthEllipsis(font, name, width - 40, TextUtils.ELLIPSIS));
         nameLabel.x = x + 40;
@@ -207,7 +213,7 @@ public class PlayerElement extends AbstractTrustElement {
 
         //trust
         int textY = y + height - font.lineHeight - 4;
-        drawString(stack, font, trust.getGroupName(), x + 40, textY, 0xFFFFFF);
+        drawString(stack, font, trust.getGroupName().append(trust.hasChanges() ? "*" : ""), x + 40, textY, 0xFFFFFF);
 
         //disconnected
         if (disconnected)

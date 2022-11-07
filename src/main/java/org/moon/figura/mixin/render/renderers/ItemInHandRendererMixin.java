@@ -10,8 +10,8 @@ import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.ItemStack;
-import org.moon.figura.avatars.Avatar;
-import org.moon.figura.avatars.AvatarManager;
+import org.moon.figura.avatar.Avatar;
+import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.lua.api.vanilla_model.VanillaModelPart;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -36,30 +36,20 @@ public abstract class ItemInHandRendererMixin {
 
     @Inject(method = "renderHandsWithItems", at = @At(value = "FIELD", target = "Lnet/minecraft/client/renderer/ItemInHandRenderer$HandRenderSelection;renderMainHand:Z", shift = At.Shift.BEFORE), locals = LocalCapture.CAPTURE_FAILSOFT)
     private void preRender(float tickDelta, PoseStack matrices, MultiBufferSource.BufferSource vertexConsumers, LocalPlayer player, int light, CallbackInfo ci, float f, InteractionHand interactionHand, float g, @Coerce HandRenderSelectionAccessor handRenderSelection, float h, float i) {
+        playerRenderer = null;
+
         canRender = handRenderSelection.renderMainHand() || handRenderSelection.renderOffHand();
         if (!canRender)
             return;
 
         avatar = AvatarManager.getAvatarForPlayer(player.getUUID());
-        if (avatar == null)
-            return;
-
-        playerRenderer = (PlayerRenderer) this.entityRenderDispatcher.getRenderer(player);
-
-        if (avatar.luaRuntime != null)
-            avatar.luaRuntime.vanilla_model.PLAYER.store(playerRenderer.getModel());
-
-        avatar.renderEvent(tickDelta);
+        if (avatar != null)
+            playerRenderer = (PlayerRenderer) this.entityRenderDispatcher.getRenderer(player);
     }
 
     @Inject(method = "renderHandsWithItems", at = @At("RETURN"))
     private void posRender(float tickDelta, PoseStack matrices, MultiBufferSource.BufferSource vertexConsumers, LocalPlayer player, int light, CallbackInfo ci) {
-        if (avatar == null || !canRender)
-            return;
-
-        avatar.postRenderEvent(tickDelta);
-
-        if (avatar.luaRuntime != null)
+        if (canRender && avatar != null && avatar.luaRuntime != null)
             avatar.luaRuntime.vanilla_model.PLAYER.restore(playerRenderer.getModel());
     }
 

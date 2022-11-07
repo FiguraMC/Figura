@@ -21,7 +21,7 @@ import java.util.List;
 public class EnumElement extends AbstractConfigElement {
 
     private final List<Component> names;
-    private final TexturedButton button;
+    private final ParentedButton button;
     private ContextMenu context;
 
     public EnumElement(int width, Config config, ConfigList parent) {
@@ -53,6 +53,7 @@ public class EnumElement extends AbstractConfigElement {
                 );
             }
         });
+        button.active = FiguraMod.DEBUG_MODE || !config.disabled;
 
         //context menu
         context = new ContextMenu(button, button.getWidth());
@@ -94,6 +95,16 @@ public class EnumElement extends AbstractConfigElement {
 
         //update context pos
         this.context.setPos(this.button.x + this.button.getWidth() / 2 - this.context.width / 2, this.button.y + 20);
+    }
+
+    @Override
+    public boolean isMouseOver(double mouseX, double mouseY) {
+        if (UIHelper.getContext() == this.context && this.context.isVisible()) {
+            this.button.setHovered(true);
+            return true;
+        }
+
+        return super.isMouseOver(mouseX, mouseY);
     }
 
     private void updateContextText() {

@@ -4,7 +4,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.backend.NetworkManager;
+import org.moon.figura.backend2.BackendCommands;
 import org.moon.figura.lua.docs.FiguraDocsManager;
 
 public class FiguraCommands {
@@ -34,7 +34,7 @@ public class FiguraCommands {
 
         //backend debug
         if (FiguraMod.DEBUG_MODE)
-            root.then(NetworkManager.getCommand());
+            root.then(BackendCommands.getCommand());
 
         //register
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> dispatcher.register(root));

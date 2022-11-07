@@ -2,18 +2,19 @@ package org.moon.figura.lua.api;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import org.luaj.vm2.LuaError;
-import org.moon.figura.avatars.Avatar;
-import org.moon.figura.avatars.model.rendering.texture.FiguraTexture;
-import org.moon.figura.avatars.model.rendering.texture.FiguraTextureSet;
+import org.moon.figura.avatar.Avatar;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.model.rendering.texture.FiguraTexture;
+import org.moon.figura.trust.Trust;
 import org.moon.figura.utils.ColorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -22,7 +23,7 @@ import java.util.List;
 )
 public class TextureAPI {
 
-    private static final int TEXTURE_LIMIT = 100;
+    private static final int TEXTURE_LIMIT = 128;
 
     private final Avatar owner;
 
@@ -35,15 +36,19 @@ public class TextureAPI {
             throw new LuaError("Avatar have no active renderer!");
     }
 
-    private FiguraTexture register(String name, NativeImage image) {
-        FiguraTexture oldText = __index(name);
+    public FiguraTexture register(String name, NativeImage image, boolean ignoreSize) {
+        int max = owner.trust.get(Trust.TEXTURE_SIZE);
+        if (!ignoreSize && (image.getWidth() > max || image.getHeight() > max))
+            throw new LuaError("Texture exceeded max size of " + max + " x " + max + " resolution, got " + image.getWidth() + " x " + image.getHeight());
+
+        FiguraTexture oldText = get(name);
         if (oldText != null)
             oldText.close();
 
         if (owner.renderer.customTextures.size() > TEXTURE_LIMIT)
             throw new LuaError("Maximum amount of textures reached!");
 
-        FiguraTexture texture = new FiguraTexture(owner.owner, image, name);
+        FiguraTexture texture = new FiguraTexture(owner, name, image);
         owner.renderer.customTextures.put(name, texture);
         return texture;
     }
@@ -59,12 +64,13 @@ public class TextureAPI {
         NativeImage image;
         try {
             image = new NativeImage(width, height, true);
-            image.fillRect(0, 0, width, height, ColorUtils.rgbaToIntABGR(ColorUtils.Colors.FRAN_PINK.vec.augmented()));
         } catch (Exception e) {
             throw new LuaError(e.getMessage());
         }
 
-        return register(name, image);
+        FiguraTexture texture = register(name, image, false);
+        texture.fill(0, 0, width, height, ColorUtils.Colors.FRAN_PINK.vec.augmented(), null, null, null);
+        return texture;
     }
 
     @LuaWhitelist
@@ -82,7 +88,7 @@ public class TextureAPI {
             throw new LuaError(e.getMessage());
         }
 
-        return register(name, image);
+        return register(name, image, false);
     }
 
     @LuaWhitelist
@@ -98,38 +104,26 @@ public class TextureAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("textures.get_primary_textures")
-    public List<FiguraTexture> getPrimaryTextures() {
+    @LuaMethodDoc("textures.get_textures")
+    public List<FiguraTexture> getTextures() {
         check();
-        List<FiguraTexture> list = new ArrayList<>();
-
-        for (FiguraTextureSet set : owner.renderer.textureSets) {
-            FiguraTexture texture = set.mainTex;
-            if (texture != null)
-                list.add(texture);
-        }
-
-        return list;
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc("textures.get_secondary_textures")
-    public List<FiguraTexture> getSecondaryTextures() {
-        check();
-        List<FiguraTexture> list = new ArrayList<>();
-
-        for (FiguraTextureSet set : owner.renderer.textureSets) {
-            FiguraTexture texture = set.emissiveTex;
-            if (texture != null)
-                list.add(texture);
-        }
-
-        return list;
+        return new ArrayList<>(owner.renderer.textures.values());
     }
 
     @LuaWhitelist
     public FiguraTexture __index(@LuaNotNil String name) {
-        return get(name);
+        check();
+
+        FiguraTexture texture = get(name);
+        if (texture != null)
+            return texture;
+
+        for (Map.Entry<String, FiguraTexture> entry : owner.renderer.textures.entrySet()) {
+            if (entry.getKey().equals(name))
+                return entry.getValue();
+        }
+
+        return null;
     }
 
     @Override

@@ -6,11 +6,11 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import org.moon.figura.avatars.Avatar;
-import org.moon.figura.avatars.AvatarManager;
+import org.moon.figura.avatar.Avatar;
+import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.lua.api.vanilla_model.VanillaModelAPI;
 import org.moon.figura.lua.api.vanilla_model.VanillaPart;
-import org.moon.figura.trust.TrustContainer;
+import org.moon.figura.trust.Trust;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -26,7 +26,7 @@ public class HumanoidArmorLayerMixin<T extends LivingEntity, M extends HumanoidM
     @Inject(at = @At("HEAD"), method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V")
     public void onRender(PoseStack poseStack, MultiBufferSource multiBufferSource, int i, T livingEntity, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
         Avatar avatar = AvatarManager.getAvatar(livingEntity);
-        if (avatar != null && avatar.luaRuntime != null && avatar.trust.get(TrustContainer.Trust.VANILLA_MODEL_EDIT) == 1)
+        if (avatar != null && avatar.luaRuntime != null && avatar.trust.get(Trust.VANILLA_MODEL_EDIT) == 1)
             vanillaModelAPI = avatar.luaRuntime.vanilla_model;
         else
             vanillaModelAPI = null;

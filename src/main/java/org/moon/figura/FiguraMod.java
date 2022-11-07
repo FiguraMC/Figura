@@ -14,17 +14,17 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.players.GameProfileCache;
 import net.minecraft.world.entity.Entity;
-import org.moon.figura.avatars.Avatar;
-import org.moon.figura.avatars.AvatarManager;
-import org.moon.figura.avatars.providers.LocalAvatarFetcher;
-import org.moon.figura.avatars.providers.LocalAvatarLoader;
-import org.moon.figura.backend.NetworkManager;
+import org.moon.figura.avatar.Avatar;
+import org.moon.figura.avatar.AvatarManager;
+import org.moon.figura.avatar.local.LocalAvatarFetcher;
+import org.moon.figura.avatar.local.LocalAvatarLoader;
+import org.moon.figura.backend2.NetworkStuff;
 import org.moon.figura.commands.FiguraCommands;
 import org.moon.figura.config.Config;
 import org.moon.figura.config.ConfigManager;
+import org.moon.figura.gui.ActionWheel;
 import org.moon.figura.gui.PaperDoll;
 import org.moon.figura.gui.PopupMenu;
-import org.moon.figura.gui.ActionWheel;
 import org.moon.figura.lua.FiguraAPIManager;
 import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.lua.docs.FiguraDocsManager;
@@ -74,7 +74,7 @@ public class FiguraMod implements ClientModInitializer {
     }
 
     private static void tick(Minecraft client) {
-        NetworkManager.tick();
+        NetworkStuff.tick();
         LocalAvatarLoader.tickWatchedKey();
         AvatarManager.tickLoadedAvatars();
         FiguraLuaPrinter.printChatFromQueue();
@@ -100,6 +100,12 @@ public class FiguraMod implements ClientModInitializer {
     }
 
     // -- Helper Functions -- //
+
+    //debug print
+    public static void debug(String str, Object... args) {
+        if (DEBUG_MODE) LOGGER.info(str, args);
+        else LOGGER.debug(str, args);
+    }
 
     //mod root directory
     public static Path getFiguraDirectory() {
@@ -165,7 +171,7 @@ public class FiguraMod implements ClientModInitializer {
 
     public static Style getAccentColor() {
         Avatar avatar = AvatarManager.getAvatarForPlayer(getLocalPlayerUUID());
-        int color = avatar != null ? ColorUtils.userInputHex(avatar.color, ColorUtils.Colors.FRAN_PINK.vec) : ColorUtils.Colors.FRAN_PINK.hex;
+        int color = avatar != null ? ColorUtils.rgbToInt(ColorUtils.userInputHex(avatar.color, ColorUtils.Colors.FRAN_PINK.vec)) : ColorUtils.Colors.FRAN_PINK.hex;
         return Style.EMPTY.withColor(color);
     }
 }

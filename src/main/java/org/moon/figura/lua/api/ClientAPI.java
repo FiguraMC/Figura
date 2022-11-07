@@ -4,11 +4,16 @@ import com.mojang.blaze3d.platform.Window;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
+import net.minecraft.core.UUIDUtil;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.world.phys.Vec3;
 import org.luaj.vm2.LuaError;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.lua.api.entity.EntityAPI;
+import org.moon.figura.lua.api.entity.PlayerAPI;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
@@ -17,6 +22,10 @@ import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.MathUtils;
 import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.Version;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -250,6 +259,34 @@ public class ClientAPI {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = String.class,
+                    argumentNames = "path"
+            ),
+            value = "client.has_resource"
+    )
+    public static boolean hasResource(@LuaNotNil String path) {
+        try {
+            ResourceLocation resource = new ResourceLocation(path);
+            return Minecraft.getInstance().getResourceManager().getResource(resource).isPresent();
+        } catch (Exception ignored) {
+            return false;
+        }
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("client.get_active_resource_packs")
+    public static List<String> getActiveResourcePacks() {
+        List<String> list = new ArrayList<>();
+
+        for (Pack pack : Minecraft.getInstance().getResourcePackRepository().getSelectedPacks())
+            list.add(pack.getTitle().getString());
+
+        return list;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc("client.get_figura_version")
     public static String getFiguraVersion() {
         return FiguraMod.VERSION;
@@ -263,11 +300,37 @@ public class ClientAPI {
             ),
             value = "client.compare_versions")
     public static int compareVersions(@LuaNotNil String ver1, @LuaNotNil String ver2) {
+        Version v1 = new Version(ver1);
+        Version v2 = new Version(ver2);
+
+        if (v1.invalid)
+            throw new LuaError("Cannot parse version " + "\"" + ver1 + "\"");
+        if (v2.invalid)
+            throw new LuaError("Cannot parse version " + "\"" + ver1 + "\"");
+
+        return v1.compareTo(v2);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = {Integer.class, Integer.class, Integer.class, Integer.class},
+                    argumentNames = {"a", "b", "c", "d"}
+            ),
+            value = "client.int_uuid_to_string")
+    public static String intUUIDToString(int a, int b, int c, int d) {
         try {
-            return Version.of(ver1).compareTo(Version.of(ver2));
-        } catch (Exception e) {
-            throw new LuaError(e.getMessage());
+            UUID uuid = UUIDUtil.uuidFromIntArray(new int[]{a, b, c, d});
+            return uuid.toString();
+        } catch (Exception ignored) {
+            throw new LuaError("Failed to parse uuid");
         }
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("client.get_viewer")
+    public static EntityAPI<?> getViewer() {
+        return PlayerAPI.wrap(Minecraft.getInstance().player);
     }
 
     @Override

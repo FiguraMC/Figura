@@ -18,6 +18,8 @@ import org.moon.figura.math.vector.FiguraVec4;
 public class LuaUtils {
 
     public static FiguraVec4 parseVec4(String methodName, Object x, Number y, Number z, Number w, double defaultX, double defaultY, double defaultZ, double defaultW) {
+        if (x instanceof FiguraVec3 vec)
+            return FiguraVec4.of(vec.x, vec.y, vec.z, defaultW);
         if (x instanceof FiguraVec4 vec)
             return vec.copy();
         if (x == null || x instanceof Number) {

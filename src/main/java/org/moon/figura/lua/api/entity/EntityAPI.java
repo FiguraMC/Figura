@@ -14,8 +14,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
-import org.moon.figura.avatars.Avatar;
-import org.moon.figura.avatars.AvatarManager;
+import org.moon.figura.avatar.Avatar;
+import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.NbtToLua;
@@ -38,7 +38,7 @@ import java.util.UUID;
         name = "EntityAPI",
         value = "entity"
 )
-public class EntityAPI<T extends Entity> {
+public class EntityAPI<T extends Entity> extends NullEntity {
 
     protected final UUID entityUUID;
     protected T entity; //We just do not care about memory anymore so, just have something not wrapped in a WeakReference
@@ -74,6 +74,7 @@ public class EntityAPI<T extends Entity> {
         return entity;
     }
 
+    @Override
     @LuaWhitelist
     @LuaMethodDoc("entity.is_loaded")
     public boolean isLoaded() {
@@ -402,7 +403,7 @@ public class EntityAPI<T extends Entity> {
             )
     )
     public boolean __eq(EntityAPI<?> rhs) {
-        return equals(rhs);
+        return this.entity.equals(rhs.entity);
     }
 
     @LuaWhitelist

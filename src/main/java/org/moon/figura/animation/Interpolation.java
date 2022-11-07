@@ -13,7 +13,7 @@ public enum Interpolation {
                 MathUtils.lerp(delta, prev.y, next.y),
                 MathUtils.lerp(delta, prev.z, next.z)
         );
-        return type == TransformType.SCALE ? result.offset(-1).scale(strength).offset(1) : result.scale(strength);
+        return getResult(result, strength, type);
     }),
     CATMULLROM((frames, currentFrame, targetFrame, strength, delta, type) -> {
         FiguraVec3 prevA = frames[Math.max(0, currentFrame - 1)].getTargetB();
@@ -25,14 +25,18 @@ public enum Interpolation {
                 MathUtils.catmullrom(delta, prevA.y, prevB.y, nextA.y, nextB.y),
                 MathUtils.catmullrom(delta, prevA.z, prevB.z, nextA.z, nextB.z)
         );
-        return type == TransformType.SCALE ? result.offset(-1).scale(strength).offset(1) : result.scale(strength);
+        return getResult(result, strength, type);
     }),
-    STEP((frames, currentFrame, targetFrame, strength, delta, type) -> frames[currentFrame].getTargetB());
+    STEP((frames, currentFrame, targetFrame, strength, delta, type) -> getResult(frames[currentFrame].getTargetB().copy(), strength, type));
 
     private final IInterpolation function;
 
     Interpolation(IInterpolation function) {
         this.function = function;
+    }
+
+    private static FiguraVec3 getResult(FiguraVec3 result, float strength, TransformType type) {
+        return type == TransformType.SCALE ? result.offset(-1).scale(strength).offset(1) : result.scale(strength);
     }
 
     public FiguraVec3 generate(Keyframe[] keyframes, int currentFrame, int targetFrame, float strength, float delta, TransformType type) {

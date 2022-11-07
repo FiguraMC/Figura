@@ -7,8 +7,9 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import org.moon.figura.avatars.Avatar;
-import org.moon.figura.avatars.AvatarManager;
+import org.moon.figura.FiguraMod;
+import org.moon.figura.avatar.Avatar;
+import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.gui.screens.TrustScreen;
 import org.moon.figura.gui.widgets.SwitchButton;
 import org.moon.figura.gui.widgets.TextField;
@@ -32,7 +33,8 @@ public class PlayerList extends AbstractList {
 
     public final TrustScreen parent;
     private final TextField searchBar;
-    private final SwitchButton showDisconnected;
+    private final SwitchButton showFigura, showDisconnected;
+    private static boolean showFiguraBl, showDisconnectedBl;
 
     private int totalHeight = 0;
     public AbstractTrustElement selectedEntry;
@@ -49,10 +51,15 @@ public class PlayerList extends AbstractList {
         scrollBar.setHeight(height - 32);
 
         //search bar
-        children.add(searchBar = new TextField(x + 4, y + 4, width - 32, 20, FiguraText.of("gui.search"), s -> filter = s));
+        children.add(searchBar = new TextField(x + 4, y + 4, width - 56, 20, FiguraText.of("gui.search"), s -> filter = s));
+
+        //show figura only button
+        children.add(showFigura = new SwitchButton(x + width - 48, y + 4, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/show_figura.png"), 60, 40, FiguraText.of("gui.trust.figura_only.tooltip"), button -> showFiguraBl = ((SwitchButton) button).isToggled()));
+        showFigura.setToggled(showFiguraBl);
 
         //show disconnected button
-        children.add(showDisconnected = new SwitchButton(x + width - 24, y + 4, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/show_disconnected.png"), 60, 40, FiguraText.of("gui.trust.disconnected.tooltip"), button -> {}));
+        children.add(showDisconnected = new SwitchButton(x + width - 24, y + 4, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/show_disconnected.png"), 60, 40, FiguraText.of("gui.trust.disconnected.tooltip"), button -> showDisconnectedBl = ((SwitchButton) button).isToggled()));
+        showDisconnected.setToggled(showDisconnectedBl);
 
         //initial load
         loadGroups();
@@ -61,6 +68,8 @@ public class PlayerList extends AbstractList {
         //select self
         PlayerElement local = Minecraft.getInstance().player != null ? players.get(Minecraft.getInstance().player.getUUID()) : null;
         if (local != null) local.onPress();
+
+        scrollToSelected();
     }
 
     @Override
@@ -92,7 +101,7 @@ public class PlayerList extends AbstractList {
         boolean hidden = false;
 
         for (AbstractTrustElement trust : trustList) {
-            if (hidden || !trust.isVisible()) {
+            if ((hidden || !trust.isVisible()) && (trust instanceof PlayerElement p && !p.dragged)) {
                 trust.visible = false;
                 continue;
             }
@@ -144,17 +153,17 @@ public class PlayerList extends AbstractList {
 
             //get player data
             String name = player.getProfile().getName();
-            UUID id = player.getProfile().getId();
             ResourceLocation skin = player.getSkinLocation();
+            Avatar avatar = AvatarManager.getAvatarForPlayer(uuid);
 
             //filter check
-            if (!name.toLowerCase().contains(filter.toLowerCase()))
+            if ((!name.toLowerCase().contains(filter.toLowerCase()) && !uuid.toString().contains(filter.toLowerCase())) || (showFigura.isToggled() && !FiguraMod.isLocal(uuid) && (avatar == null || avatar.nbt == null)))
                 continue;
 
             //player is not missing
-            missingPlayers.remove(id);
+            missingPlayers.remove(uuid);
 
-            PlayerElement element = players.computeIfAbsent(id, uuid1 -> {
+            PlayerElement element = players.computeIfAbsent(uuid, uuid1 -> {
                 PlayerElement entry = new PlayerElement(name, TrustManager.get(uuid1), skin, uuid1, this);
 
                 trustList.add(entry);
@@ -224,6 +233,7 @@ public class PlayerList extends AbstractList {
         this.y = y;
         scrollBar.y = y + 28;
         searchBar.setPos(searchBar.x, y + 4);
+        showFigura.y = y + 4;
         showDisconnected.y = y + 4;
     }
 
@@ -234,4 +244,24 @@ public class PlayerList extends AbstractList {
                 ret++;
         return Math.max(ret, 0);
     }
+
+    public void scrollToSelected() {
+        double y = 0;
+
+        //get height
+        totalHeight = 0;
+        for (AbstractTrustElement trustEntry : trustList) {
+            if (trustEntry instanceof PlayerElement && !trustEntry.isVisible())
+                continue;
+
+            if (trustEntry == selectedEntry)
+                y = totalHeight;
+            else
+                totalHeight += trustEntry.getHeight() + 8;
+        }
+
+        //set scroll
+        scrollBar.setScrollProgress(y / totalHeight);
+    }
+
 }

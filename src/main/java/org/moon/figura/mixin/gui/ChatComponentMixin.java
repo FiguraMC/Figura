@@ -8,12 +8,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MessageSignature;
 import net.minecraft.network.chat.MutableComponent;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.avatars.Avatar;
-import org.moon.figura.avatars.AvatarManager;
-import org.moon.figura.avatars.Badges;
+import org.moon.figura.avatar.Avatar;
+import org.moon.figura.avatar.AvatarManager;
+import org.moon.figura.avatar.Badges;
 import org.moon.figura.config.Config;
 import org.moon.figura.lua.api.nameplate.NameplateCustomization;
-import org.moon.figura.trust.TrustContainer;
+import org.moon.figura.trust.Trust;
 import org.moon.figura.utils.TextUtils;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -59,17 +59,23 @@ public class ChatComponentMixin {
 
             //apply customization
             Component replacement;
+            boolean replaceBadges = false;
+
             NameplateCustomization custom = avatar.luaRuntime == null ? null : avatar.luaRuntime.nameplate.CHAT;
-            if (custom != null && custom.getText() != null && avatar.trust.get(TrustContainer.Trust.NAMEPLATE_EDIT) == 1) {
-                replacement = NameplateCustomization.applyCustomization(custom.getText().replaceAll("\n|\\\\n", ""));
+            if (custom != null && custom.getText() != null && avatar.trust.get(Trust.NAMEPLATE_EDIT) == 1) {
+                replacement = NameplateCustomization.applyCustomization(custom.getText().replaceAll("\n|\\\\n", " "));
+                if (custom.getText().contains("${badges}"))
+                    replaceBadges = true;
             } else {
                 replacement = Component.literal(player.getProfile().getName());
             }
 
-            //apply nameplate
-            if (config > 1) {
-                Component badges = Badges.fetchBadges(avatar);
-                ((MutableComponent) replacement).append(badges);
+            //badges
+            Component badges = config > 1 ? Badges.fetchBadges(avatar) : Component.empty();
+            if (replaceBadges) {
+                replacement = TextUtils.replaceInText(replacement, "\\$\\{badges\\}", badges);
+            } else if (badges.getString().length() > 0) {
+                ((MutableComponent) replacement).append(" ").append(badges);
             }
 
             //modify message

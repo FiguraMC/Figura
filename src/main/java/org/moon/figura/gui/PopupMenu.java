@@ -12,9 +12,9 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.world.entity.Entity;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.avatars.Avatar;
-import org.moon.figura.avatars.AvatarManager;
-import org.moon.figura.avatars.Badges;
+import org.moon.figura.avatar.Avatar;
+import org.moon.figura.avatar.AvatarManager;
+import org.moon.figura.avatar.Badges;
 import org.moon.figura.config.Config;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec4;
@@ -121,7 +121,7 @@ public class PopupMenu {
         Component title = BUTTONS.get(index).getFirst();
 
         TrustContainer tc = TrustManager.get(id);
-        MutableComponent trust = tc.getGroupName();
+        MutableComponent trust = tc.getGroupName().append(tc.hasChanges() ? "*" : "");
 
         MutableComponent name = entity.getName().copy();
 
@@ -130,7 +130,7 @@ public class PopupMenu {
 
         Avatar avatar = AvatarManager.getAvatarForPlayer(id);
         if (avatar != null) {
-            name.append(Badges.fetchBadges(avatar));
+            name.append(" ").append(Badges.fetchBadges(avatar));
             error = avatar.scriptError;
             version = avatar.versionStatus > 0;
         }

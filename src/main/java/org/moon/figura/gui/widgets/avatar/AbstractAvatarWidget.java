@@ -1,9 +1,10 @@
 package org.moon.figura.gui.widgets.avatar;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import org.moon.figura.avatars.providers.LocalAvatarFetcher;
+import org.moon.figura.avatar.local.LocalAvatarFetcher;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.widgets.AbstractContainerElement;
 import org.moon.figura.gui.widgets.ContextMenu;
@@ -39,6 +40,14 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
             Minecraft.getInstance().keyboardHandler.setClipboard(avatar.getPath().toString());
             FiguraToast.sendToast(FiguraText.of("toast.clipboard"));
         });
+    }
+
+    @Override
+    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
+        if (UIHelper.getContext() == this.context && this.context.isVisible())
+            this.button.setHovered(true);
+
+        super.render(stack, mouseX, mouseY, delta);
     }
 
     @Override
@@ -100,5 +109,10 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
 
         //then compare names
         else return this.getName().getString().toLowerCase().compareTo(other.getName().getString().toLowerCase());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj == this || obj instanceof AbstractAvatarWidget other && other.avatar != null && this.avatar != null && this.avatar.getPath().equals(other.avatar.getPath());
     }
 }

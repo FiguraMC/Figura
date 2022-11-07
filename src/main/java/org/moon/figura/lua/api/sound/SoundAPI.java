@@ -1,23 +1,28 @@
 package org.moon.figura.lua.api.sound;
 
+import com.mojang.blaze3d.audio.SoundBuffer;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.sounds.Sound;
+import net.minecraft.client.sounds.SoundManager;
+import net.minecraft.client.sounds.WeighedSoundEvents;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaTable;
-import org.moon.figura.avatars.Avatar;
+import org.moon.figura.avatar.Avatar;
 import org.moon.figura.ducks.SoundEngineAccessor;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
-import org.moon.figura.lua.docs.LuaMetamethodDoc;
-import org.moon.figura.lua.docs.LuaMetamethodDoc.LuaMetamethodOverload;
+import org.moon.figura.lua.api.world.WorldAPI;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.mixin.sound.SoundManagerAccessor;
+import org.moon.figura.trust.Trust;
+import org.moon.figura.utils.LuaUtils;
 
 import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -27,25 +32,13 @@ import java.util.Map;
 public class SoundAPI {
 
     private final Avatar owner;
-    private final Map<String, LuaSound> luaSounds;
 
     public SoundAPI(Avatar owner) {
         this.owner = owner;
-        luaSounds = new HashMap<>();
     }
 
     public static SoundEngineAccessor getSoundEngine() {
         return (SoundEngineAccessor) ((SoundManagerAccessor) Minecraft.getInstance().getSoundManager()).getSoundEngine();
-    }
-
-    @LuaWhitelist
-    @LuaMetamethodDoc(
-            overloads = @LuaMetamethodOverload(
-                    types = {LuaSound.class, String.class}
-            )
-    )
-    public LuaSound __index(String id) {
-        return luaSounds.computeIfAbsent(id, str -> new LuaSound(str, owner));
     }
 
     @LuaWhitelist
@@ -70,8 +63,40 @@ public class SoundAPI {
             },
             value = "sounds.play_sound"
     )
-    public void playSound(@LuaNotNil String id, Object x, Double y, Double z, Object w, Double t, Boolean bl) {
-        __index(id).play(x, y, z, w, t, bl);
+    public LuaSound playSound(@LuaNotNil String id, Object x, Double y, Double z, Object w, Double t, boolean loop) {
+        LuaSound sound = __index(id);
+        FiguraVec3 pos;
+        float volume = 1f;
+        float pitch = 1f;
+
+        if (x instanceof FiguraVec3) {
+            pos = ((FiguraVec3) x).copy();
+            if (y != null) volume = y.floatValue();
+            if (z != null) pitch = z.floatValue();
+            if (w != null) {
+                if (!(w instanceof Boolean))
+                    throw new LuaError("Illegal argument to playSound(): " + w);
+                loop = (boolean) w;
+            }
+        } else if (x == null || x instanceof Number) {
+            pos = LuaUtils.parseVec3("playSound", x, y, z);
+            if (w != null) {
+                if (!(w instanceof Double))
+                    throw new LuaError("Illegal argument to playSound(): " + w);
+                volume = ((Double) w).floatValue();
+            }
+            if (t != null) pitch = t.floatValue();
+        } else {
+            throw new LuaError("Illegal argument to playSound(): " + x);
+        }
+
+        sound.pos(pos, null, null);
+        sound.volume(volume);
+        sound.pitch(pitch);
+        sound.loop(loop);
+        sound.play();
+
+        return sound;
     }
 
     @LuaWhitelist
@@ -119,6 +144,25 @@ public class SoundAPI {
             owner.loadSound(name, bytes);
         } catch (Exception e) {
             throw new LuaError("Failed to add custom sound \"" + name + "\"");
+        }
+    }
+
+    @LuaWhitelist
+    public LuaSound __index(String id) {
+        SoundBuffer buffer = owner.customSounds.get(id);
+        if (buffer != null && owner.trust.get(Trust.CUSTOM_SOUNDS) == 1)
+            return new LuaSound(buffer, id, owner);
+
+        try {
+            WeighedSoundEvents events = Minecraft.getInstance().getSoundManager().getSoundEvent(new ResourceLocation(id));
+            if (events != null) {
+                Sound sound = events.getSound(RandomSource.create(WorldAPI.getCurrentWorld().random.nextLong()));
+                if (sound != SoundManager.EMPTY_SOUND)
+                    return new LuaSound(sound, id, owner);
+            }
+            throw new LuaError("Unable to find sound \"" + id + "\"");
+        } catch (Exception e) {
+            throw new LuaError(e.getMessage());
         }
     }
 

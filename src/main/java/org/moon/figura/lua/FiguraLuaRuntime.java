@@ -9,12 +9,14 @@ import org.luaj.vm2.lib.*;
 import org.luaj.vm2.lib.jse.JseBaseLib;
 import org.luaj.vm2.lib.jse.JseMathLib;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.avatars.Avatar;
+import org.moon.figura.avatar.Avatar;
 import org.moon.figura.lua.api.AvatarAPI;
 import org.moon.figura.lua.api.HostAPI;
 import org.moon.figura.lua.api.RendererAPI;
+import org.moon.figura.lua.api.TextureAPI;
 import org.moon.figura.lua.api.action_wheel.ActionWheelAPI;
 import org.moon.figura.lua.api.entity.EntityAPI;
+import org.moon.figura.lua.api.entity.NullEntity;
 import org.moon.figura.lua.api.event.EventsAPI;
 import org.moon.figura.lua.api.keybind.KeybindAPI;
 import org.moon.figura.lua.api.nameplate.NameplateAPI;
@@ -23,8 +25,7 @@ import org.moon.figura.lua.api.vanilla_model.VanillaModelAPI;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 /**
@@ -43,8 +44,8 @@ public class FiguraLuaRuntime {
     public RendererAPI renderer;
     public ActionWheelAPI action_wheel;
     public AvatarAPI avatar_meta;
-
     public PingAPI ping;
+    public TextureAPI texture;
 
     //---------------------------------
 
@@ -52,7 +53,8 @@ public class FiguraLuaRuntime {
     private final Globals userGlobals = new Globals();
     private final LuaValue setHookFunction;
     protected final Map<String, String> scripts = new HashMap<>();
-    private final Map<String, LuaValue> loadedScripts = new HashMap<>();
+    private final Map<String, Varargs> loadedScripts = new HashMap<>();
+    private final Stack<String> loadingScripts = new Stack<>();
     public final LuaTypeManager typeManager = new LuaTypeManager();
 
     public FiguraLuaRuntime(Avatar avatar, Map<String, String> scripts) {
@@ -74,6 +76,7 @@ public class FiguraLuaRuntime {
         setupFiguraSandbox();
 
         FiguraAPIManager.setupTypesAndAPIs(this);
+        setUser(null);
 
         loadExtraLibraries();
 
@@ -91,12 +94,19 @@ public class FiguraLuaRuntime {
     }
 
     public void setGlobal(String name, Object obj) {
-        userGlobals.set(name, typeManager.javaToLua(obj));
+        userGlobals.set(name, typeManager.javaToLua(obj).arg1());
     }
 
     public void setUser(Entity user) {
-        entityAPI = EntityAPI.wrap(user);
-        userGlobals.set("user", typeManager.javaToLua(entityAPI));
+        Object val;
+        if (user == null) {
+            entityAPI = null;
+            val = NullEntity.INSTANCE;
+        } else {
+            val = entityAPI = EntityAPI.wrap(user);
+        }
+
+        userGlobals.set("user", typeManager.javaToLua(val).arg1());
         userGlobals.set("player", userGlobals.get("user"));
     }
 
@@ -119,10 +129,14 @@ public class FiguraLuaRuntime {
         LuaString.s_metatable = new ReadOnlyLuaTable(LuaString.s_metatable);
     }
 
-    private final OneArgFunction requireFunction = new OneArgFunction() {
+    private final VarArgFunction requireFunction = new VarArgFunction() {
         @Override
-        public LuaValue call(LuaValue arg) {
-            return INIT_SCRIPT.apply(arg.checkjstring());
+        public Varargs invoke(Varargs arg) {
+            String name = arg.checkjstring(1).replaceAll("[/\\\\]", ".");
+            if (loadingScripts.contains(name))
+                throw new LuaError("Detected circular dependency in script " + loadingScripts.peek());
+
+            return INIT_SCRIPT.apply(name);
         }
 
         @Override
@@ -215,12 +229,12 @@ public class FiguraLuaRuntime {
 
     // init event //
 
-    private final Function<String, LuaValue> INIT_SCRIPT = str -> {
+    private final Function<String, Varargs> INIT_SCRIPT = str -> {
         //format name
         String name = str.replaceAll("[/\\\\]", ".");
 
         //already loaded
-        LuaValue val = loadedScripts.get(name);
+        Varargs val = loadedScripts.get(name);
         if (val != null)
             return val;
 
@@ -229,18 +243,23 @@ public class FiguraLuaRuntime {
         if (src == null)
             throw new LuaError("Tried to require nonexistent script \"" + str + "\"!");
 
+        this.loadingScripts.push(name);
+
         //load
-        LuaValue value = userGlobals.load(src, name).call(name);
+        Varargs value = userGlobals.load(src, name).invoke(LuaValue.valueOf(name));
         if (value == LuaValue.NIL)
             value = LuaValue.TRUE;
 
         //cache and return
         loadedScripts.put(name, value);
+        loadingScripts.pop();
         return value;
     };
     public boolean init(ListTag autoScripts) {
         if (scripts.size() == 0)
             return false;
+
+        owner.luaRuntime = this;
 
         try {
             if (autoScripts == null) {
@@ -260,7 +279,7 @@ public class FiguraLuaRuntime {
 
     // error ^-^ //
 
-    public void error(Exception e) {
+    public void error(Throwable e) {
         LuaError err = e instanceof LuaError lua ? lua : new LuaError(e);
         FiguraLuaPrinter.sendLuaError(err, owner);
         owner.scriptError = true;
@@ -272,6 +291,7 @@ public class FiguraLuaRuntime {
     private final ZeroArgFunction onReachedLimit = new ZeroArgFunction() {
         @Override
         public LuaValue call() {
+            FiguraMod.LOGGER.warn("Avatar {} bypassed resource limits with {} instructions", owner.owner, getInstructions());
             LuaError error = new LuaError("Script overran resource limits!");
             setInstructionLimit(1);
             throw error;

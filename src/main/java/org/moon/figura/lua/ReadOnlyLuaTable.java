@@ -11,7 +11,7 @@ public class ReadOnlyLuaTable extends LuaTable {
                 .next(n.arg1())) {
             LuaValue key = n.arg1();
             LuaValue value = n.arg(2);
-            super.rawset(key, value.istable() ? new ReadOnlyLuaTable(value) : value);
+            super.rawset(key, value.istable() ? value == table ? this : new ReadOnlyLuaTable(value) : value);
         }
     }
     public LuaValue setmetatable(LuaValue metatable) { return error("table is read-only"); }

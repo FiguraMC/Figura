@@ -2,8 +2,8 @@ package org.moon.figura.animation;
 
 import com.mojang.datafixers.util.Pair;
 import org.luaj.vm2.LuaError;
-import org.moon.figura.avatars.Avatar;
-import org.moon.figura.avatars.model.FiguraModelPart;
+import org.moon.figura.avatar.Avatar;
+import org.moon.figura.model.FiguraModelPart;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
@@ -50,7 +50,7 @@ public class Animation {
     protected float length, blend, offset;
     protected float speed = 1f;
     protected float startDelay, loopDelay;
-    protected boolean override;
+    protected int override;
     protected int priority = 0;
     protected LoopMode loop;
 
@@ -61,7 +61,7 @@ public class Animation {
         this.modelName = modelName;
         this.name = name;
         this.loop = loop;
-        this.override = override;
+        this.override = override ? 7 : 0;
         this.length = length;
         this.offset = offset;
         this.blend = blend;
@@ -309,12 +309,6 @@ public class Animation {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("animation.get_override")
-    public boolean getOverride() {
-        return this.override;
-    }
-
-    @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaMethodOverload(
                     argumentTypes = Boolean.class,
@@ -323,7 +317,64 @@ public class Animation {
             value = "animation.override"
     )
     public Animation override(boolean override) {
-        this.override = override;
+        this.override = override ? 7 : 0;
+        return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("animation.get_override_rot")
+    public boolean getOverrideRot() {
+        return (override & 1) == 1;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("animation.get_override_pos")
+    public boolean getOverridePos() {
+        return (override & 2) == 2;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("animation.get_override_scale")
+    public boolean getOverrideScale() {
+        return (override & 4) == 4;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = Boolean.class,
+                    argumentNames = "override"
+            ),
+            value = "animation.override_rot"
+    )
+    public Animation overrideRot(boolean override) {
+        this.override = override ? this.override | 1 : this.override & 6;
+        return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = Boolean.class,
+                    argumentNames = "override"
+            ),
+            value = "animation.override_pos"
+    )
+    public Animation overridePos(boolean override) {
+        this.override = override ? this.override | 2 : this.override & 5;
+        return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = Boolean.class,
+                    argumentNames = "override"
+            ),
+            value = "animation.override_scale"
+    )
+    public Animation overrideScale(boolean override) {
+        this.override = override ? this.override | 4 : this.override & 3;
         return this;
     }
 

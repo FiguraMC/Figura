@@ -1,13 +1,12 @@
 package org.moon.figura.math.vector;
 
-import org.luaj.vm2.LuaDouble;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
+import org.luaj.vm2.LuaValue;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.*;
 import org.moon.figura.lua.docs.LuaMetamethodDoc.LuaMetamethodOverload;
-import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.utils.MathUtils;
 import org.moon.figura.utils.caching.CacheUtils;
@@ -310,6 +309,13 @@ public class FiguraVec4 extends FiguraVector<FiguraVec4, FiguraMat4> {
         return this;
     }
 
+    @Override
+    @LuaWhitelist
+    @LuaMethodDoc("vector_n.unpack")
+    public double[] unpack() {
+        return new double[]{x, y, z, w};
+    }
+
     // -- utility methods -- //
 
     @Override
@@ -467,10 +473,10 @@ public class FiguraVec4 extends FiguraVector<FiguraVec4, FiguraMat4> {
             value = "vector_n.apply_func"
     )
     public FiguraVec4 applyFunc(@LuaNotNil LuaFunction function) {
-        x = function.call(LuaDouble.valueOf(x)).todouble();
-        y = function.call(LuaDouble.valueOf(y)).todouble();
-        z = function.call(LuaDouble.valueOf(z)).todouble();
-        w = function.call(LuaDouble.valueOf(w)).todouble();
+        x = function.call(LuaValue.valueOf(x), LuaValue.valueOf(1)).todouble();
+        y = function.call(LuaValue.valueOf(y), LuaValue.valueOf(2)).todouble();
+        z = function.call(LuaValue.valueOf(z), LuaValue.valueOf(3)).todouble();
+        w = function.call(LuaValue.valueOf(w), LuaValue.valueOf(4)).todouble();
         return this;
     }
 

@@ -6,6 +6,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.biome.Biome;
 import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
@@ -27,8 +28,8 @@ public class BiomeAPI {
     private final Biome biome;
     private BlockPos pos;
 
-//    @LuaWhitelist
-//    @LuaFieldDoc(description = "biome.name")
+    @LuaWhitelist
+    @LuaFieldDoc("biome.name")
     public final String name;
 
     public BiomeAPI(Biome biome, BlockPos pos) {
@@ -152,9 +153,13 @@ public class BiomeAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("biome.get_name")
-    public String getName() {
-        return name;
+    public boolean __eq(BiomeAPI other) {
+        return this.biome.equals(other.biome);
+    }
+
+    @LuaWhitelist
+    public Object __index(String arg) {
+        return "name".equals(arg) ? name : null;
     }
 
     @Override
