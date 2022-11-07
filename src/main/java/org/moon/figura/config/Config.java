@@ -132,8 +132,8 @@ public enum Config {
     }},
     LOG_OTHERS(false),
     LOG_PINGS(0, 3),
-    SYNC_PINGS(false) {{
-        String tooltip = "config.sync_pings.tooltip.";
+    PINGS_TARGET(0, 3) {{
+        String tooltip = "config.pings_target.tooltip.";
         this.tooltip = FiguraText.of(tooltip + "1")
                 .append("\n")
                 .append(FiguraText.of(tooltip + "2").withStyle(ChatFormatting.RED));
