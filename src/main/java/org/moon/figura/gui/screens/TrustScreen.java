@@ -266,6 +266,8 @@ public class TrustScreen extends AbstractPanelScreen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        boolean bool = super.mouseClicked(mouseX, mouseY, button);
+
         if (button == 0 && playerList.selectedEntry instanceof PlayerElement element && element.isMouseOver(mouseX, mouseY)) {
             dragged = element;
             element.anchorX = (int) mouseX;
@@ -273,7 +275,7 @@ public class TrustScreen extends AbstractPanelScreen {
             element.initialY = element.y;
         }
 
-        return super.mouseClicked(mouseX, mouseY, button);
+        return bool;
     }
 
     @Override
