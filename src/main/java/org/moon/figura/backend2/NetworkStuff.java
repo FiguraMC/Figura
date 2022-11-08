@@ -382,7 +382,7 @@ public class NetworkStuff {
     }
 
     private static boolean checkWS() {
-        return ws != null && ws.isOpen();
+        return ws != null && ws.isOpen() && backendStatus == 3;
     }
 
     public static void sendPing(int id, boolean sync, byte[] data) {

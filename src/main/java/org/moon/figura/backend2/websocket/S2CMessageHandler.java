@@ -29,7 +29,8 @@ public class S2CMessageHandler {
             return;
 
         byte b = bytes.get();
-        FiguraMod.debug("Got ws message of type: " + b);
+        if (NetworkStuff.debug)
+            FiguraMod.debug("Got ws message of type: " + b);
 
         switch (b) {
             case AUTH -> auth();
