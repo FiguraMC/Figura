@@ -76,7 +76,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
 
         //reload
         addRenderableWidget(new TexturedButton(buttX - 12, buttY, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/reload.png"), 72, 24, new FiguraText("gui.wardrobe.reload.tooltip"), button -> {
-            AvatarManager.clearAvatar(FiguraMod.getLocalPlayerUUID());
+            AvatarManager.clearAvatars(FiguraMod.getLocalPlayerUUID());
             AvatarManager.localUploaded = true;
             NetworkStuff.auth();
             AvatarList.selectedEntry = null;

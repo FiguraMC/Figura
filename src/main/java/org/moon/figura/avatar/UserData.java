@@ -1,36 +1,58 @@
 package org.moon.figura.avatar;
 
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.nbt.CompoundTag;
+import org.moon.figura.FiguraMod;
 import org.moon.figura.backend2.NetworkStuff;
 
+import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
 public class UserData {
 
-    private static final HashMap<UUID, User> USER_MAP = new HashMap<>();
+    public final UUID id;
+    private final List<Avatar> avatars = new ArrayList<>();
+    private Pair<BitSet, BitSet> badges;
 
-    public static void loadUser(UUID id, List<Pair<String, UUID>> avatars, Pair<BitSet, BitSet> badges) {
-        USER_MAP.put(id, new User(avatars, badges));
+    public UserData(UUID id) {
+        this.id = id;
+    }
+
+    public void loadData(ArrayList<Pair<String, UUID>> avatars, Pair<BitSet,BitSet> badges) {
+        loadBadges(badges);
+        clear();
         for (Pair<String, UUID> avatar : avatars)
-            NetworkStuff.getAvatar(id, avatar.getSecond(), avatar.getFirst());
+            NetworkStuff.getAvatar(this, avatar.getSecond(), avatar.getFirst());
     }
 
-    public static List<Pair<String, UUID>> getAvatars(UUID id) {
-        User user = USER_MAP.get(id);
-        return user == null ? null : user.avatars();
+    public void loadAvatar(CompoundTag nbt) {
+        Avatar avatar = new Avatar(id);
+        this.avatars.add(avatar);
+        avatar.load(nbt);
+        FiguraMod.debug("Loaded avatar for " + id);
     }
 
-    public static Pair<BitSet, BitSet> getBadges(UUID id) {
-        User user = USER_MAP.get(id);
-        return user == null ? null : user.badges();
+    public void loadBadges(Pair<BitSet, BitSet> pair) {
+        this.badges = pair;
     }
 
-    public static void clear(UUID id) {
-        USER_MAP.remove(id);
+    public Pair<BitSet, BitSet> getBadges() {
+        return badges;
     }
 
-    private record User(List<Pair<String, UUID>> avatars, Pair<BitSet, BitSet> badges) {}
+    public List<Avatar> getAvatars() {
+        return avatars;
+    }
+
+    public Avatar getMainAvatar() {
+        return avatars.size() > 0 ? avatars.get(0) : null;
+    }
+
+    public void clear() {
+        for (Avatar avatar : avatars)
+            avatar.clean();
+        avatars.clear();
+    }
 }

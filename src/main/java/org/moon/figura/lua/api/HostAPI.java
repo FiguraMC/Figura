@@ -14,7 +14,7 @@ import net.minecraft.world.entity.Entity;
 import org.luaj.vm2.LuaError;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
-import org.moon.figura.avatar.UserData;
+import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.config.Config;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
@@ -242,7 +242,7 @@ public class HostAPI {
         if (!FiguraMod.DEBUG_MODE)
             throw new LuaError("Congrats, you found this debug easter egg!");
 
-        Pair<BitSet, BitSet> badges = UserData.getBadges(owner.owner);
+        Pair<BitSet, BitSet> badges = AvatarManager.getBadges(owner.owner);
         if (badges == null)
             return;
 

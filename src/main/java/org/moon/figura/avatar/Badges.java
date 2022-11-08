@@ -16,53 +16,55 @@ public class Badges {
 
     private static final Pair<BitSet, BitSet> NO_BADGES = Pair.of(new BitSet(Pride.values().length), new BitSet(Special.values().length));
 
-    public static Component fetchBadges(Avatar avatar) {
-        if (avatar == null)
-            return TextComponent.EMPTY.copy();
-
+    public static Component fetchBadges(UUID id) {
         MutableComponent badges = TextComponent.EMPTY.copy().withStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT).withColor(ChatFormatting.WHITE));
 
-        UUID id = avatar.owner;
-        Pair<BitSet, BitSet> pair = UserData.getBadges(id);
+        //get user data
+        Pair<BitSet, BitSet> pair = AvatarManager.getBadges(id);
         if (pair == null)
             pair = NO_BADGES;
 
-        // -- loading -- //
+        //avatar badges
+        Avatar avatar = AvatarManager.getAvatarForPlayer(id);
+        if (avatar != null) {
 
-        if (!avatar.loaded)
-            return badges.append(new TextComponent(Integer.toHexString(Math.abs(FiguraMod.ticks) % 16)));
+            // -- loading -- //
 
-        // -- mark -- //
+            if (!avatar.loaded)
+                badges.append(new TextComponent(Integer.toHexString(Math.abs(FiguraMod.ticks) % 16)));
 
-        if (avatar.nbt != null) {
-            Pride[] pride = Pride.values();
+            // -- mark -- //
 
-            //error
-            if (avatar.scriptError)
-                badges.append(System.ERROR.badge);
+            else if (avatar.nbt != null) {
+                Pride[] pride = Pride.values();
 
-            //version
-            if (avatar.versionStatus > 0)
-                badges.append(System.WARNING.badge);
+                //error
+                if (avatar.scriptError)
+                    badges.append(System.ERROR.badge);
 
-            //egg
-            if (FiguraMod.CHEESE_DAY && Config.EASTER_EGGS.asBool())
-                badges.append(System.CHEESE.badge);
+                //version
+                if (avatar.versionStatus > 0)
+                    badges.append(System.WARNING.badge);
 
-                //mark
-            else {
-                mark: {
-                    //pride (mark skins)
-                    BitSet prideSet = pair.getFirst();
-                    for (int i = pride.length - 1; i >= 0; i--) {
-                        if (prideSet.get(i)) {
-                            badges.append(pride[i].badge);
-                            break mark;
+                //egg
+                if (FiguraMod.CHEESE_DAY && Config.EASTER_EGGS.asBool())
+                    badges.append(System.CHEESE.badge);
+
+                    //mark
+                else {
+                    mark: {
+                        //pride (mark skins)
+                        BitSet prideSet = pair.getFirst();
+                        for (int i = pride.length - 1; i >= 0; i--) {
+                            if (prideSet.get(i)) {
+                                badges.append(pride[i].badge);
+                                break mark;
+                            }
                         }
-                    }
 
-                    //mark fallback
-                    badges.append(System.DEFAULT.badge.copy().withStyle(Style.EMPTY.withColor(ColorUtils.rgbToInt(ColorUtils.userInputHex(avatar.color)))));
+                        //mark fallback
+                        badges.append(System.DEFAULT.badge.copy().withStyle(Style.EMPTY.withColor(ColorUtils.rgbToInt(ColorUtils.userInputHex(avatar.color)))));
+                    }
                 }
             }
         }
