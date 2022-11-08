@@ -46,20 +46,14 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
 
     @Inject(method = "renderNameTag(Lnet/minecraft/client/player/AbstractClientPlayer;Lnet/minecraft/network/chat/Component;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", at = @At("HEAD"), cancellable = true)
     private void renderFiguraLabelIfPresent(AbstractClientPlayer player, Component text, PoseStack stack, MultiBufferSource multiBufferSource, int light, CallbackInfo ci) {
-        //config
+        //return on config or high entity distance
         int config = Config.ENTITY_NAMEPLATE.asInt();
-
-        //get metadata
-        Avatar avatar = AvatarManager.getAvatarForPlayer(player.getUUID());
-        if (avatar == null || config == 0)
-            return;
-
-        //check entity distance
-        if (this.entityRenderDispatcher.distanceToSqr(player) > 4096)
+        if (config == 0 || this.entityRenderDispatcher.distanceToSqr(player) > 4096)
             return;
 
         //get customizations
-        EntityNameplateCustomization custom = avatar.luaRuntime == null ? null : avatar.luaRuntime.nameplate.ENTITY;
+        Avatar avatar = AvatarManager.getAvatarForPlayer(player.getUUID());
+        EntityNameplateCustomization custom = avatar == null || avatar.luaRuntime == null ? null : avatar.luaRuntime.nameplate.ENTITY;
 
         //enabled
         if (custom != null && !custom.visible) {
@@ -68,7 +62,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
         }
 
         //trust check
-        boolean trust = avatar.trust.get(Trust.NAMEPLATE_EDIT) == 1;
+        boolean trust = avatar != null && avatar.trust.get(Trust.NAMEPLATE_EDIT) == 1;
 
         stack.pushPose();
 
@@ -103,7 +97,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
         }
 
         //badges
-        Component badges = config > 1 ? Badges.fetchBadges(avatar) : Component.empty();
+        Component badges = config > 1 ? Badges.fetchBadges(player.getUUID()) : Component.empty();
         if (replaceBadges) {
             replacement = TextUtils.replaceInText(replacement, "\\$\\{badges\\}", badges);
         } else if (badges.getString().length() > 0) {
