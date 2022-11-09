@@ -194,7 +194,7 @@ public class PlayerElement extends AbstractTrustElement {
 
         name = Component.empty().append(name.copy().withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(this.name + "\n" + this.owner)))));
 
-        Component badges = Badges.fetchBadges(avatar);
+        Component badges = Badges.fetchBadges(owner);
         name = replaceBadges ? TextUtils.replaceInText(name, "\\$\\{badges\\}", badges) : name.copy().append(" ").append(badges);
 
         nameLabel.setText(TextUtils.trimToWidthEllipsis(font, name, width - 40, TextUtils.ELLIPSIS));

@@ -226,8 +226,8 @@ public class NetworkStuff {
         });
     }
 
-    public static void getUser(UUID id) {
-        queueString(id, api -> api.getUser(id), (code, data) -> {
+    public static void getUser(UserData user) {
+        queueString(user.id, api -> api.getUser(user.id), (code, data) -> {
             //debug
             responseDebug("getUser", code, data);
 
@@ -268,7 +268,7 @@ public class NetworkStuff {
             for (int i = 0; i < special.size(); i++)
                 specialSet.set(i, special.get(i).getAsInt() >= 1);
 
-            UserData.loadUser(uuid, avatars, Pair.of(prideSet, specialSet));
+            user.loadData(avatars, Pair.of(prideSet, specialSet));
             subscribe(uuid);
         });
     }
@@ -341,8 +341,8 @@ public class NetworkStuff {
         });
     }
 
-    public static void getAvatar(UUID target, UUID owner, String id) {
-        queueStream(Util.NIL_UUID, api -> api.getAvatar(owner, id), (code, stream) -> {
+    public static void getAvatar(UserData target, UUID owner, String id) {
+        queueStream(target.id, api -> api.getAvatar(owner, id), (code, stream) -> {
             String s;
             try {
                 s = code == 200 ? "<avatar data>" : new String(stream.readAllBytes());
@@ -358,9 +358,9 @@ public class NetworkStuff {
             //success
             try {
                 CompoundTag nbt = NbtIo.readCompressed(stream);
-                AvatarManager.setAvatar(target, nbt);
+                target.loadAvatar(nbt);
             } catch (Exception e) {
-                FiguraMod.LOGGER.error("", e);
+                FiguraMod.LOGGER.error("Failed to load avatar for " + target.id, e);
             }
         });
         downloadRate.use();
@@ -382,7 +382,7 @@ public class NetworkStuff {
     }
 
     private static boolean checkWS() {
-        return ws != null && ws.isOpen();
+        return ws != null && ws.isOpen() && backendStatus == 3;
     }
 
     public static void sendPing(int id, boolean sync, byte[] data) {
