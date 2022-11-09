@@ -20,6 +20,7 @@ import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.avatar.local.LocalAvatarFetcher;
 import org.moon.figura.backend2.NetworkStuff;
 import org.moon.figura.config.Config;
+import org.moon.figura.parsers.LuaScriptParser;
 import org.moon.figura.trust.Trust;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
@@ -228,6 +229,18 @@ public class FiguraDebugCommand {
         //sizes
         if (avatar.nbt != null)
             a.add("sizes", parseNbtSizes(avatar.nbt));
+
+        //script errors
+        if (!LuaScriptParser.failedScripts.isEmpty()){
+            JsonObject erroredScripts = new JsonObject();
+            for(String key : LuaScriptParser.failedScripts.keySet()){
+                JsonArray arr = new JsonArray();
+                arr.add(LuaScriptParser.failedScripts.get(key).getA());
+                arr.add(LuaScriptParser.failedScripts.get(key).getB());
+                erroredScripts.add(key, arr);
+            }
+            root.add("errored_scripts", erroredScripts);
+        }
 
         //return as string
         root.add("avatar", a);
