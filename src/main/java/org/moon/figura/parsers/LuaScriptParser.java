@@ -2,9 +2,13 @@ package org.moon.figura.parsers;
 
 import net.minecraft.nbt.ByteArrayTag;
 import org.moon.figura.FiguraMod;
+import org.moon.figura.backend2.NetworkStuff;
 import org.moon.figura.config.Config;
+import oshi.util.tuples.Pair;
 
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,7 +21,7 @@ public class LuaScriptParser {
     private static final Pattern multilineString = Pattern.compile("\\[(?<s>=*)\\[.*?](\\k<s>)]", Pattern.MULTILINE | Pattern.DOTALL);
     private static final Pattern comments = Pattern.compile("--[^\n]*$", Pattern.MULTILINE);
     private static final Pattern multilineComment = Pattern.compile("--\\[(?<s>=*)\\[.*?](\\k<s>)]", Pattern.MULTILINE | Pattern.DOTALL);
-    private static final Pattern newlines = Pattern.compile("^[\t ]*((\n|\n\r|\r\n)[\t ]*)?");
+    private static final Pattern newlines = Pattern.compile("^[\t ]*((\n|\n\r|\r\n|\r)[\t ]*)?");
     private static final Pattern words = Pattern.compile("[a-zA-Z_]\\w*");
     private static final Pattern trailingNewlines = Pattern.compile("\n*$");
     private static final Pattern sheBangs = Pattern.compile("^#![^\n]*");
@@ -31,16 +35,25 @@ public class LuaScriptParser {
     //parsing data
     private static boolean error;
 
+    public static final Map<String, Pair<String, String>> failedScripts = new HashMap<>();
+
     public static ByteArrayTag parseScript(String name, String script) {
         error = true;
-        ByteArrayTag out = new ByteArrayTag((switch (Config.FORMAT_SCRIPT.asInt()) {
+        String minified = switch (Config.FORMAT_SCRIPT.asInt()) {
             case 0 -> noMinifier(script);
             case 1 -> regexMinify(name, script);
             case 2 -> aggressiveMinify(name, script);
-            default -> throw new IllegalStateException("Format_SCRIPT should not be %d, expecting 0 to %d".formatted(Config.FORMAT_SCRIPT.asInt(), Config.FORMAT_SCRIPT.enumList.size() - 1));
-        }).getBytes(StandardCharsets.UTF_8));
-
-        if (error) FiguraMod.LOGGER.error("Failed to minify the script, likely to be syntax error");
+            default ->
+                throw new IllegalStateException("Format_SCRIPT should not be %d, expecting 0 to %d".formatted(Config.FORMAT_SCRIPT.asInt(), Config.FORMAT_SCRIPT.enumList.size() - 1));
+        };
+        ByteArrayTag out;
+        if (error) {
+            FiguraMod.LOGGER.warn("Failed to minify the script, likely to be syntax error");
+            failedScripts.put(name, new Pair<>(script, minified));
+            out = new ByteArrayTag(script.getBytes(StandardCharsets.UTF_8));
+        } else {
+            out = new ByteArrayTag(minified.getBytes(StandardCharsets.UTF_8));
+        }
         return out;
     }
 
@@ -51,7 +64,13 @@ public class LuaScriptParser {
 
     private static String regexMinify(String name, String script) {
         StringBuilder builder = new StringBuilder(script);
+        int runaway = Config.MINIFIER_RUNAWAY_DETECTION.asInt() < 0 ? NetworkStuff.getSizeLimit() : Config.MINIFIER_RUNAWAY_DETECTION.asInt();
         for (int i = 0; i < builder.length(); i++) {
+            if(i > runaway){
+                if(failedScripts.isEmpty())
+                    FiguraMod.LOGGER.error("Minifier runaway detected, please run \"/figura debug\" and report a bug with resulting file");
+                return builder.toString();
+            }
             switch (builder.charAt(i)) {
                 case '#' -> {
                     if (i > 0)
@@ -64,7 +83,7 @@ public class LuaScriptParser {
                 case '\'', '"' -> {
                     Matcher matcher = string.matcher(builder);
                     if (!matcher.find(i) || !(matcher.start() == i))
-                        return script;
+                        return builder.toString();
 
                     i = matcher.end() - 1;
                 }
@@ -75,7 +94,7 @@ public class LuaScriptParser {
                 }
                 case '-' -> {
                     if (i == builder.length() - 1)
-                        return script;
+                        return builder.toString();
 
                     Matcher multiline = multilineComment.matcher(builder);
                     if (multiline.find(i) && multiline.start() == i) {
@@ -119,6 +138,8 @@ public class LuaScriptParser {
 
     private static String aggressiveMinify(String name, String script) {
         String start = regexMinify(name, script);
+        if(error)
+            return start;
         StringBuilder builder = new StringBuilder(start);
 
         for (int i = 0; i < builder.length(); i++) {
