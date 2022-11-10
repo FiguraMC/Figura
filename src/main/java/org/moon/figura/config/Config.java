@@ -154,8 +154,7 @@ public enum Config {
             super.onChange();
             NetworkStuff.reAuth();
         }
-    },
-    MINIFIER_RUNAWAY_DETECTION(1024 * 100, InputType.INT);
+    };
 
 
     /**
