@@ -130,7 +130,6 @@ public class LocalAvatarLoader {
     private static void loadScripts(Path path, CompoundTag nbt) throws IOException {
         List<File> scripts = IOUtils.getFilesByExtension(path, ".lua");
         if (scripts.size() > 0) {
-            LuaScriptParser.failedScripts.clear();
             CompoundTag scriptsNbt = new CompoundTag();
             String pathRegex = Pattern.quote(path + File.separator);
             for (File script : scripts) {

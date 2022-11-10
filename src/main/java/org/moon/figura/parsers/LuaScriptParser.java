@@ -2,13 +2,9 @@ package org.moon.figura.parsers;
 
 import net.minecraft.nbt.ByteArrayTag;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.backend2.NetworkStuff;
 import org.moon.figura.config.Config;
-import oshi.util.tuples.Pair;
 
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,21 +31,17 @@ public class LuaScriptParser {
     //parsing data
     private static boolean error;
 
-    public static final Map<String, Pair<String, String>> failedScripts = new HashMap<>();
-
     public static ByteArrayTag parseScript(String name, String script) {
         error = true;
         String minified = switch (Config.FORMAT_SCRIPT.asInt()) {
             case 0 -> noMinifier(script);
             case 1 -> regexMinify(name, script);
             case 2 -> aggressiveMinify(name, script);
-            default ->
-                throw new IllegalStateException("Format_SCRIPT should not be %d, expecting 0 to %d".formatted(Config.FORMAT_SCRIPT.asInt(), Config.FORMAT_SCRIPT.enumList.size() - 1));
+            default -> throw new IllegalStateException("Format_SCRIPT should not be %d, expecting 0 to %d".formatted(Config.FORMAT_SCRIPT.asInt(), Config.FORMAT_SCRIPT.enumList.size() - 1));
         };
         ByteArrayTag out;
         if (error) {
             FiguraMod.LOGGER.warn("Failed to minify the script, likely to be syntax error");
-            failedScripts.put(name, new Pair<>(script, minified));
             out = new ByteArrayTag(script.getBytes(StandardCharsets.UTF_8));
         } else {
             out = new ByteArrayTag(minified.getBytes(StandardCharsets.UTF_8));
@@ -64,13 +56,12 @@ public class LuaScriptParser {
 
     private static String regexMinify(String name, String script) {
         StringBuilder builder = new StringBuilder(script);
-        int runaway = Config.MINIFIER_RUNAWAY_DETECTION.asInt() < 0 ? NetworkStuff.getSizeLimit() : Config.MINIFIER_RUNAWAY_DETECTION.asInt();
+        int ogLen = script.length();
+
         for (int i = 0; i < builder.length(); i++) {
-            if(i > runaway){
-                if(failedScripts.isEmpty())
-                    FiguraMod.LOGGER.error("Minifier runaway detected, please run \"/figura debug\" and report a bug with resulting file");
-                return builder.toString();
-            }
+            if (builder.length() > ogLen)
+                throw new RuntimeException("Script minifier stopped due to a possible infinite loop when parsing \"" + name + "\"");
+
             switch (builder.charAt(i)) {
                 case '#' -> {
                     if (i > 0)
@@ -130,7 +121,7 @@ public class LuaScriptParser {
         if (trailingNewline.find())
             builder.replace(trailingNewline.start(), trailingNewline.end(), "\n");
 
-        FiguraMod.debug("Script \"{}\" minified from {} to {} using LIGHT mode", name, script.length(), builder.length());
+        FiguraMod.debug("Script \"{}\" minified from {} chars to {} chars using LIGHT mode", name, script.length(), builder.length());
 
         error = false;
         return builder.toString();
@@ -138,8 +129,7 @@ public class LuaScriptParser {
 
     private static String aggressiveMinify(String name, String script) {
         String start = regexMinify(name, script);
-        if(error)
-            return start;
+        if (error) return start;
         StringBuilder builder = new StringBuilder(start);
 
         for (int i = 0; i < builder.length(); i++) {
@@ -162,7 +152,7 @@ public class LuaScriptParser {
             }
         }
 
-        FiguraMod.debug("Script \"{}\" minified from {} to {} using HEAVY mode", name, script.length(), builder.length());
+        FiguraMod.debug("Script \"{}\" minified from {} chars to {} chars using HEAVY mode", name, script.length(), builder.length());
         return builder.toString();
     }
 }
