@@ -17,6 +17,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.UUID;
 
 @Mixin(SoundEngine.class)
@@ -84,10 +85,14 @@ public abstract class SoundEngineMixin implements SoundEngineAccessor {
         if (!this.loaded)
             return;
 
-        for (LuaSound sound : figuraHandlers) {
+        Iterator<LuaSound> iterator = figuraHandlers.iterator();
+        while (iterator.hasNext()) {
+            LuaSound sound = iterator.next();
             ChannelHandleAccessor accessor = (ChannelHandleAccessor) sound.getHandle();
-            if (accessor != null && (owner == null || (accessor.getOwner().equals(owner) && (name == null || accessor.getName().equals(name)))))
+            if (accessor != null && (owner == null || (accessor.getOwner().equals(owner) && (name == null || accessor.getName().equals(name))))) {
                 sound.stop();
+                iterator.remove();
+            }
         }
     }
 

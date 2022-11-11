@@ -1121,7 +1121,7 @@
 
   "figura.docs.textures": "A global API which allows for creating textures at runtime.",
   "figura.docs.textures.register": "Creates a new texture with the given name, width and height. The texture is filled with a solid color. Returns the texture.",
-  "figura.docs.textures.read": "Reads a texture from a base64 string.",
+  "figura.docs.textures.read": "Reads a texture from a base64 string or a byte array.",
   "figura.docs.textures.get": "Gets a registered texture based on its name, or nil if no texture was found with that name.",
   "figura.docs.textures.get_textures": "Returns a table with all textures used by this avatar. Do not include generated textures from this API.",
 

@@ -9,10 +9,12 @@ import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Mixin(ParticleEngine.class)
 public abstract class ParticleEngineMixin implements ParticleEngineAccessor {
@@ -22,6 +24,11 @@ public abstract class ParticleEngineMixin implements ParticleEngineAccessor {
     @Shadow public abstract void add(Particle particle);
 
     @Unique private final HashMap<Particle, UUID> particleMap = new HashMap<>();
+
+    @Inject(at = @At(value = "INVOKE", target = "Ljava/util/Iterator;remove()V"), method = "tickParticleList", locals = LocalCapture.CAPTURE_FAILSOFT)
+    private void tickParticleList(Collection<Particle> particles, CallbackInfo ci, Iterator<Particle> iterator, Particle particle) {
+        particleMap.remove(particle);
+    }
 
     @Override @Intrinsic
     public <T extends ParticleOptions> Particle figura$makeParticle(T parameters, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
@@ -36,16 +43,15 @@ public abstract class ParticleEngineMixin implements ParticleEngineAccessor {
 
     @Override @Intrinsic
     public void figura$clearParticles(UUID owner) {
-        for (Map.Entry<Particle, UUID> entry : particleMap.entrySet()) {
-            if (entry.getValue().equals(owner) && entry.getKey() != null)
-                entry.getKey().remove();
-        }
-    }
+        Iterator<Map.Entry<Particle, UUID>> iterator = particleMap.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<Particle, UUID> entry = iterator.next();
 
-    @Override @Intrinsic
-    public void figura$clearAllParticles() {
-        for (Particle particle : particleMap.keySet())
-            if (particle != null)
-                particle.remove();
+            if ((owner == null || entry.getValue().equals(owner))) {
+                if (entry.getKey() != null)
+                    entry.getKey().remove();
+                iterator.remove();
+            }
+        }
     }
 }
