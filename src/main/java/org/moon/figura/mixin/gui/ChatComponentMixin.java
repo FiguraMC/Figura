@@ -40,7 +40,7 @@ public class ChatComponentMixin {
     private Component addMessageName(Component message) {
         //get config
         int config = Config.CHAT_NAMEPLATE.asInt();
-        if (config == 0 || this.minecraft.player == null)
+        if (config == 0 || this.minecraft.player == null || AvatarManager.panic)
             return message;
 
         //iterate over ALL online players

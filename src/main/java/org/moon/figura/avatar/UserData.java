@@ -3,6 +3,7 @@ package org.moon.figura.avatar;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.nbt.CompoundTag;
 import org.moon.figura.FiguraMod;
+import org.moon.figura.avatar.local.CacheAvatarLoader;
 import org.moon.figura.backend2.NetworkStuff;
 
 import java.util.ArrayList;
@@ -20,11 +21,15 @@ public class UserData {
         this.id = id;
     }
 
-    public void loadData(ArrayList<Pair<String, UUID>> avatars, Pair<BitSet,BitSet> badges) {
+    public void loadData(ArrayList<Pair<String, Pair<String, UUID>>> avatars, Pair<BitSet,BitSet> badges) {
         loadBadges(badges);
         clear();
-        for (Pair<String, UUID> avatar : avatars)
-            NetworkStuff.getAvatar(this, avatar.getSecond(), avatar.getFirst());
+        for (Pair<String, Pair<String, UUID>> avatar : avatars) {
+            if (!CacheAvatarLoader.checkAndLoad(avatar.getFirst(), this)) {
+                Pair<String, UUID> pair = avatar.getSecond();
+                NetworkStuff.getAvatar(this, pair.getSecond(), pair.getFirst(), avatar.getFirst());
+            }
+        }
     }
 
     public void loadAvatar(CompoundTag nbt) {

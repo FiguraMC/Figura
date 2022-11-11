@@ -61,7 +61,6 @@ import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -98,7 +97,7 @@ public class Avatar {
     public final TrustContainer.PlayerContainer trust;
 
     public final Map<String, SoundBuffer> customSounds = new HashMap<>();
-    public final Map<Integer, Animation> animations = new ConcurrentHashMap<>();
+    public final Map<Integer, Animation> animations = new HashMap<>();
 
     //runtime status
     public boolean hasTexture = false;
@@ -195,7 +194,7 @@ public class Avatar {
     }
 
     public void tick() {
-        if (scriptError || luaRuntime == null)
+        if (scriptError || luaRuntime == null || !loaded)
             return;
 
         checkUser();
@@ -219,7 +218,7 @@ public class Avatar {
     public void render(float delta) {
         complexity.reset(trust.get(Trust.COMPLEXITY));
 
-        if (scriptError || luaRuntime == null)
+        if (scriptError || luaRuntime == null || !loaded)
             return;
 
         render.reset(trust.get(Trust.RENDER_INST));
@@ -321,6 +320,9 @@ public class Avatar {
     }
 
     public void postWorldRenderEvent(float delta) {
+        if (!loaded)
+            return;
+
         if (renderer != null)
             renderer.allowMatrixUpdate = false;
 
@@ -644,6 +646,9 @@ public class Avatar {
     // -- animations -- //
 
     public void applyAnimations() {
+        if (!loaded)
+            return;
+
         int animationsLimit = trust.get(Trust.BB_ANIMATIONS);
         int limit = animationsLimit;
         for (Animation animation : animations.values())
@@ -652,6 +657,9 @@ public class Avatar {
     }
 
     public void clearAnimations() {
+        if (!loaded)
+            return;
+
         for (Animation animation : animations.values())
             AnimationPlayer.clear(animation);
     }

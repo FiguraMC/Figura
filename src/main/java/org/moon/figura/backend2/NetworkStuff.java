@@ -9,6 +9,7 @@ import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.avatar.UserData;
+import org.moon.figura.avatar.local.CacheAvatarLoader;
 import org.moon.figura.backend2.websocket.C2SMessageHandler;
 import org.moon.figura.backend2.websocket.WebsocketThingy;
 import org.moon.figura.config.Config;
@@ -246,13 +247,13 @@ public class NetworkStuff {
             UUID uuid = UUID.fromString(json.get("uuid").getAsString());
 
             //avatars
-            ArrayList<Pair<String, UUID>> avatars = new ArrayList<>();
+            ArrayList<Pair<String, Pair<String, UUID>>> avatars = new ArrayList<>();
 
             JsonArray equippedAvatars = json.getAsJsonArray("equipped");
             for (JsonElement element : equippedAvatars) {
                 JsonObject entry = element.getAsJsonObject();
                 UUID owner = UUID.fromString(entry.get("owner").getAsString());
-                avatars.add(Pair.of(entry.get("id").getAsString(), owner));
+                avatars.add(Pair.of(entry.get("hash").getAsString(), Pair.of(entry.get("id").getAsString(), owner)));
             }
 
             //badges
@@ -341,7 +342,7 @@ public class NetworkStuff {
         });
     }
 
-    public static void getAvatar(UserData target, UUID owner, String id) {
+    public static void getAvatar(UserData target, UUID owner, String id, String hash) {
         queueStream(target.id, api -> api.getAvatar(owner, id), (code, stream) -> {
             String s;
             try {
@@ -358,6 +359,7 @@ public class NetworkStuff {
             //success
             try {
                 CompoundTag nbt = NbtIo.readCompressed(stream);
+                CacheAvatarLoader.save(hash, nbt);
                 target.loadAvatar(nbt);
             } catch (Exception e) {
                 FiguraMod.LOGGER.error("Failed to load avatar for " + target.id, e);

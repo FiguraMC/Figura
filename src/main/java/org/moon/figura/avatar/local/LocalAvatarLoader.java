@@ -8,11 +8,14 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.AvatarManager;
+import org.moon.figura.avatar.UserData;
+import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.parsers.AvatarMetadataParser;
 import org.moon.figura.parsers.BlockbenchModelParser;
 import org.moon.figura.parsers.LuaScriptParser;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FiguraResourceListener;
+import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.IOUtils;
 
 import java.io.File;
@@ -22,6 +25,7 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.regex.Pattern;
 
@@ -30,6 +34,8 @@ import java.util.regex.Pattern;
  * and used for hotswapping
  */
 public class LocalAvatarLoader {
+
+    private static CompletableFuture<Void> tasks;
 
     private static WatchService watcher;
     private static final HashMap<Path, WatchKey> KEYS = new HashMap<>();
@@ -68,63 +74,79 @@ public class LocalAvatarLoader {
         }
     }
 
+    protected static void async(Runnable toRun) {
+        if (tasks == null || tasks.isDone()) {
+            tasks = CompletableFuture.runAsync(toRun);
+        } else {
+            tasks.thenRun(toRun);
+        }
+    }
+
     /**
      * Loads an NbtCompound from the specified path
      *
      * @param path - the file/folder for loading the avatar
-     * @return the NbtCompound from this path
      */
-    public static CompoundTag loadAvatar(Path path) throws IOException {
+    public static void loadAvatar(Path path, UserData target) {
         loadState = 0;
         resetWatchKeys();
         lastLoadedPath = path;
         addWatchKey(path);
 
-        if (path == null)
-            return null;
+        if (path == null || target == null)
+            return;
 
-        //load as nbt (.moon)
-        loadState++;
-        if (path.toString().endsWith(".moon")) {
-            //NbtIo already closes the file stream
-            return NbtIo.readCompressed(new FileInputStream(path.toFile()));
-        }
+        async(() -> {
+            try {
+                //load as nbt (.moon)
+                loadState++;
+                if (path.toString().endsWith(".moon")) {
+                    //NbtIo already closes the file stream
+                    target.loadAvatar(NbtIo.readCompressed(new FileInputStream(path.toFile())));
+                    return;
+                }
 
-        //load as folder
-        CompoundTag nbt = new CompoundTag();
+                //load as folder
+                CompoundTag nbt = new CompoundTag();
 
-        //scripts
-        loadState++;
-        loadScripts(path, nbt);
+                //scripts
+                loadState++;
+                loadScripts(path, nbt);
 
-        //custom sounds
-        loadState++;
-        loadSounds(path, nbt);
+                //custom sounds
+                loadState++;
+                loadSounds(path, nbt);
 
-        //models
-        CompoundTag textures = new CompoundTag();
-        ListTag animations = new ListTag();
-        BlockbenchModelParser modelParser = new BlockbenchModelParser();
+                //models
+                CompoundTag textures = new CompoundTag();
+                ListTag animations = new ListTag();
+                BlockbenchModelParser modelParser = new BlockbenchModelParser();
 
-        loadState++;
-        CompoundTag models = loadModels(path, modelParser, textures, animations, "");
-        models.putString("name", "models");
+                loadState++;
+                CompoundTag models = loadModels(path, modelParser, textures, animations, "");
+                models.putString("name", "models");
 
-        //metadata
-        loadState++;
-        String metadata = IOUtils.readFile(path.resolve("avatar.json").toFile());
-        nbt.put("metadata", AvatarMetadataParser.parse(metadata, path.getFileName().toString()));
-        AvatarMetadataParser.injectToModels(metadata, models);
+                //metadata
+                loadState++;
+                String metadata = IOUtils.readFile(path.resolve("avatar.json").toFile());
+                nbt.put("metadata", AvatarMetadataParser.parse(metadata, path.getFileName().toString()));
+                AvatarMetadataParser.injectToModels(metadata, models);
 
-        //return :3
-        if (!models.isEmpty())
-            nbt.put("models", models);
-        if (!textures.isEmpty())
-            nbt.put("textures", textures);
-        if (!animations.isEmpty())
-            nbt.put("animations", animations);
+                //return :3
+                if (!models.isEmpty())
+                    nbt.put("models", models);
+                if (!textures.isEmpty())
+                    nbt.put("textures", textures);
+                if (!animations.isEmpty())
+                    nbt.put("animations", animations);
 
-        return nbt;
+                //load
+                target.loadAvatar(nbt);
+            } catch (Exception e) {
+                FiguraMod.LOGGER.error("Failed to load avatar from " + path, e);
+                FiguraToast.sendToast(FiguraText.of("toast.load_error"), FiguraText.of("toast.load_error." + LocalAvatarLoader.getLoadState()), FiguraToast.ToastType.ERROR);
+            }
+        });
     }
 
     private static void loadScripts(Path path, CompoundTag nbt) throws IOException {

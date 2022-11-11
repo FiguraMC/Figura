@@ -8,9 +8,7 @@ import net.minecraft.world.entity.player.Player;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.local.LocalAvatarLoader;
 import org.moon.figura.backend2.NetworkStuff;
-import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.widgets.lists.AvatarList;
-import org.moon.figura.utils.FiguraText;
 
 import java.nio.file.Path;
 import java.util.*;
@@ -187,13 +185,8 @@ public class AvatarManager {
         FETCHED_USERS.add(id);
 
         //load
-        try {
-            UserData user = LOADED_USERS.computeIfAbsent(id, UserData::new);
-            user.loadAvatar(LocalAvatarLoader.loadAvatar(path));
-        } catch (Exception e) {
-            FiguraMod.LOGGER.error("Failed to load avatar from " + path, e);
-            FiguraToast.sendToast(new FiguraText("toast.load_error"), new FiguraText("toast.load_error." + LocalAvatarLoader.getLoadState()), FiguraToast.ToastType.ERROR);
-        }
+        UserData user = LOADED_USERS.computeIfAbsent(id, UserData::new);
+        LocalAvatarLoader.loadAvatar(path, user);
 
         //mark as not uploaded
         localUploaded = false;

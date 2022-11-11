@@ -40,7 +40,7 @@ public class PlayerTabOverlayMixin {
     private void getPlayerName(PlayerInfo playerInfo, CallbackInfoReturnable<Component> cir) {
         //get config
         int config = Config.LIST_NAMEPLATE.asInt();
-        if (config == 0)
+        if (config == 0 || AvatarManager.panic)
             return;
 
         //apply customization
