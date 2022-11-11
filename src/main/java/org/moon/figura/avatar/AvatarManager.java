@@ -187,13 +187,8 @@ public class AvatarManager {
         FETCHED_USERS.add(id);
 
         //load
-        try {
-            UserData user = LOADED_USERS.computeIfAbsent(id, UserData::new);
-            user.loadAvatar(LocalAvatarLoader.loadAvatar(path));
-        } catch (Exception e) {
-            FiguraMod.LOGGER.error("Failed to load avatar from " + path, e);
-            FiguraToast.sendToast(FiguraText.of("toast.load_error"), FiguraText.of("toast.load_error." + LocalAvatarLoader.getLoadState()), FiguraToast.ToastType.ERROR);
-        }
+        UserData user = LOADED_USERS.computeIfAbsent(id, UserData::new);
+        LocalAvatarLoader.loadAvatar(path, user);
 
         //mark as not uploaded
         localUploaded = false;

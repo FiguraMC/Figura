@@ -48,7 +48,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
     private void renderFiguraLabelIfPresent(AbstractClientPlayer player, Component text, PoseStack stack, MultiBufferSource multiBufferSource, int light, CallbackInfo ci) {
         //return on config or high entity distance
         int config = Config.ENTITY_NAMEPLATE.asInt();
-        if (config == 0 || this.entityRenderDispatcher.distanceToSqr(player) > 4096)
+        if (config == 0 || AvatarManager.panic || this.entityRenderDispatcher.distanceToSqr(player) > 4096)
             return;
 
         //get customizations

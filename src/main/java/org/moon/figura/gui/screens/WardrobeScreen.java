@@ -67,7 +67,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
         addRenderableWidget(upload = new TexturedButton(buttX - 48, buttY, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/upload.png"), 72, 24, FiguraText.of("gui.wardrobe.upload.tooltip"), button -> {
             Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
             try {
-                LocalAvatarLoader.loadAvatar(null);
+                LocalAvatarLoader.loadAvatar(null, null);
             } catch (Exception ignored) {}
             NetworkStuff.uploadAvatar(avatar);
             AvatarList.selectedEntry = null;
