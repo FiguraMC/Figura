@@ -259,7 +259,14 @@ public class ConfigAPI {
             value = "config.save"
     )
     public void save(@LuaNotNil String key, LuaValue val) {
-        if (!isHost) return;
+        if (!isHost)
+            return;
+
+        if (!loaded) {
+            init();
+            loaded = true;
+        }
+
         luaTable.set(key, val == null ? LuaValue.NIL : val);
         write();
     }
