@@ -9,7 +9,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.util.FormattedCharSequence;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
@@ -85,11 +84,11 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
         int maxLines = (maxSize - 8) / height;
 
         //special author stuff
-        int authorFreeLines = maxLines - 9;
+        int authorFreeLines = maxLines - 7;
         Component authors = values.get(1);
-        List<FormattedCharSequence> authorLines = authors == null ? Collections.emptyList() : TextUtils.warpText(authors, width - 10, font);
+        List<Component> authorLines = authors == null ? Collections.emptyList() : TextUtils.splitText(authors, "\n");
         int authorUsedLines = Math.min(authorLines.size(), authorFreeLines);
-        this.height = height * TITLES.size() * 2 + 4 + height * (Math.max(authorUsedLines - 1, 0));
+        this.height = height * TITLES.size() * 2 + 4 + height * (authorUsedLines - 1);
 
         //render background
         UIHelper.renderSliced(stack, this.x, this.y, this.width, this.height, UIHelper.OUTLINE);
@@ -126,17 +125,18 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
 
             //author special rendering
             for (int j = 0; j < authorUsedLines; j++) {
-                FormattedCharSequence text = authorLines.get(j);
+                Component text = authorLines.get(j);
+                Component newText = TextUtils.trimToWidthEllipsis(font, text, width - 10, ELLIPSIS);
 
-                //add ellipsis and tooltip if it is the last entry and out lines exceeded the free space
-                if (j == authorUsedLines - 1 && authorLines.size() > authorFreeLines) {
-                    text = TextUtils.addEllipsis(font, TextUtils.charSequenceToText(text), width - 10, ELLIPSIS).getVisualOrderText();
-
-                    if (UIHelper.isMouseOver(this.x, y - height * authorUsedLines, width, height * (authorUsedLines + 1) - 4, mouseX, mouseY))
-                        UIHelper.setTooltip(value);
+                if (j == authorUsedLines - 1 && authorLines.size() > authorUsedLines) {
+                    text = value;
+                    newText = ELLIPSIS;
                 }
 
-                UIHelper.drawCenteredString(stack, font, text, x, y, 0xFFFFFF);
+                if (text != newText && UIHelper.isMouseOver(this.x, y, width, height, mouseX, mouseY))
+                    UIHelper.setTooltip(text);
+
+                UIHelper.drawCenteredString(stack, font, newText, x, y, 0xFFFFFF);
                 y += height;
             }
         }
