@@ -47,7 +47,7 @@ public abstract class MinecraftMixin {
             AvatarManager.panic = !AvatarManager.panic;
             FiguraToast.sendToast(new FiguraText(AvatarManager.panic ? "toast.panic_enabled" : "toast.panic_disabled"), FiguraToast.ToastType.WARNING);
             SoundAPI.getSoundEngine().figura$stopAllSounds();
-            ParticleAPI.getParticleEngine().figura$clearAllParticles();
+            ParticleAPI.getParticleEngine().figura$clearParticles(null);
             return;
         }
 

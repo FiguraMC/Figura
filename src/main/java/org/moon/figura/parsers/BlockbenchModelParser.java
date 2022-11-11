@@ -113,7 +113,7 @@ public class BlockbenchModelParser {
                 Path p = sourceFile.toPath().resolve(textures[i].relative_path);
                 File f = p.toFile();
                 if (!f.exists()) throw new Exception("File do not exists!");
-                if (!p.startsWith(avatar)) throw new Exception("File from outside the avatar folder!");
+                if (!p.normalize().startsWith(avatar)) throw new Exception("File from outside the avatar folder!");
 
                 //load texture
                 source = IOUtils.readFileBytes(f);
@@ -437,7 +437,8 @@ public class BlockbenchModelParser {
                 ListTag scaleData = new ListTag();
 
                 //parse keyframes
-                for (JsonElement keyframeJson : entry.getValue().getAsJsonObject().get("keyframes").getAsJsonArray()) {
+                JsonObject animationData = entry.getValue().getAsJsonObject();
+                for (JsonElement keyframeJson : animationData.get("keyframes").getAsJsonArray()) {
                     BlockbenchModel.KeyFrame keyFrame = gson.fromJson(keyframeJson, BlockbenchModel.KeyFrame.class);
 
                     CompoundTag keyframeNbt = new CompoundTag();
@@ -478,8 +479,13 @@ public class BlockbenchModelParser {
                     CompoundTag nbt = new CompoundTag();
                     CompoundTag channels = new CompoundTag();
 
-                    if (!rotData.isEmpty())
+                    if (!rotData.isEmpty()) {
                         channels.put("rotation", rotData);
+
+                        JsonElement globalRotJson = animationData.get("rotation_global");
+                        if (globalRotJson != null && globalRotJson.getAsBoolean())
+                            nbt.putBoolean("g_rot", true);
+                    }
                     if (!posData.isEmpty())
                         channels.put("position", posData);
                     if (!scaleData.isEmpty())
