@@ -480,16 +480,16 @@ public class BlockbenchModelParser {
                     CompoundTag channels = new CompoundTag();
 
                     if (!rotData.isEmpty()) {
-                        channels.put("rotation", rotData);
-
                         JsonElement globalRotJson = animationData.get("rotation_global");
                         if (globalRotJson != null && globalRotJson.getAsBoolean())
-                            nbt.putBoolean("g_rot", true);
+                            channels.put("grot", rotData);
+                        else
+                            channels.put("rot", rotData);
                     }
                     if (!posData.isEmpty())
-                        channels.put("position", posData);
+                        channels.put("pos", posData);
                     if (!scaleData.isEmpty())
-                        channels.put("scale", scaleData);
+                        channels.put("scl", scaleData);
 
                     if (!channels.isEmpty()) {
                         nbt.putInt("id", i + animationOffset);

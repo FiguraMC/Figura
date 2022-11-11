@@ -105,7 +105,7 @@ public class TextureAPI {
 
         try {
             ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-            image = NativeImage.read(bais);
+            image = NativeImage.read(null, bais);
             bais.close();
         } catch (Exception e) {
             throw new LuaError(e.getMessage());

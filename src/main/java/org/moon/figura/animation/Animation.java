@@ -3,19 +3,15 @@ package org.moon.figura.animation;
 import com.mojang.datafixers.util.Pair;
 import org.luaj.vm2.LuaError;
 import org.moon.figura.avatar.Avatar;
-import org.moon.figura.model.FiguraModelPart;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.model.FiguraModelPart;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.*;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -33,7 +29,7 @@ public class Animation {
 
     // -- keyframes -- //
 
-    protected final Map<FiguraModelPart, List<AnimationChannel>> animationParts = new ConcurrentHashMap<>();
+    protected final List<Map.Entry<FiguraModelPart, List<Animation.AnimationChannel>>> animationParts = new ArrayList<>();
     private final Map<Float, String> codeFrames = new HashMap<>();
 
     // -- player variables -- //
@@ -70,7 +66,21 @@ public class Animation {
     }
 
     public void addAnimation(FiguraModelPart part, AnimationChannel anim) {
-        this.animationParts.computeIfAbsent(part, modelPart -> new ArrayList<>()).add(anim);
+        Map.Entry<FiguraModelPart, List<AnimationChannel>> entry = null;
+        for (Map.Entry<FiguraModelPart, List<AnimationChannel>> listEntry : this.animationParts) {
+            if (listEntry.getKey() == part) {
+                entry = listEntry;
+                break;
+            }
+        }
+
+        if (entry == null) {
+            entry = new AbstractMap.SimpleEntry<>(part, new ArrayList<>());
+            this.animationParts.add(entry);
+        }
+
+        entry.getValue().add(anim);
+        this.animationParts.sort(Map.Entry.comparingByKey());
     }
 
     public void tick() {
