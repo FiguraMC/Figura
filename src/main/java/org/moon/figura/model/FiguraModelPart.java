@@ -33,7 +33,7 @@ import java.util.Map;
         name = "ModelPart",
         value = "model_part"
 )
-public class FiguraModelPart {
+public class FiguraModelPart implements Comparable<FiguraModelPart> {
 
     public final String name;
     public FiguraModelPart parent;
@@ -171,6 +171,16 @@ public class FiguraModelPart {
             customization.setAnimRot(vec);
         }
     }
+    public void globalAnimRot(FiguraVec3 vec, boolean merge) {
+        FiguraModelPart part = parent;
+        while (part != null) {
+            FiguraVec3 rot = part.getAnimRot();
+            vec.subtract(rot);
+            rot.free();
+            part = part.parent;
+        }
+        animRotation(vec, merge);
+    }
     public void animScale(FiguraVec3 vec, boolean merge) {
         if (merge) {
             FiguraVec3 scale = customization.getAnimScale();
@@ -203,6 +213,25 @@ public class FiguraModelPart {
         for (int i = 0; i < this.children.size(); i++)
             map.put(i + 1, this.children.get(i));
         return map;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = FiguraModelPart.class,
+                    argumentNames = "part"
+            ),
+            value = "model_part.is_child_of"
+    )
+    public boolean isChildOf(@LuaNotNil FiguraModelPart part) {
+        FiguraModelPart p = parent;
+        while (p != null) {
+            if (p == part)
+                return true;
+            p = p.parent;
+        }
+
+        return false;
     }
 
     @LuaWhitelist
@@ -861,6 +890,16 @@ public class FiguraModelPart {
 
         this.childCache.put(key, null);
         return null;
+    }
+
+    @Override
+    public int compareTo(FiguraModelPart o) {
+        if (this.isChildOf(o))
+            return 1;
+        else if (o.isChildOf(this))
+            return -1;
+        else
+            return 0;
     }
 
     @Override

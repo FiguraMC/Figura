@@ -1,8 +1,8 @@
 package org.moon.figura.animation;
 
 import net.minecraft.util.Mth;
-import org.moon.figura.model.FiguraModelPart;
 import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.model.FiguraModelPart;
 
 import java.util.List;
 import java.util.Map;
@@ -16,7 +16,7 @@ public class AnimationPlayer {
         if (anim.playState != Animation.PlayState.PAUSED)
             anim.tick();
 
-        for (Map.Entry<FiguraModelPart, List<Animation.AnimationChannel>> entry : anim.animationParts.entrySet()) {
+        for (Map.Entry<FiguraModelPart, List<Animation.AnimationChannel>> entry : anim.animationParts) {
             FiguraModelPart part = entry.getKey();
 
             if (part.lastAnimationPriority > anim.priority)
@@ -25,6 +25,9 @@ public class AnimationPlayer {
             boolean merge = part.lastAnimationPriority == anim.priority;
             part.lastAnimationPriority = anim.priority;
             part.animated = true;
+
+            if (merge) part.animationOverride |= anim.override;
+            else part.animationOverride = anim.override;
 
             for (Animation.AnimationChannel channel : entry.getValue()) {
                 if (limit <= 0)
@@ -47,9 +50,6 @@ public class AnimationPlayer {
                 FiguraVec3 transform = current.getInterpolation().generate(keyframes, currentIndex, nextIndex, anim.blend, delta, type);
                 type.apply(part, transform, merge);
 
-                if (merge) part.animationOverride |= anim.override;
-                else part.animationOverride = anim.override;
-
                 limit--;
             }
         }
@@ -59,7 +59,8 @@ public class AnimationPlayer {
 
     public static void clear(Animation anim) {
         FiguraVec3 zero = FiguraVec3.of();
-        for (FiguraModelPart part : anim.animationParts.keySet()) {
+        for (Map.Entry<FiguraModelPart, List<Animation.AnimationChannel>> entry : anim.animationParts) {
+            FiguraModelPart part = entry.getKey();
             if (!part.animated)
                 continue;
 

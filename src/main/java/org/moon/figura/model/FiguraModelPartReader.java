@@ -11,12 +11,12 @@ import org.moon.figura.animation.Interpolation;
 import org.moon.figura.animation.Keyframe;
 import org.moon.figura.animation.TransformType;
 import org.moon.figura.avatar.Avatar;
-import org.moon.figura.model.rendering.FiguraImmediateBuffer;
-import org.moon.figura.model.rendering.texture.FiguraTextureSet;
-import org.moon.figura.model.rendering.texture.RenderTypes;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec4;
+import org.moon.figura.model.rendering.FiguraImmediateBuffer;
+import org.moon.figura.model.rendering.texture.FiguraTextureSet;
+import org.moon.figura.model.rendering.texture.RenderTypes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -92,7 +92,17 @@ public class FiguraModelPartReader {
 
                 CompoundTag animNbt = compound.getCompound("data");
                 for (String channelString : animNbt.getAllKeys()) {
-                    TransformType type = TransformType.valueOf(channelString.toUpperCase());
+                    TransformType type = switch (channelString) {
+                        case "pos" -> TransformType.POSITION;
+                        case "rot" -> TransformType.ROTATION;
+                        case "grot" -> TransformType.GLOBAL_ROT;
+                        case "scl" -> TransformType.SCALE;
+                        default -> null;
+                    };
+
+                    if (type == null)
+                        continue;
+
                     List<Keyframe> keyframes = new ArrayList<>();
                     ListTag keyframeList = animNbt.getList(channelString, Tag.TAG_COMPOUND);
 
