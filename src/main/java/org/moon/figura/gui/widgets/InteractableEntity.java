@@ -73,7 +73,7 @@ public class InteractableEntity extends AbstractContainerElement {
 
                         //update button
                         button.x = this.x + 4;
-                        button.y = this.y + 28;
+                        button.y = this.y + 4;
                         button.setTooltip(FiguraText.of("gui.minimise"));
 
                         //update entity
