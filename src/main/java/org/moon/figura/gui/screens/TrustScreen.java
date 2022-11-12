@@ -67,7 +67,7 @@ public class TrustScreen extends AbstractPanelScreen {
         int listWidth = Math.min(middle - 6, 208);
         int lineHeight =  font.lineHeight;
 
-        double guiScale = this.minecraft.getWindow().getGuiScale();
+        double guiScale = this.minecraft == null ? 1 : this.minecraft.getWindow().getGuiScale();
         double screenScale = Math.min(this.width, this.height) / 1018d;
         int modelSize = Math.min((int) ((192 / guiScale) * (screenScale * guiScale)), 96);
 
@@ -266,6 +266,7 @@ public class TrustScreen extends AbstractPanelScreen {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         boolean bool = super.mouseClicked(mouseX, mouseY, button);
+        dragged = null;
 
         if (button == 0 && playerList.selectedEntry instanceof PlayerElement element && element.isMouseOver(mouseX, mouseY)) {
             dragged = element;
@@ -290,7 +291,7 @@ public class TrustScreen extends AbstractPanelScreen {
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (dragged == null)
+        if (dragged == null || !dragged.dragged)
             return super.mouseReleased(mouseX, mouseY, button);
 
         TrustContainer trust = dragged.getTrust();
