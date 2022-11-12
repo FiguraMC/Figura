@@ -5,13 +5,45 @@ import net.minecraft.nbt.NbtIo;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.UserData;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
+import java.util.concurrent.TimeUnit;
 
 public class CacheAvatarLoader {
+
+    public static void init() {
+        LocalAvatarLoader.async(() -> {
+            File file = getAvatarCacheDirectory().toFile();
+            if (!file.exists() || !file.isDirectory())
+                return;
+
+            File[] children = file.listFiles();
+            if (children == null)
+                return;
+
+            for (File child : children) {
+                try {
+                    FileTime time = Files.getLastModifiedTime(child.toPath());
+                    long diff = System.currentTimeMillis() - time.toMillis();
+                    long elapsed = TimeUnit.MILLISECONDS.toDays(diff);
+                    if (elapsed > 7) {
+                        if (child.delete()) {
+                            FiguraMod.debug("Successfully deleted cache avatar \"{}\" with \"{}\" days old", child.getName(), elapsed);
+                        } else {
+                            throw new Exception();
+                        }
+                    }
+                } catch (Exception ignored) {
+                    FiguraMod.debug("Failed to delete cache avatar \"{}\"", child.getName());
+                }
+            }
+        });
+    }
 
     public static boolean checkAndLoad(String hash, UserData target) {
         Path p = getAvatarCacheDirectory();

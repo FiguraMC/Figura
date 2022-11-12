@@ -16,6 +16,7 @@ import net.minecraft.server.players.GameProfileCache;
 import net.minecraft.world.entity.Entity;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
+import org.moon.figura.avatar.local.CacheAvatarLoader;
 import org.moon.figura.avatar.local.LocalAvatarFetcher;
 import org.moon.figura.avatar.local.LocalAvatarLoader;
 import org.moon.figura.backend2.NetworkStuff;
@@ -60,6 +61,7 @@ public class FiguraMod implements ClientModInitializer {
         ConfigManager.init();
         TrustManager.init();
         LocalAvatarFetcher.init();
+        CacheAvatarLoader.init();
         FiguraAPIManager.init();
         FiguraDocsManager.init();
         FiguraCommands.init();
