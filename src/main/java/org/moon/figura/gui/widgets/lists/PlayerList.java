@@ -66,10 +66,7 @@ public class PlayerList extends AbstractList {
         loadPlayers();
 
         //select self
-        PlayerElement local = Minecraft.getInstance().player != null ? players.get(Minecraft.getInstance().player.getUUID()) : null;
-        if (local != null) local.onPress();
-
-        scrollToSelected();
+        selectLocalPlayer();
     }
 
     @Override
@@ -203,6 +200,10 @@ public class PlayerList extends AbstractList {
         }
 
         sortList();
+
+        //select local if current selected is missing
+        if (selectedEntry instanceof PlayerElement player && missingPlayers.contains(player.getOwner()))
+            selectLocalPlayer();
     }
 
     private void sortList() {
@@ -212,6 +213,13 @@ public class PlayerList extends AbstractList {
                 return container1.compareTo(container2);
             return 0;
         });
+    }
+
+    private void selectLocalPlayer() {
+        PlayerElement local = Minecraft.getInstance().player != null ? players.get(Minecraft.getInstance().player.getUUID()) : null;
+        if (local != null) local.onPress();
+
+        scrollToSelected();
     }
 
     public void updateScroll() {

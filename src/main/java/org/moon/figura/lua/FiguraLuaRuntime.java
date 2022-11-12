@@ -25,7 +25,9 @@ import org.moon.figura.lua.api.vanilla_model.VanillaModelAPI;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Stack;
 import java.util.function.Function;
 
 /**
@@ -269,7 +271,7 @@ public class FiguraLuaRuntime {
                 for (Tag name : autoScripts)
                     INIT_SCRIPT.apply(name.getAsString());
             }
-        } catch (LuaError e) {
+        } catch (Exception | StackOverflowError e) {
             error(e);
             return false;
         }
@@ -280,7 +282,7 @@ public class FiguraLuaRuntime {
     // error ^-^ //
 
     public void error(Throwable e) {
-        LuaError err = e instanceof LuaError lua ? lua : new LuaError(e);
+        LuaError err = e instanceof LuaError lua ? lua : e instanceof StackOverflowError ? new LuaError("Stack Overflow") : new LuaError(e);
         FiguraLuaPrinter.sendLuaError(err, owner);
         owner.scriptError = true;
         owner.luaRuntime = null;
