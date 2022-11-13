@@ -46,9 +46,9 @@ public class VanillaModelData {
         public final FiguraVec3 scale = FiguraVec3.of();
 
         private void updateFromPart(ModelPart model) {
-            this.pos.set(model.x, model.y, model.z);
+            this.pos.set(model.x, model.y, -model.z);
             this.rot.set(Math.toDegrees(-model.xRot), Math.toDegrees(-model.yRot), Math.toDegrees(model.zRot));
-            this.scale.set(model.xScale, model.yScale, -model.zScale);
+            this.scale.set(model.xScale, model.yScale, model.zScale);
         }
     }
 }
