@@ -1273,7 +1273,7 @@
   "figura.docs.world.is_open_sky": "Gets whether or not the sky is open at the given position.",
   "figura.docs.world.get_entity": "Returns an EntityAPI object from this UUID's entity, or nil if no entity was found.",
   "figura.docs.world.get_players": "Returns a table containing instances of Player for all players in the world. The players are indexed by their names.",
-  "figura.docs.world.player_vars": "Returns a table from all players in the world containing variables stored from their Avatar api's store() function. The players are indexed by their names.",
+  "figura.docs.world.avatar_vars": "Returns a table containing variables stored from all loaded Avatars \"avatar:store()\" function. The table will be indexed by the avatar's owner UUID.",
   "figura.docs.world.new_block": "Parses and create a new BlockState from the given string. A world position can be optionally given for the blockstate functions that relies on its position.",
   "figura.docs.world.new_item": "Parses and create a new ItemStack from the given string. A count and damage can be given, to be applied on this itemstack.",
   "figura.docs.world.exists": "Checks whether or not a world currently exists. This will almost always be true, but might be false on some occasions such as while travelling between dimensions."
