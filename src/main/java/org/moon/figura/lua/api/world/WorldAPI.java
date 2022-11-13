@@ -319,15 +319,14 @@ public class WorldAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("world.player_vars")
-    public static Map<String, LuaTable> playerVars() {
-        HashMap<String, LuaTable> playerList = new HashMap<>();
-        for (Player player : getCurrentWorld().players()) {
-            Avatar avatar = AvatarManager.getAvatarForPlayer(player.getUUID());
-            LuaTable tbl = avatar == null || avatar.luaRuntime == null ? new LuaTable() : avatar.luaRuntime.avatar_meta.storedStuff;
-            playerList.put(player.getName().getString(), new ReadOnlyLuaTable(tbl));
+    @LuaMethodDoc("world.avatar_vars")
+    public static Map<String, LuaTable> avatarVars() {
+        HashMap<String, LuaTable> varList = new HashMap<>();
+        for (Avatar avatar : AvatarManager.getLoadedAvatars()) {
+            LuaTable tbl = avatar.luaRuntime == null ? new LuaTable() : avatar.luaRuntime.avatar_meta.storedStuff;
+            varList.put(avatar.owner.toString(), new ReadOnlyLuaTable(tbl));
         }
-        return playerList;
+        return varList;
     }
 
     @LuaWhitelist
