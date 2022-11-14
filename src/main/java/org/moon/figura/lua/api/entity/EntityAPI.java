@@ -38,7 +38,7 @@ import java.util.UUID;
         name = "EntityAPI",
         value = "entity"
 )
-public class EntityAPI<T extends Entity> extends NullEntity {
+public class EntityAPI<T extends Entity> {
 
     protected final UUID entityUUID;
     protected T entity; //We just do not care about memory anymore so, just have something not wrapped in a WeakReference
@@ -74,7 +74,6 @@ public class EntityAPI<T extends Entity> extends NullEntity {
         return entity;
     }
 
-    @Override
     @LuaWhitelist
     @LuaMethodDoc("entity.is_loaded")
     public boolean isLoaded() {
