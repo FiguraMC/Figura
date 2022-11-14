@@ -5,9 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
-import org.moon.figura.avatar.Avatar;
 import org.moon.figura.mixin.render.layers.elytra.ElytraLayerAccessor;
-import org.moon.figura.utils.FiguraIdentifier;
 
 import java.util.UUID;
 
@@ -83,12 +81,11 @@ public class FiguraTextureSet {
             case PRIMARY -> mainTex == null ? null : mainTex.textureID;
             case SECONDARY -> emissiveTex == null ? null : emissiveTex.textureID;
             case CUSTOM -> {
-                if (pair.getSecond() instanceof FiguraTexture texture)
-                    yield texture.textureID;
-                else if (pair.getSecond() instanceof String string)
-                    yield new FiguraIdentifier("avatar_tex/" + owner + "/custom/" + string);
-
-                yield MissingTextureAtlasSprite.getLocation();
+                try {
+                    yield ((FiguraTexture) pair.getSecond()).textureID;
+                } catch (Exception ignored) {
+                    yield MissingTextureAtlasSprite.getLocation();
+                }
             }
         };
     }

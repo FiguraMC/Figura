@@ -77,7 +77,7 @@ public class FiguraTexture extends AbstractTexture implements Closeable {
 
     public FiguraTexture(Avatar owner, String name, NativeImage image) {
         this.texture = image;
-        this.textureID = new FiguraIdentifier("avatar_tex/" + owner.owner + "/custom/" + name);
+        this.textureID = new FiguraIdentifier("avatar_tex/" + owner.owner + "/custom/" + UUID.randomUUID());
         this.name = name;
         this.owner = owner;
     }
