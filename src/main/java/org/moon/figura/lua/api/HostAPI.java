@@ -18,7 +18,6 @@ import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.config.Config;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
-import org.moon.figura.lua.api.entity.EntityAPI;
 import org.moon.figura.lua.api.world.ItemStackAPI;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaMethodDoc;
@@ -59,18 +58,6 @@ public class HostAPI {
     @LuaMethodDoc("host.is_host")
     public boolean isHost() {
         return isHost;
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc("host.get_targeted_entity")
-    public EntityAPI<?> getTargetedEntity() {
-        if (!isHost()) return null;
-
-        Entity entity = this.minecraft.crosshairPickEntity;
-        if (entity != null && Minecraft.getInstance().player != null && !entity.isInvisibleTo(Minecraft.getInstance().player))
-            return EntityAPI.wrap(entity);
-
-        return null;
     }
 
     @LuaWhitelist

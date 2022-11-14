@@ -1,18 +1,27 @@
 package org.moon.figura.lua.api.world;
 
 import com.mojang.brigadier.StringReader;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.arguments.blocks.BlockStateArgument;
 import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Marker;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaTable;
 import org.moon.figura.avatar.Avatar;
@@ -318,6 +327,53 @@ public class WorldAPI {
         } catch (Exception ignored) {
             throw new LuaError("Invalid UUID");
         }
+    }
+
+    @LuaWhitelist
+    public HashMap<String, Object> raycastBlock(boolean fluid, Object x, Object y, Double z, Object w, Double t, Double h) {
+        if (true) return null;
+        FiguraVec3 start, end;
+
+        Pair<FiguraVec3, FiguraVec3> pair = LuaUtils.parse2Vec3("raycastBlock", x, y, z, w, t, h);
+        start = pair.getFirst();
+        end = pair.getSecond();
+
+        BlockHitResult result = getCurrentWorld().clip(new ClipContext(start.asVec3(), end.asVec3(), ClipContext.Block.OUTLINE, fluid ? ClipContext.Fluid.NONE : ClipContext.Fluid.ANY, new Marker(EntityType.MARKER, getCurrentWorld())));
+
+        start.free();
+        end.free();
+
+        if (result == null || result.getType() == HitResult.Type.MISS)
+            return null;
+
+        HashMap<String, Object> map = new HashMap<>();
+        BlockPos pos = result.getBlockPos();
+        map.put("block", getBlockState(pos.getX(), (double) pos.getY(), (double) pos.getZ()));
+        map.put("direction", result.getDirection().getName());
+        map.put("pos", FiguraVec3.fromVec3(result.getLocation()));
+
+        return map;
+    }
+
+    @LuaWhitelist
+    public HashMap<String, Object> raycastEntity(Object x, Object y, Double z, Object w, Double t, Double h) {
+        if (true) return null;
+        FiguraVec3 start, end;
+
+        Pair<FiguraVec3, FiguraVec3> pair = LuaUtils.parse2Vec3("raycastEntity", x, y, z, w, t, h);
+        start = pair.getFirst();
+        end = pair.getSecond();
+
+        EntityHitResult result = ProjectileUtil.getEntityHitResult(new Marker(EntityType.MARKER, getCurrentWorld()), start.asVec3(), end.asVec3(), new AABB(start.asVec3(), end.asVec3()), entity -> true, Double.MAX_VALUE);
+
+        if (result == null)
+            return null;
+
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("entity", EntityAPI.wrap(result.getEntity()));
+        map.put("pos", FiguraVec3.fromVec3(result.getLocation()));
+
+        return map;
     }
 
     @LuaWhitelist

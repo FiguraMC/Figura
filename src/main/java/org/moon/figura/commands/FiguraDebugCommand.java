@@ -83,7 +83,7 @@ public class FiguraDebugCommand {
         //mod meta
         JsonObject meta = new JsonObject();
 
-        meta.addProperty("version", FiguraMod.VERSION);
+        meta.addProperty("version", FiguraMod.VERSION.toString());
         meta.addProperty("localUUID", FiguraMod.getLocalPlayerUUID().toString());
         meta.addProperty("ticks", FiguraMod.ticks);
         meta.addProperty("figuraDirectory", FiguraMod.getFiguraDirectory().toString());

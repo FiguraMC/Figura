@@ -289,7 +289,7 @@ public class ClientAPI {
     @LuaWhitelist
     @LuaMethodDoc("client.get_figura_version")
     public static String getFiguraVersion() {
-        return FiguraMod.VERSION;
+        return FiguraMod.VERSION.toString();
     }
 
     @LuaWhitelist

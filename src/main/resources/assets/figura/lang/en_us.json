@@ -764,6 +764,7 @@
   "figura.docs.entity.get_nbt": "Gets a table containing the NBT of this entity. Please note that not all values in the entity's NBT may be synced, as some are handled only on server side.",
   "figura.docs.entity.is_on_fire": "Returns true if this entity is currently on fire.",
   "figura.docs.entity.get_targeted_block": "Returns a proxy for your currently targeted BlockState. This BlockState appears on the F3 screen. Maximum and Default distance is 20, Minimum is -20",
+  "figura.docs.entity.get_targeted_entity": "Returns a proxy for your currently targeted Entity. This Entity appears on the F3 screen. Maximum and Default distance is 20, Minimum is 0",
   "figura.docs.entity.get_variable": "Gets the value of a variable this entity stored in themselves using the Avatar api's store() function.",
 
   "figura.docs.living_entity": "Acts as a proxy for a living entity in the Minecraft world.",
@@ -821,7 +822,6 @@
   "figura.docs.host": "A global API dedicated to specifically the host of the avatar. For other viewers, these do nothing.",
   "figura.docs.host.unlock_cursor": "Setting this value to true will unlock your cursor, letting you move it freely on the screen instead of it controlling your player's rotation.",
   "figura.docs.host.is_host": "Returns true if this instance of the script is running on host.",
-  "figura.docs.host.get_targeted_entity": "Returns a proxy for your currently targeted entity. This entity appears on the F3 screen.",
   "figura.docs.host.set_title_times": "Sets the duration of the title on the screen, also its fade-in and fade-out durations.",
   "figura.docs.host.clear_title": "Clears the current title from the GUI.",
   "figura.docs.host.set_title": "Sets the current title to the given text. The text is given as json.",
