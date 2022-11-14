@@ -522,10 +522,6 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
                             argumentNames = {"resource", "path"}
                     ),
                     @LuaMethodOverload(
-                            argumentTypes = {String.class, String.class},
-                            argumentNames = {"custom", "textureName"}
-                    ),
-                    @LuaMethodOverload(
                             argumentTypes = {String.class, FiguraTexture.class},
                             argumentNames = {"custom", "texture"}
                     )
@@ -550,10 +546,6 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
                     @LuaMethodOverload(
                             argumentTypes = {String.class, String.class},
                             argumentNames = {"resource", "path"}
-                    ),
-                    @LuaMethodOverload(
-                            argumentTypes = {String.class, String.class},
-                            argumentNames = {"custom", "textureName"}
                     ),
                     @LuaMethodOverload(
                             argumentTypes = {String.class, FiguraTexture.class},

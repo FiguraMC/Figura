@@ -55,8 +55,14 @@ public class FiguraModelPartReader {
 
         customization.needsMatrixRecalculation = true;
 
-        //Read vertex data
+        //textures
         List<Integer> facesByTexture = new ArrayList<>(0);
+        while (textureSets.size() > facesByTexture.size())
+            facesByTexture.add(0);
+        while (textureSets.size() > bufferBuilders.size())
+            bufferBuilders.add(FiguraImmediateBuffer.builder());
+
+        //Read vertex data
         if (hasCubeData(partCompound)) {
             readCuboid(facesByTexture, bufferBuilders, partCompound);
             customization.partType = PartCustomization.PartType.CUBE;
@@ -138,7 +144,7 @@ public class FiguraModelPartReader {
      */
     private static void storeTextures(FiguraModelPart modelPart, List<FiguraTextureSet> textureSets) {
         //textures
-        List<FiguraTextureSet> list = new ArrayList<>();
+        List<FiguraTextureSet> list = new ArrayList<>(0);
         for (int j = 0; j < modelPart.facesByTexture.size(); j++)
             list.add(textureSets.get(j));
         modelPart.textures = list;
@@ -325,10 +331,6 @@ public class FiguraModelPartReader {
         if (faces.contains(direction)) {
             CompoundTag face = faces.getCompound(direction);
             short texId = face.getShort("tex");
-            while (texId >= facesByTexture.size())
-                facesByTexture.add(0);
-            while (texId >= builders.size())
-                builders.add(FiguraImmediateBuffer.builder());
             facesByTexture.set(texId, facesByTexture.get(texId) + 1);
 
             FiguraVec3 normal = faceData.get(direction)[4];
@@ -393,10 +395,6 @@ public class FiguraModelPartReader {
             short packed = tex.getShort(ti);
             int texId = packed >> 4;
             int numVerts = packed & 0xf;
-            while (texId >= facesByTexture.size())
-                facesByTexture.add(0);
-            while (texId >= builders.size())
-                builders.add(FiguraImmediateBuffer.builder());
             facesByTexture.set(texId, facesByTexture.get(texId) + 1);
 
             for (int j = 0; j < numVerts; j++) {
