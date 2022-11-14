@@ -1,5 +1,6 @@
 package org.moon.figura.lua.api.math;
 
+import com.mojang.datafixers.util.Pair;
 import org.luaj.vm2.LuaError;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
@@ -254,32 +255,9 @@ public class VectorsAPI {
     public static FiguraVec3 rotateAroundAxis(double angle, Object x, Object y, Double z, Object w, Double t, Double h) {
         FiguraVec3 vec, axis;
 
-        //parse vec and axis (basically the same logic used in the particle#addParticle() method)
-        if (x instanceof FiguraVec3 vec1) {
-            vec = vec1.copy();
-            if (y instanceof FiguraVec3 vec2) {
-                axis = vec2.copy();
-            } else if (y == null || y instanceof Number) {
-                if (w == null || w instanceof Number) {
-                    axis = LuaUtils.parseVec3("rotateAroundAxis", y, z, (Number) w);
-                } else {
-                    throw new LuaError("Illegal argument to rotateAroundAxis(): " + w);
-                }
-            } else {
-                throw new LuaError("Illegal argument to rotateAroundAxis(): " + y);
-            }
-        } else if (x == null || x instanceof Number && y == null || y instanceof Number) {
-            vec = LuaUtils.parseVec3("rotateAroundAxis", x, (Number) y, z);
-            if (w instanceof FiguraVec3 vec1) {
-                axis = vec1.copy();
-            } else if (w == null || w instanceof Number) {
-                axis = LuaUtils.parseVec3("rotateAroundAxis", w, t, h);
-            } else {
-                throw new LuaError("Illegal argument to rotateAroundAxis(): " + w);
-            }
-        } else {
-            throw new LuaError("Illegal argument to rotateAroundAxis(): " + x);
-        }
+        Pair<FiguraVec3, FiguraVec3> pair = LuaUtils.parse2Vec3("rotateAroundAxis", x, y, z, w, t, h);
+        vec = pair.getFirst();
+        axis = pair.getSecond();
 
         FiguraVec3 result = MathUtils.rotateAroundAxis(vec, axis, angle);
 

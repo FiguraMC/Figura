@@ -207,7 +207,7 @@ public class NetworkStuff {
             int config = Config.UPDATE_CHANNEL.asInt();
             if (config != 0) {
                 String version = json.get(config == 1 ? "release" : "prerelease").getAsString();
-                if (new Version(version).compareTo(Version.VERSION) > 0)
+                if (new Version(version).compareTo(FiguraMod.VERSION) > 0)
                     FiguraToast.sendToast(new FiguraText("toast.new_version"), version);
             }
         });

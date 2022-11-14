@@ -8,8 +8,6 @@ java_version = project.java_version
 archivesBaseName = project.archives_base_name
 version = project.mod_version + "+" + project.minecraft_version
 group = project.maven_group
-fabric_api = project.fabric_api
-mappings = project.mappings
 
 repositories {
 	maven { url 'https://jitpack.io' }
@@ -41,7 +39,7 @@ dependencies {
 processResources {
 	Map<String, Object> properties = new HashMap<>()
 
-	properties.put("version", version)
+	properties.put("version", version + "+" + new Date().format('yyMMdd.HHmmss'))
 	properties.put("java_version", java_version)
 	properties.put("minecraft_version", minecraft_version)
 	properties.put("loader_version", loader_version)
@@ -66,7 +64,7 @@ java {
 
 jar {
 	from("LICENSE") {
-		rename { String.valueOf("$archivesBaseName").toUpperCase() + "_${it}"}
+		rename { String.valueOf("$archives_base_name").toUpperCase() + "_${it}"}
 	}
 }
 

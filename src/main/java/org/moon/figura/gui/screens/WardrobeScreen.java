@@ -94,7 +94,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
         // -- bottom -- //
 
         //version
-        Label version = new Label(new FiguraText().append(" " + FiguraMod.VERSION).withStyle(ChatFormatting.ITALIC), middle, this.height - 5, true);
+        Label version = new Label(new FiguraText().append(" " + FiguraMod.VERSION.noBuildString()).withStyle(ChatFormatting.ITALIC), middle, this.height - 5, true);
         addRenderableOnly(version);
         version.setColor(0x33FFFFFF);
 

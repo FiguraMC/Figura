@@ -6,6 +6,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
+import org.moon.figura.FiguraMod;
 import org.moon.figura.config.Config;
 import org.moon.figura.model.ParentType;
 import org.moon.figura.model.rendering.texture.RenderTypes;
@@ -37,7 +38,7 @@ public class AvatarMetadataParser {
         //version
         Version version = new Version(metadata.version);
         if (version.invalid)
-            version = Version.VERSION;
+            version = FiguraMod.VERSION;
 
         nbt.putString("name", metadata.name == null || metadata.name.isBlank() ? filename : metadata.name);
         nbt.putString("ver", version.toString());

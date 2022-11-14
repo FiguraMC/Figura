@@ -160,7 +160,7 @@ public class Avatar {
                 if (metadata.contains("minify"))
                     minify = metadata.getBoolean("minify");
                 fileSize = getFileSize();
-                versionStatus = version.compareTo(Version.VERSION);
+                versionStatus = version.compareTo(FiguraMod.VERSION);
                 if (entityName.isBlank())
                     entityName = name;
 

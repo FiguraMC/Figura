@@ -1,7 +1,5 @@
 package org.moon.figura.utils;
 
-import org.moon.figura.FiguraMod;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -10,7 +8,6 @@ public class Version implements Comparable<Version> {
     //slightly modified regex of semver
     //difference only is that build metadata can be anything
     private static final Pattern PATTERN = Pattern.compile("^(?<major>0|[1-9]\\d*)\\.(?<minor>0|[1-9]\\d*)\\.(?<patch>0|[1-9]\\d*)(?:-(?<pre>(?:0|[1-9]\\d*|\\d*[a-zA-Z-][\\da-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][\\da-zA-Z-]*))*))?(\\+(?<build>.*))*$");
-    public static final Version VERSION = new Version(FiguraMod.VERSION);
 
     private final String src;
 
@@ -98,6 +95,17 @@ public class Version implements Comparable<Version> {
         }
 
         return (int) Math.signum(ret);
+    }
+
+    public String noBuildString() {
+        if (invalid)
+            return src;
+
+        String ver = major + "." + minor + "." + patch;
+        if (!pre.isBlank())
+            ver += "-" + pre;
+
+        return ver;
     }
 
     @Override

@@ -9,9 +9,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.*;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.moon.figura.avatar.Avatar;
@@ -368,15 +368,48 @@ public class EntityAPI<T extends Entity> extends NullEntity {
             },
             value = "entity.get_targeted_block"
     )
-    public BlockStateAPI getTargetedBlock(boolean ignoreLiquids, Double distance) {
+    public Object[] getTargetedBlock(boolean ignoreLiquids, Double distance) {
         checkEntity();
         if (distance == null) distance = 20d;
         distance = Math.max(Math.min(distance, 20), -20);
-        HitResult result = entity.pick(distance, 0f, !ignoreLiquids);
+        HitResult result = entity.pick(distance, 1f, !ignoreLiquids);
         if (result instanceof BlockHitResult blockHit) {
             BlockPos pos = blockHit.getBlockPos();
-            return new BlockStateAPI(WorldAPI.getCurrentWorld().getBlockState(pos), pos);
+            return new Object[]{new BlockStateAPI(WorldAPI.getCurrentWorld().getBlockState(pos), pos), FiguraVec3.fromVec3(blockHit.getLocation()), blockHit.getDirection().getName()};
         }
+        return null;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload,
+                    @LuaMethodOverload(
+                            argumentTypes = Double.class,
+                            argumentNames = "distance"
+                    )
+            },
+            value = "entity.get_targeted_entity"
+    )
+    public Object[] getTargetedEntity(Double distance) {
+        checkEntity();
+        if (distance == null) distance = 20d;
+        distance = Math.max(Math.min(distance, 20), 0);
+
+        Vec3 vec3 = entity.getEyePosition(1f);
+        HitResult result = entity.pick(distance, 1f, false);
+
+        if (result != null)
+            distance = result.getLocation().distanceToSqr(vec3);
+
+        Vec3 vec32 = entity.getViewVector(1f);
+        Vec3 vec33 = vec3.add(vec32.x * distance, vec32.y * distance, vec32.z * distance);
+        AABB aABB = entity.getBoundingBox().expandTowards(vec32.scale(distance)).inflate(1d);
+        EntityHitResult entityHit = ProjectileUtil.getEntityHitResult(entity, vec3, vec33, aABB, e -> e != entity, distance);
+
+        if (entityHit != null)
+            return new Object[]{EntityAPI.wrap(entityHit.getEntity()), FiguraVec3.fromVec3(entityHit.getLocation())};
+
         return null;
     }
 

@@ -9,10 +9,7 @@ import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.*;
-import org.luaj.vm2.LuaFunction;
-import org.luaj.vm2.LuaTable;
-import org.luaj.vm2.LuaUserdata;
-import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.*;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.animation.Animation;
 import org.moon.figura.lua.api.*;
@@ -96,6 +93,7 @@ public class FiguraDocsManager {
         put(LuaFunction.class, "Function");
         put(LuaTable.class, "Table");
         put(LuaValue.class, "AnyType");
+        put(Varargs.class, "Varargs");
 
         //converted things
         put(Map.class, "Table");
@@ -267,6 +265,8 @@ public class FiguraDocsManager {
         return NAME_MAP.computeIfAbsent(clazz, aClass -> {
             if (clazz.isAnnotationPresent(LuaTypeDoc.class))
                 return clazz.getAnnotation(LuaTypeDoc.class).name();
+            else if (clazz.getName().startsWith("["))
+                return "Varargs";
             else
                 return clazz.getName();
         });
