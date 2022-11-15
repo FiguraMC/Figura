@@ -545,6 +545,8 @@
   "figura.docs.wheel_action.hover_color": "Sets the color of the Action when it is being hovered. Returns the Action for function chaining.",
   "figura.docs.wheel_action.item": "Sets the item of the Action. Returns the Action for function chaining.",
   "figura.docs.wheel_action.hover_item": "Sets the item of the Action when it is being hovered. Returns the Action for function chaining.",
+  "figura.docs.wheel_action.texture": "Sets a Custom Texture to render in this Action. All values are measured in pixels. Default UV is 0, 0, the default dimensions are the texture dimensions and the default scale of 1. Returns the Action for function chaining.",
+  "figura.docs.wheel_action.hover_texture": "Sets a Custom Texture to render while this Action is being hovered. All values are measured in pixels. Default UV is 0, 0, the default dimensions are the texture dimensions and the default scale of 1. Returns the Action for function chaining.",
   "figura.docs.wheel_action.on_left_click": "Sets the function that is executed when the left mouse button is clicked. Returns the Action for function chaining.",
   "figura.docs.wheel_action.on_right_click": "Sets the function that is executed when the right mouse button is clicked. Returns the Action for function chaining.",
   "figura.docs.wheel_action.on_toggle": "Sets the function that is executed when the Action is toggled. Returns the Action for function chaining.",
@@ -555,6 +557,7 @@
   "figura.docs.wheel_action.get_toggle_color": "Gets this Action toggled color.",
   "figura.docs.wheel_action.toggle_color": "Sets the color of the Action when it is toggled. Returns the Action for function chaining.",
   "figura.docs.wheel_action.toggle_item": "Sets the item of the Action when it is toggled. Returns the Action for function chaining.",
+  "figura.docs.wheel_action.toggle_texture": "Sets a Custom Texture to render in this Action when it is toggled. All values are measured in pixels. Default UV is 0, 0, the default dimensions are the texture dimensions and the default scale of 1. Returns the Action for function chaining.",
   "figura.docs.wheel_action.is_toggled": "Checks if the Action is toggled or not.",
   "figura.docs.wheel_action.toggled": "Sets the toggle state of the Action. Returns the Action for function chaining.",
 

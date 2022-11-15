@@ -75,7 +75,7 @@ public class ActionWheel {
         renderTextures(stack, currentPage);
 
         //render items
-        renderItems(currentPage);
+        renderItemsAndIcons(stack, currentPage);
 
         stack.popPose();
 
@@ -174,36 +174,48 @@ public class ActionWheel {
         }
     }
 
-    private static void renderItems(Page page) {
-        double distance = 41 * scale;
+    private static void renderItemsAndIcons(PoseStack stack, Page page) {
+        double distance = 41;
 
         for (int i = 0; i < slots; i++) {
             Action action = page.actions[i];
             if (action == null)
                 continue;
 
-            ItemStack item = action.getItem(selected == i);
+            //convert angle to x and y coordinates
+            double angle = getAngle(i);
+            double xOff = Math.cos(angle) * distance;
+            double yOff = Math.sin(angle) * distance;
+
+            //texture
+            Action.TextureData texture = action.getTexture(selected == i);
+            if (texture != null) {
+                UIHelper.setupTexture(texture.texture.textureID);
+                UIHelper.blit(stack,
+                        (int) (xOff - texture.width * texture.scale / 2d),
+                        (int) (yOff - texture.height * texture.scale / 2d),
+                        (int) (texture.width * texture.scale), (int) (texture.height * texture.scale),
+                        (float) texture.u, (float) texture.v,
+                        texture.width, texture.height,
+                        texture.texture.getWidth(), texture.texture.getHeight());
+            }
 
             //no item, no render
+            ItemStack item = action.getItem(selected == i);
             if (item == null || item.isEmpty())
                 continue;
 
-            //convert angle to x and y coordinates
-            double angle = getAngle(i);
-            double xOff = x + Math.cos(angle) * distance;
-            double yOff = y + Math.sin(angle) * distance;
-
             //render
-            PoseStack stack = RenderSystem.getModelViewStack();
-            stack.pushPose();
-            stack.translate(xOff, yOff, 0);
-            stack.scale(scale, scale, scale);
+            PoseStack modelStack = RenderSystem.getModelViewStack();
+            modelStack.pushPose();
+            modelStack.translate(x + xOff * scale, y + yOff * scale, 0);
+            modelStack.scale(scale, scale, scale);
 
             minecraft.getItemRenderer().renderGuiItem(item, -8, -8);
             if (Config.ACTION_WHEEL_DECORATIONS.asBool())
                 minecraft.getItemRenderer().renderGuiItemDecorations(minecraft.font, item, -8, -8);
 
-            stack.popPose();
+            modelStack.popPose();
             RenderSystem.applyModelViewMatrix();
         }
     }
