@@ -3,6 +3,7 @@ package org.moon.figura.lua.api.action_wheel;
 import net.minecraft.world.item.ItemStack;
 import org.luaj.vm2.LuaFunction;
 import org.moon.figura.avatar.Avatar;
+import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.world.ItemStackAPI;
 import org.moon.figura.lua.docs.LuaFieldDoc;
@@ -10,6 +11,7 @@ import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.model.rendering.texture.FiguraTexture;
 import org.moon.figura.utils.LuaUtils;
 
 @LuaWhitelist
@@ -25,6 +27,7 @@ public class Action {
     protected String title, toggleTitle;
     protected ItemStack item, hoverItem, toggleItem;
     protected FiguraVec3 color, hoverColor, toggleColor;
+    protected TextureData texture, hoverTexture, toggleTexture;
     protected boolean toggled = false;
 
 
@@ -94,6 +97,17 @@ public class Action {
             return toggleColor == null ? TOGGLE_COLOR : toggleColor;
         else
             return color;
+    }
+
+    public TextureData getTexture(boolean selected) {
+        TextureData ret = null;
+        if (selected)
+            ret = hoverTexture;
+        if (ret == null && toggled)
+            ret = toggleTexture;
+        if (ret == null)
+            ret = texture;
+        return ret;
     }
 
 
@@ -210,7 +224,61 @@ public class Action {
         return this;
     }
 
-    
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = FiguraTexture.class,
+                            argumentNames = "texture"
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {FiguraTexture.class, Double.class, Double.class},
+                            argumentNames = {"texture", "u", "v"}
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {FiguraTexture.class, Double.class, Double.class, Integer.class, Integer.class},
+                            argumentNames = {"texture", "u", "v", "width", "height"}
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {FiguraTexture.class, Double.class, Double.class, Integer.class, Integer.class, Double.class},
+                            argumentNames = {"texture", "u", "v", "width", "height", "scale"}
+                    )
+            },
+            value = "wheel_action.texture"
+    )
+    public Action texture(@LuaNotNil FiguraTexture texture, double u, double v, Integer width, Integer height, Double scale) {
+        this.texture = new TextureData(texture, u, v, width, height, scale);
+        return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = FiguraTexture.class,
+                            argumentNames = "texture"
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {FiguraTexture.class, Double.class, Double.class},
+                            argumentNames = {"texture", "u", "v"}
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {FiguraTexture.class, Double.class, Double.class, Integer.class, Integer.class},
+                            argumentNames = {"texture", "u", "v", "width", "height"}
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {FiguraTexture.class, Double.class, Double.class, Integer.class, Integer.class, Double.class},
+                            argumentNames = {"texture", "u", "v", "width", "height", "scale"}
+                    )
+            },
+            value = "wheel_action.hover_texture"
+    )
+    public Action hoverTexture(@LuaNotNil FiguraTexture texture, double u, double v, Integer width, Integer height, Double scale) {
+        this.hoverTexture = new TextureData(texture, u, v, width, height, scale);
+        return this;
+    }
+
+
     // -- set functions -- //
 
 
@@ -347,6 +415,33 @@ public class Action {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = FiguraTexture.class,
+                            argumentNames = "texture"
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {FiguraTexture.class, Double.class, Double.class},
+                            argumentNames = {"texture", "u", "v"}
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {FiguraTexture.class, Double.class, Double.class, Integer.class, Integer.class},
+                            argumentNames = {"texture", "u", "v", "width", "height"}
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {FiguraTexture.class, Double.class, Double.class, Integer.class, Integer.class, Double.class},
+                            argumentNames = {"texture", "u", "v", "width", "height", "scale"}
+                    )
+            },
+            value = "wheel_action.toggle_texture"
+    )
+    public Action toggleTexture(@LuaNotNil FiguraTexture texture, double u, double v, Integer width, Integer height, Double scale) {
+        this.toggleTexture = new TextureData(texture, u, v, width, height, scale);
+        return this;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc("wheel_action.is_toggled")
     public boolean isToggled() {
         return this.toggled;
@@ -398,5 +493,21 @@ public class Action {
     @Override
     public String toString() {
         return title == null ? "Action Wheel Action" : "Action Wheel Action (" + title + ")";
+    }
+
+    public static class TextureData {
+
+        public final FiguraTexture texture;
+        public final double u, v, scale;
+        public final int width, height;
+
+        public TextureData(FiguraTexture texture, double u, double v, Integer width, Integer height, Double scale) {
+            this.texture = texture;
+            this.u = u;
+            this.v = v;
+            this.width = width == null ? texture.getWidth() : width;
+            this.height = height == null ? texture.getHeight() : height;
+            this.scale = scale == null ? 1d : scale;
+        }
     }
 }

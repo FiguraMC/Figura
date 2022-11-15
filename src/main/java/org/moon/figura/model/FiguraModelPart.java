@@ -175,13 +175,13 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
         }
     }
     public void globalAnimRot(FiguraVec3 vec, boolean merge) {
-        FiguraModelPart part = parent;
+        /*FiguraModelPart part = parent;
         while (part != null) {
             FiguraVec3 rot = part.getAnimRot();
             vec.subtract(rot);
             rot.free();
             part = part.parent;
-        }
+        }*/
         animRotation(vec, merge);
     }
     public void animScale(FiguraVec3 vec, boolean merge) {
