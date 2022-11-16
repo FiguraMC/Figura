@@ -39,7 +39,7 @@ dependencies {
 processResources {
 	Map<String, Object> properties = new HashMap<>()
 
-	properties.put("version", version + "+" + 'git rev-parse --short HEAD'.execute().getText().trim())
+	properties.put("version", version + "-" + 'git rev-parse --short HEAD'.execute().getText().trim())
 	properties.put("java_version", java_version)
 	properties.put("minecraft_version", minecraft_version)
 	properties.put("loader_version", loader_version)
