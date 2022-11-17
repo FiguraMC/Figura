@@ -285,16 +285,21 @@ public class Avatar {
         //add event to the queue
         events.offer(ev);
 
-        Varargs val = null;
+        Varargs val = LuaValue.NIL;
 
         //run all queued events
         Supplier<Varargs> e;
         while ((e = events.poll()) != null) {
-            Varargs result = e.get();
+            try {
+                Varargs result = e.get();
 
-            //if the event is the same the one created, set the return value to it
-            if (e == ev)
-                val = result;
+                //if the event is the same the one created, set the return value to it
+                if (e == ev)
+                    val = result;
+            } catch (Exception | StackOverflowError ex) {
+                if (luaRuntime != null)
+                    luaRuntime.error(ex);
+            }
         }
 
         //return the new event result
