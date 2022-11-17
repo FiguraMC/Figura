@@ -282,10 +282,13 @@ public class FiguraLuaRuntime {
     // error ^-^ //
 
     public void error(Throwable e) {
-        LuaError err = e instanceof LuaError lua ? lua : e instanceof StackOverflowError ? new LuaError("Stack Overflow") : new LuaError(e);
-        FiguraLuaPrinter.sendLuaError(err, owner);
+        FiguraLuaPrinter.sendLuaError(parseError(e), owner);
         owner.scriptError = true;
         owner.luaRuntime = null;
+    }
+
+    public static LuaError parseError(Throwable e) {
+        return e instanceof LuaError lua ? lua : e instanceof StackOverflowError ? new LuaError("Stack Overflow") : new LuaError(e);
     }
 
     // avatar limiting //
