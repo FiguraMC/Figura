@@ -799,6 +799,8 @@
   "figura.docs.player.is_flying": "Returns whether the player is currently flying.",
   "figura.docs.player.get_model_type": "Returns \"SLIM\" or \"DEFAULT\", depending on the player's model type.",
   "figura.docs.player.get_gamemode": "Returns \"SURVIVAL\", \"CREATIVE\", \"ADVENTURE\", or \"SPECTATOR\" depending on the player's gamemode. If the gamemode is unknown, returns nil.",
+  "figura.docs.player.has_cape": "Returns whether the player has a cape loaded.",
+  "figura.docs.player.has_skin": "Returns whether the player has a custom skin loaded.",
   "figura.docs.player.is_skin_layer_visible": "Returns whether the specified skin layer, from the Skin Customizations settings, is currently visible.",
 
 
