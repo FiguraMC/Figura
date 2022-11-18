@@ -127,6 +127,7 @@ public class LocalAvatarLoader {
                 String metadata = IOUtils.readFile(path.resolve("avatar.json").toFile());
                 nbt.put("metadata", AvatarMetadataParser.parse(metadata, path.getFileName().toString()));
                 AvatarMetadataParser.injectToModels(metadata, models);
+                AvatarMetadataParser.injectToTextures(metadata, textures);
 
                 //return :3
                 if (!models.isEmpty())

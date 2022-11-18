@@ -170,10 +170,33 @@ public class AvatarMetadataParser {
         return current;
     }
 
+    public static void injectToTextures(String json, CompoundTag textures) {
+        Metadata metadata = GSON.fromJson(json, Metadata.class);
+        if (metadata == null || metadata.ignoredTextures == null)
+            return;
+
+        ListTag list = textures.getList("data", Tag.TAG_COMPOUND);
+        CompoundTag compound = textures.getCompound("src");
+
+        if (list == null || compound == null)
+            return;
+
+        for (String texture : metadata.ignoredTextures) {
+            compound.remove(texture);
+            for (Tag t : list) {
+                CompoundTag tag = (CompoundTag) t;
+                if (tag.getString("default").equals(texture))
+                    tag.remove("default");
+                if (tag.getString("emissive").equals(texture))
+                    tag.remove("emissive");
+            }
+        }
+    }
+
     //json object class
     public static class Metadata {
         public String name, author, version, color, background, id;
-        public String[] authors, autoScripts, autoAnims;
+        public String[] authors, autoScripts, autoAnims, ignoredTextures;
         public HashMap<String, Customization> customizations;
     }
 
