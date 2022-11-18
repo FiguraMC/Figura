@@ -48,23 +48,23 @@ public class MouseHandlerMixin {
     @Inject(method = "onScroll", at = @At("HEAD"), cancellable = true)
     private void onScroll(long window, double scrollDeltaX, double scrollDeltaY, CallbackInfo ci) {
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
+        if (avatar != null && avatar.mouseScrollEvent(scrollDeltaY))
+            ci.cancel();
+
         if (ActionWheel.isEnabled()) {
             ActionWheel.scroll(scrollDeltaY);
             ci.cancel();
         } else if (PopupMenu.isEnabled() && PopupMenu.hasEntity()) {
-            PopupMenu.scroll( Math.signum(scrollDeltaY));
+            PopupMenu.scroll(Math.signum(scrollDeltaY));
             ci.cancel();
         }
-
-        if (avatar != null)
-            avatar.mouseScrollEvent(scrollDeltaY);
     }
 
-    @Inject(method = "onMove", at = @At("HEAD"))
+    @Inject(method = "onMove", at = @At("HEAD"), cancellable = true)
     private void onMove(long window, double x, double y, CallbackInfo ci) {
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
-        if (avatar != null)
-            avatar.mouseMoveEvent(x, y);
+        if (avatar != null && avatar.mouseMoveEvent(x, y))
+            ci.cancel();
     }
 
     @Inject(method = "grabMouse", at = @At("HEAD"), cancellable = true)
