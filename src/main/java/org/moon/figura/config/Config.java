@@ -12,6 +12,8 @@ import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.backend2.NetworkStuff;
 import org.moon.figura.lua.FiguraLuaPrinter;
+import org.moon.figura.trust.Trust;
+import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.FiguraText;
 
@@ -118,6 +120,19 @@ public enum Config {
         public void onChange() {
             super.onChange();
             NetworkStuff.checkVersion();
+        }
+    },
+    DEFAULT_TRUST(1, Trust.Group.values().length - 1) {{
+        List<Component> list = new ArrayList<>();
+        Trust.Group[] groups = Trust.Group.values();
+        for (int i = 0; i < groups.length - 1; i++)
+            list.add(groups[i].text.copy());
+        this.enumList = list;
+    }
+        @Override
+        public void onChange() {
+            super.onChange();
+            TrustManager.saveToDisk();
         }
     },
     EASTER_EGGS(true),
