@@ -26,9 +26,6 @@ public class AnimationPlayer {
             part.lastAnimationPriority = anim.priority;
             part.animated = true;
 
-            if (merge) part.animationOverride |= anim.override;
-            else part.animationOverride = anim.override;
-
             for (Animation.AnimationChannel channel : entry.getValue()) {
                 if (limit <= 0)
                     return limit;
@@ -49,6 +46,30 @@ public class AnimationPlayer {
                 TransformType type = channel.type();
                 FiguraVec3 transform = current.getInterpolation().generate(keyframes, currentIndex, nextIndex, anim.blend, delta, type);
                 type.apply(part, transform, merge);
+
+                switch (type) {
+                    case ROTATION, GLOBAL_ROT -> {
+                        if (anim.getOverrideRot())
+                            part.animationOverride |= 1;
+                        else if (!merge) {
+                            part.animationOverride = part.animationOverride & 6;
+                        }
+                    }
+                    case POSITION -> {
+                        if (anim.getOverridePos())
+                            part.animationOverride |= 2;
+                        else if (!merge) {
+                            part.animationOverride = part.animationOverride & 5;
+                        }
+                    }
+                    case SCALE -> {
+                        if (anim.getOverrideScale())
+                            part.animationOverride |= 4;
+                        else if (!merge) {
+                            part.animationOverride = part.animationOverride & 3;
+                        }
+                    }
+                }
 
                 limit--;
             }
