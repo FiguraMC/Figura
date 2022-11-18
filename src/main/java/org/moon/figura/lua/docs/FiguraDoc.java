@@ -243,8 +243,11 @@ public abstract class FiguraDoc {
             for (int i = 0; i < parameterTypes.length; i++) {
 
                 //name
-                String prefix = "• " + typeName + (isStatic ? "." : ":") + name;
-                message.append("\n\t").append(new TextComponent(prefix).withStyle(ColorUtils.Colors.MAYA_BLUE.style))
+                message.append("\n\t")
+                        .append(new TextComponent("• ").withStyle(ColorUtils.Colors.MAYA_BLUE.style))
+                        .append(new TextComponent("<" + typeName + ">").withStyle(ChatFormatting.YELLOW))
+                        .append(new TextComponent(isStatic ? "." : ":").withStyle(ChatFormatting.BOLD))
+                        .append(new TextComponent(name).withStyle(ColorUtils.Colors.MAYA_BLUE.style))
                         .append("(");
 
                 for (int j = 0; j < parameterTypes[i].length; j++) {
@@ -258,7 +261,7 @@ public abstract class FiguraDoc {
                 }
 
                 //return
-                message.append("): ")
+                message.append(") → ")
                         .append(new FiguraText("docs.text.returns").append(" ").withStyle(ColorUtils.Colors.MAYA_BLUE.style))
                         .append(FiguraDocsManager.getClassText(returnTypes[i]).withStyle(ChatFormatting.YELLOW));
             }
