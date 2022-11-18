@@ -358,14 +358,14 @@ public class Avatar {
             run("CHAT_RECEIVE_MESSAGE", tick, message);
     }
 
-    public void mouseScrollEvent(double delta) {
-        if (loaded)
-            run("MOUSE_SCROLL", tick, delta);
+    public boolean mouseScrollEvent(double delta) {
+        Varargs result = loaded ? run("MOUSE_SCROLL", tick, delta) : null;
+        return result != null && result.arg(1).isboolean() && result.arg(1).checkboolean();
     }
 
-    public void mouseMoveEvent(double x, double y) {
-        if (loaded)
-            run("MOUSE_MOVE", tick, x, y);
+    public boolean mouseMoveEvent(double x, double y) {
+        Varargs result = loaded ? run("MOUSE_MOVE", tick, x, y) : null;
+        return result != null && result.arg(1).isboolean() && result.arg(1).checkboolean();
     }
 
     // -- rendering events -- //
