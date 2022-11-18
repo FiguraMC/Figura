@@ -270,7 +270,7 @@ public class Avatar {
                 else if (toRun instanceof Pair<?, ?> pair)
                     ret = luaRuntime.run(pair.getFirst().toString(), pair.getSecond().toString());
                 else
-                    throw new IllegalArgumentException("Invalid type to run!");
+                    throw new IllegalArgumentException("Internal event error - Invalid type to run!");
 
                 limit.use(luaRuntime.getInstructions());
                 return ret;
@@ -361,6 +361,11 @@ public class Avatar {
     public void mouseScrollEvent(double delta) {
         if (loaded)
             run("MOUSE_SCROLL", tick, delta);
+    }
+
+    public void mouseMoveEvent(double x, double y) {
+        if (loaded)
+            run("MOUSE_MOVE", tick, x, y);
     }
 
     // -- rendering events -- //
