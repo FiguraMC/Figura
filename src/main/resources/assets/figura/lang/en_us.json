@@ -381,6 +381,9 @@
   "figura.config.easter_eggs": "Enable Easter eggs",
   "figura.config.easter_eggs.tooltip": "Toggles fun and unexpected aspects of Figura (boring!)",
 
+  "figura.config.default_trust": "Default Trust Level",
+  "figura.config.default_trust.tooltip": "Changes the default trust level that new players will be assigned into",
+
 
   "figura.config.dev": "Dev",
   "figura.config.dev.tooltip": "Developer/Experimental settings",

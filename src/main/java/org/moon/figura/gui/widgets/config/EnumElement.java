@@ -11,7 +11,6 @@ import org.moon.figura.FiguraMod;
 import org.moon.figura.config.Config;
 import org.moon.figura.gui.widgets.ContextMenu;
 import org.moon.figura.gui.widgets.ParentedButton;
-import org.moon.figura.gui.widgets.TexturedButton;
 import org.moon.figura.gui.widgets.lists.ConfigList;
 import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.ui.UIHelper;
@@ -119,7 +118,7 @@ public class EnumElement extends AbstractConfigElement {
 
             //selected entry
             if (i == (int) this.config.tempValue % this.names.size())
-                text = text.copy().setStyle(FiguraMod.getAccentColor());
+                text = Component.empty().setStyle(FiguraMod.getAccentColor()).append(text);
 
             //apply text
             entries.get(i).setMessage(text);

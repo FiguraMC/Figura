@@ -128,7 +128,10 @@ public class PopupMenu {
         boolean error = false;
         boolean version = false;
 
-        name.append(" ").append(Badges.fetchBadges(id));
+        Component badges = Badges.fetchBadges(id);
+        if (badges.getString().length() > 0)
+            name.append(" ").append(badges);
+
         Avatar avatar = AvatarManager.getAvatarForPlayer(id);
         if (avatar != null) {
             error = avatar.scriptError;
