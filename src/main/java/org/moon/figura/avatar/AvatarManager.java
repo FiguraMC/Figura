@@ -8,9 +8,7 @@ import net.minecraft.world.entity.player.Player;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.local.LocalAvatarLoader;
 import org.moon.figura.backend2.NetworkStuff;
-import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.widgets.lists.AvatarList;
-import org.moon.figura.utils.FiguraText;
 
 import java.nio.file.Path;
 import java.util.*;

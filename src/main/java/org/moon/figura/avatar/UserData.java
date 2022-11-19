@@ -8,13 +8,14 @@ import org.moon.figura.backend2.NetworkStuff;
 
 import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.List;
+import java.util.Queue;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class UserData {
 
     public final UUID id;
-    private final List<Avatar> avatars = new ArrayList<>();
+    private final Queue<Avatar> avatars = new ConcurrentLinkedQueue<>();
     private Pair<BitSet, BitSet> badges;
 
     public UserData(UUID id) {
@@ -47,12 +48,12 @@ public class UserData {
         return badges;
     }
 
-    public List<Avatar> getAvatars() {
+    public Queue<Avatar> getAvatars() {
         return avatars;
     }
 
     public Avatar getMainAvatar() {
-        return avatars.size() > 0 ? avatars.get(0) : null;
+        return avatars.peek();
     }
 
     public void clear() {
