@@ -99,6 +99,7 @@ public enum Config {
     FIGURA_INVENTORY(true),
     TOAST_TIME(5f, InputType.FLOAT),
     TOAST_TITLE_TIME(2f, InputType.FLOAT),
+    WARDROBE_FILE_NAMES(false),
 
     Paperdoll,
     HAS_PAPERDOLL(false),

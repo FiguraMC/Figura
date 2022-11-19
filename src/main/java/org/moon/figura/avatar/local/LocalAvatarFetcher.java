@@ -4,6 +4,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import org.moon.figura.FiguraMod;
+import org.moon.figura.config.Config;
 import org.moon.figura.gui.cards.CardBackground;
 import org.moon.figura.parsers.AvatarMetadataParser;
 import org.moon.figura.utils.IOUtils;
@@ -122,7 +123,7 @@ public class LocalAvatarFetcher {
                     String str = IOUtils.readFile(path.resolve("avatar.json").toFile());
                     AvatarMetadataParser.Metadata metadata = AvatarMetadataParser.read(str);
 
-                    name = metadata.name == null || metadata.name.isBlank() ? filename : metadata.name;
+                    name = Config.WARDROBE_FILE_NAMES.asBool() || metadata.name == null || metadata.name.isBlank() ? filename : metadata.name;
                     bg = CardBackground.parse(metadata.background);
                 } catch (Exception e) {
                     FiguraMod.LOGGER.warn("Failed to read metadata for \"" + path + "\". Likely invalid avatar.json.");
@@ -136,7 +137,8 @@ public class LocalAvatarFetcher {
         }
 
         public boolean search(String query) {
-            return this.getName().toLowerCase().contains(query.toLowerCase());
+            String q = query.toLowerCase();
+            return this.getName().toLowerCase().contains(q) || path.getFileName().toString().contains(q);
         }
 
         public Path getPath() {
@@ -186,7 +188,7 @@ public class LocalAvatarFetcher {
             //but skip non-folders and non-moon
             for (File file : files) {
                 Path path = file.toPath();
-                boolean moon = path.toString().toLowerCase().endsWith(".moon");
+                boolean moon = FiguraMod.DEBUG_MODE && path.toString().toLowerCase().endsWith(".moon");
 
                 if (!Files.isDirectory(path) && !moon)
                     continue;

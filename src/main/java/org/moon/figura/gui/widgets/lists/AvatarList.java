@@ -141,8 +141,9 @@ public class AvatarList extends AbstractList {
                 continue;
 
             //update current
-            if (avatars.get(path) instanceof AvatarFolderWidget folder)
-                folder.update((LocalAvatarFetcher.FolderPath) avatar, filter);
+            AbstractAvatarWidget widget = avatars.get(path);
+            if (widget != null)
+                widget.update(avatar, filter);
 
             //do not remove if passed
             missingPaths.remove(path);
