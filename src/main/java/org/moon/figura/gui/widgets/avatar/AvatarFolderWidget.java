@@ -1,7 +1,6 @@
 package org.moon.figura.gui.widgets.avatar;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.avatar.local.LocalAvatarFetcher;
 import org.moon.figura.gui.widgets.ContainerButton;
 import org.moon.figura.gui.widgets.lists.AvatarList;
@@ -19,7 +18,7 @@ public class AvatarFolderWidget extends AbstractAvatarWidget {
         super(depth, width, avatar, parent);
 
         AvatarFolderWidget instance = this;
-        this.button = new ContainerButton(parent, x, y, width, 20, new TextComponent("  ".repeat(depth)).append(getName()), null, button -> {
+        this.button = new ContainerButton(parent, x, y, width, 20, null, null, button -> {
             toggleEntries(((ContainerButton) this.button).isToggled());
             parent.updateScroll();
         }) {
@@ -34,6 +33,7 @@ public class AvatarFolderWidget extends AbstractAvatarWidget {
         };
 
         children.add(this.button);
+        updateName();
 
         update(avatar, "");
 
@@ -45,8 +45,13 @@ public class AvatarFolderWidget extends AbstractAvatarWidget {
         parent.updateScroll();
     }
 
-    public void update(LocalAvatarFetcher.FolderPath avatar, String filter) {
-        this.filter = filter.toLowerCase();
+    @Override
+    public void update(LocalAvatarFetcher.AvatarPath path, String filter) {
+        super.update(path, filter);
+
+        if (!(path instanceof LocalAvatarFetcher.FolderPath avatar))
+            return;
+
         for (AbstractAvatarWidget value : entries.values())
             value.filter = this.filter;
 
@@ -60,8 +65,9 @@ public class AvatarFolderWidget extends AbstractAvatarWidget {
                 continue;
 
             //update children
-            if (entries.get(str) instanceof AvatarFolderWidget folder)
-                folder.update((LocalAvatarFetcher.FolderPath) child, filter);
+            AbstractAvatarWidget childEntry = entries.get(str);
+            if (childEntry != null)
+                childEntry.update(child, filter);
 
             //remove from exclusion list
             missingPaths.remove(str);

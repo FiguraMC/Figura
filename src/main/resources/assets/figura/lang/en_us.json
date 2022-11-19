@@ -321,6 +321,9 @@
   "figura.config.toast_title_time": "Long Toast Swap",
   "figura.config.toast_title_time.tooltip": "Changes how much time (in seconds) long toasts should swap the display of its title and message",
 
+  "figura.config.wardrobe_file_names": "Wardrobe File Names",
+  "figura.config.wardrobe_file_names.tooltip": "Changes the wardrobe avatar list to use the file names instead of the metadata name",
+
 
   "figura.config.paperdoll": "Paperdoll",
   "figura.config.paperdoll.tooltip": "Paperdoll settings",

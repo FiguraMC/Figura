@@ -79,6 +79,16 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
         return this.parent.isInsideScissors(mouseX, mouseY) && super.isMouseOver(mouseX, mouseY);
     }
 
+    public void update(LocalAvatarFetcher.AvatarPath path, String filter) {
+        this.avatar = path;
+        this.filter = filter.toLowerCase();
+        updateName();
+    }
+
+    public void updateName() {
+        this.button.setMessage(Component.literal("  ".repeat(depth)).append(getName()));
+    }
+
     public Component getName() {
         return new TextComponent(avatar.getName());
     }
