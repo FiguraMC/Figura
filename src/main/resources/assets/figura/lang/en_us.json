@@ -526,14 +526,14 @@
   "figura.docs.action_wheel.execute": "Executes the action of the given index. If the index is null, it will execute the last selected action. A second parameter can be given to specify if it should be executed the left or right action.",
   "figura.docs.action_wheel.is_enabled": "Returns if the Action Wheel is being currently rendered or not.",
   "figura.docs.action_wheel.get_selected": "Returns the index of the currently selected action.",
-  "figura.docs.action_wheel.create_action": "Creates a new Action that is not automatically asigned to a Page.",
-  "figura.docs.action_wheel.create_page": "Creates a new Page for the action wheel. A Title can be given to store this page internally. If no Title is given, the Page will just be returned from this function.",
+  "figura.docs.action_wheel.add_action": "Creates a new Action that is not automatically asigned to a Page.",
+  "figura.docs.action_wheel.add_page": "Creates a new Page for the action wheel. A Title can be given to store this page internally. If no Title is given, the Page will just be returned from this function.",
   "figura.docs.action_wheel.set_page": "Sets the Page of the action wheel to the given Title or Page.",
   "figura.docs.action_wheel.get_page": "Returns an stored Page by the given title.",
   "figura.docs.action_wheel.get_current_page": "Returns the current set Page from the Action Wheel, or NIL if no Page has been set.",
 
   "figura.docs.wheel_page": "An Action Wheel container which is used to store up to 8 actions.",
-  "figura.docs.wheel_page.new_action": "Adds a new Action on the selected Page's index. If no index is given it is added in the first available index.",
+  "figura.docs.wheel_page.add_action": "Adds a new Action on the selected Page's index. If no index is given it is added in the first available index.",
   "figura.docs.wheel_page.get_action": "Gets an Action from the Page's given index.",
   "figura.docs.wheel_page.set_action": "Sets an Action in the Page's given index.",
 
@@ -820,7 +820,7 @@
   "figura.docs.events.post_world_render": "The POST_WORLD_RENDER event runs every frame, after the world is rendered. Always runs when a world is visible, even when the avatar itself is not, so this runs even in first person. Takes a parameter delta, which is a number from 0 to 1 indicating the proportion of the way the game is between ticks.",
   "figura.docs.events.chat_send_message": "The CHAT_SEND_MESSAGE event is run every time you send a message in chat. A string parameter is passed in, which contains the message that was sent. The return value is chained to the next events of the same type, whereas NIL cancels the message from being sent and any other value will modify the sent message (if allowed in the settings).",
   "figura.docs.events.chat_receive_message": "The CHAT_RECEIVE_MESSAGE event is run every time a message is received in chat. A string parameter is passed in, which contains the message you received.",
-  "figura.docs.events.skull_render": "Called between POST_RENDER and POST_WORLD_RENDER, on every one of your skull blocks placed in the world. The arguments are the tick delta, the position of the skull as a vector, and a reference itemstack if it's being rendered from an item.",
+  "figura.docs.events.skull_render": "Called between POST_RENDER and POST_WORLD_RENDER, on every one of your skull blocks placed in the world. The arguments are the tick delta, a blockstate reference of the skull when rendered from a block, and a itemstack reference when rendered from an item.",
   "figura.docs.events.mouse_scroll": "The MOUSE_SCROLL event runs every time the mouse is scrolled. Takes a parameter delta, which is the direction of the scroll.",
   "figura.docs.events.mouse_move": "The MOUSE_MOVE event runs every time the mouse is moved around. Takes two parameters, x and y, which is the position of the mouse. The position is not scaled by the GUI.",
   "figura.docs.events.use_item": "The USE_ITEM event is run every time the entity uses an item. The item, action and amount of particles this item would produce is given as argument.",
@@ -881,7 +881,7 @@
 
 
   "figura.docs.keybind_api": "A global API containing a function to create new Keybind instances.",
-  "figura.docs.keybind_api.create": "Creates and returns a new Keybind. The name is used in the keybind menu. The key parameter is an identifier for a key, such as \"key.keyboard.r\". The boolean gui indicates whether the keybind should always work, or if it should only work when you don't have a screen open. Check the docs list command for all key names.",
+  "figura.docs.keybind_api.add_key": "Creates and returns a new Keybind. The name is used in the keybind menu. The key parameter is an identifier for a key, such as \"key.keyboard.r\". The boolean gui indicates whether the keybind should always work, or if it should only work when you don't have a screen open. Check the docs list command for all key names.",
   "figura.docs.keybind_api.get_vanilla_key": "Gets the id of the key bound to the given action, as a string. Check the docs list command for all key names and vanilla actions.",
 
   "figura.docs.keybind": "Represents a key binding for your script. Instances are obtained using the KeybindAPI's create() function.",
@@ -1133,7 +1133,7 @@
 
 
   "figura.docs.textures": "A global API which allows for creating textures at runtime.",
-  "figura.docs.textures.register": "Creates a new texture with the given name, width and height. The texture is filled with a solid color. Returns the texture.",
+  "figura.docs.textures.add_texture": "Creates a new texture with the given name, width and height. The texture is filled with a solid color. Returns the texture.",
   "figura.docs.textures.read": "Reads a texture from a base64 string or a byte array.",
   "figura.docs.textures.get": "Gets a registered texture based on its name, or nil if no texture was found with that name.",
   "figura.docs.textures.get_textures": "Returns a table with all textures used by this avatar. Do not include generated textures from this API.",
@@ -1286,7 +1286,7 @@
   "figura.docs.world.get_entity": "Returns an EntityAPI object from this UUID's entity, or nil if no entity was found.",
   "figura.docs.world.get_players": "Returns a table containing instances of Player for all players in the world. The players are indexed by their names.",
   "figura.docs.world.avatar_vars": "Returns a table containing variables stored from all loaded Avatars \"avatar:store()\" function. The table will be indexed by the avatar's owner UUID.",
-  "figura.docs.world.new_block": "Parses and create a new BlockState from the given string. A world position can be optionally given for the blockstate functions that relies on its position.",
-  "figura.docs.world.new_item": "Parses and create a new ItemStack from the given string. A count and damage can be given, to be applied on this itemstack.",
+  "figura.docs.world.add_block": "Parses and create a new BlockState from the given string. A world position can be optionally given for the blockstate functions that relies on its position.",
+  "figura.docs.world.add_item": "Parses and create a new ItemStack from the given string. A count and damage can be given, to be applied on this itemstack.",
   "figura.docs.world.exists": "Checks whether or not a world currently exists. This will almost always be true, but might be false on some occasions such as while travelling between dimensions."
 }
