@@ -9,10 +9,13 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.SkullBlockRenderer;
 import net.minecraft.core.Direction;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.SkullBlock;
 import net.minecraft.world.level.block.entity.SkullBlockEntity;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
+import org.moon.figura.ducks.SkullBlockRendererAccessor;
+import org.moon.figura.lua.api.world.ItemStackAPI;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.trust.Trust;
 import org.spongepowered.asm.mixin.Mixin;
@@ -41,8 +44,11 @@ public abstract class SkullBlockRendererMixin implements BlockEntityRenderer<Sku
         SkullBlockEntity localBlock = block;
         block = null;
 
+        ItemStack context = SkullBlockRendererAccessor.getReferenceItem();
+        SkullBlockRendererAccessor.setReferenceItem(null);
+
         //event
-        boolean bool = localAvatar.skullRenderEvent(Minecraft.getInstance().getFrameTime(), localBlock == null ? null : FiguraVec3.fromBlockPos(localBlock.getBlockPos()));
+        boolean bool = localAvatar.skullRenderEvent(Minecraft.getInstance().getFrameTime(), localBlock == null ? null : FiguraVec3.fromBlockPos(localBlock.getBlockPos()), context == null ? null : ItemStackAPI.verify(context));
 
         //render skull :3
         if (bool || localAvatar.skullRender(stack, bufferSource, light, direction, yaw))

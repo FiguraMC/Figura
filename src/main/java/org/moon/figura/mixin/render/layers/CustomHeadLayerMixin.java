@@ -25,6 +25,7 @@ import net.minecraft.world.level.block.AbstractSkullBlock;
 import net.minecraft.world.level.block.SkullBlock;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
+import org.moon.figura.ducks.SkullBlockRendererAccessor;
 import org.moon.figura.model.ParentType;
 import org.moon.figura.trust.Trust;
 import org.spongepowered.asm.mixin.Final;
@@ -80,6 +81,9 @@ public abstract class CustomHeadLayerMixin<T extends LivingEntity, M extends Ent
                 float s = 19f;
                 stack.scale(s, s, s);
                 stack.translate(-0.5d, 0d, -0.5d);
+
+                //set item context
+                SkullBlockRendererAccessor.setReferenceItem(itemStack);
                 SkullBlockRenderer.renderSkull(null, 0f, f, stack, multiBufferSource, i, skullModelBase, renderType);
             })) {
                 ci.cancel();
