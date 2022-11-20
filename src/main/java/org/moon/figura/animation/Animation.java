@@ -216,9 +216,9 @@ public class Animation {
                     argumentTypes = {Float.class, String.class},
                     argumentNames = {"time", "code"}
             ),
-            value = "animation.add_code"
+            value = "animation.new_code"
     )
-    public Animation addCode(float time, @LuaNotNil String data) {
+    public Animation newCode(float time, @LuaNotNil String data) {
         codeFrames.put(Math.max(time, 0f), data);
         return this;
     }

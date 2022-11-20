@@ -62,8 +62,8 @@ public class TextureAPI {
                     argumentTypes = {String.class, Integer.class, Integer.class},
                     argumentNames = {"name", "width", "height"}
             ),
-            value = "textures.add_texture")
-    public FiguraTexture addTexture(@LuaNotNil String name, int width, int height) {
+            value = "textures.new_texture")
+    public FiguraTexture newTexture(@LuaNotNil String name, int width, int height) {
         NativeImage image;
         try {
             image = new NativeImage(width, height, true);

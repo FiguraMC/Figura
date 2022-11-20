@@ -798,8 +798,8 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
                     argumentTypes = String.class,
                     argumentNames = "taskName"
             ),
-            value = "model_part.add_text")
-    public RenderTask addText(@LuaNotNil String name) {
+            value = "model_part.new_text")
+    public RenderTask newText(@LuaNotNil String name) {
         RenderTask task = new TextTask();
         this.renderTasks.put(name, task);
         return task;
@@ -811,8 +811,8 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
                     argumentTypes = String.class,
                     argumentNames = "taskName"
             ),
-            value = "model_part.add_item")
-    public RenderTask addItem(@LuaNotNil String name) {
+            value = "model_part.new_item")
+    public RenderTask newItem(@LuaNotNil String name) {
         RenderTask task = new ItemTask();
         this.renderTasks.put(name, task);
         return task;
@@ -824,8 +824,8 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
                     argumentTypes = String.class,
                     argumentNames = "taskName"
             ),
-            value = "model_part.add_block")
-    public RenderTask addBlock(@LuaNotNil String name) {
+            value = "model_part.new_block")
+    public RenderTask newBlock(@LuaNotNil String name) {
         RenderTask task = new BlockTask();
         this.renderTasks.put(name, task);
         return task;

@@ -526,14 +526,14 @@
   "figura.docs.action_wheel.execute": "Executes the action of the given index. If the index is null, it will execute the last selected action. A second parameter can be given to specify if it should be executed the left or right action.",
   "figura.docs.action_wheel.is_enabled": "Returns if the Action Wheel is being currently rendered or not.",
   "figura.docs.action_wheel.get_selected": "Returns the index of the currently selected action.",
-  "figura.docs.action_wheel.add_action": "Creates a new Action that is not automatically asigned to a Page.",
-  "figura.docs.action_wheel.add_page": "Creates a new Page for the action wheel. A Title can be given to store this page internally. If no Title is given, the Page will just be returned from this function.",
+  "figura.docs.action_wheel.new_action": "Creates a new Action that is not automatically asigned to a Page.",
+  "figura.docs.action_wheel.new_page": "Creates a new Page for the action wheel. A Title can be given to store this page internally. If no Title is given, the Page will just be returned from this function.",
   "figura.docs.action_wheel.set_page": "Sets the Page of the action wheel to the given Title or Page.",
   "figura.docs.action_wheel.get_page": "Returns an stored Page by the given title.",
   "figura.docs.action_wheel.get_current_page": "Returns the current set Page from the Action Wheel, or NIL if no Page has been set.",
 
   "figura.docs.wheel_page": "An Action Wheel container which is used to store up to 8 actions.",
-  "figura.docs.wheel_page.add_action": "Adds a new Action on the selected Page's index. If no index is given it is added in the first available index.",
+  "figura.docs.wheel_page.new_action": "Adds a new Action on the selected Page's index. If no index is given it is added in the first available index.",
   "figura.docs.wheel_page.get_action": "Gets an Action from the Page's given index.",
   "figura.docs.wheel_page.set_action": "Sets an Action in the Page's given index.",
 
@@ -577,7 +577,7 @@
   "figura.docs.animation.get_time": "Get the animation's playback current time.",
   "figura.docs.animation.set_time": "Sets the animation's playback current time.",
   "figura.docs.animation.get_play_state": "Get the animation's playback state.",
-  "figura.docs.animation.add_code": "Adds a string to run in a determinant time. If theres already code to run at that time, it is overridden.",
+  "figura.docs.animation.new_code": "Adds a string to run in a determinant time. If theres already code to run at that time, it is overridden.",
   "figura.docs.animation.get_blend": "Gets the animation's keyframe blend factor.",
   "figura.docs.animation.blend": "Sets the animation's keyframe blend factor.",
   "figura.docs.animation.get_offset": "Gets the animation's offset time.",
@@ -881,7 +881,7 @@
 
 
   "figura.docs.keybind_api": "A global API containing a function to create new Keybind instances.",
-  "figura.docs.keybind_api.add_key": "Creates and returns a new Keybind. The name is used in the keybind menu. The key parameter is an identifier for a key, such as \"key.keyboard.r\". The boolean gui indicates whether the keybind should always work, or if it should only work when you don't have a screen open. Check the docs list command for all key names.",
+  "figura.docs.keybind_api.new_key": "Creates and returns a new Keybind. The name is used in the keybind menu. The key parameter is an identifier for a key, such as \"key.keyboard.r\". The boolean gui indicates whether the keybind should always work, or if it should only work when you don't have a screen open. Check the docs list command for all key names.",
   "figura.docs.keybind_api.get_vanilla_key": "Gets the id of the key bound to the given action, as a string. Check the docs list command for all key names and vanilla actions.",
 
   "figura.docs.keybind": "Represents a key binding for your script. Instances are obtained using the KeybindAPI's create() function.",
@@ -1000,9 +1000,9 @@
   "figura.docs.model_part.override_vanilla_rot": "Returns if this part vanilla rotation is being overridden by an animation.",
   "figura.docs.model_part.override_vanilla_pos": "Returns if this part vanilla position is being overridden by an animation",
   "figura.docs.model_part.override_vanilla_scale": "Returns if this part vanilla scale is being overridden by an animation",
-  "figura.docs.model_part.add_text": "Adds a new Text Render Task on this part.",
-  "figura.docs.model_part.add_item": "Adds a new Item Render Task on this part.",
-  "figura.docs.model_part.add_block": "Adds a new Block Render Task on this part.",
+  "figura.docs.model_part.new_text": "Adds a new Text Render Task on this part.",
+  "figura.docs.model_part.new_item": "Adds a new Item Render Task on this part.",
+  "figura.docs.model_part.new_block": "Adds a new Block Render Task on this part.",
   "figura.docs.model_part.get_task": "Gets the Render Task with the given name from this part. Returns a table with all tasks if a name is not given.",
   "figura.docs.model_part.remove_task": "Removes the Task with the given name from this part. Removes ALL tasks if a name is not given.",
 
@@ -1032,7 +1032,7 @@
 
 
   "figura.docs.particles": "A global API which is used for dealing with Minecraft's particles. Particles instances are created when indexing their id. Accessed using the name \"particles\".",
-  "figura.docs.particles.add_particle": "Creates a particle with the given name at the specified position, with the given velocity. Some particles have special properties, like the \"dust\" particle. For these particles, the special properties can be put into the \"name\" parameter, the same way as it works for commands.",
+  "figura.docs.particles.new_particle": "Creates a particle with the given name at the specified position, with the given velocity. Some particles have special properties, like the \"dust\" particle. For these particles, the special properties can be put into the \"name\" parameter, the same way as it works for commands.",
   "figura.docs.particles.remove_particles": "Removes all particles spawned from this avatar.",
 
   "figura.docs.particle": "Represents a particle that can be spawned and modified. Obtained by indexing the ParticleAPI. Exists as an object-oriented alternative to particles:addParticle().",
@@ -1113,7 +1113,7 @@
   "figura.docs.sounds": "A global API which is used to play Minecraft sounds. Accessed using the name \"sounds\".",
   "figura.docs.sounds.play_sound": "Plays the specified sound at the specified position with the given volume and pitch multipliers. The sound id is either an identifier or the custom sound name. Volume in Minecraft refers to how far away people can hear the sound from, not the actual loudness of it. If you don't give values for volume and pitch, the default values are 1.",
   "figura.docs.sounds.stop_sound": "Stops the playing sounds from this avatar. If an id is specified, it only stops the sounds from that id.",
-  "figura.docs.sounds.add_sound": "Registers a new custom sound for this avatar. The first argument is the sound id while the second argument is either a byte array of the sound data, or a base64 string representation of the same.",
+  "figura.docs.sounds.new_sound": "Registers a new custom sound for this avatar. The first argument is the sound id while the second argument is either a byte array of the sound data, or a base64 string representation of the same.",
 
   "figura.docs.sound": "Represents a sound that can be played. Obtained by indexing the SoundAPI. Exists as an object-oriented alternative to sounds:playSound().",
   "figura.docs.sound.play": "Plays this sound, or resume a paused sound.",
@@ -1133,7 +1133,7 @@
 
 
   "figura.docs.textures": "A global API which allows for creating textures at runtime.",
-  "figura.docs.textures.add_texture": "Creates a new texture with the given name, width and height. The texture is filled with a solid color. Returns the texture.",
+  "figura.docs.textures.new_texture": "Creates a new texture with the given name, width and height. The texture is filled with a solid color. Returns the texture.",
   "figura.docs.textures.read": "Reads a texture from a base64 string or a byte array.",
   "figura.docs.textures.get": "Gets a registered texture based on its name, or nil if no texture was found with that name.",
   "figura.docs.textures.get_textures": "Returns a table with all textures used by this avatar. Do not include generated textures from this API.",
@@ -1286,7 +1286,7 @@
   "figura.docs.world.get_entity": "Returns an EntityAPI object from this UUID's entity, or nil if no entity was found.",
   "figura.docs.world.get_players": "Returns a table containing instances of Player for all players in the world. The players are indexed by their names.",
   "figura.docs.world.avatar_vars": "Returns a table containing variables stored from all loaded Avatars \"avatar:store()\" function. The table will be indexed by the avatar's owner UUID.",
-  "figura.docs.world.add_block": "Parses and create a new BlockState from the given string. A world position can be optionally given for the blockstate functions that relies on its position.",
-  "figura.docs.world.add_item": "Parses and create a new ItemStack from the given string. A count and damage can be given, to be applied on this itemstack.",
+  "figura.docs.world.new_block": "Parses and create a new BlockState from the given string. A world position can be optionally given for the blockstate functions that relies on its position.",
+  "figura.docs.world.new_item": "Parses and create a new ItemStack from the given string. A count and damage can be given, to be applied on this itemstack.",
   "figura.docs.world.exists": "Checks whether or not a world currently exists. This will almost always be true, but might be false on some occasions such as while travelling between dimensions."
 }
