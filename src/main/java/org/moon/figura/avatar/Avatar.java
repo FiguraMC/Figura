@@ -334,10 +334,10 @@ public class Avatar {
         run("POST_WORLD_RENDER", worldRender.post(), delta);
     }
 
-    public boolean skullRenderEvent(float delta, FiguraVec3 pos) {
+    public boolean skullRenderEvent(float delta, FiguraVec3 pos, ItemStackAPI itemContext) {
         Varargs result = null;
         if (loaded && renderer != null && renderer.allowSkullRendering)
-            result = run("SKULL_RENDER", render, delta, pos);
+            result = run("SKULL_RENDER", render, delta, pos, itemContext);
         return result != null && result.arg(1).isboolean() && result.arg(1).checkboolean();
     }
 
