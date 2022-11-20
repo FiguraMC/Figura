@@ -126,9 +126,9 @@ public class SoundAPI {
                             argumentNames = {"name", "base64Text"}
                     )
             },
-            value = "sounds.add_sound"
+            value = "sounds.new_sound"
     )
-    public void addSound(@LuaNotNil String name, @LuaNotNil Object object) {
+    public void newSound(@LuaNotNil String name, @LuaNotNil Object object) {
         byte[] bytes;
         if (object instanceof LuaTable table) {
             bytes = new byte[table.length()];
@@ -137,7 +137,7 @@ public class SoundAPI {
         } else if (object instanceof String s) {
             bytes = Base64.getDecoder().decode(s);
         } else {
-            throw new LuaError("Invalid type for addSound \"" + object.getClass().getSimpleName() + "\"");
+            throw new LuaError("Invalid type for newSound \"" + object.getClass().getSimpleName() + "\"");
         }
 
         try {

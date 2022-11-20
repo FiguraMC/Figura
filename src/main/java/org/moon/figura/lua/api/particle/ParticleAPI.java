@@ -78,13 +78,13 @@ public class ParticleAPI {
                             argumentNames = {"name", "posX", "posY", "posZ", "velX", "velY", "velZ"}
                     )
             },
-            value = "particles.add_particle"
+            value = "particles.new_particle"
     )
-    public LuaParticle addParticle(@LuaNotNil String id, Object x, Object y, Double z, Object w, Double t, Double h) {
+    public LuaParticle newParticle(@LuaNotNil String id, Object x, Object y, Double z, Object w, Double t, Double h) {
         FiguraVec3 pos, vel;
 
         //Parse pos and vel
-        Pair<FiguraVec3, FiguraVec3> pair = LuaUtils.parse2Vec3("addParticle", x, y, z, w, t, h);
+        Pair<FiguraVec3, FiguraVec3> pair = LuaUtils.parse2Vec3("newParticle", x, y, z, w, t, h);
         pos = pair.getFirst();
         vel = pair.getSecond();
 
