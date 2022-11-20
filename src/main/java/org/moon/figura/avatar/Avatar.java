@@ -37,6 +37,7 @@ import org.moon.figura.lua.api.particle.ParticleAPI;
 import org.moon.figura.lua.api.ping.PingArg;
 import org.moon.figura.lua.api.ping.PingFunction;
 import org.moon.figura.lua.api.sound.SoundAPI;
+import org.moon.figura.lua.api.world.BlockStateAPI;
 import org.moon.figura.lua.api.world.ItemStackAPI;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
@@ -334,10 +335,10 @@ public class Avatar {
         run("POST_WORLD_RENDER", worldRender.post(), delta);
     }
 
-    public boolean skullRenderEvent(float delta, FiguraVec3 pos) {
+    public boolean skullRenderEvent(float delta, BlockStateAPI block, ItemStackAPI item) {
         Varargs result = null;
         if (loaded && renderer != null && renderer.allowSkullRendering)
-            result = run("SKULL_RENDER", render, delta, pos);
+            result = run("SKULL_RENDER", render, delta, block, item);
         return result != null && result.arg(1).isboolean() && result.arg(1).checkboolean();
     }
 
