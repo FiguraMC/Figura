@@ -31,6 +31,15 @@
     },
     {
       "type": "bitmap",
+      "file": "figura:font/stuff.png",
+      "ascent": 8,
+      "chars": [
+        "ඞ\uD83D\uDD25\uD83C\uDF31",
+        "\uD83C\uDF7C☾\uD83C\uDFA9"
+      ]
+    },
+    {
+      "type": "bitmap",
       "file": "figura:font/arrows.png",
       "ascent": 8,
       "chars": [">V<^"]
