@@ -72,8 +72,8 @@ public class ActionWheelAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("action_wheel.create_action")
-    public Action createAction() {
+    @LuaMethodDoc("action_wheel.add_action")
+    public Action addAction() {
         return new Action();
     }
 
@@ -86,9 +86,9 @@ public class ActionWheelAPI {
                             argumentNames = "title"
                     )
             },
-            value = "action_wheel.create_page"
+            value = "action_wheel.add_page"
     )
-    public Page createPage(String title) {
+    public Page addPage(String title) {
         Page page = new Page();
         if (title != null) this.pages.put(title, page);
         return page;

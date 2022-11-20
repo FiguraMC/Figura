@@ -57,9 +57,9 @@ public class Page {
                             argumentNames = "index"
                     )
             },
-            value = "wheel_page.new_action"
+            value = "wheel_page.add_action"
     )
-    public Action newAction(Integer index) {
+    public Action addAction(Integer index) {
         //set the action
         Action action = new Action();
         this.actions[this.checkIndex(index)] = action;

@@ -403,10 +403,10 @@ public class WorldAPI {
                             argumentNames = {"block", "x", "y", "z"}
                     )
             },
-            value = "world.new_block"
+            value = "world.add_block"
     )
-    public static BlockStateAPI newBlock(@LuaNotNil String string, Object x, Double y, Double z) {
-        BlockPos pos = LuaUtils.parseVec3("newBlock", x, y, z).asBlockPos();
+    public static BlockStateAPI addBlock(@LuaNotNil String string, Object x, Double y, Double z) {
+        BlockPos pos = LuaUtils.parseVec3("addBlock", x, y, z).asBlockPos();
         try {
             BlockState block = BlockStateArgument.block(new CommandBuildContext(RegistryAccess.BUILTIN.get())).parse(new StringReader(string)).getState();
             return new BlockStateAPI(block, pos);
@@ -431,9 +431,9 @@ public class WorldAPI {
                             argumentNames = {"item", "count", "damage"}
                     )
             },
-            value = "world.new_item"
+            value = "world.add_item"
     )
-    public static ItemStackAPI newItem(@LuaNotNil String string, Integer count, Integer damage) {
+    public static ItemStackAPI addItem(@LuaNotNil String string, Integer count, Integer damage) {
         try {
             ItemStack item = ItemArgument.item(new CommandBuildContext(RegistryAccess.BUILTIN.get())).parse(new StringReader(string)).createItemStack(1, false);
             if (count != null)
