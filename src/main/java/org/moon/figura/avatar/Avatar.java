@@ -783,7 +783,7 @@ public class Avatar {
                 if (animNbt.contains("code")) {
                     for (Tag code : animNbt.getList("code", Tag.TAG_COMPOUND)) {
                         CompoundTag compound = (CompoundTag) code;
-                        animation.addCode(compound.getFloat("time"), compound.getString("src"));
+                        animation.newCode(compound.getFloat("time"), compound.getString("src"));
                     }
                 }
 
