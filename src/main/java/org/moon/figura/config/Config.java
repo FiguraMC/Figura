@@ -146,6 +146,7 @@ public enum Config {
                 new FiguraText(tooltip + ".cubes").setStyle(ColorUtils.Colors.FRAN_PINK.style),
                 new FiguraText(tooltip + ".groups").setStyle(ColorUtils.Colors.MAYA_BLUE.style));
     }},
+    FIRST_PERSON_MATRICES(true),
     LOG_OTHERS(false),
     LOG_PINGS(0, 3),
     SYNC_PINGS(false) {{

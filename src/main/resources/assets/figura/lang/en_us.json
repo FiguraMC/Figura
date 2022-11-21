@@ -402,6 +402,9 @@
   "figura.config.render_debug_parts_pivot.2": "Only Visible",
   "figura.config.render_debug_parts_pivot.3": "Everything",
 
+  "figura.config.first_person_matrices": "First Person Matrices",
+  "figura.config.first_person_matrices.tooltip": "Toggles if the model part matrices should be updated while in first person.",
+
   "figura.config.log_others": "Log non-host scripts",
   "figura.config.log_others.tooltip": "Allows debug logging and errors of non-host scripts",
 

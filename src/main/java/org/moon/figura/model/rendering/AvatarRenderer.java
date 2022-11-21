@@ -92,6 +92,8 @@ public abstract class AvatarRenderer {
 
     public abstract int render();
     public abstract int renderSpecialParts();
+    public abstract void updateMatrices();
+
     protected void clean() {
         root.clean();
         for (FiguraTexture texture : customTextures.values())
