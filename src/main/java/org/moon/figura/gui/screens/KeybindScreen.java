@@ -38,7 +38,7 @@ public class KeybindScreen extends AbstractPanelScreen {
             if (owner == null || owner.luaRuntime == null)
                 return;
 
-            for (FiguraKeybind keybind : owner.luaRuntime.keybind.keyBindings)
+            for (FiguraKeybind keybind : owner.luaRuntime.keybinds.keyBindings)
                 keybind.resetDefaultKey();
         }));
 

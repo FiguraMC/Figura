@@ -37,11 +37,9 @@ public class KeybindAPI {
                             argumentNames = {"name", "key", "gui"}
                     )
             },
-            value = "keybind_api.new_key"
+            value = "keybind_api.new_keybind"
     )
-    public FiguraKeybind newKey(@LuaNotNil String name, @LuaNotNil String key, boolean gui) {
-        this.keyBindings.removeIf(binding -> binding.getName().equals(name));
-
+    public FiguraKeybind newKeybind(@LuaNotNil String name, @LuaNotNil String key, boolean gui) {
         FiguraKeybind binding = new FiguraKeybind(this.owner, name, FiguraKeybind.parseStringKey(key));
         binding.gui = gui;
 

@@ -41,7 +41,7 @@ public class MouseHandlerMixin {
             ci.cancel();
 
         //this needs to be last because it executes functions and can cause lua errors, making luaState null
-        if (FiguraKeybind.set(avatar.luaRuntime.keybind.keyBindings, InputConstants.Type.MOUSE.getOrCreate(button), pressed))
+        if (FiguraKeybind.set(avatar.luaRuntime.keybinds.keyBindings, InputConstants.Type.MOUSE.getOrCreate(button), pressed))
             ci.cancel();
     }
 
