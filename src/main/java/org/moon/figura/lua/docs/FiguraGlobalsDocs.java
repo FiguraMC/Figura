@@ -52,8 +52,8 @@ public abstract class FiguraGlobalsDocs {
     public PlayerAPI player;
     @LuaFieldDoc("globals.events")
     public EventsAPI events;
-    @LuaFieldDoc("globals.keybind")
-    public KeybindAPI keybind;
+    @LuaFieldDoc("globals.keybinds")
+    public KeybindAPI keybinds;
     @LuaFieldDoc("globals.vectors")
     public VectorsAPI vectors;
     @LuaFieldDoc("globals.matrices")

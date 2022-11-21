@@ -40,7 +40,7 @@ public class FiguraLuaRuntime {
     public EntityAPI<?> entityAPI;
     public EventsAPI events;
     public VanillaModelAPI vanilla_model;
-    public KeybindAPI keybind;
+    public KeybindAPI keybinds;
     public HostAPI host;
     public NameplateAPI nameplate;
     public RendererAPI renderer;

@@ -492,7 +492,7 @@
   "figura.docs.globals.models": "The global instance of the Avatar Models and its subtypes.",
   "figura.docs.globals.player": "The global instance of the EntityAPI and its subtypes.",
   "figura.docs.globals.events": "The global instance of the EventsAPI and its subtypes.",
-  "figura.docs.globals.keybind": "The global instance of the KeybindAPI and its subtypes.",
+  "figura.docs.globals.keybinds": "The global instance of the KeybindAPI and its subtypes.",
   "figura.docs.globals.vectors": "The global instance of the VectorsAPI and its subtypes.",
   "figura.docs.globals.matrices": "The global instance of the MatricesAPI and its subtypes.",
   "figura.docs.globals.particles": "The global instance of ParticleAPI.",
@@ -881,7 +881,7 @@
 
 
   "figura.docs.keybind_api": "A global API containing a function to create new Keybind instances.",
-  "figura.docs.keybind_api.new_key": "Creates and returns a new Keybind. The name is used in the keybind menu. The key parameter is an identifier for a key, such as \"key.keyboard.r\". The boolean gui indicates whether the keybind should always work, or if it should only work when you don't have a screen open. Check the docs list command for all key names.",
+  "figura.docs.keybind_api.new_keybind": "Creates and returns a new Keybind. The name is used in the keybind menu. The key parameter is an identifier for a key, such as \"key.keyboard.r\". The boolean gui indicates whether the keybind should always work, or if it should only work when you don't have a screen open. Check the docs list command for all key names.",
   "figura.docs.keybind_api.get_vanilla_key": "Gets the id of the key bound to the given action, as a string. Check the docs list command for all key names and vanilla actions.",
 
   "figura.docs.keybind": "Represents a key binding for your script. Instances are obtained using the KeybindAPI's create() function.",

@@ -84,7 +84,7 @@ public class KeybindList extends AbstractList {
         if (owner == null || owner.luaRuntime == null)
             return;
 
-        for (FiguraKeybind keybind : owner.luaRuntime.keybind.keyBindings) {
+        for (FiguraKeybind keybind : owner.luaRuntime.keybinds.keyBindings) {
             KeybindElement element = new KeybindElement(width - 22, keybind, this);
             keybinds.add(element);
             children.add(element);
