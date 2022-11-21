@@ -48,4 +48,12 @@ public class EntityRenderDispatcherMixin {
         if (!avatar.luaRuntime.renderer.renderVehicle)
             ci.cancel();
     }
+
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/EntityRenderer;render(Lnet/minecraft/world/entity/Entity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", shift = At.Shift.AFTER), cancellable = true)
+    private <E extends Entity> void afterRenderEntity(E entity, double x, double y, double z, float yaw, float tickDelta, PoseStack matrices, MultiBufferSource vertexConsumers, int light, CallbackInfo ci) {
+        if (Avatar.firstPerson) {
+            matrices.popPose(); //danger
+            ci.cancel();
+        }
+    }
 }

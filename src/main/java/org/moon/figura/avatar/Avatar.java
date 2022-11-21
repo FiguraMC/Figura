@@ -72,6 +72,7 @@ import java.util.function.Supplier;
 public class Avatar {
 
     private static CompletableFuture<Void> tasks;
+    public static boolean firstPerson;
 
     //properties
     public final UUID owner;
@@ -654,6 +655,14 @@ public class Avatar {
 
         queue.clear();
         return true;
+    }
+
+    public void updateMatrices(LivingEntityRenderer<?, ?> entityRenderer) {
+        if (renderer != null && loaded) {
+            renderer.currentFilterScheme = PartFilterScheme.MODEL;
+            renderer.vanillaModelData.update(entityRenderer);
+            renderer.updateMatrices();
+        }
     }
 
     // -- animations -- //

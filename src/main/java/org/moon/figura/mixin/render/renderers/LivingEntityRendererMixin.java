@@ -78,9 +78,19 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
         return elytraModel;
     }
 
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/EntityModel;setupAnim(Lnet/minecraft/world/entity/Entity;FFFFF)V", shift = At.Shift.AFTER), method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V")
+    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/EntityModel;setupAnim(Lnet/minecraft/world/entity/Entity;FFFFF)V", shift = At.Shift.AFTER), method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", cancellable = true)
     private void preRender(T entity, float yaw, float delta, PoseStack matrices, MultiBufferSource bufferSource, int light, CallbackInfo ci) {
         currentAvatar = AvatarManager.getAvatar(entity);
+
+        if (Avatar.firstPerson) {
+            if (currentAvatar != null)
+                currentAvatar.updateMatrices((LivingEntityRenderer<?, ?>) (Object) this);
+
+            matrices.popPose(); //danger
+            ci.cancel();
+            return;
+        }
+
         if (currentAvatar == null)
             return;
 
