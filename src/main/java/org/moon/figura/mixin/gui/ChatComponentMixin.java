@@ -23,6 +23,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 @Mixin(ChatComponent.class)
 public class ChatComponentMixin {
@@ -72,7 +73,7 @@ public class ChatComponentMixin {
             }
 
             //modify message
-            message = TextUtils.replaceInText(message, "\\b" + player.getProfile().getName() + "\\b", replacement);
+            message = TextUtils.replaceInText(message, "\\b" + Pattern.quote(player.getProfile().getName()) + "\\b", replacement);
         }
 
         return message;
