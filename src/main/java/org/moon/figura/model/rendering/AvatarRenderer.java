@@ -52,7 +52,6 @@ public abstract class AvatarRenderer {
     public PoseStack matrices;
     public MultiBufferSource bufferSource;
     public VanillaModelData vanillaModelData = new VanillaModelData();
-    public boolean allowMatrixUpdate = false;
 
     public PartFilterScheme currentFilterScheme;
     public final HashMap<ParentType, ConcurrentLinkedQueue<Pair<FiguraMat4, FiguraMat3>>> pivotCustomizations = new HashMap<>();
@@ -60,10 +59,12 @@ public abstract class AvatarRenderer {
     public final HashMap<String, FiguraTexture> textures = new HashMap<>();
     public final HashMap<String, FiguraTexture> customTextures = new HashMap<>();
     protected static int shouldRenderPivots;
+    public boolean allowMatrixUpdate = false;
     public boolean allowHiddenTransforms = true;
     public boolean allowRenderTasks = true;
     public boolean allowSkullRendering = true;
     public boolean allowPivotParts = true;
+    public boolean updateLight = false;
 
     public AvatarRenderer(Avatar avatar) {
         this.avatar = avatar;
