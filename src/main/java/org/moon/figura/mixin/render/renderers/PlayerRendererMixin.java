@@ -91,8 +91,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
 
         if (custom != null && custom.getText() != null && trust) {
             replacement = NameplateCustomization.applyCustomization(custom.getText());
-            if (custom.getText().contains("${badges}"))
-                replaceBadges = true;
+            replaceBadges = replacement.getString().contains("${badges}");
         } else {
             replacement = new TextComponent(player.getName().getString());
         }
