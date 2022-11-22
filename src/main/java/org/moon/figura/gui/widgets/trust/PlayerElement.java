@@ -164,8 +164,7 @@ public class PlayerElement extends AbstractTrustElement {
             NameplateCustomization custom = avatar.luaRuntime == null ? null : avatar.luaRuntime.nameplate.LIST;
             if (custom != null && custom.getText() != null && avatar.trust.get(Trust.NAMEPLATE_EDIT) == 1) {
                 name = NameplateCustomization.applyCustomization(custom.getText());
-                if (custom.getText().contains("${badges}"))
-                    replaceBadges = true;
+                replaceBadges = name.getString().contains("${badges}");
             }
 
             head = !dragged && avatar.renderPortrait(stack, x + 4, y + 4, Math.round(32 * scale), 64, true);
