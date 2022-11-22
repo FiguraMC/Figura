@@ -6,6 +6,7 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.RenderBuffers;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.util.Mth;
@@ -28,6 +29,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class LevelRendererMixin {
 
     @Shadow @Final private EntityRenderDispatcher entityRenderDispatcher;
+    @Shadow @Final private RenderBuffers renderBuffers;
 
     @ModifyArg(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;renderEntity(Lnet/minecraft/world/entity/Entity;DDDFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;)V"), method = "renderLevel")
     private Entity onRenderEntity(Entity entity) {
@@ -61,7 +63,7 @@ public abstract class LevelRendererMixin {
         );
 
         float yaw = Mth.lerp(tickDelta, livingEntity.yRotO, livingEntity.getYRot());
-        entityRenderer.render(livingEntity, yaw, tickDelta, stack, null, LightTexture.FULL_BRIGHT);
+        entityRenderer.render(livingEntity, yaw, tickDelta, stack, this.renderBuffers.bufferSource(), LightTexture.FULL_BRIGHT);
 
         stack.popPose();
         Avatar.firstPerson = false;
