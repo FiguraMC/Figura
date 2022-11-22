@@ -657,12 +657,14 @@ public class Avatar {
         return true;
     }
 
-    public void updateMatrices(LivingEntityRenderer<?, ?> entityRenderer) {
-        if (renderer != null && loaded) {
-            renderer.currentFilterScheme = PartFilterScheme.MODEL;
-            renderer.vanillaModelData.update(entityRenderer);
-            renderer.updateMatrices();
-        }
+    public void updateMatrices(LivingEntityRenderer<?, ?> entityRenderer, PoseStack stack) {
+        if (renderer == null || !loaded)
+            return;
+
+        renderer.currentFilterScheme = PartFilterScheme.MODEL;
+        renderer.matrices = stack;
+        renderer.vanillaModelData.update(entityRenderer);
+        renderer.updateMatrices();
     }
 
     // -- animations -- //
