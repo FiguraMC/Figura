@@ -84,9 +84,9 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
 
         if (Avatar.firstPerson) {
             if (currentAvatar != null)
-                currentAvatar.updateMatrices((LivingEntityRenderer<?, ?>) (Object) this);
+                currentAvatar.updateMatrices((LivingEntityRenderer<?, ?>) (Object) this, matrices);
 
-            matrices.popPose(); //danger
+            matrices.popPose();
             ci.cancel();
             return;
         }
