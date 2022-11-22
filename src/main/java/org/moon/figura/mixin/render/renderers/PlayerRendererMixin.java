@@ -33,6 +33,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Mixin(PlayerRenderer.class)
 public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
@@ -103,7 +104,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
             ((MutableComponent) replacement).append(" ").append(badges);
         }
 
-        text = TextUtils.replaceInText(text, "\\b" + player.getName().getString() + "\\b", replacement);
+        text = TextUtils.replaceInText(text, "\\b" + Pattern.quote(player.getName().getString()) + "\\b", replacement);
 
         // * variables * //
         boolean isSneaking = player.isDiscrete();

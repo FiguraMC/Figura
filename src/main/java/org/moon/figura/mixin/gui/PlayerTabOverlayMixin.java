@@ -29,6 +29,7 @@ import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 @Mixin(PlayerTabOverlay.class)
 public class PlayerTabOverlayMixin {
@@ -65,7 +66,7 @@ public class PlayerTabOverlayMixin {
             ((MutableComponent) replacement).append(" ").append(badges);
         }
 
-        text = TextUtils.replaceInText(text, "\\b" + playerInfo.getProfile().getName() + "\\b", replacement);
+        text = TextUtils.replaceInText(text, "\\b" + Pattern.quote(playerInfo.getProfile().getName()) + "\\b", replacement);
 
         cir.setReturnValue(text);
     }
