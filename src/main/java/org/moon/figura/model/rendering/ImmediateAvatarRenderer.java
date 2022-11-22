@@ -4,8 +4,14 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.world.level.LightLayer;
 import org.moon.figura.avatar.Avatar;
+import org.moon.figura.config.Config;
+import org.moon.figura.math.matrix.FiguraMat3;
+import org.moon.figura.math.matrix.FiguraMat4;
+import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.model.FiguraModelPart;
 import org.moon.figura.model.FiguraModelPartReader;
 import org.moon.figura.model.ParentType;
@@ -14,10 +20,6 @@ import org.moon.figura.model.rendering.texture.FiguraTexture;
 import org.moon.figura.model.rendering.texture.FiguraTextureSet;
 import org.moon.figura.model.rendering.texture.RenderTypes;
 import org.moon.figura.model.rendertasks.RenderTask;
-import org.moon.figura.config.Config;
-import org.moon.figura.math.matrix.FiguraMat3;
-import org.moon.figura.math.matrix.FiguraMat4;
-import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.ColorUtils;
 
 import java.util.ArrayList;
@@ -224,6 +226,15 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
                 FiguraMat4 mat = partToWorldMatrices(custom);
                 part.savedPartToWorldMat.set(mat);
                 mat.free();
+
+                //recalculate light
+                if (updateLight && entity != null) {
+                    FiguraVec3 pos = part.savedPartToWorldMat.apply(0d, 0d, 0d);
+                    int block = entity.level.getBrightness(LightLayer.BLOCK, pos.asBlockPos());
+                    int sky = entity.level.getBrightness(LightLayer.SKY, pos.asBlockPos());
+                    custom.light = LightTexture.pack(block, sky);
+                    pos.free();
+                }
             }
 
             PartCustomization peek = customizationStack.peek();
