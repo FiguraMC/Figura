@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.config.Config;
@@ -183,8 +184,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
     protected boolean renderPart(FiguraModelPart part, int[] remainingComplexity, boolean prevPredicate) {
         PartCustomization custom = part.customization;
 
-        //Store old visibility, but overwrite it in case we only want to render certain parts
-        Boolean storedVisibility = custom.visible;
+        //test the current filter scheme
         Boolean thisPassedPredicate = currentFilterScheme.test(part.parentType, prevPredicate);
         if (thisPassedPredicate == null) {
             part.advanceVerticesImmediate(this); //stinky
@@ -206,12 +206,38 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
             custom.needsMatrixRecalculation = false;
         }
 
+        //recalculate stuff
+        Boolean storedVisibility = custom.visible;
         custom.visible = part.getVisible() && thisPassedPredicate;
         custom.recalculate();
-        customizationStack.push(custom);
-        custom.visible = storedVisibility;
 
+        //push stack
+        customizationStack.push(custom);
+
+        //restore variables
+        custom.visible = storedVisibility;
         if (reset) custom.needsMatrixRecalculation = true;
+
+        if (thisPassedPredicate) {
+            //recalculate world matrices
+            if (allowMatrixUpdate) {
+                FiguraMat4 mat = partToWorldMatrices(custom);
+                part.savedPartToWorldMat.set(mat);
+                mat.free();
+            }
+
+            //recalculate light
+            Level l;
+            if (custom.light != null)
+                updateLight = false;
+            else if (updateLight && (l = Minecraft.getInstance().level) != null) {
+                FiguraVec3 pos = part.savedPartToWorldMat.apply(0d, 0d, 0d);
+                int block = l.getBrightness(LightLayer.BLOCK, pos.asBlockPos());
+                int sky = l.getBrightness(LightLayer.SKY, pos.asBlockPos());
+                customizationStack.peek().light = LightTexture.pack(block, sky);
+                pos.free();
+            }
+        }
 
         //render this
         if (!part.pushVerticesImmediate(this, remainingComplexity)) {
@@ -221,22 +247,6 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
         //render extras
         if (thisPassedPredicate) {
-            //part to world matrices
-            if (allowMatrixUpdate) {
-                FiguraMat4 mat = partToWorldMatrices(custom);
-                part.savedPartToWorldMat.set(mat);
-                mat.free();
-
-                //recalculate light
-                if (updateLight && entity != null) {
-                    FiguraVec3 pos = part.savedPartToWorldMat.apply(0d, 0d, 0d);
-                    int block = entity.level.getBrightness(LightLayer.BLOCK, pos.asBlockPos());
-                    int sky = entity.level.getBrightness(LightLayer.SKY, pos.asBlockPos());
-                    custom.light = LightTexture.pack(block, sky);
-                    pos.free();
-                }
-            }
-
             PartCustomization peek = customizationStack.peek();
 
             //fix pivots
