@@ -185,6 +185,24 @@ public class Animation {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload,
+                    @LuaMethodOverload(
+                            argumentTypes = Boolean.class,
+                            argumentNames = "bool"
+                    )
+            },
+            value = "animation.set_playing"
+    )
+    public void setPlaying(boolean bool) {
+        if (bool)
+            play();
+        else
+            stop();
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc("animation.get_time")
     public float getTime() {
         return time;

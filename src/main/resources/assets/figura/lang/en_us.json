@@ -298,7 +298,7 @@
   "figura.config.ui.tooltip": "UI Settings",
 
   "figura.config.background_scroll_speed": "Background Scroll Speed",
-  "figura.config.background_scroll_speed.tooltip": "Multiplier for scroll speed of the animated background.",
+  "figura.config.background_scroll_speed.tooltip": "Multiplier for scroll speed of the animated background",
 
   "figura.config.popup_scale": "Player Popup Scale",
   "figura.config.popup_scale.tooltip": "Scale multiplier for the player popup",
@@ -403,7 +403,7 @@
   "figura.config.render_debug_parts_pivot.3": "Everything",
 
   "figura.config.first_person_matrices": "First Person Matrices",
-  "figura.config.first_person_matrices.tooltip": "Toggles if the model part matrices should be updated while in first person.",
+  "figura.config.first_person_matrices.tooltip": "Toggles if the model part matrices should be updated while in first person",
 
   "figura.config.log_others": "Log non-host scripts",
   "figura.config.log_others.tooltip": "Allows debug logging and errors of non-host scripts",
@@ -576,7 +576,8 @@
   "figura.docs.animation.play": "Initializes the animation. Resume the animation if it was paused.",
   "figura.docs.animation.pause": "Pause the animation's playback.",
   "figura.docs.animation.stop": "Stop the animation.",
-  "figura.docs.animation.restart": "Restarts the animation. Plays the animation if it was stopped. This behaviour can also be reproduced by stopping then playing the animation",
+  "figura.docs.animation.restart": "Restarts the animation. Plays the animation if it was stopped. This behaviour can also be reproduced by stopping then playing the animation.",
+  "figura.docs.animation.set_playing": "A function that merges \"play\" and \"stop\" together. Takes a boolean parameter, where if true, the animation will play, and when false, the animation will stop.",
   "figura.docs.animation.get_time": "Get the animation's playback current time.",
   "figura.docs.animation.set_time": "Sets the animation's playback current time.",
   "figura.docs.animation.get_play_state": "Get the animation's playback state.",
