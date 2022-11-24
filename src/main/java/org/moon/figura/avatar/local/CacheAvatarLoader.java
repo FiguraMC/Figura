@@ -81,6 +81,30 @@ public class CacheAvatarLoader {
         });
     }
 
+    public static void clearCache() {
+        LocalAvatarLoader.async(() -> {
+            File file = getAvatarCacheDirectory().toFile();
+
+            if (!file.exists() || !file.isDirectory())
+                return;
+
+            File[] children = file.listFiles();
+            if (children == null)
+                return;
+
+            for (File child : children) {
+                try {
+                    if (!child.delete())
+                        throw new Exception();
+                } catch (Exception ignored) {
+                    FiguraMod.debug("Failed to delete cache avatar \"{}\"", child.getName());
+                }
+            }
+
+            FiguraMod.debug("Finished clearing avatar cache");
+        });
+    }
+
     //cache directory
     public static Path getAvatarCacheDirectory() {
         Path p = FiguraMod.getCacheDirectory().resolve("avatars");

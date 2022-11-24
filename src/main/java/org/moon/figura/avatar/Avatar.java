@@ -412,7 +412,7 @@ public class Avatar {
         }
 
         renderer.allowMatrixUpdate = true;
-        renderer.updateLight = true;
+        renderer.updateLight = renderMode != EntityRenderMode.OTHER;
         renderer.entity = entity;
         renderer.currentFilterScheme = PartFilterScheme.WORLD;
         renderer.bufferSource = bufferSource;
@@ -439,7 +439,13 @@ public class Avatar {
 
         int light = Minecraft.getInstance().getEntityRenderDispatcher().getPackedLightCoords(watcher, tickDelta);
         Vec3 camPos = camera.getPosition();
+
+        EntityRenderMode oldMode = renderMode;
+        renderMode = EntityRenderMode.FIRST_PERSON;
+
         worldRender(watcher, camPos.x, camPos.y, camPos.z, matrices, bufferSource, light, tickDelta);
+
+        renderMode = oldMode;
     }
 
     public void firstPersonRender(PoseStack stack, MultiBufferSource bufferSource, Player player, PlayerRenderer playerRenderer, ModelPart arm, int light, int overlay, float tickDelta) {
