@@ -159,7 +159,7 @@ public class FiguraDocsManager {
                 LuaEvent.class
         ));
 
-        put("keybind", List.of(
+        put("keybinds", List.of(
                 KeybindAPI.class,
                 FiguraKeybind.class
         ));

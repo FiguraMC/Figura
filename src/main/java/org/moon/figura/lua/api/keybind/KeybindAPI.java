@@ -14,7 +14,7 @@ import java.util.ArrayList;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "KeybindAPI",
-        value = "keybind_api"
+        value = "keybinds"
 )
 public class KeybindAPI {
 
@@ -37,7 +37,7 @@ public class KeybindAPI {
                             argumentNames = {"name", "key", "gui"}
                     )
             },
-            value = "keybind_api.new_keybind"
+            value = "keybinds.new_keybind"
     )
     public FiguraKeybind newKeybind(@LuaNotNil String name, @LuaNotNil String key, boolean gui) {
         FiguraKeybind binding = new FiguraKeybind(this.owner, name, FiguraKeybind.parseStringKey(key));
@@ -53,7 +53,7 @@ public class KeybindAPI {
                     argumentTypes = String.class,
                     argumentNames = "id"
             ),
-            value = "keybind_api.get_vanilla_key"
+            value = "keybinds.get_vanilla_key"
     )
     public String getVanillaKey(@LuaNotNil String id) {
         KeyMapping key = KeyMappingAccessor.getAll().get(id);
