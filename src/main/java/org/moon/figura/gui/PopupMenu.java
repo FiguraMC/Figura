@@ -24,7 +24,6 @@ import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.MathUtils;
-import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.ui.UIHelper;
 
 import java.util.List;
@@ -37,11 +36,11 @@ public class PopupMenu {
     private static final FiguraIdentifier ICONS = new FiguraIdentifier("textures/gui/popup_icons.png");
 
     private static final MutableComponent VERSION_WARN = TextComponent.EMPTY.copy()
-            .append(Badges.System.WARNING.badge.copy().withStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT)))
+            .append(Badges.System.WARNING.badge.copy().withStyle(Style.EMPTY.withFont(UIHelper.UI_FONT)))
             .append(" ")
             .append(Badges.System.WARNING.desc.copy().withStyle(ChatFormatting.YELLOW));
     private static final MutableComponent ERROR_WARN = TextComponent.EMPTY.copy()
-            .append(Badges.System.ERROR.badge.copy().withStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT)))
+            .append(Badges.System.ERROR.badge.copy().withStyle(Style.EMPTY.withFont(UIHelper.UI_FONT)))
             .append(" ")
             .append(Badges.System.ERROR.desc.copy().withStyle(ChatFormatting.RED));
 

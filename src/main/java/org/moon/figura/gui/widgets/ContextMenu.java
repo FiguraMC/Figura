@@ -13,7 +13,6 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.utils.FiguraIdentifier;
-import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.ui.UIHelper;
 
 import java.util.ArrayList;
@@ -201,7 +200,7 @@ public class ContextMenu extends AbstractContainerElement {
 
     private static class TabButton extends ContextButton {
 
-        private static final Component ARROW = new TextComponent(">").setStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT));
+        private static final Component ARROW = new TextComponent(">").setStyle(Style.EMPTY.withFont(UIHelper.UI_FONT));
         private final ContextMenu context;
 
         public TabButton(int x, int y, Component text, ContextMenu parent, ContextMenu context) {

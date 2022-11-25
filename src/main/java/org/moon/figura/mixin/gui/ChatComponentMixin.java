@@ -11,6 +11,7 @@ import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.avatar.Badges;
 import org.moon.figura.config.Config;
+import org.moon.figura.gui.Emojis;
 import org.moon.figura.lua.api.nameplate.NameplateCustomization;
 import org.moon.figura.trust.Trust;
 import org.moon.figura.utils.TextUtils;
@@ -38,7 +39,7 @@ public class ChatComponentMixin {
     }
 
     @ModifyVariable(at = @At("HEAD"), method = "addMessage(Lnet/minecraft/network/chat/Component;IIZ)V", argsOnly = true)
-    private Component addMessageName(Component message) {
+    private Component addMessageNameplate(Component message) {
         //get config
         int config = Config.CHAT_NAMEPLATE.asInt();
         if (config == 0 || this.minecraft.player == null || AvatarManager.panic)
@@ -77,5 +78,10 @@ public class ChatComponentMixin {
         }
 
         return message;
+    }
+
+    @ModifyVariable(at = @At("HEAD"), method = "addMessage(Lnet/minecraft/network/chat/Component;IIZ)V", argsOnly = true)
+    private Component addMessageEmojis(Component message) {
+        return Config.CHAT_EMOJIS.asBool() ? Emojis.applyEmojis(message) : message;
     }
 }

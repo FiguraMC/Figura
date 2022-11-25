@@ -3,9 +3,11 @@ package org.moon.figura.avatar;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.*;
+import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.config.Config;
 import org.moon.figura.utils.ColorUtils;
+import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.TextUtils;
 
@@ -15,9 +17,10 @@ import java.util.UUID;
 public class Badges {
 
     private static final Pair<BitSet, BitSet> NO_BADGES = Pair.of(new BitSet(Pride.values().length), new BitSet(Special.values().length));
+    public static final ResourceLocation FONT = new FiguraIdentifier("badges");
 
     public static Component fetchBadges(UUID id) {
-        MutableComponent badges = TextComponent.EMPTY.copy().withStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT).withColor(ChatFormatting.WHITE));
+        MutableComponent badges = TextComponent.EMPTY.copy().withStyle(Style.EMPTY.withFont(FONT).withColor(ChatFormatting.WHITE));
 
         //get user data
         Pair<BitSet, BitSet> pair = AvatarManager.getBadges(id);
@@ -83,6 +86,10 @@ public class Badges {
         return badges;
     }
 
+    public static Component noBadges4U(Component text) {
+        return TextUtils.replaceInText(text, ".*", TextUtils.UNKNOWN, (s, style) -> style.getFont().equals(FONT));
+    }
+
     public enum System {
         DEFAULT("△"),
         CHEESE("\uD83E\uDDC0"),
@@ -139,12 +146,7 @@ public class Badges {
         DISCORD_STAFF("☆", ColorUtils.Colors.DISCORD.hex),
         CONTEST("☆", ColorUtils.Colors.FRAN_PINK.hex),
         DONATOR("❤", ColorUtils.Colors.FRAN_PINK.hex),
-        TRANSLATOR("☄"),
-
-        SHADOW("\uD83C\uDF00"),
-        MOON("\uD83C\uDF19"),
-        SHRIMP("\uD83E\uDD90"),
-        BURGER("\uD83C\uDF54");
+        TRANSLATOR("☄");
 
         public final Component badge;
         public final Component desc;

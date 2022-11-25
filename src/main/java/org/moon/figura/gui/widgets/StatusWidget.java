@@ -15,7 +15,6 @@ import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.backend2.NetworkStuff;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.MathUtils;
-import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.ui.UIHelper;
 
 import java.util.List;
@@ -103,7 +102,7 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
     }
 
     private MutableComponent getStatus(int type) {
-        return new TextComponent(String.valueOf(STATUS_INDICATORS.charAt(status >> (type * 2) & 3))).setStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT));
+        return new TextComponent(String.valueOf(STATUS_INDICATORS.charAt(status >> (type * 2) & 3))).setStyle(Style.EMPTY.withFont(UIHelper.UI_FONT));
     }
 
     public Component getTooltipFor(int i) {
