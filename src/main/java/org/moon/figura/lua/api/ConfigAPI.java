@@ -267,7 +267,8 @@ public class ConfigAPI {
             loaded = true;
         }
 
-        luaTable.set(key, val == null ? LuaValue.NIL : val);
+        val = val != null && (val.isboolean() || val.isstring() || val.isnumber() || val.istable() || val.isuserdata(FiguraVector.class) || val.isuserdata(FiguraMatrix.class)) ? val : LuaValue.NIL;
+        luaTable.set(key, val);
         write();
     }
 

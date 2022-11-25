@@ -118,3 +118,11 @@ Donate:
 
 * Are you new to Figura and is looking for a video tutorial about how... everything works?
   you should probably watch Chloe's [Figura tutorial series](https://www.youtube.com/playlist?list=PLNz7v2g2SFA8lOQUDS4z4-gIDLi_dWAhl) on YouTube
+
+
+* Wish there was a wiki for the rewrite?
+  Slyme has an [unofficial wiki](https://github.com/Slymeball/figura-wiki/wiki) covering most of Figura's basics
+
+
+* Do you use VSCode and wish there was Figura's autocomplete and documentation inside the editor?
+  GrandpaScout has made it for you with their [VSDocs](https://github.com/GrandpaScout/FiguraRewriteVSDocs/wiki)
