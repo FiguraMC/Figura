@@ -109,6 +109,14 @@ public class NetworkStuff {
         }
     }
 
+    private static boolean checkUUID(UUID id) {
+        if (id.version() != 4) {
+            FiguraMod.debug("Voiding request for non v4 UUID \"" + id + "\" (v" + id.version() + ")");
+            return true;
+        }
+        return false;
+    }
+
 
     // -- token -- //
 
@@ -228,6 +236,9 @@ public class NetworkStuff {
     }
 
     public static void getUser(UserData user) {
+        if (checkUUID(user.id))
+            return;
+
         queueString(user.id, api -> api.getUser(user.id), (code, data) -> {
             //debug
             responseDebug("getUser", code, data);
@@ -343,6 +354,9 @@ public class NetworkStuff {
     }
 
     public static void getAvatar(UserData target, UUID owner, String id, String hash) {
+        if (checkUUID(target.id))
+            return;
+
         queueStream(target.id, api -> api.getAvatar(owner, id), (code, stream) -> {
             String s;
             try {
@@ -403,25 +417,31 @@ public class NetworkStuff {
     }
 
     public static void subscribe(UUID id) {
+        if (checkUUID(id))
+            return;
+
         WS_REQUESTS.add(new Request<>(Util.NIL_UUID, client -> {
             try {
                 ByteBuffer buffer = C2SMessageHandler.sub(id);
                 client.send(buffer);
                 if (debug) FiguraMod.debug("Subbed to " + id);
             } catch (Exception e) {
-                FiguraMod.LOGGER.error("Failed to subscribe to " + id.toString(), e);
+                FiguraMod.LOGGER.error("Failed to subscribe to " + id, e);
             }
         }));
     }
 
     public static void unsubscribe(UUID id) {
+        if (checkUUID(id))
+            return;
+
         WS_REQUESTS.add(new Request<>(Util.NIL_UUID, client -> {
             try {
                 ByteBuffer buffer = C2SMessageHandler.unsub(id);
                 client.send(buffer);
                 if (debug) FiguraMod.debug("Unsubbed to " + id);
             } catch (Exception e) {
-                FiguraMod.LOGGER.error("Failed to unsubscribe to " + id.toString(), e);
+                FiguraMod.LOGGER.error("Failed to unsubscribe to " + id, e);
             }
         }));
     }

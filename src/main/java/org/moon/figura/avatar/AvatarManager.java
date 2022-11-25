@@ -152,11 +152,6 @@ public class AvatarManager {
         UserData user = LOADED_USERS.get(id);
         if (user != null) user.clear();
 
-        if (id.version() != 4) {
-            FiguraMod.debug("Voiding request for non UUID v4 of user \"" + id + "\"");
-            return;
-        }
-
         NetworkStuff.clear(id);
         NetworkStuff.unsubscribe(id);
         FiguraMod.debug("Cleared avatars of " + id);
@@ -212,11 +207,6 @@ public class AvatarManager {
         FETCHED_USERS.add(id);
 
         UserData user = LOADED_USERS.computeIfAbsent(id, UserData::new);
-
-        if (id.version() != 4) {
-            FiguraMod.debug("Voiding request for non UUID v4 of user \"" + id + "\"");
-            return;
-        }
 
         FiguraMod.debug("Getting userdata for " + id);
         NetworkStuff.getUser(user);
