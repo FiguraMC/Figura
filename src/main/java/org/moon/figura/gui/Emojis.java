@@ -35,6 +35,10 @@ public class Emojis {
         put("coffee", "☕"); put("java", "☕");
         put("lobster", "\uD83E\uDD9E");
         put("troll", "\uD83D\uDC7A"); put("trol", "\uD83D\uDC7A");
+        put("nini", "\uD83D\uDCA4"); put("sleep", "\uD83D\uDCA4");
+        put("skull", "\uD83D\uDC80"); put("forgor", "\uD83D\uDC80");
+        put("cookie", "\uD83C\uDF6A");
+        put("this", "\uD83D\uDD3A");
     }};
 
     public static Component applyEmojis(Component text) {
