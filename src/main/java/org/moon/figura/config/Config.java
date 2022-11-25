@@ -136,6 +136,7 @@ public enum Config {
             TrustManager.saveToDisk();
         }
     },
+    CHAT_EMOJIS(false),
     EASTER_EGGS(true),
 
     Dev {{this.name = this.name.copy().withStyle(ChatFormatting.RED);}},

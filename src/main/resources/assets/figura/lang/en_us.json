@@ -108,10 +108,6 @@
   "figura.badges.pride.pride": "Pride Mark!",
   "figura.badges.pride.transgender": "Transgender Mark!",
 
-  "figura.badges.special.burger": "Yummy!",
-  "figura.badges.special.shrimp": "As shrimple as that!",
-  "figura.badges.special.moon": "Kingdom Of The Moon ☽",
-  "figura.badges.special.shadow": "...",
   "figura.badges.special.translator": "Translator!",
   "figura.badges.special.donator": "Thank you for supporting the Figura mod!",
   "figura.badges.special.contest": "GG!",
@@ -381,11 +377,14 @@
   "figura.config.update_channel.2": "Releases (Stable)",
   "figura.config.update_channel.3": "Pre-releases (Unstable)",
 
-  "figura.config.easter_eggs": "Enable Easter eggs",
-  "figura.config.easter_eggs.tooltip": "Toggles fun and unexpected aspects of Figura (boring!)",
-
   "figura.config.default_trust": "Default Trust Level",
   "figura.config.default_trust.tooltip": "Changes the default trust level that new players will be assigned into",
+
+  "figura.config.chat_emojis": "Chat Emojis",
+  "figura.config.chat_emojis.tooltip": "Toggles the emoji parsing on chat messages, that converts \":emoji_name:\" into emojis",
+
+  "figura.config.easter_eggs": "Enable Easter eggs",
+  "figura.config.easter_eggs.tooltip": "Toggles fun and unexpected aspects of Figura (boring!)",
 
 
   "figura.config.dev": "Dev",

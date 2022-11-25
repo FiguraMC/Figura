@@ -13,7 +13,6 @@
       "ascent": 8,
       "chars": [
         "△❗❌\uD83E\uDDC0",
-        "\uD83C\uDF54\uD83E\uDD90\uD83C\uDF19\uD83C\uDF00",
         "☄❤☆★"
       ]
     },
@@ -31,21 +30,6 @@
     },
     {
       "type": "bitmap",
-      "file": "figura:font/stuff.png",
-      "ascent": 8,
-      "chars": [
-        "ඞ\uD83D\uDD25\uD83C\uDF31\uD83C\uDFA9",
-        "\uD83C\uDF7C\uD83C\uDF5E\uD83E\uDD5A\uD83C\uDF70"
-      ]
-    },
-    {
-      "type": "bitmap",
-      "file": "figura:font/arrows.png",
-      "ascent": 8,
-      "chars": [">V<^"]
-    },
-    {
-      "type": "bitmap",
       "file": "figura:font/loading.png",
       "ascent": 8,
       "chars": [
@@ -54,13 +38,6 @@
         "89ab",
         "cdef"
       ]
-    },
-    {
-      "type": "bitmap",
-      "file": "figura:font/status.png",
-      "ascent": 8,
-      "height": 10,
-      "chars": ["-*/+="]
     }
   ]
 }

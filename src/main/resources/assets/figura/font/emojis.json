@@ -1,0 +1,22 @@
+{
+  "providers": [
+    {
+      "type": "space",
+      "advances": {
+        " ": 4,
+        "\u200C": 0
+      }
+    },
+    {
+      "type": "bitmap",
+      "file": "figura:font/emojis.png",
+      "ascent": 8,
+      "chars": [
+        "ඞ\uD83D\uDD25\uD83C\uDF31\uD83C\uDFA9",
+        "\uD83C\uDF7C\uD83C\uDF5E\uD83E\uDD5A\uD83C\uDF70",
+        "\uD83C\uDF54\uD83E\uDD90\uD83C\uDF19\uD83C\uDF00",
+        "\uD83D\uDCB5☕\uD83E\uDD9E\uD83D\uDC7A"
+      ]
+    }
+  ]
+}

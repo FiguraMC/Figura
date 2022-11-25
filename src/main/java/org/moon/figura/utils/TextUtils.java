@@ -7,7 +7,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 
 import java.util.ArrayList;
@@ -17,14 +16,9 @@ import java.util.function.BiPredicate;
 
 public class TextUtils {
 
-    public static final ResourceLocation FIGURA_FONT = new FiguraIdentifier("default");
     public static final Component TAB = FiguraText.of("tab");
     public static final Component ELLIPSIS = FiguraText.of("ellipsis");
     public static final Component UNKNOWN = Component.literal("�").withStyle(Style.EMPTY.withFont(Style.DEFAULT_FONT));
-
-    public static Component noBadges4U(Component text) {
-        return replaceInText(text, "[❗❌\uD83C\uDF54\uD83E\uDD90\uD83C\uDF19\uD83C\uDF00☄❤☆★]", UNKNOWN, (s, style) -> style.getFont().equals(FIGURA_FONT));
-    }
 
     public static List<Component> splitText(Component text, String regex) {
         //list to return

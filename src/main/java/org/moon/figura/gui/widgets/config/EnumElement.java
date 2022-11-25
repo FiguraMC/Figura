@@ -12,7 +12,6 @@ import org.moon.figura.config.Config;
 import org.moon.figura.gui.widgets.ContextMenu;
 import org.moon.figura.gui.widgets.ParentedButton;
 import org.moon.figura.gui.widgets.lists.ConfigList;
-import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.ui.UIHelper;
 
 import java.util.List;
@@ -44,7 +43,7 @@ public class EnumElement extends AbstractConfigElement {
 
                 //draw arrow
                 Font font = Minecraft.getInstance().font;
-                Component arrow = Component.literal(context.isVisible() ? "V" : "^").setStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT));
+                Component arrow = Component.literal(context.isVisible() ? "V" : "^").setStyle(Style.EMPTY.withFont(UIHelper.UI_FONT));
                 font.drawShadow(
                         stack, arrow,
                         this.x + this.width - font.width(arrow) - 3, this.y + this.height / 2 - font.lineHeight / 2,
