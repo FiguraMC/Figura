@@ -1,12 +1,15 @@
 package org.moon.figura.model.rendertasks;
 
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
-import org.moon.figura.model.PartCustomization;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.model.PartCustomization;
 import org.moon.figura.utils.LuaUtils;
 
 @LuaWhitelist
@@ -17,7 +20,8 @@ import org.moon.figura.utils.LuaUtils;
 public abstract class RenderTask {
 
     protected boolean enabled = true;
-    protected boolean emissive = false;
+    protected Integer light = null;
+    protected Integer overlay = null;
     protected final FiguraVec3 pos = FiguraVec3.of();
     protected final FiguraVec3 rot = FiguraVec3.of();
     protected final FiguraVec3 scale = FiguraVec3.of(1, 1, 1);
@@ -54,21 +58,62 @@ public abstract class RenderTask {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("render_task.is_emissive")
-    public boolean isEmissive() {
-        return this.emissive;
+    @LuaMethodDoc("render_task.get_light")
+    public FiguraVec2 getLight() {
+        return light == null ? null : FiguraVec2.of(LightTexture.block(light), LightTexture.sky(light));
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaMethodOverload(
-                    argumentTypes = Boolean.class,
-                    argumentNames = "bool"
-            ),
-            value = "render_task.emissive"
-    )
-    public RenderTask emissive(boolean emissive) {
-        this.emissive = emissive;
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = FiguraVec2.class,
+                            argumentNames = "light"
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {Integer.class, Integer.class},
+                            argumentNames = {"blockLight", "skyLight"}
+                    )
+            },
+            value = "render_task.light")
+    public RenderTask light(Object blockLight, Double skyLight) {
+        if (blockLight == null) {
+            light = null;
+            return this;
+        }
+
+        FiguraVec2 lightVec = LuaUtils.parseVec2("light", blockLight, skyLight);
+        light = LightTexture.pack((int) lightVec.x, (int) lightVec.y);
+        return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("render_task.get_overlay")
+    public FiguraVec2 getOverlay() {
+        return overlay == null ? null : FiguraVec2.of(overlay & 0xFFFF, overlay >> 16);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = FiguraVec2.class,
+                            argumentNames = "overlay"
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {Integer.class, Integer.class},
+                            argumentNames = {"whiteOverlay", "hurtOverlay"}
+                    )
+            },
+            value = "render_task.overlay")
+    public RenderTask overlay(Object whiteOverlay, Double hurtOverlay) {
+        if (whiteOverlay == null) {
+            overlay = null;
+            return this;
+        }
+
+        FiguraVec2 overlayVec = LuaUtils.parseVec2("overlay", whiteOverlay, hurtOverlay);
+        overlay = OverlayTexture.pack((int) overlayVec.x, (int) overlayVec.y);
         return this;
     }
 
