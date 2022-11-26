@@ -1,12 +1,20 @@
 package org.moon.figura.gui;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.Resource;
+import org.moon.figura.FiguraMod;
 import org.moon.figura.utils.FiguraIdentifier;
+import org.moon.figura.utils.FiguraResourceListener;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -18,28 +26,33 @@ public class Emojis {
     public static final String suffix = ":";
 
     private static final Style STYLE = Style.EMPTY.withColor(ChatFormatting.WHITE).withFont(FONT);
-    private static final Map<String, String> EMOJI_MAP = new HashMap<>() {{
-        put("amongus", "ඞ");
-        put("burned", "\uD83D\uDD25");
-        put("plant", "\uD83C\uDF31");
-        put("hat", "\uD83C\uDFA9"); put("gn", "\uD83C\uDFA9");
-        put("ranch", "\uD83C\uDF7C");
-        put("toast", "\uD83C\uDF5E");
-        put("egg", "\uD83E\uDD5A"); put("ovo", "\uD83E\uDD5A");
-        put("cake", "\uD83C\uDF70");
-        put("burger", "\uD83C\uDF54"); put("hamburger", "\uD83C\uDF54");
-        put("shrimp", "\uD83E\uDD90");
-        put("moon", "\uD83C\uDF19"); put("kotm", "\uD83C\uDF19"); put("lua", "\uD83C\uDF19");
-        put("darkness", "\uD83C\uDF00"); put("shadow", "\uD83C\uDF00");
-        put("money", "\uD83D\uDCB5"); put("dollar", "\uD83D\uDCB5"); put("cash", "\uD83D\uDCB5");
-        put("coffee", "☕"); put("java", "☕");
-        put("lobster", "\uD83E\uDD9E");
-        put("troll", "\uD83D\uDC7A"); put("trol", "\uD83D\uDC7A");
-        put("nini", "\uD83D\uDCA4"); put("sleep", "\uD83D\uDCA4");
-        put("skull", "\uD83D\uDC80"); put("forgor", "\uD83D\uDC80");
-        put("cookie", "\uD83C\uDF6A");
-        put("this", "\uD83D\uDD3A");
-    }};
+    private static final Map<String, String> EMOJI_MAP = new HashMap<>();
+
+    //listener to load emojis from the resource pack
+    public static final FiguraResourceListener RESOURCE_LISTENER = new FiguraResourceListener("emojis", manager -> {
+        //clear old list
+        EMOJI_MAP.clear();
+
+        //get the resource
+        Optional<Resource> optional = manager.getResource(new FiguraIdentifier("emojis.json"));
+        if (optional.isEmpty())
+            return;
+
+        //open the resource as json
+        try (InputStream stream = optional.get().open()) {
+            //read a pair or String, List<String> from this json
+            JsonObject json = JsonParser.parseReader(new InputStreamReader(stream)).getAsJsonObject();
+            for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
+                //the emoji is the value
+                String emoji = entry.getKey();
+                //and each element will be the key inside the emoji map
+                for (JsonElement element : entry.getValue().getAsJsonArray())
+                    EMOJI_MAP.put(element.getAsString(), emoji);
+            }
+        } catch (Exception e) {
+            FiguraMod.LOGGER.error("Failed to load emojis", e);
+        }
+    });
 
     public static Component applyEmojis(Component text) {
         MutableComponent ret = Component.empty();
