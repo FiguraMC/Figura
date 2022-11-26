@@ -24,6 +24,7 @@ import org.moon.figura.commands.FiguraCommands;
 import org.moon.figura.config.Config;
 import org.moon.figura.config.ConfigManager;
 import org.moon.figura.gui.ActionWheel;
+import org.moon.figura.gui.Emojis;
 import org.moon.figura.gui.PaperDoll;
 import org.moon.figura.gui.PopupMenu;
 import org.moon.figura.lua.FiguraAPIManager;
@@ -73,7 +74,7 @@ public class FiguraMod implements ClientModInitializer {
         WorldRenderEvents.END.register(levelRenderer -> AvatarManager.afterWorldRender(levelRenderer.tickDelta()));
         WorldRenderEvents.AFTER_ENTITIES.register(FiguraMod::renderFirstPersonWorldParts);
         HudRenderCallback.EVENT.register(FiguraMod::hudRender);
-        ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(LocalAvatarLoader.AVATAR_LISTENER);
+        registerResourceListener(ResourceManagerHelper.get(PackType.CLIENT_RESOURCES));
     }
 
     private static void tick(Minecraft client) {
@@ -100,6 +101,11 @@ public class FiguraMod implements ClientModInitializer {
         PaperDoll.render(stack);
         ActionWheel.render(stack);
         PopupMenu.render(stack);
+    }
+
+    private static void registerResourceListener(ResourceManagerHelper managerHelper) {
+        managerHelper.registerReloadListener(LocalAvatarLoader.AVATAR_LISTENER);
+        managerHelper.registerReloadListener(Emojis.RESOURCE_LISTENER);
     }
 
     // -- Helper Functions -- //
