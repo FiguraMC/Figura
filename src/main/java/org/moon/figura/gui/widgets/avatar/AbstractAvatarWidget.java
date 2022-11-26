@@ -86,7 +86,7 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
     }
 
     public void updateName() {
-        this.button.setMessage(Component.literal("  ".repeat(depth)).append(getName()));
+        this.button.setMessage(new TextComponent("  ".repeat(depth)).append(getName()));
     }
 
     public Component getName() {

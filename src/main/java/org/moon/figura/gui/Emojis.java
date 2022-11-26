@@ -7,6 +7,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import org.moon.figura.FiguraMod;
@@ -33,13 +34,12 @@ public class Emojis {
         //clear old list
         EMOJI_MAP.clear();
 
-        //get the resource
-        Optional<Resource> optional = manager.getResource(new FiguraIdentifier("emojis.json"));
-        if (optional.isEmpty())
-            return;
+        try {
+            //get the resource
+            Resource resource = manager.getResource(new FiguraIdentifier("emojis.json"));
 
-        //open the resource as json
-        try (InputStream stream = optional.get().open()) {
+            //open the resource as json
+            InputStream stream = resource.getInputStream();
             //read a pair or String, List<String> from this json
             JsonObject json = JsonParser.parseReader(new InputStreamReader(stream)).getAsJsonObject();
             for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
@@ -49,13 +49,15 @@ public class Emojis {
                 for (JsonElement element : entry.getValue().getAsJsonArray())
                     EMOJI_MAP.put(element.getAsString(), emoji);
             }
+
+            stream.close();
         } catch (Exception e) {
             FiguraMod.LOGGER.error("Failed to load emojis", e);
         }
     });
 
     public static Component applyEmojis(Component text) {
-        MutableComponent ret = Component.empty();
+        MutableComponent ret = TextComponent.EMPTY.copy();
         text.visit((style, string) -> {
             ret.append(convertEmoji(string, style));
             return Optional.empty();
@@ -74,13 +76,13 @@ public class Emojis {
             if (emoji == null)
                 break emoji;
 
-            MutableComponent newText = Component.literal(pre[0]).withStyle(style).append(Component.literal(emoji).withStyle(STYLE));
+            MutableComponent newText = new TextComponent(pre[0]).withStyle(style).append(new TextComponent(emoji).withStyle(STYLE));
             if (pos.length > 1)
                 newText.append(convertEmoji(pos[1], style));
 
             return newText;
         }
 
-        return Component.literal(string).withStyle(style);
+        return new TextComponent(string).withStyle(style);
     }
 }
