@@ -2,19 +2,18 @@ package org.moon.figura.model.rendertasks;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import org.luaj.vm2.LuaError;
-import org.moon.figura.model.PartCustomization;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.world.ItemStackAPI;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.model.PartCustomization;
 import org.moon.figura.utils.LuaUtils;
 
 @LuaWhitelist
@@ -41,7 +40,7 @@ public class ItemTask extends RenderTask {
         Minecraft.getInstance().getItemRenderer().renderStatic(
                 null, item, renderType, left,
                 poseStack, buffer, null,
-                emissive ? LightTexture.FULL_BRIGHT : light, overlay, 0);
+                this.light != null ? this.light : light, this.overlay != null ? this.overlay : overlay, 0);
 
         stack.pop();
         return true;
