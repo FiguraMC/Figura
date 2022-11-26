@@ -35,17 +35,19 @@ public abstract class SkullBlockRendererMixin implements BlockEntityRenderer<Sku
 
     @Inject(at = @At("HEAD"), method = "renderSkull", cancellable = true)
     private static void renderSkull(Direction direction, float yaw, float animationProgress, PoseStack stack, MultiBufferSource bufferSource, int light, SkullModelBase model, RenderType renderLayer, CallbackInfo ci) {
-        if (avatar == null || avatar.trust.get(Trust.CUSTOM_HEADS) == 0)
-            return;
-
-        Avatar localAvatar = avatar;
-        avatar = null;
-
+        //parse block and items first, so we can yeet them in case of a missed event
         SkullBlockEntity localBlock = block;
         block = null;
 
         ItemStack localItem = SkullBlockRendererAccessor.getReferenceItem();
         SkullBlockRendererAccessor.setReferenceItem(null);
+
+        //avatar
+        Avatar localAvatar = avatar;
+        avatar = null;
+
+        if (localAvatar == null || localAvatar.trust.get(Trust.CUSTOM_HEADS) == 0)
+            return;
 
         //event
         BlockStateAPI b = localBlock == null ? null : new BlockStateAPI(localBlock.getBlockState(), localBlock.getBlockPos());
