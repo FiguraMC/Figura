@@ -8,6 +8,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import org.jetbrains.annotations.Nullable;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
@@ -16,6 +17,7 @@ import org.moon.figura.config.Config;
 import org.moon.figura.gui.ActionWheel;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.PopupMenu;
+import org.moon.figura.gui.screens.WardrobeScreen;
 import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.lua.api.particle.ParticleAPI;
 import org.moon.figura.lua.api.sound.SoundAPI;
@@ -36,6 +38,8 @@ public abstract class MinecraftMixin {
     @Shadow @Final public Options options;
     @Shadow public LocalPlayer player;
     @Shadow public Entity cameraEntity;
+
+    @Shadow public abstract void setScreen(@Nullable Screen screen);
 
     @Unique
     private boolean scriptMouseUnlock = false;
@@ -60,6 +64,10 @@ public abstract class MinecraftMixin {
             AvatarManager.reloadAvatar(FiguraMod.getLocalPlayerUUID());
             FiguraToast.sendToast(FiguraText.of("toast.reload"));
         }
+
+        //reload avatar button
+        if (Config.WARDROBE_BUTTON.keyBind.consumeClick())
+            this.setScreen(new WardrobeScreen(null));
 
         //action wheel button
         Boolean wheel = null;
