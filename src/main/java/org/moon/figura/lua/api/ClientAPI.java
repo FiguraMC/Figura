@@ -4,6 +4,8 @@ import com.mojang.blaze3d.platform.Window;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
+import net.minecraft.client.multiplayer.ServerData;
+import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.repository.Pack;
@@ -23,9 +25,7 @@ import org.moon.figura.utils.MathUtils;
 import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.Version;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -331,6 +331,29 @@ public class ClientAPI {
     @LuaMethodDoc("client.get_viewer")
     public static EntityAPI<?> getViewer() {
         return PlayerAPI.wrap(Minecraft.getInstance().player);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("client.get_server_data")
+    public static Map<String, String> getServerData() {
+        Map<String, String> list = new HashMap<>();
+
+        IntegratedServer iServer = Minecraft.getInstance().getSingleplayerServer();
+        if (iServer != null) {
+            list.put("name", iServer.getWorldData().getLevelName());
+            list.put("ip", iServer.getLocalIp());
+            list.put("motd", iServer.getMotd());
+            return list;
+        }
+
+        ServerData mServer = Minecraft.getInstance().getCurrentServer();
+        if (mServer != null) {
+            list.put("name", mServer.name);
+            list.put("ip", mServer.ip);
+            list.put("motd", mServer.motd.getString());
+        }
+
+        return list;
     }
 
     @Override
