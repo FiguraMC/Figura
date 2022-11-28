@@ -16,6 +16,7 @@ import org.moon.figura.utils.TextUtils;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -44,7 +45,7 @@ public class Emojis {
 
         //open the resource as json
         try (InputStream stream = optional.get().open()) {
-            JsonObject root = JsonParser.parseReader(new InputStreamReader(stream)).getAsJsonObject();
+            JsonObject root = JsonParser.parseReader(new InputStreamReader(stream, StandardCharsets.UTF_8)).getAsJsonObject();
 
             //read the prefix and suffix
             prefix = root.get("prefix").getAsString();
