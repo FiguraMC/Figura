@@ -361,6 +361,9 @@
   "figura.config.panic_button": "Panic Button",
   "figura.config.panic_button.tooltip": "Stop the rendering of all avatars",
 
+  "figura.config.wardrobe_button": "Wardrobe Button",
+  "figura.config.wardrobe_button.tooltip": "Opens the Figura Wardrobe screen",
+
   "figura.config.button_location": "Menu Button Location",
   "figura.config.button_location.tooltip": "Location of the figura button",
   "figura.config.button_location.1": "Icon",

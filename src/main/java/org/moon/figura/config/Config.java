@@ -115,6 +115,7 @@ public enum Config {
     POPUP_BUTTON("key.keyboard.r"),
     RELOAD_BUTTON("key.keyboard.unknown"),
     PANIC_BUTTON("key.keyboard.unknown"),
+    WARDROBE_BUTTON("key.keyboard.unknown"),
     BUTTON_LOCATION(0, 5),
     UPDATE_CHANNEL(1, 3) {
         @Override
