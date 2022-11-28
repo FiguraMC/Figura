@@ -535,9 +535,8 @@
   "figura.docs.action_wheel.get_current_page": "Returns the current set Page from the Action Wheel, or NIL if no Page has been set.",
 
   "figura.docs.wheel_page": "An Action Wheel container which is used to store up to 8 actions.",
-  "figura.docs.wheel_page.new_action": "Adds a new Action on the selected Page's index. If no index is given it is added in the first available index.",
+  "figura.docs.wheel_page.new_action": "Adds a new Action on the selected Page's index. If no index is given it is added in the first available index. An Action can be given as first argument, to act as a replace/set function, where the second argument will then be used for its index.",
   "figura.docs.wheel_page.get_action": "Gets an Action from the Page's given index.",
-  "figura.docs.wheel_page.set_action": "Sets an Action in the Page's given index.",
 
   "figura.docs.wheel_action": "An action in the Figura Action Wheel. Actions are either interacted by clicking and scrolling, which also being able to be toggleable.",
   "figura.docs.wheel_action.left_click": "Function that is executed when the left mouse button is clicked.",
