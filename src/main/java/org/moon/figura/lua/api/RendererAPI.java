@@ -24,7 +24,7 @@ public class RendererAPI {
 
     private final UUID owner;
 
-    public Float shadowRadius;
+    public Float shadowRadius, fov;
 
     @LuaWhitelist
     @LuaFieldDoc("renderer.render_fire")
@@ -218,6 +218,27 @@ public class RendererAPI {
     )
     public void setPostEffect(String effect) {
         this.postShader = effect == null ? null : new ResourceLocation("shaders/post/" + effect.toLowerCase() + ".json");
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload,
+                    @LuaMethodOverload(
+                            argumentTypes = Float.class,
+                            argumentNames = "fov"
+                    )
+            },
+            value = "renderer.set_fov"
+    )
+    public void setFOV(Float fov) {
+        this.fov = fov;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("renderer.get_fov")
+    public Float getFOV() {
+        return this.fov;
     }
 
     @LuaWhitelist
