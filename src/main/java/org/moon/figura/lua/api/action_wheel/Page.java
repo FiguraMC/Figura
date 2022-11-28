@@ -43,7 +43,7 @@ public class Page {
 
         //if failed to find a null slot, that means the page is full
         if (index == -1)
-            throw new LuaError("Pages have a limit of 8 actions!");
+            throw new LuaError("Reached page limit of 8 actions!");
 
         return index;
     }
@@ -55,27 +55,13 @@ public class Page {
                     @LuaMethodOverload(
                             argumentTypes = Integer.class,
                             argumentNames = "index"
-                    ),
-                    @LuaMethodOverload(
-                            argumentTypes = {Action.class, Integer.class},
-                            argumentNames = {"action", "index"}
                     )
             },
             value = "wheel_page.new_action"
     )
-    public Action newAction(Object x, Integer y) {
-        Action action;
-        Integer index;
-
-        if (x instanceof Action a) {
-            action = a;
-            index = y;
-        } else {
-            action = new Action();
-            index = x instanceof Number n ? n.intValue() : null;
-        }
-
+    public Action newAction(Integer index) {
         //set the action
+        Action action = new Action();
         this.actions[this.checkIndex(index)] = action;
 
         //return the action
@@ -94,6 +80,22 @@ public class Page {
         if (index < 1 || index > 8)
             throw new LuaError("Index must be between 1 and 8!");
         return this.actions[index - 1];
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = {Integer.class, Action.class},
+                    argumentNames = {"index", "action"}
+            ),
+            value = "wheel_page.set_action"
+    )
+    public void setAction(int index, Action action) {
+        if (index == -1)
+            index = this.checkIndex(null) + 1; //"why just not accept null" you might say, because -1 is more elegant for this, as it will return the latest available index
+        else if (index < 1 || index > 8)
+            throw new LuaError("Index must be between 1 and 8!");
+        this.actions[index - 1] = action;
     }
 
     @Override
