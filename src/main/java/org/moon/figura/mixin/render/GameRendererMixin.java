@@ -36,6 +36,8 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
     @Shadow protected abstract void loadEffect(ResourceLocation id);
     @Shadow public abstract void checkEntityPostEffect(Entity entity);
 
+    @Shadow private float fov;
+
     @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setup(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/world/entity/Entity;ZZF)V", shift = At.Shift.BEFORE))
     private void onCameraRotation(float tickDelta, long limitTime, PoseStack matrix, CallbackInfo ci) {
         Avatar avatar = AvatarManager.getAvatar(this.minecraft.getCameraEntity() == null ? this.minecraft.player : this.minecraft.getCameraEntity());
@@ -114,6 +116,15 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
     private void posRenderItemInHand(PoseStack matrices, Camera camera, float tickDelta, CallbackInfo ci) {
         if (avatar != null)
             avatar.postRenderEvent(tickDelta);
+    }
+
+    @Inject(method = "tickFov", at = @At("RETURN"))
+    private void tickFov(CallbackInfo ci) {
+        Avatar avatar = AvatarManager.getAvatar(this.minecraft.getCameraEntity());
+        if (avatar != null && avatar.luaRuntime != null && avatar.trust.get(Trust.VANILLA_MODEL_EDIT) == 1) {
+            Float fov = avatar.luaRuntime.renderer.fov;
+            if (fov != null) this.fov = fov;
+        }
     }
 
     @Override @Intrinsic

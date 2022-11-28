@@ -1103,7 +1103,7 @@
   "figura.docs.renderer.render_crosshair": "Toggles whether or not if your crosshair should render. True by default.",
   "figura.docs.renderer.force_paperdoll": "Toggles if the paperdoll should render regardless of the player doing an action. If the paperdoll is disabled, or set to always render, nothing will change. False by default.",
   "figura.docs.renderer.set_shadow_radius": "Sets the radius of your shadow. The default value is nil, which means to use the vanilla default of 0.5 for players. The maximum value is 12.",
-  "figura.docs.renderer.get_shadow_radius": "Gets the radius of your shadow. The default value is nil, which means to use the vanilla default of 0.5 for players.",
+  "figura.docs.renderer.get_shadow_radius": "Gets the radius of your shadow.",
   "figura.docs.renderer.is_first_person": "Checks if your camera is in the first person view.",
   "figura.docs.renderer.is_camera_backwards": "Checks if your camera is in the backwards third person view.",
   "figura.docs.renderer.get_camera_pos": "Gets the position offset for the camera.",
@@ -1117,6 +1117,8 @@
   "figura.docs.renderer.get_camera_offset_rot": "Gets the offset rotation for the camera.",
   "figura.docs.renderer.offset_camera_rot": "Sets the offset rotation for the camera. Nil values for rotation are assumed to be 0. Angles are given in degrees. For absolute rotation values, check out the non-offset rot function.",
   "figura.docs.renderer.set_post_effect": "Sets the current rendering effect. Same as the discontinued Super Secret Settings.",
+  "figura.docs.renderer.set_fov": "Sets the multiplier of your fov. The default value is nil, which means no changes will be applied to your fov.",
+  "figura.docs.renderer.get_fov": "Gets the multiplier of your fov.",
 
 
   "figura.docs.sounds": "A global API which is used to play Minecraft sounds. Accessed using the name \"sounds\".",
