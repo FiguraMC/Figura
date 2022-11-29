@@ -202,11 +202,30 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         custom.visible = part.getVisible() && thisPassedPredicate;
         custom.recalculate();
 
+        //void blocked matrices
+        //that's right, check only for previous predicate
+        FiguraMat4 positionCopy = null;
+        FiguraMat3 normalCopy = null;
+        boolean voidMatrices = !allowHiddenTransforms && !prevPredicate;
+        if (voidMatrices) {
+            positionCopy = custom.positionMatrix.copy();
+            normalCopy = custom.normalMatrix.copy();
+            custom.positionMatrix.reset();
+            custom.normalMatrix.reset();
+        }
+
         //push stack
         customizationStack.push(custom);
 
         //restore variables
         custom.visible = storedVisibility;
+
+        if (voidMatrices) {
+            custom.positionMatrix.set(positionCopy);
+            custom.normalMatrix.set(normalCopy);
+            positionCopy.free();
+            normalCopy.free();
+        }
 
         if (thisPassedPredicate) {
             //recalculate world matrices
@@ -227,14 +246,6 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
                 customizationStack.peek().light = LightTexture.pack(block, sky);
                 pos.free();
             }
-        }
-
-        //void blocked matrices
-        //that's right, check only for previous predicate
-        if (!allowHiddenTransforms && !prevPredicate) {
-            PartCustomization peek = customizationStack.peek();
-            peek.positionMatrix.reset();
-            peek.normalMatrix.reset();
         }
 
         //render this
