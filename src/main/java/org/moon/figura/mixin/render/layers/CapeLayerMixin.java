@@ -9,6 +9,9 @@ import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.CapeLayer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.ducks.PlayerModelAccessor;
@@ -30,8 +33,12 @@ public abstract class CapeLayerMixin extends RenderLayer<AbstractClientPlayer, P
     private Avatar avatar;
 
     @Inject(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/player/AbstractClientPlayer;FFFFFF)V", at = @At("HEAD"))
-    public void preRender(PoseStack poseStack, MultiBufferSource multiBufferSource, int i, AbstractClientPlayer abstractClientPlayer, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
-        avatar = AvatarManager.getAvatar(abstractClientPlayer);
+    private void preRender(PoseStack poseStack, MultiBufferSource multiBufferSource, int light, AbstractClientPlayer entity, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch, CallbackInfo ci) {
+        ItemStack itemStack = entity.getItemBySlot(EquipmentSlot.CHEST);
+        if (entity.isInvisible() || itemStack.is(Items.ELYTRA))
+            return;
+
+        avatar = AvatarManager.getAvatar(entity);
         if (avatar == null || avatar.luaRuntime == null)
             return;
 
@@ -40,35 +47,28 @@ public abstract class CapeLayerMixin extends RenderLayer<AbstractClientPlayer, P
         ModelPart realCloak = ((PlayerModelAccessor) getParentModel()).figura$getCloak();
 
         //Do math for fake cloak
-        fakeCloak.x = realCloak.x;
-        fakeCloak.y = realCloak.y;
-        fakeCloak.z = realCloak.z;
+        fakeCloak.copyFrom(realCloak);
 
         //REFERENCED FROM CODE IN CapeLayer (CapeFeatureRenderer for Yarn)
-        double d = Mth.lerp(h, abstractClientPlayer.xCloakO, abstractClientPlayer.xCloak) - Mth.lerp(h, abstractClientPlayer.xo, abstractClientPlayer.getX());
-        double e = Mth.lerp(h, abstractClientPlayer.yCloakO, abstractClientPlayer.yCloak) - Mth.lerp(h, abstractClientPlayer.yo, abstractClientPlayer.getY());
-        double m = Mth.lerp(h, abstractClientPlayer.zCloakO, abstractClientPlayer.zCloak) - Mth.lerp(h, abstractClientPlayer.zo, abstractClientPlayer.getZ());
+        double d = Mth.lerp(tickDelta, entity.xCloakO, entity.xCloak) - Mth.lerp(tickDelta, entity.xo, entity.getX());
+        double e = Mth.lerp(tickDelta, entity.yCloakO, entity.yCloak) - Mth.lerp(tickDelta, entity.yo, entity.getY());
+        double m = Mth.lerp(tickDelta, entity.zCloakO, entity.zCloak) - Mth.lerp(tickDelta, entity.zo, entity.getZ());
         //Change n to use lerp, to "fix" https://bugs.mojang.com/browse/MC-127749
         //float n = abstractClientPlayer.yBodyRotO + (abstractClientPlayer.yBodyRot - abstractClientPlayer.yBodyRotO);
-        float n = Mth.lerp(h, abstractClientPlayer.yBodyRotO, abstractClientPlayer.yBodyRot);
-        double o = Mth.sin(n * ((float)Math.PI / 180));
-        double p = -Mth.cos(n * ((float)Math.PI / 180));
-        float q = (float)e * 10.0f;
+        float n = Mth.lerp(tickDelta, entity.yBodyRotO, entity.yBodyRot);
+        double o = Mth.sin(n * ((float) Math.PI / 180));
+        double p = -Mth.cos(n * ((float) Math.PI / 180));
+        float q = (float) e * 10.0f;
         q = Mth.clamp(q, -6.0f, 32.0f);
-        float r = (float)(d * o + m * p) * 100.0f;
+        float r = (float) (d * o + m * p) * 100.0f;
         r = Mth.clamp(r, 0.0f, 150.0f);
-        float s = (float)(d * p - m * o) * 100.0f;
+        float s = (float) (d * p - m * o) * 100.0f;
         s = Mth.clamp(s, -20.0f, 20.0f);
         if (r < 0.0f) {
             r = 0.0f;
         }
-        float t = Mth.lerp(h, abstractClientPlayer.oBob, abstractClientPlayer.bob);
-        q += Mth.sin(Mth.lerp(h, abstractClientPlayer.walkDistO, abstractClientPlayer.walkDist) * 6.0f) * 32.0f * t;
-        if (abstractClientPlayer.isCrouching()) {
-            q += 25.0f;
-            fakeCloak.y += 0.5f;
-            fakeCloak.z -= 2;
-        }
+        float t = Mth.lerp(tickDelta, entity.oBob, entity.bob);
+        q += Mth.sin(Mth.lerp(tickDelta, entity.walkDistO, entity.walkDist) * 6.0f) * 32.0f * t;
 
         //Just going to ignore the fact that vanilla uses XZY rotation order for capes...
         //As a result, the cape rotation is slightly off.
@@ -79,9 +79,32 @@ public abstract class CapeLayerMixin extends RenderLayer<AbstractClientPlayer, P
         //close enough.
 
         //If someone wants to spend the time to correct these inaccuracies for us, feel free to make a pull request.
-        fakeCloak.xRot = (float) Math.toRadians(6f + r / 2f + q);
-        fakeCloak.yRot = (float) -Math.toRadians(s / 2f);
-        fakeCloak.zRot = (float) Math.toRadians(s / 2f);
+
+        //pos
+        if (itemStack.isEmpty()) {
+            if (entity.isCrouching()) {
+                q += 25f;
+                fakeCloak.y = 2.25f;
+                fakeCloak.z = -0.25f;
+            } else {
+                fakeCloak.y = 0f;
+                fakeCloak.z = 0f;
+            }
+        } else if (entity.isCrouching()) {
+            q += 25f;
+            fakeCloak.y = 0.85f;
+            fakeCloak.z = 0.15f;
+        } else {
+            fakeCloak.y = -1f;
+            fakeCloak.z = 1f;
+        }
+
+        //rot
+        fakeCloak.setRotation(
+                (float) Math.toRadians(6f + r / 2f + q),
+                (float) -Math.toRadians(s / 2f),
+                (float) Math.toRadians(s / 2f)
+        );
 
         //Copy rotations from fake cloak
         avatar.luaRuntime.vanilla_model.CAPE.store(getParentModel());
@@ -89,10 +112,12 @@ public abstract class CapeLayerMixin extends RenderLayer<AbstractClientPlayer, P
         //Setup visibility for real cloak
         if (avatar.trust.get(Trust.VANILLA_MODEL_EDIT) == 1)
             avatar.luaRuntime.vanilla_model.CAPE.alter(getParentModel());
+
+        avatar.capeRender(entity, multiBufferSource, poseStack, light, tickDelta, fakeCloak);
     }
 
-    @Inject(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/player/AbstractClientPlayer;FFFFFF)V", at = @At("TAIL"))
-    public void postRender(PoseStack poseStack, MultiBufferSource multiBufferSource, int i, AbstractClientPlayer abstractClientPlayer, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
+    @Inject(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/player/AbstractClientPlayer;FFFFFF)V", at = @At("RETURN"))
+    private void postRender(PoseStack poseStack, MultiBufferSource multiBufferSource, int i, AbstractClientPlayer abstractClientPlayer, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
         if (avatar == null)
             return;
 

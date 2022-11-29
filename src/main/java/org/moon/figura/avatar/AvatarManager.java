@@ -100,8 +100,7 @@ public class AvatarManager {
         if (panic || Minecraft.getInstance().level == null)
             return null;
 
-        if (!FETCHED_USERS.contains(player))
-            fetchBackend(player);
+        fetchBackend(player);
 
         UserData user = LOADED_USERS.get(player);
         return user == null ? null : user.getMainAvatar();
@@ -204,6 +203,9 @@ public class AvatarManager {
 
     //get avatar from the backend
     private static void fetchBackend(UUID id) {
+        if (FETCHED_USERS.contains(id))
+            return;
+
         FETCHED_USERS.add(id);
 
         UserData user = LOADED_USERS.computeIfAbsent(id, UserData::new);
