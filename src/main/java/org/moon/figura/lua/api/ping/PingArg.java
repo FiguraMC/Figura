@@ -1,9 +1,6 @@
 package org.moon.figura.lua.api.ping;
 
-import org.luaj.vm2.LuaString;
-import org.luaj.vm2.LuaTable;
-import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.Varargs;
+import org.luaj.vm2.*;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.math.matrix.FiguraMatrix;
@@ -46,8 +43,7 @@ public class PingArg {
 
             return baos.toByteArray();
         } catch (Exception e) {
-            FiguraMod.LOGGER.error("Failed to write ping!", e);
-            return null;
+            throw new LuaError("Failed to write ping! " + e.getMessage());
         }
     }
 

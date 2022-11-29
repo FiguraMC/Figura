@@ -12,10 +12,10 @@ public enum ParentType {
     LeftLeg(VanillaModelProvider.LEFT_LEG, FiguraVec3.of(1.9, 12, 0), "LEFT_LEG"),
     RightLeg(VanillaModelProvider.RIGHT_LEG, FiguraVec3.of(-1.9, 12, 0), "RIGHT_LEG"),
 
-    LeftElytra(VanillaModelProvider.LEFT_ELYTRON, FiguraVec3.of(5, 0, 0), "LEFT_ELYTRA", "LeftElytron", "LEFT_ELYTRON"),
-    RightElytra(VanillaModelProvider.RIGHT_ELYTRON, FiguraVec3.of(-5, 0, 0), "RIGHT_ELYTRA", "RightElytron", "RIGHT_ELYTRON"),
+    LeftElytra(true, VanillaModelProvider.LEFT_ELYTRON, FiguraVec3.of(5, 0, -2), "LEFT_ELYTRA", "LeftElytron", "LEFT_ELYTRON"),
+    RightElytra(true, VanillaModelProvider.RIGHT_ELYTRON, FiguraVec3.of(-5, 0, -2), "RIGHT_ELYTRA", "RightElytron", "RIGHT_ELYTRON"),
 
-    Cape(VanillaModelProvider.FAKE_CAPE, "CAPE"),
+    Cape(true, VanillaModelProvider.FAKE_CAPE, FiguraVec3.of(), "CAPE"),
 
     World(true, false, "WORLD"),
     Hud(true, false, "HUD", "Gui", "GUI"),
@@ -42,7 +42,7 @@ public enum ParentType {
     public final boolean isPivot;
 
     ParentType(String... aliases) {
-        this(false, false, null, aliases);
+        this(false, false, null, FiguraVec3.of(), aliases);
     }
 
     ParentType(VanillaModelProvider provider, String... aliases) {
@@ -50,15 +50,15 @@ public enum ParentType {
     }
 
     ParentType(boolean isSeparate, boolean isPivot, String... aliases) {
-        this(isSeparate, isPivot, null, aliases);
-    }
-
-    ParentType(boolean isSeparate, boolean isPivot, VanillaModelProvider provider, String... aliases) {
-        this(isSeparate, isPivot, provider, FiguraVec3.of(), aliases);
+        this(isSeparate, isPivot, null, FiguraVec3.of(), aliases);
     }
 
     ParentType(VanillaModelProvider provider, FiguraVec3 offset, String... aliases) {
         this(false, false, provider, offset, aliases);
+    }
+
+    ParentType(boolean isSeparate, VanillaModelProvider provider, FiguraVec3 offset, String... aliases) {
+        this(isSeparate, false, provider, offset, aliases);
     }
 
     ParentType(boolean isSeparate, boolean isPivot, VanillaModelProvider provider, FiguraVec3 offset, String... aliases) {

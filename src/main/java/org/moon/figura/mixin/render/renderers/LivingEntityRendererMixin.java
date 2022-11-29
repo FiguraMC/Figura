@@ -2,7 +2,6 @@ package org.moon.figura.mixin.render.renderers;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.ElytraModel;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -10,18 +9,13 @@ import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
-import net.minecraft.client.renderer.entity.layers.ElytraLayer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
-import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.config.Config;
-import org.moon.figura.ducks.LivingEntityRendererAccessor;
 import org.moon.figura.gui.PopupMenu;
-import org.moon.figura.mixin.render.layers.elytra.ElytraLayerAccessor;
 import org.moon.figura.model.rendering.PartFilterScheme;
 import org.moon.figura.trust.Trust;
 import org.moon.figura.utils.ui.UIHelper;
@@ -37,7 +31,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.List;
 
 @Mixin(LivingEntityRenderer.class)
-public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extends EntityModel<T>> extends EntityRenderer<T> implements RenderLayerParent<T, M>, LivingEntityRendererAccessor<T> {
+public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extends EntityModel<T>> extends EntityRenderer<T> implements RenderLayerParent<T, M> {
 
     protected LivingEntityRendererMixin(EntityRendererProvider.Context context) {
         super(context);
@@ -50,33 +44,12 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
     @Shadow
     protected List<RenderLayer<T, M>> layers;
 
-    private ElytraModel<T> elytraModel;
-    private boolean triedFetchElytraModel = false;
-
     @Shadow protected abstract boolean isBodyVisible(T livingEntity);
     @Shadow
     public static int getOverlayCoords(LivingEntity entity, float whiteOverlayProgress) {
         return 0;
     }
     @Shadow protected abstract float getWhiteOverlayProgress(T entity, float tickDelta);
-
-    private void fetchElytraModel() {
-        triedFetchElytraModel = true;
-        if (!((Object) this instanceof PlayerRenderer)) return;
-        RenderLayer<T, M> layerCandidate = layers.get(6);
-        if (!(layerCandidate instanceof ElytraLayer<T, M> elytraLayer)) { //a bit jank but it should get the elytra layer, look at PlayerRenderer.class
-            FiguraMod.LOGGER.warn("Unable to find elytra layer... Seems some other mod is messing with the layers, or " + FiguraMod.MOD_NAME + " version is weird.");
-            return;
-        }
-        elytraModel = ((ElytraLayerAccessor<T, M>) elytraLayer).getElytraModel();
-    }
-
-    @Override
-    public ElytraModel<T> figura$getElytraModel() {
-        if (!triedFetchElytraModel)
-            fetchElytraModel();
-        return elytraModel;
-    }
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/EntityModel;setupAnim(Lnet/minecraft/world/entity/Entity;FFFFF)V", shift = At.Shift.AFTER), method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", cancellable = true)
     private void preRender(T entity, float yaw, float delta, PoseStack matrices, MultiBufferSource bufferSource, int light, CallbackInfo ci) {

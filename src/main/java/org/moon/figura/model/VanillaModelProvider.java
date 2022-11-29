@@ -26,8 +26,8 @@ public enum VanillaModelProvider {
     CAPE(model -> ((PlayerModelAccessor) model).figura$getCloak()),
     FAKE_CAPE(model -> ((PlayerModelAccessor) model).figura$getFakeCloak()),
 
-    LEFT_ELYTRON(model -> ((ElytraModelAccessor) model).getLeftWing()),
-    RIGHT_ELYTRON(model -> ((ElytraModelAccessor) model).getRightWing());
+    LEFT_ELYTRON(model -> model instanceof ElytraModelAccessor m ? m.getLeftWing() : null),
+    RIGHT_ELYTRON(model -> model instanceof ElytraModelAccessor m ? m.getRightWing() : null);
 
     public final Function<EntityModel<?>, ModelPart> func;
 

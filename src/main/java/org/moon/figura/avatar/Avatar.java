@@ -9,6 +9,7 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.math.Vector3f;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -372,6 +373,17 @@ public class Avatar {
 
     // -- rendering events -- //
 
+    private void render() {
+        if (renderMode != EntityRenderMode.RENDER) {
+            int prev = complexity.remaining;
+            complexity.remaining = trust.get(Trust.COMPLEXITY);
+            renderer.render();
+            complexity.remaining = prev;
+        } else {
+            complexity.use(renderer.render());
+        }
+    }
+
     public void render(Entity entity, float yaw, float delta, float alpha, PoseStack matrices, MultiBufferSource bufferSource, int light, int overlay, LivingEntityRenderer<?, ?> entityRenderer, PartFilterScheme filter, boolean translucent, boolean glowing) {
         if (renderer == null || !loaded)
             return;
@@ -389,14 +401,7 @@ public class Avatar {
         renderer.translucent = translucent;
         renderer.glowing = glowing;
 
-        if (UIHelper.paperdoll) {
-            int prev = complexity.remaining;
-            complexity.remaining = trust.get(Trust.COMPLEXITY);
-            renderer.render();
-            complexity.remaining = prev;
-        } else {
-            complexity.use(renderer.render());
-        }
+        render();
     }
 
     public synchronized void worldRender(Entity entity, double camX, double camY, double camZ, PoseStack matrices, MultiBufferSource bufferSource, int lightFallback, float tickDelta) {
@@ -431,6 +436,46 @@ public class Avatar {
         matrices.popPose();
 
         renderer.updateLight = false;
+    }
+
+    public void capeRender(Entity entity, MultiBufferSource bufferSource, PoseStack stack, int light, float tickDelta, ModelPart cloak) {
+        if (renderer == null || !loaded)
+            return;
+
+        renderer.vanillaModelData.update(ParentType.Cape, cloak);
+        renderer.entity = entity;
+        renderer.currentFilterScheme = PartFilterScheme.CAPE;
+        renderer.bufferSource = bufferSource;
+        renderer.matrices = stack;
+        renderer.tickDelta = tickDelta;
+        renderer.light = light;
+        renderer.alpha = 1f;
+        renderer.overlay = OverlayTexture.NO_OVERLAY;
+
+        render();
+    }
+
+    public void elytraRender(Entity entity, MultiBufferSource bufferSource, PoseStack stack, int light, float tickDelta, EntityModel<?> model) {
+        if (renderer == null || !loaded)
+            return;
+
+        renderer.entity = entity;
+        renderer.bufferSource = bufferSource;
+        renderer.matrices = stack;
+        renderer.tickDelta = tickDelta;
+        renderer.light = light;
+        renderer.alpha = 1f;
+        renderer.overlay = OverlayTexture.NO_OVERLAY;
+
+        //left
+        renderer.vanillaModelData.update(ParentType.LeftElytra, model);
+        renderer.currentFilterScheme = PartFilterScheme.LEFT_ELYTRA;
+        render();
+
+        //right
+        renderer.vanillaModelData.update(ParentType.RightElytra, model);
+        renderer.currentFilterScheme = PartFilterScheme.RIGHT_ELYTRA;
+        render();
     }
 
     public void firstPersonWorldRender(Entity watcher, MultiBufferSource bufferSource, PoseStack matrices, Camera camera, float tickDelta) {
