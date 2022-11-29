@@ -226,7 +226,7 @@ public class TextUtils {
     }
 
     public static Component parseLegacyFormatting(Component text) {
-        MutableComponent builder = Component.empty();
+        MutableComponent builder = TextComponent.EMPTY.copy();
         text.visit((style, string) -> {
             formatting: {
                 //check for the string have the formatting char
@@ -239,7 +239,7 @@ public class TextUtils {
                     break formatting;
 
                 //creates a new text with the left part of the string
-                MutableComponent newText = Component.literal(split[0]).withStyle(style);
+                MutableComponent newText = new TextComponent(split[0]).withStyle(style);
 
                 //if right part has text
                 if (split[1].length() > 0) {
@@ -249,7 +249,7 @@ public class TextUtils {
                         style = style.applyLegacyFormat(formatting);
 
                     //create right text, and yeet the formatting code
-                    MutableComponent right = Component.literal(split[1].substring(1)).withStyle(style);
+                    MutableComponent right = new TextComponent(split[1].substring(1)).withStyle(style);
 
                     //append to the new text, however parse the right text for more formatting
                     newText.append(parseLegacyFormatting(right));
@@ -259,7 +259,7 @@ public class TextUtils {
                 return Optional.empty();
             }
 
-            builder.append(Component.literal(string).withStyle(style));
+            builder.append(new TextComponent(string).withStyle(style));
             return Optional.empty();
         }, Style.EMPTY);
         return builder;
