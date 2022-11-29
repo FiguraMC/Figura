@@ -17,6 +17,8 @@ import java.util.regex.Pattern;
 //note: use the same instance for parsing multiple models for the same avatar
 public class BlockbenchModelParser {
 
+    private final static Gson GSON = new GsonBuilder().create();
+
     //offsets for usage of diverse models
     private int textureOffset = 0;
     private int animationOffset = 0;
@@ -30,8 +32,7 @@ public class BlockbenchModelParser {
     //parser
     public ModelData parseModel(Path avatarFolder, File sourceFile, String json, String modelName, String folders) {
         //parse json -> object
-        Gson gson = new GsonBuilder().create();
-        BlockbenchModel model = gson.fromJson(json, BlockbenchModel.class);
+        BlockbenchModel model = GSON.fromJson(json, BlockbenchModel.class);
 
         //return lists
         CompoundTag textures = new CompoundTag();
@@ -40,6 +41,7 @@ public class BlockbenchModelParser {
         //object -> nbt
         CompoundTag nbt = new CompoundTag();
         nbt.putString("name", modelName);
+        parseParent(modelName, nbt);
 
         //parse textures first
         //we want to save the textures in a separated list
@@ -49,15 +51,15 @@ public class BlockbenchModelParser {
 
         //parse elements into a map of UUID (String) -> NbtCompound (the element)
         //later when parsing the outliner, we fetch the elements from this map
-        parseElements(gson, model.elements);
+        parseElements(model.elements);
 
         //parse animations
         //add the animation metadata to the animation list
         //but return a map with the group animation, as we will store it on the groups themselves
-        parseAnimations(animationList, gson, model.animations, modelName, folders);
+        parseAnimations(animationList, model.animations, modelName, folders);
 
         //add and parse the outliner
-        nbt.put("chld", parseOutliner(gson, model.outliner, null));
+        nbt.put("chld", parseOutliner(model.outliner, null));
 
         //clear variables used by the parser
         elementMap.clear();
@@ -67,6 +69,12 @@ public class BlockbenchModelParser {
 
         //return the parsed data
         return new ModelData(textures, animationList, nbt);
+    }
+
+    public static void parseParent(String name, CompoundTag nbt) {
+        ParentType parentType = ParentType.get(name);
+        if (parentType != ParentType.None)
+            nbt.putString("pt", parentType.name());
     }
 
     // -- internal functions -- //
@@ -171,7 +179,7 @@ public class BlockbenchModelParser {
         texturesNbt.put("data", data);
     }
 
-    private void parseElements(Gson gson, BlockbenchModel.Element[] elements) {
+    private void parseElements(BlockbenchModel.Element[] elements) {
         for (BlockbenchModel.Element element : elements) {
             if (element.type == null)
                 element.type = "cube";
@@ -203,10 +211,10 @@ public class BlockbenchModelParser {
             //parse faces
             CompoundTag data;
             if (element.type.equalsIgnoreCase("cube")) {
-                data = parseCubeFaces(gson, element.faces);
+                data = parseCubeFaces(element.faces);
                 nbt.put("cube_data", data);
             } else {
-                data = parseMesh(gson, element.faces, element.vertices, element.origin);
+                data = parseMesh(element.faces, element.vertices, element.origin);
                 nbt.put("mesh_data", data);
             }
 
@@ -215,7 +223,7 @@ public class BlockbenchModelParser {
         }
     }
 
-    private CompoundTag parseCubeFaces(Gson gson, JsonObject faces) {
+    private CompoundTag parseCubeFaces(JsonObject faces) {
         CompoundTag nbt = new CompoundTag();
 
         for (String cubeFace : BlockbenchModel.CubeFace.FACES) {
@@ -223,7 +231,7 @@ public class BlockbenchModelParser {
                 continue;
 
             //convert face json to java object
-            BlockbenchModel.CubeFace face = gson.fromJson(faces.getAsJsonObject(cubeFace), BlockbenchModel.CubeFace.class);
+            BlockbenchModel.CubeFace face = GSON.fromJson(faces.getAsJsonObject(cubeFace), BlockbenchModel.CubeFace.class);
 
             //dont add null faces
             if (face.texture == null)
@@ -253,7 +261,7 @@ public class BlockbenchModelParser {
         return nbt;
     }
 
-    private CompoundTag parseMesh(Gson gson, JsonObject faces, JsonObject vertices, float[] offset) {
+    private CompoundTag parseMesh(JsonObject faces, JsonObject vertices, float[] offset) {
         CompoundTag nbt = new CompoundTag();
 
         //parse vertices first, as the faces will reference it later
@@ -283,7 +291,7 @@ public class BlockbenchModelParser {
         if (index > 32767) bestType = 2; //int
         for (Map.Entry<String, JsonElement> entry : faces.entrySet()) {
             //convert json to java object
-            BlockbenchModel.MeshFace face = gson.fromJson(entry.getValue(), BlockbenchModel.MeshFace.class);
+            BlockbenchModel.MeshFace face = GSON.fromJson(entry.getValue(), BlockbenchModel.MeshFace.class);
 
             //dont parse empty faces
             //Also skip faces that have less than 3 or more than 4 vertices, since blockbench is jank as hell
@@ -388,7 +396,7 @@ public class BlockbenchModelParser {
         return t1.dot(t2) < 0;
     }
 
-    private void parseAnimations(List<CompoundTag> list, Gson gson, BlockbenchModel.Animation[] animations, String modelName, String folders) {
+    private void parseAnimations(List<CompoundTag> list, BlockbenchModel.Animation[] animations, String modelName, String folders) {
         if (animations == null)
             return;
 
@@ -439,7 +447,7 @@ public class BlockbenchModelParser {
                 //parse keyframes
                 JsonObject animationData = entry.getValue().getAsJsonObject();
                 for (JsonElement keyframeJson : animationData.get("keyframes").getAsJsonArray()) {
-                    BlockbenchModel.KeyFrame keyFrame = gson.fromJson(keyframeJson, BlockbenchModel.KeyFrame.class);
+                    BlockbenchModel.KeyFrame keyFrame = GSON.fromJson(keyframeJson, BlockbenchModel.KeyFrame.class);
 
                     CompoundTag keyframeNbt = new CompoundTag();
                     keyframeNbt.putFloat("time", keyFrame.time);
@@ -455,12 +463,12 @@ public class BlockbenchModelParser {
 
                         //pre
                         JsonObject dataPoints = keyFrame.data_points.get(0).getAsJsonObject();
-                        keyframeNbt.put("pre", parseKeyFrameData(gson, dataPoints, keyFrame.channel));
+                        keyframeNbt.put("pre", parseKeyFrameData(dataPoints, keyFrame.channel));
 
                         //end
                         if (keyFrame.data_points.size() > 1) {
                             JsonObject endDataPoints = keyFrame.data_points.get(1).getAsJsonObject();
-                            keyframeNbt.put("end", parseKeyFrameData(gson, endDataPoints, keyFrame.channel));
+                            keyframeNbt.put("end", parseKeyFrameData(endDataPoints, keyFrame.channel));
                         }
 
                         switch (keyFrame.channel) {
@@ -510,8 +518,8 @@ public class BlockbenchModelParser {
         animationOffset += list.size();
     }
 
-    private ListTag parseKeyFrameData(Gson gson, JsonObject object, String channel) {
-        BlockbenchModel.KeyFrameData endFrameData = gson.fromJson(object, BlockbenchModel.KeyFrameData.class);
+    private ListTag parseKeyFrameData(JsonObject object, String channel) {
+        BlockbenchModel.KeyFrameData endFrameData = GSON.fromJson(object, BlockbenchModel.KeyFrameData.class);
 
         float fallback = channel.equals("scale") ? 1f : 0f;
         float x = toFloat(endFrameData.x, fallback);
@@ -533,7 +541,7 @@ public class BlockbenchModelParser {
         return nbt;
     }
 
-    private ListTag parseOutliner(Gson gson, JsonArray outliner, Boolean parentVsb) {
+    private ListTag parseOutliner(JsonArray outliner, Boolean parentVsb) {
         ListTag children = new ListTag();
 
         if (outliner == null)
@@ -557,7 +565,7 @@ public class BlockbenchModelParser {
 
             //then parse as GroupElement (outliner)
             CompoundTag groupNbt = new CompoundTag();
-            BlockbenchModel.GroupElement group = gson.fromJson(element, BlockbenchModel.GroupElement.class);
+            BlockbenchModel.GroupElement group = GSON.fromJson(element, BlockbenchModel.GroupElement.class);
 
             //parse fields
             groupNbt.putString("name", group.name);
@@ -573,14 +581,11 @@ public class BlockbenchModelParser {
                 groupNbt.put("rot", toNbtList(group.rotation));
 
             //parent type
-            ParentType parentType = ParentType.get(group.name);
-            if (parentType != ParentType.None)
-                groupNbt.putString("pt", parentType.name());
-
+            parseParent(group.name, groupNbt);
 
             //parse children
             if (group.children != null && group.children.size() > 0)
-                groupNbt.put("chld", parseOutliner(gson, group.children, group.visibility));
+                groupNbt.put("chld", parseOutliner(group.children, group.visibility));
 
             //add animations
             if (animationMap.containsKey(group.uuid))
