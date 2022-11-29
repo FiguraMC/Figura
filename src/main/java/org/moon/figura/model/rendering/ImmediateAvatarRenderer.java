@@ -197,15 +197,6 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         part.applyVanillaTransforms(vanillaModelData);
         part.applyExtraTransforms(customizationStack.peek().positionMatrix);
 
-        //push customization stack
-        //that's right, check only for previous predicate
-        boolean reset = !allowHiddenTransforms && !prevPredicate;
-        if (reset) {
-            custom.positionMatrix.reset();
-            custom.normalMatrix.reset();
-            custom.needsMatrixRecalculation = false;
-        }
-
         //recalculate stuff
         Boolean storedVisibility = custom.visible;
         custom.visible = part.getVisible() && thisPassedPredicate;
@@ -216,7 +207,6 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
         //restore variables
         custom.visible = storedVisibility;
-        if (reset) custom.needsMatrixRecalculation = true;
 
         if (thisPassedPredicate) {
             //recalculate world matrices
@@ -237,6 +227,14 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
                 customizationStack.peek().light = LightTexture.pack(block, sky);
                 pos.free();
             }
+        }
+
+        //void blocked matrices
+        //that's right, check only for previous predicate
+        if (!allowHiddenTransforms && !prevPredicate) {
+            PartCustomization peek = customizationStack.peek();
+            peek.positionMatrix.reset();
+            peek.normalMatrix.reset();
         }
 
         //render this
