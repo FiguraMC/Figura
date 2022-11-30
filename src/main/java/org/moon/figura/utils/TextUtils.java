@@ -239,7 +239,7 @@ public class TextUtils {
                     break formatting;
 
                 //creates a new text with the left part of the string
-                MutableComponent newText = new TextComponent(split[0]).withStyle(style);
+                builder.append(new TextComponent(split[0]).withStyle(style));
 
                 //if right part has text
                 if (split[1].length() > 0) {
@@ -252,10 +252,9 @@ public class TextUtils {
                     MutableComponent right = new TextComponent(split[1].substring(1)).withStyle(style);
 
                     //append to the new text, however parse the right text for more formatting
-                    newText.append(parseLegacyFormatting(right));
+                    builder.append(parseLegacyFormatting(right));
                 }
 
-                builder.append(newText);
                 return Optional.empty();
             }
 
