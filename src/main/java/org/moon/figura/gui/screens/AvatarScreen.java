@@ -15,6 +15,11 @@ public class AvatarScreen extends AbstractPanelScreen {
     }
 
     @Override
+    public Component getTitle() {
+        return TITLE;
+    }
+
+    @Override
     protected void init() {
         //entity
         entityWidget.x = 0;

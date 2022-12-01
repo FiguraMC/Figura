@@ -3,6 +3,7 @@ package org.moon.figura.gui.screens;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import org.lwjgl.glfw.GLFW;
 import org.moon.figura.FiguraMod;
@@ -31,8 +32,13 @@ public class GameScreen extends AbstractPanelScreen {
     private static final String EGG = "FRAN";
     private String egg = EGG;
 
-    protected GameScreen(Screen parentScreen, int index) {
+    protected GameScreen(Screen parentScreen, Class<? extends AbstractPanelScreen> index) {
         super(parentScreen, TextComponent.EMPTY.copy(), index);
+    }
+
+    @Override
+    public Component getTitle() {
+        return TextComponent.EMPTY.copy();
     }
 
     protected void init() {

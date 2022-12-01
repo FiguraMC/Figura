@@ -20,7 +20,7 @@ public abstract class AbstractPanelScreen extends Screen {
 
     //variables
     protected final Screen parentScreen;
-    protected final int index;
+    protected final Class<? extends AbstractPanelScreen> index;
     public PanelSelectorWidget panels;
 
     //overlays
@@ -31,11 +31,13 @@ public abstract class AbstractPanelScreen extends Screen {
     private static final String EGG = "ĉĉĈĈćĆćĆBAā";
     private String egg = EGG;
 
-    protected AbstractPanelScreen(Screen parentScreen, Component title, int index) {
+    protected AbstractPanelScreen(Screen parentScreen, Component title, Class<? extends AbstractPanelScreen> index) {
         super(title);
         this.parentScreen = parentScreen;
         this.index = index;
     }
+
+    public abstract Component getTitle();
 
     @Override
     protected void init() {

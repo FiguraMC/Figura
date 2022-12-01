@@ -18,7 +18,12 @@ public class KeybindScreen extends AbstractPanelScreen {
     private KeybindList list;
 
     public KeybindScreen(Screen parentScreen) {
-        super(parentScreen, TITLE, 2);
+        super(parentScreen, TITLE, WardrobeScreen.class);
+    }
+
+    @Override
+    public Component getTitle() {
+        return TITLE;
     }
 
     @Override

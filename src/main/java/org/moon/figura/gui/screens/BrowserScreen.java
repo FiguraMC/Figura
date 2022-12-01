@@ -13,7 +13,12 @@ public class BrowserScreen extends AbstractPanelScreen {
     public static final Component TITLE = new FiguraText("gui.panels.title.browser").withStyle(ChatFormatting.RED);
 
     public BrowserScreen(Screen parentScreen) {
-        super(parentScreen, TITLE, 1);
+        super(parentScreen, TITLE, BrowserScreen.class);
+    }
+
+    @Override
+    public Component getTitle() {
+        return TITLE;
     }
 
     @Override

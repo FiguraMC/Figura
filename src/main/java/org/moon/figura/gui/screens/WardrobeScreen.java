@@ -30,7 +30,12 @@ public class WardrobeScreen extends AbstractPanelScreen {
     private TexturedButton upload, delete;
 
     public WardrobeScreen(Screen parentScreen) {
-        super(parentScreen, TITLE, 2);
+        super(parentScreen, TITLE, WardrobeScreen.class);
+    }
+
+    @Override
+    public Component getTitle() {
+        return TITLE;
     }
 
     @Override

@@ -57,7 +57,12 @@ public class TrustScreen extends AbstractPanelScreen {
     private PlayerElement dragged = null;
 
     public TrustScreen(Screen parentScreen) {
-        super(parentScreen, TITLE, 3);
+        super(parentScreen, TITLE, TrustScreen.class);
+    }
+
+    @Override
+    public Component getTitle() {
+        return TITLE;
     }
 
     @Override
