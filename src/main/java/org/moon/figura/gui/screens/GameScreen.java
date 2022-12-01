@@ -31,8 +31,13 @@ public class GameScreen extends AbstractPanelScreen {
     private static final String EGG = "FRAN";
     private String egg = EGG;
 
-    protected GameScreen(Screen parentScreen, int index) {
+    protected GameScreen(Screen parentScreen, Class<? extends AbstractPanelScreen> index) {
         super(parentScreen, Component.empty(), index);
+    }
+
+    @Override
+    public Component getTitle() {
+        return Component.empty();
     }
 
     protected void init() {

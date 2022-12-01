@@ -610,7 +610,7 @@
 
 
   "figura.docs.avatar": "A global API containing functions to interact with your avatar's metadata, and also to get information about the current script environment.",
-  "figura.docs.avatar.store": "Store the given key-value pair inside your current avatar's metadata. Someone else can get this information from a different script with the playerVars() function in World. The key must be a string.",
+  "figura.docs.avatar.store": "Store the given key-value pair inside your current avatar's metadata. Someone else can get this information from a different script with the avatarVars() function in World. The key must be a string.",
   "figura.docs.avatar.get_current_instructions": "Gets the current number of instructions that have been executed by your avatar. Resets to 0 at the beginning of certain events.",
   "figura.docs.avatar.get_color": "Gets the current color string of your avatar, used as your avatar theme.",
   "figura.docs.avatar.set_color": "Sets the current color string of your avatar, used as your avatar theme.",

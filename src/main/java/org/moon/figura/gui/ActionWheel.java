@@ -225,7 +225,7 @@ public class ActionWheel {
             return;
 
         //vars
-        Component text = TextUtils.tryParseJson(title);
+        Component text = Emojis.applyEmojis(TextUtils.tryParseJson(title));
         List<Component> list = TextUtils.splitText(text, "\n");
         Font font = minecraft.font;
         int height = font.lineHeight * list.size();

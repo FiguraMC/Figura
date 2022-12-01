@@ -237,27 +237,30 @@ public class TextUtils {
                     break formatting;
 
                 //split the string at the special char
-                String[] split = string.split("§", 2);
+                String[] split = string.split("§");
                 if (split.length < 2)
                     break formatting;
 
                 //creates a new text with the left part of the string
-                builder.append(Component.literal(split[0]).withStyle(style));
+                MutableComponent newText = Component.literal(split[0]).withStyle(style);
 
                 //if right part has text
-                if (split[1].length() > 0) {
+                for (int i = 1; i < split.length; i++) {
+                    String s = split[i];
+
+                    if (s.length() == 0)
+                        continue;
+
                     //get the formatting code and apply to the style
-                    ChatFormatting formatting = ChatFormatting.getByCode(split[1].charAt(0));
+                    ChatFormatting formatting = ChatFormatting.getByCode(s.charAt(0));
                     if (formatting != null)
                         style = style.applyLegacyFormat(formatting);
 
                     //create right text, and yeet the formatting code
-                    MutableComponent right = Component.literal(split[1].substring(1)).withStyle(style);
-
-                    //append to the new text, however parse the right text for more formatting
-                    builder.append(parseLegacyFormatting(right));
+                    newText.append(Component.literal(s.substring(1)).withStyle(style));
                 }
 
+                builder.append(newText);
                 return Optional.empty();
             }
 

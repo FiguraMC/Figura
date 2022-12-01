@@ -14,7 +14,12 @@ public class SoundScreen extends AbstractPanelScreen {
     public static final Component TITLE = FiguraText.of("gui.panels.title.sound");
 
     public SoundScreen(Screen parentScreen) {
-        super(parentScreen, TITLE, 2);
+        super(parentScreen, TITLE, WardrobeScreen.class);
+    }
+
+    @Override
+    public Component getTitle() {
+        return TITLE;
     }
 
     @Override
