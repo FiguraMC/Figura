@@ -353,6 +353,13 @@ public class EntityAPI<T extends Entity> {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("entity.is_alive")
+    public boolean isAlive() {
+        checkEntity();
+        return entity.isAlive();
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
                     @LuaMethodOverload,
