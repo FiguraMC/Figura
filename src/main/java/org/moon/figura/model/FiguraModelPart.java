@@ -623,7 +623,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     public void setUV(Object x, Double y) {
         this.customization.uvMatrix.reset();
         FiguraVec2 uv = LuaUtils.parseVec2("setUV", x, y);
-        this.customization.uvMatrix.translate(uv.x, uv.y);
+        this.customization.uvMatrix.translate(uv.x % 1, uv.y % 1);
         uv.free();
     }
 
