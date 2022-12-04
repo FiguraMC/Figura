@@ -199,7 +199,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
         //recalculate stuff
         Boolean storedVisibility = custom.visible;
-        custom.visible = part.getVisible() && thisPassedPredicate;
+        custom.visible = part.getVisible() && (currentFilterScheme.ignoreVanillaVisible || part.getVanillaVisible()) && thisPassedPredicate;
         custom.recalculate();
 
         //void blocked matrices
