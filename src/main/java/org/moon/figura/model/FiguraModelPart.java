@@ -41,6 +41,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
 
     public final PartCustomization customization;
     public ParentType parentType = ParentType.None;
+    private Boolean vanillaVisible = null;
 
     private final Map<String, FiguraModelPart> childCache = new HashMap<>();
     public final List<FiguraModelPart> children;
@@ -94,6 +95,8 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
             return;
 
         //apply vanilla transforms
+        vanillaVisible = partData.visible;
+
         FiguraVec3 defaultPivot = parentType.offset.copy();
 
         defaultPivot.subtract(partData.pos);
@@ -439,6 +442,13 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     )
     public void setMatrix(@LuaNotNil FiguraMat4 matrix) {
         this.customization.setMatrix(matrix);
+    }
+
+    public boolean getVanillaVisible() {
+        FiguraModelPart part = this;
+        while (part != null && part.vanillaVisible == null)
+            part = part.parent;
+        return part == null || part.vanillaVisible;
     }
 
     @LuaWhitelist

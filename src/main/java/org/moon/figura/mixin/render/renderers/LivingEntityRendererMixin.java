@@ -67,10 +67,10 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
         if (currentAvatar == null)
             return;
 
-        if (currentAvatar.luaRuntime != null && getModel() instanceof PlayerModel<?> playerModel && entity instanceof Player) {
-            currentAvatar.luaRuntime.vanilla_model.PLAYER.store(playerModel);
-            if (currentAvatar.trust.get(Trust.VANILLA_MODEL_EDIT) == 1)
-                currentAvatar.luaRuntime.vanilla_model.PLAYER.alter(playerModel);
+        PlayerModel<?> playerModel = null;
+        if (currentAvatar.luaRuntime != null && getModel() instanceof PlayerModel<?> model && entity instanceof Player) {
+            currentAvatar.luaRuntime.vanilla_model.PLAYER.store(model);
+            playerModel = model;
         }
 
         boolean showBody = this.isBodyVisible(entity);
@@ -79,11 +79,14 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
         boolean invisible = !translucent && !showBody && !glowing;
 
         //When viewed 3rd person, render all non-world parts.
-        PartFilterScheme filter = invisible ? PartFilterScheme.PIVOTS : entity.isSpectator() ? PartFilterScheme.HEAD : PartFilterScheme.MODEL;
+        PartFilterScheme filter = invisible ? PartFilterScheme.PIVOTS : PartFilterScheme.MODEL;
         int overlay = getOverlayCoords(entity, getWhiteOverlayProgress(entity, delta));
         currentAvatar.renderEvent(delta);
         currentAvatar.render(entity, yaw, delta, translucent ? 0.15f : 1f, matrices, bufferSource, light, overlay, (LivingEntityRenderer<?, ?>) (Object) this, filter, translucent, glowing);
         currentAvatar.postRenderEvent(delta);
+
+        if (currentAvatar.luaRuntime != null && playerModel != null && currentAvatar.trust.get(Trust.VANILLA_MODEL_EDIT) == 1)
+            currentAvatar.luaRuntime.vanilla_model.PLAYER.alter(playerModel);
     }
 
     @Inject(at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;popPose()V"), method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V")

@@ -27,11 +27,12 @@ public enum PartFilterScheme {
 
     PIVOTS(false, SchemeFunction.onlyPivotsAndCancelOnSeparate());
 
-
+    public final boolean ignoreVanillaVisible;
     private final boolean initialValue;
     private final SchemeFunction predicate;
 
     PartFilterScheme(boolean initialValue, SchemeFunction predicate) {
+        this.ignoreVanillaVisible = !initialValue;
         this.initialValue = initialValue;
         this.predicate = predicate;
     }
