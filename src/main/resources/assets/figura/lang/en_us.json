@@ -779,6 +779,7 @@
   "figura.docs.entity.get_item": "Gets an ItemStack for the item in the given slot. For the player, slots are indexed with 1 as the main hand, 2 as the off hand, and 3,4,5,6 as the 4 armor slots from the boots to the helmet. If an invalid slot number is given, this will return nil.",
   "figura.docs.entity.get_nbt": "Gets a table containing the NBT of this entity. Please note that not all values in the entity's NBT may be synced, as some are handled only on server side.",
   "figura.docs.entity.is_on_fire": "Returns true if this entity is currently on fire.",
+  "figura.docs.entity.is_alive": "Returns whether this entity is alive or not.",
   "figura.docs.entity.get_targeted_block": "Returns a proxy for your currently targeted BlockState. This BlockState appears on the F3 screen. Maximum and Default distance is 20, Minimum is -20",
   "figura.docs.entity.get_targeted_entity": "Returns a proxy for your currently targeted Entity. This Entity appears on the F3 screen. Maximum and Default distance is 20, Minimum is 0",
   "figura.docs.entity.get_variable": "Gets the value of a variable this entity stored in themselves using the Avatar api's store() function.",
@@ -803,6 +804,9 @@
   "figura.docs.living_entity.is_swinging_arm": "Returns true if the entity is currently swinging its arm.",
   "figura.docs.living_entity.get_swing_arm": "Returns \"OFF_HAND\" or \"MAIN_HAND\", based on the arm this entity is currently swinging.",
   "figura.docs.living_entity.get_swing_duration": "Returns the number of ticks this entity will have while swinging its arms.",
+  "figura.docs.living_entity.get_absorption_amount": "Returns the amount of this entity's absorption (yellow hearts).",
+  "figura.docs.living_entity.is_sensitive_to_water": "Returns if this entity takes damage to water.",
+  "figura.docs.living_entity.get_entity_category": "Returns the category of this entity. The categories are: \"ARTHROPOD\", \"UNDEAD\", \"WATER\", \"ILLAGER\" and by default, \"UNDEFINED\"",
 
   "figura.docs.player": "Acts as a proxy for a player entity in the Minecraft world. A global instance exists for the avatar's user, under the name \"player\".",
   "figura.docs.player.get_food": "Gets the current food level of the player, from 0 to 20.",

@@ -4,6 +4,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobType;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.world.ItemStackAPI;
 import org.moon.figura.lua.docs.LuaMethodDoc;
@@ -189,6 +190,38 @@ public class LivingEntityAPI<T extends LivingEntity> extends EntityAPI<T> {
     public int getSwingDuration() {
       checkEntity();
       return ((LivingEntityAccessor) entity).getSwingDuration();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("living_entity.get_absorption_amount")
+    public float getAbsorptionAmount() {
+        checkEntity();
+        return entity.getAbsorptionAmount();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("living_entity.is_sensitive_to_water")
+    public boolean isSensitiveToWater() {
+        checkEntity();
+        return entity.isSensitiveToWater();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("living_entity.get_entity_category")
+    public String getEntityCategory() {
+        checkEntity();
+
+        MobType mobType = entity.getMobType(); //why it is not an enum
+        if (mobType == MobType.ARTHROPOD)
+            return "ARTHROPOD";
+        if (mobType == MobType.UNDEAD)
+            return "UNDEAD";
+        if (mobType == MobType.WATER)
+            return "WATER";
+        if (mobType == MobType.ILLAGER)
+            return "ILLAGER";
+
+        return "UNDEFINED";
     }
 
     @Override
