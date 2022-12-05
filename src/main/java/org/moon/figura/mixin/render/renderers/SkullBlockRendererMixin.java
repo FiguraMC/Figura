@@ -12,6 +12,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.SkullBlock;
 import net.minecraft.world.level.block.entity.SkullBlockEntity;
+import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.ducks.SkullBlockRendererAccessor;
@@ -49,15 +50,24 @@ public abstract class SkullBlockRendererMixin implements BlockEntityRenderer<Sku
         if (localAvatar == null || localAvatar.trust.get(Trust.CUSTOM_HEADS) == 0)
             return;
 
+        FiguraMod.pushProfiler(localAvatar.owner.toString());
+        FiguraMod.pushProfiler(FiguraMod.MOD_ID + "-skullRender");
+
         //event
         BlockStateAPI b = localBlock == null ? null : new BlockStateAPI(localBlock.getBlockState(), localBlock.getBlockPos());
         ItemStackAPI i = localItem != null ? ItemStackAPI.verify(localItem) : null;
+
+        FiguraMod.pushProfiler(localBlock != null ? localBlock.getBlockPos().toString() : String.valueOf(i));
 
         boolean bool = localAvatar.skullRenderEvent(Minecraft.getInstance().getFrameTime(), b, i);
 
         //render skull :3
         if (bool || localAvatar.skullRender(stack, bufferSource, light, direction, yaw))
             ci.cancel();
+
+        FiguraMod.popProfiler();
+        FiguraMod.popProfiler(); //wee
+        FiguraMod.popProfiler();
     }
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/blockentity/SkullBlockRenderer;renderSkull(Lnet/minecraft/core/Direction;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/model/SkullModelBase;Lnet/minecraft/client/renderer/RenderType;)V"), method = "render(Lnet/minecraft/world/level/block/entity/SkullBlockEntity;FLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;II)V")

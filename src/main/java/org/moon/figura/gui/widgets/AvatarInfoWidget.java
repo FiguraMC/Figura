@@ -63,7 +63,7 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
         if (avatar != null && avatar.nbt != null) {
             values.set(0, new TextComponent(avatar.name).setStyle(accent)); //name
-            values.set(1, avatar.authors.isBlank() ? UNKNOWN : new TextComponent(avatar.authors).setStyle(accent)); //authors
+            values.set(1, avatar.authors == null || avatar.authors.isBlank() ? UNKNOWN : new TextComponent(avatar.authors).setStyle(accent)); //authors
             values.set(2, new TextComponent(MathUtils.asFileSize(avatar.fileSize)).setStyle(accent)); //size
             values.set(3, new TextComponent(String.valueOf(avatar.complexity.pre)).setStyle(accent)); //complexity
         } else {
