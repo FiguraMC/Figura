@@ -169,7 +169,7 @@ public class HostAPI {
             value = "host.append_chat_history"
     )
     public void appendChatHistory(@LuaNotNil String message) {
-        if (isHost() && Config.CHAT_MESSAGES.asBool())
+        if (isHost())
             this.minecraft.gui.getChat().addRecentChat(message);
     }
 

@@ -211,11 +211,15 @@ public class Avatar {
         soundsRemaining.tick();
 
         //call events
+        FiguraMod.pushProfiler("worldTick");
         worldTick.reset(trust.get(Trust.WORLD_TICK_INST));
         run("WORLD_TICK", worldTick);
 
+        FiguraMod.popPushProfiler("tick");
         tick.reset(trust.get(Trust.TICK_INST));
         tickEvent();
+
+        FiguraMod.popProfiler();
     }
 
     public void render(float delta) {
@@ -388,6 +392,9 @@ public class Avatar {
         if (renderer == null || !loaded)
             return;
 
+        FiguraMod.pushProfiler(owner.toString());
+        FiguraMod.pushProfiler(FiguraMod.MOD_ID + "-render");
+
         renderer.vanillaModelData.update(entityRenderer);
         renderer.currentFilterScheme = filter;
         renderer.entity = entity;
@@ -402,11 +409,17 @@ public class Avatar {
         renderer.glowing = glowing;
 
         render();
+
+        FiguraMod.popProfiler();
+        FiguraMod.popProfiler();
     }
 
     public synchronized void worldRender(Entity entity, double camX, double camY, double camZ, PoseStack matrices, MultiBufferSource bufferSource, int lightFallback, float tickDelta) {
         if (renderer == null || !loaded)
             return;
+
+        FiguraMod.pushProfiler(owner.toString());
+        FiguraMod.pushProfiler(FiguraMod.MOD_ID + "-worldRender");
 
         for (Queue<Pair<FiguraMat4, FiguraMat3>> queue : renderer.pivotCustomizations.values()) {
             while (!queue.isEmpty()) {
@@ -436,11 +449,17 @@ public class Avatar {
         matrices.popPose();
 
         renderer.updateLight = false;
+
+        FiguraMod.popProfiler();
+        FiguraMod.popProfiler();
     }
 
     public void capeRender(Entity entity, MultiBufferSource bufferSource, PoseStack stack, int light, float tickDelta, ModelPart cloak) {
         if (renderer == null || !loaded)
             return;
+
+        FiguraMod.pushProfiler(owner.toString());
+        FiguraMod.pushProfiler(FiguraMod.MOD_ID + "-capeRender");
 
         renderer.vanillaModelData.update(ParentType.Cape, cloak);
         renderer.entity = entity;
@@ -453,11 +472,17 @@ public class Avatar {
         renderer.overlay = OverlayTexture.NO_OVERLAY;
 
         render();
+
+        FiguraMod.popProfiler();
+        FiguraMod.popProfiler();
     }
 
     public void elytraRender(Entity entity, MultiBufferSource bufferSource, PoseStack stack, int light, float tickDelta, EntityModel<?> model) {
         if (renderer == null || !loaded)
             return;
+
+        FiguraMod.pushProfiler(owner.toString());
+        FiguraMod.pushProfiler(FiguraMod.MOD_ID + "-elytraRender");
 
         renderer.entity = entity;
         renderer.bufferSource = bufferSource;
@@ -468,19 +493,28 @@ public class Avatar {
         renderer.overlay = OverlayTexture.NO_OVERLAY;
 
         //left
+        FiguraMod.pushProfiler("leftWing");
         renderer.vanillaModelData.update(ParentType.LeftElytra, model);
         renderer.currentFilterScheme = PartFilterScheme.LEFT_ELYTRA;
         render();
 
         //right
+        FiguraMod.popPushProfiler("rightWing");
         renderer.vanillaModelData.update(ParentType.RightElytra, model);
         renderer.currentFilterScheme = PartFilterScheme.RIGHT_ELYTRA;
         render();
+        FiguraMod.popProfiler();
+
+        FiguraMod.popProfiler();
+        FiguraMod.popProfiler();
     }
 
     public void firstPersonWorldRender(Entity watcher, MultiBufferSource bufferSource, PoseStack matrices, Camera camera, float tickDelta) {
         if (renderer == null || !loaded)
             return;
+
+        FiguraMod.pushProfiler(owner.toString());
+        FiguraMod.pushProfiler(FiguraMod.MOD_ID + "-firstPersonWorldRender");
 
         int light = Minecraft.getInstance().getEntityRenderDispatcher().getPackedLightCoords(watcher, tickDelta);
         Vec3 camPos = camera.getPosition();
@@ -491,11 +525,17 @@ public class Avatar {
         worldRender(watcher, camPos.x, camPos.y, camPos.z, matrices, bufferSource, light, tickDelta);
 
         renderMode = oldMode;
+
+        FiguraMod.popProfiler();
+        FiguraMod.popProfiler();
     }
 
     public void firstPersonRender(PoseStack stack, MultiBufferSource bufferSource, Player player, PlayerRenderer playerRenderer, ModelPart arm, int light, int overlay, float tickDelta) {
         if (renderer == null || !loaded)
             return;
+
+        FiguraMod.pushProfiler(owner.toString());
+        FiguraMod.pushProfiler(FiguraMod.MOD_ID + "-firstPersonRender");
 
         PartFilterScheme filter = arm == playerRenderer.getModel().leftArm ? PartFilterScheme.LEFT_ARM : PartFilterScheme.RIGHT_ARM;
         boolean config = Config.ALLOW_FP_HANDS.asBool();
@@ -511,11 +551,17 @@ public class Avatar {
         stack.popPose();
 
         renderer.allowHiddenTransforms = true;
+
+        FiguraMod.popProfiler();
+        FiguraMod.popProfiler();
     }
 
     public void hudRender(PoseStack stack, MultiBufferSource bufferSource, Entity entity, float tickDelta) {
         if (renderer == null || !loaded)
             return;
+
+        FiguraMod.pushProfiler(owner.toString());
+        FiguraMod.pushProfiler(FiguraMod.MOD_ID + "-hudRender");
 
         renderer.currentFilterScheme = PartFilterScheme.HUD;
         renderer.entity = entity;
@@ -539,6 +585,9 @@ public class Avatar {
         stack.popPose();
 
         Lighting.setupFor3DItems();
+
+        FiguraMod.popProfiler();
+        FiguraMod.popProfiler();
     }
 
     public boolean skullRender(PoseStack stack, MultiBufferSource bufferSource, int light, Direction direction, float yaw) {
@@ -715,10 +764,16 @@ public class Avatar {
         if (renderer == null || !loaded)
             return;
 
+        FiguraMod.pushProfiler(owner.toString());
+        FiguraMod.pushProfiler(FiguraMod.MOD_ID + "-updateMatrices");
+
         renderer.currentFilterScheme = PartFilterScheme.MODEL;
         renderer.matrices = stack;
         renderer.vanillaModelData.update(entityRenderer);
         renderer.updateMatrices();
+
+        FiguraMod.popProfiler();
+        FiguraMod.popProfiler();
     }
 
     // -- animations -- //

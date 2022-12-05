@@ -183,4 +183,18 @@ public class FiguraMod implements ClientModInitializer {
         int color = avatar != null ? ColorUtils.rgbToInt(ColorUtils.userInputHex(avatar.color, ColorUtils.Colors.FRAN_PINK.vec)) : ColorUtils.Colors.FRAN_PINK.hex;
         return Style.EMPTY.withColor(color);
     }
+
+    // -- profiler -- //
+
+    public static void pushProfiler(String name) {
+        Minecraft.getInstance().getProfiler().push(name);
+    }
+
+    public static void popPushProfiler(String name) {
+        Minecraft.getInstance().getProfiler().popPush(name);
+    }
+
+    public static void popProfiler() {
+        Minecraft.getInstance().getProfiler().pop();
+    }
 }
