@@ -305,6 +305,13 @@ public class WorldAPI {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("world.get_dimension")
+    public static String getDimension() {
+        Level world = getCurrentWorld();
+        return world.dimension().location().toString();
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc("world.get_players")
     public static Map<String, EntityAPI<?>> getPlayers() {
         HashMap<String, EntityAPI<?>> playerList = new HashMap<>();
