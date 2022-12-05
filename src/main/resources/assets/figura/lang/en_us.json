@@ -1300,6 +1300,7 @@
   "figura.docs.world.get_sky_light_level": "Gets the sky light level of the block at the given position.",
   "figura.docs.world.get_block_light_level": "Gets the block light level of the block at the given position.",
   "figura.docs.world.is_open_sky": "Gets whether or not the sky is open at the given position.",
+  "figura.docs.world.get_dimension": "Gets the dimension name of this world.",
   "figura.docs.world.get_entity": "Returns an EntityAPI object from this UUID's entity, or nil if no entity was found.",
   "figura.docs.world.get_players": "Returns a table containing instances of Player for all players in the world. The players are indexed by their names.",
   "figura.docs.world.avatar_vars": "Returns a table containing variables stored from all loaded Avatars \"avatar:store()\" function. The table will be indexed by the avatar's owner UUID.",
