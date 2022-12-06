@@ -2,7 +2,6 @@ package org.moon.figura;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
@@ -69,7 +68,6 @@ public class FiguraMod implements ClientModInitializer {
         FiguraCommands.init();
 
         //register events
-        ClientTickEvents.START_CLIENT_TICK.register(FiguraMod::tick);
         WorldRenderEvents.START.register(levelRenderer -> AvatarManager.onWorldRender(levelRenderer.tickDelta()));
         WorldRenderEvents.END.register(levelRenderer -> AvatarManager.afterWorldRender(levelRenderer.tickDelta()));
         WorldRenderEvents.AFTER_ENTITIES.register(FiguraMod::renderFirstPersonWorldParts);
@@ -77,11 +75,16 @@ public class FiguraMod implements ClientModInitializer {
         registerResourceListener(ResourceManagerHelper.get(PackType.CLIENT_RESOURCES));
     }
 
-    private static void tick(Minecraft client) {
+    public static void tick() {
+        pushProfiler("network");
         NetworkStuff.tick();
+        popPushProfiler("files");
         LocalAvatarLoader.tickWatchedKey();
+        popPushProfiler("avatars");
         AvatarManager.tickLoadedAvatars();
+        popPushProfiler("chatPrint");
         FiguraLuaPrinter.printChatFromQueue();
+        popProfiler();
         ticks++;
     }
 
@@ -188,6 +191,10 @@ public class FiguraMod implements ClientModInitializer {
 
     public static void pushProfiler(String name) {
         Minecraft.getInstance().getProfiler().push(name);
+    }
+
+    public static void pushProfiler(Avatar avatar) {
+        Minecraft.getInstance().getProfiler().push(avatar.entityName.isBlank() ? avatar.owner.toString() : avatar.entityName);
     }
 
     public static void popPushProfiler(String name) {

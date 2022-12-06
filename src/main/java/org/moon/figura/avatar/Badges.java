@@ -87,7 +87,7 @@ public class Badges {
     }
 
     public static Component noBadges4U(Component text) {
-        return TextUtils.replaceInText(text, ".*", TextUtils.UNKNOWN, (s, style) -> style.getFont().equals(FONT));
+        return TextUtils.replaceInText(text, "[❗❌\uD83E\uDDC0☄❤☆★0-9a-f]", TextUtils.UNKNOWN, (s, style) -> style.getFont().equals(FONT));
     }
 
     public enum System {

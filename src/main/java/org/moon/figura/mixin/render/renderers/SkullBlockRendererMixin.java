@@ -50,8 +50,9 @@ public abstract class SkullBlockRendererMixin implements BlockEntityRenderer<Sku
         if (localAvatar == null || localAvatar.trust.get(Trust.CUSTOM_HEADS) == 0)
             return;
 
-        FiguraMod.pushProfiler(localAvatar.owner.toString());
-        FiguraMod.pushProfiler(FiguraMod.MOD_ID + "-skullRender");
+        FiguraMod.pushProfiler(FiguraMod.MOD_ID);
+        FiguraMod.pushProfiler(localAvatar);
+        FiguraMod.pushProfiler("skullRender");
 
         //event
         BlockStateAPI b = localBlock == null ? null : new BlockStateAPI(localBlock.getBlockState(), localBlock.getBlockPos());
@@ -67,7 +68,7 @@ public abstract class SkullBlockRendererMixin implements BlockEntityRenderer<Sku
         if (bool || localAvatar.skullRender(stack, bufferSource, light, direction, yaw))
             ci.cancel();
 
-        FiguraMod.popProfiler(4);
+        FiguraMod.popProfiler(5);
     }
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/blockentity/SkullBlockRenderer;renderSkull(Lnet/minecraft/core/Direction;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/model/SkullModelBase;Lnet/minecraft/client/renderer/RenderType;)V"), method = "render(Lnet/minecraft/world/level/block/entity/SkullBlockEntity;FLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;II)V")

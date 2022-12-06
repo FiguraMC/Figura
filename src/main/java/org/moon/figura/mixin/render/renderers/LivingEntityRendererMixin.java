@@ -83,18 +83,19 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
         PartFilterScheme filter = invisible ? PartFilterScheme.PIVOTS : PartFilterScheme.MODEL;
         int overlay = getOverlayCoords(entity, getWhiteOverlayProgress(entity, delta));
 
-        FiguraMod.pushProfiler(currentAvatar.owner.toString());
+        FiguraMod.pushProfiler(FiguraMod.MOD_ID);
+        FiguraMod.pushProfiler(currentAvatar);
 
-        FiguraMod.pushProfiler(FiguraMod.MOD_ID + "-renderEvent");
+        FiguraMod.pushProfiler("renderEvent");
         currentAvatar.renderEvent(delta);
 
-        FiguraMod.popPushProfiler(FiguraMod.MOD_ID + "-render");
+        FiguraMod.popPushProfiler("render");
         currentAvatar.render(entity, yaw, delta, translucent ? 0.15f : 1f, matrices, bufferSource, light, overlay, (LivingEntityRenderer<?, ?>) (Object) this, filter, translucent, glowing);
 
-        FiguraMod.popPushProfiler(FiguraMod.MOD_ID + "-postRenderEvent");
+        FiguraMod.popPushProfiler("postRenderEvent");
         currentAvatar.postRenderEvent(delta);
 
-        FiguraMod.popProfiler(2);
+        FiguraMod.popProfiler(3);
 
         if (currentAvatar.luaRuntime != null && playerModel != null && currentAvatar.trust.get(Trust.VANILLA_MODEL_EDIT) == 1)
             currentAvatar.luaRuntime.vanilla_model.PLAYER.alter(playerModel);
