@@ -5,6 +5,7 @@ import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.world.entity.Entity;
+import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.spongepowered.asm.mixin.Final;
@@ -22,7 +23,11 @@ public class LevelRendererMixin {
     @Inject(at = @At("HEAD"), method = "renderEntity")
     private void renderEntity(Entity entity, double cameraX, double cameraY, double cameraZ, float tickDelta, PoseStack matrices, MultiBufferSource bufferSource, CallbackInfo ci) {
         Avatar avatar = AvatarManager.getAvatar(entity);
-        if (avatar != null)
+        if (avatar != null) {
+            FiguraMod.pushProfiler(avatar.owner.toString());
+            FiguraMod.pushProfiler(FiguraMod.MOD_ID + "-worldRender");
             avatar.worldRender(entity, cameraX, cameraY, cameraZ, matrices, bufferSource, entityRenderDispatcher.getPackedLightCoords(entity, tickDelta), tickDelta);
+            FiguraMod.popProfiler(2);
+        }
     }
 }

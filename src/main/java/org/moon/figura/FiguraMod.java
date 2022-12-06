@@ -197,4 +197,10 @@ public class FiguraMod implements ClientModInitializer {
     public static void popProfiler() {
         Minecraft.getInstance().getProfiler().pop();
     }
+
+    public static void popProfiler(int times) {
+        var profiler = Minecraft.getInstance().getProfiler();
+        for (int i = 0; i < times; i++)
+            profiler.pop();
+    }
 }
