@@ -160,8 +160,9 @@
   "figura.gui.wardrobe.delete.tooltip": "Delete avatar from the Figura server",
   "figura.gui.wardrobe.sound.tooltip": "Avatar Sounds",
   "figura.gui.wardrobe.keybind.tooltip": "Avatar Keybinds",
+  "figura.gui.wardrobe.new_avatar.tooltip": "Create new Avatar",
+  "figura.gui.wardrobe.unselect.tooltip": "Unselect current Avatar",
   "figura.gui.wardrobe.folder.tooltip": "Open avatars root folder",
-  "figura.gui.wardrobe.unselect": "Unselect",
 
   "figura.gui.sound.play": "Play sound",
   "figura.gui.sound.stop": "Stop sound",
