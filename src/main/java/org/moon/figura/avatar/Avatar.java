@@ -392,9 +392,6 @@ public class Avatar {
         if (renderer == null || !loaded)
             return;
 
-        FiguraMod.pushProfiler(owner.toString());
-        FiguraMod.pushProfiler(FiguraMod.MOD_ID + "-render");
-
         renderer.vanillaModelData.update(entityRenderer);
         renderer.currentFilterScheme = filter;
         renderer.entity = entity;
@@ -409,17 +406,11 @@ public class Avatar {
         renderer.glowing = glowing;
 
         render();
-
-        FiguraMod.popProfiler();
-        FiguraMod.popProfiler();
     }
 
     public synchronized void worldRender(Entity entity, double camX, double camY, double camZ, PoseStack matrices, MultiBufferSource bufferSource, int lightFallback, float tickDelta) {
         if (renderer == null || !loaded)
             return;
-
-        FiguraMod.pushProfiler(owner.toString());
-        FiguraMod.pushProfiler(FiguraMod.MOD_ID + "-worldRender");
 
         for (Queue<Pair<FiguraMat4, FiguraMat3>> queue : renderer.pivotCustomizations.values()) {
             while (!queue.isEmpty()) {
@@ -449,9 +440,6 @@ public class Avatar {
         matrices.popPose();
 
         renderer.updateLight = false;
-
-        FiguraMod.popProfiler();
-        FiguraMod.popProfiler();
     }
 
     public void capeRender(Entity entity, MultiBufferSource bufferSource, PoseStack stack, int light, float tickDelta, ModelPart cloak) {
@@ -473,8 +461,7 @@ public class Avatar {
 
         render();
 
-        FiguraMod.popProfiler();
-        FiguraMod.popProfiler();
+        FiguraMod.popProfiler(2);
     }
 
     public void elytraRender(Entity entity, MultiBufferSource bufferSource, PoseStack stack, int light, float tickDelta, EntityModel<?> model) {
@@ -503,10 +490,8 @@ public class Avatar {
         renderer.vanillaModelData.update(ParentType.RightElytra, model);
         renderer.currentFilterScheme = PartFilterScheme.RIGHT_ELYTRA;
         render();
-        FiguraMod.popProfiler();
 
-        FiguraMod.popProfiler();
-        FiguraMod.popProfiler();
+        FiguraMod.popProfiler(3);
     }
 
     public void firstPersonWorldRender(Entity watcher, MultiBufferSource bufferSource, PoseStack matrices, Camera camera, float tickDelta) {
@@ -526,8 +511,7 @@ public class Avatar {
 
         renderMode = oldMode;
 
-        FiguraMod.popProfiler();
-        FiguraMod.popProfiler();
+        FiguraMod.popProfiler(2);
     }
 
     public void firstPersonRender(PoseStack stack, MultiBufferSource bufferSource, Player player, PlayerRenderer playerRenderer, ModelPart arm, int light, int overlay, float tickDelta) {
@@ -552,8 +536,7 @@ public class Avatar {
 
         renderer.allowHiddenTransforms = true;
 
-        FiguraMod.popProfiler();
-        FiguraMod.popProfiler();
+        FiguraMod.popProfiler(2);
     }
 
     public void hudRender(PoseStack stack, MultiBufferSource bufferSource, Entity entity, float tickDelta) {
@@ -586,8 +569,7 @@ public class Avatar {
 
         Lighting.setupFor3DItems();
 
-        FiguraMod.popProfiler();
-        FiguraMod.popProfiler();
+        FiguraMod.popProfiler(2);
     }
 
     public boolean skullRender(PoseStack stack, MultiBufferSource bufferSource, int light, Direction direction, float yaw) {
@@ -772,8 +754,7 @@ public class Avatar {
         renderer.vanillaModelData.update(entityRenderer);
         renderer.updateMatrices();
 
-        FiguraMod.popProfiler();
-        FiguraMod.popProfiler();
+        FiguraMod.popProfiler(2);
     }
 
     // -- animations -- //

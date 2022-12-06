@@ -59,15 +59,15 @@ public abstract class SkullBlockRendererMixin implements BlockEntityRenderer<Sku
 
         FiguraMod.pushProfiler(localBlock != null ? localBlock.getBlockPos().toString() : String.valueOf(i));
 
+        FiguraMod.pushProfiler("event");
         boolean bool = localAvatar.skullRenderEvent(Minecraft.getInstance().getFrameTime(), b, i);
 
         //render skull :3
+        FiguraMod.popPushProfiler("render");
         if (bool || localAvatar.skullRender(stack, bufferSource, light, direction, yaw))
             ci.cancel();
 
-        FiguraMod.popProfiler();
-        FiguraMod.popProfiler(); //wee
-        FiguraMod.popProfiler();
+        FiguraMod.popProfiler(4);
     }
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/blockentity/SkullBlockRenderer;renderSkull(Lnet/minecraft/core/Direction;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/model/SkullModelBase;Lnet/minecraft/client/renderer/RenderType;)V"), method = "render(Lnet/minecraft/world/level/block/entity/SkullBlockEntity;FLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;II)V")

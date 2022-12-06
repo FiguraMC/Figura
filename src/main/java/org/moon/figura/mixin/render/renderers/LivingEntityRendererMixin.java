@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.config.Config;
@@ -81,9 +82,19 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
         //When viewed 3rd person, render all non-world parts.
         PartFilterScheme filter = invisible ? PartFilterScheme.PIVOTS : PartFilterScheme.MODEL;
         int overlay = getOverlayCoords(entity, getWhiteOverlayProgress(entity, delta));
+
+        FiguraMod.pushProfiler(currentAvatar.owner.toString());
+
+        FiguraMod.pushProfiler(FiguraMod.MOD_ID + "-renderEvent");
         currentAvatar.renderEvent(delta);
+
+        FiguraMod.popPushProfiler(FiguraMod.MOD_ID + "-render");
         currentAvatar.render(entity, yaw, delta, translucent ? 0.15f : 1f, matrices, bufferSource, light, overlay, (LivingEntityRenderer<?, ?>) (Object) this, filter, translucent, glowing);
+
+        FiguraMod.popPushProfiler(FiguraMod.MOD_ID + "-postRenderEvent");
         currentAvatar.postRenderEvent(delta);
+
+        FiguraMod.popProfiler(2);
 
         if (currentAvatar.luaRuntime != null && playerModel != null && currentAvatar.trust.get(Trust.VANILLA_MODEL_EDIT) == 1)
             currentAvatar.luaRuntime.vanilla_model.PLAYER.alter(playerModel);
