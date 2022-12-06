@@ -446,8 +446,9 @@ public class Avatar {
         if (renderer == null || !loaded)
             return;
 
-        FiguraMod.pushProfiler(owner.toString());
-        FiguraMod.pushProfiler(FiguraMod.MOD_ID + "-capeRender");
+        FiguraMod.pushProfiler(FiguraMod.MOD_ID);
+        FiguraMod.pushProfiler(this);
+        FiguraMod.pushProfiler("capeRender");
 
         renderer.vanillaModelData.update(ParentType.Cape, cloak);
         renderer.entity = entity;
@@ -461,15 +462,16 @@ public class Avatar {
 
         render();
 
-        FiguraMod.popProfiler(2);
+        FiguraMod.popProfiler(3);
     }
 
     public void elytraRender(Entity entity, MultiBufferSource bufferSource, PoseStack stack, int light, float tickDelta, EntityModel<?> model) {
         if (renderer == null || !loaded)
             return;
 
-        FiguraMod.pushProfiler(owner.toString());
-        FiguraMod.pushProfiler(FiguraMod.MOD_ID + "-elytraRender");
+        FiguraMod.pushProfiler(FiguraMod.MOD_ID);
+        FiguraMod.pushProfiler(this);
+        FiguraMod.pushProfiler("elytraRender");
 
         renderer.entity = entity;
         renderer.bufferSource = bufferSource;
@@ -491,15 +493,16 @@ public class Avatar {
         renderer.currentFilterScheme = PartFilterScheme.RIGHT_ELYTRA;
         render();
 
-        FiguraMod.popProfiler(3);
+        FiguraMod.popProfiler(4);
     }
 
     public void firstPersonWorldRender(Entity watcher, MultiBufferSource bufferSource, PoseStack matrices, Camera camera, float tickDelta) {
         if (renderer == null || !loaded)
             return;
 
-        FiguraMod.pushProfiler(owner.toString());
-        FiguraMod.pushProfiler(FiguraMod.MOD_ID + "-firstPersonWorldRender");
+        FiguraMod.pushProfiler(FiguraMod.MOD_ID);
+        FiguraMod.pushProfiler(this);
+        FiguraMod.pushProfiler("firstPersonWorldRender");
 
         int light = Minecraft.getInstance().getEntityRenderDispatcher().getPackedLightCoords(watcher, tickDelta);
         Vec3 camPos = camera.getPosition();
@@ -511,15 +514,16 @@ public class Avatar {
 
         renderMode = oldMode;
 
-        FiguraMod.popProfiler(2);
+        FiguraMod.popProfiler(3);
     }
 
     public void firstPersonRender(PoseStack stack, MultiBufferSource bufferSource, Player player, PlayerRenderer playerRenderer, ModelPart arm, int light, int overlay, float tickDelta) {
         if (renderer == null || !loaded)
             return;
 
-        FiguraMod.pushProfiler(owner.toString());
-        FiguraMod.pushProfiler(FiguraMod.MOD_ID + "-firstPersonRender");
+        FiguraMod.pushProfiler(FiguraMod.MOD_ID);
+        FiguraMod.pushProfiler(this);
+        FiguraMod.pushProfiler("firstPersonRender");
 
         PartFilterScheme filter = arm == playerRenderer.getModel().leftArm ? PartFilterScheme.LEFT_ARM : PartFilterScheme.RIGHT_ARM;
         boolean config = Config.ALLOW_FP_HANDS.asBool();
@@ -536,15 +540,16 @@ public class Avatar {
 
         renderer.allowHiddenTransforms = true;
 
-        FiguraMod.popProfiler(2);
+        FiguraMod.popProfiler(3);
     }
 
     public void hudRender(PoseStack stack, MultiBufferSource bufferSource, Entity entity, float tickDelta) {
         if (renderer == null || !loaded)
             return;
 
-        FiguraMod.pushProfiler(owner.toString());
-        FiguraMod.pushProfiler(FiguraMod.MOD_ID + "-hudRender");
+        FiguraMod.pushProfiler(FiguraMod.MOD_ID);
+        FiguraMod.pushProfiler(this);
+        FiguraMod.pushProfiler("hudRender");
 
         renderer.currentFilterScheme = PartFilterScheme.HUD;
         renderer.entity = entity;
@@ -569,7 +574,7 @@ public class Avatar {
 
         Lighting.setupFor3DItems();
 
-        FiguraMod.popProfiler(2);
+        FiguraMod.popProfiler(3);
     }
 
     public boolean skullRender(PoseStack stack, MultiBufferSource bufferSource, int light, Direction direction, float yaw) {
@@ -746,15 +751,16 @@ public class Avatar {
         if (renderer == null || !loaded)
             return;
 
-        FiguraMod.pushProfiler(owner.toString());
-        FiguraMod.pushProfiler(FiguraMod.MOD_ID + "-updateMatrices");
+        FiguraMod.pushProfiler(FiguraMod.MOD_ID);
+        FiguraMod.pushProfiler(this);
+        FiguraMod.pushProfiler("updateMatrices");
 
         renderer.currentFilterScheme = PartFilterScheme.MODEL;
         renderer.matrices = stack;
         renderer.vanillaModelData.update(entityRenderer);
         renderer.updateMatrices();
 
-        FiguraMod.popProfiler(2);
+        FiguraMod.popProfiler(3);
     }
 
     // -- animations -- //

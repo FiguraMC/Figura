@@ -147,11 +147,24 @@ public abstract class MinecraftMixin {
 
     @Inject(at = @At("HEAD"), method = "runTick")
     private void preTick(boolean tick, CallbackInfo ci) {
+        FiguraMod.pushProfiler(FiguraMod.MOD_ID);
+        FiguraMod.pushProfiler("applyBBAnimations");
         AvatarManager.applyAnimations();
+        FiguraMod.popProfiler(2);
     }
 
     @Inject(at = @At("RETURN"), method = "runTick")
     private void afterTick(boolean tick, CallbackInfo ci) {
+        FiguraMod.pushProfiler(FiguraMod.MOD_ID);
+        FiguraMod.pushProfiler("clearBBAnimations");
         AvatarManager.clearAnimations();
+        FiguraMod.popProfiler(2);
+    }
+
+    @Inject(at = @At("HEAD"), method = "tick")
+    private void startTick(CallbackInfo ci) {
+        FiguraMod.pushProfiler(FiguraMod.MOD_ID);
+        FiguraMod.tick();
+        FiguraMod.popProfiler();
     }
 }

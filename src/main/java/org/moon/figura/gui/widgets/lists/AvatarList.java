@@ -39,8 +39,12 @@ public class AvatarList extends AbstractList {
     public AvatarList(int x, int y, int width, int height) {
         super(x, y, width, height);
 
+        //search bar
         children.add(new TextField(x + 4, y + 4, width - 8, 20, FiguraText.of("gui.search"), s -> filter = s));
-        children.add(new TexturedButton(
+
+        //new avatar
+        TexturedButton butt;
+        children.add(butt = new TexturedButton(
                 x + width / 2 - 46, y + 28,
                 20, 20, 0, 0, 20,
                 new FiguraIdentifier("textures/gui/new_avatar.png"),
@@ -48,6 +52,9 @@ public class AvatarList extends AbstractList {
                 FiguraText.of("gui.wardrobe.new_avatar.tooltip"),
                 button -> {})
         );
+        butt.active = false;
+
+        //unselect
         children.add(new TexturedButton(
                 x + width / 2 - 10, y + 28,
                 20, 20, 0, 0, 20,
@@ -59,6 +66,8 @@ public class AvatarList extends AbstractList {
                     selectedEntry = null;
                 })
         );
+
+        //root folder
         children.add(new TexturedButton(
                 x + width / 2 + 26, y + 28,
                 20, 20, 0, 0, 20,

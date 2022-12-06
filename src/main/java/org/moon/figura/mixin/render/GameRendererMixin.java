@@ -108,21 +108,23 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
 
         avatar = AvatarManager.getAvatarForPlayer(this.minecraft.player.getUUID());
         if (avatar != null) {
-            FiguraMod.pushProfiler(avatar.owner.toString());
-            FiguraMod.pushProfiler(FiguraMod.MOD_ID + "-renderEvent");
+            FiguraMod.pushProfiler(FiguraMod.MOD_ID);
+            FiguraMod.pushProfiler(avatar);
+            FiguraMod.pushProfiler("renderEvent");
             avatar.renderMode = EntityRenderMode.FIRST_PERSON;
             avatar.renderEvent(tickDelta);
-            FiguraMod.popProfiler(2);
+            FiguraMod.popProfiler(3);
         }
     }
 
     @Inject(method = "renderItemInHand", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;popPose()V", shift = At.Shift.BEFORE))
     private void posRenderItemInHand(PoseStack matrices, Camera camera, float tickDelta, CallbackInfo ci) {
         if (avatar != null) {
-            FiguraMod.pushProfiler(avatar.owner.toString());
-            FiguraMod.pushProfiler(FiguraMod.MOD_ID + "-postRenderEvent");
+            FiguraMod.pushProfiler(FiguraMod.MOD_ID);
+            FiguraMod.pushProfiler(avatar);
+            FiguraMod.pushProfiler("postRenderEvent");
             avatar.postRenderEvent(tickDelta);
-            FiguraMod.popProfiler(2);
+            FiguraMod.popProfiler(3);
         }
     }
 

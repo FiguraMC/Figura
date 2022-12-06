@@ -24,10 +24,11 @@ public class LevelRendererMixin {
     private void renderEntity(Entity entity, double cameraX, double cameraY, double cameraZ, float tickDelta, PoseStack matrices, MultiBufferSource bufferSource, CallbackInfo ci) {
         Avatar avatar = AvatarManager.getAvatar(entity);
         if (avatar != null) {
-            FiguraMod.pushProfiler(avatar.owner.toString());
-            FiguraMod.pushProfiler(FiguraMod.MOD_ID + "-worldRender");
+            FiguraMod.pushProfiler(FiguraMod.MOD_ID);
+            FiguraMod.pushProfiler(avatar);
+            FiguraMod.pushProfiler("worldRender");
             avatar.worldRender(entity, cameraX, cameraY, cameraZ, matrices, bufferSource, entityRenderDispatcher.getPackedLightCoords(entity, tickDelta), tickDelta);
-            FiguraMod.popProfiler(2);
+            FiguraMod.popProfiler(3);
         }
     }
 }
