@@ -76,7 +76,7 @@ public class MathUtils {
         FiguraVec3 ret = vec.copy();
         ret.subtract(pos.x, pos.y, pos.z);
         ret.transform(transformMatrix);
-        ret.multiply(-1, 1, 1);
+        //ret.multiply(-1, 1, 1);
 
         transformMatrix.free();
         return ret;
@@ -91,11 +91,11 @@ public class MathUtils {
         Vector3f camSpace = new Vector3f((float) worldSpace.x, (float) worldSpace.y, (float) worldSpace.z);
         Vec3 camPos = camera.getPosition();
         camSpace.sub(new Vector3f((float) camPos.x, (float) camPos.y, (float) camPos.z));
-        camSpace.mulTranspose(transformMatrix);
+        transformMatrix.transform(camSpace);
 
         Vector4f projectiveCamSpace = new Vector4f(camSpace, 1f);
         Matrix4f projMat = minecraft.gameRenderer.getProjectionMatrix(((GameRendererAccessor) minecraft.gameRenderer).figura$getFov(camera, minecraft.getFrameTime(), true));
-        projectiveCamSpace.mulTranspose(projMat);
+        projMat.transform(projectiveCamSpace);
         float w = projectiveCamSpace.w();
 
         return FiguraVec4.of(projectiveCamSpace.x() / w, projectiveCamSpace.y() / w, projectiveCamSpace.z() / w, Math.sqrt(camSpace.dot(camSpace)));
