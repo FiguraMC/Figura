@@ -378,14 +378,15 @@ public class Avatar {
     // -- rendering events -- //
 
     private void render() {
-        if (renderMode != EntityRenderMode.RENDER) {
-            int prev = complexity.remaining;
-            complexity.remaining = trust.get(Trust.COMPLEXITY);
-            renderer.render();
-            complexity.remaining = prev;
-        } else {
+        if (renderMode == EntityRenderMode.RENDER || renderMode == EntityRenderMode.FIRST_PERSON) {
             complexity.use(renderer.render());
+            return;
         }
+
+        int prev = complexity.remaining;
+        complexity.remaining = trust.get(Trust.COMPLEXITY);
+        renderer.render();
+        complexity.remaining = prev;
     }
 
     public void render(Entity entity, float yaw, float delta, float alpha, PoseStack matrices, MultiBufferSource bufferSource, int light, int overlay, LivingEntityRenderer<?, ?> entityRenderer, PartFilterScheme filter, boolean translucent, boolean glowing) {
