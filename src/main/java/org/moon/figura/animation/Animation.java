@@ -35,7 +35,7 @@ public class Animation {
     // -- player variables -- //
 
     private final TimeController controller = new TimeController();
-    protected PlayState playState = PlayState.STOPPED;
+    public PlayState playState = PlayState.STOPPED;
     private float time = 0f;
     private boolean inverted = false;
     private float lastTime = 0f;
@@ -127,21 +127,6 @@ public class Animation {
             if (codeTime >= minTime && codeTime < maxTime)
                 owner.run(Pair.of("animations." + modelName + "." + name, codeFrames.get(codeTime)), owner.tick, this);
         }
-    }
-
-    public static Map<String, Map<String, Animation>> getTableForAnimations(Avatar avatar) {
-        HashMap<String, Map<String, Animation>> root = new HashMap<>();
-        for (Animation animation : avatar.animations.values()) {
-            //get or create animation table
-            Map<String, Animation> animations = root.get(animation.modelName);
-            if (animations == null)
-                animations = new HashMap<>();
-
-            //put animation on the model table
-            animations.put(animation.name, animation);
-            root.put(animation.modelName, animations);
-        }
-        return root;
     }
 
     // -- lua methods -- //

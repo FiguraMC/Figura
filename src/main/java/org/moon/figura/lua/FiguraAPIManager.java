@@ -122,6 +122,7 @@ public class FiguraAPIManager {
         add(TextureAPI.class);
         add(FiguraTexture.class);
 
+        add(AnimationAPI.class);
         add(Animation.class);
 
         add(HostAPI.class);
@@ -144,7 +145,7 @@ public class FiguraAPIManager {
         put("nameplate", r -> r.nameplate = new NameplateAPI());
         put("renderer", r -> r.renderer = new RendererAPI(r.owner));
         put("action_wheel", r -> r.action_wheel = new ActionWheelAPI(r.owner));
-        put("animations", r -> Animation.getTableForAnimations(r.owner));
+        put("animations", r -> new AnimationAPI(r.owner));
         put("client", r -> ClientAPI.INSTANCE);
         put("particles", r -> new ParticleAPI(r.owner));
         put("avatar", r -> r.avatar_meta = new AvatarAPI(r.owner));

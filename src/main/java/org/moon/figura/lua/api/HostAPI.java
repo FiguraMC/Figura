@@ -340,6 +340,12 @@ public class HostAPI {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("host.is_avatar_uploaded")
+    public boolean isAvatarUploaded() {
+        return isHost() && AvatarManager.localUploaded;
+    }
+
+    @LuaWhitelist
     public Object __index(String arg) {
         if ("unlockCursor".equals(arg))
             return unlockCursor;

@@ -490,7 +490,7 @@
 
 
   "figura.docs.globals.action_wheel": "The global instance of the ActionWheelAPI and its subtypes.",
-  "figura.docs.globals.animations": "The global instance of the \"animations\" table and its subtypes.",
+  "figura.docs.globals.animations": "The global instance of the AnimationsAPI and its subtypes.",
   "figura.docs.globals.figura_metatables": "A table containing all the metatables for Figura's object types. The metatables are editable.",
   "figura.docs.globals.nameplate": "The global instance of the NameplateAPI and its subtypes.",
   "figura.docs.globals.world": "The global instance of the WorldAPI and its subtypes.",
@@ -574,7 +574,12 @@
   "figura.docs.wheel_action.toggled": "Sets the toggle state of the Action. Returns the Action for function chaining.",
 
 
-  "figura.docs.animation": "A blockbench animation.",
+  "figura.docs.animations": "A global API used for control of Blockbench Animations.",
+  "figura.docs.animations.get_animations": "Returns a map where its keys are all models that contains animations and value being another map which is that model's animations and its name.",
+  "figura.docs.animations.get_playing": "Return a table with all playing animations.",
+  "figura.docs.animations.stop_all": "Stops all playing (and paused) animations.",
+
+  "figura.docs.animation": "A Blockbench animation.",
   "figura.docs.animation.name": "This animation's name.",
   "figura.docs.animation.play": "Initializes the animation. Resume the animation if it was paused.",
   "figura.docs.animation.pause": "Pause the animation's playback.",
@@ -867,6 +872,7 @@
   "figura.docs.host.is_container_open": "Checks if the host has a container screen opened.",
   "figura.docs.host.save_texture": "A debug function, saves the texture on the cache directory as png.",
   "figura.docs.host.screenshot": "Takes a screenshot from the current screen and returns a Texture of it.",
+  "figura.docs.host.is_avatar_uploaded": "Checks if this avatar is currently uploaded.",
 
 
   "figura.docs.itemstack": "A proxy for an item stack from Minecraft.",
