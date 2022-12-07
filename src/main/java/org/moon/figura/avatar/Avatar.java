@@ -6,7 +6,7 @@ import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
@@ -532,9 +532,9 @@ public class Avatar {
 
         stack.pushPose();
         if (!config) {
-            stack.mulPose(Vector3f.ZP.rotation(arm.zRot));
-            stack.mulPose(Vector3f.YP.rotation(arm.yRot));
-            stack.mulPose(Vector3f.XP.rotation(arm.xRot));
+            stack.mulPose(Axis.ZP.rotation(arm.zRot));
+            stack.mulPose(Axis.YP.rotation(arm.yRot));
+            stack.mulPose(Axis.XP.rotation(arm.xRot));
         }
         render(player, 0f, tickDelta, 1f, stack, bufferSource, light, overlay, playerRenderer, filter, false, false);
         stack.popPose();
@@ -602,7 +602,7 @@ public class Avatar {
             stack.translate((0.5d - direction.getStepX() * 0.25d), 0.25d, (0.5d - direction.getStepZ() * 0.25d));
 
         stack.scale(-1f, -1f, 1f);
-        stack.mulPose(Vector3f.YP.rotationDegrees(yaw));
+        stack.mulPose(Axis.YP.rotationDegrees(yaw));
 
         int comp = renderer.renderSpecialParts();
         complexity.use(comp);
@@ -665,7 +665,7 @@ public class Avatar {
         stack.pushPose();
         stack.translate(x, y, 0d);
         stack.scale(modelScale, -modelScale, modelScale);
-        stack.mulPose(Vector3f.XP.rotationDegrees(180f));
+        stack.mulPose(Axis.XP.rotationDegrees(180f));
 
         //scissors
         FiguraVec4 oldScissors = UIHelper.scissors.copy();

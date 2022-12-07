@@ -48,7 +48,7 @@ public class BooleanElement extends AbstractConfigElement {
     public void setPos(int x, int y) {
         super.setPos(x, y);
 
-        this.button.x = x + width - 154;
-        this.button.y = y;
+        this.button.setX(x + width - 154);
+        this.button.setY(y);
     }
 }

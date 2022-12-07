@@ -14,8 +14,4 @@ public interface SoundManagerAccessor {
     @Intrinsic
     @Accessor("soundEngine")
     SoundEngine getSoundEngine();
-
-    @Intrinsic
-    @Invoker("getSoundEvent")
-    WeighedSoundEvents getSoundEvent(ResourceLocation id);
 }

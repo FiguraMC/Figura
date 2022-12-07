@@ -2,11 +2,11 @@ package org.moon.figura.gui.widgets;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Quaternion;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
+import org.joml.Quaternionf;
 import org.moon.figura.gui.screens.AbstractPanelScreen;
 import org.moon.figura.gui.screens.AvatarScreen;
 import org.moon.figura.model.rendering.texture.EntityRenderMode;
@@ -72,8 +72,8 @@ public class InteractableEntity extends AbstractContainerElement {
                         Minecraft.getInstance().setScreen(new AvatarScreen(parentScreen, this));
 
                         //update button
-                        button.x = this.x + 4;
-                        button.y = this.y + 4;
+                        button.setX(this.x + 4);
+                        button.setY(this.y + 4);
                         button.setTooltip(FiguraText.of("gui.minimise"));
 
                         //update entity
@@ -114,14 +114,14 @@ public class InteractableEntity extends AbstractContainerElement {
             stack.translate(x + modelX, y + modelY, 0f);
             float scale = this.scale / 35;
             stack.scale(scale, scale, scale);
-            stack.mulPose(Quaternion.fromXYZDegrees(new Vector3f(angleX - pitch, angleY - yaw, 0f)));
+            stack.mulPose(new Quaternionf().rotateXYZ((float) Math.toRadians(angleX - pitch), (float) Math.toRadians(angleY - yaw), 0f));
 
             //draw front
             UIHelper.renderTexture(stack, -24, -32, 48, 64, UNKNOWN);
 
             //draw back
             stack.pushPose();
-            stack.mulPose(Vector3f.YP.rotationDegrees(180));
+            stack.mulPose(Axis.YP.rotationDegrees(180));
             UIHelper.renderTexture(stack, -24, -32, 48, 64, UNKNOWN);
             stack.popPose();
 

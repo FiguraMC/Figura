@@ -1,6 +1,6 @@
 package org.moon.figura.math.matrix;
 
-import com.mojang.math.Matrix3f;
+import org.joml.Matrix3f;
 import org.luaj.vm2.LuaError;
 import org.lwjgl.BufferUtils;
 import org.moon.figura.lua.LuaNotNil;
@@ -27,7 +27,7 @@ public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
 
     public static FiguraMat3 fromMatrix3f(Matrix3f mat) {
         copyingBuffer.clear();
-        mat.store(copyingBuffer);
+        mat.get(copyingBuffer);
         return of(copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get(),
                 copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get(),
                 copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get());
@@ -36,13 +36,13 @@ public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
     public Matrix3f toMatrix3f() {
         writeToBuffer();
         Matrix3f result = new Matrix3f();
-        result.load(copyingBuffer);
+        result.set(copyingBuffer);
         return result;
     }
 
     public void copyDataTo(Matrix3f vanillaMatrix) {
         writeToBuffer();
-        vanillaMatrix.load(copyingBuffer);
+        vanillaMatrix.set(copyingBuffer);
     }
 
     private void writeToBuffer() {

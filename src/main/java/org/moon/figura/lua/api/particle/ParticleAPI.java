@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.commands.arguments.ParticleArgument;
 import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.registries.BuiltInRegistries;
 import org.luaj.vm2.LuaError;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.ducks.ParticleEngineAccessor;
@@ -37,7 +38,7 @@ public class ParticleAPI {
 
     private LuaParticle generate(String id, double x, double y, double z, double w, double t, double h) {
         try {
-            ParticleOptions options = ParticleArgument.readParticle(new StringReader(id));
+            ParticleOptions options = ParticleArgument.readParticle(new StringReader(id), BuiltInRegistries.PARTICLE_TYPE.asLookup());
             Particle p = getParticleEngine().figura$makeParticle(options, x, y, z, w, t, h);
             if (p == null) throw new LuaError("Could not parse particle \"" + id + "\"");
             return new LuaParticle(p, owner);

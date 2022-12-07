@@ -71,7 +71,7 @@ public abstract class AbstractConfigElement extends AbstractContainerElement {
         this.x = x;
         this.y = y;
 
-        resetButton.x = x + width - 60;
-        resetButton.y = y;
+        resetButton.setX(x + width - 60);
+        resetButton.setY(y);
     }
 }

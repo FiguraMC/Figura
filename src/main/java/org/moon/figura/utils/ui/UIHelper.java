@@ -4,9 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Quaternion;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -23,6 +21,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import org.moon.figura.FiguraMod;
@@ -122,21 +123,21 @@ public class UIHelper extends GuiComponent {
         stack.pushPose();
         stack.translate(x, y, renderMode == EntityRenderMode.MINECRAFT_GUI ? 200d : 0d);
         stack.scale(scale, scale, scale);
-        stack.last().pose().multiply(Matrix4f.createScaleMatrix(1f, 1f, -1f)); //Scale ONLY THE POSITIONS! Inverted normals don't work for whatever reason
+        stack.last().pose().mul(new Matrix4f().scale(1f, 1f, -1f)); //Scale ONLY THE POSITIONS! Inverted normals don't work for whatever reason
 
-        Quaternion quaternion = Vector3f.ZP.rotationDegrees(180f);
+        Quaternionf quaternion = Axis.ZP.rotationDegrees(180f);
 
         double finalY;
-        Quaternion quaternion2;
+        Quaternionf quaternion2;
         switch (renderMode) {
             case PAPERDOLL -> {
                 //stack rotations
-                quaternion2 = Vector3f.XP.rotationDegrees(pitch);
-                Quaternion quaternion3 = Vector3f.YP.rotationDegrees(yaw + 180);
+                quaternion2 = Axis.XP.rotationDegrees(pitch);
+                Quaternionf quaternion3 = Axis.YP.rotationDegrees(yaw + 180);
                 quaternion3.mul(quaternion2);
                 quaternion.mul(quaternion3);
                 stack.mulPose(quaternion);
-                quaternion3.conj();
+                quaternion3.conjugate();
                 quaternion2 = quaternion3;
 
                 //offset
@@ -161,10 +162,10 @@ public class UIHelper extends GuiComponent {
                 finalY = -1d;
             }
             case FIGURA_GUI -> {
-                quaternion2 = Vector3f.XP.rotationDegrees(pitch);
+                quaternion2 = Axis.XP.rotationDegrees(pitch);
                 quaternion.mul(quaternion2);
                 stack.mulPose(quaternion);
-                quaternion2.conj();
+                quaternion2.conjugate();
 
                 //rotations
                 float rot = 180f - yaw;
@@ -187,10 +188,10 @@ public class UIHelper extends GuiComponent {
                 float angle = (float) Math.atan(pitch / 40f);
                 float angle2 = (float) (Math.atan(yaw / 40f) * 20f);
 
-                quaternion2 = Vector3f.XP.rotationDegrees(angle2);
+                quaternion2 = Axis.XP.rotationDegrees(angle2);
                 quaternion.mul(quaternion2);
                 stack.mulPose(quaternion);
-                quaternion2.conj();
+                quaternion2.conjugate();
 
                 //rotations
                 entity.setXRot(-angle2);
@@ -376,7 +377,7 @@ public class UIHelper extends GuiComponent {
         //object
         int x, y, width, height;
         if (component instanceof AbstractWidget w) {
-            x = w.x; y = w.y;
+            x = w.getX(); y = w.getY();
             width = w.getWidth();
             height = w.getHeight();
         } else if (component instanceof AbstractContainerElement c) {

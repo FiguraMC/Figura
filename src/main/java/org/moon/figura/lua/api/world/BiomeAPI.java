@@ -2,6 +2,7 @@ package org.moon.figura.lua.api.world;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.biome.Biome;
@@ -35,7 +36,7 @@ public class BiomeAPI {
     public BiomeAPI(Biome biome, BlockPos pos) {
         this.biome = biome;
         this.pos = pos;
-        this.name = WorldAPI.getCurrentWorld().registryAccess().registry(Registry.BIOME_REGISTRY).get().getKey(biome).toString();
+        this.name = WorldAPI.getCurrentWorld().registryAccess().registry(Registries.BIOME).get().getKey(biome).toString();
     }
 
     protected BlockPos getBlockPos() {
@@ -73,7 +74,7 @@ public class BiomeAPI {
     public List<String> getTags() {
         List<String> list = new ArrayList<>();
 
-        Registry<Biome> registry = WorldAPI.getCurrentWorld().registryAccess().registryOrThrow(Registry.BIOME_REGISTRY);
+        Registry<Biome> registry = WorldAPI.getCurrentWorld().registryAccess().registryOrThrow(Registries.BIOME);
         Optional<ResourceKey<Biome>> key = registry.getResourceKey(biome);
 
         if (key.isEmpty())

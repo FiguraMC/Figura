@@ -78,7 +78,7 @@ public class AvatarList extends AbstractList {
         );
 
         //scrollbar
-        this.scrollBar.y = y + 48;
+        this.scrollBar.setY(y + 48);
         this.scrollBar.setHeight(height - 52);
 
         //scissors

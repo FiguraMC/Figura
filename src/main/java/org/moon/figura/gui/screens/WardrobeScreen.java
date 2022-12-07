@@ -139,7 +139,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
         addRenderableWidget(keybinds);
 
         //avatar metadata
-        addRenderableOnly(avatarInfo = new AvatarInfoWidget(this.width - rightSide - 4, 64, rightSide, back.y - 68));
+        addRenderableOnly(avatarInfo = new AvatarInfoWidget(this.width - rightSide - 4, 64, rightSide, back.getY() - 68));
 
         //panic warning - always added last, on top
         addRenderableOnly(panic = new Label(FiguraText.of("gui.panic.1").withStyle(ChatFormatting.YELLOW).append("\n").append(FiguraText.of("gui.panic.2", Config.PANIC_BUTTON.keyBind.getTranslatedKeyMessage())),

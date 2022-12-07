@@ -111,27 +111,27 @@ public class PlayerElement extends AbstractTrustElement {
     @Override
     public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
         if (dragged)
-            UIHelper.fillRounded(stack, x - 1, y - 1, width + 2, height + 2, 0x40FFFFFF);
+            UIHelper.fillRounded(stack, getX() - 1, getY() - 1, width + 2, height + 2, 0x40FFFFFF);
         else
             super.render(stack, mouseX, mouseY, delta);
     }
 
     public void renderDragged(PoseStack stack, int mouseX, int mouseY, float delta) {
-        int oX = x;
-        int oY = y;
-        x = mouseX - (anchorX - x);
-        y = mouseY - (anchorY - y) + (initialY - oY);
+        int oX = getX();
+        int oY = getY();
+        setX(mouseX - (anchorX - oX));
+        setY(mouseY - (anchorY - oY) + (initialY - oY));
         super.render(stack, mouseX, mouseY, delta);
-        x = oX;
-        y = oY;
+        setX(oX);
+        setY(oY);
     }
 
     @Override
     public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
         stack.pushPose();
 
-        float tx = x + width / 2f;
-        float ty = y + height / 2f;
+        float tx = getX() + width / 2f;
+        float ty = getY() + height / 2f;
 
         stack.translate(tx, ty, 100);
         stack.scale(scale, scale, 1f);

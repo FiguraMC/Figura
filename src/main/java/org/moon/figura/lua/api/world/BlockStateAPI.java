@@ -3,6 +3,8 @@ package org.moon.figura.lua.api.world;
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.resources.ResourceKey;
@@ -51,7 +53,7 @@ public class BlockStateAPI {
     public BlockStateAPI(BlockState blockstate, BlockPos pos) {
         this.blockState = blockstate;
         this.pos = pos;
-        this.id = Registry.BLOCK.getKey(blockstate.getBlock()).toString();
+        this.id = BuiltInRegistries.BLOCK.getKey(blockstate.getBlock()).toString();
 
         CompoundTag tag = NbtUtils.writeBlockState(blockstate);
         this.properties = (LuaTable) NbtToLua.convert(tag.contains("Properties") ? tag.get("Properties") : null);
@@ -201,7 +203,7 @@ public class BlockStateAPI {
     public List<String> getTags() {
         List<String> list = new ArrayList<>();
 
-        Registry<Block> registry = WorldAPI.getCurrentWorld().registryAccess().registryOrThrow(Registry.BLOCK_REGISTRY);
+        Registry<Block> registry = WorldAPI.getCurrentWorld().registryAccess().registryOrThrow(Registries.BLOCK);
         Optional<ResourceKey<Block>> key = registry.getResourceKey(blockState.getBlock());
 
         if (key.isEmpty())

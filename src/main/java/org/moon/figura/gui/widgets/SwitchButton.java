@@ -56,7 +56,7 @@ public class SwitchButton extends TexturedButton {
         drawCenteredString(
                 stack, Minecraft.getInstance().font,
                 (this.toggled ? getMessage().copy().withStyle(ChatFormatting.UNDERLINE) : getMessage()),
-                this.x + this.width / 2, this.y + this.height / 2 - 4,
+                this.getX() + this.width / 2, this.getY() + this.height / 2 - 4,
                 (!this.active ? ChatFormatting.DARK_GRAY : ChatFormatting.WHITE).getColor()
         );
     }
@@ -64,6 +64,8 @@ public class SwitchButton extends TexturedButton {
     protected void renderDefaultTexture(PoseStack stack, float delta) {
         //set texture
         UIHelper.setupTexture(SWITCH_TEXTURE);
+        int x = getX();
+        int y = getY();
 
         //render switch
         blit(stack, x + 5, y + 5, 20, 10, 10f, (this.toggled ? 20f : 0f) + (this.isHoveredOrFocused() ? 10f : 0f), 20, 10, 30, 40);

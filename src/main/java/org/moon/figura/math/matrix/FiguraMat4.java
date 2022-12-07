@@ -1,7 +1,7 @@
 package org.moon.figura.math.matrix;
 
-import com.mojang.math.Matrix4f;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix4f;
 import org.luaj.vm2.LuaError;
 import org.lwjgl.BufferUtils;
 import org.moon.figura.lua.LuaNotNil;
@@ -28,7 +28,7 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
 
     public static FiguraMat4 fromMatrix4f(Matrix4f mat) {
         copyingBuffer.clear();
-        mat.store(copyingBuffer);
+        mat.get(copyingBuffer);
         return of(copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get(),
                 copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get(),
                 copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get(),
@@ -38,13 +38,13 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
     public Matrix4f toMatrix4f() {
         writeToBuffer();
         Matrix4f result = new Matrix4f();
-        result.load(copyingBuffer);
+        result.set(copyingBuffer);
         return result;
     }
 
     public void copyDataTo(Matrix4f vanillaMatrix) {
         writeToBuffer();
-        vanillaMatrix.load(copyingBuffer);
+        vanillaMatrix.set(copyingBuffer);
     }
 
     private void writeToBuffer() {

@@ -72,8 +72,8 @@ public class TextField extends AbstractContainerElement {
             return false;
 
         //hacky
-        mouseX = Mth.clamp(mouseX, field.x, field.x + field.getWidth() - 1);
-        mouseY = Mth.clamp(mouseY, field.y, field.y + field.getHeight() - 1);
+        mouseX = Mth.clamp(mouseX, field.getX(), field.getX() + field.getWidth() - 1);
+        mouseY = Mth.clamp(mouseY, field.getY(), field.getY() + field.getHeight() - 1);
 
         return super.mouseClicked(mouseX, mouseY, button);
     }
@@ -81,8 +81,8 @@ public class TextField extends AbstractContainerElement {
     public void setPos(int x, int y) {
         this.x = x;
         this.y = y;
-        this.field.x = x + 4;
-        this.field.y = y + (this.height - 8) / 2;
+        this.field.setX(x + 4);
+        this.field.setY(y + (this.height - 8) / 2);
     }
 
     public void setBorderColour(int borderColour) {

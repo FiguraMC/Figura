@@ -10,6 +10,7 @@ import net.minecraft.core.UUIDUtil;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Vector3f;
 import org.luaj.vm2.LuaError;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.lua.LuaNotNil;
@@ -21,7 +22,6 @@ import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
-import org.moon.figura.utils.MathUtils;
 import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.Version;
 
@@ -212,8 +212,11 @@ public class ClientAPI {
     @LuaWhitelist
     @LuaMethodDoc("client.get_camera_rot")
     public static FiguraVec3 getCameraRot() {
+        var quaternion = Minecraft.getInstance().gameRenderer.getMainCamera().rotation();
+        Vector3f vec = new Vector3f();
+        quaternion.getEulerAnglesYXZ(vec);
         double f = 180d / Math.PI;
-        return MathUtils.quaternionToYXZ(Minecraft.getInstance().gameRenderer.getMainCamera().rotation()).multiply(f, -f, f); //degrees, and negate y
+        return FiguraVec3.fromVec3f(vec).multiply(f, -f, f); //degrees, and negate y
     }
 
     @LuaWhitelist

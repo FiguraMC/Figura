@@ -1,7 +1,7 @@
 package org.moon.figura.mixin.render.layers.items;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import net.minecraft.client.model.ArmedModel;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.ItemInHandRenderer;
@@ -57,7 +57,7 @@ public abstract class ItemInHandLayerMixin<T extends LivingEntity, M extends Ent
         if (avatar.pivotPartRender(left ? ParentType.LeftItemPivot : ParentType.RightItemPivot, stack -> {
             float s = 16f;
             stack.scale(s, s, s);
-            stack.mulPose(Vector3f.XP.rotationDegrees(-90f));
+            stack.mulPose(Axis.XP.rotationDegrees(-90f));
             this.itemInHandRenderer.renderItem(livingEntity, itemStack, transformType, left, stack, multiBufferSource, i);
         })) {
             ci.cancel();
