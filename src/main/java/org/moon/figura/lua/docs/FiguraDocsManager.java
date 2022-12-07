@@ -117,6 +117,7 @@ public class FiguraDocsManager {
         ));
 
         put("animations", List.of(
+                AnimationAPI.class,
                 Animation.class
         ));
 

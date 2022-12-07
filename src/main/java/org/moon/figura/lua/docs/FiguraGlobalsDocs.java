@@ -37,7 +37,7 @@ public abstract class FiguraGlobalsDocs {
     @LuaFieldDoc("globals.action_wheel")
     public ActionWheelAPI action_wheel;
     @LuaFieldDoc("globals.animations")
-    public LuaTable animations;
+    public AnimationAPI animations;
     @LuaFieldDoc("globals.figura_metatables")
     public LuaTable figuraMetatables;
     @LuaFieldDoc("globals.nameplate")
