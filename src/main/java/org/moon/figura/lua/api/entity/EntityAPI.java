@@ -29,6 +29,7 @@ import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.mixin.EntityAccessor;
 import org.moon.figura.utils.EntityUtils;
 
 import java.util.UUID;
@@ -357,6 +358,13 @@ public class EntityAPI<T extends Entity> {
     public boolean isAlive() {
         checkEntity();
         return entity.isAlive();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("entity.get_permission_level")
+    public int getPermissionLevel() {
+        checkEntity();
+        return ((EntityAccessor) entity).getPermissionLevel();
     }
 
     @LuaWhitelist

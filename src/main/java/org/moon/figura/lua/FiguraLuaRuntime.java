@@ -250,7 +250,10 @@ public class FiguraLuaRuntime {
         this.loadingScripts.push(name);
 
         //load
-        Varargs value = userGlobals.load(src, name).invoke(LuaValue.valueOf(name));
+        int split = name.lastIndexOf('.');
+        String path = split == -1 ? "" : name.substring(0, split);
+        String fileName = split == -1 ? name : name.substring(split + 1);
+        Varargs value = userGlobals.load(src, name).invoke(LuaValue.varargsOf(LuaValue.valueOf(path), LuaValue.valueOf(fileName)));
         if (value == LuaValue.NIL)
             value = LuaValue.TRUE;
 
