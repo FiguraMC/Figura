@@ -575,7 +575,7 @@
 
 
   "figura.docs.animations": "A global API used for control of Blockbench Animations.",
-  "figura.docs.animations.get_animations": "Returns a map where its keys are all models that contains animations and value being another map which is that model's animations and its name.",
+  "figura.docs.animations.get_animations": "Returns a table with all animations.",
   "figura.docs.animations.get_playing": "Return a table with all playing animations.",
   "figura.docs.animations.stop_all": "Stops all playing (and paused) animations.",
 
@@ -786,6 +786,7 @@
   "figura.docs.entity.get_nbt": "Gets a table containing the NBT of this entity. Please note that not all values in the entity's NBT may be synced, as some are handled only on server side.",
   "figura.docs.entity.is_on_fire": "Returns true if this entity is currently on fire.",
   "figura.docs.entity.is_alive": "Returns whether this entity is alive or not.",
+  "figura.docs.entity.get_permission_level": "Returns the permission level number of this entity. Server Operators, by default, have the permission level of 4.",
   "figura.docs.entity.get_targeted_block": "Returns a proxy for your currently targeted BlockState. This BlockState appears on the F3 screen. Maximum and Default distance is 20, Minimum is -20",
   "figura.docs.entity.get_targeted_entity": "Returns a proxy for your currently targeted Entity. This Entity appears on the F3 screen. Maximum and Default distance is 20, Minimum is 0",
   "figura.docs.entity.get_variable": "Gets the value of a variable this entity stored in themselves using the Avatar api's store() function.",

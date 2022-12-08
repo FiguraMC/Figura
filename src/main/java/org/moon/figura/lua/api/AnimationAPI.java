@@ -43,8 +43,11 @@ public class AnimationAPI {
 
     @LuaWhitelist
     @LuaMethodDoc("animations.get_animations")
-    public Map<String, Map<String, Animation>> getAnimations() {
-        return animTable;
+    public List<Animation> getAnimations() {
+        List<Animation> list = new ArrayList<>();
+        for (Map<String, Animation> value : animTable.values())
+            list.addAll(value.values());
+        return list;
     }
 
     @LuaWhitelist
