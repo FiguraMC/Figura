@@ -10,43 +10,43 @@ import org.moon.figura.mixin.render.layers.elytra.ElytraLayerAccessor;
 import java.util.UUID;
 
 public class FiguraTextureSet {
-    public final FiguraTexture mainTex, emissiveTex;
+    public final FiguraTexture[] textures = new FiguraTexture[4];
 
-    public FiguraTextureSet(FiguraTexture mainData, FiguraTexture emissiveData) {
-        mainTex = mainData;
-        emissiveTex = emissiveData;
+    public FiguraTextureSet(FiguraTexture mainData, FiguraTexture emissiveData, FiguraTexture specularData, FiguraTexture normalData) {
+        textures[0] = mainData;
+        textures[1] = emissiveData;
+        textures[2] = specularData;
+        textures[3] = normalData;
     }
 
     public void clean() {
-        if (mainTex != null)
-            mainTex.close();
-        if (emissiveTex != null)
-            emissiveTex.close();
+        for (FiguraTexture texture : textures) {
+            if (texture != null)
+                texture.close();
+        }
     }
 
     public void uploadIfNeeded() {
-        if (mainTex != null)
-            mainTex.registerAndUpload();
-        if (emissiveTex != null)
-            emissiveTex.registerAndUpload();
+        for (FiguraTexture texture : textures) {
+            if (texture != null)
+                texture.uploadIfDirty();
+        }
     }
 
     public int getWidth() {
-        if (mainTex != null)
-            return mainTex.getWidth();
-        else if (emissiveTex != null)
-            return emissiveTex.getWidth();
-        else
-            return -1;
+        for (FiguraTexture texture : textures) {
+            if (texture != null)
+                return texture.getWidth();
+        }
+        return -1;
     }
 
     public int getHeight() {
-        if (mainTex != null)
-            return mainTex.getHeight();
-        else if (emissiveTex != null)
-            return emissiveTex.getHeight();
-        else
-            return -1;
+        for (FiguraTexture texture : textures) {
+            if (texture != null)
+                return texture.getHeight();
+        }
+        return -1;
     }
 
     public ResourceLocation getOverrideTexture(UUID owner, Pair<OverrideType, Object> pair) {
@@ -78,11 +78,13 @@ public class FiguraTextureSet {
                     yield MissingTextureAtlasSprite.getLocation();
                 }
             }
-            case PRIMARY -> mainTex == null ? null : mainTex.textureID;
-            case SECONDARY -> emissiveTex == null ? null : emissiveTex.textureID;
+            case PRIMARY -> textures[0] == null ? null : textures[0].getLocation();
+            case SECONDARY -> textures[1] == null ? null : textures[1].getLocation();
+            case SPECULAR -> textures[2] == null ? null : textures[2].getLocation();
+            case NORMAL -> textures[3] == null ? null : textures[3].getLocation();
             case CUSTOM -> {
                 try {
-                    yield ((FiguraTexture) pair.getSecond()).textureID;
+                    yield ((FiguraTexture) pair.getSecond()).getLocation();
                 } catch (Exception ignored) {
                     yield MissingTextureAtlasSprite.getLocation();
                 }
@@ -97,6 +99,8 @@ public class FiguraTextureSet {
         RESOURCE,
         PRIMARY,
         SECONDARY,
+        SPECULAR,
+        NORMAL,
         CUSTOM
     }
 }

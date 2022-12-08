@@ -576,13 +576,10 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
         List<FiguraTexture> list = new ArrayList<>();
 
         for (FiguraTextureSet set : textures) {
-            FiguraTexture texture = set.mainTex;
-            if (texture != null)
-                list.add(texture);
-
-            texture = set.emissiveTex;
-            if (texture != null)
-                list.add(texture);
+            for (FiguraTexture texture : set.textures) {
+                if (texture != null)
+                    list.add(texture);
+            }
         }
 
         return list;
