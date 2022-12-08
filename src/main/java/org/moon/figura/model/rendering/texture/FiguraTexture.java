@@ -1,10 +1,11 @@
 package org.moon.figura.model.rendering.texture;
 
+import com.mojang.blaze3d.pipeline.RenderCall;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.AbstractTexture;
+import net.minecraft.client.renderer.texture.SimpleTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.luaj.vm2.LuaError;
@@ -25,25 +26,21 @@ import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.LuaUtils;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Path;
 import java.util.Base64;
-import java.util.UUID;
 
 @LuaWhitelist
 @LuaTypeDoc(
         name = "Texture",
         value = "texture"
 )
-public class FiguraTexture extends AbstractTexture implements Closeable {
+public class FiguraTexture extends SimpleTexture {
 
     /**
      * The ID of the texture, used to register to Minecraft.
      */
-    public final ResourceLocation textureID;
-    private boolean registered = false;
     private boolean dirty = true;
     private boolean modified = false;
     private final String name;
@@ -57,6 +54,8 @@ public class FiguraTexture extends AbstractTexture implements Closeable {
     private boolean isClosed = false;
 
     public FiguraTexture(Avatar owner, String name, byte[] data) {
+        super(new FiguraIdentifier("avatar_tex/" + owner.owner + "/" + FiguraIdentifier.formatPath(name)));
+
         //Read image from wrapper
         NativeImage image;
         try {
@@ -70,44 +69,24 @@ public class FiguraTexture extends AbstractTexture implements Closeable {
         }
 
         this.texture = image;
-        this.textureID = new FiguraIdentifier("avatar_tex/" + owner.owner + "/" + UUID.randomUUID());
         this.name = name;
         this.owner = owner;
+
+        Minecraft.getInstance().getTextureManager().register(this.location, this);
     }
 
     public FiguraTexture(Avatar owner, String name, NativeImage image) {
+        super(new FiguraIdentifier("avatar_tex/" + owner.owner + "/custom/" + FiguraIdentifier.formatPath(name)));
         this.texture = image;
-        this.textureID = new FiguraIdentifier("avatar_tex/" + owner.owner + "/custom/" + UUID.randomUUID());
         this.name = name;
         this.owner = owner;
+
+        Minecraft.getInstance().getTextureManager().register(this.location, this);
     }
 
     @Override
-    public void load(ResourceManager manager) throws IOException {}
-
-    //Called when a texture is first created and when it reloads
-    //Registers the texture to minecraft, and uploads it to GPU.
-    public void registerAndUpload() {
-        if (!registered) {
-            //Register texture under the ID, so Minecraft's rendering can use it.
-            Minecraft.getInstance().getTextureManager().register(textureID, this);
-            registered = true;
-        }
-
-        if (dirty) {
-            //Upload texture to GPU.
-            TextureUtil.prepareImage(this.getId(), texture.getWidth(), texture.getHeight());
-            texture.upload(0, 0, 0, false);
-            dirty = false;
-        }
-    }
-
-    public int getWidth() {
-        return texture.getWidth();
-    }
-
-    public int getHeight() {
-        return texture.getHeight();
+    public void load(ResourceManager manager) throws IOException {
+        uploadIfDirty();
     }
 
     @Override
@@ -122,8 +101,24 @@ public class FiguraTexture extends AbstractTexture implements Closeable {
         if (backup != null)
             backup.close();
 
-        //Cache GLID and then release it on GPU
-        RenderSystem.recordRenderCall(() -> TextureUtil.releaseTextureId(this.id));
+        this.releaseId();
+    }
+
+    public void uploadIfDirty() {
+        if (dirty) {
+            RenderCall runnable = () -> {
+                //Upload texture to GPU.
+                TextureUtil.prepareImage(this.getId(), texture.getWidth(), texture.getHeight());
+                texture.upload(0, 0, 0, false);
+                dirty = false;
+            };
+
+            if (RenderSystem.isOnRenderThreadOrInit()) {
+                runnable.execute();
+            } else {
+                RenderSystem.recordRenderCall(runnable);
+            }
+        }
     }
 
     public void saveCache() throws IOException {
@@ -138,6 +133,19 @@ public class FiguraTexture extends AbstractTexture implements Closeable {
             backup.copyFrom(texture);
         }
     }
+
+    public int getWidth() {
+        return texture.getWidth();
+    }
+
+    public int getHeight() {
+        return texture.getHeight();
+    }
+
+    public ResourceLocation getLocation() {
+        return this.location;
+    }
+
 
     // -- lua stuff -- //
 

@@ -119,7 +119,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
         //custom textures
         for (FiguraTexture texture : customTextures.values())
-            texture.registerAndUpload();
+            texture.uploadIfDirty();
 
         //Set shouldRenderPivots
         int config = Config.RENDER_DEBUG_PARTS_PIVOT.asInt();

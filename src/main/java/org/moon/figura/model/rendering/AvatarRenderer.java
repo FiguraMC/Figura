@@ -85,7 +85,12 @@ public abstract class AvatarRenderer {
         ListTag texturesList = nbt.getList("data", Tag.TAG_COMPOUND);
         for (Tag t : texturesList) {
             CompoundTag tag = (CompoundTag) t;
-            textureSets.add(new FiguraTextureSet(textures.get(tag.getString("default")), textures.get(tag.getString("emissive"))));
+            textureSets.add(new FiguraTextureSet(
+                    textures.get(tag.getString("default")),
+                    textures.get(tag.getString("emissive")),
+                    textures.get(tag.getString("specular")),
+                    textures.get(tag.getString("normal"))
+            ));
         }
 
         avatar.hasTexture = !texturesList.isEmpty();
