@@ -190,7 +190,7 @@ public class ActionWheel {
             //texture
             Action.TextureData texture = action.getTexture(selected == i);
             if (texture != null) {
-                UIHelper.setupTexture(texture.texture.textureID);
+                UIHelper.setupTexture(texture.texture.getLocation());
                 UIHelper.blit(stack,
                         (int) (xOff - texture.width * texture.scale / 2d),
                         (int) (yOff - texture.height * texture.scale / 2d),
