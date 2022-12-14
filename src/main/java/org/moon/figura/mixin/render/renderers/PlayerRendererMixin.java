@@ -12,7 +12,6 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.Score;
 import net.minecraft.world.scores.Scoreboard;
@@ -94,25 +93,15 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
 
         //text
         FiguraMod.popPushProfiler("text");
-        Component replacement;
-        boolean replaceBadges = false;
-
-        if (custom != null && custom.getText() != null && trust) {
-            replacement = NameplateCustomization.applyCustomization(custom.getText());
-            replaceBadges = replacement.getString().contains("${badges}");
-        } else {
-            replacement = Component.literal(player.getName().getString());
-        }
+        Component replacement = custom != null && custom.getText() != null && trust ?
+                NameplateCustomization.applyCustomization(custom.getText()) :
+                Component.literal(player.getName().getString());
 
         //badges
         FiguraMod.popPushProfiler("badges");
-        Component badges = config > 1 ? Badges.fetchBadges(player.getUUID()) : Component.empty();
-        if (replaceBadges) {
-            replacement = TextUtils.replaceInText(replacement, "\\$\\{badges\\}", badges);
-        } else if (badges.getString().length() > 0) {
-            ((MutableComponent) replacement).append(" ").append(badges);
-        }
+        replacement = Badges.appendBadges(replacement, player.getUUID(), config > 1);
 
+        FiguraMod.popPushProfiler("applyName");
         text = TextUtils.replaceInText(text, "\\b" + Pattern.quote(player.getName().getString()) + "\\b", replacement);
 
         // * variables * //
