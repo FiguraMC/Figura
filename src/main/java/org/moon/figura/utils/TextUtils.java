@@ -142,7 +142,7 @@ public class TextUtils {
         List<Component> splitText = TextUtils.splitText(text, "\n");
 
         //get the possible tooltip width
-        int left = mousePos - 16;
+        int left = mousePos - 12;
         int right = screenWidth - mousePos - 12;
 
         //get largest text size
