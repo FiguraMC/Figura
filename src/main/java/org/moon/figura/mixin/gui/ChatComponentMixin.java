@@ -4,7 +4,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.ChatComponent;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
@@ -53,25 +52,15 @@ public class ChatComponentMixin {
                 continue;
 
             //apply customization
-            Component replacement;
-            boolean replaceBadges = false;
-
             Avatar avatar = AvatarManager.getAvatarForPlayer(uuid);
             NameplateCustomization custom = avatar == null || avatar.luaRuntime == null ? null : avatar.luaRuntime.nameplate.CHAT;
-            if (custom != null && custom.getText() != null && avatar.trust.get(Trust.NAMEPLATE_EDIT) == 1) {
-                replacement = NameplateCustomization.applyCustomization(custom.getText().replaceAll("\n|\\\\n", " "));
-                replaceBadges = replacement.getString().contains("${badges}");
-            } else {
-                replacement = new TextComponent(player.getProfile().getName());
-            }
+
+            Component replacement = custom != null && custom.getText() != null && avatar.trust.get(Trust.NAMEPLATE_EDIT) == 1 ?
+                    NameplateCustomization.applyCustomization(custom.getText().replaceAll("\n|\\\\n", " ")) :
+                    new TextComponent(player.getProfile().getName());
 
             //badges
-            Component badges = config > 1 ? Badges.fetchBadges(uuid) : TextComponent.EMPTY.copy();
-            if (replaceBadges) {
-                replacement = TextUtils.replaceInText(replacement, "\\$\\{badges\\}", badges);
-            } else if (badges.getString().length() > 0) {
-                ((MutableComponent) replacement).append(" ").append(badges);
-            }
+            replacement = Badges.appendBadges(replacement, uuid, config > 1);
 
             //modify message
             message = TextUtils.replaceInText(message, "\\b" + Pattern.quote(player.getProfile().getName()) + "\\b", replacement);
