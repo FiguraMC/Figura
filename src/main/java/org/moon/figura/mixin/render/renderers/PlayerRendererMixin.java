@@ -25,7 +25,6 @@ import org.moon.figura.lua.api.nameplate.NameplateCustomization;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.trust.Trust;
 import org.moon.figura.utils.TextUtils;
-import org.moon.figura.utils.ui.UIHelper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -109,11 +108,16 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
         boolean isSneaking = player.isDiscrete();
         boolean deadmau = text.getString().equals("deadmau5");
 
-        double bgOpacity = trust && custom != null && custom.alpha != null ? custom.alpha : Minecraft.getInstance().options.getBackgroundOpacity(0.25f);
-        int bgColor = (trust && custom != null && custom.background != null ? custom.background : 0) + ((int) (bgOpacity * 0xFF) << 24);
+        boolean hasCustom = trust && custom != null;
 
-        boolean outline = trust && custom != null && custom.outline;
-        boolean shadow = trust && custom != null && custom.shadow;
+        double bgOpacity = hasCustom && custom.alpha != null ? custom.alpha : Minecraft.getInstance().options.getBackgroundOpacity(0.25f);
+        int bgColor = (hasCustom && custom.background != null ? custom.background : 0) + ((int) (bgOpacity * 0xFF) << 24);
+        int outlineColor = hasCustom && custom.outlineColor != null ? custom.outlineColor : 0x202020;
+
+        boolean outline = hasCustom && custom.outline;
+        boolean shadow = hasCustom && custom.shadow;
+
+        light = hasCustom && custom.light != null ? custom.light : light;
 
         Matrix4f matrix4f = stack.last().pose();
         Font font = this.getFont();
@@ -139,7 +143,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
                 font.drawInBatch(text1, x, y, 0x20FFFFFF, false, matrix4f, multiBufferSource, !isSneaking, bgColor, light);
                 if (!isSneaking) {
                     if (outline)
-                        UIHelper.renderOutlineText(stack, font, text1, (int) x, (int) y, -1, 0x202020);
+                        font.drawInBatch8xOutline(text1.getVisualOrderText(), x, y, -1, outlineColor, matrix4f, multiBufferSource, light);
                     else
                         font.drawInBatch(text1, x, y, -1, shadow, matrix4f, multiBufferSource, false, 0, light);
                 }
@@ -164,7 +168,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
             font.drawInBatch(text1, x, y, 0x20FFFFFF, false, matrix4f, multiBufferSource, !isSneaking, bgColor, light);
             if (!isSneaking) {
                 if (outline)
-                    UIHelper.renderOutlineText(stack, font, text1, (int) x, (int) y, -1, 0x202020);
+                    font.drawInBatch8xOutline(text1.getVisualOrderText(), x, y, -1, outlineColor, matrix4f, multiBufferSource, light);
                 else
                     font.drawInBatch(text1, x, y, -1, shadow, matrix4f, multiBufferSource, false, 0, light);
             }
