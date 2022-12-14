@@ -103,8 +103,7 @@ public class Avatar {
     public final Map<Integer, Animation> animations = new HashMap<>();
 
     //runtime status
-    public boolean hasTexture = false;
-    public boolean scriptError = false;
+    public boolean hasTexture, scriptError, trustIssues;
     public int versionStatus = 0;
 
     //limits
