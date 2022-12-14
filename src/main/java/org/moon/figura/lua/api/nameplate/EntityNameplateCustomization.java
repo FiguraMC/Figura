@@ -1,10 +1,12 @@
 package org.moon.figura.lua.api.nameplate;
 
+import net.minecraft.client.renderer.LightTexture;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec4;
 import org.moon.figura.utils.ColorUtils;
@@ -19,7 +21,7 @@ public class EntityNameplateCustomization extends NameplateCustomization {
 
     private FiguraVec3 position;
     private FiguraVec3 scale;
-    public Integer background;
+    public Integer background, outlineColor, light;
     public Double alpha;
 
     @LuaWhitelist
@@ -121,6 +123,53 @@ public class EntityNameplateCustomization extends NameplateCustomization {
             this.background = ColorUtils.rgbToInt(vec);
             this.alpha = a;
         }
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "color"
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"r", "g", "b"}
+                    )
+            },
+            value = "nameplate_entity.set_outline_color"
+    )
+    public void setOutlineColor(Object x, Double y, Double z) {
+        outlineColor = ColorUtils.rgbToInt(LuaUtils.parseVec3("setOutlineColor", x, y, z));
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = FiguraVec2.class,
+                            argumentNames = "light"
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {Integer.class, Integer.class},
+                            argumentNames = {"blockLight", "skyLight"}
+                    )
+            },
+            value = "nameplate_entity.set_light")
+    public void setLight(Object light, Double skyLight) {
+        if (light == null) {
+            this.light = null;
+            return;
+        }
+
+        FiguraVec2 lightVec = LuaUtils.parseVec2("setLight", light, skyLight);
+        this.light = LightTexture.pack((int) lightVec.x, (int) lightVec.y);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("nameplate_entity.get_light")
+    public FiguraVec2 getLight() {
+        return light == null ? null : FiguraVec2.of(LightTexture.block(light), LightTexture.sky(light));
     }
 
     @LuaWhitelist
