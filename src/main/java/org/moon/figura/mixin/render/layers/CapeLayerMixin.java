@@ -53,22 +53,21 @@ public abstract class CapeLayerMixin extends RenderLayer<AbstractClientPlayer, P
         double d = Mth.lerp(tickDelta, entity.xCloakO, entity.xCloak) - Mth.lerp(tickDelta, entity.xo, entity.getX());
         double e = Mth.lerp(tickDelta, entity.yCloakO, entity.yCloak) - Mth.lerp(tickDelta, entity.yo, entity.getY());
         double m = Mth.lerp(tickDelta, entity.zCloakO, entity.zCloak) - Mth.lerp(tickDelta, entity.zo, entity.getZ());
-        //Change n to use lerp, to "fix" https://bugs.mojang.com/browse/MC-127749
-        //float n = abstractClientPlayer.yBodyRotO + (abstractClientPlayer.yBodyRot - abstractClientPlayer.yBodyRotO);
-        float n = Mth.lerp(tickDelta, entity.yBodyRotO, entity.yBodyRot);
-        double o = Mth.sin(n * ((float) Math.PI / 180));
-        double p = -Mth.cos(n * ((float) Math.PI / 180));
-        float q = (float) e * 10.0f;
-        q = Mth.clamp(q, -6.0f, 32.0f);
-        float r = (float) (d * o + m * p) * 100.0f;
-        r = Mth.clamp(r, 0.0f, 150.0f);
-        float s = (float) (d * p - m * o) * 100.0f;
-        s = Mth.clamp(s, -20.0f, 20.0f);
-        if (r < 0.0f) {
-            r = 0.0f;
-        }
+        //Change n to use lerp, to "fix" https://bugs.mojang.com/browse/MC-127749 //Fran: we cant, check my comment in the issue
+        //float n = Mth.lerp(tickDelta, entity.yBodyRotO, entity.yBodyRot);
+        float n = entity.yBodyRotO + (entity.yBodyRot - entity.yBodyRotO);
+        n = (float) Math.toRadians(n);
+        double o = Mth.sin(n);
+        double p = -Mth.cos(n);
+        float q = (float) e * 10f;
+        q = Mth.clamp(q, -6f, 32f);
+        float r = (float) (d * o + m * p) * 100f;
+        r = Mth.clamp(r, 0f, 150f);
+        float s = (float) (d * p - m * o) * 100f;
+        s = Mth.clamp(s, -20f, 20f);
+        r = Math.max(r, 0f);
         float t = Mth.lerp(tickDelta, entity.oBob, entity.bob);
-        q += Mth.sin(Mth.lerp(tickDelta, entity.walkDistO, entity.walkDist) * 6.0f) * 32.0f * t;
+        q += Mth.sin(Mth.lerp(tickDelta, entity.walkDistO, entity.walkDist) * 6f) * 32f * t;
 
         //Just going to ignore the fact that vanilla uses XZY rotation order for capes...
         //As a result, the cape rotation is slightly off.
