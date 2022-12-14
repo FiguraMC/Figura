@@ -8,6 +8,7 @@ import net.minecraft.nbt.NbtIo;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
+import org.moon.figura.avatar.Badges;
 import org.moon.figura.avatar.UserData;
 import org.moon.figura.avatar.local.CacheAvatarLoader;
 import org.moon.figura.backend2.websocket.C2SMessageHandler;
@@ -269,18 +270,19 @@ public class NetworkStuff {
 
             //badges
             JsonObject badges = json.getAsJsonObject("equippedBadges");
+            Pair<BitSet, BitSet> badgesPair = Badges.emptyBadges();
 
             JsonArray pride = badges.getAsJsonArray("pride");
-            BitSet prideSet = new BitSet();
+            BitSet prideSet = badgesPair.getFirst();
             for (int i = 0; i < pride.size(); i++)
                 prideSet.set(i, pride.get(i).getAsInt() >= 1);
 
             JsonArray special = badges.getAsJsonArray("special");
-            BitSet specialSet = new BitSet();
+            BitSet specialSet = badgesPair.getSecond();
             for (int i = 0; i < special.size(); i++)
                 specialSet.set(i, special.get(i).getAsInt() >= 1);
 
-            user.loadData(avatars, Pair.of(prideSet, specialSet));
+            user.loadData(avatars, badgesPair);
             subscribe(uuid);
         });
     }

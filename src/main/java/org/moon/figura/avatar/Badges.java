@@ -8,7 +8,8 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.config.Config;
+import org.moon.figura.trust.Trust;
+import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FiguraText;
@@ -19,16 +20,18 @@ import java.util.UUID;
 
 public class Badges {
 
-    private static final Pair<BitSet, BitSet> NO_BADGES = Pair.of(new BitSet(Pride.values().length), new BitSet(Special.values().length));
     public static final ResourceLocation FONT = new FiguraIdentifier("badges");
 
     public static Component fetchBadges(UUID id) {
         MutableComponent badges = Component.empty().withStyle(Style.EMPTY.withFont(FONT).withColor(ChatFormatting.WHITE));
 
+        if (TrustManager.get(id).getGroup() == Trust.Group.BLOCKED)
+            return badges;
+
         //get user data
         Pair<BitSet, BitSet> pair = AvatarManager.getBadges(id);
         if (pair == null)
-            pair = NO_BADGES;
+            return badges;
 
         //avatar badges
         Avatar avatar = AvatarManager.getAvatarForPlayer(id);
@@ -44,19 +47,19 @@ public class Badges {
             else if (avatar.nbt != null) {
                 Pride[] pride = Pride.values();
 
+                //trust
+                if (avatar.trustIssues)
+                    badges.append(System.TRUST.badge);
+
                 //error
-                if (avatar.scriptError)
+                else if (avatar.scriptError)
                     badges.append(System.ERROR.badge);
 
                 //version
-                if (avatar.versionStatus > 0)
+                else if (avatar.versionStatus > 0)
                     badges.append(System.WARNING.badge);
 
-                //egg
-                if (FiguraMod.CHEESE_DAY && Config.EASTER_EGGS.asBool())
-                    badges.append(System.CHEESE.badge);
-
-                    //mark
+                //mark
                 else {
                     mark: {
                         //pride (mark skins)
@@ -90,12 +93,16 @@ public class Badges {
     }
 
     public static Component noBadges4U(Component text) {
-        return TextUtils.replaceInText(text, "[❗❌\uD83E\uDDC0☄❤☆★0-9a-f]", TextUtils.UNKNOWN, (s, style) -> style.getFont().equals(FONT));
+        return TextUtils.replaceInText(text, "[❗❌\uD83D\uDEE1☄❤☆★0-9a-f]", TextUtils.UNKNOWN, (s, style) -> style.getFont().equals(FONT));
+    }
+
+    public static Pair<BitSet, BitSet> emptyBadges() {
+        return Pair.of(new BitSet(Pride.values().length), new BitSet(Special.values().length));
     }
 
     public enum System {
         DEFAULT("△"),
-        CHEESE("\uD83E\uDDC0"),
+        TRUST("\uD83D\uDEE1"),
         WARNING("❗"),
         ERROR("❌");
 
