@@ -106,11 +106,12 @@ public class FiguraTexture extends SimpleTexture {
 
     public void uploadIfDirty() {
         if (dirty) {
+            dirty = false;
+
             RenderCall runnable = () -> {
                 //Upload texture to GPU.
                 TextureUtil.prepareImage(this.getId(), texture.getWidth(), texture.getHeight());
                 texture.upload(0, 0, 0, false);
-                dirty = false;
             };
 
             if (RenderSystem.isOnRenderThreadOrInit()) {
