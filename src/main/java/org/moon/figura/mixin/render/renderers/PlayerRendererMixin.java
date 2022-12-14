@@ -17,6 +17,7 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.Score;
 import net.minecraft.world.scores.Scoreboard;
+import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.avatar.Badges;
@@ -63,12 +64,17 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
             return;
         }
 
+        FiguraMod.pushProfiler(FiguraMod.MOD_ID);
+        FiguraMod.pushProfiler(player.getName().getString());
+        FiguraMod.pushProfiler("nameplate");
+
         //trust check
         boolean trust = avatar != null && avatar.trust.get(Trust.NAMEPLATE_EDIT) == 1;
 
         stack.pushPose();
 
         //pos
+        FiguraMod.pushProfiler("position");
         FiguraVec3 pos = FiguraVec3.of(0f, player.getBbHeight() + 0.5f, 0f);
         if (custom != null && custom.getPos() != null && trust)
             pos.add(custom.getPos());
@@ -79,6 +85,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
         stack.mulPose(this.entityRenderDispatcher.cameraOrientation());
 
         //scale
+        FiguraMod.popPushProfiler("scale");
         float scale = 0.025f;
         FiguraVec3 scaleVec = FiguraVec3.of(-scale, -scale, -scale);
         if (custom != null && custom.getScale() != null && trust)
@@ -87,6 +94,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
         stack.scale((float) scaleVec.x, (float) scaleVec.y, (float) scaleVec.z);
 
         //text
+        FiguraMod.popPushProfiler("text");
         Component replacement;
         boolean replaceBadges = false;
 
@@ -98,6 +106,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
         }
 
         //badges
+        FiguraMod.popPushProfiler("badges");
         Component badges = config > 1 ? Badges.fetchBadges(player.getUUID()) : TextComponent.EMPTY.copy();
         if (replaceBadges) {
             replacement = TextUtils.replaceInText(replacement, "\\$\\{badges\\}", badges);
@@ -108,6 +117,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
         text = TextUtils.replaceInText(text, "\\b" + Pattern.quote(player.getName().getString()) + "\\b", replacement);
 
         // * variables * //
+        FiguraMod.popPushProfiler("colors");
         boolean isSneaking = player.isDiscrete();
         boolean deadmau = text.getString().equals("deadmau5");
 
@@ -121,6 +131,8 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
         Font font = this.getFont();
 
         //render scoreboard
+        FiguraMod.popPushProfiler("render");
+        FiguraMod.pushProfiler("scoreboard");
         boolean hasScore = false;
         if (this.entityRenderDispatcher.distanceToSqr(player) < 100) {
             //get scoreboard
@@ -147,6 +159,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
         }
 
         //render name
+        FiguraMod.popPushProfiler("name");
         List<Component> textList = TextUtils.splitText(text, "\n");
 
         for (int i = 0; i < textList.size(); i++) {
@@ -169,6 +182,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
             }
         }
 
+        FiguraMod.popProfiler(5);
         stack.popPose();
         ci.cancel();
     }

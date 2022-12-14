@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
+import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.config.Config;
 import org.moon.figura.math.matrix.FiguraMat3;
@@ -182,12 +183,15 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
     }
 
     protected boolean renderPart(FiguraModelPart part, int[] remainingComplexity, boolean prevPredicate) {
+        FiguraMod.pushProfiler(part.name);
+
         PartCustomization custom = part.customization;
 
         //test the current filter scheme
         Boolean thisPassedPredicate = currentFilterScheme.test(part.parentType, prevPredicate);
         if (thisPassedPredicate == null) {
             part.advanceVerticesImmediate(this); //stinky
+            FiguraMod.popProfiler();
             return true;
         }
 
@@ -251,6 +255,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         //render this
         if (!part.pushVerticesImmediate(this, remainingComplexity)) {
             customizationStack.pop();
+            FiguraMod.popProfiler();
             return false;
         }
 
@@ -299,6 +304,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         for (FiguraModelPart child : part.children)
             if (!renderPart(child, remainingComplexity, thisPassedPredicate)) {
                 customizationStack.pop();
+                FiguraMod.popProfiler();
                 return false;
             }
 
@@ -307,6 +313,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
         //pop
         customizationStack.pop();
+        FiguraMod.popProfiler();
 
         return true;
     }
@@ -348,12 +355,16 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
     }
 
     protected void calculatePartMatrices(FiguraModelPart part) {
+        FiguraMod.pushProfiler(part.name);
+
         PartCustomization custom = part.customization;
 
         //Store old visibility, but overwrite it in case we only want to render certain parts
         Boolean thisPassedPredicate = currentFilterScheme.test(part.parentType, true);
-        if (thisPassedPredicate == null)
+        if (thisPassedPredicate == null) {
+            FiguraMod.popProfiler();
             return;
+        }
 
         //calculate part transforms
 
@@ -382,6 +393,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
         //pop
         customizationStack.pop();
+        FiguraMod.popProfiler();
     }
 
     public void pushFaces(int texIndex, int faceCount, int[] remainingComplexity) {

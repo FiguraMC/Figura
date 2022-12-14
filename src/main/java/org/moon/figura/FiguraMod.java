@@ -101,9 +101,18 @@ public class FiguraMod implements ClientModInitializer {
         if (AvatarManager.panic)
             return;
 
+        pushProfiler(MOD_ID);
+
+        pushProfiler("paperdoll");
         PaperDoll.render(stack);
+
+        popPushProfiler("actionWheel");
         ActionWheel.render(stack);
+
+        popPushProfiler("popupMenu");
         PopupMenu.render(stack);
+
+        popProfiler(2);
     }
 
     private static void registerResourceListener(ResourceManagerHelper managerHelper) {

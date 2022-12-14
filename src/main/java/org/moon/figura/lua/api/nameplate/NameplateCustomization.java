@@ -2,6 +2,7 @@ package org.moon.figura.lua.api.nameplate;
 
 import net.minecraft.network.chat.Component;
 import org.luaj.vm2.LuaError;
+import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Badges;
 import org.moon.figura.gui.Emojis;
 import org.moon.figura.lua.LuaWhitelist;
@@ -20,7 +21,16 @@ public class NameplateCustomization {
     private String text;
 
     public static Component applyCustomization(String text) {
-        return Emojis.applyEmojis(TextUtils.removeClickableObjects(Badges.noBadges4U(TextUtils.tryParseJson(text))));
+        FiguraMod.pushProfiler("parseJson");
+        Component c = TextUtils.tryParseJson(text);
+        FiguraMod.popPushProfiler("removeBadges");
+        c = Badges.noBadges4U(c);
+        FiguraMod.popPushProfiler("removeClick");
+        c = TextUtils.removeClickableObjects(c);
+        FiguraMod.popPushProfiler("applyEmoji");
+        c = Emojis.applyEmojis(c);
+        FiguraMod.popProfiler();
+        return c;
     }
 
     @LuaWhitelist
