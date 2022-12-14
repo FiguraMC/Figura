@@ -2,10 +2,7 @@ package org.moon.figura.avatar;
 
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.*;
 import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.trust.Trust;
@@ -16,9 +13,12 @@ import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.TextUtils;
 
 import java.util.BitSet;
+import java.util.Optional;
 import java.util.UUID;
 
 public class Badges {
+
+    private static final String BADGES_REGEX = ".*(\\$\\{badges}|\\$\\{segdab}).*";
 
     public static final ResourceLocation FONT = new FiguraIdentifier("badges");
 
@@ -98,6 +98,24 @@ public class Badges {
 
     public static Pair<BitSet, BitSet> emptyBadges() {
         return Pair.of(new BitSet(Pride.values().length), new BitSet(Special.values().length));
+    }
+
+    public static boolean hasCustomBadges(Component text) {
+        return text.visit((style, string) -> string.matches(BADGES_REGEX) ? FormattedText.STOP_ITERATION : Optional.empty(), Style.EMPTY).isPresent();
+    }
+
+    public static Component appendBadges(Component text, UUID id, boolean allow) {
+        Component badges = allow ? fetchBadges(id) : Component.empty();
+        boolean custom = hasCustomBadges(text);
+
+        //no custom badges text
+        if (!custom)
+            return badges.getString().isBlank() ? text : text.copy().append(" ").append(badges);
+
+        text = TextUtils.replaceInText(text, "\\$\\{badges\\}", badges);
+        text = TextUtils.replaceInText(text, "\\$\\{segdab\\}", TextUtils.reverse(badges));
+
+        return text;
     }
 
     public enum System {

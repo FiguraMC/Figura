@@ -269,4 +269,13 @@ public class TextUtils {
         }, Style.EMPTY);
         return builder;
     }
+
+    public static Component reverse(Component text) {
+        MutableComponent builder = Component.empty();
+        for (Component entry : text.toFlatList(text.getStyle())) {
+            StringBuilder str = new StringBuilder(entry.getString()).reverse();
+            builder = Component.literal(str.toString()).withStyle(entry.getStyle()).append(builder);
+        }
+        return builder;
+    }
 }
