@@ -69,19 +69,25 @@ public class ActionWheel {
         mouseY = minecraft.mouseHandler.ypos();
 
         //calculate selected slot
+        FiguraMod.pushProfiler("selectedSlot");
         calculateSelected();
 
         //render overlays
+        FiguraMod.popPushProfiler("wheel");
         renderTextures(stack, currentPage);
 
         //render items
+        FiguraMod.popPushProfiler("items");
         renderItemsAndIcons(stack, currentPage);
 
         stack.popPose();
 
         //render title
+        FiguraMod.popPushProfiler("title");
         Action action = selected == -1 ? null : currentPage.actions[selected];
         renderTitle(stack, action == null ? null : action.getTitle());
+
+        FiguraMod.popProfiler();
     }
 
     // -- render helpers -- //
