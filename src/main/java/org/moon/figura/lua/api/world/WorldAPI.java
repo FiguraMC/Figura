@@ -336,9 +336,8 @@ public class WorldAPI {
         }
     }
 
-    @LuaWhitelist
+    //@LuaWhitelist
     public HashMap<String, Object> raycastBlock(boolean fluid, Object x, Object y, Double z, Object w, Double t, Double h) {
-        if (true) return null;
         FiguraVec3 start, end;
 
         Pair<FiguraVec3, FiguraVec3> pair = LuaUtils.parse2Vec3("raycastBlock", x, y, z, w, t, h);
@@ -362,9 +361,8 @@ public class WorldAPI {
         return map;
     }
 
-    @LuaWhitelist
+    //@LuaWhitelist
     public HashMap<String, Object> raycastEntity(Object x, Object y, Double z, Object w, Double t, Double h) {
-        if (true) return null;
         FiguraVec3 start, end;
 
         Pair<FiguraVec3, FiguraVec3> pair = LuaUtils.parse2Vec3("raycastEntity", x, y, z, w, t, h);
