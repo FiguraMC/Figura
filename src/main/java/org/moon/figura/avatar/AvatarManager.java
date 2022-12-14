@@ -244,6 +244,15 @@ public class AvatarManager {
 
     public static Pair<BitSet, BitSet> getBadges(UUID id) {
         UserData user = LOADED_USERS.get(id);
-        return user == null ? null : user.getBadges();
+        if (user == null)
+            return null;
+
+        Pair<BitSet, BitSet> badges = user.getBadges();
+        if (badges != null)
+            return badges;
+
+        badges = Badges.emptyBadges();
+        user.loadBadges(badges);
+        return badges;
     }
 }
