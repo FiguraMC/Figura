@@ -456,7 +456,7 @@ public class UIHelper extends GuiComponent {
 
         int width = TextUtils.getWidth(text, font);
         if (x + width > screenX)
-            x = Math.max(x - 28 - width, 0);
+            x = Math.max(x - 24 - width, 0);
 
         //render
         stack.pushPose();
