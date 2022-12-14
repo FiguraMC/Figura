@@ -1050,6 +1050,9 @@
   "figura.docs.nameplate_entity.get_scale": "Gets scale factor of the nameplate.",
   "figura.docs.nameplate_entity.set_scale": "Sets the scale factor of the nameplate.",
   "figura.docs.nameplate_entity.set_background_color": "Sets the color of the nameplate background. If the alpha value is not given, it will uses the vanilla value (from the accessibility settings) for it.",
+  "figura.docs.nameplate_entity.set_outline_color": "Sets the color used for the outline in the outline mode.",
+  "figura.docs.nameplate_entity.set_light": "Sets the light override value. Values are given from 0 to 15, indicating the block light and sky light levels you want to use. Passing nil will reset the lighting override.",
+  "figura.docs.nameplate_entity.get_light": "Gets the lighting override value..",
 
   "figura.docs.nameplate_group": "A customization that holds another nameplate customizations.",
   "figura.docs.nameplate_group.set_text": "Sets the text for all its children customizations.",
