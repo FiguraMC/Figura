@@ -11,6 +11,7 @@ import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec4;
 import org.moon.figura.mixin.particle.ParticleAccessor;
+import org.moon.figura.trust.Trust;
 import org.moon.figura.utils.LuaUtils;
 
 @LuaWhitelist
@@ -31,8 +32,14 @@ public class LuaParticle {
     @LuaWhitelist
     @LuaMethodDoc("particle.spawn")
     public LuaParticle spawn() {
-        if (!Minecraft.getInstance().isPaused() && owner.particlesRemaining.use())
-            ParticleAPI.getParticleEngine().figura$spawnParticle(particle, owner.owner);
+        if (!Minecraft.getInstance().isPaused()) {
+            if (owner.particlesRemaining.use()) {
+                ParticleAPI.getParticleEngine().figura$spawnParticle(particle, owner.owner);
+                owner.trustIssues.remove(Trust.PARTICLES);
+            } else {
+                owner.trustIssues.add(Trust.PARTICLES);
+            }
+        }
         return this;
     }
 

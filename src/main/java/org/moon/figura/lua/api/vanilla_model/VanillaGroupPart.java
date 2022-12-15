@@ -1,6 +1,7 @@
 package org.moon.figura.lua.api.vanilla_model;
 
 import net.minecraft.client.model.EntityModel;
+import org.moon.figura.avatar.Avatar;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
@@ -21,8 +22,8 @@ public class VanillaGroupPart extends VanillaPart {
 
     private boolean visible = true;
 
-    public VanillaGroupPart(String name, VanillaPart... parts) {
-        super(name);
+    public VanillaGroupPart(Avatar owner, String name, VanillaPart... parts) {
+        super(owner, name);
         partMap = new HashMap<>();
         for (VanillaPart part : parts)
             partMap.put(part.name, part);

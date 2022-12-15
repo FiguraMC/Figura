@@ -22,6 +22,7 @@ import org.moon.figura.lua.api.keybind.KeybindAPI;
 import org.moon.figura.lua.api.nameplate.NameplateAPI;
 import org.moon.figura.lua.api.ping.PingAPI;
 import org.moon.figura.lua.api.vanilla_model.VanillaModelAPI;
+import org.moon.figura.trust.Trust;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -303,6 +304,7 @@ public class FiguraLuaRuntime {
         public LuaValue call() {
             FiguraMod.LOGGER.warn("Avatar {} bypassed resource limits with {} instructions", owner.owner, getInstructions());
             LuaError error = new LuaError("Script overran resource limits!");
+            owner.trustIssues.add(Trust.INIT_INST);
             setInstructionLimit(1);
             throw error;
         }
