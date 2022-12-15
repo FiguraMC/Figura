@@ -1,5 +1,6 @@
 package org.moon.figura.lua.api.vanilla_model;
 
+import org.moon.figura.avatar.Avatar;
 import org.moon.figura.model.ParentType;
 import org.moon.figura.model.VanillaModelProvider;
 import org.moon.figura.lua.LuaWhitelist;
@@ -179,84 +180,84 @@ public class VanillaModelAPI {
     @LuaFieldDoc("vanilla_model.parrots")
     public final VanillaGroupPart PARROTS;
 
-    public VanillaModelAPI() {
+    public VanillaModelAPI(Avatar owner) {
         // -- body -- //
 
-        HEAD = new VanillaModelPart("HEAD", ParentType.Head, VanillaModelProvider.HEAD.func);
-        BODY = new VanillaModelPart("BODY", ParentType.Body, VanillaModelProvider.BODY.func);
-        LEFT_ARM = new VanillaModelPart("LEFT_ARM", ParentType.LeftArm, VanillaModelProvider.LEFT_ARM.func);
-        RIGHT_ARM = new VanillaModelPart("RIGHT_ARM", ParentType.RightArm, VanillaModelProvider.RIGHT_ARM.func);
-        LEFT_LEG = new VanillaModelPart("LEFT_LEG", ParentType.LeftLeg, VanillaModelProvider.LEFT_LEG.func);
-        RIGHT_LEG = new VanillaModelPart("RIGHT_LEG", ParentType.RightLeg, VanillaModelProvider.RIGHT_LEG.func);
+        HEAD = new VanillaModelPart(owner, "HEAD", ParentType.Head, VanillaModelProvider.HEAD.func);
+        BODY = new VanillaModelPart(owner, "BODY", ParentType.Body, VanillaModelProvider.BODY.func);
+        LEFT_ARM = new VanillaModelPart(owner, "LEFT_ARM", ParentType.LeftArm, VanillaModelProvider.LEFT_ARM.func);
+        RIGHT_ARM = new VanillaModelPart(owner, "RIGHT_ARM", ParentType.RightArm, VanillaModelProvider.RIGHT_ARM.func);
+        LEFT_LEG = new VanillaModelPart(owner, "LEFT_LEG", ParentType.LeftLeg, VanillaModelProvider.LEFT_LEG.func);
+        RIGHT_LEG = new VanillaModelPart(owner, "RIGHT_LEG", ParentType.RightLeg, VanillaModelProvider.RIGHT_LEG.func);
 
-        HAT = new VanillaModelPart("HAT", ParentType.Head, VanillaModelProvider.HAT.func);
-        JACKET = new VanillaModelPart("JACKET", ParentType.Body, VanillaModelProvider.JACKET.func);
-        LEFT_SLEEVE = new VanillaModelPart("LEFT_SLEEVE", ParentType.LeftArm, VanillaModelProvider.LEFT_SLEEVE.func);
-        RIGHT_SLEEVE = new VanillaModelPart("RIGHT_SLEEVE", ParentType.RightArm, VanillaModelProvider.RIGHT_SLEEVE.func);
-        LEFT_PANTS = new VanillaModelPart("LEFT_PANTS", ParentType.LeftLeg, VanillaModelProvider.LEFT_PANTS.func);
-        RIGHT_PANTS = new VanillaModelPart("RIGHT_PANTS", ParentType.RightLeg, VanillaModelProvider.RIGHT_PANTS.func);
+        HAT = new VanillaModelPart(owner, "HAT", ParentType.Head, VanillaModelProvider.HAT.func);
+        JACKET = new VanillaModelPart(owner, "JACKET", ParentType.Body, VanillaModelProvider.JACKET.func);
+        LEFT_SLEEVE = new VanillaModelPart(owner, "LEFT_SLEEVE", ParentType.LeftArm, VanillaModelProvider.LEFT_SLEEVE.func);
+        RIGHT_SLEEVE = new VanillaModelPart(owner, "RIGHT_SLEEVE", ParentType.RightArm, VanillaModelProvider.RIGHT_SLEEVE.func);
+        LEFT_PANTS = new VanillaModelPart(owner, "LEFT_PANTS", ParentType.LeftLeg, VanillaModelProvider.LEFT_PANTS.func);
+        RIGHT_PANTS = new VanillaModelPart(owner, "RIGHT_PANTS", ParentType.RightLeg, VanillaModelProvider.RIGHT_PANTS.func);
 
         // -- cape -- //
 
-        CAPE_MODEL = new VanillaModelPart("CAPE_MODEL", ParentType.Cape, VanillaModelProvider.CAPE.func);
-        FAKE_CAPE = new VanillaModelPart("FAKE_CAPE", ParentType.Cape, VanillaModelProvider.FAKE_CAPE.func);
+        CAPE_MODEL = new VanillaModelPart(owner, "CAPE_MODEL", ParentType.Cape, VanillaModelProvider.CAPE.func);
+        FAKE_CAPE = new VanillaModelPart(owner, "FAKE_CAPE", ParentType.Cape, VanillaModelProvider.FAKE_CAPE.func);
 
         // -- armor -- //
 
-        HELMET_ITEM = new VanillaModelPart("HELMET_ITEM", ParentType.Head, null);
+        HELMET_ITEM = new VanillaModelPart(owner, "HELMET_ITEM", ParentType.Head, null);
 
-        HELMET_HEAD = new VanillaModelPart("HELMET_HEAD", ParentType.Head, VanillaModelProvider.HEAD.func);
-        HELMET_HAT = new VanillaModelPart("HELMET_HAT", ParentType.Head, VanillaModelProvider.HAT.func);
+        HELMET_HEAD = new VanillaModelPart(owner, "HELMET_HEAD", ParentType.Head, VanillaModelProvider.HEAD.func);
+        HELMET_HAT = new VanillaModelPart(owner, "HELMET_HAT", ParentType.Head, VanillaModelProvider.HAT.func);
 
-        CHESTPLATE_BODY = new VanillaModelPart("CHESTPLATE_BODY", ParentType.Body, VanillaModelProvider.BODY.func);
-        CHESTPLATE_LEFT_ARM = new VanillaModelPart("CHESTPLATE_LEFT_ARM", ParentType.LeftArm, VanillaModelProvider.LEFT_ARM.func);
-        CHESTPLATE_RIGHT_ARM = new VanillaModelPart("CHESTPLATE_RIGHT_ARM", ParentType.RightArm, VanillaModelProvider.RIGHT_ARM.func);
+        CHESTPLATE_BODY = new VanillaModelPart(owner, "CHESTPLATE_BODY", ParentType.Body, VanillaModelProvider.BODY.func);
+        CHESTPLATE_LEFT_ARM = new VanillaModelPart(owner, "CHESTPLATE_LEFT_ARM", ParentType.LeftArm, VanillaModelProvider.LEFT_ARM.func);
+        CHESTPLATE_RIGHT_ARM = new VanillaModelPart(owner, "CHESTPLATE_RIGHT_ARM", ParentType.RightArm, VanillaModelProvider.RIGHT_ARM.func);
 
-        LEGGINGS_BODY = new VanillaModelPart("LEGGINGS_BODY", ParentType.Body, VanillaModelProvider.BODY.func);
-        LEGGINGS_LEFT_LEG = new VanillaModelPart("LEGGINGS_LEFT_LEG", ParentType.LeftLeg, VanillaModelProvider.LEFT_LEG.func);
-        LEGGINGS_RIGHT_LEG = new VanillaModelPart("LEGGINGS_RIGHT_LEG", ParentType.RightLeg, VanillaModelProvider.RIGHT_LEG.func);
+        LEGGINGS_BODY = new VanillaModelPart(owner, "LEGGINGS_BODY", ParentType.Body, VanillaModelProvider.BODY.func);
+        LEGGINGS_LEFT_LEG = new VanillaModelPart(owner, "LEGGINGS_LEFT_LEG", ParentType.LeftLeg, VanillaModelProvider.LEFT_LEG.func);
+        LEGGINGS_RIGHT_LEG = new VanillaModelPart(owner, "LEGGINGS_RIGHT_LEG", ParentType.RightLeg, VanillaModelProvider.RIGHT_LEG.func);
 
-        BOOTS_LEFT_LEG = new VanillaModelPart("BOOTS_LEFT_LEG", ParentType.LeftLeg, VanillaModelProvider.LEFT_LEG.func);
-        BOOTS_RIGHT_LEG = new VanillaModelPart("BOOTS_RIGHT_LEG", ParentType.RightLeg, VanillaModelProvider.RIGHT_LEG.func);
+        BOOTS_LEFT_LEG = new VanillaModelPart(owner, "BOOTS_LEFT_LEG", ParentType.LeftLeg, VanillaModelProvider.LEFT_LEG.func);
+        BOOTS_RIGHT_LEG = new VanillaModelPart(owner, "BOOTS_RIGHT_LEG", ParentType.RightLeg, VanillaModelProvider.RIGHT_LEG.func);
 
         // -- elytra -- //
 
-        LEFT_ELYTRA = new VanillaModelPart("LEFT_ELYTRA", ParentType.LeftElytra, VanillaModelProvider.LEFT_ELYTRON.func);
-        RIGHT_ELYTRA = new VanillaModelPart("RIGHT_ELYTRA", ParentType.RightElytra, VanillaModelProvider.RIGHT_ELYTRON.func);
+        LEFT_ELYTRA = new VanillaModelPart(owner, "LEFT_ELYTRA", ParentType.LeftElytra, VanillaModelProvider.LEFT_ELYTRON.func);
+        RIGHT_ELYTRA = new VanillaModelPart(owner, "RIGHT_ELYTRA", ParentType.RightElytra, VanillaModelProvider.RIGHT_ELYTRON.func);
 
         // -- held items -- //
 
-        LEFT_ITEM = new VanillaModelPart("LEFT_ITEM", ParentType.LeftArm, null);
-        RIGHT_ITEM = new VanillaModelPart("RIGHT_ITEM", ParentType.RightArm, null);
+        LEFT_ITEM = new VanillaModelPart(owner, "LEFT_ITEM", ParentType.LeftArm, null);
+        RIGHT_ITEM = new VanillaModelPart(owner, "RIGHT_ITEM", ParentType.RightArm, null);
 
         // -- parrots -- //
 
-        LEFT_PARROT = new VanillaModelPart("LEFT_PARROT", ParentType.Body, null);
-        RIGHT_PARROT = new VanillaModelPart("RIGHT_PARROT", ParentType.Body, null);
+        LEFT_PARROT = new VanillaModelPart(owner, "LEFT_PARROT", ParentType.Body, null);
+        RIGHT_PARROT = new VanillaModelPart(owner, "RIGHT_PARROT", ParentType.Body, null);
 
 
         // -- groups -- //
 
 
-        INNER_LAYER = new VanillaGroupPart("INNER_LAYER", HEAD, BODY, LEFT_ARM, RIGHT_ARM, LEFT_LEG, RIGHT_LEG);
-        OUTER_LAYER = new VanillaGroupPart("OUTER_LAYER", HAT, JACKET, LEFT_SLEEVE, RIGHT_SLEEVE, LEFT_PANTS, RIGHT_PANTS);
-        PLAYER = new VanillaGroupPart("PLAYER", INNER_LAYER, OUTER_LAYER);
+        INNER_LAYER = new VanillaGroupPart(owner, "INNER_LAYER", HEAD, BODY, LEFT_ARM, RIGHT_ARM, LEFT_LEG, RIGHT_LEG);
+        OUTER_LAYER = new VanillaGroupPart(owner, "OUTER_LAYER", HAT, JACKET, LEFT_SLEEVE, RIGHT_SLEEVE, LEFT_PANTS, RIGHT_PANTS);
+        PLAYER = new VanillaGroupPart(owner, "PLAYER", INNER_LAYER, OUTER_LAYER);
 
-        CAPE = new VanillaGroupPart("CAPE", CAPE_MODEL, FAKE_CAPE);
+        CAPE = new VanillaGroupPart(owner, "CAPE", CAPE_MODEL, FAKE_CAPE);
 
-        HELMET = new VanillaGroupPart("HELMET", HELMET_ITEM, HELMET_HEAD, HELMET_HAT);
-        CHESTPLATE = new VanillaGroupPart("CHESTPLATE", CHESTPLATE_BODY, CHESTPLATE_LEFT_ARM, CHESTPLATE_RIGHT_ARM);
-        LEGGINGS = new VanillaGroupPart("LEGGINGS", LEGGINGS_BODY, LEGGINGS_LEFT_LEG, LEGGINGS_RIGHT_LEG);
-        BOOTS = new VanillaGroupPart("BOOTS", BOOTS_LEFT_LEG, BOOTS_RIGHT_LEG);
-        ARMOR = new VanillaGroupPart("ARMOR", HELMET, CHESTPLATE, LEGGINGS, BOOTS);
+        HELMET = new VanillaGroupPart(owner, "HELMET", HELMET_ITEM, HELMET_HEAD, HELMET_HAT);
+        CHESTPLATE = new VanillaGroupPart(owner, "CHESTPLATE", CHESTPLATE_BODY, CHESTPLATE_LEFT_ARM, CHESTPLATE_RIGHT_ARM);
+        LEGGINGS = new VanillaGroupPart(owner, "LEGGINGS", LEGGINGS_BODY, LEGGINGS_LEFT_LEG, LEGGINGS_RIGHT_LEG);
+        BOOTS = new VanillaGroupPart(owner, "BOOTS", BOOTS_LEFT_LEG, BOOTS_RIGHT_LEG);
+        ARMOR = new VanillaGroupPart(owner, "ARMOR", HELMET, CHESTPLATE, LEGGINGS, BOOTS);
 
-        ELYTRA = new VanillaGroupPart("ELYTRA", LEFT_ELYTRA, RIGHT_ELYTRA);
+        ELYTRA = new VanillaGroupPart(owner, "ELYTRA", LEFT_ELYTRA, RIGHT_ELYTRA);
 
-        HELD_ITEMS = new VanillaGroupPart("HELD_ITEMS", LEFT_ITEM, RIGHT_ITEM);
+        HELD_ITEMS = new VanillaGroupPart(owner, "HELD_ITEMS", LEFT_ITEM, RIGHT_ITEM);
 
-        PARROTS = new VanillaGroupPart("PARROTS", LEFT_PARROT, RIGHT_PARROT);
+        PARROTS = new VanillaGroupPart(owner, "PARROTS", LEFT_PARROT, RIGHT_PARROT);
 
-        ALL = new VanillaGroupPart("ALL", PLAYER, CAPE, ARMOR, ELYTRA, HELD_ITEMS, PARROTS);
+        ALL = new VanillaGroupPart(owner, "ALL", PLAYER, CAPE, ARMOR, ELYTRA, HELD_ITEMS, PARROTS);
     }
 
     @LuaWhitelist

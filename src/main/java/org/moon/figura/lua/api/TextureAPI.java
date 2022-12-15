@@ -41,8 +41,10 @@ public class TextureAPI {
 
     public FiguraTexture register(String name, NativeImage image, boolean ignoreSize) {
         int max = owner.trust.get(Trust.TEXTURE_SIZE);
-        if (!ignoreSize && (image.getWidth() > max || image.getHeight() > max))
+        if (!ignoreSize && (image.getWidth() > max || image.getHeight() > max)) {
+            owner.trustIssues.add(Trust.TEXTURE_SIZE);
             throw new LuaError("Texture exceeded max size of " + max + " x " + max + " resolution, got " + image.getWidth() + " x " + image.getHeight());
+        }
 
         FiguraTexture oldText = get(name);
         if (oldText != null)

@@ -2,12 +2,14 @@ package org.moon.figura.lua.api.vanilla_model;
 
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
+import org.moon.figura.avatar.Avatar;
 import org.moon.figura.model.ParentType;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.trust.Trust;
 
 import java.util.function.Function;
 
@@ -27,8 +29,8 @@ public class VanillaModelPart extends VanillaPart {
     private boolean visible = true;
     private boolean storedVisibility;
 
-    public VanillaModelPart(String name, ParentType parentType, Function<EntityModel<?>, ModelPart> provider) {
-        super(name);
+    public VanillaModelPart(Avatar owner, String name, ParentType parentType, Function<EntityModel<?>, ModelPart> provider) {
+        super(owner, name);
         this.parentType = parentType;
         this.provider = provider;
     }
@@ -76,6 +78,7 @@ public class VanillaModelPart extends VanillaPart {
     )
     public void setVisible(boolean visible) {
         this.visible = visible;
+        owner.trustsToTick.add(Trust.VANILLA_MODEL_EDIT);
     }
 
     @Override

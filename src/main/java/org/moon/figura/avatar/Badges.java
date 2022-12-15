@@ -45,49 +45,51 @@ public class Badges {
             // -- mark -- //
 
             else if (avatar.nbt != null) {
-                Pride[] pride = Pride.values();
+                //mark
+                mark: {
+                    //pride (mark skins)
+                    BitSet prideSet = pair.getFirst();
+                    Pride[] pride = Pride.values();
+                    for (int i = pride.length - 1; i >= 0; i--) {
+                        if (prideSet.get(i)) {
+                            badges.append(pride[i].badge);
+                            break mark;
+                        }
+                    }
 
-                //trust
-                if (!avatar.trustIssues.isEmpty())
-                    badges.append(System.TRUST.badge);
+                    //mark fallback
+                    badges.append(System.DEFAULT.badge.copy().withStyle(Style.EMPTY.withColor(ColorUtils.rgbToInt(ColorUtils.userInputHex(avatar.color)))));
+                }
 
                 //error
-                else if (avatar.scriptError) {
+                if (avatar.scriptError) {
                     if (avatar.errorText == null)
                         badges.append(System.ERROR.badge);
                     else
-                        badges.append(System.ERROR.badge.copy().withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, avatar.errorText))));
+                        badges.append(System.ERROR.badge.copy().withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, System.ERROR.desc.copy().append("\n\n").append(avatar.errorText)))));
                 }
 
                 //version
-                else if (avatar.versionStatus > 0)
+                if (avatar.versionStatus > 0)
                     badges.append(System.WARNING.badge);
 
-                //mark
-                else {
-                    mark: {
-                        //pride (mark skins)
-                        BitSet prideSet = pair.getFirst();
-                        for (int i = pride.length - 1; i >= 0; i--) {
-                            if (prideSet.get(i)) {
-                                badges.append(pride[i].badge);
-                                break mark;
-                            }
-                        }
+                //trust
+                if (!avatar.trustIssues.isEmpty()) {
+                    MutableComponent trust = System.TRUST.badge.copy();
+                    MutableComponent desc = System.TRUST.desc.copy().append("\n");
+                    for (Trust t : avatar.trustIssues)
+                        desc.append("\n• ").append(FiguraText.of("badges.trust." + t.name.toLowerCase()));
 
-                        //mark fallback
-                        badges.append(System.DEFAULT.badge.copy().withStyle(Style.EMPTY.withColor(ColorUtils.rgbToInt(ColorUtils.userInputHex(avatar.color)))));
-                    }
+                    badges.append(trust.withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, desc))));
                 }
             }
         }
 
         // -- special -- //
 
-        Special[] special = Special.values();
-
         //special badges
         BitSet specialSet = pair.getSecond();
+        Special[] special = Special.values();
         for (int i = special.length - 1; i >= 0; i--) {
             if (specialSet.get(i))
                 badges.append(special[i].badge);
