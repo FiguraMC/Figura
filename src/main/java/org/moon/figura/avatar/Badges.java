@@ -78,7 +78,7 @@ public class Badges {
                     MutableComponent trust = System.TRUST.badge.copy();
                     MutableComponent desc = System.TRUST.desc.copy().append("\n");
                     for (Trust t : avatar.trustIssues)
-                        desc.append("\n• ").append(FiguraText.of("badges.trust." + t.name.toLowerCase()));
+                        desc.append("\n• ").append(FiguraText.of("badges.trust_err." + t.name.toLowerCase()));
 
                     badges.append(trust.withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, desc))));
                 }

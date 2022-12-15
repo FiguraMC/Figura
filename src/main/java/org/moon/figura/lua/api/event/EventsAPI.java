@@ -55,6 +55,12 @@ public class EventsAPI {
     @LuaFieldDoc("events.mouse_move")
     public final LuaEvent MOUSE_MOVE = new LuaEvent();
     @LuaWhitelist
+    @LuaFieldDoc("events.key_press")
+    public final LuaEvent KEY_PRESS = new LuaEvent();
+    @LuaWhitelist
+    @LuaFieldDoc("events.mouse_press")
+    public final LuaEvent MOUSE_PRESS = new LuaEvent();
+    @LuaWhitelist
     @LuaFieldDoc("events.use_item")
     public final LuaEvent USE_ITEM = new LuaEvent();
 
@@ -78,6 +84,8 @@ public class EventsAPI {
             case "SKULL_RENDER" -> SKULL_RENDER;
             case "MOUSE_SCROLL" -> MOUSE_SCROLL;
             case "MOUSE_MOVE" -> MOUSE_MOVE;
+            case "MOUSE_PRESS" -> MOUSE_PRESS;
+            case "KEY_PRESS" -> KEY_PRESS;
             case "USE_ITEM" -> USE_ITEM;
             default -> null;
         };
