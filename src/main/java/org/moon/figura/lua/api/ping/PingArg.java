@@ -3,6 +3,7 @@ package org.moon.figura.lua.api.ping;
 import org.luaj.vm2.*;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
+import org.moon.figura.lua.api.action_wheel.Action;
 import org.moon.figura.math.matrix.FiguraMatrix;
 import org.moon.figura.math.vector.FiguraVector;
 import org.moon.figura.utils.MathUtils;
@@ -66,8 +67,10 @@ public class PingArg {
             writeVec((FiguraVector<?, ?>) val.checkuserdata(), dos);
         } else if (val.isuserdata(FiguraMatrix.class)) {
             writeMat((FiguraMatrix<?, ?>) val.checkuserdata(), dos);
-        } else {
+        } else if (val.isnil() || val.isuserdata(Action.class)) {
             dos.writeByte(NIL);
+        } else {
+            throw new IllegalArgumentException("Invalid ping argument \"" + val + "\"");
         }
     }
 
