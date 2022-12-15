@@ -64,9 +64,6 @@ public class FiguraLuaPrinter {
 
     //print an error, errors should always show up on chat
     public static void sendLuaError(LuaError error, Avatar owner) {
-        if ((!Config.LOG_OTHERS.asBool() && !FiguraMod.isLocal(owner.owner)) || owner.trust.getGroup() == Trust.Group.BLOCKED)
-            return;
-
         //Jank as hell
         String message = error.toString().replace("org.luaj.vm2.LuaError: ", "")
                 .replace("\n\t[Java]: in ?", "")
@@ -109,6 +106,11 @@ public class FiguraLuaPrinter {
                 .append(new TextComponent(owner.entityName))
                 .append(new TextComponent(" : " + message).withStyle(ColorUtils.Colors.LUA_ERROR.style))
                 .append(new TextComponent("\n"));
+
+        owner.errorText = TextUtils.replaceTabs(Component.literal(message).withStyle(ColorUtils.Colors.LUA_ERROR.style));
+
+        if ((!Config.LOG_OTHERS.asBool() && !FiguraMod.isLocal(owner.owner)) || owner.trust.getGroup() == Trust.Group.BLOCKED)
+            return;
 
         chatQueue.offer(component); //bypass the char limit filter
         FiguraMod.LOGGER.error("", error);

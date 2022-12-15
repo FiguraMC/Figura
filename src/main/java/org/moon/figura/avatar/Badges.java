@@ -48,12 +48,16 @@ public class Badges {
                 Pride[] pride = Pride.values();
 
                 //trust
-                if (avatar.trustIssues)
+                if (!avatar.trustIssues.isEmpty())
                     badges.append(System.TRUST.badge);
 
                 //error
-                else if (avatar.scriptError)
-                    badges.append(System.ERROR.badge);
+                else if (avatar.scriptError) {
+                    if (avatar.errorText == null)
+                        badges.append(System.ERROR.badge);
+                    else
+                        badges.append(System.ERROR.badge.copy().withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, avatar.errorText))));
+                }
 
                 //version
                 else if (avatar.versionStatus > 0)
