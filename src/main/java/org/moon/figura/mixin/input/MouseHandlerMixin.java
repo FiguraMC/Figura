@@ -22,9 +22,18 @@ public class MouseHandlerMixin {
     @Shadow @Final private Minecraft minecraft;
 
     @Inject(method = "onPress", at = @At("HEAD"), cancellable = true)
-    private void onPress(long window, int button, int action, int mods, CallbackInfo ci) {
+    private void onPress(long window, int button, int action, int modifiers, CallbackInfo ci) {
         if (window != this.minecraft.getWindow().getWindow())
             return;
+
+        Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
+        if (avatar == null || avatar.luaRuntime == null)
+            return;
+
+        if (avatar.mousePressEvent(button, action, modifiers)) {
+            ci.cancel();
+            return;
+        }
 
         boolean pressed = action != 0;
 
@@ -33,15 +42,10 @@ public class MouseHandlerMixin {
             ci.cancel();
         }
 
-        Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
-        if (avatar == null || avatar.luaRuntime == null)
-            return;
-
-        if (pressed && avatar.luaRuntime.host.unlockCursor && this.minecraft.screen == null)
+        if (pressed && avatar.luaRuntime != null && avatar.luaRuntime.host.unlockCursor && this.minecraft.screen == null)
             ci.cancel();
 
-        //this needs to be last because it executes functions and can cause lua errors, making luaState null
-        if (FiguraKeybind.set(avatar.luaRuntime.keybinds.keyBindings, InputConstants.Type.MOUSE.getOrCreate(button), pressed))
+        if (avatar.luaRuntime != null && FiguraKeybind.set(avatar.luaRuntime.keybinds.keyBindings, InputConstants.Type.MOUSE.getOrCreate(button), pressed))
             ci.cancel();
     }
 

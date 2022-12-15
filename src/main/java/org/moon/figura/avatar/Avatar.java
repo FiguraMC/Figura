@@ -390,6 +390,16 @@ public class Avatar {
         return result != null && result.arg(1).isboolean() && result.arg(1).checkboolean();
     }
 
+    public boolean mousePressEvent(int button, int action, int modifiers) {
+        Varargs result = loaded ? run("MOUSE_PRESS", tick, button, action, modifiers) : null;
+        return result != null && result.arg(1).isboolean() && result.arg(1).checkboolean();
+    }
+
+    public boolean keyPressEvent(int key, int action, int modifiers) {
+        Varargs result = loaded ? run("KEY_PRESS", tick, key, action, modifiers) : null;
+        return result != null && result.arg(1).isboolean() && result.arg(1).checkboolean();
+    }
+
     // -- rendering events -- //
 
     private void render() {
