@@ -139,7 +139,7 @@ public class FiguraAPIManager {
     public static final Map<String, Function<FiguraLuaRuntime, Object>> API_GETTERS = new LinkedHashMap<>() {{
         put("events", r -> r.events = new EventsAPI());
         put("sounds", r -> new SoundAPI(r.owner));
-        put("vanilla_model", r -> r.vanilla_model = new VanillaModelAPI());
+        put("vanilla_model", r -> r.vanilla_model = new VanillaModelAPI(r.owner));
         put("keybinds", r -> r.keybinds = new KeybindAPI(r.owner));
         put("host", r -> r.host = new HostAPI(r.owner));
         put("nameplate", r -> r.nameplate = new NameplateAPI());

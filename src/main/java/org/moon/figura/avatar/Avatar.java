@@ -107,6 +107,7 @@ public class Avatar {
     public boolean hasTexture, scriptError;
     public Component errorText;
     public Set<Trust> trustIssues = new HashSet<>();
+    public Set<Trust> trustsToTick = new HashSet<>();
     public int versionStatus = 0;
 
     //limits
@@ -188,21 +189,27 @@ public class Avatar {
         });
     }
 
-    private void checkUser() {
-        if (luaRuntime != null && luaRuntime.getUser() == null) {
+    public void tick() {
+        if (scriptError || luaRuntime == null || !loaded)
+            return;
+
+        //fetch this avatar entity
+        if (luaRuntime.getUser() == null) {
             Entity entity = EntityUtils.getEntityByUUID(owner);
             if (entity != null) {
                 luaRuntime.setUser(entity);
                 run("ENTITY_INIT", init.post());
             }
         }
-    }
 
-    public void tick() {
-        if (scriptError || luaRuntime == null || !loaded)
-            return;
-
-        checkUser();
+        //tick trusts
+        for (Trust t : trustsToTick) {
+            if (trust.get(t) > 0) {
+                trustIssues.remove(t);
+            } else {
+                trustIssues.add(t);
+            }
+        }
 
         //sound
         particlesRemaining.set(trust.get(Trust.PARTICLES));
@@ -225,6 +232,12 @@ public class Avatar {
     }
 
     public void render(float delta) {
+        if (complexity.remaining <= 0) {
+            trustIssues.add(Trust.COMPLEXITY);
+        } else {
+            trustIssues.remove(Trust.COMPLEXITY);
+        }
+
         complexity.reset(trust.get(Trust.COMPLEXITY));
 
         if (scriptError || luaRuntime == null || !loaded)
@@ -777,6 +790,12 @@ public class Avatar {
         for (Animation animation : animations.values())
             limit = AnimationPlayer.tick(animation, limit);
         animationComplexity = animationsLimit - limit;
+
+        if (limit <= 0) {
+            trustIssues.add(Trust.BB_ANIMATIONS);
+        } else {
+            trustIssues.remove(Trust.BB_ANIMATIONS);
+        }
     }
 
     public void clearAnimations() {

@@ -148,15 +148,22 @@ public class SoundAPI {
     @LuaWhitelist
     public LuaSound __index(String id) {
         SoundBuffer buffer = owner.customSounds.get(id);
-        if (buffer != null && owner.trust.get(Trust.CUSTOM_SOUNDS) == 1)
-            return new LuaSound(buffer, id, owner);
+        if (buffer != null) {
+            if (owner.trust.get(Trust.CUSTOM_SOUNDS) == 1) {
+                return new LuaSound(buffer, id, owner);
+            } else {
+                owner.trustIssues.add(Trust.CUSTOM_SOUNDS);
+            }
+        }
 
         try {
             WeighedSoundEvents events = Minecraft.getInstance().getSoundManager().getSoundEvent(new ResourceLocation(id));
             if (events != null) {
                 Sound sound = events.getSound();
-                if (sound != SoundManager.EMPTY_SOUND)
+                if (sound != SoundManager.EMPTY_SOUND) {
+                    owner.trustIssues.remove(Trust.CUSTOM_SOUNDS);
                     return new LuaSound(sound, id, owner);
+                }
             }
             throw new LuaError("Unable to find sound \"" + id + "\"");
         } catch (Exception e) {

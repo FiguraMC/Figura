@@ -65,6 +65,13 @@ public class LuaSound {
         if (this.playing)
             return this;
 
+        if (!owner.soundsRemaining.use()) {
+            owner.trustIssues.add(Trust.SOUNDS);
+            return this;
+        }
+
+        owner.trustIssues.remove(Trust.SOUNDS);
+
         if (handle != null) {
             handle.execute(Channel::unpause);
             this.playing = true;
