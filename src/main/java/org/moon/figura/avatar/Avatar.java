@@ -21,6 +21,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
@@ -103,7 +104,9 @@ public class Avatar {
     public final Map<Integer, Animation> animations = new HashMap<>();
 
     //runtime status
-    public boolean hasTexture, scriptError, trustIssues;
+    public boolean hasTexture, scriptError;
+    public Component errorText;
+    public Set<Trust> trustIssues = new HashSet<>();
     public int versionStatus = 0;
 
     //limits
