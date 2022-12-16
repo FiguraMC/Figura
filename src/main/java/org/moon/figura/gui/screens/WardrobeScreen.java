@@ -54,7 +54,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
 
         // -- left -- //
 
-        AvatarList avatarList = new AvatarList(4, 28, third, height - 36);
+        AvatarList avatarList = new AvatarList(4, 28, third, height - 36, this);
         addRenderableWidget(avatarList);
 
         // -- middle -- //

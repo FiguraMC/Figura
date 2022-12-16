@@ -128,7 +128,7 @@ public class TrustScreen extends AbstractPanelScreen {
         ));
 
         //debug buttons
-        uuid = new TextField(middle + 2, back.getY() - 24, listWidth - 24, 20, Component.literal("Name/UUID"), s -> yoink.active = !s.isBlank());
+        uuid = new TextField(middle + 2, back.getY() - 24, listWidth - 24, 20, TextField.HintType.NAME, s -> yoink.active = !s.isBlank());
         yoink = new TexturedButton(middle + listWidth - 18, back.getY() - 24, 20, 20, Component.literal("yoink"), Component.literal("Set the selected player's avatar"), button -> {
             String text = uuid.getField().getValue();
             UUID id;
