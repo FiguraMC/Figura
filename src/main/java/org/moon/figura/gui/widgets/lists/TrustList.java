@@ -28,7 +28,7 @@ public class TrustList extends AbstractList {
 
     public boolean precise = false;
 
-    private final Map<String, List<GuiEventListener>> trusts = new LinkedHashMap<>();
+    private final Map<Component, List<GuiEventListener>> trusts = new LinkedHashMap<>();
 
     public TrustList(int x, int y, int width, int height) {
         super(x, y, width, height);
@@ -62,10 +62,10 @@ public class TrustList extends AbstractList {
         int xOffset = scrollBar.visible ? 8 : 15;
         int yOffset = scrollBar.visible ? (int) -(Mth.lerp(scrollBar.getScrollProgress(), -16, totalHeight - height)) : 16;
 
-        for (Map.Entry<String, List<GuiEventListener>> entry : trusts.entrySet()) {
+        for (Map.Entry<Component, List<GuiEventListener>> entry : trusts.entrySet()) {
             //titles
             if (titles) {
-                UIHelper.drawCenteredString(stack, font, Component.translatable(entry.getKey()), x + (width - xOffset) / 2, y + yOffset, 0xFFFFFF);
+                UIHelper.drawCenteredString(stack, font, entry.getKey(), x + (width - xOffset) / 2, y + yOffset, 0xFFFFFF);
                 yOffset += titleHeight;
             }
 
@@ -97,11 +97,11 @@ public class TrustList extends AbstractList {
         //add new trusts
 
         //defaults
-        trusts.put(FiguraMod.MOD_ID, generateWidgets(container, Trust.DEFAULT, FiguraMod.MOD_ID));
+        trusts.put(FiguraText.of(), generateWidgets(container, Trust.DEFAULT, FiguraMod.MOD_ID));
 
         //custom
         for (Map.Entry<String, Collection<Trust>> entry : TrustManager.CUSTOM_TRUST.entrySet())
-            trusts.put(entry.getKey(), generateWidgets(container, entry.getValue(), entry.getKey()));
+            trusts.put(Component.translatable(entry.getKey()), generateWidgets(container, entry.getValue(), entry.getKey()));
     }
 
     private List<GuiEventListener> generateWidgets(TrustContainer container, Collection<Trust> coll, String id) {

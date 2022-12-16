@@ -3,11 +3,14 @@ package org.moon.figura.gui.widgets.lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.util.Mth;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.avatar.local.LocalAvatarFetcher;
+import org.moon.figura.gui.screens.AbstractPanelScreen;
+import org.moon.figura.gui.screens.AvatarWizardScreen;
 import org.moon.figura.gui.widgets.TextField;
 import org.moon.figura.gui.widgets.TexturedButton;
 import org.moon.figura.gui.widgets.avatar.AbstractAvatarWidget;
@@ -36,23 +39,21 @@ public class AvatarList extends AbstractList {
 
     // -- Constructors -- //
 
-    public AvatarList(int x, int y, int width, int height) {
+    public AvatarList(int x, int y, int width, int height, AbstractPanelScreen parentScreen) {
         super(x, y, width, height);
 
         //search bar
-        children.add(new TextField(x + 4, y + 4, width - 8, 20, FiguraText.of("gui.search"), s -> filter = s));
+        children.add(new TextField(x + 4, y + 4, width - 8, 20, TextField.HintType.SEARCH, s -> filter = s));
 
         //new avatar
-        TexturedButton butt;
-        children.add(butt = new TexturedButton(
+        children.add(new TexturedButton(
                 x + width / 2 - 46, y + 28,
                 20, 20, 0, 0, 20,
                 new FiguraIdentifier("textures/gui/new_avatar.png"),
                 60, 20,
                 FiguraText.of("gui.wardrobe.new_avatar.tooltip"),
-                button -> {})
+                button -> Minecraft.getInstance().setScreen(new AvatarWizardScreen(parentScreen)))
         );
-        butt.active = false;
 
         //unselect
         children.add(new TexturedButton(
@@ -118,7 +119,7 @@ public class AvatarList extends AbstractList {
 
         //render list
         int xOffset = scrollBar.visible ? 4 : 11;
-        int yOffset = scrollBar.visible ? (int) -(Mth.lerp(scrollBar.getScrollProgress(), -28, totalHeight - height)) : 56;
+        int yOffset = scrollBar.visible ? (int) -(Mth.lerp(scrollBar.getScrollProgress(), -49, totalHeight - height)) : 56;
         boolean hidden = false;
 
         for (AbstractAvatarWidget avatar : avatarList) {

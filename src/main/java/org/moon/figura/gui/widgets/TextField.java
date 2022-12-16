@@ -9,6 +9,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.moon.figura.utils.FiguraIdentifier;
+import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.ui.UIHelper;
 
 import java.util.function.Consumer;
@@ -19,12 +20,12 @@ public class TextField extends AbstractContainerElement {
     private static final int ENABLED_COLOR = ChatFormatting.WHITE.getColor();
     private static final int DISABLED_COLOR = ChatFormatting.DARK_GRAY.getColor();
 
-    private final Component hint;
+    private final HintType hint;
     private final EditBox field;
     private int borderColour = 0xFFFFFFFF;
     private boolean enabled = true;
 
-    public TextField(int x, int y, int width, int height, Component hint, Consumer<String> changedListener) {
+    public TextField(int x, int y, int width, int height, HintType hint, Consumer<String> changedListener) {
         super(x, y, width, height);
         this.hint = hint;
 
@@ -55,7 +56,7 @@ public class TextField extends AbstractContainerElement {
         //hint text
         if (hint != null && field.getValue().isEmpty() && !field.isFocused()) {
             Minecraft.getInstance().font.drawShadow(
-                    stack, hint.copy().withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC),
+                    stack, hint.hint.copy().withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC),
                     this.x + 4, this.y + (height - 8) / 2, 0xFFFFFF
             );
         }
@@ -128,5 +129,23 @@ public class TextField extends AbstractContainerElement {
 
     public boolean isFocused() {
         return isEnabled() && field.isFocused();
+    }
+
+    public enum HintType {
+        ANY,
+        INT,
+        POSITIVE_INT,
+        FLOAT,
+        HEX_COLOR,
+        FOLDER_PATH,
+        IP,
+        SEARCH,
+        NAME;
+
+        private final Component hint;
+
+        HintType() {
+            this.hint = FiguraText.of("gui.text_hint." + this.name().toLowerCase());
+        }
     }
 }

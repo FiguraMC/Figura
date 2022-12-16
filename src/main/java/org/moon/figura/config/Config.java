@@ -11,6 +11,7 @@ import net.minecraft.network.chat.Component;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.backend2.NetworkStuff;
+import org.moon.figura.gui.widgets.TextField;
 import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.trust.Trust;
 import org.moon.figura.trust.TrustManager;
@@ -355,10 +356,11 @@ public enum Config {
         IP(ServerAddress::isValidAddress);
 
         public final Predicate<String> validator;
-        public final Component hint;
+        public final TextField.HintType hint;
+
         InputType(Predicate<String> predicate) {
             this.validator = predicate;
-            this.hint = FiguraText.of("config.input." + this.name().toLowerCase());
+            this.hint = TextField.HintType.valueOf(this.name());
         }
     }
 
