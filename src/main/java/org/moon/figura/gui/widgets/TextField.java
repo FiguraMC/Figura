@@ -111,6 +111,9 @@ public class TextField extends AbstractContainerElement {
 
     @Override
     public void setVisible(boolean visible) {
+        if (visible == isVisible())
+            return;
+
         super.setVisible(visible);
         this.field.setFocus(false);
     }
