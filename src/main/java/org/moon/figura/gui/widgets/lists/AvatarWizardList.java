@@ -44,8 +44,17 @@ public class AvatarWizardList extends AbstractList {
         int entryHeight = 24;
 
         int size = 0;
-        for (List<GuiEventListener> value : map.values())
-            size += value.size();
+        for (List<GuiEventListener> list : map.values()) {
+            for (GuiEventListener widget : list) {
+                if (widget instanceof WizardInputBox ib) {
+                    ib.setVisible(wizard.checkDependency(ib.entry));
+                    if (ib.isVisible()) size++;
+                } else if (widget instanceof WizardToggleButton tb) {
+                    tb.visible = wizard.checkDependency(tb.entry);
+                    if (tb.visible) size++;
+                }
+            }
+        }
         int totalHeight = entryHeight * size + lineHeight * map.size();
 
         scrollBar.visible = totalHeight > height;
@@ -54,19 +63,32 @@ public class AvatarWizardList extends AbstractList {
         //render list
         int yOffset = scrollBar.visible ? (int) -(Mth.lerp(scrollBar.getScrollProgress(), -4, totalHeight - height)) : 4;
         for (Map.Entry<Component, List<GuiEventListener>> entry : map.entrySet()) {
-            //category
-            UIHelper.drawCenteredString(stack, font, entry.getKey(), x + width / 2, y + yOffset + 4, 0xFFFFFF);
-            yOffset += lineHeight;
+            List<GuiEventListener> value = entry.getValue();
+            if (value.isEmpty())
+                continue;
 
+            int newY = yOffset + lineHeight;
             //elements
             for (GuiEventListener widget : entry.getValue()) {
                 if (widget instanceof AbstractWidget w) {
-                    w.setY(y + yOffset);
+                    if (w.visible) {
+                        w.setY(y + newY);
+                        newY += entryHeight;
+                    }
                 } else if (widget instanceof TextField t) {
-                    t.setPos(t.x, y + yOffset);
+                    if (t.isVisible()) {
+                        t.setPos(t.x, y + newY);
+                        newY += entryHeight;
+                    }
                 }
-                yOffset += entryHeight;
             }
+
+            if (newY == yOffset + lineHeight)
+                continue;
+
+            //category
+            UIHelper.drawCenteredString(stack, font, entry.getKey(), x + width / 2, y + yOffset + 4, 0xFFFFFF);
+            yOffset = newY;
         }
 
         //children
@@ -122,19 +144,22 @@ public class AvatarWizardList extends AbstractList {
 
         private final AvatarWizardList parent;
         private final AvatarWizard.WizardEntry entry;
+        private final Component name;
 
         public WizardInputBox(int x, int width, AvatarWizardList parent, AvatarWizard.WizardEntry entry) {
             super(x, 0, width, 20, HintType.ANY, s -> parent.wizard.changeEntry(entry, s));
             this.parent = parent;
             this.entry = entry;
+            this.name = FiguraText.of("gui.avatar_wizard." + entry.name().toLowerCase());
         }
 
         @Override
         public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
+            if (!isVisible()) return;
             super.render(stack, mouseX, mouseY, delta);
 
             Font font = Minecraft.getInstance().font;
-            MutableComponent name = FiguraText.of("gui.avatar_wizard." + entry.name().toLowerCase());
+            MutableComponent name = this.name.copy();
             if (!this.getField().getValue().isBlank())
                 name.setStyle(FiguraMod.getAccentColor());
             font.draw(stack, name, x - width - 8, y + (height - font.lineHeight) / 2, 0xFFFFFF);
@@ -150,11 +175,13 @@ public class AvatarWizardList extends AbstractList {
 
         private final AvatarWizardList parent;
         private final AvatarWizard.WizardEntry entry;
+        private final Component name;
 
         public WizardToggleButton(int x, int width, AvatarWizardList parent, AvatarWizard.WizardEntry entry) {
             super(x, 0, width, 20, false);
             this.parent = parent;
             this.entry = entry;
+            this.name = FiguraText.of("gui.avatar_wizard." + entry.name().toLowerCase());
         }
 
         @Override
@@ -165,13 +192,15 @@ public class AvatarWizardList extends AbstractList {
 
         @Override
         protected void renderTexture(PoseStack stack, float delta) {
+            //button
             stack.pushPose();
             stack.translate(width - textureWidth, 0, 0);
             super.renderTexture(stack, delta);
             stack.popPose();
 
+            //name
             Font font = Minecraft.getInstance().font;
-            MutableComponent name = FiguraText.of("gui.avatar_wizard." + entry.name().toLowerCase());
+            MutableComponent name = this.name.copy();
             if (this.isToggled())
                 name.withStyle(FiguraMod.getAccentColor());
             font.draw(stack, name, getX() - width - 8, getY() + (height - font.lineHeight) / 2, 0xFFFFFF);
