@@ -7,14 +7,18 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.moon.figura.utils.FiguraIdentifier;
+import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.ui.UIHelper;
 
 public class SwitchButton extends TexturedButton {
 
     public static final ResourceLocation SWITCH_TEXTURE = new FiguraIdentifier("textures/gui/switch.png");
+    public static final Component ON = FiguraText.of("gui.on");
+    public static final Component OFF = FiguraText.of("gui.off");
 
     protected boolean toggled = false;
     private boolean defaultTexture = false;
+    private boolean underline = true;
     private float headPos = 0f;
 
     //text constructor
@@ -55,7 +59,7 @@ public class SwitchButton extends TexturedButton {
         //draw text
         drawCenteredString(
                 stack, Minecraft.getInstance().font,
-                (this.toggled ? getMessage().copy().withStyle(ChatFormatting.UNDERLINE) : getMessage()),
+                (this.toggled && underline ? getMessage().copy().withStyle(ChatFormatting.UNDERLINE) : getMessage()),
                 this.x + this.width / 2, this.y + this.height / 2 - 4,
                 (!this.active ? ChatFormatting.DARK_GRAY : ChatFormatting.WHITE).getColor()
         );
@@ -79,5 +83,9 @@ public class SwitchButton extends TexturedButton {
 
     public void setToggled(boolean toggled) {
         this.toggled = toggled;
+    }
+
+    public void setUnderline(boolean underline) {
+        this.underline = underline;
     }
 }

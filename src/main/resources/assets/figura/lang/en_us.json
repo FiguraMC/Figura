@@ -125,7 +125,7 @@
 
   "figura.gui.on": "ON",
   "figura.gui.off": "OFF",
-  "figura.gui.search": "Search...",
+  "figura.gui.create": "Create",
   "figura.gui.name": "Name",
   "figura.gui.authors": "Authors",
   "figura.gui.size": "Size",
@@ -138,6 +138,16 @@
   "figura.gui.panic.1": "Panic mode active! Figura features are disabled!",
   "figura.gui.panic.2": "toggle panic mode with [%s] key",
   "figura.gui.help.tooltip": "Help",
+
+  "figura.gui.text_hint.any": "Text...",
+  "figura.gui.text_hint.int": "Integer...",
+  "figura.gui.text_hint.positive_int": "Integer...",
+  "figura.gui.text_hint.float": "Number...",
+  "figura.gui.text_hint.hex_color": "Color...",
+  "figura.gui.text_hint.folder_path": "Path...",
+  "figura.gui.text_hint.ip": "IP Address...",
+  "figura.gui.text_hint.search": "Search...",
+  "figura.gui.text_hint.name": "Name/UUID",
 
   "figura.gui.error.no_avatar": "No Avatar selected!",
   "figura.gui.error.no_keybinds": "Avatar does not have keybinds!",
@@ -220,14 +230,26 @@
   "figura.gui.status.backend.2": "Connecting",
   "figura.gui.status.backend.3": "Connected",
 
+  "figura.gui.avatar_wizard.meta": "Avatar Metadata",
+  "figura.gui.avatar_wizard.name": "Name",
 
-  "figura.config.input.any": "Text...",
-  "figura.config.input.int": "Integer...",
-  "figura.config.input.positive_int": "Integer...",
-  "figura.config.input.float": "Number...",
-  "figura.config.input.hex_color": "Color...",
-  "figura.config.input.folder_path": "Path...",
-  "figura.config.input.ip": "IP Address...",
+  "figura.gui.avatar_wizard.model": "Model",
+  "figura.gui.avatar_wizard.slim": "Slim (Small) Arms",
+  "figura.gui.avatar_wizard.cape": "Cape template",
+  "figura.gui.avatar_wizard.elytra": "Elytra template",
+
+  "figura.gui.avatar_wizard.pivots": "Pivots",
+  "figura.gui.avatar_wizard.items_pivot": "Held Items Pivot",
+  "figura.gui.avatar_wizard.spyglass_pivot": "Spyglass Pivot",
+  "figura.gui.avatar_wizard.helmet_item_pivot": "Head Item Pivot",
+  "figura.gui.avatar_wizard.parrots_pivot": "Parrots Pivot",
+
+  "figura.gui.avatar_wizard.scripting": "Script",
+  "figura.gui.avatar_wizard.hide_player": "Hide Vanilla Player",
+  "figura.gui.avatar_wizard.hide_armor": "Hide Vanilla Armor",
+  "figura.gui.avatar_wizard.hide_cape": "Hide Vanilla Cape",
+  "figura.gui.avatar_wizard.hide_elytra": "Hide Vanilla Elytra",
+  "figura.gui.avatar_wizard.empty_events": "Include dummy events",
 
 
   "figura.config.nameplate": "Nameplate",
