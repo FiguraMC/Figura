@@ -232,8 +232,11 @@
 
   "figura.gui.avatar_wizard.meta": "Avatar Metadata",
   "figura.gui.avatar_wizard.name": "Name",
+  "figura.gui.avatar_wizard.authors": "Authors",
 
   "figura.gui.avatar_wizard.model": "Model",
+  "figura.gui.avatar_wizard.dummy_model": "Include a Model",
+  "figura.gui.avatar_wizard.custom_player": "Custom Player Model",
   "figura.gui.avatar_wizard.slim": "Slim (Small) Arms",
   "figura.gui.avatar_wizard.cape": "Cape template",
   "figura.gui.avatar_wizard.elytra": "Elytra template",
@@ -245,6 +248,7 @@
   "figura.gui.avatar_wizard.parrots_pivot": "Parrots Pivot",
 
   "figura.gui.avatar_wizard.scripting": "Script",
+  "figura.gui.avatar_wizard.dummy_script": "Include a Script",
   "figura.gui.avatar_wizard.hide_player": "Hide Vanilla Player",
   "figura.gui.avatar_wizard.hide_armor": "Hide Vanilla Armor",
   "figura.gui.avatar_wizard.hide_cape": "Hide Vanilla Cape",
