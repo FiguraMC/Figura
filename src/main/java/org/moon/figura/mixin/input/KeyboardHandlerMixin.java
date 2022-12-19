@@ -29,7 +29,7 @@ public class KeyboardHandlerMixin {
         if (avatar == null || avatar.luaRuntime == null)
             return;
 
-        if (avatar.keyPressEvent(key, action, modifiers)) {
+        if (avatar.keyPressEvent(key, action, modifiers) && this.minecraft.mouseHandler.isMouseGrabbed()) {
             ci.cancel();
             return;
         }
