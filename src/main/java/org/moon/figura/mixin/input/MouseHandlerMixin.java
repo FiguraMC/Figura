@@ -6,8 +6,8 @@ import net.minecraft.client.MouseHandler;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
-import org.moon.figura.gui.PopupMenu;
 import org.moon.figura.gui.ActionWheel;
+import org.moon.figura.gui.PopupMenu;
 import org.moon.figura.lua.api.keybind.FiguraKeybind;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -20,6 +20,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MouseHandlerMixin {
 
     @Shadow @Final private Minecraft minecraft;
+    @Shadow private double xpos;
+    @Shadow private double ypos;
+
+    @Shadow private boolean mouseGrabbed;
 
     @Inject(method = "onPress", at = @At("HEAD"), cancellable = true)
     private void onPress(long window, int button, int action, int modifiers, CallbackInfo ci) {
@@ -30,7 +34,7 @@ public class MouseHandlerMixin {
         if (avatar == null || avatar.luaRuntime == null)
             return;
 
-        if (avatar.mousePressEvent(button, action, modifiers)) {
+        if (avatar.mousePressEvent(button, action, modifiers) && this.mouseGrabbed) {
             ci.cancel();
             return;
         }
@@ -52,7 +56,7 @@ public class MouseHandlerMixin {
     @Inject(method = "onScroll", at = @At("HEAD"), cancellable = true)
     private void onScroll(long window, double scrollDeltaX, double scrollDeltaY, CallbackInfo ci) {
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
-        if (avatar != null && avatar.mouseScrollEvent(scrollDeltaY))
+        if (avatar != null && avatar.mouseScrollEvent(scrollDeltaY) && this.mouseGrabbed)
             ci.cancel();
 
         if (ActionWheel.isEnabled()) {
@@ -67,7 +71,7 @@ public class MouseHandlerMixin {
     @Inject(method = "onMove", at = @At("HEAD"), cancellable = true)
     private void onMove(long window, double x, double y, CallbackInfo ci) {
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
-        if (avatar != null && avatar.mouseMoveEvent(x, y))
+        if (avatar != null && avatar.mouseMoveEvent(x - this.xpos, y - this.ypos) && mouseGrabbed)
             ci.cancel();
     }
 
