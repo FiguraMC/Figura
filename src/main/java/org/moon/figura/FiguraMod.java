@@ -34,6 +34,7 @@ import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.Version;
+import org.moon.figura.wizards.AvatarWizard;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -118,6 +119,7 @@ public class FiguraMod implements ClientModInitializer {
     private static void registerResourceListener(ResourceManagerHelper managerHelper) {
         managerHelper.registerReloadListener(LocalAvatarLoader.AVATAR_LISTENER);
         managerHelper.registerReloadListener(Emojis.RESOURCE_LISTENER);
+        managerHelper.registerReloadListener(AvatarWizard.RESOURCE_LISTENER);
     }
 
     // -- Helper Functions -- //

@@ -1,8 +1,59 @@
 package org.moon.figura.wizards;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
+import org.apache.commons.codec.binary.Base64;
+import org.moon.figura.FiguraMod;
+import org.moon.figura.avatar.local.LocalAvatarFetcher;
+import org.moon.figura.exporters.BlockBenchModel;
+import org.moon.figura.exporters.BlockBenchModel.Cube;
+import org.moon.figura.exporters.BlockBenchModel.Group;
+import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.utils.ColorUtils;
+import org.moon.figura.utils.FiguraIdentifier;
+import org.moon.figura.utils.FiguraResourceListener;
+import org.moon.figura.utils.IOUtils;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.Optional;
+import java.util.function.BiFunction;
 
 public class AvatarWizard {
+
+    private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
+
+    private static String playerTexture = "";
+    private static String playerTextureSlim = "";
+    private static String capeTexture = "";
+
+    private static final BiFunction<ResourceManager, String, String> GET_TEXTURE_DATA = (manager, path) -> {
+        Optional<Resource> optional = manager.getResource(new FiguraIdentifier(path));
+        if (optional.isPresent()) {
+            try (InputStream is = optional.get().open()) {
+                return Base64.encodeBase64String(is.readAllBytes());
+            } catch (Exception e) {
+                FiguraMod.LOGGER.error("", e);
+            }
+        }
+        return "";
+    };
+
+    public static final FiguraResourceListener RESOURCE_LISTENER = new FiguraResourceListener("avatar_wizard", manager -> {
+        playerTexture = GET_TEXTURE_DATA.apply(manager, "textures/avatar_wizard/texture.png");
+        playerTextureSlim = GET_TEXTURE_DATA.apply(manager, "textures/avatar_wizard/texture_slim.png");
+        capeTexture = GET_TEXTURE_DATA.apply(manager, "textures/avatar_wizard/cape.png");
+    });
 
     private final HashMap<WizardEntry, Object> map = new HashMap<>();
 
@@ -41,8 +92,241 @@ public class AvatarWizard {
         return true;
     }
 
-    public void build() {
+    public void build() throws IOException {
+        //file io
+        Path root = LocalAvatarFetcher.getLocalAvatarDirectory();
+        String name = (String) map.get(WizardEntry.NAME);
+        String filename = name.replaceAll(IOUtils.INVALID_FILENAME_REGEX, "_");
 
+        Path folder = root.resolve(filename);
+        int i = 1;
+        while (Files.exists(folder)) {
+            folder = root.resolve(filename + "_" + i);
+            i++;
+        }
+
+        Files.createDirectories(folder);
+
+        //metadata
+        buildMetadata(folder, name);
+
+        //script
+        if (WizardEntry.DUMMY_SCRIPT.asBool(map))
+            buildScript(folder);
+
+        //model
+        if (WizardEntry.DUMMY_MODEL.asBool(map))
+            buildModel(folder);
+
+        //open file manager
+        Util.getPlatform().openFile(folder.toFile());
+    }
+
+    private void buildMetadata(Path path, String name) throws IOException {
+        JsonObject root = new JsonObject();
+
+        //name
+        root.addProperty("name", name);
+
+        //authors
+        String authorStr = (String) map.get(WizardEntry.AUTHORS);
+        String playerName = Minecraft.getInstance().player.getName().getString();
+        String[] authors = authorStr == null ? new String[]{playerName} : authorStr.split(",");
+        if (authors.length == 0) authors = new String[]{playerName};
+
+        JsonArray authorsJson = new JsonArray();
+        for (String author : authors)
+            authorsJson.add(author.trim());
+
+        root.add("authors", authorsJson);
+
+        //color
+        root.addProperty("color", "#" + ColorUtils.rgbToHex(ColorUtils.Colors.FRAN_PINK.vec));
+
+        //write file
+        path = path.resolve("avatar.json");
+
+        try (FileOutputStream fs = new FileOutputStream(path.toFile())) {
+            fs.write(GSON.toJson(root).getBytes());
+        }
+    }
+
+    private void buildScript(Path path) throws IOException {
+        String script = "-- Auto generated script file --\n";
+
+        boolean hasPlayerModel = WizardEntry.CUSTOM_PLAYER.asBool(map);
+
+        //hide player
+        if (hasPlayerModel && WizardEntry.HIDE_PLAYER.asBool(map))
+            script += """
+
+                    --hide vanilla model
+                    vanilla_model.PLAYER:setVisible(false)
+                    """;
+
+        //hide armor
+        boolean hideArmor = WizardEntry.HIDE_ARMOR.asBool(map);
+        if (hideArmor)
+            script += """
+
+                    --hide vanilla armor model
+                    vanilla_model.ARMOR:setVisible(false)
+                    """;
+
+        //helmet item fix :3
+        if (hasPlayerModel && hideArmor && WizardEntry.HELMET_ITEM_PIVOT.asBool(map))
+            script += """
+                    --re-enable the helmet item
+                    vanilla_model.HELMET_ITEM:setVisible(true)
+                    """;
+
+        //hide cape
+        if (WizardEntry.HIDE_CAPE.asBool(map))
+            script += """
+
+                    --hide vanilla cape model
+                    vanilla_model.CAPE:setVisible(false)
+                    """;
+
+        //hide cape
+        if (WizardEntry.HIDE_ELYTRA.asBool(map))
+            script += """
+
+                    --hide vanilla elytra model
+                    vanilla_model.ELYTRA:setVisible(false)
+                    """;
+
+        //empty events
+        if (WizardEntry.EMPTY_EVENTS.asBool(map))
+            script += """
+
+                    --entity init event, used for when the avatar entity is loaded for the first time
+                    function events.entity_init()
+                      --player functions goes here
+                    end
+
+                    --tick event, called 20 times per second
+                    function events.tick()
+                      --code goes here
+                    end
+
+                    --render event, called every time your avatar is rendered
+                    --it have two arguments, "delta" and "context"
+                    --"delta" is the percentage between the last and the next tick (as a decimal value, 0.0 to 1.0)
+                    --"context" is a string that tells from where this render event was called (the paperdoll, gui, player render, first person)
+                    function events.render(delta, context)
+                      --code goes here
+                    end
+                    """;
+
+        //write file
+        path = path.resolve("script.lua");
+
+        try (FileOutputStream fs = new FileOutputStream(path.toFile())) {
+            fs.write(script.getBytes());
+        }
+    }
+
+    private void buildModel(Path path) throws IOException {
+        boolean hasPlayer = WizardEntry.CUSTOM_PLAYER.asBool(map);
+        boolean hasElytra = WizardEntry.ELYTRA.asBool(map);
+        boolean hasCape = WizardEntry.CAPE.asBool(map);
+        boolean hasCapeOrElytra = hasCape || hasElytra;
+        boolean slim = WizardEntry.SLIM.asBool(map);
+
+        //model
+        BlockBenchModel model = new BlockBenchModel("free");
+
+        //textures
+        int playerTex = hasPlayer ? model.addImage("Skin", slim ? playerTextureSlim : playerTexture) : -1;
+        int capeTex = hasCapeOrElytra ? model.addImage("Cape", capeTexture) : -1;
+
+        //resolution
+        if (hasPlayer)
+            model.setResolution(64, 64);
+        else if (hasCapeOrElytra)
+            model.setResolution(64, 32);
+
+        //base bones
+        Group root = model.addGroup("root", FiguraVec3.of());
+        Group head = model.addGroup("Head", FiguraVec3.of(0, 24, 0), root);
+        Group body = model.addGroup("Body", FiguraVec3.of(0, 24, 0), root);
+        Group leftArm = model.addGroup("LeftArm", FiguraVec3.of(-5, 22, 0), root);
+        Group rightArm = model.addGroup("RightArm", FiguraVec3.of(5, 22, 0), root);
+        Group leftLeg = model.addGroup("LeftLeg", FiguraVec3.of(-1.9, 12, 0), root);
+        Group rightLeg = model.addGroup("RightLeg", FiguraVec3.of(1.9, 12, 0), root);
+
+        //player
+        if (hasPlayer) {
+            generateCubeAndLayer(model, "Hat", FiguraVec3.of(-4, 24, -4), FiguraVec3.of(8, 8, 8), 0.5, head, 0, 0, 32, 0, playerTex);
+            generateCubeAndLayer(model, "Jacket", FiguraVec3.of(-4, 12, -2), FiguraVec3.of(8, 12, 4), 0.25, body, 16, 16, 16, 32, playerTex);
+
+            FiguraVec3 armSize = FiguraVec3.of(slim ? 3 : 4, 12, 4);
+            generateCubeAndLayer(model, "Left Sleeve", FiguraVec3.of(slim ? -7 : -8, 12, -2), armSize, 0.25, leftArm, 32, 48, 48, 48, playerTex);
+            generateCubeAndLayer(model, "Right Sleeve", FiguraVec3.of(4, 12, -2), armSize, 0.25, rightArm, 40, 16, 40, 32, playerTex);
+
+            generateCubeAndLayer(model, "Left Pants", FiguraVec3.of(-3.9, 0, -2), FiguraVec3.of(4, 12, 4), 0.25, leftLeg, 16, 48, 0, 48, playerTex);
+            generateCubeAndLayer(model, "Right Pants", FiguraVec3.of(-0.1, 0, -2), FiguraVec3.of(4, 12, 4), 0.25, rightLeg, 0, 16, 0, 32, playerTex);
+        }
+
+        //cape
+        if (hasCape) {
+            Group cape = model.addGroup("Cape", FiguraVec3.of(0, 24, 2), root);
+            Cube cube = model.addCube("Cape", FiguraVec3.of(-5, 8, 2), FiguraVec3.of(10, 16, 1), cape);
+            cube.generateBoxFaces(0, 0, capeTex, 1, hasPlayer ? 2 : 1);
+        }
+
+        //elytra
+        if (hasElytra) {
+            Group elytra = model.addGroup("Elytra", FiguraVec3.of(0, 24, 2), root);
+
+            //left wing
+            Group leftElytra = model.addGroup("LeftElytra", FiguraVec3.of(-5, 24, 2), elytra);
+            Cube cube = model.addCube(FiguraVec3.of(-5, 4, 2), FiguraVec3.of(10, 20, 2), leftElytra);
+            cube.inflate = 1;
+            cube.generateBoxFaces(22, 0, capeTex, 1, hasPlayer ? 2 : 1);
+
+            //right wing
+            Group rightElytra = model.addGroup("RightElytra", FiguraVec3.of(5, 24, 2), elytra);
+            cube = model.addCube(FiguraVec3.of(-5, 4, 2), FiguraVec3.of(10, 20, 2), rightElytra);
+            cube.inflate = 1;
+            cube.generateBoxFaces(22, 0, capeTex, -1, hasPlayer ? 2 : 1);
+        }
+
+        //pivots
+        if (WizardEntry.ITEMS_PIVOT.asBool(map)) {
+            model.addGroup("LeftItemPivot", FiguraVec3.of(slim ? -5.5 : -6, 12, -2), leftArm);
+            model.addGroup("RightItemPivot", FiguraVec3.of(slim ? 5.5 : 6, 12, -2), rightArm);
+        }
+
+        if (WizardEntry.SPYGLASS_PIVOT.asBool(map)) {
+            model.addGroup("LeftSpyglassPivot", FiguraVec3.of(-2, 28, -4), head);
+            model.addGroup("RightSpyglassPivot", FiguraVec3.of(2, 28, -4), head);
+        }
+
+        if (WizardEntry.HELMET_ITEM_PIVOT.asBool(map)) {
+            model.addGroup("HelmetItemPivot", FiguraVec3.of(0, 24, 0), head);
+        }
+
+        if (WizardEntry.PARROTS_PIVOT.asBool(map)) {
+            model.addGroup("LeftParrotPivot", FiguraVec3.of(-6, 24, 0), body);
+            model.addGroup("RightParrotPivot", FiguraVec3.of(6, 24, 0), body);
+        }
+
+        //write file
+        path = path.resolve("model.bbmodel");
+
+        try (FileOutputStream fs = new FileOutputStream(path.toFile())) {
+            fs.write(GSON.toJson(model.build()).getBytes());
+        }
+    }
+
+    private void generateCubeAndLayer(BlockBenchModel model, String layerName, FiguraVec3 position, FiguraVec3 size, double inflation, Group parent, int x1, int y1, int x2, int y2, int texture) {
+        Cube c = model.addCube(position, size, parent);
+        c.generateBoxFaces(x1, y1, texture);
+        Cube l = model.addCube(layerName, position, size, parent);
+        l.inflate = inflation;
+        l.generateBoxFaces(x2, y2, texture);
     }
 
     public enum WizardEntry {
@@ -75,9 +359,6 @@ public class AvatarWizard {
         private final Type type;
         private final WizardEntry[] dependencies;
 
-        WizardEntry() {
-            this(Type.TOGGLE);
-        }
         WizardEntry(WizardEntry... dependencies) {
             this(Type.TOGGLE, dependencies);
         }
@@ -96,6 +377,11 @@ public class AvatarWizard {
                 case TEXT -> object instanceof String;
                 case CATEGORY -> true;
             };
+        }
+
+        public boolean asBool(HashMap<WizardEntry, Object> map) {
+            Object object = map.get(this);
+            return type == Type.TOGGLE && object != null && (boolean) object;
         }
 
         public enum Type {
