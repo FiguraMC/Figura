@@ -114,7 +114,7 @@ public class FiguraLuaRuntime {
     }
 
     public Entity getUser() {
-        return entityAPI == null ? null : entityAPI.getEntity();
+        return entityAPI != null && entityAPI.isLoaded() ? entityAPI.getEntity() : null;
     }
 
     // init runtime //
@@ -138,8 +138,8 @@ public class FiguraLuaRuntime {
             String name = arg.checkjstring(1).replaceAll("[/\\\\]", ".");
             if (loadingScripts.contains(name))
                 throw new LuaError("Detected circular dependency in script " + loadingScripts.peek());
-            if (scripts.get(name) == null && arg(2).isfunction())
-                return arg.checkfunction(2).call();
+            if (scripts.get(name) == null && arg.isfunction(2))
+                return arg.checkfunction(2).invoke(LuaValue.valueOf(name));
 
             return INIT_SCRIPT.apply(name);
         }
