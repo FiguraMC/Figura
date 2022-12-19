@@ -22,6 +22,8 @@ import java.util.function.Consumer;
 
 public class IOUtils {
 
+    public static final String INVALID_FILENAME_REGEX = "CON|PRN|AUX|NUL|COM\\d|LPT\\d|[\\\\/:*?\"<>|\u0000]|\\.$";
+
     public static List<File> getFilesByExtension(Path root, String extension) {
         List<File> result = new ArrayList<>();
         File rf = root.toFile();

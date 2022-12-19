@@ -32,6 +32,8 @@
   "figura.toast.clipboard": "Copied to clipboard!",
   "figura.toast.trust_change": "Trust changed to",
   "figura.toast.new_version": "New version available!",
+  "figura.toast.avatar_wizard.error": "Failed to create Avatar!",
+  "figura.toast.avatar_wizard.success": "Avatar Created!",
 
   "figura.toast.load_error": "Failed to load avatar!",
   "figura.toast.load_error.1": "invalid moon file",

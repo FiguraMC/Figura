@@ -2,6 +2,8 @@ package org.moon.figura.gui.screens;
 
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import org.moon.figura.FiguraMod;
+import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.widgets.TexturedButton;
 import org.moon.figura.gui.widgets.lists.AvatarWizardList;
 import org.moon.figura.utils.FiguraText;
@@ -41,7 +43,14 @@ public class AvatarWizardScreen extends AbstractPanelScreen {
 
         //done
         addRenderableWidget(build = new TexturedButton(width / 2 + 4, height - 24, 120, 20, FiguraText.of("gui.create"), null, button -> {
-            wizard.build();
+            try {
+                wizard.build();
+                FiguraToast.sendToast(FiguraText.of("toast.avatar_wizard.success"));
+            } catch (Exception e) {
+                FiguraToast.sendToast(FiguraText.of("toast.avatar_wizard.error"), FiguraToast.ToastType.ERROR);
+                FiguraMod.LOGGER.error("", e);
+            }
+
             this.minecraft.setScreen(sourcePanel);
         }));
 
