@@ -41,6 +41,7 @@ public class LocalAvatarLoader {
     private static final HashMap<Path, WatchKey> KEYS = new HashMap<>();
     private static Path lastLoadedPath;
     private static int loadState;
+    private static String loadError;
 
     public static CompoundTag cheese;
     public static final ArrayList<CompoundTag> SERVER_AVATARS = new ArrayList<>();
@@ -88,6 +89,7 @@ public class LocalAvatarLoader {
      * @param path - the file/folder for loading the avatar
      */
     public static void loadAvatar(Path path, UserData target) {
+        loadError = null;
         loadState = 0;
         resetWatchKeys();
         lastLoadedPath = path;
@@ -144,6 +146,7 @@ public class LocalAvatarLoader {
                 //load
                 target.loadAvatar(nbt);
             } catch (Exception e) {
+                loadError = e.getMessage();
                 FiguraMod.LOGGER.error("Failed to load avatar from " + path, e);
                 FiguraToast.sendToast(new FiguraText("toast.load_error"), new FiguraText("toast.load_error." + LocalAvatarLoader.getLoadState()), FiguraToast.ToastType.ERROR);
             }
@@ -182,7 +185,7 @@ public class LocalAvatarLoader {
         }
     }
 
-    private static CompoundTag loadModels(Path path, BlockbenchModelParser parser, CompoundTag textures, ListTag animations, String folders) throws IOException {
+    private static CompoundTag loadModels(Path path, BlockbenchModelParser parser, CompoundTag textures, ListTag animations, String folders) throws Exception {
         CompoundTag result = new CompoundTag();
         File[] subFiles = path.toFile().listFiles(f -> !f.isHidden() && !f.getName().startsWith("."));
         ListTag children = new ListTag();
@@ -314,5 +317,9 @@ public class LocalAvatarLoader {
 
     public static int getLoadState() {
         return loadState;
+    }
+
+    public static String getLoadError() {
+        return loadError;
     }
 }
