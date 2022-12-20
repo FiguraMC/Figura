@@ -10,6 +10,7 @@ import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.LuaUtils;
 
@@ -45,6 +46,7 @@ public class RendererAPI {
     public FiguraVec3 cameraRot;
     public FiguraVec3 cameraOffsetRot;
     public ResourceLocation postShader;
+    public FiguraVec2 crosshairOffset;
 
     public RendererAPI(Avatar owner) {
         this.owner = owner.owner;
@@ -233,6 +235,29 @@ public class RendererAPI {
     )
     public void setFOV(Float fov) {
         this.fov = fov;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = FiguraVec2.class,
+                            argumentNames = "vec"
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {Integer.class, Integer.class},
+                            argumentNames = {"x", "y"}
+                    )
+            },
+            value = "renderer.set_crosshair_offset")
+    public void setCrosshairOffset(Object x, Double y) {
+        this.crosshairOffset = x == null ? null : LuaUtils.parseVec2("setCrosshairOffset", x, y);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("renderer.get_crosshair_offset")
+    public FiguraVec2 getCrosshairOffset() {
+        return this.crosshairOffset;
     }
 
     @LuaWhitelist
