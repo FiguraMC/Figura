@@ -44,6 +44,12 @@ public class AvatarAPI {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("avatar.get_uuid")
+    public String getUUID() {
+        return avatar.owner.toString();
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc("avatar.get_current_instructions")
     public int getCurrentInstructions() {
         return avatar.luaRuntime == null ? 0 : avatar.luaRuntime.getInstructions();
