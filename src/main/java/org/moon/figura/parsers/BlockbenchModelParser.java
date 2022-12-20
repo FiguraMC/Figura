@@ -30,9 +30,15 @@ public class BlockbenchModelParser {
     private final HashMap<Integer, String> textureIdMap = new HashMap<>();
 
     //parser
-    public ModelData parseModel(Path avatarFolder, File sourceFile, String json, String modelName, String folders) {
+    public ModelData parseModel(Path avatarFolder, File sourceFile, String json, String modelName, String folders) throws Exception {
         //parse json -> object
         BlockbenchModel model = GSON.fromJson(json, BlockbenchModel.class);
+
+        //meta check
+        if (!model.meta.model_format.equals("free"))
+            throw new Exception("Model \"" + modelName + "\" not generic format");
+        if (Integer.parseInt(model.meta.format_version.split("\\.")[0]) < 4)
+            throw new Exception("Model \"" + modelName + "\" is too old (version " + model.meta.format_version + "), minimum compatible version is 4.0");
 
         //return lists
         CompoundTag textures = new CompoundTag();
