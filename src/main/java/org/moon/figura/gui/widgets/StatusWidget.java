@@ -87,20 +87,20 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
         boolean hovered = this.isMouseOver(mouseX, mouseY);
 
         //text and tooltip
-        float spacing = (width - (background ? 13 : 11)) / (count - 1f);
-        float hSpacing = spacing / 2;
+        double spacing = (double) width / count;
+        double hSpacing = spacing * 0.5;
         for (int i = 0; i < count; i++) {
-            int x = (int) (this.x + spacing * i + (background ? 1 : 0));
+            int x = (int) (this.x + spacing * i + hSpacing);
 
-            Component text = getStatus(i);
-            UIHelper.drawString(stack, font, text, x, y + (background ? 3 : 0), 0xFFFFFF);
+            Component text = getStatusIcon(i);
+            UIHelper.drawString(stack, font, text, x - font.width(text) / 2, y + (background ? 3 : 0), 0xFFFFFF);
 
-            if (hovered && mouseX >= x - hSpacing + 6 && mouseX < x + hSpacing + 6 && mouseY >= y && mouseY < y + (background ? 14 : 11))
+            if (hovered && mouseX >= x - hSpacing && mouseX < x + hSpacing && mouseY >= y && mouseY < y + font.lineHeight + (background ? 3 : 0))
                 UIHelper.setTooltip(getTooltipFor(i));
         }
     }
 
-    private MutableComponent getStatus(int type) {
+    public MutableComponent getStatusIcon(int type) {
         return Component.literal(String.valueOf(STATUS_INDICATORS.charAt(status >> (type * 2) & 3))).setStyle(Style.EMPTY.withFont(UIHelper.UI_FONT));
     }
 

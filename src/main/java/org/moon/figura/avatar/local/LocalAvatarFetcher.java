@@ -125,8 +125,7 @@ public class LocalAvatarFetcher {
 
                     name = Config.WARDROBE_FILE_NAMES.asBool() || metadata.name == null || metadata.name.isBlank() ? filename : metadata.name;
                     bg = CardBackground.parse(metadata.background);
-                } catch (Exception e) {
-                    FiguraMod.LOGGER.warn("Failed to read metadata for \"" + path + "\". Likely invalid avatar.json.");
+                } catch (Exception ignored) {
                     name = filename;
                     bg = CardBackground.DEFAULT;
                 }
