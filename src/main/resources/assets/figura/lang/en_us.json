@@ -653,6 +653,7 @@
 
   "figura.docs.avatar": "A global API containing functions to interact with your avatar's metadata, and also to get information about the current script environment.",
   "figura.docs.avatar.store": "Store the given key-value pair inside your current avatar's metadata. Someone else can get this information from a different script with the avatarVars() function in World. The key must be a string.",
+  "figura.docs.avatar.get_uuid": "Returns the UUID of the owner of this avatar.",
   "figura.docs.avatar.get_current_instructions": "Gets the current number of instructions that have been executed by your avatar. Resets to 0 at the beginning of certain events.",
   "figura.docs.avatar.get_color": "Gets the current color string of your avatar, used as your avatar theme.",
   "figura.docs.avatar.set_color": "Sets the current color string of your avatar, used as your avatar theme.",
@@ -1177,6 +1178,8 @@
   "figura.docs.renderer.set_post_effect": "Sets the current rendering effect. Same as the discontinued Super Secret Settings.",
   "figura.docs.renderer.set_fov": "Sets the multiplier of your fov. The default value is nil, which means no changes will be applied to your fov.",
   "figura.docs.renderer.get_fov": "Gets the multiplier of your fov.",
+  "figura.docs.renderer.set_crosshair_offset": "Sets the offset of your crosshair.",
+  "figura.docs.renderer.get_crosshair_offset": "Gets the offset of your crosshair.",
 
 
   "figura.docs.sounds": "A global API which is used to play Minecraft sounds. Accessed using the name \"sounds\".",

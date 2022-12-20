@@ -7,9 +7,11 @@ import net.minecraft.world.entity.Entity;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.gui.ActionWheel;
+import org.moon.figura.lua.api.RendererAPI;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -18,6 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class GuiMixin {
 
     @Shadow @Final private Minecraft minecraft;
+    @Unique private boolean crosshair = false;
 
     @Inject(at = @At("RETURN"), method = "render")
     private void render(PoseStack stack, float tickDelta, CallbackInfo ci) {
@@ -31,12 +34,34 @@ public class GuiMixin {
 
     @Inject(at = @At("HEAD"), method = "renderCrosshair", cancellable = true)
     private void renderCrosshair(PoseStack stack, CallbackInfo ci) {
-        if (ActionWheel.isEnabled())
+        if (ActionWheel.isEnabled()) {
             ci.cancel();
+            return;
+        }
 
         Entity entity = this.minecraft.getCameraEntity();
         Avatar avatar;
-        if (entity != null && (avatar = AvatarManager.getAvatar(entity)) != null && avatar.luaRuntime != null && !avatar.luaRuntime.renderer.renderCrosshair)
+        if (entity == null || (avatar = AvatarManager.getAvatar(entity)) == null || avatar.luaRuntime == null)
+            return;
+
+        RendererAPI renderer = avatar.luaRuntime.renderer;
+        if (!renderer.renderCrosshair) {
             ci.cancel();
+            return;
+        }
+
+        if (renderer.crosshairOffset != null) {
+            crosshair = true;
+            stack.pushPose();
+            stack.translate(renderer.crosshairOffset.x, renderer.crosshairOffset.y, 0d);
+        }
+    }
+
+    @Inject(at = @At("RETURN"), method = "renderCrosshair")
+    private void afterRenderCrosshair(PoseStack stack, CallbackInfo ci) {
+        if (crosshair) {
+            stack.popPose();
+            crosshair = false;
+        }
     }
 }
