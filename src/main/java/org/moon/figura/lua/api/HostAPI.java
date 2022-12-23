@@ -10,6 +10,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.commands.arguments.SlotArgument;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import org.luaj.vm2.LuaError;
 import org.moon.figura.FiguraMod;
@@ -30,7 +31,7 @@ import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.TextUtils;
 
-import java.util.BitSet;
+import java.util.*;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -343,6 +344,28 @@ public class HostAPI {
     @LuaMethodDoc("host.is_avatar_uploaded")
     public boolean isAvatarUploaded() {
         return isHost() && AvatarManager.localUploaded;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("host.get_status_effects")
+    public List<Map<String, Object>> getStatusEffects() {
+        List<Map<String, Object>> list = new ArrayList<>();
+
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player == null)
+            return list;
+
+        for (MobEffectInstance effect : player.getActiveEffects()) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("name", effect.getEffect().getDescriptionId());
+            map.put("amplifier", effect.getAmplifier());
+            map.put("duration", effect.getDuration());
+            map.put("visible", effect.isVisible());
+
+            list.add(map);
+        }
+
+        return list;
     }
 
     @LuaWhitelist
