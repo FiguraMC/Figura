@@ -841,7 +841,6 @@
   "figura.docs.living_entity.get_max_health": "Returns the maximum amount of health this entity can have.",
   "figura.docs.living_entity.get_armor": "Returns the amount of armor points this entity has.",
   "figura.docs.living_entity.get_death_time": "Returns the number of ticks this entity has been dead for.",
-  "figura.docs.living_entity.get_status_effects": "Returns, as a table, all of the status effects this entity has on it. The table contains sub-tables, each of which contains the name, amplifier, duration, and particle visibility of an effect this entity has.",
   "figura.docs.living_entity.get_arrow_count": "Returns the number of arrows sticking out of this entity.",
   "figura.docs.living_entity.get_stinger_count": "Returns the number of bee stingers sticking out of this entity.",
   "figura.docs.living_entity.is_left_handed": "Returns true if the entity's main hand is its left.",
@@ -917,6 +916,7 @@
   "figura.docs.host.save_texture": "A debug function, saves the texture on the cache directory as png.",
   "figura.docs.host.screenshot": "Takes a screenshot from the current screen and returns a Texture of it.",
   "figura.docs.host.is_avatar_uploaded": "Checks if this avatar is currently uploaded.",
+  "figura.docs.host.get_status_effects": "Returns a table of all of the player's status effects. The table contains sub-tables, each of which contains the name, amplifier, duration, and particle visibility of each status effect.",
 
 
   "figura.docs.itemstack": "A proxy for an item stack from Minecraft.",

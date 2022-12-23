@@ -1,7 +1,6 @@
 package org.moon.figura.lua.api.entity;
 
 import net.minecraft.util.Mth;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobType;
@@ -11,11 +10,6 @@ import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.mixin.LivingEntityAccessor;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -101,25 +95,6 @@ public class LivingEntityAPI<T extends LivingEntity> extends EntityAPI<T> {
     public float getDeathTime() {
         checkEntity();
         return entity.deathTime;
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc("living_entity.get_status_effects")
-    public List<Map<String, Object>> getStatusEffects() {
-        checkEntity();
-        List<Map<String, Object>> list = new ArrayList<>();
-
-        for (MobEffectInstance effect : entity.getActiveEffects()) {
-            Map<String, Object> map = new HashMap<>();
-            map.put("name", effect.getEffect().getDescriptionId());
-            map.put("amplifier", effect.getAmplifier());
-            map.put("duration", effect.getDuration());
-            map.put("visible", effect.isVisible());
-
-            list.add(map);
-        }
-
-        return list;
     }
 
     @LuaWhitelist
