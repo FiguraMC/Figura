@@ -41,6 +41,7 @@ public class FiguraTexture extends SimpleTexture {
     /**
      * The ID of the texture, used to register to Minecraft.
      */
+    private boolean registered = false;
     private boolean dirty = true;
     private boolean modified = false;
     private final String name;
@@ -71,8 +72,6 @@ public class FiguraTexture extends SimpleTexture {
         this.texture = image;
         this.name = name;
         this.owner = owner;
-
-        Minecraft.getInstance().getTextureManager().register(this.location, this);
     }
 
     public FiguraTexture(Avatar owner, String name, NativeImage image) {
@@ -80,14 +79,10 @@ public class FiguraTexture extends SimpleTexture {
         this.texture = image;
         this.name = name;
         this.owner = owner;
-
-        Minecraft.getInstance().getTextureManager().register(this.location, this);
     }
 
     @Override
-    public void load(ResourceManager manager) throws IOException {
-        uploadIfDirty();
-    }
+    public void load(ResourceManager manager) throws IOException {}
 
     @Override
     public void close() {
@@ -105,6 +100,11 @@ public class FiguraTexture extends SimpleTexture {
     }
 
     public void uploadIfDirty() {
+        if (!registered) {
+            Minecraft.getInstance().getTextureManager().register(this.location, this);
+            registered = true;
+        }
+
         if (dirty) {
             dirty = false;
 

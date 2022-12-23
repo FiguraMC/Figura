@@ -110,13 +110,17 @@ public class BlockbenchModelParser {
             if (name.endsWith(".png"))
                 name = name.substring(0, name.length() - 4);
 
-            //render type
-            TextureType renderType = TextureType.fromString(textures[i].render_mode);
+            //texture type
+            String textureType;
 
-            TextureType newType = TextureType.fromName(name);
-            if (newType != TextureType.DEFAULT) {
-                renderType = newType;
-                name = name.substring(0, name.length() - 2);
+            if (name.endsWith("_e")) {
+                textureType = "emissive";
+            } else if (name.endsWith("_n")) {
+                textureType = "normal";
+            } else if (name.endsWith("_s")) {
+                textureType = "specular";
+            } else {
+                textureType = "default";
             }
 
             //parse the texture data
@@ -137,11 +141,11 @@ public class BlockbenchModelParser {
                 path = path.substring(0, path.length() - 4);
 
                 //feedback
-                FiguraMod.debug("Loaded " + renderType.name() + " Texture \"{}\" from {}", name, f);
+                FiguraMod.debug("Loaded " + textureType + " Texture \"{}\" from {}", name, f);
             } catch (Exception ignored) {
                 //otherwise, load from the source stored in the model
                 source = Base64.getDecoder().decode(textures[i].source.substring("data:image/png;base64,".length()));
-                path = folders + modelName + "." + name + renderType.suffix;
+                path = folders + modelName + "." + name;
             }
 
             //add source nbt
@@ -149,11 +153,11 @@ public class BlockbenchModelParser {
 
             //add textures nbt
             if (texturesTemp.containsKey(name)) {
-                texturesTemp.get(name).putString(renderType.name().toLowerCase(), path);
+                texturesTemp.get(name).putString(textureType, path);
             } else {
                 //create nbt
                 CompoundTag compound = new CompoundTag();
-                compound.putString(renderType.name().toLowerCase(), path);
+                compound.putString(textureType, path);
 
                 //add to temp lists
                 texturesTemp.put(name, compound);
@@ -678,34 +682,4 @@ public class BlockbenchModelParser {
 
     //dummy class containing the return object of the parser
     public record ModelData(CompoundTag textures, List<CompoundTag> animationList, CompoundTag modelNbt) {}
-
-    private enum TextureType {
-        DEFAULT(""),
-        EMISSIVE("_e"),
-        SPECULAR("_s"),
-        NORMAL("_n");
-
-        private final String suffix;
-
-        TextureType(String suffix) {
-            this.suffix = suffix;
-        }
-
-        public static TextureType fromString(String type) {
-            try {
-                return TextureType.valueOf(type.toUpperCase());
-            } catch (Exception ignored) {
-                return DEFAULT;
-            }
-        }
-
-        public static TextureType fromName(String name) {
-            for (TextureType value : TextureType.values()) {
-                if (value != DEFAULT && name.endsWith(value.suffix))
-                    return value;
-            }
-
-            return DEFAULT;
-        }
-    }
 }
