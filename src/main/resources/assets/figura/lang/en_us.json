@@ -782,6 +782,7 @@
   "figura.docs.client.int_uuid_to_string": "Converts an int array UUID (as 4 separated arguments) into its hexadecimal string representation.",
   "figura.docs.client.get_viewer": "Returns the player entity from the running client.",
   "figura.docs.client.get_server_data": "Returns a table with information of the current connected server (also for singleplayer worlds).",
+  "figura.docs.client.get_date": "Returns a table with information about the client current time.",
 
 
   "figura.docs.config": "A global API used to save and load avatar data between game sessions.",
