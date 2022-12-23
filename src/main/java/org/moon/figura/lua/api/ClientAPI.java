@@ -25,6 +25,7 @@ import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.Version;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @LuaWhitelist
@@ -339,24 +340,57 @@ public class ClientAPI {
     @LuaWhitelist
     @LuaMethodDoc("client.get_server_data")
     public static Map<String, String> getServerData() {
-        Map<String, String> list = new HashMap<>();
+        Map<String, String> map = new HashMap<>();
 
         IntegratedServer iServer = Minecraft.getInstance().getSingleplayerServer();
         if (iServer != null) {
-            list.put("name", iServer.getWorldData().getLevelName());
-            list.put("ip", iServer.getLocalIp());
-            list.put("motd", iServer.getMotd());
-            return list;
+            map.put("name", iServer.getWorldData().getLevelName());
+            map.put("ip", iServer.getLocalIp());
+            map.put("motd", iServer.getMotd());
+            return map;
         }
 
         ServerData mServer = Minecraft.getInstance().getCurrentServer();
         if (mServer != null) {
-            list.put("name", mServer.name);
-            list.put("ip", mServer.ip);
-            list.put("motd", mServer.motd.getString());
+            map.put("name", mServer.name);
+            map.put("ip", mServer.ip);
+            map.put("motd", mServer.motd.getString());
         }
 
-        return list;
+        return map;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("client.get_date")
+    public static Map<String, Object> getDate() {
+        Map<String, Object> map = new HashMap<>();
+
+        Calendar calendar = FiguraMod.CALENDAR;
+        Date date = new Date();
+        calendar.setTime(date);
+
+        map.put("day", calendar.get(Calendar.DAY_OF_MONTH));
+        map.put("month", calendar.get(Calendar.MONTH) + 1);
+        map.put("year", calendar.get(Calendar.YEAR));
+        map.put("hour", calendar.get(Calendar.HOUR_OF_DAY));
+        map.put("minute", calendar.get(Calendar.MINUTE));
+        map.put("second", calendar.get(Calendar.SECOND));
+        map.put("millisecond", calendar.get(Calendar.MILLISECOND));
+        map.put("week", calendar.get(Calendar.WEEK_OF_YEAR));
+        map.put("year_day", calendar.get(Calendar.DAY_OF_YEAR));
+        map.put("week_day", calendar.get(Calendar.DAY_OF_WEEK));
+        map.put("daylight_saving", calendar.getTimeZone().inDaylightTime(date));
+
+        SimpleDateFormat format = new SimpleDateFormat("Z|zzzz|G|MMMM|EEEE", Locale.US);
+        String[] f = format.format(date).split("\\|");
+
+        map.put("timezone", f[0]);
+        map.put("timezone_name", f[1]);
+        map.put("era", f[2]);
+        map.put("month_name", f[3]);
+        map.put("day_name", f[4]);
+
+        return map;
     }
 
     @Override

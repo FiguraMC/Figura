@@ -8,6 +8,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.Calendar;
+import java.util.Date;
+
 @Mixin(SplashManager.class)
 public class SplashManagerMixin {
 
@@ -16,29 +19,30 @@ public class SplashManagerMixin {
         if (!Config.EASTER_EGGS.asBool())
             return;
 
-        if (FiguraMod.CHEESE_DAY) {
-            cir.setReturnValue("LARGECHEESE!");
-        } else { //b-days!!
-            int month = FiguraMod.DATE.getMonthValue();
-            int day = FiguraMod.DATE.getDayOfMonth();
-            String bday = "Happy birthday ";
+        Calendar calendar = FiguraMod.CALENDAR;
+        calendar.setTime(new Date());
 
-            switch (month) {
-                case 1 -> {
-                    if (day == 1) cir.setReturnValue(bday + "Foxes!");
+        String bday = "Happy birthday ";
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        switch (calendar.get(Calendar.MONTH)) {
+            case Calendar.JANUARY -> {
+                if (day == 1) cir.setReturnValue(bday + "Foxes!");
+            }
+            case Calendar.MARCH -> {
+                switch (day) {
+                    case 5 -> cir.setReturnValue(bday + "Limits!");
+                    case 24 -> cir.setReturnValue(bday + FiguraMod.MOD_NAME + "!");
                 }
-                case 3 -> {
-                    switch (day) {
-                        case 5 -> cir.setReturnValue(bday + "Limits!");
-                        case 24 -> cir.setReturnValue(bday + FiguraMod.MOD_NAME + "!");
-                    }
-                }
-                case 7 -> {
-                    if (day == 4) cir.setReturnValue(bday + "Skylar!");
-                }
-                case 9 -> {
-                    if (day == 21) cir.setReturnValue(bday + "Fran!");
-                }
+            }
+            case Calendar.APRIL -> {
+                if (day == 1) cir.setReturnValue("LARGECHEESE!");
+            }
+            case Calendar.JULY -> {
+                if (day == 4) cir.setReturnValue(bday + "Skylar!");
+            }
+            case Calendar.SEPTEMBER -> {
+                if (day == 21) cir.setReturnValue(bday + "Fran!");
             }
         }
     }

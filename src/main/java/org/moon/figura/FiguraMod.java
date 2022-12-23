@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.LocalDate;
+import java.util.Calendar;
 import java.util.UUID;
 
 public class FiguraMod implements ClientModInitializer {
@@ -50,8 +50,7 @@ public class FiguraMod implements ClientModInitializer {
     public static final String MOD_NAME = "Figura";
     public static final Version VERSION = new Version(FabricLoader.getInstance().getModContainer(FiguraMod.MOD_ID).get().getMetadata().getVersion().getFriendlyString());
     public static final boolean DEBUG_MODE = Math.random() + 1 < 0;
-    public static final LocalDate DATE = LocalDate.now();
-    public static final boolean CHEESE_DAY = DATE.getDayOfMonth() == 1 && DATE.getMonthValue() == 4;
+    public static final Calendar CALENDAR = Calendar.getInstance();
     public static final Path GAME_DIR = FabricLoader.getInstance().getGameDir().normalize();
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_NAME);
 
