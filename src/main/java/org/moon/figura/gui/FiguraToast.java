@@ -17,6 +17,8 @@ import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.ui.UIHelper;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class FiguraToast implements Toast {
@@ -122,9 +124,12 @@ public class FiguraToast implements Toast {
         Component text2 = message instanceof Component m ? m : new TranslatableComponent(message.toString());
 
         if (type == ToastType.DEFAULT && Config.EASTER_EGGS.asBool()) {
-            if (FiguraMod.CHEESE_DAY || Math.random() < 0.0001)
+            Calendar calendar = FiguraMod.CALENDAR;
+            calendar.setTime(new Date());
+
+            if ((calendar.get(Calendar.DAY_OF_MONTH) == 1 && calendar.get(Calendar.MONTH) == Calendar.APRIL) || Math.random() < 0.0001)
                 type = ToastType.CHEESE;
-            else if (FiguraMod.DATE.getDayOfMonth() == 21 && FiguraMod.DATE.getMonthValue() == 9)
+            else if (calendar.get(Calendar.DAY_OF_MONTH) == 21 && calendar.get(Calendar.MONTH) == Calendar.SEPTEMBER)
                 type = ToastType.FRAN;
         }
 
