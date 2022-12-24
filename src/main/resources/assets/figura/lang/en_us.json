@@ -866,6 +866,7 @@
   "figura.docs.player.has_cape": "Returns whether the player has a cape loaded.",
   "figura.docs.player.has_skin": "Returns whether the player has a custom skin loaded.",
   "figura.docs.player.is_skin_layer_visible": "Returns whether the specified skin layer, from the Skin Customizations settings, is currently visible.",
+  "figura.docs.player.is_fishing": "Returns if the player is currently fishing.",
 
 
   "figura.docs.events": "A global API that contains all of the figura Events. Accessed using the name \"events\".",

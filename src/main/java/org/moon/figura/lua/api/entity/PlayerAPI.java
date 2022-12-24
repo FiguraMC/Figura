@@ -126,6 +126,13 @@ public class PlayerAPI extends LivingEntityAPI<Player> {
         }
     }
 
+    @LuaWhitelist
+    @LuaMethodDoc("player.is_fishing")
+    public boolean isFishing() {
+        checkEntity();
+        return entity.fishing != null;
+    }
+
     @Override
     public String toString() {
         checkEntity();
