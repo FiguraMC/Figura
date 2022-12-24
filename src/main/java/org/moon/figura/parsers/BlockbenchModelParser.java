@@ -123,6 +123,9 @@ public class BlockbenchModelParser {
                 textureType = "default";
             }
 
+            if (!textureType.equals("default"))
+                name = name.substring(0, name.length() - 2);
+
             //parse the texture data
             String path;
             byte[] source;
@@ -141,7 +144,7 @@ public class BlockbenchModelParser {
                 path = path.substring(0, path.length() - 4);
 
                 //feedback
-                FiguraMod.debug("Loaded " + textureType + " Texture \"{}\" from {}", name, f);
+                FiguraMod.debug("Loaded " + textureType.toUpperCase() + " Texture \"{}\" from {}", name, f);
             } catch (Exception ignored) {
                 //otherwise, load from the source stored in the model
                 source = Base64.getDecoder().decode(textures[i].source.substring("data:image/png;base64,".length()));
