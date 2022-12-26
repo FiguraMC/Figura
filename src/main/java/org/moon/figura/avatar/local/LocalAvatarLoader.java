@@ -144,7 +144,7 @@ public class LocalAvatarLoader {
             } catch (Exception e) {
                 loadError = e.getMessage();
                 FiguraMod.LOGGER.error("Failed to load avatar from " + path, e);
-                FiguraToast.sendToast(FiguraText.of("toast.load_error"), FiguraText.of("toast.load_error." + LocalAvatarLoader.getLoadState()), FiguraToast.ToastType.ERROR);
+                FiguraToast.sendToast(FiguraText.of("toast.load_error"), FiguraText.of("gui.load_error." + LocalAvatarLoader.getLoadState()), FiguraToast.ToastType.ERROR);
             }
         });
     }

@@ -34,13 +34,7 @@
   "figura.toast.new_version": "New version available!",
   "figura.toast.avatar_wizard.error": "Failed to create Avatar!",
   "figura.toast.avatar_wizard.success": "Avatar Created!",
-
   "figura.toast.load_error": "Failed to load avatar!",
-  "figura.toast.load_error.1": "invalid moon file",
-  "figura.toast.load_error.2": "invalid script",
-  "figura.toast.load_error.3": "invalid custom sound",
-  "figura.toast.load_error.4": "invalid model",
-  "figura.toast.load_error.5": "invalid \"avatar.json\"",
 
 
   "figura.trust.group.blocked": "Blocked",
@@ -210,6 +204,14 @@
   "figura.gui.trust.render.post_entity": "Post Entity: %s",
   "figura.gui.trust.render.post_world": "Post World: %s",
 
+  "figura.gui.load_error": "Loading Error",
+  "figura.gui.load_error.1": "Invalid moon file",
+  "figura.gui.load_error.2": "Invalid script",
+  "figura.gui.load_error.3": "Invalid custom sound",
+  "figura.gui.load_error.4": "Invalid model",
+  "figura.gui.load_error.5": "Invalid \"avatar.json\"",
+
+  "figura.gui.status.reason": "Reason",
   "figura.gui.status.size": "Size",
   "figura.gui.status.size.0": "none",
   "figura.gui.status.size.1": "Avatar size is greater than %s",
@@ -227,7 +229,6 @@
   "figura.gui.status.script.3": "ok",
 
   "figura.gui.status.backend": "Backend",
-  "figura.gui.status.backend.reason": "Reason",
   "figura.gui.status.backend.1": "Disconnected",
   "figura.gui.status.backend.2": "Connecting",
   "figura.gui.status.backend.3": "Connected",
