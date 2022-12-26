@@ -23,7 +23,7 @@ public class Badges {
     public static final ResourceLocation FONT = new FiguraIdentifier("badges");
 
     public static Component fetchBadges(UUID id) {
-        MutableComponent badges = Component.empty().withStyle(Style.EMPTY.withFont(FONT).withColor(ChatFormatting.WHITE));
+        MutableComponent badges = Component.empty().withStyle(Style.EMPTY.withFont(FONT).withColor(ChatFormatting.WHITE).withObfuscated(false));
 
         if (TrustManager.get(id).getGroup() == Trust.Group.BLOCKED)
             return badges;
