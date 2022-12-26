@@ -23,7 +23,7 @@ public class Badges {
     public static final ResourceLocation FONT = new FiguraIdentifier("badges");
 
     public static Component fetchBadges(UUID id) {
-        MutableComponent badges = TextComponent.EMPTY.copy().withStyle(Style.EMPTY.withFont(FONT).withColor(ChatFormatting.WHITE));
+        MutableComponent badges = TextComponent.EMPTY.copy().withStyle(Style.EMPTY.withFont(FONT).withColor(ChatFormatting.WHITE).withObfuscated(false));
 
         if (TrustManager.get(id).getGroup() == Trust.Group.BLOCKED)
             return badges;
@@ -78,7 +78,7 @@ public class Badges {
                     MutableComponent trust = System.TRUST.badge.copy();
                     MutableComponent desc = System.TRUST.desc.copy().append("\n");
                     for (Trust t : avatar.trustIssues)
-                        desc.append("\n• ").append(FiguraText.of("badges.trust_err." + t.name.toLowerCase()));
+                        desc.append("\n• ").append(new FiguraText("badges.trust_err." + t.name.toLowerCase()));
 
                     badges.append(trust.withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, desc))));
                 }
@@ -111,7 +111,7 @@ public class Badges {
     }
 
     public static Component appendBadges(Component text, UUID id, boolean allow) {
-        Component badges = allow ? fetchBadges(id) : Component.empty();
+        Component badges = allow ? fetchBadges(id) : TextComponent.EMPTY.copy();
         boolean custom = hasCustomBadges(text);
 
         //no custom badges text
