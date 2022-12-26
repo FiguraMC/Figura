@@ -33,7 +33,7 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
     private final Font font;
     protected final int count;
     protected int status = 0;
-    private Component disconnectedReason;
+    private Component scriptError, disconnectedReason;
 
     public int x, y;
     public int width, height;
@@ -68,6 +68,7 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
 
         int script = empty ? 0 : avatar.scriptError ? 1 : avatar.luaRuntime == null ? 0 : avatar.versionStatus > 0 ? 2 : 3;
         status += script << 4;
+        scriptError = script == 1 ? avatar.errorText.copy() : null;
 
         int backend = NetworkStuff.backendStatus;
         status += backend << 6;
@@ -120,9 +121,13 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
 
         MutableComponent text = new FiguraText(part).append("\n• ").append(info).setStyle(TEXT_COLORS.get(color));
 
+        //script error
+        if (i == 2 && color == 1 && scriptError != null)
+            text.append("\n\n").append(new FiguraText("gui.status.reason")).append("\n• ").append(scriptError);
+
         //get backend disconnect reason
         if (i == 3 && disconnectedReason != null)
-            text.append("\n\n").append(new FiguraText(part + ".reason")).append("\n• ").append(disconnectedReason);
+            text.append("\n\n").append(new FiguraText("gui.status.reason")).append("\n• ").append(disconnectedReason);
 
         return text;
     }
