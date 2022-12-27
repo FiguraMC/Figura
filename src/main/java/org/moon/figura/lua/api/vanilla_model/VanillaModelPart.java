@@ -41,6 +41,9 @@ public class VanillaModelPart extends VanillaPart {
             return;
 
         ModelPart part = provider.apply(model);
+        if (part == null)
+            return;
+
         storedVisibility = part.visible;
         part.visible = visible;
     }
@@ -51,6 +54,9 @@ public class VanillaModelPart extends VanillaPart {
             return;
 
         ModelPart part = provider.apply(model);
+        if (part == null)
+            return;
+
         savedOriginRot.set(-part.xRot, -part.yRot, part.zRot);
         savedOriginRot.scale(180 / Math.PI);
 
@@ -63,8 +69,14 @@ public class VanillaModelPart extends VanillaPart {
 
     @Override
     public void restore(EntityModel<?> model) {
-        if (provider != null)
-            provider.apply(model).visible = storedVisibility;
+        if (provider == null)
+            return;
+
+        ModelPart part = provider.apply(model);
+        if (part == null)
+            return;
+
+        part.visible = storedVisibility;
     }
 
     @Override

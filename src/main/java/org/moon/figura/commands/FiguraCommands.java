@@ -4,6 +4,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.fabricmc.fabric.api.client.command.v1.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import org.moon.figura.FiguraMod;
+import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.backend2.BackendCommands;
 import org.moon.figura.lua.docs.FiguraDocsManager;
 
@@ -32,9 +33,13 @@ public class FiguraCommands {
         //debug
         root.then(FiguraDebugCommand.getCommand());
 
-        //backend debug
-        if (FiguraMod.DEBUG_MODE)
+        if (FiguraMod.DEBUG_MODE) {
+            //backend debug
             root.then(BackendCommands.getCommand());
+
+            //set avatar command
+            root.then(AvatarManager.getCommand());
+        }
 
         //register
         ClientCommandManager.DISPATCHER.register(root);
