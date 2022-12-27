@@ -198,9 +198,9 @@ public class ActionWheel {
             if (texture != null) {
                 UIHelper.setupTexture(texture.texture.getLocation());
                 UIHelper.blit(stack,
-                        (int) (xOff - texture.width * texture.scale / 2d),
-                        (int) (yOff - texture.height * texture.scale / 2d),
-                        (int) (texture.width * texture.scale), (int) (texture.height * texture.scale),
+                        (int) Math.round(xOff - texture.width * texture.scale / 2d),
+                        (int) Math.round(yOff - texture.height * texture.scale / 2d),
+                        (int) Math.round(texture.width * texture.scale), (int) Math.round(texture.height * texture.scale),
                         (float) texture.u, (float) texture.v,
                         texture.width, texture.height,
                         texture.texture.getWidth(), texture.texture.getHeight());
@@ -214,10 +214,10 @@ public class ActionWheel {
             //render
             PoseStack modelStack = RenderSystem.getModelViewStack();
             modelStack.pushPose();
-            modelStack.translate(x + xOff * scale, y + yOff * scale, 0);
+            modelStack.translate(x, y, 0);
             modelStack.scale(scale, scale, scale);
 
-            minecraft.getItemRenderer().renderGuiItem(item, -8, -8);
+            minecraft.getItemRenderer().renderGuiItem(item, (int) Math.round(xOff - 8), (int) Math.round(yOff - 8));
             if (Config.ACTION_WHEEL_DECORATIONS.asBool())
                 minecraft.getItemRenderer().renderGuiItemDecorations(minecraft.font, item, -8, -8);
 
