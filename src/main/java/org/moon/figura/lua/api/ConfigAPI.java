@@ -244,10 +244,12 @@ public class ConfigAPI {
             ),
             value = "config.name"
     )
-    public void name(@LuaNotNil String name) {
-        if (!isHost) return;
+    public ConfigAPI name(@LuaNotNil String name) {
+        if (!isHost)
+            return this;
         this.name = name;
         this.loaded = false;
+        return this;
     }
 
     @LuaWhitelist
@@ -258,9 +260,9 @@ public class ConfigAPI {
             ),
             value = "config.save"
     )
-    public void save(@LuaNotNil String key, LuaValue val) {
+    public ConfigAPI save(@LuaNotNil String key, LuaValue val) {
         if (!isHost)
-            return;
+            return this;
 
         if (!loaded) {
             init();
@@ -270,6 +272,8 @@ public class ConfigAPI {
         val = val != null && (val.isboolean() || val.isstring() || val.isnumber() || val.istable() || val.isuserdata(FiguraVector.class) || val.isuserdata(FiguraMatrix.class)) ? val : LuaValue.NIL;
         luaTable.set(key, val);
         write();
+
+        return this;
     }
 
     @LuaWhitelist

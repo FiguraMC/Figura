@@ -5,7 +5,10 @@ import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaMetamethodDoc;
 import org.moon.figura.lua.docs.LuaMetamethodDoc.LuaMetamethodOverload;
+import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
+
+import java.util.List;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -63,6 +66,28 @@ public class EventsAPI {
     @LuaWhitelist
     @LuaFieldDoc("events.use_item")
     public final LuaEvent USE_ITEM = new LuaEvent();
+
+    @LuaWhitelist
+    @LuaMethodDoc("events.get_events")
+    public List<LuaEvent> getEvents() {
+        return List.of(
+                ENTITY_INIT,
+                TICK,
+                WORLD_TICK,
+                RENDER,
+                POST_RENDER,
+                WORLD_RENDER,
+                POST_WORLD_RENDER,
+                CHAT_SEND_MESSAGE,
+                CHAT_RECEIVE_MESSAGE,
+                SKULL_RENDER,
+                MOUSE_SCROLL,
+                MOUSE_MOVE,
+                MOUSE_PRESS,
+                KEY_PRESS,
+                USE_ITEM
+        );
+    }
 
     @LuaWhitelist
     @LuaMetamethodDoc(overloads = @LuaMetamethodOverload(
