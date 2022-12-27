@@ -3,8 +3,6 @@ package org.moon.figura.lua.docs;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaUserdata;
-import org.moon.figura.lua.api.ConfigAPI;
-import org.moon.figura.model.FiguraModelPart;
 import org.moon.figura.lua.api.*;
 import org.moon.figura.lua.api.action_wheel.ActionWheelAPI;
 import org.moon.figura.lua.api.entity.EntityAPI;
@@ -17,9 +15,9 @@ import org.moon.figura.lua.api.nameplate.NameplateAPI;
 import org.moon.figura.lua.api.particle.ParticleAPI;
 import org.moon.figura.lua.api.ping.PingAPI;
 import org.moon.figura.lua.api.sound.SoundAPI;
-import org.moon.figura.lua.api.TextureAPI;
 import org.moon.figura.lua.api.vanilla_model.VanillaModelAPI;
 import org.moon.figura.lua.api.world.WorldAPI;
+import org.moon.figura.model.FiguraModelPart;
 
 /**
  * Class only exists to have docs for the global figura
@@ -83,10 +81,16 @@ public abstract class FiguraGlobalsDocs {
     public LuaFunction type;
 
     @LuaMethodDoc(
-            overloads = @LuaMethodOverload(
-                    argumentTypes = String.class,
-                    argumentNames = "scriptName"
-            ),
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = String.class,
+                            argumentNames = "scriptName"
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {String.class, LuaFunction.class},
+                            argumentNames = {"scriptName", "fallbackFunction"}
+                    )
+            },
             value = "globals.require"
     )
     public static Object require() {return null;}
@@ -105,7 +109,7 @@ public abstract class FiguraGlobalsDocs {
             },
             value = "globals.list_files"
     )
-    public static LuaTable listFiles(String folder, boolean subFolders) {return null;}
+    public static LuaTable listFiles() {return null;}
 
     @LuaMethodDoc(
             overloads = @LuaMethodOverload(
@@ -118,13 +122,7 @@ public abstract class FiguraGlobalsDocs {
         return null;
     }
 
-    @LuaMethodDoc(
-            overloads = @LuaMethodOverload(
-                    argumentTypes = Object.class,
-                    argumentNames = "arg"
-            ),
-            value = "globals.log"
-    )
+    @LuaMethodShadow("print")
     public static String log() {
         return null;
     }
@@ -162,35 +160,7 @@ public abstract class FiguraGlobalsDocs {
         return null;
     }
 
-    @LuaMethodDoc(
-            overloads = {
-                    @LuaMethodOverload(
-                            argumentTypes = LuaTable.class,
-                            argumentNames = "table"
-                    ),
-                    @LuaMethodOverload(
-                            argumentTypes = LuaUserdata.class,
-                            argumentNames = "javaObject"
-                    ),
-                    @LuaMethodOverload(
-                            argumentTypes = {LuaTable.class, Integer.class},
-                            argumentNames = {"table", "maxDepth"}
-                    ),
-                    @LuaMethodOverload(
-                            argumentTypes = {LuaUserdata.class, Integer.class},
-                            argumentNames = {"javaObject", "maxDepth"}
-                    ),
-                    @LuaMethodOverload(
-                            argumentTypes = {LuaTable.class, Integer.class, Boolean.class},
-                            argumentNames = {"table", "maxDepth", "silent"}
-                    ),
-                    @LuaMethodOverload(
-                            argumentTypes = {LuaUserdata.class, Integer.class, Boolean.class},
-                            argumentNames = {"javaObject", "maxDepth", "silent"}
-                    )
-            },
-            value = "globals.log_table"
-    )
+    @LuaMethodShadow("printTable")
     public static String logTable() {
         return null;
     }
@@ -206,13 +176,7 @@ public abstract class FiguraGlobalsDocs {
         return null;
     }
 
-    @LuaMethodDoc(
-            overloads = @LuaMethodOverload(
-                    argumentTypes = String.class,
-                    argumentNames = "json"
-            ),
-            value = "globals.log_json"
-    )
+    @LuaMethodShadow("printJson")
     public static String logJson() {
         return null;
     }
