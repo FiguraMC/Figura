@@ -6,8 +6,10 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.datafixers.util.Pair;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import org.moon.figura.FiguraMod;
@@ -41,19 +43,6 @@ public class AvatarManager {
         if (panic)
             return;
 
-        //unload avatars from disconnected players
-        //needs to actually be an event, otherwise some things like skulls will try to download the avatar every tick
-        /*
-        ClientPacketListener connection = Minecraft.getInstance().getConnection();
-        Set<UUID> toRemove = new HashSet<>();
-        for (UUID id : LOADED_AVATARS.keySet()) {
-            if (connection != null && connection.getPlayerInfo(id) == null)
-                toRemove.add(id);
-        }
-        for (UUID id : toRemove)
-            clearAvatar(id);
-        */
-
         //tick the avatars
         for (UserData user : LOADED_USERS.values()) {
             Avatar avatar = user.getMainAvatar();
@@ -64,6 +53,21 @@ public class AvatarManager {
             }
         }
 
+        //CEM
+        if (LOADED_CEM.isEmpty())
+            return;
+
+        //unload entities
+        Set<Entity> toBeRemoved = new HashSet<>();
+
+        for (Entity entity : LOADED_CEM.keySet())
+            if (entity.isRemoved())
+                toBeRemoved.add(entity);
+
+        for (Entity entity : toBeRemoved)
+            LOADED_CEM.remove(entity);
+
+        //tick entities
         for (Avatar avatar : LOADED_CEM.values()) {
             if (avatar != null) {
                 FiguraMod.pushProfiler(avatar);
@@ -184,6 +188,18 @@ public class AvatarManager {
         return user == null ? null : user.getMainAvatar();
     }
 
+    public static Avatar getAvatarForEntity(Entity entity) {
+        //get loaded
+        Avatar loaded = LOADED_CEM.get(entity);
+        if (loaded != null)
+            return loaded;
+
+        //new avatar
+        ResourceLocation type = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
+        CompoundTag nbt = LocalAvatarLoader.CEM_AVATARS.get(type);
+        return nbt == null ? null : loadEntityAvatar(entity, nbt);
+    }
+
     //tries to get data from an entity
     public static Avatar getAvatar(Entity entity) {
         if (panic || Minecraft.getInstance().level == null)
@@ -195,9 +211,8 @@ public class AvatarManager {
         if (entity instanceof Player)
             return getAvatarForPlayer(uuid);
 
-        //TODO - CEM
-        //otherwise, returns the avatar from the entity pool (cem)
-        return LOADED_CEM.get(entity);
+        //otherwise check for CEM
+        return getAvatarForEntity(entity);
     }
 
     //get a loaded avatar without fetching backend or creating a new one
@@ -234,7 +249,7 @@ public class AvatarManager {
         FiguraMod.debug("Cleared avatars of " + id);
     }
 
-    private static void clearCEMAvatars() {
+    public static void clearCEMAvatars() {
         for (Avatar avatar : LOADED_CEM.values())
             avatar.clean();
         LOADED_CEM.clear();
@@ -274,6 +289,14 @@ public class AvatarManager {
 
         //mark as not uploaded
         localUploaded = false;
+    }
+
+    //load CEM avatar
+    public static Avatar loadEntityAvatar(Entity entity, CompoundTag nbt) {
+        Avatar targetAvatar = new Avatar(entity);
+        targetAvatar.load(nbt);
+        LOADED_CEM.put(entity, targetAvatar);
+        return targetAvatar;
     }
 
     //set an user's avatar
@@ -359,15 +382,8 @@ public class AvatarManager {
                 return 0;
             }
 
-            try {
-                Avatar targetAvatar = new Avatar(targetEntity);
-                targetAvatar.load(avatar.nbt);
-                LOADED_CEM.put(targetEntity, targetAvatar);
-                return 1;
-            } catch (Exception e) {
-                context.getSource().sendError(Component.literal("Failed to load avatar"));
-                return 0;
-            }
+            loadEntityAvatar(targetEntity, avatar.nbt);
+            return 1;
         });
         target.then(source);
 
