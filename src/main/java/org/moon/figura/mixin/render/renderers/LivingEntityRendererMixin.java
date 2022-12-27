@@ -3,7 +3,6 @@ package org.moon.figura.mixin.render.renderers;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -68,11 +67,8 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
         if (currentAvatar == null)
             return;
 
-        PlayerModel<?> playerModel = null;
-        if (currentAvatar.luaRuntime != null && getModel() instanceof PlayerModel<?> model && entity instanceof Player) {
-            currentAvatar.luaRuntime.vanilla_model.PLAYER.store(model);
-            playerModel = model;
-        }
+        if (currentAvatar.luaRuntime != null && entity instanceof Player)
+            currentAvatar.luaRuntime.vanilla_model.PLAYER.store(getModel());
 
         boolean showBody = this.isBodyVisible(entity);
         boolean translucent = !showBody && Minecraft.getInstance().player != null && !entity.isInvisibleTo(Minecraft.getInstance().player);
@@ -97,8 +93,8 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
 
         FiguraMod.popProfiler(3);
 
-        if (currentAvatar.luaRuntime != null && playerModel != null && currentAvatar.trust.get(Trust.VANILLA_MODEL_EDIT) == 1)
-            currentAvatar.luaRuntime.vanilla_model.PLAYER.alter(playerModel);
+        if (currentAvatar.luaRuntime != null && currentAvatar.trust.get(Trust.VANILLA_MODEL_EDIT) == 1)
+            currentAvatar.luaRuntime.vanilla_model.PLAYER.alter(getModel());
     }
 
     @Inject(at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;popPose()V"), method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V")
@@ -107,9 +103,8 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
             return;
 
         //Render avatar with params
-        EntityModel<?> model = this.getModel();
-        if (model instanceof PlayerModel<?> playerModel && entity instanceof Player && currentAvatar.luaRuntime != null && currentAvatar.trust.get(Trust.VANILLA_MODEL_EDIT) == 1)
-            currentAvatar.luaRuntime.vanilla_model.PLAYER.restore(playerModel);
+        if (currentAvatar.luaRuntime != null && currentAvatar.trust.get(Trust.VANILLA_MODEL_EDIT) == 1)
+            currentAvatar.luaRuntime.vanilla_model.PLAYER.restore(getModel());
 
         currentAvatar = null;
     }
