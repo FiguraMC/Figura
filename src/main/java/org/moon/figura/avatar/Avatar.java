@@ -116,10 +116,10 @@ public class Avatar {
     public final Instructions init, render, worldRender, tick, worldTick;
     public final RefilledNumber particlesRemaining, soundsRemaining;
 
-    public Avatar(UUID owner) {
+    private Avatar(UUID owner, boolean host, TrustContainer.PlayerContainer trust, String name) {
         this.owner = owner;
-        this.isHost = FiguraMod.isLocal(owner);
-        this.trust = TrustManager.get(owner);
+        this.isHost = host;
+        this.trust = trust;
         this.complexity = new Instructions(trust.get(Trust.COMPLEXITY));
         this.init = new Instructions(trust.get(Trust.INIT_INST));
         this.render = new Instructions(trust.get(Trust.RENDER_INST));
@@ -128,9 +128,15 @@ public class Avatar {
         this.worldTick = new Instructions(trust.get(Trust.WORLD_TICK_INST));
         this.particlesRemaining = new RefilledNumber(trust.get(Trust.PARTICLES));
         this.soundsRemaining = new RefilledNumber(trust.get(Trust.SOUNDS));
-
-        String name = EntityUtils.getNameForUUID(owner);
         this.entityName = name == null ? "" : name;
+    }
+
+    public Avatar(UUID owner) {
+        this(owner, FiguraMod.isLocal(owner), TrustManager.get(owner), EntityUtils.getNameForUUID(owner));
+    }
+
+    public Avatar(Entity entity) {
+        this(entity.getUUID(), true, TrustManager.getMobTrust(entity.getUUID()), entity.getName().getString());
     }
 
     public void load(CompoundTag nbt) {
