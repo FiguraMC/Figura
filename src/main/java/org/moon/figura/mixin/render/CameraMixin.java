@@ -58,9 +58,11 @@ public abstract class CameraMixin {
     @ModifyArgs(method = "setup", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setPosition(DDD)V"))
     private void setupPivot(Args args) {
         if (avatar != null) {
-            double x = args.get(0);
-            double y = args.get(1);
-            double z = args.get(2);
+            int i = args.get(0) instanceof Camera ? 1 : 0;
+
+            double x = args.get(i++);
+            double y = args.get(i++);
+            double z = args.get(i);
 
             FiguraVec3 piv = avatar.luaRuntime.renderer.cameraPivot;
             if (piv != null) {
