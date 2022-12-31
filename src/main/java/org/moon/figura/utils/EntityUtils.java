@@ -46,13 +46,15 @@ public class EntityUtils {
         return null;
     }
 
+    public static PlayerInfo getPlayerInfo(UUID uuid) {
+        ClientPacketListener connection = Minecraft.getInstance().getConnection();
+        return connection == null ? null : connection.getPlayerInfo(uuid);
+    }
+
     public static String getNameForUUID(UUID uuid) {
-        ClientPacketListener con = Minecraft.getInstance().getConnection();
-        if (con != null) {
-            PlayerInfo player = con.getPlayerInfo(uuid);
-            if (player != null)
-                return player.getProfile().getName();
-        }
+        PlayerInfo player = getPlayerInfo(uuid);
+        if (player != null)
+            return player.getProfile().getName();
 
         Entity e = getEntityByUUID(uuid);
         if (e != null)

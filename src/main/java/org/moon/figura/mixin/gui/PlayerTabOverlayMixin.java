@@ -44,14 +44,17 @@ public class PlayerTabOverlayMixin {
 
         //apply customization
         Component text = cir.getReturnValue();
+        Component name = Component.literal(playerInfo.getProfile().getName());
 
         UUID uuid = playerInfo.getProfile().getId();
         Avatar avatar = AvatarManager.getAvatarForPlayer(uuid);
         NameplateCustomization custom = avatar == null || avatar.luaRuntime == null ? null : avatar.luaRuntime.nameplate.LIST;
 
         Component replacement = custom != null && custom.getText() != null && avatar.trust.get(Trust.NAMEPLATE_EDIT) == 1 ?
-                NameplateCustomization.applyCustomization(custom.getText().replaceAll("\n|\\\\n", " ")) :
-                Component.literal(playerInfo.getProfile().getName());
+                NameplateCustomization.applyCustomization(custom.getText().replaceAll("\n|\\\\n", " ")) : name;
+
+        //name
+        replacement = TextUtils.replaceInText(replacement, "\\$\\{name\\}", name);
 
         //badges
         replacement = Badges.appendBadges(replacement, uuid, config > 1);

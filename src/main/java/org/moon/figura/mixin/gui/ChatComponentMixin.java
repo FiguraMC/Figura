@@ -52,13 +52,17 @@ public class ChatComponentMixin {
             if (player == null)
                 continue;
 
+            Component name = Component.literal(player.getProfile().getName());
+
             //apply customization
             Avatar avatar = AvatarManager.getAvatarForPlayer(uuid);
             NameplateCustomization custom = avatar == null || avatar.luaRuntime == null ? null : avatar.luaRuntime.nameplate.CHAT;
 
             Component replacement = custom != null && custom.getText() != null && avatar.trust.get(Trust.NAMEPLATE_EDIT) == 1 ?
-                    NameplateCustomization.applyCustomization(custom.getText().replaceAll("\n|\\\\n", " ")) :
-                    Component.literal(player.getProfile().getName());
+                    NameplateCustomization.applyCustomization(custom.getText().replaceAll("\n|\\\\n", " ")) : name;
+
+            //name
+            replacement = TextUtils.replaceInText(replacement, "\\$\\{name\\}", name);
 
             //badges
             replacement = Badges.appendBadges(replacement, uuid, config > 1);
