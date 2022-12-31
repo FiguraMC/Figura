@@ -185,10 +185,12 @@ public class PlayerElement extends AbstractTrustElement {
 
         //name
         Font font = Minecraft.getInstance().font;
+        Component ogName = new TextComponent(this.name);
 
         if (name == null)
-            name = new TextComponent(this.name);
+            name = ogName;
 
+        name = TextUtils.replaceInText(name, "\\$\\{name\\}", ogName);
         name = TextComponent.EMPTY.copy().append(name.copy().withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent(this.name + "\n" + this.owner)))));
 
         //badges

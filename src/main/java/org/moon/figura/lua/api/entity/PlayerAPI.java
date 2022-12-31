@@ -1,7 +1,7 @@
 package org.moon.figura.lua.api.entity;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.PlayerInfo;
+import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.PlayerModelPart;
 import net.minecraft.world.level.GameType;
@@ -11,6 +11,7 @@ import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.utils.EntityUtils;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -29,10 +30,7 @@ public class PlayerAPI extends LivingEntityAPI<Player> {
         if (playerInfo != null)
             return true;
 
-        if (Minecraft.getInstance().player == null)
-            return false;
-
-        PlayerInfo info = Minecraft.getInstance().player.connection.getPlayerInfo(entity.getUUID());
+        PlayerInfo info = EntityUtils.getPlayerInfo(entity.getUUID());
         if (info == null)
             return false;
 
@@ -79,7 +77,7 @@ public class PlayerAPI extends LivingEntityAPI<Player> {
     @LuaMethodDoc("player.get_model_type")
     public String getModelType() {
         checkEntity();
-        return checkPlayerInfo() ? playerInfo.getModelName().toUpperCase() : null;
+        return checkPlayerInfo() ? playerInfo.getModelName().toUpperCase() : DefaultPlayerSkin.getSkinModelName(entity.getUUID());
     }
 
     @LuaWhitelist

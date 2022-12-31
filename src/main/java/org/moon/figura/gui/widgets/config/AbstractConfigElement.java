@@ -1,6 +1,7 @@
 package org.moon.figura.gui.widgets.config;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -43,7 +44,7 @@ public abstract class AbstractConfigElement extends AbstractContainerElement {
         if (isHovered()) font.draw(stack, HOVERED_ARROW, x + 8 - font.width(HOVERED_ARROW) / 2, textY, 0xFFFFFF);
 
         //render name
-        font.draw(stack, config.name, x + 16, textY, 0xFFFFFF);
+        font.draw(stack, config.name, x + 16, textY, (config.disabled ? ChatFormatting.DARK_GRAY : ChatFormatting.WHITE).getColor());
 
         //render children
         super.render(stack, mouseX, mouseY, delta);
