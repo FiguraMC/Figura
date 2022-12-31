@@ -6,15 +6,16 @@ import it.unimi.dsi.fastutil.floats.FloatArrayList;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import org.lwjgl.BufferUtils;
+import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.math.vector.FiguraVec4;
 import org.moon.figura.model.PartCustomization;
 import org.moon.figura.model.rendering.texture.FiguraTextureSet;
 import org.moon.figura.model.rendering.texture.RenderTypes;
-import org.moon.figura.math.vector.FiguraVec2;
-import org.moon.figura.math.vector.FiguraVec3;
-import org.moon.figura.math.vector.FiguraVec4;
 import org.moon.figura.utils.caching.CacheStack;
 
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FiguraImmediateBuffer {
 
@@ -171,35 +172,37 @@ public class FiguraImmediateBuffer {
     }
 
     public static class Builder {
-        private int size;
-        private final FloatArrayList positions = new FloatArrayList();
-        private final FloatArrayList uvs = new FloatArrayList();
-        private final FloatArrayList normals = new FloatArrayList();
+        private final List<Vertex> vertices = new ArrayList<>();
 
-        public Builder vertex(float x, float y, float z, float u, float v, float nx, float ny, float nz) {
-            positions.add(x);
-            positions.add(y);
-            positions.add(z);
-            uvs.add(u);
-            uvs.add(v);
-            normals.add(nx);
-            normals.add(ny);
-            normals.add(nz);
-            size++;
-            return this;
+        public static class Vertex {
+            public float x, y, z;
+            public float u, v;
+            public float nx, ny, nz;
         }
 
-        public Builder vertex(FiguraVec3 pos, FiguraVec2 uv, FiguraVec3 normal) {
-            return vertex((float) pos.x, (float) pos.y, (float) pos.z,
-                    (float) uv.x, (float) uv.y,
-                    (float) normal.x, (float) normal.y, (float) normal.z);
-        }
-
-        public int getSize() {
-            return size;
+        public void vertex(float x, float y, float z, float u, float v, float nx, float ny, float nz) {
+            Vertex vx = new Vertex();
+            vx.x = x; vx.y = y; vx.z = z;
+            vx.u = u; vx.v = v;
+            vx.nx = nx; vx.ny = ny; vx.nz = nz;
+            vertices.add(vx);
         }
 
         public FiguraImmediateBuffer build(FiguraTextureSet textureSet, PartCustomization.Stack customizationStack) {
+            int size = vertices.size();
+            FloatArrayList positions = new FloatArrayList(size * 3);
+            FloatArrayList uvs = new FloatArrayList(size * 2);
+            FloatArrayList normals = new FloatArrayList(size * 3);
+            for (Vertex vertex : vertices) {
+                positions.add(vertex.x);
+                positions.add(vertex.y);
+                positions.add(vertex.z);
+                uvs.add(vertex.u);
+                uvs.add(vertex.v);
+                normals.add(vertex.nx);
+                normals.add(vertex.ny);
+                normals.add(vertex.nz);
+            }
             return new FiguraImmediateBuffer(positions, uvs, normals, textureSet, customizationStack);
         }
     }

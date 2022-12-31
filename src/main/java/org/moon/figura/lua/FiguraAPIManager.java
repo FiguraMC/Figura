@@ -5,7 +5,6 @@ import org.moon.figura.lua.api.*;
 import org.moon.figura.lua.api.action_wheel.Action;
 import org.moon.figura.lua.api.action_wheel.ActionWheelAPI;
 import org.moon.figura.lua.api.action_wheel.Page;
-import org.moon.figura.lua.api.ConfigAPI;
 import org.moon.figura.lua.api.entity.EntityAPI;
 import org.moon.figura.lua.api.entity.LivingEntityAPI;
 import org.moon.figura.lua.api.entity.NullEntity;

@@ -105,8 +105,10 @@ public class BlockbenchModelParser {
 
         //read textures
         for (int i = 0; i < textures.length; i++) {
+            BlockbenchModel.Texture texture = textures[i];
+
             //name
-            String name = folders + textures[i].name;
+            String name = folders + texture.name;
             if (name.endsWith(".png"))
                 name = name.substring(0, name.length() - 4);
 
@@ -114,24 +116,21 @@ public class BlockbenchModelParser {
             String textureType;
 
             if (name.endsWith("_e")) {
-                textureType = "emissive";
+                textureType = "e";
             } else if (name.endsWith("_n")) {
-                textureType = "normal";
+                textureType = "n";
             } else if (name.endsWith("_s")) {
-                textureType = "specular";
+                textureType = "s";
             } else {
-                textureType = "default";
+                textureType = "d";
             }
-
-            if (!textureType.equals("default"))
-                name = name.substring(0, name.length() - 2);
 
             //parse the texture data
             String path;
             byte[] source;
             try {
                 //check the file to load
-                Path p = sourceFile.toPath().resolve(textures[i].relative_path);
+                Path p = sourceFile.toPath().resolve(texture.relative_path);
                 File f = p.toFile();
                 if (!f.exists()) throw new Exception("File do not exists!");
                 if (!p.normalize().startsWith(avatar)) throw new Exception("File from outside the avatar folder!");
@@ -147,12 +146,17 @@ public class BlockbenchModelParser {
                 FiguraMod.debug("Loaded " + textureType.toUpperCase() + " Texture \"{}\" from {}", name, f);
             } catch (Exception ignored) {
                 //otherwise, load from the source stored in the model
-                source = Base64.getDecoder().decode(textures[i].source.substring("data:image/png;base64,".length()));
+                source = Base64.getDecoder().decode(texture.source.substring("data:image/png;base64,".length()));
                 path = folders + modelName + "." + name;
+                FiguraMod.debug("Loaded " + textureType.toUpperCase() + " Texture \"{}\" from {}", name, path);
             }
 
             //add source nbt
             src.putByteArray(path, source);
+
+            //fix texture name
+            if (!textureType.equals("d"))
+                name = name.substring(0, name.length() - 2);
 
             //add textures nbt
             if (texturesTemp.containsKey(name)) {

@@ -369,6 +369,23 @@ public class HostAPI {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("host.get_clipboard")
+    public String getClipboard() {
+        return Minecraft.getInstance().keyboardHandler.getClipboard();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = String.class,
+                    argumentNames = "text"
+            ),
+            value = "host.set_clipboard")
+    public void getClipboard(@LuaNotNil String text) {
+        Minecraft.getInstance().keyboardHandler.setClipboard(text);
+    }
+
+    @LuaWhitelist
     public Object __index(String arg) {
         if ("unlockCursor".equals(arg))
             return unlockCursor;

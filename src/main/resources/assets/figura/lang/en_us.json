@@ -918,6 +918,8 @@
   "figura.docs.host.screenshot": "Takes a screenshot from the current screen and returns a Texture of it.",
   "figura.docs.host.is_avatar_uploaded": "Checks if this avatar is currently uploaded.",
   "figura.docs.host.get_status_effects": "Returns a table of all of the player's status effects. The table contains sub-tables, each of which contains the name, amplifier, duration, and particle visibility of each status effect.",
+  "figura.docs.host.get_clipboard": "Gets the text from the clipboard.",
+  "figura.docs.host.set_clipboard": "Sets the clipboard text.",
 
 
   "figura.docs.itemstack": "A proxy for an item stack from Minecraft.",

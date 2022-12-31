@@ -5,6 +5,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.world.entity.EntityType;
 import org.luaj.vm2.*;
 import org.luaj.vm2.lib.VarArgFunction;
 import org.moon.figura.FiguraMod;
@@ -112,7 +113,7 @@ public class FiguraLuaPrinter {
 
         owner.errorText = TextUtils.replaceTabs(Component.literal(message).withStyle(ColorUtils.Colors.LUA_ERROR.style));
 
-        if ((!Config.LOG_OTHERS.asBool() && !FiguraMod.isLocal(owner.owner)) || owner.trust.getGroup() == Trust.Group.BLOCKED)
+        if ((owner.entityType == EntityType.PLAYER && !Config.LOG_OTHERS.asBool() && !FiguraMod.isLocal(owner.owner)) || owner.trust.getGroup() == Trust.Group.BLOCKED)
             return;
 
         chatQueue.offer(component); //bypass the char limit filter

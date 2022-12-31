@@ -86,10 +86,10 @@ public abstract class AvatarRenderer {
         for (Tag t : texturesList) {
             CompoundTag tag = (CompoundTag) t;
             textureSets.add(new FiguraTextureSet(
-                    textures.get(tag.getString("default")),
-                    textures.get(tag.getString("emissive")),
-                    textures.get(tag.getString("specular")),
-                    textures.get(tag.getString("normal"))
+                    textures.get(tag.getString("d")),
+                    textures.get(tag.getString("e")),
+                    textures.get(tag.getString("s")),
+                    textures.get(tag.getString("n"))
             ));
         }
 

@@ -23,6 +23,7 @@ import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import org.luaj.vm2.LuaFunction;
@@ -78,6 +79,7 @@ public class Avatar {
 
     //properties
     public final UUID owner;
+    public final EntityType<?> entityType;
     public CompoundTag nbt;
     public boolean loaded = true;
     public final boolean isHost;
@@ -116,10 +118,11 @@ public class Avatar {
     public final Instructions init, render, worldRender, tick, worldTick;
     public final RefilledNumber particlesRemaining, soundsRemaining;
 
-    private Avatar(UUID owner, boolean mob, String name) {
+    private Avatar(UUID owner, EntityType<?> type, String name) {
         this.owner = owner;
-        this.isHost = !mob && FiguraMod.isLocal(owner);
-        this.trust = mob ? TrustManager.getMobTrust(owner) : TrustManager.get(owner);
+        this.entityType = type;
+        this.isHost = type == EntityType.PLAYER && FiguraMod.isLocal(owner);
+        this.trust = type == EntityType.PLAYER ? TrustManager.get(owner) : TrustManager.getMobTrust(owner);
         this.complexity = new Instructions(trust.get(Trust.COMPLEXITY));
         this.init = new Instructions(trust.get(Trust.INIT_INST));
         this.render = new Instructions(trust.get(Trust.RENDER_INST));
@@ -132,11 +135,11 @@ public class Avatar {
     }
 
     public Avatar(UUID owner) {
-        this(owner, false, EntityUtils.getNameForUUID(owner));
+        this(owner, EntityType.PLAYER, EntityUtils.getNameForUUID(owner));
     }
 
     public Avatar(Entity entity) {
-        this(entity.getUUID(), true, entity.getName().getString());
+        this(entity.getUUID(), entity.getType(), entity.getName().getString());
     }
 
     public void load(CompoundTag nbt) {
