@@ -688,7 +688,7 @@ public class Avatar {
         renderer.allowPivotParts = true;
 
         stack.popPose();
-        return comp > 0 && luaRuntime != null && !luaRuntime.vanilla_model.HEAD.getVisible();
+        return comp > 0 && luaRuntime != null && !luaRuntime.vanilla_model.HEAD.checkVisible();
     }
 
     public boolean renderPortrait(PoseStack stack, int x, int y, int screenSize, float modelScale, boolean scissors) {

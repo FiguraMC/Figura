@@ -68,7 +68,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
             return;
 
         if (currentAvatar.luaRuntime != null && entity instanceof Player)
-            currentAvatar.luaRuntime.vanilla_model.PLAYER.store(getModel());
+            currentAvatar.luaRuntime.vanilla_model.PLAYER.save(getModel());
 
         boolean showBody = this.isBodyVisible(entity);
         boolean translucent = !showBody && Minecraft.getInstance().player != null && !entity.isInvisibleTo(Minecraft.getInstance().player);
@@ -94,7 +94,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
         FiguraMod.popProfiler(3);
 
         if (currentAvatar.luaRuntime != null && currentAvatar.trust.get(Trust.VANILLA_MODEL_EDIT) == 1)
-            currentAvatar.luaRuntime.vanilla_model.PLAYER.alter(getModel());
+            currentAvatar.luaRuntime.vanilla_model.PLAYER.change(getModel());
     }
 
     @Inject(at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;popPose()V"), method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V")

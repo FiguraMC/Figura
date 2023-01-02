@@ -18,10 +18,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.luaj.vm2.LuaTable;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.NbtToLua;
-import org.moon.figura.lua.docs.LuaFieldDoc;
-import org.moon.figura.lua.docs.LuaMethodDoc;
-import org.moon.figura.lua.docs.LuaMethodOverload;
-import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.lua.docs.*;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec6;
 import org.moon.figura.mixin.BlockBehaviourAccessor;
@@ -69,6 +66,18 @@ public class BlockStateAPI {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("blockstate.get_id")
+    public String getID() {
+        return id;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("blockstate.get_properties")
+    public LuaTable getProperties() {
+        return properties;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc("blockstate.get_pos")
     public FiguraVec3 getPos() {
         return FiguraVec3.fromBlockPos(getBlockPos());
@@ -92,6 +101,13 @@ public class BlockStateAPI {
         FiguraVec3 newPos = LuaUtils.parseVec3("setPos", x, y, z);
         pos = newPos.asBlockPos();
         newPos.free();
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setPos")
+    public BlockStateAPI pos(Object x, Double y, Double z) {
+        setPos(x, y, z);
+        return this;
     }
 
     @LuaWhitelist
