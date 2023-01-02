@@ -20,8 +20,6 @@ public class VanillaGroupPart extends VanillaPart {
     private final Collection<VanillaPart> cachedParts;
     private final HashMap<String, VanillaPart> partMap;
 
-    private boolean visible = true;
-
     public VanillaGroupPart(Avatar owner, String name, VanillaPart... parts) {
         super(owner, name);
         partMap = new HashMap<>();
@@ -31,15 +29,15 @@ public class VanillaGroupPart extends VanillaPart {
     }
 
     @Override
-    public void alter(EntityModel<?> model) {
+    public void change(EntityModel<?> model) {
         for (VanillaPart part : cachedParts)
-            part.alter(model);
+            part.change(model);
     }
 
     @Override
-    public void store(EntityModel<?> model) {
+    public void save(EntityModel<?> model) {
         for (VanillaPart part : cachedParts)
-            part.store(model);
+            part.save(model);
     }
 
     @Override
@@ -57,7 +55,7 @@ public class VanillaGroupPart extends VanillaPart {
             ),
             value = "vanilla_group.set_visible"
     )
-    public void setVisible(boolean visible) {
+    public void setVisible(Boolean visible) {
         this.visible = visible;
         for (VanillaPart part : cachedParts)
             part.setVisible(visible);
@@ -66,7 +64,7 @@ public class VanillaGroupPart extends VanillaPart {
     @Override
     @LuaWhitelist
     @LuaMethodDoc("vanilla_group.get_visible")
-    public boolean getVisible() {
+    public Boolean getVisible() {
         return this.visible;
     }
 

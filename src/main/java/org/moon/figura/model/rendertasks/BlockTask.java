@@ -11,6 +11,7 @@ import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.world.BlockStateAPI;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
+import org.moon.figura.lua.docs.LuaMethodShadow;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.model.PartCustomization;
 import org.moon.figura.utils.LuaUtils;
@@ -24,6 +25,11 @@ public class BlockTask extends RenderTask {
 
     private BlockState block;
     private int cachedComplexity;
+
+    public BlockTask(String name) {
+        super(name);
+    }
+
     @Override
     public boolean render(PartCustomization.Stack stack, MultiBufferSource buffer, int light, int overlay) {
         if (!enabled || block == null || block.isAir())
@@ -56,9 +62,9 @@ public class BlockTask extends RenderTask {
                             argumentNames = "block"
                     )
             },
-            value = "block_task.block"
+            value = "block_task.set_block"
     )
-    public RenderTask block(Object block) {
+    public void setBlock(Object block) {
         this.block = LuaUtils.parseBlockState("block", block);
         Minecraft client = Minecraft.getInstance();
         RandomSource random = client.level != null ? client.level.random : RandomSource.create();
@@ -67,12 +73,17 @@ public class BlockTask extends RenderTask {
         cachedComplexity = blockModel.getQuads(this.block, null, random).size();
         for (Direction dir : Direction.values())
             cachedComplexity += blockModel.getQuads(this.block, dir, random).size();
+    }
 
+    @LuaWhitelist
+    @LuaMethodShadow("setBlock")
+    public RenderTask block(Object block) {
+        setBlock(block);
         return this;
     }
 
     @Override
     public String toString() {
-        return "Block Render Task";
+        return name + " (Block Render Task)";
     }
 }

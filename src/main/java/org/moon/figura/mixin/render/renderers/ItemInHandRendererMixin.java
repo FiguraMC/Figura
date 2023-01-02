@@ -61,7 +61,7 @@ public abstract class ItemInHandRendererMixin {
         HumanoidArm arm = hand == InteractionHand.MAIN_HAND ? player.getMainArm() : player.getMainArm().getOpposite();
         VanillaModelPart part = arm == HumanoidArm.LEFT ? avatar.luaRuntime.vanilla_model.LEFT_ITEM : avatar.luaRuntime.vanilla_model.RIGHT_ITEM;
 
-        if (!part.getVisible()) {
+        if (!part.checkVisible()) {
             ci.cancel();
             if (!player.isInvisible()) {
                 matrices.pushPose();

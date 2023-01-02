@@ -186,7 +186,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
     private void onRenderHand(PoseStack stack, MultiBufferSource multiBufferSource, int light, AbstractClientPlayer player, ModelPart arm, ModelPart sleeve, CallbackInfo ci) {
         avatar = AvatarManager.getAvatarForPlayer(player.getUUID());
         if (avatar != null && avatar.luaRuntime != null && avatar.trust.get(Trust.VANILLA_MODEL_EDIT) == 1)
-            avatar.luaRuntime.vanilla_model.PLAYER.alter(this.getModel());
+            avatar.luaRuntime.vanilla_model.PLAYER.change(this.getModel());
     }
 
     @Inject(at = @At("RETURN"), method = "renderHand")

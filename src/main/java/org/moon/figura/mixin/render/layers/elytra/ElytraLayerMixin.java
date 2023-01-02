@@ -31,12 +31,12 @@ public abstract class ElytraLayerMixin<T extends LivingEntity, M extends EntityM
             return;
 
         if (avatar.luaRuntime != null)
-            avatar.luaRuntime.vanilla_model.ELYTRA.store(elytraModel);
+            avatar.luaRuntime.vanilla_model.ELYTRA.save(elytraModel);
 
         avatar.elytraRender(livingEntity, multiBufferSource, poseStack, light, tickDelta, elytraModel);
 
         if (avatar.luaRuntime != null && avatar.trust.get(Trust.VANILLA_MODEL_EDIT) == 1)
-            avatar.luaRuntime.vanilla_model.ELYTRA.alter(elytraModel);
+            avatar.luaRuntime.vanilla_model.ELYTRA.change(elytraModel);
     }
 
     @Inject(at = @At("RETURN"), method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V")

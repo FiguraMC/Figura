@@ -41,7 +41,7 @@ public class ParticleAPI {
             ParticleOptions options = ParticleArgument.readParticle(new StringReader(id), BuiltInRegistries.PARTICLE_TYPE.asLookup());
             Particle p = getParticleEngine().figura$makeParticle(options, x, y, z, w, t, h);
             if (p == null) throw new LuaError("Could not parse particle \"" + id + "\"");
-            return new LuaParticle(p, owner);
+            return new LuaParticle(id, p, owner);
         } catch (Exception e) {
             throw new LuaError(e.getMessage());
         }

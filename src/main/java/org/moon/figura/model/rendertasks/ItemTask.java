@@ -12,6 +12,7 @@ import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.world.ItemStackAPI;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
+import org.moon.figura.lua.docs.LuaMethodShadow;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.model.PartCustomization;
 import org.moon.figura.utils.LuaUtils;
@@ -27,6 +28,10 @@ public class ItemTask extends RenderTask {
     private ItemTransforms.TransformType renderType = ItemTransforms.TransformType.NONE;
     private boolean left = false;
     private int cachedComplexity;
+
+    public ItemTask(String name) {
+        super(name);
+    }
 
     @Override
     public boolean render(PartCustomization.Stack stack, MultiBufferSource buffer, int light, int overlay) {
@@ -63,13 +68,19 @@ public class ItemTask extends RenderTask {
                             argumentNames = "item"
                     )
             },
-            value = "item_task.item"
+            value = "item_task.set_item"
     )
-    public RenderTask item(Object item) {
+    public void setItem(Object item) {
         this.item = LuaUtils.parseItemStack("item", item);
         Minecraft client = Minecraft.getInstance();
         RandomSource random = client.level != null ? client.level.random : RandomSource.create();
         cachedComplexity = client.getItemRenderer().getModel(this.item, null, null, 0).getQuads(null, null, random).size();
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setItem")
+    public RenderTask item(Object item) {
+        setItem(item);
         return this;
     }
 
@@ -85,20 +96,26 @@ public class ItemTask extends RenderTask {
                         argumentTypes = String.class,
                         argumentNames = "renderType"
             ),
-            value = "item_task.render_type"
+            value = "item_task.set_render_type"
     )
-    public RenderTask renderType(@LuaNotNil String type) {
+    public void setRenderType(@LuaNotNil String type) {
         try {
             this.renderType = ItemTransforms.TransformType.valueOf(type.toUpperCase());
             this.left = this.renderType == ItemTransforms.TransformType.FIRST_PERSON_LEFT_HAND || this.renderType == ItemTransforms.TransformType.THIRD_PERSON_LEFT_HAND;
-            return this;
         } catch (Exception ignored) {
             throw new LuaError("Illegal RenderType: \"" + type + "\".");
         }
     }
 
+    @LuaWhitelist
+    @LuaMethodShadow("setRenderType")
+    public RenderTask renderType(@LuaNotNil String type) {
+        setRenderType(type);
+        return this;
+    }
+
     @Override
     public String toString() {
-        return "Item Render Task";
+        return name + " (Item Render Task)";
     }
 }

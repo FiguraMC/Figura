@@ -46,8 +46,8 @@ public abstract class ItemInHandLayerMixin<T extends LivingEntity, M extends Ent
 
         //script hide
         if (avatar.luaRuntime != null &&
-                (left && !avatar.luaRuntime.vanilla_model.LEFT_ITEM.getVisible() ||
-                !left && !avatar.luaRuntime.vanilla_model.RIGHT_ITEM.getVisible())
+                (left && !avatar.luaRuntime.vanilla_model.LEFT_ITEM.checkVisible() ||
+                !left && !avatar.luaRuntime.vanilla_model.RIGHT_ITEM.checkVisible())
         ) {
             ci.cancel();
             return;

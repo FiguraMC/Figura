@@ -7,10 +7,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.biome.Biome;
 import org.moon.figura.lua.LuaWhitelist;
-import org.moon.figura.lua.docs.LuaFieldDoc;
-import org.moon.figura.lua.docs.LuaMethodDoc;
-import org.moon.figura.lua.docs.LuaMethodOverload;
-import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.lua.docs.*;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.LuaUtils;
@@ -30,13 +27,13 @@ public class BiomeAPI {
     private BlockPos pos;
 
     @LuaWhitelist
-    @LuaFieldDoc("biome.name")
-    public final String name;
+    @LuaFieldDoc("biome.id")
+    public final String id;
 
     public BiomeAPI(Biome biome, BlockPos pos) {
         this.biome = biome;
         this.pos = pos;
-        this.name = WorldAPI.getCurrentWorld().registryAccess().registry(Registries.BIOME).get().getKey(biome).toString();
+        this.id = WorldAPI.getCurrentWorld().registryAccess().registry(Registries.BIOME).get().getKey(biome).toString();
     }
 
     protected BlockPos getBlockPos() {
@@ -67,6 +64,13 @@ public class BiomeAPI {
         FiguraVec3 newPos = LuaUtils.parseVec3("setPos", x, y, z);
         pos = newPos.asBlockPos();
         newPos.free();
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setPos")
+    public BiomeAPI pos(Object x, Double y, Double z) {
+        setPos(x, y, z);
+        return this;
     }
 
     @LuaWhitelist
@@ -160,11 +164,11 @@ public class BiomeAPI {
 
     @LuaWhitelist
     public Object __index(String arg) {
-        return "name".equals(arg) ? name : null;
+        return "id".equals(arg) ? id : null;
     }
 
     @Override
     public String toString() {
-        return name + " (Biome)";
+        return id + " (Biome)";
     }
 }

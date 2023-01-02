@@ -23,11 +23,10 @@ public class VanillaModelPart extends VanillaPart {
     private final ParentType parentType;
     private final Function<EntityModel<?>, ModelPart> provider;
 
-    private final FiguraVec3 savedOriginRot = FiguraVec3.of();
-    private final FiguraVec3 savedOriginPos = FiguraVec3.of();
-
-    private boolean visible = true;
-    private boolean storedVisibility;
+    private final FiguraVec3 originRot = FiguraVec3.of();
+    private final FiguraVec3 originPos = FiguraVec3.of();
+    private final FiguraVec3 originScale = FiguraVec3.of();
+    private boolean originVisible;
 
     public VanillaModelPart(Avatar owner, String name, ParentType parentType, Function<EntityModel<?>, ModelPart> provider) {
         super(owner, name);
@@ -36,20 +35,19 @@ public class VanillaModelPart extends VanillaPart {
     }
 
     @Override
-    public void alter(EntityModel<?> model) {
-        if (provider == null)
+    public void change(EntityModel<?> model) {
+        if (visible == null || provider == null)
             return;
 
         ModelPart part = provider.apply(model);
         if (part == null)
             return;
 
-        storedVisibility = part.visible;
         part.visible = visible;
     }
 
     @Override
-    public void store(EntityModel<?> model) {
+    public void save(EntityModel<?> model) {
         if (provider == null)
             return;
 
@@ -57,14 +55,18 @@ public class VanillaModelPart extends VanillaPart {
         if (part == null)
             return;
 
-        savedOriginRot.set(-part.xRot, -part.yRot, part.zRot);
-        savedOriginRot.scale(180 / Math.PI);
+        originRot.set(-part.xRot, -part.yRot, part.zRot);
+        originRot.scale(180 / Math.PI);
 
         FiguraVec3 pivot = parentType.offset.copy();
         pivot.subtract(part.x, part.y, part.z);
         pivot.multiply(1, -1, -1);
-        savedOriginPos.set(pivot);
+        originPos.set(pivot);
         pivot.free();
+
+        originScale.set(part.xScale, part.yScale, part.zScale);
+
+        originVisible = part.visible;
     }
 
     @Override
@@ -76,7 +78,7 @@ public class VanillaModelPart extends VanillaPart {
         if (part == null)
             return;
 
-        part.visible = storedVisibility;
+        part.visible = originVisible;
     }
 
     @Override
@@ -88,34 +90,44 @@ public class VanillaModelPart extends VanillaPart {
             ),
             value = "vanilla_part.set_visible"
     )
-    public void setVisible(boolean visible) {
+    public void setVisible(Boolean visible) {
         this.visible = visible;
-        owner.trustsToTick.add(Trust.VANILLA_MODEL_EDIT);
+        if (visible == null) {
+            owner.trustsToTick.remove(Trust.VANILLA_MODEL_EDIT);
+        } else {
+            owner.trustsToTick.add(Trust.VANILLA_MODEL_EDIT);
+        }
     }
 
     @Override
     @LuaWhitelist
     @LuaMethodDoc("vanilla_part.get_visible")
-    public boolean getVisible() {
+    public Boolean getVisible() {
         return this.visible;
     }
 
     @LuaWhitelist
     @LuaMethodDoc("vanilla_part.get_origin_visible")
     public boolean getOriginVisible() {
-        return this.storedVisibility;
+        return this.originVisible;
     }
 
     @LuaWhitelist
     @LuaMethodDoc("vanilla_part.get_origin_rot")
     public FiguraVec3 getOriginRot() {
-        return this.savedOriginRot.copy();
+        return this.originRot.copy();
     }
 
     @LuaWhitelist
     @LuaMethodDoc("vanilla_part.get_origin_pos")
     public FiguraVec3 getOriginPos() {
-        return this.savedOriginPos.copy();
+        return this.originPos.copy();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("vanilla_part.get_origin_scale")
+    public FiguraVec3 getOriginScale() {
+        return this.originScale.copy();
     }
 
     @Override

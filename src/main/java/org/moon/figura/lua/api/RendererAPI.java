@@ -6,10 +6,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.lua.LuaWhitelist;
-import org.moon.figura.lua.docs.LuaFieldDoc;
-import org.moon.figura.lua.docs.LuaMethodDoc;
-import org.moon.figura.lua.docs.LuaMethodOverload;
-import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.lua.docs.*;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.LuaUtils;
@@ -55,6 +52,74 @@ public class RendererAPI {
     private static boolean checkCameraOwner(UUID entity) {
         Entity e = Minecraft.getInstance().getCameraEntity();
         return e != null && e.getUUID().equals(entity);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("renderer.should_render_fire")
+    public boolean shouldRenderFire() {
+        return renderFire;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = Boolean.class,
+                    argumentNames = "renderFire"
+            ),
+            value = "renderer.set_render_fire")
+    public void setRenderFire(boolean renderFire) {
+        this.renderFire = renderFire;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("renderer.should_render_vehicle")
+    public boolean shouldRenderVehicle() {
+        return renderVehicle;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = Boolean.class,
+                    argumentNames = "renderVehicle"
+            ),
+            value = "renderer.set_render_vehicle")
+    public void setRenderVehicle(boolean renderVehicle) {
+        this.renderVehicle = renderVehicle;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("renderer.should_render_crosshair")
+    public boolean shouldRenderCrosshair() {
+        return renderCrosshair;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = Boolean.class,
+                    argumentNames = "renderCrosshair"
+            ),
+            value = "renderer.set_render_crosshair")
+    public void setRenderCrosshair(boolean renderCrosshair) {
+        this.renderCrosshair = renderCrosshair;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("renderer.should_force_paperdoll")
+    public boolean shouldForcePaperdoll() {
+        return forcePaperdoll;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = Boolean.class,
+                    argumentNames = "forcePaperdoll"
+            ),
+            value = "renderer.set_force_paperdoll")
+    public void setForcePaperdoll(boolean forcePaperdoll) {
+        this.forcePaperdoll = forcePaperdoll;
     }
 
     @LuaWhitelist
@@ -156,10 +221,17 @@ public class RendererAPI {
                             argumentNames = {"x", "y", "z"}
                     )
             },
-            value = "renderer.offset_camera_pivot"
+            value = "renderer.set_offset_camera_pivot"
     )
-    public void offsetCameraPivot(Object x, Double y, Double z) {
-        this.cameraOffsetPivot = x == null ? null : LuaUtils.parseVec3("offsetCameraPivot", x, y, z);
+    public void setOffsetCameraPivot(Object x, Double y, Double z) {
+        this.cameraOffsetPivot = x == null ? null : LuaUtils.parseVec3("setOffsetCameraPivot", x, y, z);
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setOffsetCameraPivot")
+    public RendererAPI offsetCameraPivot(Object x, Double y, Double z) {
+        setOffsetCameraPivot(x, y, z);
+        return this;
     }
 
     @LuaWhitelist
@@ -204,10 +276,17 @@ public class RendererAPI {
                             argumentNames = {"x", "y", "z"}
                     )
             },
-            value = "renderer.offset_camera_rot"
+            value = "renderer.set_offset_camera_rot"
     )
-    public void offsetCameraRot(Object x, Double y, Double z) {
-        this.cameraOffsetRot = x == null ? null : LuaUtils.parseVec3("offsetCameraRot", x, y, z);
+    public void setOffsetCameraRot(Object x, Double y, Double z) {
+        this.cameraOffsetRot = x == null ? null : LuaUtils.parseVec3("setOffsetCameraRot", x, y, z);
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setOffsetCameraRot")
+    public RendererAPI offsetCameraRot(Object x, Double y, Double z) {
+        setOffsetCameraRot(x, y, z);
+        return this;
     }
 
     @LuaWhitelist
