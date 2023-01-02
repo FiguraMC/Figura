@@ -54,6 +54,18 @@ public class ItemStackAPI {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("itemstack.get_id")
+    public String getID() {
+        return id;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("itemstack.get_tag")
+    public LuaTable getTag() {
+        return tag;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc("itemstack.get_count")
     public int getCount() {
         return itemStack.getCount();

@@ -57,7 +57,7 @@ public abstract class CustomHeadLayerMixin<T extends LivingEntity, M extends Ent
             return;
 
         //script hide
-        if (avatar.luaRuntime != null && !avatar.luaRuntime.vanilla_model.HELMET_ITEM.getVisible()) {
+        if (avatar.luaRuntime != null && !avatar.luaRuntime.vanilla_model.HELMET_ITEM.checkVisible()) {
             ci.cancel();
             return;
         }

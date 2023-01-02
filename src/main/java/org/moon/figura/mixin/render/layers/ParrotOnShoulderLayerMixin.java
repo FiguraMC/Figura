@@ -42,8 +42,8 @@ public abstract class ParrotOnShoulderLayerMixin<T extends Player> extends Rende
 
         //script hide
         if (avatar.luaRuntime != null &&
-                (leftShoulder && !avatar.luaRuntime.vanilla_model.LEFT_PARROT.getVisible() ||
-                !leftShoulder && !avatar.luaRuntime.vanilla_model.RIGHT_PARROT.getVisible())
+                (leftShoulder && !avatar.luaRuntime.vanilla_model.LEFT_PARROT.checkVisible() ||
+                !leftShoulder && !avatar.luaRuntime.vanilla_model.RIGHT_PARROT.checkVisible())
         ) {
             ci.cancel();
             return;

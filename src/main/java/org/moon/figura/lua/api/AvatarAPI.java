@@ -7,6 +7,7 @@ import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
+import org.moon.figura.lua.docs.LuaMethodShadow;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.trust.Trust;
@@ -39,8 +40,9 @@ public class AvatarAPI {
             ),
             value = "avatar.store"
     )
-    public void store(@LuaNotNil String key, LuaValue value) {
+    public AvatarAPI store(@LuaNotNil String key, LuaValue value) {
         storedStuff.set(key, value == null ? LuaValue.NIL : value);
+        return this;
     }
 
     @LuaWhitelist
@@ -79,6 +81,13 @@ public class AvatarAPI {
         FiguraVec3 vec = LuaUtils.parseVec3("setColor", r, g, b, 1, 1, 1);
         avatar.color = ColorUtils.rgbToHex(vec);
         vec.free();
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setColor")
+    public AvatarAPI color(Object r, Double g, Double b) {
+        setColor(r, g, b);
+        return this;
     }
 
     @LuaWhitelist

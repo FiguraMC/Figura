@@ -6,6 +6,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
+import org.moon.figura.lua.docs.LuaMethodShadow;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
@@ -19,12 +20,18 @@ import org.moon.figura.utils.LuaUtils;
 )
 public abstract class RenderTask {
 
+    protected final String name;
+
     protected boolean enabled = true;
     protected Integer light = null;
     protected Integer overlay = null;
     protected final FiguraVec3 pos = FiguraVec3.of();
     protected final FiguraVec3 rot = FiguraVec3.of();
     protected final FiguraVec3 scale = FiguraVec3.of(1, 1, 1);
+
+    public RenderTask(String name) {
+        this.name = name;
+    }
 
     //Return true if something was rendered, false if the function cancels for some reason
     public abstract boolean render(PartCustomization.Stack stack, MultiBufferSource buffer, int light, int overlay);
@@ -50,10 +57,16 @@ public abstract class RenderTask {
                     argumentTypes = Boolean.class,
                     argumentNames = "bool"
             ),
-            value = "render_task.enabled"
+            value = "render_task.set_enabled"
     )
-    public RenderTask enabled(boolean enabled) {
+    public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setEnabled")
+    public RenderTask enabled(boolean enabled) {
+        setEnabled(enabled);
         return this;
     }
 
@@ -75,15 +88,21 @@ public abstract class RenderTask {
                             argumentNames = {"blockLight", "skyLight"}
                     )
             },
-            value = "render_task.light")
-    public RenderTask light(Object blockLight, Double skyLight) {
+            value = "render_task.set_light")
+    public void setLight(Object blockLight, Double skyLight) {
         if (blockLight == null) {
             light = null;
-            return this;
+            return;
         }
 
-        FiguraVec2 lightVec = LuaUtils.parseVec2("light", blockLight, skyLight);
+        FiguraVec2 lightVec = LuaUtils.parseVec2("setLight", blockLight, skyLight);
         light = LightTexture.pack((int) lightVec.x, (int) lightVec.y);
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setLight")
+    public RenderTask light(Object blockLight, Double skyLight) {
+        setLight(blockLight, skyLight);
         return this;
     }
 
@@ -105,15 +124,21 @@ public abstract class RenderTask {
                             argumentNames = {"whiteOverlay", "hurtOverlay"}
                     )
             },
-            value = "render_task.overlay")
-    public RenderTask overlay(Object whiteOverlay, Double hurtOverlay) {
+            value = "render_task.set_overlay")
+    public void setOverlay(Object whiteOverlay, Double hurtOverlay) {
         if (whiteOverlay == null) {
             overlay = null;
-            return this;
+            return;
         }
 
-        FiguraVec2 overlayVec = LuaUtils.parseVec2("overlay", whiteOverlay, hurtOverlay);
+        FiguraVec2 overlayVec = LuaUtils.parseVec2("setOverlay", whiteOverlay, hurtOverlay);
         overlay = OverlayTexture.pack((int) overlayVec.x, (int) overlayVec.y);
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setOverlay")
+    public RenderTask overlay(Object whiteOverlay, Double hurtOverlay) {
+        setOverlay(whiteOverlay, hurtOverlay);
         return this;
     }
 
@@ -135,12 +160,18 @@ public abstract class RenderTask {
                             argumentNames = {"x", "y", "z"}
                     )
             },
-            value = "render_task.pos"
+            value = "render_task.set_pos"
     )
-    public RenderTask pos(Object x, Double y, Double z) {
-        FiguraVec3 vec = LuaUtils.parseVec3("pos", x, y, z);
+    public void setPos(Object x, Double y, Double z) {
+        FiguraVec3 vec = LuaUtils.parseVec3("setPos", x, y, z);
         pos.set(vec);
         vec.free();
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setPos")
+    public RenderTask pos(Object x, Double y, Double z) {
+        setPos(x, y, z);
         return this;
     }
 
@@ -162,12 +193,18 @@ public abstract class RenderTask {
                             argumentNames = {"x", "y", "z"}
                     )
             },
-            value = "render_task.rot"
+            value = "render_task.set_rot"
     )
-    public RenderTask rot(Object x, Double y, Double z) {
-        FiguraVec3 vec = LuaUtils.parseVec3("rot", x, y, z);
+    public void setRot(Object x, Double y, Double z) {
+        FiguraVec3 vec = LuaUtils.parseVec3("setRot", x, y, z);
         rot.set(vec);
         vec.free();
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setRot")
+    public RenderTask rot(Object x, Double y, Double z) {
+        setRot(x, y, z);
         return this;
     }
 
@@ -189,17 +226,23 @@ public abstract class RenderTask {
                             argumentNames = {"x", "y", "z"}
                     )
             },
-            value = "render_task.scale"
+            value = "render_task.set_scale"
     )
-    public RenderTask scale(Object x, Double y, Double z) {
-        FiguraVec3 vec = LuaUtils.parseVec3("scale", x, y, z, 1, 1, 1);
+    public void setScale(Object x, Double y, Double z) {
+        FiguraVec3 vec = LuaUtils.parseVec3("setScale", x, y, z, 1, 1, 1);
         scale.set(vec);
         vec.free();
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setScale")
+    public RenderTask scale(Object x, Double y, Double z) {
+        setScale(x, y, z);
         return this;
     }
 
     @Override
     public String toString() {
-        return "Render Task";
+        return name + " (Render Task)";
     }
 }

@@ -18,6 +18,7 @@ import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
+import org.moon.figura.lua.docs.LuaMethodShadow;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
@@ -209,6 +210,13 @@ public class FiguraTexture extends SimpleTexture {
     }
 
     @LuaWhitelist
+    @LuaMethodShadow("setPixel")
+    public FiguraTexture pixel(int x, int y, Object r, Double g, Double b, Double a) {
+        setPixel(x, y, r, g, b, a);
+        return this;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
                     @LuaMethodOverload(
@@ -225,10 +233,11 @@ public class FiguraTexture extends SimpleTexture {
                     )
             },
             value = "texture.fill")
-    public void fill(int x, int y, int width, int height, Object r, Double g, Double b, Double a) {
+    public FiguraTexture fill(int x, int y, int width, int height, Object r, Double g, Double b, Double a) {
         try {
             backupImage();
             texture.fillRect(x, y, width, height, ColorUtils.rgbaToIntABGR(parseColor("fill", r, g, b, a)));
+            return this;
         } catch (Exception e) {
             throw new LuaError(e.getMessage());
         }
@@ -236,17 +245,19 @@ public class FiguraTexture extends SimpleTexture {
 
     @LuaWhitelist
     @LuaMethodDoc("texture.update")
-    public void update() {
+    public FiguraTexture update() {
         this.dirty = true;
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodDoc("texture.restore")
-    public void restore() {
+    public FiguraTexture restore() {
         if (modified) {
             this.texture.copyFrom(backup);
             this.modified = false;
         }
+        return this;
     }
 
     @LuaWhitelist
@@ -267,7 +278,7 @@ public class FiguraTexture extends SimpleTexture {
             ),
             value = "texture.apply_func"
     )
-    public void applyFunc(int x, int y, int width, int height, @LuaNotNil LuaFunction function) {
+    public FiguraTexture applyFunc(int x, int y, int width, int height, @LuaNotNil LuaFunction function) {
         for (int i = y; i < y + height; i++) {
             for (int j = x; j < x + width; j++) {
                 FiguraVec4 color = getPixel(j, i);
@@ -276,6 +287,12 @@ public class FiguraTexture extends SimpleTexture {
                     setPixel(j, i, result.checkuserdata(FiguraVec4.class), null, null, null);
             }
         }
+        return this;
+    }
+
+    @LuaWhitelist
+    public Object __index(String arg) {
+        return "name".equals(arg) ? name : null;
     }
 
     @Override

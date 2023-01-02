@@ -8,14 +8,20 @@ public abstract class VanillaPart {
     protected final String name;
     protected final Avatar owner;
 
+    protected Boolean visible;
+
     public VanillaPart(Avatar owner, String name) {
         this.owner = owner;
         this.name = name;
     }
 
-    public abstract void alter(EntityModel<?> model);
-    public abstract void store(EntityModel<?> model);
+    public boolean checkVisible() {
+        return visible == null || visible;
+    }
+
+    public abstract void change(EntityModel<?> model);
+    public abstract void save(EntityModel<?> model);
     public abstract void restore(EntityModel<?> model);
-    public abstract boolean getVisible();
-    public abstract void setVisible(boolean visible);
+    public abstract Boolean getVisible();
+    public abstract void setVisible(Boolean visible);
 }
