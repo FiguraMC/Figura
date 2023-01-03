@@ -32,7 +32,7 @@ public class LoadingErrorWidget extends StatusWidget {
 
     @Override
     public Component getTooltipFor(int i) {
-        return string == null ? Component.empty() : FiguraText.of("gui.status.load_error").withStyle(ChatFormatting.RED)
+        return string == null ? Component.empty() : FiguraText.of("gui.load_error").withStyle(ChatFormatting.RED)
                 .append("\n\n")
                 .append(FiguraText.of("gui.status.reason"))
                 .append("\n• ")
