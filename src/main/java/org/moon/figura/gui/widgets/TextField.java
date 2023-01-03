@@ -10,6 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FiguraText;
+import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.ui.UIHelper;
 
 import java.util.function.Consumer;
@@ -56,7 +57,7 @@ public class TextField extends AbstractContainerElement {
         //hint text
         if (hint != null && field.getValue().isEmpty() && !field.isFocused()) {
             Minecraft.getInstance().font.drawShadow(
-                    stack, hint.hint.copy().withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC),
+                    stack, hint.hint.copy().append(TextUtils.ELLIPSIS).withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC),
                     this.x + 4, this.y + (height - 8) / 2, 0xFFFFFF
             );
         }
