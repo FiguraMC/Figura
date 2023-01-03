@@ -127,7 +127,7 @@ public class FiguraKeybind {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setOnToggle")
+    @LuaMethodShadow("setOnPress")
     public FiguraKeybind onPress(LuaFunction function) {
         setOnPress(function);
         return this;
