@@ -80,7 +80,7 @@ public abstract class CapeLayerMixin extends RenderLayer<AbstractClientPlayer, P
         //If someone wants to spend the time to correct these inaccuracies for us, feel free to make a pull request.
 
         //pos
-        if (itemStack.isEmpty()) {
+        if (itemStack.isEmpty() || (avatar.luaRuntime != null && !avatar.luaRuntime.vanilla_model.CHESTPLATE_BODY.checkVisible())) {
             if (entity.isCrouching()) {
                 q += 25f;
                 fakeCloak.y = 2.25f;

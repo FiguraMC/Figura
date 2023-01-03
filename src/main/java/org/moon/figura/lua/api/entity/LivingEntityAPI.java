@@ -199,6 +199,34 @@ public class LivingEntityAPI<T extends LivingEntity> extends EntityAPI<T> {
         return "UNDEFINED";
     }
 
+    @LuaWhitelist
+    @LuaMethodDoc("living_entity.is_gliding")
+    public boolean isGliding() {
+        checkEntity();
+        return entity.isFallFlying();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("living_entity.is_blocking")
+    public boolean isBlocking() {
+        checkEntity();
+        return entity.isBlocking();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("living_entity.is_visually_swimming")
+    public boolean isVisuallySwimming() {
+        checkEntity();
+        return entity.isVisuallySwimming();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("living_entity.riptide_spinning")
+    public boolean riptideSpinning() {
+        checkEntity();
+        return entity.isAutoSpinAttack();
+    }
+
     @Override
     public String toString() {
         checkEntity();
