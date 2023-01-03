@@ -824,7 +824,8 @@
   "figura.docs.entity.is_glowing": "Returns true if this entity is currently glowing.",
   "figura.docs.entity.is_invisible": "Returns true if this entity is invisible, for one reason or another.",
   "figura.docs.entity.is_silent": "Returns true if this entity is silent.",
-  "figura.docs.entity.is_sneaking": "Returns true if this entity is sneaking.",
+  "figura.docs.entity.is_sneaking": "Returns true if this entity is logically sneaking (can't fall from blocks edges, can't see nameplate behind walls, etc).",
+  "figura.docs.entity.is_crouching": "Returns true if this entity is visually sneaking.",
   "figura.docs.entity.get_item": "Gets an ItemStack for the item in the given slot. For the player, slots are indexed with 1 as the main hand, 2 as the off hand, and 3,4,5,6 as the 4 armor slots from the boots to the helmet. If an invalid slot number is given, this will return nil.",
   "figura.docs.entity.get_nbt": "Gets a table containing the NBT of this entity. Please note that not all values in the entity's NBT may be synced, as some are handled only on server side.",
   "figura.docs.entity.is_on_fire": "Returns true if this entity is currently on fire.",
@@ -856,6 +857,10 @@
   "figura.docs.living_entity.get_absorption_amount": "Returns the amount of this entity's absorption (yellow hearts).",
   "figura.docs.living_entity.is_sensitive_to_water": "Returns if this entity takes damage to water.",
   "figura.docs.living_entity.get_entity_category": "Returns the category of this entity. The categories are: \"ARTHROPOD\", \"UNDEAD\", \"WATER\", \"ILLAGER\" and by default, \"UNDEFINED\"",
+  "figura.docs.living_entity.is_gliding": "Returns if this entity is gliding with an elytra.",
+  "figura.docs.living_entity.is_blocking": "Return if this entity is blocking with a shield.",
+  "figura.docs.living_entity.is_visually_swimming": "Returns if this entity have the swimming pose.",
+  "figura.docs.living_entity.riptide_spinning": "Returns if this entity is riptide spinning.",
 
   "figura.docs.player": "Acts as a proxy for a player entity in the Minecraft world. A global instance exists for the avatar's user, under the name \"player\".",
   "figura.docs.player.get_food": "Gets the current food level of the player, from 0 to 20.",
@@ -869,6 +874,7 @@
   "figura.docs.player.has_skin": "Returns whether the player has a custom skin loaded.",
   "figura.docs.player.is_skin_layer_visible": "Returns whether the specified skin layer, from the Skin Customizations settings, is currently visible.",
   "figura.docs.player.is_fishing": "Returns if the player is currently fishing.",
+  "figura.docs.player.get_charged_attack_delay": "Returns the delay (in ticks) of charged attacks.",
 
 
   "figura.docs.events": "A global API that contains all of the figura Events. Accessed using the name \"events\".",
@@ -925,6 +931,8 @@
   "figura.docs.host.get_status_effects": "Returns a table of all of the player's status effects. The table contains sub-tables, each of which contains the name, amplifier, duration, and particle visibility of each status effect.",
   "figura.docs.host.get_clipboard": "Gets the text from the clipboard.",
   "figura.docs.host.set_clipboard": "Sets the clipboard text.",
+  "figura.docs.host.get_attack_charge": "Returns a fraction (0 to 1) of the charge of the player attack. If less than 1, every attack will result result in a weak attack.",
+  "figura.docs.host.is_jumping": "Checks if the player is jumping. Note this is only true during the first tick the player started jumping.",
 
 
   "figura.docs.itemstack": "A proxy for an item stack from Minecraft.",
