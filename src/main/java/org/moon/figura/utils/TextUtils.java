@@ -268,10 +268,10 @@ public class TextUtils {
     }
 
     public static Component reverse(Component text) {
-        MutableComponent builder = Component.empty();
+        MutableComponent builder = TextComponent.EMPTY.copy();
         for (Component entry : text.toFlatList(text.getStyle())) {
             StringBuilder str = new StringBuilder(entry.getString()).reverse();
-            builder = Component.literal(str.toString()).withStyle(entry.getStyle()).append(builder);
+            builder = new TextComponent(str.toString()).withStyle(entry.getStyle()).append(builder);
         }
         return builder;
     }

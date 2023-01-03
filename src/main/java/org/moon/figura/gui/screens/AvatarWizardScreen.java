@@ -11,7 +11,7 @@ import org.moon.figura.wizards.AvatarWizard;
 
 public class AvatarWizardScreen extends AbstractPanelScreen {
 
-    public static final Component TITLE = FiguraText.of("gui.panels.title.avatar_wizard");
+    public static final Component TITLE = new FiguraText("gui.panels.title.avatar_wizard");
 
     private final Screen sourcePanel;
 
@@ -37,17 +37,17 @@ public class AvatarWizardScreen extends AbstractPanelScreen {
         // -- bottom buttons -- //
 
         //cancel
-        this.addRenderableWidget(new TexturedButton(width / 2 - 122, height - 24, 120, 20, FiguraText.of("gui.cancel"), null,
+        this.addRenderableWidget(new TexturedButton(width / 2 - 122, height - 24, 120, 20, new FiguraText("gui.cancel"), null,
                 button -> this.minecraft.setScreen(sourcePanel)
         ));
 
         //done
-        addRenderableWidget(build = new TexturedButton(width / 2 + 4, height - 24, 120, 20, FiguraText.of("gui.create"), null, button -> {
+        addRenderableWidget(build = new TexturedButton(width / 2 + 4, height - 24, 120, 20, new FiguraText("gui.create"), null, button -> {
             try {
                 wizard.build();
-                FiguraToast.sendToast(FiguraText.of("toast.avatar_wizard.success"));
+                FiguraToast.sendToast(new FiguraText("toast.avatar_wizard.success"));
             } catch (Exception e) {
-                FiguraToast.sendToast(FiguraText.of("toast.avatar_wizard.error"), FiguraToast.ToastType.ERROR);
+                FiguraToast.sendToast(new FiguraText("toast.avatar_wizard.error"), FiguraToast.ToastType.ERROR);
                 FiguraMod.LOGGER.error("", e);
             }
 

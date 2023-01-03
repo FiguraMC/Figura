@@ -8,6 +8,7 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.Mth;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.gui.widgets.SwitchButton;
@@ -117,7 +118,7 @@ public class AvatarWizardList extends AbstractList {
         int x = this.x + width / 2 + 4;
         int width = this.width / 2 - 20;
 
-        Component lastName = Component.empty();
+        Component lastName = TextComponent.EMPTY.copy();
         List<GuiEventListener> lastList = new ArrayList<>();
 
         for (AvatarWizard.WizardEntry value : AvatarWizard.WizardEntry.values()) {
@@ -128,7 +129,7 @@ public class AvatarWizardList extends AbstractList {
                         children.addAll(lastList);
                     }
 
-                    lastName = FiguraText.of("gui.avatar_wizard." + value.name().toLowerCase());
+                    lastName = new FiguraText("gui.avatar_wizard." + value.name().toLowerCase());
                     lastList = new ArrayList<>();
                 }
                 case TEXT -> lastList.add(new WizardInputBox(x, width, this, value));
@@ -150,7 +151,7 @@ public class AvatarWizardList extends AbstractList {
             super(x, 0, width, 20, HintType.ANY, s -> parent.wizard.changeEntry(entry, s));
             this.parent = parent;
             this.entry = entry;
-            this.name = FiguraText.of("gui.avatar_wizard." + entry.name().toLowerCase());
+            this.name = new FiguraText("gui.avatar_wizard." + entry.name().toLowerCase());
         }
 
         @Override
@@ -181,7 +182,7 @@ public class AvatarWizardList extends AbstractList {
             super(x, 0, width, 20, false);
             this.parent = parent;
             this.entry = entry;
-            this.name = FiguraText.of("gui.avatar_wizard." + entry.name().toLowerCase());
+            this.name = new FiguraText("gui.avatar_wizard." + entry.name().toLowerCase());
         }
 
         @Override

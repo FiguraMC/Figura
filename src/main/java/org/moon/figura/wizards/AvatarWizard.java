@@ -26,7 +26,6 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.Optional;
 import java.util.function.BiFunction;
 
 public class AvatarWizard {
@@ -38,13 +37,12 @@ public class AvatarWizard {
     private static String capeTexture = "";
 
     private static final BiFunction<ResourceManager, String, String> GET_TEXTURE_DATA = (manager, path) -> {
-        Optional<Resource> optional = manager.getResource(new FiguraIdentifier(path));
-        if (optional.isPresent()) {
-            try (InputStream is = optional.get().open()) {
-                return Base64.encodeBase64String(is.readAllBytes());
-            } catch (Exception e) {
-                FiguraMod.LOGGER.error("", e);
-            }
+        try {
+            Resource resource = manager.getResource(new FiguraIdentifier(path));
+            InputStream is = resource.getInputStream();
+            return Base64.encodeBase64String(is.readAllBytes());
+        } catch (Exception e) {
+            FiguraMod.LOGGER.error("", e);
         }
         return "";
     };

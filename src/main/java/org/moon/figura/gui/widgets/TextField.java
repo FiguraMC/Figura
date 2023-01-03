@@ -150,7 +150,7 @@ public class TextField extends AbstractContainerElement {
         private final Component hint;
 
         HintType() {
-            this.hint = FiguraText.of("gui.text_hint." + this.name().toLowerCase());
+            this.hint = new FiguraText("gui.text_hint." + this.name().toLowerCase());
         }
     }
 }

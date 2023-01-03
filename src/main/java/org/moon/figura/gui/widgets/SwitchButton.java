@@ -13,8 +13,8 @@ import org.moon.figura.utils.ui.UIHelper;
 public class SwitchButton extends TexturedButton {
 
     public static final ResourceLocation SWITCH_TEXTURE = new FiguraIdentifier("textures/gui/switch.png");
-    public static final Component ON = FiguraText.of("gui.on");
-    public static final Component OFF = FiguraText.of("gui.off");
+    public static final Component ON = new FiguraText("gui.on");
+    public static final Component OFF = new FiguraText("gui.off");
 
     protected boolean toggled = false;
     private boolean defaultTexture = false;

@@ -43,7 +43,7 @@ public class PopupMenu {
             .append(Badges.System.ERROR.badge.copy().withStyle(Style.EMPTY.withFont(Badges.FONT)))
             .append(" ")
             .append(Badges.System.ERROR.desc.copy().withStyle(ChatFormatting.RED));
-    private static final MutableComponent TRUST_WARN = Component.empty()
+    private static final MutableComponent TRUST_WARN = TextComponent.EMPTY.copy()
             .append(Badges.System.TRUST.badge.copy().withStyle(Style.EMPTY.withFont(Badges.FONT)))
             .append(" ")
             .append(Badges.System.TRUST.desc.copy().withStyle(ChatFormatting.BLUE));
