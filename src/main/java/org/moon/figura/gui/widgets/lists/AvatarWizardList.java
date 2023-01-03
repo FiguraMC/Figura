@@ -72,7 +72,7 @@ public class AvatarWizardList extends AbstractList {
             for (GuiEventListener widget : entry.getValue()) {
                 if (widget instanceof AbstractWidget w) {
                     if (w.visible) {
-                        w.setY(y + newY);
+                        w.y = y + newY;
                         newY += entryHeight;
                     }
                 } else if (widget instanceof TextField t) {
@@ -203,7 +203,7 @@ public class AvatarWizardList extends AbstractList {
             MutableComponent name = this.name.copy();
             if (this.isToggled())
                 name.withStyle(FiguraMod.getAccentColor());
-            font.draw(stack, name, getX() - width - 8, getY() + (height - font.lineHeight) / 2, 0xFFFFFF);
+            font.draw(stack, name, x - width - 8, y + (height - font.lineHeight) / 2, 0xFFFFFF);
         }
 
         @Override

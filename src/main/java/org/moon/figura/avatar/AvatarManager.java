@@ -6,7 +6,7 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.datafixers.util.Pair;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -195,7 +195,7 @@ public class AvatarManager {
             return loaded;
 
         //new avatar
-        ResourceLocation type = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
+        ResourceLocation type = Registry.ENTITY_TYPE.getKey(entity.getType());
         CompoundTag nbt = LocalAvatarLoader.CEM_AVATARS.get(type);
         return nbt == null ? null : loadEntityAvatar(entity, nbt);
     }
