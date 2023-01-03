@@ -131,6 +131,13 @@ public class PlayerAPI extends LivingEntityAPI<Player> {
         return entity.fishing != null;
     }
 
+    @LuaWhitelist
+    @LuaMethodDoc("player.get_charged_attack_delay")
+    public float getChargedAttackDelay() {
+        checkEntity();
+        return entity.getCurrentItemAttackStrengthDelay();
+    }
+
     @Override
     public String toString() {
         checkEntity();

@@ -22,6 +22,7 @@ import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.world.ItemStackAPI;
 import org.moon.figura.lua.docs.*;
 import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.mixin.LivingEntityAccessor;
 import org.moon.figura.mixin.gui.ChatScreenAccessor;
 import org.moon.figura.model.rendering.texture.FiguraTexture;
 import org.moon.figura.utils.ColorUtils;
@@ -289,10 +290,7 @@ public class HostAPI {
     @LuaWhitelist
     @LuaMethodDoc("host.get_chat_color")
     public Integer getChatColor() {
-        if (isHost())
-            return this.chatColor;
-
-        return null;
+        return isHost() ? this.chatColor : null;
     }
 
     @LuaWhitelist
@@ -310,8 +308,7 @@ public class HostAPI {
             value = "host.set_chat_color"
     )
     public void setChatColor(Object x, Double y, Double z) {
-        if (isHost())
-            this.chatColor = x == null ? null : ColorUtils.rgbToInt(LuaUtils.parseVec3("setChatColor", x, y, z));
+        if (isHost()) this.chatColor = x == null ? null : ColorUtils.rgbToInt(LuaUtils.parseVec3("setChatColor", x, y, z));
     }
 
     @LuaWhitelist
@@ -414,7 +411,7 @@ public class HostAPI {
         List<Map<String, Object>> list = new ArrayList<>();
 
         LocalPlayer player = Minecraft.getInstance().player;
-        if (player == null)
+        if (!isHost() || player == null)
             return list;
 
         for (MobEffectInstance effect : player.getActiveEffects()) {
@@ -433,7 +430,7 @@ public class HostAPI {
     @LuaWhitelist
     @LuaMethodDoc("host.get_clipboard")
     public String getClipboard() {
-        return Minecraft.getInstance().keyboardHandler.getClipboard();
+        return isHost() ? Minecraft.getInstance().keyboardHandler.getClipboard() : null;
     }
 
     @LuaWhitelist
@@ -444,7 +441,7 @@ public class HostAPI {
             ),
             value = "host.set_clipboard")
     public void setClipboard(@LuaNotNil String text) {
-        Minecraft.getInstance().keyboardHandler.setClipboard(text);
+        if (isHost()) Minecraft.getInstance().keyboardHandler.setClipboard(text);
     }
 
     @LuaWhitelist
@@ -452,6 +449,24 @@ public class HostAPI {
     public HostAPI clipboard(@LuaNotNil String text) {
         setClipboard(text);
         return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("host.get_attack_charge")
+    public float getAttackCharge() {
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (isHost() && player != null)
+            return player.getAttackStrengthScale(0f);
+        return 0f;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("host.is_jumping")
+    public boolean isJumping() {
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (isHost() && player != null)
+            return ((LivingEntityAccessor) player).isJumping();
+        return false;
     }
 
     public Object __index(String arg) {

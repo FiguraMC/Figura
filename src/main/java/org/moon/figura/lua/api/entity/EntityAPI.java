@@ -315,6 +315,13 @@ public class EntityAPI<T extends Entity> {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("entity.is_crouching")
+    public boolean isCrouching() {
+        checkEntity();
+        return entity.isCrouching();
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaMethodOverload(
                     argumentTypes = int.class,
