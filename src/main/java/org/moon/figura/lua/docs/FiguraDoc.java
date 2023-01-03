@@ -6,11 +6,13 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import net.minecraft.ChatFormatting;
 import net.minecraft.locale.Language;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.FiguraText;
+import org.moon.figura.utils.TextUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -160,11 +162,12 @@ public abstract class FiguraDoc {
                     .append(new TextComponent("• ")
                             .append(new FiguraText("docs.text.description"))
                             .append(":")
-                            .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
-                    .append("\n\t")
-                    .append(new TextComponent("• ")
-                            .append(new FiguraText("docs." + description))
-                            .withStyle(ColorUtils.Colors.MAYA_BLUE.style));
+                            .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style));
+
+            MutableComponent descText = TextComponent.EMPTY.copy().withStyle(ColorUtils.Colors.MAYA_BLUE.style);
+            for (Component component : TextUtils.splitText(new FiguraText("docs." + description), "\n"))
+                descText.append("\n\t").append("• ").append(component);
+            message.append(descText);
 
             FiguraMod.sendChatMessage(message);
             return 1;
@@ -290,11 +293,12 @@ public abstract class FiguraDoc {
                     .append(new TextComponent("• ")
                             .append(new FiguraText("docs.text.description"))
                             .append(":")
-                            .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
-                    .append("\n\t")
-                    .append(new TextComponent("• ")
-                            .append(new FiguraText("docs." + description))
-                            .withStyle(ColorUtils.Colors.MAYA_BLUE.style));
+                            .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style));
+
+            MutableComponent descText = TextComponent.EMPTY.copy().withStyle(ColorUtils.Colors.MAYA_BLUE.style);
+            for (Component component : TextUtils.splitText(new FiguraText("docs." + description), "\n"))
+                descText.append("\n\t").append("• ").append(component);
+            message.append(descText);
 
             FiguraMod.sendChatMessage(message);
             return 1;
@@ -363,7 +367,7 @@ public abstract class FiguraDoc {
         @Override
         public int print() {
             //header
-            FiguraMod.sendChatMessage(HEADER.copy()
+            MutableComponent message = HEADER.copy()
 
                     //type
                     .append("\n\n")
@@ -378,19 +382,20 @@ public abstract class FiguraDoc {
                     .append(new TextComponent(" (")
                             .append(new FiguraText(editable ? "docs.text.editable" : "docs.text.not_editable"))
                             .append(")")
-                            .withStyle(editable ? ChatFormatting.GREEN : ChatFormatting.DARK_RED))
-
-                    //description
-                    .append("\n\n")
+                            .withStyle(editable ? ChatFormatting.GREEN : ChatFormatting.DARK_RED));
+            //description
+            message.append("\n\n")
                     .append(new TextComponent("• ")
                             .append(new FiguraText("docs.text.description"))
                             .append(":")
-                            .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
-                    .append("\n\t")
-                    .append(new TextComponent("• ")
-                            .append(new FiguraText("docs." + description))
-                            .withStyle(ColorUtils.Colors.MAYA_BLUE.style)));
+                            .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style));
 
+            MutableComponent descText = TextComponent.EMPTY.copy().withStyle(ColorUtils.Colors.MAYA_BLUE.style);
+            for (Component component : TextUtils.splitText(new FiguraText("docs." + description), "\n"))
+                descText.append("\n\t").append("• ").append(component);
+            message.append(descText);
+
+            FiguraMod.sendChatMessage(message);
             return 1;
         }
 
