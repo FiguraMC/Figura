@@ -29,6 +29,7 @@ import org.lwjgl.opengl.GL30;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
+import org.moon.figura.config.Config;
 import org.moon.figura.gui.screens.AbstractPanelScreen;
 import org.moon.figura.gui.widgets.AbstractContainerElement;
 import org.moon.figura.gui.widgets.ContextMenu;
@@ -109,8 +110,6 @@ public class UIHelper extends GuiComponent {
         float headYaw = entity.yHeadRot;
         boolean invisible = entity.isInvisible();
 
-        entity.setInvisible(false);
-
         //vehicle
         LivingEntity vehicle = null;
         float vBodyYaw = 0f;
@@ -159,6 +158,10 @@ public class UIHelper extends GuiComponent {
                 //lightning
                 Lighting.setupForEntityInInventory();
 
+                //invisibility
+                if (Config.PAPERDOLL_INVISIBLE.asBool())
+                    entity.setInvisible(false);
+
                 finalY = -1d;
             }
             case FIGURA_GUI -> {
@@ -180,6 +183,9 @@ public class UIHelper extends GuiComponent {
                 //set up lighting
                 Lighting.setupForFlatItems();
                 RenderSystem.setShaderLights(Util.make(new Vector3f(-0.2f, -1f, -1f), Vector3f::normalize), Util.make(new Vector3f(-0.2f, 0.4f, -0.3f), Vector3f::normalize));
+
+                //invisibility
+                entity.setInvisible(false);
 
                 yaw = 0f;
                 finalY = -1d;
