@@ -6,8 +6,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.PlayerModelPart;
 import net.minecraft.world.level.GameType;
 import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaTable;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.lua.NbtToLua;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
@@ -136,6 +138,21 @@ public class PlayerAPI extends LivingEntityAPI<Player> {
     public float getChargedAttackDelay() {
         checkEntity();
         return entity.getCurrentItemAttackStrengthDelay();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload,
+                    @LuaMethodOverload(
+                            argumentTypes = Boolean.class,
+                            argumentNames = "right"
+                    )
+            },
+            value = "player.get_shoulder_entity")
+    public LuaTable getShoulderEntity(boolean right) {
+        checkEntity();
+        return (LuaTable) NbtToLua.convert(right ? entity.getShoulderEntityRight() : entity.getShoulderEntityLeft());
     }
 
     @Override
