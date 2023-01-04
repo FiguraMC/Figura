@@ -16,9 +16,9 @@ import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
-import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.NbtToLua;
+import org.moon.figura.lua.ReadOnlyLuaTable;
 import org.moon.figura.lua.api.world.BlockStateAPI;
 import org.moon.figura.lua.api.world.ItemStackAPI;
 import org.moon.figura.lua.api.world.WorldAPI;
@@ -32,6 +32,8 @@ import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.mixin.EntityAccessor;
 import org.moon.figura.utils.EntityUtils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @LuaWhitelist
@@ -375,6 +377,17 @@ public class EntityAPI<T extends Entity> {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("entity.get_passengers")
+    public List<EntityAPI<?>> getPassengers() {
+        checkEntity();
+
+        List<EntityAPI<?>> list = new ArrayList<>();
+        for (Entity passenger : entity.getPassengers())
+            list.add(wrap(passenger));
+        return list;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
                     @LuaMethodOverload,
@@ -436,18 +449,21 @@ public class EntityAPI<T extends Entity> {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaMethodOverload(
-                    argumentTypes = String.class,
-                    argumentNames = "key"
-            ),
+            overloads = {
+                    @LuaMethodOverload,
+                    @LuaMethodOverload(
+                            argumentTypes = String.class,
+                            argumentNames = "key"
+                    )
+            },
             value = "entity.get_variable"
     )
-    public LuaValue getVariable(@LuaNotNil String key) {
+    public LuaValue getVariable(String key) {
         checkEntity();
         Avatar a = AvatarManager.getAvatar(entity);
-        if (a == null || a.luaRuntime == null)
-            return null;
-        return a.luaRuntime.avatar_meta.storedStuff.get(key);
+        LuaTable table = a == null || a.luaRuntime == null ? new LuaTable() : a.luaRuntime.avatar_meta.storedStuff;
+        table = new ReadOnlyLuaTable(table);
+        return key == null ? table : table.get(key);
     }
 
     @LuaWhitelist
