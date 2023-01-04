@@ -106,6 +106,7 @@ public enum Config {
     HAS_PAPERDOLL(false),
     PAPERDOLL_ALWAYS_ON(false),
     FIRST_PERSON_PAPERDOLL(true),
+    PAPERDOLL_INVISIBLE(false),
     PAPERDOLL_SCALE(1f, InputType.FLOAT),
     PAPERDOLL_X(0f, InputType.FLOAT),
     PAPERDOLL_Y(0f, InputType.FLOAT),

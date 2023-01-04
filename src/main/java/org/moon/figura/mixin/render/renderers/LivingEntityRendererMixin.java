@@ -113,11 +113,9 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
     public void shouldShowName(T livingEntity, CallbackInfoReturnable<Boolean> cir) {
         if (UIHelper.paperdoll)
             cir.setReturnValue(Config.PREVIEW_NAMEPLATE.asBool());
-        else if (!Minecraft.renderNames())
+        else if (!Minecraft.renderNames() || livingEntity.getUUID().equals(PopupMenu.getEntityId()))
             cir.setReturnValue(false);
-        else if (livingEntity.getUUID().equals(PopupMenu.getEntityId()))
-            cir.setReturnValue(false);
-        else if (Config.SELF_NAMEPLATE.asBool() && livingEntity == Minecraft.getInstance().player)
+        else if (!AvatarManager.panic && Config.SELF_NAMEPLATE.asBool() && livingEntity == Minecraft.getInstance().player)
             cir.setReturnValue(true);
     }
 }
