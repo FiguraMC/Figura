@@ -371,6 +371,9 @@
   "figura.config.first_person_paperdoll": "First Person only",
   "figura.config.first_person_paperdoll.tooltip": "Toggles if the paperdoll should render only when in first person",
 
+  "figura.config.paperdoll_invisible": "Remove Invisibility",
+  "figura.config.paperdoll_invisible.tooltip": "Toggles if the paperdoll should remove the invisibility effect while rendering",
+
   "figura.config.paperdoll_scale": "Paperdoll Scale",
   "figura.config.paperdoll_scale.tooltip": "Changes the paperdoll scale",
 
