@@ -834,6 +834,7 @@
   "figura.docs.entity.is_on_fire": "Returns true if this entity is currently on fire",
   "figura.docs.entity.is_alive": "Returns whether this entity is alive or not",
   "figura.docs.entity.get_permission_level": "Returns the permission level number of this entity\nServer Operators, by default, have the permission level of 4",
+  "figura.docs.entity.get_passengers": "Returns a List of entities of all passengers this entity have",
   "figura.docs.entity.get_targeted_block": "Returns a proxy for your currently targeted BlockState\nThis BlockState appears on the F3 screen\nMaximum and Default distance is 20, Minimum is -20",
   "figura.docs.entity.get_targeted_entity": "Returns a proxy for your currently targeted Entity\nThis Entity appears on the F3 screen\nMaximum and Default distance is 20, Minimum is 0",
   "figura.docs.entity.get_variable": "Gets the value of a variable this entity stored in themselves using the Avatar api's store() function",
@@ -878,6 +879,7 @@
   "figura.docs.player.is_skin_layer_visible": "Returns whether the specified skin layer, from the Skin Customizations settings, is currently visible",
   "figura.docs.player.is_fishing": "Returns if the player is currently fishing",
   "figura.docs.player.get_charged_attack_delay": "Returns the delay (in ticks) of charged attacks",
+  "figura.docs.player.get_shoulder_entity": "Returns a table of the nbt of this entity left or right shoulder entity",
 
 
   "figura.docs.events": "A global API that contains all of the figura Events\nAccessed using the name \"events\"",
