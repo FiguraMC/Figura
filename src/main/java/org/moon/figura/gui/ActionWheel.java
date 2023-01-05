@@ -219,7 +219,7 @@ public class ActionWheel {
 
             minecraft.getItemRenderer().renderGuiItem(item, (int) Math.round(xOff - 8), (int) Math.round(yOff - 8));
             if (Config.ACTION_WHEEL_DECORATIONS.asBool())
-                minecraft.getItemRenderer().renderGuiItemDecorations(minecraft.font, item, -8, -8);
+                minecraft.getItemRenderer().renderGuiItemDecorations(minecraft.font, item, (int) Math.round(xOff - 8), (int) Math.round(yOff - 8));
 
             modelStack.popPose();
             RenderSystem.applyModelViewMatrix();
