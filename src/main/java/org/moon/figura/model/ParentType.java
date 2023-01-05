@@ -18,7 +18,7 @@ public enum ParentType {
     Cape(true, VanillaModelProvider.FAKE_CAPE, FiguraVec3.of(), "CAPE"),
 
     World(true, false, "WORLD"),
-    Hud(true, false, "HUD", "Gui", "GUI"),
+    Hud(true, false, "HUD", "HeadsUpDisplay", "Gui", "GUI", "GraphicalUserInterface", "JraficalUserInterface"),
     Camera("CAMERA"),
     Skull(true, false, "SKULL", "☠"),
     Portrait(true, false, "PORTRAIT"),
