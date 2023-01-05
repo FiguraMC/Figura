@@ -143,7 +143,7 @@ public class BlockStateAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("blockstate.has_emissive_lightning")
+    @LuaMethodDoc("blockstate.has_emissive_lighting")
     public boolean hasEmissiveLighting() {
         return blockState.emissiveRendering(WorldAPI.getCurrentWorld(), getBlockPos());
     }
@@ -245,7 +245,7 @@ public class BlockStateAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("blockstate.get_has_collision")
+    @LuaMethodDoc("blockstate.has_collision")
     public boolean hasCollision() {
         return ((BlockBehaviourAccessor) blockState.getBlock()).hasCollision();
     }
