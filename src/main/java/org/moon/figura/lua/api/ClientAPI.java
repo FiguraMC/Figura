@@ -390,6 +390,12 @@ public class ClientAPI {
         return map;
     }
 
+    @LuaWhitelist
+    @LuaMethodDoc("client.get_frame_time")
+    public static double getFrameTime() {
+        return Minecraft.getInstance().getFrameTime();
+    }
+
     @Override
     public String toString() {
         return "ClientAPI";

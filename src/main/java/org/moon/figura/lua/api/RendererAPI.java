@@ -138,6 +138,13 @@ public class RendererAPI {
     }
 
     @LuaWhitelist
+    @LuaMethodShadow("setShadowRadius")
+    public RendererAPI shadowRadius(Float shadowRadius) {
+        setShadowRadius(shadowRadius);
+        return this;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc("renderer.get_shadow_radius")
     public Float getShadowRadius() {
         return this.shadowRadius;
@@ -180,6 +187,13 @@ public class RendererAPI {
     }
 
     @LuaWhitelist
+    @LuaMethodShadow("setCameraPos")
+    public RendererAPI cameraPos(Object x, Double y, Double z) {
+        setCameraPos(x, y, z);
+        return this;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc("renderer.get_camera_pivot")
     public FiguraVec3 getCameraPivot() {
         return this.cameraPivot;
@@ -201,6 +215,13 @@ public class RendererAPI {
     )
     public void setCameraPivot(Object x, Double y, Double z) {
         this.cameraPivot = x == null ? null : LuaUtils.parseVec3("setCameraPivot", x, y, z);
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setCameraPivot")
+    public RendererAPI cameraPivot(Object x, Double y, Double z) {
+        setCameraPivot(x, y, z);
+        return this;
     }
 
     @LuaWhitelist
@@ -259,6 +280,13 @@ public class RendererAPI {
     }
 
     @LuaWhitelist
+    @LuaMethodShadow("setCameraRot")
+    public RendererAPI cameraRot(Object x, Double y, Double z) {
+        setCameraRot(x, y, z);
+        return this;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc("renderer.get_camera_offset_rot")
     public FiguraVec3 getCameraOffsetRot() {
         return this.cameraOffsetRot;
@@ -302,6 +330,19 @@ public class RendererAPI {
     }
 
     @LuaWhitelist
+    @LuaMethodShadow("setPostEffect")
+    public RendererAPI postEffect(String effect) {
+        setPostEffect(effect);
+        return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("renderer.get_fov")
+    public Float getFOV() {
+        return this.fov;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
                     @LuaMethodOverload,
@@ -314,6 +355,19 @@ public class RendererAPI {
     )
     public void setFOV(Float fov) {
         this.fov = fov;
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setFOV")
+    public RendererAPI fov(Float fov) {
+        setFOV(fov);
+        return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("renderer.get_crosshair_offset")
+    public FiguraVec2 getCrosshairOffset() {
+        return this.crosshairOffset;
     }
 
     @LuaWhitelist
@@ -334,15 +388,10 @@ public class RendererAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("renderer.get_crosshair_offset")
-    public FiguraVec2 getCrosshairOffset() {
-        return this.crosshairOffset;
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc("renderer.get_fov")
-    public Float getFOV() {
-        return this.fov;
+    @LuaMethodShadow("setCrosshairOffset")
+    public RendererAPI crosshairOffset(Object x, Double y) {
+        setCrosshairOffset(x, y);
+        return this;
     }
 
     @LuaWhitelist

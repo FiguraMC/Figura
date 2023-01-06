@@ -789,6 +789,7 @@
   "figura.docs.client.get_viewer": "Returns the player entity from the running client",
   "figura.docs.client.get_server_data": "Returns a table with information of the current connected server (also for singleplayer worlds)",
   "figura.docs.client.get_date": "Returns a table with information about the client current time",
+  "figura.docs.client.get_frame_time": "Returns the current fraction between the last tick and the next tick\nThis is the value used as \"delta\" in the RENDER event",
 
 
   "figura.docs.config": "A global API used to save and load avatar data between game sessions",
@@ -986,8 +987,8 @@
   "figura.docs.keybind.is_pressed": "Gets whether this keybind is currently pressed down",
   "figura.docs.keybind.is_enabled": "Returns if this keybind is enabled or not",
   "figura.docs.keybind.set_enabled": "Toggles if this keybind should be processed or not",
-  "figura.docs.keybind.has_gui": "Returns if this keybind should work within the GUI is open or not",
-  "figura.docs.keybind.set_gui": "Set whenever or not this keybind should run when a GUI is open",
+  "figura.docs.keybind.is_gui_enabled": "Returns if this keybind should work when a GUI screen (Chat, Inventory, etc) is open or not",
+  "figura.docs.keybind.set_gui": "Set whenever or not this keybind should run when a GUI screen is open",
 
 
   "figura.docs.matrices": "A global API which provides functions dedicated to creating and otherwise manipulating matrices\nAccessed using the name \"matrices\"",
@@ -1227,10 +1228,10 @@
   "figura.docs.renderer.get_camera_offset_rot": "Gets the offset rotation for the camera",
   "figura.docs.renderer.set_offset_camera_rot": "Sets the offset rotation for the camera\nNil values for rotation are assumed to be 0\nAngles are given in degrees\nFor absolute rotation values, check out the non-offset rot function",
   "figura.docs.renderer.set_post_effect": "Sets the current rendering effect\nSame as the discontinued Super Secret Settings",
-  "figura.docs.renderer.set_fov": "Sets the multiplier of your fov\nThe default value is nil, which means no changes will be applied to your fov",
   "figura.docs.renderer.get_fov": "Gets the multiplier of your fov",
-  "figura.docs.renderer.set_crosshair_offset": "Sets the offset of your crosshair",
+  "figura.docs.renderer.set_fov": "Sets the multiplier of your fov\nThe default value is nil, which means no changes will be applied to your fov",
   "figura.docs.renderer.get_crosshair_offset": "Gets the offset of your crosshair",
+  "figura.docs.renderer.set_crosshair_offset": "Sets the offset of your crosshair",
 
 
   "figura.docs.sounds": "A global API which is used to play Minecraft sounds\nAccessed using the name \"sounds\"",
