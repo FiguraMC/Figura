@@ -35,7 +35,7 @@ public class FiguraRunCommand {
         }
 
         try {
-            localAvatar.luaRuntime.run("runCommand", lua);
+            localAvatar.luaRuntime.load("runCommand", lua).call();
             return 1;
         } catch (Exception | StackOverflowError e) {
             FiguraLuaPrinter.sendLuaError(FiguraLuaRuntime.parseError(e), localAvatar);

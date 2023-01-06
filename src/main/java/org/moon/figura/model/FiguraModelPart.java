@@ -159,21 +159,21 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     public void animPosition(FiguraVec3 vec, boolean merge) {
         if (merge) {
             FiguraVec3 pos = customization.getAnimPos();
-            pos.add(vec);
-            customization.setAnimPos(pos);
+            pos.add(-vec.x, vec.y, vec.z);
+            customization.setAnimPos(pos.x, pos.y, pos.z);
             pos.free();
         } else {
-            customization.setAnimPos(vec);
+            customization.setAnimPos(-vec.x, vec.y, vec.z);
         }
     }
     public void animRotation(FiguraVec3 vec, boolean merge) {
         if (merge) {
             FiguraVec3 rot = customization.getAnimRot();
-            rot.add(vec);
-            customization.setAnimRot(rot);
+            rot.add(-vec.x, -vec.y, vec.z);
+            customization.setAnimRot(rot.x, rot.y, rot.z);
             rot.free();
         } else {
-            customization.setAnimRot(vec);
+            customization.setAnimRot(-vec.x, -vec.y, vec.z);
         }
     }
     public void globalAnimRot(FiguraVec3 vec, boolean merge) {
@@ -190,10 +190,10 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
         if (merge) {
             FiguraVec3 scale = customization.getAnimScale();
             scale.multiply(vec);
-            customization.setAnimScale(scale);
+            customization.setAnimScale(scale.x, scale.y, scale.z);
             scale.free();
         } else {
-            customization.setAnimScale(vec);
+            customization.setAnimScale(vec.x, vec.y, vec.z);
         }
     }
 

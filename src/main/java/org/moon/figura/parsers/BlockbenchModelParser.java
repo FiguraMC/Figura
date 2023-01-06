@@ -536,24 +536,23 @@ public class BlockbenchModelParser {
     }
 
     private ListTag parseKeyFrameData(JsonObject object, String channel) {
-        BlockbenchModel.KeyFrameData endFrameData = GSON.fromJson(object, BlockbenchModel.KeyFrameData.class);
+        BlockbenchModel.KeyFrameData frameData = GSON.fromJson(object, BlockbenchModel.KeyFrameData.class);
 
         float fallback = channel.equals("scale") ? 1f : 0f;
-        float x = toFloat(endFrameData.x, fallback);
-        float y = toFloat(endFrameData.y, fallback);
-        float z = toFloat(endFrameData.z, fallback);
-
-        if (channel.equals("position")) {
-            x = -x;
-        } else if (channel.equals("rotation")) {
-            x = -x;
-            y = -y;
-        }
+        Object x = keyFrameData(frameData.x, fallback);
+        Object y = keyFrameData(frameData.y, fallback);
+        Object z = keyFrameData(frameData.z, fallback);
 
         ListTag nbt = new ListTag();
-        nbt.add(FloatTag.valueOf(x));
-        nbt.add(FloatTag.valueOf(y));
-        nbt.add(FloatTag.valueOf(z));
+        if (x instanceof Float xx && y instanceof Float yy && z instanceof Float zz) {
+            nbt.add(FloatTag.valueOf(xx));
+            nbt.add(FloatTag.valueOf(yy));
+            nbt.add(FloatTag.valueOf(zz));
+        } else {
+            nbt.add(StringTag.valueOf(String.valueOf(x)));
+            nbt.add(StringTag.valueOf(String.valueOf(y)));
+            nbt.add(StringTag.valueOf(String.valueOf(z)));
+        }
 
         return nbt;
     }
@@ -666,6 +665,14 @@ public class BlockbenchModelParser {
             return Float.parseFloat(input);
         } catch (Exception ignored) {
             return fallback;
+        }
+    }
+
+    public static Object keyFrameData(String input, float fallback) {
+        try {
+            return Float.parseFloat(input);
+        } catch (Exception ignored) {
+            return input.isBlank() ? fallback : input;
         }
     }
 
