@@ -88,8 +88,8 @@ public class FiguraLuaRuntime {
         setGlobal("figuraMetatables", figuraMetatables);
     }
 
-    public LuaValue run(String name, String src) {
-        return userGlobals.load(src, name, userGlobals).call();
+    public LuaValue load(String name, String src) {
+        return userGlobals.load(src, name, userGlobals);
     }
 
     public void registerClass(Class<?> clazz) {
