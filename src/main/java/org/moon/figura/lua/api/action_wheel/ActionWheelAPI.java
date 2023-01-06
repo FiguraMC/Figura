@@ -2,9 +2,9 @@ package org.moon.figura.lua.api.action_wheel;
 
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
+import org.luaj.vm2.LuaTable;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.gui.ActionWheel;
-import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaMethodDoc;
@@ -89,7 +89,7 @@ public class ActionWheelAPI {
             value = "action_wheel.new_page"
     )
     public Page newPage(String title) {
-        Page page = new Page();
+        Page page = new Page(title);
         if (title != null) this.pages.put(title, page);
         return page;
     }
@@ -128,14 +128,20 @@ public class ActionWheelAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaMethodOverload(
-                    argumentTypes = String.class,
-                    argumentNames = "pageTitle"
-            ),
+            overloads = {
+                    @LuaMethodOverload(
+                            returnType = LuaTable.class
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = String.class,
+                            argumentNames = "pageTitle",
+                            returnType = Page.class
+                    )
+            },
             value = "action_wheel.get_page"
     )
-    public Page getPage(@LuaNotNil String pageTitle) {
-        return this.pages.get(pageTitle);
+    public Object getPage(String pageTitle) {
+        return pageTitle != null ? this.pages.get(pageTitle) : this.pages;
     }
 
     @LuaWhitelist
