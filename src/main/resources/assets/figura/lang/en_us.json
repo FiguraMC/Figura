@@ -572,10 +572,11 @@
   "figura.docs.action_wheel.new_action": "Creates a new Action that is not automatically asigned to a Page",
   "figura.docs.action_wheel.new_page": "Creates a new Page for the action wheel\nA Title can be given to store this page internally\nIf no Title is given, the Page will just be returned from this function",
   "figura.docs.action_wheel.set_page": "Sets the Page of the action wheel to the given Title or Page",
-  "figura.docs.action_wheel.get_page": "Returns an stored Page by the given title",
+  "figura.docs.action_wheel.get_page": "Returns an stored Page by the given title\nIf no title is given, returns a table with all registered Pages",
   "figura.docs.action_wheel.get_current_page": "Returns the current set Page from the Action Wheel, or NIL if no Page has been set",
 
   "figura.docs.wheel_page": "An Action Wheel container which is used to store up to 8 actions",
+  "figura.docs.wheel_page.get_title": "Returns the title of this Page",
   "figura.docs.wheel_page.new_action": "Adds a new Action on the selected Page's index\nIf no index is given it is added in the first available index",
   "figura.docs.wheel_page.get_action": "Gets an Action from the Page's given index",
   "figura.docs.wheel_page.set_action": "Sets an Action in the Page's given index\nIf index is -1, the action will be set in the latest empty index",
@@ -969,6 +970,7 @@
   "figura.docs.keybinds.new_keybind": "Creates and returns a new Keybind\nThe name is used in the keybind menu\nThe key parameter is an identifier for a key, such as \"key.keyboard.r\"\nThe boolean gui indicates whether the keybind should always work, or if it should only work when you don't have a screen open\nCheck the docs list command for all key names",
   "figura.docs.keybinds.from_vanilla": "Creates a new Keybind based from a vanilla key",
   "figura.docs.keybinds.get_vanilla_key": "Gets the id of the key bound to the given action, as a string\nCheck the docs list command for all key names and vanilla actions",
+  "figura.docs.keybinds.get_keybinds": "Returns a table with all registered keybinds",
 
   "figura.docs.keybind": "Represents a key binding for your script\nInstances are obtained using the KeybindAPI's create() function",
   "figura.docs.keybind.press": "A function that runs when the key is pressed down",
@@ -1182,6 +1184,7 @@
   "figura.docs.block_task.set_block": "Sets the Block for this task render",
 
   "figura.docs.text_task": "A task for rendering some Text",
+  "figura.docs.text_task.get_text": "Returns the Text from this task",
   "figura.docs.text_task.set_text": "Sets the Text for this task render",
   "figura.docs.text_task.is_centered": "Checks if this task text will render centered",
   "figura.docs.text_task.set_centered": "Toggles if the Text should render centered on this task pivot point\nNot compatible with \"Right\" mode",

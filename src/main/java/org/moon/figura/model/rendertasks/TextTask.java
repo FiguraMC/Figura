@@ -27,6 +27,7 @@ import java.util.List;
 )
 public class TextTask extends RenderTask {
 
+    private String textCached;
     private List<Component> text;
     private boolean centered = false;
     private boolean rtl = false;
@@ -73,6 +74,12 @@ public class TextTask extends RenderTask {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("text_task.get_text")
+    public String getText() {
+        return textCached;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
                     @LuaMethodOverload(
@@ -83,9 +90,9 @@ public class TextTask extends RenderTask {
             value = "text_task.set_text"
     )
     public void setText(String text) {
+        this.textCached = text;
         this.text = text == null ? null : TextUtils.splitText(Badges.noBadges4U(TextUtils.tryParseJson(text)), "\n");
-        if (text != null)
-            this.cachedComplexity = text.length() + 1;
+        if (text != null) this.cachedComplexity = text.length() + 1;
     }
 
     @LuaWhitelist

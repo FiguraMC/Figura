@@ -161,8 +161,8 @@ public class PlayerElement extends AbstractTrustElement {
         Avatar avatar = AvatarManager.getAvatarForPlayer(owner);
         if (avatar != null) {
             NameplateCustomization custom = avatar.luaRuntime == null ? null : avatar.luaRuntime.nameplate.LIST;
-            if (custom != null && custom.getText() != null && avatar.trust.get(Trust.NAMEPLATE_EDIT) == 1)
-                name = NameplateCustomization.applyCustomization(custom.getText());
+            if (custom != null && custom.getJson() != null && avatar.trust.get(Trust.NAMEPLATE_EDIT) == 1)
+                name = custom.getJson().copy();
 
             head = !dragged && avatar.renderPortrait(stack, x + 4, y + 4, Math.round(32 * scale), 64, true);
         }
