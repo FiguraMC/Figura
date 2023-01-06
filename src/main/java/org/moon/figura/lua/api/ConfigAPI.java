@@ -238,6 +238,12 @@ public class ConfigAPI {
 
 
     @LuaWhitelist
+    @LuaMethodDoc("config.get_name")
+    public String getName() {
+        return name;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaMethodOverload(
                     argumentTypes = String.class,
