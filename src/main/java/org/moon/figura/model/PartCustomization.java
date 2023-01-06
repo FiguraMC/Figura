@@ -203,22 +203,22 @@ public class PartCustomization implements CachedType<PartCustomization> {
         return offsetRot.copy();
     }
 
-    public void setAnimPos(FiguraVec3 vec) {
-        animPos.set(vec);
+    public void setAnimPos(double x, double y, double z) {
+        animPos.set(x, y, z);
         needsMatrixRecalculation = true;
     }
     public FiguraVec3 getAnimPos() {
         return animPos.copy();
     }
-    public void setAnimRot(FiguraVec3 vec) {
-        animRot.set(vec);
+    public void setAnimRot(double x, double y, double z) {
+        animRot.set(x, y, z);
         needsMatrixRecalculation = true;
     }
     public FiguraVec3 getAnimRot() {
         return animRot.copy();
     }
-    public void setAnimScale(FiguraVec3 vec) {
-        animScale.set(vec);
+    public void setAnimScale(double x, double y, double z) {
+        animScale.set(x, y, z);
         needsMatrixRecalculation = true;
     }
     public FiguraVec3 getAnimScale() {

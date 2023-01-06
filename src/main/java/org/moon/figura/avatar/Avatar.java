@@ -299,7 +299,7 @@ public class Avatar {
                 else if (toRun instanceof LuaFunction func)
                     ret = func.invoke(val);
                 else if (toRun instanceof Pair<?, ?> pair)
-                    ret = luaRuntime.run(pair.getFirst().toString(), pair.getSecond().toString());
+                    ret = luaRuntime.load(pair.getFirst().toString(), pair.getSecond().toString()).invoke(val);
                 else
                     throw new IllegalArgumentException("Internal event error - Invalid type to run!");
 
