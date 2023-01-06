@@ -792,6 +792,7 @@
 
 
   "figura.docs.config": "A global API used to save and load avatar data between game sessions",
+  "figura.docs.config.get_name": "Returns the name of the destination file",
   "figura.docs.config.set_name": "Sets the name of the destination file, data will be saved and loaded from that file\nDefaults to the avatar name",
   "figura.docs.config.save": "Save to disk a variable under the specific key\nIf the value is nil, the variable is removed from the file",
   "figura.docs.config.load": "Loads a saved variable under the specific key\nIf no key is given, it will return a table with all saved variables",
