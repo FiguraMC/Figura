@@ -227,8 +227,8 @@ public class FiguraKeybind {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("keybind.has_gui")
-    public boolean hasGUI() {
+    @LuaMethodDoc("keybind.is_gui_enabled")
+    public boolean isGuiEnabled() {
         return this.gui;
     }
 
@@ -245,7 +245,7 @@ public class FiguraKeybind {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setEnabled")
+    @LuaMethodShadow("setGUI")
     public FiguraKeybind gui(boolean bool) {
         setGUI(bool);
         return this;
