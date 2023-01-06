@@ -94,8 +94,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
         //text
         Component name = new TextComponent(player.getName().getString());
         FiguraMod.popPushProfiler("text");
-        Component replacement = custom != null && custom.getText() != null && trust ?
-                NameplateCustomization.applyCustomization(custom.getText()) : name;
+        Component replacement = custom != null && custom.getJson() != null && trust ? custom.getJson().copy() : name;
 
         //name
         replacement = TextUtils.replaceInText(replacement, "\\$\\{name\\}", name);

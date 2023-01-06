@@ -57,8 +57,8 @@ public class ChatComponentMixin {
             Avatar avatar = AvatarManager.getAvatarForPlayer(uuid);
             NameplateCustomization custom = avatar == null || avatar.luaRuntime == null ? null : avatar.luaRuntime.nameplate.CHAT;
 
-            Component replacement = custom != null && custom.getText() != null && avatar.trust.get(Trust.NAMEPLATE_EDIT) == 1 ?
-                    NameplateCustomization.applyCustomization(custom.getText().replaceAll("\n|\\\\n", " ")) : name;
+            Component replacement = custom != null && custom.getJson() != null && avatar.trust.get(Trust.NAMEPLATE_EDIT) == 1 ?
+                    TextUtils.replaceInText(custom.getJson().copy(), "\n|\\\\n", " ") : name;
 
             //name
             replacement = TextUtils.replaceInText(replacement, "\\$\\{name\\}", name);

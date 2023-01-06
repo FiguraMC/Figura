@@ -13,7 +13,13 @@ import org.moon.figura.lua.docs.LuaTypeDoc;
 )
 public class Page {
 
-    public Action[] actions = new Action[8]; //max 8 actions per page
+    private final String title;
+
+    public final Action[] actions = new Action[8]; //max 8 actions per page
+
+    public Page(String title) {
+        this.title = title;
+    }
 
     public int getSize() {
         int i = actions.length;
@@ -46,6 +52,12 @@ public class Page {
             throw new LuaError("Reached page limit of 8 actions!");
 
         return index;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("wheel_page.get_title")
+    public String getTitle() {
+        return title;
     }
 
     @LuaWhitelist
@@ -100,6 +112,6 @@ public class Page {
 
     @Override
     public String toString() {
-        return "Action Wheel Page";
+        return title != null ? title + " (Action Wheel Page)" : "Action Wheel Page";
     }
 }
