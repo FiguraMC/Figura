@@ -966,6 +966,9 @@
   "figura.docs.itemstack.get_repair_cost": "Gets the repair cost modifier, in an anvil, for this item stack",
   "figura.docs.itemstack.get_use_duration": "Gets the number of ticks needed to \"use\" this item\nCurrently only has a use for food items\nAlways 32 for food items except kelp, which is 16",
   "figura.docs.itemstack.to_stack_string": "Converts this ItemStack to a string, like you'd see in a command",
+  "figura.docs.itemstack.is_armor": "Checks if this item is a Armor",
+  "figura.docs.itemstack.is_tool": "Check if this item is a Tool (Axe, Shovel, Pickaxe, ...)",
+  "figura.docs.itemstack.get_equipment_slot": "Returns the slot name of where this item is used",
 
 
   "figura.docs.keybinds": "A global API containing a function to create new Keybind instances",
