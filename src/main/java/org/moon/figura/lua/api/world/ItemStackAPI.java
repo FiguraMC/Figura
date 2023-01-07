@@ -4,10 +4,8 @@ import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.*;
 import org.luaj.vm2.LuaTable;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.NbtToLua;
@@ -189,6 +187,24 @@ public class ItemStackAPI {
             ret += nbt.toString();
 
         return ret;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("itemstack.is_armor")
+    public boolean isArmor() {
+        return itemStack.getItem() instanceof ArmorItem;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("itemstack.is_tool")
+    public boolean isTool() {
+        return itemStack.getItem() instanceof DiggerItem;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("itemstack.get_equipment_slot")
+    public String getEquipmentSlot() {
+        return LivingEntity.getEquipmentSlotForItem(itemStack).name();
     }
 
     @LuaWhitelist
