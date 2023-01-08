@@ -5,11 +5,13 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import org.moon.figura.config.Config;
 import org.moon.figura.gui.widgets.AbstractContainerElement;
 import org.moon.figura.gui.widgets.ParentedButton;
 import org.moon.figura.gui.widgets.TexturedButton;
 import org.moon.figura.gui.widgets.lists.ConfigList;
+import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.ui.UIHelper;
 
 public abstract class AbstractConfigElement extends AbstractContainerElement {
@@ -54,8 +56,17 @@ public abstract class AbstractConfigElement extends AbstractContainerElement {
     public boolean isMouseOver(double mouseX, double mouseY) {
         boolean over = this.parent.isInsideScissors(mouseX, mouseY) && super.isMouseOver(mouseX, mouseY);
 
-        if (over && mouseX < this.x + this.width - 158)
-            UIHelper.setTooltip(config.tooltip);
+        if (over && mouseX < this.x + this.width - 158) {
+            MutableComponent tooltip = config.tooltip.copy();
+
+            if (config.enumTooltip != null) {
+                tooltip.append("\n");
+                for (Component component : TextUtils.splitText(config.enumTooltip, "\n"))
+                    tooltip.append("\n• ").append(component);
+            }
+
+            UIHelper.setTooltip(tooltip);
+        }
 
         return over;
     }
