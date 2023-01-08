@@ -35,6 +35,7 @@ import org.moon.figura.animation.AnimationPlayer;
 import org.moon.figura.config.Config;
 import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.lua.FiguraLuaRuntime;
+import org.moon.figura.lua.api.entity.EntityAPI;
 import org.moon.figura.lua.api.event.LuaEvent;
 import org.moon.figura.lua.api.particle.ParticleAPI;
 import org.moon.figura.lua.api.ping.PingArg;
@@ -49,9 +50,9 @@ import org.moon.figura.math.vector.FiguraVec4;
 import org.moon.figura.model.ParentType;
 import org.moon.figura.model.PartCustomization;
 import org.moon.figura.model.rendering.AvatarRenderer;
+import org.moon.figura.model.rendering.EntityRenderMode;
 import org.moon.figura.model.rendering.ImmediateAvatarRenderer;
 import org.moon.figura.model.rendering.PartFilterScheme;
-import org.moon.figura.model.rendering.texture.EntityRenderMode;
 import org.moon.figura.trust.Trust;
 import org.moon.figura.trust.TrustContainer;
 import org.moon.figura.trust.TrustManager;
@@ -365,10 +366,10 @@ public class Avatar {
         run("POST_WORLD_RENDER", worldRender.post(), delta);
     }
 
-    public boolean skullRenderEvent(float delta, BlockStateAPI block, ItemStackAPI item) {
+    public boolean skullRenderEvent(float delta, BlockStateAPI block, ItemStackAPI item, EntityAPI<?> entity, String mode) {
         Varargs result = null;
         if (loaded && renderer != null && renderer.allowSkullRendering)
-            result = run("SKULL_RENDER", render, delta, block, item);
+            result = run("SKULL_RENDER", render, delta, block, item, entity, mode);
         return result != null && result.arg(1).isboolean() && result.arg(1).checkboolean();
     }
 
