@@ -211,7 +211,22 @@ public class ItemStackAPI {
 
     @LuaWhitelist
     public boolean __eq(ItemStackAPI other) {
-        return ItemStack.matches(this.itemStack, other.itemStack);
+        if (this == other)
+            return true;
+
+        ItemStack t = this.itemStack;
+        ItemStack o = other.itemStack;
+        if (t.getCount() != o.getCount())
+            return false;
+        if (!t.is(o.getItem()))
+            return false;
+
+        CompoundTag tag1 = t.getTag();
+        CompoundTag tag2 = o.getTag();
+        if (tag1 == null && tag2 != null)
+            return false;
+
+        return tag1 == null || tag1.equals(tag2);
     }
 
     @LuaWhitelist
