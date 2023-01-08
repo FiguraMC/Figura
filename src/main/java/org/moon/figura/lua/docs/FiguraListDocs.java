@@ -19,7 +19,7 @@ import org.moon.figura.animation.Animation;
 import org.moon.figura.mixin.input.KeyMappingAccessor;
 import org.moon.figura.mixin.render.GameRendererAccessor;
 import org.moon.figura.model.ParentType;
-import org.moon.figura.model.rendering.texture.EntityRenderMode;
+import org.moon.figura.model.rendering.EntityRenderMode;
 import org.moon.figura.model.rendering.texture.FiguraTextureSet;
 import org.moon.figura.model.rendering.texture.RenderTypes;
 import org.moon.figura.utils.ColorUtils;

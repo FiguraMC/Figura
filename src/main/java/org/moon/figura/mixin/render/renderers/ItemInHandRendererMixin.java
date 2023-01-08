@@ -5,13 +5,18 @@ import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.AbstractSkullBlock;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
+import org.moon.figura.ducks.SkullBlockRendererAccessor;
 import org.moon.figura.lua.api.vanilla_model.VanillaModelPart;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -68,6 +73,14 @@ public abstract class ItemInHandRendererMixin {
                 this.renderPlayerArm(matrices, vertexConsumers, light, equipProgress, swingProgress, arm);
                 matrices.popPose();
             }
+        }
+    }
+
+    @Inject(method = "renderItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/ItemRenderer;renderStatic(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/client/renderer/block/model/ItemTransforms$TransformType;ZLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/world/level/Level;III)V"))
+    private void renderItem(LivingEntity entity, ItemStack stack, ItemTransforms.TransformType renderMode, boolean leftHanded, PoseStack matrices, MultiBufferSource vertexConsumers, int light, CallbackInfo ci) {
+        if (stack.getItem() instanceof BlockItem bl && bl.getBlock() instanceof AbstractSkullBlock) {
+            SkullBlockRendererAccessor.setEntity(entity);
+            SkullBlockRendererAccessor.setRenderMode(leftHanded ? SkullBlockRendererAccessor.SkullRenderMode.LEFT_HAND : SkullBlockRendererAccessor.SkullRenderMode.RIGHT_HAND);
         }
     }
 }
