@@ -33,9 +33,11 @@ public enum Config {
 
     Nameplate,
     SELF_NAMEPLATE(false),
+    NAMEPLATE_RENDER(0, 3),
     PREVIEW_NAMEPLATE(true),
     CHAT_NAMEPLATE(2, 3) {{
         String path = "config.nameplate_level";
+        this.enumTooltip = FiguraText.of(path + ".enum");
         this.enumList = List.of(
                 new FiguraText(path + ".1"),
                 new FiguraText(path + ".2"),
@@ -44,6 +46,7 @@ public enum Config {
     }},
     ENTITY_NAMEPLATE(2, 3) {{
         String path = "config.nameplate_level";
+        this.enumTooltip = FiguraText.of(path + ".enum");
         this.enumList = List.of(
                 new FiguraText(path + ".1"),
                 new FiguraText(path + ".2"),
@@ -52,6 +55,7 @@ public enum Config {
     }},
     LIST_NAMEPLATE(2, 3) {{
         String path = "config.nameplate_level";
+        this.enumTooltip = FiguraText.of(path + ".enum");
         this.enumList = List.of(
                 new FiguraText(path + ".1"),
                 new FiguraText(path + ".2"),
@@ -132,6 +136,7 @@ public enum Config {
         for (int i = 0; i < groups.length - 1; i++)
             list.add(groups[i].text.copy());
         this.enumList = list;
+        this.enumTooltip = null;
     }
         @Override
         public void onChange() {
@@ -209,6 +214,7 @@ public enum Config {
     public final ConfigType type;
 
     //special properties
+    public Component enumTooltip;
     public List<Component> enumList;
     public ConfigKeyBind keyBind;
     public final InputType inputType;
@@ -247,8 +253,11 @@ public enum Config {
         this.name = new FiguraText(name);
         this.tooltip = new FiguraText(name + ".tooltip");
 
-        //generate enum list
+        //enums
         if (length != null) {
+            this.enumTooltip = FiguraText.of(name + ".enum");
+
+            //generate enum list
             ArrayList<Component> enumList = new ArrayList<>();
             for (int i = 1; i <= length; i++)
                 enumList.add(new FiguraText(name + "." + i));

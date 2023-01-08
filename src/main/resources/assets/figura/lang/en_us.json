@@ -265,6 +265,13 @@
   "figura.config.self_nameplate": "Enable Self Nameplate",
   "figura.config.self_nameplate.tooltip": "Toggles the rendering of your own nameplate",
 
+  "figura.config.nameplate_render": "Nameplate Render Mode",
+  "figura.config.nameplate_render.tooltip": "Toggles the conditions to render entities nameplates",
+  "figura.config.nameplate_render.enum": "Vanilla: Vanilla behaviour\nLooking At: You must be looking at the entity for its nameplate to render\nNever: Nameplate will never render",
+  "figura.config.nameplate_render.1": "Vanilla",
+  "figura.config.nameplate_render.2": "Vanilla + Looking At",
+  "figura.config.nameplate_render.3": "Never",
+
   "figura.config.preview_nameplate": "Nameplate in GUI",
   "figura.config.preview_nameplate.tooltip": "Toggles the rendering of nameplates in the GUI",
 
@@ -274,6 +281,7 @@
   "figura.config.entity_nameplate.tooltip": "Set the level of nameplate customizations on the ENTITY",
   "figura.config.list_nameplate": "Tablist customizations",
   "figura.config.list_nameplate.tooltip": "Set the level of nameplate customizations on the TABLIST",
+  "figura.config.nameplate_level.enum": "None: No customizations will be applied\nScript: Allows for script customizations\nBadges: Allows the inclusion of special Badges provided by Figura",
   "figura.config.nameplate_level.1": "None",
   "figura.config.nameplate_level.2": "Script",
   "figura.config.nameplate_level.3": "Script + Badges",
@@ -284,11 +292,12 @@
 
   "figura.config.log_location": "Print Output",
   "figura.config.log_location.tooltip": "Output location of script print functions",
+  "figura.config.log_location.enum": "Chat: The in-game chat (the chat also prints in the logger)\nLogger: The output log of your client",
   "figura.config.log_location.1": "Chat",
   "figura.config.log_location.2": "Logger",
 
   "figura.config.allow_fp_hands": "First Person Hands",
-  "figura.config.allow_fp_hands.tooltip": "Toggles if scripts can move around, rotate or scale the First Person Hands",
+  "figura.config.allow_fp_hands.tooltip": "Toggles if scripts can move around, rotate or scale the First Person Hand parent type groups",
 
   "figura.config.log_number_length": "Print Number Length",
   "figura.config.log_number_length.tooltip": "Changes the length of the decimal places that will be displayed within print functions",
@@ -296,6 +305,7 @@
   "figura.config.format_script": "Format Script",
   "figura.config.format_script.tooltip.1":"Selects if scripts should be compacted, removing out comments, whitespaces and/or empty lines",
   "figura.config.format_script.tooltip.2":"Requires reselecting the avatar to take effect",
+  "figura.config.format_script.enum":"Disabled: No compacting\nLight: Minimal compacting, removes only comments and unnecessary whitespaces\nHeavy: Same as Light and also compacts everything into a single line",
   "figura.config.format_script.1":"Disabled",
   "figura.config.format_script.2":"Light",
   "figura.config.format_script.3":"Heavy",
@@ -308,6 +318,7 @@
 
   "figura.config.action_wheel_mode": "Action Wheel Mode",
   "figura.config.action_wheel_mode.tooltip": "Changes the way to open and interact with the Action Wheel",
+  "figura.config.action_wheel_mode.enum": "Hold: The Action Wheel button must be kept pressed for the Action Wheel to show up\nToggle: The Action Wheel button must be pressed once for the Action Wheel to open, and pressed again for it to close\nRun on Release: Executes the current selected Action when closing the Action Wheel",
   "figura.config.action_wheel_mode.1": "Hold",
   "figura.config.action_wheel_mode.2": "Toggle",
   "figura.config.action_wheel_mode.3": "Hold (run on release)",
@@ -318,6 +329,7 @@
 
   "figura.config.action_wheel_title": "Selected Action's Text",
   "figura.config.action_wheel_title.tooltip": "Changes where the place of the selected action's text is shown",
+  "figura.config.action_wheel_title.enum": "Tooltip: Render just like GUI tooltips\nMouse: Renders the text next to the mouse\nTop: Renders the text above the Action Wheel\nMiddle: Renders the text in the middle of the Action Wheel\nBottom: Renders the text below the Action Wheel",
   "figura.config.action_wheel_title.1": "Mouse (Tooltip)",
   "figura.config.action_wheel_title.2": "Mouse",
   "figura.config.action_wheel_title.3": "Top",
@@ -356,7 +368,7 @@
   "figura.config.toast_title_time.tooltip": "Changes how much time (in seconds) long toasts should swap the display of its title and message",
 
   "figura.config.wardrobe_file_names": "Wardrobe File Names",
-  "figura.config.wardrobe_file_names.tooltip": "Changes the wardrobe avatar list to use the file names instead of the metadata name",
+  "figura.config.wardrobe_file_names.tooltip": "Changes the wardrobe avatar list to use the file names instead of the metadata (avatar.json) name",
 
 
   "figura.config.paperdoll": "Paperdoll",
@@ -407,6 +419,7 @@
 
   "figura.config.button_location": "Menu Button Location",
   "figura.config.button_location.tooltip": "Location of the figura button",
+  "figura.config.button_location.enum": "Icon: Renders the Figura button as a small Icon next to the Player Reporting button\nOther: Renders the Figura button as text, anchored at the given position",
   "figura.config.button_location.1": "Icon",
   "figura.config.button_location.2": "Top Left",
   "figura.config.button_location.3": "Top Right",
@@ -417,6 +430,7 @@
 
   "figura.config.update_channel": "Update Type",
   "figura.config.update_channel.tooltip": "Changes the version type when looking for new Figura updates",
+  "figura.config.update_channel.enum": "None: Do not check for updates\nReleases: Check only for releases updates\nPre-releases: Check for pre-releases and releases updates",
   "figura.config.update_channel.1": "None",
   "figura.config.update_channel.2": "Releases (Stable)",
   "figura.config.update_channel.3": "Pre-releases (Unstable)",
@@ -441,6 +455,7 @@
   "figura.config.render_debug_parts_pivot.tooltip": "Render the Pivots from %d and %d when the hitbox debug rendering is enabled",
   "figura.config.render_debug_parts_pivot.tooltip.cubes": "cubes",
   "figura.config.render_debug_parts_pivot.tooltip.groups": "groups",
+  "figura.config.render_debug_parts_pivot.enum": "Off: Do not render pivots\nOnly Visible: Render only pivots of parts that are visible\nEverything: Render all pivots of this Avatar",
   "figura.config.render_debug_parts_pivot.1": "Off",
   "figura.config.render_debug_parts_pivot.2": "Only Visible",
   "figura.config.render_debug_parts_pivot.3": "Everything",
@@ -453,13 +468,14 @@
 
   "figura.config.log_pings": "Log Pings",
   "figura.config.log_pings.tooltip": "Chooses wherever to log pings data",
+  "figura.config.log_pings.enum": "Off: Do not log pings\nChat: The in-game chat (the chat also prints in the logger)\nLogger: The output log of your client",
   "figura.config.log_pings.1": "Off",
   "figura.config.log_pings.2": "Chat",
   "figura.config.log_pings.3": "Logger",
 
   "figura.config.sync_pings": "Sync Pings",
   "figura.config.sync_pings.tooltip.1": "Toggles if host pings should be executed locally or received from the backend",
-  "figura.config.sync_pings.tooltip.2": "Note that: if toggled, no connection with the backend means your pings will never run!",
+  "figura.config.sync_pings.tooltip.2": "Note that: if toggled, your pings will never run if you're not connected to the backend!",
 
   "figura.config.chat_messages": "Chat Messages",
   "figura.config.chat_messages.tooltip.1": "Toggles if scripts can change and/or send chat messages for you",
