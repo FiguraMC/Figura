@@ -7,9 +7,11 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
+import net.minecraft.world.entity.HasCustomInventoryScreen;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.entity.vehicle.ContainerEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.*;
 import org.luaj.vm2.LuaTable;
@@ -388,6 +390,20 @@ public class EntityAPI<T extends Entity> {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("entity.has_container")
+    public boolean hasContainer() {
+        checkEntity();
+        return entity instanceof ContainerEntity;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("entity.has_inventory")
+    public boolean hasInventory() {
+        checkEntity();
+        return entity instanceof HasCustomInventoryScreen;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
                     @LuaMethodOverload,
@@ -489,6 +505,6 @@ public class EntityAPI<T extends Entity> {
     @Override
     public String toString() {
         checkEntity();
-        return (entity.hasCustomName() ? entity.getCustomName().getString() + " (" + getType() + ")" : getType() ) + " (Entity)";
+        return (entity.hasCustomName() ? entity.getCustomName().getString() + " (" + getType() + ")" : getType()) + " (Entity)";
     }
 }
