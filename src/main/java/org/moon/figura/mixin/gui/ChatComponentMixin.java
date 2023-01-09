@@ -32,17 +32,17 @@ public class ChatComponentMixin {
     @Shadow @Final private Minecraft minecraft;
 
     @Inject(at = @At("HEAD"), method = "addMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/MessageSignature;ILnet/minecraft/client/GuiMessageTag;Z)V")
-    private void addMessageEvent(Component component, MessageSignature messageSignature, int i, GuiMessageTag guiMessageTag, boolean bl, CallbackInfo ci) {
-        Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
-        if (avatar != null)
-            avatar.chatReceivedMessageEvent(component.getString());
+    private void addMessageEvent(Component message, MessageSignature signature, int k, GuiMessageTag tag, boolean refresh, CallbackInfo ci) {
+        Avatar avatar;
+        if (!refresh && (avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID())) != null)
+            avatar.chatReceivedMessageEvent(message.getString());
     }
 
-    @ModifyVariable(at = @At("HEAD"), method = "addMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/MessageSignature;ILnet/minecraft/client/GuiMessageTag;Z)V", argsOnly = true)
-    private Component addMessageNameplate(Component message) {
+    @ModifyVariable(at = @At("HEAD"), method = "addMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/MessageSignature;ILnet/minecraft/client/GuiMessageTag;Z)V", ordinal = 0, argsOnly = true)
+    private Component addMessage(Component message, Component msg, MessageSignature signature, int k, GuiMessageTag tag, boolean refresh) {
         //get config
         int config = Config.CHAT_NAMEPLATE.asInt();
-        if (config == 0 || this.minecraft.player == null || AvatarManager.panic)
+        if (refresh || config == 0 || this.minecraft.player == null || AvatarManager.panic)
             return message;
 
         //iterate over ALL online players
