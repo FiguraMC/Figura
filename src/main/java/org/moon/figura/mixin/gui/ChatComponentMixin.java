@@ -32,16 +32,16 @@ public class ChatComponentMixin {
 
     @Inject(at = @At("HEAD"), method = "addMessage(Lnet/minecraft/network/chat/Component;IIZ)V")
     private void addMessageEvent(Component message, int messageId, int timestamp, boolean refresh, CallbackInfo ci) {
-        Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
-        if (avatar != null)
+        Avatar avatar;
+        if (!refresh && (avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID())) != null)
             avatar.chatReceivedMessageEvent(message.getString());
     }
 
-    @ModifyVariable(at = @At("HEAD"), method = "addMessage(Lnet/minecraft/network/chat/Component;IIZ)V", argsOnly = true)
-    private Component addMessageNameplate(Component message) {
+    @ModifyVariable(at = @At("HEAD"), method = "addMessage(Lnet/minecraft/network/chat/Component;IIZ)V", ordinal = 0, argsOnly = true)
+    private Component addMessage(Component message, Component message2, int messageId, int timestamp, boolean refresh) {
         //get config
         int config = Config.CHAT_NAMEPLATE.asInt();
-        if (config == 0 || this.minecraft.player == null || AvatarManager.panic)
+        if (refresh || config == 0 || this.minecraft.player == null || AvatarManager.panic)
             return message;
 
         //iterate over ALL online players
