@@ -854,6 +854,8 @@
   "figura.docs.entity.is_alive": "Returns whether this entity is alive or not",
   "figura.docs.entity.get_permission_level": "Returns the permission level number of this entity\nServer Operators, by default, have the permission level of 4",
   "figura.docs.entity.get_passengers": "Returns a List of entities of all passengers this entity have",
+  "figura.docs.entity.has_container": "Checks if the entity has a container (Chest Boats, Minecarts with Chests, ...)",
+  "figura.docs.entity.has_inventory": "Checks if the entity has an inventory (Horses, Camels, LLamas, ...)",
   "figura.docs.entity.get_targeted_block": "Returns a proxy for your currently targeted BlockState\nThis BlockState appears on the F3 screen\nMaximum and Default distance is 20, Minimum is -20",
   "figura.docs.entity.get_targeted_entity": "Returns a proxy for your currently targeted Entity\nThis Entity appears on the F3 screen\nMaximum and Default distance is 20, Minimum is 0",
   "figura.docs.entity.get_variable": "Gets the value of a variable this entity stored in themselves using the Avatar api's store() function",
