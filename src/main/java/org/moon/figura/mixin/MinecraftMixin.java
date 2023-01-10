@@ -96,7 +96,7 @@ public abstract class MinecraftMixin {
             PopupMenu.setEnabled(true);
 
             if (!PopupMenu.hasEntity()) {
-                Entity target = EntityUtils.getViewedEntity(32);
+                Entity target = FiguraMod.extendedPickEntity;
                 if (this.player != null && target instanceof Player && !target.isInvisibleTo(this.player)) {
                     PopupMenu.setEntity(target);
                 } else if (!this.options.getCameraType().isFirstPerson()) {

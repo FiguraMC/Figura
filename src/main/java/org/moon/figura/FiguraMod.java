@@ -55,6 +55,7 @@ public class FiguraMod implements ClientModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_NAME);
 
     public static int ticks = 0;
+    public static Entity extendedPickEntity = null;
 
     @Override
     public void onInitializeClient() {
