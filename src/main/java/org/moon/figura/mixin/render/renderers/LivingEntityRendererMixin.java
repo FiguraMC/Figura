@@ -118,7 +118,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
         else if (!AvatarManager.panic) {
             if (Config.SELF_NAMEPLATE.asBool() && livingEntity == Minecraft.getInstance().player)
                 cir.setReturnValue(true);
-            else if (Config.NAMEPLATE_RENDER.asInt() == 2 || (Config.NAMEPLATE_RENDER.asInt() == 1 && livingEntity != entityRenderDispatcher.crosshairPickEntity))
+            else if (Config.NAMEPLATE_RENDER.asInt() == 2 || (Config.NAMEPLATE_RENDER.asInt() == 1 && livingEntity != FiguraMod.extendedPickEntity))
                 cir.setReturnValue(false);
         }
     }

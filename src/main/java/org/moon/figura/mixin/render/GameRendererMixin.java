@@ -15,6 +15,7 @@ import org.moon.figura.ducks.GameRendererAccessor;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.model.rendering.EntityRenderMode;
 import org.moon.figura.trust.Trust;
+import org.moon.figura.utils.EntityUtils;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -135,6 +136,14 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
             Float fov = avatar.luaRuntime.renderer.fov;
             if (fov != null) this.fov = fov;
         }
+    }
+
+    @Inject(method = "pick", at = @At("RETURN"))
+    private void pick(float tickDelta, CallbackInfo ci) {
+        FiguraMod.pushProfiler(FiguraMod.MOD_ID);
+        FiguraMod.pushProfiler("extendedPick");
+        FiguraMod.extendedPickEntity = EntityUtils.getViewedEntity(32);
+        FiguraMod.popProfiler(2);
     }
 
     @Override @Intrinsic
