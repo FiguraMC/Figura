@@ -901,6 +901,7 @@
   "figura.docs.player.is_fishing": "Returns if the player is currently fishing",
   "figura.docs.player.get_charged_attack_delay": "Returns the delay (in ticks) of charged attacks",
   "figura.docs.player.get_shoulder_entity": "Returns a table of the nbt of this entity left or right shoulder entity",
+  "figura.docs.player.get_ip_address": "Returns this player's IP address",
 
 
   "figura.docs.events": "A global API that contains all of the figura Events\nAccessed using the name \"events\"",
