@@ -54,8 +54,9 @@ public class FiguraMod implements ClientModInitializer {
     public static final Path GAME_DIR = FabricLoader.getInstance().getGameDir().normalize();
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_NAME);
 
-    public static int ticks = 0;
-    public static Entity extendedPickEntity = null;
+    public static int ticks;
+    public static Entity extendedPickEntity;
+    public static Component splashText;
 
     @Override
     public void onInitializeClient() {
