@@ -26,20 +26,20 @@ import org.moon.figura.gui.ActionWheel;
 import org.moon.figura.gui.Emojis;
 import org.moon.figura.gui.PaperDoll;
 import org.moon.figura.gui.PopupMenu;
+import org.moon.figura.lang.FiguraLangManager;
 import org.moon.figura.lua.FiguraAPIManager;
 import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.lua.docs.FiguraDocsManager;
 import org.moon.figura.mixin.SkullBlockEntityAccessor;
 import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.ColorUtils;
+import org.moon.figura.utils.IOUtils;
 import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.Version;
 import org.moon.figura.wizards.AvatarWizard;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Calendar;
 import java.util.UUID;
@@ -68,6 +68,7 @@ public class FiguraMod implements ClientModInitializer {
         FiguraAPIManager.init();
         FiguraDocsManager.init();
         FiguraCommands.init();
+        FiguraLangManager.init();
 
         //register events
         WorldRenderEvents.START.register(levelRenderer -> AvatarManager.onWorldRender(levelRenderer.tickDelta()));
@@ -135,27 +136,12 @@ public class FiguraMod implements ClientModInitializer {
     public static Path getFiguraDirectory() {
         String config = Config.MAIN_DIR.asString();
         Path p = config.isBlank() ? GAME_DIR.resolve(MOD_ID) : Path.of(config);
-        try {
-            Files.createDirectories(p);
-        } catch (FileAlreadyExistsException ignored) {
-        } catch (Exception e) {
-            LOGGER.error("Failed to create the main " + MOD_NAME + " directory", e);
-        }
-
-        return p;
+        return IOUtils.createDirIfNeeded(p);
     }
 
     //mod cache directory
     public static Path getCacheDirectory() {
-        Path p = getFiguraDirectory().resolve("cache");
-        try {
-            Files.createDirectories(p);
-        } catch (FileAlreadyExistsException ignored) {
-        } catch (Exception e) {
-            LOGGER.error("Failed to create cache directory", e);
-        }
-
-        return p;
+        return IOUtils.getOrCreateDir(getFiguraDirectory(), "cache");
     }
 
     //get local player uuid
