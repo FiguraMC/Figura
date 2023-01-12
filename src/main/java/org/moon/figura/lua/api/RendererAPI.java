@@ -9,6 +9,7 @@ import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.*;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.LuaUtils;
 
 import java.util.UUID;
@@ -326,7 +327,7 @@ public class RendererAPI {
             value = "renderer.set_post_effect"
     )
     public void setPostEffect(String effect) {
-        this.postShader = effect == null ? null : new ResourceLocation("shaders/post/" + effect.toLowerCase() + ".json");
+        this.postShader = effect == null ? null : new ResourceLocation("shaders/post/" + FiguraIdentifier.formatPath(effect) + ".json");
     }
 
     @LuaWhitelist
