@@ -23,7 +23,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
@@ -168,11 +170,11 @@ public class NetworkStuff {
 
 
     private static void queueString(UUID owner, Function<HttpAPI, HttpRequest> request, BiConsumer<Integer, String> consumer) {
-        API_REQUESTS.add(new Request<>(owner, api -> api.runString(request.apply(api), consumer)));
+        API_REQUESTS.add(new Request<>(owner, api -> HttpAPI.runString(request.apply(api), consumer)));
     }
 
     private static void queueStream(UUID owner, Function<HttpAPI, HttpRequest> request, BiConsumer<Integer, InputStream> consumer) {
-        API_REQUESTS.add(new Request<>(owner, api -> api.runStream(request.apply(api), consumer)));
+        API_REQUESTS.add(new Request<>(owner, api -> HttpAPI.runStream(request.apply(api), consumer)));
     }
 
     public static void clear(UUID requestOwner) {
@@ -184,7 +186,7 @@ public class NetworkStuff {
     }
 
     private static void connectAPI(String token) {
-        api = new HttpAPI(client, token);
+        api = new HttpAPI(token);
         checkVersion();
         setLimits();
     }
@@ -201,7 +203,7 @@ public class NetworkStuff {
                 return;
             }
 
-            api.runString(api.checkAuth(), (code, data) -> {
+            HttpAPI.runString(api.checkAuth(), (code, data) -> {
                 if (code != 200)
                     reAuth();
             });
@@ -449,6 +451,27 @@ public class NetworkStuff {
     }
 
 
+    // -- translation stuff -- //
+
+
+    private static String request(HttpRequest request) {
+        try {
+            HttpResponse<String> response = NetworkStuff.client.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+            return response.body();
+        } catch (Exception ignored) {
+            return null;
+        }
+    }
+
+    public static String getLangMetadata() {
+        return request(HttpRequest.newBuilder(HttpAPI.getUri("lang")).build());
+    }
+
+    public static String getLang(String lang) {
+        return request(HttpRequest.newBuilder(HttpAPI.getUri("lang/" + lang)).build());
+    }
+
+
     // -- global functions -- //
 
 
@@ -470,9 +493,9 @@ public class NetworkStuff {
 
     private record Request<T>(UUID owner, Consumer<T> consumer) {
         @Override
-            public boolean equals(Object o) {
-                if (this == o) return true;
-                return o instanceof Request request && owner.equals(request.owner);
-            }
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            return o instanceof Request request && owner.equals(request.owner);
         }
+    }
 }

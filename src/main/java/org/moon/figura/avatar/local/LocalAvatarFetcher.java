@@ -10,7 +10,6 @@ import org.moon.figura.parsers.AvatarMetadataParser;
 import org.moon.figura.utils.IOUtils;
 
 import java.io.File;
-import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -88,15 +87,7 @@ public class LocalAvatarFetcher {
      * The directory is always under main directory.
      */
     public static Path getLocalAvatarDirectory() {
-        Path p = FiguraMod.getFiguraDirectory().resolve("avatars");
-        try {
-            Files.createDirectories(p);
-        } catch (FileAlreadyExistsException ignored) {
-        } catch (Exception e) {
-            FiguraMod.LOGGER.error("Failed to create avatar directory", e);
-        }
-
-        return p;
+        return IOUtils.getOrCreateDir(FiguraMod.getFiguraDirectory(), "avatars");
     }
 
     /**

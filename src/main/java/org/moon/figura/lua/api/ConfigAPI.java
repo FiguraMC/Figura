@@ -13,12 +13,11 @@ import org.moon.figura.lua.docs.LuaMethodShadow;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.matrix.FiguraMatrix;
 import org.moon.figura.math.vector.FiguraVector;
+import org.moon.figura.utils.IOUtils;
 import org.moon.figura.utils.MathUtils;
 
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -58,15 +57,7 @@ public class ConfigAPI {
 
 
     public static Path getConfigDataDir() {
-        Path p = FiguraMod.getFiguraDirectory().resolve("data");
-        try {
-            Files.createDirectories(p);
-        } catch (FileAlreadyExistsException ignored) {
-        } catch (Exception e) {
-            FiguraMod.LOGGER.error("Failed to create avatar data directory", e);
-        }
-
-        return p;
+        return IOUtils.getOrCreateDir(FiguraMod.getFiguraDirectory(), "data");
     }
 
     private Path getPath() {
