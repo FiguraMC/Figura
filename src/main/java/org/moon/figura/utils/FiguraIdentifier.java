@@ -10,6 +10,6 @@ public class FiguraIdentifier extends ResourceLocation {
     }
 
     public static String formatPath(String path) {
-        return path.replaceAll("[^a-z\\d/._-]", "_");
+        return path.toLowerCase().replaceAll("[^a-z\\d/._-]", "_");
     }
 }

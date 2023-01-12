@@ -28,17 +28,16 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
     @Shadow @Final private Minecraft minecraft;
     @Shadow private PostChain postEffect;
     @Shadow private boolean effectActive;
-
-    @Unique
-    private boolean avatarPostShader = false;
-    @Unique
-    private Avatar avatar;
+    @Shadow private float fov;
 
     @Shadow protected abstract double getFov(Camera camera, float tickDelta, boolean changingFov);
     @Shadow protected abstract void loadEffect(ResourceLocation id);
     @Shadow public abstract void checkEntityPostEffect(Entity entity);
 
-    @Shadow private float fov;
+    @Unique
+    private boolean avatarPostShader = false;
+    @Unique
+    private Avatar avatar;
 
     @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setup(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/world/entity/Entity;ZZF)V", shift = At.Shift.BEFORE))
     private void onCameraRotation(float tickDelta, long limitTime, PoseStack matrix, CallbackInfo ci) {
@@ -87,6 +86,7 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
                 this.loadEffect(resource);
         } catch (Exception ignored) {
             this.effectActive = false;
+            avatar.luaRuntime.renderer.postShader = null;
         }
     }
 
