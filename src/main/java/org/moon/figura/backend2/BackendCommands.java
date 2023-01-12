@@ -50,7 +50,7 @@ public class BackendCommands {
 
     private static int runRequest(CommandContext<FabricClientCommandSource> context, String request) {
         try {
-            NetworkStuff.api.runString(
+            HttpAPI.runString(
                     NetworkStuff.api.header(request).build(),
                     (code, data) -> FiguraMod.sendChatMessage(new TextComponent(data))
             );
