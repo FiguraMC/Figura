@@ -1,0 +1,19 @@
+{
+  "providers": [
+    {
+      "type": "space",
+      "advances": {
+        " ": 4,
+        "\u200C": 0
+      }
+    },
+    {
+      "type": "bitmap",
+      "file": "figura:font/special.png",
+      "ascent": 8,
+      "chars": [
+        "\uD83D\uDC3E"
+      ]
+    }
+  ]
+}

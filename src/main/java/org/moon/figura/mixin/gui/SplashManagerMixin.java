@@ -1,22 +1,39 @@
 package org.moon.figura.mixin.gui;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.SplashManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.util.RandomSource;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Badges;
 import org.moon.figura.config.Config;
 import org.moon.figura.utils.ColorUtils;
+import org.moon.figura.utils.ui.UIHelper;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 @Mixin(SplashManager.class)
 public class SplashManagerMixin {
+
+    @Shadow @Final private static RandomSource RANDOM;
+    @Shadow @Final private List<String> splashes;
+
+    @Unique
+    private static final List<Component> FIGURA_SPLASHES = List.of(
+            Component.literal("Also try ears ")
+                    .append(Component.literal("\uD83D\uDC3E").withStyle(Style.EMPTY.withFont(UIHelper.SPECIAL_FONT).withColor(ChatFormatting.WHITE)))
+                    .append("!")
+    );
 
     @Inject(at = @At("RETURN"), method = "getSplash")
     private void init(CallbackInfoReturnable<String> cir) {
@@ -52,6 +69,11 @@ public class SplashManagerMixin {
             FiguraMod.splashText = Component.literal("Happy birthday " + who + " ")
                     .append(Badges.System.DEFAULT.badge.copy().withStyle(Style.EMPTY.withFont(Badges.FONT).withColor(ColorUtils.Colors.DEFAULT.hex)))
                     .append("!");
+        } else {
+            int size = this.splashes.size();
+            int random = RANDOM.nextInt(size + FIGURA_SPLASHES.size());
+            if (random >= size)
+                FiguraMod.splashText = FIGURA_SPLASHES.get(random - size);
         }
     }
 }
