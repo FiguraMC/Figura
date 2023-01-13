@@ -65,7 +65,7 @@ public class AvatarMetadataParser {
         if (metadata.autoScripts != null) {
             ListTag autoScripts = new ListTag();
             for (String name : metadata.autoScripts) {
-                name = name.replaceAll(".lua$", "").replaceAll("[/\\\\]", ".");
+                name = name.replaceAll("\\.lua$", "").replaceAll("[/\\\\]", ".");
                 autoScripts.add(StringTag.valueOf(name));
             }
             nbt.put("autoScripts", autoScripts);
