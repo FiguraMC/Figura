@@ -1199,6 +1199,7 @@
   "figura.docs.render_task.set_rot": "Sets the rotation of the task, relative with its attached part",
   "figura.docs.render_task.get_scale": "Gets this task scale",
   "figura.docs.render_task.set_scale": "Sets the scale of the task, relative with its attached part",
+  "figura.docs.render_task.set_matrix": "Sets the given matrix as the position matrix for this render task, relative with its attached part\nThe normal matrix is automatically calculated as the inverse transpose of this matrix\nCalling this DOES NOT CHANGE the values of position, rot, or scale in the render task\nIf you call setPos() or a similar function, the effects of setMatrix() will be overwritten",
 
   "figura.docs.item_task": "A task for rendering an Item",
   "figura.docs.item_task.set_item": "Sets the Item for this task render",

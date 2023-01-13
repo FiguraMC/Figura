@@ -3,11 +3,14 @@ package org.moon.figura.model.rendertasks;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import org.jetbrains.annotations.Nullable;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaMethodShadow;
 import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.math.matrix.FiguraMat3;
+import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.model.PartCustomization;
@@ -28,6 +31,7 @@ public abstract class RenderTask {
     protected final FiguraVec3 pos = FiguraVec3.of();
     protected final FiguraVec3 rot = FiguraVec3.of();
     protected final FiguraVec3 scale = FiguraVec3.of(1, 1, 1);
+    protected @Nullable FiguraMat4 matrix = null;
 
     public RenderTask(String name) {
         this.name = name;
@@ -37,11 +41,30 @@ public abstract class RenderTask {
     public abstract boolean render(PartCustomization.Stack stack, MultiBufferSource buffer, int light, int overlay);
     public abstract int getComplexity();
     private static final PartCustomization dummyCustomization = PartCustomization.of();
+    // present to prevent having to apply the same RT twice if not needed
+    private static @Nullable RenderTask customizerOwner = null;
+
+    protected void applyToGlobal() {
+        if (customizerOwner != this) {
+            if (matrix == null) {
+                dummyCustomization.setScale(scale);
+                dummyCustomization.setPos(pos);
+                dummyCustomization.setRot(rot);
+                dummyCustomization.recalculate();
+            }
+            else {
+                dummyCustomization.setMatrix(matrix);
+            }
+            customizerOwner = this;
+        }
+    }
+
+    protected void invalidateGlobal() {
+        customizerOwner = customizerOwner == this ? null : customizerOwner;
+    }
+
     public void pushOntoStack(PartCustomization.Stack stack) {
-        dummyCustomization.setScale(scale);
-        dummyCustomization.setPos(pos);
-        dummyCustomization.setRot(rot);
-        dummyCustomization.recalculate();
+        applyToGlobal();
         stack.push(dummyCustomization);
     }
 
@@ -163,6 +186,8 @@ public abstract class RenderTask {
             value = "render_task.set_pos"
     )
     public void setPos(Object x, Double y, Double z) {
+        matrix = null;
+        invalidateGlobal();
         FiguraVec3 vec = LuaUtils.parseVec3("setPos", x, y, z);
         pos.set(vec);
         vec.free();
@@ -196,6 +221,8 @@ public abstract class RenderTask {
             value = "render_task.set_rot"
     )
     public void setRot(Object x, Double y, Double z) {
+        matrix = null;
+        invalidateGlobal();
         FiguraVec3 vec = LuaUtils.parseVec3("setRot", x, y, z);
         rot.set(vec);
         vec.free();
@@ -229,6 +256,8 @@ public abstract class RenderTask {
             value = "render_task.set_scale"
     )
     public void setScale(Object x, Double y, Double z) {
+        matrix = null;
+        invalidateGlobal();
         FiguraVec3 vec = LuaUtils.parseVec3("setScale", x, y, z, 1, 1, 1);
         scale.set(vec);
         vec.free();
@@ -240,6 +269,22 @@ public abstract class RenderTask {
         setScale(x, y, z);
         return this;
     }
+
+
+    @LuaWhitelist
+    @LuaMethodDoc("render_task.set_matrix")
+    public void setMatrix(@Nullable FiguraMat4 mat) {
+        invalidateGlobal();
+        matrix = mat == null ? null : mat.copy();
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setMatrix")
+    public RenderTask matrix(@Nullable FiguraMat4 mat) {
+        setMatrix(mat);
+        return this;
+    }
+
 
     @Override
     public String toString() {
