@@ -59,6 +59,10 @@ public class AvatarWizard {
         map.put(entry, value);
     }
 
+    public Object getEntry(WizardEntry entry, Object fallback) {
+        return map.getOrDefault(entry, fallback);
+    }
+
     public boolean canBuild() {
         String name = (String) map.get(WizardEntry.NAME);
         return name != null && !name.isBlank();
