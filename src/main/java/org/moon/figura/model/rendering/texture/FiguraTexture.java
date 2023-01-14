@@ -131,10 +131,14 @@ public class FiguraTexture extends SimpleTexture {
 
     private void backupImage() {
         this.modified = true;
-        if (this.backup == null) {
-            backup = new NativeImage(texture.format(), texture.getWidth(), texture.getHeight(), true);
-            backup.copyFrom(texture);
-        }
+        if (this.backup == null)
+            backup = copy();
+    }
+
+    public NativeImage copy() {
+        NativeImage image = new NativeImage(texture.format(), texture.getWidth(), texture.getHeight(), true);
+        image.copyFrom(texture);
+        return image;
     }
 
     public int getWidth() {
