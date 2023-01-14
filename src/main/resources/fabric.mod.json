@@ -43,12 +43,12 @@
   },
   "conflicts": {
     "iris": "*",
-    "immersive_portals": "*"
+    "immersive_portals": "*",
+    "canvas": "*"
   },
   "breaks": {
     "optifine": "*",
-    "optifabric": "*",
-    "canvas": "*"
+    "optifabric": "*"
   },
   "custom": {
     "modmenu": {
