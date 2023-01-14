@@ -151,6 +151,7 @@ public class AvatarWizardList extends AbstractList {
             this.parent = parent;
             this.entry = entry;
             this.name = FiguraText.of("gui.avatar_wizard." + entry.name().toLowerCase());
+            this.getField().setValue(String.valueOf(parent.wizard.getEntry(entry, "")));
         }
 
         @Override
@@ -182,6 +183,7 @@ public class AvatarWizardList extends AbstractList {
             this.parent = parent;
             this.entry = entry;
             this.name = FiguraText.of("gui.avatar_wizard." + entry.name().toLowerCase());
+            this.setToggled((boolean) parent.wizard.getEntry(entry, false));
         }
 
         @Override
