@@ -15,7 +15,7 @@ public class AvatarWizardScreen extends AbstractPanelScreen {
 
     private final Screen sourcePanel;
 
-    private AvatarWizard wizard;
+    private final AvatarWizard wizard = new AvatarWizard();
     private TexturedButton build;
 
     public AvatarWizardScreen(AbstractPanelScreen parentScreen) {
@@ -31,8 +31,6 @@ public class AvatarWizardScreen extends AbstractPanelScreen {
     @Override
     protected void init() {
         super.init();
-
-        wizard = new AvatarWizard();
 
         // -- bottom buttons -- //
 
