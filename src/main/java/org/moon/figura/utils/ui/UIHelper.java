@@ -120,7 +120,7 @@ public class UIHelper extends GuiComponent {
 
         //apply matrix transformers
         stack.pushPose();
-        stack.translate(x, y, 500d);
+        stack.translate(x, y, renderMode == EntityRenderMode.MINECRAFT_GUI ? 250d : -250d);
         stack.scale(scale, scale, scale);
         stack.last().pose().multiply(Matrix4f.createScaleMatrix(1f, 1f, -1f)); //Scale ONLY THE POSITIONS! Inverted normals don't work for whatever reason
 
@@ -293,10 +293,11 @@ public class UIHelper extends GuiComponent {
         BufferBuilder bufferBuilder = tessellator.getBuilder();
         bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
 
-        bufferBuilder.vertex(x, y + height, 0f).uv(0f, height / textureHeight).endVertex();
-        bufferBuilder.vertex(x + width, y + height, 0f).uv(width / textureWidth, height / textureHeight).endVertex();
-        bufferBuilder.vertex(x + width, y, 0f).uv(width / textureWidth, 0f).endVertex();
-        bufferBuilder.vertex(x, y, 0f).uv(0f, 0f).endVertex();
+        float z = -999f;
+        bufferBuilder.vertex(x, y + height, z).uv(0f, height / textureHeight).endVertex();
+        bufferBuilder.vertex(x + width, y + height, z).uv(width / textureWidth, height / textureHeight).endVertex();
+        bufferBuilder.vertex(x + width, y, z).uv(width / textureWidth, 0f).endVertex();
+        bufferBuilder.vertex(x, y, z).uv(0f, 0f).endVertex();
 
         tessellator.end();
     }
@@ -459,7 +460,7 @@ public class UIHelper extends GuiComponent {
 
         //render
         stack.pushPose();
-        stack.translate(0d, 0d, 400d);
+        stack.translate(0d, 0d, 999d);
 
         if (background)
             renderSliced(stack, x - 4, y - 4, width + 8, height + 8, TOOLTIP);
