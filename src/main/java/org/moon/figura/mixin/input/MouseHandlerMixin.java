@@ -71,8 +71,11 @@ public class MouseHandlerMixin {
     @Inject(method = "onMove", at = @At("HEAD"), cancellable = true)
     private void onMove(long window, double x, double y, CallbackInfo ci) {
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
-        if (avatar != null && avatar.mouseMoveEvent(x - this.xpos, y - this.ypos) && mouseGrabbed)
+        if (avatar != null && avatar.mouseMoveEvent(x - this.xpos, y - this.ypos) && mouseGrabbed) {
+            this.xpos = x;
+            this.ypos = y;
             ci.cancel();
+        }
     }
 
     @Inject(method = "grabMouse", at = @At("HEAD"), cancellable = true)

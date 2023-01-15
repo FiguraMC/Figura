@@ -119,6 +119,18 @@ public class TextureAPI {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaMethodOverload(
+                    argumentTypes = {String.class, FiguraTexture.class},
+                    argumentNames = {"name", "texture"}
+            ),
+            value = "textures.copy")
+    public FiguraTexture copy(@LuaNotNil String name, @LuaNotNil FiguraTexture texture) {
+        NativeImage image = texture.copy();
+        return register(name, image, false);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
                     argumentTypes = String.class,
                     argumentNames = "name"
             ),
