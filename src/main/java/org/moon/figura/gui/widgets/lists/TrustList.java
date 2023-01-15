@@ -28,7 +28,7 @@ public class TrustList extends AbstractList {
 
     public boolean precise = false;
 
-    private final Map<String, List<GuiEventListener>> trusts = new LinkedHashMap<>();
+    private final Map<Component, List<GuiEventListener>> trusts = new LinkedHashMap<>();
 
     public TrustList(int x, int y, int width, int height) {
         super(x, y, width, height);
@@ -54,7 +54,7 @@ public class TrustList extends AbstractList {
         boolean titles = trusts.size() > 1;
         if (titles) totalHeight += trusts.size() * titleHeight;
 
-        scrollBar.y = y + 4;
+        scrollBar.setY(y + 4);
         scrollBar.visible = totalHeight > height;
         scrollBar.setScrollRatio(entryHeight, totalHeight - height);
 
@@ -62,18 +62,18 @@ public class TrustList extends AbstractList {
         int xOffset = scrollBar.visible ? 8 : 15;
         int yOffset = scrollBar.visible ? (int) -(Mth.lerp(scrollBar.getScrollProgress(), -16, totalHeight - height)) : 16;
 
-        for (Map.Entry<String, List<GuiEventListener>> entry : trusts.entrySet()) {
+        for (Map.Entry<Component, List<GuiEventListener>> entry : trusts.entrySet()) {
             //titles
             if (titles) {
-                UIHelper.drawCenteredString(stack, font, Component.translatable(entry.getKey()), x + (width - xOffset) / 2, y + yOffset, 0xFFFFFF);
+                UIHelper.drawCenteredString(stack, font, entry.getKey(), x + (width - xOffset) / 2, y + yOffset, 0xFFFFFF);
                 yOffset += titleHeight;
             }
 
             //elements
             for (GuiEventListener widget : entry.getValue()) {
                 if (widget instanceof AbstractWidget w) {
-                    w.x = x + xOffset;
-                    w.y = y + yOffset;
+                    w.setX(x + xOffset);
+                    w.setY(y + yOffset);
                 } else if (widget instanceof TextField t) {
                     t.setPos(x + xOffset, y + yOffset);
                 }
@@ -97,11 +97,11 @@ public class TrustList extends AbstractList {
         //add new trusts
 
         //defaults
-        trusts.put(FiguraMod.MOD_ID, generateWidgets(container, Trust.DEFAULT, FiguraMod.MOD_ID));
+        trusts.put(FiguraText.of(), generateWidgets(container, Trust.DEFAULT, FiguraMod.MOD_ID));
 
         //custom
         for (Map.Entry<String, Collection<Trust>> entry : TrustManager.CUSTOM_TRUST.entrySet())
-            trusts.put(entry.getKey(), generateWidgets(container, entry.getValue(), entry.getKey()));
+            trusts.put(Component.translatable(entry.getKey()), generateWidgets(container, entry.getValue(), entry.getKey()));
     }
 
     private List<GuiEventListener> generateWidgets(TrustContainer container, Collection<Trust> coll, String id) {
@@ -174,8 +174,8 @@ public class TrustList extends AbstractList {
             MutableComponent name = Component.translatable(id + ".trust.value." + trust.name.toLowerCase());
             if (changed) name = Component.literal("*").setStyle(FiguraMod.getAccentColor()).append(name).append("*");
 
-            font.draw(stack, name, x + 1, y + 1, 0xFFFFFF);
-            font.draw(stack, value.copy().setStyle(FiguraMod.getAccentColor()), x + width - font.width(value) - 1, y + 1, 0xFFFFFF);
+            font.draw(stack, name, getX() + 1, getY() + 1, 0xFFFFFF);
+            font.draw(stack, value.copy().setStyle(FiguraMod.getAccentColor()), getX() + width - font.width(value) - 1, getY() + 1, 0xFFFFFF);
         }
 
         @Override
@@ -246,8 +246,8 @@ public class TrustList extends AbstractList {
             MutableComponent name = Component.translatable(id + ".trust.value." + trust.name.toLowerCase());
             if (changed) name = Component.literal("*").setStyle(FiguraMod.getAccentColor()).append(name).append("*");
 
-            font.draw(stack, name, x + 1, y + 1, 0xFFFFFF);
-            font.draw(stack, value.copy().setStyle(FiguraMod.getAccentColor()), x + width - font.width(value) - 1, y + 1, 0xFFFFFF);
+            font.draw(stack, name, getX() + 1, getY() + 1, 0xFFFFFF);
+            font.draw(stack, value.copy().setStyle(FiguraMod.getAccentColor()), getX() + width - font.width(value) - 1, getY() + 1, 0xFFFFFF);
         }
 
         @Override

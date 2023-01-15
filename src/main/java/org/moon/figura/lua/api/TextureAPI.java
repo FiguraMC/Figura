@@ -2,6 +2,7 @@ package org.moon.figura.lua.api;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaTable;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
@@ -12,7 +13,9 @@ import org.moon.figura.model.rendering.texture.FiguraTexture;
 import org.moon.figura.trust.Trust;
 import org.moon.figura.utils.ColorUtils;
 
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
@@ -38,8 +41,10 @@ public class TextureAPI {
 
     public FiguraTexture register(String name, NativeImage image, boolean ignoreSize) {
         int max = owner.trust.get(Trust.TEXTURE_SIZE);
-        if (!ignoreSize && (image.getWidth() > max || image.getHeight() > max))
+        if (!ignoreSize && (image.getWidth() > max || image.getHeight() > max)) {
+            owner.trustIssues.add(Trust.TEXTURE_SIZE);
             throw new LuaError("Texture exceeded max size of " + max + " x " + max + " resolution, got " + image.getWidth() + " x " + image.getHeight());
+        }
 
         FiguraTexture oldText = get(name);
         if (oldText != null)
@@ -59,8 +64,8 @@ public class TextureAPI {
                     argumentTypes = {String.class, Integer.class, Integer.class},
                     argumentNames = {"name", "width", "height"}
             ),
-            value = "textures.register")
-    public FiguraTexture register(@LuaNotNil String name, int width, int height) {
+            value = "textures.new_texture")
+    public FiguraTexture newTexture(@LuaNotNil String name, int width, int height) {
         NativeImage image;
         try {
             image = new NativeImage(width, height, true);
@@ -75,19 +80,51 @@ public class TextureAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaMethodOverload(
-                    argumentTypes = {String.class, String.class},
-                    argumentNames = {"name", "data"}
-            ),
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = {String.class, String.class},
+                            argumentNames = {"name", "base64Text"}
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {String.class, LuaTable.class},
+                            argumentNames = {"name", "byteArray"}
+                    )
+            },
             value = "textures.read")
-    public FiguraTexture read(@LuaNotNil String name, @LuaNotNil String data) {
+    public FiguraTexture read(@LuaNotNil String name, @LuaNotNil Object object) {
         NativeImage image;
+        byte[] bytes;
+
+        if (object instanceof LuaTable table) {
+            bytes = new byte[table.length()];
+            for(int i = 0; i < bytes.length; i++)
+                bytes[i] = (byte) table.get(i + 1).checkint();
+        } else if (object instanceof String s) {
+            bytes = Base64.getDecoder().decode(s);
+        } else {
+            throw new LuaError("Invalid type for read \"" + object.getClass().getSimpleName() + "\"");
+        }
+
         try {
-            image = NativeImage.fromBase64(data);
+            ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+            image = NativeImage.read(null, bais);
+            bais.close();
         } catch (Exception e) {
             throw new LuaError(e.getMessage());
         }
 
+        return register(name, image, false);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = {String.class, FiguraTexture.class},
+                    argumentNames = {"name", "texture"}
+            ),
+            value = "textures.copy")
+    public FiguraTexture copy(@LuaNotNil String name, @LuaNotNil FiguraTexture texture) {
+        NativeImage image = texture.copy();
         return register(name, image, false);
     }
 

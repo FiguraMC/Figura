@@ -12,8 +12,7 @@
       "file": "figura:font/badges.png",
       "ascent": 8,
       "chars": [
-        "△❗❌\uD83E\uDDC0",
-        "\uD83C\uDF54\uD83E\uDD90\uD83C\uDF19\uD83C\uDF00",
+        "△❗❌\uD83D\uDEE1",
         "☄❤☆★"
       ]
     },
@@ -31,12 +30,6 @@
     },
     {
       "type": "bitmap",
-      "file": "figura:font/arrows.png",
-      "ascent": 8,
-      "chars": [">V<^"]
-    },
-    {
-      "type": "bitmap",
       "file": "figura:font/loading.png",
       "ascent": 8,
       "chars": [
@@ -45,13 +38,6 @@
         "89ab",
         "cdef"
       ]
-    },
-    {
-      "type": "bitmap",
-      "file": "figura:font/status.png",
-      "ascent": 8,
-      "height": 10,
-      "chars": ["-*/+="]
     }
   ]
 }

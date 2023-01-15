@@ -23,7 +23,6 @@ import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.MathUtils;
-import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.ui.UIHelper;
 
 import java.util.List;
@@ -36,13 +35,17 @@ public class PopupMenu {
     private static final FiguraIdentifier ICONS = new FiguraIdentifier("textures/gui/popup_icons.png");
 
     private static final MutableComponent VERSION_WARN = Component.empty()
-            .append(Badges.System.WARNING.badge.copy().withStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT)))
+            .append(Badges.System.WARNING.badge.copy().withStyle(Style.EMPTY.withFont(Badges.FONT)))
             .append(" ")
             .append(Badges.System.WARNING.desc.copy().withStyle(ChatFormatting.YELLOW));
     private static final MutableComponent ERROR_WARN = Component.empty()
-            .append(Badges.System.ERROR.badge.copy().withStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT)))
+            .append(Badges.System.ERROR.badge.copy().withStyle(Style.EMPTY.withFont(Badges.FONT)))
             .append(" ")
             .append(Badges.System.ERROR.desc.copy().withStyle(ChatFormatting.RED));
+    private static final MutableComponent TRUST_WARN = Component.empty()
+            .append(Badges.System.TRUST.badge.copy().withStyle(Style.EMPTY.withFont(Badges.FONT)))
+            .append(" ")
+            .append(Badges.System.TRUST.desc.copy().withStyle(ChatFormatting.BLUE));
 
     private static final List<Pair<Component, Consumer<UUID>>> BUTTONS = List.of(
             Pair.of(FiguraText.of("popup_menu.cancel"), id -> {}),
@@ -127,12 +130,17 @@ public class PopupMenu {
 
         boolean error = false;
         boolean version = false;
+        boolean trustIssues = false;
+
+        Component badges = Badges.fetchBadges(id);
+        if (badges.getString().length() > 0)
+            name.append(" ").append(badges);
 
         Avatar avatar = AvatarManager.getAvatarForPlayer(id);
         if (avatar != null) {
-            name.append(" ").append(Badges.fetchBadges(avatar));
             error = avatar.scriptError;
             version = avatar.versionStatus > 0;
+            trustIssues = !avatar.trustIssues.isEmpty();
         }
 
         //render texts
@@ -148,6 +156,8 @@ public class PopupMenu {
             UIHelper.renderOutlineText(stack, font, ERROR_WARN, -font.width(ERROR_WARN) / 2, 0, 0xFFFFFF, 0x202020);
         if (version)
             UIHelper.renderOutlineText(stack, font, VERSION_WARN, -font.width(VERSION_WARN) / 2, error ? font.lineHeight : 0, 0xFFFFFF, 0x202020);
+        if (trustIssues)
+            UIHelper.renderOutlineText(stack, font, TRUST_WARN, -font.width(TRUST_WARN) / 2, (error ? font.lineHeight : 0) + (version ? font.lineHeight : 0), 0xFFFFFF, 0x202020);
 
         //finish rendering
         stack.popPose();

@@ -5,13 +5,10 @@ import net.minecraft.network.chat.Component;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.config.Config;
 import org.moon.figura.gui.widgets.ParentedButton;
+import org.moon.figura.gui.widgets.SwitchButton;
 import org.moon.figura.gui.widgets.lists.ConfigList;
-import org.moon.figura.utils.FiguraText;
 
 public class BooleanElement extends AbstractConfigElement {
-
-    private static final Component ON = FiguraText.of("gui.on");
-    private static final Component OFF = FiguraText.of("gui.off");
 
     private final ParentedButton button;
 
@@ -19,7 +16,7 @@ public class BooleanElement extends AbstractConfigElement {
         super(width, config, parent);
 
         //button
-        children.add(0, button = new ParentedButton(0, 0, 90, 20, (boolean) config.tempValue ? ON : OFF, this, button -> config.tempValue = !(boolean) config.tempValue));
+        children.add(0, button = new ParentedButton(0, 0, 90, 20, (boolean) config.tempValue ? SwitchButton.ON : SwitchButton.OFF, this, button -> config.tempValue = !(boolean) config.tempValue));
         button.active = FiguraMod.DEBUG_MODE || !config.disabled;
     }
 
@@ -31,7 +28,7 @@ public class BooleanElement extends AbstractConfigElement {
         this.resetButton.active = this.isDefault();
 
         //button text
-        Component text = (boolean) config.tempValue ? ON : OFF;
+        Component text = (boolean) config.tempValue ? SwitchButton.ON : SwitchButton.OFF;
 
         //edited colour
         if (isChanged())
@@ -48,7 +45,7 @@ public class BooleanElement extends AbstractConfigElement {
     public void setPos(int x, int y) {
         super.setPos(x, y);
 
-        this.button.x = x + width - 154;
-        this.button.y = y;
+        this.button.setX(x + width - 154);
+        this.button.setY(y);
     }
 }

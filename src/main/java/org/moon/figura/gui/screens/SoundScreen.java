@@ -13,8 +13,16 @@ public class SoundScreen extends AbstractPanelScreen {
 
     public static final Component TITLE = FiguraText.of("gui.panels.title.sound");
 
-    public SoundScreen(Screen parentScreen) {
-        super(parentScreen, TITLE, 2);
+    private final Screen sourcePanel;
+
+    public SoundScreen(AbstractPanelScreen parentScreen) {
+        super(parentScreen.parentScreen, TITLE, WardrobeScreen.class);
+        sourcePanel = parentScreen;
+    }
+
+    @Override
+    public Component getTitle() {
+        return TITLE;
     }
 
     @Override
@@ -29,7 +37,7 @@ public class SoundScreen extends AbstractPanelScreen {
 
         //back
         addRenderableWidget(new TexturedButton(width / 2 - 60, height - 24, 120, 20, FiguraText.of("gui.done"), null,
-                bx -> this.minecraft.setScreen(parentScreen)
+                bx -> this.minecraft.setScreen(sourcePanel)
         ));
     }
 }

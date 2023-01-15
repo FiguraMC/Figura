@@ -1,10 +1,12 @@
 package org.moon.figura.lua.api.particle;
 
 import com.mojang.brigadier.StringReader;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.commands.arguments.ParticleArgument;
 import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.registries.BuiltInRegistries;
 import org.luaj.vm2.LuaError;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.ducks.ParticleEngineAccessor;
@@ -36,10 +38,10 @@ public class ParticleAPI {
 
     private LuaParticle generate(String id, double x, double y, double z, double w, double t, double h) {
         try {
-            ParticleOptions options = ParticleArgument.readParticle(new StringReader(id));
+            ParticleOptions options = ParticleArgument.readParticle(new StringReader(id), BuiltInRegistries.PARTICLE_TYPE.asLookup());
             Particle p = getParticleEngine().figura$makeParticle(options, x, y, z, w, t, h);
             if (p == null) throw new LuaError("Could not parse particle \"" + id + "\"");
-            return new LuaParticle(p, owner);
+            return new LuaParticle(id, p, owner);
         } catch (Exception e) {
             throw new LuaError(e.getMessage());
         }
@@ -77,42 +79,15 @@ public class ParticleAPI {
                             argumentNames = {"name", "posX", "posY", "posZ", "velX", "velY", "velZ"}
                     )
             },
-            value = "particles.add_particle"
+            value = "particles.new_particle"
     )
-    public LuaParticle addParticle(@LuaNotNil String id, Object x, Object y, Double z, Object w, Double t, Double h) {
+    public LuaParticle newParticle(@LuaNotNil String id, Object x, Object y, Double z, Object w, Double t, Double h) {
         FiguraVec3 pos, vel;
 
         //Parse pos and vel
-        if (x instanceof FiguraVec6 posVel) {
-            pos = FiguraVec3.of(posVel.x, posVel.y, posVel.z);
-            vel = FiguraVec3.of(posVel.w, posVel.t, posVel.h);
-        } else if (x instanceof FiguraVec3 vec1) {
-            pos = vec1.copy();
-            if (y instanceof FiguraVec3 vec2) {
-                vel = vec2.copy();
-            } else if (y == null || y instanceof Number) {
-                if (w == null || w instanceof Number) {
-                    //Intellij says: y should probably not be passed as parameter x
-                    //It really doesn't like the kind of programming that happens in this function lol
-                    vel = LuaUtils.parseVec3("addParticle", y, z, (Number) w);
-                } else {
-                    throw new LuaError("Illegal argument to addParticle(): " + w);
-                }
-            } else {
-                throw new LuaError("Illegal argument to addParticle(): " + y);
-            }
-        } else if (x == null || x instanceof Number && y == null || y instanceof Number) {
-            pos = LuaUtils.parseVec3("addParticle", x, (Number) y, z);
-            if (w instanceof FiguraVec3 vec1) {
-                vel = vec1.copy();
-            } else if (w == null || w instanceof Number) {
-                vel = LuaUtils.parseVec3("addParticle", w, t, h);
-            } else {
-                throw new LuaError("Illegal argument to addParticle(): " + w);
-            }
-        } else {
-            throw new LuaError("Illegal argument to addParticle(): " + x);
-        }
+        Pair<FiguraVec3, FiguraVec3> pair = LuaUtils.parse2Vec3("newParticle", x, y, z, w, t, h);
+        pos = pair.getFirst();
+        vel = pair.getSecond();
 
         LuaParticle particle = generate(id, pos.x, pos.y, pos.z, vel.x, vel.y, vel.z);
         particle.spawn();

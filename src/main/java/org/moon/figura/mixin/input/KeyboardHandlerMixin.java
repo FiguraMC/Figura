@@ -29,7 +29,12 @@ public class KeyboardHandlerMixin {
         if (avatar == null || avatar.luaRuntime == null)
             return;
 
-        if (FiguraKeybind.set(avatar.luaRuntime.keybind.keyBindings, InputConstants.getKey(key, scancode), action != 0)) {
+        if (avatar.keyPressEvent(key, action, modifiers) && this.minecraft.mouseHandler.isMouseGrabbed()) {
+            ci.cancel();
+            return;
+        }
+
+        if (FiguraKeybind.set(avatar.luaRuntime.keybinds.keyBindings, InputConstants.getKey(key, scancode), action != 0)) {
             KeyMapping.setAll();
             ci.cancel();
         }

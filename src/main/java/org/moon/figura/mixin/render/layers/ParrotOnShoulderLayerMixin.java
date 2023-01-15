@@ -2,7 +2,7 @@ package org.moon.figura.mixin.render.layers;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import net.minecraft.client.model.ParrotModel;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.animal.Parrot;
 import net.minecraft.world.entity.player.Player;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
@@ -42,8 +43,8 @@ public abstract class ParrotOnShoulderLayerMixin<T extends Player> extends Rende
 
         //script hide
         if (avatar.luaRuntime != null &&
-                (leftShoulder && !avatar.luaRuntime.vanilla_model.LEFT_PARROT.getVisible() ||
-                !leftShoulder && !avatar.luaRuntime.vanilla_model.RIGHT_PARROT.getVisible())
+                (leftShoulder && !avatar.luaRuntime.vanilla_model.LEFT_PARROT.checkVisible() ||
+                !leftShoulder && !avatar.luaRuntime.vanilla_model.RIGHT_PARROT.checkVisible())
         ) {
             ci.cancel();
             return;
@@ -52,13 +53,14 @@ public abstract class ParrotOnShoulderLayerMixin<T extends Player> extends Rende
         //pivot part
         CompoundTag compoundTag = leftShoulder ? player.getShoulderEntityLeft() : player.getShoulderEntityRight();
         EntityType.byString(compoundTag.getString("id")).filter((type) -> type == EntityType.PARROT).ifPresent((type) -> {
-            VertexConsumer vertexConsumer = vertexConsumers.getBuffer(this.model.renderType(ParrotRenderer.PARROT_LOCATIONS[compoundTag.getInt("Variant")]));
+            Parrot.Variant variant = Parrot.Variant.byId(compoundTag.getInt("Variant"));
+            VertexConsumer vertexConsumer = vertexConsumers.getBuffer(this.model.renderType(ParrotRenderer.getVariantTexture(variant)));
             if (avatar.pivotPartRender(leftShoulder ? ParentType.LeftParrotPivot : ParentType.RightParrotPivot, stack -> {
                 stack.translate(0d, 24d, 0d);
                 float s = 16f;
                 stack.scale(s, s, s);
-                stack.mulPose(Vector3f.XP.rotationDegrees(180f));
-                stack.mulPose(Vector3f.YP.rotationDegrees(180f));
+                stack.mulPose(Axis.XP.rotationDegrees(180f));
+                stack.mulPose(Axis.YP.rotationDegrees(180f));
                 this.model.renderOnShoulder(stack, vertexConsumer, light, OverlayTexture.NO_OVERLAY, limbAngle, limbDistance, headYaw, headPitch, player.tickCount);
             })) {
                 ci.cancel();

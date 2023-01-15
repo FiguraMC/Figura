@@ -2,9 +2,9 @@ package org.moon.figura.lua.api.action_wheel;
 
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
+import org.luaj.vm2.LuaTable;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.gui.ActionWheel;
-import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaMethodDoc;
@@ -72,8 +72,8 @@ public class ActionWheelAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("action_wheel.create_action")
-    public Action createAction() {
+    @LuaMethodDoc("action_wheel.new_action")
+    public Action newAction() {
         return new Action();
     }
 
@@ -86,10 +86,10 @@ public class ActionWheelAPI {
                             argumentNames = "title"
                     )
             },
-            value = "action_wheel.create_page"
+            value = "action_wheel.new_page"
     )
-    public Page createPage(String title) {
-        Page page = new Page();
+    public Page newPage(String title) {
+        Page page = new Page(title);
         if (title != null) this.pages.put(title, page);
         return page;
     }
@@ -128,14 +128,20 @@ public class ActionWheelAPI {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaMethodOverload(
-                    argumentTypes = String.class,
-                    argumentNames = "pageTitle"
-            ),
+            overloads = {
+                    @LuaMethodOverload(
+                            returnType = LuaTable.class
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = String.class,
+                            argumentNames = "pageTitle",
+                            returnType = Page.class
+                    )
+            },
             value = "action_wheel.get_page"
     )
-    public Page getPage(@LuaNotNil String pageTitle) {
-        return this.pages.get(pageTitle);
+    public Object getPage(String pageTitle) {
+        return pageTitle != null ? this.pages.get(pageTitle) : this.pages;
     }
 
     @LuaWhitelist

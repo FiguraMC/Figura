@@ -2,65 +2,54 @@ package org.moon.figura.avatar;
 
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.*;
+import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.backend.NetworkManager;
-import org.moon.figura.config.Config;
+import org.moon.figura.trust.Trust;
+import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.ColorUtils;
+import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.TextUtils;
 
 import java.util.BitSet;
-import java.util.HashMap;
+import java.util.Optional;
 import java.util.UUID;
 
 public class Badges {
 
-    private static final HashMap<UUID, Pair<BitSet, BitSet>> badgesMap = new HashMap<>();
+    private static final String BADGES_REGEX = ".*(\\$\\{badges}|\\$\\{segdab}).*";
 
-    public static Component fetchBadges(Avatar avatar) {
-        if (avatar == null)
-            return Component.empty();
+    public static final ResourceLocation FONT = new FiguraIdentifier("badges");
 
-        MutableComponent badges = Component.empty().withStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT).withColor(ChatFormatting.WHITE));
+    public static Component fetchBadges(UUID id) {
+        MutableComponent badges = Component.empty().withStyle(Style.EMPTY.withFont(FONT).withColor(ChatFormatting.WHITE).withObfuscated(false));
 
-        UUID id = avatar.owner;
-        Pair<BitSet, BitSet> pair = badgesMap.get(id);
-        if (pair == null) {
-            badgesMap.put(id, pair = empty());
-            NetworkManager.fetchUserdata(id);
-        }
+        if (TrustManager.get(id).getGroup() == Trust.Group.BLOCKED)
+            return badges;
 
-        // -- loading -- //
+        //get user data
+        Pair<BitSet, BitSet> pair = AvatarManager.getBadges(id);
+        if (pair == null)
+            return badges;
 
-        if (!avatar.loaded)
-            return badges.append(Component.literal(Integer.toHexString(Math.abs(FiguraMod.ticks) % 16)));
+        //avatar badges
+        Avatar avatar = AvatarManager.getAvatarForPlayer(id);
+        if (avatar != null) {
 
-        // -- mark -- //
+            // -- loading -- //
 
-        if (avatar.nbt != null) {
-            Pride[] pride = Pride.values();
+            if (!avatar.loaded)
+                badges.append(Component.literal(Integer.toHexString(Math.abs(FiguraMod.ticks) % 16)));
 
-            //error
-            if (avatar.scriptError)
-                badges.append(System.ERROR.badge);
+            // -- mark -- //
 
-            //version
-            if (avatar.versionStatus > 0)
-                badges.append(System.WARNING.badge);
-
-            //egg
-            if (FiguraMod.CHEESE_DAY && Config.EASTER_EGGS.asBool())
-                badges.append(System.CHEESE.badge);
-
+            else if (avatar.nbt != null) {
                 //mark
-            else {
                 mark: {
                     //pride (mark skins)
                     BitSet prideSet = pair.getFirst();
+                    Pride[] pride = Pride.values();
                     for (int i = pride.length - 1; i >= 0; i--) {
                         if (prideSet.get(i)) {
                             badges.append(pride[i].badge);
@@ -71,15 +60,36 @@ public class Badges {
                     //mark fallback
                     badges.append(System.DEFAULT.badge.copy().withStyle(Style.EMPTY.withColor(ColorUtils.rgbToInt(ColorUtils.userInputHex(avatar.color)))));
                 }
+
+                //error
+                if (avatar.scriptError) {
+                    if (avatar.errorText == null)
+                        badges.append(System.ERROR.badge);
+                    else
+                        badges.append(System.ERROR.badge.copy().withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, System.ERROR.desc.copy().append("\n\n").append(avatar.errorText)))));
+                }
+
+                //version
+                if (avatar.versionStatus > 0)
+                    badges.append(System.WARNING.badge);
+
+                //trust
+                if (!avatar.trustIssues.isEmpty()) {
+                    MutableComponent trust = System.TRUST.badge.copy();
+                    MutableComponent desc = System.TRUST.desc.copy().append("\n");
+                    for (Trust t : avatar.trustIssues)
+                        desc.append("\n• ").append(FiguraText.of("badges.trust_err." + t.name.toLowerCase()));
+
+                    badges.append(trust.withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, desc))));
+                }
             }
         }
 
         // -- special -- //
 
-        Special[] special = Special.values();
-
         //special badges
         BitSet specialSet = pair.getSecond();
+        Special[] special = Special.values();
         for (int i = special.length - 1; i >= 0; i--) {
             if (specialSet.get(i))
                 badges.append(special[i].badge);
@@ -88,30 +98,35 @@ public class Badges {
         return badges;
     }
 
-    public static void load(UUID id, BitSet pride, BitSet special) {
-        badgesMap.put(id, Pair.of(pride, special));
+    public static Component noBadges4U(Component text) {
+        return TextUtils.replaceInText(text, "[❗❌\uD83D\uDEE1☄❤☆★0-9a-f]", TextUtils.UNKNOWN, (s, style) -> style.getFont().equals(FONT));
     }
 
-    public static void set(UUID id, int index, boolean value, boolean pride) {
-        Pair<BitSet, BitSet> pair = badgesMap.get(id);
-        if (pair == null)
-            badgesMap.put(id, pair = empty());
-
-        BitSet set = pride ? pair.getFirst() : pair.getSecond();
-        set.set(index, value);
-    }
-
-    public static void clear(UUID id) {
-        badgesMap.remove(id);
-    }
-
-    public static Pair<BitSet, BitSet> empty() {
+    public static Pair<BitSet, BitSet> emptyBadges() {
         return Pair.of(new BitSet(Pride.values().length), new BitSet(Special.values().length));
+    }
+
+    public static boolean hasCustomBadges(Component text) {
+        return text.visit((style, string) -> string.matches(BADGES_REGEX) ? FormattedText.STOP_ITERATION : Optional.empty(), Style.EMPTY).isPresent();
+    }
+
+    public static Component appendBadges(Component text, UUID id, boolean allow) {
+        Component badges = allow ? fetchBadges(id) : Component.empty();
+        boolean custom = hasCustomBadges(text);
+
+        //no custom badges text
+        if (!custom)
+            return badges.getString().isBlank() ? text : text.copy().append(" ").append(badges);
+
+        text = TextUtils.replaceInText(text, "\\$\\{badges\\}", badges);
+        text = TextUtils.replaceInText(text, "\\$\\{segdab\\}", TextUtils.reverse(badges));
+
+        return text;
     }
 
     public enum System {
         DEFAULT("△"),
-        CHEESE("\uD83E\uDDC0"),
+        TRUST("\uD83D\uDEE1"),
         WARNING("❗"),
         ERROR("❌");
 
@@ -165,12 +180,7 @@ public class Badges {
         DISCORD_STAFF("☆", ColorUtils.Colors.DISCORD.hex),
         CONTEST("☆", ColorUtils.Colors.FRAN_PINK.hex),
         DONATOR("❤", ColorUtils.Colors.FRAN_PINK.hex),
-        TRANSLATOR("☄"),
-
-        SHADOW("\uD83C\uDF00"),
-        MOON("\uD83C\uDF19"),
-        SHRIMP("\uD83E\uDD90"),
-        BURGER("\uD83C\uDF54");
+        TRANSLATOR("☄");
 
         public final Component badge;
         public final Component desc;

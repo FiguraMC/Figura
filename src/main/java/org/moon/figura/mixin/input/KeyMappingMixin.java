@@ -22,14 +22,14 @@ public class KeyMappingMixin {
     private static void setAll(CallbackInfo ci) {
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
         if (avatar != null && avatar.luaRuntime != null)
-            FiguraKeybind.updateAll(avatar.luaRuntime.keybind.keyBindings);
+            FiguraKeybind.updateAll(avatar.luaRuntime.keybinds.keyBindings);
     }
 
     @Inject(method = "releaseAll", at = @At("HEAD"))
     private static void releaseAll(CallbackInfo ci) {
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
         if (avatar != null && avatar.luaRuntime != null)
-            FiguraKeybind.releaseAll(avatar.luaRuntime.keybind.keyBindings);
+            FiguraKeybind.releaseAll(avatar.luaRuntime.keybinds.keyBindings);
     }
 
     @ModifyVariable(method = "setDown", at = @At("HEAD"), argsOnly = true)
@@ -38,6 +38,6 @@ public class KeyMappingMixin {
         if (avatar == null || avatar.luaRuntime == null)
             return pressed;
 
-        return pressed && !FiguraKeybind.overridesKey(avatar.luaRuntime.keybind.keyBindings, this.key);
+        return pressed && !FiguraKeybind.overridesKey(avatar.luaRuntime.keybinds.keyBindings, this.key);
     }
 }

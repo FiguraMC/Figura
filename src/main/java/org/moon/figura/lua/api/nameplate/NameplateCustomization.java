@@ -2,7 +2,8 @@ package org.moon.figura.lua.api.nameplate;
 
 import net.minecraft.network.chat.Component;
 import org.luaj.vm2.LuaError;
-import org.moon.figura.lua.LuaNotNil;
+import org.moon.figura.avatar.Badges;
+import org.moon.figura.gui.Emojis;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
@@ -16,10 +17,18 @@ import org.moon.figura.utils.TextUtils;
 )
 public class NameplateCustomization {
 
+    private Component json;
     private String text;
 
-    public static Component applyCustomization(String text) {
-        return TextUtils.removeClickableObjects(TextUtils.noBadges4U(TextUtils.tryParseJson(text)));
+    private void parseJsonText(String text) {
+        json = TextUtils.tryParseJson(text);
+        json = Badges.noBadges4U(json);
+        json = TextUtils.removeClickableObjects(json);
+        json = Emojis.applyEmojis(json);
+    }
+
+    public Component getJson() {
+        return json;
     }
 
     @LuaWhitelist
@@ -37,9 +46,14 @@ public class NameplateCustomization {
             value = "nameplate_customization.set_text"
     )
     public void setText(String text) {
-        if (text != null && TextUtils.tryParseJson(text).getString().length() > 256)
-            throw new LuaError("Text length exceeded limit of 256 characters");
         this.text = text;
+        if (text != null) {
+            parseJsonText(text);
+            if (json.getString().length() > 256)
+                throw new LuaError("Text length exceeded limit of 256 characters");
+        } else {
+            json = null;
+        }
     }
 
     @Override

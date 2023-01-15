@@ -5,7 +5,6 @@ import org.moon.figura.lua.api.*;
 import org.moon.figura.lua.api.action_wheel.Action;
 import org.moon.figura.lua.api.action_wheel.ActionWheelAPI;
 import org.moon.figura.lua.api.action_wheel.Page;
-import org.moon.figura.lua.api.ConfigAPI;
 import org.moon.figura.lua.api.entity.EntityAPI;
 import org.moon.figura.lua.api.entity.LivingEntityAPI;
 import org.moon.figura.lua.api.entity.NullEntity;
@@ -122,6 +121,7 @@ public class FiguraAPIManager {
         add(TextureAPI.class);
         add(FiguraTexture.class);
 
+        add(AnimationAPI.class);
         add(Animation.class);
 
         add(HostAPI.class);
@@ -138,13 +138,13 @@ public class FiguraAPIManager {
     public static final Map<String, Function<FiguraLuaRuntime, Object>> API_GETTERS = new LinkedHashMap<>() {{
         put("events", r -> r.events = new EventsAPI());
         put("sounds", r -> new SoundAPI(r.owner));
-        put("vanilla_model", r -> r.vanilla_model = new VanillaModelAPI());
-        put("keybind", r -> r.keybind = new KeybindAPI(r.owner));
+        put("vanilla_model", r -> r.vanilla_model = new VanillaModelAPI(r.owner));
+        put("keybinds", r -> r.keybinds = new KeybindAPI(r.owner));
         put("host", r -> r.host = new HostAPI(r.owner));
         put("nameplate", r -> r.nameplate = new NameplateAPI());
         put("renderer", r -> r.renderer = new RendererAPI(r.owner));
         put("action_wheel", r -> r.action_wheel = new ActionWheelAPI(r.owner));
-        put("animations", r -> Animation.getTableForAnimations(r.owner));
+        put("animations", r -> new AnimationAPI(r.owner));
         put("client", r -> ClientAPI.INSTANCE);
         put("particles", r -> new ParticleAPI(r.owner));
         put("avatar", r -> r.avatar_meta = new AvatarAPI(r.owner));

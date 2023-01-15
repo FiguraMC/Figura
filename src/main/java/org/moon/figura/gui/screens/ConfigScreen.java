@@ -33,8 +33,13 @@ public class ConfigScreen extends AbstractPanelScreen {
     }
 
     public ConfigScreen(Screen parentScreen, boolean enablePanels) {
-        super(parentScreen, TITLE, 4);
+        super(parentScreen, TITLE, ConfigScreen.class);
         this.hasPanels = enablePanels;
+    }
+
+    @Override
+    public Component getTitle() {
+        return TITLE;
     }
 
     @Override

@@ -3,13 +3,12 @@ package org.moon.figura.lua.api.action_wheel;
 import net.minecraft.world.item.ItemStack;
 import org.luaj.vm2.LuaFunction;
 import org.moon.figura.avatar.Avatar;
+import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.world.ItemStackAPI;
-import org.moon.figura.lua.docs.LuaFieldDoc;
-import org.moon.figura.lua.docs.LuaMethodDoc;
-import org.moon.figura.lua.docs.LuaMethodOverload;
-import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.lua.docs.*;
 import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.model.rendering.texture.FiguraTexture;
 import org.moon.figura.utils.LuaUtils;
 
 @LuaWhitelist
@@ -25,6 +24,7 @@ public class Action {
     protected String title, toggleTitle;
     protected ItemStack item, hoverItem, toggleItem;
     protected FiguraVec3 color, hoverColor, toggleColor;
+    protected TextureData texture, hoverTexture, toggleTexture;
     protected boolean toggled = false;
 
 
@@ -96,6 +96,17 @@ public class Action {
             return color;
     }
 
+    public TextureData getTexture(boolean selected) {
+        TextureData ret = null;
+        if (selected)
+            ret = hoverTexture;
+        if (ret == null && toggled)
+            ret = toggleTexture;
+        if (ret == null)
+            ret = texture;
+        return ret;
+    }
+
 
     // -- general functions -- //
 
@@ -115,10 +126,16 @@ public class Action {
                             argumentNames = "title"
                     )
             },
-            value = "wheel_action.title"
+            value = "wheel_action.set_title"
     )
-    public Action title(String title) {
+    public void setTitle(String title) {
         this.title = title;
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setTitle")
+    public Action title(String title) {
+        setTitle(title);
         return this;
     }
 
@@ -140,10 +157,16 @@ public class Action {
                             argumentNames = {"r", "g", "b"}
                     )
             },
-            value = "wheel_action.color"
+            value = "wheel_action.set_color"
     )
-    public Action color(Object x, Double y, Double z) {
+    public void setColor(Object x, Double y, Double z) {
         this.color = x == null ? null : LuaUtils.parseVec3("color", x, y, z);
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setColor")
+    public Action color(Object x, Double y, Double z) {
+        setColor(x, y, z);
         return this;
     }
 
@@ -165,10 +188,16 @@ public class Action {
                             argumentNames = {"r", "g", "b"}
                     )
             },
-            value = "wheel_action.hover_color"
+            value = "wheel_action.set_hover_color"
     )
-    public Action hoverColor(Object x, Double y, Double z) {
+    public void setHoverColor(Object x, Double y, Double z) {
         this.hoverColor = x == null ? null : LuaUtils.parseVec3("hoverColor", x, y, z);
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setHoverColor")
+    public Action hoverColor(Object x, Double y, Double z) {
+        setHoverColor(x, y, z);
         return this;
     }
 
@@ -184,10 +213,16 @@ public class Action {
                             argumentNames = "item"
                     )
             },
-            value = "wheel_action.item"
+            value = "wheel_action.set_item"
     )
-    public Action item(Object item) {
+    public void setItem(Object item) {
         this.item = LuaUtils.parseItemStack("item", item);
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setItem")
+    public Action item(Object item) {
+        setItem(item);
         return this;
     }
 
@@ -203,14 +238,86 @@ public class Action {
                             argumentNames = "item"
                     )
             },
-            value = "wheel_action.hover_item"
+            value = "wheel_action.set_hover_item"
     )
-    public Action hoverItem(Object item) {
+    public void setHoverItem(Object item) {
         this.hoverItem = LuaUtils.parseItemStack("hoverItem", item);
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setHoverItem")
+    public Action hoverItem(Object item) {
+        setHoverItem(item);
         return this;
     }
 
-    
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = FiguraTexture.class,
+                            argumentNames = "texture"
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {FiguraTexture.class, Double.class, Double.class},
+                            argumentNames = {"texture", "u", "v"}
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {FiguraTexture.class, Double.class, Double.class, Integer.class, Integer.class},
+                            argumentNames = {"texture", "u", "v", "width", "height"}
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {FiguraTexture.class, Double.class, Double.class, Integer.class, Integer.class, Double.class},
+                            argumentNames = {"texture", "u", "v", "width", "height", "scale"}
+                    )
+            },
+            value = "wheel_action.set_texture"
+    )
+    public void setTexture(@LuaNotNil FiguraTexture texture, double u, double v, Integer width, Integer height, Double scale) {
+        this.texture = new TextureData(texture, u, v, width, height, scale);
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setTexture")
+    public Action texture(@LuaNotNil FiguraTexture texture, double u, double v, Integer width, Integer height, Double scale) {
+        setTexture(texture, u, v, width, height, scale);
+        return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = FiguraTexture.class,
+                            argumentNames = "texture"
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {FiguraTexture.class, Double.class, Double.class},
+                            argumentNames = {"texture", "u", "v"}
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {FiguraTexture.class, Double.class, Double.class, Integer.class, Integer.class},
+                            argumentNames = {"texture", "u", "v", "width", "height"}
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {FiguraTexture.class, Double.class, Double.class, Integer.class, Integer.class, Double.class},
+                            argumentNames = {"texture", "u", "v", "width", "height", "scale"}
+                    )
+            },
+            value = "wheel_action.set_hover_texture"
+    )
+    public void setHoverTexture(@LuaNotNil FiguraTexture texture, double u, double v, Integer width, Integer height, Double scale) {
+        this.hoverTexture = new TextureData(texture, u, v, width, height, scale);
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setHoverTexture")
+    public Action hoverTexture(@LuaNotNil FiguraTexture texture, double u, double v, Integer width, Integer height, Double scale) {
+        setHoverTexture(texture, u, v, width, height, scale);
+        return this;
+    }
+
+
     // -- set functions -- //
 
 
@@ -220,10 +327,16 @@ public class Action {
                     argumentTypes = LuaFunction.class,
                     argumentNames = "leftFunction"
             ),
-            value = "wheel_action.on_left_click"
+            value = "wheel_action.set_on_left_click"
     )
-    public Action onLeftClick(LuaFunction function) {
+    public void setOnLeftClick(LuaFunction function) {
         this.leftClick = function;
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setOnLeftClick")
+    public Action onLeftClick(LuaFunction function) {
+        setOnLeftClick(function);
         return this;
     }
 
@@ -233,10 +346,16 @@ public class Action {
                     argumentTypes = LuaFunction.class,
                     argumentNames = "rightFunction"
             ),
-            value = "wheel_action.on_right_click"
+            value = "wheel_action.set_on_right_click"
     )
-    public Action onRightClick(LuaFunction function) {
+    public void setOnRightClick(LuaFunction function) {
         this.rightClick = function;
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setOnRightClick")
+    public Action onRightClick(LuaFunction function) {
+        setOnRightClick(function);
         return this;
     }
 
@@ -246,10 +365,16 @@ public class Action {
                     argumentTypes = LuaFunction.class,
                     argumentNames = "leftFunction"
             ),
-            value = "wheel_action.on_toggle"
+            value = "wheel_action.set_on_toggle"
     )
-    public Action onToggle(LuaFunction function) {
+    public void setOnToggle(LuaFunction function) {
         this.toggle = function;
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setOnToggle")
+    public Action onToggle(LuaFunction function) {
+        setOnToggle(function);
         return this;
     }
 
@@ -259,10 +384,16 @@ public class Action {
                     argumentTypes = LuaFunction.class,
                     argumentNames = "rightFunction"
             ),
-            value = "wheel_action.on_untoggle"
+            value = "wheel_action.set_on_untoggle"
     )
-    public Action onUntoggle(LuaFunction function) {
+    public void setOnUntoggle(LuaFunction function) {
         this.untoggle = function;
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setOnUntoggle")
+    public Action onUntoggle(LuaFunction function) {
+        setOnUntoggle(function);
         return this;
     }
 
@@ -272,10 +403,16 @@ public class Action {
                     argumentTypes = LuaFunction.class,
                     argumentNames = "scrollFunction"
             ),
-            value = "wheel_action.on_scroll"
+            value = "wheel_action.set_on_scroll"
     )
-    public Action onScroll(LuaFunction function) {
+    public void setOnScroll(LuaFunction function) {
         this.scroll = function;
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setOnScroll")
+    public Action onScroll(LuaFunction function) {
+        setOnScroll(function);
         return this;
     }
 
@@ -291,14 +428,20 @@ public class Action {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            value = "wheel_action.toggle_title",
+            value = "wheel_action.set_toggle_title",
             overloads = @LuaMethodOverload(
                     argumentTypes = String.class,
                     argumentNames = "title"
             )
     )
-    public Action toggleTitle(String title) {
+    public void setToggleTitle(String title) {
         this.toggleTitle = title;
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setToggleTitle")
+    public Action toggleTitle(String title) {
+        setToggleTitle(title);
         return this;
     }
 
@@ -320,10 +463,16 @@ public class Action {
                             argumentNames = {"r", "g", "b"}
                     )
             },
-            value = "wheel_action.toggle_color"
+            value = "wheel_action.set_toggle_color"
     )
-    public Action toggleColor(Object x, Double y, Double z) {
+    public void setToggleColor(Object x, Double y, Double z) {
         this.toggleColor = x == null ? null : LuaUtils.parseVec3("toggleColor", x, y, z);
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setToggleColor")
+    public Action toggleColor(Object x, Double y, Double z) {
+        setToggleColor(x, y, z);
         return this;
     }
 
@@ -339,10 +488,49 @@ public class Action {
                             argumentNames = "item"
                     )
             },
-            value = "wheel_action.toggle_item"
+            value = "wheel_action.set_toggle_item"
     )
-    public Action toggleItem(Object item) {
+    public void setToggleItem(Object item) {
         this.toggleItem = LuaUtils.parseItemStack("toggleItem", item);
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setToggleItem")
+    public Action toggleItem(Object item) {
+        setToggleItem(item);
+        return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = FiguraTexture.class,
+                            argumentNames = "texture"
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {FiguraTexture.class, Double.class, Double.class},
+                            argumentNames = {"texture", "u", "v"}
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {FiguraTexture.class, Double.class, Double.class, Integer.class, Integer.class},
+                            argumentNames = {"texture", "u", "v", "width", "height"}
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {FiguraTexture.class, Double.class, Double.class, Integer.class, Integer.class, Double.class},
+                            argumentNames = {"texture", "u", "v", "width", "height", "scale"}
+                    )
+            },
+            value = "wheel_action.set_toggle_texture"
+    )
+    public void setToggleTexture(@LuaNotNil FiguraTexture texture, double u, double v, Integer width, Integer height, Double scale) {
+        this.toggleTexture = new TextureData(texture, u, v, width, height, scale);
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setToggleTexture")
+    public Action toggleTexture(@LuaNotNil FiguraTexture texture, double u, double v, Integer width, Integer height, Double scale) {
+        setToggleTexture(texture, u, v, width, height, scale);
         return this;
     }
 
@@ -358,10 +546,16 @@ public class Action {
                     argumentTypes = Boolean.class,
                     argumentNames = "bool"
             ),
-            value = "wheel_action.toggled"
+            value = "wheel_action.set_toggled"
     )
-    public Action toggled(boolean bool) {
+    public void setToggled(boolean bool) {
         this.toggled = bool;
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setToggled")
+    public Action toggled(boolean bool) {
+        setToggled(bool);
         return this;
     }
 
@@ -398,5 +592,21 @@ public class Action {
     @Override
     public String toString() {
         return title == null ? "Action Wheel Action" : "Action Wheel Action (" + title + ")";
+    }
+
+    public static class TextureData {
+
+        public final FiguraTexture texture;
+        public final double u, v, scale;
+        public final int width, height;
+
+        public TextureData(FiguraTexture texture, double u, double v, Integer width, Integer height, Double scale) {
+            this.texture = texture;
+            this.u = u;
+            this.v = v;
+            this.width = width == null ? texture.getWidth() : width;
+            this.height = height == null ? texture.getHeight() : height;
+            this.scale = scale == null ? 1d : scale;
+        }
     }
 }

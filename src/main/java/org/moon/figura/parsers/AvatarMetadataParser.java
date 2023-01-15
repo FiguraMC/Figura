@@ -6,6 +6,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
+import org.moon.figura.FiguraMod;
 import org.moon.figura.config.Config;
 import org.moon.figura.model.ParentType;
 import org.moon.figura.model.rendering.texture.RenderTypes;
@@ -37,12 +38,13 @@ public class AvatarMetadataParser {
         //version
         Version version = new Version(metadata.version);
         if (version.invalid)
-            version = Version.VERSION;
+            version = FiguraMod.VERSION;
 
         nbt.putString("name", metadata.name == null || metadata.name.isBlank() ? filename : metadata.name);
         nbt.putString("ver", version.toString());
         if (metadata.color != null) nbt.putString("color", metadata.color);
         if (metadata.background != null) nbt.putString("bg", metadata.background);
+        if (metadata.id != null) nbt.putString("id", metadata.id);
 
         if (metadata.authors != null) {
             StringBuilder authors = new StringBuilder();
@@ -63,7 +65,7 @@ public class AvatarMetadataParser {
         if (metadata.autoScripts != null) {
             ListTag autoScripts = new ListTag();
             for (String name : metadata.autoScripts) {
-                name = name.replaceAll(".lua$", "").replaceAll("[/\\\\]", ".");
+                name = name.replaceAll("\\.lua$", "").replaceAll("[/\\\\]", ".");
                 autoScripts.add(StringTag.valueOf(name));
             }
             nbt.put("autoScripts", autoScripts);
@@ -107,14 +109,14 @@ public class AvatarMetadataParser {
         //Add more of these later
         if (customization.primaryRenderType != null) {
             try {
-                modelPart.putString("primary", RenderTypes.valueOf(customization.primaryRenderType).name());
+                modelPart.putString("primary", RenderTypes.valueOf(customization.primaryRenderType.toUpperCase()).name());
             } catch (Exception ignored) {
                 throw new IOException("Invalid render type \"" + customization.primaryRenderType + "\"!");
             }
         }
         if (customization.secondaryRenderType != null) {
             try {
-                modelPart.putString("secondary", RenderTypes.valueOf(customization.secondaryRenderType).name());
+                modelPart.putString("secondary", RenderTypes.valueOf(customization.secondaryRenderType.toUpperCase()).name());
             } catch (Exception ignored) {
                 throw new IOException("Invalid render type \"" + customization.secondaryRenderType + "\"!");
             }
@@ -168,10 +170,33 @@ public class AvatarMetadataParser {
         return current;
     }
 
+    public static void injectToTextures(String json, CompoundTag textures) {
+        Metadata metadata = GSON.fromJson(json, Metadata.class);
+        if (metadata == null || metadata.ignoredTextures == null)
+            return;
+
+        ListTag list = textures.getList("data", Tag.TAG_COMPOUND);
+        CompoundTag compound = textures.getCompound("src");
+
+        if (list == null || compound == null)
+            return;
+
+        for (String texture : metadata.ignoredTextures) {
+            compound.remove(texture);
+            for (Tag t : list) {
+                CompoundTag tag = (CompoundTag) t;
+                if (tag.getString("default").equals(texture))
+                    tag.remove("default");
+                if (tag.getString("emissive").equals(texture))
+                    tag.remove("emissive");
+            }
+        }
+    }
+
     //json object class
     public static class Metadata {
-        public String name, author, version, color, background;
-        public String[] authors, autoScripts, autoAnims;
+        public String name, author, version, color, background, id;
+        public String[] authors, autoScripts, autoAnims, ignoredTextures;
         public HashMap<String, Customization> customizations;
     }
 

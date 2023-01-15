@@ -4,6 +4,7 @@ import com.google.common.collect.HashMultimap;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.Varargs;
+import org.moon.figura.FiguraMod;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaMetamethodDoc;
@@ -56,8 +57,17 @@ public class LuaEvent {
     public Varargs call(Varargs args) {
         flushQueue();
         Varargs vars = args;
-        for (LuaFunction function : functions)
-            vars = function.invoke(piped ? vars : args);
+        for (LuaFunction function : functions) {
+            FiguraMod.pushProfiler(function.name());
+            if (piped) {
+                vars = function.invoke(vars);
+            } else {
+                Varargs value = function.invoke(args);
+                if (value.arg(1).isboolean() && value.arg(1).checkboolean())
+                    vars = value;
+            }
+            FiguraMod.popProfiler();
+        }
         return vars;
     }
 

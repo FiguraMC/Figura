@@ -8,6 +8,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import org.moon.figura.gui.widgets.lists.AbstractList;
 import org.moon.figura.utils.TextUtils;
+import org.moon.figura.utils.ui.UIHelper;
 
 public class ContainerButton extends SwitchButton {
 
@@ -23,21 +24,21 @@ public class ContainerButton extends SwitchButton {
         //variables
         Font font = Minecraft.getInstance().font;
         int color = (!this.active || !this.isToggled() ? ChatFormatting.DARK_GRAY : ChatFormatting.WHITE).getColor();
-        Component arrow = Component.literal(this.toggled ? "V" : "^").setStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT));
+        Component arrow = Component.literal(this.toggled ? "V" : "^").setStyle(Style.EMPTY.withFont(UIHelper.UI_FONT));
         int arrowWidth = font.width(arrow);
         Component message = TextUtils.trimToWidthEllipsis(font, getMessage(), this.width - arrowWidth - 6, TextUtils.ELLIPSIS.copy().withStyle(getMessage().getStyle()));
 
         //draw text
         font.drawShadow(
                 stack, message,
-                this.x + 3, this.y + this.height / 2 - font.lineHeight / 2,
+                this.getX() + 3, this.getY() + this.height / 2 - font.lineHeight / 2,
                 color
         );
 
         //draw arrow
         font.drawShadow(
                 stack, arrow,
-                this.x + this.width - arrowWidth - 3, this.y + this.height / 2 - font.lineHeight / 2,
+                this.getX() + this.width - arrowWidth - 3, this.getY() + this.height / 2 - font.lineHeight / 2,
                 color
         );
 

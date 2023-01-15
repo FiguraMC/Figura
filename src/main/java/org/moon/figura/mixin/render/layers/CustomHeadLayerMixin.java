@@ -25,6 +25,7 @@ import net.minecraft.world.level.block.AbstractSkullBlock;
 import net.minecraft.world.level.block.SkullBlock;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
+import org.moon.figura.ducks.SkullBlockRendererAccessor;
 import org.moon.figura.model.ParentType;
 import org.moon.figura.trust.Trust;
 import org.spongepowered.asm.mixin.Final;
@@ -58,7 +59,7 @@ public abstract class CustomHeadLayerMixin<T extends LivingEntity, M extends Ent
             return;
 
         //script hide
-        if (avatar.luaRuntime != null && !avatar.luaRuntime.vanilla_model.HELMET_ITEM.getVisible()) {
+        if (avatar.luaRuntime != null && !avatar.luaRuntime.vanilla_model.HELMET_ITEM.checkVisible()) {
             ci.cancel();
             return;
         }
@@ -82,6 +83,11 @@ public abstract class CustomHeadLayerMixin<T extends LivingEntity, M extends Ent
                 float s = 19f;
                 stack.scale(s, s, s);
                 stack.translate(-0.5d, 0d, -0.5d);
+
+                //set item context
+                SkullBlockRendererAccessor.setItem(itemStack);
+                SkullBlockRendererAccessor.setEntity(livingEntity);
+                SkullBlockRendererAccessor.setRenderMode(SkullBlockRendererAccessor.SkullRenderMode.HEAD);
                 SkullBlockRenderer.renderSkull(null, 0f, f, stack, multiBufferSource, i, skullModelBase, renderType);
             })) {
                 ci.cancel();
@@ -94,5 +100,12 @@ public abstract class CustomHeadLayerMixin<T extends LivingEntity, M extends Ent
         })) {
             ci.cancel();
         }
+    }
+
+    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/blockentity/SkullBlockRenderer;renderSkull(Lnet/minecraft/core/Direction;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/model/SkullModelBase;Lnet/minecraft/client/renderer/RenderType;)V"), method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V", cancellable = true)
+    private void renderSkull(PoseStack poseStack, MultiBufferSource multiBufferSource, int i, T livingEntity, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
+        SkullBlockRendererAccessor.setItem(livingEntity.getItemBySlot(EquipmentSlot.HEAD));
+        SkullBlockRendererAccessor.setEntity(livingEntity);
+        SkullBlockRendererAccessor.setRenderMode(SkullBlockRendererAccessor.SkullRenderMode.HEAD);
     }
 }

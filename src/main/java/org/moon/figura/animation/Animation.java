@@ -3,19 +3,12 @@ package org.moon.figura.animation;
 import com.mojang.datafixers.util.Pair;
 import org.luaj.vm2.LuaError;
 import org.moon.figura.avatar.Avatar;
-import org.moon.figura.model.FiguraModelPart;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
-import org.moon.figura.lua.docs.LuaFieldDoc;
-import org.moon.figura.lua.docs.LuaMethodDoc;
-import org.moon.figura.lua.docs.LuaMethodOverload;
-import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.lua.docs.*;
+import org.moon.figura.model.FiguraModelPart;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.*;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -33,13 +26,13 @@ public class Animation {
 
     // -- keyframes -- //
 
-    protected final Map<FiguraModelPart, List<AnimationChannel>> animationParts = new ConcurrentHashMap<>();
+    protected final List<Map.Entry<FiguraModelPart, List<Animation.AnimationChannel>>> animationParts = new ArrayList<>();
     private final Map<Float, String> codeFrames = new HashMap<>();
 
     // -- player variables -- //
 
     private final TimeController controller = new TimeController();
-    protected PlayState playState = PlayState.STOPPED;
+    public PlayState playState = PlayState.STOPPED;
     private float time = 0f;
     private boolean inverted = false;
     private float lastTime = 0f;
@@ -70,7 +63,21 @@ public class Animation {
     }
 
     public void addAnimation(FiguraModelPart part, AnimationChannel anim) {
-        this.animationParts.computeIfAbsent(part, modelPart -> new ArrayList<>()).add(anim);
+        Map.Entry<FiguraModelPart, List<AnimationChannel>> entry = null;
+        for (Map.Entry<FiguraModelPart, List<AnimationChannel>> listEntry : this.animationParts) {
+            if (listEntry.getKey() == part) {
+                entry = listEntry;
+                break;
+            }
+        }
+
+        if (entry == null) {
+            entry = new AbstractMap.SimpleEntry<>(part, new ArrayList<>());
+            this.animationParts.add(entry);
+        }
+
+        entry.getValue().add(anim);
+        this.animationParts.sort(Map.Entry.comparingByKey());
     }
 
     public void tick() {
@@ -119,21 +126,6 @@ public class Animation {
         }
     }
 
-    public static Map<String, Map<String, Animation>> getTableForAnimations(Avatar avatar) {
-        HashMap<String, Map<String, Animation>> root = new HashMap<>();
-        for (Animation animation : avatar.animations.values()) {
-            //get or create animation table
-            Map<String, Animation> animations = root.get(animation.modelName);
-            if (animations == null)
-                animations = new HashMap<>();
-
-            //put animation on the model table
-            animations.put(animation.name, animation);
-            root.put(animation.modelName, animations);
-        }
-        return root;
-    }
-
     // -- lua methods -- //
 
     @LuaWhitelist
@@ -175,6 +167,31 @@ public class Animation {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload,
+                    @LuaMethodOverload(
+                            argumentTypes = Boolean.class,
+                            argumentNames = "bool"
+                    )
+            },
+            value = "animation.set_playing"
+    )
+    public void setPlaying(boolean bool) {
+        if (bool)
+            play();
+        else
+            stop();
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setPlaying")
+    public Animation playing(boolean bool) {
+        setPlaying(bool);
+        return this;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc("animation.get_time")
     public float getTime() {
         return time;
@@ -195,6 +212,13 @@ public class Animation {
     }
 
     @LuaWhitelist
+    @LuaMethodShadow("setTime")
+    public Animation time(float time) {
+        setTime(time);
+        return this;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc("animation.get_play_state")
     public String getPlayState() {
         return playState.name();
@@ -206,10 +230,16 @@ public class Animation {
                     argumentTypes = {Float.class, String.class},
                     argumentNames = {"time", "code"}
             ),
-            value = "animation.add_code"
+            value = "animation.new_code"
     )
-    public Animation addCode(float time, @LuaNotNil String data) {
+    public void newCode(float time, @LuaNotNil String data) {
         codeFrames.put(Math.max(time, 0f), data);
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("newCode")
+    public Animation code(float time, @LuaNotNil String data) {
+        newCode(time, data);
         return this;
     }
 
@@ -225,10 +255,16 @@ public class Animation {
                     argumentTypes = Float.class,
                     argumentNames = "blend"
             ),
-            value = "animation.blend"
+            value = "animation.set_blend"
     )
-    public Animation blend(float blend) {
+    public void setBlend(float blend) {
         this.blend = blend;
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setBlend")
+    public Animation blend(float blend) {
+        setBlend(blend);
         return this;
     }
 
@@ -244,10 +280,16 @@ public class Animation {
                     argumentTypes = Float.class,
                     argumentNames = "offset"
             ),
-            value = "animation.offset"
+            value = "animation.set_offset"
     )
-    public Animation offset(float offset) {
+    public void setOffset(float offset) {
         this.offset = offset;
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setOffset")
+    public Animation offset(float offset) {
+        setOffset(offset);
         return this;
     }
 
@@ -263,10 +305,16 @@ public class Animation {
                     argumentTypes = Float.class,
                     argumentNames = "delay"
             ),
-            value = "animation.start_delay"
+            value = "animation.set_start_delay"
     )
-    public Animation startDelay(float delay) {
+    public void setStartDelay(float delay) {
         this.startDelay = delay;
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setStartDelay")
+    public Animation startDelay(float delay) {
+        setStartDelay(delay);
         return this;
     }
 
@@ -282,10 +330,16 @@ public class Animation {
                     argumentTypes = Float.class,
                     argumentNames = "delay"
             ),
-            value = "animation.loop_delay"
+            value = "animation.set_loop_delay"
     )
-    public Animation loopDelay(float delay) {
+    public void setLoopDelay(float delay) {
         this.loopDelay = delay;
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setLoopDelay")
+    public Animation loopDelay(float delay) {
+        setLoopDelay(delay);
         return this;
     }
 
@@ -301,10 +355,16 @@ public class Animation {
                     argumentTypes = Float.class,
                     argumentNames = "length"
             ),
-            value = "animation.length"
+            value = "animation.set_length"
     )
-    public Animation length(float length) {
+    public void setLength(float length) {
         this.length = length;
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setLength")
+    public Animation length(float length) {
+        setLength(length);
         return this;
     }
 
@@ -314,10 +374,16 @@ public class Animation {
                     argumentTypes = Boolean.class,
                     argumentNames = "override"
             ),
-            value = "animation.override"
+            value = "animation.set_override"
     )
-    public Animation override(boolean override) {
+    public void setOverride(boolean override) {
         this.override = override ? 7 : 0;
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setOverride")
+    public Animation override(boolean override) {
+        setOverride(override);
         return this;
     }
 
@@ -345,10 +411,16 @@ public class Animation {
                     argumentTypes = Boolean.class,
                     argumentNames = "override"
             ),
-            value = "animation.override_rot"
+            value = "animation.set_override_rot"
     )
-    public Animation overrideRot(boolean override) {
+    public void setOverrideRot(boolean override) {
         this.override = override ? this.override | 1 : this.override & 6;
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setOverrideRot")
+    public Animation overrideRot(boolean override) {
+        setOverrideRot(override);
         return this;
     }
 
@@ -358,10 +430,16 @@ public class Animation {
                     argumentTypes = Boolean.class,
                     argumentNames = "override"
             ),
-            value = "animation.override_pos"
+            value = "animation.set_override_pos"
     )
-    public Animation overridePos(boolean override) {
+    public void setOverridePos(boolean override) {
         this.override = override ? this.override | 2 : this.override & 5;
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setOverridePos")
+    public Animation overridePos(boolean override) {
+        setOverridePos(override);
         return this;
     }
 
@@ -371,10 +449,16 @@ public class Animation {
                     argumentTypes = Boolean.class,
                     argumentNames = "override"
             ),
-            value = "animation.override_scale"
+            value = "animation.set_override_scale"
     )
-    public Animation overrideScale(boolean override) {
+    public void setOverrideScale(boolean override) {
         this.override = override ? this.override | 4 : this.override & 3;
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setOverrideScale")
+    public Animation overrideScale(boolean override) {
+        setOverrideScale(override);
         return this;
     }
 
@@ -390,15 +474,21 @@ public class Animation {
                     argumentTypes = String.class,
                     argumentNames = "loop"
             ),
-            value = "animation.loop"
+            value = "animation.set_loop"
     )
-    public Animation loop(@LuaNotNil String loop) {
+    public void setLoop(@LuaNotNil String loop) {
         try {
             this.loop = LoopMode.valueOf(loop.toUpperCase());
-            return this;
         } catch (Exception ignored) {
             throw new LuaError("Illegal LoopMode: \"" + loop + "\".");
         }
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setLoop")
+    public Animation loop(@LuaNotNil String loop) {
+        setLoop(loop);
+        return this;
     }
 
     @LuaWhitelist
@@ -413,10 +503,16 @@ public class Animation {
                     argumentTypes = Integer.class,
                     argumentNames = "priority"
             ),
-            value = "animation.priority"
+            value = "animation.set_priority"
     )
-    public Animation priority(int priority) {
+    public void setPriority(int priority) {
         this.priority = priority;
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setPriority")
+    public Animation priority(int priority) {
+        setPriority(priority);
         return this;
     }
 
@@ -432,13 +528,25 @@ public class Animation {
                     argumentTypes = Float.class,
                     argumentNames = "speed"
             ),
-            value = "animation.speed"
+            value = "animation.set_speed"
     )
-    public Animation speed(Float speed) {
+    public void setSpeed(Float speed) {
         if (speed == null) speed = 1f;
         this.speed = speed;
         this.inverted = speed < 0;
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setSpeed")
+    public Animation speed(Float speed) {
+        setSpeed(speed);
         return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("animation.get_name")
+    public String getName() {
+        return name;
     }
 
     @LuaWhitelist

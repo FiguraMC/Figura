@@ -18,7 +18,7 @@ public class AvatarWidget extends AbstractAvatarWidget {
         super(depth, width, avatar, parent);
 
         AvatarWidget instance = this;
-        this.button = new TexturedButton(x, y, width, 20, Component.literal("  ".repeat(depth)).append(getName()), null, button -> {
+        this.button = new TexturedButton(x, y, width, 20, null, null, button -> {
             AvatarManager.loadLocalAvatar(avatar == null ? null : avatar.getPath());
             AvatarList.selectedEntry = instance;
         }) {
@@ -40,7 +40,7 @@ public class AvatarWidget extends AbstractAvatarWidget {
                 //draw text
                 font.drawShadow(
                         stack, message,
-                        this.x + 3, this.y + this.height / 2 - font.lineHeight / 2,
+                        this.getX() + 3, this.getY() + this.height / 2 - font.lineHeight / 2,
                         (!this.active ? ChatFormatting.DARK_GRAY : ChatFormatting.WHITE).getColor()
                 );
 
@@ -57,5 +57,6 @@ public class AvatarWidget extends AbstractAvatarWidget {
 
         this.button.shouldHaveBackground(false);
         children.add(this.button);
+        updateName();
     }
 }

@@ -4,10 +4,13 @@ import com.mojang.blaze3d.platform.Window;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
+import net.minecraft.client.multiplayer.ServerData;
+import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Vector3f;
 import org.luaj.vm2.LuaError;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.lua.LuaNotNil;
@@ -19,13 +22,11 @@ import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
-import org.moon.figura.utils.MathUtils;
 import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.Version;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -212,8 +213,11 @@ public class ClientAPI {
     @LuaWhitelist
     @LuaMethodDoc("client.get_camera_rot")
     public static FiguraVec3 getCameraRot() {
+        var quaternion = Minecraft.getInstance().gameRenderer.getMainCamera().rotation();
+        Vector3f vec = new Vector3f();
+        quaternion.getEulerAnglesYXZ(vec);
         double f = 180d / Math.PI;
-        return MathUtils.quaternionToYXZ(Minecraft.getInstance().gameRenderer.getMainCamera().rotation()).multiply(f, -f, f); //degrees, and negate y
+        return FiguraVec3.fromVec3f(vec).multiply(f, -f, f); //degrees, and negate y
     }
 
     @LuaWhitelist
@@ -289,7 +293,7 @@ public class ClientAPI {
     @LuaWhitelist
     @LuaMethodDoc("client.get_figura_version")
     public static String getFiguraVersion() {
-        return FiguraMod.VERSION;
+        return FiguraMod.VERSION.toString();
     }
 
     @LuaWhitelist
@@ -306,7 +310,7 @@ public class ClientAPI {
         if (v1.invalid)
             throw new LuaError("Cannot parse version " + "\"" + ver1 + "\"");
         if (v2.invalid)
-            throw new LuaError("Cannot parse version " + "\"" + ver1 + "\"");
+            throw new LuaError("Cannot parse version " + "\"" + ver2 + "\"");
 
         return v1.compareTo(v2);
     }
@@ -331,6 +335,68 @@ public class ClientAPI {
     @LuaMethodDoc("client.get_viewer")
     public static EntityAPI<?> getViewer() {
         return PlayerAPI.wrap(Minecraft.getInstance().player);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("client.get_server_data")
+    public static Map<String, String> getServerData() {
+        Map<String, String> map = new HashMap<>();
+
+        IntegratedServer iServer = Minecraft.getInstance().getSingleplayerServer();
+        if (iServer != null) {
+            map.put("name", iServer.getWorldData().getLevelName());
+            map.put("ip", iServer.getLocalIp());
+            map.put("motd", iServer.getMotd());
+            return map;
+        }
+
+        ServerData mServer = Minecraft.getInstance().getCurrentServer();
+        if (mServer != null) {
+            map.put("name", mServer.name);
+            map.put("ip", mServer.ip);
+            map.put("motd", mServer.motd.getString());
+        }
+
+        return map;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("client.get_date")
+    public static Map<String, Object> getDate() {
+        Map<String, Object> map = new HashMap<>();
+
+        Calendar calendar = FiguraMod.CALENDAR;
+        Date date = new Date();
+        calendar.setTime(date);
+
+        map.put("day", calendar.get(Calendar.DAY_OF_MONTH));
+        map.put("month", calendar.get(Calendar.MONTH) + 1);
+        map.put("year", calendar.get(Calendar.YEAR));
+        map.put("hour", calendar.get(Calendar.HOUR_OF_DAY));
+        map.put("minute", calendar.get(Calendar.MINUTE));
+        map.put("second", calendar.get(Calendar.SECOND));
+        map.put("millisecond", calendar.get(Calendar.MILLISECOND));
+        map.put("week", calendar.get(Calendar.WEEK_OF_YEAR));
+        map.put("year_day", calendar.get(Calendar.DAY_OF_YEAR));
+        map.put("week_day", calendar.get(Calendar.DAY_OF_WEEK));
+        map.put("daylight_saving", calendar.getTimeZone().inDaylightTime(date));
+
+        SimpleDateFormat format = new SimpleDateFormat("Z|zzzz|G|MMMM|EEEE", Locale.US);
+        String[] f = format.format(date).split("\\|");
+
+        map.put("timezone", f[0]);
+        map.put("timezone_name", f[1]);
+        map.put("era", f[2]);
+        map.put("month_name", f[3]);
+        map.put("day_name", f[4]);
+
+        return map;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("client.get_frame_time")
+    public static double getFrameTime() {
+        return Minecraft.getInstance().getFrameTime();
     }
 
     @Override

@@ -11,10 +11,9 @@ import net.minecraft.network.chat.Style;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
-import org.moon.figura.backend.NetworkManager;
+import org.moon.figura.backend2.NetworkStuff;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.MathUtils;
-import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.ui.UIHelper;
 
 import java.util.List;
@@ -33,7 +32,7 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
     private final Font font;
     protected final int count;
     protected int status = 0;
-    private Component disconnectedReason;
+    private Component scriptError, disconnectedReason;
 
     public int x, y;
     public int width, height;
@@ -61,18 +60,19 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
         boolean empty = avatar == null || avatar.nbt == null;
 
-        status = empty ? 0 : avatar.fileSize > NetworkManager.getSizeLimit() ? 1 : avatar.fileSize > NetworkManager.getSizeLimit() * 0.75 ? 2 : 3;
+        status = empty ? 0 : avatar.fileSize > NetworkStuff.getSizeLimit() ? 1 : avatar.fileSize > NetworkStuff.getSizeLimit() * 0.75 ? 2 : 3;
 
         int texture = empty || !avatar.hasTexture ? 0 : 3;
         status += texture << 2;
 
         int script = empty ? 0 : avatar.scriptError ? 1 : avatar.luaRuntime == null ? 0 : avatar.versionStatus > 0 ? 2 : 3;
         status += script << 4;
+        scriptError = script == 1 ? avatar.errorText.copy() : null;
 
-        int backend = NetworkManager.backendStatus;
+        int backend = NetworkStuff.backendStatus;
         status += backend << 6;
 
-        String dc = NetworkManager.disconnectedReason;
+        String dc = NetworkStuff.disconnectedReason;
         disconnectedReason = backend == 1 && dc != null && !dc.isBlank() ? Component.literal(dc) : null;
     }
 
@@ -88,21 +88,21 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
         boolean hovered = this.isMouseOver(mouseX, mouseY);
 
         //text and tooltip
-        float spacing = (width - (background ? 13 : 11)) / (count - 1f);
-        float hSpacing = spacing / 2;
+        double spacing = (double) width / count;
+        double hSpacing = spacing * 0.5;
         for (int i = 0; i < count; i++) {
-            int x = (int) (this.x + spacing * i + (background ? 1 : 0));
+            int x = (int) (this.x + spacing * i + hSpacing);
 
-            Component text = getStatus(i);
-            UIHelper.drawString(stack, font, text, x, y + (background ? 3 : 0), 0xFFFFFF);
+            Component text = getStatusIcon(i);
+            UIHelper.drawString(stack, font, text, x - font.width(text) / 2, y + (background ? 3 : 0), 0xFFFFFF);
 
-            if (hovered && mouseX >= x - hSpacing + 6 && mouseX < x + hSpacing + 6 && mouseY >= y && mouseY < y + (background ? 14 : 11))
+            if (hovered && mouseX >= x - hSpacing && mouseX < x + hSpacing && mouseY >= y && mouseY < y + font.lineHeight + (background ? 3 : 0))
                 UIHelper.setTooltip(getTooltipFor(i));
         }
     }
 
-    private MutableComponent getStatus(int type) {
-        return Component.literal(String.valueOf(STATUS_INDICATORS.charAt(status >> (type * 2) & 3))).setStyle(Style.EMPTY.withFont(TextUtils.FIGURA_FONT));
+    public MutableComponent getStatusIcon(int type) {
+        return Component.literal(String.valueOf(STATUS_INDICATORS.charAt(status >> (type * 2) & 3))).setStyle(Style.EMPTY.withFont(UIHelper.UI_FONT));
     }
 
     public Component getTooltipFor(int i) {
@@ -112,7 +112,7 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
 
         MutableComponent info;
         if (i == 0) {
-            double size = color == 1 ? NetworkManager.getSizeLimit() : NetworkManager.getSizeLimit() * 0.75;
+            double size = color == 1 ? NetworkStuff.getSizeLimit() : NetworkStuff.getSizeLimit() * 0.75;
             info = FiguraText.of(part + "." + color, MathUtils.asFileSize(size));
         } else {
             info = FiguraText.of(part + "." + color);
@@ -120,9 +120,13 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
 
         MutableComponent text = FiguraText.of(part).append("\n• ").append(info).setStyle(TEXT_COLORS.get(color));
 
+        //script error
+        if (i == 2 && color == 1 && scriptError != null)
+            text.append("\n\n").append(FiguraText.of("gui.status.reason")).append("\n• ").append(scriptError);
+
         //get backend disconnect reason
         if (i == 3 && disconnectedReason != null)
-            text.append("\n\n").append(FiguraText.of(part + ".reason")).append("\n• ").append(disconnectedReason);
+            text.append("\n\n").append(FiguraText.of("gui.status.reason")).append("\n• ").append(disconnectedReason);
 
         return text;
     }

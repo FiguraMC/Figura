@@ -84,7 +84,7 @@ public class KeybindList extends AbstractList {
         if (owner == null || owner.luaRuntime == null)
             return;
 
-        for (FiguraKeybind keybind : owner.luaRuntime.keybind.keyBindings) {
+        for (FiguraKeybind keybind : owner.luaRuntime.keybinds.keyBindings) {
             KeybindElement element = new KeybindElement(width - 22, keybind, this);
             keybinds.add(element);
             children.add(element);
@@ -169,11 +169,11 @@ public class KeybindList extends AbstractList {
             this.x = x;
             this.y = y;
 
-            resetButton.x = x + width - 60;
-            resetButton.y = y;
+            resetButton.setX(x + width - 60);
+            resetButton.setY(y);
 
-            keybindButton.x = x + width - 154;
-            keybindButton.y = y;
+            keybindButton.setX(x + width - 154);
+            keybindButton.setY(y);
         }
     }
 }

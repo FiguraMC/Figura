@@ -1,14 +1,17 @@
 package org.moon.figura.gui.widgets.config;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import org.moon.figura.config.Config;
 import org.moon.figura.gui.widgets.AbstractContainerElement;
 import org.moon.figura.gui.widgets.ParentedButton;
 import org.moon.figura.gui.widgets.TexturedButton;
 import org.moon.figura.gui.widgets.lists.ConfigList;
+import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.ui.UIHelper;
 
 public abstract class AbstractConfigElement extends AbstractContainerElement {
@@ -43,7 +46,7 @@ public abstract class AbstractConfigElement extends AbstractContainerElement {
         if (isHovered()) font.draw(stack, HOVERED_ARROW, x + 8 - font.width(HOVERED_ARROW) / 2, textY, 0xFFFFFF);
 
         //render name
-        font.draw(stack, config.name, x + 16, textY, 0xFFFFFF);
+        font.draw(stack, config.name, x + 16, textY, (config.disabled ? ChatFormatting.DARK_GRAY : ChatFormatting.WHITE).getColor());
 
         //render children
         super.render(stack, mouseX, mouseY, delta);
@@ -53,8 +56,17 @@ public abstract class AbstractConfigElement extends AbstractContainerElement {
     public boolean isMouseOver(double mouseX, double mouseY) {
         boolean over = this.parent.isInsideScissors(mouseX, mouseY) && super.isMouseOver(mouseX, mouseY);
 
-        if (over && mouseX < this.x + this.width - 158)
-            UIHelper.setTooltip(config.tooltip);
+        if (over && mouseX < this.x + this.width - 158) {
+            MutableComponent tooltip = config.tooltip.copy();
+
+            if (config.enumTooltip != null) {
+                tooltip.append("\n");
+                for (Component component : TextUtils.splitText(config.enumTooltip, "\n"))
+                    tooltip.append("\n• ").append(component);
+            }
+
+            UIHelper.setTooltip(tooltip);
+        }
 
         return over;
     }
@@ -71,7 +83,7 @@ public abstract class AbstractConfigElement extends AbstractContainerElement {
         this.x = x;
         this.y = y;
 
-        resetButton.x = x + width - 60;
-        resetButton.y = y;
+        resetButton.setX(x + width - 60);
+        resetButton.setY(y);
     }
 }

@@ -1,10 +1,12 @@
 package org.moon.figura.lua.api.nameplate;
 
+import net.minecraft.client.renderer.LightTexture;
 import org.moon.figura.lua.LuaWhitelist;
-import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
+import org.moon.figura.lua.docs.LuaMethodShadow;
 import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec4;
 import org.moon.figura.utils.ColorUtils;
@@ -19,18 +21,11 @@ public class EntityNameplateCustomization extends NameplateCustomization {
 
     private FiguraVec3 position;
     private FiguraVec3 scale;
-    public Integer background;
+    public Integer background, outlineColor, light;
     public Double alpha;
 
-    @LuaWhitelist
-    @LuaFieldDoc("nameplate_entity.visible")
     public boolean visible = true;
-    @LuaWhitelist
-    @LuaFieldDoc("nameplate_entity.shadow")
-    public boolean shadow;
-    @LuaWhitelist
-    @LuaFieldDoc("nameplate_entity.outline")
-    public boolean outline;
+    public boolean shadow, outline;
 
     @LuaWhitelist
     @LuaMethodDoc("nameplate_entity.get_pos")
@@ -57,6 +52,13 @@ public class EntityNameplateCustomization extends NameplateCustomization {
     }
 
     @LuaWhitelist
+    @LuaMethodShadow("setPos")
+    public EntityNameplateCustomization pos(Object x, Double y, Double z) {
+        setPos(x, y, z);
+        return this;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc("nameplate_entity.get_scale")
     public FiguraVec3 getScale() {
         return this.scale;
@@ -78,6 +80,13 @@ public class EntityNameplateCustomization extends NameplateCustomization {
     )
     public void setScale(Object x, Double y, Double z) {
         this.scale = x == null ? null : LuaUtils.parseVec3("setScale", x, y, z, 1, 1, 1);
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setScale")
+    public EntityNameplateCustomization scale(Object x, Double y, Double z) {
+        setScale(x, y, z);
+        return this;
     }
 
     @LuaWhitelist
@@ -124,24 +133,146 @@ public class EntityNameplateCustomization extends NameplateCustomization {
     }
 
     @LuaWhitelist
-    public Object __index(String arg) {
-        if (arg == null) return null;
-        return switch (arg) {
-            case "visible" -> visible;
-            case "shadow" -> shadow;
-            case "outline" -> outline;
-            default -> null;
-        };
+    @LuaMethodShadow("setBackgroundColor")
+    public EntityNameplateCustomization backgroundColor(Object r, Double g, Double b, Double a) {
+        setBackgroundColor(r, g, b, a);
+        return this;
     }
 
     @LuaWhitelist
-    public void __newindex(String key, boolean value) {
-        if (key == null) return;
-        switch (key) {
-            case "visible" -> visible = value;
-            case "shadow" -> shadow = value;
-            case "outline" -> outline = value;
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "color"
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"r", "g", "b"}
+                    )
+            },
+            value = "nameplate_entity.set_outline_color"
+    )
+    public void setOutlineColor(Object x, Double y, Double z) {
+        outlineColor = ColorUtils.rgbToInt(LuaUtils.parseVec3("setOutlineColor", x, y, z));
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setOutlineColor")
+    public EntityNameplateCustomization outlineColor(Object x, Double y, Double z) {
+        setOutlineColor(x, y, z);
+        return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("nameplate_entity.get_light")
+    public FiguraVec2 getLight() {
+        return light == null ? null : FiguraVec2.of(LightTexture.block(light), LightTexture.sky(light));
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = FiguraVec2.class,
+                            argumentNames = "light"
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {Integer.class, Integer.class},
+                            argumentNames = {"blockLight", "skyLight"}
+                    )
+            },
+            value = "nameplate_entity.set_light")
+    public void setLight(Object light, Double skyLight) {
+        if (light == null) {
+            this.light = null;
+            return;
         }
+
+        FiguraVec2 lightVec = LuaUtils.parseVec2("setLight", light, skyLight);
+        this.light = LightTexture.pack((int) lightVec.x, (int) lightVec.y);
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setLight")
+    public EntityNameplateCustomization light(Object light, Double skyLight) {
+        setLight(light, skyLight);
+        return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("nameplate_entity.is_visible")
+    public boolean isVisible() {
+        return visible;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = Boolean.class,
+                    argumentNames = "visible"
+            ),
+            value = "animation.set_visible"
+    )
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setVisible")
+    public EntityNameplateCustomization visible(boolean visible) {
+        setVisible(visible);
+        return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("nameplate_entity.has_outline")
+    public boolean hasOutline() {
+        return outline;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = Boolean.class,
+                    argumentNames = "outline"
+            ),
+            value = "animation.set_outline"
+    )
+    public void setOutline(boolean outline) {
+        this.outline = outline;
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setOutline")
+    public EntityNameplateCustomization outline(boolean outline) {
+        setOutline(outline);
+        return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("nameplate_entity.has_shadow")
+    public boolean hasShadow() {
+        return shadow;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = Boolean.class,
+                    argumentNames = "shadow"
+            ),
+            value = "animation.set_shadow"
+    )
+    public void setShadow(boolean shadow) {
+        this.shadow = shadow;
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setShadow")
+    public EntityNameplateCustomization shadow(boolean shadow) {
+        setShadow(shadow);
+        return this;
     }
 
     @Override

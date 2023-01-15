@@ -37,7 +37,7 @@ public class AbstractTrustElement extends AbstractButton implements Comparable<A
     public boolean isMouseOver(double mouseX, double mouseY) {
         int dw = (int) ((width * scale - width) / 2f);
         int dh = (int) ((height * scale - height) / 2f);
-        return parent.isInsideScissors(mouseX, mouseY) && active && visible && UIHelper.isMouseOver(x - dw, y - dh, width + dw, height + dh, mouseX, mouseY);
+        return parent.isInsideScissors(mouseX, mouseY) && active && visible && UIHelper.isMouseOver(getX() - dw, getY() - dh, width + dw, height + dh, mouseX, mouseY);
     }
 
     @Override
@@ -55,7 +55,7 @@ public class AbstractTrustElement extends AbstractButton implements Comparable<A
     }
 
     @Override
-    public void updateNarration(NarrationElementOutput narrationElementOutput) {
+    protected void updateWidgetNarration(NarrationElementOutput builder) {
     }
 
     public boolean isVisible() {

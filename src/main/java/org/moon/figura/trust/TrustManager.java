@@ -4,6 +4,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import org.moon.figura.FiguraMod;
+import org.moon.figura.config.Config;
 import org.moon.figura.utils.IOUtils;
 
 import java.util.*;
@@ -100,8 +101,13 @@ public class TrustManager {
 
             //get players nbt
             for (TrustContainer.PlayerContainer trust : PLAYERS.values()) {
-                //dont save local or unchanged trusts
-                if (isLocal(trust) || (!trust.hasChanges() && trust.getGroup() == Trust.Group.UNTRUSTED))
+                //dont save local
+                if (isLocal(trust))
+                    continue;
+
+                Trust.Group group = Trust.Group.indexOf(Config.DEFAULT_TRUST.asInt());
+                if (group == null) group = Trust.Group.UNTRUSTED;
+                if ((!trust.hasChanges() && trust.getGroup() == group))
                     continue;
 
                 CompoundTag container = new CompoundTag();
@@ -122,11 +128,23 @@ public class TrustManager {
         if (PLAYERS.containsKey(id))
             return PLAYERS.get(id);
 
-        boolean local = FiguraMod.isLocal(id);
-        TrustContainer.PlayerContainer trust = new TrustContainer.PlayerContainer(GROUPS.get(local ? Trust.Group.LOCAL : Trust.Group.UNTRUSTED), id.toString());
+        Trust.Group group = Trust.Group.indexOf(Config.DEFAULT_TRUST.asInt());
+        if (FiguraMod.isLocal(id)) {
+            group = Trust.Group.LOCAL;
+        } else if (group == null) {
+            group = Trust.Group.UNTRUSTED;
+        }
+
+        TrustContainer.PlayerContainer trust = new TrustContainer.PlayerContainer(GROUPS.get(group), id.toString());
         PLAYERS.put(id, trust);
 
         FiguraMod.debug("Created trust for: " + id);
+        return trust;
+    }
+
+    public static TrustContainer.PlayerContainer getMobTrust(UUID id) {
+        TrustContainer.PlayerContainer trust = new TrustContainer.PlayerContainer(GROUPS.get(Trust.Group.LOCAL), id.toString());
+        trust.insert(Trust.OFFSCREEN_RENDERING, 0, FiguraMod.MOD_ID);
         return trust;
     }
 

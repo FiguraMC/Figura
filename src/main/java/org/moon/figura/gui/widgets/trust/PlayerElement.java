@@ -111,27 +111,27 @@ public class PlayerElement extends AbstractTrustElement {
     @Override
     public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
         if (dragged)
-            UIHelper.fillRounded(stack, x - 1, y - 1, width + 2, height + 2, 0x40FFFFFF);
+            UIHelper.fillRounded(stack, getX() - 1, getY() - 1, width + 2, height + 2, 0x40FFFFFF);
         else
             super.render(stack, mouseX, mouseY, delta);
     }
 
     public void renderDragged(PoseStack stack, int mouseX, int mouseY, float delta) {
-        int oX = x;
-        int oY = y;
-        x = mouseX - (anchorX - x);
-        y = mouseY - (anchorY - y) + (initialY - oY);
+        int oX = getX();
+        int oY = getY();
+        setX(mouseX - (anchorX - oX));
+        setY(mouseY - (anchorY - oY) + (initialY - oY));
         super.render(stack, mouseX, mouseY, delta);
-        x = oX;
-        y = oY;
+        setX(oX);
+        setY(oY);
     }
 
     @Override
     public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
         stack.pushPose();
 
-        float tx = x + width / 2f;
-        float ty = y + height / 2f;
+        float tx = getX() + width / 2f;
+        float ty = getY() + height / 2f;
 
         stack.translate(tx, ty, 100);
         stack.scale(scale, scale, 1f);
@@ -156,17 +156,13 @@ public class PlayerElement extends AbstractTrustElement {
 
         //head
         Component name = null;
-        boolean replaceBadges = false;
         boolean head = false;
 
         Avatar avatar = AvatarManager.getAvatarForPlayer(owner);
         if (avatar != null) {
             NameplateCustomization custom = avatar.luaRuntime == null ? null : avatar.luaRuntime.nameplate.LIST;
-            if (custom != null && custom.getText() != null && avatar.trust.get(Trust.NAMEPLATE_EDIT) == 1) {
-                name = NameplateCustomization.applyCustomization(custom.getText());
-                if (custom.getText().contains("${badges}"))
-                    replaceBadges = true;
-            }
+            if (custom != null && custom.getJson() != null && avatar.trust.get(Trust.NAMEPLATE_EDIT) == 1)
+                name = custom.getJson().copy();
 
             head = !dragged && avatar.renderPortrait(stack, x + 4, y + 4, Math.round(32 * scale), 64, true);
         }
@@ -188,14 +184,16 @@ public class PlayerElement extends AbstractTrustElement {
 
         //name
         Font font = Minecraft.getInstance().font;
+        Component ogName = Component.literal(this.name);
 
         if (name == null)
-            name = Component.literal(this.name);
+            name = ogName;
 
+        name = TextUtils.replaceInText(name, "\\$\\{name\\}", ogName);
         name = Component.empty().append(name.copy().withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(this.name + "\n" + this.owner)))));
 
-        Component badges = Badges.fetchBadges(avatar);
-        name = replaceBadges ? TextUtils.replaceInText(name, "\\$\\{badges\\}", badges) : name.copy().append(" ").append(badges);
+        //badges
+        name = Badges.appendBadges(name, owner, true);
 
         nameLabel.setText(TextUtils.trimToWidthEllipsis(font, name, width - 40, TextUtils.ELLIPSIS));
         nameLabel.x = x + 40;

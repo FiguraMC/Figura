@@ -480,12 +480,12 @@ public class FiguraVec6 extends FiguraVector<FiguraVec6, FiguraMatrix.DummyMatri
             value = "vector_n.apply_func"
     )
     public FiguraVec6 applyFunc(@LuaNotNil LuaFunction function) {
-        x = function.call(LuaValue.valueOf(1), LuaValue.valueOf(x)).todouble();
-        y = function.call(LuaValue.valueOf(2), LuaValue.valueOf(y)).todouble();
-        z = function.call(LuaValue.valueOf(3), LuaValue.valueOf(z)).todouble();
-        w = function.call(LuaValue.valueOf(4), LuaValue.valueOf(w)).todouble();
-        t = function.call(LuaValue.valueOf(5), LuaValue.valueOf(t)).todouble();
-        h = function.call(LuaValue.valueOf(6), LuaValue.valueOf(h)).todouble();
+        x = function.call(LuaValue.valueOf(x), LuaValue.valueOf(1)).todouble();
+        y = function.call(LuaValue.valueOf(y), LuaValue.valueOf(2)).todouble();
+        z = function.call(LuaValue.valueOf(z), LuaValue.valueOf(3)).todouble();
+        w = function.call(LuaValue.valueOf(w), LuaValue.valueOf(4)).todouble();
+        t = function.call(LuaValue.valueOf(t), LuaValue.valueOf(5)).todouble();
+        h = function.call(LuaValue.valueOf(h), LuaValue.valueOf(6)).todouble();
         return this;
     }
 

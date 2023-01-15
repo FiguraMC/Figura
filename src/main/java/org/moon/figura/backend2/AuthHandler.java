@@ -1,6 +1,5 @@
 package org.moon.figura.backend2;
 
-import net.minecraft.client.ClientTelemetryManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientHandshakePacketListenerImpl;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -19,9 +18,6 @@ import java.util.Optional;
 
 public class AuthHandler {
 
-    private static final int RECONNECT = 6000; //5 min
-
-    private static int lastAuth = 0;
     private static Connection authConnection;
 
     public static void tick() {
@@ -34,19 +30,12 @@ public class AuthHandler {
                 authConnection = null;
             }
         }
-
-        //re auth
-        lastAuth++;
-        if (lastAuth >= RECONNECT)
-            auth(false);
     }
 
     public static void auth(boolean reAuth) {
         NetworkStuff.async(() -> {
             try {
-                lastAuth = (int) (Math.random() * 600) - 300; //between -15 and +15 seconds
-
-                if (!reAuth && NetworkStuff.backendStatus != 3)
+                if (!reAuth && NetworkStuff.isConnected())
                     return;
 
                 if (authConnection != null && !authConnection.isConnected())
@@ -56,20 +45,18 @@ public class AuthHandler {
                 NetworkStuff.backendStatus = 2;
 
                 Minecraft minecraft = Minecraft.getInstance();
-                ClientTelemetryManager telemetryManager = minecraft.createTelemetryManager();
 
-                ServerAddress authServer = ServerAddress.parseString(Config.AUTH_SERVER_IP.asString());
+                ServerAddress authServer = ServerAddress.parseString(Config.SERVER_IP.asString());
                 InetSocketAddress inetSocketAddress = new InetSocketAddress(authServer.getHost(), authServer.getPort());
                 Connection connection = Connection.connectToServer(inetSocketAddress, minecraft.options.useNativeTransport());
 
-                connection.setListener(new ClientHandshakePacketListenerImpl(connection, minecraft, null, (text) -> FiguraMod.LOGGER.info(text.getString())) {
+                connection.setListener(new ClientHandshakePacketListenerImpl(connection, minecraft, null, null, false, null, (text) -> FiguraMod.LOGGER.info(text.getString())) {
                     @Override
                     public void handleGameProfile(ClientboundGameProfilePacket clientboundGameProfilePacket) {
                         super.handleGameProfile(clientboundGameProfilePacket);
-                        connection.setListener(new ClientPacketListener(minecraft, null, connection, clientboundGameProfilePacket.getGameProfile(), telemetryManager) {
+                        connection.setListener(new ClientPacketListener(minecraft, null, connection, null, clientboundGameProfilePacket.getGameProfile(), minecraft.getTelemetryManager().createWorldSessionManager(false, null)) {
                             @Override
                             public void onDisconnect(Component reason) {
-                                telemetryManager.onDisconnect();
                                 String dc = reason.getString();
 
                                 //parse token
@@ -85,9 +72,7 @@ public class AuthHandler {
                                     return;
                                 }
 
-                                authConnection = null;
-                                NetworkStuff.disconnectedReason = null;
-                                NetworkStuff.api = new API(split[0]);
+                                connected(split[0]);
                             }
                         });
                     }
@@ -99,7 +84,7 @@ public class AuthHandler {
                 });
 
                 connection.send(new ClientIntentionPacket(inetSocketAddress.getHostName(), inetSocketAddress.getPort(), ConnectionProtocol.LOGIN));
-                connection.send(new ServerboundHelloPacket(minecraft.getUser().getName(), minecraft.getProfileKeyPairManager().preparePublicKey().join(), Optional.ofNullable(minecraft.getUser().getProfileId())));
+                connection.send(new ServerboundHelloPacket(minecraft.getUser().getName(), Optional.ofNullable(minecraft.getUser().getProfileId())));
 
                 authConnection = connection;
             } catch (Exception e) {
@@ -110,8 +95,11 @@ public class AuthHandler {
 
     private static void handleDc(String reason) {
         authConnection = null;
-        NetworkStuff.disconnectedReason = reason;
-        NetworkStuff.backendStatus = 1;
-        NetworkStuff.api = null;
+        NetworkStuff.authFail(reason);
+    }
+
+    private static void connected(String token) {
+        authConnection = null;
+        NetworkStuff.authSuccess(token);
     }
 }

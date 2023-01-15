@@ -2,11 +2,12 @@ package org.moon.figura.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.config.Config;
-import org.moon.figura.model.rendering.texture.EntityRenderMode;
+import org.moon.figura.model.rendering.EntityRenderMode;
 import org.moon.figura.utils.ui.UIHelper;
 
 public class PaperDoll {
@@ -15,28 +16,28 @@ public class PaperDoll {
 
     public static void render(PoseStack stack) {
         Minecraft minecraft = Minecraft.getInstance();
-        Player player = minecraft.getCameraEntity() instanceof Player p ? p : null;
+        LivingEntity entity = minecraft.getCameraEntity() instanceof LivingEntity e ? e : null;
         Avatar avatar;
 
         if (!Config.HAS_PAPERDOLL.asBool() ||
-                player == null ||
+                entity == null ||
                 !Minecraft.renderNames() ||
                 minecraft.options.renderDebug ||
                 (Config.FIRST_PERSON_PAPERDOLL.asBool() && !minecraft.options.getCameraType().isFirstPerson()) ||
-                player.isSleeping())
+                entity.isSleeping())
             return;
 
         //check if should stay always on
-        if (!Config.PAPERDOLL_ALWAYS_ON.asBool() && (avatar = AvatarManager.getAvatarForPlayer(player.getUUID())) != null && avatar.luaRuntime != null && !avatar.luaRuntime.renderer.forcePaperdoll) {
+        if (!Config.PAPERDOLL_ALWAYS_ON.asBool() && (avatar = AvatarManager.getAvatar(entity)) != null && avatar.luaRuntime != null && !avatar.luaRuntime.renderer.forcePaperdoll) {
             //if action - reset activity time and enable can draw
-            if (player.isSprinting() ||
-                    player.isCrouching() ||
-                    player.isAutoSpinAttack() ||
-                    player.isVisuallySwimming() ||
-                    player.isFallFlying() ||
-                    player.isBlocking() ||
-                    player.onClimbable() ||
-                    player.getAbilities().flying)
+            if (entity.isSprinting() ||
+                    entity.isCrouching() ||
+                    entity.isAutoSpinAttack() ||
+                    entity.isVisuallySwimming() ||
+                    entity.isFallFlying() ||
+                    entity.isBlocking() ||
+                    entity.onClimbable() ||
+                    (entity instanceof Player p && p.getAbilities().flying))
                 lastActivityTime = System.currentTimeMillis();
 
             //if activity time is greater than duration - return
@@ -59,7 +60,7 @@ public class PaperDoll {
                 x, y,
                 scale * 30f,
                 Config.PAPERDOLL_PITCH.asFloat(), Config.PAPERDOLL_YAW.asFloat(),
-                player, stack, EntityRenderMode.PAPERDOLL
+                entity, stack, EntityRenderMode.PAPERDOLL
         );
     }
 }

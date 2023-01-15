@@ -2,7 +2,6 @@ package org.moon.figura.model.rendering;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
-import com.mojang.math.Matrix3f;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -13,6 +12,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix3f;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
@@ -52,7 +52,6 @@ public abstract class AvatarRenderer {
     public PoseStack matrices;
     public MultiBufferSource bufferSource;
     public VanillaModelData vanillaModelData = new VanillaModelData();
-    public boolean allowMatrixUpdate = false;
 
     public PartFilterScheme currentFilterScheme;
     public final HashMap<ParentType, ConcurrentLinkedQueue<Pair<FiguraMat4, FiguraMat3>>> pivotCustomizations = new HashMap<>();
@@ -60,10 +59,12 @@ public abstract class AvatarRenderer {
     public final HashMap<String, FiguraTexture> textures = new HashMap<>();
     public final HashMap<String, FiguraTexture> customTextures = new HashMap<>();
     protected static int shouldRenderPivots;
+    public boolean allowMatrixUpdate = false;
     public boolean allowHiddenTransforms = true;
     public boolean allowRenderTasks = true;
     public boolean allowSkullRendering = true;
     public boolean allowPivotParts = true;
+    public boolean updateLight = false;
 
     public AvatarRenderer(Avatar avatar) {
         this.avatar = avatar;
@@ -84,7 +85,12 @@ public abstract class AvatarRenderer {
         ListTag texturesList = nbt.getList("data", Tag.TAG_COMPOUND);
         for (Tag t : texturesList) {
             CompoundTag tag = (CompoundTag) t;
-            textureSets.add(new FiguraTextureSet(textures.get(tag.getString("default")), textures.get(tag.getString("emissive"))));
+            textureSets.add(new FiguraTextureSet(
+                    textures.get(tag.getString("d")),
+                    textures.get(tag.getString("e")),
+                    textures.get(tag.getString("s")),
+                    textures.get(tag.getString("n"))
+            ));
         }
 
         avatar.hasTexture = !texturesList.isEmpty();
@@ -92,6 +98,8 @@ public abstract class AvatarRenderer {
 
     public abstract int render();
     public abstract int renderSpecialParts();
+    public abstract void updateMatrices();
+
     protected void clean() {
         root.clean();
         for (FiguraTexture texture : customTextures.values())
@@ -130,7 +138,7 @@ public abstract class AvatarRenderer {
     public static FiguraMat4 worldToViewMatrix() {
         Minecraft client = Minecraft.getInstance();
         Camera camera = client.gameRenderer.getMainCamera();
-        Matrix3f cameraMat3f = new Matrix3f(camera.rotation());
+        Matrix3f cameraMat3f = new Matrix3f().rotation(camera.rotation());
         cameraMat3f.invert();
         FiguraMat4 result = FiguraMat4.of();
         Vec3 cameraPos = camera.getPosition().scale(-1);

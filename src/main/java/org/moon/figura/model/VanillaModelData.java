@@ -3,7 +3,6 @@ package org.moon.figura.model;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
-import org.moon.figura.ducks.LivingEntityRendererAccessor;
 import org.moon.figura.math.vector.FiguraVec3;
 
 import java.util.HashMap;
@@ -23,20 +22,27 @@ public class VanillaModelData {
             ParentType parent = entry.getKey();
 
             EntityModel<?> vanillaModel;
-            if (parent == ParentType.LeftElytra || parent == ParentType.RightElytra)
-                vanillaModel = ((LivingEntityRendererAccessor<?>) entityRenderer).figura$getElytraModel();
-            else
-                vanillaModel = entityRenderer.getModel();
+            vanillaModel = entityRenderer.getModel();
 
             if (vanillaModel == null)
                 continue;
 
-            ModelPart part = parent.provider.func.apply(vanillaModel);
-            if (part == null)
-                continue;
-
-            entry.getValue().updateFromPart(part);
+            update(parent, vanillaModel);
         }
+    }
+
+    public void update(ParentType parent, EntityModel<?> model) {
+        ModelPart part = parent.provider.func.apply(model);
+        if (part == null)
+            return;
+
+        update(parent, part);
+    }
+
+    public void update(ParentType parent, ModelPart part) {
+        PartData data = partMap.get(parent);
+        if (data != null)
+            data.updateFromPart(part);
     }
 
     public static class PartData {
@@ -44,11 +50,13 @@ public class VanillaModelData {
         public final FiguraVec3 pos = FiguraVec3.of();
         public final FiguraVec3 rot = FiguraVec3.of();
         public final FiguraVec3 scale = FiguraVec3.of();
+        public boolean visible = false;
 
         private void updateFromPart(ModelPart model) {
-            this.pos.set(model.x, model.y, model.z);
+            this.pos.set(model.x, model.y, -model.z);
             this.rot.set(Math.toDegrees(-model.xRot), Math.toDegrees(-model.yRot), Math.toDegrees(model.zRot));
-            this.scale.set(model.xScale, model.yScale, -model.zScale);
+            this.scale.set(model.xScale, model.yScale, model.zScale);
+            this.visible = model.visible;
         }
     }
 }

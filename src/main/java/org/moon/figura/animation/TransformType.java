@@ -6,6 +6,7 @@ import org.moon.figura.math.vector.FiguraVec3;
 public enum TransformType {
     POSITION(FiguraModelPart::animPosition),
     ROTATION(FiguraModelPart::animRotation),
+    GLOBAL_ROT(FiguraModelPart::globalAnimRot),
     SCALE(FiguraModelPart::animScale);
 
     private final ITransform function;

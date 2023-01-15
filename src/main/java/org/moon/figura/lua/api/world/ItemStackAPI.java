@@ -1,13 +1,13 @@
 package org.moon.figura.lua.api.world;
 
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.*;
 import org.luaj.vm2.LuaTable;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.NbtToLua;
@@ -49,8 +49,20 @@ public class ItemStackAPI {
 
     public ItemStackAPI(ItemStack itemStack) {
         this.itemStack = itemStack;
-        this.id = Registry.ITEM.getKey(itemStack.getItem()).toString();
+        this.id = BuiltInRegistries.ITEM.getKey(itemStack.getItem()).toString();
         this.tag = (LuaTable) NbtToLua.convert(itemStack.getTag() != null ? itemStack.getTag() : null);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("itemstack.get_id")
+    public String getID() {
+        return id;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("itemstack.get_tag")
+    public LuaTable getTag() {
+        return tag;
     }
 
     @LuaWhitelist
@@ -82,7 +94,7 @@ public class ItemStackAPI {
     public List<String> getTags() {
         List<String> list = new ArrayList<>();
 
-        Registry<Item> registry = WorldAPI.getCurrentWorld().registryAccess().registryOrThrow(Registry.ITEM_REGISTRY);
+        Registry<Item> registry = WorldAPI.getCurrentWorld().registryAccess().registryOrThrow(Registries.ITEM);
         Optional<ResourceKey<Item>> key = registry.getResourceKey(itemStack.getItem());
 
         if (key.isEmpty())
@@ -170,7 +182,7 @@ public class ItemStackAPI {
     @LuaMethodDoc("itemstack.to_stack_string")
     public String toStackString() {
         ItemStack stack = itemStack;
-        String ret = Registry.ITEM.getKey(stack.getItem()).toString();
+        String ret = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
 
         CompoundTag nbt = stack.getTag();
         if (nbt != null)
@@ -180,8 +192,41 @@ public class ItemStackAPI {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("itemstack.is_armor")
+    public boolean isArmor() {
+        return itemStack.getItem() instanceof ArmorItem;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("itemstack.is_tool")
+    public boolean isTool() {
+        return itemStack.getItem() instanceof DiggerItem;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("itemstack.get_equipment_slot")
+    public String getEquipmentSlot() {
+        return LivingEntity.getEquipmentSlotForItem(itemStack).name();
+    }
+
+    @LuaWhitelist
     public boolean __eq(ItemStackAPI other) {
-        return ItemStack.matches(this.itemStack, other.itemStack);
+        if (this == other)
+            return true;
+
+        ItemStack t = this.itemStack;
+        ItemStack o = other.itemStack;
+        if (t.getCount() != o.getCount())
+            return false;
+        if (!t.is(o.getItem()))
+            return false;
+
+        CompoundTag tag1 = t.getTag();
+        CompoundTag tag2 = o.getTag();
+        if (tag1 == null && tag2 != null)
+            return false;
+
+        return tag1 == null || tag1.equals(tag2);
     }
 
     @LuaWhitelist

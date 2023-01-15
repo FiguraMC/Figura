@@ -10,8 +10,11 @@ import net.minecraft.client.multiplayer.resolver.ServerAddress;
 import net.minecraft.network.chat.Component;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.AvatarManager;
-import org.moon.figura.backend.NetworkManager;
+import org.moon.figura.backend2.NetworkStuff;
+import org.moon.figura.gui.widgets.TextField;
 import org.moon.figura.lua.FiguraLuaPrinter;
+import org.moon.figura.trust.Trust;
+import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.FiguraText;
 
@@ -30,9 +33,11 @@ public enum Config {
 
     Nameplate,
     SELF_NAMEPLATE(false),
+    NAMEPLATE_RENDER(0, 3),
     PREVIEW_NAMEPLATE(true),
     CHAT_NAMEPLATE(2, 3) {{
         String path = "config.nameplate_level";
+        this.enumTooltip = FiguraText.of(path + ".enum");
         this.enumList = List.of(
                 FiguraText.of(path + ".1"),
                 FiguraText.of(path + ".2"),
@@ -41,6 +46,7 @@ public enum Config {
     }},
     ENTITY_NAMEPLATE(2, 3) {{
         String path = "config.nameplate_level";
+        this.enumTooltip = FiguraText.of(path + ".enum");
         this.enumList = List.of(
                 FiguraText.of(path + ".1"),
                 FiguraText.of(path + ".2"),
@@ -49,6 +55,7 @@ public enum Config {
     }},
     LIST_NAMEPLATE(2, 3) {{
         String path = "config.nameplate_level";
+        this.enumTooltip = FiguraText.of(path + ".enum");
         this.enumList = List.of(
                 FiguraText.of(path + ".1"),
                 FiguraText.of(path + ".2"),
@@ -97,11 +104,13 @@ public enum Config {
     FIGURA_INVENTORY(true),
     TOAST_TIME(5f, InputType.FLOAT),
     TOAST_TITLE_TIME(2f, InputType.FLOAT),
+    WARDROBE_FILE_NAMES(false),
 
     Paperdoll,
     HAS_PAPERDOLL(false),
     PAPERDOLL_ALWAYS_ON(false),
     FIRST_PERSON_PAPERDOLL(true),
+    PAPERDOLL_INVISIBLE(false),
     PAPERDOLL_SCALE(1f, InputType.FLOAT),
     PAPERDOLL_X(0f, InputType.FLOAT),
     PAPERDOLL_Y(0f, InputType.FLOAT),
@@ -112,8 +121,30 @@ public enum Config {
     POPUP_BUTTON("key.keyboard.r"),
     RELOAD_BUTTON("key.keyboard.unknown"),
     PANIC_BUTTON("key.keyboard.unknown"),
+    WARDROBE_BUTTON("key.keyboard.unknown"),
     BUTTON_LOCATION(0, 5),
-    UPDATE_CHANNEL(1, 3),
+    UPDATE_CHANNEL(1, 3) {
+        @Override
+        public void onChange() {
+            super.onChange();
+            NetworkStuff.checkVersion();
+        }
+    },
+    DEFAULT_TRUST(1, Trust.Group.values().length - 1) {{
+        List<Component> list = new ArrayList<>();
+        Trust.Group[] groups = Trust.Group.values();
+        for (int i = 0; i < groups.length - 1; i++)
+            list.add(groups[i].text.copy());
+        this.enumList = list;
+        this.enumTooltip = null;
+    }
+        @Override
+        public void onChange() {
+            super.onChange();
+            TrustManager.saveToDisk();
+        }
+    },
+    CHAT_EMOJIS(false),
     EASTER_EGGS(true),
 
     Dev {{this.name = this.name.copy().withStyle(ChatFormatting.RED);}},
@@ -124,6 +155,7 @@ public enum Config {
                 FiguraText.of(tooltip + ".cubes").setStyle(ColorUtils.Colors.FRAN_PINK.style),
                 FiguraText.of(tooltip + ".groups").setStyle(ColorUtils.Colors.MAYA_BLUE.style));
     }},
+    FIRST_PERSON_MATRICES(true),
     LOG_OTHERS(false),
     LOG_PINGS(0, 3),
     SYNC_PINGS(false) {{
@@ -142,20 +174,11 @@ public enum Config {
                 .append(FiguraText.of(tooltip + "3").withStyle(ChatFormatting.RED, ChatFormatting.BOLD));
     }},
     MAIN_DIR("", InputType.FOLDER_PATH),
-    AUTH_SERVER_IP("figura.moonlight-devs.org:25565", InputType.IP) {
+    SERVER_IP("figura.moonlight-devs.org:25565", InputType.IP) {
         @Override
         public void onChange() {
             super.onChange();
-            NetworkManager.closeBackend();
-            NetworkManager.auth(true);
-        }
-    },
-    BACKEND_IP("figura.moonlight-devs.org:25500", InputType.IP) {
-        @Override
-        public void onChange() {
-            super.onChange();
-            NetworkManager.closeBackend();
-            NetworkManager.auth(true);
+            NetworkStuff.reAuth();
         }
     };
 
@@ -191,6 +214,7 @@ public enum Config {
     public final ConfigType type;
 
     //special properties
+    public Component enumTooltip;
     public List<Component> enumList;
     public ConfigKeyBind keyBind;
     public final InputType inputType;
@@ -229,8 +253,11 @@ public enum Config {
         this.name = FiguraText.of(name);
         this.tooltip = FiguraText.of(name + ".tooltip");
 
-        //generate enum list
+        //enums
         if (length != null) {
+            this.enumTooltip = FiguraText.of(name + ".enum");
+
+            //generate enum list
             ArrayList<Component> enumList = new ArrayList<>();
             for (int i = 1; i <= length; i++)
                 enumList.add(FiguraText.of(name + "." + i));
@@ -339,10 +366,11 @@ public enum Config {
         IP(ServerAddress::isValidAddress);
 
         public final Predicate<String> validator;
-        public final Component hint;
+        public final TextField.HintType hint;
+
         InputType(Predicate<String> predicate) {
             this.validator = predicate;
-            this.hint = FiguraText.of("config.input." + this.name().toLowerCase());
+            this.hint = TextField.HintType.valueOf(this.name());
         }
     }
 

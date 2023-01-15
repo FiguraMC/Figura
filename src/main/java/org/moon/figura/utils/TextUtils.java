@@ -1,13 +1,13 @@
 package org.moon.figura.utils;
 
 import com.google.gson.JsonParser;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 
 import java.util.ArrayList;
@@ -17,14 +17,9 @@ import java.util.function.BiPredicate;
 
 public class TextUtils {
 
-    public static final ResourceLocation FIGURA_FONT = new FiguraIdentifier("default");
     public static final Component TAB = FiguraText.of("tab");
     public static final Component ELLIPSIS = FiguraText.of("ellipsis");
     public static final Component UNKNOWN = Component.literal("�").withStyle(Style.EMPTY.withFont(Style.DEFAULT_FONT));
-
-    public static Component noBadges4U(Component text) {
-        return replaceInText(text, "[❗❌\uD83C\uDF54\uD83E\uDD90\uD83C\uDF19\uD83C\uDF00☄❤☆★]", UNKNOWN, (s, style) -> style.getFont().equals(FIGURA_FONT));
-    }
 
     public static List<Component> splitText(Component text, String regex) {
         //list to return
@@ -147,7 +142,7 @@ public class TextUtils {
         List<Component> splitText = TextUtils.splitText(text, "\n");
 
         //get the possible tooltip width
-        int left = mousePos - 16;
+        int left = mousePos - 12;
         int right = screenWidth - mousePos - 12;
 
         //get largest text size
@@ -230,6 +225,57 @@ public class TextUtils {
             counter.append(string);
             return counter.length() > endIndex ? FormattedText.STOP_ITERATION : Optional.empty();
         }, Style.EMPTY);
+        return builder;
+    }
+
+    public static Component parseLegacyFormatting(Component text) {
+        MutableComponent builder = Component.empty();
+        text.visit((style, string) -> {
+            formatting: {
+                //check for the string have the formatting char
+                if (!string.contains("§"))
+                    break formatting;
+
+                //split the string at the special char
+                String[] split = string.split("§");
+                if (split.length < 2)
+                    break formatting;
+
+                //creates a new text with the left part of the string
+                MutableComponent newText = Component.literal(split[0]).withStyle(style);
+
+                //if right part has text
+                for (int i = 1; i < split.length; i++) {
+                    String s = split[i];
+
+                    if (s.length() == 0)
+                        continue;
+
+                    //get the formatting code and apply to the style
+                    ChatFormatting formatting = ChatFormatting.getByCode(s.charAt(0));
+                    if (formatting != null)
+                        style = style.applyLegacyFormat(formatting);
+
+                    //create right text, and yeet the formatting code
+                    newText.append(Component.literal(s.substring(1)).withStyle(style));
+                }
+
+                builder.append(newText);
+                return Optional.empty();
+            }
+
+            builder.append(Component.literal(string).withStyle(style));
+            return Optional.empty();
+        }, Style.EMPTY);
+        return builder;
+    }
+
+    public static Component reverse(Component text) {
+        MutableComponent builder = Component.empty();
+        for (Component entry : text.toFlatList(text.getStyle())) {
+            StringBuilder str = new StringBuilder(entry.getString()).reverse();
+            builder = Component.literal(str.toString()).withStyle(entry.getStyle()).append(builder);
+        }
         return builder;
     }
 }
