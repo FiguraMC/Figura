@@ -989,6 +989,7 @@
   "figura.docs.itemstack.is_armor": "Checks if this item is a Armor",
   "figura.docs.itemstack.is_tool": "Check if this item is a Tool (Axe, Shovel, Pickaxe, ...)",
   "figura.docs.itemstack.get_equipment_slot": "Returns the slot name of where this item is used",
+  "figura.docs.itemstack.copy": "Returns a copy of this item stack.",
 
 
   "figura.docs.keybinds": "A global API containing a function to create new Keybind instances",
