@@ -200,6 +200,7 @@ public class FiguraLuaRuntime {
                 }
                 return LuaString.valueOf(arg.typename());
             }
+
             @Override
             public String tojstring(){
                 return typename() + ": type";
@@ -207,39 +208,41 @@ public class FiguraLuaRuntime {
         });
 
         //Change the pairs() function
-        LuaFunction globalPairs=userGlobals.get("pairs").checkfunction();
-        setGlobal("pairs", new VarArgFunction(){
+        LuaFunction globalPairs = userGlobals.get("pairs").checkfunction();
+        setGlobal("pairs", new VarArgFunction() {
             @Override
             public Varargs invoke(Varargs varargs) {
                 LuaValue arg1 = varargs.arg1();
-                if(arg1.type() == LuaValue.TTABLE && arg1.getmetatable() != null){
-                    LuaValue __pairs=arg1.getmetatable().rawget("__pairs");
+                if (arg1.type() == LuaValue.TTABLE && arg1.getmetatable() != null) {
+                    LuaValue __pairs = arg1.getmetatable().rawget("__pairs");
                     if (__pairs.isfunction())
                         return __pairs.invoke(varargs);
                 }
                 return globalPairs.invoke(varargs);
             }
+
             @Override
-            public String tojstring(){
+            public String tojstring() {
                 return typename() + ": pairs";
             }
         });
 
         //Change the ipairs() function
-        LuaFunction globalIPairs=userGlobals.get("ipairs").checkfunction();
-        setGlobal("ipairs", new VarArgFunction(){
+        LuaFunction globalIPairs = userGlobals.get("ipairs").checkfunction();
+        setGlobal("ipairs", new VarArgFunction() {
             @Override
             public Varargs invoke(Varargs varargs) {
                 LuaValue arg1 = varargs.arg1();
-                if(arg1.type() == LuaValue.TTABLE && arg1.getmetatable() != null){
-                    LuaValue __ipairs=arg1.getmetatable().rawget("__ipairs");
+                if (arg1.type() == LuaValue.TTABLE && arg1.getmetatable() != null) {
+                    LuaValue __ipairs = arg1.getmetatable().rawget("__ipairs");
                     if (__ipairs.isfunction())
                         return __ipairs.invoke(varargs);
                 }
                 return globalIPairs.invoke(varargs);
             }
+
             @Override
-            public String tojstring(){
+            public String tojstring() {
                 return typename() + ": ipairs";
             }
         });
