@@ -208,6 +208,12 @@ public class ItemStackAPI {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("itemstack.copy")
+    public ItemStackAPI copy() {
+        return new ItemStackAPI(itemStack.copy());
+    }
+
+    @LuaWhitelist
     public boolean __eq(ItemStackAPI other) {
         if (this == other)
             return true;
