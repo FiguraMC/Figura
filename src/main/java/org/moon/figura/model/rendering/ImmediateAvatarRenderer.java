@@ -279,6 +279,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
             if (peek.visible) {
                 //render tasks
                 if (allowRenderTasks) {
+                    FiguraMod.pushProfiler("renderTasks");
                     int light = peek.light;
                     int overlay = peek.overlay;
                     allowSkullRendering = false;
@@ -286,10 +287,13 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
                         int neededComplexity = task.getComplexity();
                         if (neededComplexity > remainingComplexity[0])
                             continue;
+                        FiguraMod.pushProfiler(task.getName());
                         if (task.render(customizationStack, bufferSource, light, overlay))
                             remainingComplexity[0] -= neededComplexity;
+                        FiguraMod.popProfiler();
                     }
                     allowSkullRendering = true;
+                    FiguraMod.popProfiler();
                 }
 
                 //render pivot parts
@@ -319,6 +323,8 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
     }
 
     protected void renderPivot(FiguraModelPart part) {
+        FiguraMod.pushProfiler("pivotBox");
+
         boolean group = part.customization.partType == PartCustomization.PartType.GROUP;
         FiguraVec3 color = group ? ColorUtils.Colors.MAYA_BLUE.vec : ColorUtils.Colors.FRAN_PINK.vec;
         double boxSize = group ? 1 / 16d : 1 / 32d;
@@ -330,6 +336,8 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
                 -boxSize, -boxSize, -boxSize,
                 boxSize, boxSize, boxSize,
                 (float) color.x, (float) color.y, (float) color.z, 1f);
+
+        FiguraMod.popProfiler();
     }
 
     protected void savePivotTransform(ParentType parentType) {
