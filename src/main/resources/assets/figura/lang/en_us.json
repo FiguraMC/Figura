@@ -1187,6 +1187,7 @@
 
 
   "figura.docs.render_task": "Represents a rendering task for Figura to complete each frame\nAn abstract superclass of ItemTask, BlockTask, and TextTask",
+  "figura.docs.render_task.get_name": "Get this task's name",
   "figura.docs.render_task.is_enabled": "Checks if this task is enabled",
   "figura.docs.render_task.set_enabled": "Sets whether or not this task should be rendered",
   "figura.docs.render_task.get_light": "Returns the light override value of this task",
@@ -1199,6 +1200,11 @@
   "figura.docs.render_task.set_rot": "Sets the rotation of the task, relative with its attached part",
   "figura.docs.render_task.get_scale": "Gets this task scale",
   "figura.docs.render_task.set_scale": "Sets the scale of the task, relative with its attached part",
+  "figura.docs.render_task.get_position_matrix": "Recalculates the matrix for this render task, based on its current position, rotation, scale, and pivot, then returns this matrix",
+  "figura.docs.render_task.get_position_matrix_raw": "Returns the position matrix for this render task\nThe Raw version of the function is different in that it doesn't recalculate the matrix before getting it",
+  "figura.docs.render_task.get_normal_matrix": "Recalculates the normal matrix for this render task, based on its current position, rotation, scale, and pivot, then returns this matrix",
+  "figura.docs.render_task.get_normal_matrix_raw": "Returns the normal matrix for this render task\nThe Raw version of the function is different in that it doesn't recalculate the matrix before returning it",
+  "figura.docs.render_task.set_matrix": "Sets the given matrix as the position matrix for this render task\nThe normal matrix is automatically calculated as the inverse transpose of this matrix\nCalling this DOES NOT CHANGE the values of position, rot, or scale in the render task\nIf you call setPos() or a similar function, the effects of setMatrix() will be overwritten",
 
   "figura.docs.item_task": "A task for rendering an Item",
   "figura.docs.item_task.set_item": "Sets the Item for this task render",
