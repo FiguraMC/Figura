@@ -932,8 +932,7 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
     }
 
     @LuaWhitelist
-    public void __newindex(String string, Object value) {
-        if (string == null) return;
+    public void __newindex(@LuaNotNil String string, Object value) {
         if (value instanceof FiguraVec4 vec4) {
             switch (string) {
                 case "1", "c1" -> {

@@ -1,6 +1,7 @@
 package org.moon.figura.lua.api.action_wheel;
 
 import net.minecraft.world.item.ItemStack;
+import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.lua.LuaNotNil;
@@ -577,8 +578,7 @@ public class Action {
     }
 
     @LuaWhitelist
-    public void __newindex(String key, Object value) {
-        if (key == null) return;
+    public void __newindex(@LuaNotNil String key, Object value) {
         LuaFunction func = value instanceof LuaFunction f ? f : null;
         switch (key) {
             case "leftClick" -> leftClick = func;
@@ -586,6 +586,7 @@ public class Action {
             case "toggle" -> toggle = func;
             case "untoggle" -> untoggle = func;
             case "scroll" -> scroll = func;
+            default -> throw new LuaError("Cannot assign value on key \"" + key + "\"");
         }
     }
 

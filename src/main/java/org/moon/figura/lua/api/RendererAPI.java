@@ -4,7 +4,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import org.luaj.vm2.LuaError;
 import org.moon.figura.avatar.Avatar;
+import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.*;
 import org.moon.figura.math.vector.FiguraVec2;
@@ -412,13 +414,13 @@ public class RendererAPI {
     }
 
     @LuaWhitelist
-    public void __newindex(String key, boolean value) {
-        if (key == null) return;
+    public void __newindex(@LuaNotNil String key, boolean value) {
         switch (key) {
             case "renderFire" -> renderFire = value;
             case "renderVehicle" -> renderVehicle = value;
             case "renderCrosshair" -> renderCrosshair = value;
             case "forcePaperdoll" -> forcePaperdoll = value;
+            default -> throw new LuaError("Cannot assign value on key \"" + key + "\"");
         }
     }
 
