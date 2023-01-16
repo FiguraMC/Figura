@@ -10,24 +10,25 @@ import org.moon.figura.mixin.render.layers.elytra.ElytraModelAccessor;
 import java.util.function.Function;
 
 public enum VanillaModelProvider {
-    HEAD(model -> ((HumanoidModel<?>) model).head),
-    BODY(model -> ((HumanoidModel<?>) model).body),
-    LEFT_ARM(model -> ((HumanoidModel<?>) model).leftArm),
-    RIGHT_ARM(model -> ((HumanoidModel<?>) model).rightArm),
-    LEFT_LEG(model -> ((HumanoidModel<?>) model).leftLeg),
-    RIGHT_LEG(model -> ((HumanoidModel<?>) model).rightLeg),
+    HEAD(model -> model instanceof HumanoidModel m ? m.head : null),
+    BODY(model -> model instanceof HumanoidModel m ? m.body : null),
+    LEFT_ARM(model -> model instanceof HumanoidModel m ? m.leftArm : null),
+    RIGHT_ARM(model -> model instanceof HumanoidModel m ? m.rightArm : null),
+    LEFT_LEG(model -> model instanceof HumanoidModel m ? m.leftLeg : null),
+    RIGHT_LEG(model -> model instanceof HumanoidModel m ? m.rightLeg : null),
+    HAT(model -> model instanceof HumanoidModel m ? m.hat : null),
 
-    HAT(model -> ((HumanoidModel<?>) model).hat),
-    JACKET(model -> ((PlayerModel<?>) model).jacket),
-    LEFT_SLEEVE(model -> ((PlayerModel<?>) model).leftSleeve),
-    RIGHT_SLEEVE(model -> ((PlayerModel<?>) model).rightSleeve),
-    LEFT_PANTS(model -> ((PlayerModel<?>) model).leftPants),
-    RIGHT_PANTS(model -> ((PlayerModel<?>) model).rightPants),
-    CAPE(model -> ((PlayerModelAccessor) model).figura$getCloak()),
-    FAKE_CAPE(model -> ((PlayerModelAccessor) model).figura$getFakeCloak()),
+    JACKET(model -> model instanceof PlayerModel m ? m.jacket : null),
+    LEFT_SLEEVE(model -> model instanceof PlayerModel m ? m.leftSleeve : null),
+    RIGHT_SLEEVE(model -> model instanceof PlayerModel m ? m.rightSleeve : null),
+    LEFT_PANTS(model -> model instanceof PlayerModel m ? m.leftPants : null),
+    RIGHT_PANTS(model -> model instanceof PlayerModel m ? m.rightPants : null),
 
-    LEFT_ELYTRON(model -> ((ElytraModelAccessor) model).getLeftWing()),
-    RIGHT_ELYTRON(model -> ((ElytraModelAccessor) model).getRightWing());
+    CAPE(model -> model instanceof PlayerModel m ? ((PlayerModelAccessor) m).figura$getCloak() : null),
+    FAKE_CAPE(model -> model instanceof PlayerModel m ? ((PlayerModelAccessor) m).figura$getFakeCloak() : null),
+
+    LEFT_ELYTRON(model -> model instanceof ElytraModelAccessor m ? m.getLeftWing() : null),
+    RIGHT_ELYTRON(model -> model instanceof ElytraModelAccessor m ? m.getRightWing() : null);
 
     public final Function<EntityModel<?>, ModelPart> func;
 

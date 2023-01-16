@@ -11,6 +11,7 @@ import net.minecraft.network.chat.Component;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.backend2.NetworkStuff;
+import org.moon.figura.gui.widgets.TextField;
 import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.trust.Trust;
 import org.moon.figura.trust.TrustManager;
@@ -32,9 +33,11 @@ public enum Config {
 
     Nameplate,
     SELF_NAMEPLATE(false),
+    NAMEPLATE_RENDER(0, 3),
     PREVIEW_NAMEPLATE(true),
     CHAT_NAMEPLATE(2, 3) {{
         String path = "config.nameplate_level";
+        this.enumTooltip = FiguraText.of(path + ".enum");
         this.enumList = List.of(
                 FiguraText.of(path + ".1"),
                 FiguraText.of(path + ".2"),
@@ -43,6 +46,7 @@ public enum Config {
     }},
     ENTITY_NAMEPLATE(2, 3) {{
         String path = "config.nameplate_level";
+        this.enumTooltip = FiguraText.of(path + ".enum");
         this.enumList = List.of(
                 FiguraText.of(path + ".1"),
                 FiguraText.of(path + ".2"),
@@ -51,6 +55,7 @@ public enum Config {
     }},
     LIST_NAMEPLATE(2, 3) {{
         String path = "config.nameplate_level";
+        this.enumTooltip = FiguraText.of(path + ".enum");
         this.enumList = List.of(
                 FiguraText.of(path + ".1"),
                 FiguraText.of(path + ".2"),
@@ -105,6 +110,7 @@ public enum Config {
     HAS_PAPERDOLL(false),
     PAPERDOLL_ALWAYS_ON(false),
     FIRST_PERSON_PAPERDOLL(true),
+    PAPERDOLL_INVISIBLE(false),
     PAPERDOLL_SCALE(1f, InputType.FLOAT),
     PAPERDOLL_X(0f, InputType.FLOAT),
     PAPERDOLL_Y(0f, InputType.FLOAT),
@@ -115,6 +121,7 @@ public enum Config {
     POPUP_BUTTON("key.keyboard.r"),
     RELOAD_BUTTON("key.keyboard.unknown"),
     PANIC_BUTTON("key.keyboard.unknown"),
+    WARDROBE_BUTTON("key.keyboard.unknown"),
     BUTTON_LOCATION(0, 5),
     UPDATE_CHANNEL(1, 3) {
         @Override
@@ -129,6 +136,7 @@ public enum Config {
         for (int i = 0; i < groups.length - 1; i++)
             list.add(groups[i].text.copy());
         this.enumList = list;
+        this.enumTooltip = null;
     }
         @Override
         public void onChange() {
@@ -206,6 +214,7 @@ public enum Config {
     public final ConfigType type;
 
     //special properties
+    public Component enumTooltip;
     public List<Component> enumList;
     public ConfigKeyBind keyBind;
     public final InputType inputType;
@@ -244,8 +253,11 @@ public enum Config {
         this.name = FiguraText.of(name);
         this.tooltip = FiguraText.of(name + ".tooltip");
 
-        //generate enum list
+        //enums
         if (length != null) {
+            this.enumTooltip = FiguraText.of(name + ".enum");
+
+            //generate enum list
             ArrayList<Component> enumList = new ArrayList<>();
             for (int i = 1; i <= length; i++)
                 enumList.add(FiguraText.of(name + "." + i));
@@ -354,10 +366,11 @@ public enum Config {
         IP(ServerAddress::isValidAddress);
 
         public final Predicate<String> validator;
-        public final Component hint;
+        public final TextField.HintType hint;
+
         InputType(Predicate<String> predicate) {
             this.validator = predicate;
-            this.hint = FiguraText.of("config.input." + this.name().toLowerCase());
+            this.hint = TextField.HintType.valueOf(this.name());
         }
     }
 

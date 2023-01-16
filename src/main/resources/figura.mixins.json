@@ -7,7 +7,9 @@
   ],
   "client": [
     "BlockBehaviourAccessor",
+    "ClientLanguageMixin",
     "ClientLevelInvoker",
+    "EntityAccessor",
     "LivingEntityAccessor",
     "LivingEntityMixin",
     "MinecraftMixin",
@@ -22,6 +24,7 @@
     "gui.PauseScreenMixin",
     "gui.PlayerTabOverlayMixin",
     "gui.SplashManagerMixin",
+    "gui.TitleScreenMixin",
 
     "input.InputConstantsTypeMixin",
     "input.KeyboardHandlerMixin",

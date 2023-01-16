@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
+import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.config.Config;
 import org.moon.figura.math.matrix.FiguraMat3;
@@ -119,7 +120,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
         //custom textures
         for (FiguraTexture texture : customTextures.values())
-            texture.registerAndUpload();
+            texture.uploadIfDirty();
 
         //Set shouldRenderPivots
         int config = Config.RENDER_DEBUG_PARTS_PIVOT.asInt();
@@ -182,12 +183,15 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
     }
 
     protected boolean renderPart(FiguraModelPart part, int[] remainingComplexity, boolean prevPredicate) {
+        FiguraMod.pushProfiler(part.name);
+
         PartCustomization custom = part.customization;
 
         //test the current filter scheme
         Boolean thisPassedPredicate = currentFilterScheme.test(part.parentType, prevPredicate);
         if (thisPassedPredicate == null) {
             part.advanceVerticesImmediate(this); //stinky
+            FiguraMod.popProfiler();
             return true;
         }
 
@@ -197,26 +201,35 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         part.applyVanillaTransforms(vanillaModelData);
         part.applyExtraTransforms(customizationStack.peek().positionMatrix);
 
-        //push customization stack
-        //that's right, check only for previous predicate
-        boolean reset = !allowHiddenTransforms && !prevPredicate;
-        if (reset) {
-            custom.positionMatrix.reset();
-            custom.normalMatrix.reset();
-            custom.needsMatrixRecalculation = false;
-        }
-
         //recalculate stuff
         Boolean storedVisibility = custom.visible;
-        custom.visible = part.getVisible() && thisPassedPredicate;
+        custom.visible = part.getVisible() && (currentFilterScheme.ignoreVanillaVisible || part.getVanillaVisible()) && thisPassedPredicate;
         custom.recalculate();
+
+        //void blocked matrices
+        //that's right, check only for previous predicate
+        FiguraMat4 positionCopy = null;
+        FiguraMat3 normalCopy = null;
+        boolean voidMatrices = !allowHiddenTransforms && !prevPredicate;
+        if (voidMatrices) {
+            positionCopy = custom.positionMatrix.copy();
+            normalCopy = custom.normalMatrix.copy();
+            custom.positionMatrix.reset();
+            custom.normalMatrix.reset();
+        }
 
         //push stack
         customizationStack.push(custom);
 
         //restore variables
         custom.visible = storedVisibility;
-        if (reset) custom.needsMatrixRecalculation = true;
+
+        if (voidMatrices) {
+            custom.positionMatrix.set(positionCopy);
+            custom.normalMatrix.set(normalCopy);
+            positionCopy.free();
+            normalCopy.free();
+        }
 
         if (thisPassedPredicate) {
             //recalculate world matrices
@@ -242,6 +255,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         //render this
         if (!part.pushVerticesImmediate(this, remainingComplexity)) {
             customizationStack.pop();
+            FiguraMod.popProfiler();
             return false;
         }
 
@@ -265,6 +279,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
             if (peek.visible) {
                 //render tasks
                 if (allowRenderTasks) {
+                    FiguraMod.pushProfiler("renderTasks");
                     int light = peek.light;
                     int overlay = peek.overlay;
                     allowSkullRendering = false;
@@ -272,10 +287,13 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
                         int neededComplexity = task.getComplexity();
                         if (neededComplexity > remainingComplexity[0])
                             continue;
+                        FiguraMod.pushProfiler(task.getName());
                         if (task.render(customizationStack, bufferSource, light, overlay))
                             remainingComplexity[0] -= neededComplexity;
+                        FiguraMod.popProfiler();
                     }
                     allowSkullRendering = true;
+                    FiguraMod.popProfiler();
                 }
 
                 //render pivot parts
@@ -290,6 +308,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         for (FiguraModelPart child : part.children)
             if (!renderPart(child, remainingComplexity, thisPassedPredicate)) {
                 customizationStack.pop();
+                FiguraMod.popProfiler();
                 return false;
             }
 
@@ -298,11 +317,14 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
         //pop
         customizationStack.pop();
+        FiguraMod.popProfiler();
 
         return true;
     }
 
     protected void renderPivot(FiguraModelPart part) {
+        FiguraMod.pushProfiler("pivotBox");
+
         boolean group = part.customization.partType == PartCustomization.PartType.GROUP;
         FiguraVec3 color = group ? ColorUtils.Colors.MAYA_BLUE.vec : ColorUtils.Colors.FRAN_PINK.vec;
         double boxSize = group ? 1 / 16d : 1 / 32d;
@@ -314,6 +336,8 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
                 -boxSize, -boxSize, -boxSize,
                 boxSize, boxSize, boxSize,
                 (float) color.x, (float) color.y, (float) color.z, 1f);
+
+        FiguraMod.popProfiler();
     }
 
     protected void savePivotTransform(ParentType parentType) {
@@ -339,12 +363,16 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
     }
 
     protected void calculatePartMatrices(FiguraModelPart part) {
+        FiguraMod.pushProfiler(part.name);
+
         PartCustomization custom = part.customization;
 
         //Store old visibility, but overwrite it in case we only want to render certain parts
         Boolean thisPassedPredicate = currentFilterScheme.test(part.parentType, true);
-        if (thisPassedPredicate == null)
+        if (thisPassedPredicate == null) {
+            FiguraMod.popProfiler();
             return;
+        }
 
         //calculate part transforms
 
@@ -373,6 +401,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
         //pop
         customizationStack.pop();
+        FiguraMod.popProfiler();
     }
 
     public void pushFaces(int texIndex, int faceCount, int[] remainingComplexity) {

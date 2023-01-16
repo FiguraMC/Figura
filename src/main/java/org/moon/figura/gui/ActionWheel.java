@@ -2,7 +2,7 @@ package org.moon.figura.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -69,19 +69,25 @@ public class ActionWheel {
         mouseY = minecraft.mouseHandler.ypos();
 
         //calculate selected slot
+        FiguraMod.pushProfiler("selectedSlot");
         calculateSelected();
 
         //render overlays
+        FiguraMod.popPushProfiler("wheel");
         renderTextures(stack, currentPage);
 
         //render items
+        FiguraMod.popPushProfiler("items");
         renderItemsAndIcons(stack, currentPage);
 
         stack.popPose();
 
         //render title
+        FiguraMod.popPushProfiler("title");
         Action action = selected == -1 ? null : currentPage.actions[selected];
         renderTitle(stack, action == null ? null : action.getTitle());
+
+        FiguraMod.popProfiler();
     }
 
     // -- render helpers -- //
@@ -190,11 +196,11 @@ public class ActionWheel {
             //texture
             Action.TextureData texture = action.getTexture(selected == i);
             if (texture != null) {
-                UIHelper.setupTexture(texture.texture.textureID);
+                UIHelper.setupTexture(texture.texture.getLocation());
                 UIHelper.blit(stack,
-                        (int) (xOff - texture.width * texture.scale / 2d),
-                        (int) (yOff - texture.height * texture.scale / 2d),
-                        (int) (texture.width * texture.scale), (int) (texture.height * texture.scale),
+                        (int) Math.round(xOff - texture.width * texture.scale / 2d),
+                        (int) Math.round(yOff - texture.height * texture.scale / 2d),
+                        (int) Math.round(texture.width * texture.scale), (int) Math.round(texture.height * texture.scale),
                         (float) texture.u, (float) texture.v,
                         texture.width, texture.height,
                         texture.texture.getWidth(), texture.texture.getHeight());
@@ -208,12 +214,12 @@ public class ActionWheel {
             //render
             PoseStack modelStack = RenderSystem.getModelViewStack();
             modelStack.pushPose();
-            modelStack.translate(x + xOff * scale, y + yOff * scale, 0);
+            modelStack.translate(x, y, 0);
             modelStack.scale(scale, scale, scale);
 
-            minecraft.getItemRenderer().renderGuiItem(item, -8, -8);
+            minecraft.getItemRenderer().renderGuiItem(item, (int) Math.round(xOff - 8), (int) Math.round(yOff - 8));
             if (Config.ACTION_WHEEL_DECORATIONS.asBool())
-                minecraft.getItemRenderer().renderGuiItemDecorations(minecraft.font, item, -8, -8);
+                minecraft.getItemRenderer().renderGuiItemDecorations(minecraft.font, item, (int) Math.round(xOff - 8), (int) Math.round(yOff - 8));
 
             modelStack.popPose();
             RenderSystem.applyModelViewMatrix();
@@ -225,7 +231,7 @@ public class ActionWheel {
             return;
 
         //vars
-        Component text = TextUtils.tryParseJson(title);
+        Component text = Emojis.applyEmojis(TextUtils.tryParseJson(title));
         List<Component> list = TextUtils.splitText(text, "\n");
         Font font = minecraft.font;
         int height = font.lineHeight * list.size();
@@ -366,7 +372,7 @@ public class ActionWheel {
 
         public void render(PoseStack stack, FiguraVec3 color, boolean left) {
             stack.pushPose();
-            stack.mulPose(Vector3f.ZP.rotationDegrees(rotation + (left ? 180 : 0)));
+            stack.mulPose(Axis.ZP.rotationDegrees(rotation + (left ? 180 : 0)));
 
             UIHelper.setupTexture(TEXTURE);
             if (color != null)

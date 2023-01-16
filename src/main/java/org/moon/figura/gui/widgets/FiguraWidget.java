@@ -1,8 +1,8 @@
 package org.moon.figura.gui.widgets;
 
-import net.minecraft.client.gui.components.Widget;
+import net.minecraft.client.gui.components.Renderable;
 
-public interface FiguraWidget extends Widget {
+public interface FiguraWidget extends Renderable {
     boolean isVisible();
     void setVisible(boolean visible);
 }

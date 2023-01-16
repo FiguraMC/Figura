@@ -23,7 +23,7 @@ public class GroupElement extends AbstractTrustElement {
     @Override
     public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
         stack.pushPose();
-        stack.translate(x + width / 2f, y + height / 2f, 100);
+        stack.translate(getX() + width / 2f, getY() + height / 2f, 100);
         stack.scale(scale, scale, 1f);
 
         animate(delta, this.isMouseOver(mouseX, mouseY) || this.isFocused());

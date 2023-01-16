@@ -12,6 +12,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -21,6 +22,8 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 public class IOUtils {
+
+    public static final String INVALID_FILENAME_REGEX = "CON|PRN|AUX|NUL|COM\\d|LPT\\d|[\\\\/:*?\"<>|\u0000]|\\.$";
 
     public static List<File> getFilesByExtension(Path root, String extension) {
         List<File> result = new ArrayList<>();
@@ -107,5 +110,20 @@ public class IOUtils {
         }
 
         return ret;
+    }
+
+    public static Path getOrCreateDir(Path startingPath, String dir) {
+        return createDirIfNeeded(startingPath.resolve(dir));
+    }
+
+    public static Path createDirIfNeeded(Path path) {
+        try {
+            Files.createDirectories(path);
+        } catch (FileAlreadyExistsException ignored) {
+        } catch (Exception e) {
+            FiguraMod.LOGGER.error("Failed to create directory", e);
+        }
+
+        return path;
     }
 }

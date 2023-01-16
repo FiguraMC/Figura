@@ -4,11 +4,11 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.UserData;
+import org.moon.figura.utils.IOUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
@@ -107,14 +107,6 @@ public class CacheAvatarLoader {
 
     //cache directory
     public static Path getAvatarCacheDirectory() {
-        Path p = FiguraMod.getCacheDirectory().resolve("avatars");
-        try {
-            Files.createDirectories(p);
-        } catch (FileAlreadyExistsException ignored) {
-        } catch (Exception e) {
-            FiguraMod.LOGGER.error("Failed to create avatar cache directory", e);
-        }
-
-        return p;
+        return IOUtils.getOrCreateDir(FiguraMod.getCacheDirectory(), "avatars");
     }
 }

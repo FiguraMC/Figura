@@ -65,7 +65,7 @@ public class AvatarMetadataParser {
         if (metadata.autoScripts != null) {
             ListTag autoScripts = new ListTag();
             for (String name : metadata.autoScripts) {
-                name = name.replaceAll(".lua$", "").replaceAll("[/\\\\]", ".");
+                name = name.replaceAll("\\.lua$", "").replaceAll("[/\\\\]", ".");
                 autoScripts.add(StringTag.valueOf(name));
             }
             nbt.put("autoScripts", autoScripts);
@@ -109,14 +109,14 @@ public class AvatarMetadataParser {
         //Add more of these later
         if (customization.primaryRenderType != null) {
             try {
-                modelPart.putString("primary", RenderTypes.valueOf(customization.primaryRenderType).name());
+                modelPart.putString("primary", RenderTypes.valueOf(customization.primaryRenderType.toUpperCase()).name());
             } catch (Exception ignored) {
                 throw new IOException("Invalid render type \"" + customization.primaryRenderType + "\"!");
             }
         }
         if (customization.secondaryRenderType != null) {
             try {
-                modelPart.putString("secondary", RenderTypes.valueOf(customization.secondaryRenderType).name());
+                modelPart.putString("secondary", RenderTypes.valueOf(customization.secondaryRenderType.toUpperCase()).name());
             } catch (Exception ignored) {
                 throw new IOException("Invalid render type \"" + customization.secondaryRenderType + "\"!");
             }

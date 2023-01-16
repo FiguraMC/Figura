@@ -1,4 +1,4 @@
-package org.moon.figura.model.rendering.texture;
+package org.moon.figura.model.rendering;
 
 public enum EntityRenderMode {
     FIGURA_GUI,

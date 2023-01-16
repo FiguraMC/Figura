@@ -154,11 +154,11 @@ public class SoundsList extends AbstractList {
             this.x = x;
             this.y = y;
 
-            play.x = x + width - 64;
-            play.y = y;
+            play.setX(x + width - 64);
+            play.setY(y);
 
-            stop.x = x + width - 40;
-            stop.y = y;
+            stop.setX(x + width - 40);
+            stop.setY(y);
         }
 
         @Override

@@ -77,8 +77,8 @@ public class ConfigWidget extends AbstractContainerElement {
         this.x = x;
         this.y = y;
 
-        this.parentConfig.x = x;
-        this.parentConfig.y = y;
+        this.parentConfig.setX(x);
+        this.parentConfig.setY(y);
 
         for (int i = 0; i < entries.size(); i++)
             entries.get(i).setPos(x, y + 22 * (i + 1));

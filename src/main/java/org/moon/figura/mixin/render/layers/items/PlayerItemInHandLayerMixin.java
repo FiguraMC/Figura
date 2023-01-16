@@ -54,8 +54,8 @@ public abstract class PlayerItemInHandLayerMixin <T extends Player, M extends En
 
         //script hide
         if (avatar.luaRuntime != null &&
-                (left && !avatar.luaRuntime.vanilla_model.LEFT_ITEM.getVisible() ||
-                !left && !avatar.luaRuntime.vanilla_model.RIGHT_ITEM.getVisible()
+                (left && !avatar.luaRuntime.vanilla_model.LEFT_ITEM.checkVisible() ||
+                !left && !avatar.luaRuntime.vanilla_model.RIGHT_ITEM.checkVisible()
         )) {
             ci.cancel();
             return;

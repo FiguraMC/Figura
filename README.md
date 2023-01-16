@@ -14,7 +14,7 @@ you can filter those people and tweak their avatar available resources using a s
 ## Links
 [discord]: https://discord.com/api/guilds/125227483518861312/widget.png
 [reddit]: https://img.shields.io/badge/Reddit-ff4500?logo=reddit&logoColor=ffffff&labelColor=ff4500
-[modrinth]: https://img.shields.io/badge/Modrinth-1bd96a?logo=modrinth&logoColor=1bd96a&labelColor=1bd96a
+[modrinth]: https://img.shields.io/badge/Modrinth-1bd96a?logo=modrinth&logoColor=ffffff&labelColor=1bd96a
 [curseforge]: https://img.shields.io/badge/CurseForge-f16436?logo=curseforge&logoColor=ffffff&labelColor=f16436
 [kofi]: https://img.shields.io/badge/Ko--fi-00b9fe?logo=kofi&logoColor=ffffff&labelColor=00b9fe
 

@@ -1,14 +1,22 @@
 package org.moon.figura.avatar;
 
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.datafixers.util.Pair;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.local.LocalAvatarLoader;
 import org.moon.figura.backend2.NetworkStuff;
 import org.moon.figura.gui.widgets.lists.AvatarList;
+import org.moon.figura.utils.EntityUtils;
 
 import java.nio.file.Path;
 import java.util.*;
@@ -24,6 +32,8 @@ public class AvatarManager {
     private static final Map<UUID, UserData> LOADED_USERS = new ConcurrentHashMap<>();
     private static final Set<UUID> FETCHED_USERS = new HashSet<>();
 
+    private static final Map<Entity, Avatar> LOADED_CEM = new ConcurrentHashMap<>();
+
     public static boolean localUploaded = true; //init as true :3
     public static boolean panic = false;
 
@@ -33,23 +43,37 @@ public class AvatarManager {
         if (panic)
             return;
 
-        //unload avatars from disconnected players
-        //needs to actually be an event, otherwise some things like skulls will try to download the avatar every tick
-        /*
-        ClientPacketListener connection = Minecraft.getInstance().getConnection();
-        Set<UUID> toRemove = new HashSet<>();
-        for (UUID id : LOADED_AVATARS.keySet()) {
-            if (connection != null && connection.getPlayerInfo(id) == null)
-                toRemove.add(id);
-        }
-        for (UUID id : toRemove)
-            clearAvatar(id);
-        */
-
-        //tick the avatar
+        //tick the avatars
         for (UserData user : LOADED_USERS.values()) {
-            for (Avatar avatar : user.getAvatars())
+            Avatar avatar = user.getMainAvatar();
+            if (avatar != null) {
+                FiguraMod.pushProfiler(avatar);
                 avatar.tick();
+                FiguraMod.popProfiler();
+            }
+        }
+
+        //CEM
+        if (LOADED_CEM.isEmpty())
+            return;
+
+        //unload entities
+        Set<Entity> toBeRemoved = new HashSet<>();
+
+        for (Entity entity : LOADED_CEM.keySet())
+            if (entity.isRemoved())
+                toBeRemoved.add(entity);
+
+        for (Entity entity : toBeRemoved)
+            LOADED_CEM.remove(entity);
+
+        //tick entities
+        for (Avatar avatar : LOADED_CEM.values()) {
+            if (avatar != null) {
+                FiguraMod.pushProfiler(avatar);
+                avatar.tick();
+                FiguraMod.popProfiler();
+            }
         }
     }
 
@@ -57,20 +81,54 @@ public class AvatarManager {
         if (panic)
             return;
 
+        FiguraMod.pushProfiler(FiguraMod.MOD_ID);
+        FiguraMod.pushProfiler("worldRender");
+
         for (UserData user : LOADED_USERS.values()) {
-            for (Avatar avatar : user.getAvatars())
+            Avatar avatar = user.getMainAvatar();
+            if (avatar != null) {
+                FiguraMod.pushProfiler(avatar);
                 avatar.render(tickDelta);
+                FiguraMod.popProfiler();
+            }
         }
+
+        for (Avatar avatar : LOADED_CEM.values()) {
+            if (avatar != null) {
+                FiguraMod.pushProfiler(avatar);
+                avatar.render(tickDelta);
+                FiguraMod.popProfiler();
+            }
+        }
+
+        FiguraMod.popProfiler(2);
     }
 
     public static void afterWorldRender(float tickDelta) {
         if (panic)
             return;
 
+        FiguraMod.pushProfiler(FiguraMod.MOD_ID );
+        FiguraMod.pushProfiler("postWorldRender");
+
         for (UserData user : LOADED_USERS.values()) {
-            for (Avatar avatar : user.getAvatars())
+            Avatar avatar = user.getMainAvatar();
+            if (avatar != null) {
+                FiguraMod.pushProfiler(avatar);
                 avatar.postWorldRenderEvent(tickDelta);
+                FiguraMod.popProfiler();
+            }
         }
+
+        for (Avatar avatar : LOADED_CEM.values()) {
+            if (avatar != null) {
+                FiguraMod.pushProfiler(avatar);
+                avatar.postWorldRenderEvent(tickDelta);
+                FiguraMod.popProfiler();
+            }
+        }
+
+        FiguraMod.popProfiler(2);
     }
 
     public static void applyAnimations() {
@@ -78,8 +136,20 @@ public class AvatarManager {
             return;
 
         for (UserData user : LOADED_USERS.values()) {
-            for (Avatar avatar : user.getAvatars())
+            Avatar avatar = user.getMainAvatar();
+            if (avatar != null) {
+                FiguraMod.pushProfiler(avatar);
                 avatar.applyAnimations();
+                FiguraMod.popProfiler();
+            }
+        }
+
+        for (Avatar avatar : LOADED_CEM.values()) {
+            if (avatar != null) {
+                FiguraMod.pushProfiler(avatar);
+                avatar.applyAnimations();
+                FiguraMod.popProfiler();
+            }
         }
     }
 
@@ -88,8 +158,20 @@ public class AvatarManager {
             return;
 
         for (UserData user : LOADED_USERS.values()) {
-            for (Avatar avatar : user.getAvatars())
+            Avatar avatar = user.getMainAvatar();
+            if (avatar != null) {
+                FiguraMod.pushProfiler(avatar);
                 avatar.clearAnimations();
+                FiguraMod.popProfiler();
+            }
+        }
+
+        for (Avatar avatar : LOADED_CEM.values()) {
+            if (avatar != null) {
+                FiguraMod.pushProfiler(avatar);
+                avatar.clearAnimations();
+                FiguraMod.popProfiler();
+            }
         }
     }
 
@@ -100,11 +182,22 @@ public class AvatarManager {
         if (panic || Minecraft.getInstance().level == null)
             return null;
 
-        if (!FETCHED_USERS.contains(player))
-            fetchBackend(player);
+        fetchBackend(player);
 
         UserData user = LOADED_USERS.get(player);
         return user == null ? null : user.getMainAvatar();
+    }
+
+    public static Avatar getAvatarForEntity(Entity entity) {
+        //get loaded
+        Avatar loaded = LOADED_CEM.get(entity);
+        if (loaded != null)
+            return loaded;
+
+        //new avatar
+        ResourceLocation type = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
+        CompoundTag nbt = LocalAvatarLoader.CEM_AVATARS.get(type);
+        return nbt == null ? null : loadEntityAvatar(entity, nbt);
     }
 
     //tries to get data from an entity
@@ -118,9 +211,8 @@ public class AvatarManager {
         if (entity instanceof Player)
             return getAvatarForPlayer(uuid);
 
-        //TODO - CEM
-        //otherwise, returns the avatar from the entity pool (cem)
-        return null;
+        //otherwise check for CEM
+        return getAvatarForEntity(entity);
     }
 
     //get a loaded avatar without fetching backend or creating a new one
@@ -157,10 +249,18 @@ public class AvatarManager {
         FiguraMod.debug("Cleared avatars of " + id);
     }
 
+    public static void clearCEMAvatars() {
+        for (Avatar avatar : LOADED_CEM.values())
+            avatar.clean();
+        LOADED_CEM.clear();
+    }
+
     //clears ALL loaded avatars, including local
     public static void clearAllAvatars() {
         for (UUID id : LOADED_USERS.keySet())
             clearAvatars(id);
+
+        clearCEMAvatars();
 
         localUploaded = true;
         AvatarList.selectedEntry = null;
@@ -191,6 +291,14 @@ public class AvatarManager {
         localUploaded = false;
     }
 
+    //load CEM avatar
+    public static Avatar loadEntityAvatar(Entity entity, CompoundTag nbt) {
+        Avatar targetAvatar = new Avatar(entity);
+        targetAvatar.load(nbt);
+        LOADED_CEM.put(entity, targetAvatar);
+        return targetAvatar;
+    }
+
     //set an user's avatar
     public static void setAvatar(UUID id, CompoundTag nbt) {
         try {
@@ -204,6 +312,9 @@ public class AvatarManager {
 
     //get avatar from the backend
     private static void fetchBackend(UUID id) {
+        if (FETCHED_USERS.contains(id))
+            return;
+
         FETCHED_USERS.add(id);
 
         UserData user = LOADED_USERS.computeIfAbsent(id, UserData::new);
@@ -216,6 +327,68 @@ public class AvatarManager {
 
     public static Pair<BitSet, BitSet> getBadges(UUID id) {
         UserData user = LOADED_USERS.get(id);
-        return user == null ? null : user.getBadges();
+        if (user == null)
+            return null;
+
+        Pair<BitSet, BitSet> badges = user.getBadges();
+        if (badges != null)
+            return badges;
+
+        badges = Badges.emptyBadges();
+        user.loadBadges(badges);
+        return badges;
+    }
+
+    // -- command -- //
+
+    public static LiteralArgumentBuilder<FabricClientCommandSource> getCommand() {
+        //root
+        LiteralArgumentBuilder<FabricClientCommandSource> root = LiteralArgumentBuilder.literal("setAvatar");
+
+        //source
+        RequiredArgumentBuilder<FabricClientCommandSource, String> target = RequiredArgumentBuilder.argument("target", StringArgumentType.word());
+
+        //target
+        RequiredArgumentBuilder<FabricClientCommandSource, String> source = RequiredArgumentBuilder.argument("source", StringArgumentType.word());
+        source.executes(context -> {
+            String s = StringArgumentType.getString(context, "source");
+            String t = StringArgumentType.getString(context, "target");
+
+            UUID sourceUUID, targetUUID;
+            try {
+                sourceUUID = UUID.fromString(s);
+                targetUUID = UUID.fromString(t);
+            } catch (Exception e) {
+                context.getSource().sendError(Component.literal("Failed to parse uuids"));
+                return 0;
+            }
+
+            UserData user = LOADED_USERS.get(sourceUUID);
+            Avatar avatar = user == null ? null : user.getMainAvatar();
+            if (avatar == null || avatar.nbt == null) {
+                context.getSource().sendError(Component.literal("No source Avatar found"));
+                return 0;
+            }
+
+            if (LOADED_USERS.get(targetUUID) != null) {
+                setAvatar(targetUUID, avatar.nbt);
+                context.getSource().sendFeedback(Component.literal("Set avatar for " + t));
+                return 1;
+            }
+
+            Entity targetEntity = EntityUtils.getEntityByUUID(targetUUID);
+            if (targetEntity == null) {
+                context.getSource().sendError(Component.literal("Target entity not found"));
+                return 0;
+            }
+
+            loadEntityAvatar(targetEntity, avatar.nbt);
+            return 1;
+        });
+        target.then(source);
+
+        //build root
+        root.then(target);
+        return root;
     }
 }

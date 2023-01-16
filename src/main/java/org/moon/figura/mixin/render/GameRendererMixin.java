@@ -1,19 +1,21 @@
 package org.moon.figura.mixin.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.PostChain;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
+import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.ducks.GameRendererAccessor;
 import org.moon.figura.math.vector.FiguraVec3;
-import org.moon.figura.model.rendering.texture.EntityRenderMode;
+import org.moon.figura.model.rendering.EntityRenderMode;
 import org.moon.figura.trust.Trust;
+import org.moon.figura.utils.EntityUtils;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -23,18 +25,19 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(GameRenderer.class)
 public abstract class GameRendererMixin implements GameRendererAccessor {
 
-    @Shadow @Final private Minecraft minecraft;
-    @Shadow private PostChain postEffect;
+    @Shadow @Final Minecraft minecraft;
+    @Shadow PostChain postEffect;
     @Shadow private boolean effectActive;
+    @Shadow private float fov;
+
+    @Shadow protected abstract double getFov(Camera camera, float tickDelta, boolean changingFov);
+    @Shadow abstract void loadEffect(ResourceLocation id);
+    @Shadow public abstract void checkEntityPostEffect(Entity entity);
 
     @Unique
     private boolean avatarPostShader = false;
     @Unique
     private Avatar avatar;
-
-    @Shadow protected abstract double getFov(Camera camera, float tickDelta, boolean changingFov);
-    @Shadow protected abstract void loadEffect(ResourceLocation id);
-    @Shadow public abstract void checkEntityPostEffect(Entity entity);
 
     @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setup(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/world/entity/Entity;ZZF)V", shift = At.Shift.BEFORE))
     private void onCameraRotation(float tickDelta, long limitTime, PoseStack matrix, CallbackInfo ci) {
@@ -52,7 +55,7 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
         if (offset != null)
             z += (float) offset.z;
 
-        matrix.mulPose(Vector3f.ZP.rotationDegrees(z));
+        matrix.mulPose(Axis.ZP.rotationDegrees(z));
     }
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;doEntityOutline()V", shift = At.Shift.AFTER))
@@ -83,6 +86,7 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
                 this.loadEffect(resource);
         } catch (Exception ignored) {
             this.effectActive = false;
+            avatar.luaRuntime.renderer.postShader = null;
         }
     }
 
@@ -105,15 +109,41 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
 
         avatar = AvatarManager.getAvatarForPlayer(this.minecraft.player.getUUID());
         if (avatar != null) {
+            FiguraMod.pushProfiler(FiguraMod.MOD_ID);
+            FiguraMod.pushProfiler(avatar);
+            FiguraMod.pushProfiler("renderEvent");
             avatar.renderMode = EntityRenderMode.FIRST_PERSON;
             avatar.renderEvent(tickDelta);
+            FiguraMod.popProfiler(3);
         }
     }
 
     @Inject(method = "renderItemInHand", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;popPose()V", shift = At.Shift.BEFORE))
     private void posRenderItemInHand(PoseStack matrices, Camera camera, float tickDelta, CallbackInfo ci) {
-        if (avatar != null)
+        if (avatar != null) {
+            FiguraMod.pushProfiler(FiguraMod.MOD_ID);
+            FiguraMod.pushProfiler(avatar);
+            FiguraMod.pushProfiler("postRenderEvent");
             avatar.postRenderEvent(tickDelta);
+            FiguraMod.popProfiler(3);
+        }
+    }
+
+    @Inject(method = "tickFov", at = @At("RETURN"))
+    private void tickFov(CallbackInfo ci) {
+        Avatar avatar = AvatarManager.getAvatar(this.minecraft.getCameraEntity());
+        if (avatar != null && avatar.luaRuntime != null && avatar.trust.get(Trust.VANILLA_MODEL_EDIT) == 1) {
+            Float fov = avatar.luaRuntime.renderer.fov;
+            if (fov != null) this.fov = fov;
+        }
+    }
+
+    @Inject(method = "pick", at = @At("RETURN"))
+    private void pick(float tickDelta, CallbackInfo ci) {
+        FiguraMod.pushProfiler(FiguraMod.MOD_ID);
+        FiguraMod.pushProfiler("extendedPick");
+        FiguraMod.extendedPickEntity = EntityUtils.getViewedEntity(32);
+        FiguraMod.popProfiler(2);
     }
 
     @Override @Intrinsic

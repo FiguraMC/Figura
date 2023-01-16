@@ -169,11 +169,11 @@ public class KeybindList extends AbstractList {
             this.x = x;
             this.y = y;
 
-            resetButton.x = x + width - 60;
-            resetButton.y = y;
+            resetButton.setX(x + width - 60);
+            resetButton.setY(y);
 
-            keybindButton.x = x + width - 154;
-            keybindButton.y = y;
+            keybindButton.setX(x + width - 154);
+            keybindButton.setY(y);
         }
     }
 }

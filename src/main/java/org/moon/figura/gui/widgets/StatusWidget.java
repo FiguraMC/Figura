@@ -32,7 +32,7 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
     private final Font font;
     protected final int count;
     protected int status = 0;
-    private Component disconnectedReason;
+    private Component scriptError, disconnectedReason;
 
     public int x, y;
     public int width, height;
@@ -67,6 +67,7 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
 
         int script = empty ? 0 : avatar.scriptError ? 1 : avatar.luaRuntime == null ? 0 : avatar.versionStatus > 0 ? 2 : 3;
         status += script << 4;
+        scriptError = script == 1 ? avatar.errorText.copy() : null;
 
         int backend = NetworkStuff.backendStatus;
         status += backend << 6;
@@ -87,20 +88,20 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
         boolean hovered = this.isMouseOver(mouseX, mouseY);
 
         //text and tooltip
-        float spacing = (width - (background ? 13 : 11)) / (count - 1f);
-        float hSpacing = spacing / 2;
+        double spacing = (double) width / count;
+        double hSpacing = spacing * 0.5;
         for (int i = 0; i < count; i++) {
-            int x = (int) (this.x + spacing * i + (background ? 1 : 0));
+            int x = (int) (this.x + spacing * i + hSpacing);
 
-            Component text = getStatus(i);
-            UIHelper.drawString(stack, font, text, x, y + (background ? 3 : 0), 0xFFFFFF);
+            Component text = getStatusIcon(i);
+            UIHelper.drawString(stack, font, text, x - font.width(text) / 2, y + (background ? 3 : 0), 0xFFFFFF);
 
-            if (hovered && mouseX >= x - hSpacing + 6 && mouseX < x + hSpacing + 6 && mouseY >= y && mouseY < y + (background ? 14 : 11))
+            if (hovered && mouseX >= x - hSpacing && mouseX < x + hSpacing && mouseY >= y && mouseY < y + font.lineHeight + (background ? 3 : 0))
                 UIHelper.setTooltip(getTooltipFor(i));
         }
     }
 
-    private MutableComponent getStatus(int type) {
+    public MutableComponent getStatusIcon(int type) {
         return Component.literal(String.valueOf(STATUS_INDICATORS.charAt(status >> (type * 2) & 3))).setStyle(Style.EMPTY.withFont(UIHelper.UI_FONT));
     }
 
@@ -119,9 +120,13 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
 
         MutableComponent text = FiguraText.of(part).append("\n• ").append(info).setStyle(TEXT_COLORS.get(color));
 
+        //script error
+        if (i == 2 && color == 1 && scriptError != null)
+            text.append("\n\n").append(FiguraText.of("gui.status.reason")).append("\n• ").append(scriptError);
+
         //get backend disconnect reason
         if (i == 3 && disconnectedReason != null)
-            text.append("\n\n").append(FiguraText.of(part + ".reason")).append("\n• ").append(disconnectedReason);
+            text.append("\n\n").append(FiguraText.of("gui.status.reason")).append("\n• ").append(disconnectedReason);
 
         return text;
     }

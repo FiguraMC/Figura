@@ -1,20 +1,15 @@
 package org.moon.figura.lua.api.entity;
 
 import net.minecraft.util.Mth;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobType;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.world.ItemStackAPI;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.mixin.LivingEntityAccessor;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -103,25 +98,6 @@ public class LivingEntityAPI<T extends LivingEntity> extends EntityAPI<T> {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("living_entity.get_status_effects")
-    public List<Map<String, Object>> getStatusEffects() {
-        checkEntity();
-        List<Map<String, Object>> list = new ArrayList<>();
-
-        for (MobEffectInstance effect : entity.getActiveEffects()) {
-            Map<String, Object> map = new HashMap<>();
-            map.put("name", effect.getEffect().getDescriptionId());
-            map.put("amplifier", effect.getAmplifier());
-            map.put("duration", effect.getDuration());
-            map.put("visible", effect.isVisible());
-
-            list.add(map);
-        }
-
-        return list;
-    }
-
-    @LuaWhitelist
     @LuaMethodDoc("living_entity.get_arrow_count")
     public int getArrowCount() {
         checkEntity();
@@ -189,6 +165,66 @@ public class LivingEntityAPI<T extends LivingEntity> extends EntityAPI<T> {
     public int getSwingDuration() {
       checkEntity();
       return ((LivingEntityAccessor) entity).getSwingDuration();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("living_entity.get_absorption_amount")
+    public float getAbsorptionAmount() {
+        checkEntity();
+        return entity.getAbsorptionAmount();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("living_entity.is_sensitive_to_water")
+    public boolean isSensitiveToWater() {
+        checkEntity();
+        return entity.isSensitiveToWater();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("living_entity.get_entity_category")
+    public String getEntityCategory() {
+        checkEntity();
+
+        MobType mobType = entity.getMobType(); //why it is not an enum
+        if (mobType == MobType.ARTHROPOD)
+            return "ARTHROPOD";
+        if (mobType == MobType.UNDEAD)
+            return "UNDEAD";
+        if (mobType == MobType.WATER)
+            return "WATER";
+        if (mobType == MobType.ILLAGER)
+            return "ILLAGER";
+
+        return "UNDEFINED";
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("living_entity.is_gliding")
+    public boolean isGliding() {
+        checkEntity();
+        return entity.isFallFlying();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("living_entity.is_blocking")
+    public boolean isBlocking() {
+        checkEntity();
+        return entity.isBlocking();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("living_entity.is_visually_swimming")
+    public boolean isVisuallySwimming() {
+        checkEntity();
+        return entity.isVisuallySwimming();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("living_entity.riptide_spinning")
+    public boolean riptideSpinning() {
+        checkEntity();
+        return entity.isAutoSpinAttack();
     }
 
     @Override

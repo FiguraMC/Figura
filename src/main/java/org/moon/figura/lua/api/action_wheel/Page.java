@@ -13,7 +13,13 @@ import org.moon.figura.lua.docs.LuaTypeDoc;
 )
 public class Page {
 
-    public Action[] actions = new Action[8]; //max 8 actions per page
+    private final String title;
+
+    public final Action[] actions = new Action[8]; //max 8 actions per page
+
+    public Page(String title) {
+        this.title = title;
+    }
 
     public int getSize() {
         int i = actions.length;
@@ -43,9 +49,15 @@ public class Page {
 
         //if failed to find a null slot, that means the page is full
         if (index == -1)
-            throw new LuaError("Pages have a limit of 8 actions!");
+            throw new LuaError("Reached page limit of 8 actions!");
 
         return index;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("wheel_page.get_title")
+    public String getTitle() {
+        return title;
     }
 
     @LuaWhitelist
@@ -91,13 +103,15 @@ public class Page {
             value = "wheel_page.set_action"
     )
     public void setAction(int index, Action action) {
-        if (index < 1 || index > 8)
+        if (index == -1)
+            index = this.checkIndex(null) + 1; //"why just not accept null" you might say, because -1 is more elegant for this, as it will return the latest available index
+        else if (index < 1 || index > 8)
             throw new LuaError("Index must be between 1 and 8!");
         this.actions[index - 1] = action;
     }
 
     @Override
     public String toString() {
-        return "Action Wheel Page";
+        return title != null ? title + " (Action Wheel Page)" : "Action Wheel Page";
     }
 }

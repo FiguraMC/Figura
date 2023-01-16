@@ -7,6 +7,7 @@ import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
+import org.moon.figura.lua.docs.LuaMethodShadow;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.trust.Trust;
@@ -27,6 +28,10 @@ public class AvatarAPI {
         this.avatar = avatar;
     }
 
+    private boolean bool(Trust trust) {
+        return trust.asBoolean(avatar.trust.get(trust));
+    }
+
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaMethodOverload(
@@ -35,8 +40,15 @@ public class AvatarAPI {
             ),
             value = "avatar.store"
     )
-    public void store(@LuaNotNil String key, LuaValue value) {
+    public AvatarAPI store(@LuaNotNil String key, LuaValue value) {
         storedStuff.set(key, value == null ? LuaValue.NIL : value);
+        return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("avatar.get_uuid")
+    public String getUUID() {
+        return avatar.owner.toString();
     }
 
     @LuaWhitelist
@@ -69,6 +81,13 @@ public class AvatarAPI {
         FiguraVec3 vec = LuaUtils.parseVec3("setColor", r, g, b, 1, 1, 1);
         avatar.color = ColorUtils.rgbToHex(vec);
         vec.free();
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setColor")
+    public AvatarAPI color(Object r, Double g, Double b) {
+        setColor(r, g, b);
+        return this;
     }
 
     @LuaWhitelist
@@ -106,6 +125,12 @@ public class AvatarAPI {
     public boolean hasScriptError() {
         //useless I know
         return avatar.scriptError;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("avatar.get_trust_level")
+    public String getTrustLevel() {
+        return avatar.trust.getGroup().name();
     }
 
     @LuaWhitelist
@@ -229,31 +254,39 @@ public class AvatarAPI {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("avatar.get_max_texture_size")
+    public int getMaxTextureSize() {
+        return avatar.trust.get(Trust.TEXTURE_SIZE);
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc("avatar.can_edit_vanilla_model")
     public boolean canEditVanillaModel() {
-        Trust trust = Trust.VANILLA_MODEL_EDIT;
-        return trust.asBoolean(avatar.trust.get(trust));
+        return bool(Trust.VANILLA_MODEL_EDIT);
     }
 
     @LuaWhitelist
     @LuaMethodDoc("avatar.can_edit_nameplate")
     public boolean canEditNameplate() {
-        Trust trust = Trust.NAMEPLATE_EDIT;
-        return trust.asBoolean(avatar.trust.get(trust));
+        return bool(Trust.NAMEPLATE_EDIT);
     }
 
     @LuaWhitelist
     @LuaMethodDoc("avatar.can_render_offscreen")
     public boolean canRenderOffscreen() {
-        Trust trust = Trust.OFFSCREEN_RENDERING;
-        return trust.asBoolean(avatar.trust.get(trust));
+        return bool(Trust.OFFSCREEN_RENDERING);
     }
 
     @LuaWhitelist
     @LuaMethodDoc("avatar.can_use_custom_sounds")
     public boolean canUseCustomSounds() {
-        Trust trust = Trust.CUSTOM_SOUNDS;
-        return trust.asBoolean(avatar.trust.get(trust));
+        return bool(Trust.CUSTOM_SOUNDS);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("avatar.can_have_custom_heads")
+    public boolean canHaveCustomHeads() {
+        return bool(Trust.CUSTOM_HEADS);
     }
 
     @Override

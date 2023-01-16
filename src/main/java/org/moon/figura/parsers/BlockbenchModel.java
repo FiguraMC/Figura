@@ -8,6 +8,7 @@ import java.util.List;
 //dummy class for gson reflection
 //allows reading the model json way easier
 public class BlockbenchModel {
+    Meta meta;
     Resolution resolution;
     Texture[] textures;
     Element[] elements;
@@ -17,6 +18,10 @@ public class BlockbenchModel {
     //as it can be either an object or a string
     JsonArray outliner;
 
+    public static class Meta {
+        String format_version, model_format;
+    }
+
     public static class Resolution {
         int width, height;
     }
@@ -25,7 +30,6 @@ public class BlockbenchModel {
         String name;
         String relative_path;
         String source;
-        String render_mode;
     }
 
     // -- elements -- //

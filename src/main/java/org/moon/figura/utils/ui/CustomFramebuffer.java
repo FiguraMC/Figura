@@ -4,9 +4,9 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import com.mojang.math.Matrix4f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ShaderInstance;
+import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 
@@ -86,10 +86,10 @@ public class CustomFramebuffer {
         shader.setSampler("DiffuseSampler", colorAttachment);
         //shader.addSampler("DiffuseSampler", MinecraftClient.getInstance().getFramebuffer().getColorAttachment());
         //shader.addSampler("DiffuseSampler", MinecraftClient.getInstance().getTextureManager().getTexture(ClickableWidget.WIDGETS_TEXTURE).getGlId());
-        Matrix4f matrix4f = Matrix4f.orthographic((float) viewWidth, (float) (-viewHeight), 1000f, 3000f);
+        Matrix4f matrix4f = new Matrix4f().setOrtho(0f, (float) viewWidth, (float) (viewHeight), 0f, 1000f, 3000f);
         RenderSystem.setProjectionMatrix(matrix4f);
         if (shader.MODEL_VIEW_MATRIX != null) {
-            shader.MODEL_VIEW_MATRIX.set(Matrix4f.createTranslateMatrix(0f, 0f, -2000f));
+            shader.MODEL_VIEW_MATRIX.set(new Matrix4f().translation(0f, 0f, -2000f));
         }
 
         if (shader.PROJECTION_MATRIX != null) {

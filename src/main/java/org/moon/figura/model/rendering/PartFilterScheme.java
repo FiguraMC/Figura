@@ -15,6 +15,11 @@ public enum PartFilterScheme {
     RIGHT_ARM(false, SchemeFunction.allowOnThisAndCancelOnSeparate(ParentType.RightArm)),
 
 
+    CAPE(false, SchemeFunction.onlyThisSeparate(ParentType.Cape)),
+    LEFT_ELYTRA(false, SchemeFunction.onlyThisSeparate(ParentType.LeftElytra)),
+    RIGHT_ELYTRA(false, SchemeFunction.onlyThisSeparate(ParentType.RightElytra)),
+
+
     WORLD(false, SchemeFunction.onlyThisSeparate(ParentType.World)),
     HUD(false, SchemeFunction.onlyThisSeparate(ParentType.Hud)),
     SKULL(false, SchemeFunction.onlyThisSeparate(ParentType.Skull)),
@@ -22,11 +27,12 @@ public enum PartFilterScheme {
 
     PIVOTS(false, SchemeFunction.onlyPivotsAndCancelOnSeparate());
 
-
+    public final boolean ignoreVanillaVisible;
     private final boolean initialValue;
     private final SchemeFunction predicate;
 
     PartFilterScheme(boolean initialValue, SchemeFunction predicate) {
+        this.ignoreVanillaVisible = !initialValue;
         this.initialValue = initialValue;
         this.predicate = predicate;
     }

@@ -1,9 +1,9 @@
 package org.moon.figura.utils;
 
-import com.mojang.math.*;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.Vec3;
+import org.joml.*;
 import org.moon.figura.ducks.GameRendererAccessor;
 import org.moon.figura.math.matrix.FiguraMat2;
 import org.moon.figura.math.matrix.FiguraMat3;
@@ -11,6 +11,7 @@ import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.matrix.FiguraMatrix;
 import org.moon.figura.math.vector.*;
 
+import java.lang.Math;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -53,29 +54,29 @@ public class MathUtils {
     //maya pls check those //ty <3 <3
     public static FiguraVec3 rotateAroundAxis(FiguraVec3 vec, FiguraVec3 axis, double degrees) {
         FiguraVec3 normalizedAxis = axis.normalized();
-        Quaternion vectorQuat = new Quaternion((float) vec.x, (float) vec.y, (float) vec.z, 0);
-        Quaternion rotatorQuat = new Quaternion(new Vector3f((float) normalizedAxis.x, (float) normalizedAxis.y, (float) normalizedAxis.z), (float) degrees, true);
-        Quaternion rotatorQuatConj = new Quaternion(rotatorQuat);
-        rotatorQuatConj.conj();
+        Quaternionf vectorQuat = new Quaternionf((float) vec.x, (float) vec.y, (float) vec.z, 0);
+        Quaternionf rotatorQuat = new Quaternionf().fromAxisAngleDeg((float) normalizedAxis.x, (float) normalizedAxis.y, (float) normalizedAxis.z, (float) degrees);
+        Quaternionf rotatorQuatConj = new Quaternionf(rotatorQuat);
+        rotatorQuatConj.conjugate();
 
         rotatorQuat.mul(vectorQuat);
         rotatorQuat.mul(rotatorQuatConj);
 
         normalizedAxis.free();
-        return FiguraVec3.of(rotatorQuat.i(), rotatorQuat.j(), rotatorQuat.k());
+        return FiguraVec3.of(rotatorQuat.x(), rotatorQuat.y(), rotatorQuat.z());
     }
 
     public static FiguraVec3 toCameraSpace(FiguraVec3 vec) {
         Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
 
-        FiguraMat3 transformMatrix = FiguraMat3.fromMatrix3f(new Matrix3f(camera.rotation()));
+        FiguraMat3 transformMatrix = FiguraMat3.fromMatrix3f(new Matrix3f().rotation(camera.rotation()));
         Vec3 pos = camera.getPosition();
         transformMatrix.invert();
 
         FiguraVec3 ret = vec.copy();
         ret.subtract(pos.x, pos.y, pos.z);
         ret.transform(transformMatrix);
-        ret.multiply(-1, 1, 1);
+        //ret.multiply(-1, 1, 1);
 
         transformMatrix.free();
         return ret;
@@ -84,17 +85,17 @@ public class MathUtils {
     public static FiguraVec4 worldToScreenSpace(FiguraVec3 worldSpace) {
         Minecraft minecraft = Minecraft.getInstance();
         Camera camera = minecraft.gameRenderer.getMainCamera();
-        Matrix3f transformMatrix = new Matrix3f(camera.rotation());
+        Matrix3f transformMatrix = new Matrix3f().rotation(camera.rotation());
         transformMatrix.invert();
 
         Vector3f camSpace = new Vector3f((float) worldSpace.x, (float) worldSpace.y, (float) worldSpace.z);
         Vec3 camPos = camera.getPosition();
         camSpace.sub(new Vector3f((float) camPos.x, (float) camPos.y, (float) camPos.z));
-        camSpace.transform(transformMatrix);
+        transformMatrix.transform(camSpace);
 
-        Vector4f projectiveCamSpace = new Vector4f(camSpace);
+        Vector4f projectiveCamSpace = new Vector4f(camSpace, 1f);
         Matrix4f projMat = minecraft.gameRenderer.getProjectionMatrix(((GameRendererAccessor) minecraft.gameRenderer).figura$getFov(camera, minecraft.getFrameTime(), true));
-        projectiveCamSpace.transform(projMat);
+        projMat.transform(projectiveCamSpace);
         float w = projectiveCamSpace.w();
 
         return FiguraVec4.of(projectiveCamSpace.x() / w, projectiveCamSpace.y() / w, projectiveCamSpace.z() / w, Math.sqrt(camSpace.dot(camSpace)));
@@ -122,25 +123,5 @@ public class MathUtils {
     //it is the same function from minecraft, but using doubles instead
     public static double catmullrom(double delta, double prevA, double prevB, double nextA, double nextB) {
         return 0.5 * (2 * prevB + (nextA - prevA) * delta + (2 * prevA - 5 * prevB + 4 * nextA - nextB) * delta * delta + (3 * prevB - prevA - 3 * nextA + nextB) * delta * delta * delta);
-    }
-
-    //same as minecraft too, but with doubles and fixing the NaN in the Math.asin
-    public static FiguraVec3 quaternionToYXZ(Quaternion quaternion) {
-        double r, i, j, k;
-        r = quaternion.r();
-        i = quaternion.i();
-        j = quaternion.j();
-        k = quaternion.k();
-
-        double f = r * r;
-        double g = i * i;
-        double h = j * j;
-        double m = k * k;
-        double n = f + g + h + m;
-        double o = 2 * r * i - 2 * j * k;
-        double l = Math.asin(Math.max(Math.min(1, o / n), -1));
-        return Math.abs(o) > 0.999d * n ?
-                FiguraVec3.of(l, 2 * Math.atan2(j, r), 0) :
-                FiguraVec3.of(l, Math.atan2(2 * i * k + 2 * j * r, f - g - h + m), Math.atan2(2 * i * j + 2 * r * k, f - g + h - m));
     }
 }

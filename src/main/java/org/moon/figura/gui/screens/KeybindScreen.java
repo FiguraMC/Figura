@@ -15,10 +15,18 @@ public class KeybindScreen extends AbstractPanelScreen {
 
     public static final Component TITLE = FiguraText.of("gui.panels.title.keybind");
 
+    private final Screen sourcePanel;
+
     private KeybindList list;
 
-    public KeybindScreen(Screen parentScreen) {
-        super(parentScreen, TITLE, 2);
+    public KeybindScreen(AbstractPanelScreen parentScreen) {
+        super(parentScreen.parentScreen, TITLE, WardrobeScreen.class);
+        sourcePanel = parentScreen;
+    }
+
+    @Override
+    public Component getTitle() {
+        return TITLE;
     }
 
     @Override
@@ -44,7 +52,7 @@ public class KeybindScreen extends AbstractPanelScreen {
 
         //back
         addRenderableWidget(new TexturedButton(width / 2 + 4, height - 24, 120, 20, FiguraText.of("gui.done"), null,
-                bx -> this.minecraft.setScreen(parentScreen)
+                bx -> this.minecraft.setScreen(sourcePanel)
         ));
     }
 

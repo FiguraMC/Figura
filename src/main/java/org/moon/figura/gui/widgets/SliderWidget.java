@@ -87,6 +87,8 @@ public class SliderWidget extends ScrollBarWidget {
     @Override
     public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
         UIHelper.setupTexture(SLIDER_TEXTURE);
+        int x = getX();
+        int y = getY();
 
         //draw bar
         blit(stack, x, y + 3, width, 5, isScrolling ? 10f : 0f, 0f, 5, 5, 33, 16);

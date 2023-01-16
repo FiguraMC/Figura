@@ -1,8 +1,7 @@
 package org.moon.figura.math.matrix;
 
-import com.mojang.math.Matrix3f;
+import org.joml.Matrix3f;
 import org.luaj.vm2.LuaError;
-import org.lwjgl.BufferUtils;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaMethodDoc;
@@ -14,8 +13,6 @@ import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.caching.CacheStack;
 import org.moon.figura.utils.caching.CacheUtils;
 
-import java.nio.FloatBuffer;
-
 @LuaWhitelist
 @LuaTypeDoc(
         name = "Matrix3",
@@ -23,34 +20,28 @@ import java.nio.FloatBuffer;
 )
 public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
 
-    private static final FloatBuffer copyingBuffer = BufferUtils.createFloatBuffer(3 * 3);
-
     public static FiguraMat3 fromMatrix3f(Matrix3f mat) {
-        copyingBuffer.clear();
-        mat.store(copyingBuffer);
-        return of(copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get(),
-                copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get(),
-                copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get());
+        return of(
+                mat.m00(), mat.m01(), mat.m02(),
+                mat.m10(), mat.m11(), mat.m12(),
+                mat.m20(), mat.m21(), mat.m22()
+        );
     }
 
     public Matrix3f toMatrix3f() {
-        writeToBuffer();
-        Matrix3f result = new Matrix3f();
-        result.load(copyingBuffer);
-        return result;
+        return new Matrix3f(
+                (float) v11, (float) v21, (float) v31,
+                (float) v12, (float) v22, (float) v32,
+                (float) v13, (float) v23, (float) v33
+        );
     }
 
     public void copyDataTo(Matrix3f vanillaMatrix) {
-        writeToBuffer();
-        vanillaMatrix.load(copyingBuffer);
-    }
-
-    private void writeToBuffer() {
-        copyingBuffer.clear();
-        copyingBuffer
-                .put((float) v11).put((float) v21).put((float) v31)
-                .put((float) v12).put((float) v22).put((float) v32)
-                .put((float) v13).put((float) v23).put((float) v33);
+        vanillaMatrix.set(
+                (float) v11, (float) v21, (float) v31,
+                (float) v12, (float) v22, (float) v32,
+                (float) v13, (float) v23, (float) v33
+        );
     }
 
     //----------------------------IMPLEMENTATION BELOW-----------------------//

@@ -115,7 +115,7 @@ public class InputElement extends AbstractConfigElement {
 
         private final InputElement parent;
 
-        public InputField(int x, int y, int width, int height, Component hint, InputElement parent, Consumer<String> changedListener) {
+        public InputField(int x, int y, int width, int height, HintType hint, InputElement parent, Consumer<String> changedListener) {
             super(x, y, width, height, hint, changedListener);
             this.parent = parent;
         }

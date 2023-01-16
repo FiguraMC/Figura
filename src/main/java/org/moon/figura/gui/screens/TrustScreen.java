@@ -56,7 +56,12 @@ public class TrustScreen extends AbstractPanelScreen {
     private PlayerElement dragged = null;
 
     public TrustScreen(Screen parentScreen) {
-        super(parentScreen, TITLE, 3);
+        super(parentScreen, TITLE, TrustScreen.class);
+    }
+
+    @Override
+    public Component getTitle() {
+        return TITLE;
     }
 
     @Override
@@ -87,7 +92,7 @@ public class TrustScreen extends AbstractPanelScreen {
                 MutableComponent text = selectedTrust.getGroupName();
 
                 stack.pushPose();
-                stack.translate(this.x + this.getWidth() / 2f - font.width(text) * 0.75, this.y - 4 - font.lineHeight * 2, 0f);
+                stack.translate(this.getX() + this.getWidth() / 2f - font.width(text) * 0.75, this.getY() - 4 - font.lineHeight * 2, 0f);
                 stack.scale(1.5f, 1.5f, 1f);
                 UIHelper.renderOutlineText(stack, font, text, 0, 0, 0xFFFFFF, 0x202020);
                 stack.popPose();
@@ -123,8 +128,8 @@ public class TrustScreen extends AbstractPanelScreen {
         ));
 
         //debug buttons
-        uuid = new TextField(middle + 2, back.y - 24, listWidth - 24, 20, Component.literal("Name/UUID"), s -> yoink.active = !s.isBlank());
-        yoink = new TexturedButton(middle + listWidth - 18, back.y - 24, 20, 20, Component.literal("yoink"), Component.literal("Set the selected player's avatar"), button -> {
+        uuid = new TextField(middle + 2, back.getY() - 24, listWidth - 24, 20, TextField.HintType.NAME, s -> yoink.active = !s.isBlank());
+        yoink = new TexturedButton(middle + listWidth - 18, back.getY() - 24, 20, 20, Component.literal("yoink"), Component.literal("Set the selected player's avatar"), button -> {
             String text = uuid.getField().getValue();
             UUID id;
 
@@ -198,7 +203,7 @@ public class TrustScreen extends AbstractPanelScreen {
             @Override
             protected void renderText(PoseStack stack) {
                 Font font = Minecraft.getInstance().font;
-                drawString(stack, font, this.getMessage(), x + width + 4, y + height / 2 - font.lineHeight / 2, 0xFFFFFF);
+                drawString(stack, font, this.getMessage(), getX() + width + 4, getY() + height / 2 - font.lineHeight / 2, 0xFFFFFF);
             }
         });
         preciseTrust.setMessage(FiguraText.of("gui.trust.precise"));
@@ -207,8 +212,8 @@ public class TrustScreen extends AbstractPanelScreen {
         addRenderableWidget(trustList);
 
         listYPrecise = trustList.y;
-        expandYPrecise = expandButton.y;
-        resetYPrecise = resetButton.y;
+        expandYPrecise = expandButton.getY();
+        resetYPrecise = resetButton.getY();
     }
 
     @Override
@@ -228,11 +233,11 @@ public class TrustScreen extends AbstractPanelScreen {
         this.trustList.y = (int) listYPrecise;
 
         expandYPrecise = Mth.lerp(lerpDelta, expandYPrecise, expandButton.isToggled() ? listYPrecise - 22f : listYPrecise - 24f);
-        this.expandButton.y = (int) expandYPrecise;
+        this.expandButton.setY((int) expandYPrecise);
 
         resetYPrecise = Mth.lerp(lerpDelta, resetYPrecise, expandButton.isToggled() ? listYPrecise - 22f : height);
-        this.resetButton.y = (int) resetYPrecise;
-        this.preciseTrust.y = (int) resetYPrecise;
+        this.resetButton.setY((int) resetYPrecise);
+        this.preciseTrust.setY((int) resetYPrecise);
 
         //render
         super.render(stack, mouseX, mouseY, delta);
@@ -272,7 +277,7 @@ public class TrustScreen extends AbstractPanelScreen {
             dragged = element;
             element.anchorX = (int) mouseX;
             element.anchorY = (int) mouseY;
-            element.initialY = element.y;
+            element.initialY = element.getY();
         }
 
         return bool;

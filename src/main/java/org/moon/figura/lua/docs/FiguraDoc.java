@@ -11,6 +11,7 @@ import net.minecraft.network.chat.MutableComponent;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.FiguraText;
+import org.moon.figura.utils.TextUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -65,7 +66,7 @@ public abstract class FiguraDoc {
 
         public final ArrayList<MethodDoc> documentedMethods;
         public final ArrayList<FieldDoc> documentedFields;
-        public final Class<?> superclass;
+        public final Class<?> thisClass, superclass;
 
         public ClassDoc(Class<?> clazz, LuaTypeDoc typeDoc) {
             this(clazz, typeDoc, null);
@@ -73,6 +74,8 @@ public abstract class FiguraDoc {
 
         public ClassDoc(Class<?> clazz, LuaTypeDoc typeDoc, Map<String, List<FiguraDoc>> children) {
             super(typeDoc.name(), typeDoc.value());
+
+            thisClass = clazz;
 
             if (clazz.getSuperclass().isAnnotationPresent(LuaTypeDoc.class))
                 superclass = clazz.getSuperclass();
@@ -97,11 +100,28 @@ public abstract class FiguraDoc {
 
         //Parse docs for this method if none were already found and stored in "foundIndices".
         private void parseMethodIfNeeded(Set<String> foundIndices, Map<String, List<FiguraDoc>> children, LuaTypeDoc typeDoc, Method method) {
-            if (!foundIndices.contains(method.getName()) && method.isAnnotationPresent(LuaMethodDoc.class)) {
+            if (!foundIndices.contains(method.getName())) {
+                LuaMethodDoc doc = getDocAnnotation(method);
+                if (doc == null) return;
+
                 List<FiguraDoc> childList = children == null ? null : children.get(method.getName());
-                documentedMethods.add(new MethodDoc(method, method.getAnnotation(LuaMethodDoc.class), childList, typeDoc.name()));
+                documentedMethods.add(new MethodDoc(method, doc, childList, typeDoc.name()));
                 foundIndices.add(method.getName());
             }
+        }
+
+        private LuaMethodDoc getDocAnnotation(Method method) {
+            if (method.isAnnotationPresent(LuaMethodDoc.class)) {
+                return method.getAnnotation(LuaMethodDoc.class);
+            } else if (method.isAnnotationPresent(LuaMethodShadow.class)) {
+                try {
+                    Method shadow = thisClass.getMethod(method.getAnnotation(LuaMethodShadow.class).value(), method.getParameterTypes());
+                    return getDocAnnotation(shadow);
+                } catch (Exception e) {
+                    FiguraMod.LOGGER.warn("", e);
+                }
+            }
+            return null;
         }
 
         //Parse docs for this field if none were already found and stored in "foundIndices".
@@ -141,11 +161,12 @@ public abstract class FiguraDoc {
                     .append(Component.literal("• ")
                             .append(FiguraText.of("docs.text.description"))
                             .append(":")
-                            .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
-                    .append("\n\t")
-                    .append(Component.literal("• ")
-                            .append(FiguraText.of("docs." + description))
-                            .withStyle(ColorUtils.Colors.MAYA_BLUE.style));
+                            .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style));
+
+            MutableComponent descText = Component.empty().withStyle(ColorUtils.Colors.MAYA_BLUE.style);
+            for (Component component : TextUtils.splitText(FiguraText.of("docs." + description), "\n"))
+                descText.append("\n\t").append("• ").append(component);
+            message.append(descText);
 
             FiguraMod.sendChatMessage(message);
             return 1;
@@ -271,11 +292,12 @@ public abstract class FiguraDoc {
                     .append(Component.literal("• ")
                             .append(FiguraText.of("docs.text.description"))
                             .append(":")
-                            .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
-                    .append("\n\t")
-                    .append(Component.literal("• ")
-                            .append(FiguraText.of("docs." + description))
-                            .withStyle(ColorUtils.Colors.MAYA_BLUE.style));
+                            .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style));
+
+            MutableComponent descText = Component.empty().withStyle(ColorUtils.Colors.MAYA_BLUE.style);
+            for (Component component : TextUtils.splitText(FiguraText.of("docs." + description), "\n"))
+                descText.append("\n\t").append("• ").append(component);
+            message.append(descText);
 
             FiguraMod.sendChatMessage(message);
             return 1;
@@ -344,7 +366,7 @@ public abstract class FiguraDoc {
         @Override
         public int print() {
             //header
-            FiguraMod.sendChatMessage(HEADER.copy()
+            MutableComponent message = HEADER.copy()
 
                     //type
                     .append("\n\n")
@@ -359,19 +381,21 @@ public abstract class FiguraDoc {
                     .append(Component.literal(" (")
                             .append(FiguraText.of(editable ? "docs.text.editable" : "docs.text.not_editable"))
                             .append(")")
-                            .withStyle(editable ? ChatFormatting.GREEN : ChatFormatting.DARK_RED))
+                            .withStyle(editable ? ChatFormatting.GREEN : ChatFormatting.DARK_RED));
 
-                    //description
-                    .append("\n\n")
+            //description
+            message.append("\n\n")
                     .append(Component.literal("• ")
                             .append(FiguraText.of("docs.text.description"))
                             .append(":")
-                            .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
-                    .append("\n\t")
-                    .append(Component.literal("• ")
-                            .append(FiguraText.of("docs." + description))
-                            .withStyle(ColorUtils.Colors.MAYA_BLUE.style)));
+                            .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style));
 
+            MutableComponent descText = Component.empty().withStyle(ColorUtils.Colors.MAYA_BLUE.style);
+            for (Component component : TextUtils.splitText(FiguraText.of("docs." + description), "\n"))
+                descText.append("\n\t").append("• ").append(component);
+            message.append(descText);
+
+            FiguraMod.sendChatMessage(message);
             return 1;
         }
 

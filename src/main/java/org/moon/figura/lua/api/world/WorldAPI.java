@@ -7,7 +7,6 @@ import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.arguments.blocks.BlockStateArgument;
 import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Marker;
 import net.minecraft.world.entity.player.Player;
@@ -305,6 +304,13 @@ public class WorldAPI {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("world.get_dimension")
+    public static String getDimension() {
+        Level world = getCurrentWorld();
+        return world.dimension().location().toString();
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc("world.get_players")
     public static Map<String, EntityAPI<?>> getPlayers() {
         HashMap<String, EntityAPI<?>> playerList = new HashMap<>();
@@ -329,9 +335,8 @@ public class WorldAPI {
         }
     }
 
-    @LuaWhitelist
+    //@LuaWhitelist
     public HashMap<String, Object> raycastBlock(boolean fluid, Object x, Object y, Double z, Object w, Double t, Double h) {
-        if (true) return null;
         FiguraVec3 start, end;
 
         Pair<FiguraVec3, FiguraVec3> pair = LuaUtils.parse2Vec3("raycastBlock", x, y, z, w, t, h);
@@ -355,9 +360,8 @@ public class WorldAPI {
         return map;
     }
 
-    @LuaWhitelist
+    //@LuaWhitelist
     public HashMap<String, Object> raycastEntity(Object x, Object y, Double z, Object w, Double t, Double h) {
-        if (true) return null;
         FiguraVec3 start, end;
 
         Pair<FiguraVec3, FiguraVec3> pair = LuaUtils.parse2Vec3("raycastEntity", x, y, z, w, t, h);
@@ -408,7 +412,8 @@ public class WorldAPI {
     public static BlockStateAPI newBlock(@LuaNotNil String string, Object x, Double y, Double z) {
         BlockPos pos = LuaUtils.parseVec3("newBlock", x, y, z).asBlockPos();
         try {
-            BlockState block = BlockStateArgument.block(new CommandBuildContext(RegistryAccess.BUILTIN.get())).parse(new StringReader(string)).getState();
+            Level level = getCurrentWorld();
+            BlockState block = BlockStateArgument.block(CommandBuildContext.simple(level.registryAccess(), level.enabledFeatures())).parse(new StringReader(string)).getState();
             return new BlockStateAPI(block, pos);
         } catch (Exception e) {
             throw new LuaError("Could not parse block state from string: " + string);
@@ -435,7 +440,8 @@ public class WorldAPI {
     )
     public static ItemStackAPI newItem(@LuaNotNil String string, Integer count, Integer damage) {
         try {
-            ItemStack item = ItemArgument.item(new CommandBuildContext(RegistryAccess.BUILTIN.get())).parse(new StringReader(string)).createItemStack(1, false);
+            Level level = getCurrentWorld();
+            ItemStack item = ItemArgument.item(CommandBuildContext.simple(level.registryAccess(), level.enabledFeatures())).parse(new StringReader(string)).createItemStack(1, false);
             if (count != null)
                 item.setCount(count);
             if (damage != null)

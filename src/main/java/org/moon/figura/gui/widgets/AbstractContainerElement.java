@@ -2,7 +2,7 @@ package org.moon.figura.gui.widgets;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.Widget;
+import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.AbstractContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
@@ -43,7 +43,7 @@ public abstract class AbstractContainerElement extends AbstractContainerEventHan
     @Override
     public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
         for (GuiEventListener listener : this.children) {
-            if (listener instanceof Widget widget)
+            if (listener instanceof Renderable widget)
                 widget.render(stack, mouseX, mouseY, delta);
         }
     }

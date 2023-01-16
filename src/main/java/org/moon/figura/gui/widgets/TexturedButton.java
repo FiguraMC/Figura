@@ -30,7 +30,7 @@ public class TexturedButton extends Button {
 
     //texture and text constructor
     public TexturedButton(int x, int y, int width, int height, Integer u, Integer v, Integer regionSize, ResourceLocation texture, Integer textureWidth, Integer textureHeight, Component text, Component tooltip, Button.OnPress pressAction) {
-        super(x, y, width, height, text, pressAction);
+        super(x, y, width, height, text, pressAction, DEFAULT_NARRATION);
 
         this.u = u;
         this.v = v;
@@ -69,7 +69,7 @@ public class TexturedButton extends Button {
         if (this.texture != null) {
             renderTexture(stack, delta);
         } else {
-            UIHelper.renderSliced(stack, x, y, width, height, getUVStatus() * 16f, this.hasBackground ? 0f : 16f, 16, 16, 48, 32, TEXTURE);
+            UIHelper.renderSliced(stack, getX(), getY(), width, height, getUVStatus() * 16f, this.hasBackground ? 0f : 16f, 16, 16, 48, 32, TEXTURE);
         }
 
         //render text
@@ -84,7 +84,7 @@ public class TexturedButton extends Button {
 
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
-        boolean over = UIHelper.isMouseOver(x, y, width, height, mouseX, mouseY);
+        boolean over = UIHelper.isMouseOver(getX(), getY(), width, height, mouseX, mouseY);
         if (over) UIHelper.setTooltip(this.tooltip);
         return over;
     }
@@ -98,7 +98,7 @@ public class TexturedButton extends Button {
         UIHelper.setupTexture(this.texture);
 
         int size = this.regionSize;
-        blit(stack, this.x + this.width / 2 - size / 2, this.y + this.height / 2 - size / 2, u, v, size, size, this.textureWidth, this.textureHeight);
+        blit(stack, this.getX() + this.width / 2 - size / 2, this.getY() + this.height / 2 - size / 2, u, v, size, size, this.textureWidth, this.textureHeight);
     }
 
     protected void renderText(PoseStack stack) {
@@ -107,7 +107,7 @@ public class TexturedButton extends Button {
         drawCenteredString(
                 stack, font,
                 this.getMessage(),
-                this.x + this.width / 2, this.y + this.height / 2 - font.lineHeight / 2,
+                this.getX() + this.width / 2, this.getY() + this.height / 2 - font.lineHeight / 2,
                 (!this.active ? ChatFormatting.DARK_GRAY : ChatFormatting.WHITE).getColor()
         );
     }

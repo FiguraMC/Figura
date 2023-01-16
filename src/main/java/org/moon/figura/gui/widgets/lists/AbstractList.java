@@ -1,7 +1,7 @@
 package org.moon.figura.gui.widgets.lists;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.gui.components.Widget;
+import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import org.moon.figura.gui.widgets.AbstractContainerElement;
 import org.moon.figura.gui.widgets.ScrollBarWidget;
@@ -40,7 +40,7 @@ public abstract class AbstractList extends AbstractContainerElement {
     @Override
     public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
         for (GuiEventListener child : children) {
-            if (child instanceof Widget widget && !contents().contains(child))
+            if (child instanceof Renderable widget && !contents().contains(child))
                 widget.render(stack, mouseX, mouseY, delta);
         }
     }

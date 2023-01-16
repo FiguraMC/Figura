@@ -2,23 +2,25 @@ package org.moon.figura.lua.api.entity;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
+import net.minecraft.world.entity.HasCustomInventoryScreen;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.entity.vehicle.ContainerEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.*;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
-import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.NbtToLua;
+import org.moon.figura.lua.ReadOnlyLuaTable;
 import org.moon.figura.lua.api.world.BlockStateAPI;
 import org.moon.figura.lua.api.world.ItemStackAPI;
 import org.moon.figura.lua.api.world.WorldAPI;
@@ -29,8 +31,11 @@ import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.mixin.EntityAccessor;
 import org.moon.figura.utils.EntityUtils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @LuaWhitelist
@@ -125,7 +130,7 @@ public class EntityAPI<T extends Entity> {
     @LuaMethodDoc("entity.get_type")
     public String getType() {
         checkEntity();
-        return cacheType != null ? cacheType : (cacheType = Registry.ENTITY_TYPE.getKey(entity.getType()).toString());
+        return cacheType != null ? cacheType : (cacheType = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).toString());
     }
 
     public static final UUID hambrgr = UUID.fromString("66a6c5c4-963b-4b73-a0d9-162faedd8b7f");
@@ -314,6 +319,13 @@ public class EntityAPI<T extends Entity> {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("entity.is_crouching")
+    public boolean isCrouching() {
+        checkEntity();
+        return entity.isCrouching();
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaMethodOverload(
                     argumentTypes = int.class,
@@ -350,6 +362,45 @@ public class EntityAPI<T extends Entity> {
     public boolean isOnFire() {
         checkEntity();
         return entity.displayFireAnimation();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("entity.is_alive")
+    public boolean isAlive() {
+        checkEntity();
+        return entity.isAlive();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("entity.get_permission_level")
+    public int getPermissionLevel() {
+        checkEntity();
+        return ((EntityAccessor) entity).getPermissionLevel();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("entity.get_passengers")
+    public List<EntityAPI<?>> getPassengers() {
+        checkEntity();
+
+        List<EntityAPI<?>> list = new ArrayList<>();
+        for (Entity passenger : entity.getPassengers())
+            list.add(wrap(passenger));
+        return list;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("entity.has_container")
+    public boolean hasContainer() {
+        checkEntity();
+        return entity instanceof ContainerEntity;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("entity.has_inventory")
+    public boolean hasInventory() {
+        checkEntity();
+        return entity instanceof HasCustomInventoryScreen;
     }
 
     @LuaWhitelist
@@ -414,18 +465,21 @@ public class EntityAPI<T extends Entity> {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaMethodOverload(
-                    argumentTypes = String.class,
-                    argumentNames = "key"
-            ),
+            overloads = {
+                    @LuaMethodOverload,
+                    @LuaMethodOverload(
+                            argumentTypes = String.class,
+                            argumentNames = "key"
+                    )
+            },
             value = "entity.get_variable"
     )
-    public LuaValue getVariable(@LuaNotNil String key) {
+    public LuaValue getVariable(String key) {
         checkEntity();
         Avatar a = AvatarManager.getAvatar(entity);
-        if (a == null || a.luaRuntime == null)
-            return null;
-        return a.luaRuntime.avatar_meta.storedStuff.get(key);
+        LuaTable table = a == null || a.luaRuntime == null ? new LuaTable() : a.luaRuntime.avatar_meta.storedStuff;
+        table = new ReadOnlyLuaTable(table);
+        return key == null ? table : table.get(key);
     }
 
     @LuaWhitelist
@@ -451,6 +505,6 @@ public class EntityAPI<T extends Entity> {
     @Override
     public String toString() {
         checkEntity();
-        return (entity.hasCustomName() ? entity.getCustomName().getString() + " (" + getType() + ")" : getType() ) + " (Entity)";
+        return (entity.hasCustomName() ? entity.getCustomName().getString() + " (" + getType() + ")" : getType()) + " (Entity)";
     }
 }

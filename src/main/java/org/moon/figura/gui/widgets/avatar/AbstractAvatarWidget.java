@@ -96,8 +96,8 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
         this.x = x;
         this.y = y;
 
-        this.button.x = x;
-        this.button.y = y;
+        this.button.setX(x);
+        this.button.setY(y);
     }
 
     public boolean filtered() {

@@ -3,6 +3,8 @@ package org.moon.figura.lua.api.world;
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.resources.ResourceKey;
@@ -18,10 +20,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.luaj.vm2.LuaTable;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.NbtToLua;
-import org.moon.figura.lua.docs.LuaFieldDoc;
-import org.moon.figura.lua.docs.LuaMethodDoc;
-import org.moon.figura.lua.docs.LuaMethodOverload;
-import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.lua.docs.*;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec6;
 import org.moon.figura.mixin.BlockBehaviourAccessor;
@@ -51,7 +50,7 @@ public class BlockStateAPI {
     public BlockStateAPI(BlockState blockstate, BlockPos pos) {
         this.blockState = blockstate;
         this.pos = pos;
-        this.id = Registry.BLOCK.getKey(blockstate.getBlock()).toString();
+        this.id = BuiltInRegistries.BLOCK.getKey(blockstate.getBlock()).toString();
 
         CompoundTag tag = NbtUtils.writeBlockState(blockstate);
         this.properties = (LuaTable) NbtToLua.convert(tag.contains("Properties") ? tag.get("Properties") : null);
@@ -66,6 +65,18 @@ public class BlockStateAPI {
         for (AABB aabb : shape.toAabbs())
             shapes.add(FiguraVec6.of(aabb.minX, aabb.minY, aabb.minZ, aabb.maxX, aabb.maxY, aabb.maxZ));
         return shapes;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("blockstate.get_id")
+    public String getID() {
+        return id;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("blockstate.get_properties")
+    public LuaTable getProperties() {
+        return properties;
     }
 
     @LuaWhitelist
@@ -92,6 +103,13 @@ public class BlockStateAPI {
         FiguraVec3 newPos = LuaUtils.parseVec3("setPos", x, y, z);
         pos = newPos.asBlockPos();
         newPos.free();
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setPos")
+    public BlockStateAPI pos(Object x, Double y, Double z) {
+        setPos(x, y, z);
+        return this;
     }
 
     @LuaWhitelist
@@ -125,7 +143,7 @@ public class BlockStateAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("blockstate.has_emissive_lightning")
+    @LuaMethodDoc("blockstate.has_emissive_lighting")
     public boolean hasEmissiveLighting() {
         return blockState.emissiveRendering(WorldAPI.getCurrentWorld(), getBlockPos());
     }
@@ -201,7 +219,7 @@ public class BlockStateAPI {
     public List<String> getTags() {
         List<String> list = new ArrayList<>();
 
-        Registry<Block> registry = WorldAPI.getCurrentWorld().registryAccess().registryOrThrow(Registry.BLOCK_REGISTRY);
+        Registry<Block> registry = WorldAPI.getCurrentWorld().registryAccess().registryOrThrow(Registries.BLOCK);
         Optional<ResourceKey<Block>> key = registry.getResourceKey(blockState.getBlock());
 
         if (key.isEmpty())
@@ -227,7 +245,7 @@ public class BlockStateAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("blockstate.get_has_collision")
+    @LuaMethodDoc("blockstate.has_collision")
     public boolean hasCollision() {
         return ((BlockBehaviourAccessor) blockState.getBlock()).hasCollision();
     }

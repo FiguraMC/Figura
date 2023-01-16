@@ -8,6 +8,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import org.jetbrains.annotations.Nullable;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
@@ -16,6 +17,7 @@ import org.moon.figura.config.Config;
 import org.moon.figura.gui.ActionWheel;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.PopupMenu;
+import org.moon.figura.gui.screens.WardrobeScreen;
 import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.lua.api.particle.ParticleAPI;
 import org.moon.figura.lua.api.sound.SoundAPI;
@@ -36,6 +38,8 @@ public abstract class MinecraftMixin {
     @Shadow @Final public Options options;
     @Shadow public LocalPlayer player;
     @Shadow public Entity cameraEntity;
+
+    @Shadow public abstract void setScreen(@Nullable Screen screen);
 
     @Unique
     private boolean scriptMouseUnlock = false;
@@ -60,6 +64,10 @@ public abstract class MinecraftMixin {
             AvatarManager.reloadAvatar(FiguraMod.getLocalPlayerUUID());
             FiguraToast.sendToast(FiguraText.of("toast.reload"));
         }
+
+        //reload avatar button
+        if (Config.WARDROBE_BUTTON.keyBind.consumeClick())
+            this.setScreen(new WardrobeScreen(null));
 
         //action wheel button
         Boolean wheel = null;
@@ -88,7 +96,7 @@ public abstract class MinecraftMixin {
             PopupMenu.setEnabled(true);
 
             if (!PopupMenu.hasEntity()) {
-                Entity target = EntityUtils.getViewedEntity(32);
+                Entity target = FiguraMod.extendedPickEntity;
                 if (this.player != null && target instanceof Player && !target.isInvisibleTo(this.player)) {
                     PopupMenu.setEntity(target);
                 } else if (!this.options.getCameraType().isFirstPerson()) {
@@ -139,11 +147,24 @@ public abstract class MinecraftMixin {
 
     @Inject(at = @At("HEAD"), method = "runTick")
     private void preTick(boolean tick, CallbackInfo ci) {
+        FiguraMod.pushProfiler(FiguraMod.MOD_ID);
+        FiguraMod.pushProfiler("applyBBAnimations");
         AvatarManager.applyAnimations();
+        FiguraMod.popProfiler(2);
     }
 
     @Inject(at = @At("RETURN"), method = "runTick")
     private void afterTick(boolean tick, CallbackInfo ci) {
+        FiguraMod.pushProfiler(FiguraMod.MOD_ID);
+        FiguraMod.pushProfiler("clearBBAnimations");
         AvatarManager.clearAnimations();
+        FiguraMod.popProfiler(2);
+    }
+
+    @Inject(at = @At("HEAD"), method = "tick")
+    private void startTick(CallbackInfo ci) {
+        FiguraMod.pushProfiler(FiguraMod.MOD_ID);
+        FiguraMod.tick();
+        FiguraMod.popProfiler();
     }
 }

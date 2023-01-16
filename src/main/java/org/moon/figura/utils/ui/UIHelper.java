@@ -4,9 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Quaternion;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -23,16 +21,20 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
+import org.moon.figura.config.Config;
 import org.moon.figura.gui.screens.AbstractPanelScreen;
 import org.moon.figura.gui.widgets.AbstractContainerElement;
 import org.moon.figura.gui.widgets.ContextMenu;
 import org.moon.figura.math.vector.FiguraVec4;
-import org.moon.figura.model.rendering.texture.EntityRenderMode;
+import org.moon.figura.model.rendering.EntityRenderMode;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.TextUtils;
 
@@ -45,6 +47,7 @@ public class UIHelper extends GuiComponent {
     public static final ResourceLocation OUTLINE = new FiguraIdentifier("textures/gui/outline.png");
     public static final ResourceLocation TOOLTIP = new FiguraIdentifier("textures/gui/tooltip.png");
     public static final ResourceLocation UI_FONT = new FiguraIdentifier("ui");
+    public static final ResourceLocation SPECIAL_FONT = new FiguraIdentifier("special");
 
     //Used for GUI rendering
     private static final CustomFramebuffer FIGURA_FRAMEBUFFER = new CustomFramebuffer();
@@ -108,8 +111,6 @@ public class UIHelper extends GuiComponent {
         float headYaw = entity.yHeadRot;
         boolean invisible = entity.isInvisible();
 
-        entity.setInvisible(false);
-
         //vehicle
         LivingEntity vehicle = null;
         float vBodyYaw = 0f;
@@ -120,23 +121,23 @@ public class UIHelper extends GuiComponent {
 
         //apply matrix transformers
         stack.pushPose();
-        stack.translate(x, y, renderMode == EntityRenderMode.MINECRAFT_GUI ? 200d : 0d);
+        stack.translate(x, y, renderMode == EntityRenderMode.MINECRAFT_GUI ? 250d : -250d);
         stack.scale(scale, scale, scale);
-        stack.last().pose().multiply(Matrix4f.createScaleMatrix(1f, 1f, -1f)); //Scale ONLY THE POSITIONS! Inverted normals don't work for whatever reason
+        stack.last().pose().mul(new Matrix4f().scale(1f, 1f, -1f)); //Scale ONLY THE POSITIONS! Inverted normals don't work for whatever reason
 
-        Quaternion quaternion = Vector3f.ZP.rotationDegrees(180f);
+        Quaternionf quaternion = Axis.ZP.rotationDegrees(180f);
 
         double finalY;
-        Quaternion quaternion2;
+        Quaternionf quaternion2;
         switch (renderMode) {
             case PAPERDOLL -> {
                 //stack rotations
-                quaternion2 = Vector3f.XP.rotationDegrees(pitch);
-                Quaternion quaternion3 = Vector3f.YP.rotationDegrees(yaw + 180);
+                quaternion2 = Axis.XP.rotationDegrees(pitch);
+                Quaternionf quaternion3 = Axis.YP.rotationDegrees(yaw + 180);
                 quaternion3.mul(quaternion2);
                 quaternion.mul(quaternion3);
                 stack.mulPose(quaternion);
-                quaternion3.conj();
+                quaternion3.conjugate();
                 quaternion2 = quaternion3;
 
                 //offset
@@ -158,13 +159,17 @@ public class UIHelper extends GuiComponent {
                 //lightning
                 Lighting.setupForEntityInInventory();
 
+                //invisibility
+                if (Config.PAPERDOLL_INVISIBLE.asBool())
+                    entity.setInvisible(false);
+
                 finalY = -1d;
             }
             case FIGURA_GUI -> {
-                quaternion2 = Vector3f.XP.rotationDegrees(pitch);
+                quaternion2 = Axis.XP.rotationDegrees(pitch);
                 quaternion.mul(quaternion2);
                 stack.mulPose(quaternion);
-                quaternion2.conj();
+                quaternion2.conjugate();
 
                 //rotations
                 float rot = 180f - yaw;
@@ -180,6 +185,9 @@ public class UIHelper extends GuiComponent {
                 Lighting.setupForFlatItems();
                 RenderSystem.setShaderLights(Util.make(new Vector3f(-0.2f, -1f, -1f), Vector3f::normalize), Util.make(new Vector3f(-0.2f, 0.4f, -0.3f), Vector3f::normalize));
 
+                //invisibility
+                entity.setInvisible(false);
+
                 yaw = 0f;
                 finalY = -1d;
             }
@@ -187,10 +195,10 @@ public class UIHelper extends GuiComponent {
                 float angle = (float) Math.atan(pitch / 40f);
                 float angle2 = (float) (Math.atan(yaw / 40f) * 20f);
 
-                quaternion2 = Vector3f.XP.rotationDegrees(angle2);
+                quaternion2 = Axis.XP.rotationDegrees(angle2);
                 quaternion.mul(quaternion2);
                 stack.mulPose(quaternion);
-                quaternion2.conj();
+                quaternion2.conjugate();
 
                 //rotations
                 entity.setXRot(-angle2);
@@ -286,10 +294,11 @@ public class UIHelper extends GuiComponent {
         BufferBuilder bufferBuilder = tessellator.getBuilder();
         bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
 
-        bufferBuilder.vertex(x, y + height, 0f).uv(0f, height / textureHeight).endVertex();
-        bufferBuilder.vertex(x + width, y + height, 0f).uv(width / textureWidth, height / textureHeight).endVertex();
-        bufferBuilder.vertex(x + width, y, 0f).uv(width / textureWidth, 0f).endVertex();
-        bufferBuilder.vertex(x, y, 0f).uv(0f, 0f).endVertex();
+        float z = -999f;
+        bufferBuilder.vertex(x, y + height, z).uv(0f, height / textureHeight).endVertex();
+        bufferBuilder.vertex(x + width, y + height, z).uv(width / textureWidth, height / textureHeight).endVertex();
+        bufferBuilder.vertex(x + width, y, z).uv(width / textureWidth, 0f).endVertex();
+        bufferBuilder.vertex(x, y, z).uv(0f, 0f).endVertex();
 
         tessellator.end();
     }
@@ -376,7 +385,7 @@ public class UIHelper extends GuiComponent {
         //object
         int x, y, width, height;
         if (component instanceof AbstractWidget w) {
-            x = w.x; y = w.y;
+            x = w.getX(); y = w.getY();
             width = w.getWidth();
             height = w.getHeight();
         } else if (component instanceof AbstractContainerElement c) {
@@ -425,17 +434,9 @@ public class UIHelper extends GuiComponent {
     }
 
     public static void renderOutlineText(PoseStack stack, Font textRenderer, Component text, int x, int y, int color, int outline) {
-        Component outlineText = TextUtils.replaceStyle(TextUtils.replaceInText(text, "§.", ""), Style.EMPTY.withColor(outline));
-        for (int i = -1; i <= 1; ++i) {
-            for (int j = -1; j <= 1; ++j) {
-                textRenderer.draw(stack, outlineText, x + i, y + j, outline);
-            }
-        }
-
-        stack.pushPose();
-        stack.translate(0f, 0f, 0.001f);
-        textRenderer.draw(stack, text, x, y, color);
-        stack.popPose();
+        MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+        textRenderer.drawInBatch8xOutline(text.getVisualOrderText(), x, y, color, outline, stack.last().pose(), bufferSource, LightTexture.FULL_BRIGHT);
+        bufferSource.endBatch();
     }
 
     public static void renderTooltip(PoseStack stack, Component tooltip, int mouseX, int mouseY, boolean background) {
@@ -456,11 +457,11 @@ public class UIHelper extends GuiComponent {
 
         int width = TextUtils.getWidth(text, font);
         if (x + width > screenX)
-            x = Math.max(x - 28 - width, 0);
+            x = Math.max(x - 24 - width, 0);
 
         //render
         stack.pushPose();
-        stack.translate(0d, 0d, 400d);
+        stack.translate(0d, 0d, 999d);
 
         if (background)
             renderSliced(stack, x - 4, y - 4, width + 8, height + 8, TOOLTIP);

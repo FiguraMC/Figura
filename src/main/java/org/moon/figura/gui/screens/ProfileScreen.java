@@ -18,7 +18,12 @@ public class ProfileScreen extends AbstractPanelScreen {
     private TexturedButton button;
 
     public ProfileScreen(Screen parentScreen) {
-        super(parentScreen, TITLE, 0);
+        super(parentScreen, TITLE, ProfileScreen.class);
+    }
+
+    @Override
+    public Component getTitle() {
+        return TITLE;
     }
 
     @Override
@@ -33,14 +38,14 @@ public class ProfileScreen extends AbstractPanelScreen {
         }));
 
         this.addRenderableWidget(new TexturedButton(width / 2 - 30, height / 2 + 10, 60, 20, Component.literal("meow"), TextUtils.tryParseJson(
-                "{\"text\": \"△🟥🟧🟨🟩\n🟦🟪🟫⬜⬛\n\n❗❌🧀🍔🦐\n\n\n🌙🌀❤☆★\n\",\"font\": \"figura:default\"}"), button -> {
+                "{\"text\": \"△❗\n❌\uD83E\uDDC0\n\n☄❤\n\n\n☆★\",\"font\": \"figura:badges\"}"), button -> {
             FiguraToast.sendToast(Component.literal("Backend restarting").setStyle(Style.EMPTY.withColor(0x99BBEE)), "in 10 minutes!", FiguraToast.ToastType.DEFAULT);
         }));
     }
 
     @Override
     public void renderOverlays(PoseStack stack, int mouseX, int mouseY, float delta) {
-        UIHelper.highlight(stack, button, TextUtils.tryParseJson("{\"text\":\"🦐🦐🦐🦐\",\"font\":\"figura:default\"}"));
+        //UIHelper.highlight(stack, button, TextUtils.tryParseJson("{\"text\":\"🦐🦐🦐🦐\",\"font\":\"figura:emojis\"}"));
         super.renderOverlays(stack, mouseX, mouseY, delta);
     }
 }

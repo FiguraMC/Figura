@@ -47,11 +47,11 @@ public class PlayerList extends AbstractList {
         this.parent = parent;
 
         //fix scrollbar y and height
-        scrollBar.y = y + 28;
+        scrollBar.setY(y + 28);
         scrollBar.setHeight(height - 32);
 
         //search bar
-        children.add(searchBar = new TextField(x + 4, y + 4, width - 56, 20, FiguraText.of("gui.search"), s -> filter = s));
+        children.add(searchBar = new TextField(x + 4, y + 4, width - 56, 20, TextField.HintType.SEARCH, s -> filter = s));
 
         //show figura only button
         children.add(showFigura = new SwitchButton(x + width - 48, y + 4, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/show_figura.png"), 60, 40, FiguraText.of("gui.trust.figura_only.tooltip"), button -> showFiguraBl = ((SwitchButton) button).isToggled()));
@@ -104,10 +104,10 @@ public class PlayerList extends AbstractList {
             }
 
             trust.visible = true;
-            trust.x = x + Math.max(4, xOffset);
-            trust.y = y + playerY;
+            trust.setX(x + Math.max(4, xOffset));
+            trust.setY(y + playerY);
 
-            if (trust.y + trust.getHeight() > y + scissorsY)
+            if (trust.getY() + trust.getHeight() > y + scissorsY)
                 trust.render(stack, mouseX, mouseY, delta);
 
             playerY += trust.getHeight() + 8;
@@ -239,16 +239,16 @@ public class PlayerList extends AbstractList {
 
     public void setY(int y) {
         this.y = y;
-        scrollBar.y = y + 28;
+        scrollBar.setY(y + 28);
         searchBar.setPos(searchBar.x, y + 4);
-        showFigura.y = y + 4;
-        showDisconnected.y = y + 4;
+        showFigura.setY(y + 4);
+        showDisconnected.setY(y + 4);
     }
 
     public int getTrustAt(double y) {
         int ret = -1;
         for (AbstractTrustElement element : trustList)
-            if (element instanceof GroupElement group && group.visible && y >= group.y)
+            if (element instanceof GroupElement group && group.visible && y >= group.getY())
                 ret++;
         return Math.max(ret, 0);
     }

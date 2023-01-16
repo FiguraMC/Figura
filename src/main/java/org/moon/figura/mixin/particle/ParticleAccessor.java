@@ -15,7 +15,15 @@ public interface ParticleAccessor {
 
     @Intrinsic
     @Accessor
+    float getGravity();
+
+    @Intrinsic
+    @Accessor
     void setHasPhysics(boolean physics);
+
+    @Intrinsic
+    @Accessor
+    boolean getHasPhysics();
 
     @Intrinsic
     @Accessor

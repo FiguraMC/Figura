@@ -142,6 +142,12 @@ public class TrustManager {
         return trust;
     }
 
+    public static TrustContainer.PlayerContainer getMobTrust(UUID id) {
+        TrustContainer.PlayerContainer trust = new TrustContainer.PlayerContainer(GROUPS.get(Trust.Group.LOCAL), id.toString());
+        trust.insert(Trust.OFFSCREEN_RENDERING, 0, FiguraMod.MOD_ID);
+        return trust;
+    }
+
     //increase a container trust
     public static boolean increaseTrust(TrustContainer container) {
         Trust.Group group = container.getGroup();

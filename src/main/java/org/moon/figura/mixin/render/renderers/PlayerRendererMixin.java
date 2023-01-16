@@ -1,7 +1,6 @@
 package org.moon.figura.mixin.render.renderers;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Matrix4f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.model.PlayerModel;
@@ -12,10 +11,11 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.Score;
 import net.minecraft.world.scores.Scoreboard;
+import org.joml.Matrix4f;
+import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.avatar.Badges;
@@ -25,7 +25,6 @@ import org.moon.figura.lua.api.nameplate.NameplateCustomization;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.trust.Trust;
 import org.moon.figura.utils.TextUtils;
-import org.moon.figura.utils.ui.UIHelper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -62,12 +61,17 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
             return;
         }
 
+        FiguraMod.pushProfiler(FiguraMod.MOD_ID);
+        FiguraMod.pushProfiler(player.getName().getString());
+        FiguraMod.pushProfiler("nameplate");
+
         //trust check
         boolean trust = avatar != null && avatar.trust.get(Trust.NAMEPLATE_EDIT) == 1;
 
         stack.pushPose();
 
         //pos
+        FiguraMod.pushProfiler("position");
         FiguraVec3 pos = FiguraVec3.of(0f, player.getBbHeight() + 0.5f, 0f);
         if (custom != null && custom.getPos() != null && trust)
             pos.add(custom.getPos());
@@ -78,6 +82,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
         stack.mulPose(this.entityRenderDispatcher.cameraOrientation());
 
         //scale
+        FiguraMod.popPushProfiler("scale");
         float scale = 0.025f;
         FiguraVec3 scaleVec = FiguraVec3.of(-scale, -scale, -scale);
         if (custom != null && custom.getScale() != null && trust)
@@ -86,40 +91,42 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
         stack.scale((float) scaleVec.x, (float) scaleVec.y, (float) scaleVec.z);
 
         //text
-        Component replacement;
-        boolean replaceBadges = false;
+        Component name = Component.literal(player.getName().getString());
+        FiguraMod.popPushProfiler("text");
+        Component replacement = custom != null && custom.getJson() != null && trust ? custom.getJson().copy() : name;
 
-        if (custom != null && custom.getText() != null && trust) {
-            replacement = NameplateCustomization.applyCustomization(custom.getText());
-            replaceBadges = replacement.getString().contains("${badges}");
-        } else {
-            replacement = Component.literal(player.getName().getString());
-        }
+        //name
+        replacement = TextUtils.replaceInText(replacement, "\\$\\{name\\}", name);
 
         //badges
-        Component badges = config > 1 ? Badges.fetchBadges(player.getUUID()) : Component.empty();
-        if (replaceBadges) {
-            replacement = TextUtils.replaceInText(replacement, "\\$\\{badges\\}", badges);
-        } else if (badges.getString().length() > 0) {
-            ((MutableComponent) replacement).append(" ").append(badges);
-        }
+        FiguraMod.popPushProfiler("badges");
+        replacement = Badges.appendBadges(replacement, player.getUUID(), config > 1);
 
+        FiguraMod.popPushProfiler("applyName");
         text = TextUtils.replaceInText(text, "\\b" + Pattern.quote(player.getName().getString()) + "\\b", replacement);
 
         // * variables * //
+        FiguraMod.popPushProfiler("colors");
         boolean isSneaking = player.isDiscrete();
         boolean deadmau = text.getString().equals("deadmau5");
 
-        double bgOpacity = trust && custom != null && custom.alpha != null ? custom.alpha : Minecraft.getInstance().options.getBackgroundOpacity(0.25f);
-        int bgColor = (trust && custom != null && custom.background != null ? custom.background : 0) + ((int) (bgOpacity * 0xFF) << 24);
+        boolean hasCustom = trust && custom != null;
 
-        boolean outline = trust && custom != null && custom.outline;
-        boolean shadow = trust && custom != null && custom.shadow;
+        double bgOpacity = hasCustom && custom.alpha != null ? custom.alpha : Minecraft.getInstance().options.getBackgroundOpacity(0.25f);
+        int bgColor = (hasCustom && custom.background != null ? custom.background : 0) + ((int) (bgOpacity * 0xFF) << 24);
+        int outlineColor = hasCustom && custom.outlineColor != null ? custom.outlineColor : 0x202020;
+
+        boolean outline = hasCustom && custom.outline;
+        boolean shadow = hasCustom && custom.shadow;
+
+        light = hasCustom && custom.light != null ? custom.light : light;
 
         Matrix4f matrix4f = stack.last().pose();
         Font font = this.getFont();
 
         //render scoreboard
+        FiguraMod.popPushProfiler("render");
+        FiguraMod.pushProfiler("scoreboard");
         boolean hasScore = false;
         if (this.entityRenderDispatcher.distanceToSqr(player) < 100) {
             //get scoreboard
@@ -138,7 +145,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
                 font.drawInBatch(text1, x, y, 0x20FFFFFF, false, matrix4f, multiBufferSource, !isSneaking, bgColor, light);
                 if (!isSneaking) {
                     if (outline)
-                        UIHelper.renderOutlineText(stack, font, text1, (int) x, (int) y, -1, 0x202020);
+                        font.drawInBatch8xOutline(text1.getVisualOrderText(), x, y, -1, outlineColor, matrix4f, multiBufferSource, light);
                     else
                         font.drawInBatch(text1, x, y, -1, shadow, matrix4f, multiBufferSource, false, 0, light);
                 }
@@ -146,6 +153,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
         }
 
         //render name
+        FiguraMod.popPushProfiler("name");
         List<Component> textList = TextUtils.splitText(text, "\n");
 
         for (int i = 0; i < textList.size(); i++) {
@@ -162,12 +170,13 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
             font.drawInBatch(text1, x, y, 0x20FFFFFF, false, matrix4f, multiBufferSource, !isSneaking, bgColor, light);
             if (!isSneaking) {
                 if (outline)
-                    UIHelper.renderOutlineText(stack, font, text1, (int) x, (int) y, -1, 0x202020);
+                    font.drawInBatch8xOutline(text1.getVisualOrderText(), x, y, -1, outlineColor, matrix4f, multiBufferSource, light);
                 else
                     font.drawInBatch(text1, x, y, -1, shadow, matrix4f, multiBufferSource, false, 0, light);
             }
         }
 
+        FiguraMod.popProfiler(5);
         stack.popPose();
         ci.cancel();
     }
@@ -176,7 +185,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
     private void onRenderHand(PoseStack stack, MultiBufferSource multiBufferSource, int light, AbstractClientPlayer player, ModelPart arm, ModelPart sleeve, CallbackInfo ci) {
         avatar = AvatarManager.getAvatarForPlayer(player.getUUID());
         if (avatar != null && avatar.luaRuntime != null && avatar.trust.get(Trust.VANILLA_MODEL_EDIT) == 1)
-            avatar.luaRuntime.vanilla_model.PLAYER.alter(this.getModel());
+            avatar.luaRuntime.vanilla_model.PLAYER.change(this.getModel());
     }
 
     @Inject(at = @At("RETURN"), method = "renderHand")

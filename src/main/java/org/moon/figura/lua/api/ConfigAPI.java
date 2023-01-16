@@ -9,15 +9,15 @@ import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.ReadOnlyLuaTable;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
+import org.moon.figura.lua.docs.LuaMethodShadow;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.matrix.FiguraMatrix;
 import org.moon.figura.math.vector.FiguraVector;
+import org.moon.figura.utils.IOUtils;
 import org.moon.figura.utils.MathUtils;
 
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -57,15 +57,7 @@ public class ConfigAPI {
 
 
     public static Path getConfigDataDir() {
-        Path p = FiguraMod.getFiguraDirectory().resolve("data");
-        try {
-            Files.createDirectories(p);
-        } catch (FileAlreadyExistsException ignored) {
-        } catch (Exception e) {
-            FiguraMod.LOGGER.error("Failed to create avatar data directory", e);
-        }
-
-        return p;
+        return IOUtils.getOrCreateDir(FiguraMod.getFiguraDirectory(), "data");
     }
 
     private Path getPath() {
@@ -237,17 +229,30 @@ public class ConfigAPI {
 
 
     @LuaWhitelist
+    @LuaMethodDoc("config.get_name")
+    public String getName() {
+        return name;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaMethodOverload(
                     argumentTypes = String.class,
                     argumentNames = "name"
             ),
-            value = "config.name"
+            value = "config.set_name"
     )
-    public void name(@LuaNotNil String name) {
+    public void setName(@LuaNotNil String name) {
         if (!isHost) return;
         this.name = name;
         this.loaded = false;
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setName")
+    public ConfigAPI name(@LuaNotNil String name) {
+        setName(name);
+        return this;
     }
 
     @LuaWhitelist
@@ -258,9 +263,9 @@ public class ConfigAPI {
             ),
             value = "config.save"
     )
-    public void save(@LuaNotNil String key, LuaValue val) {
+    public ConfigAPI save(@LuaNotNil String key, LuaValue val) {
         if (!isHost)
-            return;
+            return this;
 
         if (!loaded) {
             init();
@@ -270,6 +275,8 @@ public class ConfigAPI {
         val = val != null && (val.isboolean() || val.isstring() || val.isnumber() || val.istable() || val.isuserdata(FiguraVector.class) || val.isuserdata(FiguraMatrix.class)) ? val : LuaValue.NIL;
         luaTable.set(key, val);
         write();
+
+        return this;
     }
 
     @LuaWhitelist

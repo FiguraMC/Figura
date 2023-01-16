@@ -5,7 +5,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.Tag;
-import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.Resource;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.avatar.UserData;
@@ -13,7 +14,6 @@ import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.parsers.AvatarMetadataParser;
 import org.moon.figura.parsers.BlockbenchModelParser;
 import org.moon.figura.parsers.LuaScriptParser;
-import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FiguraResourceListener;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.IOUtils;
@@ -24,9 +24,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.*;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.BiFunction;
 import java.util.regex.Pattern;
 
 /**
@@ -41,25 +43,37 @@ public class LocalAvatarLoader {
     private static final HashMap<Path, WatchKey> KEYS = new HashMap<>();
     private static Path lastLoadedPath;
     private static int loadState;
+    private static String loadError;
 
-    public static CompoundTag cheese;
-    public static final ArrayList<CompoundTag> SERVER_AVATARS = new ArrayList<>();
-    private static final BiFunction<String, ResourceManager, CompoundTag> LOAD_AVATAR = (name, manager) -> {
-        try {
-            return NbtIo.readCompressed(manager.getResource(new FiguraIdentifier("avatars/" + name + ".moon")).get().open());
-        } catch (Exception e) {
-            FiguraMod.LOGGER.error("Failed to load the " + name + " avatar", e);
-            return null;
+    public static final HashMap<ResourceLocation, CompoundTag> CEM_AVATARS = new HashMap<>();
+    public static final FiguraResourceListener AVATAR_LISTENER = new FiguraResourceListener("cem", manager -> {
+        CEM_AVATARS.clear();
+        AvatarManager.clearCEMAvatars();
+
+        for (Map.Entry<ResourceLocation, Resource> cem : manager.listResources("cem", location -> location.getNamespace().equals(FiguraMod.MOD_ID) && location.getPath().endsWith(".moon")).entrySet()) {
+            //id
+            ResourceLocation key = cem.getKey();
+            String[] split = key.getPath().split("/");
+            if (split.length <= 1)
+                continue;
+
+            String namespace = split[split.length - 2];
+            String path = split[split.length - 1];
+            ResourceLocation id = new ResourceLocation(namespace, path.substring(0, path.length() - 5));
+
+            //nbt
+            CompoundTag nbt;
+            try {
+                nbt = NbtIo.readCompressed(cem.getValue().open());
+            } catch (Exception e) {
+                FiguraMod.LOGGER.error("Failed to load " + id + " avatar", e);
+                continue;
+            }
+
+            //insert
+            FiguraMod.LOGGER.info("Loaded CEM model for " + id);
+            CEM_AVATARS.put(id, nbt);
         }
-    };
-    public static final FiguraResourceListener AVATAR_LISTENER = new FiguraResourceListener("avatars", manager -> {
-        cheese = LOAD_AVATAR.apply("cheese", manager);
-
-        SERVER_AVATARS.clear();
-        manager.listResources("avatars/server", resource -> resource.getNamespace().equals(FiguraMod.MOD_ID) && resource.getPath().endsWith(".moon")).forEach((location, resource) -> {
-            String name = location.getPath().substring(8, location.getPath().length() - 5);
-            SERVER_AVATARS.add(LOAD_AVATAR.apply(name, manager));
-        });
     });
 
     static {
@@ -84,6 +98,7 @@ public class LocalAvatarLoader {
      * @param path - the file/folder for loading the avatar
      */
     public static void loadAvatar(Path path, UserData target) {
+        loadError = null;
         loadState = 0;
         resetWatchKeys();
         lastLoadedPath = path;
@@ -140,8 +155,9 @@ public class LocalAvatarLoader {
                 //load
                 target.loadAvatar(nbt);
             } catch (Exception e) {
+                loadError = e.getMessage();
                 FiguraMod.LOGGER.error("Failed to load avatar from " + path, e);
-                FiguraToast.sendToast(FiguraText.of("toast.load_error"), FiguraText.of("toast.load_error." + LocalAvatarLoader.getLoadState()), FiguraToast.ToastType.ERROR);
+                FiguraToast.sendToast(FiguraText.of("toast.load_error"), FiguraText.of("gui.load_error." + LocalAvatarLoader.getLoadState()), FiguraToast.ToastType.ERROR);
             }
         });
     }
@@ -178,7 +194,7 @@ public class LocalAvatarLoader {
         }
     }
 
-    private static CompoundTag loadModels(Path path, BlockbenchModelParser parser, CompoundTag textures, ListTag animations, String folders) throws IOException {
+    private static CompoundTag loadModels(Path path, BlockbenchModelParser parser, CompoundTag textures, ListTag animations, String folders) throws Exception {
         CompoundTag result = new CompoundTag();
         File[] subFiles = path.toFile().listFiles(f -> !f.isHidden() && !f.getName().startsWith("."));
         ListTag children = new ListTag();
@@ -189,6 +205,7 @@ public class LocalAvatarLoader {
                     CompoundTag subfolder = loadModels(file.toPath(), parser, textures, animations, folders + name + ".");
                     if (!subfolder.isEmpty()) {
                         subfolder.putString("name", name);
+                        BlockbenchModelParser.parseParent(name, subfolder);
                         children.add(subfolder);
                     }
                 } else if (file.toString().toLowerCase().endsWith(".bbmodel")) {
@@ -309,5 +326,9 @@ public class LocalAvatarLoader {
 
     public static int getLoadState() {
         return loadState;
+    }
+
+    public static String getLoadError() {
+        return loadError;
     }
 }
