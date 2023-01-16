@@ -13,7 +13,7 @@ public class LuaScriptParser {
 
     // regex minify constants
 
-    private static final Pattern string = Pattern.compile("\"(\\\\|\\\"|[^\"\n\r])*?\"|'(\\\\|\\'|[^'\n\r])*?'".stripIndent(), Pattern.MULTILINE);
+    private static final Pattern string = Pattern.compile("\"(\\\\z\\s*|\\\\\\d{1,3}|\\\\x[\\da-fA-F]{2}|\\\\[\\\\\"'\\n\\rabfnrtv]|[^\\\\\"\\n\\r])*?\"|'(\\\\z\\s*|\\\\\\d{1,3}|\\\\x[\\da-fA-F]{2}|\\\\[\\\\\"'\\n\\rabfnrtv]|[^\\\\'\\n\\r])*?'", Pattern.MULTILINE);
     private static final Pattern multilineString = Pattern.compile("\\[(?<s>=*)\\[.*?](\\k<s>)]", Pattern.MULTILINE | Pattern.DOTALL);
     private static final Pattern comments = Pattern.compile("--[^\n]*$", Pattern.MULTILINE);
     private static final Pattern multilineComment = Pattern.compile("--\\[(?<s>=*)\\[.*?](\\k<s>)]", Pattern.MULTILINE | Pattern.DOTALL);
