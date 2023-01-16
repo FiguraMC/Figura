@@ -7,6 +7,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.util.Mth;
+import org.moon.figura.FiguraMod;
 import org.moon.figura.animation.Animation;
 import org.moon.figura.animation.Interpolation;
 import org.moon.figura.animation.Keyframe;
@@ -116,7 +117,13 @@ public class FiguraModelPartReader {
                     for (Tag keyframeTag : keyframeList) {
                         CompoundTag keyframeNbt = (CompoundTag) keyframeTag;
                         float time = keyframeNbt.getFloat("time");
-                        Interpolation interpolation = Interpolation.valueOf(keyframeNbt.getString("int").toUpperCase());
+                        Interpolation interpolation;
+                        try {
+                            interpolation = Interpolation.valueOf(keyframeNbt.getString("int").toUpperCase());
+                        } catch (Exception e) {
+                            FiguraMod.LOGGER.error("", e);
+                            continue;
+                        }
 
                         Pair<FiguraVec3, String[]> pre = parseKeyframeData(keyframeNbt, "pre");
                         if (pre == null) pre = Pair.of(FiguraVec3.of(), null);
