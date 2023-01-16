@@ -22,6 +22,7 @@ import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.ui.UIHelper;
 
 import java.util.List;
+import java.util.function.Function;
 
 public class ActionWheel {
 
@@ -83,9 +84,9 @@ public class ActionWheel {
         stack.popPose();
 
         //render title
-        FiguraMod.popPushProfiler("title");
-        Action action = selected == -1 ? null : currentPage.actions[selected];
-        renderTitle(stack, action == null ? null : action.getTitle());
+        FiguraMod.popPushProfiler("texts");
+        Action action = selected == -1 ? null : currentPage.group()[selected];
+        renderTexts(stack, currentPage, action == null ? null : action.getTitle());
 
         FiguraMod.popProfiler();
     }
@@ -145,7 +146,7 @@ public class ActionWheel {
 
     private static void renderTextures(PoseStack stack, Page page) {
         for (int i = 0; i < slots; i++) {
-            Action action = page.actions[i];
+            Action action = page.group()[i];
             boolean left = i >= rightSlots;
             int type = left ? leftSlots : rightSlots;
             int relativeIndex = left ? i - rightSlots : i;
@@ -184,7 +185,7 @@ public class ActionWheel {
         double distance = 41;
 
         for (int i = 0; i < slots; i++) {
-            Action action = page.actions[i];
+            Action action = page.group()[i];
             if (action == null)
                 continue;
 
@@ -226,40 +227,46 @@ public class ActionWheel {
         }
     }
 
-    private static void renderTitle(PoseStack stack, String title) {
+    private static void renderTexts(PoseStack stack, Page page, String title) {
+        Font font = minecraft.font;
+        int titlePosition = Config.ACTION_WHEEL_TITLE.asInt();
+        int indicatorPosition = Config.ACTION_WHEEL_GROUP_INDICATOR.asInt();
+
+        //page indicator
+        int groupCount = page.getGroupCount();
+        if (groupCount > 1 && (title == null || indicatorPosition != titlePosition - 2)) {
+            stack.pushPose();
+            stack.translate(0d, 0d, 999d);
+            Component indicator = FiguraText.of("gui.action_wheel.group_indicator", page.getGroupIndex(), groupCount);
+            font.drawShadow(stack, indicator, x - font.width(indicator) / 2, (int) Position.index(indicatorPosition).apply(font.lineHeight), 0xFFFFFF);
+            stack.popPose();
+        }
+
+        //title
         if (title == null)
             return;
 
         //vars
         Component text = Emojis.applyEmojis(TextUtils.tryParseJson(title));
         List<Component> list = TextUtils.splitText(text, "\n");
-        Font font = minecraft.font;
         int height = font.lineHeight * list.size();
 
-        //pos
-        double yOff;
-        int config = Config.ACTION_WHEEL_TITLE.asInt();
-        switch (config) {
-            case 2 -> yOff = Math.max(y - 64 * scale - 4 - height, 4); // top
-            case 3 -> yOff = y - height / 2f; // middle
-            case 4 -> yOff = Math.min(y + 64 * scale + 4 + height, y * 2 - 4) - height; // bottom
-            default -> { // tooltip
-                double guiScale = minecraft.getWindow().getGuiScale();
-                UIHelper.renderTooltip(stack, text, (int) (mouseX / guiScale), (int) (mouseY / guiScale), config == 0);
-                return;
+        //render
+        if (titlePosition < 2) { //tooltip
+            double guiScale = minecraft.getWindow().getGuiScale();
+            UIHelper.renderTooltip(stack, text, (int) (mouseX / guiScale), (int) (mouseY / guiScale), titlePosition == 0);
+        } else { //anchored
+            stack.pushPose();
+            stack.translate(0d, 0d, 999d);
+
+            int y = (int) Position.index(titlePosition - 2).apply(height);
+            for (int i = 0; i < list.size(); i++) {
+                Component component = list.get(i);
+                font.drawShadow(stack, component, x - font.width(component) / 2, y + font.lineHeight * i, 0xFFFFFF);
             }
+
+            stack.popPose();
         }
-
-        //render (when not tooltip)
-        stack.pushPose();
-        stack.translate(0d, 0d, 400d);
-
-        for (int i = 0; i < list.size(); i++) {
-            Component component = list.get(i);
-            font.drawShadow(stack, component, x - font.width(component) / 2, (int) (yOff + font.lineHeight * i), 0xFFFFFF);
-        }
-
-        stack.popPose();
     }
 
     // -- functions -- //
@@ -272,7 +279,8 @@ public class ActionWheel {
         }
 
         //wheel click action
-        avatar.luaRuntime.action_wheel.execute(avatar, left);
+        if (avatar.luaRuntime.action_wheel.execute(avatar, left))
+            return;
 
         //execute action
         Page currentPage;
@@ -281,7 +289,7 @@ public class ActionWheel {
             return;
         }
 
-        Action action = currentPage.actions[index];
+        Action action = currentPage.group()[index];
         if (action != null) action.execute(avatar, left);
 
         selected = -1;
@@ -293,15 +301,24 @@ public class ActionWheel {
             return;
 
         //wheel scroll action
-        avatar.luaRuntime.action_wheel.mouseScroll(avatar, delta);
-
-        //scroll
-        Page currentPage;
-        if (selected < 0 || selected > 7 || (currentPage = avatar.luaRuntime.action_wheel.currentPage) == null)
+        if (avatar.luaRuntime.action_wheel.mouseScroll(avatar, delta))
             return;
 
-        Action action = currentPage.actions[selected];
-        if (action != null) action.mouseScroll(avatar, delta);
+        //scroll action
+        Page currentPage = avatar.luaRuntime.action_wheel.currentPage;
+        if (currentPage == null)
+            return;
+
+        if (selected >= 0 && selected <= 7) {
+            Action action = currentPage.group()[selected];
+            if (action != null && action.scroll != null) {
+                action.mouseScroll(avatar, delta);
+                return;
+            }
+        }
+
+        //page scroll
+        currentPage.setGroupIndex(currentPage.getGroupIndex() - (int) Math.signum(delta));
     }
 
     public static void setEnabled(boolean enabled) {
@@ -380,6 +397,28 @@ public class ActionWheel {
             UIHelper.blit(stack, 0, y, 64, h, u, color == null ? v : v + 128, 64, rh, 256, 256);
 
             stack.popPose();
+        }
+    }
+
+    // -- text position -- //
+
+    private enum Position {
+        TOP(height -> Math.max(y - 64 * scale - 4 - height, 4)),
+        MID(height -> y - height / 2f),
+        BOT(height -> Math.min(y + 64 * scale + 4 + height, y * 2 - 4) - height);
+
+        private final Function<Double, Double> function;
+
+        Position(Function<Double, Double> function) {
+            this.function = function;
+        }
+
+        public static Position index(int i) {
+            return values()[i];
+        }
+
+        public double apply(double d) {
+            return function.apply(d);
         }
     }
 }

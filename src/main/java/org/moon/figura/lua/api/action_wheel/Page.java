@@ -1,10 +1,13 @@
 package org.moon.figura.lua.api.action_wheel;
 
 import org.luaj.vm2.LuaError;
+import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
-import org.moon.figura.lua.docs.LuaMethodDoc;
-import org.moon.figura.lua.docs.LuaMethodOverload;
-import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.lua.docs.*;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -15,13 +18,20 @@ public class Page {
 
     private final String title;
 
-    public final Action[] actions = new Action[8]; //max 8 actions per page
+    private final HashMap<Integer, Action> actionsMap = new HashMap<>();
+
+    private int groupIndex = 0;
+
+    @LuaWhitelist
+    @LuaFieldDoc("wheel_page.keep_last_group")
+    public boolean keepLastGroup = false;
 
     public Page(String title) {
         this.title = title;
     }
 
     public int getSize() {
+        Action[] actions = group();
         int i = actions.length;
         while (i > 0 && actions[i - 1] == null) {
             i--;
@@ -29,29 +39,63 @@ public class Page {
         return Math.max(i, 2);
     }
 
+    public int getGroupCount() {
+        int greatest = 0;
+        for (Integer i : actionsMap.keySet()) {
+            greatest = i > greatest ? i : greatest;
+        }
+        return greatest / 8 + 1;
+    }
+
+    public Action[] group() {
+        return group(groupIndex);
+    }
+
+    public Action[] group(int groupIndex) {
+        Action[] page = new Action[8];
+        for (int i = 0; i < 8; i++) {
+            page[i] = actionsMap.get(i + 8 * groupIndex);
+        }
+        return page;
+    }
+
     private int checkIndex(Integer index) {
         //check and fix index
         if (index != null) {
-            if (index < 1 || index > 8)
-                throw new LuaError("Index must be between 1 and 8!");
+            if (index < 1)
+                throw new LuaError("Index must be greater than 0!");
 
             return index - 1;
         }
 
         //if no index is given, get the first null slot
-        index = -1;
-        for (int i = 0; i < actions.length; i++) {
-            if (actions[i] == null) {
-                index = i;
-                break;
-            }
-        }
+        int i = 0;
+        while (actionsMap.get(i) != null)
+            i++;
 
-        //if failed to find a null slot, that means the page is full
-        if (index == -1)
-            throw new LuaError("Reached page limit of 8 actions!");
+        return i;
+    }
 
-        return index;
+
+    // -- lua stuff -- //
+
+
+    @LuaWhitelist
+    @LuaMethodDoc("wheel_page.should_keep_last_group")
+    public boolean shouldKeepLastGroup() {
+        return keepLastGroup;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = Boolean.class,
+                    argumentNames = "keepLastGroup"
+            ),
+            value = "wheel_page.set_keep_last_group")
+    public Page setKeepLastGroup(boolean bool) {
+        keepLastGroup = bool;
+        return this;
     }
 
     @LuaWhitelist
@@ -74,7 +118,7 @@ public class Page {
     public Action newAction(Integer index) {
         //set the action
         Action action = new Action();
-        this.actions[this.checkIndex(index)] = action;
+        this.actionsMap.put(checkIndex(index), action);
 
         //return the action
         return action;
@@ -89,9 +133,9 @@ public class Page {
             value = "wheel_page.get_action"
     )
     public Action getAction(int index) {
-        if (index < 1 || index > 8)
-            throw new LuaError("Index must be between 1 and 8!");
-        return this.actions[index - 1];
+        if (index < 1)
+            throw new LuaError("Index must be greater than 0!");
+        return this.actionsMap.get(index - 1);
     }
 
     @LuaWhitelist
@@ -103,12 +147,69 @@ public class Page {
             value = "wheel_page.set_action"
     )
     public Page setAction(int index, Action action) {
-        if (index == -1)
-            index = this.checkIndex(null) + 1; //"why just not accept null" you might say, because -1 is more elegant for this, as it will return the latest available index
-        else if (index < 1 || index > 8)
-            throw new LuaError("Index must be between 1 and 8!");
-        this.actions[index - 1] = action;
+        if (index < 1)
+            throw new LuaError("Index must be greater than 0!");
+        this.actionsMap.put(index - 1, action);
         return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setAction")
+    public Page action(int index, Action action) {
+        return setAction(index, action);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("wheel_page.get_group_index")
+    public int getGroupIndex() {
+        return this.groupIndex + 1;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = Integer.class,
+                    argumentNames = "index"
+            ),
+            value = "wheel_page.set_group_index"
+    )
+    public Page setGroupIndex(int index) {
+        groupIndex = Math.min(Math.max(index - 1, 0), getGroupCount() - 1);
+        return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodShadow("setGroupIndex")
+    public Page groupIndex(int index) {
+        return setGroupIndex(index);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload,
+                    @LuaMethodOverload(
+                            argumentTypes = Integer.class,
+                            argumentNames = "groupIndex"
+                    )
+            },
+            value = "wheel_page.get_group_actions")
+    public List<Action> getGroupActions(Integer group) {
+        if (group != null && group < 1)
+            throw new LuaError("Index must be greater than 0!");
+        return Arrays.asList(group(group == null ? groupIndex : group - 1));
+    }
+
+    @LuaWhitelist
+    public Object __index(String arg) {
+        return "keepLastGroup".equals(arg) ? keepLastGroup : null;
+    }
+
+    @LuaWhitelist
+    public void __newindex(@LuaNotNil String key, boolean value) {
+        if ("keepLastGroup".equals(key))
+            keepLastGroup = value;
+        else throw new LuaError("Cannot assign value on key \"" + key + "\"");
     }
 
     @Override
