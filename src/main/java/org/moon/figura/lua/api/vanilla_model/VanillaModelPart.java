@@ -90,13 +90,14 @@ public class VanillaModelPart extends VanillaPart {
             ),
             value = "vanilla_part.set_visible"
     )
-    public void setVisible(Boolean visible) {
+    public VanillaModelPart setVisible(Boolean visible) {
         this.visible = visible;
         if (visible == null) {
             owner.trustsToTick.remove(Trust.VANILLA_MODEL_EDIT);
         } else {
             owner.trustsToTick.add(Trust.VANILLA_MODEL_EDIT);
         }
+        return this;
     }
 
     @Override

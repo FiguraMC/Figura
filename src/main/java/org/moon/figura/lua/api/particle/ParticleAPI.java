@@ -99,8 +99,9 @@ public class ParticleAPI {
 
     @LuaWhitelist
     @LuaMethodDoc("particles.remove_particles")
-    public void removeParticles() {
+    public ParticleAPI removeParticles() {
         getParticleEngine().figura$clearParticles(owner.owner);
+        return this;
     }
 
     @LuaWhitelist

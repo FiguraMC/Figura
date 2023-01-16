@@ -73,6 +73,10 @@ public class TextTask extends RenderTask {
         return cachedComplexity;
     }
 
+
+    // -- lua -- //
+
+
     @LuaWhitelist
     @LuaMethodDoc("text_task.get_text")
     public String getText() {
@@ -89,17 +93,17 @@ public class TextTask extends RenderTask {
             },
             value = "text_task.set_text"
     )
-    public void setText(String text) {
+    public TextTask setText(String text) {
         this.textCached = text;
         this.text = text == null ? null : TextUtils.splitText(Badges.noBadges4U(TextUtils.tryParseJson(text)), "\n");
         if (text != null) this.cachedComplexity = text.length() + 1;
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setText")
-    public RenderTask text(String text) {
-        setText(text);
-        return this;
+    public TextTask text(String text) {
+        return setText(text);
     }
 
     @LuaWhitelist
@@ -118,15 +122,15 @@ public class TextTask extends RenderTask {
             },
             value = "text_task.set_centered"
     )
-    public void setCentered(boolean centered) {
+    public TextTask setCentered(boolean centered) {
         this.centered = centered;
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setCentered")
-    public RenderTask centered(boolean centered) {
-        setCentered(centered);
-        return this;
+    public TextTask centered(boolean centered) {
+        return setCentered(centered);
     }
 
     @LuaWhitelist
@@ -145,15 +149,15 @@ public class TextTask extends RenderTask {
             },
             value = "text_task.set_right"
     )
-    public void setRight(boolean right) {
+    public TextTask setRight(boolean right) {
         this.rtl = right;
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setRight")
-    public RenderTask right(boolean right) {
-        setRight(right);
-        return this;
+    public TextTask right(boolean right) {
+        return setRight(right);
     }
 
     @LuaWhitelist
@@ -172,15 +176,15 @@ public class TextTask extends RenderTask {
             },
             value = "text_task.set_shadow"
     )
-    public void setShadow(boolean shadow) {
+    public TextTask setShadow(boolean shadow) {
         this.shadow = shadow;
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setShadow")
-    public RenderTask shadow(boolean shadow) {
-        setShadow(shadow);
-        return this;
+    public TextTask shadow(boolean shadow) {
+        return setShadow(shadow);
     }
 
     @LuaWhitelist
@@ -199,15 +203,15 @@ public class TextTask extends RenderTask {
             },
             value = "text_task.set_outline"
     )
-    public void setOutline(boolean outline) {
+    public TextTask setOutline(boolean outline) {
         this.outline = outline;
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setOutline")
-    public RenderTask outline(boolean outline) {
-        setOutline(outline);
-        return this;
+    public TextTask outline(boolean outline) {
+        return setOutline(outline);
     }
 
     @LuaWhitelist
@@ -230,15 +234,15 @@ public class TextTask extends RenderTask {
             },
             value = "text_task.set_outline_color"
     )
-    public void setOutlineColor(Object x, Double y, Double z) {
+    public TextTask setOutlineColor(Object x, Double y, Double z) {
         this.outlineColor = LuaUtils.parseVec3("setOutlineColor", x, y, z);
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setOutlineColor")
     public TextTask outlineColor(Object x, Double y, Double z) {
-        setOutlineColor(x, y, z);
-        return this;
+        return setOutlineColor(x, y, z);
     }
 
     @Override

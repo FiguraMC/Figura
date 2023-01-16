@@ -108,8 +108,9 @@ public class SoundAPI {
             },
             value = "sounds.stop_sound"
     )
-    public void stopSound(String id) {
+    public SoundAPI stopSound(String id) {
         getSoundEngine().figura$stopSound(owner.owner, id);
+        return this;
     }
 
     @LuaWhitelist
@@ -126,7 +127,7 @@ public class SoundAPI {
             },
             value = "sounds.new_sound"
     )
-    public void newSound(@LuaNotNil String name, @LuaNotNil Object object) {
+    public SoundAPI newSound(@LuaNotNil String name, @LuaNotNil Object object) {
         byte[] bytes;
         if (object instanceof LuaTable table) {
             bytes = new byte[table.length()];
@@ -140,6 +141,7 @@ public class SoundAPI {
 
         try {
             owner.loadSound(name, bytes);
+            return this;
         } catch (Exception e) {
             throw new LuaError("Failed to add custom sound \"" + name + "\"");
         }

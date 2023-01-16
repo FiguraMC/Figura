@@ -53,10 +53,11 @@ public class ActionWheelAPI {
             },
             value = "action_wheel.execute"
     )
-    public void execute(Integer index, boolean right) {
+    public ActionWheelAPI execute(Integer index, boolean right) {
         if (index != null && (index < 1 || index > 8))
             throw new LuaError("index must be between 1 and 8");
         if (this.isHost) ActionWheel.execute(index == null ? ActionWheel.getSelected() : index - 1, !right);
+        return this;
     }
 
     @LuaWhitelist
@@ -108,7 +109,7 @@ public class ActionWheelAPI {
             },
             value = "action_wheel.set_page"
     )
-    public void setPage(Object page) {
+    public ActionWheelAPI setPage(Object page) {
         Page currentPage;
         if (page == null) {
             currentPage = null;
@@ -124,6 +125,7 @@ public class ActionWheelAPI {
         }
 
         this.currentPage = currentPage;
+        return this;
     }
 
     @LuaWhitelist
