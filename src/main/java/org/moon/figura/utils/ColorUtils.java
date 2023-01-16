@@ -51,6 +51,11 @@ public class ColorUtils {
             }
             return null;
         }
+
+        public static Colors random() {
+            Colors[] colors = values();
+            return colors[(int) (Math.random() * colors.length)];
+        }
     }
 
     /**
