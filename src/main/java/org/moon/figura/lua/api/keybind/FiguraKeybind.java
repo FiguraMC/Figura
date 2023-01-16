@@ -114,6 +114,10 @@ public class FiguraKeybind {
         return false;
     }
 
+
+    // -- lua -- //
+
+
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaMethodOverload(
@@ -122,15 +126,15 @@ public class FiguraKeybind {
             ),
             value = "keybind.set_on_press"
     )
-    public void setOnPress(LuaFunction function) {
+    public FiguraKeybind setOnPress(LuaFunction function) {
         this.press = function;
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setOnPress")
     public FiguraKeybind onPress(LuaFunction function) {
-        setOnPress(function);
-        return this;
+        return setOnPress(function);
     }
 
     @LuaWhitelist
@@ -141,15 +145,15 @@ public class FiguraKeybind {
             ),
             value = "keybind.set_on_release"
     )
-    public void setOnRelease(LuaFunction function) {
+    public FiguraKeybind setOnRelease(LuaFunction function) {
         this.release = function;
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setOnRelease")
     public FiguraKeybind onRelease(LuaFunction function) {
-        setOnRelease(function);
-        return this;
+        return setOnRelease(function);
     }
 
     @LuaWhitelist
@@ -160,15 +164,15 @@ public class FiguraKeybind {
             ),
             value = "keybind.set_key"
     )
-    public void setKey(@LuaNotNil String key) {
+    public FiguraKeybind setKey(@LuaNotNil String key) {
         this.key = parseStringKey(key);
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setKey")
     public FiguraKeybind key(@LuaNotNil String key) {
-        setKey(key);
-        return this;
+        return setKey(key);
     }
 
     @LuaWhitelist
@@ -215,15 +219,15 @@ public class FiguraKeybind {
             ),
             value = "keybind.set_enabled"
     )
-    public void setEnabled(boolean bool) {
+    public FiguraKeybind setEnabled(boolean bool) {
         this.enabled = bool;
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setEnabled")
     public FiguraKeybind enabled(boolean bool) {
-        setEnabled(bool);
-        return this;
+        return setEnabled(bool);
     }
 
     @LuaWhitelist
@@ -240,15 +244,15 @@ public class FiguraKeybind {
             ),
             value = "keybind.set_gui"
     )
-    public void setGUI(boolean bool) {
+    public FiguraKeybind setGUI(boolean bool) {
         this.gui = bool;
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setGUI")
     public FiguraKeybind gui(boolean bool) {
-        setGUI(bool);
-        return this;
+        return setGUI(bool);
     }
 
     @LuaWhitelist

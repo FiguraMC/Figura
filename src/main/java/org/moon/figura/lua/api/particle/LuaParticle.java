@@ -83,7 +83,7 @@ public class LuaParticle {
                     )
             },
             value = "particle.set_pos")
-    public void setPos(Object x, Double y, Double z) {
+    public LuaParticle setPos(Object x, Double y, Double z) {
         FiguraVec3 vec = LuaUtils.parseVec3("setPos", x, y, z);
         particle.setPos(vec.x, vec.y, vec.z);
 
@@ -92,13 +92,14 @@ public class LuaParticle {
         p.setYo(vec.y);
         p.setZo(vec.z);
         this.pos = vec;
+
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setPos")
     public LuaParticle pos(Object x, Double y, Double z) {
-        setPos(x, y, z);
-        return this;
+        return setPos(x, y, z);
     }
 
     @LuaWhitelist
@@ -120,17 +121,17 @@ public class LuaParticle {
                     )
             },
             value = "particle.set_velocity")
-    public void setVelocity(Object x, Double y, Double z) {
+    public LuaParticle setVelocity(Object x, Double y, Double z) {
         FiguraVec3 vec = LuaUtils.parseVec3("setVelocity", x, y, z);
         particle.setParticleSpeed(vec.x, vec.y, vec.z);
         this.vel = vec;
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setVelocity")
     public LuaParticle velocity(Object x, Double y, Double z) {
-        setVelocity(x, y, z);
-        return this;
+        return setVelocity(x, y, z);
     }
 
     @LuaWhitelist
@@ -156,18 +157,18 @@ public class LuaParticle {
                     )
             },
             value = "particle.set_color")
-    public void setColor(Object r, Double g, Double b, Double a) {
+    public LuaParticle setColor(Object r, Double g, Double b, Double a) {
         FiguraVec4 vec = LuaUtils.parseVec4("setColor", r, g, b, a, 1, 1, 1, 1);
         particle.setColor((float) vec.x, (float) vec.y, (float) vec.z);
         ((ParticleAccessor) particle).setParticleAlpha((float) vec.w);
         this.color = vec;
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setColor")
     public LuaParticle color(Object r, Double g, Double b, Double a) {
-        setColor(r, g, b, a);
-        return this;
+        return setColor(r, g, b, a);
     }
 
     @LuaWhitelist
@@ -183,15 +184,15 @@ public class LuaParticle {
                     argumentNames = "lifetime"
             ),
             value = "particle.set_lifetime")
-    public void setLifetime(int age) {
+    public LuaParticle setLifetime(int age) {
         particle.setLifetime(Math.max(particle instanceof WakeParticle ? Math.min(age, 60) : age, 0));
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setLifetime")
     public LuaParticle lifetime(int age) {
-        setLifetime(age);
-        return this;
+        return setLifetime(age);
     }
 
     @LuaWhitelist
@@ -207,16 +208,16 @@ public class LuaParticle {
                     argumentNames = "power"
             ),
             value = "particle.set_power")
-    public void setPower(float power) {
+    public LuaParticle setPower(float power) {
         particle.setPower(power);
         this.power = power;
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setPower")
     public LuaParticle power(float power) {
-        setPower(power);
-        return this;
+        return setPower(power);
     }
 
     @LuaWhitelist
@@ -232,16 +233,16 @@ public class LuaParticle {
                     argumentNames = "scale"
             ),
             value = "particle.set_scale")
-    public void setScale(float scale) {
+    public LuaParticle setScale(float scale) {
         particle.scale(scale);
         this.scale = scale;
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setScale")
     public LuaParticle scale(float scale) {
-        setScale(scale);
-        return this;
+        return setScale(scale);
     }
 
     @LuaWhitelist
@@ -257,15 +258,15 @@ public class LuaParticle {
                     argumentNames = "gravity"
             ),
             value = "particle.set_gravity")
-    public void setGravity(float gravity) {
+    public LuaParticle setGravity(float gravity) {
         ((ParticleAccessor) particle).setGravity(gravity);
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setGravity")
     public LuaParticle gravity(float gravity) {
-        setGravity(gravity);
-        return this;
+        return setGravity(gravity);
     }
 
     @LuaWhitelist
@@ -281,15 +282,15 @@ public class LuaParticle {
                     argumentNames = "physics"
             ),
             value = "particle.set_physics")
-    public void setPhysics(boolean physics) {
+    public LuaParticle setPhysics(boolean physics) {
         ((ParticleAccessor) particle).setHasPhysics(physics);
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setPhysics")
     public LuaParticle physics(boolean physics) {
-        setPhysics(physics);
-        return this;
+        return setPhysics(physics);
     }
 
     public String toString() {

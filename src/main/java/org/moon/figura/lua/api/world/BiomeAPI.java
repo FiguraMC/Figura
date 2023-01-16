@@ -60,17 +60,17 @@ public class BiomeAPI {
             },
             value = "biome.set_pos"
     )
-    public void setPos(Object x, Double y, Double z) {
+    public BiomeAPI setPos(Object x, Double y, Double z) {
         FiguraVec3 newPos = LuaUtils.parseVec3("setPos", x, y, z);
         pos = newPos.asBlockPos();
         newPos.free();
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setPos")
     public BiomeAPI pos(Object x, Double y, Double z) {
-        setPos(x, y, z);
-        return this;
+        return setPos(x, y, z);
     }
 
     @LuaWhitelist

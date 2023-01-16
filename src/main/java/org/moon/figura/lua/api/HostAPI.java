@@ -72,8 +72,9 @@ public class HostAPI {
                     argumentNames = "boolean"
             ),
             value = "host.set_unlock_cursor")
-    public void setUnlockCursor(boolean bool) {
+    public HostAPI setUnlockCursor(boolean bool) {
         unlockCursor = bool;
+        return this;
     }
 
     @LuaWhitelist
@@ -90,24 +91,25 @@ public class HostAPI {
             },
             value = "host.set_title_times"
     )
-    public void setTitleTimes(Object x, Double y, Double z) {
-        if (!isHost()) return;
+    public HostAPI setTitleTimes(Object x, Double y, Double z) {
+        if (!isHost()) return this;
         FiguraVec3 times = LuaUtils.parseVec3("setTitleTimes", x, y, z);
         this.minecraft.gui.setTimes((int) times.x, (int) times.y, (int) times.z);
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setTitleTimes")
     public HostAPI titleTimes(Object x, Double y, Double z) {
-        setTitleTimes(x, y, z);
-        return this;
+        return setTitleTimes(x, y, z);
     }
 
     @LuaWhitelist
     @LuaMethodDoc("host.clear_title")
-    public void clearTitle() {
+    public HostAPI clearTitle() {
         if (isHost())
             this.minecraft.gui.clear();
+        return this;
     }
 
     @LuaWhitelist
@@ -118,16 +120,16 @@ public class HostAPI {
             ),
             value = "host.set_title"
     )
-    public void setTitle(@LuaNotNil String text) {
+    public HostAPI setTitle(@LuaNotNil String text) {
         if (isHost())
             this.minecraft.gui.setTitle(TextUtils.tryParseJson(text));
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setTitle")
     public HostAPI title(@LuaNotNil String text) {
-        setTitle(text);
-        return this;
+        return setTitle(text);
     }
 
     @LuaWhitelist
@@ -138,16 +140,16 @@ public class HostAPI {
             ),
             value = "host.set_subtitle"
     )
-    public void setSubtitle(@LuaNotNil String text) {
+    public HostAPI setSubtitle(@LuaNotNil String text) {
         if (isHost())
             this.minecraft.gui.setSubtitle(TextUtils.tryParseJson(text));
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setSubtitle")
     public HostAPI subtitle(@LuaNotNil String text) {
-        setSubtitle(text);
-        return this;
+        return setSubtitle(text);
     }
 
     @LuaWhitelist
@@ -164,16 +166,16 @@ public class HostAPI {
             },
             value = "host.set_actionbar"
     )
-    public void setActionbar(@LuaNotNil String text, boolean animated) {
+    public HostAPI setActionbar(@LuaNotNil String text, boolean animated) {
         if (isHost())
             this.minecraft.gui.setOverlayMessage(TextUtils.tryParseJson(text), animated);
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setActionbar")
     public HostAPI actionbar(@LuaNotNil String text, boolean animated) {
-        setActionbar(text, animated);
-        return this;
+        return setActionbar(text, animated);
     }
 
     @LuaWhitelist
@@ -184,10 +186,11 @@ public class HostAPI {
             ),
             value = "host.send_chat_message"
     )
-    public void sendChatMessage(@LuaNotNil String message) {
-        if (!isHost() || !Config.CHAT_MESSAGES.asBool()) return;
+    public HostAPI sendChatMessage(@LuaNotNil String message) {
+        if (!isHost() || !Config.CHAT_MESSAGES.asBool()) return this;
         LocalPlayer player = this.minecraft.player;
         if (player != null) player.connection.sendChat(message);
+        return this;
     }
 
     @LuaWhitelist
@@ -198,10 +201,11 @@ public class HostAPI {
             ),
             value = "host.send_chat_command"
     )
-    public void sendChatCommand(@LuaNotNil String command) {
-        if (!isHost() || !Config.CHAT_MESSAGES.asBool()) return;
+    public HostAPI sendChatCommand(@LuaNotNil String command) {
+        if (!isHost() || !Config.CHAT_MESSAGES.asBool()) return this;
         LocalPlayer player = this.minecraft.player;
         if (player != null) player.connection.sendCommand(command.startsWith("/") ? command.substring(1) : command);
+        return this;
     }
 
     @LuaWhitelist
@@ -212,9 +216,10 @@ public class HostAPI {
             ),
             value = "host.append_chat_history"
     )
-    public void appendChatHistory(@LuaNotNil String message) {
+    public HostAPI appendChatHistory(@LuaNotNil String message) {
         if (isHost())
             this.minecraft.gui.getChat().addRecentChat(message);
+        return this;
     }
 
     @LuaWhitelist
@@ -228,9 +233,10 @@ public class HostAPI {
             },
             value = "host.swing_arm"
     )
-    public void swingArm(boolean offhand) {
+    public HostAPI swingArm(boolean offhand) {
         if (isHost() && this.minecraft.player != null)
             this.minecraft.player.swing(offhand ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND);
+        return this;
     }
 
     @LuaWhitelist
@@ -268,23 +274,23 @@ public class HostAPI {
     }
 
     @LuaWhitelist
-    public void setBadge(int index, boolean value, boolean pride) {
-        if (!isHost()) return;
+    public HostAPI setBadge(int index, boolean value, boolean pride) {
+        if (!isHost()) return this;
         if (!FiguraMod.DEBUG_MODE)
             throw new LuaError("Congrats, you found this debug easter egg!");
 
         Pair<BitSet, BitSet> badges = AvatarManager.getBadges(owner.owner);
         if (badges == null)
-            return;
+            return this;
 
         BitSet set = pride ? badges.getFirst() : badges.getSecond();
         set.set(index, value);
+        return this;
     }
 
     @LuaWhitelist
     public HostAPI badge(int index, boolean value, boolean pride) {
-        setBadge(index, value, pride);
-        return this;
+        return setBadge(index, value, pride);
     }
 
     @LuaWhitelist
@@ -307,15 +313,15 @@ public class HostAPI {
             },
             value = "host.set_chat_color"
     )
-    public void setChatColor(Object x, Double y, Double z) {
+    public HostAPI setChatColor(Object x, Double y, Double z) {
         if (isHost()) this.chatColor = x == null ? null : ColorUtils.rgbToInt(LuaUtils.parseVec3("setChatColor", x, y, z));
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setChatColor")
     public HostAPI chatColor(Object x, Double y, Double z) {
-        setChatColor(x, y, z);
-        return this;
+        return setChatColor(x, y, z);
     }
 
     @LuaWhitelist
@@ -335,16 +341,16 @@ public class HostAPI {
             ),
             value = "host.set_chat_text"
     )
-    public void setChatText(@LuaNotNil String text) {
+    public HostAPI setChatText(@LuaNotNil String text) {
         if (isHost() && Config.CHAT_MESSAGES.asBool() && this.minecraft.screen instanceof ChatScreen chat)
             ((ChatScreenAccessor) chat).getInput().setValue(text);
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setChatText")
     public HostAPI chatText(@LuaNotNil String text) {
-        setChatText(text);
-        return this;
+        return setChatText(text);
     }
 
     @LuaWhitelist
@@ -374,7 +380,7 @@ public class HostAPI {
                     argumentNames = "texture"
             ),
             value = "host.save_texture")
-    public void saveTexture(@LuaNotNil FiguraTexture texture) {
+    public HostAPI saveTexture(@LuaNotNil FiguraTexture texture) {
         if (isHost()) {
             try {
                 texture.saveCache();
@@ -382,6 +388,7 @@ public class HostAPI {
                 throw new LuaError(e.getMessage());
             }
         }
+        return this;
     }
 
     @LuaWhitelist
@@ -440,15 +447,15 @@ public class HostAPI {
                     argumentNames = "text"
             ),
             value = "host.set_clipboard")
-    public void setClipboard(@LuaNotNil String text) {
+    public HostAPI setClipboard(@LuaNotNil String text) {
         if (isHost()) this.minecraft.keyboardHandler.setClipboard(text);
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setClipboard")
     public HostAPI clipboard(@LuaNotNil String text) {
-        setClipboard(text);
-        return this;
+        return setClipboard(text);
     }
 
     @LuaWhitelist

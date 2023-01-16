@@ -23,5 +23,5 @@ public abstract class VanillaPart {
     public abstract void save(EntityModel<?> model);
     public abstract void restore(EntityModel<?> model);
     public abstract Boolean getVisible();
-    public abstract void setVisible(Boolean visible);
+    public abstract VanillaPart setVisible(Boolean visible);
 }

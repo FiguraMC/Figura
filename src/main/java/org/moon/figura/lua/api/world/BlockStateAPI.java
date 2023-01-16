@@ -99,17 +99,17 @@ public class BlockStateAPI {
             },
             value = "blockstate.set_pos"
     )
-    public void setPos(Object x, Double y, Double z) {
+    public BlockStateAPI setPos(Object x, Double y, Double z) {
         FiguraVec3 newPos = LuaUtils.parseVec3("setPos", x, y, z);
         pos = newPos.asBlockPos();
         newPos.free();
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setPos")
     public BlockStateAPI pos(Object x, Double y, Double z) {
-        setPos(x, y, z);
-        return this;
+        return setPos(x, y, z);
     }
 
     @LuaWhitelist

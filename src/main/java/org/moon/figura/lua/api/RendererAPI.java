@@ -68,8 +68,9 @@ public class RendererAPI {
                     argumentNames = "renderFire"
             ),
             value = "renderer.set_render_fire")
-    public void setRenderFire(boolean renderFire) {
+    public RendererAPI setRenderFire(boolean renderFire) {
         this.renderFire = renderFire;
+        return this;
     }
 
     @LuaWhitelist
@@ -85,8 +86,9 @@ public class RendererAPI {
                     argumentNames = "renderVehicle"
             ),
             value = "renderer.set_render_vehicle")
-    public void setRenderVehicle(boolean renderVehicle) {
+    public RendererAPI setRenderVehicle(boolean renderVehicle) {
         this.renderVehicle = renderVehicle;
+        return this;
     }
 
     @LuaWhitelist
@@ -102,8 +104,9 @@ public class RendererAPI {
                     argumentNames = "renderCrosshair"
             ),
             value = "renderer.set_render_crosshair")
-    public void setRenderCrosshair(boolean renderCrosshair) {
+    public RendererAPI setRenderCrosshair(boolean renderCrosshair) {
         this.renderCrosshair = renderCrosshair;
+        return this;
     }
 
     @LuaWhitelist
@@ -119,8 +122,9 @@ public class RendererAPI {
                     argumentNames = "forcePaperdoll"
             ),
             value = "renderer.set_force_paperdoll")
-    public void setForcePaperdoll(boolean forcePaperdoll) {
+    public RendererAPI setForcePaperdoll(boolean forcePaperdoll) {
         this.forcePaperdoll = forcePaperdoll;
+        return this;
     }
 
     @LuaWhitelist
@@ -134,15 +138,15 @@ public class RendererAPI {
             },
             value = "renderer.set_shadow_radius"
     )
-    public void setShadowRadius(Float shadowRadius) {
+    public RendererAPI setShadowRadius(Float shadowRadius) {
         this.shadowRadius = shadowRadius == null ? null : Mth.clamp(shadowRadius, 0f, 12f);
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setShadowRadius")
     public RendererAPI shadowRadius(Float shadowRadius) {
-        setShadowRadius(shadowRadius);
-        return this;
+        return setShadowRadius(shadowRadius);
     }
 
     @LuaWhitelist
@@ -183,15 +187,15 @@ public class RendererAPI {
             },
             value = "renderer.set_camera_pos"
     )
-    public void setCameraPos(Object x, Double y, Double z) {
+    public RendererAPI setCameraPos(Object x, Double y, Double z) {
         this.cameraPos = x == null ? null : LuaUtils.parseVec3("setCameraPos", x, y, z);
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setCameraPos")
     public RendererAPI cameraPos(Object x, Double y, Double z) {
-        setCameraPos(x, y, z);
-        return this;
+        return setCameraPos(x, y, z);
     }
 
     @LuaWhitelist
@@ -214,15 +218,15 @@ public class RendererAPI {
             },
             value = "renderer.set_camera_pivot"
     )
-    public void setCameraPivot(Object x, Double y, Double z) {
+    public RendererAPI setCameraPivot(Object x, Double y, Double z) {
         this.cameraPivot = x == null ? null : LuaUtils.parseVec3("setCameraPivot", x, y, z);
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setCameraPivot")
     public RendererAPI cameraPivot(Object x, Double y, Double z) {
-        setCameraPivot(x, y, z);
-        return this;
+        return setCameraPivot(x, y, z);
     }
 
     @LuaWhitelist
@@ -245,15 +249,15 @@ public class RendererAPI {
             },
             value = "renderer.set_offset_camera_pivot"
     )
-    public void setOffsetCameraPivot(Object x, Double y, Double z) {
+    public RendererAPI setOffsetCameraPivot(Object x, Double y, Double z) {
         this.cameraOffsetPivot = x == null ? null : LuaUtils.parseVec3("setOffsetCameraPivot", x, y, z);
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setOffsetCameraPivot")
     public RendererAPI offsetCameraPivot(Object x, Double y, Double z) {
-        setOffsetCameraPivot(x, y, z);
-        return this;
+        return setOffsetCameraPivot(x, y, z);
     }
 
     @LuaWhitelist
@@ -276,15 +280,15 @@ public class RendererAPI {
             },
             value = "renderer.set_camera_rot"
     )
-    public void setCameraRot(Object x, Double y, Double z) {
+    public RendererAPI setCameraRot(Object x, Double y, Double z) {
         this.cameraRot = x == null ? null : LuaUtils.parseVec3("setCameraRot", x, y, z);
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setCameraRot")
     public RendererAPI cameraRot(Object x, Double y, Double z) {
-        setCameraRot(x, y, z);
-        return this;
+        return setCameraRot(x, y, z);
     }
 
     @LuaWhitelist
@@ -307,15 +311,15 @@ public class RendererAPI {
             },
             value = "renderer.set_offset_camera_rot"
     )
-    public void setOffsetCameraRot(Object x, Double y, Double z) {
+    public RendererAPI setOffsetCameraRot(Object x, Double y, Double z) {
         this.cameraOffsetRot = x == null ? null : LuaUtils.parseVec3("setOffsetCameraRot", x, y, z);
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setOffsetCameraRot")
     public RendererAPI offsetCameraRot(Object x, Double y, Double z) {
-        setOffsetCameraRot(x, y, z);
-        return this;
+        return setOffsetCameraRot(x, y, z);
     }
 
     @LuaWhitelist
@@ -326,15 +330,15 @@ public class RendererAPI {
             ),
             value = "renderer.set_post_effect"
     )
-    public void setPostEffect(String effect) {
+    public RendererAPI setPostEffect(String effect) {
         this.postShader = effect == null ? null : new ResourceLocation("shaders/post/" + FiguraIdentifier.formatPath(effect) + ".json");
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setPostEffect")
     public RendererAPI postEffect(String effect) {
-        setPostEffect(effect);
-        return this;
+        return setPostEffect(effect);
     }
 
     @LuaWhitelist
@@ -354,15 +358,15 @@ public class RendererAPI {
             },
             value = "renderer.set_fov"
     )
-    public void setFOV(Float fov) {
+    public RendererAPI setFOV(Float fov) {
         this.fov = fov;
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setFOV")
     public RendererAPI fov(Float fov) {
-        setFOV(fov);
-        return this;
+        return setFOV(fov);
     }
 
     @LuaWhitelist
@@ -384,15 +388,15 @@ public class RendererAPI {
                     )
             },
             value = "renderer.set_crosshair_offset")
-    public void setCrosshairOffset(Object x, Double y) {
+    public RendererAPI setCrosshairOffset(Object x, Double y) {
         this.crosshairOffset = x == null ? null : LuaUtils.parseVec2("setCrosshairOffset", x, y);
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setCrosshairOffset")
     public RendererAPI crosshairOffset(Object x, Double y) {
-        setCrosshairOffset(x, y);
-        return this;
+        return setCrosshairOffset(x, y);
     }
 
     @LuaWhitelist

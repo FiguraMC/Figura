@@ -85,12 +85,13 @@ public class LuaEvent {
             },
             value = "event.register"
     )
-    public void register(@LuaNotNil LuaFunction func, String name) {
+    public LuaEvent register(@LuaNotNil LuaFunction func, String name) {
         if (__len() >= MAX_FUNCTIONS)
             throw new LuaError("Reached maximum limit of " + MAX_FUNCTIONS + " functions in one event!");
         queue.addLast(func);
         if (name != null)
             names.put(name, func);
+        return this;
     }
 
     @LuaWhitelist

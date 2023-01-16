@@ -62,9 +62,10 @@ public class AnimationAPI {
 
     @LuaWhitelist
     @LuaMethodDoc("animations.stop_all")
-    public void stopAll() {
+    public AnimationAPI stopAll() {
         for (Animation animation : avatar.animations.values())
             animation.stop();
+        return this;
     }
 
     @LuaWhitelist

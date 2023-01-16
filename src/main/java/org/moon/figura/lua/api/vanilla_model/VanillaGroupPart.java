@@ -55,10 +55,11 @@ public class VanillaGroupPart extends VanillaPart {
             ),
             value = "vanilla_group.set_visible"
     )
-    public void setVisible(Boolean visible) {
+    public VanillaGroupPart setVisible(Boolean visible) {
         this.visible = visible;
         for (VanillaPart part : cachedParts)
             part.setVisible(visible);
+        return this;
     }
 
     @Override
