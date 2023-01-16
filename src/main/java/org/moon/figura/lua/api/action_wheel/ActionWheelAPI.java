@@ -5,6 +5,7 @@ import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaTable;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.gui.ActionWheel;
+import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaMethodDoc;
@@ -166,7 +167,7 @@ public class ActionWheelAPI {
     }
 
     @LuaWhitelist
-    public Object __index( String arg) {
+    public Object __index(String arg) {
         if (arg == null) return null;
         return switch (arg) {
             case "leftClick" -> leftClick;
@@ -177,13 +178,13 @@ public class ActionWheelAPI {
     }
 
     @LuaWhitelist
-    public void __newindex(String key, Object value) {
-        if (key == null) return;
+    public void __newindex(@LuaNotNil String key, Object value) {
         LuaFunction val = value instanceof LuaFunction f ? f : null;
         switch (key) {
             case "leftClick" -> leftClick = val;
             case "rightClick" -> rightClick = val;
             case "scroll" -> scroll = val;
+            default -> throw new LuaError("Cannot assign value on key \"" + key + "\"");
         }
     }
 

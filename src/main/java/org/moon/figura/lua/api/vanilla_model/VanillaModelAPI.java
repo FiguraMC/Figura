@@ -263,7 +263,7 @@ public class VanillaModelAPI {
     @LuaWhitelist
     public Object __index(String key) {
         if (key == null) return null;
-        return switch (key) {
+        return switch (key.toUpperCase()) {
             case "HEAD" -> HEAD;
             case "BODY" -> BODY;
             case "LEFT_ARM" -> LEFT_ARM;

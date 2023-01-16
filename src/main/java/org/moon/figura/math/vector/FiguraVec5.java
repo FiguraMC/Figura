@@ -771,8 +771,7 @@ public class FiguraVec5 extends FiguraVector<FiguraVec5, FiguraMatrix.DummyMatri
                     )
             }
     )
-    public void __newindex(String key, Object value) {
-        if (key == null) return;
+    public void __newindex(@LuaNotNil String key, Object value) {
         int len = key.length();
         if (len == 1)  {
             if (value instanceof Number n) {

@@ -266,11 +266,11 @@ public class FiguraKeybind {
     }
 
     @LuaWhitelist
-    public void __newindex(String key, LuaFunction value) {
-        if (key == null) return;
+    public void __newindex(@LuaNotNil String key, LuaFunction value) {
         switch (key) {
             case "press" -> press = value;
             case "release" -> release = value;
+            default -> throw new LuaError("Cannot assign value on key \"" + key + "\"");
         }
     }
 
