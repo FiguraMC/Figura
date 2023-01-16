@@ -715,8 +715,7 @@ public class FiguraVec2 extends FiguraVector<FiguraVec2, FiguraMat2> {
                     )
             }
     )
-    public void __newindex(String key, Object value) {
-        if (key == null) return;
+    public void __newindex(@LuaNotNil String key, Object value) {
         int len = key.length();
         if (len == 1)  {
             if (value instanceof Number n) {

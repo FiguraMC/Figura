@@ -489,9 +489,10 @@ public class HostAPI {
     }
 
     @LuaWhitelist
-    public void __newindex(String key, Object value) {
+    public void __newindex(@LuaNotNil String key, Object value) {
         if ("unlockCursor".equals(key))
             unlockCursor = (Boolean) value;
+        else throw new LuaError("Cannot assign value on key \"" + key + "\"");
     }
 
     @Override
