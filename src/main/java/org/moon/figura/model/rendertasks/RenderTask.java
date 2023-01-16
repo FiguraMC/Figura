@@ -68,15 +68,15 @@ public abstract class RenderTask {
             ),
             value = "render_task.set_enabled"
     )
-    public void setEnabled(boolean enabled) {
+    public RenderTask setEnabled(boolean enabled) {
         this.enabled = enabled;
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setEnabled")
     public RenderTask enabled(boolean enabled) {
-        setEnabled(enabled);
-        return this;
+        return setEnabled(enabled);
     }
 
     @LuaWhitelist
@@ -98,21 +98,21 @@ public abstract class RenderTask {
                     )
             },
             value = "render_task.set_light")
-    public void setLight(Object blockLight, Double skyLight) {
+    public RenderTask setLight(Object blockLight, Double skyLight) {
         if (blockLight == null) {
             light = null;
-            return;
+            return this;
         }
 
         FiguraVec2 lightVec = LuaUtils.parseVec2("setLight", blockLight, skyLight);
         light = LightTexture.pack((int) lightVec.x, (int) lightVec.y);
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setLight")
     public RenderTask light(Object blockLight, Double skyLight) {
-        setLight(blockLight, skyLight);
-        return this;
+        return setLight(blockLight, skyLight);
     }
 
     @LuaWhitelist
@@ -134,21 +134,21 @@ public abstract class RenderTask {
                     )
             },
             value = "render_task.set_overlay")
-    public void setOverlay(Object whiteOverlay, Double hurtOverlay) {
+    public RenderTask setOverlay(Object whiteOverlay, Double hurtOverlay) {
         if (whiteOverlay == null) {
             overlay = null;
-            return;
+            return this;
         }
 
         FiguraVec2 overlayVec = LuaUtils.parseVec2("setOverlay", whiteOverlay, hurtOverlay);
         overlay = OverlayTexture.pack((int) overlayVec.x, (int) overlayVec.y);
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setOverlay")
     public RenderTask overlay(Object whiteOverlay, Double hurtOverlay) {
-        setOverlay(whiteOverlay, hurtOverlay);
-        return this;
+        return setOverlay(whiteOverlay, hurtOverlay);
     }
 
     @LuaWhitelist
@@ -171,16 +171,16 @@ public abstract class RenderTask {
             },
             value = "render_task.set_pos"
     )
-    public void setPos(Object x, Double y, Double z) {
+    public RenderTask setPos(Object x, Double y, Double z) {
         FiguraVec3 vec = LuaUtils.parseVec3("setPos", x, y, z);
         this.customization.setPos(vec);
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setPos")
     public RenderTask pos(Object x, Double y, Double z) {
-        setPos(x, y, z);
-        return this;
+        return setPos(x, y, z);
     }
 
     @LuaWhitelist
@@ -203,16 +203,16 @@ public abstract class RenderTask {
             },
             value = "render_task.set_rot"
     )
-    public void setRot(Object x, Double y, Double z) {
+    public RenderTask setRot(Object x, Double y, Double z) {
         FiguraVec3 vec = LuaUtils.parseVec3("setRot", x, y, z);
         this.customization.setRot(vec);
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setRot")
     public RenderTask rot(Object x, Double y, Double z) {
-        setRot(x, y, z);
-        return this;
+        return setRot(x, y, z);
     }
 
     @LuaWhitelist
@@ -235,16 +235,16 @@ public abstract class RenderTask {
             },
             value = "render_task.set_scale"
     )
-    public void setScale(Object x, Double y, Double z) {
+    public RenderTask setScale(Object x, Double y, Double z) {
         FiguraVec3 vec = LuaUtils.parseVec3("setScale", x, y, z, 1, 1, 1);
         this.customization.setScale(vec);
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setScale")
     public RenderTask scale(Object x, Double y, Double z) {
-        setScale(x, y, z);
-        return this;
+        return setScale(x, y, z);
     }
 
     @LuaWhitelist
@@ -281,15 +281,15 @@ public abstract class RenderTask {
             ),
             value = "render_task.set_matrix"
     )
-    public void setMatrix(@LuaNotNil FiguraMat4 matrix) {
+    public RenderTask setMatrix(@LuaNotNil FiguraMat4 matrix) {
         this.customization.setMatrix(matrix);
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setMatrix")
     public RenderTask matrix(@LuaNotNil FiguraMat4 mat) {
-        setMatrix(mat);
-        return this;
+        return setMatrix(mat);
     }
 
     @Override

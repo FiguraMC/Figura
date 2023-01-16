@@ -50,6 +50,10 @@ public class BlockTask extends RenderTask {
         return cachedComplexity;
     }
 
+
+    // -- lua -- //
+
+
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
@@ -64,7 +68,7 @@ public class BlockTask extends RenderTask {
             },
             value = "block_task.set_block"
     )
-    public void setBlock(Object block) {
+    public BlockTask setBlock(Object block) {
         this.block = LuaUtils.parseBlockState("block", block);
         Minecraft client = Minecraft.getInstance();
         RandomSource random = client.level != null ? client.level.random : RandomSource.create();
@@ -73,13 +77,14 @@ public class BlockTask extends RenderTask {
         cachedComplexity = blockModel.getQuads(this.block, null, random).size();
         for (Direction dir : Direction.values())
             cachedComplexity += blockModel.getQuads(this.block, dir, random).size();
+
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setBlock")
-    public RenderTask block(Object block) {
-        setBlock(block);
-        return this;
+    public BlockTask block(Object block) {
+        return setBlock(block);
     }
 
     @Override

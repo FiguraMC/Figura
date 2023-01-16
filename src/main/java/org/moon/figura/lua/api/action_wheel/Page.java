@@ -102,12 +102,13 @@ public class Page {
             ),
             value = "wheel_page.set_action"
     )
-    public void setAction(int index, Action action) {
+    public Page setAction(int index, Action action) {
         if (index == -1)
             index = this.checkIndex(null) + 1; //"why just not accept null" you might say, because -1 is more elegant for this, as it will return the latest available index
         else if (index < 1 || index > 8)
             throw new LuaError("Index must be between 1 and 8!");
         this.actions[index - 1] = action;
+        return this;
     }
 
     @Override

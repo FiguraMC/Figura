@@ -635,6 +635,9 @@
 
   "figura.docs.animation": "A Blockbench animation",
   "figura.docs.animation.name": "This animation's name",
+  "figura.docs.animation.animation.is_playing": "Checks if this animation is being played",
+  "figura.docs.animation.animation.is_paused": "Checks if this animation is paused",
+  "figura.docs.animation.animation.is_stopped": "Checks if this animation is stopped",
   "figura.docs.animation.play": "Initializes the animation\nResume the animation if it was paused",
   "figura.docs.animation.pause": "Pause the animation's playback",
   "figura.docs.animation.stop": "Stop the animation",

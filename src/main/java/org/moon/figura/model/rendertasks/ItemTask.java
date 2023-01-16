@@ -56,6 +56,10 @@ public class ItemTask extends RenderTask {
         return cachedComplexity;
     }
 
+
+    // -- lua -- //
+
+
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
@@ -70,18 +74,18 @@ public class ItemTask extends RenderTask {
             },
             value = "item_task.set_item"
     )
-    public void setItem(Object item) {
+    public ItemTask setItem(Object item) {
         this.item = LuaUtils.parseItemStack("item", item);
         Minecraft client = Minecraft.getInstance();
         RandomSource random = client.level != null ? client.level.random : RandomSource.create();
         cachedComplexity = client.getItemRenderer().getModel(this.item, null, null, 0).getQuads(null, null, random).size();
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setItem")
-    public RenderTask item(Object item) {
-        setItem(item);
-        return this;
+    public ItemTask item(Object item) {
+        return setItem(item);
     }
 
     @LuaWhitelist
@@ -98,10 +102,11 @@ public class ItemTask extends RenderTask {
             ),
             value = "item_task.set_render_type"
     )
-    public void setRenderType(@LuaNotNil String type) {
+    public ItemTask setRenderType(@LuaNotNil String type) {
         try {
             this.renderType = ItemTransforms.TransformType.valueOf(type.toUpperCase());
             this.left = this.renderType == ItemTransforms.TransformType.FIRST_PERSON_LEFT_HAND || this.renderType == ItemTransforms.TransformType.THIRD_PERSON_LEFT_HAND;
+            return this;
         } catch (Exception ignored) {
             throw new LuaError("Illegal RenderType: \"" + type + "\".");
         }
@@ -109,9 +114,8 @@ public class ItemTask extends RenderTask {
 
     @LuaWhitelist
     @LuaMethodShadow("setRenderType")
-    public RenderTask renderType(@LuaNotNil String type) {
-        setRenderType(type);
-        return this;
+    public ItemTask renderType(@LuaNotNil String type) {
+        return setRenderType(type);
     }
 
     @Override

@@ -205,10 +205,11 @@ public class FiguraTexture extends SimpleTexture {
                     )
             },
             value = "texture.set_pixel")
-    public void setPixel(int x, int y, Object r, Double g, Double b, Double a) {
+    public FiguraTexture setPixel(int x, int y, Object r, Double g, Double b, Double a) {
         try {
             backupImage();
             texture.setPixelRGBA(x, y, ColorUtils.rgbaToIntABGR(parseColor("setPixel", r, g, b, a)));
+            return this;
         } catch (Exception e) {
             throw new LuaError(e.getMessage());
         }
@@ -217,8 +218,7 @@ public class FiguraTexture extends SimpleTexture {
     @LuaWhitelist
     @LuaMethodShadow("setPixel")
     public FiguraTexture pixel(int x, int y, Object r, Double g, Double b, Double a) {
-        setPixel(x, y, r, g, b, a);
-        return this;
+        return setPixel(x, y, r, g, b, a);
     }
 
     @LuaWhitelist

@@ -29,9 +29,10 @@ public class NameplateCustomizationGroup {
             ),
             value = "nameplate_group.set_text"
     )
-    public void setText(String text) {
+    public NameplateCustomizationGroup setText(String text) {
         for (NameplateCustomization customization : customizations)
             customization.setText(text);
+        return this;
     }
 
     @Override

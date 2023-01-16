@@ -126,11 +126,31 @@ public class Animation {
         }
     }
 
+
     // -- lua methods -- //
+
+
+    @LuaWhitelist
+    @LuaMethodDoc("animation.is_playing")
+    public boolean isPlaying() {
+        return this.playState == PlayState.PLAYING;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("animation.is_paused")
+    public boolean isPaused() {
+        return this.playState == PlayState.PAUSED;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("animation.is_stopped")
+    public boolean isStopped() {
+        return this.playState == PlayState.STOPPED;
+    }
 
     @LuaWhitelist
     @LuaMethodDoc("animation.play")
-    public void play() {
+    public Animation play() {
         switch (playState) {
             case PAUSED -> controller.resume();
             case STOPPED -> {
@@ -139,31 +159,35 @@ public class Animation {
                 lastTime = time;
                 frameTime = 0f;
             }
-            default -> {return;}
+            default -> {return this;}
         }
 
         playState = PlayState.PLAYING;
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodDoc("animation.pause")
-    public void pause() {
+    public Animation pause() {
         controller.pause();
         playState = PlayState.PAUSED;
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodDoc("animation.stop")
-    public void stop() {
+    public Animation stop() {
         controller.reset();
         playState = PlayState.STOPPED;
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodDoc("animation.restart")
-    public void restart() {
+    public Animation restart() {
         stop();
         play();
+        return this;
     }
 
     @LuaWhitelist
@@ -177,18 +201,18 @@ public class Animation {
             },
             value = "animation.set_playing"
     )
-    public void setPlaying(boolean bool) {
+    public Animation setPlaying(boolean bool) {
         if (bool)
             play();
         else
             stop();
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setPlaying")
     public Animation playing(boolean bool) {
-        setPlaying(bool);
-        return this;
+        return setPlaying(bool);
     }
 
     @LuaWhitelist
@@ -205,17 +229,17 @@ public class Animation {
             ),
             value = "animation.set_time"
     )
-    public void setTime(float time) {
+    public Animation setTime(float time) {
         this.time = time;
         this.lastTime = time;
         this.frameTime = Math.max(time, this.offset);
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setTime")
     public Animation time(float time) {
-        setTime(time);
-        return this;
+        return setTime(time);
     }
 
     @LuaWhitelist
@@ -232,15 +256,15 @@ public class Animation {
             ),
             value = "animation.new_code"
     )
-    public void newCode(float time, @LuaNotNil String data) {
+    public Animation newCode(float time, @LuaNotNil String data) {
         codeFrames.put(Math.max(time, 0f), data);
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("newCode")
     public Animation code(float time, @LuaNotNil String data) {
-        newCode(time, data);
-        return this;
+        return newCode(time, data);
     }
 
     @LuaWhitelist
@@ -257,15 +281,15 @@ public class Animation {
             ),
             value = "animation.set_blend"
     )
-    public void setBlend(float blend) {
+    public Animation setBlend(float blend) {
         this.blend = blend;
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setBlend")
     public Animation blend(float blend) {
-        setBlend(blend);
-        return this;
+        return setBlend(blend);
     }
 
     @LuaWhitelist
@@ -282,15 +306,15 @@ public class Animation {
             ),
             value = "animation.set_offset"
     )
-    public void setOffset(float offset) {
+    public Animation setOffset(float offset) {
         this.offset = offset;
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setOffset")
     public Animation offset(float offset) {
-        setOffset(offset);
-        return this;
+        return setOffset(offset);
     }
 
     @LuaWhitelist
@@ -307,15 +331,15 @@ public class Animation {
             ),
             value = "animation.set_start_delay"
     )
-    public void setStartDelay(float delay) {
+    public Animation setStartDelay(float delay) {
         this.startDelay = delay;
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setStartDelay")
     public Animation startDelay(float delay) {
-        setStartDelay(delay);
-        return this;
+        return setStartDelay(delay);
     }
 
     @LuaWhitelist
@@ -332,15 +356,15 @@ public class Animation {
             ),
             value = "animation.set_loop_delay"
     )
-    public void setLoopDelay(float delay) {
+    public Animation setLoopDelay(float delay) {
         this.loopDelay = delay;
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setLoopDelay")
     public Animation loopDelay(float delay) {
-        setLoopDelay(delay);
-        return this;
+        return setLoopDelay(delay);
     }
 
     @LuaWhitelist
@@ -357,15 +381,15 @@ public class Animation {
             ),
             value = "animation.set_length"
     )
-    public void setLength(float length) {
+    public Animation setLength(float length) {
         this.length = length;
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setLength")
     public Animation length(float length) {
-        setLength(length);
-        return this;
+        return setLength(length);
     }
 
     @LuaWhitelist
@@ -376,15 +400,15 @@ public class Animation {
             ),
             value = "animation.set_override"
     )
-    public void setOverride(boolean override) {
+    public Animation setOverride(boolean override) {
         this.override = override ? 7 : 0;
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setOverride")
     public Animation override(boolean override) {
-        setOverride(override);
-        return this;
+        return setOverride(override);
     }
 
     @LuaWhitelist
@@ -413,15 +437,15 @@ public class Animation {
             ),
             value = "animation.set_override_rot"
     )
-    public void setOverrideRot(boolean override) {
+    public Animation setOverrideRot(boolean override) {
         this.override = override ? this.override | 1 : this.override & 6;
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setOverrideRot")
     public Animation overrideRot(boolean override) {
-        setOverrideRot(override);
-        return this;
+        return setOverrideRot(override);
     }
 
     @LuaWhitelist
@@ -432,15 +456,15 @@ public class Animation {
             ),
             value = "animation.set_override_pos"
     )
-    public void setOverridePos(boolean override) {
+    public Animation setOverridePos(boolean override) {
         this.override = override ? this.override | 2 : this.override & 5;
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setOverridePos")
     public Animation overridePos(boolean override) {
-        setOverridePos(override);
-        return this;
+        return setOverridePos(override);
     }
 
     @LuaWhitelist
@@ -451,8 +475,9 @@ public class Animation {
             ),
             value = "animation.set_override_scale"
     )
-    public void setOverrideScale(boolean override) {
+    public Animation setOverrideScale(boolean override) {
         this.override = override ? this.override | 4 : this.override & 3;
+        return this;
     }
 
     @LuaWhitelist
@@ -476,9 +501,10 @@ public class Animation {
             ),
             value = "animation.set_loop"
     )
-    public void setLoop(@LuaNotNil String loop) {
+    public Animation setLoop(@LuaNotNil String loop) {
         try {
             this.loop = LoopMode.valueOf(loop.toUpperCase());
+            return this;
         } catch (Exception ignored) {
             throw new LuaError("Illegal LoopMode: \"" + loop + "\".");
         }
@@ -487,8 +513,7 @@ public class Animation {
     @LuaWhitelist
     @LuaMethodShadow("setLoop")
     public Animation loop(@LuaNotNil String loop) {
-        setLoop(loop);
-        return this;
+        return setLoop(loop);
     }
 
     @LuaWhitelist
@@ -505,15 +530,15 @@ public class Animation {
             ),
             value = "animation.set_priority"
     )
-    public void setPriority(int priority) {
+    public Animation setPriority(int priority) {
         this.priority = priority;
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setPriority")
     public Animation priority(int priority) {
-        setPriority(priority);
-        return this;
+        return setPriority(priority);
     }
 
     @LuaWhitelist
@@ -530,17 +555,17 @@ public class Animation {
             ),
             value = "animation.set_speed"
     )
-    public void setSpeed(Float speed) {
+    public Animation setSpeed(Float speed) {
         if (speed == null) speed = 1f;
         this.speed = speed;
         this.inverted = speed < 0;
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setSpeed")
     public Animation speed(Float speed) {
-        setSpeed(speed);
-        return this;
+        return setSpeed(speed);
     }
 
     @LuaWhitelist

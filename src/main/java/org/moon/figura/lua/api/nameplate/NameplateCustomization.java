@@ -45,7 +45,7 @@ public class NameplateCustomization {
             ),
             value = "nameplate_customization.set_text"
     )
-    public void setText(String text) {
+    public NameplateCustomization setText(String text) {
         this.text = text;
         if (text != null) {
             parseJsonText(text);
@@ -54,6 +54,7 @@ public class NameplateCustomization {
         } else {
             json = null;
         }
+        return this;
     }
 
     @Override

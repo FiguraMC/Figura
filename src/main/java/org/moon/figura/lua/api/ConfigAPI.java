@@ -242,17 +242,17 @@ public class ConfigAPI {
             ),
             value = "config.set_name"
     )
-    public void setName(@LuaNotNil String name) {
-        if (!isHost) return;
+    public ConfigAPI setName(@LuaNotNil String name) {
+        if (!isHost) return this;
         this.name = name;
         this.loaded = false;
+        return this;
     }
 
     @LuaWhitelist
     @LuaMethodShadow("setName")
     public ConfigAPI name(@LuaNotNil String name) {
-        setName(name);
-        return this;
+        return setName(name);
     }
 
     @LuaWhitelist
