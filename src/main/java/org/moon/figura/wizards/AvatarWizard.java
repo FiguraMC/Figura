@@ -143,7 +143,7 @@ public class AvatarWizard {
         root.add("authors", authorsJson);
 
         //color
-        root.addProperty("color", "#" + ColorUtils.rgbToHex(ColorUtils.Colors.FRAN_PINK.vec));
+        root.addProperty("color", "#" + ColorUtils.rgbToHex(ColorUtils.Colors.random().vec));
 
         //write file
         path = path.resolve("avatar.json");
