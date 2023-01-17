@@ -6,7 +6,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.config.Config;
 import org.moon.figura.gui.widgets.ContextMenu;
@@ -43,7 +42,7 @@ public class EnumElement extends AbstractConfigElement {
 
                 //draw arrow
                 Font font = Minecraft.getInstance().font;
-                Component arrow = Component.literal(context.isVisible() ? "V" : "^").setStyle(Style.EMPTY.withFont(UIHelper.UI_FONT));
+                Component arrow = context.isVisible() ? UIHelper.DOWN_ARROW : UIHelper.UP_ARROW;
                 font.drawShadow(
                         stack, arrow,
                         this.x + this.width - font.width(arrow) - 3, this.y + this.height / 2 - font.lineHeight / 2,
