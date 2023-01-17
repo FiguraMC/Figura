@@ -2,8 +2,10 @@ package org.moon.figura.lua.api.particle;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
+import net.minecraft.client.particle.SingleQuadParticle;
 import net.minecraft.client.particle.WakeParticle;
 import org.moon.figura.avatar.Avatar;
+import org.moon.figura.ducks.SingleQuadParticleAccessor;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
@@ -234,6 +236,8 @@ public class LuaParticle {
             ),
             value = "particle.set_scale")
     public LuaParticle setScale(float scale) {
+        if (particle instanceof SingleQuadParticle quadParticle)
+            ((SingleQuadParticleAccessor) quadParticle).figura$fixQuadSize();
         particle.scale(scale);
         this.scale = scale;
         return this;
