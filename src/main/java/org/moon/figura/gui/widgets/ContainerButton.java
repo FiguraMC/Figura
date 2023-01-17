@@ -5,8 +5,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.gui.widgets.lists.AbstractList;
 import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.ui.UIHelper;
@@ -25,7 +23,7 @@ public class ContainerButton extends SwitchButton {
         //variables
         Font font = Minecraft.getInstance().font;
         int color = (!this.active || !this.isToggled() ? ChatFormatting.DARK_GRAY : ChatFormatting.WHITE).getColor();
-        Component arrow = new TextComponent(this.toggled ? "V" : "^").setStyle(Style.EMPTY.withFont(UIHelper.UI_FONT));
+        Component arrow = this.toggled ? UIHelper.DOWN_ARROW : UIHelper.UP_ARROW;
         int arrowWidth = font.width(arrow);
         Component message = TextUtils.trimToWidthEllipsis(font, getMessage(), this.width - arrowWidth - 6, TextUtils.ELLIPSIS.copy().withStyle(getMessage().getStyle()));
 

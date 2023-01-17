@@ -7,6 +7,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.moon.figura.FiguraMod;
@@ -85,7 +86,7 @@ public class ActionWheel {
 
         //render title
         FiguraMod.popPushProfiler("texts");
-        Action action = selected == -1 ? null : currentPage.group()[selected];
+        Action action = selected == -1 ? null : currentPage.slots()[selected];
         renderTexts(stack, currentPage, action == null ? null : action.getTitle());
 
         FiguraMod.popProfiler();
@@ -146,7 +147,7 @@ public class ActionWheel {
 
     private static void renderTextures(PoseStack stack, Page page) {
         for (int i = 0; i < slots; i++) {
-            Action action = page.group()[i];
+            Action action = page.slots()[i];
             boolean left = i >= rightSlots;
             int type = left ? leftSlots : rightSlots;
             int relativeIndex = left ? i - rightSlots : i;
@@ -185,7 +186,7 @@ public class ActionWheel {
         double distance = 41;
 
         for (int i = 0; i < slots; i++) {
-            Action action = page.group()[i];
+            Action action = page.slots()[i];
             if (action == null)
                 continue;
 
@@ -230,15 +231,40 @@ public class ActionWheel {
     private static void renderTexts(PoseStack stack, Page page, String title) {
         Font font = minecraft.font;
         int titlePosition = Config.ACTION_WHEEL_TITLE.asInt();
-        int indicatorPosition = Config.ACTION_WHEEL_GROUP_INDICATOR.asInt();
+        int indicatorPosition = Config.ACTION_WHEEL_SLOTS_INDICATOR.asInt();
 
         //page indicator
         int groupCount = page.getGroupCount();
         if (groupCount > 1 && (title == null || indicatorPosition != titlePosition - 2)) {
             stack.pushPose();
             stack.translate(0d, 0d, 999d);
-            Component indicator = FiguraText.of("gui.action_wheel.group_indicator", page.getGroupIndex(), groupCount);
-            font.drawShadow(stack, indicator, x - font.width(indicator) / 2, (int) Position.index(indicatorPosition).apply(font.lineHeight), 0xFFFFFF);
+            int index = page.getSlotsShift();
+            int greatest = page.getGreatestSlot() + 1;
+
+            MutableComponent indicator = Component.empty();
+            int extraWidth = 0;
+
+            //down arrow
+            if (index > 1) {
+                Component arrow = UIHelper.UP_ARROW.copy().append(" ");
+                indicator.append(arrow);
+                extraWidth -= font.width(arrow);
+            }
+            //text
+            indicator.append(FiguraText.of("gui.action_wheel.slots_indicator",
+                    Component.literal(String.valueOf((index - 1) * 8 + 1)).withStyle(FiguraMod.getAccentColor()),
+                    Component.literal(String.valueOf(Math.min(index * 8, greatest))).withStyle(FiguraMod.getAccentColor()),
+                    Component.literal(String.valueOf(greatest)).withStyle(FiguraMod.getAccentColor())
+            ));
+            //up arrow
+            if (index < groupCount) {
+                Component arrow = Component.literal(" ").append(UIHelper.DOWN_ARROW);
+                indicator.append(arrow);
+                extraWidth += font.width(arrow);
+            }
+
+            //draw
+            font.drawShadow(stack, indicator, x - (font.width(indicator) - extraWidth) / 2, (int) Position.index(indicatorPosition).apply(font.lineHeight), 0xFFFFFF);
             stack.popPose();
         }
 
@@ -289,7 +315,7 @@ public class ActionWheel {
             return;
         }
 
-        Action action = currentPage.group()[index];
+        Action action = currentPage.slots()[index];
         if (action != null) action.execute(avatar, left);
 
         selected = -1;
@@ -310,7 +336,7 @@ public class ActionWheel {
             return;
 
         if (selected >= 0 && selected <= 7) {
-            Action action = currentPage.group()[selected];
+            Action action = currentPage.slots()[selected];
             if (action != null && action.scroll != null) {
                 action.mouseScroll(avatar, delta);
                 return;
@@ -318,7 +344,7 @@ public class ActionWheel {
         }
 
         //page scroll
-        currentPage.setGroupIndex(currentPage.getGroupIndex() - (int) Math.signum(delta));
+        currentPage.setSlotsShift(currentPage.getSlotsShift() - (int) Math.signum(delta));
     }
 
     public static void setEnabled(boolean enabled) {

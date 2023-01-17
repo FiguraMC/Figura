@@ -126,8 +126,8 @@ public class ActionWheelAPI {
             throw new LuaError("Invalid page type, expected \"string\" or \"page\"");
         }
 
-        if (currentPage != null && !currentPage.keepLastGroup)
-            currentPage.setGroupIndex(1);
+        if (currentPage != null && !currentPage.keepSlots)
+            currentPage.setSlotsShift(1);
 
         this.currentPage = currentPage;
         return this;

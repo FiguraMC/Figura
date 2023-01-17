@@ -48,6 +48,9 @@ public class UIHelper extends GuiComponent {
     public static final ResourceLocation UI_FONT = new FiguraIdentifier("ui");
     public static final ResourceLocation SPECIAL_FONT = new FiguraIdentifier("special");
 
+    public static final Component UP_ARROW = Component.literal("^").withStyle(Style.EMPTY.withFont(UI_FONT));
+    public static final Component DOWN_ARROW = Component.literal("V").withStyle(Style.EMPTY.withFont(UI_FONT));
+
     //Used for GUI rendering
     private static final CustomFramebuffer FIGURA_FRAMEBUFFER = new CustomFramebuffer();
     private static int previousFBO = -1;
