@@ -7,7 +7,7 @@ import org.moon.figura.lua.docs.*;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -20,18 +20,18 @@ public class Page {
 
     private final HashMap<Integer, Action> actionsMap = new HashMap<>();
 
-    private int groupIndex = 0;
+    private int slotsShift = 0;
 
     @LuaWhitelist
-    @LuaFieldDoc("wheel_page.keep_last_group")
-    public boolean keepLastGroup = false;
+    @LuaFieldDoc("wheel_page.keep_slots")
+    public boolean keepSlots = false;
 
     public Page(String title) {
         this.title = title;
     }
 
     public int getSize() {
-        Action[] actions = group();
+        Action[] actions = slots();
         int i = actions.length;
         while (i > 0 && actions[i - 1] == null) {
             i--;
@@ -39,22 +39,25 @@ public class Page {
         return Math.max(i, 2);
     }
 
-    public int getGroupCount() {
+    public int getGreatestSlot() {
         int greatest = 0;
-        for (Integer i : actionsMap.keySet()) {
-            greatest = i > greatest ? i : greatest;
-        }
-        return greatest / 8 + 1;
+        for (Integer i : actionsMap.keySet())
+            greatest = Math.max(greatest, i);
+        return greatest;
     }
 
-    public Action[] group() {
-        return group(groupIndex);
+    public int getGroupCount() {
+        return getGreatestSlot() / 8 + 1;
     }
 
-    public Action[] group(int groupIndex) {
+    public Action[] slots() {
+        return slots(slotsShift);
+    }
+
+    public Action[] slots(int shift) {
         Action[] page = new Action[8];
         for (int i = 0; i < 8; i++) {
-            page[i] = actionsMap.get(i + 8 * groupIndex);
+            page[i] = actionsMap.get(i + 8 * shift);
         }
         return page;
     }
@@ -81,20 +84,20 @@ public class Page {
 
 
     @LuaWhitelist
-    @LuaMethodDoc("wheel_page.should_keep_last_group")
-    public boolean shouldKeepLastGroup() {
-        return keepLastGroup;
+    @LuaMethodDoc("wheel_page.should_keep_slots")
+    public boolean shouldKeepSlots() {
+        return keepSlots;
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaMethodOverload(
                     argumentTypes = Boolean.class,
-                    argumentNames = "keepLastGroup"
+                    argumentNames = "bool"
             ),
-            value = "wheel_page.set_keep_last_group")
-    public Page setKeepLastGroup(boolean bool) {
-        keepLastGroup = bool;
+            value = "wheel_page.set_keep_slots")
+    public Page setKeepSlots(boolean bool) {
+        keepSlots = bool;
         return this;
     }
 
@@ -160,28 +163,28 @@ public class Page {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("wheel_page.get_group_index")
-    public int getGroupIndex() {
-        return this.groupIndex + 1;
+    @LuaMethodDoc("wheel_page.get_slots_shift")
+    public int getSlotsShift() {
+        return this.slotsShift + 1;
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaMethodOverload(
                     argumentTypes = Integer.class,
-                    argumentNames = "index"
+                    argumentNames = "shift"
             ),
-            value = "wheel_page.set_group_index"
+            value = "wheel_page.set_slots_shift"
     )
-    public Page setGroupIndex(int index) {
-        groupIndex = Math.min(Math.max(index - 1, 0), getGroupCount() - 1);
+    public Page setSlotsShift(int shift) {
+        slotsShift = Math.min(Math.max(shift - 1, 0), getGroupCount() - 1);
         return this;
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setGroupIndex")
-    public Page groupIndex(int index) {
-        return setGroupIndex(index);
+    @LuaMethodShadow("setSlotsShift")
+    public Page slotsShift(int shift) {
+        return setSlotsShift(shift);
     }
 
     @LuaWhitelist
@@ -190,25 +193,32 @@ public class Page {
                     @LuaMethodOverload,
                     @LuaMethodOverload(
                             argumentTypes = Integer.class,
-                            argumentNames = "groupIndex"
+                            argumentNames = "shift"
                     )
             },
             value = "wheel_page.get_group_actions")
-    public List<Action> getGroupActions(Integer group) {
-        if (group != null && group < 1)
-            throw new LuaError("Index must be greater than 0!");
-        return Arrays.asList(group(group == null ? groupIndex : group - 1));
+    public Object getActions(Integer shift) {
+        if (shift != null) {
+            if (shift < 1)
+                throw new LuaError("Shift must be greater than 0!");
+            return Arrays.asList(slots(shift - 1));
+        } else {
+            HashMap<Integer, Action> map = new HashMap<>();
+            for (Map.Entry<Integer, Action> entry : actionsMap.entrySet())
+                map.put(entry.getKey() + 1, entry.getValue());
+            return map;
+        }
     }
 
     @LuaWhitelist
     public Object __index(String arg) {
-        return "keepLastGroup".equals(arg) ? keepLastGroup : null;
+        return "keepSlots".equals(arg) ? keepSlots : null;
     }
 
     @LuaWhitelist
     public void __newindex(@LuaNotNil String key, boolean value) {
-        if ("keepLastGroup".equals(key))
-            keepLastGroup = value;
+        if ("keepSlots".equals(key))
+            keepSlots = value;
         else throw new LuaError("Cannot assign value on key \"" + key + "\"");
     }
 
