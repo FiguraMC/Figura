@@ -780,6 +780,7 @@
   "figura.docs.blockstate.get_fluid_tags": "Returns a table containing all the fluid tags of this block, as strings",
   "figura.docs.blockstate.get_entity_data": "Returns the nbt of the Block Entity associated with this BlockState, at its position, as a table\nSince the mod is only on client side, this NBT might not actually contain the real nbt, which is stored server-side",
   "figura.docs.blockstate.to_state_string": "Converts this BlockState into a string, like you'd see in a Minecraft command",
+  "figura.docs.blockstate.get_textures": "Returns a List of this BlockState's textures\nThe keys represents the Culling Direction, while the values is another table with all texture paths (string)\nNote this only work for normal blocks, special blocks (water, beds, ...) will return an empty table",
 
 
   "figura.docs.client": "A global API used to interact with the current Minecraft client\nMost of its functions return things that can be found in the F3 menu",

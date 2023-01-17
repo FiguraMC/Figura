@@ -8,10 +8,7 @@ import org.moon.figura.lua.docs.FiguraDocsManager;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 
 import java.lang.reflect.*;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * One LuaTypeManager per LuaRuntime, so that people can be allowed to edit the metatables within.
@@ -228,11 +225,13 @@ public class LuaTypeManager {
         return table;
     }
 
-    private LuaValue wrapList(List<?> list) {
+    private LuaValue wrapCollection(Collection<?> collection) {
         LuaTable table = new LuaTable();
 
-        for (int i = 0; i < list.size(); i++)
-            table.set(i + 1, javaToLua(list.get(i)).arg1());
+        int i = 1;
+        for (Object o : collection) {
+            table.set(i++, javaToLua(o).arg1());
+        }
 
         return table;
     }
@@ -320,8 +319,8 @@ public class LuaTypeManager {
             return LuaValue.valueOf(s);
         else if (val instanceof Map<?,?> map)
             return wrapMap(map);
-        else if (val instanceof List<?> list)
-            return wrapList(list);
+        else if (val instanceof Collection<?> collection)
+            return wrapCollection(collection);
         else if (val.getClass().isArray())
             return wrapArray(val);
         else
