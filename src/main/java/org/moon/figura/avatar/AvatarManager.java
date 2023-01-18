@@ -245,7 +245,6 @@ public class AvatarManager {
         if (user != null) user.clear();
 
         NetworkStuff.clear(id);
-        NetworkStuff.unsubscribe(id);
         FiguraMod.debug("Cleared avatars of " + id);
     }
 
