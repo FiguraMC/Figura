@@ -578,7 +578,7 @@
   "figura.docs.math": "Contains functions which Figura adds to the default Lua \"math\" library table",
   "figura.docs.math.player_scale": "The constant of the player scaling related to the world",
   "figura.docs.math.world_scale": "The constant of the world scaling related with the player",
-  "figura.docs.math.lerp": "Linearly interpolates from its first argument to its second argument, with the third argument as the parameter\nWorks on both regular numbers and vectors",
+  "figura.docs.math.lerp": "Linearly interpolates from its first argument to its second argument, with the third argument as the parameter\nWorks on both regular numbers, vectors of the same type and matrices of the same type",
   "figura.docs.math.clamp": "Clamps the given value between min and max",
   "figura.docs.math.round": "Rounds the given number to the nearest whole integer",
   "figura.docs.math.map": "Maps the given value from one range to another\nFor example, if you have a value of 20 in the range 0-200, and you want to map it to the range 100-200, the result will be 110",
