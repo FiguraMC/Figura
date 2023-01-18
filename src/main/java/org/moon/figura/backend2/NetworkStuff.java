@@ -3,6 +3,8 @@ package org.moon.figura.backend2;
 import com.google.gson.*;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import org.moon.figura.FiguraMod;
@@ -39,6 +41,7 @@ public class NetworkStuff {
 
     private static final LinkedList<Request<HttpAPI>> API_REQUESTS = new LinkedList<>();
     private static final LinkedList<Request<WebsocketThingy>> WS_REQUESTS = new LinkedList<>();
+    private static final List<UUID> SUBSCRIPTIONS = new ArrayList<>();
     private static CompletableFuture<Void> tasks;
 
     private static final int RECONNECT = 6000; //5 min
@@ -80,26 +83,53 @@ public class NetworkStuff {
                 checkAPI();
         }
 
+        tickSubscriptions();
+
+        //process requests
+        if (isConnected())
+            processRequests();
+
         //pings counter
         if (lastPing > 0 && FiguraMod.ticks - lastPing >= 20)
             lastPing = pingsSent = pingsReceived = 0;
+    }
 
-        //process requests
-        if (isConnected()) {
-            if (!API_REQUESTS.isEmpty()) {
-                Request<HttpAPI> request;
-                while ((request = API_REQUESTS.poll()) != null) {
-                    Request<HttpAPI> finalRequest = request;
-                    async(() -> finalRequest.consumer.accept(api));
-                }
+    private static void tickSubscriptions() {
+        ClientPacketListener connection = Minecraft.getInstance().getConnection();
+        if (connection == null) {
+            unsubscribeAll();
+            return;
+        }
+
+        List<UUID> unsub = new ArrayList<>(SUBSCRIPTIONS);
+        for (UUID uuid : connection.getOnlinePlayerIds()) {
+            unsub.remove(uuid);
+            if (!SUBSCRIPTIONS.contains(uuid)) {
+                SUBSCRIPTIONS.add(uuid);
+                subscribe(uuid);
             }
+        }
 
-            if (!WS_REQUESTS.isEmpty()) {
-                Request<WebsocketThingy> request;
-                while ((request = WS_REQUESTS.poll()) != null) {
-                    Request<WebsocketThingy> finalRequest = request;
-                    async(() -> finalRequest.consumer.accept(ws));
-                }
+        for (UUID uuid : unsub) {
+            SUBSCRIPTIONS.remove(uuid);
+            unsubscribe(uuid);
+        }
+    }
+
+    private static void processRequests() {
+        if (!API_REQUESTS.isEmpty()) {
+            Request<HttpAPI> request;
+            while ((request = API_REQUESTS.poll()) != null) {
+                Request<HttpAPI> finalRequest = request;
+                async(() -> finalRequest.consumer.accept(api));
+            }
+        }
+
+        if (!WS_REQUESTS.isEmpty()) {
+            Request<WebsocketThingy> request;
+            while ((request = WS_REQUESTS.poll()) != null) {
+                Request<WebsocketThingy> finalRequest = request;
+                async(() -> finalRequest.consumer.accept(ws));
             }
         }
     }
@@ -257,9 +287,6 @@ public class NetworkStuff {
 
             JsonObject json = JsonParser.parseString(data).getAsJsonObject();
 
-            //id
-            UUID uuid = UUID.fromString(json.get("uuid").getAsString());
-
             //avatars
             ArrayList<Pair<String, Pair<String, UUID>>> avatars = new ArrayList<>();
 
@@ -285,7 +312,6 @@ public class NetworkStuff {
                 specialSet.set(i, special.get(i).getAsInt() >= 1);
 
             user.loadData(avatars, badgesPair);
-            subscribe(uuid);
         });
     }
 
@@ -420,8 +446,8 @@ public class NetworkStuff {
         }
     }
 
-    public static void subscribe(UUID id) {
-        if (checkUUID(id))
+    private static void subscribe(UUID id) {
+        if (checkUUID(id) || !checkWS())
             return;
 
         WS_REQUESTS.add(new Request<>(Util.NIL_UUID, client -> {
@@ -435,8 +461,8 @@ public class NetworkStuff {
         }));
     }
 
-    public static void unsubscribe(UUID id) {
-        if (checkUUID(id))
+    private static void unsubscribe(UUID id) {
+        if (checkUUID(id) || !checkWS())
             return;
 
         WS_REQUESTS.add(new Request<>(Util.NIL_UUID, client -> {
@@ -448,6 +474,17 @@ public class NetworkStuff {
                 FiguraMod.LOGGER.error("Failed to unsubscribe to " + id, e);
             }
         }));
+    }
+
+    public static void subscribeAll() {
+        for (UUID uuid : SUBSCRIPTIONS)
+            subscribe(uuid);
+    }
+
+    public static void unsubscribeAll() {
+        for (UUID uuid : SUBSCRIPTIONS)
+            unsubscribe(uuid);
+        SUBSCRIPTIONS.clear();
     }
 
 

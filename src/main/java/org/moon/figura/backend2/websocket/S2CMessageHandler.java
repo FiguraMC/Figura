@@ -45,6 +45,7 @@ public class S2CMessageHandler {
     private static void auth() {
         FiguraMod.LOGGER.info("Connected to " + FiguraMod.MOD_NAME + " ws backend");
         NetworkStuff.backendStatus = 3;
+        NetworkStuff.subscribeAll();
         if (Config.CONNECTION_TOASTS.asBool())
             FiguraToast.sendToast(new FiguraText("backend.connected"));
     }
