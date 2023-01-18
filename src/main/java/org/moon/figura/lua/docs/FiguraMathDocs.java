@@ -1,6 +1,7 @@
 package org.moon.figura.lua.docs;
 
-import org.moon.figura.math.vector.*;
+import org.moon.figura.math.matrix.FiguraMatrix;
+import org.moon.figura.math.vector.FiguraVector;
 
 /**
  * Adds docs for the functions added to Lua's math library.
@@ -24,29 +25,14 @@ public class FiguraMathDocs {
                             returnType = Double.class
                     ),
                     @LuaMethodOverload(
-                            argumentTypes = {FiguraVec2.class, FiguraVec2.class, Double.class},
+                            argumentTypes = {FiguraVector.class, FiguraVector.class, Double.class},
                             argumentNames = {"a", "b", "t"},
-                            returnType = FiguraVec2.class
+                            returnType = FiguraVector.class
                     ),
                     @LuaMethodOverload(
-                            argumentTypes = {FiguraVec3.class, FiguraVec3.class, Double.class},
+                            argumentTypes = {FiguraMatrix.class, FiguraMatrix.class, Double.class},
                             argumentNames = {"a", "b", "t"},
-                            returnType = FiguraVec3.class
-                    ),
-                    @LuaMethodOverload(
-                            argumentTypes = {FiguraVec4.class, FiguraVec4.class, Double.class},
-                            argumentNames = {"a", "b", "t"},
-                            returnType = FiguraVec4.class
-                    ),
-                    @LuaMethodOverload(
-                            argumentTypes = {FiguraVec5.class, FiguraVec5.class, Double.class},
-                            argumentNames = {"a", "b", "t"},
-                            returnType = FiguraVec5.class
-                    ),
-                    @LuaMethodOverload(
-                            argumentTypes = {FiguraVec6.class, FiguraVec6.class, Double.class},
-                            argumentNames = {"a", "b", "t"},
-                            returnType = FiguraVec6.class
+                            returnType = FiguraMatrix.class
                     ),
             },
             value = "math.lerp"
