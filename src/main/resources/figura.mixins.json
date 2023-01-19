@@ -6,6 +6,7 @@
   "mixins": [
   ],
   "client": [
+    "BiomeAccessor",
     "BlockBehaviourAccessor",
     "ClientLanguageMixin",
     "ClientLevelInvoker",

@@ -27,6 +27,7 @@ public enum Interpolation {
         );
         return getResult(result, strength, type);
     }),
+    BEZIER((frames, currentFrame, targetFrame, strength, delta, type) -> getResult(frames[currentFrame].getTargetB().copy(), strength, type)),
     STEP((frames, currentFrame, targetFrame, strength, delta, type) -> getResult(frames[currentFrame].getTargetB().copy(), strength, type));
 
     private final IInterpolation function;

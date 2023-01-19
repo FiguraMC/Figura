@@ -29,7 +29,7 @@ public class ClientLanguageMixin {
     private static ResourceLocation location;
 
     @Inject(method = "loadFrom", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/resources/language/ClientLanguage;appendFrom(Ljava/lang/String;Ljava/util/List;Ljava/util/Map;)V"), locals = LocalCapture.CAPTURE_FAILSOFT)
-    private static void appendFrom(ResourceManager resourceManager, List<LanguageInfo> definitions, CallbackInfoReturnable<ClientLanguage> cir, Map<String, String> map, boolean bl, Iterator<LanguageInfo> var4, LanguageInfo languageInfo, String string, String string2, Iterator<String> var8, String string3, ResourceLocation resourceLocation) {
+    private static void appendFrom(ResourceManager resourceManager, List<LanguageInfo> definitions, boolean bl, CallbackInfoReturnable<ClientLanguage> cir, Map<String, String> map, Iterator<String> var4, String string, String string2, Iterator<String> var7, String string3, ResourceLocation resourceLocation) {
         location = resourceLocation;
     }
 

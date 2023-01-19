@@ -103,7 +103,7 @@ public class AvatarWizardList extends AbstractList {
         //fix mojang focusing for text fields
         for (GuiEventListener widget : children()) {
             if (widget instanceof TextField field)
-                field.getField().setFocus(field.isEnabled() && field.isMouseOver(mouseX, mouseY));
+                field.getField().setFocused(field.isEnabled() && field.isMouseOver(mouseX, mouseY));
         }
 
         return super.mouseClicked(mouseX, mouseY, button);

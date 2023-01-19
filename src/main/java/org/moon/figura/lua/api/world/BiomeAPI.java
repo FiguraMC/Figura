@@ -9,6 +9,7 @@ import net.minecraft.world.level.biome.Biome;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.*;
 import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.mixin.BiomeAccessor;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.LuaUtils;
 
@@ -99,7 +100,7 @@ public class BiomeAPI {
     @LuaWhitelist
     @LuaMethodDoc("biome.get_precipitation")
     public String getPrecipitation() {
-        return biome.getPrecipitation().name();
+        return biome.getPrecipitationAt(getBlockPos()).name();
     }
 
     @LuaWhitelist
@@ -142,13 +143,13 @@ public class BiomeAPI {
     @LuaWhitelist
     @LuaMethodDoc("biome.get_downfall")
     public float getDownfall() {
-        return biome.getDownfall();
+        return -1f; //im not adding an access widener just for that lol
     }
 
     @LuaWhitelist
     @LuaMethodDoc("biome.is_hot")
     public boolean isHot() {
-        return biome.shouldSnowGolemBurn(getBlockPos());
+        return ((BiomeAccessor) (Object) biome).getTemperature(getBlockPos()) > 1f;
     }
 
     @LuaWhitelist

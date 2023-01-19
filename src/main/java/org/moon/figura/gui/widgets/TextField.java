@@ -115,7 +115,7 @@ public class TextField extends AbstractContainerElement {
             return;
 
         super.setVisible(visible);
-        this.field.setFocus(false);
+        this.field.setFocused(false);
     }
 
     public void setColor(int color) {

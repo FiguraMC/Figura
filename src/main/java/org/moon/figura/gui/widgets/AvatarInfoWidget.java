@@ -150,4 +150,12 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
     public void setVisible(boolean visible) {
         this.visible = visible;
     }
+
+    @Override
+    public void setFocused(boolean bl) {}
+
+    @Override
+    public boolean isFocused() {
+        return false;
+    }
 }

@@ -7,15 +7,15 @@ import org.moon.figura.FiguraMod;
 public class FiguraText extends TranslatableContents {
 
     public FiguraText() {
-        super(FiguraMod.MOD_ID);
+        super(FiguraMod.MOD_ID, FiguraMod.MOD_NAME, null);
     }
 
     public FiguraText(String string) {
-        super(FiguraMod.MOD_ID + "." + string);
+        super(FiguraMod.MOD_ID + "." + string, null, null);
     }
 
     public FiguraText(String string, Object... args) {
-        super(FiguraMod.MOD_ID + "." + string, args);
+        super(FiguraMod.MOD_ID + "." + string, null, args);
     }
 
     public static MutableComponent of() {

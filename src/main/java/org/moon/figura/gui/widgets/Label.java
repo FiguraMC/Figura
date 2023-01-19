@@ -98,4 +98,12 @@ public class Label implements FiguraWidget, GuiEventListener {
     public void setOutlineColor(Integer outlineColor) {
         this.outlineColor = outlineColor;
     }
+
+    @Override
+    public void setFocused(boolean bl) {}
+
+    @Override
+    public boolean isFocused() {
+        return false;
+    }
 }

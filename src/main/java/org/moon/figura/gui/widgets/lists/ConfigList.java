@@ -63,7 +63,7 @@ public class ConfigList extends AbstractList {
             for (GuiEventListener children : configWidget.children()) {
                 if (children instanceof InputElement inputElement) {
                     TextField field = inputElement.getTextField();
-                    field.getField().setFocus(field.isEnabled() && field.isMouseOver(mouseX, mouseY));
+                    field.getField().setFocused(field.isEnabled() && field.isMouseOver(mouseX, mouseY));
                 }
             }
         }
