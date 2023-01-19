@@ -107,6 +107,10 @@ public class BlockbenchModel {
 
         //keyframe data can contain any type of object
         JsonArray data_points;
+
+        //bezier stuff
+        float[] bezier_left_value;
+        float[] bezier_right_value;
     }
 
     public static class KeyFrameData {

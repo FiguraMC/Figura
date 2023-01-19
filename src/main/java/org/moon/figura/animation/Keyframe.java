@@ -13,8 +13,9 @@ public class Keyframe implements Comparable<Keyframe> {
     private final Interpolation interpolation;
     private final FiguraVec3 targetA, targetB;
     private final String[] aCode, bCode;
+    private final FiguraVec3 bezierLeft, bezierRight;
 
-    public Keyframe(Avatar owner, float time, Interpolation interpolation, Pair<FiguraVec3, String[]> a, Pair<FiguraVec3, String[]> b) {
+    public Keyframe(Avatar owner, float time, Interpolation interpolation, Pair<FiguraVec3, String[]> a, Pair<FiguraVec3, String[]> b, FiguraVec3 bezierLeft, FiguraVec3 bezierRight) {
         this.owner = owner;
         this.time = time;
         this.interpolation = interpolation;
@@ -22,6 +23,8 @@ public class Keyframe implements Comparable<Keyframe> {
         this.targetB = b.getFirst();
         this.aCode = a.getSecond();
         this.bCode = b.getSecond();
+        this.bezierLeft = bezierLeft;
+        this.bezierRight = bezierRight;
     }
 
     public FiguraVec3 getTargetA() {
@@ -58,6 +61,14 @@ public class Keyframe implements Comparable<Keyframe> {
 
     public Interpolation getInterpolation() {
         return interpolation;
+    }
+
+    public FiguraVec3 getBezierLeft() {
+        return bezierLeft;
+    }
+
+    public FiguraVec3 getBezierRight() {
+        return bezierRight;
     }
 
     @Override

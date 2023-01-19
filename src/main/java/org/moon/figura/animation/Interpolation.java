@@ -8,11 +8,7 @@ public enum Interpolation {
     LINEAR((frames, currentFrame, targetFrame, strength, delta, type) -> {
         FiguraVec3 prev = frames[currentFrame].getTargetB();
         FiguraVec3 next = frames[targetFrame].getTargetA();
-        FiguraVec3 result = FiguraVec3.of(
-                MathUtils.lerp(delta, prev.x, next.x),
-                MathUtils.lerp(delta, prev.y, next.y),
-                MathUtils.lerp(delta, prev.z, next.z)
-        );
+        FiguraVec3 result = MathUtils.lerp(delta, prev, next);
         return getResult(result, strength, type);
     }),
     CATMULLROM((frames, currentFrame, targetFrame, strength, delta, type) -> {
@@ -20,11 +16,19 @@ public enum Interpolation {
         FiguraVec3 prevB = frames[currentFrame].getTargetB();
         FiguraVec3 nextA = frames[targetFrame].getTargetA();
         FiguraVec3 nextB = frames[Math.min(frames.length - 1, targetFrame + 1)].getTargetA();
-        FiguraVec3 result = FiguraVec3.of(
-                MathUtils.catmullrom(delta, prevA.x, prevB.x, nextA.x, nextB.x),
-                MathUtils.catmullrom(delta, prevA.y, prevB.y, nextA.y, nextB.y),
-                MathUtils.catmullrom(delta, prevA.z, prevB.z, nextA.z, nextB.z)
-        );
+        FiguraVec3 result = MathUtils.catmullrom(delta, prevA, prevB, nextA, nextB);
+        return getResult(result, strength, type);
+    }),
+    BEZIER((frames, currentFrame, targetFrame, strength, delta, type) -> {
+        Keyframe prev = frames[currentFrame];
+        Keyframe next = frames[targetFrame];
+
+        FiguraVec3 p0 = prev.getTargetB();
+        FiguraVec3 p3 = next.getTargetA();
+        FiguraVec3 p1 = p0.plus(prev.getBezierRight());
+        FiguraVec3 p2 = p3.plus(next.getBezierLeft());
+
+        FiguraVec3 result = MathUtils.bezier(delta, p0, p1, p2, p3);
         return getResult(result, strength, type);
     }),
     BEZIER((frames, currentFrame, targetFrame, strength, delta, type) -> getResult(frames[currentFrame].getTargetB().copy(), strength, type)),
