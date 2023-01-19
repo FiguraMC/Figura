@@ -211,13 +211,13 @@ public class BlockbenchModelParser {
             nbt.putString("name", element.name);
 
             //parse transform data
-            if (element.from != null && notZero(element.from))
+            if (notZero(element.from))
                 nbt.put("f", toNbtList(element.from));
-            if (element.to != null && notZero(element.to))
+            if (notZero(element.to))
                 nbt.put("t", toNbtList(element.to));
-            if (element.rotation != null && notZero(element.rotation))
+            if (notZero(element.rotation))
                 nbt.put("rot", toNbtList(element.rotation));
-            if (element.origin != null && notZero(element.origin))
+            if (notZero(element.origin))
                 nbt.put("piv", toNbtList(element.origin));
             if (element.inflate != 0f)
                 nbt.putFloat("inf", element.inflate);
@@ -267,7 +267,7 @@ public class BlockbenchModelParser {
                 faceNbt.putFloat("rot", face.rotation);
 
             //parse uv
-            if (face.uv != null && notZero(face.uv)) {
+            if (notZero(face.uv)) {
                 float[] uv = {face.uv[0] * texture.fixedSize[0], face.uv[1] * texture.fixedSize[1], face.uv[2] * texture.fixedSize[0], face.uv[3] * texture.fixedSize[1]};
                 faceNbt.put("uv", toNbtList(uv));
             }
@@ -488,6 +488,12 @@ public class BlockbenchModelParser {
                             keyframeNbt.put("end", parseKeyFrameData(endDataPoints, keyFrame.channel));
                         }
 
+                        //bezier stuff
+                        if (notZero(keyFrame.bezier_left_value))
+                            keyframeNbt.put("bl", toNbtList(keyFrame.bezier_left_value));
+                        if (notZero(keyFrame.bezier_right_value))
+                            keyframeNbt.put("br", toNbtList(keyFrame.bezier_right_value));
+
                         switch (keyFrame.channel) {
                             case "position" -> posData.add(keyframeNbt);
                             case "rotation" -> rotData.add(keyframeNbt);
@@ -591,9 +597,9 @@ public class BlockbenchModelParser {
                 groupNbt.putBoolean("vsb", false);
 
             //parse transforms
-            if (group.origin != null && notZero(group.origin))
+            if (notZero(group.origin))
                 groupNbt.put("piv", toNbtList(group.origin));
-            if (group.rotation != null && notZero(group.rotation))
+            if (notZero(group.rotation))
                 groupNbt.put("rot", toNbtList(group.rotation));
 
             //parent type
@@ -647,16 +653,20 @@ public class BlockbenchModelParser {
 
     //check if a float array is not composed of only zeros
     public static boolean notZero(float[] floats) {
-        boolean zero = true;
+        return isDifferent(floats, 0f);
+    }
+
+    public static boolean isDifferent(float[] floats, float value) {
+        if (floats == null)
+            return false;
 
         for (float f : floats) {
-            if (f != 0) {
-                zero = false;
-                break;
+            if (f != value) {
+                return true;
             }
         }
 
-        return !zero;
+        return false;
     }
 
     //try converting a String to float, with a fallback

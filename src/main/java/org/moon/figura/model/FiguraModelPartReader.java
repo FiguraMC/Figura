@@ -130,7 +130,12 @@ public class FiguraModelPartReader {
                         Pair<FiguraVec3, String[]> end = parseKeyframeData(keyframeNbt, "end");
                         if (end == null) end = pre;
 
-                        keyframes.add(new Keyframe(owner, time, interpolation, pre, end));
+                        FiguraVec3 bezierLeft = FiguraVec3.of();
+                        FiguraVec3 bezierRight = FiguraVec3.of();
+                        readVec3(bezierLeft, keyframeNbt, "bl");
+                        readVec3(bezierRight, keyframeNbt, "br");
+
+                        keyframes.add(new Keyframe(owner, time, interpolation, pre, end, bezierLeft, bezierRight));
                     }
 
                     keyframes.sort(Keyframe::compareTo);

@@ -53,7 +53,8 @@ public class AnimationPlayer {
                 if (Float.isNaN(delta))
                     delta = 0;
 
-                FiguraVec3 transform = current.getInterpolation().generate(keyframes, currentIndex, nextIndex, anim.blend, delta, type);
+                Interpolation interpolation = next.getInterpolation() == Interpolation.BEZIER ? Interpolation.BEZIER : current.getInterpolation();
+                FiguraVec3 transform = interpolation.generate(keyframes, currentIndex, nextIndex, anim.blend, delta, type);
                 type.apply(part, transform, merge);
 
                 switch (type) {
