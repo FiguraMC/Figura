@@ -152,6 +152,11 @@ public class UIHelper extends GuiComponent {
                 xRot = pitch;
                 yRot = yaw + bodyY + 180;
 
+                if (!Config.PREVIEW_HEAD_ROTATION.asBool()) {
+                    entity.setXRot(0f);
+                    entity.yHeadRot = bodyY;
+                }
+
                 //positions
                 yPos--;
 
@@ -187,10 +192,10 @@ public class UIHelper extends GuiComponent {
         Quaternionf quaternion = Axis.ZP.rotationDegrees(180f);
         Quaternionf quaternion2 = Axis.YP.rotationDegrees(yRot);
         Quaternionf quaternion3 = Axis.XP.rotationDegrees(xRot);
+        quaternion3.mul(quaternion2);
         quaternion.mul(quaternion3);
-        quaternion.mul(quaternion2);
         stack.mulPose(quaternion);
-        quaternion.conjugate();
+        quaternion3.conjugate();
 
         //setup entity renderer
         Minecraft minecraft = Minecraft.getInstance();
@@ -198,7 +203,7 @@ public class UIHelper extends GuiComponent {
         boolean renderHitboxes = dispatcher.shouldRenderHitBoxes();
         dispatcher.setRenderHitBoxes(false);
         dispatcher.setRenderShadow(false);
-        dispatcher.overrideCameraOrientation(quaternion);
+        dispatcher.overrideCameraOrientation(quaternion3);
         MultiBufferSource.BufferSource immediate = minecraft.renderBuffers().bufferSource();
 
         //render
