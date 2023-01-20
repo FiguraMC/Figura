@@ -379,6 +379,9 @@
   "figura.config.wardrobe_file_names": "Wardrobe File Names",
   "figura.config.wardrobe_file_names.tooltip": "Changes the wardrobe avatar list to use the file names instead of the metadata (avatar.json) name",
 
+  "figura.config.preview_head_rotation": "GUI Head Rotation",
+  "figura.config.preview_head_rotation.tooltip": "Toggles if the player head rotation should be applied in avatar previews through the GUI\nWhen off, the avatar will always be rendered looking forwards",
+
 
   "figura.config.paperdoll": "Paperdoll",
   "figura.config.paperdoll.tooltip": "Paperdoll settings",

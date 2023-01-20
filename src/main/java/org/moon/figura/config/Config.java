@@ -106,6 +106,7 @@ public enum Config {
     TOAST_TIME(5f, InputType.FLOAT),
     TOAST_TITLE_TIME(2f, InputType.FLOAT),
     WARDROBE_FILE_NAMES(false),
+    PREVIEW_HEAD_ROTATION(false),
 
     Paperdoll,
     HAS_PAPERDOLL(false),
