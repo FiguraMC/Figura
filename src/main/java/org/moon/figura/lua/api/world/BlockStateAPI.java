@@ -335,7 +335,7 @@ public class BlockStateAPI {
         Set<String> textures = new HashSet<>();
 
         for (BakedQuad quad : quads) {
-            ResourceLocation location = quad.getSprite().contents().name(); // do not close it
+            ResourceLocation location = quad.getSprite().getName(); // do not close it
             textures.add(location.getNamespace() + ":textures/" + location.getPath());
         }
 

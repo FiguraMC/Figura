@@ -1,7 +1,7 @@
 package org.moon.figura.lang;
 
 import com.google.gson.*;
-import net.minecraft.server.packs.PathPackResources;
+import net.minecraft.server.packs.FolderPackResources;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.backend2.NetworkStuff;
 import org.moon.figura.utils.IOUtils;
@@ -14,7 +14,7 @@ import java.util.Map;
 public class FiguraLangManager {
 
     private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
-    public static final PathPackResources LANG_PACK = new PathPackResources(FiguraMod.MOD_NAME + " backend lang pack", getLangRootDirectory(), true);
+    public static final FolderPackResources LANG_PACK = new FolderPackResources(getLangRootDirectory().toFile());
 
     public static Path getLangRootDirectory() {
         return IOUtils.getOrCreateDir(FiguraMod.getCacheDirectory(), "lang");
