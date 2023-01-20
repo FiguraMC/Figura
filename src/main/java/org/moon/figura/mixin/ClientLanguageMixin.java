@@ -4,7 +4,6 @@ import net.minecraft.client.resources.language.ClientLanguage;
 import net.minecraft.client.resources.language.LanguageInfo;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.resources.IoSupplier;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.moon.figura.FiguraMod;
@@ -18,6 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -38,9 +38,12 @@ public class ClientLanguageMixin {
         if (location == null || !location.getNamespace().equals(FiguraMod.MOD_ID))
             return resources;
 
-        IoSupplier<InputStream> supplier = FiguraLangManager.LANG_PACK.getResource(PackType.CLIENT_RESOURCES, location);
-        if (supplier == null)
+        InputStream stream;
+        try {
+            stream = FiguraLangManager.LANG_PACK.getResource(PackType.CLIENT_RESOURCES, location);
+        } catch (Exception ignored) {
             return resources;
+        }
 
         int i = 0;
         for (int j = 0; j < resources.size(); j++) {
@@ -50,10 +53,11 @@ public class ClientLanguageMixin {
             }
         }
 
-        Resource resource = new Resource(FiguraLangManager.LANG_PACK, supplier);
-        resources.add(i, resource);
+        Resource resource = new Resource(FiguraMod.MOD_NAME + " backend lang pack", () -> stream);
+        List<Resource> tempList = new ArrayList<>(resources);
+        tempList.add(i, resource);
 
         FiguraMod.debug("Injected Lang for {}", location.getPath());
-        return resources;
+        return tempList;
     }
 }
