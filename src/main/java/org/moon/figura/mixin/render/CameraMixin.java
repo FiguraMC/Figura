@@ -58,7 +58,9 @@ public abstract class CameraMixin {
     @ModifyArgs(method = "setup", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setPosition(DDD)V"))
     private void setupPivot(Args args) {
         if (avatar != null) {
-            int i = args.get(0) instanceof Camera ? 1 : 0;
+            int i = 0;
+            while (args.get(i) instanceof Camera)
+                i++;
 
             double x = args.get(i++);
             double y = args.get(i++);

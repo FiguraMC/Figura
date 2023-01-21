@@ -28,8 +28,12 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -39,8 +43,8 @@ public class NetworkStuff {
     protected static final HttpClient client = HttpClient.newHttpClient();
     protected static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
 
-    private static final LinkedList<Request<HttpAPI>> API_REQUESTS = new LinkedList<>();
-    private static final LinkedList<Request<WebsocketThingy>> WS_REQUESTS = new LinkedList<>();
+    private static final ConcurrentLinkedQueue<Request<HttpAPI>> API_REQUESTS = new ConcurrentLinkedQueue<>();
+    private static final ConcurrentLinkedQueue<Request<WebsocketThingy>> WS_REQUESTS = new ConcurrentLinkedQueue<>();
     private static final List<UUID> SUBSCRIPTIONS = new ArrayList<>();
     private static CompletableFuture<Void> tasks;
 
