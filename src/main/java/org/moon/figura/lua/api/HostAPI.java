@@ -477,6 +477,15 @@ public class HostAPI {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("host.is_flying")
+    public boolean isFlying() {
+        LocalPlayer player = this.minecraft.player;
+        if (isHost() && player != null)
+            return player.getAbilities().flying;
+        return false;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc("host.get_reach_distance")
     public double getReachDistance() {
         return this.minecraft.gameMode == null ? 0 : this.minecraft.gameMode.getPickRange();

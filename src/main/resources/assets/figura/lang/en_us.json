@@ -914,7 +914,6 @@
   "figura.docs.player.get_saturation": "Gets the current saturation level of the player",
   "figura.docs.player.get_experience_progress": "Gets the progress of the way towards the player's next level, as a value from 0 to 1",
   "figura.docs.player.get_experience_level": "Gets the player's current level",
-  "figura.docs.player.is_flying": "Returns whether the player is currently flying",
   "figura.docs.player.get_model_type": "Returns \"SLIM\" or \"DEFAULT\", depending on the player's model type",
   "figura.docs.player.get_gamemode": "Returns \"SURVIVAL\", \"CREATIVE\", \"ADVENTURE\", or \"SPECTATOR\" depending on the player's gamemode\nIf the gamemode is unknown, returns nil",
   "figura.docs.player.has_cape": "Returns whether the player has a cape loaded",
@@ -982,6 +981,7 @@
   "figura.docs.host.set_clipboard": "Sets the clipboard text",
   "figura.docs.host.get_attack_charge": "Returns a fraction (0 to 1) of the charge of the player attack\nIf less than 1, every attack will result result in a weak attack",
   "figura.docs.host.is_jumping": "Checks if the player is jumping\nNote this is only true during the first tick the player started jumping",
+  "figura.docs.host.is_flying": "Checks if the player is currently flying",
   "figura.docs.host.get_reach_distance": "Returns the current reach distance of the player",
 
 

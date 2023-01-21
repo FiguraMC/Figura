@@ -69,13 +69,6 @@ public class PlayerAPI extends LivingEntityAPI<Player> {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("player.is_flying")
-    public boolean isFlying() {
-        checkEntity();
-        return entity.getAbilities().flying;
-    }
-
-    @LuaWhitelist
     @LuaMethodDoc("player.get_model_type")
     public String getModelType() {
         checkEntity();
