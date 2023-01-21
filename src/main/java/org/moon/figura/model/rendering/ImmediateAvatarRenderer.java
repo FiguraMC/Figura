@@ -188,22 +188,28 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         PartCustomization custom = part.customization;
 
         //test the current filter scheme
+        FiguraMod.pushProfiler("predicate");
         Boolean thisPassedPredicate = currentFilterScheme.test(part.parentType, prevPredicate);
         if (thisPassedPredicate == null) {
             part.advanceVerticesImmediate(this); //stinky
-            FiguraMod.popProfiler();
+            FiguraMod.popProfiler(2);
             return true;
         }
 
         //calculate part transforms
 
         //calculate vanilla parent
+        FiguraMod.popPushProfiler("copyVanillaPart");
         part.applyVanillaTransforms(vanillaModelData);
         part.applyExtraTransforms(customizationStack.peek().positionMatrix);
 
         //recalculate stuff
+        FiguraMod.pushProfiler("checkVisibility");
+
         Boolean storedVisibility = custom.visible;
         custom.visible = part.getVisible() && (currentFilterScheme.ignoreVanillaVisible || part.getVanillaVisible()) && thisPassedPredicate;
+
+        FiguraMod.popPushProfiler("calculatePartMatrices");
         custom.recalculate();
 
         //void blocked matrices
@@ -212,6 +218,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         FiguraMat3 normalCopy = null;
         boolean voidMatrices = !allowHiddenTransforms && !prevPredicate;
         if (voidMatrices) {
+            FiguraMod.popPushProfiler("clearMatrices");
             positionCopy = custom.positionMatrix.copy();
             normalCopy = custom.normalMatrix.copy();
             custom.positionMatrix.reset();
@@ -219,20 +226,25 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         }
 
         //push stack
+        FiguraMod.popPushProfiler("applyOnStack");
         customizationStack.push(custom);
 
         //restore variables
         custom.visible = storedVisibility;
 
         if (voidMatrices) {
+            FiguraMod.popPushProfiler("restoreMatrices");
             custom.positionMatrix.set(positionCopy);
             custom.normalMatrix.set(normalCopy);
             positionCopy.free();
             normalCopy.free();
         }
 
+        FiguraMod.popProfiler(2);
+
         if (thisPassedPredicate) {
             //recalculate world matrices
+            FiguraMod.pushProfiler("worldMatrices");
             if (allowMatrixUpdate) {
                 FiguraMat4 mat = partToWorldMatrices(custom);
                 part.savedPartToWorldMat.set(mat);
@@ -240,6 +252,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
             }
 
             //recalculate light
+            FiguraMod.popPushProfiler("calculateLight");
             Level l;
             if (custom.light != null)
                 updateLight = false;
@@ -250,9 +263,11 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
                 customizationStack.peek().light = LightTexture.pack(block, sky);
                 pos.free();
             }
+            FiguraMod.popProfiler();
         }
 
         //render this
+        FiguraMod.pushProfiler("render");
         if (!part.pushVerticesImmediate(this, remainingComplexity)) {
             customizationStack.pop();
             FiguraMod.popProfiler();
@@ -260,10 +275,13 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         }
 
         //render extras
+        FiguraMod.popPushProfiler("extras");
         if (thisPassedPredicate) {
             PartCustomization peek = customizationStack.peek();
 
             //fix pivots
+            FiguraMod.pushProfiler("fixMatricesPivot");
+
             FiguraVec3 pivot = custom.getPivot();
             FiguraVec3 offsetPivot = custom.getOffsetPivot();
             pivotOffsetter.setPos(pivot.add(offsetPivot));
@@ -273,13 +291,15 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
             offsetPivot.free();
 
             //render pivot indicators
-            if (shouldRenderPivots > 1 || shouldRenderPivots == 1 && peek.visible)
+            if (shouldRenderPivots > 1 || shouldRenderPivots == 1 && peek.visible) {
+                FiguraMod.popPushProfiler("renderPivotCube");
                 renderPivot(part);
+            }
 
             if (peek.visible) {
                 //render tasks
+                FiguraMod.popPushProfiler("renderTasks");
                 if (allowRenderTasks) {
-                    FiguraMod.pushProfiler("renderTasks");
                     int light = peek.light;
                     int overlay = peek.overlay;
                     allowSkullRendering = false;
@@ -293,22 +313,24 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
                         FiguraMod.popProfiler();
                     }
                     allowSkullRendering = true;
-                    FiguraMod.popProfiler();
                 }
 
                 //render pivot parts
+                FiguraMod.popPushProfiler("savePivotParts");
                 if (part.parentType.isPivot && allowPivotParts)
                     savePivotTransform(part.parentType);
             }
 
             customizationStack.pop();
+            FiguraMod.popProfiler();
         }
 
         //render children
+        FiguraMod.popPushProfiler("children");
         for (FiguraModelPart child : part.children)
             if (!renderPart(child, remainingComplexity, thisPassedPredicate)) {
                 customizationStack.pop();
-                FiguraMod.popProfiler();
+                FiguraMod.popProfiler(2);
                 return false;
             }
 
@@ -317,14 +339,12 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
         //pop
         customizationStack.pop();
-        FiguraMod.popProfiler();
+        FiguraMod.popProfiler(2);
 
         return true;
     }
 
     protected void renderPivot(FiguraModelPart part) {
-        FiguraMod.pushProfiler("pivotBox");
-
         boolean group = part.customization.partType == PartCustomization.PartType.GROUP;
         FiguraVec3 color = group ? ColorUtils.Colors.MAYA_BLUE.vec : ColorUtils.Colors.FRAN_PINK.vec;
         double boxSize = group ? 1 / 16d : 1 / 32d;
@@ -336,8 +356,6 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
                 -boxSize, -boxSize, -boxSize,
                 boxSize, boxSize, boxSize,
                 (float) color.x, (float) color.y, (float) color.z, 1f);
-
-        FiguraMod.popProfiler();
     }
 
     protected void savePivotTransform(ParentType parentType) {
@@ -368,31 +386,37 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         PartCustomization custom = part.customization;
 
         //Store old visibility, but overwrite it in case we only want to render certain parts
+        FiguraMod.pushProfiler("predicate");
         Boolean thisPassedPredicate = currentFilterScheme.test(part.parentType, true);
         if (thisPassedPredicate == null) {
-            FiguraMod.popProfiler();
+            FiguraMod.popProfiler(2);
             return;
         }
 
         //calculate part transforms
 
         //calculate vanilla parent
+        FiguraMod.popPushProfiler("copyVanillaPart");
         part.applyVanillaTransforms(vanillaModelData);
         part.applyExtraTransforms(customizationStack.peek().positionMatrix);
 
         //push customization stack
+        FiguraMod.popPushProfiler("calculatePartMatrices");
         custom.recalculate();
+        FiguraMod.popPushProfiler("applyOnStack");
         customizationStack.push(custom);
 
         //render extras
         if (thisPassedPredicate) {
             //part to world matrices
+            FiguraMod.popPushProfiler("worldMatrices");
             FiguraMat4 mat = partToWorldMatrices(custom);
             part.savedPartToWorldMat.set(mat);
             mat.free();
         }
 
         //render children
+        FiguraMod.popPushProfiler("children");
         for (FiguraModelPart child : part.children)
             calculatePartMatrices(child);
 
@@ -401,7 +425,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
         //pop
         customizationStack.pop();
-        FiguraMod.popProfiler();
+        FiguraMod.popProfiler(2);
     }
 
     public void pushFaces(int texIndex, int faceCount, int[] remainingComplexity) {

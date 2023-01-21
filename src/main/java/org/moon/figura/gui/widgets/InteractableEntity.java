@@ -3,9 +3,9 @@ package org.moon.figura.gui.widgets;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Quaternion;
-import com.mojang.math.Vector3f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import org.moon.figura.gui.screens.AbstractPanelScreen;
 import org.moon.figura.gui.screens.AvatarScreen;
@@ -113,16 +113,13 @@ public class InteractableEntity extends AbstractContainerElement {
             stack.translate(x + modelX, y + modelY, 0f);
             float scale = this.scale / 35;
             stack.scale(scale, scale, scale);
-            stack.mulPose(Quaternion.fromXYZDegrees(new Vector3f(angleX - pitch, angleY - yaw, 0f)));
 
-            //draw front
-            UIHelper.renderTexture(stack, -24, -32, 48, 64, UNKNOWN);
+            float xRot = Mth.wrapDegrees((angleX - pitch) * 2) / 2f;
+            float yRot = Mth.wrapDegrees((angleY - yaw) * 2) / 2f;
+            stack.mulPose(Quaternion.fromXYZ((float) Math.toRadians(xRot), (float) Math.toRadians(yRot), 0f));
 
-            //draw back
-            stack.pushPose();
-            stack.mulPose(Vector3f.YP.rotationDegrees(180));
+            //draw
             UIHelper.renderTexture(stack, -24, -32, 48, 64, UNKNOWN);
-            stack.popPose();
 
             stack.popPose();
         }
