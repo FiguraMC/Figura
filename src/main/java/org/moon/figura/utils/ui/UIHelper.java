@@ -56,6 +56,7 @@ public class UIHelper extends GuiComponent {
     private static final CustomFramebuffer FIGURA_FRAMEBUFFER = new CustomFramebuffer();
     private static int previousFBO = -1;
     public static boolean paperdoll = false;
+    public static float fireRot = 0f;
     public static float dollScale = 1f;
     public static FiguraVec4 scissors = FiguraVec4.of();
 
@@ -208,6 +209,7 @@ public class UIHelper extends GuiComponent {
 
         //render
         paperdoll = true;
+        fireRot = -yRot;
         dollScale = scale;
 
         Avatar avatar = AvatarManager.getAvatar(entity);
