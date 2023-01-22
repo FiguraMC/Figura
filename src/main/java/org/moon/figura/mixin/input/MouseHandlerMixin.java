@@ -41,16 +41,16 @@ public class MouseHandlerMixin {
 
         boolean pressed = action != 0;
 
-        if (pressed && (ActionWheel.isEnabled())) {
+        if (avatar.luaRuntime != null && FiguraKeybind.set(avatar.luaRuntime.keybinds.keyBindings, InputConstants.Type.MOUSE.getOrCreate(button), pressed))
+            ci.cancel();
+
+        if (avatar.luaRuntime != null && pressed && avatar.luaRuntime.host.unlockCursor && this.minecraft.screen == null)
+            ci.cancel();
+
+        if (avatar.luaRuntime != null && pressed && ActionWheel.isEnabled()) {
             if (button <= 1) ActionWheel.execute(ActionWheel.getSelected(), button == 0);
             ci.cancel();
         }
-
-        if (pressed && avatar.luaRuntime != null && avatar.luaRuntime.host.unlockCursor && this.minecraft.screen == null)
-            ci.cancel();
-
-        if (avatar.luaRuntime != null && FiguraKeybind.set(avatar.luaRuntime.keybinds.keyBindings, InputConstants.Type.MOUSE.getOrCreate(button), pressed))
-            ci.cancel();
     }
 
     @Inject(method = "onScroll", at = @At("HEAD"), cancellable = true)
