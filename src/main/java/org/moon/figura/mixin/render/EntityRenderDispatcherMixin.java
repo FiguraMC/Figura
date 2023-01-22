@@ -8,9 +8,11 @@ import net.minecraft.world.level.LevelReader;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.trust.Trust;
+import org.moon.figura.utils.ui.UIHelper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
@@ -25,6 +27,11 @@ public class EntityRenderDispatcherMixin {
 
         if (!avatar.luaRuntime.renderer.renderFire)
             ci.cancel();
+    }
+
+    @ModifyArg(method = "renderFlame", at = @At(value = "INVOKE", target = "Lcom/mojang/math/Axis;rotationDegrees(F)Lorg/joml/Quaternionf;"))
+    private float renderFlameRot(float f) {
+        return UIHelper.paperdoll ? UIHelper.fireRot : f;
     }
 
     @ModifyVariable(method = "renderShadow", at = @At("HEAD"), ordinal = 2, argsOnly = true)
