@@ -493,6 +493,10 @@ public class BlockbenchModelParser {
                             keyframeNbt.put("bl", toNbtList(keyFrame.bezier_left_value));
                         if (notZero(keyFrame.bezier_right_value))
                             keyframeNbt.put("br", toNbtList(keyFrame.bezier_right_value));
+                        if (isDifferent(keyFrame.bezier_left_time, -0.1f))
+                            keyframeNbt.put("blt", toNbtList(keyFrame.bezier_left_time));
+                        if (isDifferent(keyFrame.bezier_right_time, 0.1f))
+                            keyframeNbt.put("brt", toNbtList(keyFrame.bezier_right_time));
 
                         switch (keyFrame.channel) {
                             case "position" -> posData.add(keyframeNbt);

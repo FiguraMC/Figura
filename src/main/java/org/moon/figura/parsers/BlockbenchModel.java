@@ -111,6 +111,8 @@ public class BlockbenchModel {
         //bezier stuff
         float[] bezier_left_value;
         float[] bezier_right_value;
+        float[] bezier_left_time;
+        float[] bezier_right_time;
     }
 
     public static class KeyFrameData {
