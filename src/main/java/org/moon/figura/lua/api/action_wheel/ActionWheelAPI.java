@@ -75,6 +75,19 @@ public class ActionWheelAPI {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("action_wheel.get_selected_action")
+    public Action getSelectedAction() {
+        if (!this.isHost || this.currentPage == null)
+            return null;
+
+        int selected = ActionWheel.getSelected();
+        if (selected < 0 || selected > 7)
+            return null;
+
+        return this.currentPage.slots()[selected];
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc("action_wheel.new_action")
     public Action newAction() {
         return new Action();

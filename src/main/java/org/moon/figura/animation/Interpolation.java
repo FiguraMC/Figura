@@ -25,8 +25,8 @@ public enum Interpolation {
 
         FiguraVec3 p0 = prev.getTargetB();
         FiguraVec3 p3 = next.getTargetA();
-        FiguraVec3 p1 = p0.plus(prev.getBezierRight());
-        FiguraVec3 p2 = p3.plus(next.getBezierLeft());
+        FiguraVec3 p1 = prev.getBezierRight().add(p0);
+        FiguraVec3 p2 = next.getBezierLeft().add(p3);
 
         FiguraVec3 result = MathUtils.bezier(delta, p0, p1, p2, p3);
         return getResult(result, strength, type);

@@ -201,7 +201,7 @@ public class Page {
                             argumentNames = "shift"
                     )
             },
-            value = "wheel_page.get_group_actions")
+            value = "wheel_page.get_actions")
     public Object getActions(Integer shift) {
         if (shift != null) {
             if (shift < 1)
