@@ -36,7 +36,7 @@ import java.util.*;
 public class ClientAPI {
 
     public static final ClientAPI INSTANCE = new ClientAPI();
-    private static final boolean hasIris = FabricLoader.getInstance().isModLoaded("iris");
+    private static final HashMap<String, Boolean> LOADED_MODS = new HashMap<>();
 
     @LuaWhitelist
     @LuaMethodDoc("client.get_fps")
@@ -248,15 +248,28 @@ public class ClientAPI {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = String.class,
+                    argumentNames = "modID"
+            ),
+            value = "client.is_mod_loaded"
+    )
+    public static boolean isModLoaded(String id) {
+        LOADED_MODS.putIfAbsent(id, FabricLoader.getInstance().isModLoaded(id));
+        return LOADED_MODS.get(id);
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc("client.has_iris")
     public static boolean hasIris() {
-        return hasIris;
+        return isModLoaded("iris");
     }
 
     @LuaWhitelist
     @LuaMethodDoc("client.has_iris_shader")
     public static boolean hasIrisShader() {
-        return hasIris && net.irisshaders.iris.api.v0.IrisApi.getInstance().isShaderPackInUse();
+        return hasIris() && net.irisshaders.iris.api.v0.IrisApi.getInstance().isShaderPackInUse();
     }
 
     @LuaWhitelist

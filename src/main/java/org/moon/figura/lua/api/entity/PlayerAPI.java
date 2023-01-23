@@ -63,7 +63,7 @@ public class PlayerAPI extends LivingEntityAPI<Player> {
 
     @LuaWhitelist
     @LuaMethodDoc("player.get_experience_level")
-    public float getExperienceLevel() {
+    public int getExperienceLevel() {
         checkEntity();
         return entity.experienceLevel;
     }
