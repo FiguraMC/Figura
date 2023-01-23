@@ -163,7 +163,7 @@ public class Page {
 
     @LuaWhitelist
     @LuaMethodShadow("setAction")
-    public Page action(int index, Action action) {
+    public Page action(Integer index, Action action) {
         return setAction(index, action);
     }
 
