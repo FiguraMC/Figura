@@ -34,7 +34,7 @@ public class MouseHandlerMixin {
         if (avatar == null || avatar.luaRuntime == null)
             return;
 
-        if (avatar.mousePressEvent(button, action, modifiers) && this.mouseGrabbed) {
+        if (avatar.mousePressEvent(button, action, modifiers) && (this.mouseGrabbed || this.minecraft.screen == null)) {
             ci.cancel();
             return;
         }
@@ -56,8 +56,10 @@ public class MouseHandlerMixin {
     @Inject(method = "onScroll", at = @At("HEAD"), cancellable = true)
     private void onScroll(long window, double scrollDeltaX, double scrollDeltaY, CallbackInfo ci) {
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
-        if (avatar != null && avatar.mouseScrollEvent(scrollDeltaY) && this.mouseGrabbed)
+        if (avatar != null && avatar.mouseScrollEvent(scrollDeltaY) && (this.mouseGrabbed || this.minecraft.screen == null)) {
             ci.cancel();
+            return;
+        }
 
         if (ActionWheel.isEnabled()) {
             ActionWheel.scroll(scrollDeltaY);
@@ -71,7 +73,7 @@ public class MouseHandlerMixin {
     @Inject(method = "onMove", at = @At("HEAD"), cancellable = true)
     private void onMove(long window, double x, double y, CallbackInfo ci) {
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
-        if (avatar != null && avatar.mouseMoveEvent(x - this.xpos, y - this.ypos) && mouseGrabbed) {
+        if (avatar != null && avatar.mouseMoveEvent(x - this.xpos, y - this.ypos) && (this.mouseGrabbed || this.minecraft.screen == null)) {
             this.xpos = x;
             this.ypos = y;
             ci.cancel();
