@@ -9,7 +9,6 @@ import org.moon.figura.avatar.Badges;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
-import org.moon.figura.lua.docs.LuaMethodShadow;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.model.PartCustomization;
@@ -91,6 +90,7 @@ public class TextTask extends RenderTask {
                             argumentNames = "text"
                     )
             },
+            aliases = "text",
             value = "text_task.set_text"
     )
     public TextTask setText(String text) {
@@ -101,7 +101,6 @@ public class TextTask extends RenderTask {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setText")
     public TextTask text(String text) {
         return setText(text);
     }
@@ -120,6 +119,7 @@ public class TextTask extends RenderTask {
                             argumentNames = "centered"
                     )
             },
+            aliases = "centered",
             value = "text_task.set_centered"
     )
     public TextTask setCentered(boolean centered) {
@@ -128,7 +128,6 @@ public class TextTask extends RenderTask {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setCentered")
     public TextTask centered(boolean centered) {
         return setCentered(centered);
     }
@@ -147,6 +146,7 @@ public class TextTask extends RenderTask {
                             argumentNames = "right"
                     )
             },
+            aliases = "right",
             value = "text_task.set_right"
     )
     public TextTask setRight(boolean right) {
@@ -155,7 +155,6 @@ public class TextTask extends RenderTask {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setRight")
     public TextTask right(boolean right) {
         return setRight(right);
     }
@@ -174,6 +173,7 @@ public class TextTask extends RenderTask {
                             argumentNames = "shadow"
                     )
             },
+            aliases = "shadow",
             value = "text_task.set_shadow"
     )
     public TextTask setShadow(boolean shadow) {
@@ -182,7 +182,6 @@ public class TextTask extends RenderTask {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setShadow")
     public TextTask shadow(boolean shadow) {
         return setShadow(shadow);
     }
@@ -201,6 +200,7 @@ public class TextTask extends RenderTask {
                             argumentNames = "outline"
                     )
             },
+            aliases = "outline",
             value = "text_task.set_outline"
     )
     public TextTask setOutline(boolean outline) {
@@ -209,7 +209,6 @@ public class TextTask extends RenderTask {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setOutline")
     public TextTask outline(boolean outline) {
         return setOutline(outline);
     }
@@ -232,6 +231,7 @@ public class TextTask extends RenderTask {
                             argumentNames = {"r", "g", "b"}
                     )
             },
+            aliases = "outlineColor",
             value = "text_task.set_outline_color"
     )
     public TextTask setOutlineColor(Object x, Double y, Double z) {
@@ -240,7 +240,6 @@ public class TextTask extends RenderTask {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setOutlineColor")
     public TextTask outlineColor(Object x, Double y, Double z) {
         return setOutlineColor(x, y, z);
     }

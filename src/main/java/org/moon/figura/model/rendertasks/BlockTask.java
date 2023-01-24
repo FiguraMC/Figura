@@ -11,7 +11,6 @@ import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.world.BlockStateAPI;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
-import org.moon.figura.lua.docs.LuaMethodShadow;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.model.PartCustomization;
 import org.moon.figura.utils.LuaUtils;
@@ -66,6 +65,7 @@ public class BlockTask extends RenderTask {
                             argumentNames = "block"
                     )
             },
+            aliases = "block",
             value = "block_task.set_block"
     )
     public BlockTask setBlock(Object block) {
@@ -82,7 +82,6 @@ public class BlockTask extends RenderTask {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setBlock")
     public BlockTask block(Object block) {
         return setBlock(block);
     }

@@ -19,6 +19,12 @@ public @interface LuaMethodDoc {
     LuaMethodOverload[] overloads() default @LuaMethodOverload;
 
     /**
+     * Name of methods that are intended to be alias of this method, sharing the same functionality
+     * however with a different name
+     */
+    String[] aliases() default {};
+
+    /**
      * A translation key for the description of what this method does with its parameters.
      */
     String value();

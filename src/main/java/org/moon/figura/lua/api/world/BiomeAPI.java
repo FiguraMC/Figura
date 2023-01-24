@@ -6,7 +6,10 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.biome.Biome;
 import org.moon.figura.lua.LuaWhitelist;
-import org.moon.figura.lua.docs.*;
+import org.moon.figura.lua.docs.LuaFieldDoc;
+import org.moon.figura.lua.docs.LuaMethodDoc;
+import org.moon.figura.lua.docs.LuaMethodOverload;
+import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.LuaUtils;
@@ -57,6 +60,7 @@ public class BiomeAPI {
                             argumentNames = {"x", "y", "z"}
                     )
             },
+            aliases = "pos",
             value = "biome.set_pos"
     )
     public BiomeAPI setPos(Object x, Double y, Double z) {
@@ -67,7 +71,6 @@ public class BiomeAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setPos")
     public BiomeAPI pos(Object x, Double y, Double z) {
         return setPos(x, y, z);
     }

@@ -3,7 +3,10 @@ package org.moon.figura.lua.api.action_wheel;
 import org.luaj.vm2.LuaError;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
-import org.moon.figura.lua.docs.*;
+import org.moon.figura.lua.docs.LuaFieldDoc;
+import org.moon.figura.lua.docs.LuaMethodDoc;
+import org.moon.figura.lua.docs.LuaMethodOverload;
+import org.moon.figura.lua.docs.LuaTypeDoc;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -147,6 +150,7 @@ public class Page {
                     argumentTypes = {Integer.class, Action.class},
                     argumentNames = {"index", "action"}
             ),
+            aliases = "action",
             value = "wheel_page.set_action"
     )
     public Page setAction(Integer index, Action action) {
@@ -162,7 +166,6 @@ public class Page {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setAction")
     public Page action(Integer index, Action action) {
         return setAction(index, action);
     }
@@ -179,6 +182,7 @@ public class Page {
                     argumentTypes = Integer.class,
                     argumentNames = "shift"
             ),
+            aliases = "slotsShift",
             value = "wheel_page.set_slots_shift"
     )
     public Page setSlotsShift(int shift) {
@@ -187,7 +191,6 @@ public class Page {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setSlotsShift")
     public Page slotsShift(int shift) {
         return setSlotsShift(shift);
     }
