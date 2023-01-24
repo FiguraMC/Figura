@@ -199,6 +199,7 @@ public class Animation {
                             argumentNames = "bool"
                     )
             },
+            aliases = "playing",
             value = "animation.set_playing"
     )
     public Animation setPlaying(boolean bool) {
@@ -210,7 +211,6 @@ public class Animation {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setPlaying")
     public Animation playing(boolean bool) {
         return setPlaying(bool);
     }
@@ -227,6 +227,7 @@ public class Animation {
                     argumentTypes = Float.class,
                     argumentNames = "time"
             ),
+            aliases = "time",
             value = "animation.set_time"
     )
     public Animation setTime(float time) {
@@ -237,7 +238,6 @@ public class Animation {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setTime")
     public Animation time(float time) {
         return setTime(time);
     }
@@ -254,6 +254,7 @@ public class Animation {
                     argumentTypes = {Float.class, String.class},
                     argumentNames = {"time", "code"}
             ),
+            aliases = "code",
             value = "animation.new_code"
     )
     public Animation newCode(float time, @LuaNotNil String data) {
@@ -262,7 +263,6 @@ public class Animation {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("newCode")
     public Animation code(float time, @LuaNotNil String data) {
         return newCode(time, data);
     }
@@ -279,6 +279,7 @@ public class Animation {
                     argumentTypes = Float.class,
                     argumentNames = "blend"
             ),
+            aliases = "blend",
             value = "animation.set_blend"
     )
     public Animation setBlend(float blend) {
@@ -287,7 +288,6 @@ public class Animation {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setBlend")
     public Animation blend(float blend) {
         return setBlend(blend);
     }
@@ -304,6 +304,7 @@ public class Animation {
                     argumentTypes = Float.class,
                     argumentNames = "offset"
             ),
+            aliases = "offset",
             value = "animation.set_offset"
     )
     public Animation setOffset(float offset) {
@@ -312,7 +313,6 @@ public class Animation {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setOffset")
     public Animation offset(float offset) {
         return setOffset(offset);
     }
@@ -329,6 +329,7 @@ public class Animation {
                     argumentTypes = Float.class,
                     argumentNames = "delay"
             ),
+            aliases = "startDelay",
             value = "animation.set_start_delay"
     )
     public Animation setStartDelay(float delay) {
@@ -337,7 +338,6 @@ public class Animation {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setStartDelay")
     public Animation startDelay(float delay) {
         return setStartDelay(delay);
     }
@@ -354,6 +354,7 @@ public class Animation {
                     argumentTypes = Float.class,
                     argumentNames = "delay"
             ),
+            aliases = "loopDelay",
             value = "animation.set_loop_delay"
     )
     public Animation setLoopDelay(float delay) {
@@ -362,7 +363,6 @@ public class Animation {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setLoopDelay")
     public Animation loopDelay(float delay) {
         return setLoopDelay(delay);
     }
@@ -379,6 +379,7 @@ public class Animation {
                     argumentTypes = Float.class,
                     argumentNames = "length"
             ),
+            aliases = "length",
             value = "animation.set_length"
     )
     public Animation setLength(float length) {
@@ -387,7 +388,6 @@ public class Animation {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setLength")
     public Animation length(float length) {
         return setLength(length);
     }
@@ -398,6 +398,7 @@ public class Animation {
                     argumentTypes = Boolean.class,
                     argumentNames = "override"
             ),
+            aliases = "override",
             value = "animation.set_override"
     )
     public Animation setOverride(boolean override) {
@@ -406,7 +407,6 @@ public class Animation {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setOverride")
     public Animation override(boolean override) {
         return setOverride(override);
     }
@@ -435,6 +435,7 @@ public class Animation {
                     argumentTypes = Boolean.class,
                     argumentNames = "override"
             ),
+            aliases = "overrideRot",
             value = "animation.set_override_rot"
     )
     public Animation setOverrideRot(boolean override) {
@@ -443,7 +444,6 @@ public class Animation {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setOverrideRot")
     public Animation overrideRot(boolean override) {
         return setOverrideRot(override);
     }
@@ -454,6 +454,7 @@ public class Animation {
                     argumentTypes = Boolean.class,
                     argumentNames = "override"
             ),
+            aliases = "overridePos",
             value = "animation.set_override_pos"
     )
     public Animation setOverridePos(boolean override) {
@@ -462,7 +463,6 @@ public class Animation {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setOverridePos")
     public Animation overridePos(boolean override) {
         return setOverridePos(override);
     }
@@ -473,6 +473,7 @@ public class Animation {
                     argumentTypes = Boolean.class,
                     argumentNames = "override"
             ),
+            aliases = "overrideScale",
             value = "animation.set_override_scale"
     )
     public Animation setOverrideScale(boolean override) {
@@ -481,7 +482,6 @@ public class Animation {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setOverrideScale")
     public Animation overrideScale(boolean override) {
         setOverrideScale(override);
         return this;
@@ -499,6 +499,7 @@ public class Animation {
                     argumentTypes = String.class,
                     argumentNames = "loop"
             ),
+            aliases = "loop",
             value = "animation.set_loop"
     )
     public Animation setLoop(@LuaNotNil String loop) {
@@ -511,7 +512,6 @@ public class Animation {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setLoop")
     public Animation loop(@LuaNotNil String loop) {
         return setLoop(loop);
     }
@@ -528,6 +528,7 @@ public class Animation {
                     argumentTypes = Integer.class,
                     argumentNames = "priority"
             ),
+            aliases = "priority",
             value = "animation.set_priority"
     )
     public Animation setPriority(int priority) {
@@ -536,7 +537,6 @@ public class Animation {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setPriority")
     public Animation priority(int priority) {
         return setPriority(priority);
     }
@@ -553,6 +553,7 @@ public class Animation {
                     argumentTypes = Float.class,
                     argumentNames = "speed"
             ),
+            aliases = "speed",
             value = "animation.set_speed"
     )
     public Animation setSpeed(Float speed) {
@@ -563,7 +564,6 @@ public class Animation {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setSpeed")
     public Animation speed(Float speed) {
         return setSpeed(speed);
     }

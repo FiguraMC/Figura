@@ -8,7 +8,6 @@ import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
-import org.moon.figura.lua.docs.LuaMethodShadow;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
@@ -257,6 +256,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
                             argumentNames = {"x", "y", "z"}
                     )
             },
+            aliases = "pos",
             value = "model_part.set_pos"
     )
     public FiguraModelPart setPos(Object x, Double y, Double z) {
@@ -266,7 +266,6 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setPos")
     public FiguraModelPart pos(Object x, Double y, Double z) {
         return setPos(x, y, z);
     }
@@ -295,6 +294,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
                             argumentNames = {"x", "y", "z"}
                     )
             },
+            aliases = "rot",
             value = "model_part.set_rot"
     )
     public FiguraModelPart setRot(Object x, Double y, Double z) {
@@ -304,7 +304,6 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setRot")
     public FiguraModelPart rot(Object x, Double y, Double z) {
         return setRot(x, y, z);
     }
@@ -327,6 +326,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
                             argumentNames = {"x", "y", "z"}
                     )
             },
+            aliases = "offsetRot",
             value = "model_part.set_offset_rot"
     )
     public FiguraModelPart setOffsetRot(Object x, Double y, Double z) {
@@ -336,7 +336,6 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setOffsetRot")
     public FiguraModelPart offsetRot(Object x, Double y, Double z) {
         return setOffsetRot(x, y, z);
     }
@@ -365,6 +364,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
                             argumentNames = {"x", "y", "z"}
                     )
             },
+            aliases = "scale",
             value = "model_part.set_scale"
     )
     public FiguraModelPart setScale(Object x, Double y, Double z) {
@@ -374,7 +374,6 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setScale")
     public FiguraModelPart scale(Object x, Double y, Double z) {
         return setScale(x, y, z);
     }
@@ -403,6 +402,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
                             argumentNames = {"x", "y", "z"}
                     )
             },
+            aliases = "pivot",
             value = "model_part.set_pivot"
     )
     public FiguraModelPart setPivot(Object x, Double y, Double z) {
@@ -412,7 +412,6 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setPivot")
     public FiguraModelPart pivot(Object x, Double y, Double z) {
         return setPivot(x, y, z);
     }
@@ -435,6 +434,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
                             argumentNames = {"x", "y", "z"}
                     )
             },
+            aliases = "offsetPivot",
             value = "model_part.set_offset_pivot"
     )
     public FiguraModelPart setOffsetPivot(Object x, Double y, Double z) {
@@ -444,7 +444,6 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setOffsetPivot")
     public FiguraModelPart offsetPivot(Object x, Double y, Double z) {
         return setOffsetPivot(x, y, z);
     }
@@ -481,6 +480,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
                     argumentTypes = FiguraMat4.class,
                     argumentNames = "matrix"
             ),
+            aliases = "matrix",
             value = "model_part.set_matrix"
     )
     public FiguraModelPart setMatrix(@LuaNotNil FiguraMat4 matrix) {
@@ -489,7 +489,6 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setMatrix")
     public FiguraModelPart matrix(@LuaNotNil FiguraMat4 matrix) {
         return setMatrix(matrix);
     }
@@ -516,6 +515,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
                     argumentTypes = Boolean.class,
                     argumentNames = "visible"
             ),
+            aliases = "visible",
             value = "model_part.set_visible"
     )
     public FiguraModelPart setVisible(Boolean bool) {
@@ -524,7 +524,6 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setVisible")
     public FiguraModelPart visible(Boolean bool) {
         return setVisible(bool);
     }
@@ -549,6 +548,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
                     argumentTypes = String.class,
                     argumentNames = "renderType"
             ),
+            aliases = "primaryRenderType",
             value = "model_part.set_primary_render_type"
     )
     public FiguraModelPart setPrimaryRenderType(String type) {
@@ -566,6 +566,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
                     argumentTypes = String.class,
                     argumentNames = "renderType"
             ),
+            aliases = "secondaryRenderType",
             value = "model_part.set_secondary_render_type"
     )
     public FiguraModelPart setSecondaryRenderType(String type) {
@@ -578,13 +579,11 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setPrimaryRenderType")
     public FiguraModelPart primaryRenderType(String type) {
         return setPrimaryRenderType(type);
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setSecondaryRenderType")
     public FiguraModelPart secondaryRenderType(String type) {
         return setSecondaryRenderType(type);
     }
@@ -605,6 +604,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
                             argumentNames = {"custom", "texture"}
                     )
             },
+            aliases = "primaryTexture",
             value = "model_part.set_primary_texture"
     )
     public FiguraModelPart setPrimaryTexture(String type, Object x) {
@@ -632,6 +632,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
                             argumentNames = {"custom", "texture"}
                     )
             },
+            aliases = "secondaryTexture",
             value = "model_part.set_secondary_texture"
     )
     public FiguraModelPart setSecondaryTexture(String type, Object x) {
@@ -644,13 +645,11 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setPrimaryTexture")
     public FiguraModelPart primaryTexture(String type, Object x) {
         return setPrimaryTexture(type, x);
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setSecondaryTexture")
     public FiguraModelPart secondaryTexture(String type, Object x) {
         return setSecondaryTexture(type, x);
     }
@@ -701,6 +700,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
                             argumentNames = {"u", "v"}
                     )
             },
+            aliases = "uv",
             value = "model_part.set_uv")
     public FiguraModelPart setUV(Object x, Double y) {
         this.customization.uvMatrix.reset();
@@ -711,7 +711,6 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setUV")
     public FiguraModelPart uv(Object x, Double y) {
         return setUV(x, y);
     }
@@ -734,6 +733,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
                             argumentNames = {"u", "v"}
                     )
             },
+            aliases = "uvPixels",
             value = "model_part.set_uv_pixels")
     public FiguraModelPart setUVPixels(Object x, Double y) {
         if (this.textureWidth == -1 || this.textureHeight == -1) {
@@ -753,7 +753,6 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setUVPixels")
     public FiguraModelPart uvPixels(Object x, Double y) {
         return setUVPixels(x, y);
     }
@@ -777,6 +776,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
                     argumentTypes = FiguraMat3.class,
                     argumentNames = "matrix"
             ),
+            aliases = "uvMatrix",
             value = "model_part.set_uv_matrix")
     public FiguraModelPart setUVMatrix(@LuaNotNil FiguraMat3 matrix) {
         this.customization.uvMatrix.set(matrix);
@@ -784,7 +784,6 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setUVMatrix")
     public FiguraModelPart uvMatrix(@LuaNotNil FiguraMat3 matrix) {
         return setUVMatrix(matrix);
     }
@@ -807,6 +806,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
                             argumentNames = {"r", "g", "b"}
                     )
             },
+            aliases = "color",
             value = "model_part.set_color")
     public FiguraModelPart setColor(Object r, Double g, Double b) {
         this.customization.color = LuaUtils.parseVec3("setColor", r, g, b, 1, 1, 1);
@@ -814,7 +814,6 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setColor")
     public FiguraModelPart color(Object r, Double g, Double b) {
         return setColor(r, g, b);
     }
@@ -831,6 +830,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
                     argumentTypes = Float.class,
                     argumentNames = "opacity"
             ),
+            aliases = "opacity",
             value = "model_part.set_opacity")
     public FiguraModelPart setOpacity(Float opacity) {
         this.customization.alpha = opacity;
@@ -838,7 +838,6 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setOpacity")
     public FiguraModelPart opacity(Float opacity) {
         return setOpacity(opacity);
     }
@@ -861,6 +860,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
                             argumentNames = {"blockLight", "skyLight"}
                     )
             },
+            aliases = "light",
             value = "model_part.set_light")
     public FiguraModelPart setLight(Object light, Double skyLight) {
         if (light == null) {
@@ -874,7 +874,6 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setLight")
     public FiguraModelPart light(Object light, Double skyLight) {
         return setLight(light, skyLight);
     }
@@ -898,6 +897,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
                             argumentNames = {"whiteOverlay", "hurtOverlay"}
                     )
             },
+            aliases = "overlay",
             value = "model_part.set_overlay")
     public FiguraModelPart setOverlay(Object whiteOverlay, Double hurtOverlay) {
         if (whiteOverlay == null) {
@@ -911,7 +911,6 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setOverlay")
     public FiguraModelPart overlay(Object whiteOverlay, Double hurtOverlay) {
         return setOverlay(whiteOverlay, hurtOverlay);
     }
@@ -929,6 +928,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
                     argumentTypes = String.class,
                     argumentNames = "parentType"
             ),
+            aliases = "parentType",
             value = "model_part.set_parent_type")
     public FiguraModelPart setParentType(@LuaNotNil String parent) {
         this.parentType = ParentType.get(parent);
@@ -937,7 +937,6 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setParentType")
     public FiguraModelPart parentType(@LuaNotNil String parent) {
         return setParentType(parent);
     }

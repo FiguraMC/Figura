@@ -101,37 +101,23 @@ public abstract class FiguraDoc {
 
         //Parse docs for this method if none were already found and stored in "foundIndices".
         private void parseMethodIfNeeded(Set<String> foundIndices, Map<String, List<FiguraDoc>> children, LuaTypeDoc typeDoc, Method method) {
-            if (!foundIndices.contains(method.getName())) {
-                LuaMethodDoc doc = getDocAnnotation(method);
-                if (doc == null) return;
+            String name = method.getName();
+            if (foundIndices.contains(name) || !method.isAnnotationPresent(LuaMethodDoc.class))
+                return;
 
-                List<FiguraDoc> childList = children == null ? null : children.get(method.getName());
-                documentedMethods.add(new MethodDoc(method, doc, childList, typeDoc.name()));
-                foundIndices.add(method.getName());
-            }
-        }
-
-        private LuaMethodDoc getDocAnnotation(Method method) {
-            if (method.isAnnotationPresent(LuaMethodDoc.class)) {
-                return method.getAnnotation(LuaMethodDoc.class);
-            } else if (method.isAnnotationPresent(LuaMethodShadow.class)) {
-                try {
-                    Method shadow = thisClass.getMethod(method.getAnnotation(LuaMethodShadow.class).value(), method.getParameterTypes());
-                    return getDocAnnotation(shadow);
-                } catch (Exception e) {
-                    FiguraMod.LOGGER.warn("", e);
-                }
-            }
-            return null;
+            LuaMethodDoc doc = method.getAnnotation(LuaMethodDoc.class);
+            List<FiguraDoc> childList = children == null ? null : children.get(name);
+            documentedMethods.add(new MethodDoc(method, doc, childList, typeDoc.name()));
         }
 
         //Parse docs for this field if none were already found and stored in "foundIndices".
         private void parseFieldIfNeeded(Map<String, List<FiguraDoc>> children, Set<String> foundIndices, Field field) {
-            if (!foundIndices.contains(field.getName()) && field.isAnnotationPresent(LuaFieldDoc.class)) {
-                List<FiguraDoc> childList = children == null ? null : children.get(field.getName());
-                documentedFields.add(new FieldDoc(field, field.getAnnotation(LuaFieldDoc.class), childList));
-                foundIndices.add(field.getName());
-            }
+            String name = field.getName();
+            if (foundIndices.contains(name) || !field.isAnnotationPresent(LuaFieldDoc.class))
+                return;
+
+            List<FiguraDoc> childList = children == null ? null : children.get(name);
+            documentedFields.add(new FieldDoc(field, field.getAnnotation(LuaFieldDoc.class), childList));
         }
 
 
@@ -216,6 +202,7 @@ public abstract class FiguraDoc {
         public final String[][] parameterNames;
         public final Class<?>[] returnTypes;
         public final String typeName;
+        public final String[] aliases;
         public final boolean isStatic;
         public final List<FiguraDoc> children;
 
@@ -227,6 +214,7 @@ public abstract class FiguraDoc {
             parameterNames = new String[overloads.length][];
             returnTypes = new Class[overloads.length];
             isStatic = Modifier.isStatic(method.getModifiers());
+            aliases = methodDoc.aliases();
             this.typeName = typeName;
             this.children = children;
 
@@ -244,19 +232,35 @@ public abstract class FiguraDoc {
         @Override
         public int print() {
             //header
-            MutableComponent message = HEADER.copy()
+            MutableComponent message = HEADER.copy();
 
-                    //type
-                    .append("\n\n")
+            //type
+            message.append("\n\n")
                     .append(new TextComponent("• ")
                             .append(new FiguraText("docs.text.function"))
                             .append(":")
                             .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
                     .append("\n\t")
-                    .append(new TextComponent("• " + name).withStyle(ColorUtils.Colors.MAYA_BLUE.style))
+                    .append(new TextComponent("• " + name).withStyle(ColorUtils.Colors.MAYA_BLUE.style));
 
-                    //syntax
-                    .append("\n\n")
+            //aliases
+            if (aliases.length > 0) {
+                message.append("\n\n")
+                        .append(new TextComponent("• ")
+                                .append(new FiguraText("docs.text.aliases"))
+                                .append(":")
+                                .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style));
+
+                for (String alias : aliases) {
+                    message.append("\n\t")
+                            .append(new TextComponent("• ")
+                                    .append(alias)
+                                    .withStyle(ColorUtils.Colors.MAYA_BLUE.style));
+                }
+            }
+
+            //syntax
+            message.append("\n\n")
                     .append(new TextComponent("• ")
                             .append(new FiguraText("docs.text.syntax"))
                             .append(":")
@@ -337,6 +341,11 @@ public abstract class FiguraDoc {
             for (Class<?> returnType : returnTypes)
                 returns.add(FiguraDocsManager.getNameFor(returnType));
             json.add("returns", returns);
+
+            JsonArray aliases = new JsonArray();
+            for (String alias : this.aliases)
+                aliases.add(alias);
+            json.add("aliases", aliases);
 
             JsonArray children = new JsonArray();
             if (this.children != null) {

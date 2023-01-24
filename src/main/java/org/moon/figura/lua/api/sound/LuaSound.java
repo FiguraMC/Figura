@@ -11,7 +11,6 @@ import org.moon.figura.avatar.Avatar;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
-import org.moon.figura.lua.docs.LuaMethodShadow;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.trust.Trust;
@@ -176,6 +175,7 @@ public class LuaSound {
                             argumentNames = {"x", "y", "z"}
                     )
             },
+            aliases = "pos",
             value = "sound.set_pos")
     public LuaSound setPos(Object x, Double y, Double z) {
         this.pos = LuaUtils.parseVec3("setPos", x, y, z);
@@ -185,7 +185,6 @@ public class LuaSound {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setPos")
     public LuaSound pos(Object x, Double y, Double z) {
         return setPos(x, y, z);
     }
@@ -202,6 +201,7 @@ public class LuaSound {
                     argumentTypes = Float.class,
                     argumentNames = "volume"
             ),
+            aliases = "volume",
             value = "sound.set_volume")
     public LuaSound setVolume(float volume) {
         this.volume = Math.min(volume, 1);
@@ -211,7 +211,6 @@ public class LuaSound {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setVolume")
     public LuaSound volume(float volume) {
         return setVolume(volume);
     }
@@ -228,6 +227,7 @@ public class LuaSound {
                     argumentTypes = Float.class,
                     argumentNames = "attenuation"
             ),
+            aliases = "attenuation",
             value = "sound.set_attenuation")
     public LuaSound setAttenuation(float attenuation) {
         this.attenuation = Math.max(attenuation, 1);
@@ -237,7 +237,6 @@ public class LuaSound {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setAttenuation")
     public LuaSound attenuation(float attenuation) {
         return setAttenuation(attenuation);
     }
@@ -254,6 +253,7 @@ public class LuaSound {
                     argumentTypes = Float.class,
                     argumentNames = "pitch"
             ),
+            aliases = "pitch",
             value = "sound.set_pitch")
     public LuaSound setPitch(float pitch) {
         this.pitch = Math.max(pitch, 0);
@@ -263,7 +263,6 @@ public class LuaSound {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setPitch")
     public LuaSound pitch(float pitch) {
         return setPitch(pitch);
     }
@@ -280,6 +279,7 @@ public class LuaSound {
                     argumentTypes = Boolean.class,
                     argumentNames = "loop"
             ),
+            aliases = "loop",
             value = "sound.set_loop")
     public LuaSound setLoop(boolean loop) {
         this.loop = loop;
@@ -289,7 +289,6 @@ public class LuaSound {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setLoop")
     public LuaSound loop(boolean loop) {
         return setLoop(loop);
     }
