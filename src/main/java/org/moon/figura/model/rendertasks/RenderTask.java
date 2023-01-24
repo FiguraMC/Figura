@@ -7,7 +7,6 @@ import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
-import org.moon.figura.lua.docs.LuaMethodShadow;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
@@ -66,6 +65,7 @@ public abstract class RenderTask {
                     argumentTypes = Boolean.class,
                     argumentNames = "bool"
             ),
+            aliases = "enabled",
             value = "render_task.set_enabled"
     )
     public RenderTask setEnabled(boolean enabled) {
@@ -74,7 +74,6 @@ public abstract class RenderTask {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setEnabled")
     public RenderTask enabled(boolean enabled) {
         return setEnabled(enabled);
     }
@@ -97,6 +96,7 @@ public abstract class RenderTask {
                             argumentNames = {"blockLight", "skyLight"}
                     )
             },
+            aliases = "light",
             value = "render_task.set_light")
     public RenderTask setLight(Object blockLight, Double skyLight) {
         if (blockLight == null) {
@@ -110,7 +110,6 @@ public abstract class RenderTask {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setLight")
     public RenderTask light(Object blockLight, Double skyLight) {
         return setLight(blockLight, skyLight);
     }
@@ -133,6 +132,7 @@ public abstract class RenderTask {
                             argumentNames = {"whiteOverlay", "hurtOverlay"}
                     )
             },
+            aliases = "overlay",
             value = "render_task.set_overlay")
     public RenderTask setOverlay(Object whiteOverlay, Double hurtOverlay) {
         if (whiteOverlay == null) {
@@ -146,7 +146,6 @@ public abstract class RenderTask {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setOverlay")
     public RenderTask overlay(Object whiteOverlay, Double hurtOverlay) {
         return setOverlay(whiteOverlay, hurtOverlay);
     }
@@ -169,6 +168,7 @@ public abstract class RenderTask {
                             argumentNames = {"x", "y", "z"}
                     )
             },
+            aliases = "pos",
             value = "render_task.set_pos"
     )
     public RenderTask setPos(Object x, Double y, Double z) {
@@ -178,7 +178,6 @@ public abstract class RenderTask {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setPos")
     public RenderTask pos(Object x, Double y, Double z) {
         return setPos(x, y, z);
     }
@@ -201,6 +200,7 @@ public abstract class RenderTask {
                             argumentNames = {"x", "y", "z"}
                     )
             },
+            aliases = "rot",
             value = "render_task.set_rot"
     )
     public RenderTask setRot(Object x, Double y, Double z) {
@@ -210,7 +210,6 @@ public abstract class RenderTask {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setRot")
     public RenderTask rot(Object x, Double y, Double z) {
         return setRot(x, y, z);
     }
@@ -233,6 +232,7 @@ public abstract class RenderTask {
                             argumentNames = {"x", "y", "z"}
                     )
             },
+            aliases = "scale",
             value = "render_task.set_scale"
     )
     public RenderTask setScale(Object x, Double y, Double z) {
@@ -242,7 +242,6 @@ public abstract class RenderTask {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setScale")
     public RenderTask scale(Object x, Double y, Double z) {
         return setScale(x, y, z);
     }
@@ -279,6 +278,7 @@ public abstract class RenderTask {
                     argumentTypes = FiguraMat4.class,
                     argumentNames = "matrix"
             ),
+            aliases = "matrix",
             value = "render_task.set_matrix"
     )
     public RenderTask setMatrix(@LuaNotNil FiguraMat4 matrix) {
@@ -287,7 +287,6 @@ public abstract class RenderTask {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setMatrix")
     public RenderTask matrix(@LuaNotNil FiguraMat4 mat) {
         return setMatrix(mat);
     }

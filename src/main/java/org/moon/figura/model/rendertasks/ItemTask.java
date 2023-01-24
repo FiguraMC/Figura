@@ -12,7 +12,6 @@ import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.world.ItemStackAPI;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
-import org.moon.figura.lua.docs.LuaMethodShadow;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.model.PartCustomization;
 import org.moon.figura.utils.LuaUtils;
@@ -72,6 +71,7 @@ public class ItemTask extends RenderTask {
                             argumentNames = "item"
                     )
             },
+            aliases = "item",
             value = "item_task.set_item"
     )
     public ItemTask setItem(Object item) {
@@ -83,7 +83,6 @@ public class ItemTask extends RenderTask {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setItem")
     public ItemTask item(Object item) {
         return setItem(item);
     }
@@ -100,6 +99,7 @@ public class ItemTask extends RenderTask {
                         argumentTypes = String.class,
                         argumentNames = "renderType"
             ),
+            aliases = "renderType",
             value = "item_task.set_render_type"
     )
     public ItemTask setRenderType(@LuaNotNil String type) {
@@ -113,7 +113,6 @@ public class ItemTask extends RenderTask {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setRenderType")
     public ItemTask renderType(@LuaNotNil String type) {
         return setRenderType(type);
     }

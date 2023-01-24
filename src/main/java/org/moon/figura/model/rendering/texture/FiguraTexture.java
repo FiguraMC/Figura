@@ -18,7 +18,6 @@ import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
-import org.moon.figura.lua.docs.LuaMethodShadow;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
@@ -204,6 +203,7 @@ public class FiguraTexture extends SimpleTexture {
                             argumentNames = {"x", "y", "r", "g", "b", "a"}
                     )
             },
+            aliases = "pixel",
             value = "texture.set_pixel")
     public FiguraTexture setPixel(int x, int y, Object r, Double g, Double b, Double a) {
         try {
@@ -216,7 +216,6 @@ public class FiguraTexture extends SimpleTexture {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setPixel")
     public FiguraTexture pixel(int x, int y, Object r, Double g, Double b, Double a) {
         return setPixel(x, y, r, g, b, a);
     }

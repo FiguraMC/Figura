@@ -20,7 +20,10 @@ import org.moon.figura.config.Config;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.world.ItemStackAPI;
-import org.moon.figura.lua.docs.*;
+import org.moon.figura.lua.docs.LuaFieldDoc;
+import org.moon.figura.lua.docs.LuaMethodDoc;
+import org.moon.figura.lua.docs.LuaMethodOverload;
+import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.mixin.LivingEntityAccessor;
 import org.moon.figura.mixin.gui.ChatScreenAccessor;
@@ -89,6 +92,7 @@ public class HostAPI {
                             argumentNames = {"fadeInTime", "stayTime", "fadeOutTime"}
                     )
             },
+            aliases = "titleTimes",
             value = "host.set_title_times"
     )
     public HostAPI setTitleTimes(Object x, Double y, Double z) {
@@ -99,7 +103,6 @@ public class HostAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setTitleTimes")
     public HostAPI titleTimes(Object x, Double y, Double z) {
         return setTitleTimes(x, y, z);
     }
@@ -118,6 +121,7 @@ public class HostAPI {
                     argumentTypes = String.class,
                     argumentNames = "text"
             ),
+            aliases = "title",
             value = "host.set_title"
     )
     public HostAPI setTitle(@LuaNotNil String text) {
@@ -127,7 +131,6 @@ public class HostAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setTitle")
     public HostAPI title(@LuaNotNil String text) {
         return setTitle(text);
     }
@@ -138,6 +141,7 @@ public class HostAPI {
                     argumentTypes = String.class,
                     argumentNames = "text"
             ),
+            aliases = "subtitle",
             value = "host.set_subtitle"
     )
     public HostAPI setSubtitle(@LuaNotNil String text) {
@@ -147,7 +151,6 @@ public class HostAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setSubtitle")
     public HostAPI subtitle(@LuaNotNil String text) {
         return setSubtitle(text);
     }
@@ -164,6 +167,7 @@ public class HostAPI {
                             argumentNames = {"text", "animated"}
                     )
             },
+            aliases = "actionbar",
             value = "host.set_actionbar"
     )
     public HostAPI setActionbar(@LuaNotNil String text, boolean animated) {
@@ -173,7 +177,6 @@ public class HostAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setActionbar")
     public HostAPI actionbar(@LuaNotNil String text, boolean animated) {
         return setActionbar(text, animated);
     }
@@ -311,6 +314,7 @@ public class HostAPI {
                             argumentNames = {"r", "g", "b"}
                     )
             },
+            aliases = "chatColor",
             value = "host.set_chat_color"
     )
     public HostAPI setChatColor(Object x, Double y, Double z) {
@@ -319,7 +323,6 @@ public class HostAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setChatColor")
     public HostAPI chatColor(Object x, Double y, Double z) {
         return setChatColor(x, y, z);
     }
@@ -339,6 +342,7 @@ public class HostAPI {
                     argumentTypes = String.class,
                     argumentNames = "text"
             ),
+            aliases = "chatText",
             value = "host.set_chat_text"
     )
     public HostAPI setChatText(@LuaNotNil String text) {
@@ -348,7 +352,6 @@ public class HostAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setChatText")
     public HostAPI chatText(@LuaNotNil String text) {
         return setChatText(text);
     }
@@ -446,6 +449,7 @@ public class HostAPI {
                     argumentTypes = String.class,
                     argumentNames = "text"
             ),
+            aliases = "clipboard",
             value = "host.set_clipboard")
     public HostAPI setClipboard(@LuaNotNil String text) {
         if (isHost()) this.minecraft.keyboardHandler.setClipboard(text);
@@ -453,7 +457,6 @@ public class HostAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setClipboard")
     public HostAPI clipboard(@LuaNotNil String text) {
         return setClipboard(text);
     }

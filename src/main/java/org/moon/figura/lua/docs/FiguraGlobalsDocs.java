@@ -116,14 +116,10 @@ public abstract class FiguraGlobalsDocs {
                     argumentTypes = Object.class,
                     argumentNames = "arg"
             ),
+            aliases = "log",
             value = "globals.print"
     )
     public static String print() {
-        return null;
-    }
-
-    @LuaMethodShadow("print")
-    public static String log() {
         return null;
     }
 
@@ -154,14 +150,10 @@ public abstract class FiguraGlobalsDocs {
                             argumentNames = {"javaObject", "maxDepth", "silent"}
                     )
             },
+            aliases = "logTable",
             value = "globals.print_table"
     )
     public static String printTable() {
-        return null;
-    }
-
-    @LuaMethodShadow("printTable")
-    public static String logTable() {
         return null;
     }
 
@@ -170,15 +162,10 @@ public abstract class FiguraGlobalsDocs {
                     argumentTypes = String.class,
                     argumentNames = "json"
             ),
+            aliases = "logJson",
             value = "globals.print_json"
     )
     public static String printJson() {
         return null;
     }
-
-    @LuaMethodShadow("printJson")
-    public static String logJson() {
-        return null;
-    }
-
 }

@@ -27,7 +27,10 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.luaj.vm2.LuaTable;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.NbtToLua;
-import org.moon.figura.lua.docs.*;
+import org.moon.figura.lua.docs.LuaFieldDoc;
+import org.moon.figura.lua.docs.LuaMethodDoc;
+import org.moon.figura.lua.docs.LuaMethodOverload;
+import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec6;
 import org.moon.figura.mixin.BlockBehaviourAccessor;
@@ -104,6 +107,7 @@ public class BlockStateAPI {
                             argumentNames = {"x", "y", "z"}
                     )
             },
+            aliases = "pos",
             value = "blockstate.set_pos"
     )
     public BlockStateAPI setPos(Object x, Double y, Double z) {
@@ -114,7 +118,6 @@ public class BlockStateAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setPos")
     public BlockStateAPI pos(Object x, Double y, Double z) {
         return setPos(x, y, z);
     }

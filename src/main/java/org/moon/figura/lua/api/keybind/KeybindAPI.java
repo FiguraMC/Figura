@@ -7,7 +7,6 @@ import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
-import org.moon.figura.lua.docs.LuaMethodShadow;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.mixin.input.KeyMappingAccessor;
 
@@ -44,6 +43,7 @@ public class KeybindAPI {
                             argumentNames = {"name", "key", "gui"}
                     )
             },
+            aliases = "of",
             value = "keybinds.new_keybind"
     )
     public FiguraKeybind newKeybind(@LuaNotNil String name, String key, boolean gui) {
@@ -54,7 +54,6 @@ public class KeybindAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("newKeybind")
     public FiguraKeybind of(@LuaNotNil String name, String key, boolean gui) {
         return newKeybind(name, key, gui);
     }

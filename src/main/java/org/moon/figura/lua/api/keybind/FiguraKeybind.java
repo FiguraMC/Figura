@@ -9,7 +9,10 @@ import org.luaj.vm2.Varargs;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
-import org.moon.figura.lua.docs.*;
+import org.moon.figura.lua.docs.LuaFieldDoc;
+import org.moon.figura.lua.docs.LuaMethodDoc;
+import org.moon.figura.lua.docs.LuaMethodOverload;
+import org.moon.figura.lua.docs.LuaTypeDoc;
 
 import java.util.List;
 
@@ -124,6 +127,7 @@ public class FiguraKeybind {
                     argumentTypes = LuaFunction.class,
                     argumentNames = "function"
             ),
+            aliases = "onPress",
             value = "keybind.set_on_press"
     )
     public FiguraKeybind setOnPress(LuaFunction function) {
@@ -132,7 +136,6 @@ public class FiguraKeybind {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setOnPress")
     public FiguraKeybind onPress(LuaFunction function) {
         return setOnPress(function);
     }
@@ -143,6 +146,7 @@ public class FiguraKeybind {
                     argumentTypes = LuaFunction.class,
                     argumentNames = "function"
             ),
+            aliases = "onRelease",
             value = "keybind.set_on_release"
     )
     public FiguraKeybind setOnRelease(LuaFunction function) {
@@ -151,7 +155,6 @@ public class FiguraKeybind {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setOnRelease")
     public FiguraKeybind onRelease(LuaFunction function) {
         return setOnRelease(function);
     }
@@ -162,6 +165,7 @@ public class FiguraKeybind {
                     argumentTypes = String.class,
                     argumentNames = "key"
             ),
+            aliases = "key",
             value = "keybind.set_key"
     )
     public FiguraKeybind setKey(@LuaNotNil String key) {
@@ -170,7 +174,6 @@ public class FiguraKeybind {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setKey")
     public FiguraKeybind key(@LuaNotNil String key) {
         return setKey(key);
     }
@@ -217,6 +220,7 @@ public class FiguraKeybind {
                     argumentTypes = Boolean.class,
                     argumentNames = "bool"
             ),
+            aliases = "enabled",
             value = "keybind.set_enabled"
     )
     public FiguraKeybind setEnabled(boolean bool) {
@@ -225,7 +229,6 @@ public class FiguraKeybind {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setEnabled")
     public FiguraKeybind enabled(boolean bool) {
         return setEnabled(bool);
     }
@@ -242,6 +245,7 @@ public class FiguraKeybind {
                     argumentTypes = Boolean.class,
                     argumentNames = "bool"
             ),
+            aliases = "gui",
             value = "keybind.set_gui"
     )
     public FiguraKeybind setGUI(boolean bool) {
@@ -250,7 +254,6 @@ public class FiguraKeybind {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setGUI")
     public FiguraKeybind gui(boolean bool) {
         return setGUI(bool);
     }

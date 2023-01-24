@@ -8,7 +8,10 @@ import org.luaj.vm2.LuaError;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
-import org.moon.figura.lua.docs.*;
+import org.moon.figura.lua.docs.LuaFieldDoc;
+import org.moon.figura.lua.docs.LuaMethodDoc;
+import org.moon.figura.lua.docs.LuaMethodOverload;
+import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.FiguraIdentifier;
@@ -138,6 +141,7 @@ public class RendererAPI {
                             argumentNames = "radius"
                     )
             },
+            aliases = "shadowRadius",
             value = "renderer.set_shadow_radius"
     )
     public RendererAPI setShadowRadius(Float shadowRadius) {
@@ -146,7 +150,6 @@ public class RendererAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setShadowRadius")
     public RendererAPI shadowRadius(Float shadowRadius) {
         return setShadowRadius(shadowRadius);
     }
@@ -187,6 +190,7 @@ public class RendererAPI {
                             argumentNames = {"x", "y", "z"}
                     )
             },
+            aliases = "cameraPos",
             value = "renderer.set_camera_pos"
     )
     public RendererAPI setCameraPos(Object x, Double y, Double z) {
@@ -195,7 +199,6 @@ public class RendererAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setCameraPos")
     public RendererAPI cameraPos(Object x, Double y, Double z) {
         return setCameraPos(x, y, z);
     }
@@ -218,6 +221,7 @@ public class RendererAPI {
                             argumentNames = {"x", "y", "z"}
                     )
             },
+            aliases = "cameraPivot",
             value = "renderer.set_camera_pivot"
     )
     public RendererAPI setCameraPivot(Object x, Double y, Double z) {
@@ -226,7 +230,6 @@ public class RendererAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setCameraPivot")
     public RendererAPI cameraPivot(Object x, Double y, Double z) {
         return setCameraPivot(x, y, z);
     }
@@ -249,6 +252,7 @@ public class RendererAPI {
                             argumentNames = {"x", "y", "z"}
                     )
             },
+            aliases = "offsetCameraPivot",
             value = "renderer.set_offset_camera_pivot"
     )
     public RendererAPI setOffsetCameraPivot(Object x, Double y, Double z) {
@@ -257,7 +261,6 @@ public class RendererAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setOffsetCameraPivot")
     public RendererAPI offsetCameraPivot(Object x, Double y, Double z) {
         return setOffsetCameraPivot(x, y, z);
     }
@@ -280,6 +283,7 @@ public class RendererAPI {
                             argumentNames = {"x", "y", "z"}
                     )
             },
+            aliases = "cameraRot",
             value = "renderer.set_camera_rot"
     )
     public RendererAPI setCameraRot(Object x, Double y, Double z) {
@@ -288,7 +292,6 @@ public class RendererAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setCameraRot")
     public RendererAPI cameraRot(Object x, Double y, Double z) {
         return setCameraRot(x, y, z);
     }
@@ -311,6 +314,7 @@ public class RendererAPI {
                             argumentNames = {"x", "y", "z"}
                     )
             },
+            aliases = "offsetCameraRot",
             value = "renderer.set_offset_camera_rot"
     )
     public RendererAPI setOffsetCameraRot(Object x, Double y, Double z) {
@@ -319,7 +323,6 @@ public class RendererAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setOffsetCameraRot")
     public RendererAPI offsetCameraRot(Object x, Double y, Double z) {
         return setOffsetCameraRot(x, y, z);
     }
@@ -330,6 +333,7 @@ public class RendererAPI {
                     argumentTypes = String.class,
                     argumentNames = "effect"
             ),
+            aliases = "postEffect",
             value = "renderer.set_post_effect"
     )
     public RendererAPI setPostEffect(String effect) {
@@ -338,7 +342,6 @@ public class RendererAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setPostEffect")
     public RendererAPI postEffect(String effect) {
         return setPostEffect(effect);
     }
@@ -358,6 +361,7 @@ public class RendererAPI {
                             argumentNames = "fov"
                     )
             },
+            aliases = "fov",
             value = "renderer.set_fov"
     )
     public RendererAPI setFOV(Float fov) {
@@ -366,7 +370,6 @@ public class RendererAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setFOV")
     public RendererAPI fov(Float fov) {
         return setFOV(fov);
     }
@@ -389,6 +392,7 @@ public class RendererAPI {
                             argumentNames = {"x", "y"}
                     )
             },
+            aliases = "crosshairOffset",
             value = "renderer.set_crosshair_offset")
     public RendererAPI setCrosshairOffset(Object x, Double y) {
         this.crosshairOffset = x == null ? null : LuaUtils.parseVec2("setCrosshairOffset", x, y);
@@ -396,7 +400,6 @@ public class RendererAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setCrosshairOffset")
     public RendererAPI crosshairOffset(Object x, Double y) {
         return setCrosshairOffset(x, y);
     }

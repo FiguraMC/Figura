@@ -7,7 +7,6 @@ import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
-import org.moon.figura.lua.docs.LuaMethodShadow;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.trust.Trust;
@@ -75,6 +74,7 @@ public class AvatarAPI {
                             argumentNames = {"r", "g", "b"}
                     )
             },
+            aliases = "color",
             value = "avatar.set_color"
     )
     public AvatarAPI setColor(Object r, Double g, Double b) {
@@ -85,7 +85,6 @@ public class AvatarAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodShadow("setColor")
     public AvatarAPI color(Object r, Double g, Double b) {
         return setColor(r, g, b);
     }
