@@ -50,8 +50,11 @@ public class HumanoidArmorLayerMixin<T extends LivingEntity, M extends HumanoidM
             default -> null;
         };
 
-        if (part != null)
+        if (part != null) {
+            part.save(humanoidModel);
             part.change(humanoidModel);
+            part.transform(humanoidModel);
+        }
     }
 
     @Inject(at = @At("RETURN"), method = "renderArmorPiece")
