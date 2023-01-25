@@ -31,7 +31,6 @@ public enum Interpolation {
         FiguraVec3 result = MathUtils.bezier(delta, p0, p1, p2, p3);
         return getResult(result, strength, type);
     }),
-    BEZIER((frames, currentFrame, targetFrame, strength, delta, type) -> getResult(frames[currentFrame].getTargetB().copy(), strength, type)),
     STEP((frames, currentFrame, targetFrame, strength, delta, type) -> getResult(frames[currentFrame].getTargetB().copy(), strength, type));
 
     private final IInterpolation function;
