@@ -101,6 +101,11 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
 
         defaultPivot.subtract(partData.pos);
 
+        if (!overrideVanillaScale()) {
+            defaultPivot.multiply(partData.scale);
+            customization.offsetScale(partData.scale);
+        }
+
         if (!overrideVanillaPos()) {
             customization.offsetPivot(defaultPivot);
             customization.offsetPos(defaultPivot);
@@ -121,6 +126,8 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
             }
             if (!overrideVanillaRot())
                 customization.offsetRot(0, 0, 0);
+            if (!overrideVanillaScale())
+                customization.offsetScale(1, 1, 1);
         }
     }
 
@@ -376,6 +383,38 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     @LuaWhitelist
     public FiguraModelPart scale(Object x, Double y, Double z) {
         return setScale(x, y, z);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("model_part.get_offset_scale")
+    public FiguraVec3 getOffsetScale() {
+        return this.customization.getOffsetScale();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "offsetScale"
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"x", "y", "z"}
+                    )
+            },
+            aliases = "offsetScale",
+            value = "model_part.set_offset_scale"
+    )
+    public FiguraModelPart setOffsetScale(Object x, Double y, Double z) {
+        FiguraVec3 vec = LuaUtils.parseVec3("setOffsetScale", x, y, z, 1, 1, 1);
+        this.customization.offsetScale(vec);
+        return this;
+    }
+
+    @LuaWhitelist
+    public FiguraModelPart offsetScale(Object x, Double y, Double z) {
+        return setOffsetScale(x, y, z);
     }
 
     @LuaWhitelist

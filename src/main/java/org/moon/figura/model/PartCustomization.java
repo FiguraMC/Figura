@@ -37,6 +37,7 @@ public class PartCustomization implements CachedType<PartCustomization> {
     private FiguraVec3 offsetPivot = FiguraVec3.of();
     private FiguraVec3 offsetPos = FiguraVec3.of();
     private FiguraVec3 offsetRot = FiguraVec3.of();
+    private FiguraVec3 offsetScale = FiguraVec3.of(1, 1, 1);
 
     //These values are set by animation players. They can be queried, though not set, by script.
     private FiguraVec3 animPos = FiguraVec3.of();
@@ -72,9 +73,9 @@ public class PartCustomization implements CachedType<PartCustomization> {
 
             //Scale the model part around the pivot
             positionMatrix.scale(
-                    scale.x * animScale.x,
-                    scale.y * animScale.y,
-                    scale.z * animScale.z
+                    offsetScale.x * scale.x * animScale.x,
+                    offsetScale.y * scale.y * animScale.y,
+                    offsetScale.z * scale.z * animScale.z
             );
 
             //Rotate the model part around the pivot
@@ -203,6 +204,17 @@ public class PartCustomization implements CachedType<PartCustomization> {
         return offsetRot.copy();
     }
 
+    public void offsetScale(FiguraVec3 scale) {
+        offsetScale(scale.x, scale.y, scale.z);
+    }
+    public void offsetScale(double x, double y, double z) {
+        offsetScale.set(x, y, z);
+        needsMatrixRecalculation = true;
+    }
+    public FiguraVec3 getOffsetScale() {
+        return offsetScale.copy();
+    }
+
     public void setAnimPos(double x, double y, double z) {
         animPos.set(x, y, z);
         needsMatrixRecalculation = true;
@@ -286,6 +298,7 @@ public class PartCustomization implements CachedType<PartCustomization> {
         offsetPivot = FiguraVec3.of();
         offsetPos = FiguraVec3.of();
         offsetRot = FiguraVec3.of();
+        offsetScale = FiguraVec3.of(1, 1, 1);
         color = FiguraVec3.of(1, 1, 1);
         animPos = FiguraVec3.of();
         animRot = FiguraVec3.of();
@@ -309,6 +322,7 @@ public class PartCustomization implements CachedType<PartCustomization> {
         offsetPivot.free();
         offsetPos.free();
         offsetRot.free();
+        offsetScale.free();
         color.free();
     }
     public static PartCustomization of() {
@@ -340,6 +354,7 @@ public class PartCustomization implements CachedType<PartCustomization> {
             to.offsetPivot(from.offsetPivot);
             to.offsetPos(from.offsetPos);
             to.offsetRot(from.offsetRot);
+            to.offsetScale(from.offsetScale);
             to.color.set(from.color);
             to.alpha = from.alpha;
             to.light = from.light;

@@ -10,12 +10,12 @@ import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.config.Config;
 import org.moon.figura.gui.PopupMenu;
+import org.moon.figura.lua.api.vanilla_model.VanillaPart;
 import org.moon.figura.model.rendering.PartFilterScheme;
 import org.moon.figura.trust.Trust;
 import org.moon.figura.utils.ui.UIHelper;
@@ -67,8 +67,13 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
         if (currentAvatar == null)
             return;
 
-        if (currentAvatar.luaRuntime != null && entity instanceof Player)
-            currentAvatar.luaRuntime.vanilla_model.PLAYER.save(getModel());
+        if (currentAvatar.luaRuntime != null) {
+            VanillaPart part = currentAvatar.luaRuntime.vanilla_model.PLAYER;
+            EntityModel<?> model = getModel();
+            part.save(model);
+            if (currentAvatar.trust.get(Trust.VANILLA_MODEL_EDIT) == 1)
+                part.transform(model);
+        }
 
         boolean showBody = this.isBodyVisible(entity);
         boolean translucent = !showBody && Minecraft.getInstance().player != null && !entity.isInvisibleTo(Minecraft.getInstance().player);
