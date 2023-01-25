@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.entity.layers.ElytraLayer;
 import net.minecraft.world.entity.LivingEntity;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
+import org.moon.figura.lua.api.vanilla_model.VanillaPart;
 import org.moon.figura.trust.Trust;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -30,8 +31,12 @@ public abstract class ElytraLayerMixin<T extends LivingEntity, M extends EntityM
         if (avatar == null)
             return;
 
-        if (avatar.luaRuntime != null)
-            avatar.luaRuntime.vanilla_model.ELYTRA.save(elytraModel);
+        if (avatar.luaRuntime != null) {
+            VanillaPart part = avatar.luaRuntime.vanilla_model.ELYTRA;
+            part.save(elytraModel);
+            if (avatar.trust.get(Trust.VANILLA_MODEL_EDIT) == 1)
+                part.transform(elytraModel);
+        }
 
         avatar.elytraRender(livingEntity, multiBufferSource, poseStack, light, tickDelta, elytraModel);
 

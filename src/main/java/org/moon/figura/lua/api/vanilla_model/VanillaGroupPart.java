@@ -47,6 +47,12 @@ public class VanillaGroupPart extends VanillaPart {
     }
 
     @Override
+    public void transform(EntityModel<?> model) {
+        for (VanillaPart part : cachedParts)
+            part.transform(model);
+    }
+
+    @Override
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaMethodOverload(

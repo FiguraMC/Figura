@@ -1,6 +1,7 @@
 package org.moon.figura.mixin.render.layers;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -15,6 +16,7 @@ import net.minecraft.world.item.Items;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.ducks.PlayerModelAccessor;
+import org.moon.figura.lua.api.vanilla_model.VanillaPart;
 import org.moon.figura.trust.Trust;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -105,8 +107,13 @@ public abstract class CapeLayerMixin extends RenderLayer<AbstractClientPlayer, P
         );
 
         //Copy rotations from fake cloak
-        if (avatar.luaRuntime != null)
-            avatar.luaRuntime.vanilla_model.CAPE.save(getParentModel());
+        if (avatar.luaRuntime != null) {
+            VanillaPart part = avatar.luaRuntime.vanilla_model.CAPE;
+            EntityModel<?> model = getParentModel();
+            part.save(model);
+            if (avatar.trust.get(Trust.VANILLA_MODEL_EDIT) == 1)
+                part.transform(model);
+        }
 
         avatar.capeRender(entity, multiBufferSource, poseStack, light, tickDelta, fakeCloak);
 
