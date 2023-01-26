@@ -184,11 +184,16 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
     @Inject(at = @At(value = "INVOKE", shift = At.Shift.AFTER, target = "Lnet/minecraft/client/model/PlayerModel;setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V"), method = "renderHand")
     private void onRenderHand(PoseStack stack, MultiBufferSource multiBufferSource, int light, AbstractClientPlayer player, ModelPart arm, ModelPart sleeve, CallbackInfo ci) {
         avatar = AvatarManager.getAvatarForPlayer(player.getUUID());
-        if (avatar != null && avatar.luaRuntime != null && avatar.trust.get(Trust.VANILLA_MODEL_EDIT) == 1) {
+        if (avatar != null && avatar.luaRuntime != null) {
             VanillaPart part = avatar.luaRuntime.vanilla_model.PLAYER;
             PlayerModel<AbstractClientPlayer> model = this.getModel();
-            part.change(model);
-            part.transform(model);
+
+            part.save(model);
+
+            if (avatar.trust.get(Trust.VANILLA_MODEL_EDIT) == 1) {
+                part.change(model);
+                part.transform(model);
+            }
         }
     }
 
