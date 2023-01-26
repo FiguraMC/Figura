@@ -281,7 +281,7 @@ public class BlockStateAPI {
         sounds.put("break", snd.getBreakSound().getLocation().toString());
         sounds.put("fall", snd.getFallSound().getLocation().toString());
         sounds.put("hit", snd.getHitSound().getLocation().toString());
-        sounds.put("plate", snd.getPlaceSound().getLocation().toString());
+        sounds.put("place", snd.getPlaceSound().getLocation().toString());
         sounds.put("step", snd.getStepSound().getLocation().toString());
 
         return sounds;
