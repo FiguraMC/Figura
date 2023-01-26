@@ -151,7 +151,7 @@ public enum Config {
 
     Dev {{this.name = this.name.copy().withStyle(ChatFormatting.RED);}},
     CONNECTION_TOASTS(true),
-    RENDER_DEBUG_PARTS_PIVOT(1, 3) {{
+    RENDER_DEBUG_PARTS_PIVOT(1, 5) {{
         String tooltip = "config.render_debug_parts_pivot.tooltip";
         this.tooltip = new FiguraText(tooltip,
                 new FiguraText(tooltip + ".cubes").setStyle(ColorUtils.Colors.FRAN_PINK.style),

@@ -124,7 +124,10 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
         //Set shouldRenderPivots
         int config = Config.RENDER_DEBUG_PARTS_PIVOT.asInt();
-        shouldRenderPivots = !Minecraft.getInstance().getEntityRenderDispatcher().shouldRenderHitBoxes() ? 0 : config;
+        if (!Minecraft.getInstance().getEntityRenderDispatcher().shouldRenderHitBoxes() || (!avatar.isHost && config < 3))
+            shouldRenderPivots = 0;
+        else
+            shouldRenderPivots = config;
 
         //world matrices
         if (allowMatrixUpdate)
@@ -283,15 +286,13 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
             FiguraMod.pushProfiler("fixMatricesPivot");
 
             FiguraVec3 pivot = custom.getPivot();
-            FiguraVec3 offsetPivot = custom.getOffsetPivot();
-            pivotOffsetter.setPos(pivot.add(offsetPivot));
+            pivotOffsetter.setPos(pivot);
             pivotOffsetter.recalculate();
             customizationStack.push(pivotOffsetter);
             pivot.free();
-            offsetPivot.free();
 
             //render pivot indicators
-            if (shouldRenderPivots > 1 || shouldRenderPivots == 1 && peek.visible) {
+            if (shouldRenderPivots > 0 && (shouldRenderPivots % 2 == 0 || peek.visible)) {
                 FiguraMod.popPushProfiler("renderPivotCube");
                 renderPivot(part);
             }
