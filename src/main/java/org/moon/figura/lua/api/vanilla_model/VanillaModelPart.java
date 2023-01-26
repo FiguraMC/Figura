@@ -24,15 +24,21 @@ public class VanillaModelPart extends VanillaPart {
     private final ParentType parentType;
     private final Function<EntityModel<?>, ModelPart> provider;
 
-    private final ModelPart backup = new ModelPart(null, null);
+    //backup
+    private float backupPosX, backupPosY, backupPosZ;
+    private float backupRotX, backupRotY, backupRotZ;
+    private float backupScaleX, backupScaleY, backupScaleZ;
+    private boolean originVisible;
     private boolean saved;
-    private FiguraVec3 pos, rot, scale;
-    private FiguraVec3 offsetRot, offsetScale;
 
+    //part getters
     private final FiguraVec3 originRot = FiguraVec3.of();
     private final FiguraVec3 originPos = FiguraVec3.of();
     private final FiguraVec3 originScale = FiguraVec3.of();
-    private boolean originVisible;
+
+    //transforms
+    private FiguraVec3 pos, rot, scale;
+    private FiguraVec3 offsetRot, offsetScale;
 
     public VanillaModelPart(Avatar owner, String name, ParentType parentType, Function<EntityModel<?>, ModelPart> provider) {
         super(owner, name);
@@ -60,6 +66,7 @@ public class VanillaModelPart extends VanillaPart {
         ModelPart part = getPart(model);
         if (part == null) return;
 
+        //set getters
         originRot.set(-part.xRot, -part.yRot, part.zRot);
         originRot.scale(180 / Math.PI);
 
@@ -71,9 +78,24 @@ public class VanillaModelPart extends VanillaPart {
 
         originScale.set(part.xScale, part.yScale, part.zScale);
 
+        //save visible
         originVisible = part.visible;
 
-        backup.copyFrom(part);
+        //save pos
+        backupPosX = part.x;
+        backupPosY = part.y;
+        backupPosZ = part.z;
+
+        //save rot
+        backupRotX = part.xRot;
+        backupRotY = part.yRot;
+        backupRotZ = part.zRot;
+
+        //save scale
+        backupScaleX = part.xScale;
+        backupScaleY = part.yScale;
+        backupScaleZ = part.zScale;
+
         saved = true;
     }
 
@@ -82,8 +104,25 @@ public class VanillaModelPart extends VanillaPart {
         ModelPart part = getPart(model);
         if (part == null) return;
 
+        //restore visible
         part.visible = originVisible;
-        if (saved) part.copyFrom(backup);
+
+        if (!saved) return;
+
+        //restore pos
+        part.x = backupPosX;
+        part.y = backupPosY;
+        part.z = backupPosZ;
+
+        //restore rot
+        part.xRot = backupRotX;
+        part.yRot = backupRotY;
+        part.zRot = backupRotZ;
+
+        //restore scale
+        part.xScale = backupScaleX;
+        part.yScale = backupScaleY;
+        part.zScale = backupScaleZ;
     }
 
     @Override
