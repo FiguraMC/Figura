@@ -1,10 +1,6 @@
 package org.moon.figura;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
@@ -22,10 +18,7 @@ import org.moon.figura.backend2.NetworkStuff;
 import org.moon.figura.commands.FiguraCommands;
 import org.moon.figura.config.Config;
 import org.moon.figura.config.ConfigManager;
-import org.moon.figura.gui.ActionWheel;
 import org.moon.figura.gui.Emojis;
-import org.moon.figura.gui.PaperDoll;
-import org.moon.figura.gui.PopupMenu;
 import org.moon.figura.lang.FiguraLangManager;
 import org.moon.figura.lua.FiguraAPIManager;
 import org.moon.figura.lua.FiguraLuaPrinter;
@@ -70,12 +63,11 @@ public class FiguraMod implements ClientModInitializer {
         FiguraCommands.init();
         FiguraLangManager.init();
 
-        //register events
-        WorldRenderEvents.START.register(levelRenderer -> AvatarManager.onWorldRender(levelRenderer.tickDelta()));
-        WorldRenderEvents.END.register(levelRenderer -> AvatarManager.afterWorldRender(levelRenderer.tickDelta()));
-        WorldRenderEvents.AFTER_ENTITIES.register(FiguraMod::renderFirstPersonWorldParts);
-        HudRenderCallback.EVENT.register(FiguraMod::hudRender);
-        registerResourceListener(ResourceManagerHelper.get(PackType.CLIENT_RESOURCES));
+        //register reload listener
+        ResourceManagerHelper managerHelper = ResourceManagerHelper.get(PackType.CLIENT_RESOURCES);
+        managerHelper.registerReloadListener(LocalAvatarLoader.AVATAR_LISTENER);
+        managerHelper.registerReloadListener(Emojis.RESOURCE_LISTENER);
+        managerHelper.registerReloadListener(AvatarWizard.RESOURCE_LISTENER);
     }
 
     public static void tick() {
@@ -89,39 +81,6 @@ public class FiguraMod implements ClientModInitializer {
         FiguraLuaPrinter.printChatFromQueue();
         popProfiler();
         ticks++;
-    }
-
-    private static void renderFirstPersonWorldParts(WorldRenderContext context) {
-        if (!context.camera().isDetached()) {
-            Entity watcher = context.camera().getEntity();
-            Avatar avatar = AvatarManager.getAvatar(watcher);
-            if (avatar != null)
-                avatar.firstPersonWorldRender(watcher, context.consumers(), context.matrixStack(), context.camera(), context.tickDelta());
-        }
-    }
-
-    private static void hudRender(PoseStack stack, float delta) {
-        if (AvatarManager.panic)
-            return;
-
-        pushProfiler(MOD_ID);
-
-        pushProfiler("paperdoll");
-        PaperDoll.render(stack);
-
-        popPushProfiler("actionWheel");
-        ActionWheel.render(stack);
-
-        popPushProfiler("popupMenu");
-        PopupMenu.render(stack);
-
-        popProfiler(2);
-    }
-
-    private static void registerResourceListener(ResourceManagerHelper managerHelper) {
-        managerHelper.registerReloadListener(LocalAvatarLoader.AVATAR_LISTENER);
-        managerHelper.registerReloadListener(Emojis.RESOURCE_LISTENER);
-        managerHelper.registerReloadListener(AvatarWizard.RESOURCE_LISTENER);
     }
 
     // -- Helper Functions -- //

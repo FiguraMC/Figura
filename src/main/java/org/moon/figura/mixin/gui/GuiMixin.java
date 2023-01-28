@@ -4,9 +4,12 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.world.entity.Entity;
+import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.gui.ActionWheel;
+import org.moon.figura.gui.PaperDoll;
+import org.moon.figura.gui.PopupMenu;
 import org.moon.figura.lua.api.RendererAPI;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.spongepowered.asm.mixin.Final;
@@ -25,12 +28,28 @@ public class GuiMixin {
 
     @Inject(at = @At("RETURN"), method = "render")
     private void render(PoseStack stack, float tickDelta, CallbackInfo ci) {
-        Entity entity = this.minecraft.getCameraEntity();
-        Avatar avatar;
-        if (entity == null || (avatar = AvatarManager.getAvatar(entity)) == null)
+        if (AvatarManager.panic)
             return;
 
-        avatar.hudRender(stack, minecraft.renderBuffers().bufferSource(), entity, tickDelta);
+        FiguraMod.pushProfiler(FiguraMod.MOD_ID);
+
+        FiguraMod.pushProfiler("paperdoll");
+        PaperDoll.render(stack);
+
+        FiguraMod.popPushProfiler("actionWheel");
+        ActionWheel.render(stack);
+
+        FiguraMod.popPushProfiler("popupMenu");
+        PopupMenu.render(stack);
+
+        FiguraMod.popProfiler();
+
+        Entity entity = this.minecraft.getCameraEntity();
+        Avatar avatar;
+        if (entity != null && (avatar = AvatarManager.getAvatar(entity)) != null)
+            avatar.hudRender(stack, minecraft.renderBuffers().bufferSource(), entity, tickDelta);
+
+        FiguraMod.popProfiler();
     }
 
     @Inject(at = @At("HEAD"), method = "renderCrosshair", cancellable = true)

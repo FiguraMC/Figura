@@ -1,18 +1,15 @@
 package org.moon.figura.mixin.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Matrix4f;
 import net.minecraft.client.Camera;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.RenderBuffers;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix4f;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.config.Config;
@@ -40,13 +37,22 @@ public abstract class LevelRendererMixin {
     }
 
     @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;checkPoseStack(Lcom/mojang/blaze3d/vertex/PoseStack;)V", ordinal = 0))
-    public void render(PoseStack stack, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightTexture lightmapTextureManager, Matrix4f matrix4f, CallbackInfo info) {
-        if (camera.isDetached() || !Config.FIRST_PERSON_MATRICES.asBool())
+    private void renderLevelFirstPerson(PoseStack stack, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightTexture lightmapTextureManager, Matrix4f matrix4f, CallbackInfo ci) {
+        if (camera.isDetached())
             return;
 
         Entity e = camera.getEntity();
         Avatar avatar = AvatarManager.getAvatar(e);
-        if (avatar == null || !(e instanceof LivingEntity livingEntity))
+
+        if (avatar == null)
+            return;
+
+        //first person world parts
+        MultiBufferSource.BufferSource bufferSource = this.renderBuffers.bufferSource();
+        avatar.firstPersonWorldRender(e, bufferSource, stack, camera, tickDelta);
+
+        //first person matrices
+        if (!(e instanceof LivingEntity livingEntity) || !Config.FIRST_PERSON_MATRICES.asBool())
             return;
 
         Avatar.firstPerson = true;
@@ -63,9 +69,19 @@ public abstract class LevelRendererMixin {
         );
 
         float yaw = Mth.lerp(tickDelta, livingEntity.yRotO, livingEntity.getYRot());
-        entityRenderer.render(livingEntity, yaw, tickDelta, stack, this.renderBuffers.bufferSource(), LightTexture.FULL_BRIGHT);
+        entityRenderer.render(livingEntity, yaw, tickDelta, stack, bufferSource, LightTexture.FULL_BRIGHT);
 
         stack.popPose();
         Avatar.firstPerson = false;
+    }
+
+    @Inject(method = "renderLevel", at = @At("HEAD"))
+    private void onRenderLevel(PoseStack matrices, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightTexture lightmapTextureManager, Matrix4f matrix4f, CallbackInfo ci) {
+        AvatarManager.onWorldRender(tickDelta);
+    }
+
+    @Inject(method = "renderLevel", at = @At("RETURN"))
+    private void afterRenderLevel(PoseStack matrices, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightTexture lightmapTextureManager, Matrix4f matrix4f, CallbackInfo ci) {
+        AvatarManager.afterWorldRender(tickDelta);
     }
 }
