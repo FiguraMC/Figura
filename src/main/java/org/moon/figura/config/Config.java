@@ -147,6 +147,7 @@ public enum Config {
         }
     },
     CHAT_EMOJIS(false),
+    IRIS_EMISSIVE_FIX(true),
     EASTER_EGGS(true),
 
     Dev {{this.name = this.name.copy().withStyle(ChatFormatting.RED);}},
@@ -202,6 +203,7 @@ public enum Config {
      * do not edit below this line :p
      * why not ? lol
      * *stabs*
+     * *dies*
      */
 
 

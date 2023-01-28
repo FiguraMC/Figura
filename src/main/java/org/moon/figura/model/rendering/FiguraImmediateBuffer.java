@@ -3,9 +3,13 @@ package org.moon.figura.model.rendering;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.floats.FloatArrayList;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import org.lwjgl.BufferUtils;
+import org.moon.figura.FiguraMod;
+import org.moon.figura.config.Config;
+import org.moon.figura.lua.api.ClientAPI;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec4;
 import org.moon.figura.model.PartCustomization;
@@ -74,6 +78,8 @@ public class FiguraImmediateBuffer {
         normals.position(normals.position() + faceCount * 12);
     }
 
+    private boolean doIrisEmissiveFix;
+
     public void pushVertices(AvatarRenderer renderer, int faceCount, int[] remainingComplexity) {
         //Handle cases that we can quickly
         if (faceCount == 0)
@@ -87,30 +93,33 @@ public class FiguraImmediateBuffer {
             return;
         }
 
-        RenderType primary = this.getTexture(renderer, customization.getPrimaryRenderType(), customization.primaryTexture, textureSet);
-        RenderType secondary = this.getTexture(renderer, customization.getSecondaryRenderType(), customization.secondaryTexture, textureSet);
+        doIrisEmissiveFix = Config.IRIS_EMISSIVE_FIX.asBool() && ClientAPI.hasIrisShader();
 
-        if (primary == null && secondary == null) {
+        TextureResult primary = this.getTexture(renderer, customization.getPrimaryRenderType(), customization.primaryTexture, textureSet);
+        TextureResult secondary = this.getTexture(renderer, customization.getSecondaryRenderType(), customization.secondaryTexture, textureSet);
+
+        if (primary.texture == null && secondary.texture == null) {
             advanceBuffers(faceCount);
             remainingComplexity[0] += faceCount;
             return;
         }
 
-        if (primary != null) {
-            if (secondary != null)
+        if (primary.texture != null) {
+            if (secondary.texture != null)
                 markBuffers();
-            pushToConsumer(renderer.bufferSource.getBuffer(primary), faceCount);
+            pushToConsumer(renderer.bufferSource.getBuffer(primary.texture), faceCount, primary.forceFullbright);
         }
-        if (secondary != null) {
-            if (primary != null)
+        if (secondary.texture != null) {
+            if (primary.texture != null)
                 resetBuffers();
-            pushToConsumer(renderer.bufferSource.getBuffer(secondary), faceCount);
+            pushToConsumer(renderer.bufferSource.getBuffer(secondary.texture), faceCount, secondary.forceFullbright);
         }
     }
 
-    private RenderType getTexture(AvatarRenderer renderer, RenderTypes types, Pair<FiguraTextureSet.OverrideType, Object> texture, FiguraTextureSet textureSet) {
+    private record TextureResult(RenderType texture, boolean forceFullbright) {}
+    private TextureResult getTexture(AvatarRenderer renderer, RenderTypes types, Pair<FiguraTextureSet.OverrideType, Object> texture, FiguraTextureSet textureSet) {
         if (types == RenderTypes.NONE)
-            return null;
+            return new TextureResult(null, false);
 
         //get texture
         ResourceLocation id = textureSet.getOverrideTexture(renderer.avatar.owner, texture);
@@ -118,15 +127,21 @@ public class FiguraImmediateBuffer {
         //get render type
         if (id != null) {
             if (renderer.translucent)
-                return RenderType.itemEntityTranslucentCull(id);
+                return new TextureResult(RenderType.itemEntityTranslucentCull(id), false);
             if (renderer.glowing)
-                return RenderType.outline(id);
+                return new TextureResult(RenderType.outline(id), false);
         }
 
-        return types == null ? null : types.get(id);
+        boolean forceFullbright = false;
+        if (doIrisEmissiveFix && types == RenderTypes.EMISSIVE) {
+            types = RenderTypes.CUTOUT; //Switch to cutout with fullbright if the iris emissive fix is enabled
+            forceFullbright = true;
+        }
+
+        return new TextureResult(types == null ? null : types.get(id), forceFullbright);
     }
 
-    private void pushToConsumer(VertexConsumer consumer, int faceCount) {
+    private void pushToConsumer(VertexConsumer consumer, int faceCount, boolean forceFullbright) {
         PartCustomization customization = customizationStack.peek();
 
         FiguraVec3 uvFixer = FiguraVec3.of();
@@ -156,7 +171,7 @@ public class FiguraImmediateBuffer {
                     (float) uv.y,
 
                     customization.overlay,
-                    customization.light,
+                    forceFullbright ? LightTexture.FULL_BRIGHT : customization.light,
 
                     (float) normal.x,
                     (float) normal.y,
