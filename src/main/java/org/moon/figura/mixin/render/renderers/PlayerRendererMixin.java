@@ -191,8 +191,8 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
             part.save(model);
 
             if (avatar.trust.get(Trust.VANILLA_MODEL_EDIT) == 1) {
-                part.change(model);
-                part.transform(model);
+                part.preTransform(model);
+                part.posTransform(model);
             }
         }
     }

@@ -112,14 +112,14 @@ public abstract class CapeLayerMixin extends RenderLayer<AbstractClientPlayer, P
             EntityModel<?> model = getParentModel();
             part.save(model);
             if (avatar.trust.get(Trust.VANILLA_MODEL_EDIT) == 1)
-                part.transform(model);
+                part.preTransform(model);
         }
 
         avatar.capeRender(entity, multiBufferSource, poseStack, light, tickDelta, fakeCloak);
 
         //Setup visibility for real cloak
         if (avatar.luaRuntime != null && avatar.trust.get(Trust.VANILLA_MODEL_EDIT) == 1)
-            avatar.luaRuntime.vanilla_model.CAPE.change(getParentModel());
+            avatar.luaRuntime.vanilla_model.CAPE.posTransform(getParentModel());
     }
 
     @Inject(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/player/AbstractClientPlayer;FFFFFF)V", at = @At("RETURN"))

@@ -72,7 +72,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
             EntityModel<?> model = getModel();
             part.save(model);
             if (currentAvatar.trust.get(Trust.VANILLA_MODEL_EDIT) == 1)
-                part.transform(model);
+                part.preTransform(model);
         }
 
         boolean showBody = this.isBodyVisible(entity);
@@ -99,7 +99,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
         FiguraMod.popProfiler(3);
 
         if (currentAvatar.luaRuntime != null && currentAvatar.trust.get(Trust.VANILLA_MODEL_EDIT) == 1)
-            currentAvatar.luaRuntime.vanilla_model.PLAYER.change(getModel());
+            currentAvatar.luaRuntime.vanilla_model.PLAYER.posTransform(getModel());
     }
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;isSpectator()Z"), method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V")

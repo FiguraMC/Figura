@@ -35,13 +35,13 @@ public abstract class ElytraLayerMixin<T extends LivingEntity, M extends EntityM
             VanillaPart part = avatar.luaRuntime.vanilla_model.ELYTRA;
             part.save(elytraModel);
             if (avatar.trust.get(Trust.VANILLA_MODEL_EDIT) == 1)
-                part.transform(elytraModel);
+                part.preTransform(elytraModel);
         }
 
         avatar.elytraRender(livingEntity, multiBufferSource, poseStack, light, tickDelta, elytraModel);
 
         if (avatar.luaRuntime != null && avatar.trust.get(Trust.VANILLA_MODEL_EDIT) == 1)
-            avatar.luaRuntime.vanilla_model.ELYTRA.change(elytraModel);
+            avatar.luaRuntime.vanilla_model.ELYTRA.posTransform(elytraModel);
     }
 
     @Inject(at = @At("RETURN"), method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V")

@@ -6,6 +6,7 @@ import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.math.vector.FiguraVec3;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -13,7 +14,7 @@ import java.util.HashMap;
 @LuaWhitelist
 @LuaTypeDoc(
         name = "VanillaModelGroup",
-        value = "vanilla_group"
+        value = "vanilla_group_part"
 )
 public class VanillaGroupPart extends VanillaPart {
 
@@ -29,15 +30,21 @@ public class VanillaGroupPart extends VanillaPart {
     }
 
     @Override
-    public void change(EntityModel<?> model) {
-        for (VanillaPart part : cachedParts)
-            part.change(model);
-    }
-
-    @Override
     public void save(EntityModel<?> model) {
         for (VanillaPart part : cachedParts)
             part.save(model);
+    }
+
+    @Override
+    public void preTransform(EntityModel<?> model) {
+        for (VanillaPart part : cachedParts)
+            part.preTransform(model);
+    }
+
+    @Override
+    public void posTransform(EntityModel<?> model) {
+        for (VanillaPart part : cachedParts)
+            part.posTransform(model);
     }
 
     @Override
@@ -47,32 +54,129 @@ public class VanillaGroupPart extends VanillaPart {
     }
 
     @Override
-    public void transform(EntityModel<?> model) {
-        for (VanillaPart part : cachedParts)
-            part.transform(model);
-    }
-
-    @Override
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaMethodOverload(
                     argumentTypes = Boolean.class,
                     argumentNames = "visible"
             ),
-            value = "vanilla_group.set_visible"
+            aliases = "visible",
+            value = "vanilla_group_part.set_visible"
     )
-    public VanillaGroupPart setVisible(Boolean visible) {
-        this.visible = visible;
+    public VanillaPart setVisible(Boolean visible) {
         for (VanillaPart part : cachedParts)
             part.setVisible(visible);
-        return this;
+        return super.setVisible(visible);
     }
 
     @Override
     @LuaWhitelist
-    @LuaMethodDoc("vanilla_group.get_visible")
-    public Boolean getVisible() {
-        return this.visible;
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "pos"
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"x", "y", "z"}
+                    )
+            },
+            aliases = "pos",
+            value = "vanilla_group_part.set_pos"
+    )
+    public VanillaPart setPos(Object x, Double y, Double z) {
+        for (VanillaPart part : cachedParts)
+            part.setPos(x, y, z);
+        return super.setPos(x, y, z);
+    }
+
+    @Override
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "rot"
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"x", "y", "z"}
+                    )
+            },
+            aliases = "rot",
+            value = "vanilla_group_part.set_rot"
+    )
+    public VanillaPart setRot(Object x, Double y, Double z) {
+        for (VanillaPart part : cachedParts)
+            part.setRot(x, y, z);
+        return super.setRot(x, y, z);
+    }
+
+    @Override
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "offsetRot"
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"x", "y", "z"}
+                    )
+            },
+            aliases = "offsetRot",
+            value = "vanilla_group_part.set_offset_rot"
+    )
+    public VanillaPart setOffsetRot(Object x, Double y, Double z) {
+        for (VanillaPart part : cachedParts)
+            part.setOffsetRot(x, y, z);
+        return super.setOffsetRot(x, y, z);
+    }
+
+    @Override
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "scale"
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"x", "y", "z"}
+                    )
+            },
+            aliases = "scale",
+            value = "vanilla_group_part.set_scale"
+    )
+    public VanillaPart setScale(Object x, Double y, Double z) {
+        for (VanillaPart part : cachedParts)
+            part.setScale(x, y, z);
+        return super.setScale(x, y, z);
+    }
+
+    @Override
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "offsetScale"
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"x", "y", "z"}
+                    )
+            },
+            aliases = "offsetScale",
+            value = "vanilla_group_part.set_offset_scale"
+    )
+    public VanillaPart setOffsetScale(Object x, Double y, Double z) {
+        for (VanillaPart part : cachedParts)
+            part.setOffsetScale(x, y, z);
+        return super.setOffsetScale(x, y, z);
     }
 
     @LuaWhitelist
