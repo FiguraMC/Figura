@@ -52,8 +52,8 @@ public class HumanoidArmorLayerMixin<T extends LivingEntity, M extends HumanoidM
 
         if (part != null) {
             part.save(humanoidModel);
-            part.change(humanoidModel);
-            part.transform(humanoidModel);
+            part.preTransform(humanoidModel);
+            part.posTransform(humanoidModel);
         }
     }
 

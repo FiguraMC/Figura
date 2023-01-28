@@ -38,6 +38,7 @@ import org.moon.figura.lua.api.sound.SoundAPI;
 import org.moon.figura.lua.api.vanilla_model.VanillaGroupPart;
 import org.moon.figura.lua.api.vanilla_model.VanillaModelAPI;
 import org.moon.figura.lua.api.vanilla_model.VanillaModelPart;
+import org.moon.figura.lua.api.vanilla_model.VanillaPart;
 import org.moon.figura.lua.api.world.BiomeAPI;
 import org.moon.figura.lua.api.world.BlockStateAPI;
 import org.moon.figura.lua.api.world.ItemStackAPI;
@@ -137,6 +138,7 @@ public class FiguraDocsManager {
 
         put("vanilla_model", List.of(
                 VanillaModelAPI.class,
+                VanillaPart.class,
                 VanillaModelPart.class,
                 VanillaGroupPart.class
         ));
