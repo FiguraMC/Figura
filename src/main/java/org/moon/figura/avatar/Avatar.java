@@ -583,7 +583,6 @@ public class Avatar {
         if (renderer == null || !loaded)
             return;
 
-        FiguraMod.pushProfiler(FiguraMod.MOD_ID);
         FiguraMod.pushProfiler(this);
         FiguraMod.pushProfiler("hudRender");
 
@@ -610,7 +609,7 @@ public class Avatar {
 
         Lighting.setupFor3DItems();
 
-        FiguraMod.popProfiler(3);
+        FiguraMod.popProfiler(2);
     }
 
     public boolean skullRender(PoseStack stack, MultiBufferSource bufferSource, int light, Direction direction, float yaw) {
