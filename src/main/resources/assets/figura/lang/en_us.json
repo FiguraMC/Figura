@@ -453,6 +453,9 @@
   "figura.config.chat_emojis": "Chat Emojis",
   "figura.config.chat_emojis.tooltip": "Toggles the emoji parsing on chat messages, that converts \":emoji_name:\" into emojis",
 
+  "figura.config.iris_emissive_fix": "Iris Emissive Fix",
+  "figura.config.iris_emissive_fix.tooltip": "When Iris is enabled, change the way emissive textures work to a more compatible system that uses fully-lit textures instead of the vanilla eyes layer.",
+
   "figura.config.easter_eggs": "Enable Easter eggs",
   "figura.config.easter_eggs.tooltip": "Toggles fun and unexpected aspects of Figura (boring!)",
 
