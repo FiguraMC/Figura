@@ -1380,13 +1380,9 @@
   "figura.docs.vanilla_model.armor": "Multi-part: All armor on the model",
   "figura.docs.vanilla_model.player": "Multi-part: Both the outer and inner layers of the player's skin, as well as the cape",
 
-  "figura.docs.vanilla_part": "Represents a model part in a vanilla model\nCan be set visible and invisible, and queried for rotation and position offsets",
+  "figura.docs.vanilla_part": "An abstract superclass for vanilla model parts and groups\nThis part can be transformed similar to custom model parts, however not with the same extent",
+  "figura.docs.vanilla_part.get_visible": "Gets whether you have set this part to be visible or invisible",
   "figura.docs.vanilla_part.set_visible": "Sets this part to be visible or invisible",
-  "figura.docs.vanilla_part.get_visible": "Gets whether you have set this part to be visible or invisible\nOnly responds to your own changes in script, not anything done by Minecraft",
-  "figura.docs.vanilla_part.get_origin_visible": "Gets if this vanilla model part is visible or not, without interference from your script",
-  "figura.docs.vanilla_part.get_origin_rot": "Gets the rotation to this vanilla model part currently applied by Minecraft",
-  "figura.docs.vanilla_part.get_origin_pos": "Gets the position offset to this vanilla model part currently applied by Minecraft",
-  "figura.docs.vanilla_part.get_origin_scale": "Gets the scale to this vanilla model part currently applied by Minecraft",
   "figura.docs.vanilla_part.get_pos": "Get this part's set position\nReturns the value set by the \"set\" function",
   "figura.docs.vanilla_part.set_pos": "Set this part's position, preserving the previous values",
   "figura.docs.vanilla_part.get_rot": "Get this part's set rotation\nReturns the value set by the \"set\" function",
@@ -1398,9 +1394,19 @@
   "figura.docs.vanilla_part.get_offset_scale": "Gets this part's scale offset",
   "figura.docs.vanilla_part.set_offset_scale": "Offsets this part's scale, multiplying with the vanilla values",
 
-  "figura.docs.vanilla_group": "Represents a group of model parts in a vanilla model\nUsed for easy reference of normal parts\nCan only be set visible and invisible",
-  "figura.docs.vanilla_group.set_visible": "Sets this parts to be visible or invisible",
-  "figura.docs.vanilla_group.get_visible": "Gets whether you have set this parts to be visible or invisible\nOnly responds to your own changes in script, not anything done by Minecraft",
+  "figura.docs.vanilla_model_part": "Represents a model part in a vanilla model\nCan be queried for vanilla transform values",
+  "figura.docs.vanilla_model_part.get_origin_visible": "Gets if this vanilla model part is visible or not, without interference from your script",
+  "figura.docs.vanilla_model_part.get_origin_rot": "Gets the rotation to this vanilla model part currently applied by Minecraft",
+  "figura.docs.vanilla_model_part.get_origin_pos": "Gets the position offset to this vanilla model part currently applied by Minecraft",
+  "figura.docs.vanilla_model_part.get_origin_scale": "Gets the scale to this vanilla model part currently applied by Minecraft",
+
+  "figura.docs.vanilla_group_part": "Represents a group of model parts in a vanilla model\nUsed for easy reference of normal parts\nAll changes also applies to all children parts",
+  "figura.docs.vanilla_group_part.set_visible": "Sets this part and its children to be visible or invisible",
+  "figura.docs.vanilla_group_part.set_pos": "Set this part and its children's position, preserving the previous values",
+  "figura.docs.vanilla_group_part.set_rot": "Set this part and its children's rotation",
+  "figura.docs.vanilla_group_part.set_offset_rot": "Offsets this part and its children's rotation, adding on top of the vanilla values",
+  "figura.docs.vanilla_group_part.set_scale": "Set this part and its children's scale",
+  "figura.docs.vanilla_group_part.set_offset_scale": "Offsets this part and its children's scale, multiplying with the vanilla values",
 
 
   "figura.docs.vectors": "A global API which provides functions dedicated to creating and otherwise manipulating vectors\nAccessed using the name \"vectors\"",
