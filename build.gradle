@@ -31,9 +31,7 @@ dependencies {
 	include(implementation("org.java-websocket:Java-WebSocket:$websocket"))
 
 	// Fabric API
-	include(modImplementation(fabricApi.module("fabric-command-api-v2", project.fabric_api)))
-	include(modImplementation(fabricApi.module("fabric-key-binding-api-v1", project.fabric_api)))
-	include(modImplementation(fabricApi.module("fabric-resource-loader-v0", project.fabric_api)))
+	modImplementation "net.fabricmc.fabric-api:fabric-api:$fabric_api"
 
 	// Mods
 	modImplementation "com.terraformersmc:modmenu:$modmenu"
@@ -47,6 +45,7 @@ processResources {
 	properties.put("java_version", java_version)
 	properties.put("minecraft_version", minecraft)
 	properties.put("loader_version", loader_version)
+	properties.put("fabric_api", fabric_api)
 
 	properties.forEach((k, v) -> inputs.property(k, v.toString()))
 	filesMatching("fabric.mod.json") {

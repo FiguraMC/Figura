@@ -298,9 +298,6 @@
   "figura.config.log_location.1": "Chat",
   "figura.config.log_location.2": "Logger",
 
-  "figura.config.allow_fp_hands": "First Person Hands",
-  "figura.config.allow_fp_hands.tooltip": "Toggles if scripts can move around, rotate or scale the First Person Hand parent type groups",
-
   "figura.config.log_number_length": "Print Number Length",
   "figura.config.log_number_length.tooltip": "Changes the length of the decimal places that will be displayed within print functions",
 
@@ -311,6 +308,31 @@
   "figura.config.format_script.1":"Disabled",
   "figura.config.format_script.2":"Light",
   "figura.config.format_script.3":"Heavy",
+
+
+  "figura.config.rendering": "Rendering",
+  "figura.config.rendering.tooltip": "Rendering settings",
+
+  "figura.config.iris_emissive_fix": "Iris Emissive Fix",
+  "figura.config.iris_emissive_fix.tooltip": "When Iris is enabled, change the way emissive textures work to a more compatible system that uses fully-lit textures instead of the vanilla eyes layer",
+
+  "figura.config.allow_fp_hands": "First Person Hands",
+  "figura.config.allow_fp_hands.tooltip": "Toggles if scripts can move around, rotate or scale the First Person Hand parent type groups",
+
+  "figura.config.render_debug_parts_pivot": "Render Parts Pivot",
+  "figura.config.render_debug_parts_pivot.tooltip": "Render the Pivots from %d and %d when the hitbox debug rendering is enabled",
+  "figura.config.render_debug_parts_pivot.tooltip.cubes": "cubes",
+  "figura.config.render_debug_parts_pivot.tooltip.groups": "groups",
+  "figura.config.render_debug_parts_pivot.enum": "Off: Do not render pivots\nVisible: Render only pivots of parts that are visible\nEverything: Render all pivots of this Avatar\nHost: Only render if the target Avatar is the Host\nEveryone: Render in all Avatars",
+  "figura.config.render_debug_parts_pivot.1": "Off",
+  "figura.config.render_debug_parts_pivot.2": "Visible (Host)",
+  "figura.config.render_debug_parts_pivot.3": "Everything (Host)",
+  "figura.config.render_debug_parts_pivot.4": "Visible (Everyone)",
+  "figura.config.render_debug_parts_pivot.5": "Everything (Everyone)",
+
+  "figura.config.first_person_matrices": "First Person Matrices",
+  "figura.config.first_person_matrices.tooltip": "Toggles if the model part matrices should be updated while in first person",
+
 
   "figura.config.actionwheel": "Action Wheel",
   "figura.config.actionwheel.tooltip": "Action Wheel settings",
@@ -453,9 +475,6 @@
   "figura.config.chat_emojis": "Chat Emojis",
   "figura.config.chat_emojis.tooltip": "Toggles the emoji parsing on chat messages, that converts \":emoji_name:\" into emojis",
 
-  "figura.config.iris_emissive_fix": "Iris Emissive Fix",
-  "figura.config.iris_emissive_fix.tooltip": "When Iris is enabled, change the way emissive textures work to a more compatible system that uses fully-lit textures instead of the vanilla eyes layer.",
-
   "figura.config.easter_eggs": "Enable Easter eggs",
   "figura.config.easter_eggs.tooltip": "Toggles fun and unexpected aspects of Figura (boring!)",
 
@@ -465,20 +484,6 @@
 
   "figura.config.connection_toasts": "Backend Connection Toasts",
   "figura.config.connection_toasts.tooltip": "Toggles if the game should show up toasts related with the backend connection status",
-
-  "figura.config.render_debug_parts_pivot": "Render Parts Pivot",
-  "figura.config.render_debug_parts_pivot.tooltip": "Render the Pivots from %d and %d when the hitbox debug rendering is enabled",
-  "figura.config.render_debug_parts_pivot.tooltip.cubes": "cubes",
-  "figura.config.render_debug_parts_pivot.tooltip.groups": "groups",
-  "figura.config.render_debug_parts_pivot.enum": "Off: Do not render pivots\nVisible: Render only pivots of parts that are visible\nEverything: Render all pivots of this Avatar\nHost: Only render if the target Avatar is the Host\nEveryone: Render in all Avatars",
-  "figura.config.render_debug_parts_pivot.1": "Off",
-  "figura.config.render_debug_parts_pivot.2": "Visible (Host)",
-  "figura.config.render_debug_parts_pivot.3": "Everything (Host)",
-  "figura.config.render_debug_parts_pivot.4": "Visible (Everyone)",
-  "figura.config.render_debug_parts_pivot.5": "Everything (Everyone)",
-
-  "figura.config.first_person_matrices": "First Person Matrices",
-  "figura.config.first_person_matrices.tooltip": "Toggles if the model part matrices should be updated while in first person",
 
   "figura.config.log_others": "Log non-host scripts",
   "figura.config.log_others.tooltip": "Allows debug logging and errors of non-host scripts",
