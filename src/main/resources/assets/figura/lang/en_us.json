@@ -1179,6 +1179,8 @@
   "figura.docs.nameplate_customization.set_text": "The text to use in this nameplate",
 
   "figura.docs.nameplate_entity": "A nameplate customization that is specialized for entities",
+  "figura.docs.nameplate_entity.get_pivot": "Gets the pivot of the nameplate, in world coordinates",
+  "figura.docs.nameplate_entity.set_pivot": "Sets the pivot of the nameplate, in world coordinates",
   "figura.docs.nameplate_entity.get_pos": "Gets the position offset of the nameplate, in world coordinates",
   "figura.docs.nameplate_entity.set_pos": "Sets the position offset of the nameplate, in world coordinates",
   "figura.docs.nameplate_entity.get_scale": "Gets scale factor of the nameplate",
