@@ -11,6 +11,7 @@ import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.TextUtils;
+import org.moon.figura.utils.ui.UIHelper;
 
 import java.util.BitSet;
 import java.util.Optional;
@@ -99,7 +100,7 @@ public class Badges {
     }
 
     public static Component noBadges4U(Component text) {
-        return TextUtils.replaceInText(text, "[❗❌\uD83D\uDEE1☄❤☆★0-9a-f]", TextUtils.UNKNOWN, (s, style) -> style.getFont().equals(FONT));
+        return TextUtils.replaceInText(text, "[-*/+=❗❌\uD83D\uDEE1☄❤☆★0-9a-f]", TextUtils.UNKNOWN, (s, style) -> style.getFont().equals(FONT) || style.getFont().equals(UIHelper.UI_FONT));
     }
 
     public static Pair<BitSet, BitSet> emptyBadges() {

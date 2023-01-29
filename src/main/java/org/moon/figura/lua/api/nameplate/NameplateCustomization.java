@@ -20,11 +20,11 @@ public class NameplateCustomization {
     private Component json;
     private String text;
 
-    private void parseJsonText(String text) {
-        json = TextUtils.tryParseJson(text);
-        json = Badges.noBadges4U(json);
-        json = TextUtils.removeClickableObjects(json);
-        json = Emojis.applyEmojis(json);
+    private Component parseJsonText(String text) {
+        Component component = TextUtils.tryParseJson(text);
+        component = Badges.noBadges4U(component);
+        component = TextUtils.removeClickableObjects(component);
+        return Emojis.applyEmojis(component);
     }
 
     public Component getJson() {
@@ -48,9 +48,10 @@ public class NameplateCustomization {
     public NameplateCustomization setText(String text) {
         this.text = text;
         if (text != null) {
-            parseJsonText(text);
-            if (json.getString().length() > 256)
-                throw new LuaError("Text length exceeded limit of 256 characters");
+            Component component = parseJsonText(text);
+            if (component.getString().length() > 64)
+                throw new LuaError("Text length exceeded limit of 64 characters");
+            json = component;
         } else {
             json = null;
         }

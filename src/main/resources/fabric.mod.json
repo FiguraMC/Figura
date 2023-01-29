@@ -38,7 +38,8 @@
   "depends": {
     "java": ">=${java_version}",
     "minecraft": "${minecraft_version}",
-    "fabricloader": ">=${loader_version}"
+    "fabricloader": ">=${loader_version}",
+    "fabric": ">=${fabric_api}"
   },
   "conflicts": {
     "iris": "*",
