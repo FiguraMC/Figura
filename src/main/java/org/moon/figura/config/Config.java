@@ -65,7 +65,6 @@ public enum Config {
 
     Script,
     LOG_LOCATION(0, 2),
-    ALLOW_FP_HANDS(false),
     LOG_NUMBER_LENGTH(5, InputType.POSITIVE_INT) {
         @Override
         public void onChange() {
@@ -85,6 +84,17 @@ public enum Config {
                 AvatarManager.reloadAvatar(FiguraMod.getLocalPlayerUUID());
         }
     },
+
+    Rendering,
+    IRIS_EMISSIVE_FIX(false),
+    ALLOW_FP_HANDS(false),
+    RENDER_DEBUG_PARTS_PIVOT(1, 5) {{
+        String tooltip = "config.render_debug_parts_pivot.tooltip";
+        this.tooltip = FiguraText.of(tooltip,
+                FiguraText.of(tooltip + ".cubes").setStyle(ColorUtils.Colors.FRAN_PINK.style),
+                FiguraText.of(tooltip + ".groups").setStyle(ColorUtils.Colors.MAYA_BLUE.style));
+    }},
+    FIRST_PERSON_MATRICES(true),
 
     ActionWheel,
     ACTION_WHEEL_BUTTON("key.keyboard.b"),
@@ -147,18 +157,10 @@ public enum Config {
         }
     },
     CHAT_EMOJIS(false),
-    IRIS_EMISSIVE_FIX(true),
     EASTER_EGGS(true),
 
     Dev {{this.name = this.name.copy().withStyle(ChatFormatting.RED);}},
     CONNECTION_TOASTS(true),
-    RENDER_DEBUG_PARTS_PIVOT(1, 5) {{
-        String tooltip = "config.render_debug_parts_pivot.tooltip";
-        this.tooltip = FiguraText.of(tooltip,
-                FiguraText.of(tooltip + ".cubes").setStyle(ColorUtils.Colors.FRAN_PINK.style),
-                FiguraText.of(tooltip + ".groups").setStyle(ColorUtils.Colors.MAYA_BLUE.style));
-    }},
-    FIRST_PERSON_MATRICES(true),
     LOG_OTHERS(false),
     LOG_PINGS(0, 3),
     SYNC_PINGS(false) {{
