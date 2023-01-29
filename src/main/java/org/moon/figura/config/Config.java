@@ -13,6 +13,7 @@ import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.backend2.NetworkStuff;
 import org.moon.figura.gui.widgets.TextField;
 import org.moon.figura.lua.FiguraLuaPrinter;
+import org.moon.figura.lua.api.ClientAPI;
 import org.moon.figura.trust.Trust;
 import org.moon.figura.trust.TrustManager;
 import org.moon.figura.utils.ColorUtils;
@@ -86,7 +87,14 @@ public enum Config {
     },
 
     Rendering,
-    IRIS_EMISSIVE_FIX(false),
+    IRIS_COMPATIBILITY_FIX(0, 4) {{
+        this.disabled = !ClientAPI.hasIris();
+    }
+        @Override
+        public void setValue(String text) {
+            super.setValue(this.disabled ? String.valueOf(0) : text);
+        }
+    },
     ALLOW_FP_HANDS(false),
     RENDER_DEBUG_PARTS_PIVOT(1, 5) {{
         String tooltip = "config.render_debug_parts_pivot.tooltip";

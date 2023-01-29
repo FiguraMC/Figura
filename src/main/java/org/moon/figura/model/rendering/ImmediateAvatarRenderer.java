@@ -11,6 +11,7 @@ import net.minecraft.world.level.LightLayer;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.config.Config;
+import org.moon.figura.lua.api.ClientAPI;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec3;
@@ -109,6 +110,9 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
         //Free customization after use
         customization.free();
+
+        //iris emissive fix
+        doIrisEmissiveFix = (Config.IRIS_COMPATIBILITY_FIX.asInt() >= 3 || Config.IRIS_COMPATIBILITY_FIX.asInt() == 1) && ClientAPI.hasIrisShader();
 
         //Iterate and setup each buffer
         for (FiguraImmediateBuffer buffer : buffers) {
