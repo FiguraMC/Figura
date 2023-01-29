@@ -284,6 +284,12 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("model_part.get_true_pos")
+    public FiguraVec3 getTruePos() {
+        return this.getPos().add(this.getAnimPos());
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc("model_part.get_rot")
     public FiguraVec3 getRot() {
         return this.customization.getRot();
@@ -351,6 +357,12 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     @LuaMethodDoc("model_part.get_anim_rot")
     public FiguraVec3 getAnimRot() {
         return this.customization.getAnimRot();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("model_part.get_true_rot")
+    public FiguraVec3 getTrueRot() {
+        return this.getRot().add(this.getOffsetRot()).add(this.getAnimRot());
     }
 
     @LuaWhitelist
@@ -424,6 +436,12 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("model_part.get_true_scale")
+    public FiguraVec3 getTrueScale() {
+        return this.getScale().add(this.getOffsetScale()).add(this.getAnimScale());
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc("model_part.get_pivot")
     public FiguraVec3 getPivot() {
         return this.customization.getPivot();
@@ -485,6 +503,12 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     @LuaWhitelist
     public FiguraModelPart offsetPivot(Object x, Double y, Double z) {
         return setOffsetPivot(x, y, z);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("model_part.get_true_pivot")
+    public FiguraVec3 getTruePivot() {
+        return this.getPivot().add(this.getOffsetPivot());
     }
 
     @LuaWhitelist
