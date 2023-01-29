@@ -7,9 +7,6 @@ import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import org.lwjgl.BufferUtils;
-import org.moon.figura.FiguraMod;
-import org.moon.figura.config.Config;
-import org.moon.figura.lua.api.ClientAPI;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec4;
 import org.moon.figura.model.PartCustomization;
@@ -78,8 +75,6 @@ public class FiguraImmediateBuffer {
         normals.position(normals.position() + faceCount * 12);
     }
 
-    private boolean doIrisEmissiveFix;
-
     public void pushVertices(AvatarRenderer renderer, int faceCount, int[] remainingComplexity) {
         //Handle cases that we can quickly
         if (faceCount == 0)
@@ -92,8 +87,6 @@ public class FiguraImmediateBuffer {
             remainingComplexity[0] += faceCount;
             return;
         }
-
-        doIrisEmissiveFix = Config.IRIS_EMISSIVE_FIX.asBool() && ClientAPI.hasIrisShader();
 
         TextureResult primary = this.getTexture(renderer, customization.getPrimaryRenderType(), customization.primaryTexture, textureSet);
         TextureResult secondary = this.getTexture(renderer, customization.getSecondaryRenderType(), customization.secondaryTexture, textureSet);
@@ -133,7 +126,7 @@ public class FiguraImmediateBuffer {
         }
 
         boolean forceFullbright = false;
-        if (doIrisEmissiveFix && types == RenderTypes.EMISSIVE) {
+        if (renderer.doIrisEmissiveFix && types == RenderTypes.EMISSIVE) {
             types = RenderTypes.CUTOUT; //Switch to cutout with fullbright if the iris emissive fix is enabled
             forceFullbright = true;
         }

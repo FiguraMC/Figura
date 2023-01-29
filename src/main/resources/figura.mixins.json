@@ -37,13 +37,13 @@
     "particle.ParticleEngineMixin",
     "particle.SingleQuadParticleMixin",
 
-    "render.BlockEntityWithoutLevelRendererMixin",
     "render.CameraMixin",
     "render.EntityRenderDispatcherMixin",
     "render.GameRendererAccessor",
     "render.GameRendererMixin",
     "render.LevelRendererMixin",
     "render.PlayerModelMixin",
+    "render.RenderBuffersMixin",
 
     "render.layers.CapeLayerMixin",
     "render.layers.CustomHeadLayerMixin",
@@ -57,6 +57,7 @@
     "render.layers.items.ItemInHandLayerMixin",
     "render.layers.items.PlayerItemInHandLayerMixin",
 
+    "render.renderers.BlockEntityWithoutLevelRendererMixin",
     "render.renderers.EntityRendererMixin",
     "render.renderers.HandRenderSelectionAccessor",
     "render.renderers.ItemInHandRendererMixin",

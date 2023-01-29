@@ -65,6 +65,7 @@ public abstract class AvatarRenderer {
     public boolean allowSkullRendering = true;
     public boolean allowPivotParts = true;
     public boolean updateLight = false;
+    public boolean doIrisEmissiveFix = false;
 
     public AvatarRenderer(Avatar avatar) {
         this.avatar = avatar;
