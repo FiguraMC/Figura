@@ -18,13 +18,43 @@ import org.moon.figura.utils.LuaUtils;
 )
 public class EntityNameplateCustomization extends NameplateCustomization {
 
-    private FiguraVec3 position;
-    private FiguraVec3 scale;
+    private FiguraVec3 pivot, position, scale;
     public Integer background, outlineColor, light;
     public Double alpha;
 
     public boolean visible = true;
     public boolean shadow, outline;
+
+    @LuaWhitelist
+    @LuaMethodDoc("nameplate_entity.get_pivot")
+    public FiguraVec3 getPivot() {
+        return this.pivot;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "pivot"
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"x", "y", "z"}
+                    )
+            },
+            aliases = "pivot",
+            value = "nameplate_entity.set_pivot"
+    )
+    public EntityNameplateCustomization setPivot(Object x, Double y, Double z) {
+        this.pivot = x == null ? null : LuaUtils.parseVec3("setPivot", x, y, z);
+        return this;
+    }
+
+    @LuaWhitelist
+    public EntityNameplateCustomization pivot(Object x, Double y, Double z) {
+        return setPivot(x, y, z);
+    }
 
     @LuaWhitelist
     @LuaMethodDoc("nameplate_entity.get_pos")

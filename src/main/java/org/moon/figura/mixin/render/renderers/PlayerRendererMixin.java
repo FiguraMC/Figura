@@ -71,16 +71,25 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
 
         stack.pushPose();
 
-        //pos
-        FiguraMod.pushProfiler("position");
-        FiguraVec3 pos = FiguraVec3.of(0f, player.getBbHeight() + 0.5f, 0f);
-        if (custom != null && custom.getPos() != null && trust)
-            pos.add(custom.getPos());
+        //pivot
+        FiguraMod.pushProfiler("pivot");
+        FiguraVec3 pivot;
+        if (custom != null && custom.getPivot() != null && trust)
+            pivot = custom.getPivot();
+        else
+            pivot = FiguraVec3.of(0f, player.getBbHeight() + 0.5f, 0f);
 
-        stack.translate(pos.x, pos.y, pos.z);
+        stack.translate(pivot.x, pivot.y, pivot.z);
 
         //rotation
         stack.mulPose(this.entityRenderDispatcher.cameraOrientation());
+
+        //pos
+        FiguraMod.popPushProfiler("position");
+        if (custom != null && custom.getPos() != null && trust) {
+            FiguraVec3 pos = custom.getPos();
+            stack.translate(pos.x, pos.y, pos.z);
+        }
 
         //scale
         FiguraMod.popPushProfiler("scale");
