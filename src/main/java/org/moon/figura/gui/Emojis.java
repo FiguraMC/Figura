@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextComponent;
@@ -96,7 +97,7 @@ public class Emojis {
 
             //success, append the emoji
             if (emoji != null) {
-                newText.append(new TextComponent(emoji).withStyle(STYLE));
+                newText.append(new TextComponent(emoji).withStyle(STYLE.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent(prefix + pos[0] + suffix).withStyle(style)))));
             //fail, break if there is no remaining text to parse
             } else if (pos.length < 2) {
                 break emoji;
