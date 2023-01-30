@@ -16,7 +16,7 @@ public class PanelSelectorWidget extends AbstractContainerElement {
             ProfileScreen::new,
             BrowserScreen::new,
             WardrobeScreen::new,
-            TrustScreen::new,
+            PermissionsScreen::new,
             ConfigScreen::new
     );
 

@@ -19,7 +19,7 @@ import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.mixin.sound.SoundManagerAccessor;
-import org.moon.figura.trust.Trust;
+import org.moon.figura.permissions.Permissions;
 import org.moon.figura.utils.LuaUtils;
 
 import java.util.Base64;
@@ -153,10 +153,10 @@ public class SoundAPI {
     public LuaSound __index(String id) {
         SoundBuffer buffer = owner.customSounds.get(id);
         if (buffer != null) {
-            if (owner.trust.get(Trust.CUSTOM_SOUNDS) == 1) {
+            if (owner.permissions.get(Permissions.CUSTOM_SOUNDS) == 1) {
                 return new LuaSound(buffer, id, owner);
             } else {
-                owner.trustIssues.add(Trust.CUSTOM_SOUNDS);
+                owner.noPermissions.add(Permissions.CUSTOM_SOUNDS);
             }
         }
 
@@ -165,7 +165,7 @@ public class SoundAPI {
             if (events != null) {
                 Sound sound = events.getSound(RandomSource.create(WorldAPI.getCurrentWorld().random.nextLong()));
                 if (sound != SoundManager.EMPTY_SOUND) {
-                    owner.trustIssues.remove(Trust.CUSTOM_SOUNDS);
+                    owner.noPermissions.remove(Permissions.CUSTOM_SOUNDS);
                     return new LuaSound(sound, id, owner);
                 }
             }

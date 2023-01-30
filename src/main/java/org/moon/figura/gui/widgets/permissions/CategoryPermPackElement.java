@@ -1,4 +1,4 @@
-package org.moon.figura.gui.widgets.trust;
+package org.moon.figura.gui.widgets.permissions;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
@@ -6,18 +6,18 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.gui.widgets.lists.PlayerList;
-import org.moon.figura.trust.TrustContainer;
+import org.moon.figura.permissions.PermissionPack;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.ui.UIHelper;
 
-public class GroupElement extends AbstractTrustElement {
+public class CategoryPermPackElement extends AbstractPermPackElement {
 
-    private static final ResourceLocation BACKGROUND = new FiguraIdentifier("textures/gui/group_trust.png");
+    private static final ResourceLocation BACKGROUND = new FiguraIdentifier("textures/gui/group_permissions.png");
     private boolean enabled;
 
-    public GroupElement(TrustContainer container, PlayerList parent) {
-        super(20, container, parent);
-        this.enabled = container.isVisible();
+    public CategoryPermPackElement(PermissionPack pack, PlayerList parent) {
+        super(20, pack, parent);
+        this.enabled = pack.isVisible();
     }
 
     @Override
@@ -42,7 +42,7 @@ public class GroupElement extends AbstractTrustElement {
         blit(stack, x, y, width, height, 0f, enabled ? 20f : 0f, 174, 20, 174, 40);
 
         //name
-        Component text = trust.getGroupName().append(trust.hasChanges() ? "*" : "");
+        Component text = pack.getCategoryName().append(pack.hasChanges() ? "*" : "");
         Font font = Minecraft.getInstance().font;
         UIHelper.renderOutlineText(stack, font, text, x + width / 2 - font.width(text) / 2, y + height / 2 - font.lineHeight / 2, 0xFFFFFF, 0);
 
@@ -58,7 +58,7 @@ public class GroupElement extends AbstractTrustElement {
     public void onPress() {
         if (parent.selectedEntry == this) {
             enabled = !enabled;
-            trust.setVisible(enabled);
+            pack.setVisible(enabled);
 
             parent.updateScroll();
         }
