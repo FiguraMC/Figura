@@ -89,6 +89,11 @@ public enum Config {
     Rendering,
     IRIS_COMPATIBILITY_FIX(0, 4) {{
         this.disabled = !ClientAPI.hasIris();
+
+        String tooltip = "config.iris_compatibility_fix.tooltip.";
+        this.tooltip = FiguraText.of(tooltip + "1")
+                .append("\n")
+                .append(FiguraText.of(tooltip + "2").withStyle(ChatFormatting.RED));
     }
         @Override
         public void setValue(String text) {
