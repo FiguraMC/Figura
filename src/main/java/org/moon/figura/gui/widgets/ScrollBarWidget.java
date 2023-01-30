@@ -74,12 +74,25 @@ public class ScrollBarWidget extends AbstractWidget {
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
         if (isScrolling) {
             //vertical drag
-            if (vertical && mouseY >= this.y && mouseY <= this.y + this.height) {
-                scroll(deltaY);
-                return true;
+            if (vertical) {
+                if (Math.signum(deltaY) == -1) {
+                    if (mouseY <= this.y + this.height) {
+                        scroll(deltaY);
+                        return true;
+                    }
+
+                } else if (mouseY >= this.y) {
+                    scroll(deltaY);
+                    return true;
+                }
             }
             //horizontal drag
-            else if (!vertical && mouseX >= this.x && mouseX <= this.x + this.width) {
+            else if (Math.signum(deltaX) == -1) {
+                if (mouseX <= this.x + this.width) {
+                    scroll(deltaX);
+                    return true;
+                }
+            } else if (mouseX >= this.x) {
                 scroll(deltaX);
                 return true;
             }
