@@ -17,7 +17,7 @@ import org.moon.figura.config.Config;
 import org.moon.figura.gui.PopupMenu;
 import org.moon.figura.lua.api.vanilla_model.VanillaPart;
 import org.moon.figura.model.rendering.PartFilterScheme;
-import org.moon.figura.trust.Trust;
+import org.moon.figura.permissions.Permissions;
 import org.moon.figura.utils.ui.UIHelper;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -71,7 +71,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
             VanillaPart part = currentAvatar.luaRuntime.vanilla_model.PLAYER;
             EntityModel<?> model = getModel();
             part.save(model);
-            if (currentAvatar.trust.get(Trust.VANILLA_MODEL_EDIT) == 1)
+            if (currentAvatar.permissions.get(Permissions.VANILLA_MODEL_EDIT) == 1)
                 part.preTransform(model);
         }
 
@@ -98,7 +98,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
 
         FiguraMod.popProfiler(3);
 
-        if (currentAvatar.luaRuntime != null && currentAvatar.trust.get(Trust.VANILLA_MODEL_EDIT) == 1)
+        if (currentAvatar.luaRuntime != null && currentAvatar.permissions.get(Permissions.VANILLA_MODEL_EDIT) == 1)
             currentAvatar.luaRuntime.vanilla_model.PLAYER.posTransform(getModel());
     }
 
@@ -108,7 +108,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
             return;
 
         //Render avatar with params
-        if (currentAvatar.luaRuntime != null && currentAvatar.trust.get(Trust.VANILLA_MODEL_EDIT) == 1)
+        if (currentAvatar.luaRuntime != null && currentAvatar.permissions.get(Permissions.VANILLA_MODEL_EDIT) == 1)
             currentAvatar.luaRuntime.vanilla_model.PLAYER.restore(getModel());
 
         currentAvatar = null;

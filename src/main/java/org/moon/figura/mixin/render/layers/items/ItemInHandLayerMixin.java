@@ -16,7 +16,7 @@ import net.minecraft.world.item.ItemStack;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.model.ParentType;
-import org.moon.figura.trust.Trust;
+import org.moon.figura.permissions.Permissions;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -39,7 +39,7 @@ public abstract class ItemInHandLayerMixin<T extends LivingEntity, M extends Ent
             return;
 
         Avatar avatar = AvatarManager.getAvatar(livingEntity);
-        if (avatar == null || avatar.trust.get(Trust.VANILLA_MODEL_EDIT) == 0)
+        if (avatar == null || avatar.permissions.get(Permissions.VANILLA_MODEL_EDIT) == 0)
             return;
 
         boolean left = humanoidArm == HumanoidArm.LEFT;

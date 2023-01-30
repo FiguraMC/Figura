@@ -23,7 +23,7 @@ import org.moon.figura.config.Config;
 import org.moon.figura.lua.api.nameplate.EntityNameplateCustomization;
 import org.moon.figura.lua.api.vanilla_model.VanillaPart;
 import org.moon.figura.math.vector.FiguraVec3;
-import org.moon.figura.trust.Trust;
+import org.moon.figura.permissions.Permissions;
 import org.moon.figura.utils.TextUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -66,7 +66,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
         FiguraMod.pushProfiler("nameplate");
 
         //trust check
-        boolean trust = avatar != null && avatar.trust.get(Trust.NAMEPLATE_EDIT) == 1;
+        boolean trust = avatar != null && avatar.permissions.get(Permissions.NAMEPLATE_EDIT) == 1;
 
         stack.pushPose();
 
@@ -199,7 +199,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
 
             part.save(model);
 
-            if (avatar.trust.get(Trust.VANILLA_MODEL_EDIT) == 1) {
+            if (avatar.permissions.get(Permissions.VANILLA_MODEL_EDIT) == 1) {
                 part.preTransform(model);
                 part.posTransform(model);
             }

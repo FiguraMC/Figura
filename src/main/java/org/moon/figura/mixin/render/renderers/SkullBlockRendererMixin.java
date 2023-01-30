@@ -20,7 +20,7 @@ import org.moon.figura.ducks.SkullBlockRendererAccessor;
 import org.moon.figura.lua.api.entity.EntityAPI;
 import org.moon.figura.lua.api.world.BlockStateAPI;
 import org.moon.figura.lua.api.world.ItemStackAPI;
-import org.moon.figura.trust.Trust;
+import org.moon.figura.permissions.Permissions;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -55,7 +55,7 @@ public abstract class SkullBlockRendererMixin implements BlockEntityRenderer<Sku
         Avatar localAvatar = avatar;
         avatar = null;
 
-        if (localAvatar == null || localAvatar.trust.get(Trust.CUSTOM_HEADS) == 0)
+        if (localAvatar == null || localAvatar.permissions.get(Permissions.CUSTOM_HEADS) == 0)
             return;
 
         FiguraMod.pushProfiler(FiguraMod.MOD_ID);
@@ -89,7 +89,7 @@ public abstract class SkullBlockRendererMixin implements BlockEntityRenderer<Sku
 
     @Override
     public boolean shouldRenderOffScreen(SkullBlockEntity blockEntity) {
-        return avatar != null && avatar.trust.get(Trust.OFFSCREEN_RENDERING) == 1;
+        return avatar != null && avatar.permissions.get(Permissions.OFFSCREEN_RENDERING) == 1;
     }
 
     @Inject(at = @At("HEAD"), method = "getRenderType")

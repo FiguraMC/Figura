@@ -5,8 +5,8 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.*;
 import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.trust.Trust;
-import org.moon.figura.trust.TrustManager;
+import org.moon.figura.permissions.PermissionManager;
+import org.moon.figura.permissions.Permissions;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FiguraText;
@@ -24,15 +24,15 @@ public class Badges {
     public static final ResourceLocation FONT = new FiguraIdentifier("badges");
 
     public static Component fetchBadges(UUID id) {
-        MutableComponent badges = Component.empty().withStyle(Style.EMPTY.withFont(FONT).withColor(ChatFormatting.WHITE).withObfuscated(false));
-
-        if (TrustManager.get(id).getGroup() == Trust.Group.BLOCKED)
-            return badges;
+        if (PermissionManager.get(id).getCategory() == Permissions.Category.BLOCKED)
+            return Component.empty();
 
         //get user data
         Pair<BitSet, BitSet> pair = AvatarManager.getBadges(id);
         if (pair == null)
-            return badges;
+            return Component.empty();
+
+        MutableComponent badges = Component.empty().withStyle(Style.EMPTY.withFont(FONT).withColor(ChatFormatting.WHITE).withObfuscated(false));
 
         //avatar badges
         Avatar avatar = AvatarManager.getAvatarForPlayer(id);
@@ -74,14 +74,14 @@ public class Badges {
                 if (avatar.versionStatus > 0)
                     badges.append(System.WARNING.badge);
 
-                //trust
-                if (!avatar.trustIssues.isEmpty()) {
-                    MutableComponent trust = System.TRUST.badge.copy();
-                    MutableComponent desc = System.TRUST.desc.copy().append("\n");
-                    for (Trust t : avatar.trustIssues)
-                        desc.append("\n• ").append(FiguraText.of("badges.trust_err." + t.name.toLowerCase()));
+                //permissions
+                if (!avatar.noPermissions.isEmpty()) {
+                    MutableComponent badge = System.PERMISSIONS.badge.copy();
+                    MutableComponent desc = System.PERMISSIONS.desc.copy().append("\n");
+                    for (Permissions t : avatar.noPermissions)
+                        desc.append("\n• ").append(FiguraText.of("badges.no_permissions." + t.name.toLowerCase()));
 
-                    badges.append(trust.withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, desc))));
+                    badges.append(badge.withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, desc))));
                 }
             }
         }
@@ -127,7 +127,7 @@ public class Badges {
 
     public enum System {
         DEFAULT("△"),
-        TRUST("\uD83D\uDEE1"),
+        PERMISSIONS("\uD83D\uDEE1"),
         WARNING("❗"),
         ERROR("❌");
 

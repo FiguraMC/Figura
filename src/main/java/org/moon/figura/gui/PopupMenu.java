@@ -18,8 +18,8 @@ import org.moon.figura.avatar.Badges;
 import org.moon.figura.config.Config;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec4;
-import org.moon.figura.trust.TrustContainer;
-import org.moon.figura.trust.TrustManager;
+import org.moon.figura.permissions.PermissionPack;
+import org.moon.figura.permissions.PermissionManager;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.MathUtils;
@@ -42,10 +42,10 @@ public class PopupMenu {
             .append(Badges.System.ERROR.badge.copy().withStyle(Style.EMPTY.withFont(Badges.FONT)))
             .append(" ")
             .append(Badges.System.ERROR.desc.copy().withStyle(ChatFormatting.RED));
-    private static final MutableComponent TRUST_WARN = Component.empty()
-            .append(Badges.System.TRUST.badge.copy().withStyle(Style.EMPTY.withFont(Badges.FONT)))
+    private static final MutableComponent PERMISSION_WARN = Component.empty()
+            .append(Badges.System.PERMISSIONS.badge.copy().withStyle(Style.EMPTY.withFont(Badges.FONT)))
             .append(" ")
-            .append(Badges.System.TRUST.desc.copy().withStyle(ChatFormatting.BLUE));
+            .append(Badges.System.PERMISSIONS.desc.copy().withStyle(ChatFormatting.BLUE));
 
     private static final List<Pair<Component, Consumer<UUID>>> BUTTONS = List.of(
             Pair.of(FiguraText.of("popup_menu.cancel"), id -> {}),
@@ -53,15 +53,15 @@ public class PopupMenu {
                 AvatarManager.reloadAvatar(id);
                 FiguraToast.sendToast(FiguraText.of("toast.reload"));
             }),
-            Pair.of(FiguraText.of("popup_menu.increase_trust"), id -> {
-                TrustContainer trust = TrustManager.get(id);
-                if (TrustManager.increaseTrust(trust))
-                    FiguraToast.sendToast(FiguraText.of("toast.trust_change"), trust.getGroupName());
+            Pair.of(FiguraText.of("popup_menu.increase_permissions"), id -> {
+                PermissionPack pack = PermissionManager.get(id);
+                if (PermissionManager.increaseCategory(pack))
+                    FiguraToast.sendToast(FiguraText.of("toast.permission_change"), pack.getCategoryName());
             }),
-            Pair.of(FiguraText.of("popup_menu.decrease_trust"), id -> {
-                TrustContainer trust = TrustManager.get(id);
-                if (TrustManager.decreaseTrust(trust))
-                    FiguraToast.sendToast(FiguraText.of("toast.trust_change"), trust.getGroupName());
+            Pair.of(FiguraText.of("popup_menu.decrease_permissions"), id -> {
+                PermissionPack pack = PermissionManager.get(id);
+                if (PermissionManager.decreaseCategory(pack))
+                    FiguraToast.sendToast(FiguraText.of("toast.permission_change"), pack.getCategoryName());
             })
     );
     private static final int LENGTH = BUTTONS.size();
@@ -123,14 +123,14 @@ public class PopupMenu {
 
         Component title = BUTTONS.get(index).getFirst();
 
-        TrustContainer tc = TrustManager.get(id);
-        MutableComponent trust = tc.getGroupName().append(tc.hasChanges() ? "*" : "");
+        PermissionPack tc = PermissionManager.get(id);
+        MutableComponent permissionName = tc.getCategoryName().append(tc.hasChanges() ? "*" : "");
 
         MutableComponent name = entity.getName().copy();
 
         boolean error = false;
         boolean version = false;
-        boolean trustIssues = false;
+        boolean noPermissions = false;
 
         Component badges = Badges.fetchBadges(id);
         if (badges.getString().length() > 0)
@@ -140,7 +140,7 @@ public class PopupMenu {
         if (avatar != null) {
             error = avatar.scriptError;
             version = avatar.versionStatus > 0;
-            trustIssues = !avatar.trustIssues.isEmpty();
+            noPermissions = !avatar.noPermissions.isEmpty();
         }
 
         //render texts
@@ -149,15 +149,15 @@ public class PopupMenu {
         stack.scale(0.5f, 0.5f, 0.5f);
         stack.translate(0f, 0f, -1f);
 
-        UIHelper.renderOutlineText(stack, font, trust, -font.width(trust) / 2, -54, 0xFFFFFF, 0x202020);
+        UIHelper.renderOutlineText(stack, font, permissionName, -font.width(permissionName) / 2, -54, 0xFFFFFF, 0x202020);
         font.draw(stack, title, -width + 4, -12, 0xFFFFFF);
 
         if (error)
             UIHelper.renderOutlineText(stack, font, ERROR_WARN, -font.width(ERROR_WARN) / 2, 0, 0xFFFFFF, 0x202020);
         if (version)
             UIHelper.renderOutlineText(stack, font, VERSION_WARN, -font.width(VERSION_WARN) / 2, error ? font.lineHeight : 0, 0xFFFFFF, 0x202020);
-        if (trustIssues)
-            UIHelper.renderOutlineText(stack, font, TRUST_WARN, -font.width(TRUST_WARN) / 2, (error ? font.lineHeight : 0) + (version ? font.lineHeight : 0), 0xFFFFFF, 0x202020);
+        if (noPermissions)
+            UIHelper.renderOutlineText(stack, font, PERMISSION_WARN, -font.width(PERMISSION_WARN) / 2, (error ? font.lineHeight : 0) + (version ? font.lineHeight : 0), 0xFFFFFF, 0x202020);
 
         //finish rendering
         stack.popPose();

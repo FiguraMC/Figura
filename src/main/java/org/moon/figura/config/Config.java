@@ -14,8 +14,8 @@ import org.moon.figura.backend2.NetworkStuff;
 import org.moon.figura.gui.widgets.TextField;
 import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.lua.api.ClientAPI;
-import org.moon.figura.trust.Trust;
-import org.moon.figura.trust.TrustManager;
+import org.moon.figura.permissions.PermissionManager;
+import org.moon.figura.permissions.Permissions;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.FiguraText;
 
@@ -92,7 +92,7 @@ public enum Config {
     }
         @Override
         public void setValue(String text) {
-            super.setValue(this.disabled ? String.valueOf(0) : text);
+            super.setValue(this.disabled ? String.valueOf(this.defaultValue) : text);
         }
     },
     ALLOW_FP_HANDS(false),
@@ -150,18 +150,18 @@ public enum Config {
             NetworkStuff.checkVersion();
         }
     },
-    DEFAULT_TRUST(1, Trust.Group.values().length - 1) {{
+    DEFAULT_PERMISSION_LEVEL(2, Permissions.Category.values().length) {{
         List<Component> list = new ArrayList<>();
-        Trust.Group[] groups = Trust.Group.values();
-        for (int i = 0; i < groups.length - 1; i++)
-            list.add(groups[i].text.copy());
+        Permissions.Category[] categories = Permissions.Category.values();
+        for (Permissions.Category category : categories)
+            list.add(category.text.copy());
         this.enumList = list;
         this.enumTooltip = null;
     }
         @Override
         public void onChange() {
             super.onChange();
-            TrustManager.saveToDisk();
+            PermissionManager.saveToDisk();
         }
     },
     CHAT_EMOJIS(false),

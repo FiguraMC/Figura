@@ -7,7 +7,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.LevelReader;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
-import org.moon.figura.trust.Trust;
+import org.moon.figura.permissions.Permissions;
 import org.moon.figura.utils.ui.UIHelper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -22,7 +22,7 @@ public class EntityRenderDispatcherMixin {
     @Inject(method = "renderFlame", at = @At("HEAD"), cancellable = true)
     private void renderFlame(PoseStack stack, MultiBufferSource multiBufferSource, Entity entity, CallbackInfo ci) {
         Avatar avatar = AvatarManager.getAvatar(entity);
-        if (avatar == null || avatar.luaRuntime == null || avatar.trust.get(Trust.VANILLA_MODEL_EDIT) == 0)
+        if (avatar == null || avatar.luaRuntime == null || avatar.permissions.get(Permissions.VANILLA_MODEL_EDIT) == 0)
             return;
 
         if (!avatar.luaRuntime.renderer.renderFire)
@@ -37,7 +37,7 @@ public class EntityRenderDispatcherMixin {
     @ModifyVariable(method = "renderShadow", at = @At("HEAD"), ordinal = 2, argsOnly = true)
     private static float modifyShadowSize(float h, PoseStack poseStack, MultiBufferSource multiBufferSource, Entity entity, float f, float g, LevelReader levelReader) {
         Avatar avatar = AvatarManager.getAvatar(entity);
-        if (avatar != null && avatar.luaRuntime != null && avatar.luaRuntime.renderer.shadowRadius != null && avatar.trust.get(Trust.VANILLA_MODEL_EDIT) == 1)
+        if (avatar != null && avatar.luaRuntime != null && avatar.luaRuntime.renderer.shadowRadius != null && avatar.permissions.get(Permissions.VANILLA_MODEL_EDIT) == 1)
             return avatar.luaRuntime.renderer.shadowRadius;
         return h;
     }
@@ -49,7 +49,7 @@ public class EntityRenderDispatcherMixin {
             return;
 
         Avatar avatar = AvatarManager.getAvatar(owner);
-        if (avatar == null || avatar.luaRuntime == null || avatar.trust.get(Trust.VANILLA_MODEL_EDIT) == 0)
+        if (avatar == null || avatar.luaRuntime == null || avatar.permissions.get(Permissions.VANILLA_MODEL_EDIT) == 0)
             return;
 
         if (!avatar.luaRuntime.renderer.renderVehicle)

@@ -53,9 +53,9 @@ import org.moon.figura.model.rendering.AvatarRenderer;
 import org.moon.figura.model.rendering.EntityRenderMode;
 import org.moon.figura.model.rendering.ImmediateAvatarRenderer;
 import org.moon.figura.model.rendering.PartFilterScheme;
-import org.moon.figura.trust.Trust;
-import org.moon.figura.trust.TrustContainer;
-import org.moon.figura.trust.TrustManager;
+import org.moon.figura.permissions.PermissionManager;
+import org.moon.figura.permissions.PermissionPack;
+import org.moon.figura.permissions.Permissions;
 import org.moon.figura.utils.EntityUtils;
 import org.moon.figura.utils.RefilledNumber;
 import org.moon.figura.utils.Version;
@@ -72,7 +72,7 @@ import java.util.function.Supplier;
 
 //the avatar class
 //contains all things related to the avatar
-//and also related to the owner, like trust settings
+//and also related to the owner, like its permissions
 public class Avatar {
 
     private static CompletableFuture<Void> tasks;
@@ -101,7 +101,7 @@ public class Avatar {
     public FiguraLuaRuntime luaRuntime;
     public EntityRenderMode renderMode = EntityRenderMode.OTHER;
 
-    public final TrustContainer.PlayerContainer trust;
+    public final PermissionPack.PlayerPermissionPack permissions;
 
     public final Map<String, SoundBuffer> customSounds = new HashMap<>();
     public final Map<Integer, Animation> animations = new HashMap<>();
@@ -109,8 +109,8 @@ public class Avatar {
     //runtime status
     public boolean hasTexture, scriptError;
     public Component errorText;
-    public Set<Trust> trustIssues = new HashSet<>();
-    public Set<Trust> trustsToTick = new HashSet<>();
+    public Set<Permissions> noPermissions = new HashSet<>();
+    public Set<Permissions> permissionsToTick = new HashSet<>();
     public int versionStatus = 0;
 
     //limits
@@ -123,15 +123,15 @@ public class Avatar {
         this.owner = owner;
         this.entityType = type;
         this.isHost = type == EntityType.PLAYER && FiguraMod.isLocal(owner);
-        this.trust = type == EntityType.PLAYER ? TrustManager.get(owner) : TrustManager.getMobTrust(owner);
-        this.complexity = new Instructions(trust.get(Trust.COMPLEXITY));
-        this.init = new Instructions(trust.get(Trust.INIT_INST));
-        this.render = new Instructions(trust.get(Trust.RENDER_INST));
-        this.worldRender = new Instructions(trust.get(Trust.WORLD_RENDER_INST));
-        this.tick = new Instructions(trust.get(Trust.TICK_INST));
-        this.worldTick = new Instructions(trust.get(Trust.WORLD_TICK_INST));
-        this.particlesRemaining = new RefilledNumber(trust.get(Trust.PARTICLES));
-        this.soundsRemaining = new RefilledNumber(trust.get(Trust.SOUNDS));
+        this.permissions = type == EntityType.PLAYER ? PermissionManager.get(owner) : PermissionManager.getMobPermissions(owner);
+        this.complexity = new Instructions(permissions.get(Permissions.COMPLEXITY));
+        this.init = new Instructions(permissions.get(Permissions.INIT_INST));
+        this.render = new Instructions(permissions.get(Permissions.RENDER_INST));
+        this.worldRender = new Instructions(permissions.get(Permissions.WORLD_RENDER_INST));
+        this.tick = new Instructions(permissions.get(Permissions.TICK_INST));
+        this.worldTick = new Instructions(permissions.get(Permissions.WORLD_TICK_INST));
+        this.particlesRemaining = new RefilledNumber(permissions.get(Permissions.PARTICLES));
+        this.soundsRemaining = new RefilledNumber(permissions.get(Permissions.SOUNDS));
         this.entityName = name == null ? "" : name;
     }
 
@@ -212,30 +212,30 @@ public class Avatar {
             }
         }
 
-        //tick trusts
-        for (Trust t : trustsToTick) {
-            if (trust.get(t) > 0) {
-                trustIssues.remove(t);
+        //tick permissions
+        for (Permissions t : permissionsToTick) {
+            if (permissions.get(t) > 0) {
+                noPermissions.remove(t);
             } else {
-                trustIssues.add(t);
+                noPermissions.add(t);
             }
         }
 
         //sound
-        particlesRemaining.set(trust.get(Trust.PARTICLES));
+        particlesRemaining.set(permissions.get(Permissions.PARTICLES));
         particlesRemaining.tick();
 
         //particles
-        soundsRemaining.set(trust.get(Trust.SOUNDS));
+        soundsRemaining.set(permissions.get(Permissions.SOUNDS));
         soundsRemaining.tick();
 
         //call events
         FiguraMod.pushProfiler("worldTick");
-        worldTick.reset(trust.get(Trust.WORLD_TICK_INST));
+        worldTick.reset(permissions.get(Permissions.WORLD_TICK_INST));
         run("WORLD_TICK", worldTick);
 
         FiguraMod.popPushProfiler("tick");
-        tick.reset(trust.get(Trust.TICK_INST));
+        tick.reset(permissions.get(Permissions.TICK_INST));
         tickEvent();
 
         FiguraMod.popProfiler();
@@ -243,18 +243,18 @@ public class Avatar {
 
     public void render(float delta) {
         if (complexity.remaining <= 0) {
-            trustIssues.add(Trust.COMPLEXITY);
+            noPermissions.add(Permissions.COMPLEXITY);
         } else {
-            trustIssues.remove(Trust.COMPLEXITY);
+            noPermissions.remove(Permissions.COMPLEXITY);
         }
 
-        complexity.reset(trust.get(Trust.COMPLEXITY));
+        complexity.reset(permissions.get(Permissions.COMPLEXITY));
 
         if (scriptError || luaRuntime == null || !loaded)
             return;
 
-        render.reset(trust.get(Trust.RENDER_INST));
-        worldRender.reset(trust.get(Trust.WORLD_RENDER_INST));
+        render.reset(permissions.get(Permissions.RENDER_INST));
+        worldRender.reset(permissions.get(Permissions.WORLD_RENDER_INST));
         run("WORLD_RENDER", worldRender, delta);
     }
 
@@ -419,7 +419,7 @@ public class Avatar {
         }
 
         int prev = complexity.remaining;
-        complexity.remaining = trust.get(Trust.COMPLEXITY);
+        complexity.remaining = permissions.get(Permissions.COMPLEXITY);
         renderer.render();
         complexity.remaining = prev;
     }
@@ -804,16 +804,16 @@ public class Avatar {
         if (!loaded)
             return;
 
-        int animationsLimit = trust.get(Trust.BB_ANIMATIONS);
+        int animationsLimit = permissions.get(Permissions.BB_ANIMATIONS);
         int limit = animationsLimit;
         for (Animation animation : animations.values())
             limit = AnimationPlayer.tick(animation, limit);
         animationComplexity = animationsLimit - limit;
 
         if (limit <= 0) {
-            trustIssues.add(Trust.BB_ANIMATIONS);
+            noPermissions.add(Permissions.BB_ANIMATIONS);
         } else {
-            trustIssues.remove(Trust.BB_ANIMATIONS);
+            noPermissions.remove(Permissions.BB_ANIMATIONS);
         }
     }
 
@@ -885,7 +885,7 @@ public class Avatar {
         if (renderer != null && renderer.root != null)
             runtime.setGlobal("models", renderer.root);
 
-        init.reset(trust.get(Trust.INIT_INST));
+        init.reset(permissions.get(Permissions.INIT_INST));
         runtime.setInstructionLimit(init.remaining);
 
         events.offer(() -> {

@@ -13,7 +13,7 @@ import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec4;
 import org.moon.figura.mixin.particle.ParticleAccessor;
-import org.moon.figura.trust.Trust;
+import org.moon.figura.permissions.Permissions;
 import org.moon.figura.utils.LuaUtils;
 
 @LuaWhitelist
@@ -44,9 +44,9 @@ public class LuaParticle {
         if (!Minecraft.getInstance().isPaused()) {
             if (owner.particlesRemaining.use()) {
                 ParticleAPI.getParticleEngine().figura$spawnParticle(particle, owner.owner);
-                owner.trustIssues.remove(Trust.PARTICLES);
+                owner.noPermissions.remove(Permissions.PARTICLES);
             } else {
-                owner.trustIssues.add(Trust.PARTICLES);
+                owner.noPermissions.add(Permissions.PARTICLES);
             }
         }
         return this;
