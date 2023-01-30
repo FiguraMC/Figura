@@ -237,8 +237,9 @@ public class ClientAPI {
             ),
             value = "client.get_text_height"
     )
-    public static int getTextHeight(@LuaNotNil String text) {
-        return Minecraft.getInstance().font.lineHeight * TextUtils.splitText(TextUtils.tryParseJson(text), "\n").size();
+    public static int getTextHeight(String text) {
+        int lineHeight = Minecraft.getInstance().font.lineHeight;
+        return text == null ? lineHeight : lineHeight * TextUtils.splitText(TextUtils.tryParseJson(text), "\n").size();
     }
 
     @LuaWhitelist
