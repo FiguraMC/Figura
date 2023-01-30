@@ -10,6 +10,7 @@ import org.luaj.vm2.LuaTable;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.NbtToLua;
+import org.moon.figura.lua.ReadOnlyLuaTable;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
@@ -145,7 +146,7 @@ public class PlayerAPI extends LivingEntityAPI<Player> {
             value = "player.get_shoulder_entity")
     public LuaTable getShoulderEntity(boolean right) {
         checkEntity();
-        return (LuaTable) NbtToLua.convert(right ? entity.getShoulderEntityRight() : entity.getShoulderEntityLeft());
+        return new ReadOnlyLuaTable(NbtToLua.convert(right ? entity.getShoulderEntityRight() : entity.getShoulderEntityLeft()));
     }
 
     private static final String[] IP_MESSAGES = {":trol:", "lol", "cope", "ratio'd", "192.168.0.1", "doxxed", "IP grabbed!"};
