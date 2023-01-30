@@ -91,7 +91,7 @@ public class PermissionManager {
 
             //get groups nbt
             for (PermissionPack group : CATEGORIES.values()) {
-                if (group.getCategory() == Permissions.Category.MAX || group.getCategory() == Permissions.Category.BLOCKED || !group.hasChanges())
+                if (!group.hasChanges())
                     continue;
 
                 CompoundTag container = new CompoundTag();
