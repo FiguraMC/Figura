@@ -11,6 +11,7 @@ import net.minecraft.world.item.*;
 import org.luaj.vm2.LuaTable;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.NbtToLua;
+import org.moon.figura.lua.ReadOnlyLuaTable;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
@@ -50,7 +51,7 @@ public class ItemStackAPI {
     public ItemStackAPI(ItemStack itemStack) {
         this.itemStack = itemStack;
         this.id = BuiltInRegistries.ITEM.getKey(itemStack.getItem()).toString();
-        this.tag = (LuaTable) NbtToLua.convert(itemStack.getTag() != null ? itemStack.getTag() : null);
+        this.tag = new ReadOnlyLuaTable(itemStack.getTag() != null ? NbtToLua.convert(itemStack.getTag()) : new LuaTable());
     }
 
     @LuaWhitelist

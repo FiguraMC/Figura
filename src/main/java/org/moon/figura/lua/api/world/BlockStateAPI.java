@@ -27,6 +27,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.luaj.vm2.LuaTable;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.NbtToLua;
+import org.moon.figura.lua.ReadOnlyLuaTable;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
@@ -63,7 +64,7 @@ public class BlockStateAPI {
         this.id = BuiltInRegistries.BLOCK.getKey(blockstate.getBlock()).toString();
 
         CompoundTag tag = NbtUtils.writeBlockState(blockstate);
-        this.properties = (LuaTable) NbtToLua.convert(tag.contains("Properties") ? tag.get("Properties") : null);
+        this.properties = new ReadOnlyLuaTable(tag.contains("Properties") ? NbtToLua.convert(tag.get("Properties")) : new LuaTable());
     }
 
     protected BlockPos getBlockPos() {
