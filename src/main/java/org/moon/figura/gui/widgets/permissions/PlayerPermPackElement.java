@@ -1,4 +1,4 @@
-package org.moon.figura.gui.widgets.trust;
+package org.moon.figura.gui.widgets.permissions;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -20,9 +20,9 @@ import org.moon.figura.gui.widgets.ContextMenu;
 import org.moon.figura.gui.widgets.Label;
 import org.moon.figura.gui.widgets.lists.PlayerList;
 import org.moon.figura.lua.api.nameplate.NameplateCustomization;
-import org.moon.figura.trust.Trust;
-import org.moon.figura.trust.TrustContainer;
-import org.moon.figura.trust.TrustManager;
+import org.moon.figura.permissions.PermissionManager;
+import org.moon.figura.permissions.PermissionPack;
+import org.moon.figura.permissions.Permissions;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.TextUtils;
@@ -31,11 +31,11 @@ import org.moon.figura.utils.ui.UIHelper;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class PlayerElement extends AbstractTrustElement {
+public class PlayerPermPackElement extends AbstractPermPackElement {
 
     public static final ResourceLocation UNKNOWN = new FiguraIdentifier("textures/gui/unknown_portrait.png");
-    private static final ResourceLocation BACKGROUND = new FiguraIdentifier("textures/gui/player_trust.png");
-    private static final Component DC_TEXT = new FiguraText("gui.trust.disconnected").withStyle(ChatFormatting.RED);
+    private static final ResourceLocation BACKGROUND = new FiguraIdentifier("textures/gui/player_permissions.png");
+    private static final Component DC_TEXT = new FiguraText("gui.permissions.disconnected").withStyle(ChatFormatting.RED);
 
     private final String name;
     private final ResourceLocation skin;
@@ -51,8 +51,8 @@ public class PlayerElement extends AbstractTrustElement {
     public int anchorX, anchorY, initialY;
     public int index;
 
-    public PlayerElement(String name, TrustContainer trust, ResourceLocation skin, UUID owner, PlayerList parent) {
-        super(40, trust, parent);
+    public PlayerPermPackElement(String name, PermissionPack pack, ResourceLocation skin, UUID owner, PlayerList parent) {
+        super(40, pack, parent);
         this.name = name;
         this.skin = skin;
         this.owner = owner;
@@ -81,18 +81,17 @@ public class PlayerElement extends AbstractTrustElement {
             FiguraToast.sendToast(new FiguraText("toast.reload"));
         });
 
-        //trust
-        ContextMenu trustContext = new ContextMenu();
-        int size = Trust.Group.values().length;
-        for (int i = 0; i < (TrustManager.isLocal(trust) ? size : size - 1); i++) {
-            TrustContainer.GroupContainer container = TrustManager.GROUPS.get(Trust.Group.indexOf(i));
-            trustContext.addAction(container.getGroupName(), button -> {
-                trust.setParent(container);
+        //permissions
+        ContextMenu permissionsContext = new ContextMenu();
+        for (Permissions.Category category : Permissions.Category.values()) {
+            PermissionPack.CategoryPermissionPack categoryPack = PermissionManager.CATEGORIES.get(category);
+            permissionsContext.addAction(categoryPack.getCategoryName(), button -> {
+                pack.setCategory(categoryPack);
                 if (parent.selectedEntry == this)
-                    parent.parent.updateTrustData(trust);
+                    parent.parent.updatePermissions(pack);
             });
         }
-        context.addTab(new FiguraText("gui.context.set_trust"), trustContext);
+        context.addTab(new FiguraText("gui.context.set_permissions"), permissionsContext);
 
         if (FiguraMod.DEBUG_MODE) {
             context.addAction(new TextComponent("yoink to cache"), button -> {
@@ -147,8 +146,8 @@ public class PlayerElement extends AbstractTrustElement {
 
         //selected overlay
         if (this.parent.selectedEntry == this) {
-            ArrayList<TrustContainer> list = new ArrayList<>(TrustManager.GROUPS.values());
-            int color = (dragged ? list.get(Math.min(index, list.size() - (TrustManager.isLocal(trust) ? 1 : 2))) : trust).getColor();
+            ArrayList<PermissionPack> list = new ArrayList<>(PermissionManager.CATEGORIES.values());
+            int color = (dragged ? list.get(Math.min(index, list.size() - 1)) : pack).getColor();
             UIHelper.fillRounded(stack, x - 1, y - 1, width + 2, height + 2, color + (0xFF << 24));
         }
 
@@ -162,7 +161,7 @@ public class PlayerElement extends AbstractTrustElement {
         Avatar avatar = AvatarManager.getAvatarForPlayer(owner);
         if (avatar != null) {
             NameplateCustomization custom = avatar.luaRuntime == null ? null : avatar.luaRuntime.nameplate.LIST;
-            if (custom != null && custom.getJson() != null && avatar.trust.get(Trust.NAMEPLATE_EDIT) == 1)
+            if (custom != null && custom.getJson() != null && avatar.permissions.get(Permissions.NAMEPLATE_EDIT) == 1)
                 name = custom.getJson().copy();
 
             head = !dragged && avatar.renderPortrait(stack, x + 4, y + 4, Math.round(32 * scale), 64, true);
@@ -210,9 +209,9 @@ public class PlayerElement extends AbstractTrustElement {
             status.render(stack, mouseX, mouseY, delta);
         }
 
-        //trust
+        //category
         int textY = y + height - font.lineHeight - 4;
-        drawString(stack, font, trust.getGroupName().append(trust.hasChanges() ? "*" : ""), x + 40, textY, 0xFFFFFF);
+        drawString(stack, font, pack.getCategoryName().append(pack.hasChanges() ? "*" : ""), x + 40, textY, 0xFFFFFF);
 
         //disconnected
         if (disconnected)

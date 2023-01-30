@@ -20,9 +20,9 @@ import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.avatar.local.LocalAvatarFetcher;
 import org.moon.figura.backend2.NetworkStuff;
 import org.moon.figura.config.Config;
-import org.moon.figura.trust.Trust;
-import org.moon.figura.trust.TrustContainer;
-import org.moon.figura.trust.TrustManager;
+import org.moon.figura.permissions.PermissionManager;
+import org.moon.figura.permissions.PermissionPack;
+import org.moon.figura.permissions.Permissions;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.MathUtils;
 
@@ -105,33 +105,33 @@ public class FiguraDebugCommand {
 
         root.add("config", config);
 
-        //trust groups
-        JsonObject trust = new JsonObject();
+        //all permissions
+        JsonObject permissions = new JsonObject();
 
-        for (TrustContainer.GroupContainer group : TrustManager.GROUPS.values()) {
-            JsonObject allTrust = new JsonObject();
+        for (PermissionPack.CategoryPermissionPack group : PermissionManager.CATEGORIES.values()) {
+            JsonObject allPermissions = new JsonObject();
 
             JsonObject standard = new JsonObject();
-            for (Map.Entry<Trust, Integer> entry : group.getTrustSettings().entrySet())
+            for (Map.Entry<Permissions, Integer> entry : group.getPermissions().entrySet())
                 standard.addProperty(entry.getKey().name, entry.getValue());
 
-            allTrust.add("standard", standard);
+            allPermissions.add("standard", standard);
 
-            JsonObject customTrust = new JsonObject();
-            for (Map.Entry<String, Map<Trust, Integer>> entry : group.getCustomTrusts().entrySet()) {
+            JsonObject customPermissions = new JsonObject();
+            for (Map.Entry<String, Map<Permissions, Integer>> entry : group.getCustomPermissions().entrySet()) {
                 JsonObject obj = new JsonObject();
-                for (Map.Entry<Trust, Integer> entry1 : entry.getValue().entrySet())
+                for (Map.Entry<Permissions, Integer> entry1 : entry.getValue().entrySet())
                     obj.addProperty(entry1.getKey().name, entry1.getValue());
 
-                customTrust.add(entry.getKey(), obj);
+                customPermissions.add(entry.getKey(), obj);
             }
 
-            allTrust.add("custom", customTrust);
+            allPermissions.add("custom", customPermissions);
 
-            trust.add(group.name, allTrust);
+            permissions.add(group.name, allPermissions);
         }
 
-        root.add("trust", trust);
+        root.add("permissions", permissions);
 
         //avatars
         LocalAvatarFetcher.load();
@@ -146,29 +146,29 @@ public class FiguraDebugCommand {
 
         JsonObject a = new JsonObject();
 
-        //trust
-        JsonObject aTrust = new JsonObject();
+        //permissions
+        JsonObject aPermissions = new JsonObject();
 
-        aTrust.addProperty("parentTrust", avatar.trust.parent.name);
+        aPermissions.addProperty("category", avatar.permissions.category.name);
 
         JsonObject standard = new JsonObject();
-        for (Map.Entry<Trust, Integer> entry : avatar.trust.getTrustSettings().entrySet())
+        for (Map.Entry<Permissions, Integer> entry : avatar.permissions.getPermissions().entrySet())
             standard.addProperty(entry.getKey().name, entry.getValue());
 
-        aTrust.add("standard", standard);
+        aPermissions.add("standard", standard);
 
-        JsonObject customTrust = new JsonObject();
-        for (Map.Entry<String, Map<Trust, Integer>> entry : avatar.trust.getCustomTrusts().entrySet()) {
+        JsonObject customPermissions = new JsonObject();
+        for (Map.Entry<String, Map<Permissions, Integer>> entry : avatar.permissions.getCustomPermissions().entrySet()) {
             JsonObject obj = new JsonObject();
-            for (Map.Entry<Trust, Integer> entry1 : entry.getValue().entrySet())
+            for (Map.Entry<Permissions, Integer> entry1 : entry.getValue().entrySet())
                 obj.addProperty(entry1.getKey().name, entry1.getValue());
 
-            customTrust.add(entry.getKey(), obj);
+            customPermissions.add(entry.getKey(), obj);
         }
 
-        aTrust.add("custom", customTrust);
+        aPermissions.add("custom", customPermissions);
 
-        a.add("trust", aTrust);
+        a.add("permissions", aPermissions);
 
         //avatar metadata
         JsonObject aMeta = new JsonObject();

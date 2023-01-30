@@ -121,8 +121,8 @@ public abstract class AbstractPanelScreen extends Screen {
             //attempt to click on the context menu
             boolean clicked = contextMenu.mouseClicked(mouseX, mouseY, button);
 
-            //then try to click on the parent container and suppress it
-            //let the parent handle the context menu visibility
+            //then try to click on the category container and suppress it
+            //let the category handle the context menu visibility
             if (!clicked && contextMenu.parent != null && contextMenu.parent.mouseClicked(mouseX, mouseY, button))
                 return true;
 

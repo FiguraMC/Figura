@@ -8,7 +8,7 @@ import org.luaj.vm2.lib.VarArgFunction;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.config.Config;
-import org.moon.figura.trust.Trust;
+import org.moon.figura.permissions.Permissions;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.TextUtils;
 
@@ -110,7 +110,7 @@ public class FiguraLuaPrinter {
 
         owner.errorText = TextUtils.replaceTabs(new TextComponent(message).withStyle(ColorUtils.Colors.LUA_ERROR.style));
 
-        if ((owner.entityType == EntityType.PLAYER && !Config.LOG_OTHERS.asBool() && !FiguraMod.isLocal(owner.owner)) || owner.trust.getGroup() == Trust.Group.BLOCKED)
+        if ((owner.entityType == EntityType.PLAYER && !Config.LOG_OTHERS.asBool() && !FiguraMod.isLocal(owner.owner)) || owner.permissions.getCategory() == Permissions.Category.BLOCKED)
             return;
 
         chatQueue.offer(component); //bypass the char limit filter

@@ -12,7 +12,7 @@ import org.moon.figura.avatar.Badges;
 import org.moon.figura.config.Config;
 import org.moon.figura.gui.Emojis;
 import org.moon.figura.lua.api.nameplate.NameplateCustomization;
-import org.moon.figura.trust.Trust;
+import org.moon.figura.permissions.Permissions;
 import org.moon.figura.utils.TextUtils;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -57,7 +57,7 @@ public class ChatComponentMixin {
             Avatar avatar = AvatarManager.getAvatarForPlayer(uuid);
             NameplateCustomization custom = avatar == null || avatar.luaRuntime == null ? null : avatar.luaRuntime.nameplate.CHAT;
 
-            Component replacement = custom != null && custom.getJson() != null && avatar.trust.get(Trust.NAMEPLATE_EDIT) == 1 ?
+            Component replacement = custom != null && custom.getJson() != null && avatar.permissions.get(Permissions.NAMEPLATE_EDIT) == 1 ?
                     TextUtils.replaceInText(custom.getJson().copy(), "\n|\\\\n", " ") : name;
 
             //name

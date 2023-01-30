@@ -10,7 +10,7 @@ import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.model.rendering.texture.FiguraTexture;
-import org.moon.figura.trust.Trust;
+import org.moon.figura.permissions.Permissions;
 import org.moon.figura.utils.ColorUtils;
 
 import java.io.ByteArrayInputStream;
@@ -40,9 +40,9 @@ public class TextureAPI {
     }
 
     public FiguraTexture register(String name, NativeImage image, boolean ignoreSize) {
-        int max = owner.trust.get(Trust.TEXTURE_SIZE);
+        int max = owner.permissions.get(Permissions.TEXTURE_SIZE);
         if (!ignoreSize && (image.getWidth() > max || image.getHeight() > max)) {
-            owner.trustIssues.add(Trust.TEXTURE_SIZE);
+            owner.noPermissions.add(Permissions.TEXTURE_SIZE);
             throw new LuaError("Texture exceeded max size of " + max + " x " + max + " resolution, got " + image.getWidth() + " x " + image.getHeight());
         }
 

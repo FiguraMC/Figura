@@ -1,4 +1,4 @@
-package org.moon.figura.gui.widgets.trust;
+package org.moon.figura.gui.widgets.permissions;
 
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -7,22 +7,20 @@ import net.minecraft.util.Mth;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.gui.widgets.lists.PlayerList;
-import org.moon.figura.trust.Trust;
-import org.moon.figura.trust.TrustContainer;
-import org.moon.figura.trust.TrustManager;
+import org.moon.figura.permissions.PermissionPack;
+import org.moon.figura.permissions.Permissions;
 import org.moon.figura.utils.ui.UIHelper;
 
-public class AbstractTrustElement extends AbstractButton implements Comparable<AbstractTrustElement> {
+public class AbstractPermPackElement extends AbstractButton implements Comparable<AbstractPermPackElement> {
 
     protected final PlayerList parent;
-    protected final TrustContainer trust;
-
+    protected final PermissionPack pack;
     protected float scale = 1f;
 
-    protected AbstractTrustElement(int height, TrustContainer container, PlayerList parent) {
+    protected AbstractPermPackElement(int height, PermissionPack pack, PlayerList parent) {
         super(0, 0, 174, height, TextComponent.EMPTY.copy());
         this.parent = parent;
-        this.trust = container;
+        this.pack = pack;
     }
 
     protected void animate(float delta, boolean anim) {
@@ -50,8 +48,8 @@ public class AbstractTrustElement extends AbstractButton implements Comparable<A
         //set selected entry
         parent.selectedEntry = this;
 
-        //update trust widgets
-        parent.parent.updateTrustData(this.trust);
+        //update permissions widgets
+        parent.parent.updatePermissions(this.pack);
     }
 
     @Override
@@ -59,41 +57,41 @@ public class AbstractTrustElement extends AbstractButton implements Comparable<A
     }
 
     public boolean isVisible() {
-        return trust.isVisible();
+        return pack.isVisible();
     }
 
-    public TrustContainer getTrust() {
-        return trust;
+    public PermissionPack getPack() {
+        return pack;
     }
 
     @Override
-    public int compareTo(AbstractTrustElement other) {
-        //compare trust levels first
-        int len = Trust.Group.values().length;
+    public int compareTo(AbstractPermPackElement other) {
+        //compare permission categories first
+        int len = Permissions.Category.values().length;
 
         int i;
-        if (this instanceof PlayerElement p && p.dragged) {
-            i = Math.min(p.index, len - (TrustManager.isLocal(p.trust) ? 1 : 2));
+        if (this instanceof PlayerPermPackElement p && p.dragged) {
+            i = Math.min(p.index, len - 1);
         } else {
-            i = this.trust.getGroup().index;
+            i = this.pack.getCategory().index;
         }
 
         int j;
-        if (other instanceof PlayerElement p && p.dragged) {
-            j = Math.min(p.index, len - (TrustManager.isLocal(p.trust) ? 1 : 2));
+        if (other instanceof PlayerPermPackElement p && p.dragged) {
+            j = Math.min(p.index, len - 1);
         } else {
-            j = other.trust.getGroup().index;
+            j = other.pack.getCategory().index;
         }
 
         int comp = Integer.compare(i, j);
         if (comp == 0) {
             //then compare types
-            if (this instanceof GroupElement && other instanceof PlayerElement)
+            if (this instanceof CategoryPermPackElement && other instanceof PlayerPermPackElement)
                 return -1;
-            if (this instanceof PlayerElement && other instanceof GroupElement)
+            if (this instanceof PlayerPermPackElement && other instanceof CategoryPermPackElement)
                 return 1;
 
-            if (this instanceof PlayerElement player1 && other instanceof PlayerElement player2) {
+            if (this instanceof PlayerPermPackElement player1 && other instanceof PlayerPermPackElement player2) {
                 Avatar avatar1 = AvatarManager.getAvatarForPlayer(player1.getOwner());
                 Avatar avatar2 = AvatarManager.getAvatarForPlayer(player2.getOwner());
 

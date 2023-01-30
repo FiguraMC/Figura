@@ -15,21 +15,21 @@ import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.widgets.*;
 import org.moon.figura.gui.widgets.lists.PlayerList;
-import org.moon.figura.gui.widgets.lists.TrustList;
-import org.moon.figura.gui.widgets.trust.AbstractTrustElement;
-import org.moon.figura.gui.widgets.trust.PlayerElement;
-import org.moon.figura.trust.Trust;
-import org.moon.figura.trust.TrustContainer;
-import org.moon.figura.trust.TrustManager;
+import org.moon.figura.gui.widgets.lists.PermissionsList;
+import org.moon.figura.gui.widgets.permissions.AbstractPermPackElement;
+import org.moon.figura.gui.widgets.permissions.PlayerPermPackElement;
+import org.moon.figura.permissions.Permissions;
+import org.moon.figura.permissions.PermissionPack;
+import org.moon.figura.permissions.PermissionManager;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.ui.UIHelper;
 
 import java.util.UUID;
 
-public class TrustScreen extends AbstractPanelScreen {
+public class PermissionsScreen extends AbstractPanelScreen {
 
-    public static final Component TITLE = new FiguraText("gui.panels.title.trust");
+    public static final Component TITLE = new FiguraText("gui.panels.title.permissions");
 
     // -- widgets -- //
     private PlayerList playerList;
@@ -37,12 +37,12 @@ public class TrustScreen extends AbstractPanelScreen {
 
     private SliderWidget slider;
 
-    private TrustList trustList;
+    private PermissionsList permissionsList;
     private SwitchButton expandButton;
     private TexturedButton reloadAll;
     private TexturedButton back;
     private TexturedButton resetButton;
-    private SwitchButton preciseTrust;
+    private SwitchButton precisePermissions;
 
     // -- debug -- //
     private TextField uuid;
@@ -54,10 +54,10 @@ public class TrustScreen extends AbstractPanelScreen {
     private float resetYPrecise;
 
     private boolean expanded;
-    private PlayerElement dragged = null;
+    private PlayerPermPackElement dragged = null;
 
-    public TrustScreen(Screen parentScreen) {
-        super(parentScreen, TITLE, TrustScreen.class);
+    public PermissionsScreen(Screen parentScreen) {
+        super(parentScreen, TITLE, PermissionsScreen.class);
     }
 
     @Override
@@ -83,14 +83,14 @@ public class TrustScreen extends AbstractPanelScreen {
         //entity widget
         entityWidget = new InteractableEntity(entityX, 28, entitySize, entitySize, modelSize, -15f, 30f, Minecraft.getInstance().player, this);
 
-        //trust slider and list
+        //permission slider and list
         slider = new SliderWidget(middle + 2, (int) (entityWidget.y + entityWidget.height + lineHeight * 1.5 + 20), listWidth, 11, 1d, 5, true) {
             @Override
             public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
                 super.renderButton(stack, mouseX, mouseY, delta);
 
-                TrustContainer selectedTrust = playerList.selectedEntry.getTrust();
-                MutableComponent text = selectedTrust.getGroupName();
+                PermissionPack selectedPack = playerList.selectedEntry.getPack();
+                MutableComponent text = selectedPack.getCategoryName();
 
                 stack.pushPose();
                 stack.translate(this.x + this.getWidth() / 2f - font.width(text) * 0.75, this.y - 4 - font.lineHeight * 2, 0f);
@@ -99,7 +99,7 @@ public class TrustScreen extends AbstractPanelScreen {
                 stack.popPose();
             }
         };
-        trustList = new TrustList(middle + 2, height, listWidth, height - 54);
+        permissionsList = new PermissionsList(middle + 2, height, listWidth, height - 54);
 
         // -- left -- //
 
@@ -118,7 +118,7 @@ public class TrustScreen extends AbstractPanelScreen {
 
         //reload all
         int bottomButtonsWidth = (listWidth - 24) / 2 - 2;
-        addRenderableWidget(reloadAll = new TexturedButton(middle + 2, height - 24, bottomButtonsWidth, 20, new FiguraText("gui.trust.reload_all"), null, bx -> {
+        addRenderableWidget(reloadAll = new TexturedButton(middle + 2, height - 24, bottomButtonsWidth, 20, new FiguraText("gui.permissions.reload_all"), null, bx -> {
             AvatarManager.clearAllAvatars();
             FiguraToast.sendToast(new FiguraText("toast.reload_all"));
         }));
@@ -149,7 +149,7 @@ public class TrustScreen extends AbstractPanelScreen {
             if (avatar == null || avatar.nbt == null)
                 return;
 
-            if (playerList.selectedEntry instanceof PlayerElement player) {
+            if (playerList.selectedEntry instanceof PlayerPermPackElement player) {
                 UUID target = player.getOwner();
                 if (FiguraMod.isLocal(target))
                     AvatarManager.localUploaded = false;
@@ -166,7 +166,7 @@ public class TrustScreen extends AbstractPanelScreen {
         }
 
         //expand button
-        addRenderableWidget(expandButton = new SwitchButton( middle + listWidth - 18, height - 24, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/expand_v.png"), 60, 40, new FiguraText("gui.trust.expand_trust.tooltip"), btn -> {
+        addRenderableWidget(expandButton = new SwitchButton( middle + listWidth - 18, height - 24, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/expand_v.png"), 60, 40, new FiguraText("gui.permissions.expand_permissions.tooltip"), btn -> {
             expanded = expandButton.isToggled();
 
             //hide widgets
@@ -179,26 +179,26 @@ public class TrustScreen extends AbstractPanelScreen {
             yoink.visible = !expanded;
 
             //update expand button
-            expandButton.setTooltip(expanded ? new FiguraText("gui.trust.minimize_trust.tooltip") : new FiguraText("gui.trust.expand_trust.tooltip"));
+            expandButton.setTooltip(expanded ? new FiguraText("gui.permissions.minimize_permissions.tooltip") : new FiguraText("gui.permissions.expand_permissions.tooltip"));
 
             //set reset button activeness
             resetButton.active = expanded;
         }));
 
         //reset all button
-        addRenderableWidget(resetButton = new TexturedButton(middle + 2, height, 60, 20, new FiguraText("gui.trust.reset"), null, btn -> {
-            //clear trust
-            TrustContainer trust = playerList.selectedEntry.getTrust();
-            trust.clear();
-            updateTrustData(trust);
+        addRenderableWidget(resetButton = new TexturedButton(middle + 2, height, 60, 20, new FiguraText("gui.permissions.reset"), null, btn -> {
+            //clear permissions
+            PermissionPack pack = playerList.selectedEntry.getPack();
+            pack.clear();
+            updatePermissions(pack);
         }));
 
-        addRenderableWidget(preciseTrust = new SwitchButton(middle + 72, height, 30, 20, false) {
+        addRenderableWidget(precisePermissions = new SwitchButton(middle + 72, height, 30, 20, false) {
             @Override
             public void onPress() {
                 super.onPress();
-                trustList.precise = this.isToggled();
-                trustList.updateList(playerList.selectedEntry.getTrust());
+                permissionsList.precise = this.isToggled();
+                permissionsList.updateList(playerList.selectedEntry.getPack());
             }
 
             @Override
@@ -207,12 +207,12 @@ public class TrustScreen extends AbstractPanelScreen {
                 drawString(stack, font, this.getMessage(), x + width + 4, y + height / 2 - font.lineHeight / 2, 0xFFFFFF);
             }
         });
-        preciseTrust.setMessage(new FiguraText("gui.trust.precise"));
+        precisePermissions.setMessage(new FiguraText("gui.permissions.precise"));
 
-        //add trust list
-        addRenderableWidget(trustList);
+        //add permissions list
+        addRenderableWidget(permissionsList);
 
-        listYPrecise = trustList.y;
+        listYPrecise = permissionsList.y;
         expandYPrecise = expandButton.y;
         resetYPrecise = resetButton.y;
     }
@@ -220,10 +220,10 @@ public class TrustScreen extends AbstractPanelScreen {
     @Override
     public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
         //set entity to render
-        AbstractTrustElement entity = playerList.selectedEntry;
+        AbstractPermPackElement entity = playerList.selectedEntry;
         Level world = Minecraft.getInstance().level;
-        if (world != null && entity instanceof PlayerElement player)
-            entityWidget.setEntity(world.getPlayerByUUID(UUID.fromString(player.getTrust().name)));
+        if (world != null && entity instanceof PlayerPermPackElement player)
+            entityWidget.setEntity(world.getPlayerByUUID(UUID.fromString(player.getPack().name)));
         else
             entityWidget.setEntity(null);
 
@@ -231,14 +231,14 @@ public class TrustScreen extends AbstractPanelScreen {
         float lerpDelta = (float) (1f - Math.pow(0.6f, delta));
 
         listYPrecise = Mth.lerp(lerpDelta, listYPrecise, expandButton.isToggled() ? 50f : height + 1);
-        this.trustList.y = (int) listYPrecise;
+        this.permissionsList.y = (int) listYPrecise;
 
         expandYPrecise = Mth.lerp(lerpDelta, expandYPrecise, expandButton.isToggled() ? listYPrecise - 22f : listYPrecise - 24f);
         this.expandButton.y = (int) expandYPrecise;
 
         resetYPrecise = Mth.lerp(lerpDelta, resetYPrecise, expandButton.isToggled() ? listYPrecise - 22f : height);
         this.resetButton.y = (int) resetYPrecise;
-        this.preciseTrust.y = (int) resetYPrecise;
+        this.precisePermissions.y = (int) resetYPrecise;
 
         //render
         super.render(stack, mouseX, mouseY, delta);
@@ -254,7 +254,7 @@ public class TrustScreen extends AbstractPanelScreen {
 
     @Override
     public void removed() {
-        TrustManager.saveToDisk();
+        PermissionManager.saveToDisk();
         super.removed();
     }
 
@@ -274,7 +274,7 @@ public class TrustScreen extends AbstractPanelScreen {
         boolean bool = super.mouseClicked(mouseX, mouseY, button);
         dragged = null;
 
-        if (button == 0 && playerList.selectedEntry instanceof PlayerElement element && element.isMouseOver(mouseX, mouseY)) {
+        if (button == 0 && playerList.selectedEntry instanceof PlayerPermPackElement element && element.isMouseOver(mouseX, mouseY)) {
             dragged = element;
             element.anchorX = (int) mouseX;
             element.anchorY = (int) mouseY;
@@ -287,7 +287,7 @@ public class TrustScreen extends AbstractPanelScreen {
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
         if (dragged != null) {
-            dragged.index = playerList.getTrustAt(mouseY);
+            dragged.index = playerList.getCategoryAt(mouseY);
             dragged.dragged = true;
             return true;
         }
@@ -300,42 +300,41 @@ public class TrustScreen extends AbstractPanelScreen {
         if (dragged == null || !dragged.dragged)
             return super.mouseReleased(mouseX, mouseY, button);
 
-        TrustContainer trust = dragged.getTrust();
-        Trust.Group group = Trust.Group.indexOf(Math.min(dragged.index, Trust.Group.values().length - (TrustManager.isLocal(trust) ? 1 : 2)));
+        PermissionPack pack = dragged.getPack();
+        Permissions.Category category = Permissions.Category.indexOf(Math.min(dragged.index, Permissions.Category.values().length - 1));
 
-        trust.setParent(TrustManager.GROUPS.get(group));
-        updateTrustData(trust);
+        pack.setCategory(PermissionManager.CATEGORIES.get(category));
+        updatePermissions(pack);
 
         dragged.dragged = false;
         dragged = null;
         return true;
     }
 
-    public void updateTrustData(TrustContainer trust) {
+    public void updatePermissions(PermissionPack pack) {
         //reset run action
         slider.setAction(null);
 
         //set slider active only for players
-        slider.active = trust instanceof TrustContainer.PlayerContainer && !expanded;
+        slider.active = pack instanceof PermissionPack.PlayerPermissionPack && !expanded;
 
         //set step sizes
-        int len = Trust.Group.values().length;
-        slider.setMax(TrustManager.isLocal(trust) ? len : len - 1);
+        slider.setMax(Permissions.Category.values().length);
 
         //set slider progress
-        slider.setScrollProgress(trust.getGroup().index / (slider.getMax() - 1d));
+        slider.setScrollProgress(pack.getCategory().index / (slider.getMax() - 1d));
 
         //set new slider action
         slider.setAction(scroll -> {
-            //set new trust parent
-            Trust.Group group = Trust.Group.indexOf(((SliderWidget) scroll).getIntValue());
-            trust.setParent(TrustManager.GROUPS.get(group));
+            //set new permissions category
+            Permissions.Category category = Permissions.Category.indexOf(((SliderWidget) scroll).getIntValue());
+            pack.setCategory(PermissionManager.CATEGORIES.get(category));
 
-            //and update the advanced trust
-            trustList.updateList(trust);
+            //and update the advanced permissions
+            permissionsList.updateList(pack);
         });
 
-        //update advanced trust list
-        trustList.updateList(trust);
+        //update advanced permissions list
+        permissionsList.updateList(pack);
     }
 }
