@@ -62,7 +62,7 @@ public class FiguraModelPartReader {
         while (textureSets.size() > facesByTexture.size())
             facesByTexture.add(0);
         while (textureSets.size() > bufferBuilders.size())
-            bufferBuilders.add(FiguraImmediateBuffer.builder());
+            bufferBuilders.add(new FiguraImmediateBuffer.Builder());
 
         //Read vertex data
         if (hasCubeData(partCompound)) {
