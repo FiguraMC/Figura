@@ -315,11 +315,10 @@
 
   "figura.config.iris_compatibility_fix": "Iris Compatibility Fix",
   "figura.config.iris_compatibility_fix.tooltip": "Series of compatibility fixes to ensure compatibility with the shader mod Iris\nIf Iris is not installed, all fixes will be ignored",
-  "figura.config.iris_compatibility_fix.enum": "None: Don't apply any compatibility fix\nEmissives: Change the way the emissive render type work to a more compatible system that uses fully-lit textures instead of the vanilla eyes type\nOffset Render Types: Offset special render types a tiny bit, to make sure they're rendered on top of other render types\nBoth: Apply both fixes",
+  "figura.config.iris_compatibility_fix.enum": "None: Don't apply any compatibility fix\nOffset: Offset special render types a tiny bit, to make sure they're rendered on top of other render types\nEmissives: When a shader pack is active, change the way the emissive render type work to a more compatible system that uses fully-lit textures instead of the vanilla eyes type",
   "figura.config.iris_compatibility_fix.1": "None",
-  "figura.config.iris_compatibility_fix.2": "Emissives",
-  "figura.config.iris_compatibility_fix.3": "Offset Render Types",
-  "figura.config.iris_compatibility_fix.4": "Both",
+  "figura.config.iris_compatibility_fix.2": "Offset",
+  "figura.config.iris_compatibility_fix.3": "Offset + Emissives",
 
   "figura.config.allow_fp_hands": "First Person Hands",
   "figura.config.allow_fp_hands.tooltip": "Toggles if scripts can move around, rotate or scale the First Person Hand parent type groups",

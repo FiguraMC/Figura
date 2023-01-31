@@ -154,11 +154,12 @@ public class FiguraImmediateBuffer {
         uvFixer.set(textureSet.getWidth(), textureSet.getHeight(), 1); //Dividing by this makes uv 0 to 1
 
         double light = vertexData.fullBright ? LightTexture.FULL_BRIGHT : customization.light;
-        double vertexOffset = vertexData.offsetVertices ? 0.0001f : 0f;
+        double vertexOffset = vertexData.offsetVertices ? -0.001f : 0f;
 
         for (int i = 0; i < faceCount * 4; i++) {
             pos.set(positions.get(), positions.get(), positions.get(), 1);
             pos.transform(customization.positionMatrix);
+            pos.add(pos.normalized().scale(vertexOffset));
             normal.set(normals.get(), normals.get(), normals.get());
             normal.transform(customization.normalMatrix);
             uv.set(uvs.get(), uvs.get(), 1);
@@ -167,7 +168,7 @@ public class FiguraImmediateBuffer {
 
             buffer.add((float) pos.x);
             buffer.add((float) pos.y);
-            buffer.add((float) (pos.z + vertexOffset));
+            buffer.add((float) pos.z);
 
             buffer.add((float) customization.color.x);
             buffer.add((float) customization.color.y);
