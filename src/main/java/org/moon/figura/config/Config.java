@@ -87,7 +87,7 @@ public enum Config {
     },
 
     Rendering,
-    IRIS_COMPATIBILITY_FIX(0, 4),
+    IRIS_COMPATIBILITY_FIX(2, 3),
     ALLOW_FP_HANDS(false),
     RENDER_DEBUG_PARTS_PIVOT(1, 5) {{
         String tooltip = "config.render_debug_parts_pivot.tooltip";

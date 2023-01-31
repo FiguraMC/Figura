@@ -26,6 +26,7 @@ import org.moon.figura.model.rendering.texture.FiguraTextureSet;
 import org.moon.figura.model.rendering.texture.RenderTypes;
 import org.moon.figura.model.rendertasks.RenderTask;
 import org.moon.figura.utils.ColorUtils;
+import org.moon.figura.utils.ui.UIHelper;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -114,9 +115,9 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         customization.free();
 
         //iris fix
-        int irisConfig = Config.IRIS_COMPATIBILITY_FIX.asInt();
-        doIrisEmissiveFix = (irisConfig == 1 || irisConfig >= 3) && ClientAPI.hasIrisShader();
-        offsetRenderLayers = irisConfig >= 2 && ClientAPI.hasIris();
+        int irisConfig = UIHelper.paperdoll || !ClientAPI.hasIris() ? 0 : Config.IRIS_COMPATIBILITY_FIX.asInt();
+        doIrisEmissiveFix = irisConfig >= 2 && ClientAPI.hasIrisShader();
+        offsetRenderLayers = irisConfig >= 1;
 
         //Iterate and setup each buffer
         for (FiguraImmediateBuffer buffer : buffers) {
