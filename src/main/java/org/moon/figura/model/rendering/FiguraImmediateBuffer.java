@@ -1,6 +1,5 @@
 package org.moon.figura.model.rendering;
 
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.floats.FloatArrayList;
 import net.minecraft.client.renderer.LightTexture;
@@ -16,6 +15,7 @@ import org.moon.figura.utils.caching.CacheStack;
 
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 public class FiguraImmediateBuffer {
@@ -75,7 +75,7 @@ public class FiguraImmediateBuffer {
         normals.position(normals.position() + faceCount * 12);
     }
 
-    public void pushVertices(AvatarRenderer renderer, int faceCount, int[] remainingComplexity) {
+    public void pushVertices(ImmediateAvatarRenderer renderer, int faceCount, int[] remainingComplexity) {
         //Handle cases that we can quickly
         if (faceCount == 0)
             return;
@@ -88,31 +88,33 @@ public class FiguraImmediateBuffer {
             return;
         }
 
-        TextureResult primary = this.getTexture(renderer, customization.getPrimaryRenderType(), customization.primaryTexture, textureSet);
-        TextureResult secondary = this.getTexture(renderer, customization.getSecondaryRenderType(), customization.secondaryTexture, textureSet);
+        VertexData primary = this.getTexture(renderer, customization, textureSet, true);
+        VertexData secondary = this.getTexture(renderer, customization, textureSet, false);
 
-        if (primary.texture == null && secondary.texture == null) {
+        if (primary.renderType == null && secondary.renderType == null) {
             advanceBuffers(faceCount);
             remainingComplexity[0] += faceCount;
             return;
         }
 
-        if (primary.texture != null) {
-            if (secondary.texture != null)
+        if (primary.renderType != null) {
+            if (secondary.renderType != null)
                 markBuffers();
-            pushToConsumer(renderer.bufferSource.getBuffer(primary.texture), faceCount, primary.forceFullbright);
+            pushToBuffer(faceCount, primary);
         }
-        if (secondary.texture != null) {
-            if (primary.texture != null)
+        if (secondary.renderType != null) {
+            if (primary.renderType != null)
                 resetBuffers();
-            pushToConsumer(renderer.bufferSource.getBuffer(secondary.texture), faceCount, secondary.forceFullbright);
+            pushToBuffer(faceCount, secondary);
         }
     }
 
-    private record TextureResult(RenderType texture, boolean forceFullbright) {}
-    private TextureResult getTexture(AvatarRenderer renderer, RenderTypes types, Pair<FiguraTextureSet.OverrideType, Object> texture, FiguraTextureSet textureSet) {
+    private VertexData getTexture(ImmediateAvatarRenderer renderer, PartCustomization customization, FiguraTextureSet textureSet, boolean primary) {
+        RenderTypes types = primary ? customization.getPrimaryRenderType() : customization.getSecondaryRenderType();
+        Pair<FiguraTextureSet.OverrideType, Object> texture = primary ? customization.primaryTexture : customization.secondaryTexture;
+
         if (types == RenderTypes.NONE)
-            return new TextureResult(null, false);
+            return new VertexData();
 
         //get texture
         ResourceLocation id = textureSet.getOverrideTexture(renderer.avatar.owner, texture);
@@ -120,28 +122,41 @@ public class FiguraImmediateBuffer {
         //get render type
         if (id != null) {
             if (renderer.translucent)
-                return new TextureResult(RenderType.itemEntityTranslucentCull(id), false);
+                return new VertexData(RenderTypes.TRANSLUCENT_CULL, RenderType.itemEntityTranslucentCull(id));
             if (renderer.glowing)
-                return new TextureResult(RenderType.outline(id), false);
+                return new VertexData(RenderTypes.TRANSLUCENT_CULL, RenderType.outline(id));
         }
 
-        boolean forceFullbright = false;
+        if (types == null)
+            return new VertexData();
+
+        RenderType renderType;
+        boolean fullBright = false;
+        boolean offset = renderer.offsetRenderLayers && !primary && types.isOffset();
+        //Switch to cutout with fullbright if the iris emissive fix is enabled
         if (renderer.doIrisEmissiveFix && types == RenderTypes.EMISSIVE) {
-            types = RenderTypes.CUTOUT; //Switch to cutout with fullbright if the iris emissive fix is enabled
-            forceFullbright = true;
+            fullBright = true;
+            renderType = RenderTypes.CUTOUT.get(id);
+        } else {
+            renderType = types.get(id);
         }
 
-        return new TextureResult(types == null ? null : types.get(id), forceFullbright);
+        return new VertexData(types, renderType, offset, fullBright);
     }
 
-    private void pushToConsumer(VertexConsumer consumer, int faceCount, boolean forceFullbright) {
+    private void pushToBuffer(int faceCount, VertexData vertexData) {
+        LinkedHashMap<RenderType, FloatArrayList> bufferMap = ImmediateAvatarRenderer.VERTICES.computeIfAbsent(vertexData.type, renderTypes -> new LinkedHashMap<>());
+        FloatArrayList buffer = bufferMap.computeIfAbsent(vertexData.renderType, renderType -> new FloatArrayList());
+
         PartCustomization customization = customizationStack.peek();
 
         FiguraVec3 uvFixer = FiguraVec3.of();
         uvFixer.set(textureSet.getWidth(), textureSet.getHeight(), 1); //Dividing by this makes uv 0 to 1
 
-        for (int i = 0; i < faceCount*4; i++) {
+        double light = vertexData.fullBright ? LightTexture.FULL_BRIGHT : customization.light;
+        double vertexOffset = vertexData.offsetVertices ? 0.0001f : 0f;
 
+        for (int i = 0; i < faceCount * 4; i++) {
             pos.set(positions.get(), positions.get(), positions.get(), 1);
             pos.transform(customization.positionMatrix);
             normal.set(normals.get(), normals.get(), normals.get());
@@ -150,33 +165,53 @@ public class FiguraImmediateBuffer {
             uv.divide(uvFixer);
             uv.transform(customization.uvMatrix);
 
-            consumer.vertex(
-                    (float) pos.x,
-                    (float) pos.y,
-                    (float) pos.z,
+            buffer.add((float) pos.x);
+            buffer.add((float) pos.y);
+            buffer.add((float) (pos.z + vertexOffset));
 
-                    (float) customization.color.x,
-                    (float) customization.color.y,
-                    (float) customization.color.z,
-                    customization.alpha,
+            buffer.add((float) customization.color.x);
+            buffer.add((float) customization.color.y);
+            buffer.add((float) customization.color.z);
+            buffer.add((float) customization.alpha);
 
-                    (float) uv.x,
-                    (float) uv.y,
+            buffer.add((float) uv.x);
+            buffer.add((float) uv.y);
 
-                    customization.overlay,
-                    forceFullbright ? LightTexture.FULL_BRIGHT : customization.light,
+            buffer.add((float) customization.overlay);
+            buffer.add((float) light);
 
-                    (float) normal.x,
-                    (float) normal.y,
-                    (float) normal.z
-            );
+            buffer.add((float) normal.x);
+            buffer.add((float) normal.y);
+            buffer.add((float) normal.z);
         }
 
         uvFixer.free();
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public static class VertexData {
+        public final RenderTypes type;
+        public final RenderType renderType;
+        public final boolean fullBright;
+        public final boolean offsetVertices;
+
+        public VertexData() {
+            this(null, null);
+        }
+
+        public VertexData(RenderTypes type, RenderType renderType) {
+            this(type, renderType, false);
+        }
+
+        public VertexData(RenderTypes type, RenderType renderType, boolean offsetVertices) {
+            this(type, renderType, offsetVertices, false);
+        }
+
+        public VertexData(RenderTypes type, RenderType renderType, boolean offsetVertices, boolean fullBright) {
+            this.type = type;
+            this.renderType = renderType;
+            this.offsetVertices = offsetVertices;
+            this.fullBright = fullBright;
+        }
     }
 
     public static class Builder {
