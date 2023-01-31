@@ -43,7 +43,6 @@
     "render.GameRendererMixin",
     "render.LevelRendererMixin",
     "render.PlayerModelMixin",
-    "render.RenderBuffersMixin",
 
     "render.layers.CapeLayerMixin",
     "render.layers.CustomHeadLayerMixin",

@@ -44,7 +44,7 @@ public class EntityRenderDispatcherMixin {
 
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
     private <E extends Entity> void render(E entity, double d, double e, double f, float g, float h, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, CallbackInfo ci) {
-        Entity owner = entity.getControllingPassenger();
+        Entity owner = entity.getFirstPassenger();
         if (owner == null)
             return;
 

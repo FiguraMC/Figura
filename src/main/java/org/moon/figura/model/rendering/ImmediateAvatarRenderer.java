@@ -1,7 +1,9 @@
 package org.moon.figura.model.rendering;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.datafixers.util.Pair;
+import it.unimi.dsi.fastutil.floats.FloatArrayList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.LightTexture;
@@ -25,8 +27,7 @@ import org.moon.figura.model.rendering.texture.RenderTypes;
 import org.moon.figura.model.rendertasks.RenderTask;
 import org.moon.figura.utils.ColorUtils;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ImmediateAvatarRenderer extends AvatarRenderer {
@@ -36,6 +37,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
     public static final FiguraMat4 VIEW_TO_WORLD_MATRIX = FiguraMat4.of();
     private static final PartCustomization pivotOffsetter = PartCustomization.of();
+    protected static final HashMap<RenderTypes, LinkedHashMap<RenderType, FloatArrayList>> VERTICES = new HashMap<>();
 
     public ImmediateAvatarRenderer(Avatar avatar) {
         super(avatar);
@@ -111,8 +113,10 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         //Free customization after use
         customization.free();
 
-        //iris emissive fix
-        doIrisEmissiveFix = (Config.IRIS_COMPATIBILITY_FIX.asInt() >= 3 || Config.IRIS_COMPATIBILITY_FIX.asInt() == 1) && ClientAPI.hasIrisShader();
+        //iris fix
+        int irisConfig = Config.IRIS_COMPATIBILITY_FIX.asInt();
+        doIrisEmissiveFix = (irisConfig == 1 || irisConfig >= 3) && ClientAPI.hasIrisShader();
+        offsetRenderLayers = irisConfig >= 2 && ClientAPI.hasIris();
 
         //Iterate and setup each buffer
         for (FiguraImmediateBuffer buffer : buffers) {
@@ -145,6 +149,52 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         Boolean initialValue = currentFilterScheme.initialValue(root);
         if (initialValue != null)
             renderPart(root, remainingComplexity, initialValue);
+
+        //push vertices to vertex consumer
+        FiguraMod.pushProfiler("draw");
+
+        RenderTypes[] values = RenderTypes.values();
+        for (RenderTypes value : values) {
+            Map<RenderType, FloatArrayList> map = VERTICES.get(value);
+            if (map == null)
+                continue;
+
+            for (Map.Entry<RenderType, FloatArrayList> entry : map.entrySet()) {
+                VertexConsumer consumer = bufferSource.getBuffer(entry.getKey());
+                FloatArrayList vertex = entry.getValue();
+
+                for (int i = 0; i < vertex.size(); ) {
+                    consumer.vertex(
+                            //pos
+                            vertex.getFloat(i++),
+                            vertex.getFloat(i++),
+                            vertex.getFloat(i++),
+
+                            //color
+                            vertex.getFloat(i++),
+                            vertex.getFloat(i++),
+                            vertex.getFloat(i++),
+                            vertex.getFloat(i++),
+
+                            //uv
+                            vertex.getFloat(i++),
+                            vertex.getFloat(i++),
+
+                            //overlay, light
+                            (int) vertex.getFloat(i++),
+                            (int) vertex.getFloat(i++),
+
+                            //normal
+                            vertex.getFloat(i++),
+                            vertex.getFloat(i++),
+                            vertex.getFloat(i++)
+                    );
+                }
+            }
+        }
+
+        VERTICES.clear();
+        FiguraMod.popProfiler();
 
         //finish rendering
         customizationStack.pop();
@@ -274,7 +324,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         }
 
         //render this
-        FiguraMod.pushProfiler("render");
+        FiguraMod.pushProfiler("pushVertices");
         if (!part.pushVerticesImmediate(this, remainingComplexity)) {
             customizationStack.pop();
             FiguraMod.popProfiler();
