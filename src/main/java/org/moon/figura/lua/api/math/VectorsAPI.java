@@ -38,25 +38,11 @@ public class VectorsAPI {
                             argumentTypes = {Double.class, Double.class, Double.class, Double.class},
                             argumentNames = {"x", "y", "z", "w"},
                             returnType = FiguraVec4.class
-                    ),
-                    @LuaMethodOverload(
-                            argumentTypes = {Double.class, Double.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"x", "y", "z", "w", "t"},
-                            returnType = FiguraVec5.class
-                    ),
-                    @LuaMethodOverload(
-                            argumentTypes = {Double.class, Double.class, Double.class, Double.class, Double.class, Double.class},
-                            argumentNames = {"x", "y", "z", "w", "t", "h"},
-                            returnType = FiguraVec6.class
                     )
             },
             value = "vectors.vec"
     )
-    public static Object vec(Double x, Double y, Double z, Double w, Double t, Double h) {
-        if (h != null)
-            return vec6(x, y, z, w, t, h);
-        if (t != null)
-            return vec5(x, y, z, w, t);
+    public static Object vec(Double x, Double y, Double z, Double w) {
         if (w != null)
             return vec4(x, y, z, w);
         if (z != null)

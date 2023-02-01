@@ -13,7 +13,6 @@ import org.moon.figura.lua.api.world.ItemStackAPI;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec4;
-import org.moon.figura.math.vector.FiguraVec6;
 
 public class LuaUtils {
 
@@ -35,10 +34,7 @@ public class LuaUtils {
     public static Pair<FiguraVec3, FiguraVec3> parse2Vec3(String methodName, Object x, Object y, Number z, Object w, Number t, Number h) {
         FiguraVec3 a, b;
 
-        if (x instanceof FiguraVec6 vec1) {
-            a = FiguraVec3.of(vec1.x, vec1.y, vec1.z);
-            b = FiguraVec3.of(vec1.w, vec1.t, vec1.h);
-        } else if (x instanceof FiguraVec3 vec1) {
+        if (x instanceof FiguraVec3 vec1) {
             a = vec1.copy();
             if (y instanceof FiguraVec3 vec2) {
                 b = vec2.copy();

@@ -15,7 +15,6 @@ import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
-import org.moon.figura.math.vector.FiguraVec6;
 import org.moon.figura.utils.LuaUtils;
 
 @LuaWhitelist
@@ -49,10 +48,6 @@ public class ParticleAPI {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
-                    @LuaMethodOverload(
-                            argumentTypes = {String.class, FiguraVec6.class},
-                            argumentNames = {"name", "posVel"}
-                    ),
                     @LuaMethodOverload(
                             argumentTypes = {String.class, FiguraVec3.class},
                             argumentNames = {"name", "pos"}

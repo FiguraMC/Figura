@@ -47,13 +47,13 @@ import org.moon.figura.math.matrix.FiguraMat2;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.matrix.FiguraMatrix;
-import org.moon.figura.math.vector.*;
+import org.moon.figura.math.vector.FiguraVec2;
+import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.math.vector.FiguraVec4;
+import org.moon.figura.math.vector.FiguraVector;
 import org.moon.figura.model.FiguraModelPart;
 import org.moon.figura.model.rendering.texture.FiguraTexture;
-import org.moon.figura.model.rendertasks.BlockTask;
-import org.moon.figura.model.rendertasks.ItemTask;
-import org.moon.figura.model.rendertasks.RenderTask;
-import org.moon.figura.model.rendertasks.TextTask;
+import org.moon.figura.model.rendertasks.*;
 import org.moon.figura.utils.FiguraText;
 
 import java.io.FileOutputStream;
@@ -148,7 +148,8 @@ public class FiguraDocsManager {
                 RenderTask.class,
                 BlockTask.class,
                 ItemTask.class,
-                TextTask.class
+                TextTask.class,
+                TextureTask.class
         ));
 
         put("player", List.of(
@@ -171,9 +172,7 @@ public class FiguraDocsManager {
                 VectorsAPI.class,
                 FiguraVec2.class,
                 FiguraVec3.class,
-                FiguraVec4.class,
-                FiguraVec5.class,
-                FiguraVec6.class
+                FiguraVec4.class
         ));
 
         put("matrices", List.of(
