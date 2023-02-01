@@ -42,7 +42,6 @@
     "fabric": ">=${fabric_api}"
   },
   "conflicts": {
-    "iris": "*",
     "immersive_portals": "*",
     "canvas": "*"
   },

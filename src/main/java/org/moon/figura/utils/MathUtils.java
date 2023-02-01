@@ -9,7 +9,10 @@ import org.moon.figura.math.matrix.FiguraMat2;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.matrix.FiguraMatrix;
-import org.moon.figura.math.vector.*;
+import org.moon.figura.math.vector.FiguraVec2;
+import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.math.vector.FiguraVec4;
+import org.moon.figura.math.vector.FiguraVector;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
@@ -23,8 +26,6 @@ public class MathUtils {
             case 2 -> FiguraVec2.of(vals[0], vals[1]);
             case 3 -> FiguraVec3.of(vals[0], vals[1], vals[2]);
             case 4 -> FiguraVec4.of(vals[0], vals[1], vals[2], vals[3]);
-            case 5 -> FiguraVec5.of(vals[0], vals[1], vals[2], vals[3], vals[4]);
-            case 6 -> FiguraVec6.of(vals[0], vals[1], vals[2], vals[3], vals[4], vals[5]);
             default -> throw new IllegalStateException("Cannot create vector of size: " + vals.length);
         };
     }
