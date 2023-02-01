@@ -33,7 +33,6 @@ import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
-import org.moon.figura.math.vector.FiguraVec6;
 import org.moon.figura.mixin.BlockBehaviourAccessor;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.LuaUtils;
@@ -71,10 +70,10 @@ public class BlockStateAPI {
         return pos == null ? BlockPos.ZERO : pos;
     }
 
-    protected static List<FiguraVec6> voxelShapeToTable(VoxelShape shape) {
-        List<FiguraVec6> shapes = new ArrayList<>();
+    protected static List<List<FiguraVec3>> voxelShapeToTable(VoxelShape shape) {
+        List<List<FiguraVec3>> shapes = new ArrayList<>();
         for (AABB aabb : shape.toAabbs())
-            shapes.add(FiguraVec6.of(aabb.minX, aabb.minY, aabb.minZ, aabb.maxX, aabb.maxY, aabb.maxZ));
+            shapes.add(List.of(FiguraVec3.of(aabb.minX, aabb.minY, aabb.minZ), FiguraVec3.of(aabb.maxX, aabb.maxY, aabb.maxZ)));
         return shapes;
     }
 
@@ -263,13 +262,13 @@ public class BlockStateAPI {
 
     @LuaWhitelist
     @LuaMethodDoc("blockstate.get_collision_shape")
-    public List<FiguraVec6> getCollisionShape() {
+    public List<List<FiguraVec3>> getCollisionShape() {
         return voxelShapeToTable(blockState.getCollisionShape(WorldAPI.getCurrentWorld(), getBlockPos()));
     }
 
     @LuaWhitelist
     @LuaMethodDoc("blockstate.get_outline_shape")
-    public List<FiguraVec6> getOutlineShape() {
+    public List<List<FiguraVec3>> getOutlineShape() {
         return voxelShapeToTable(blockState.getShape(WorldAPI.getCurrentWorld(), getBlockPos()));
     }
 

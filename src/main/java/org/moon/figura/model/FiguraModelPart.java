@@ -17,10 +17,7 @@ import org.moon.figura.model.rendering.ImmediateAvatarRenderer;
 import org.moon.figura.model.rendering.texture.FiguraTexture;
 import org.moon.figura.model.rendering.texture.FiguraTextureSet;
 import org.moon.figura.model.rendering.texture.RenderTypes;
-import org.moon.figura.model.rendertasks.BlockTask;
-import org.moon.figura.model.rendertasks.ItemTask;
-import org.moon.figura.model.rendertasks.RenderTask;
-import org.moon.figura.model.rendertasks.TextTask;
+import org.moon.figura.model.rendertasks.*;
 import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.ui.UIHelper;
 
@@ -1069,6 +1066,19 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
             value = "model_part.new_block")
     public BlockTask newBlock(@LuaNotNil String name) {
         BlockTask task = new BlockTask(name);
+        this.renderTasks.put(name, task);
+        return task;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = String.class,
+                    argumentNames = "taskName"
+            ),
+            value = "model_part.new_texture")
+    public TextureTask newTexture(@LuaNotNil String name) {
+        TextureTask task = new TextureTask(name);
         this.renderTasks.put(name, task);
         return task;
     }
