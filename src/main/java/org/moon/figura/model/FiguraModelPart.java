@@ -881,7 +881,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     @LuaWhitelist
     @LuaMethodDoc("model_part.get_color")
     public FiguraVec3 getColor() {
-        return getPrimaryColor().multiply(getSecondaryColor());
+        return getPrimaryColor().add(getSecondaryColor()).scale(0.5);
     }
 
     @LuaWhitelist
