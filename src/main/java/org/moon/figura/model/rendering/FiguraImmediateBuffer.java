@@ -9,6 +9,7 @@ import org.lwjgl.BufferUtils;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec4;
 import org.moon.figura.model.PartCustomization;
+import org.moon.figura.model.rendering.texture.FiguraTexture;
 import org.moon.figura.model.rendering.texture.FiguraTextureSet;
 import org.moon.figura.model.rendering.texture.RenderTypes;
 import org.moon.figura.utils.caching.CacheStack;
@@ -27,6 +28,7 @@ public class FiguraImmediateBuffer {
     private static final FiguraVec4 pos = FiguraVec4.of();
     private static final FiguraVec3 normal = FiguraVec3.of();
     private static final FiguraVec3 uv = FiguraVec3.of(0, 0, 1);
+    private static final FiguraVec4 color = FiguraVec4.of(1, 1, 1, 1);
 
     private FiguraImmediateBuffer(FloatArrayList posList, FloatArrayList uvList, FloatArrayList normalList, FiguraTextureSet textureSet, PartCustomization.Stack customizationStack) {
         positions = BufferUtils.createFloatBuffer(posList.size());
@@ -112,36 +114,48 @@ public class FiguraImmediateBuffer {
     private VertexData getTexture(ImmediateAvatarRenderer renderer, PartCustomization customization, FiguraTextureSet textureSet, boolean primary) {
         RenderTypes types = primary ? customization.getPrimaryRenderType() : customization.getSecondaryRenderType();
         Pair<FiguraTextureSet.OverrideType, Object> texture = primary ? customization.primaryTexture : customization.secondaryTexture;
+        VertexData ret = new VertexData();
 
         if (types == RenderTypes.NONE)
-            return new VertexData();
+            return ret;
 
         //get texture
         ResourceLocation id = textureSet.getOverrideTexture(renderer.avatar.owner, texture);
 
+        //color
+        FiguraTexture figuraTexture = textureSet.getTexture(texture);
+        if (figuraTexture != null && figuraTexture.getColor() != null)
+            ret.color = figuraTexture.getColor();
+
         //get render type
         if (id != null) {
-            if (renderer.translucent)
-                return new VertexData(RenderTypes.TRANSLUCENT_CULL, RenderType.itemEntityTranslucentCull(id));
-            if (renderer.glowing)
-                return new VertexData(RenderTypes.TRANSLUCENT_CULL, RenderType.outline(id));
+            if (renderer.translucent) {
+                ret.type = RenderTypes.TRANSLUCENT_CULL;
+                ret.renderType = RenderType.itemEntityTranslucentCull(id);
+                return ret;
+            }
+            if (renderer.glowing) {
+                ret.type = RenderTypes.TRANSLUCENT_CULL;
+                ret.renderType = RenderType.outline(id);
+                return ret;
+            }
         }
 
         if (types == null)
-            return new VertexData();
+            return ret;
 
-        RenderType renderType;
-        boolean fullBright = false;
-        boolean offset = renderer.offsetRenderLayers && !primary && types.isOffset();
+        ret.type = types;
+        ret.offsetVertices = renderer.offsetRenderLayers && !primary && types.isOffset();
+
         //Switch to cutout with fullbright if the iris emissive fix is enabled
         if (renderer.doIrisEmissiveFix && types == RenderTypes.EMISSIVE) {
-            fullBright = true;
-            renderType = RenderTypes.CUTOUT.get(id);
+            ret.fullBright = true;
+            ret.renderType = RenderTypes.CUTOUT.get(id);
         } else {
-            renderType = types.get(id);
+            ret.renderType = types.get(id);
         }
 
-        return new VertexData(types, renderType, offset, fullBright);
+        return ret;
     }
 
     private void pushToBuffer(int faceCount, VertexData vertexData) {
@@ -153,8 +167,14 @@ public class FiguraImmediateBuffer {
         FiguraVec3 uvFixer = FiguraVec3.of();
         uvFixer.set(textureSet.getWidth(), textureSet.getHeight(), 1); //Dividing by this makes uv 0 to 1
 
+        double overlay = customization.overlay;
         double light = vertexData.fullBright ? LightTexture.FULL_BRIGHT : customization.light;
-        double vertexOffset = vertexData.offsetVertices ? -0.001f : 0f;
+        double vertexOffset = vertexData.offsetVertices ? -0.005f : 0f;
+
+        if (vertexData.color != null)
+            color.set(vertexData.color);
+        else
+            color.set(customization.color.x, customization.color.y, customization.color.z, (double) customization.alpha);
 
         for (int i = 0; i < faceCount * 4; i++) {
             pos.set(positions.get(), positions.get(), positions.get(), 1);
@@ -170,15 +190,15 @@ public class FiguraImmediateBuffer {
             buffer.add((float) pos.y);
             buffer.add((float) pos.z);
 
-            buffer.add((float) customization.color.x);
-            buffer.add((float) customization.color.y);
-            buffer.add((float) customization.color.z);
-            buffer.add((float) customization.alpha);
+            buffer.add((float) color.x);
+            buffer.add((float) color.y);
+            buffer.add((float) color.z);
+            buffer.add((float) color.w);
 
             buffer.add((float) uv.x);
             buffer.add((float) uv.y);
 
-            buffer.add((float) customization.overlay);
+            buffer.add((float) overlay);
             buffer.add((float) light);
 
             buffer.add((float) normal.x);
@@ -190,29 +210,11 @@ public class FiguraImmediateBuffer {
     }
 
     public static class VertexData {
-        public final RenderTypes type;
-        public final RenderType renderType;
-        public final boolean fullBright;
-        public final boolean offsetVertices;
-
-        public VertexData() {
-            this(null, null);
-        }
-
-        public VertexData(RenderTypes type, RenderType renderType) {
-            this(type, renderType, false);
-        }
-
-        public VertexData(RenderTypes type, RenderType renderType, boolean offsetVertices) {
-            this(type, renderType, offsetVertices, false);
-        }
-
-        public VertexData(RenderTypes type, RenderType renderType, boolean offsetVertices, boolean fullBright) {
-            this.type = type;
-            this.renderType = renderType;
-            this.offsetVertices = offsetVertices;
-            this.fullBright = fullBright;
-        }
+        public RenderTypes type;
+        public RenderType renderType;
+        public boolean fullBright;
+        public boolean offsetVertices;
+        public FiguraVec4 color;
     }
 
     public static class Builder {

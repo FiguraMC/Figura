@@ -262,7 +262,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         part.applyExtraTransforms(customizationStack.peek().positionMatrix);
 
         //recalculate stuff
-        FiguraMod.pushProfiler("checkVisibility");
+        FiguraMod.popPushProfiler("checkVisibility");
 
         Boolean storedVisibility = custom.visible;
         custom.visible = part.getVisible() && (currentFilterScheme.ignoreVanillaVisible || part.getVanillaVisible()) && thisPassedPredicate;
@@ -284,7 +284,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         }
 
         //push stack
-        FiguraMod.popPushProfiler("applyOnStack");
+        FiguraMod.popPushProfiler("pushCustomizationStack");
         customizationStack.push(custom);
 
         //restore variables
@@ -298,7 +298,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
             normalCopy.free();
         }
 
-        FiguraMod.popProfiler(2);
+        FiguraMod.popProfiler();
 
         if (thisPassedPredicate) {
             //recalculate world matrices
@@ -328,7 +328,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         FiguraMod.pushProfiler("pushVertices");
         if (!part.pushVerticesImmediate(this, remainingComplexity)) {
             customizationStack.pop();
-            FiguraMod.popProfiler();
+            FiguraMod.popProfiler(2);
             return false;
         }
 
@@ -337,25 +337,29 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         if (thisPassedPredicate) {
             PartCustomization peek = customizationStack.peek();
 
-            //fix pivots
-            FiguraMod.pushProfiler("fixMatricesPivot");
+            boolean renderPivot = shouldRenderPivots > 0 && (shouldRenderPivots % 2 == 0 || peek.visible);
+            boolean renderTasks = peek.visible && allowRenderTasks && !part.renderTasks.isEmpty();
+            boolean renderPivotParts = peek.visible && part.parentType.isPivot && allowPivotParts;
 
-            FiguraVec3 pivot = custom.getPivot();
-            pivotOffsetter.setPos(pivot);
-            pivotOffsetter.recalculate();
-            customizationStack.push(pivotOffsetter);
-            pivot.free();
+            if (renderPivot || renderTasks || renderPivotParts) {
+                //fix pivots
+                FiguraMod.pushProfiler("fixMatricesPivot");
 
-            //render pivot indicators
-            if (shouldRenderPivots > 0 && (shouldRenderPivots % 2 == 0 || peek.visible)) {
-                FiguraMod.popPushProfiler("renderPivotCube");
-                renderPivot(part);
-            }
+                FiguraVec3 pivot = custom.getPivot();
+                pivotOffsetter.setPos(pivot);
+                pivotOffsetter.recalculate();
+                customizationStack.push(pivotOffsetter);
+                pivot.free();
 
-            if (peek.visible) {
+                //render pivot indicators
+                if (renderPivot) {
+                    FiguraMod.popPushProfiler("renderPivotCube");
+                    renderPivot(part);
+                }
+
                 //render tasks
-                FiguraMod.popPushProfiler("renderTasks");
-                if (allowRenderTasks) {
+                if (renderTasks) {
+                    FiguraMod.popPushProfiler("renderTasks");
                     int light = peek.light;
                     int overlay = peek.overlay;
                     allowSkullRendering = false;
@@ -372,13 +376,15 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
                 }
 
                 //render pivot parts
-                FiguraMod.popPushProfiler("savePivotParts");
-                if (part.parentType.isPivot && allowPivotParts)
-                    savePivotTransform(part.parentType);
-            }
+                if (renderPivotParts) {
+                    FiguraMod.popPushProfiler("savePivotParts");
+                    if (part.parentType.isPivot && allowPivotParts)
+                        savePivotTransform(part.parentType);
+                }
 
-            customizationStack.pop();
-            FiguraMod.popProfiler();
+                customizationStack.pop();
+                FiguraMod.popProfiler();
+            }
         }
 
         //render children
@@ -391,6 +397,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
             }
 
         //reset the parent
+        FiguraMod.popPushProfiler("removeVanillaTransforms");
         part.resetVanillaTransforms();
 
         //pop
