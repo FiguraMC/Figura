@@ -32,6 +32,7 @@ import org.luaj.vm2.Varargs;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.animation.Animation;
 import org.moon.figura.animation.AnimationPlayer;
+import org.moon.figura.backend2.NetworkStuff;
 import org.moon.figura.config.Config;
 import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.lua.FiguraLuaRuntime;
@@ -176,7 +177,7 @@ public class Avatar {
                 if (metadata.contains("minify"))
                     minify = metadata.getBoolean("minify");
                 fileSize = getFileSize();
-                versionStatus = version.compareTo(FiguraMod.VERSION);
+                versionStatus = getVersionStatus();
                 if (entityName.isBlank())
                     entityName = name;
 
@@ -860,6 +861,12 @@ public class Avatar {
             FiguraMod.LOGGER.warn("Failed to generate file size for model " + this.name, e);
             return 0;
         }
+    }
+
+    private int getVersionStatus() {
+        if (version == null || (NetworkStuff.latestVersion != null && version.compareTo(NetworkStuff.latestVersion) > 0))
+            return 0;
+        return version.compareTo(FiguraMod.VERSION);
     }
 
     // -- loading -- //
