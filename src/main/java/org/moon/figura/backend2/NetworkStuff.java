@@ -61,6 +61,8 @@ public class NetworkStuff {
 
     public static int lastPing, pingsSent, pingsReceived;
 
+    public static Version latestVersion;
+
     //limits
     private static final RefilledNumber
             uploadRate = new RefilledNumber(),
@@ -248,12 +250,13 @@ public class NetworkStuff {
         queueString(Util.NIL_UUID, HttpAPI::getVersion, (code, data) -> {
             responseDebug("checkVersion", code, data);
             JsonObject json = JsonParser.parseString(data).getAsJsonObject();
+            latestVersion = new Version(json.get("prerelease").getAsString());
 
             int config = Config.UPDATE_CHANNEL.asInt();
             if (config != 0) {
-                String version = json.get(config == 1 ? "release" : "prerelease").getAsString();
-                if (new Version(version).compareTo(FiguraMod.VERSION) > 0)
-                    FiguraToast.sendToast(new FiguraText("toast.new_version"), version);
+                Version compare = config == 1 ? new Version(json.get("release").getAsString()) : latestVersion;
+                if (compare.compareTo(FiguraMod.VERSION) > 0)
+                    FiguraToast.sendToast(new FiguraText("toast.new_version"), compare);
             }
         });
     }
