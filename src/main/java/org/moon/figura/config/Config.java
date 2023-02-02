@@ -13,7 +13,6 @@ import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.backend2.NetworkStuff;
 import org.moon.figura.gui.widgets.TextField;
 import org.moon.figura.lua.FiguraLuaPrinter;
-import org.moon.figura.lua.api.ClientAPI;
 import org.moon.figura.permissions.PermissionManager;
 import org.moon.figura.permissions.Permissions;
 import org.moon.figura.utils.ColorUtils;
