@@ -45,6 +45,7 @@ public class PartCustomization implements CachedType<PartCustomization> {
     private FiguraVec3 animScale = FiguraVec3.of(1, 1, 1);
 
     public FiguraVec3 color = FiguraVec3.of(1, 1, 1);
+    public FiguraVec3 color2 = FiguraVec3.of(1, 1, 1);
     public Float alpha = null;
     public Integer light = null;
     public Integer overlay = null;
@@ -300,6 +301,7 @@ public class PartCustomization implements CachedType<PartCustomization> {
         offsetRot = FiguraVec3.of();
         offsetScale = FiguraVec3.of(1, 1, 1);
         color = FiguraVec3.of(1, 1, 1);
+        color2 = FiguraVec3.of(1, 1, 1);
         animPos = FiguraVec3.of();
         animRot = FiguraVec3.of();
         animScale = FiguraVec3.of(1, 1, 1);
@@ -324,6 +326,7 @@ public class PartCustomization implements CachedType<PartCustomization> {
         offsetRot.free();
         offsetScale.free();
         color.free();
+        color2.free();
     }
     public static PartCustomization of() {
         return CACHE.getFresh();
@@ -356,6 +359,7 @@ public class PartCustomization implements CachedType<PartCustomization> {
             to.offsetRot(from.offsetRot);
             to.offsetScale(from.offsetScale);
             to.color.set(from.color);
+            to.color2.set(from.color2);
             to.alpha = from.alpha;
             to.light = from.light;
             to.overlay = from.overlay;
@@ -396,6 +400,7 @@ public class PartCustomization implements CachedType<PartCustomization> {
         }
 
         color.multiply(other.color);
+        color2.multiply(other.color2);
 
         if (other.primaryTexture != null)
             primaryTexture = other.primaryTexture;

@@ -92,28 +92,6 @@ public class FiguraTextureSet {
         };
     }
 
-    public FiguraTexture getTexture(Pair<OverrideType, Object> pair) {
-        OverrideType type;
-
-        if (pair == null || (type = pair.getFirst()) == null)
-            return null;
-
-        return switch (type) {
-            case PRIMARY -> textures[0] == null ? null : textures[0];
-            case SECONDARY -> textures[1] == null ? null : textures[1];
-            case SPECULAR -> textures[2] == null ? null : textures[2];
-            case NORMAL -> textures[3] == null ? null : textures[3];
-            case CUSTOM -> {
-                try {
-                    yield ((FiguraTexture) pair.getSecond());
-                } catch (Exception ignored) {
-                    yield null;
-                }
-            }
-            default -> null;
-        };
-    }
-
     public enum OverrideType {
         SKIN,
         CAPE,

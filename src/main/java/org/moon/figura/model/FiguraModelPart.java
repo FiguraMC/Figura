@@ -869,7 +869,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
             aliases = "color",
             value = "model_part.set_color")
     public FiguraModelPart setColor(Object r, Double g, Double b) {
-        this.customization.color = LuaUtils.parseVec3("setColor", r, g, b, 1, 1, 1);
+        this.customization.color = this.customization.color2 = LuaUtils.parseVec3("setColor", r, g, b, 1, 1, 1);
         return this;
     }
 
@@ -881,7 +881,67 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     @LuaWhitelist
     @LuaMethodDoc("model_part.get_color")
     public FiguraVec3 getColor() {
+        return getPrimaryColor().multiply(getSecondaryColor());
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "color"
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"r", "g", "b"}
+                    )
+            },
+            aliases = "primaryColor",
+            value = "model_part.set_primary_color")
+    public FiguraModelPart setPrimaryColor(Object r, Double g, Double b) {
+        this.customization.color = LuaUtils.parseVec3("setPrimaryColor", r, g, b, 1, 1, 1);
+        return this;
+    }
+
+    @LuaWhitelist
+    public FiguraModelPart primaryColor(Object r, Double g, Double b) {
+        return setPrimaryColor(r, g, b);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("model_part.get_primary_color")
+    public FiguraVec3 getPrimaryColor() {
         return this.customization.color.copy();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "color"
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"r", "g", "b"}
+                    )
+            },
+            aliases = "secondaryColor",
+            value = "model_part.set_secondary_color")
+    public FiguraModelPart setSecondaryColor(Object r, Double g, Double b) {
+        this.customization.color2 = LuaUtils.parseVec3("setSecondaryColor", r, g, b, 1, 1, 1);
+        return this;
+    }
+
+    @LuaWhitelist
+    public FiguraModelPart secondaryColor(Object r, Double g, Double b) {
+        return setSecondaryColor(r, g, b);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("model_part.get_secondary_color")
+    public FiguraVec3 getSecondaryColor() {
+        return this.customization.color2.copy();
     }
 
     @LuaWhitelist

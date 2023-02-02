@@ -55,11 +55,6 @@ public class FiguraTexture extends SimpleTexture {
     private NativeImage backup;
     private boolean isClosed = false;
 
-    /**
-     * Custom fields
-     */
-    private FiguraVec4 color;
-
     public FiguraTexture(Avatar owner, String name, byte[] data) {
         super(new FiguraIdentifier("avatar_tex/" + owner.owner + "/" + UUID.randomUUID()));
 
@@ -297,22 +292,6 @@ public class FiguraTexture extends SimpleTexture {
             }
         }
         return this;
-    }
-
-    @LuaWhitelist
-    public FiguraVec4 getColor() {
-        return color;
-    }
-
-    @LuaWhitelist
-    public FiguraTexture setColor(Object r, Double g, Double b, Double a) {
-        this.color = parseColor("setColor", r, g, b, a);
-        return this;
-    }
-
-    @LuaWhitelist
-    public FiguraTexture color(Object r, Double g, Double b, Double a) {
-        return setColor(r, g, b, a);
     }
 
     @LuaWhitelist
