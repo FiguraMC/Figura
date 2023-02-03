@@ -5,6 +5,8 @@ public enum EntityRenderMode {
     PAPERDOLL,
     MINECRAFT_GUI,
     FIRST_PERSON,
+    FIRST_PERSON_WORLD,
     RENDER,
+    WORLD,
     OTHER
 }
