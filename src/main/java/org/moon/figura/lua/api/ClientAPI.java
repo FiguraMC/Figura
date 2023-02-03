@@ -37,6 +37,7 @@ public class ClientAPI {
 
     public static final ClientAPI INSTANCE = new ClientAPI();
     private static final HashMap<String, Boolean> LOADED_MODS = new HashMap<>();
+    private static final boolean HAS_IRIS = FabricLoader.getInstance().isModLoaded("iris"); //separated to avoid indexing the list every frame
 
     @LuaWhitelist
     @LuaMethodDoc("client.get_fps")
@@ -267,13 +268,13 @@ public class ClientAPI {
     @LuaWhitelist
     @LuaMethodDoc("client.has_iris")
     public static boolean hasIris() {
-        return isModLoaded("iris");
+        return HAS_IRIS;
     }
 
     @LuaWhitelist
     @LuaMethodDoc("client.has_iris_shader")
     public static boolean hasIrisShader() {
-        return hasIris() && net.irisshaders.iris.api.v0.IrisApi.getInstance().isShaderPackInUse();
+        return HAS_IRIS && net.irisshaders.iris.api.v0.IrisApi.getInstance().isShaderPackInUse();
     }
 
     @LuaWhitelist

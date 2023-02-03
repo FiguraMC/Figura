@@ -15,13 +15,14 @@ public enum RenderTypes {
 
     EMISSIVE(RenderType::eyes, false, true),
     EMISSIVE_SOLID(resourceLocation -> RenderType.beaconBeam(resourceLocation, false), false, true),
+    EYES(RenderType::eyes, false, true),
 
     END_PORTAL(t -> RenderType.endPortal(), true, true),
     END_GATEWAY(t -> RenderType.endGateway(), true, true),
-    GLINT(t ->  RenderType.entityGlintDirect(), true),
-    GLINT2(t ->  RenderType.glintDirect(), true),
-    LINES(t ->  RenderType.lines(), true),
-    LINES_STRIP(t ->  RenderType.lineStrip(), true);
+    GLINT(t -> RenderType.entityGlintDirect(), true),
+    GLINT2(t -> RenderType.glintDirect(), true),
+    LINES(t -> RenderType.lines(), true),
+    LINES_STRIP(t -> RenderType.lineStrip(), true);
 
     private final Function<ResourceLocation, RenderType> func;
     private final boolean force;

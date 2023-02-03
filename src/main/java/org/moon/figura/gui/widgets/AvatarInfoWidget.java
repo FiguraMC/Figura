@@ -17,7 +17,7 @@ import org.moon.figura.utils.MathUtils;
 import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.ui.UIHelper;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -38,7 +38,10 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
     private final int maxSize;
 
     private final Font font;
-    private final List<Component> values = Arrays.asList(new Component[TITLES.size()]);
+    private final List<Component> values = new ArrayList<>() {{
+        for (Component ignored : TITLES)
+            this.add(UNKNOWN);
+    }};
 
     public AvatarInfoWidget(int x, int y, int width, int maxSize) {
         this.x = x;

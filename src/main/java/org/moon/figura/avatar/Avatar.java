@@ -545,7 +545,7 @@ public class Avatar {
         Vec3 camPos = camera.getPosition();
 
         EntityRenderMode oldMode = renderMode;
-        renderMode = EntityRenderMode.FIRST_PERSON;
+        renderMode = EntityRenderMode.FIRST_PERSON_WORLD;
 
         worldRender(watcher, camPos.x, camPos.y, camPos.z, matrices, bufferSource, light, tickDelta);
 
