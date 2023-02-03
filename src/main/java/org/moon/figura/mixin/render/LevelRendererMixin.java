@@ -10,6 +10,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
+import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.config.Config;
@@ -17,6 +18,7 @@ import org.moon.figura.model.rendering.EntityRenderMode;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
@@ -28,12 +30,31 @@ public abstract class LevelRendererMixin {
     @Shadow @Final private EntityRenderDispatcher entityRenderDispatcher;
     @Shadow @Final private RenderBuffers renderBuffers;
 
-    @ModifyArg(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;renderEntity(Lnet/minecraft/world/entity/Entity;DDDFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;)V"), method = "renderLevel")
-    private Entity onRenderEntity(Entity entity) {
-        Avatar avatar = AvatarManager.getAvatar(entity);
+    @Unique private Avatar avatar;
+
+    @ModifyArg(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;renderEntity(Lnet/minecraft/world/entity/Entity;DDDFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;)V"))
+    private Entity ModifyRenderEntity(Entity entity) {
+        avatar = AvatarManager.getAvatar(entity);
         if (avatar != null)
             avatar.renderMode = EntityRenderMode.RENDER;
         return entity;
+    }
+
+    @Inject(method = "renderEntity", at = @At("HEAD"))
+    private void renderEntity(Entity entity, double cameraX, double cameraY, double cameraZ, float tickDelta, PoseStack matrices, MultiBufferSource bufferSource, CallbackInfo ci) {
+        if (avatar == null || avatar.renderMode != EntityRenderMode.RENDER)
+            return;
+
+        FiguraMod.pushProfiler(FiguraMod.MOD_ID);
+        FiguraMod.pushProfiler(avatar);
+        FiguraMod.pushProfiler("worldRender");
+
+        avatar.renderMode = EntityRenderMode.WORLD;
+        avatar.worldRender(entity, cameraX, cameraY, cameraZ, matrices, bufferSource, entityRenderDispatcher.getPackedLightCoords(entity, tickDelta), tickDelta);
+
+        avatar.renderMode = EntityRenderMode.RENDER;
+        avatar = null;
+        FiguraMod.popProfiler(3);
     }
 
     @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;checkPoseStack(Lcom/mojang/blaze3d/vertex/PoseStack;)V", ordinal = 0))

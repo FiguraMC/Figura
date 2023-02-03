@@ -146,7 +146,7 @@ public class FiguraImmediateBuffer {
         //Switch to cutout with fullbright if the iris emissive fix is enabled
         if (renderer.doIrisEmissiveFix && types == RenderTypes.EMISSIVE) {
             ret.fullBright = true;
-            ret.renderType = RenderTypes.CUTOUT.get(id);
+            ret.renderType = RenderTypes.TRANSLUCENT_CULL.get(id);
         } else {
             ret.renderType = types.get(id);
         }
