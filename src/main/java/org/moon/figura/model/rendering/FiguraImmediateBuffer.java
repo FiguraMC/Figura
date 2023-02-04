@@ -140,8 +140,8 @@ public class FiguraImmediateBuffer {
         if (types == null)
             return ret;
 
-        ret.type = types;
-        ret.offsetVertices = renderer.offsetRenderLayers && !primary && types.isOffset();
+        if (renderer.offsetRenderLayers && !primary && types.isOffset())
+            ret.vertexOffset = -0.005f;
 
         //Switch to cutout with fullbright if the iris emissive fix is enabled
         if (renderer.doIrisEmissiveFix && types == RenderTypes.EMISSIVE) {
@@ -151,6 +151,7 @@ public class FiguraImmediateBuffer {
             ret.renderType = types.get(id);
         }
 
+        ret.type = types;
         return ret;
     }
 
@@ -165,12 +166,11 @@ public class FiguraImmediateBuffer {
 
         double overlay = customization.overlay;
         double light = vertexData.fullBright ? LightTexture.FULL_BRIGHT : customization.light;
-        double vertexOffset = vertexData.offsetVertices ? -0.005f : 0f;
 
         for (int i = 0; i < faceCount * 4; i++) {
             pos.set(positions.get(), positions.get(), positions.get(), 1);
             pos.transform(customization.positionMatrix);
-            pos.add(pos.normalized().scale(vertexOffset));
+            pos.add(pos.normalized().scale(vertexData.vertexOffset));
             normal.set(normals.get(), normals.get(), normals.get());
             normal.transform(customization.normalMatrix);
             uv.set(uvs.get(), uvs.get(), 1);
@@ -204,7 +204,7 @@ public class FiguraImmediateBuffer {
         public RenderTypes type;
         public RenderType renderType;
         public boolean fullBright;
-        public boolean offsetVertices;
+        public float vertexOffset;
         public FiguraVec3 color;
     }
 

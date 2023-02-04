@@ -4,7 +4,9 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Matrix3f;
 import com.mojang.math.Matrix4f;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import org.luaj.vm2.LuaError;
 import org.moon.figura.lua.LuaNotNil;
@@ -112,7 +114,8 @@ public class TextureTask extends RenderTask {
 
         if (texture instanceof String s) {
             try {
-                this.texture = new ResourceLocation(s);
+                ResourceLocation resource = new ResourceLocation(s);
+                this.texture = Minecraft.getInstance().getResourceManager().getResource(resource).isPresent() ? resource : MissingTextureAtlasSprite.getLocation();
             } catch (Exception e) {
                 throw new LuaError(e.getMessage());
             }

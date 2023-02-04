@@ -10,6 +10,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 
+import java.util.List;
+import java.util.Map;
+
 @Mixin(PlayerModel.class)
 public abstract class PlayerModelMixin<T extends LivingEntity> extends HumanoidModel<T> implements PlayerModelAccessor {
 
@@ -17,7 +20,7 @@ public abstract class PlayerModelMixin<T extends LivingEntity> extends HumanoidM
     //This is because the internal cape renderer uses the matrix stack,
     //instead of setting rotations like every single other ModelPart they render...
     @Unique
-    public ModelPart fakeCloak = new ModelPart(null, null);
+    public ModelPart fakeCloak = new ModelPart(List.of(), Map.of());
 
     @Final
     @Shadow
