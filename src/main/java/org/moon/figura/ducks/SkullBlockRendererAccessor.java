@@ -3,7 +3,7 @@ package org.moon.figura.ducks;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 
-public class SkullBlockRendererAccessor {
+public abstract class SkullBlockRendererAccessor {
 
     private static ItemStack stack = null;
     private static Entity entity = null;

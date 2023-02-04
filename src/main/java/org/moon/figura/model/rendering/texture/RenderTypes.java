@@ -10,6 +10,7 @@ public enum RenderTypes {
 
     CUTOUT(RenderType::entityCutoutNoCull),
     CUTOUT_CULL(RenderType::entityCutout),
+
     TRANSLUCENT(RenderType::entityTranslucent),
     TRANSLUCENT_CULL(RenderType::entityTranslucentCull),
 
@@ -19,8 +20,10 @@ public enum RenderTypes {
 
     END_PORTAL(t -> RenderType.endPortal(), true, true),
     END_GATEWAY(t -> RenderType.endGateway(), true, true),
+
     GLINT(t -> RenderType.entityGlintDirect(), true),
     GLINT2(t -> RenderType.glintDirect(), true),
+
     LINES(t -> RenderType.lines(), true),
     LINES_STRIP(t -> RenderType.lineStrip(), true);
 

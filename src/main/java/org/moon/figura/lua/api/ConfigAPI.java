@@ -39,9 +39,9 @@ public class ConfigAPI {
         MATRIX
     }
 
-    private final LuaTable luaTable = new LuaTable();
     private final Avatar owner;
     private final boolean isHost;
+    private LuaTable luaTable;
     private String name;
     private boolean loaded = false;
 
@@ -158,6 +158,9 @@ public class ConfigAPI {
 
     //read
     private void init() {
+        if (loaded) return;
+        luaTable = new LuaTable();
+
         //read file
         Path path = getPath();
         JsonObject root;
@@ -177,6 +180,8 @@ public class ConfigAPI {
             FiguraMod.LOGGER.error("", e);
             throw new LuaError("Failed to load avatar data file");
         }
+
+        loaded = true;
     }
 
     private static LuaValue readArg(JsonElement json, Avatar owner) {
@@ -266,10 +271,7 @@ public class ConfigAPI {
         if (!isHost)
             return this;
 
-        if (!loaded) {
-            init();
-            loaded = true;
-        }
+        init();
 
         val = val != null && (val.isboolean() || val.isstring() || val.isnumber() || val.istable() || val.isuserdata(FiguraVector.class) || val.isuserdata(FiguraMatrix.class)) ? val : LuaValue.NIL;
         luaTable.set(key, val);
@@ -296,11 +298,7 @@ public class ConfigAPI {
         if (!isHost)
             return null;
 
-        if (!loaded) {
-            init();
-            loaded = true;
-        }
-
+        init();
         return key != null ? luaTable.get(key) : new ReadOnlyLuaTable(luaTable);
     }
 
