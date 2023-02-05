@@ -15,7 +15,6 @@ import org.moon.figura.utils.caching.CacheStack;
 
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 public class FiguraImmediateBuffer {
@@ -88,8 +87,8 @@ public class FiguraImmediateBuffer {
             return;
         }
 
-        VertexData primary = this.getTexture(renderer, customization, textureSet, true);
-        VertexData secondary = this.getTexture(renderer, customization, textureSet, false);
+        VertexData primary = getTexture(renderer, customization, textureSet, true);
+        VertexData secondary = getTexture(renderer, customization, textureSet, false);
 
         if (primary.renderType == null && secondary.renderType == null) {
             advanceBuffers(faceCount);
@@ -123,15 +122,16 @@ public class FiguraImmediateBuffer {
         //color
         ret.color = primary ? customization.color : customization.color2;
 
+        //primary
+        ret.primary = primary;
+
         //get render type
         if (id != null) {
             if (renderer.translucent) {
-                ret.type = RenderTypes.TRANSLUCENT_CULL;
                 ret.renderType = RenderType.itemEntityTranslucentCull(id);
                 return ret;
             }
             if (renderer.glowing) {
-                ret.type = RenderTypes.TRANSLUCENT_CULL;
                 ret.renderType = RenderType.outline(id);
                 return ret;
             }
@@ -151,14 +151,11 @@ public class FiguraImmediateBuffer {
             ret.renderType = types.get(id);
         }
 
-        ret.type = types;
         return ret;
     }
 
     private void pushToBuffer(int faceCount, VertexData vertexData) {
-        LinkedHashMap<RenderType, FloatArrayList> bufferMap = ImmediateAvatarRenderer.VERTICES.computeIfAbsent(vertexData.type, renderTypes -> new LinkedHashMap<>());
-        FloatArrayList buffer = bufferMap.computeIfAbsent(vertexData.renderType, renderType -> new FloatArrayList());
-
+        FloatArrayList buffer = ImmediateAvatarRenderer.VERTEX_BUFFER.getBufferFor(vertexData.renderType, vertexData.primary);
         PartCustomization customization = customizationStack.peek();
 
         FiguraVec3 uvFixer = FiguraVec3.of();
@@ -201,11 +198,11 @@ public class FiguraImmediateBuffer {
     }
 
     public static class VertexData {
-        public RenderTypes type;
         public RenderType renderType;
         public boolean fullBright;
         public float vertexOffset;
         public FiguraVec3 color;
+        public boolean primary;
     }
 
     public static class Builder {
