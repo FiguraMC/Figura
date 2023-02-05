@@ -7,6 +7,7 @@ import it.unimi.dsi.fastutil.floats.FloatArrayList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
@@ -28,7 +29,10 @@ import org.moon.figura.model.rendertasks.RenderTask;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.ui.UIHelper;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ImmediateAvatarRenderer extends AvatarRenderer {
@@ -38,7 +42,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
     public static final FiguraMat4 VIEW_TO_WORLD_MATRIX = FiguraMat4.of();
     private static final PartCustomization pivotOffsetter = PartCustomization.of();
-    protected static final HashMap<RenderTypes, LinkedHashMap<RenderType, FloatArrayList>> VERTICES = new HashMap<>();
+    protected static final VertexBuffer VERTEX_BUFFER = new VertexBuffer();
 
     public ImmediateAvatarRenderer(Avatar avatar) {
         super(avatar);
@@ -153,49 +157,11 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
         //push vertices to vertex consumer
         FiguraMod.pushProfiler("draw");
-
-        RenderTypes[] values = RenderTypes.values();
-        for (RenderTypes value : values) {
-            Map<RenderType, FloatArrayList> map = VERTICES.get(value);
-            if (map == null)
-                continue;
-
-            for (Map.Entry<RenderType, FloatArrayList> entry : map.entrySet()) {
-                VertexConsumer consumer = bufferSource.getBuffer(entry.getKey());
-                FloatArrayList vertex = entry.getValue();
-
-                for (int i = 0; i < vertex.size(); ) {
-                    consumer.vertex(
-                            //pos
-                            vertex.getFloat(i++),
-                            vertex.getFloat(i++),
-                            vertex.getFloat(i++),
-
-                            //color
-                            vertex.getFloat(i++),
-                            vertex.getFloat(i++),
-                            vertex.getFloat(i++),
-                            vertex.getFloat(i++),
-
-                            //uv
-                            vertex.getFloat(i++),
-                            vertex.getFloat(i++),
-
-                            //overlay, light
-                            (int) vertex.getFloat(i++),
-                            (int) vertex.getFloat(i++),
-
-                            //normal
-                            vertex.getFloat(i++),
-                            vertex.getFloat(i++),
-                            vertex.getFloat(i++)
-                    );
-                }
-            }
-        }
-
-        VERTICES.clear();
-        FiguraMod.popProfiler();
+        FiguraMod.pushProfiler("primary");
+        VERTEX_BUFFER.consume(true, bufferSource);
+        FiguraMod.popPushProfiler("secondary");
+        VERTEX_BUFFER.consume(false, bufferSource);
+        FiguraMod.popProfiler(2);
 
         //finish rendering
         customizationStack.pop();
@@ -497,5 +463,52 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
     public void advanceFaces(int texIndex, int faceCount) {
         buffers.get(texIndex).advanceBuffers(faceCount);
+    }
+
+    protected static class VertexBuffer {
+        private final HashMap<RenderType, FloatArrayList> primaryBuffers = new HashMap<>();
+        private final HashMap<RenderType, FloatArrayList> secondaryBuffers = new HashMap<>();
+
+        public FloatArrayList getBufferFor(RenderType renderType, boolean primary) {
+            HashMap<RenderType, FloatArrayList> buffer = primary ? primaryBuffers : secondaryBuffers;
+            return buffer.computeIfAbsent(renderType, renderType1 -> new FloatArrayList());
+        }
+
+        public void consume(boolean primary, MultiBufferSource bufferSource) {
+            HashMap<RenderType, FloatArrayList> map = primary ? primaryBuffers : secondaryBuffers;
+            for (Map.Entry<RenderType, FloatArrayList> entry : map.entrySet()) {
+                VertexConsumer consumer = bufferSource.getBuffer(entry.getKey());
+                FloatArrayList vertex = entry.getValue();
+
+                for (int i = 0; i < vertex.size(); ) {
+                    consumer.vertex(
+                            //pos
+                            vertex.getFloat(i++),
+                            vertex.getFloat(i++),
+                            vertex.getFloat(i++),
+
+                            //color
+                            vertex.getFloat(i++),
+                            vertex.getFloat(i++),
+                            vertex.getFloat(i++),
+                            vertex.getFloat(i++),
+
+                            //uv
+                            vertex.getFloat(i++),
+                            vertex.getFloat(i++),
+
+                            //overlay, light
+                            (int) vertex.getFloat(i++),
+                            (int) vertex.getFloat(i++),
+
+                            //normal
+                            vertex.getFloat(i++),
+                            vertex.getFloat(i++),
+                            vertex.getFloat(i++)
+                    );
+                }
+            }
+            map.clear();
+        }
     }
 }

@@ -1,8 +1,13 @@
 package org.moon.figura.model.rendering.texture;
 
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import net.minecraft.Util;
+import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.OptionalDouble;
 import java.util.function.Function;
 
 public enum RenderTypes {
@@ -20,12 +25,14 @@ public enum RenderTypes {
 
     END_PORTAL(t -> RenderType.endPortal(), true, true),
     END_GATEWAY(t -> RenderType.endGateway(), true, true),
+    FIGURA_PORTAL(FiguraRenderType.END_GATEWAY, false, true),
 
     GLINT(t -> RenderType.entityGlintDirect(), true),
     GLINT2(t -> RenderType.glintDirect(), true),
 
     LINES(t -> RenderType.lines(), true),
-    LINES_STRIP(t -> RenderType.lineStrip(), true);
+    LINES_STRIP(t -> RenderType.lineStrip(), true),
+    SOLID(t -> FiguraRenderType.SOLID, true);
 
     private final Function<ResourceLocation, RenderType> func;
     private final boolean force;
@@ -54,5 +61,48 @@ public enum RenderTypes {
 
     public boolean isOffset() {
         return offset;
+    }
+
+    private static class FiguraRenderType extends RenderType {
+
+        public FiguraRenderType(String name, VertexFormat vertexFormat, VertexFormat.Mode drawMode, int expectedBufferSize, boolean hasCrumbling, boolean translucent, Runnable startAction, Runnable endAction) {
+            super(name, vertexFormat, drawMode, expectedBufferSize, hasCrumbling, translucent, startAction, endAction);
+        }
+
+        public static final RenderType SOLID = create(
+                "figura_solid",
+                DefaultVertexFormat.POSITION_COLOR_NORMAL,
+                VertexFormat.Mode.QUADS,
+                256,
+                RenderType.CompositeState.builder()
+                        .setShaderState(RENDERTYPE_LINES_SHADER)
+                        .setLineState(new RenderStateShard.LineStateShard(OptionalDouble.empty()))
+                        .setLayeringState(VIEW_OFFSET_Z_LAYERING)
+                        .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                        .setOutputState(ITEM_ENTITY_TARGET)
+                        .setWriteMaskState(COLOR_DEPTH_WRITE)
+                        .setCullState(NO_CULL)
+                        .createCompositeState(false)
+        );
+
+        public static final Function<ResourceLocation, RenderType> END_GATEWAY = Util.memoize(
+                texture -> create(
+                        "figura_end_gateway",
+                        DefaultVertexFormat.POSITION,
+                        VertexFormat.Mode.QUADS,
+                        256,
+                        false,
+                        false,
+                        CompositeState.builder()
+                                .setShaderState(RENDERTYPE_END_GATEWAY_SHADER)
+                                .setTextureState(
+                                        MultiTextureStateShard.builder()
+                                                .add(texture, false, false)
+                                                .add(texture, false, false)
+                                                .build()
+                                )
+                                .createCompositeState(false)
+                )
+        );
     }
 }
