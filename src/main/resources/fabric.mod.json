@@ -34,6 +34,7 @@
   "mixins": [
     "figura.mixins.json"
   ],
+  "accessWidener": "figura.accesswidener",
 
   "depends": {
     "java": ">=${java_version}",
