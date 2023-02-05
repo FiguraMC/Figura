@@ -131,13 +131,14 @@ public class BlockbenchModelParser {
             try {
                 //check the file to load
                 Path p = sourceFile.toPath().resolve(texture.relative_path);
-                File f = p.toFile();
+                File f = p.toFile().getCanonicalFile();
+                p = f.toPath();
                 if (!f.exists()) throw new Exception("File do not exists!");
-                if (!p.normalize().startsWith(avatar)) throw new Exception("File from outside the avatar folder!");
+                if (!p.startsWith(avatar)) throw new Exception("File from outside the avatar folder!");
 
                 //load texture
                 source = IOUtils.readFileBytes(f);
-                path = f.getCanonicalPath()
+                path = p.toString()
                         .replaceFirst(pathRegex, "")
                         .replaceAll("[/\\\\]", ".");
                 path = path.substring(0, path.length() - 4);
