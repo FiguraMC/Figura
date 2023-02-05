@@ -106,7 +106,7 @@ public class FiguraTexture extends SimpleTexture {
             registered = true;
         }
 
-        if (dirty) {
+        if (dirty && !isClosed) {
             dirty = false;
 
             RenderCall runnable = () -> {
