@@ -1,5 +1,6 @@
 package org.moon.figura.gui;
 
+import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -44,8 +45,9 @@ public class ActionWheel {
         if (!isEnabled()) return;
 
         minecraft = Minecraft.getInstance();
-        x = (int) (minecraft.getWindow().getGuiScaledWidth() / 2d);
-        y = (int) (minecraft.getWindow().getGuiScaledHeight() / 2d);
+        Window window = minecraft.getWindow();
+        x = (int) (window.getGuiScaledWidth() / 2d);
+        y = (int) (window.getGuiScaledHeight() / 2d);
 
         //rendering
         stack.pushPose();
@@ -67,8 +69,8 @@ public class ActionWheel {
         leftSlots = (int) Math.floor(slots / 2d);
         rightSlots = (int) Math.ceil(slots / 2d);
 
-        mouseX = minecraft.mouseHandler.xpos();
-        mouseY = minecraft.mouseHandler.ypos();
+        mouseX = minecraft.mouseHandler.xpos() * window.getGuiScaledWidth() / window.getScreenWidth();
+        mouseY = minecraft.mouseHandler.ypos() * window.getGuiScaledHeight() / window.getScreenHeight();
 
         //calculate selected slot
         FiguraMod.pushProfiler("selectedSlot");
@@ -120,22 +122,17 @@ public class ActionWheel {
     }
 
     private static void calculateSelected() {
-        //window specific variables
-        double screenMiddleW = minecraft.getWindow().getScreenWidth() / 2d;
-        double screenMiddleH = minecraft.getWindow().getScreenHeight() / 2d;
-        double guiScale = minecraft.getWindow().getGuiScale();
-
-        //get the total mouse distance from the center of screen
-        double mouseDistance = Math.sqrt(Math.pow(screenMiddleW - mouseX, 2) + Math.pow(screenMiddleH - mouseY, 2));
+        //get the total mouse distance from the center of the wheel
+        double mouseDistance = Math.sqrt(Math.pow(x - mouseX, 2) + Math.pow(y - mouseY, 2));
 
         //no need to sum left side because if the right side is 0, the left side will also be 0
-        if (rightSlots == 0 || mouseDistance < (19 * guiScale * scale)) {
+        if (rightSlots == 0 || mouseDistance < (19 * scale)) {
             selected = -1;
             return;
         }
 
-        //get the mouse angle in degrees from middle of screen, starting at top, clockwise
-        double angle = Math.toDegrees(Math.atan2(mouseY - screenMiddleH, mouseX - screenMiddleW)) + 90;
+        //get the mouse angle in degrees from middle of the wheel, starting at top, clockwise
+        double angle = Math.toDegrees(Math.atan2(mouseY - y, mouseX - x)) + 90;
         if (angle < 0) angle += 360;
 
         //get the selected slot
@@ -279,8 +276,7 @@ public class ActionWheel {
 
         //render
         if (titlePosition < 2) { //tooltip
-            double guiScale = minecraft.getWindow().getGuiScale();
-            UIHelper.renderTooltip(stack, text, (int) (mouseX / guiScale), (int) (mouseY / guiScale), titlePosition == 0);
+            UIHelper.renderTooltip(stack, text, (int) mouseX, (int) mouseY, titlePosition == 0);
         } else { //anchored
             stack.pushPose();
             stack.translate(0d, 0d, 999d);
