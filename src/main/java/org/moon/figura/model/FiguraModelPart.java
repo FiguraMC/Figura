@@ -1052,6 +1052,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
             value = "model_part.set_parent_type")
     public FiguraModelPart setParentType(@LuaNotNil String parent) {
         this.parentType = ParentType.get(parent);
+        this.vanillaVisible = null;
         this.customization.needsMatrixRecalculation = true;
         return this;
     }

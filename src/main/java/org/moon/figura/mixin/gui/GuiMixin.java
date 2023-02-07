@@ -26,30 +26,56 @@ public class GuiMixin {
     @Shadow @Final private Minecraft minecraft;
     @Unique private FiguraVec2 crosshairOffset;
 
-    @Inject(at = @At("RETURN"), method = "render")
-    private void render(PoseStack stack, float tickDelta, CallbackInfo ci) {
+    @Inject(at = @At("HEAD"), method = "render", cancellable = true)
+    private void onRender(PoseStack stack, float tickDelta, CallbackInfo ci) {
         if (AvatarManager.panic)
             return;
 
         FiguraMod.pushProfiler(FiguraMod.MOD_ID);
 
-        FiguraMod.pushProfiler("paperdoll");
-        PaperDoll.render(stack);
-
-        FiguraMod.popPushProfiler("actionWheel");
-        ActionWheel.render(stack);
-
-        FiguraMod.popPushProfiler("popupMenu");
+        FiguraMod.pushProfiler("popupMenu");
         PopupMenu.render(stack);
 
+        FiguraMod.popPushProfiler("paperdoll");
+        PaperDoll.render(stack);
+
         FiguraMod.popProfiler();
 
+        //get avatar
         Entity entity = this.minecraft.getCameraEntity();
-        Avatar avatar;
-        if (entity != null && (avatar = AvatarManager.getAvatar(entity)) != null)
-            avatar.hudRender(stack, minecraft.renderBuffers().bufferSource(), entity, tickDelta);
+        Avatar avatar = entity == null ? null : AvatarManager.getAvatar(entity);
+
+        if (avatar != null) {
+            //hud parent type
+            avatar.hudRender(stack, this.minecraft.renderBuffers().bufferSource(), entity, tickDelta);
+
+            //hud hidden by script
+            if (avatar.luaRuntime != null && avatar.luaRuntime.renderer.hideHUD) {
+                //render wheel
+                FiguraMod.pushProfiler("actionWheel");
+                ActionWheel.render(stack);
+                FiguraMod.popProfiler();
+
+                //cancel this method
+                ci.cancel();
+            }
+        }
 
         FiguraMod.popProfiler();
+    }
+
+    @Inject(at = @At("RETURN"), method = "render")
+    private void afterRender(PoseStack stack, float tickDelta, CallbackInfo ci) {
+        if (AvatarManager.panic)
+            return;
+
+        //render wheel last, on top of everything
+        FiguraMod.pushProfiler(FiguraMod.MOD_ID);
+        FiguraMod.pushProfiler("actionWheel");
+
+        ActionWheel.render(stack);
+
+        FiguraMod.popProfiler(2);
     }
 
     @Inject(at = @At("HEAD"), method = "renderCrosshair", cancellable = true)
