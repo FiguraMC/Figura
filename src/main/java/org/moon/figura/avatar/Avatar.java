@@ -386,9 +386,9 @@ public class Avatar {
         return val == null || (!val.isnil(1) && !Config.CHAT_MESSAGES.asBool()) ? message : val.isnil(1) ? "" : val.arg(1).tojstring();
     }
 
-    public void chatReceivedMessageEvent(String message) {
+    public void chatReceivedMessageEvent(Component message) {
         if (loaded)
-            run("CHAT_RECEIVE_MESSAGE", tick, message);
+            run("CHAT_RECEIVE_MESSAGE", tick, message.getString(), Component.Serializer.toJson(message));
     }
 
     public boolean mouseScrollEvent(double delta) {
