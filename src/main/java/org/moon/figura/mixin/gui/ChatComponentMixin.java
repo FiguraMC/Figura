@@ -34,7 +34,7 @@ public class ChatComponentMixin {
     private void addMessageEvent(Component message, int messageId, int timestamp, boolean refresh, CallbackInfo ci) {
         Avatar avatar;
         if (!refresh && (avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID())) != null)
-            avatar.chatReceivedMessageEvent(message.getString());
+            avatar.chatReceivedMessageEvent(message);
     }
 
     @ModifyVariable(at = @At("HEAD"), method = "addMessage(Lnet/minecraft/network/chat/Component;IIZ)V", ordinal = 0, argsOnly = true)
