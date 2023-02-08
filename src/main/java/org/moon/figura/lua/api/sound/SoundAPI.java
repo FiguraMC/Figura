@@ -150,6 +150,26 @@ public class SoundAPI {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = String.class,
+                    argumentNames = "id"
+            ),
+            value = "sounds.is_present"
+    )
+    public boolean isPresent(String id) {
+        if (id == null)
+            return false;
+        if (owner.customSounds.get(id) != null)
+            return true;
+        try {
+            return Minecraft.getInstance().getSoundManager().getSoundEvent(new ResourceLocation(id)) != null;
+        } catch (Exception ignored) {
+            return false;
+        }
+    }
+
+    @LuaWhitelist
     public LuaSound __index(String id) {
         SoundBuffer buffer = owner.customSounds.get(id);
         if (buffer != null) {
@@ -169,7 +189,7 @@ public class SoundAPI {
                     return new LuaSound(sound, id, owner);
                 }
             }
-            throw new LuaError("Unable to find sound \"" + id + "\"");
+            return new LuaSound((SoundBuffer) null, id, owner);
         } catch (Exception e) {
             throw new LuaError(e.getMessage());
         }

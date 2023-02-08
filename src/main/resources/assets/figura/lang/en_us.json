@@ -1212,6 +1212,7 @@
   "figura.docs.particles": "A global API which is used for dealing with Minecraft's particles\nParticles instances are created when indexing their id\nAccessed using the name \"particles\"",
   "figura.docs.particles.new_particle": "Creates a particle with the given name at the specified position, with the given velocity\nSome particles have special properties, like the \"dust\" particle\nFor these particles, the special properties can be put into the \"name\" parameter, the same way as it works for commands",
   "figura.docs.particles.remove_particles": "Removes all particles spawned from this avatar",
+  "figura.docs.particles.is_present": "Checks if this particle id is registered",
 
   "figura.docs.particle": "Represents a particle that can be spawned and modified\nObtained by indexing the ParticleAPI\nExists as an object-oriented alternative to particles:addParticle()",
   "figura.docs.particle.spawn": "Spawns this particle with the current properties",
@@ -1341,6 +1342,7 @@
   "figura.docs.sounds.play_sound": "Plays the specified sound at the specified position with the given volume and pitch multipliers\nThe sound id is either an identifier or the custom sound name\nVolume in Minecraft refers to how far away people can hear the sound from, not the actual loudness of it\nIf you don't give values for volume and pitch, the default values are 1",
   "figura.docs.sounds.stop_sound": "Stops the playing sounds from this avatar\nIf an id is specified, it only stops the sounds from that id",
   "figura.docs.sounds.new_sound": "Registers a new custom sound for this avatar\nThe first argument is the sound id while the second argument is either a byte array of the sound data, or a base64 string representation of the same",
+  "figura.docs.sounds.is_present": "Checks if this sound id is registered either by custom avatar sounds or a vanilla sound",
 
   "figura.docs.sound": "Represents a sound that can be played\nObtained by indexing the SoundAPI\nExists as an object-oriented alternative to sounds:playSound()",
   "figura.docs.sound.play": "Plays this sound, or resume a paused sound",
