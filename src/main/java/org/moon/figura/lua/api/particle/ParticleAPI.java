@@ -100,6 +100,23 @@ public class ParticleAPI {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = String.class,
+                    argumentNames = "id"
+            ),
+            value = "particles.is_present"
+    )
+    public boolean isPresent(String id) {
+        try {
+            ParticleOptions options = ParticleArgument.readParticle(new StringReader(id), BuiltInRegistries.PARTICLE_TYPE.asLookup());
+            return getParticleEngine().figura$makeParticle(options, 0, 0, 0, 0, 0, 0) != null;
+        } catch (Exception ignored) {
+            return false;
+        }
+    }
+
+    @LuaWhitelist
     public LuaParticle __index(String id) {
         return generate(id, 0, 0, 0, 0, 0, 0);
     }
