@@ -115,7 +115,7 @@ public class TextureTask extends RenderTask {
         if (texture instanceof String s) {
             try {
                 ResourceLocation resource = new ResourceLocation(s);
-                this.texture = Minecraft.getInstance().getResourceManager().getResource(resource).isPresent() ? resource : MissingTextureAtlasSprite.getLocation();
+                this.texture = Minecraft.getInstance().getTextureManager().getTexture(resource, null) != null ? resource : MissingTextureAtlasSprite.getLocation();
             } catch (Exception e) {
                 throw new LuaError(e.getMessage());
             }
