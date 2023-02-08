@@ -36,6 +36,8 @@ public abstract class AvatarRenderer {
     protected final Avatar avatar;
     public FiguraModelPart root;
 
+    private final HashMap<ParentType, List<FiguraModelPart>> separatedParts = new HashMap<>();
+
     protected boolean isRendering, dirty;
 
     // -- rendering data -- //
@@ -112,6 +114,21 @@ public abstract class AvatarRenderer {
         this.dirty = true;
         if (!this.isRendering)
             clean();
+    }
+
+    public void sortParts() {
+        separatedParts.clear();
+        _sortParts(root);
+    }
+
+    private void _sortParts(FiguraModelPart part) {
+        if (part.parentType.isSeparate) {
+            List<FiguraModelPart> list = separatedParts.computeIfAbsent(part.parentType, parentType -> new ArrayList<>());
+            list.add(part);
+        }
+
+        for (FiguraModelPart child : part.children)
+            _sortParts(child);
     }
 
     /**

@@ -4,6 +4,7 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import org.luaj.vm2.LuaError;
+import org.moon.figura.avatar.Avatar;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaMethodDoc;
@@ -33,12 +34,13 @@ import java.util.Map;
 )
 public class FiguraModelPart implements Comparable<FiguraModelPart> {
 
+    private final Avatar owner;
+
     public final String name;
     public FiguraModelPart parent;
 
     public final PartCustomization customization;
     public ParentType parentType = ParentType.None;
-    private Boolean vanillaVisible = null;
 
     private final Map<String, FiguraModelPart> childCache = new HashMap<>();
     public final List<FiguraModelPart> children;
@@ -56,7 +58,8 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
 
     public final FiguraMat4 savedPartToWorldMat = FiguraMat4.of().scale(1 / 16d, 1 / 16d, 1 / 16d);
 
-    public FiguraModelPart(String name, PartCustomization customization, List<FiguraModelPart> children) {
+    public FiguraModelPart(Avatar owner, String name, PartCustomization customization, List<FiguraModelPart> children) {
+        this.owner = owner;
         this.name = name;
         this.customization = customization;
         this.children = children;
@@ -92,7 +95,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
             return;
 
         //apply vanilla transforms
-        vanillaVisible = partData.visible;
+        customization.vanillaVisible = partData.visible;
 
         FiguraVec3 defaultPivot = parentType.offset.copy();
 
@@ -125,6 +128,8 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
                 customization.offsetRot(0, 0, 0);
             if (!overrideVanillaScale())
                 customization.offsetScale(1, 1, 1);
+
+            customization.vanillaVisible = null;
         }
     }
 
@@ -551,13 +556,6 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     @LuaWhitelist
     public FiguraModelPart matrix(@LuaNotNil FiguraMat4 matrix) {
         return setMatrix(matrix);
-    }
-
-    public boolean getVanillaVisible() {
-        FiguraModelPart part = this;
-        while (part != null && part.vanillaVisible == null)
-            part = part.parent;
-        return part == null || part.vanillaVisible;
     }
 
     @LuaWhitelist
@@ -1051,8 +1049,12 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
             aliases = "parentType",
             value = "model_part.set_parent_type")
     public FiguraModelPart setParentType(@LuaNotNil String parent) {
-        this.parentType = ParentType.get(parent);
-        this.vanillaVisible = null;
+        ParentType newParent = ParentType.get(parent);
+        if ((newParent.isSeparate || this.parentType.isSeparate) && newParent != this.parentType)
+            owner.renderer.sortParts();
+
+        this.parentType = newParent;
+        this.customization.vanillaVisible = null;
         this.customization.needsMatrixRecalculation = true;
         return this;
     }

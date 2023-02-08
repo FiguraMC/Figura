@@ -80,7 +80,7 @@ public class FiguraImmediateBuffer {
             return;
 
         PartCustomization customization = customizationStack.peek();
-        if (!customization.visible) {
+        if (!customization.render) {
             advanceBuffers(faceCount);
             //Refund complexity for invisible parts
             remainingComplexity[0] += faceCount;
