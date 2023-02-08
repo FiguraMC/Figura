@@ -82,7 +82,7 @@ public class FiguraModelPartReader {
                 children.add(read(owner, (CompoundTag) tag, bufferBuilders, textureSets));
         }
 
-        FiguraModelPart result = new FiguraModelPart(name, customization, children);
+        FiguraModelPart result = new FiguraModelPart(owner, name, customization, children);
         result.facesByTexture = facesByTexture;
         storeTextures(result, textureSets);
         if (partCompound.contains("pt"))

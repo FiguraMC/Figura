@@ -26,7 +26,9 @@ public class PartCustomization implements CachedType<PartCustomization> {
     public FiguraMat3 normalMatrix = FiguraMat3.of();
 
     public boolean needsMatrixRecalculation = true;
+    public boolean render = true;
     public Boolean visible = null;
+    public Boolean vanillaVisible = null;
 
     private FiguraVec3 position = FiguraVec3.of();
     private FiguraVec3 rotation = FiguraVec3.of();
@@ -52,6 +54,8 @@ public class PartCustomization implements CachedType<PartCustomization> {
 
     private RenderTypes primaryRenderType, secondaryRenderType;
     public Pair<FiguraTextureSet.OverrideType, Object> primaryTexture, secondaryTexture;
+
+    public Stack cachedStack;
 
     public void applyToStack(PoseStack stack) {
         stack.mulPoseMatrix(positionMatrix.toMatrix4f());
@@ -309,6 +313,7 @@ public class PartCustomization implements CachedType<PartCustomization> {
         light = null;
         needsMatrixRecalculation = false;
         visible = null;
+        vanillaVisible = null;
         primaryTexture = null;
         secondaryTexture = null;
         return this;
@@ -364,7 +369,9 @@ public class PartCustomization implements CachedType<PartCustomization> {
             to.light = from.light;
             to.overlay = from.overlay;
             to.needsMatrixRecalculation = from.needsMatrixRecalculation;
+            to.render = from.render;
             to.visible = from.visible;
+            to.vanillaVisible = from.vanillaVisible;
             to.setPrimaryRenderType(from.primaryRenderType);
             to.setSecondaryRenderType(from.secondaryRenderType);
             to.primaryTexture = from.primaryTexture;
@@ -383,8 +390,13 @@ public class PartCustomization implements CachedType<PartCustomization> {
         if (other.secondaryRenderType != null)
             setSecondaryRenderType(other.secondaryRenderType);
 
+        render = other.render;
+
         if (other.visible != null)
             visible = other.visible;
+
+        if (other.vanillaVisible != null)
+            vanillaVisible = other.vanillaVisible;
 
         if (other.light != null)
             light = other.light;
