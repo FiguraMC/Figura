@@ -53,6 +53,8 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
         for (int i = 0; i < textureSets.size() && i < builders.size(); i++)
             buffers.add(builders.get(i).build(textureSets.get(i), customizationStack));
+
+        sortParts();
     }
 
     @Override
@@ -195,7 +197,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         posMat.free();
         normalMat.free();
 
-        customization.visible = true;
+        customization.render = true;
         customization.light = light;
         customization.alpha = alpha;
         customization.overlay = overlay;
@@ -227,12 +229,22 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         part.applyVanillaTransforms(vanillaModelData);
         part.applyExtraTransforms(customizationStack.peek().positionMatrix);
 
-        //recalculate stuff
+        //visibility
         FiguraMod.popPushProfiler("checkVisibility");
 
-        Boolean storedVisibility = custom.visible;
-        custom.visible = part.getVisible() && (currentFilterScheme.ignoreVanillaVisible || part.getVanillaVisible()) && thisPassedPredicate;
+        if (thisPassedPredicate) {
+            Boolean vanillaVisible = custom.vanillaVisible == null ? customizationStack.peek().vanillaVisible : custom.vanillaVisible;
+            if (!currentFilterScheme.ignoreVanillaVisible && vanillaVisible != null && !vanillaVisible) {
+                custom.render = false;
+            } else {
+                Boolean visible = custom.visible == null ? customizationStack.peek().visible : custom.visible;
+                custom.render = (visible == null || visible) && (currentFilterScheme.ignoreVanillaVisible || vanillaVisible == null || vanillaVisible);
+            }
+        } else {
+            custom.render = false;
+        }
 
+        //recalculate stuff
         FiguraMod.popPushProfiler("calculatePartMatrices");
         custom.recalculate();
 
@@ -254,8 +266,6 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         customizationStack.push(custom);
 
         //restore variables
-        custom.visible = storedVisibility;
-
         if (voidMatrices) {
             FiguraMod.popPushProfiler("restoreMatrices");
             custom.positionMatrix.set(positionCopy);
@@ -303,9 +313,9 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         if (thisPassedPredicate) {
             PartCustomization peek = customizationStack.peek();
 
-            boolean renderPivot = shouldRenderPivots > 0 && (shouldRenderPivots % 2 == 0 || peek.visible);
-            boolean renderTasks = peek.visible && allowRenderTasks && !part.renderTasks.isEmpty();
-            boolean renderPivotParts = peek.visible && part.parentType.isPivot && allowPivotParts;
+            boolean renderPivot = shouldRenderPivots > 0 && (shouldRenderPivots % 2 == 0 || peek.render);
+            boolean renderTasks = peek.render && allowRenderTasks && !part.renderTasks.isEmpty();
+            boolean renderPivotParts = peek.render && part.parentType.isPivot && allowPivotParts;
 
             if (renderPivot || renderTasks || renderPivotParts) {
                 //fix pivots
