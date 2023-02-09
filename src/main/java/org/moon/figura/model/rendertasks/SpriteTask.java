@@ -25,10 +25,10 @@ import org.moon.figura.utils.LuaUtils;
 
 @LuaWhitelist
 @LuaTypeDoc(
-        name = "TextureTask",
-        value = "texture_task"
+        name = "SpriteTask",
+        value = "sprite_task"
 )
-public class TextureTask extends RenderTask {
+public class SpriteTask extends RenderTask {
 
     private ResourceLocation texture;
     private int textureW = -1, textureH = -1;
@@ -38,7 +38,7 @@ public class TextureTask extends RenderTask {
     private int r = 0xFF, g = 0xFF, b = 0xFF, a = 0xFF;
     private RenderTypes renderType = RenderTypes.TRANSLUCENT;
 
-    public TextureTask(String name) {
+    public SpriteTask(String name) {
         super(name);
     }
 
@@ -83,7 +83,7 @@ public class TextureTask extends RenderTask {
 
 
     @LuaWhitelist
-    @LuaMethodDoc("texture_task.get_texture")
+    @LuaMethodDoc("sprite_task.get_texture")
     public String getTexture() {
         return texture == null ? null : texture.toString();
     }
@@ -105,9 +105,9 @@ public class TextureTask extends RenderTask {
                     )
             },
             aliases = "texture",
-            value = "texture_task.set_texture"
+            value = "sprite_task.set_texture"
     )
-    public TextureTask setTexture(Object texture, Integer width, Integer height) {
+    public SpriteTask setTexture(Object texture, Integer width, Integer height) {
         if (texture == null) {
             this.texture = null;
             return this;
@@ -141,12 +141,12 @@ public class TextureTask extends RenderTask {
     }
 
     @LuaWhitelist
-    public TextureTask texture(Object texture, Integer width, Integer height) {
+    public SpriteTask texture(Object texture, Integer width, Integer height) {
         return setTexture(texture, width, height);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("texture_task.get_dimensions")
+    @LuaMethodDoc("sprite_task.get_dimensions")
     public FiguraVec2 getDimensions() {
         return FiguraVec2.of(textureW, textureH);
     }
@@ -164,9 +164,9 @@ public class TextureTask extends RenderTask {
                     )
             },
             aliases = "dimensions",
-            value = "texture_task.set_dimensions"
+            value = "sprite_task.set_dimensions"
     )
-    public TextureTask setDimensions(Object w, Double h) {
+    public SpriteTask setDimensions(Object w, Double h) {
         FiguraVec2 vec = LuaUtils.parseVec2("setDimensions", w, h);
         if (vec.x <= 0 || vec.y <= 0)
             throw new LuaError("Invalid dimensions: " + vec.x + "x" + vec.y);
@@ -176,12 +176,12 @@ public class TextureTask extends RenderTask {
     }
 
     @LuaWhitelist
-    public TextureTask dimensions(Object w, Double h) {
+    public SpriteTask dimensions(Object w, Double h) {
         return setDimensions(w, h);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("texture_task.get_size")
+    @LuaMethodDoc("sprite_task.get_size")
     public FiguraVec2 getSize() {
         return FiguraVec2.of(width, height);
     }
@@ -199,9 +199,9 @@ public class TextureTask extends RenderTask {
                     )
             },
             aliases = "size",
-            value = "texture_task.set_size"
+            value = "sprite_task.set_size"
     )
-    public TextureTask setSize(Object w, Double h) {
+    public SpriteTask setSize(Object w, Double h) {
         FiguraVec2 vec = LuaUtils.parseVec2("setSize", w, h);
         this.width = (int) Math.round(vec.x);
         this.height = (int) Math.round(vec.y);
@@ -209,12 +209,12 @@ public class TextureTask extends RenderTask {
     }
 
     @LuaWhitelist
-    public TextureTask size(Object w, Double h) {
+    public SpriteTask size(Object w, Double h) {
         return setSize(w, h);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("texture_task.get_region")
+    @LuaMethodDoc("sprite_task.get_region")
     public FiguraVec2 getRegion() {
         return FiguraVec2.of(regionW, regionH);
     }
@@ -232,9 +232,9 @@ public class TextureTask extends RenderTask {
                     )
             },
             aliases = "region",
-            value = "texture_task.set_region"
+            value = "sprite_task.set_region"
     )
-    public TextureTask setRegion(Object w, Double h) {
+    public SpriteTask setRegion(Object w, Double h) {
         FiguraVec2 vec = LuaUtils.parseVec2("setRegion", w, h);
         this.regionW = (int) Math.round(vec.x);
         this.regionH = (int) Math.round(vec.y);
@@ -242,12 +242,12 @@ public class TextureTask extends RenderTask {
     }
 
     @LuaWhitelist
-    public TextureTask region(Object w, Double h) {
+    public SpriteTask region(Object w, Double h) {
         return setRegion(w, h);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("texture_task.get_uv")
+    @LuaMethodDoc("sprite_task.get_uv")
     public FiguraVec2 getUV() {
         return FiguraVec2.of(u, v);
     }
@@ -265,9 +265,9 @@ public class TextureTask extends RenderTask {
                     )
             },
             aliases = "uv",
-            value = "texture_task.set_uv"
+            value = "sprite_task.set_uv"
     )
-    public TextureTask setUV(Object u, Double v) {
+    public SpriteTask setUV(Object u, Double v) {
         FiguraVec2 vec = LuaUtils.parseVec2("setUV", u, v);
         this.u = (float) vec.x;
         this.v = (float) vec.y;
@@ -275,12 +275,12 @@ public class TextureTask extends RenderTask {
     }
 
     @LuaWhitelist
-    public TextureTask uv(Object u, Double v) {
+    public SpriteTask uv(Object u, Double v) {
         return setUV(u, v);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("texture_task.get_uv_pixels")
+    @LuaMethodDoc("sprite_task.get_uv_pixels")
     public FiguraVec2 getUVPixels() {
         if (this.textureW == -1 || this.textureH == -1)
             throw new LuaError("Cannot call getUVPixels before defining the texture dimensions!");
@@ -300,8 +300,8 @@ public class TextureTask extends RenderTask {
                     )
             },
             aliases = "uvPixels",
-            value = "texture_task.set_uv_pixels")
-    public TextureTask setUVPixels(Object u, Double v) {
+            value = "sprite_task.set_uv_pixels")
+    public SpriteTask setUVPixels(Object u, Double v) {
         if (this.textureW == -1 || this.textureH == -1)
             throw new LuaError("Cannot call setUVPixels before defining the texture dimensions!");
 
@@ -313,12 +313,12 @@ public class TextureTask extends RenderTask {
     }
 
     @LuaWhitelist
-    public TextureTask uvPixels(Object u, Double v) {
+    public SpriteTask uvPixels(Object u, Double v) {
         return setUVPixels(u, v);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("texture_task.get_color")
+    @LuaMethodDoc("sprite_task.get_color")
     public FiguraVec4 getColor() {
         return FiguraVec4.of(r, g, b, a).scale(1f / 255f);
     }
@@ -340,9 +340,9 @@ public class TextureTask extends RenderTask {
                     )
             },
             aliases = "color",
-            value = "texture_task.set_color"
+            value = "sprite_task.set_color"
     )
-    public TextureTask setColor(Object r, Double g, Double b, Double a) {
+    public SpriteTask setColor(Object r, Double g, Double b, Double a) {
         FiguraVec4 vec = LuaUtils.parseVec4("setColor", r, g, b, a, 0, 0, 0, 1);
         int i = ColorUtils.rgbaToInt(vec);
         this.r = i >> 24 & 0xFF;
@@ -353,12 +353,12 @@ public class TextureTask extends RenderTask {
     }
 
     @LuaWhitelist
-    public TextureTask color(Object r, Double g, Double b, Double a) {
+    public SpriteTask color(Object r, Double g, Double b, Double a) {
         return setColor(r, g, b, a);
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("texture_task.get_render_type")
+    @LuaMethodDoc("sprite_task.get_render_type")
     public String getRenderType() {
         return renderType.name();
     }
@@ -370,9 +370,9 @@ public class TextureTask extends RenderTask {
                     argumentNames = "renderType"
             ),
             aliases = "renderType",
-            value = "texture_task.set_render_type"
+            value = "sprite_task.set_render_type"
     )
-    public TextureTask setRenderType(@LuaNotNil String renderType) {
+    public SpriteTask setRenderType(@LuaNotNil String renderType) {
         try {
             this.renderType = RenderTypes.valueOf(renderType.toUpperCase());
             return this;
@@ -382,12 +382,12 @@ public class TextureTask extends RenderTask {
     }
 
     @LuaWhitelist
-    public TextureTask renderType(@LuaNotNil String renderType) {
+    public SpriteTask renderType(@LuaNotNil String renderType) {
         return setRenderType(renderType);
     }
 
     @Override
     public String toString() {
-        return name + " (Texture Render Task)";
+        return name + " (Sprite Render Task)";
     }
 }
