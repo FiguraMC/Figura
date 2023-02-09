@@ -169,8 +169,11 @@ public abstract class AbstractPanelScreen extends Screen {
         if (EGG.equals(egg)) {
             Minecraft.getInstance().setScreen(new GameScreen(this, index));
             return true;
-        } else {
-            return super.keyPressed(keyCode, scanCode, modifiers);
         }
+
+        if (children().contains(panels) && panels.cycleTab(keyCode))
+            return true;
+
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 }

@@ -1,5 +1,6 @@
 package org.moon.figura.lua.api.nameplate;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaMethodDoc;
@@ -20,7 +21,6 @@ public class EntityNameplateCustomization extends NameplateCustomization {
 
     private FiguraVec3 pivot, position, scale;
     public Integer background, outlineColor, light;
-    public Double alpha;
 
     public boolean visible = true;
     public boolean shadow, outline;
@@ -119,23 +119,17 @@ public class EntityNameplateCustomization extends NameplateCustomization {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("nameplate_entity.get_background_color")
+    public FiguraVec4 getBackgroundColor() {
+        return this.background == null ? null : ColorUtils.intToARGB(this.background);
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
                     @LuaMethodOverload(
-                            argumentTypes = FiguraVec3.class,
-                            argumentNames = "rgb"
-                    ),
-                    @LuaMethodOverload(
                             argumentTypes = FiguraVec4.class,
                             argumentNames = "rgba"
-                    ),
-                    @LuaMethodOverload(
-                            argumentTypes = {FiguraVec3.class, Double.class},
-                            argumentNames = {"rgb", "a"}
-                    ),
-                    @LuaMethodOverload(
-                            argumentTypes = {Double.class, Double.class, Double.class},
-                            argumentNames = {"r", "g", "b"}
                     ),
                     @LuaMethodOverload(
                             argumentTypes = {Double.class, Double.class, Double.class, Double.class},
@@ -146,20 +140,8 @@ public class EntityNameplateCustomization extends NameplateCustomization {
             value = "nameplate_entity.set_background_color"
     )
     public EntityNameplateCustomization setBackgroundColor(Object r, Double g, Double b, Double a) {
-        if (r == null) {
-            this.background = null;
-            this.alpha = null;
-        } else if (r instanceof FiguraVec3 vec) {
-            this.background = ColorUtils.rgbToInt(vec);
-            this.alpha = g;
-        } else if (r instanceof FiguraVec4 vec) {
-            this.background = ColorUtils.rgbToInt(FiguraVec3.of(vec.x, vec.y, vec.z));
-            this.alpha = vec.w;
-        } else {
-            FiguraVec3 vec = LuaUtils.parseVec3("setBackgroundColor", r, g, b);
-            this.background = ColorUtils.rgbToInt(vec);
-            this.alpha = a;
-        }
+        FiguraVec4 vec = LuaUtils.parseVec4("setBackgroundColor", r, g, b, a, 0, 0, 0,  Minecraft.getInstance().options.getBackgroundOpacity(0.25f));
+        this.background = ColorUtils.rgbaToIntARGB(vec);
         return this;
     }
 

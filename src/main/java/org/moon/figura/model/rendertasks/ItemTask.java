@@ -24,7 +24,7 @@ import org.moon.figura.utils.LuaUtils;
 public class ItemTask extends RenderTask {
 
     private ItemStack item;
-    private ItemTransforms.TransformType renderType = ItemTransforms.TransformType.NONE;
+    private ItemTransforms.TransformType displayMode = ItemTransforms.TransformType.NONE;
     private boolean left = false;
     private int cachedComplexity;
 
@@ -42,7 +42,7 @@ public class ItemTask extends RenderTask {
         poseStack.scale(-16, 16, -16);
 
         Minecraft.getInstance().getItemRenderer().renderStatic(
-                null, item, renderType, left,
+                null, item, displayMode, left,
                 poseStack, buffer, null,
                 this.light != null ? this.light : light, this.overlay != null ? this.overlay : overlay, 0);
 
@@ -88,33 +88,33 @@ public class ItemTask extends RenderTask {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("item_task.get_render_type")
-    public String getRenderType() {
-        return this.renderType.name();
+    @LuaMethodDoc("item_task.get_display_mode")
+    public String getDisplayMode() {
+        return this.displayMode.name();
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaMethodOverload(
                         argumentTypes = String.class,
-                        argumentNames = "renderType"
+                        argumentNames = "displayMode"
             ),
-            aliases = "renderType",
-            value = "item_task.set_render_type"
+            aliases = "displayMode",
+            value = "item_task.set_display_mode"
     )
-    public ItemTask setRenderType(@LuaNotNil String type) {
+    public ItemTask setDisplayMode(@LuaNotNil String mode) {
         try {
-            this.renderType = ItemTransforms.TransformType.valueOf(type.toUpperCase());
-            this.left = this.renderType == ItemTransforms.TransformType.FIRST_PERSON_LEFT_HAND || this.renderType == ItemTransforms.TransformType.THIRD_PERSON_LEFT_HAND;
+            this.displayMode = ItemTransforms.TransformType.valueOf(mode.toUpperCase());
+            this.left = this.displayMode == ItemTransforms.TransformType.FIRST_PERSON_LEFT_HAND || this.displayMode == ItemTransforms.TransformType.THIRD_PERSON_LEFT_HAND;
             return this;
         } catch (Exception ignored) {
-            throw new LuaError("Illegal RenderType: \"" + type + "\".");
+            throw new LuaError("Illegal display mode: \"" + mode + "\".");
         }
     }
 
     @LuaWhitelist
-    public ItemTask renderType(@LuaNotNil String type) {
-        return setRenderType(type);
+    public ItemTask displayMode(@LuaNotNil String mode) {
+        return setDisplayMode(mode);
     }
 
     @Override

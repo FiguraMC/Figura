@@ -20,6 +20,7 @@ import org.moon.figura.math.vector.FiguraVec4;
 import org.moon.figura.model.PartCustomization;
 import org.moon.figura.model.rendering.texture.FiguraTexture;
 import org.moon.figura.model.rendering.texture.RenderTypes;
+import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.LuaUtils;
 
 @LuaWhitelist
@@ -342,12 +343,12 @@ public class TextureTask extends RenderTask {
             value = "texture_task.set_color"
     )
     public TextureTask setColor(Object r, Double g, Double b, Double a) {
-        FiguraVec4 color = LuaUtils.parseVec4("setColor", r, g, b, a, 0, 0, 0, 1);
-        color.scale(0xFF);
-        this.r = Math.max(Math.min((int) Math.round(color.x), 255), 0);
-        this.g = Math.max(Math.min((int) Math.round(color.y), 255), 0);
-        this.b = Math.max(Math.min((int) Math.round(color.z), 255), 0);
-        this.a = Math.max(Math.min((int) Math.round(color.w), 255), 0);
+        FiguraVec4 vec = LuaUtils.parseVec4("setColor", r, g, b, a, 0, 0, 0, 1);
+        int i = ColorUtils.rgbaToInt(vec);
+        this.r = i >> 24 & 0xFF;
+        this.g = i >> 16 & 0xFF;
+        this.b = i >> 8 & 0xFF;
+        this.a = i & 0xFF;
         return this;
     }
 
