@@ -1139,9 +1139,9 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
                     argumentTypes = String.class,
                     argumentNames = "taskName"
             ),
-            value = "model_part.new_texture")
-    public TextureTask newTexture(@LuaNotNil String name) {
-        TextureTask task = new TextureTask(name);
+            value = "model_part.new_sprite")
+    public SpriteTask newSprite(@LuaNotNil String name) {
+        SpriteTask task = new SpriteTask(name);
         this.renderTasks.put(name, task);
         return task;
     }

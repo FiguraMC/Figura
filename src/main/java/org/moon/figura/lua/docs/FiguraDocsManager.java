@@ -149,7 +149,7 @@ public class FiguraDocsManager {
                 BlockTask.class,
                 ItemTask.class,
                 TextTask.class,
-                TextureTask.class
+                SpriteTask.class
         ));
 
         put("player", List.of(
