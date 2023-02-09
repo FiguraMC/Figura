@@ -82,7 +82,7 @@ public class FiguraAPIManager {
         add(ItemTask.class);
         add(BlockTask.class);
         add(TextTask.class);
-        add(TextureTask.class);
+        add(SpriteTask.class);
 
         add(SoundAPI.class);
         add(LuaSound.class);
