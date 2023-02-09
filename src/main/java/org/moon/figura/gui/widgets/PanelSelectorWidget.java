@@ -32,7 +32,7 @@ public class PanelSelectorWidget extends AbstractContainerElement {
             createPanelButton(panel, panel.getClass() == selected);
         }
 
-        //TODO - remove this when we actually implement those panels {
+        //TODO - remove this when we actually implement those panels
         if (FiguraMod.DEBUG_MODE)
             return;
 
@@ -53,5 +53,47 @@ public class PanelSelectorWidget extends AbstractContainerElement {
         //add button
         buttons.add(button);
         children.add(button);
+    }
+
+    public boolean cycleTab(int keyCode) {
+        if (Screen.hasControlDown()) {
+            int index = this.getNextPanel(keyCode);
+            if (index != -1) {
+                //TODO (same as above)
+                int i = Math.max(FiguraMod.DEBUG_MODE ? 0 : 2, Math.min(index, buttons.size() - 1));
+                SwitchButton button = buttons.get(i);
+                button.playDownSound(Minecraft.getInstance().getSoundManager());
+                button.onPress();
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private int getNextPanel(int keyCode) {
+        //numbers
+        if (keyCode >= 49 && keyCode <= 57)
+            return keyCode - 49;
+
+        //tab
+        if (keyCode == 258) {
+            //get current button
+            int index = -1;
+            for (int i = 0; i < buttons.size(); i++) {
+                if (buttons.get(i).isToggled()) {
+                    index = i;
+                    break;
+                }
+            }
+
+            //cycle
+            if (index != -1) {
+                int i = Screen.hasShiftDown() ? index - 1 : index + 1;
+                return Math.floorMod(i, buttons.size());
+            }
+        }
+
+        return -1;
     }
 }

@@ -200,8 +200,34 @@ public class ColorUtils {
         return hex;
     }
 
+    public static int rgbaToIntARGB(FiguraVec4 rgba) {
+        int hex = (int) (rgba.w * 0xFF);
+        hex = (hex << 8) + (int) (rgba.x * 0xFF);
+        hex = (hex << 8) + (int) (rgba.y * 0xFF);
+        hex = (hex << 8) + (int) (rgba.z * 0xFF);
+        return hex;
+    }
+
+    public static int rgbaToInt(FiguraVec4 rgba) {
+        int hex = (int) (rgba.x * 0xFF);
+        hex = (hex << 8) + (int) (rgba.y * 0xFF);
+        hex = (hex << 8) + (int) (rgba.z * 0xFF);
+        hex = (hex << 8) + (int) (rgba.w * 0xFF);
+        return hex;
+    }
+
     public static FiguraVec4 abgrToRGBA(int color) {
         int[] rgb = ColorUtils.split(color, 4);
         return FiguraVec4.of(rgb[3] / 255f, rgb[2] / 255f, rgb[1] / 255f, rgb[0] / 255f);
+    }
+
+    public static FiguraVec4 intToRGBA(int color) {
+        int[] rgb = ColorUtils.split(color, 4);
+        return FiguraVec4.of(rgb[0] / 255f, rgb[1] / 255f, rgb[2] / 255f, rgb[3] / 255f);
+    }
+
+    public static FiguraVec4 intToARGB(int color) {
+        int[] rgb = ColorUtils.split(color, 4);
+        return FiguraVec4.of(rgb[3] / 255f, rgb[0] / 255f, rgb[1] / 255f, rgb[2] / 255f);
     }
 }

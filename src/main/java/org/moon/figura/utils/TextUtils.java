@@ -134,7 +134,7 @@ public class TextUtils {
         return TextUtils.replaceInText(text, "\\t", TAB);
     }
 
-    public static List<FormattedCharSequence> warpTooltip(Component text, Font font, int mousePos, int screenWidth) {
+    public static List<FormattedCharSequence> wrapTooltip(Component text, Font font, int mousePos, int screenWidth) {
         //first split the new line text
         List<Component> splitText = TextUtils.splitText(text, "\n");
 
@@ -149,7 +149,7 @@ public class TextUtils {
         int side = largest <= right ? right : largest <= left ? left : Math.max(left, right);
 
         //warp the unmodified text
-        return warpText(text, side, font);
+        return wrapText(text, side, font);
     }
 
     //get the largest text width from a list
@@ -182,7 +182,7 @@ public class TextUtils {
         return ret;
     }
 
-    public static List<FormattedCharSequence> warpText(Component text, int width, Font font) {
+    public static List<FormattedCharSequence> wrapText(Component text, int width, Font font) {
         List<FormattedCharSequence> warp = new ArrayList<>();
         font.getSplitter().splitLines(text, width, Style.EMPTY, (formattedText, aBoolean) -> warp.add(Language.getInstance().getVisualOrder(formattedText)));
         return warp;

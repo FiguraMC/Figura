@@ -19,7 +19,7 @@ public enum ParentType {
 
     World(true, false, "WORLD"),
     Hud(true, false, "HUD", "HeadsUpDisplay", "Gui", "GUI", "GraphicalUserInterface", "JraficalUserInterface"),
-    Camera("CAMERA"),
+    Camera("CAMERA", "Billboard", "BILLBOARD"),
     Skull(true, false, "SKULL", "☠"),
     Portrait(true, false, "PORTRAIT"),
 

@@ -122,8 +122,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
 
         boolean hasCustom = trust && custom != null;
 
-        double bgOpacity = hasCustom && custom.alpha != null ? custom.alpha : Minecraft.getInstance().options.getBackgroundOpacity(0.25f);
-        int bgColor = (hasCustom && custom.background != null ? custom.background : 0) + ((int) (bgOpacity * 0xFF) << 24);
+        int bgColor = hasCustom && custom.background != null ? custom.background : (int) (Minecraft.getInstance().options.getBackgroundOpacity(0.25f) * 0xFF) << 24;
         int outlineColor = hasCustom && custom.outlineColor != null ? custom.outlineColor : 0x202020;
 
         boolean outline = hasCustom && custom.outline;
@@ -175,7 +174,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
             int line = i - textList.size() + (hasScore ? 0 : 1);
 
             float x = -font.width(text1) / 2f;
-            float y = (deadmau ? -10f : 0f) + (font.lineHeight + 1.5f) * line;
+            float y = (deadmau ? -10f : 0f) + (font.lineHeight + 1) * line;
 
             font.drawInBatch(text1, x, y, 0x20FFFFFF, false, matrix4f, multiBufferSource, !isSneaking, bgColor, light);
             if (!isSneaking) {

@@ -428,7 +428,7 @@ public class UIHelper extends GuiComponent {
 
         //prepare text
         Font font = minecraft.font;
-        List<FormattedCharSequence> text = TextUtils.warpTooltip(tooltip, font, mouseX, (int) screenX);
+        List<FormattedCharSequence> text = TextUtils.wrapTooltip(tooltip, font, mouseX, (int) screenX);
         int height = font.lineHeight * text.size();
 
         //calculate pos
