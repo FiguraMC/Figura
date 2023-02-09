@@ -53,6 +53,7 @@ public class RendererAPI {
     public FiguraVec3 cameraOffsetRot;
     public ResourceLocation postShader;
     public FiguraVec2 crosshairOffset;
+    public FiguraVec3 outlineColor;
 
     public RendererAPI(Avatar owner) {
         this.owner = owner.owner;
@@ -418,6 +419,37 @@ public class RendererAPI {
     public RendererAPI setCrosshairOffset(Object x, Double y) {
         this.crosshairOffset = x == null ? null : LuaUtils.parseVec2("setCrosshairOffset", x, y);
         return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("renderer.get_outline_color")
+    public FiguraVec3 getOutlineColor() {
+        return outlineColor;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "rgb"
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"r", "g", "b"}
+                    )
+            },
+            aliases = "outlineColor",
+            value = "renderer.set_outline_color"
+    )
+    public RendererAPI setOutlineColor(Object r, Double g, Double b) {
+        outlineColor = r == null ? null : LuaUtils.parseVec3("setOutlineColor", r, g, b);
+        return this;
+    }
+
+    @LuaWhitelist
+    public RendererAPI outlineColor(Object r, Double g, Double b) {
+        return setOutlineColor(r, g, b);
     }
 
     @LuaWhitelist
