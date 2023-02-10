@@ -100,7 +100,7 @@ public class Badges {
     }
 
     public static Component noBadges4U(Component text) {
-        return TextUtils.replaceInText(text, "[-*/+=❗❌\uD83D\uDEE1☄❤☆★0-9a-f]", TextUtils.UNKNOWN, (s, style) -> style.getFont().equals(FONT) || style.getFont().equals(UIHelper.UI_FONT));
+        return TextUtils.replaceInText(text, "[-*/+=❗❌\uD83D\uDEE1☄❤☆★0-9a-f]", TextUtils.UNKNOWN, (s, style) -> style.getFont().equals(FONT) || style.getFont().equals(UIHelper.UI_FONT), Integer.MAX_VALUE);
     }
 
     public static Pair<BitSet, BitSet> emptyBadges() {

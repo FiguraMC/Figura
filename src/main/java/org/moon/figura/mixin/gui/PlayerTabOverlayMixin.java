@@ -51,6 +51,9 @@ public class PlayerTabOverlayMixin {
         //badges
         replacement = Badges.appendBadges(replacement, uuid, config > 1);
 
+        //trim
+        replacement = TextUtils.trim(replacement);
+
         text = TextUtils.replaceInText(text, "\\b" + Pattern.quote(playerInfo.getProfile().getName()) + "\\b", replacement);
 
         cir.setReturnValue(text);

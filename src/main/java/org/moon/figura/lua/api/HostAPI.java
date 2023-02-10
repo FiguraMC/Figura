@@ -7,6 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.commands.arguments.SlotArgument;
 import net.minecraft.world.InteractionHand;
@@ -191,8 +192,8 @@ public class HostAPI {
     )
     public HostAPI sendChatMessage(@LuaNotNil String message) {
         if (!isHost() || !Config.CHAT_MESSAGES.asBool()) return this;
-        LocalPlayer player = this.minecraft.player;
-        if (player != null) player.connection.sendChat(message);
+        ClientPacketListener connection = this.minecraft.getConnection();
+        if (connection != null) connection.sendChat(message);
         return this;
     }
 
@@ -206,8 +207,8 @@ public class HostAPI {
     )
     public HostAPI sendChatCommand(@LuaNotNil String command) {
         if (!isHost() || !Config.CHAT_MESSAGES.asBool()) return this;
-        LocalPlayer player = this.minecraft.player;
-        if (player != null) player.connection.sendCommand(command.startsWith("/") ? command.substring(1) : command);
+        ClientPacketListener connection = this.minecraft.getConnection();
+        if (connection != null) connection.sendCommand(command.startsWith("/") ? command.substring(1) : command);
         return this;
     }
 
