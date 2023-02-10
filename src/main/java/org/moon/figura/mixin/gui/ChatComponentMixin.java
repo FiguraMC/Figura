@@ -1,8 +1,6 @@
 package org.moon.figura.mixin.gui;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.ChatComponent;
-import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.FiguraMod;
@@ -13,22 +11,20 @@ import org.moon.figura.config.Config;
 import org.moon.figura.gui.Emojis;
 import org.moon.figura.lua.api.nameplate.NameplateCustomization;
 import org.moon.figura.permissions.Permissions;
+import org.moon.figura.utils.EntityUtils;
 import org.moon.figura.utils.TextUtils;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
 @Mixin(ChatComponent.class)
 public class ChatComponentMixin {
-
-    @Shadow @Final private Minecraft minecraft;
 
     @Inject(at = @At("HEAD"), method = "addMessage(Lnet/minecraft/network/chat/Component;IIZ)V")
     private void addMessageEvent(Component message, int messageId, int timestamp, boolean refresh, CallbackInfo ci) {
@@ -41,33 +37,57 @@ public class ChatComponentMixin {
     private Component addMessage(Component message, Component message2, int messageId, int timestamp, boolean refresh) {
         //get config
         int config = Config.CHAT_NAMEPLATE.asInt();
-        if (refresh || config == 0 || this.minecraft.player == null || AvatarManager.panic)
+        if (refresh || config == 0 || AvatarManager.panic)
             return message;
 
-        //iterate over ALL online players
-        for (UUID uuid : this.minecraft.player.connection.getOnlinePlayerIds()) {
-            //get player
-            PlayerInfo player = this.minecraft.player.connection.getPlayerInfo(uuid);
-            if (player == null)
-                continue;
+        message = TextUtils.parseLegacyFormatting(message);
 
-            Component name = new TextComponent(player.getProfile().getName());
+        Map<String, UUID> players = EntityUtils.getPlayerList();
+        String owner = null;
+
+        String[] split = message.getString().split("\\W+");
+        for (String s : split) {
+            if (players.containsKey(s)) {
+                owner = s;
+                break;
+            }
+        }
+
+        //iterate over ALL online players
+        for (Map.Entry<String, UUID> entry : players.entrySet()) {
+            String name = entry.getKey();
+            UUID uuid = entry.getValue();
+
+            Component playerName = new TextComponent(name);
 
             //apply customization
             Avatar avatar = AvatarManager.getAvatarForPlayer(uuid);
             NameplateCustomization custom = avatar == null || avatar.luaRuntime == null ? null : avatar.luaRuntime.nameplate.CHAT;
 
             Component replacement = custom != null && custom.getJson() != null && avatar.permissions.get(Permissions.NAMEPLATE_EDIT) == 1 ?
-                    TextUtils.replaceInText(custom.getJson().copy(), "\n|\\\\n", " ") : name;
+                    TextUtils.replaceInText(custom.getJson().copy(), "\n|\\\\n", " ") : playerName;
 
             //name
-            replacement = TextUtils.replaceInText(replacement, "\\$\\{name\\}", name);
+            replacement = TextUtils.replaceInText(replacement, "\\$\\{name\\}", playerName);
+
+            //sender badges
+            if (config > 1 && name.equals(owner)) {
+                //badges
+                Component temp = Badges.appendBadges(replacement, uuid, true);
+                //trim
+                temp = TextUtils.trim(temp);
+                //modify message, only first, also no need for ignore case, since it is already matched with proper case
+                message = TextUtils.replaceInText(message, "\\b" + Pattern.quote(name) + "\\b", temp, (s, style) -> true, 1);
+            }
 
             //badges
-            replacement = Badges.appendBadges(replacement, uuid, config > 1);
+            replacement = Badges.appendBadges(replacement, uuid, config > 1 && owner == null);
+
+            //trim
+            replacement = TextUtils.trim(replacement);
 
             //modify message
-            message = TextUtils.replaceInText(message, "\\b" + Pattern.quote(player.getProfile().getName()) + "\\b", replacement);
+            message = TextUtils.replaceInText(message, "(?i)\\b" + Pattern.quote(name) + "\\b", replacement);
         }
 
         return message;

@@ -2,6 +2,7 @@ package org.moon.figura.model.rendering.texture;
 
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
@@ -57,10 +58,11 @@ public class FiguraTextureSet {
 
         return switch (type) {
             case SKIN, CAPE, ELYTRA -> {
-                if (Minecraft.getInstance().player == null)
+                ClientPacketListener connection = Minecraft.getInstance().getConnection();
+                if (connection == null)
                     yield null;
 
-                PlayerInfo info = Minecraft.getInstance().player.connection.getPlayerInfo(owner);
+                PlayerInfo info = connection.getPlayerInfo(owner);
                 if (info == null)
                     yield null;
 
