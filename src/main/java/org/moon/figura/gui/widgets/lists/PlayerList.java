@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -16,8 +17,8 @@ import org.moon.figura.gui.widgets.TextField;
 import org.moon.figura.gui.widgets.permissions.AbstractPermPackElement;
 import org.moon.figura.gui.widgets.permissions.CategoryPermPackElement;
 import org.moon.figura.gui.widgets.permissions.PlayerPermPackElement;
-import org.moon.figura.permissions.PermissionPack;
 import org.moon.figura.permissions.PermissionManager;
+import org.moon.figura.permissions.PermissionPack;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.ui.UIHelper;
@@ -141,10 +142,11 @@ public class PlayerList extends AbstractList {
         missingPlayers.addAll(players.keySet());
 
         //for all players
-        List<UUID> playerList = new ArrayList<>(Minecraft.getInstance().player == null ? Collections.emptyList() : Minecraft.getInstance().player.connection.getOnlinePlayerIds());
+        ClientPacketListener connection = Minecraft.getInstance().getConnection();
+        List<UUID> playerList = connection == null ? List.of() : new ArrayList<>(connection.getOnlinePlayerIds());
         for (UUID uuid : playerList) {
             //get player
-            PlayerInfo player = Minecraft.getInstance().player.connection.getPlayerInfo(uuid);
+            PlayerInfo player = connection.getPlayerInfo(uuid);
             if (player == null)
                 continue;
 

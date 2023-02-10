@@ -12,6 +12,8 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import org.moon.figura.mixin.ClientLevelInvoker;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class EntityUtils {
@@ -61,5 +63,21 @@ public class EntityUtils {
             return e.getName().getString();
 
         return null;
+    }
+
+    public static Map<String, UUID> getPlayerList() {
+        ClientPacketListener connection = Minecraft.getInstance().getConnection();
+        if (connection == null || connection.getOnlinePlayerIds().isEmpty())
+            return Map.of();
+
+        Map<String, UUID> playerList = new HashMap<>();
+
+        for (UUID uuid : connection.getOnlinePlayerIds()) {
+            PlayerInfo player = connection.getPlayerInfo(uuid);
+            if (player != null)
+                playerList.put(player.getProfile().getName(), uuid);
+        }
+
+        return playerList;
     }
 }

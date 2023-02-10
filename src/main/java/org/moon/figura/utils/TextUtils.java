@@ -87,14 +87,15 @@ public class TextUtils {
     }
 
     public static Component replaceInText(Component text, String regex, Object replacement) {
-        return replaceInText(text, regex, replacement, (s, style) -> true);
+        return replaceInText(text, regex, replacement, (s, style) -> true, Integer.MAX_VALUE);
     }
 
-    public static Component replaceInText(Component text, String regex, Object replacement, BiPredicate<String, Style> predicate) {
+    public static Component replaceInText(Component text, String regex, Object replacement, BiPredicate<String, Style> predicate, int times) {
         //fix replacement object
         Component replace = replacement instanceof Component c ? c : Component.literal(replacement.toString());
         MutableComponent ret = Component.empty();
 
+        int[] remaining = {times};
         text.visit((style, string) -> {
             //test predicate
             if (!predicate.test(string, style)) {
@@ -106,10 +107,12 @@ public class TextUtils {
             String[] split = string.split("((?<=" + regex + ")|(?=" + regex + "))");
             for (String s : split) {
                 //append the text if it does not match the split, otherwise append the replacement instead
-                if (!s.matches(regex))
+                if (!s.matches(regex) || remaining[0] <= 0)
                     ret.append(Component.literal(s).withStyle(style));
-                else
+                else {
                     ret.append(Component.empty().withStyle(style).append(replace));
+                    remaining[0]--;
+                }
             }
 
             return Optional.empty();
@@ -277,5 +280,20 @@ public class TextUtils {
             builder = Component.literal(str.toString()).withStyle(entry.getStyle()).append(builder);
         }
         return builder;
+    }
+
+    public static Component trim(Component text) {
+        String string = text.getString();
+        int start = 0;
+        int end = string.length();
+
+        //trim
+        while (start < end && string.charAt(start) <= ' ')
+            start++;
+        while (start < end && string.charAt(end - 1) <= ' ')
+            end--;
+
+        //apply trim
+        return substring(text, start, end);
     }
 }
