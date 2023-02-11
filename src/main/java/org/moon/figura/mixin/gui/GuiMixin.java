@@ -50,7 +50,7 @@ public class GuiMixin {
             avatar.hudRender(stack, this.minecraft.renderBuffers().bufferSource(), entity, tickDelta);
 
             //hud hidden by script
-            if (avatar.luaRuntime != null && avatar.luaRuntime.renderer.hideHUD) {
+            if (avatar.luaRuntime != null && !avatar.luaRuntime.renderer.renderHUD) {
                 //render wheel
                 FiguraMod.pushProfiler("actionWheel");
                 ActionWheel.render(stack);

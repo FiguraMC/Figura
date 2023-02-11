@@ -6,6 +6,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.state.BlockState;
+import org.moon.figura.avatar.Avatar;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.world.BlockStateAPI;
 import org.moon.figura.lua.docs.LuaMethodDoc;
@@ -26,8 +27,8 @@ public class BlockTask extends RenderTask {
     private BlockState block;
     private int cachedComplexity;
 
-    public BlockTask(String name) {
-        super(name);
+    public BlockTask(String name, Avatar owner) {
+        super(name, owner);
     }
 
     @Override

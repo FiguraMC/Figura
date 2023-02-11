@@ -43,8 +43,8 @@ public class RendererAPI {
     @LuaFieldDoc("renderer.force_paperdoll")
     public boolean forcePaperdoll;
     @LuaWhitelist
-    @LuaFieldDoc("renderer.hide_hud")
-    public boolean hideHUD;
+    @LuaFieldDoc("renderer.render_hud")
+    public boolean renderHUD = true;
 
     public FiguraVec3 cameraPos;
     public FiguraVec3 cameraPivot;
@@ -137,20 +137,20 @@ public class RendererAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("renderer.should_hide_hud")
-    public boolean shouldHideHUD() {
-        return hideHUD;
+    @LuaMethodDoc("renderer.should_render_hud")
+    public boolean shouldRenderHUD() {
+        return renderHUD;
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaMethodOverload(
                     argumentTypes = Boolean.class,
-                    argumentNames = "hideHUD"
+                    argumentNames = "renderHUD"
             ),
-            value = "renderer.set_hide_hud")
-    public RendererAPI setHideHUD(boolean hideHUD) {
-        this.hideHUD = hideHUD;
+            value = "renderer.set_render_hud")
+    public RendererAPI setHideHUD(boolean renderHUD) {
+        this.renderHUD = renderHUD;
         return this;
     }
 
@@ -465,7 +465,7 @@ public class RendererAPI {
             case "renderVehicle" -> renderVehicle;
             case "renderCrosshair" -> renderCrosshair;
             case "forcePaperdoll" -> forcePaperdoll;
-            case "hideHUD" -> hideHUD;
+            case "renderHUD" -> renderHUD;
             default -> null;
         };
     }
@@ -477,7 +477,7 @@ public class RendererAPI {
             case "renderVehicle" -> renderVehicle = value;
             case "renderCrosshair" -> renderCrosshair = value;
             case "forcePaperdoll" -> forcePaperdoll = value;
-            case "hideHUD" -> hideHUD = value;
+            case "renderHUD" -> renderHUD = value;
             default -> throw new LuaError("Cannot assign value on key \"" + key + "\"");
         }
     }

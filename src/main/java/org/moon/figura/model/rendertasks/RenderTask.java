@@ -3,6 +3,7 @@ package org.moon.figura.model.rendertasks;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import org.moon.figura.avatar.Avatar;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaMethodDoc;
@@ -23,6 +24,7 @@ import org.moon.figura.utils.LuaUtils;
 public abstract class RenderTask {
 
     protected final String name;
+    protected final Avatar owner;
 
     protected boolean enabled = true;
     protected Integer light = null;
@@ -30,8 +32,9 @@ public abstract class RenderTask {
 
     private final PartCustomization customization = PartCustomization.of();
 
-    public RenderTask(String name) {
+    public RenderTask(String name, Avatar owner) {
         this.name = name;
+        this.owner = owner;
     }
 
     //Return true if something was rendered, false if the function cancels for some reason

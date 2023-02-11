@@ -4,11 +4,14 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import org.luaj.vm2.LuaError;
+import org.moon.figura.avatar.Avatar;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.world.ItemStackAPI;
+import org.moon.figura.lua.api.world.WorldAPI;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
@@ -29,8 +32,8 @@ public class ItemTask extends RenderTask {
     private boolean left = false;
     private int cachedComplexity;
 
-    public ItemTask(String name) {
-        super(name);
+    public ItemTask(String name, Avatar owner) {
+        super(name, owner);
     }
 
     @Override
@@ -42,10 +45,11 @@ public class ItemTask extends RenderTask {
         PoseStack poseStack = stack.peek().copyIntoGlobalPoseStack();
         poseStack.scale(-16, 16, -16);
 
+        LivingEntity entity = owner.renderer.entity instanceof LivingEntity living ? living : null;
         Minecraft.getInstance().getItemRenderer().renderStatic(
-                null, item, displayMode, left,
-                poseStack, buffer, null,
-                this.light != null ? this.light : light, this.overlay != null ? this.overlay : overlay, 0);
+                entity, item, displayMode, left,
+                poseStack, buffer, WorldAPI.getCurrentWorld(),
+                this.light != null ? this.light : light, this.overlay != null ? this.overlay : overlay, entity != null ? entity.getId() + displayMode.ordinal() : 0);
 
         stack.pop();
         return true;
