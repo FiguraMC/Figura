@@ -8,6 +8,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 import org.joml.Matrix4f;
 import org.luaj.vm2.LuaError;
+import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.Badges;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
@@ -43,8 +44,8 @@ public class TextTask extends RenderTask {
 
     private int cachedComplexity;
 
-    public TextTask(String name) {
-        super(name);
+    public TextTask(String name, Avatar owner) {
+        super(name, owner);
     }
 
     @Override

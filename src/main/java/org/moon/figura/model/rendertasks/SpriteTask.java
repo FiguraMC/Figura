@@ -9,6 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.luaj.vm2.LuaError;
+import org.moon.figura.avatar.Avatar;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaMethodDoc;
@@ -38,8 +39,8 @@ public class SpriteTask extends RenderTask {
     private int r = 0xFF, g = 0xFF, b = 0xFF, a = 0xFF;
     private RenderTypes renderType = RenderTypes.TRANSLUCENT;
 
-    public SpriteTask(String name) {
-        super(name);
+    public SpriteTask(String name, Avatar owner) {
+        super(name, owner);
     }
 
     @Override
