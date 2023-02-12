@@ -104,11 +104,12 @@
   "figura.badges.pride.pride": "Figura Pride Mark!",
   "figura.badges.pride.transgender": "Figura Transgender Mark!",
 
-  "figura.badges.special.translator": "Figura mod Translator!",
-  "figura.badges.special.donator": "Thank you for supporting the Figura mod!",
-  "figura.badges.special.contest": "Figura contest winner! GG!",
-  "figura.badges.special.discord_staff": "Official Figura Discord Staff!",
   "figura.badges.special.dev": "Figura Developer!",
+  "figura.badges.special.discord_staff": "Official Figura Discord Staff!",
+  "figura.badges.special.contest": "Figura contest winner! GG!",
+  "figura.badges.special.donator": "Thank you for supporting the Figura mod!",
+  "figura.badges.special.translator": "Figura mod Translator!",
+  "figura.badges.special.texture_artist": "Figura mod Texture Artist!",
 
   "figura.badges.no_permissions.init_inst": "Script overran resource limits",
   "figura.badges.no_permissions.complexity": "Model too complex",
@@ -1516,7 +1517,7 @@
 
   "figura.docs.vector3.cross": "Sets this vector to the cross product of itself and the other vector\nReturns self for chaining",
   "figura.docs.vector3.crossed": "Returns a new vector which is the cross product of this and the other one",
-  "figura.docs.vector3.augmented": "Returns the augmented form of this vector\nThe augmented form is Vector4 with a 1 in its W coordinate",
+  "figura.docs.vector3.augmented": "Returns the augmented form of this vector\nThe augmented form is Vector4 with given value in its W coordinate\nDefault to 1 when no value is specified",
 
 
   "figura.docs.world": "A global API dedicated to reading information from the Minecraft world\nAccessed using the name \"world\"",

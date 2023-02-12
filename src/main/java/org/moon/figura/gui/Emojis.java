@@ -21,7 +21,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.regex.Pattern;
 
 public class Emojis {
 
@@ -29,16 +28,10 @@ public class Emojis {
 
     private static final Style STYLE = Style.EMPTY.withColor(ChatFormatting.WHITE).withFont(FONT);
     private static final Map<String, String> EMOJI_MAP = new HashMap<>();
-    private static String prefix = "\u0000";
-    private static String suffix = "\u0000";
+    private static final String DELIMITER = ":";
 
     //listener to load emojis from the resource pack
     public static final FiguraResourceListener RESOURCE_LISTENER = new FiguraResourceListener("emojis", manager -> {
-        //clear old list
-        EMOJI_MAP.clear();
-        prefix = "\u0000";
-        suffix = "\u0000";
-
         //get the resource
         Optional<Resource> optional = manager.getResource(new FiguraIdentifier("emojis.json"));
         if (optional.isEmpty())
@@ -46,14 +39,10 @@ public class Emojis {
 
         //open the resource as json
         try (InputStream stream = optional.get().open()) {
-            JsonObject root = JsonParser.parseReader(new InputStreamReader(stream, StandardCharsets.UTF_8)).getAsJsonObject();
-
-            //read the prefix and suffix
-            prefix = root.get("prefix").getAsString();
-            suffix = root.get("suffix").getAsString();
+            JsonObject emojis = JsonParser.parseReader(new InputStreamReader(stream, StandardCharsets.UTF_8)).getAsJsonObject();
 
             //read a pair or String, List<String> from this json
-            for (Map.Entry<String, JsonElement> entry : root.getAsJsonObject("emojis").entrySet()) {
+            for (Map.Entry<String, JsonElement> entry : emojis.entrySet()) {
                 //the emoji is the value
                 String emoji = entry.getKey();
                 //and each element will be the key inside the emoji map
@@ -78,31 +67,31 @@ public class Emojis {
     public static Component convertEmoji(String string, Style style) {
         emoji: {
             //check first :
-            String[] pre = string.split(Pattern.quote(prefix), 2);
+            String[] pre = string.split(DELIMITER, 2);
             if (pre.length < 2)
                 break emoji;
 
             //check if there is a second :
-            if (!pre[1].contains(suffix))
+            if (!pre[1].contains(DELIMITER))
                 break emoji;
 
             //success, we can now start building our text
             MutableComponent newText = Component.literal(pre[0]).withStyle(style);
 
             //check second :
-            String[] pos = pre[1].split(Pattern.quote(suffix), 2);
+            String[] pos = pre[1].split(DELIMITER, 2);
             String emoji = EMOJI_MAP.get(pos[0]);
 
             //success, append the emoji
             if (emoji != null) {
-                newText.append(Component.literal(emoji).withStyle(STYLE.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(prefix + pos[0] + suffix).withStyle(style)))));
+                newText.append(Component.literal(emoji).withStyle(STYLE.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(DELIMITER + pos[0] + DELIMITER).withStyle(style)))));
             //fail, break if there is no remaining text to parse
             } else if (pos.length < 2) {
                 break emoji;
             //otherwise append this text as is (with prefix) and re-add the suffix to the next text
             } else {
-                newText.append(prefix + pos[0]);
-                pos[1] = suffix + pos[1];
+                newText.append(DELIMITER + pos[0]);
+                pos[1] = DELIMITER + pos[1];
             }
 
             //parse the next text

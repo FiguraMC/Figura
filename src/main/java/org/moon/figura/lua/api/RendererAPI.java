@@ -149,7 +149,7 @@ public class RendererAPI {
                     argumentNames = "renderHUD"
             ),
             value = "renderer.set_render_hud")
-    public RendererAPI setHideHUD(boolean renderHUD) {
+    public RendererAPI setRenderHUD(boolean renderHUD) {
         this.renderHUD = renderHUD;
         return this;
     }
