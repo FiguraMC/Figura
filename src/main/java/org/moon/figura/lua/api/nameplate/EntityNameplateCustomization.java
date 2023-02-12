@@ -224,7 +224,7 @@ public class EntityNameplateCustomization extends NameplateCustomization {
                     argumentNames = "visible"
             ),
             aliases = "visible",
-            value = "animation.set_visible"
+            value = "nameplate_entity.set_visible"
     )
     public EntityNameplateCustomization setVisible(boolean visible) {
         this.visible = visible;
@@ -249,7 +249,7 @@ public class EntityNameplateCustomization extends NameplateCustomization {
                     argumentNames = "outline"
             ),
             aliases = "outline",
-            value = "animation.set_outline"
+            value = "nameplate_entity.set_outline"
     )
     public EntityNameplateCustomization setOutline(boolean outline) {
         this.outline = outline;
@@ -274,7 +274,7 @@ public class EntityNameplateCustomization extends NameplateCustomization {
                     argumentNames = "shadow"
             ),
             aliases = "shadow",
-            value = "animation.set_shadow"
+            value = "nameplate_entity.set_shadow"
     )
     public EntityNameplateCustomization setShadow(boolean shadow) {
         this.shadow = shadow;

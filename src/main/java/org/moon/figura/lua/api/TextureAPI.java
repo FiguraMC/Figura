@@ -74,7 +74,7 @@ public class TextureAPI {
         }
 
         FiguraTexture texture = register(name, image, false);
-        texture.fill(0, 0, width, height, ColorUtils.Colors.FRAN_PINK.vec.augmented(), null, null, null);
+        texture.fill(0, 0, width, height, ColorUtils.Colors.FRAN_PINK.vec.augmented(1d), null, null, null);
         return texture;
     }
 

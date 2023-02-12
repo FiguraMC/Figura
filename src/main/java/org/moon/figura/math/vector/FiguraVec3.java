@@ -517,9 +517,18 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("vector3.augmented")
-    public FiguraVec4 augmented() {
-        return FiguraVec4.of(x, y, z, 1);
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload,
+                    @LuaMethodOverload(
+                            argumentTypes = Double.class,
+                            argumentNames = "value"
+                    )
+            },
+            value = "vector3.augmented"
+    )
+    public FiguraVec4 augmented(Double d) {
+        return FiguraVec4.of(x, y, z, d == null ? 1 : d);
     }
 
     public BlockPos asBlockPos() {
