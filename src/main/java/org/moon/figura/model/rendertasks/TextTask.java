@@ -5,7 +5,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.FormattedCharSequence;
 import org.joml.Matrix4f;
 import org.luaj.vm2.LuaError;
 import org.moon.figura.avatar.Avatar;
@@ -23,9 +22,7 @@ import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.ui.UIHelper;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiFunction;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -36,11 +33,12 @@ public class TextTask extends RenderTask {
 
     private String textCached;
     private List<Component> text;
-    private Alignment alignment = Alignment.LEFT;
+    private TextUtils.Alignment alignment = TextUtils.Alignment.LEFT;
     private boolean shadow = false, outline = false;
     private boolean background = false, seeThrough = false;
     private Integer outlineColor, backgroundColor;
     private int width = 0;
+    private boolean wrap = true;
 
     private int cachedComplexity;
 
@@ -96,15 +94,7 @@ public class TextTask extends RenderTask {
         }
 
         Component component = Badges.noBadges4U(TextUtils.tryParseJson(this.textCached));
-        if (this.width > 0) {
-            List<FormattedCharSequence> warped = TextUtils.wrapText(component, this.width, Minecraft.getInstance().font);
-            List<Component> newList = new ArrayList<>();
-            for (FormattedCharSequence charSequence : warped)
-                newList.add(TextUtils.charSequenceToText(charSequence));
-            this.text = newList;
-        } else {
-            this.text = TextUtils.splitText(component, "\n");
-        }
+        this.text = TextUtils.formatInBounds(component, Minecraft.getInstance().font, width, wrap);
     }
 
 
@@ -119,12 +109,10 @@ public class TextTask extends RenderTask {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = {
-                    @LuaMethodOverload(
-                            argumentTypes = String.class,
-                            argumentNames = "text"
-                    )
-            },
+            overloads = @LuaMethodOverload(
+                    argumentTypes = String.class,
+                    argumentNames = "text"
+            ),
             aliases = "text",
             value = "text_task.set_text"
     )
@@ -148,18 +136,16 @@ public class TextTask extends RenderTask {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = {
-                    @LuaMethodOverload(
-                            argumentTypes = String.class,
-                            argumentNames = "alignment"
-                    )
-            },
+            overloads = @LuaMethodOverload(
+                    argumentTypes = String.class,
+                    argumentNames = "alignment"
+            ),
             aliases = "alignment",
             value = "text_task.set_alignment"
     )
     public TextTask setAlignment(@LuaNotNil String alignment) {
         try {
-            this.alignment = Alignment.valueOf(alignment.toUpperCase());
+            this.alignment = TextUtils.Alignment.valueOf(alignment.toUpperCase());
         } catch (Exception ignored) {
             throw new LuaError("Invalid alignment type \"" + alignment + "\"");
         }
@@ -179,12 +165,10 @@ public class TextTask extends RenderTask {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = {
-                    @LuaMethodOverload(
-                            argumentTypes = Boolean.class,
-                            argumentNames = "shadow"
-                    )
-            },
+            overloads = @LuaMethodOverload(
+                    argumentTypes = Boolean.class,
+                    argumentNames = "shadow"
+            ),
             aliases = "shadow",
             value = "text_task.set_shadow"
     )
@@ -206,12 +190,10 @@ public class TextTask extends RenderTask {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = {
-                    @LuaMethodOverload(
-                            argumentTypes = Boolean.class,
-                            argumentNames = "outline"
-                    )
-            },
+            overloads = @LuaMethodOverload(
+                    argumentTypes = Boolean.class,
+                    argumentNames = "outline"
+            ),
             aliases = "outline",
             value = "text_task.set_outline"
     )
@@ -265,12 +247,10 @@ public class TextTask extends RenderTask {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = {
-                    @LuaMethodOverload(
-                            argumentTypes = Integer.class,
-                            argumentNames = "width"
-                    )
-            },
+            overloads = @LuaMethodOverload(
+                    argumentTypes = Integer.class,
+                    argumentNames = "width"
+            ),
             aliases = "width",
             value = "text_task.set_width"
     )
@@ -286,6 +266,32 @@ public class TextTask extends RenderTask {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("text_task.has_wrap")
+    public boolean HasWrap() {
+        return wrap;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = Boolean.class,
+                    argumentNames = "wrap"
+            ),
+            aliases = "wrap",
+            value = "text_task.set_wrap"
+    )
+    public TextTask setWrap(boolean wrap) {
+        this.wrap = wrap;
+        updateText();
+        return this;
+    }
+
+    @LuaWhitelist
+    public TextTask wrap(boolean wrap) {
+        return setWrap(wrap);
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc("text_task.is_see_through")
     public boolean isSeeThrough() {
         return this.seeThrough;
@@ -293,12 +299,10 @@ public class TextTask extends RenderTask {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = {
-                    @LuaMethodOverload(
-                            argumentTypes = Boolean.class,
-                            argumentNames = "seeThrough"
-                    )
-            },
+            overloads = @LuaMethodOverload(
+                    argumentTypes = Boolean.class,
+                    argumentNames = "seeThrough"
+            ),
             aliases = "seeThrough",
             value = "text_task.set_see_through"
     )
@@ -320,12 +324,10 @@ public class TextTask extends RenderTask {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = {
-                    @LuaMethodOverload(
-                            argumentTypes = Boolean.class,
-                            argumentNames = "background"
-                    )
-            },
+            overloads = @LuaMethodOverload(
+                    argumentTypes = Boolean.class,
+                    argumentNames = "background"
+            ),
             aliases = "background",
             value = "text_task.set_background"
     )
@@ -374,21 +376,5 @@ public class TextTask extends RenderTask {
     @Override
     public String toString() {
         return name + " (Text Render Task)";
-    }
-
-    private enum Alignment {
-        LEFT((font, component) -> 0),
-        RIGHT((font, component) -> font.width(component)),
-        CENTER((font, component) -> font.width(component) / 2);
-
-        private final BiFunction<Font, Component, Integer> function;
-
-        Alignment(BiFunction<Font, Component, Integer> function) {
-            this.function = function;
-        }
-
-        public int apply(Font font, Component component) {
-            return function.apply(font, component);
-        }
     }
 }
