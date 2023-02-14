@@ -18,9 +18,7 @@ import org.moon.figura.utils.TextUtils;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class Emojis {
 
@@ -28,7 +26,8 @@ public class Emojis {
 
     private static final Style STYLE = Style.EMPTY.withColor(ChatFormatting.WHITE).withFont(FONT);
     private static final Map<String, String> EMOJI_MAP = new HashMap<>();
-    private static final String DELIMITER = ":";
+    private static final char DELIMITER = ':';
+    private static final char ESCAPE = '\\';
 
     //listener to load emojis from the resource pack
     public static final FiguraResourceListener RESOURCE_LISTENER = new FiguraResourceListener("emojis", manager -> {
@@ -69,43 +68,79 @@ public class Emojis {
     }
 
     public static Component convertEmoji(String string, Style style) {
-        emoji: {
-            //check first :
-            String[] pre = string.split(DELIMITER, 2);
-            if (pre.length < 2)
-                break emoji;
+        //if the string does not contain the delimiter, then return
+        if (!string.contains(":"))
+            return Component.literal(string).withStyle(style);
 
-            //check if there is a second :
-            if (!pre[1].contains(DELIMITER))
-                break emoji;
+        //string lists, every odd index is an emoji
+        List<String> strings = new ArrayList<>();
 
-            //success, we can now start building our text
-            MutableComponent newText = Component.literal(pre[0]).withStyle(style);
+        //temp variables
+        StringBuilder current = new StringBuilder();
+        boolean escaped = false;
+        boolean inside = false;
 
-            //check second :
-            String[] pos = pre[1].split(DELIMITER, 2);
-            String emoji = EMOJI_MAP.get(pos[0].toLowerCase());
+        //iterate over every char
+        for (int i = 0; i < string.length(); i++) {
+            char c = string.charAt(i);
 
-            //success, append the emoji
-            if (emoji != null) {
-                newText.append(Component.literal(emoji).withStyle(STYLE.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(DELIMITER + pos[0] + DELIMITER)))));
-            //fail, break if there is no remaining text to parse
-            } else if (pos.length < 2) {
-                break emoji;
-            //otherwise append this text as is (with prefix) and re-add the suffix to the next text
+            //escape sequence
+            if (c == ESCAPE) {
+                escaped = !escaped;
+                //append only if the next char is not the delimiter
+                if (i + 1 == string.length() || string.charAt(i + 1) != DELIMITER)
+                    current.append(c);
+            //delimiter, only if not escaped
+            } else if (c == DELIMITER && !escaped) {
+                //toggle inside status
+                inside = !inside;
+                //and also append to the list
+                strings.add(current.toString());
+                current = new StringBuilder();
+            //otherwise just add to the queue
             } else {
-                newText.append(DELIMITER + pos[0]);
-                pos[1] = DELIMITER + pos[1];
+                escaped = false;
+                current.append(c);
             }
-
-            //parse the next text
-            if (pos.length > 1)
-                newText.append(convertEmoji(pos[1], style));
-
-            //return the modified text
-            return newText;
         }
 
-        return Component.literal(string).withStyle(style);
+        //if the queue is not flushed
+        if (current.length() > 0 || inside) {
+            String toAdd = current.toString();
+            //if we left inside, we want to keep the text within the last index
+            //also keep the delimiter since its end was not found
+            if (inside) {
+                int index = strings.size() - 1;
+                String s = strings.get(index) + DELIMITER + toAdd;
+                strings.set(index, s);
+            //otherwise just add what is remaining
+            } else {
+                strings.add(toAdd);
+            }
+        }
+
+        MutableComponent result = Component.empty().withStyle(style);
+
+        //now we parse the list
+        for (int i = 0; i < strings.size(); i++) {
+            String s = strings.get(i);
+            //even: append
+            if (i % 2 == 0) {
+                result.append(s);
+            //odd: emoji
+            } else {
+                String emoji = EMOJI_MAP.get(s);
+                String quoted = DELIMITER + s + DELIMITER;
+                //emoji not found, so we add the unformatted text
+                if (emoji == null) {
+                    result.append(quoted);
+                //add the emoji
+                } else {
+                    result.append(Component.literal(emoji).withStyle(STYLE.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(quoted)))));
+                }
+            }
+        }
+
+        return result;
     }
 }
