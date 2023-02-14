@@ -4,13 +4,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.*;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.Resource;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FiguraResourceListener;
@@ -42,8 +37,12 @@ public class Emojis {
                 //the emoji is the value
                 String emoji = entry.getKey();
                 //and each element will be the key inside the emoji map
-                for (JsonElement element : entry.getValue().getAsJsonArray())
-                    EMOJI_MAP.put(element.getAsString(), emoji);
+                for (JsonElement element : entry.getValue().getAsJsonArray()) {
+                    String key = element.getAsString();
+                    if (EMOJI_MAP.containsKey(key))
+                        FiguraMod.LOGGER.warn("Duplicate emoji id \"" + key + "\" for emoji \"" + emoji + "\"");
+                    EMOJI_MAP.put(key, emoji);
+                }
             }
         } catch (Exception e) {
             FiguraMod.LOGGER.error("Failed to load emojis", e);
@@ -76,11 +75,11 @@ public class Emojis {
 
             //check second :
             String[] pos = pre[1].split(DELIMITER, 2);
-            String emoji = EMOJI_MAP.get(pos[0]);
+            String emoji = EMOJI_MAP.get(pos[0].toLowerCase());
 
             //success, append the emoji
             if (emoji != null) {
-                newText.append(new TextComponent(emoji).withStyle(STYLE.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent(DELIMITER + pos[0] + DELIMITER).withStyle(style)))));
+                newText.append(new TextComponent(emoji).withStyle(STYLE.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent(DELIMITER + pos[0] + DELIMITER)))));
             //fail, break if there is no remaining text to parse
             } else if (pos.length < 2) {
                 break emoji;
