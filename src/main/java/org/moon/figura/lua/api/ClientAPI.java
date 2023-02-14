@@ -4,9 +4,11 @@ import com.mojang.blaze3d.platform.Window;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.core.SerializableUUID;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.world.phys.Vec3;
@@ -241,6 +243,29 @@ public class ClientAPI {
     public static int getTextHeight(String text) {
         int lineHeight = Minecraft.getInstance().font.lineHeight;
         return text == null ? lineHeight : lineHeight * TextUtils.splitText(TextUtils.tryParseJson(text), "\n").size();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = String.class,
+                            argumentNames = "text"
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {String.class, Integer.class, Boolean.class},
+                            argumentNames = {"text", "maxWidth", "wrap"}
+                    )
+            },
+            value = "client.get_text_dimensions"
+    )
+    public static FiguraVec2 getTextDimensions(@LuaNotNil String text, int maxWidth, Boolean wrap) {
+        Component component = TextUtils.tryParseJson(text);
+        Font font = Minecraft.getInstance().font;
+        List<Component> list = TextUtils.formatInBounds(component, font, maxWidth, wrap == null || wrap);
+        int x = TextUtils.getWidth(list, font);
+        int y = list.size() * font.lineHeight;
+        return FiguraVec2.of(x, y);
     }
 
     @LuaWhitelist
