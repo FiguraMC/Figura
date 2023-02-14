@@ -132,7 +132,7 @@ public class LocalAvatarLoader {
                 BlockbenchModelParser modelParser = new BlockbenchModelParser();
 
                 loadState++;
-                CompoundTag models = loadModels(path, modelParser, textures, animations, "");
+                CompoundTag models = loadModels(path.toFile().getCanonicalPath(), path, modelParser, textures, animations, "");
                 models.putString("name", "models");
 
                 //metadata
@@ -192,22 +192,22 @@ public class LocalAvatarLoader {
         }
     }
 
-    private static CompoundTag loadModels(Path path, BlockbenchModelParser parser, CompoundTag textures, ListTag animations, String folders) throws Exception {
+    private static CompoundTag loadModels(String avatarFolder, Path currentFile, BlockbenchModelParser parser, CompoundTag textures, ListTag animations, String folders) throws Exception {
         CompoundTag result = new CompoundTag();
-        File[] subFiles = path.toFile().listFiles(f -> !f.isHidden() && !f.getName().startsWith("."));
+        File[] subFiles = currentFile.toFile().listFiles(f -> !f.isHidden() && !f.getName().startsWith("."));
         ListTag children = new ListTag();
         if (subFiles != null)
             for (File file : subFiles) {
                 String name = file.getName();
                 if (file.isDirectory()) {
-                    CompoundTag subfolder = loadModels(file.toPath(), parser, textures, animations, folders + name + ".");
+                    CompoundTag subfolder = loadModels(avatarFolder, file.toPath(), parser, textures, animations, folders + name + ".");
                     if (!subfolder.isEmpty()) {
                         subfolder.putString("name", name);
                         BlockbenchModelParser.parseParent(name, subfolder);
                         children.add(subfolder);
                     }
                 } else if (file.toString().toLowerCase().endsWith(".bbmodel")) {
-                    BlockbenchModelParser.ModelData data = parser.parseModel(path, file, IOUtils.readFile(file), name.substring(0, name.length() - 8), folders);
+                    BlockbenchModelParser.ModelData data = parser.parseModel(avatarFolder, file, IOUtils.readFile(file), name.substring(0, name.length() - 8), folders);
                     children.add(data.modelNbt());
                     animations.addAll(data.animationList());
 
