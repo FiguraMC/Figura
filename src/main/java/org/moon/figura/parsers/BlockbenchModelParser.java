@@ -8,6 +8,7 @@ import org.moon.figura.model.ParentType;
 import org.moon.figura.utils.IOUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -30,7 +31,7 @@ public class BlockbenchModelParser {
     private final HashMap<Integer, String> textureIdMap = new HashMap<>();
 
     //parser
-    public ModelData parseModel(Path avatarFolder, File sourceFile, String json, String modelName, String folders) throws Exception {
+    public ModelData parseModel(String avatarFolder, File sourceFile, String json, String modelName, String folders) throws Exception {
         //parse json -> object
         BlockbenchModel model = GSON.fromJson(json, BlockbenchModel.class);
 
@@ -85,7 +86,7 @@ public class BlockbenchModelParser {
 
     // -- internal functions -- //
 
-    private void parseTextures(Path avatar, File sourceFile, String folders, String modelName, CompoundTag texturesNbt, BlockbenchModel.Texture[] textures, BlockbenchModel.Resolution resolution) {
+    private void parseTextures(String avatar, File sourceFile, String folders, String modelName, CompoundTag texturesNbt, BlockbenchModel.Texture[] textures, BlockbenchModel.Resolution resolution) {
         if (textures == null)
             return;
 
@@ -108,7 +109,7 @@ public class BlockbenchModelParser {
             BlockbenchModel.Texture texture = textures[i];
 
             //name
-            String name = folders + texture.name;
+            String name = texture.name;
             if (name.endsWith(".png"))
                 name = name.substring(0, name.length() - 4);
 
@@ -133,8 +134,8 @@ public class BlockbenchModelParser {
                 Path p = sourceFile.toPath().resolve(texture.relative_path);
                 File f = p.toFile().getCanonicalFile();
                 p = f.toPath();
-                if (!f.exists()) throw new Exception("File do not exists!");
-                if (!p.startsWith(avatar)) throw new Exception("File from outside the avatar folder!");
+                if (!f.exists()) throw new IllegalStateException("File do not exists!");
+                if (!p.startsWith(avatar)) throw new IllegalStateException("File from outside the avatar folder!");
 
                 //load texture
                 source = IOUtils.readFileBytes(f);
@@ -143,9 +144,15 @@ public class BlockbenchModelParser {
                         .replaceAll("[/\\\\]", ".");
                 path = path.substring(0, path.length() - 4);
 
+                //fix name
+                name = folders + name;
+
                 //feedback
                 FiguraMod.debug("Loaded " + textureType.toUpperCase() + " Texture \"{}\" from {}", name, f);
-            } catch (Exception ignored) {
+            } catch (IllegalStateException | IOException e) {
+                if (e instanceof IOException)
+                    FiguraMod.LOGGER.error("", e);
+
                 //otherwise, load from the source stored in the model
                 source = Base64.getDecoder().decode(texture.source.substring("data:image/png;base64,".length()));
                 path = folders + modelName + "." + name;
