@@ -1,7 +1,9 @@
 package org.moon.figura.lua.api.world;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
 import net.minecraft.core.BlockPos;
@@ -321,13 +323,17 @@ public class BlockStateAPI {
         if (renderShape != RenderShape.MODEL)
             return map;
 
-        BakedModel bakedModel = Minecraft.getInstance().getBlockRenderer().getBlockModel(blockState);
+        BlockRenderDispatcher blockRenderer = Minecraft.getInstance().getBlockRenderer();
+        BakedModel bakedModel = blockRenderer.getBlockModel(blockState);
         RandomSource randomSource = RandomSource.create();
         long seed = 42L;
 
         for (Direction direction : Direction.values())
             map.put(direction.name(), getTexturesForFace(blockState, direction, randomSource, bakedModel, seed));
         map.put("NONE", getTexturesForFace(blockState, null, randomSource, bakedModel, seed));
+
+        TextureAtlasSprite particle = blockRenderer.getBlockModelShaper().getParticleIcon(blockState);
+        map.put("PARTICLE", Set.of(getTextureName(particle)));
 
         return map;
     }
@@ -337,12 +343,15 @@ public class BlockStateAPI {
         List<BakedQuad> quads = bakedModel.getQuads(blockState, direction, randomSource);
         Set<String> textures = new HashSet<>();
 
-        for (BakedQuad quad : quads) {
-            ResourceLocation location = quad.getSprite().getName(); // do not close it
-            textures.add(location.getNamespace() + ":textures/" + location.getPath());
-        }
+        for (BakedQuad quad : quads)
+            textures.add(getTextureName(quad.getSprite()));
 
         return textures;
+    }
+
+    private static String getTextureName(TextureAtlasSprite sprite) {
+        ResourceLocation location = sprite.getName(); // do not close it
+        return location.getNamespace() + ":textures/" + location.getPath();
     }
 
     @LuaWhitelist
