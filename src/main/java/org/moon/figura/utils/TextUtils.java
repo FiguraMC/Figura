@@ -22,33 +22,35 @@ public class TextUtils {
     public static final Component ELLIPSIS = FiguraText.of("ellipsis");
     public static final Component UNKNOWN = Component.literal("�").withStyle(Style.EMPTY.withFont(Style.DEFAULT_FONT));
 
-    public static List<Component> splitText(Component text, String regex) {
+    public static List<Component> splitText(FormattedText text, String regex) {
         //list to return
         ArrayList<Component> textList = new ArrayList<>();
 
         //current line variable
-        MutableComponent currentText = Component.empty();
+        MutableComponent[] currentText = {Component.empty()};
 
         //iterate over the text
-        for (Component entry : text.toFlatList(text.getStyle())) {
+        text.visit((style, string) -> {
             //split text based on regex
-            String entryString = entry.getString();
-            String[] lines = entryString.split(regex, -1);
+            String[] lines = string.split(regex, -1);
 
             //iterate over the split text
             for (int i = 0; i < lines.length; i++) {
                 //if it is not the first iteration, add to return list and reset the line variable
                 if (i != 0) {
-                    textList.add(currentText.copy());
-                    currentText = Component.empty();
+                    textList.add(currentText[0].copy());
+                    currentText[0] = Component.empty();
                 }
 
                 //append text with the line text
-                currentText.append(Component.literal(lines[i]).setStyle(entry.getStyle()));
+                currentText[0].append(Component.literal(lines[i]).withStyle(style));
             }
-        }
+
+            return Optional.empty();
+        }, Style.EMPTY);
+
         //add the last text iteration then return
-        textList.add(currentText);
+        textList.add(currentText[0]);
         return textList;
     }
 
@@ -137,11 +139,11 @@ public class TextUtils {
         return formattedTextToText(trimmed).copy().append(ellipsis);
     }
 
-    public static Component replaceTabs(Component text) {
+    public static Component replaceTabs(FormattedText text) {
         return TextUtils.replaceInText(text, "\\t", TAB);
     }
 
-    public static List<FormattedCharSequence> wrapTooltip(Component text, Font font, int mousePos, int screenWidth) {
+    public static List<FormattedCharSequence> wrapTooltip(FormattedText text, Font font, int mousePos, int screenWidth) {
         //first split the new line text
         List<Component> splitText = TextUtils.splitText(text, "\n");
 
@@ -273,13 +275,14 @@ public class TextUtils {
         return builder;
     }
 
-    public static Component reverse(Component text) {
-        MutableComponent builder = Component.empty();
-        for (Component entry : text.toFlatList(text.getStyle())) {
-            StringBuilder str = new StringBuilder(entry.getString()).reverse();
-            builder = Component.literal(str.toString()).withStyle(entry.getStyle()).append(builder);
-        }
-        return builder;
+    public static Component reverse(FormattedText text) {
+        MutableComponent[] builder = {Component.empty()};
+        text.visit((style, string) -> {
+            StringBuilder str = new StringBuilder(string).reverse();
+            builder[0] = Component.literal(str.toString()).withStyle(style).append(builder[0]);
+            return Optional.empty();
+        }, Style.EMPTY);
+        return builder[0];
     }
 
     public static Component trim(FormattedText text) {
@@ -297,7 +300,7 @@ public class TextUtils {
         return substring(text, start, end);
     }
 
-    public static List<Component> formatInBounds(Component text, Font font, int maxWidth, boolean wrap) {
+    public static List<Component> formatInBounds(FormattedText text, Font font, int maxWidth, boolean wrap) {
         if (maxWidth > 0) {
             if (wrap) {
                 List<FormattedCharSequence> warped = wrapText(text, maxWidth, font);

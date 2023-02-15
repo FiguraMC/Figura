@@ -24,7 +24,9 @@ public class NameplateCustomization {
         Component component = TextUtils.tryParseJson(text);
         component = Badges.noBadges4U(component);
         component = TextUtils.removeClickableObjects(component);
-        return Emojis.applyEmojis(component);
+        component = Emojis.applyEmojis(component);
+        component = Emojis.removeBlacklistedEmojis(component);
+        return component;
     }
 
     public Component getJson() {
