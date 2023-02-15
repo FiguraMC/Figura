@@ -46,7 +46,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
     private Avatar avatar;
 
     @Inject(method = "renderNameTag(Lnet/minecraft/client/player/AbstractClientPlayer;Lnet/minecraft/network/chat/Component;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", at = @At("HEAD"), cancellable = true)
-    private void renderFiguraLabelIfPresent(AbstractClientPlayer player, Component text, PoseStack stack, MultiBufferSource multiBufferSource, int light, CallbackInfo ci) {
+    private void renderNameTag(AbstractClientPlayer player, Component text, PoseStack stack, MultiBufferSource multiBufferSource, int light, CallbackInfo ci) {
         //return on config or high entity distance
         int config = Config.ENTITY_NAMEPLATE.asInt();
         if (config == 0 || AvatarManager.panic || this.entityRenderDispatcher.distanceToSqr(player) > 4096)
@@ -66,15 +66,15 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
         FiguraMod.pushProfiler(player.getName().getString());
         FiguraMod.pushProfiler("nameplate");
 
-        //trust check
-        boolean trust = avatar != null && avatar.permissions.get(Permissions.NAMEPLATE_EDIT) == 1;
+        //customization boolean, which also is the trust check
+        boolean hasCustom = avatar != null && avatar.permissions.get(Permissions.NAMEPLATE_EDIT) == 1 && custom != null;
 
         stack.pushPose();
 
         //pivot
         FiguraMod.pushProfiler("pivot");
         FiguraVec3 pivot;
-        if (custom != null && custom.getPivot() != null && trust)
+        if (hasCustom && custom.getPivot() != null)
             pivot = custom.getPivot();
         else
             pivot = FiguraVec3.of(0f, player.getBbHeight() + 0.5f, 0f);
@@ -86,7 +86,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
 
         //pos
         FiguraMod.popPushProfiler("position");
-        if (custom != null && custom.getPos() != null && trust) {
+        if (hasCustom && custom.getPos() != null) {
             FiguraVec3 pos = custom.getPos();
             stack.translate(pos.x, pos.y, pos.z);
         }
@@ -94,8 +94,8 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
         //scale
         FiguraMod.popPushProfiler("scale");
         float scale = 0.025f;
-        FiguraVec3 scaleVec = FiguraVec3.of(-scale, -scale, -scale);
-        if (custom != null && custom.getScale() != null && trust)
+        FiguraVec3 scaleVec = FiguraVec3.of(-scale, -scale, scale);
+        if (hasCustom && custom.getScale() != null)
             scaleVec.multiply(custom.getScale());
 
         stack.scale((float) scaleVec.x, (float) scaleVec.y, (float) scaleVec.z);
@@ -103,7 +103,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
         //text
         Component name = new TextComponent(player.getName().getString());
         FiguraMod.popPushProfiler("text");
-        Component replacement = custom != null && custom.getJson() != null && trust ? custom.getJson().copy() : name;
+        Component replacement = hasCustom && custom.getJson() != null ? custom.getJson().copy() : name;
 
         //name
         replacement = TextUtils.replaceInText(replacement, "\\$\\{name\\}", name);
@@ -120,8 +120,6 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
         boolean isSneaking = player.isDiscrete();
         boolean deadmau = text.getString().equals("deadmau5");
 
-        boolean hasCustom = trust && custom != null;
-
         int bgColor = hasCustom && custom.background != null ? custom.background : (int) (Minecraft.getInstance().options.getBackgroundOpacity(0.25f) * 0xFF) << 24;
         int outlineColor = hasCustom && custom.outlineColor != null ? custom.outlineColor : 0x202020;
 
@@ -130,8 +128,15 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
 
         light = hasCustom && custom.light != null ? custom.light : light;
 
-        Matrix4f matrix4f = stack.last().pose();
         Font font = this.getFont();
+        Matrix4f matrix4f = stack.last().pose();
+        Matrix4f textMatrix = matrix4f;
+        if (shadow) {
+            stack.pushPose();
+            stack.scale(1, 1, -1);
+            textMatrix = stack.last().pose();
+            stack.popPose();
+        }
 
         //render scoreboard
         FiguraMod.popPushProfiler("render");
@@ -151,12 +156,12 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
                 float x = -font.width(text1) / 2f;
                 float y = deadmau ? -10f : 0f;
 
-                font.drawInBatch(text1, x, y, 0x20FFFFFF, false, matrix4f, multiBufferSource, !isSneaking, bgColor, light);
+                font.drawInBatch(text1, x, y, 0x20FFFFFF, false, matrix4f, multiBufferSource, isSneaking ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.NORMAL, bgColor, light);
                 if (!isSneaking) {
                     if (outline)
                         font.drawInBatch8xOutline(text1.getVisualOrderText(), x, y, -1, outlineColor, matrix4f, multiBufferSource, light);
                     else
-                        font.drawInBatch(text1, x, y, -1, shadow, matrix4f, multiBufferSource, false, 0, light);
+                        font.drawInBatch(text1, x, y, -1, shadow, textMatrix, multiBufferSource, Font.DisplayMode.NORMAL, 0, light);
                 }
             }
         }
@@ -176,12 +181,12 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
             float x = -font.width(text1) / 2f;
             float y = (deadmau ? -10f : 0f) + (font.lineHeight + 1) * line;
 
-            font.drawInBatch(text1, x, y, 0x20FFFFFF, false, matrix4f, multiBufferSource, !isSneaking, bgColor, light);
+            font.drawInBatch(text1, x, y, 0x20FFFFFF, false, matrix4f, multiBufferSource, isSneaking ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.NORMAL, bgColor, light);
             if (!isSneaking) {
                 if (outline)
                     font.drawInBatch8xOutline(text1.getVisualOrderText(), x, y, -1, outlineColor, matrix4f, multiBufferSource, light);
                 else
-                    font.drawInBatch(text1, x, y, -1, shadow, matrix4f, multiBufferSource, false, 0, light);
+                    font.drawInBatch(text1, x, y, -1, shadow, textMatrix, multiBufferSource, Font.DisplayMode.NORMAL, 0, light);
             }
         }
 

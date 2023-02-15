@@ -20,7 +20,6 @@ import org.moon.figura.model.PartCustomization;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.TextUtils;
-import org.moon.figura.utils.ui.UIHelper;
 
 import java.util.List;
 
@@ -53,10 +52,17 @@ public class TextTask extends RenderTask {
 
         this.pushOntoStack(stack);
         PoseStack poseStack = stack.peek().copyIntoGlobalPoseStack();
-        poseStack.scale(-1, -1, -1);
+        poseStack.scale(-1, -1, 1);
 
         Font font = Minecraft.getInstance().font;
         Matrix4f matrix = poseStack.last().pose();
+        Matrix4f textMatrix = matrix;
+        if (shadow) {
+            poseStack.pushPose();
+            poseStack.scale(1, 1, -1);
+            textMatrix = poseStack.last().pose();
+            poseStack.popPose();
+        }
 
         int l = this.light != null ? this.light : light;
         int bgColor = backgroundColor != null ? backgroundColor : background ? (int) (Minecraft.getInstance().options.getBackgroundOpacity(0.25f) * 0xFF) << 24 : 0;
@@ -68,13 +74,13 @@ public class TextTask extends RenderTask {
             int y = (font.lineHeight + 1) * i;
 
             if (background || seeThrough) {
-                font.drawInBatch(text, x, y, 0x20FFFFFF, false, matrix, buffer, seeThrough, bgColor, l);
+                font.drawInBatch(text, x, y, 0x20FFFFFF, false, matrix, buffer, seeThrough ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.NORMAL, bgColor, l);
             }
 
             if (outline) {
-                UIHelper.renderOutlineText(poseStack, font, text, x, y, 0xFFFFFF, outlineColor);
+                font.drawInBatch8xOutline(text.getVisualOrderText(), x, y, -1, outlineColor, matrix, buffer, light);
             } else {
-                font.drawInBatch(text, x, y, 0xFFFFFF, shadow, matrix, buffer, false, 0, l);
+                font.drawInBatch(text, x, y, 0xFFFFFF, shadow, textMatrix, buffer, Font.DisplayMode.NORMAL, 0, l);
             }
         }
 
