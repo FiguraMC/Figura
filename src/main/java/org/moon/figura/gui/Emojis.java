@@ -58,7 +58,7 @@ public class Emojis {
         return ret;
     }
 
-    public static Component convertEmoji(String string, Style style) {
+    private static Component convertEmoji(String string, Style style) {
         //if the string does not contain the delimiter, then return
         if (!string.contains(":"))
             return new TextComponent(string).withStyle(style);
@@ -133,5 +133,9 @@ public class Emojis {
         }
 
         return result;
+    }
+
+    public static Component removeBlacklistedEmojis(Component text) {
+        return text; // TextUtils.replaceInText(text, "[Δ]", TextUtils.UNKNOWN, (s, style) -> style.getFont().equals(FONT), Integer.MAX_VALUE);
     }
 }
