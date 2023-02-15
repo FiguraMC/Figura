@@ -1349,6 +1349,10 @@
   "figura.docs.renderer.set_crosshair_offset": "Sets the offset of your crosshair",
   "figura.docs.renderer.get_outline_color": "Gets the custom glowing effect's outline color",
   "figura.docs.renderer.set_outline_color": "Sets the custom glowing effect's outline color",
+  "figura.docs.renderer.get_primary_fire_texture": "Gets the current custom primary fire texture",
+  "figura.docs.renderer.get_secondary_fire_texture": "Gets the current custom secondary fire texture",
+  "figura.docs.renderer.set_primary_fire_texture": "Sets a custom primary fire texture, to render while the entity is on fire\nThe effect is compound by two layers\nThe secondary layer is what renders in first person\nThe absence of a secondary layer uses the primary layer as fallback",
+  "figura.docs.renderer.set_secondary_fire_texture": "Sets a custom secondary fire texture, to render while the entity is on fire\nThe effect is compound by two layers\nThe secondary layer is what renders in first person\nThe absence of a secondary layer uses the primary layer as fallback",
 
 
   "figura.docs.sounds": "A global API which is used to play Minecraft sounds\nAccessed using the name \"sounds\"",

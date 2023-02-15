@@ -62,6 +62,7 @@
     "render.renderers.ItemInHandRendererMixin",
     "render.renderers.LivingEntityRendererMixin",
     "render.renderers.PlayerRendererMixin",
+    "render.renderers.ScreenEffectRendererMixin",
     "render.renderers.SkullBlockRendererMixin",
 
     "sound.ChannelHandleMixin",

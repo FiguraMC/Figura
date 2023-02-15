@@ -22,7 +22,7 @@ import java.util.*;
 
 public class Emojis {
 
-    public static final ResourceLocation FONT = new FiguraIdentifier("emojis");
+    public static final ResourceLocation FONT = new FiguraIdentifier("emoji");
 
     private static final Style STYLE = Style.EMPTY.withColor(ChatFormatting.WHITE).withFont(FONT);
     private static final Map<String, String> EMOJI_MAP = new HashMap<>();
