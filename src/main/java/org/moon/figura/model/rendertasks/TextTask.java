@@ -74,13 +74,13 @@ public class TextTask extends RenderTask {
             int y = (font.lineHeight + 1) * i;
 
             if (background || seeThrough) {
-                font.drawInBatch(text, x, y, 0x20FFFFFF, false, matrix, buffer, seeThrough ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.NORMAL, bgColor, l);
+                font.drawInBatch(text, x, y, 0x20FFFFFF, false, matrix, buffer, seeThrough, bgColor, l);
             }
 
             if (outline) {
                 font.drawInBatch8xOutline(text.getVisualOrderText(), x, y, -1, outlineColor, matrix, buffer, light);
             } else {
-                font.drawInBatch(text, x, y, 0xFFFFFF, shadow, textMatrix, buffer, Font.DisplayMode.NORMAL, 0, l);
+                font.drawInBatch(text, x, y, 0xFFFFFF, shadow, textMatrix, buffer, false, 0, l);
             }
         }
 
