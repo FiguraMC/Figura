@@ -54,6 +54,7 @@ public class RendererAPI {
     public ResourceLocation postShader;
     public FiguraVec2 crosshairOffset;
     public FiguraVec3 outlineColor;
+    public ResourceLocation fireLayer1, fireLayer2;
 
     public RendererAPI(Avatar owner) {
         this.owner = owner.owner;
@@ -455,6 +456,78 @@ public class RendererAPI {
     @LuaWhitelist
     public RendererAPI crosshairOffset(Object x, Double y) {
         return setCrosshairOffset(x, y);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("renderer.get_primary_fire_texture")
+    public String getPrimaryFireTexture() {
+        return fireLayer1.toString();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("renderer.get_secondary_fire_texture")
+    public String getSecondaryFireTexture() {
+        return fireLayer2.toString();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = String.class,
+                    argumentNames = "id"
+            ),
+            aliases = "primaryFireTexture",
+            value = "renderer.set_primary_fire_texture"
+    )
+    public RendererAPI setPrimaryFireTexture(String id) {
+        if (id == null) {
+            fireLayer1 = null;
+            return this;
+        }
+
+        try {
+            fireLayer1 = new ResourceLocation(id);
+            if (fireLayer1.getPath().startsWith("textures/"))
+                fireLayer1 = new ResourceLocation(fireLayer1.getNamespace(), fireLayer1.getPath().substring("textures/".length()));
+            return this;
+        } catch (Exception e) {
+            throw new LuaError(e.getMessage());
+        }
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = String.class,
+                    argumentNames = "id"
+            ),
+            aliases = "secondaryFireTexture",
+            value = "renderer.set_secondary_fire_texture"
+    )
+    public RendererAPI setSecondaryFireTexture(String id) {
+        if (id == null) {
+            fireLayer2 = null;
+            return this;
+        }
+
+        try {
+            fireLayer2 = new ResourceLocation(id);
+            if (fireLayer2.getPath().startsWith("textures/"))
+                fireLayer2 = new ResourceLocation(fireLayer2.getNamespace(), fireLayer2.getPath().substring("textures/".length()));
+            return this;
+        } catch (Exception e) {
+            throw new LuaError(e.getMessage());
+        }
+    }
+
+    @LuaWhitelist
+    public RendererAPI primaryFireTexture(String id) {
+        return setPrimaryFireTexture(id);
+    }
+
+    @LuaWhitelist
+    public RendererAPI secondaryFireTexture(String id) {
+        return setSecondaryFireTexture(id);
     }
 
     @LuaWhitelist
