@@ -57,14 +57,14 @@ public class TexturedButton extends Button {
             return;
 
          //render button
-        this.renderButton(stack, mouseX, mouseY, delta);
+        this.renderWidget(stack, mouseX, mouseY, delta);
 
         //update hovered
         this.setHovered(this.isMouseOver(mouseX, mouseY));
     }
 
     @Override
-    public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
+    public void renderWidget(PoseStack stack, int mouseX, int mouseY, float delta) {
         //render texture
         if (this.texture != null) {
             renderTexture(stack, delta);

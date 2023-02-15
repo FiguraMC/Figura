@@ -146,7 +146,7 @@ public class BiomeAPI {
     @LuaWhitelist
     @LuaMethodDoc("biome.get_downfall")
     public float getDownfall() {
-        return -1f; //im not adding an access widener just for that lol
+        return ((BiomeAccessor) (Object) biome).getClimateSettings().downfall();
     }
 
     @LuaWhitelist

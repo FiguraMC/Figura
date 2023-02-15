@@ -142,12 +142,12 @@ public class ScrollBarWidget extends AbstractWidget {
             return;
 
         isHovered = this.isMouseOver(mouseX, mouseY);
-        renderButton(matrices, mouseX, mouseY, delta);
+        renderWidget(matrices, mouseX, mouseY, delta);
     }
 
     //render the scroll
     @Override
-    public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
+    public void renderWidget(PoseStack stack, int mouseX, int mouseY, float delta) {
         UIHelper.setupTexture(SCROLLBAR_TEXTURE);
         int x = getX();
         int y = getY();

@@ -126,7 +126,7 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
     }
 
     @Override
-    public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
+    public void renderWidget(PoseStack stack, int mouseX, int mouseY, float delta) {
         stack.pushPose();
 
         float tx = getX() + width / 2f;

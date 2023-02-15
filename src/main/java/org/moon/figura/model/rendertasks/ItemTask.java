@@ -3,9 +3,9 @@ package org.moon.figura.model.rendertasks;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.luaj.vm2.LuaError;
 import org.moon.figura.avatar.Avatar;
@@ -27,7 +27,7 @@ import org.moon.figura.utils.LuaUtils;
 public class ItemTask extends RenderTask {
 
     private ItemStack item;
-    private ItemTransforms.TransformType displayMode = ItemTransforms.TransformType.NONE;
+    private ItemDisplayContext displayMode = ItemDisplayContext.NONE;
     private boolean left = false;
     private int cachedComplexity;
 
@@ -108,8 +108,8 @@ public class ItemTask extends RenderTask {
     )
     public ItemTask setDisplayMode(@LuaNotNil String mode) {
         try {
-            this.displayMode = ItemTransforms.TransformType.valueOf(mode.toUpperCase());
-            this.left = this.displayMode == ItemTransforms.TransformType.FIRST_PERSON_LEFT_HAND || this.displayMode == ItemTransforms.TransformType.THIRD_PERSON_LEFT_HAND;
+            this.displayMode = ItemDisplayContext.valueOf(mode.toUpperCase());
+            this.left = this.displayMode == ItemDisplayContext.FIRST_PERSON_LEFT_HAND || this.displayMode == ItemDisplayContext.THIRD_PERSON_LEFT_HAND;
             return this;
         } catch (Exception ignored) {
             throw new LuaError("Illegal display mode: \"" + mode + "\".");

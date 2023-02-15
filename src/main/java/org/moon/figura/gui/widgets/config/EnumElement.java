@@ -36,9 +36,9 @@ public class EnumElement extends AbstractConfigElement {
             }
         }) {
             @Override
-            public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
+            public void renderWidget(PoseStack stack, int mouseX, int mouseY, float delta) {
                 //super
-                super.renderButton(stack, mouseX, mouseY, delta);
+                super.renderWidget(stack, mouseX, mouseY, delta);
 
                 //draw arrow
                 Font font = Minecraft.getInstance().font;

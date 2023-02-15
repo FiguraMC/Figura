@@ -63,7 +63,7 @@ public class TextField extends AbstractContainerElement {
         }
         //input text
         else {
-            field.renderButton(stack, mouseX, mouseY, delta);
+            field.renderWidget(stack, mouseX, mouseY, delta);
         }
     }
 

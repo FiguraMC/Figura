@@ -80,6 +80,9 @@ public class ActionWheel {
         FiguraMod.popPushProfiler("wheel");
         renderTextures(stack, currentPage);
 
+        //reset colours
+        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+
         //render items
         FiguraMod.popPushProfiler("items");
         renderItemsAndIcons(stack, currentPage);

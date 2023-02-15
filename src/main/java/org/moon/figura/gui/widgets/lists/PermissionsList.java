@@ -161,13 +161,13 @@ public class PermissionsList extends AbstractList {
         }
 
         @Override
-        public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
+        public void renderWidget(PoseStack stack, int mouseX, int mouseY, float delta) {
             Font font = Minecraft.getInstance().font;
 
             //button
             stack.pushPose();
             stack.translate(0f, font.lineHeight, 0f);
-            super.renderButton(stack, mouseX, mouseY, delta);
+            super.renderWidget(stack, mouseX, mouseY, delta);
             stack.popPose();
 
             //texts
