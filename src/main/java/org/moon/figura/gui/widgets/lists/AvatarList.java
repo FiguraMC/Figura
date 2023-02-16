@@ -214,7 +214,7 @@ public class AvatarList extends AbstractList {
         }
 
         //set scroll
-        scrollBar.setScrollProgress(y / totalHeight);
+        scrollBar.setScrollProgressNoAnim(y / totalHeight);
     }
 
     @Override

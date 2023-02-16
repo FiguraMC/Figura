@@ -271,7 +271,7 @@ public class PlayerList extends AbstractList {
         }
 
         //set scroll
-        scrollBar.setScrollProgress(y / totalHeight);
+        scrollBar.setScrollProgressNoAnim(y / totalHeight);
     }
 
 }
