@@ -28,6 +28,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
@@ -508,7 +509,7 @@ public class NetworkStuff {
     }
 
     public static String getLangMetadata() {
-        return request(HttpRequest.newBuilder(HttpAPI.getUri("lang")).build());
+        return request(HttpRequest.newBuilder(HttpAPI.getUri("lang")).timeout(Duration.ofSeconds(5)).build());
     }
 
     public static String getLang(String lang) {

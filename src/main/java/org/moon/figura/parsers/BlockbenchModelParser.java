@@ -149,7 +149,7 @@ public class BlockbenchModelParser {
 
                 //feedback
                 FiguraMod.debug("Loaded " + textureType.toUpperCase() + " Texture \"{}\" from {}", name, f);
-            } catch (IllegalStateException | IOException e) {
+            } catch (Exception e) {
                 if (e instanceof IOException)
                     FiguraMod.LOGGER.error("", e);
 
