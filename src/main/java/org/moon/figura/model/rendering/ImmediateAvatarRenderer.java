@@ -227,7 +227,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         //calculate vanilla parent
         FiguraMod.popPushProfiler("copyVanillaPart");
         part.applyVanillaTransforms(vanillaModelData);
-        part.applyExtraTransforms(customizationStack.peek().positionMatrix);
+        part.applyExtraTransforms(customizationStack.peek());
 
         //visibility
         FiguraMod.popPushProfiler("checkVisibility");
@@ -437,7 +437,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         //calculate vanilla parent
         FiguraMod.popPushProfiler("copyVanillaPart");
         part.applyVanillaTransforms(vanillaModelData);
-        part.applyExtraTransforms(customizationStack.peek().positionMatrix);
+        part.applyExtraTransforms(customizationStack.peek());
 
         //push customization stack
         FiguraMod.popPushProfiler("calculatePartMatrices");
