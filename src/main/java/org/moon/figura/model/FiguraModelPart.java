@@ -133,25 +133,27 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
         }
     }
 
-    public void applyExtraTransforms(FiguraMat4 currentTransforms) {
+    public void applyExtraTransforms(PartCustomization currentTransforms) {
         if (parentType != ParentType.Camera)
             return;
 
-        FiguraMat4 prevPartToView = currentTransforms.inverted();
+        FiguraMat4 prevPartToView = currentTransforms.positionMatrix.inverted();
         double s = 1 / 16d;
         if (UIHelper.paperdoll) {
             s *= -UIHelper.dollScale;
         } else {
             prevPartToView.rightMultiply(FiguraMat4.of().rotateY(180));
         }
-        prevPartToView.scale(s, s, s);
+        FiguraVec3 scale = currentTransforms.stackScale.scaled(s);
         FiguraVec3 piv = customization.getPivot();
         FiguraVec3 piv2 = customization.getOffsetPivot().add(piv);
+        prevPartToView.scale(scale);
         prevPartToView.v14 = prevPartToView.v24 = prevPartToView.v34 = 0;
         prevPartToView.translateFirst(-piv2.x, -piv2.y, -piv2.z);
         prevPartToView.translate(piv2.x, piv2.y, piv2.z);
         customization.setMatrix(prevPartToView);
         prevPartToView.free();
+        scale.free();
         piv.free();
         piv2.free();
     }
@@ -440,7 +442,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     @LuaWhitelist
     @LuaMethodDoc("model_part.get_true_scale")
     public FiguraVec3 getTrueScale() {
-        return this.getScale().add(this.getOffsetScale()).add(this.getAnimScale());
+        return this.getScale().multiply(this.getOffsetScale()).multiply(this.getAnimScale());
     }
 
     @LuaWhitelist
