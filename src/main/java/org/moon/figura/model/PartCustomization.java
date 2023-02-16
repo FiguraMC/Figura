@@ -46,6 +46,7 @@ public class PartCustomization implements CachedType<PartCustomization> {
     private FiguraVec3 animRot = FiguraVec3.of();
     private FiguraVec3 animScale = FiguraVec3.of(1, 1, 1);
 
+    public FiguraVec3 stackScale = FiguraVec3.of(1, 1, 1);
     public FiguraVec3 color = FiguraVec3.of(1, 1, 1);
     public FiguraVec3 color2 = FiguraVec3.of(1, 1, 1);
     public Float alpha = null;
@@ -77,11 +78,12 @@ public class PartCustomization implements CachedType<PartCustomization> {
             );
 
             //Scale the model part around the pivot
-            positionMatrix.scale(
+            stackScale.set(
                     offsetScale.x * scale.x * animScale.x,
                     offsetScale.y * scale.y * animScale.y,
                     offsetScale.z * scale.z * animScale.z
             );
+            positionMatrix.scale(stackScale);
 
             //Rotate the model part around the pivot
             if (partType == PartType.MESH) {
@@ -330,6 +332,7 @@ public class PartCustomization implements CachedType<PartCustomization> {
         offsetPos.free();
         offsetRot.free();
         offsetScale.free();
+        stackScale.free();
         color.free();
         color2.free();
     }
@@ -363,6 +366,7 @@ public class PartCustomization implements CachedType<PartCustomization> {
             to.offsetPos(from.offsetPos);
             to.offsetRot(from.offsetRot);
             to.offsetScale(from.offsetScale);
+            to.stackScale.set(from.stackScale);
             to.color.set(from.color);
             to.color2.set(from.color2);
             to.alpha = from.alpha;
@@ -411,6 +415,7 @@ public class PartCustomization implements CachedType<PartCustomization> {
                 alpha = other.alpha;
         }
 
+        stackScale.multiply(other.stackScale);
         color.multiply(other.color);
         color2.multiply(other.color2);
 

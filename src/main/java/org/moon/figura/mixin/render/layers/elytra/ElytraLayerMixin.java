@@ -29,35 +29,33 @@ public abstract class ElytraLayerMixin<T extends LivingEntity, M extends EntityM
 
     @Shadow @Final private ElytraModel<T> elytraModel;
     @Unique
-    private Avatar avatar;
+    private VanillaPart vanillaPart;
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/ElytraModel;setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V", shift = At.Shift.AFTER), method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V")
     public void onRender(PoseStack poseStack, MultiBufferSource multiBufferSource, int light, T livingEntity, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch, CallbackInfo ci) {
-        avatar = AvatarManager.getAvatar(livingEntity);
+        vanillaPart = null;
+        Avatar avatar = AvatarManager.getAvatar(livingEntity);
         if (avatar == null)
             return;
 
         if (avatar.luaRuntime != null) {
             VanillaPart part = avatar.luaRuntime.vanilla_model.ELYTRA;
             part.save(elytraModel);
-            if (avatar.permissions.get(Permissions.VANILLA_MODEL_EDIT) == 1)
-                part.preTransform(elytraModel);
+            if (avatar.permissions.get(Permissions.VANILLA_MODEL_EDIT) == 1) {
+                vanillaPart = part;
+                vanillaPart.preTransform(elytraModel);
+            }
         }
 
         avatar.elytraRender(livingEntity, multiBufferSource, poseStack, light, tickDelta, elytraModel);
 
-        if (avatar.luaRuntime != null && avatar.permissions.get(Permissions.VANILLA_MODEL_EDIT) == 1)
-            avatar.luaRuntime.vanilla_model.ELYTRA.posTransform(elytraModel);
+        if (vanillaPart != null)
+            vanillaPart.posTransform(elytraModel);
     }
 
     @Inject(at = @At("RETURN"), method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V")
     public void postRender(PoseStack poseStack, MultiBufferSource multiBufferSource, int i, T livingEntity, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
-        if (avatar == null)
-            return;
-
-        if (avatar.luaRuntime != null)
-            avatar.luaRuntime.vanilla_model.ELYTRA.restore(elytraModel);
-
-        avatar = null;
+        if (vanillaPart != null)
+            vanillaPart.restore(elytraModel);
     }
 }
