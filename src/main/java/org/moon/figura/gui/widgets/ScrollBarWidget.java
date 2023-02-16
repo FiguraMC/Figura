@@ -181,6 +181,11 @@ public class ScrollBarWidget extends AbstractWidget {
         setScrollProgress(amount, false);
     }
 
+    public void setScrollProgressNoAnim(double amount) {
+        setScrollProgress(amount, false);
+        scrollPos = scrollPrecise;
+    }
+
     //manually set scroll with optional clamping
     public void setScrollProgress(double amount, boolean force) {
         scrollPrecise = force ? amount : Mth.clamp(amount, 0d, 1d);

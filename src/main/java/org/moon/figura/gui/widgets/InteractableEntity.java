@@ -33,7 +33,7 @@ public class InteractableEntity extends AbstractContainerElement {
     private float angleX, angleY;
 
     //scale
-    private float scaledValue = 0f;
+    private float scaledValue = 0f, scaledPrecise = 0f;
     private static final float SCALE_FACTOR = 1.1F;
 
     //pos
@@ -104,6 +104,7 @@ public class InteractableEntity extends AbstractContainerElement {
         //render entity
         if (entity != null) {
             stack.pushPose();
+            scaledValue = Mth.lerp((float) (1f - Math.pow(0.5f, delta)), scaledValue, scaledPrecise);
             UIHelper.drawEntity(x + modelX, y + modelY, scale + scaledValue, angleX, angleY, entity, stack, EntityRenderMode.FIGURA_GUI);
             stack.popPose();
         } else {
@@ -179,6 +180,7 @@ public class InteractableEntity extends AbstractContainerElement {
                 angleX = pitch;
                 angleY = yaw;
                 scaledValue = 0f;
+                scaledPrecise = 0f;
                 modelX = width / 2;
                 modelY = height / 2;
                 return true;
@@ -259,7 +261,7 @@ public class InteractableEntity extends AbstractContainerElement {
         float scaleDir = (amount > 0) ? SCALE_FACTOR : 1 / SCALE_FACTOR;
 
         //determine scale
-        scaledValue = ((scale + scaledValue) * scaleDir) - scale;
+        scaledPrecise = ((scale + scaledPrecise) * scaleDir) - scale;
 
         return true;
     }
