@@ -1,5 +1,6 @@
 package org.moon.figura.gui;
 
+import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.LivingEntity;
@@ -46,9 +47,10 @@ public class PaperDoll {
         }
 
         //draw
-        float screenWidth = Minecraft.getInstance().getWindow().getWidth();
-        float screenHeight = Minecraft.getInstance().getWindow().getHeight();
-        float guiScale = (float) Minecraft.getInstance().getWindow().getGuiScale();
+        Window window = minecraft.getWindow();
+        float screenWidth = window.getWidth();
+        float screenHeight = window.getHeight();
+        float guiScale = (float) window.getGuiScale();
 
         float scale = Config.PAPERDOLL_SCALE.asFloat();
         float x = scale * 25f;
