@@ -19,12 +19,12 @@ import org.moon.figura.commands.FiguraCommands;
 import org.moon.figura.config.Config;
 import org.moon.figura.config.ConfigManager;
 import org.moon.figura.gui.Emojis;
-import org.moon.figura.lang.FiguraLangManager;
 import org.moon.figura.lua.FiguraAPIManager;
 import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.lua.docs.FiguraDocsManager;
 import org.moon.figura.mixin.SkullBlockEntityAccessor;
 import org.moon.figura.permissions.PermissionManager;
+import org.moon.figura.resources.FiguraRuntimeResources;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.IOUtils;
 import org.moon.figura.utils.TextUtils;
@@ -41,7 +41,7 @@ public class FiguraMod implements ClientModInitializer {
 
     public static final String MOD_ID = "figura";
     public static final String MOD_NAME = "Figura";
-    public static final Version VERSION = new Version(FabricLoader.getInstance().getModContainer(FiguraMod.MOD_ID).get().getMetadata().getVersion().getFriendlyString());
+    public static final Version VERSION = new Version(FabricLoader.getInstance().getModContainer(MOD_ID).get().getMetadata().getVersion().getFriendlyString());
     public static final boolean DEBUG_MODE = Math.random() + 1 < 0;
     public static final Calendar CALENDAR = Calendar.getInstance();
     public static final Path GAME_DIR = FabricLoader.getInstance().getGameDir().normalize();
@@ -61,7 +61,7 @@ public class FiguraMod implements ClientModInitializer {
         FiguraAPIManager.init();
         FiguraDocsManager.init();
         FiguraCommands.init();
-        FiguraLangManager.init();
+        FiguraRuntimeResources.init();
 
         //register reload listener
         ResourceManagerHelper managerHelper = ResourceManagerHelper.get(PackType.CLIENT_RESOURCES);

@@ -1,7 +1,8 @@
-package org.moon.figura.lang;
+package org.moon.figura.resources;
 
-import com.google.gson.*;
-import net.minecraft.server.packs.PathPackResources;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.backend2.NetworkStuff;
 import org.moon.figura.utils.IOUtils;
@@ -13,15 +14,8 @@ import java.util.Map;
 
 public class FiguraLangManager {
 
-    private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
-    public static final PathPackResources LANG_PACK = new PathPackResources(FiguraMod.MOD_NAME + " backend lang pack", getLangRootDirectory(), true);
-
-    public static Path getLangRootDirectory() {
-        return IOUtils.getOrCreateDir(FiguraMod.getCacheDirectory(), "lang");
-    }
-
     public static Path getLangDirectory() {
-        return IOUtils.getOrCreateDir(getLangRootDirectory(), "assets/figura/lang");
+        return IOUtils.getOrCreateDir(FiguraRuntimeResources.getAssetsDirectory(), "lang");
     }
 
     public static void init() {
@@ -31,7 +25,7 @@ public class FiguraLangManager {
 
         //load old hashes
         JsonObject hashes;
-        Path hashesPath = getLangRootDirectory().resolve("hashes.json");
+        Path hashesPath = FiguraRuntimeResources.getRootDirectory().resolve("hashes.json");
         try (FileReader reader = new FileReader(hashesPath.toFile())) {
             hashes = JsonParser.parseReader(reader).getAsJsonObject();
         } catch (Exception ignored) {
@@ -51,7 +45,7 @@ public class FiguraLangManager {
 
             //save hashes
             try (FileOutputStream fs = new FileOutputStream(hashesPath.toFile())) {
-                fs.write(GSON.toJson(json).getBytes());
+                fs.write(FiguraRuntimeResources.GSON.toJson(json).getBytes());
             } catch (Exception e) {
                 FiguraMod.LOGGER.error("Failed to save translations hash file", e);
             }
@@ -64,9 +58,8 @@ public class FiguraLangManager {
         try {
             Path p = getLangDirectory().resolve(lang + ".json");
             String translations = NetworkStuff.getLang(lang);
-            JsonElement json = JsonParser.parseString(translations);
             try (FileOutputStream fs = new FileOutputStream(p.toFile())) {
-                fs.write(GSON.toJson(json).getBytes());
+                fs.write(translations.getBytes());
             }
             FiguraMod.LOGGER.info("Downloaded translations for \"" + lang + "\"");
         } catch (Exception e) {

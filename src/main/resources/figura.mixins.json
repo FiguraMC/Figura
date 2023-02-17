@@ -8,12 +8,12 @@
   "client": [
     "BiomeAccessor",
     "BlockBehaviourAccessor",
-    "ClientLanguageMixin",
     "ClientLevelInvoker",
     "EntityAccessor",
     "LivingEntityAccessor",
     "LivingEntityMixin",
     "MinecraftMixin",
+    "ReloadableResourceManagerMixin",
     "SkullBlockEntityAccessor",
 
     "gui.ChatComponentMixin",
