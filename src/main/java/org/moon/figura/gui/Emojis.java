@@ -27,6 +27,8 @@ public class Emojis {
 
     //listener to load emojis from the resource pack
     public static final FiguraResourceListener RESOURCE_LISTENER = new FiguraResourceListener("emojis", manager -> {
+        EMOJI_MAP.clear();
+
         //open the resource as json
         try (InputStream stream = manager.getResource(new FiguraIdentifier("emojis.json")).getInputStream()) {
             JsonObject emojis = JsonParser.parseReader(new InputStreamReader(stream, StandardCharsets.UTF_8)).getAsJsonObject();
