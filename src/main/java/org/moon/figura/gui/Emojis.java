@@ -120,7 +120,7 @@ public class Emojis {
                 result.append(s);
             //odd: emoji
             } else {
-                String emoji = EMOJI_MAP.get(s);
+                String emoji = EMOJI_MAP.get(s.toLowerCase());
                 String quoted = DELIMITER + s + DELIMITER;
                 //emoji not found, so we add the unformatted text
                 if (emoji == null) {
