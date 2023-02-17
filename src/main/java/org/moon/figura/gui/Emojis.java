@@ -31,6 +31,8 @@ public class Emojis {
 
     //listener to load emojis from the resource pack
     public static final FiguraResourceListener RESOURCE_LISTENER = new FiguraResourceListener("emojis", manager -> {
+        EMOJI_MAP.clear();
+
         //get the resource
         Optional<Resource> optional = manager.getResource(new FiguraIdentifier("emojis.json"));
         if (optional.isEmpty())
