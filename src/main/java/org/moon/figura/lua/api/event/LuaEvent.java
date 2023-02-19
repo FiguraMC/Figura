@@ -126,6 +126,18 @@ public class LuaEvent {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = String.class,
+                    argumentNames = "name"
+            ),
+            value = "event.get_registered_count"
+    )
+    public int getRegisteredCount(@LuaNotNil String name) {
+        return names.get(name).size();
+    }
+
+    @LuaWhitelist
     @LuaMetamethodDoc(overloads = {
             @LuaMetamethodOverload(
                     types = {int.class, LuaEvent.class}

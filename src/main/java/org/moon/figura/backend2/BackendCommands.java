@@ -8,6 +8,7 @@ import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.FiguraMod;
+import org.moon.figura.resources.FiguraRuntimeResources;
 
 public class BackendCommands {
 
@@ -43,6 +44,16 @@ public class BackendCommands {
         });
 
         backend.then(debug);
+
+        //check resources
+        LiteralArgumentBuilder<FabricClientCommandSource> resources = LiteralArgumentBuilder.literal("checkResources");
+        resources.executes(context -> {
+            context.getSource().sendFeedback(Component.literal("Checking for resources..."));
+            FiguraRuntimeResources.init();
+            return 1;
+        });
+
+        backend.then(resources);
 
         //return
         return backend;

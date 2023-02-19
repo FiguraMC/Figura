@@ -23,12 +23,20 @@ public enum Interpolation {
         Keyframe prev = frames[currentFrame];
         Keyframe next = frames[targetFrame];
 
+        FiguraVec3 p1Time = prev.getBezierRightTime();
+        FiguraVec3 p2Time = next.getBezierLeftTime();
+
         FiguraVec3 p0 = prev.getTargetB();
         FiguraVec3 p3 = next.getTargetA();
         FiguraVec3 p1 = prev.getBezierRight().add(p0);
         FiguraVec3 p2 = next.getBezierLeft().add(p3);
 
-        FiguraVec3 result = MathUtils.bezier(delta, p0, p1, p2, p3);
+        FiguraVec3 result = FiguraVec3.of(
+                MathUtils.bezier(MathUtils.bezierFindT(delta, 0, p1Time.x, p2Time.x, 1), p0.x, p1.x, p2.x, p3.x),
+                MathUtils.bezier(MathUtils.bezierFindT(delta, 0, p1Time.y, p2Time.y, 1), p0.y, p1.y, p2.y, p3.y),
+                MathUtils.bezier(MathUtils.bezierFindT(delta, 0, p1Time.z, p2Time.z, 1), p0.z, p1.z, p2.z, p3.z)
+        );
+
         return getResult(result, strength, type);
     }),
     STEP((frames, currentFrame, targetFrame, strength, delta, type) -> getResult(frames[currentFrame].getTargetB().copy(), strength, type));

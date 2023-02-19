@@ -19,6 +19,7 @@ import org.moon.figura.math.vector.FiguraVec4;
 import org.moon.figura.model.rendering.FiguraImmediateBuffer;
 import org.moon.figura.model.rendering.texture.FiguraTextureSet;
 import org.moon.figura.model.rendering.texture.RenderTypes;
+import org.moon.figura.utils.MathUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -139,6 +140,9 @@ public class FiguraModelPartReader {
                         FiguraVec3 bezierRightTime = FiguraVec3.of(0.1, 0.1, 0.1);
                         readVec3(bezierLeftTime, keyframeNbt, "blt");
                         readVec3(bezierRightTime, keyframeNbt, "brt");
+                        bezierLeftTime.add(1, 1, 1);
+                        bezierLeftTime = MathUtils.clamp(bezierLeftTime, 0, 1);
+                        bezierRightTime = MathUtils.clamp(bezierRightTime, 0, 1);
 
                         keyframes.add(new Keyframe(owner, time, interpolation, pre, end, bezierLeft, bezierRight, bezierLeftTime, bezierRightTime));
                     }
