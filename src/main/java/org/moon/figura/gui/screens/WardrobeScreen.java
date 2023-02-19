@@ -45,21 +45,20 @@ public class WardrobeScreen extends AbstractPanelScreen {
 
         //screen
         int middle = width / 2;
-        int third = this.width / 3 - 8;
-        double guiScale = this.minecraft.getWindow().getGuiScale();
-        double screenScale = Math.min(this.width, this.height) / 1018d;
+        int panels = Math.min(width / 3, 256) - 8;
 
-        //model
-        int modelBgSize = Math.min((int) ((512 / guiScale) * (screenScale * guiScale)), third);
-        int entitySize = (int) ((192 / guiScale) * (screenScale * guiScale));
+        int modelBgSize = Math.min(width - panels * 2 - 16, height - 96);
+        panels = Math.max((width - modelBgSize) / 2 - 8, panels);
 
         // -- left -- //
 
-        AvatarList avatarList = new AvatarList(4, 28, third, height - 36, this);
+        AvatarList avatarList = new AvatarList(4, 28, panels, height - 32, this);
         addRenderableWidget(avatarList);
 
         // -- middle -- //
 
+        //model
+        int entitySize = 11 * modelBgSize / 29;
         int entityX = middle - modelBgSize / 2;
         int entityY = this.height / 2 - modelBgSize / 2;
 
@@ -109,7 +108,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
         addRenderableOnly(version);
         version.setColor(0x33FFFFFF);
 
-        int rightSide = Math.min(third, 134);
+        int rightSide = Math.min(panels, 134);
 
         //back
         TexturedButton back = new TexturedButton(width - rightSide - 4, height - 24, rightSide, 20, FiguraText.of("gui.done"), null,
@@ -119,9 +118,11 @@ public class WardrobeScreen extends AbstractPanelScreen {
 
         // -- right side -- //
 
+        rightSide = panels / 2 + 52;
+
         //hellp
         addRenderableWidget(new TexturedButton(
-                this.width - rightSide - 4, 32, 24, 24,
+                this.width - rightSide, 28, 24, 24,
                 0, 0, 24,
                 new FiguraIdentifier("textures/gui/help.png"),
                 72, 24,
@@ -133,19 +134,19 @@ public class WardrobeScreen extends AbstractPanelScreen {
         ));
 
         //sounds
-        TexturedButton sounds = new TexturedButton(this.width - rightSide / 2 - 16, 32, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/sound.png"), 72, 24, FiguraText.of("gui.wardrobe.sound.tooltip"),
+        TexturedButton sounds = new TexturedButton(this.width - rightSide + 36, 28, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/sound.png"), 72, 24, FiguraText.of("gui.wardrobe.sound.tooltip"),
                 button -> Minecraft.getInstance().setScreen(new SoundScreen(this))
         );
         addRenderableWidget(sounds);
 
         //keybinds
-        TexturedButton keybinds = new TexturedButton(this.width - 28, 32, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/keybind.png"), 72, 24, FiguraText.of("gui.wardrobe.keybind.tooltip"),
+        TexturedButton keybinds = new TexturedButton(this.width - rightSide + 72, 28, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/keybind.png"), 72, 24, FiguraText.of("gui.wardrobe.keybind.tooltip"),
                 button -> Minecraft.getInstance().setScreen(new KeybindScreen(this))
         );
         addRenderableWidget(keybinds);
 
         //avatar metadata
-        addRenderableOnly(avatarInfo = new AvatarInfoWidget(this.width - rightSide - 4, 64, rightSide, back.y - 68));
+        addRenderableOnly(avatarInfo = new AvatarInfoWidget(this.width - panels - 4, 56, panels, back.y - 60));
 
         //panic warning - always added last, on top
         addRenderableOnly(panic = new Label(FiguraText.of("gui.panic.1").withStyle(ChatFormatting.YELLOW).append("\n").append(FiguraText.of("gui.panic.2", Config.PANIC_BUTTON.keyBind.getTranslatedKeyMessage())),
