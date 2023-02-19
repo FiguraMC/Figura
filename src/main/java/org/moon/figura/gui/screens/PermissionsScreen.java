@@ -14,13 +14,13 @@ import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.widgets.*;
-import org.moon.figura.gui.widgets.lists.PlayerList;
 import org.moon.figura.gui.widgets.lists.PermissionsList;
+import org.moon.figura.gui.widgets.lists.PlayerList;
 import org.moon.figura.gui.widgets.permissions.AbstractPermPackElement;
 import org.moon.figura.gui.widgets.permissions.PlayerPermPackElement;
-import org.moon.figura.permissions.Permissions;
-import org.moon.figura.permissions.PermissionPack;
 import org.moon.figura.permissions.PermissionManager;
+import org.moon.figura.permissions.PermissionPack;
+import org.moon.figura.permissions.Permissions;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.ui.UIHelper;
@@ -73,11 +73,8 @@ public class PermissionsScreen extends AbstractPanelScreen {
         int listWidth = Math.min(middle - 6, 208);
         int lineHeight =  font.lineHeight;
 
-        double guiScale = this.minecraft == null ? 1 : this.minecraft.getWindow().getGuiScale();
-        double screenScale = Math.min(this.width, this.height) / 1018d;
-        int modelSize = Math.min((int) ((192 / guiScale) * (screenScale * guiScale)), 96);
-
         int entitySize = (int) Math.min(height - 95 - lineHeight * 1.5 - (FiguraMod.DEBUG_MODE ? 24 : 0), listWidth);
+        int modelSize = 11 * entitySize / 29;
         int entityX = Math.max(middle + (listWidth - entitySize) / 2 + 1, middle + 2);
 
         //entity widget
