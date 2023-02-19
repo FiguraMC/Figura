@@ -90,7 +90,11 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
         Component authors = values.get(1);
         List<Component> authorLines = authors == null ? Collections.emptyList() : TextUtils.splitText(authors, "\n");
         int authorUsedLines = Math.min(authorLines.size(), authorFreeLines);
-        this.height = height * TITLES.size() * 2 + 4 + height * (authorUsedLines - 1);
+
+        //set new widget height
+        int newHeight = height * TITLES.size() * 2 + 4 + height * (authorUsedLines - 1);
+        this.height = Math.min(newHeight + height, maxSize);
+        y += (this.height - newHeight) / 2;
 
         //render background
         UIHelper.renderSliced(stack, this.x, this.y, this.width, this.height, UIHelper.OUTLINE);

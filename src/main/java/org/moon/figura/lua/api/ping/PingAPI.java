@@ -39,9 +39,14 @@ public class PingAPI {
     @LuaWhitelist
     public void __newindex(@LuaNotNil String key, LuaFunction value) {
         int id = (key.hashCode() + 1) * 31;
-        PingFunction func = new PingFunction(id, owner, value);
-        map.put(key, func);
-        idMap.put(id, key);
+        if (value == null) {
+            map.remove(key);
+            idMap.remove(id);
+        } else {
+            PingFunction func = new PingFunction(id, owner, value);
+            map.put(key, func);
+            idMap.put(id, key);
+        }
     }
 
     @Override
