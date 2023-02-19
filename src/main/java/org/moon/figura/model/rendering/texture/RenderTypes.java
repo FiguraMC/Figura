@@ -25,14 +25,16 @@ public enum RenderTypes {
 
     END_PORTAL(t -> RenderType.endPortal(), true, true),
     END_GATEWAY(t -> RenderType.endGateway(), true, true),
-    FIGURA_PORTAL(FiguraRenderType.END_GATEWAY, false, true),
+    TEXTURED_PORTAL(FiguraRenderType.TEXTURED_PORTAL, false, true),
 
     GLINT(t -> RenderType.entityGlintDirect(), true),
     GLINT2(t -> RenderType.glintDirect(), true),
 
     LINES(t -> RenderType.lines(), true),
     LINES_STRIP(t -> RenderType.lineStrip(), true),
-    SOLID(t -> FiguraRenderType.SOLID, true);
+    SOLID(t -> FiguraRenderType.SOLID, true),
+
+    BLURRY(FiguraRenderType.BLURRY);
 
     private final Function<ResourceLocation, RenderType> func;
     private final boolean force;
@@ -85,9 +87,9 @@ public enum RenderTypes {
                         .createCompositeState(false)
         );
 
-        public static final Function<ResourceLocation, RenderType> END_GATEWAY = Util.memoize(
+        public static final Function<ResourceLocation, RenderType> TEXTURED_PORTAL = Util.memoize(
                 texture -> create(
-                        "figura_end_gateway",
+                        "figura_textured_portal",
                         DefaultVertexFormat.POSITION,
                         VertexFormat.Mode.QUADS,
                         256,
@@ -102,6 +104,25 @@ public enum RenderTypes {
                                                 .build()
                                 )
                                 .createCompositeState(false)
+                )
+        );
+
+        public static final Function<ResourceLocation, RenderType> BLURRY = Util.memoize(
+                texture -> create(
+                        "figura_blurry",
+                        DefaultVertexFormat.NEW_ENTITY,
+                        VertexFormat.Mode.QUADS,
+                        256,
+                        true,
+                        true,
+                        CompositeState.builder()
+                                .setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_SHADER)
+                                .setTextureState(new RenderStateShard.TextureStateShard(texture, true, false))
+                                .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                                .setCullState(NO_CULL)
+                                .setLightmapState(LIGHTMAP)
+                                .setOverlayState(OVERLAY)
+                                .createCompositeState(true)
                 )
         );
     }
