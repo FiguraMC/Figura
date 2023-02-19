@@ -18,7 +18,7 @@ public class AvatarWidget extends AbstractAvatarWidget {
         super(depth, width, avatar, parent);
 
         AvatarWidget instance = this;
-        this.button = new TexturedButton(x, y, width, 20, null, null, button -> {
+        this.button = new TexturedButton(x, y, width, 20, Component.empty(), null, button -> {
             AvatarManager.loadLocalAvatar(avatar == null ? null : avatar.getPath());
             AvatarList.selectedEntry = instance;
         }) {
