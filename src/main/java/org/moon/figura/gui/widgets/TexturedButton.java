@@ -48,7 +48,7 @@ public class TexturedButton extends Button {
 
     //texture constructor
     public TexturedButton(int x, int y, int width, int height, int u, int v, int regionSize, ResourceLocation texture, int textureWidth, int textureHeight, Component tooltip, Button.OnPress pressAction) {
-        this(x, y, width, height, u, v, regionSize, texture, textureWidth, textureHeight, null, tooltip, pressAction);
+        this(x, y, width, height, u, v, regionSize, texture, textureWidth, textureHeight, Component.empty(), tooltip, pressAction);
     }
 
     @Override
@@ -73,7 +73,7 @@ public class TexturedButton extends Button {
         }
 
         //render text
-        if (this.getMessage() != null)
+        if (this.getMessage() != null && !this.getMessage().getString().isBlank())
             renderText(stack);
     }
 
