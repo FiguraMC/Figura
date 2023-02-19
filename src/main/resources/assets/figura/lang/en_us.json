@@ -966,6 +966,7 @@
   "figura.docs.event.register": "Registers the given function to the given event\nWhen the event occurs, the function will be run\nFunctions are run in the order they were registered\nThe optional name parameter is used when you wish to later remove a function from the event",
   "figura.docs.event.clear": "Clears the given event of all its functions",
   "figura.docs.event.remove": "Removes all functions with the given name from the event\nReturns the number of functions that were removed",
+  "figura.docs.event.get_registered_count": "Returns a number of how many functions is registered by this name",
 
 
   "figura.docs.host": "A global API dedicated to specifically the host of the avatar\nFor other viewers, these do nothing",
