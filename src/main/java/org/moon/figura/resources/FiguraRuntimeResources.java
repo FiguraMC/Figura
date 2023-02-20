@@ -2,7 +2,7 @@ package org.moon.figura.resources;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import net.minecraft.server.packs.PathPackResources;
+import net.minecraft.server.packs.FolderPackResources;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.utils.IOUtils;
 
@@ -11,7 +11,7 @@ import java.nio.file.Path;
 public class FiguraRuntimeResources {
 
     protected static final Gson GSON = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
-    public static final PathPackResources PACK = new PathPackResources(FiguraMod.MOD_NAME + " runtime resource pack", getRootDirectory(), true);
+    public static final FolderPackResources PACK = new FolderPackResources(getRootDirectory().toFile());
 
     public static Path getRootDirectory() {
         return IOUtils.getOrCreateDir(FiguraMod.getCacheDirectory(), "resources");
