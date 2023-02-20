@@ -1,0 +1,430 @@
+{
+    "figura.backend.connected": "Подключен к серверу!",
+    "figura.backend.disconnected": "Отключен от сервера!",
+    
+    "figura.backend.user_not_found": "Пользователь не найден",
+    "figura.backend.avatar_not_found": "Аватар не найден",
+    
+    "figura.backend.upload_success": "Аватар загружен!",
+    "figura.backend.upload_too_big": "Аватар слишком большой",
+    "figura.backend.upload_too_many": "У Вас слишком много Аватаров",
+    "figura.backend.upload_error": "При загрузке Аватара произошла ошибка",
+
+    "figura.backend.delete_success": "Аватар удалён!",
+    "figura.backend.delete_error": "При удалении Аватара произошла ошибка",
+    
+    "figura.backend.equip_error": "При установке выбранных Аватаров произошла ошибка",
+
+    "figura.backend.warning": "Предупреждение",
+    "figura.backend.ping_size": "Пинг слишком большой",
+    "figura.backend.ping_rate": "Отправляется слишком много Пингов",
+
+    "figura.toast.reload": "Аватар перезагружен!",
+    "figura.toast.reload_all": "Перезагружены ВСЕ Аватары!",
+    "figura.toast.panic_enabled": "Режим паники включен!",
+    "figura.toast.panic_disabled": "Режим паники выключен!",
+    "figura.toast.clipboard": "Скопировано в буфер обмена!",
+    "figura.toast.trust_change": "Доверие изменено на",
+    "figura.toast.new_version": "Доступна новая версия!",
+    "figura.toast.avatar_wizard.error": "Произошла ошибка при создании Аватара!",
+    "figura.toast.avatar_wizard.success": "Аватар Создан!",
+    "figura.toast.load_error": "Произошла ошибка при загрузке Аватара!",
+
+    "figura.trust.group.blocked": "Заблокирован",
+    "figura.trust.group.untrusted": "Без доверия",
+    "figura.trust.group.trusted": "Доверяемый",
+    "figura.trust.group.friend": "Друг",
+    "figura.trust.group.local": "Локально",
+
+    "figura.trust.infinity": "∞",
+    "figura.trust.enabled": "Включено",
+    "figura.trust.disabled": "Выключено",
+
+    "figura.popup_menu.cancel": "Отмена",
+    "figura.popup_menu.reload": "Перезагрузить Аватар",
+    "figura.popup_menu.increase_trust": "Повысить Доверие",
+    "figura.popup_menu.decrease_trust": "Понизить Доверие",
+    "figura.popup_menu.trust_menu": "Открыть Меню Доверия",
+
+    "figura.badges.system.default": "Значок Figura!",
+    "figura.badges.system.trust": "Этому Аватару нужен более высокий уровень Доверия!",
+    "figura.badges.system.warning": "Этот Аватар нацелен но более новую версию Figura, совместимость может быть неполной!",
+    "figura.badges.system.error": "Скрипт Аватара содержит ошибку!",
+
+    "figura.badges.special.translator": "Переводчик Figura!",
+    "figura.badges.special.donator": "Спасибо за поддержку Figura!",
+    "figura.badges.special.contest": "Подебитель контеста Figura! GG!",
+    "figura.badges.special.discord_staff": "Член Персонала Официального Сервера Figura!",
+    "figura.badges.special.dev": "Разработчик Figura!",
+
+    "figura.badges.trust_err.init_inst": "Скрипт превысил лимиты ресурсов",
+    "figura.badges.trust_err.complexity": "Модель слишком сложная",
+    "figura.badges.trust_err.bb_animations": "Анимации Модели слишком сложные",
+    "figura.badges.trust_err.texture_size": "Пользовательские Текстуры слишком большие",
+    "figura.badges.trust_err.particles": "Достигнут лимит Частиц",
+    "figura.badges.trust_err.sounds": "Достигнут лимит Звуков",
+    "figura.badges.trust_err.custom_sounds": "Не позволено загружать Пользовательские Звуки",
+    "figura.badges.trust_err.vanilla_model_edit": "Попытка изменить Ванильную Модель",
+
+    "figura.gui.on": "ВКЛ",
+    "figura.gui.off": "ВЫКЛ",
+    "figura.gui.create": "Создать",
+    "figura.gui.name": "Имя",
+    "figura.gui.authors": "Авторы",
+    "figura.gui.size": "Размер",
+    "figura.gui.complexity": "Сложность",
+    "figura.gui.done": "Готово",
+    "figura.gui.cancel": "Отмена",
+    "figura.gui.expand": "Расширить",
+    "figura.gui.minimise": "Свернуть",
+    "figura.gui.reset_all": "Сбросить Всё",
+    "figura.gui.panic.1": "Режим Паники активен! Возможности Фигуры выключены!",
+    "figura.gui.panic.2": "переключите режим паники с помощью [%s]",
+    "figura.gui.help.tooltip": "Помощь",
+
+    "figura.gui.text_hint.any": "Текст",
+    "figura.gui.text_hint.int": "Цел. число",
+    "figura.gui.text_hint.positive_int": "Цел. число",
+    "figura.gui.text_hint.float": "Число",
+    "figura.gui.text_hint.hex_color": "Цвет",
+    "figura.gui.text_hint.folder_path": "Путь",
+    "figura.gui.text_hint.ip": "IP Адрес",
+    "figura.gui.text_hint.search": "Поиск",
+    "figura.gui.text_hint.name": "Имя/UUID",
+
+    "figura.gui.error.no_avatar": "Нет выбранного Аватара!",
+    "figura.gui.error.no_keybinds": "У Аватара нету горячих клавиш!",
+    "figura.gui.error.no_sounds": "У Аватара нету пользовательских звуков!",
+    "figura.gui.error.no_wheel_page": "У Колеса Действий нет активной Страницы!",
+
+    "figura.gui.context.set_trust": "Установить Доверие",
+    "figura.gui.context.reload": "Перезагрузить Аватар",
+    "figura.gui.context.copy_name": "Скопировать Имя",
+    "figura.gui.context.copy_uuid": "Скопировать UUID",
+    "figura.gui.context.copy_path": "Скопировать Путь",
+    "figura.gui.context.open_folder": "Открыть Папку",
+
+    "figura.gui.panels.title.profile": "Профиль",
+    "figura.gui.panels.title.browser": "Браузер",
+    "figura.gui.panels.title.wardrobe": "Гардероб",
+    "figura.gui.panels.title.trust": "Доверие",
+    "figura.gui.panels.title.settings": "Настройки",
+
+    "figura.gui.panels.title.sound": "Звуки Аватара",
+    "figura.gui.panels.title.keybind": "Горячие клавиши Аватара",
+    "figura.gui.panels.title.avatar": "Предпросмотр Аватара",
+
+    "figura.gui.wardrobe.expand_wardrobe.tooltip": "Развернуть список гардероба",
+    "figura.gui.wardrobe.minimize_wardrobe.tooltip": "Свернуть список гардероба",
+    "figura.gui.wardrobe.upload.tooltip": "Загрузить аватар на сервер Figura\nДругие игроки увидят вас под загруженным аватаром",
+    "figura.gui.wardrobe.reload.tooltip": "Перезагрузить аватар с сервера Figura",
+    "figura.gui.wardrobe.delete.tooltip": "Удалить аватар с сервера Figura",
+    "figura.gui.wardrobe.sound.tooltip": "Звуки Аватара",
+    "figura.gui.wardrobe.keybind.tooltip": "Горячие клавиши Аватара",
+    "figura.gui.wardrobe.new_avatar.tooltip": "Создать новый Аватар",
+    "figura.gui.wardrobe.unselect.tooltip": "Снять выделение с текущего Аватара",
+    "figura.gui.wardrobe.folder.tooltip": "Открыть корневую папку аватаров",
+
+    "figura.gui.sound.play": "Проиграть звук",
+    "figura.gui.sound.stop": "Остановить звук",
+
+    "figura.gui.trust.reset": "Сбросить Всё",
+    "figura.gui.trust.reload_all": "Перезагрузить Всё",
+    "figura.gui.trust.precise": "Точный Режим",
+    "figura.gui.trust.expand_trust.tooltip": "Развернуть расширенное меню доверия",
+    "figura.gui.trust.minimize_trust.tooltip": "Свернуть расширенное меню доверия",
+    "figura.gui.trust.figura_only.tooltip": "Показывать только игроков с Figura",
+    "figura.gui.trust.disconnected.tooltip": "Показать аватары не в сети",
+
+    "figura.gui.trust.disconnected": "(не в сети)",
+    "figura.gui.trust.size": "Размер Аватара",
+    "figura.gui.trust.complexity": "Сложность модели",
+
+    "figura.gui.load_error": "Ошибка Загрузки",
+    "figura.gui.load_error.1": "Некорректный moon файл",
+    "figura.gui.load_error.2": "Некорректный скрипт",
+    "figura.gui.load_error.3": "Некорректный пользовательский звук",
+    "figura.gui.load_error.4": "Некорректная модель",
+    "figura.gui.load_error.5": "Некорректный \"avatar.json\"",
+
+    "figura.gui.status.reason": "Причина",
+    "figura.gui.status.size": "Размер",
+    "figura.gui.status.size.0": "нет",
+    "figura.gui.status.size.1": "Размер аватара больше чем %s",
+    "figura.gui.status.size.2": "Размер аватара больше чем %s",
+    "figura.gui.status.size.3": "ok",
+
+    "figura.gui.status.texture": "Текстура",
+    "figura.gui.status.texture.0": "нет",
+    "figura.gui.status.texture.3": "ok",
+
+    "figura.gui.status.script": "Скрипт",
+    "figura.gui.status.script.0": "нет",
+    "figura.gui.status.script.1": "Скрипт этого Аватара содержит ошибку",
+    "figura.gui.status.script.2": "Скрипт этого Аватара нацелен на более новую версию Figura",
+    "figura.gui.status.script.3": "ok",
+
+    "figura.gui.status.backend": "Сервер",
+    "figura.gui.status.backend.1": "Отключен",
+    "figura.gui.status.backend.2": "Подключение",
+    "figura.gui.status.backend.3": "Подключен",
+
+    "figura.gui.avatar_wizard.meta": "Метаданные Аватара",
+    "figura.gui.avatar_wizard.name": "Имя",
+    "figura.gui.avatar_wizard.authors": "Авторы",
+
+    "figura.gui.avatar_wizard.model": "Модель",
+    "figura.gui.avatar_wizard.dummy_model": "Встроить модель",
+    "figura.gui.avatar_wizard.custom_player": "Пользовательская Модель Игрока",
+    "figura.gui.avatar_wizard.slim": "Тонкие Руки",
+    "figura.gui.avatar_wizard.cape": "Шаблон плаща",
+    "figura.gui.avatar_wizard.elytra": "Шаблон Элитр",
+
+    "figura.gui.avatar_wizard.pivots": "Опорные точки",
+    "figura.gui.avatar_wizard.items_pivot": "Удерживаемые предметы",
+    "figura.gui.avatar_wizard.spyglass_pivot": "Подзорная труба",
+    "figura.gui.avatar_wizard.helmet_item_pivot": "Предмет на голове",
+    "figura.gui.avatar_wizard.parrots_pivot": "Попугаи на плечах",
+
+    "figura.gui.avatar_wizard.scripting": "Скрипт",
+    "figura.gui.avatar_wizard.dummy_script": "Встроить скрипт",
+    "figura.gui.avatar_wizard.hide_player": "Скрыть стандартного игрока",
+    "figura.gui.avatar_wizard.hide_armor": "Скрыть стандартную броню",
+    "figura.gui.avatar_wizard.hide_cape": "Скрыть стандартный плащ",
+    "figura.gui.avatar_wizard.hide_elytra": "Скрыть стандартные элитры",
+    "figura.gui.avatar_wizard.empty_events": "Встроить обработчики событий",
+
+    "figura.config.nameplate": "Никнейм",
+    "figura.config.nameplate.tooltip": "Настройки никнейма",
+
+    "figura.config.self_nameplate": "Включить свой никнейм",
+    "figura.config.self_nameplate.tooltip": "Переключает отрисовку вашего никнейма",
+
+    "figura.config.nameplate_render": "Режим отрисовки никнейма",
+    "figura.config.nameplate_render.tooltip": "Переключает условия для отрисовки никнеймов сущностей",
+    "figura.config.nameplate_render.enum": "Стандартный: Стандартное поведение\nПри взгляде: Вы должны смотреть на сущность для отрисовки никнейма\nНикогда: Никнейм никогда не будет отрисовываться",
+    "figura.config.nameplate_render.1": "Стандартный",
+    "figura.config.nameplate_render.2": "Стандартный + При взгляде",
+    "figura.config.nameplate_render.3": "Никогда",
+
+    "figura.config.preview_nameplate": "Никнейм в GUI",
+    "figura.config.preview_nameplate.tooltip": "Переключает отрисовка никнейма в GUI",
+
+    "figura.config.chat_nameplate": "Измненения в чате",
+    "figura.config.chat_nameplate.tooltip": "Устанавливает уровень изменений в ЧАТЕ",
+    "figura.config.entity_nameplate": "Изменения для сущностей",
+    "figura.config.entity_nameplate.tooltip": "Устанавливает уровень изменений для СУЩНОСТЕЙ",
+    "figura.config.list_nameplate": "Изменения для списка игроков",
+    "figura.config.list_nameplate.tooltip": "Устанавливает уровень изменений для СПИСКА ИГРОКОВ",
+    "figura.config.nameplate_level.enum": "Нет: Никакие изменения не будут применены\nСкрипт: Позволяет скрипту вносить изменения\nBadges: Позволяет включение специальных Значков предоставленных Figura",
+    "figura.config.nameplate_level.1": "Нет",
+    "figura.config.nameplate_level.2": "Скрипт",
+    "figura.config.nameplate_level.3": "Скрипт + Значки",
+
+    "figura.config.script": "Скрипт",
+    "figura.config.script.tooltip": "Настройки скрипты",
+
+    "figura.config.log_location": "Вывод \"Print\"",
+    "figura.config.log_location.tooltip": "Куда \"print\" функции будут выводить информацию.",
+    "figura.config.log_location.enum": "Чат: В чате игры (и так же в логгере)\nЛоггер: Лог вашего клиента",
+    "figura.config.log_location.1": "Чат",
+    "figura.config.log_location.2": "Логгер",
+
+    "figura.config.allow_fp_hands": "Руки от первого лица",
+    "figura.config.allow_fp_hands.tooltip": "Переключает, может ли скрипт двигать, вращать или изменять размер родительских групп для рук от первого лица",
+
+    "figura.config.log_number_length": "Длина выводимых чисел",
+    "figura.config.log_number_length.tooltip": "Изменяет длину чисел после запятой которые будут выведены через \"print\"",
+
+    "figura.config.format_script": "Форматирование скрипта",
+    "figura.config.format_script.tooltip.1":"Должен ли скрипт сжиматься при помощи удаления комментариев, свободного места и/или пустых линий",
+    "figura.config.format_script.tooltip.2":"Нужно перевыбрать аватар для того что бы изменения вступили в силу",
+    "figura.config.format_script.enum":"Отключено: Никакого сжатия\nЛёгкое: Минимальное сжатие, убирает только комментарии и ненужное пустое место\nЖёсткое: Тоже самое что и Лёгкое, только ещё сжимает скрипт в одну линию.",
+    "figura.config.format_script.1":"Отключено",
+    "figura.config.format_script.2":"Лёгкое",
+    "figura.config.format_script.3":"Жёсткое",
+
+    "figura.config.actionwheel": "Колесо Действий",
+    "figura.config.actionwheel.tooltip": "Настройки Колеса Действий",
+
+    "figura.config.action_wheel_button": "Кнопка Колеса Действий",
+    "figura.config.action_wheel_button.tooltip": "Кнопка для открытия Колеса Действий",
+
+    "figura.config.action_wheel_mode": "Режим Колеса Действий",
+    "figura.config.action_wheel_mode.tooltip": "Меняет способ открытия и взаимодействия с Колесом Действий",
+    "figura.config.action_wheel_mode.enum": "Удержание: Кнопка должна быть зажата для показа Колеса Действий\nToggle: Кнопка переключет видимость колеса действий\nЗапуск при отжатии: Запускает выбранное Действие при закрытии Колеса Действий",
+    "figura.config.action_wheel_mode.1": "Удержание",
+    "figura.config.action_wheel_mode.2": "Переключение",
+    "figura.config.action_wheel_mode.3": "Удержание (запуск при отжатии)",
+    "figura.config.action_wheel_mode.4": "Переключение (запуск при отжатии)",
+
+    "figura.config.action_wheel_scale": "Размер Колеса Действий",
+    "figura.config.action_wheel_scale.tooltip": "Меняет размер Колеса Действий",
+
+    "figura.config.action_wheel_title": "Текст Выбранного Действия",
+    "figura.config.action_wheel_title.tooltip": "Меняет место отрисовки текста выбранного действия",
+    "figura.config.action_wheel_title.enum": "Подсказка: Отрисовывает текст как подсказку\nМышь: Отрисовывает текст рядом с курсором\nСверху: Отрисовывает текст над Колесом Действий\nПо центру: Отрисовывает текст по центру Колеса Действий\nСнизу: Отрисовывает текст под Колесом Действий",
+    "figura.config.action_wheel_title.1": "Мышь (Подсказка)",
+    "figura.config.action_wheel_title.2": "Мышь",
+    "figura.config.action_wheel_title.3": "Сверху",
+    "figura.config.action_wheel_title.4": "По центру",
+    "figura.config.action_wheel_title.5": "Снизу",
+
+    "figura.config.action_wheel_decorations": "Декорации Предметов",
+    "figura.config.action_wheel_decorations.tooltip": "Включает отрисовку декорации предметов, таких как прочности и кол-во предметов",
+
+    "figura.config.ui": "Настройки Интерфейса",
+    "figura.config.ui.tooltip": "Настройки Интерфейса",
+
+    "figura.config.background_scroll_speed": "Скорость Прокрутки Заднего Фона",
+    "figura.config.background_scroll_speed.tooltip": "Модификатор для скорости прокрутки заднего фона",
+
+    "figura.config.popup_scale": "Размер Поп-апа Игрока",
+    "figura.config.popup_scale.tooltip": "Модификатор размера для Поп-апа игрока",
+
+    "figura.config.popup_min_size": "Мин. Размер Поп-апа игрока",
+    "figura.config.popup_min_size.tooltip": "Минимальный размер поп-апа игрока по мере отдаления от него.",
+
+
+    "figura.config.popup_max_size": "Макс. Размер Поп-апа игрока",
+    "figura.config.popup_max_size.tooltip": "Максимальный размер поп-апа игрока по мере приблежения к нему.",
+
+    "figura.config.avatar_portraits": "Портреты Аватаров",
+    "figura.config.avatar_portraits.tooltip": "Должен ли лист игроков отрисовывать портеты их аватаров вместо скина игрока",
+
+    "figura.config.figura_inventory": "Аватар в Инвентаре",
+    "figura.config.figura_inventory.tooltip": "Отрисовывать ли аватар в инвентаре игрока",
+
+    "figura.config.toast_time": "Длительность уведомлений",
+    "figura.config.toast_time.tooltip": "Сколько секунд уведомление должно оставаться на экране",
+
+    "figura.config.toast_title_time": "Переключение для длинных уведомлений",
+    "figura.config.toast_title_time.tooltip": "Через сколько секунд длинные уведомления должны сменять заголовок уведомления его сообщением",
+
+    "figura.config.wardrobe_file_names": "Имена Файлов в Гардеробе",
+    "figura.config.wardrobe_file_names.tooltip": "Должен ли лист аватаров в гардеробе использовать имена файлов вместо имени в метаданных (avatar.json)",
+
+    "figura.config.paperdoll": "Кукла",
+    "figura.config.paperdoll.tooltip": "Настройки куклы",
+
+    "figura.config.has_paperdoll": "Включить куклу",
+    "figura.config.has_paperdoll.tooltip": "Переключает отрисовку куклы",
+
+    "figura.config.paperdoll_always_on": "Всегда включено",
+    "figura.config.paperdoll_always_on.tooltip": "Должна ли кукла отрисовываться всегда или только во время поз",
+
+    "figura.config.first_person_paperdoll": "Только от Первого Лица",
+    "figura.config.first_person_paperdoll.tooltip": "Должна ли кукла отрисовываться только при просмотре от первого лица",
+
+    "figura.config.paperdoll_invisible": "Убрать Невидимость",
+    "figura.config.paperdoll_invisible.tooltip": "Должна ли кукла убирать эффект невидимости во время отрисовки",
+
+    "figura.config.paperdoll_scale": "Размер Куклы",
+    "figura.config.paperdoll_scale.tooltip": "Меняет размер куклы",
+
+    "figura.config.paperdoll_x": "Позиция по X",
+    "figura.config.paperdoll_x.tooltip": "Меняет позицию куклы по оси X",
+
+    "figura.config.paperdoll_y": "Позиция по Y",
+    "figura.config.paperdoll_y.tooltip": "Меняет позицию куклы по оси Y",
+
+    "figura.config.paperdoll_pitch": "Поворот по оси X",
+    "figura.config.paperdoll_pitch.tooltip": "Меняет поворот куклы по оси X",
+
+    "figura.config.paperdoll_yaw": "Поворот по оси Y",
+    "figura.config.paperdoll_yaw.tooltip": "Меняет поворот куклы по оси Y",
+
+    "figura.config.misc": "Разное",
+    "figura.config.misc.tooltip": "Неотсортированные настройки/Настройки которые никуда нельзя отнести",
+
+    "figura.config.popup_button": "Поп-ап меню",
+    "figura.config.popup_button.tooltip": "Меню для открытия поп-ап меню с быстрыми действиями для указанного пользователя",
+
+    "figura.config.reload_button": "Перезагрузить Аватар",
+    "figura.config.reload_button.tooltip": "Перезагружает текущий выбранный аватар при нажатии",
+
+    "figura.config.panic_button": "Кнопка Паники",
+    "figura.config.panic_button.tooltip": "Останавливает отрисовку всех аватаров",
+
+    "figura.config.wardrobe_button": "Кнопка Гардероба",
+    "figura.config.wardrobe_button.tooltip": "Открывает Гардероб Figura",
+
+    "figura.config.button_location": "Позиция Кнопки Меню",
+    "figura.config.button_location.tooltip": "Положение кнопки Figura",
+    "figura.config.button_location.enum": "Иконка: Отрисовывает кнопку Figura как маленькую иконку рядом с кнопкой Жалобы на Игроков\nДругое: Отрисовывает кнопку Figura как текст привязанный к указанной позиции",
+    "figura.config.button_location.1": "Иконка",
+    "figura.config.button_location.2": "Левый Верх",
+    "figura.config.button_location.3": "Правый Верх",
+    "figura.config.button_location.4": "Левый Низ",
+    "figura.config.button_location.5": "Правый Низ",
+
+    "figura.config.update_channel": "Канал обновлений",
+    "figura.config.update_channel.tooltip": "Меняет канал на котором Figura будет искать обновления",
+    "figura.config.update_channel.enum": "Нет: Не проверять на наличие обновлений\nРелизы: Проверять только релизные версии\nПре-релизы: Проверять обновления пре-релизов и релизов",
+    "figura.config.update_channel.1": "Нет",
+    "figura.config.update_channel.2": "Релизы",
+    "figura.config.update_channel.3": "Пре-релизы",
+
+    "figura.config.default_trust": "Стандартный Уровень Доверия",
+    "figura.config.default_trust.tooltip": "Меняет стандартный уровень доверия, который будет присваиваться новым игрокам",
+
+    "figura.config.chat_emojis": "Эмодзи",
+    "figura.config.chat_emojis.tooltip": "Переключает парсинг эмодзи, что переводит \":emoji_name:\" в эмодзи",
+
+    "figura.config.easter_eggs": "Включить Пасхалки",
+    "figura.config.easter_eggs.tooltip": "Включает весёлые и неожиданные аспекты Figura (скука смертная!)",
+
+    "figura.config.dev": "Для разработчиков",
+    "figura.config.dev.tooltip": "Настройки для разработчиков/Эксперементальные настройки",
+  
+    "figura.config.connection_toasts": "Уведомления О Подключении К Серверу",
+    "figura.config.connection_toasts.tooltip": "Должна ли игра показывать уведомления о состоянии подключения к серверу?",
+  
+    "figura.config.render_debug_parts_pivot": "Отрисовка Опорных Точек",
+    "figura.config.render_debug_parts_pivot.tooltip": "Отрисовывать опорные точки %d и %d когда отрисовка хитбоксов включена",
+    "figura.config.render_debug_parts_pivot.tooltip.cubes": "кубов",
+    "figura.config.render_debug_parts_pivot.tooltip.groups": "групп",
+    "figura.config.render_debug_parts_pivot.enum": "Отключено: Не отрисовывать опорные точки\nТолько видимые: Отрисовывать опорные точно только тех частей которые видны\nВсе: Отрисовывать все опорные точки аватара",
+    "figura.config.render_debug_parts_pivot.1": "Отключено",
+    "figura.config.render_debug_parts_pivot.2": "Только видимые",
+    "figura.config.render_debug_parts_pivot.3": "Все",
+
+    "figura.config.first_person_matrices": "Матрицы от Первого Лица",
+    "figura.config.first_person_matrices.tooltip": "Должны ли матрицы моделей обновляться в виде от первого лица",
+
+    "figura.config.log_others": "Логировать чужие скрипты",
+    "figura.config.log_others.tooltip": "Позволяет логгирование скриптов из аватаров других игроков",
+
+    "figura.config.log_pings": "Логировать Пинги",
+    "figura.config.log_pings.tooltip": "Нужно ли логировать данные пингов",
+    "figura.config.log_pings.enum": "Нет: Отключает логирование пингов\nЧат: Логировать пинги в чате и логгере\nЛоггер: Лог вашего клиента",
+    "figura.config.log_pings.1": "Нет",
+    "figura.config.log_pings.2": "Чат",
+    "figura.config.log_pings.3": "Логгер",
+
+    "figura.config.sync_pings": "Синхронизировать пинги",
+    "figura.config.sync_pings.tooltip.1": "Должны ли пинги от хоста аватара выполнятся локально или приходить от сервера",
+    "figura.config.sync_pings.tooltip.2": "Если включено, ваши пинги никогда не запустятся если вы не подключены к серверу!",
+
+    "figura.config.chat_messages": "Сообщения чата",
+    "figura.config.chat_messages.tooltip.1": "Могут ли скрипты изменять ваши сообщения и/или отправлять сообщения в чате",
+    "figura.config.chat_messages.tooltip.2": "Опасно включать, так как сообщения всё ещё будут подписаны",
+    "figura.config.chat_messages.tooltip.3": "Figura не берёт на себя любую ответственность за использование этой функции",
+
+    "figura.config.main_dir": "Местоположение папки Figura",
+    "figura.config.main_dir.tooltip": "Меняет местоположение папки Figura",
+
+    "figura.config.server_ip": "IP сервера Figura",
+    "figura.config.server_ip.tooltip": "Устанавливает IP сервера который Figura использует для реализации мультиплеерных функций",
+
+    "figura.command.click_to_open": "Нажмите сюда что-бы открыть",
+    "figura.command.run.not_local_error": "Локальный аватар не выбран!",
+    "figura.command.run.no_script_error": "Нету активного скрипта для запуска кода в нём!",
+    "figura.command.load.loading": "Загрузка аватара!",
+    "figura.command.load.invalid": "Неправильный путь \"%s\"",
+    "figura.command.docs_export.success": "Документация Figura экспортирована в директорию Figura",
+    "figura.command.docs_export.error": "Ошибка при экспорте документации Figura!",
+    "figura.command.docs_type_hover": "Нажмите что бы показать документацию для %s",
+    "figura.command.debug.success": "Дебаг данные сохранены в директорию Figura",
+    "figura.command.debug.error": "Ошибка при сохранении дебаг данных!"
+}
