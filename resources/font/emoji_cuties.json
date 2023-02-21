@@ -1,0 +1,24 @@
+{
+  "providers": [
+    {
+      "type": "space",
+      "advances": {
+        " ": 4,
+        "\u200C": 0
+      }
+    },
+    {
+      "type": "bitmap",
+      "file": "figura:font/emojis/cuties.png",
+      "ascent": 8,
+      "chars": [
+        "\uE000\uE001\uE002\uE003",
+        "\uE004\uE005\uE006\uE007",
+        "\uE008\uE009\uE00A\uE00B",
+        "\uE00C\uE00D\uE00E\uE00F",
+        "\uE010\uE011\uE012\uE013",
+        "\uE014\u0000\u0000\u0000"
+      ]
+    }
+  ]
+}

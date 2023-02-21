@@ -22,16 +22,13 @@ import java.util.*;
 
 public class Emojis {
 
-    public static final ResourceLocation FONT = new FiguraIdentifier("emoji");
-
-    private static final Style STYLE = Style.EMPTY.withColor(ChatFormatting.WHITE).withFont(FONT);
-    private static final Map<String, String> EMOJI_MAP = new HashMap<>();
+    private static final List<EmojiContainer> EMOJIS = new ArrayList<>();
     private static final char DELIMITER = ':';
     private static final char ESCAPE = '\\';
 
     //listener to load emojis from the resource pack
     public static final FiguraResourceListener RESOURCE_LISTENER = new FiguraResourceListener("emojis", manager -> {
-        EMOJI_MAP.clear();
+        EMOJIS.clear();
 
         //get the resource
         Optional<Resource> optional = manager.getResource(new FiguraIdentifier("emojis.json"));
@@ -42,18 +39,9 @@ public class Emojis {
         try (InputStream stream = optional.get().open()) {
             JsonObject emojis = JsonParser.parseReader(new InputStreamReader(stream, StandardCharsets.UTF_8)).getAsJsonObject();
 
-            //read a pair or String, List<String> from this json
-            for (Map.Entry<String, JsonElement> entry : emojis.entrySet()) {
-                //the emoji is the value
-                String emoji = entry.getKey();
-                //and each element will be the key inside the emoji map
-                for (JsonElement element : entry.getValue().getAsJsonArray()) {
-                    String key = element.getAsString();
-                    if (EMOJI_MAP.containsKey(key))
-                        FiguraMod.LOGGER.warn("Duplicate emoji id \"" + key + "\" for emoji \"" + emoji + "\"");
-                    EMOJI_MAP.put(key, emoji);
-                }
-            }
+            //read a pair or String, JsonObject from this json
+            for (Map.Entry<String, JsonElement> entry : emojis.entrySet())
+                EMOJIS.add(new EmojiContainer(entry.getKey(), entry.getValue().getAsJsonObject()));
         } catch (Exception e) {
             FiguraMod.LOGGER.error("Failed to load emojis", e);
         }
@@ -131,14 +119,17 @@ public class Emojis {
                 result.append(s);
             //odd: emoji
             } else {
-                String emoji = EMOJI_MAP.get(s.toLowerCase());
-                String quoted = DELIMITER + s + DELIMITER;
-                //emoji not found, so we add the unformatted text
-                if (emoji == null) {
-                    result.append(quoted);
-                //add the emoji
-                } else {
-                    result.append(Component.literal(emoji).withStyle(STYLE.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(quoted)))));
+                apply: {
+                    for (EmojiContainer container : EMOJIS) {
+                        Component emoji = container.getEmoji(s);
+                        if (emoji != null) {
+                            //emoji found, add it and break
+                            result.append(emoji);
+                            break apply;
+                        }
+                    }
+                    //emoji not found, so we add the unformatted text
+                    result.append(DELIMITER + s + DELIMITER);
                 }
             }
         }
@@ -147,6 +138,41 @@ public class Emojis {
     }
 
     public static Component removeBlacklistedEmojis(Component text) {
-        return text; // TextUtils.replaceInText(text, "[Δ]", TextUtils.UNKNOWN, (s, style) -> style.getFont().equals(FONT), Integer.MAX_VALUE);
+        for (EmojiContainer container : EMOJIS)
+            text = container.blacklist(text);
+        return text;
+    }
+
+    private static class EmojiContainer {
+        private static final Style STYLE = Style.EMPTY.withColor(ChatFormatting.WHITE);
+
+        private final ResourceLocation font;
+        private final Map<String, String> map = new HashMap<>(); //<EmojiName, Unicode>
+        private final String blacklist;
+
+        public EmojiContainer(String name, JsonObject data) {
+            this.font = new FiguraIdentifier("emoji_" + name);
+            this.blacklist = "[" + data.get("blacklist").getAsString() + "]";
+
+            //key = emoji unicode, value = array of names
+            for (Map.Entry<String, JsonElement> emoji : data.get("emojis").getAsJsonObject().entrySet()) {
+                String unicode = emoji.getKey();
+                for (JsonElement element : emoji.getValue().getAsJsonArray())
+                    map.put(element.getAsString(), unicode);
+            }
+        }
+
+        public Component getEmoji(String key) {
+            String emoji = map.get(key.toLowerCase());
+            if (emoji == null)
+                return null;
+            return Component.literal(emoji).withStyle(STYLE.withFont(font).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(DELIMITER + key + DELIMITER))));
+        }
+
+        public Component blacklist(Component text) {
+            if (blacklist.isBlank())
+                return text;
+            return TextUtils.replaceInText(text, blacklist, TextUtils.UNKNOWN, (s, style) -> style.getFont().equals(font), Integer.MAX_VALUE);
+        }
     }
 }
