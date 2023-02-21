@@ -27,7 +27,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -496,24 +495,20 @@ public class NetworkStuff {
     }
 
 
-    // -- translation stuff -- //
+    // -- resources stuff -- //
 
 
-    private static String request(HttpRequest request) {
-        try {
-            HttpResponse<String> response = NetworkStuff.client.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
-            return response.body();
-        } catch (Exception ignored) {
-            return null;
-        }
+    private static InputStream request(HttpRequest request) throws Exception {
+        HttpResponse<InputStream> response = NetworkStuff.client.send(request, HttpResponse.BodyHandlers.ofInputStream());
+        return response.body();
     }
 
-    public static String getLangMetadata() {
-        return request(HttpRequest.newBuilder(HttpAPI.getUri("lang")).timeout(Duration.ofSeconds(5)).build());
+    public static InputStream getResourcesHashes() throws Exception {
+        return request(HttpRequest.newBuilder(HttpAPI.getUri("/resources")).timeout(Duration.ofSeconds(15)).build());
     }
 
-    public static String getLang(String lang) {
-        return request(HttpRequest.newBuilder(HttpAPI.getUri("lang/" + lang)).build());
+    public static InputStream getResource(String resource) throws Exception {
+        return request(HttpRequest.newBuilder(HttpAPI.getUri("/resources/" + resource)).build());
     }
 
 

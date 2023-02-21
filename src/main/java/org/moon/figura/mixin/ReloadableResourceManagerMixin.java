@@ -16,6 +16,7 @@ public class ReloadableResourceManagerMixin {
     @ModifyVariable(at = @At(value = "HEAD"), method = "createReload", argsOnly = true)
     private List<PackResources> createReload(List<PackResources> packs) {
         List<PackResources> list = new ArrayList<>(packs);
+        FiguraRuntimeResources.joinFuture();
         list.add(FiguraRuntimeResources.PACK);
         return list;
     }
