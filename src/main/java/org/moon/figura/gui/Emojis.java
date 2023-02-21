@@ -152,7 +152,7 @@ public class Emojis {
 
         public EmojiContainer(String name, JsonObject data) {
             this.font = new FiguraIdentifier("emoji_" + name);
-            this.blacklist = "[" + data.get("blacklist").getAsString() + "]";
+            this.blacklist = data.get("blacklist").getAsString();
 
             //key = emoji unicode, value = array of names
             for (Map.Entry<String, JsonElement> emoji : data.get("emojis").getAsJsonObject().entrySet()) {
@@ -172,7 +172,7 @@ public class Emojis {
         public Component blacklist(Component text) {
             if (blacklist.isBlank())
                 return text;
-            return TextUtils.replaceInText(text, blacklist, TextUtils.UNKNOWN, (s, style) -> style.getFont().equals(font), Integer.MAX_VALUE);
+            return TextUtils.replaceInText(text, "[" + blacklist + "]", TextUtils.UNKNOWN, (s, style) -> style.getFont().equals(font), Integer.MAX_VALUE);
         }
     }
 }
