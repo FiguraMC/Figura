@@ -70,8 +70,6 @@ public class NetworkStuff {
     private static int maxAvatarSize = Integer.MAX_VALUE;
 
     public static void tick() {
-        AuthHandler.tick();
-
         //limits
         uploadRate.tick();
         downloadRate.tick();
@@ -177,7 +175,7 @@ public class NetworkStuff {
     }
 
     protected static void authFail(String reason) {
-        FiguraMod.LOGGER.warn("Failed to auth with the " + FiguraMod.MOD_NAME + " auth server! {}", reason);
+        FiguraMod.LOGGER.warn("Failed to auth with the " + FiguraMod.MOD_NAME + " auth server! {}", reason == null ? "" : reason);
         disconnect(reason);
     }
 
