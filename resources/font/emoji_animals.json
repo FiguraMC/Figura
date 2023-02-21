@@ -1,0 +1,24 @@
+{
+  "providers": [
+    {
+      "type": "space",
+      "advances": {
+        " ": 4,
+        "\u200C": 0
+      }
+    },
+    {
+      "type": "bitmap",
+      "file": "figura:font/emojis/animals.png",
+      "ascent": 8,
+      "chars": [
+        "\uD83E\uDD88\uD83D\uDC2C\uD83D\uDC1B\uD83E\uDD8B",
+        "\uD83E\uDD90\uD83E\uDD80\uD83E\uDD9E\uD83D\uDD35",
+        "\uD83D\uDC19\uD83D\uDC27\uD83D\uDC3A\uD83E\uDD8A",
+        "\uD83D\uDE3C\uD83D\uDC31\uD83D\uDC08\uD83D\uDC07",
+        "\uD83E\uDD57\uD83D\uDC33\uD83D\uDC22\uD83D\uDC23",
+        "\uD83D\uDC09\uD83E\uDD86\u0000\u0000"
+      ]
+    }
+  ]
+}

@@ -9,6 +9,7 @@ import net.minecraft.network.chat.Component;
 import org.luaj.vm2.LuaError;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.Badges;
+import org.moon.figura.gui.Emojis;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaMethodDoc;
@@ -99,7 +100,10 @@ public class TextTask extends RenderTask {
             return;
         }
 
-        Component component = Badges.noBadges4U(TextUtils.tryParseJson(this.textCached));
+        Component component = TextUtils.tryParseJson(this.textCached);
+        component = Badges.noBadges4U(component);
+        component = Emojis.applyEmojis(component);
+        component = Emojis.removeBlacklistedEmojis(component);
         this.text = TextUtils.formatInBounds(component, Minecraft.getInstance().font, width, wrap);
     }
 
