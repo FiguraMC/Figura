@@ -51,9 +51,9 @@ public class PingArg {
         if (val.isboolean()) {
             dos.writeByte(BOOL);
             dos.writeBoolean(val.checkboolean());
-        } else if (val instanceof LuaString) {
+        } else if (val instanceof LuaString valStr) {
             dos.writeByte(STRING);
-            dos.writeUTF(val.checkjstring());
+            writeString(valStr, dos);
         } else if (val.isint()) {
             dos.writeByte(INT);
             dos.writeInt(val.checkinteger().v);
@@ -73,6 +73,12 @@ public class PingArg {
             dos.writeByte(NIL);
             //dos.writeNull();
         }
+    }
+
+    private static void writeString(LuaString string, DataOutputStream dos) throws IOException {
+        int strLen = Math.min(string.m_length, Short.MAX_VALUE*2+1);
+        dos.writeShort((short)strLen);
+        dos.write(string.m_bytes, string.m_offset, strLen);
     }
 
     private static void writeTable(LuaTable table, DataOutputStream dos) throws IOException {
@@ -124,7 +130,7 @@ public class PingArg {
             case BOOL -> LuaValue.valueOf(dis.readBoolean());
             case INT -> LuaValue.valueOf(dis.readInt());
             case DOUBLE -> LuaValue.valueOf(dis.readDouble());
-            case STRING -> LuaValue.valueOf(dis.readUTF());
+            case STRING -> LuaValue.valueOf(dis.readNBytes(dis.readUnsignedShort()));
             case TABLE -> readTable(dis, owner);
             case VECTOR -> owner.luaRuntime.typeManager.javaToLua(readVec(dis)).arg1();
             case MATRIX -> owner.luaRuntime.typeManager.javaToLua(readMat(dis)).arg1();
