@@ -80,7 +80,6 @@ public class AvatarAPI {
     public AvatarAPI setColor(Object r, Double g, Double b) {
         FiguraVec3 vec = LuaUtils.parseVec3("setColor", r, g, b, 1, 1, 1);
         avatar.color = ColorUtils.rgbToHex(vec);
-        vec.free();
         return this;
     }
 

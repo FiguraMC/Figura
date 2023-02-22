@@ -164,7 +164,6 @@ public abstract class AvatarRenderer {
         result.translate(cameraPos.x, cameraPos.y, cameraPos.z);
         FiguraMat3 cameraMat = FiguraMat3.fromMatrix3f(cameraMat3f);
         result.multiply(cameraMat.augmented());
-        cameraMat.free();
         result.scale(-1, 1, -1);
         return result;
     }

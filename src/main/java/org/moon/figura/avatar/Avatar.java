@@ -449,14 +449,7 @@ public class Avatar {
         if (renderer == null || !loaded)
             return;
 
-        for (Queue<Pair<FiguraMat4, FiguraMat3>> queue : renderer.pivotCustomizations.values()) {
-            while (!queue.isEmpty()) {
-                Pair<FiguraMat4, FiguraMat3> pair = queue.poll();
-                pair.getFirst().free();
-                pair.getSecond().free();
-            }
-        }
-
+        renderer.pivotCustomizations.values().clear();
         renderer.allowMatrixUpdate = true;
         renderer.updateLight = renderMode != EntityRenderMode.OTHER;
         renderer.entity = entity;
@@ -775,8 +768,6 @@ public class Avatar {
             PIVOT_PART_RENDERING_CUSTOMIZATION.needsMatrixRecalculation = false;
             PoseStack stack = PIVOT_PART_RENDERING_CUSTOMIZATION.copyIntoGlobalPoseStack();
             consumer.accept(stack);
-            matrixPair.getFirst().free();
-            matrixPair.getSecond().free();
         }
 
         queue.clear();

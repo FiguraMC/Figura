@@ -10,8 +10,6 @@ import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.LuaUtils;
-import org.moon.figura.utils.caching.CacheStack;
-import org.moon.figura.utils.caching.CacheUtils;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -47,36 +45,15 @@ public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
     //----------------------------IMPLEMENTATION BELOW-----------------------//
 
     //Values are named as v(ROW)(COLUMN), both 1-indexed like in actual math
-    public double v11, v12, v13, v21, v22, v23, v31, v32, v33;
+    public double v11 = 1, v12, v13, v21, v22 = 1, v23, v31, v32, v33 = 1;
 
-    @Override
-    public CacheUtils.Cache<FiguraMat3> getCache() {
-        return CACHE;
-    }
-    private static final CacheUtils.Cache<FiguraMat3> CACHE = CacheUtils.getCache(FiguraMat3::new, 250);
     public static FiguraMat3 of() {
-        return CACHE.getFresh();
+        return new FiguraMat3();
     }
     public static FiguraMat3 of(double n11, double n21, double n31,
                                 double n12, double n22, double n32,
                                 double n13, double n23, double n33) {
         return of().set(n11, n21, n31, n12, n22, n32, n13, n23, n33);
-    }
-    public static class Stack extends CacheStack<FiguraMat3, FiguraMat3> {
-        public Stack() {
-            this(CACHE);
-        }
-        public Stack(CacheUtils.Cache<FiguraMat3> cache) {
-            super(cache);
-        }
-        @Override
-        protected void modify(FiguraMat3 valueToModify, FiguraMat3 modifierArg) {
-            valueToModify.rightMultiply(modifierArg);
-        }
-        @Override
-        protected void copy(FiguraMat3 from, FiguraMat3 to) {
-            to.set(from);
-        }
     }
 
     @Override
@@ -668,10 +645,7 @@ public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
 
     public FiguraVec2 apply(FiguraVec3 vec) {
         FiguraVec3 result = this.times(vec);
-        FiguraVec2 ret = FiguraVec2.of(result.x, result.y);
-        vec.free();
-        result.free();
-        return ret;
+        return FiguraVec2.of(result.x, result.y);
     }
 
     @LuaWhitelist

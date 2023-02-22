@@ -63,7 +63,6 @@ public class MathUtils {
         rotatorQuat.mul(vectorQuat);
         rotatorQuat.mul(rotatorQuatConj);
 
-        normalizedAxis.free();
         return FiguraVec3.of(rotatorQuat.x(), rotatorQuat.y(), rotatorQuat.z());
     }
 
@@ -79,7 +78,6 @@ public class MathUtils {
         ret.transform(transformMatrix);
         //ret.multiply(-1, 1, 1);
 
-        transformMatrix.free();
         return ret;
     }
 

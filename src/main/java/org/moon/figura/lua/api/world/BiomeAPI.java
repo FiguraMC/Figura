@@ -68,7 +68,6 @@ public class BiomeAPI {
     public BiomeAPI setPos(Object x, Double y, Double z) {
         FiguraVec3 newPos = LuaUtils.parseVec3("setPos", x, y, z);
         pos = newPos.asBlockPos();
-        newPos.free();
         return this;
     }
 

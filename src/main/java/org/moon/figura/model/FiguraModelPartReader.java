@@ -42,7 +42,6 @@ public class FiguraModelPartReader {
         customization.setRot(target);
         readVec3(target, partCompound, "piv");
         customization.setPivot(target);
-        target.free();
         if (partCompound.contains("primary")) {
             try {
                 customization.setPrimaryRenderType(RenderTypes.valueOf(partCompound.getString("primary")));
