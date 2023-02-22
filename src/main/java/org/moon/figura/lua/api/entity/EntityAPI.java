@@ -266,7 +266,7 @@ public class EntityAPI<T extends Entity> {
     public boolean isInRain() {
         checkEntity();
         BlockPos blockPos = entity.blockPosition();
-        return entity.level.isRainingAt(blockPos) || entity.level.isRainingAt(new BlockPos(blockPos.getX(), entity.getBoundingBox().maxY, entity.getZ()));
+        return entity.level.isRainingAt(blockPos) || entity.level.isRainingAt(new BlockPos(blockPos.getX(), (int) entity.getBoundingBox().maxY, (int) entity.getZ()));
     }
 
     @LuaWhitelist

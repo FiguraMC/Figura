@@ -214,17 +214,9 @@ public class ActionWheel {
                 continue;
 
             //render
-            PoseStack modelStack = RenderSystem.getModelViewStack();
-            modelStack.pushPose();
-            modelStack.translate(x, y, 0);
-            modelStack.scale(scale, scale, scale);
-
-            minecraft.getItemRenderer().renderGuiItem(item, (int) Math.round(xOff - 8), (int) Math.round(yOff - 8));
+            minecraft.getItemRenderer().renderGuiItem(stack, item, (int) Math.round(xOff - 8), (int) Math.round(yOff - 8));
             if (Config.ACTION_WHEEL_DECORATIONS.asBool())
-                minecraft.getItemRenderer().renderGuiItemDecorations(minecraft.font, item, (int) Math.round(xOff - 8), (int) Math.round(yOff - 8));
-
-            modelStack.popPose();
-            RenderSystem.applyModelViewMatrix();
+                minecraft.getItemRenderer().renderGuiItemDecorations(stack, minecraft.font, item, (int) Math.round(xOff - 8), (int) Math.round(yOff - 8));
         }
     }
 
