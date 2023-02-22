@@ -250,7 +250,6 @@ public class PartCustomization implements CachedType<PartCustomization> {
         temp.invert();
         temp.transpose();
         normalMatrix.set(temp);
-        temp.free();
         needsMatrixRecalculation = false;
     }
 
@@ -268,7 +267,7 @@ public class PartCustomization implements CachedType<PartCustomization> {
         return result;
     }
     public FiguraMat3 getNormalMatrix() {
-        FiguraMat3 result = FiguraMat3.of();
+        FiguraMat3 result = new FiguraMat3();
         result.set(normalMatrix);
         return result;
     }
@@ -321,20 +320,6 @@ public class PartCustomization implements CachedType<PartCustomization> {
         return this;
     }
     public void free() {
-        positionMatrix.free();
-        uvMatrix.free();
-        normalMatrix.free();
-        position.free();
-        rotation.free();
-        scale.free();
-        pivot.free();
-        offsetPivot.free();
-        offsetPos.free();
-        offsetRot.free();
-        offsetScale.free();
-        stackScale.free();
-        color.free();
-        color2.free();
     }
     public static PartCustomization of() {
         return CACHE.getFresh();

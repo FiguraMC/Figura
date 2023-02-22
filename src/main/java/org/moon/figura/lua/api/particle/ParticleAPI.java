@@ -85,10 +85,6 @@ public class ParticleAPI {
 
         LuaParticle particle = generate(id, pos.x, pos.y, pos.z, vel.x, vel.y, vel.z);
         particle.spawn();
-
-        pos.free();
-        vel.free();
-
         return particle;
     }
 

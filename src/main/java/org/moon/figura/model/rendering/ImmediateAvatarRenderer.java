@@ -194,9 +194,6 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         customization.positionMatrix.multiply(posMat);
         customization.normalMatrix.multiply(normalMat);
 
-        posMat.free();
-        normalMat.free();
-
         customization.render = true;
         customization.light = light;
         customization.alpha = alpha;
@@ -270,8 +267,6 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
             FiguraMod.popPushProfiler("restoreMatrices");
             custom.positionMatrix.set(positionCopy);
             custom.normalMatrix.set(normalCopy);
-            positionCopy.free();
-            normalCopy.free();
         }
 
         FiguraMod.popProfiler();
@@ -282,7 +277,6 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
             if (allowMatrixUpdate) {
                 FiguraMat4 mat = partToWorldMatrices(custom);
                 part.savedPartToWorldMat.set(mat);
-                mat.free();
             }
 
             //recalculate light
@@ -295,7 +289,6 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
                 int block = l.getBrightness(LightLayer.BLOCK, pos.asBlockPos());
                 int sky = l.getBrightness(LightLayer.SKY, pos.asBlockPos());
                 customizationStack.peek().light = LightTexture.pack(block, sky);
-                pos.free();
             }
             FiguraMod.popProfiler();
         }
@@ -325,7 +318,6 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
                 pivotOffsetter.setPos(pivot);
                 pivotOffsetter.recalculate();
                 customizationStack.push(pivotOffsetter);
-                pivot.free();
 
                 //render pivot indicators
                 if (renderPivot) {
@@ -413,9 +405,6 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         translation.translate(piv);
         customizePeek.rightMultiply(translation);
 
-        piv.free();
-        translation.free();
-
         return customizePeek;
     }
 
@@ -451,7 +440,6 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
             FiguraMod.popPushProfiler("worldMatrices");
             FiguraMat4 mat = partToWorldMatrices(custom);
             part.savedPartToWorldMat.set(mat);
-            mat.free();
         }
 
         //render children

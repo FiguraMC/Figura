@@ -71,9 +71,7 @@ public class WorldAPI {
     )
     public static BiomeAPI getBiome(Object x, Double y, Double z) {
         FiguraVec3 pos = LuaUtils.parseVec3("getBiome", x, y, z);
-        BiomeAPI result = new BiomeAPI(getCurrentWorld().getBiome(pos.asBlockPos()).value(), pos.asBlockPos());
-        pos.free();
-        return result;
+        return new BiomeAPI(getCurrentWorld().getBiome(pos.asBlockPos()).value(), pos.asBlockPos());
     }
 
     @LuaWhitelist
@@ -93,7 +91,6 @@ public class WorldAPI {
     public static BlockStateAPI getBlockState(Object x, Double y, Double z) {
         FiguraVec3 pos = LuaUtils.parseVec3("getBlockState", x, y, z);
         BlockPos blockPos = pos.asBlockPos();
-        pos.free();
         Level world = getCurrentWorld();
         if (world.getChunkAt(blockPos) == null)
             return new BlockStateAPI(Blocks.AIR.defaultBlockState(), blockPos);
@@ -117,7 +114,6 @@ public class WorldAPI {
     public static int getRedstonePower(Object x, Double y, Double z) {
         FiguraVec3 pos = LuaUtils.parseVec3("getRedstonePower", x, y, z);
         BlockPos blockPos = pos.asBlockPos();
-        pos.free();
         if (getCurrentWorld().getChunkAt(blockPos) == null)
             return 0;
         return getCurrentWorld().getBestNeighborSignal(blockPos);
@@ -140,7 +136,6 @@ public class WorldAPI {
     public static int getStrongRedstonePower(Object x, Double y, Double z) {
         FiguraVec3 pos = LuaUtils.parseVec3("getStrongRedstonePower", x, y, z);
         BlockPos blockPos = pos.asBlockPos();
-        pos.free();
         if (getCurrentWorld().getChunkAt(blockPos) == null)
             return 0;
         return getCurrentWorld().getDirectSignalTo(blockPos);
@@ -224,7 +219,6 @@ public class WorldAPI {
     public static Integer getLightLevel(Object x, Double y, Double z) {
         FiguraVec3 pos = LuaUtils.parseVec3("getLightLevel", x, y, z);
         BlockPos blockPos = pos.asBlockPos();
-        pos.free();
         Level world = getCurrentWorld();
         if (world.getChunkAt(blockPos) == null)
             return null;
@@ -249,7 +243,6 @@ public class WorldAPI {
     public static Integer getSkyLightLevel(Object x, Double y, Double z) {
         FiguraVec3 pos = LuaUtils.parseVec3("getSkyLightLevel", x, y, z);
         BlockPos blockPos = pos.asBlockPos();
-        pos.free();
         Level world = getCurrentWorld();
         if (world.getChunkAt(blockPos) == null)
             return null;
@@ -273,7 +266,6 @@ public class WorldAPI {
     public static Integer getBlockLightLevel(Object x, Double y, Double z) {
         FiguraVec3 pos = LuaUtils.parseVec3("getBlockLightLevel", x, y, z);
         BlockPos blockPos = pos.asBlockPos();
-        pos.free();
         Level world = getCurrentWorld();
         if (world.getChunkAt(blockPos) == null)
             return null;
@@ -297,7 +289,6 @@ public class WorldAPI {
     public static Boolean isOpenSky(Object x, Double y, Double z) {
         FiguraVec3 pos = LuaUtils.parseVec3("isOpenSky", x, y, z);
         BlockPos blockPos = pos.asBlockPos();
-        pos.free();
         Level world = getCurrentWorld();
         if (world.getChunkAt(blockPos) == null)
             return null;
@@ -345,10 +336,6 @@ public class WorldAPI {
         end = pair.getSecond();
 
         BlockHitResult result = getCurrentWorld().clip(new ClipContext(start.asVec3(), end.asVec3(), ClipContext.Block.OUTLINE, fluid ? ClipContext.Fluid.NONE : ClipContext.Fluid.ANY, new Marker(EntityType.MARKER, getCurrentWorld())));
-
-        start.free();
-        end.free();
-
         if (result == null || result.getType() == HitResult.Type.MISS)
             return null;
 
