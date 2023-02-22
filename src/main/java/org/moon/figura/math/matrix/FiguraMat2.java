@@ -8,8 +8,6 @@ import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.utils.LuaUtils;
-import org.moon.figura.utils.caching.CacheStack;
-import org.moon.figura.utils.caching.CacheUtils;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -19,35 +17,14 @@ import org.moon.figura.utils.caching.CacheUtils;
 public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
 
     //Values are named as v(ROW)(COLUMN), both 1-indexed like in actual math
-    public double v11, v12, v21, v22;
+    public double v11 = 1, v12, v21, v22 = 1;
 
-    @Override
-    public CacheUtils.Cache<FiguraMat2> getCache() {
-        return CACHE;
-    }
-    private static final CacheUtils.Cache<FiguraMat2> CACHE = CacheUtils.getCache(FiguraMat2::new, 250);
     public static FiguraMat2 of() {
-        return CACHE.getFresh();
+        return new FiguraMat2();
     }
     public static FiguraMat2 of(double n11, double n21,
                                 double n12, double n22) {
         return of().set(n11, n21, n12, n22);
-    }
-    public static class Stack extends CacheStack<FiguraMat2, FiguraMat2> {
-        public Stack() {
-            this(CACHE);
-        }
-        public Stack(CacheUtils.Cache<FiguraMat2> cache) {
-            super(cache);
-        }
-        @Override
-        protected void modify(FiguraMat2 valueToModify, FiguraMat2 modifierArg) {
-            valueToModify.rightMultiply(modifierArg);
-        }
-        @Override
-        protected void copy(FiguraMat2 from, FiguraMat2 to) {
-            to.set(from);
-        }
     }
 
     @Override
@@ -388,10 +365,7 @@ public class FiguraMat2 extends FiguraMatrix<FiguraMat2, FiguraVec2> {
 
     public double apply(FiguraVec2 vec) {
         FiguraVec2 result = this.times(vec);
-        double ret = result.x;
-        vec.free();
-        result.free();
-        return ret;
+        return result.x;
     }
 
     @LuaWhitelist

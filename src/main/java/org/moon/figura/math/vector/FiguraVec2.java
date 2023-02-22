@@ -10,7 +10,6 @@ import org.moon.figura.lua.docs.LuaMetamethodDoc.LuaMetamethodOverload;
 import org.moon.figura.math.matrix.FiguraMat2;
 import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.MathUtils;
-import org.moon.figura.utils.caching.CacheUtils;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -28,9 +27,6 @@ public class FiguraVec2 extends FiguraVector<FiguraVec2, FiguraMat2> {
 
     // -- cache -- //
 
-    private final static CacheUtils.Cache<FiguraVec2> CACHE = CacheUtils.getCache(FiguraVec2::new, 300);
-
-    @Override
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaMethodOverload(
@@ -43,17 +39,12 @@ public class FiguraVec2 extends FiguraVector<FiguraVec2, FiguraMat2> {
         return this;
     }
 
-    @Override
-    public void free() {
-        CACHE.offerOld(this);
-    }
-
     public static FiguraVec2 of() {
-        return CACHE.getFresh();
+        return new FiguraVec2();
     }
 
     public static FiguraVec2 of(double x, double y) {
-        return CACHE.getFresh().set(x, y);
+        return of().set(x, y);
     }
 
     // -- basic math -- //
@@ -588,9 +579,7 @@ public class FiguraVec2 extends FiguraVector<FiguraVec2, FiguraMat2> {
             if (d == 0)
                 throw new LuaError("Attempt to reduce vector by 0");
             FiguraVec2 modulus = of(d, d);
-            FiguraVec2 result = mod(modulus);
-            modulus.free();
-            return result;
+            return mod(modulus);
         } else if (rhs instanceof FiguraVec2 vec) {
             return mod(vec);
         }

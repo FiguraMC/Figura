@@ -193,8 +193,6 @@ public class FiguraImmediateBuffer {
             buffer.add((float) normal.y);
             buffer.add((float) normal.z);
         }
-
-        uvFixer.free();
     }
 
     public static class VertexData {

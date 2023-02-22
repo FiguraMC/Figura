@@ -12,8 +12,6 @@ import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec4;
 import org.moon.figura.utils.LuaUtils;
-import org.moon.figura.utils.caching.CacheStack;
-import org.moon.figura.utils.caching.CacheUtils;
 
 import java.nio.FloatBuffer;
 
@@ -59,37 +57,16 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
     //----------------------------IMPLEMENTATION BELOW-----------------------//
 
     //Values are named as v(ROW)(COLUMN), both 1-indexed like in actual math
-    public double v11, v12, v13, v14, v21, v22, v23, v24, v31, v32, v33, v34, v41, v42, v43, v44;
+    public double v11 = 1, v12, v13, v14, v21, v22 = 1, v23, v24, v31, v32, v33 = 1, v34, v41, v42, v43, v44 = 1;
 
-    @Override
-    public CacheUtils.Cache<FiguraMat4> getCache() {
-        return CACHE;
-    }
-    private static final CacheUtils.Cache<FiguraMat4> CACHE = CacheUtils.getCache(FiguraMat4::new, 250);
     public static FiguraMat4 of() {
-        return CACHE.getFresh();
+        return new FiguraMat4();
     }
     public static FiguraMat4 of(double n11, double n21, double n31, double n41,
                                 double n12, double n22, double n32, double n42,
                                 double n13, double n23, double n33, double n43,
                                 double n14, double n24, double n34, double n44) {
         return of().set(n11, n21, n31, n41, n12, n22, n32, n42, n13, n23, n33, n43, n14, n24, n34, n44);
-    }
-    public static class Stack extends CacheStack<FiguraMat4, FiguraMat4> {
-        public Stack() {
-            this(CACHE);
-        }
-        public Stack(CacheUtils.Cache<FiguraMat4> cache) {
-            super(cache);
-        }
-        @Override
-        protected void modify(FiguraMat4 valueToModify, FiguraMat4 modifierArg) {
-            valueToModify.rightMultiply(modifierArg);
-        }
-        @Override
-        protected void copy(FiguraMat4 from, FiguraMat4 to) {
-            to.set(from);
-        }
     }
 
     @Override
@@ -819,10 +796,7 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
 
     public FiguraVec3 apply(FiguraVec4 vec) {
         FiguraVec4 result = this.times(vec);
-        FiguraVec3 ret = FiguraVec3.of(result.x, result.y, result.z);
-        vec.free();
-        result.free();
-        return ret;
+        return FiguraVec3.of(result.x, result.y, result.z);
     }
 
     @LuaWhitelist

@@ -223,12 +223,7 @@ public class VectorsAPI {
         vec = pair.getFirst();
         axis = pair.getSecond();
 
-        FiguraVec3 result = MathUtils.rotateAroundAxis(vec, axis, angle);
-
-        vec.free();
-        axis.free();
-
-        return result;
+        return MathUtils.rotateAroundAxis(vec, axis, angle);
     }
 
     @LuaWhitelist

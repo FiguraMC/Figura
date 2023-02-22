@@ -2,10 +2,8 @@ package org.moon.figura.math.matrix;
 
 import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.math.vector.FiguraVector;
-import org.moon.figura.utils.caching.CacheUtils;
-import org.moon.figura.utils.caching.CachedType;
 
-public abstract class FiguraMatrix<T extends FiguraMatrix<T, V>, V extends FiguraVector<V, T>> implements CachedType<T> {
+public abstract class FiguraMatrix<T extends FiguraMatrix<T, V>, V extends FiguraVector<V, T>> {
 
     protected T cachedInverse = null;
     protected double cachedDeterminant = Double.NaN;
@@ -13,7 +11,6 @@ public abstract class FiguraMatrix<T extends FiguraMatrix<T, V>, V extends Figur
 
     protected abstract double calculateDeterminant();
     protected abstract void resetIdentity();
-    protected abstract CacheUtils.Cache<T> getCache();
     public abstract T copy();
     public abstract boolean equals(T other);
     public abstract V getColumn(int col);
@@ -58,10 +55,6 @@ public abstract class FiguraMatrix<T extends FiguraMatrix<T, V>, V extends Figur
         return (T) this;
     }
 
-    public void free() {
-        getCache().offerOld((T) this);
-    }
-
     public double det() {
         if (!Double.isNaN(cachedDeterminant))
             return cachedDeterminant;
@@ -72,8 +65,6 @@ public abstract class FiguraMatrix<T extends FiguraMatrix<T, V>, V extends Figur
     }
 
     protected final void invalidate() {
-        if (cachedInverse != null)
-            cachedInverse.free();
         cachedInverse = null;
         cachedDeterminant = Double.NaN;
     }

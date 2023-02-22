@@ -57,7 +57,6 @@ public class VanillaModelPart extends VanillaPart {
         pivot.subtract(part.x, part.y, part.z);
         pivot.multiply(1, -1, -1);
         originPos.set(pivot);
-        pivot.free();
 
         //originScale.set(part.xScale, part.yScale, part.zScale);
 

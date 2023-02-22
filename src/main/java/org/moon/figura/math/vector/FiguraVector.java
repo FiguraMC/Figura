@@ -2,9 +2,8 @@ package org.moon.figura.math.vector;
 
 import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.math.matrix.FiguraMatrix;
-import org.moon.figura.utils.caching.CachedType;
 
-public abstract class FiguraVector<T extends FiguraVector<T, M>, M extends FiguraMatrix<M, T>> implements CachedType<T> {
+public abstract class FiguraVector<T extends FiguraVector<T, M>, M extends FiguraMatrix<M, T>> {
 
     public abstract double lengthSquared();
     public double length() {

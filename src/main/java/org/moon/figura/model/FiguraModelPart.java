@@ -114,8 +114,6 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
         //customization.offsetPivot(pivot);
         if (!overrideVanillaRot())
             customization.offsetRot(partData.rot);
-
-        defaultPivot.free();
     }
 
     public void resetVanillaTransforms() {
@@ -152,10 +150,6 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
         prevPartToView.translateFirst(-piv2.x, -piv2.y, -piv2.z);
         prevPartToView.translate(piv2.x, piv2.y, piv2.z);
         customization.setMatrix(prevPartToView);
-        prevPartToView.free();
-        scale.free();
-        piv.free();
-        piv2.free();
     }
 
     public void clean() {
@@ -171,7 +165,6 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
             FiguraVec3 pos = customization.getAnimPos();
             pos.add(-vec.x, vec.y, vec.z);
             customization.setAnimPos(pos.x, pos.y, pos.z);
-            pos.free();
         } else {
             customization.setAnimPos(-vec.x, vec.y, vec.z);
         }
@@ -181,7 +174,6 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
             FiguraVec3 rot = customization.getAnimRot();
             rot.add(-vec.x, -vec.y, vec.z);
             customization.setAnimRot(rot.x, rot.y, rot.z);
-            rot.free();
         } else {
             customization.setAnimRot(-vec.x, -vec.y, vec.z);
         }
@@ -191,7 +183,6 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
         while (part != null) {
             FiguraVec3 rot = part.getAnimRot();
             vec.subtract(rot);
-            rot.free();
             part = part.parent;
         }*/
         animRotation(vec, merge);
@@ -201,7 +192,6 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
             FiguraVec3 scale = customization.getAnimScale();
             scale.multiply(vec);
             customization.setAnimScale(scale.x, scale.y, scale.z);
-            scale.free();
         } else {
             customization.setAnimScale(vec.x, vec.y, vec.z);
         }
@@ -766,7 +756,6 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
         this.customization.uvMatrix.reset();
         FiguraVec2 uv = LuaUtils.parseVec2("setUV", x, y);
         this.customization.uvMatrix.translate(uv.x % 1, uv.y % 1);
-        uv.free();
         return this;
     }
 
@@ -807,7 +796,6 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
         FiguraVec2 uv = LuaUtils.parseVec2("setUVPixels", x, y);
         uv.divide(this.textureWidth, this.textureHeight);
         this.customization.uvMatrix.translate(uv.x, uv.y);
-        uv.free();
 
         return this;
     }
