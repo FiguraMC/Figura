@@ -48,10 +48,13 @@ public class AnimationPlayer {
                 Keyframe current = keyframes[currentIndex];
                 Keyframe next = keyframes[nextIndex];
 
-                float timeDiff = anim.frameTime - current.getTime();
-                float delta = Math.min(Math.max(timeDiff / (next.getTime() - current.getTime()), 0), 1);
-                if (Float.isNaN(delta))
+                float delta;
+                if (current == next) {
                     delta = 0;
+                } else {
+                    float timeDiff = anim.frameTime - current.getTime();
+                    delta = Math.min(Math.max(timeDiff / (next.getTime() - current.getTime()), 0), 1);
+                }
 
                 Interpolation interpolation = next.getInterpolation() == Interpolation.BEZIER ? Interpolation.BEZIER : current.getInterpolation();
                 FiguraVec3 transform = interpolation.generate(keyframes, currentIndex, nextIndex, anim.blend, delta, type);
