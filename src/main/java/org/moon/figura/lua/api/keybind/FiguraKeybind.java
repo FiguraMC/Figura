@@ -51,22 +51,22 @@ public class FiguraKeybind {
         this.key = this.defaultKey;
     }
 
-    public boolean setDown(boolean bl) {
+    public boolean setDown(boolean pressed, int modifiers) {
         //events
-        if (isDown != bl) {
+        if (isDown != pressed) {
             Varargs result = null;
 
-            if (bl) {
+            if (pressed) {
                 if (press != null)
-                    result = owner.run(press, owner.tick, this);
+                    result = owner.run(press, owner.tick, modifiers, this);
             } else if (release != null) {
-                result = owner.run(release, owner.tick, this);
+                result = owner.run(release, owner.tick, modifiers, this);
             }
 
             override = result != null && result.arg(1).isboolean() && result.checkboolean(1);
         }
 
-        this.isDown = bl;
+        this.isDown = pressed;
         return override;
     }
 
@@ -88,25 +88,25 @@ public class FiguraKeybind {
         }
     }
 
-    public static boolean set(List<FiguraKeybind> bindings, InputConstants.Key key, boolean pressed) {
+    public static boolean set(List<FiguraKeybind> bindings, InputConstants.Key key, boolean pressed, int modifiers) {
         boolean overrided = false;
         for (FiguraKeybind keybind : bindings) {
             if (keybind.key == key && keybind.enabled && (keybind.gui || Minecraft.getInstance().screen == null))
-                overrided = keybind.setDown(pressed) || overrided;
+                overrided = keybind.setDown(pressed, modifiers) || overrided;
         }
         return overrided;
     }
 
     public static void releaseAll(List<FiguraKeybind> bindings) {
         for (FiguraKeybind keybind : bindings)
-            keybind.setDown(false);
+            keybind.setDown(false, -1);
     }
 
     public static void updateAll(List<FiguraKeybind> bindings) {
         for (FiguraKeybind keybind : bindings) {
             int value = keybind.key.getValue();
             if (keybind.enabled && keybind.key.getType() == InputConstants.Type.KEYSYM && value != InputConstants.UNKNOWN.getValue())
-                keybind.setDown(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), value));
+                keybind.setDown(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), value), -1);
         }
     }
 
