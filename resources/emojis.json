@@ -1,6 +1,6 @@
 {
   "animals": {
-    "blacklist": "🔵",
+    "blacklist": "",
     "emojis": {
       "🦈": ["shark"],
       "🐬": ["trans_shark"],
@@ -46,10 +46,35 @@
       "\uE00E": ["campbell2"],
       "\uE00F": ["lexie"],
       "\uE010": ["serena"],
-      "\uE011": ["?"],
+      "\uE011": ["auria"],
       "\uE012": ["katt"],
       "\uE013": ["toastcraft2"],
-      "\uE014": ["auria"]
+      "\uE014": ["auria2"]
+    }
+  },
+  "symbols": {
+    "blacklist": "",
+    "emojis": {
+      "™": ["tm"],
+      "💤": ["nini"],
+      "⬆": ["this"],
+      "💯": ["100"],
+      "🌑": ["lua"],
+      "△": ["mark"],
+      "📞": ["whatsapp"],
+      "🕹": ["minecraft"],
+      "🧵": ["quilt"],
+      "👘": ["fabric"],
+      "🎏": ["koinobori"],
+      "⚧️": ["transgender"],
+      "🖱": ["click"],
+      "🖲": ["pointer"],
+      "🔔": ["taco_bell"],
+      "🔺": ["cone"],
+      "1": ["1bar"],
+      "2": ["2bar"],
+      "3": ["3bar"],
+      "4": ["4bar"]
     }
   }
 }

@@ -29,7 +29,7 @@ public class AuthHandler {
                 String serverID = getServerID(username);
                 FiguraMod.debug("Joining \"{}\" on server \"{}\"", username, serverID);
                 minecraft.getMinecraftSessionService().joinServer(user.getGameProfile(), user.getAccessToken(), serverID);
-                NetworkStuff.authSuccess(getToken(username, serverID));
+                NetworkStuff.authSuccess(getToken(serverID));
             //cringe exceptions
             } catch (AuthenticationUnavailableException e) {
                 NetworkStuff.authFail(new TranslatableComponent("disconnect.loginFailedInfo.serversUnavailable").getString());
@@ -56,7 +56,7 @@ public class AuthHandler {
         return request(HttpRequest.newBuilder(HttpAPI.getUri("/auth/id?username=" + username)).build());
     }
 
-    private static String getToken(String username, String serverID) throws Exception {
-        return request(HttpRequest.newBuilder(HttpAPI.getUri("/auth/verify?username=" + username + "&id=" + serverID)).build());
+    private static String getToken(String serverID) throws Exception {
+        return request(HttpRequest.newBuilder(HttpAPI.getUri("/auth/verify?id=" + serverID)).build());
     }
 }

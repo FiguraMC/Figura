@@ -37,18 +37,20 @@ public class EnumElement extends AbstractConfigElement {
             }
         }) {
             @Override
-            public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
-                //super
-                super.renderButton(stack, mouseX, mouseY, delta);
-
-                //draw arrow
+            protected void renderText(PoseStack stack) {
                 Font font = Minecraft.getInstance().font;
                 Component arrow = context.isVisible() ? UIHelper.DOWN_ARROW : UIHelper.UP_ARROW;
-                font.drawShadow(
-                        stack, arrow,
-                        this.x + this.width - font.width(arrow) - 3, this.y + this.height / 2 - font.lineHeight / 2,
-                        (!this.active ? ChatFormatting.DARK_GRAY : ChatFormatting.WHITE).getColor()
-                );
+                int arrowWidth = font.width(arrow);
+
+                Component message = getMessage();
+                int textWidth = font.width(message);
+
+                //draw text
+                int color = (!this.active ? ChatFormatting.DARK_GRAY : ChatFormatting.WHITE).getColor();
+                UIHelper.renderScrollingText(stack, message, x, y, getWidth() - (textWidth <= width - arrowWidth - 9 ? 0 : arrowWidth + 1), getHeight(), color);
+
+                //draw arrow
+                font.drawShadow(stack, arrow, x + getWidth() - arrowWidth - 3, y + getHeight() / 2 - font.lineHeight / 2, color);
             }
         });
         button.active = FiguraMod.DEBUG_MODE || !config.disabled;

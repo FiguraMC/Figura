@@ -117,6 +117,8 @@ public enum Config {
     TOAST_TITLE_TIME(2f, InputType.FLOAT),
     WARDROBE_FILE_NAMES(false),
     PREVIEW_HEAD_ROTATION(false),
+    TEXT_SCROLL_SPEED(1f, InputType.POSITIVE_FLOAT),
+    TEXT_SCROLL_DELAY(20, InputType.POSITIVE_INT),
 
     Paperdoll,
     HAS_PAPERDOLL(false),
@@ -356,7 +358,15 @@ public enum Config {
         FLOAT(s -> {
             try {
                 Float f = Float.parseFloat(s);
-                return !f.isInfinite();
+                return !f.isInfinite() && !f.isNaN();
+            } catch (Exception ignored) {
+                return false;
+            }
+        }),
+        POSITIVE_FLOAT(s -> {
+            try {
+                Float f = Float.parseFloat(s);
+                return !f.isInfinite() && !f.isNaN() && f >= 0f;
             } catch (Exception ignored) {
                 return false;
             }

@@ -164,7 +164,7 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
             if (custom != null && custom.getJson() != null && avatar.permissions.get(Permissions.NAMEPLATE_EDIT) == 1)
                 name = custom.getJson().copy();
 
-            head = !dragged && avatar.renderPortrait(stack, x + 4, y + 4, Math.round(32 * scale), 64, true);
+            head = !dragged && avatar.renderPortrait(stack, x + 4, y + 4, Math.round(32 * scale), 64);
         }
 
         if (!head) {
