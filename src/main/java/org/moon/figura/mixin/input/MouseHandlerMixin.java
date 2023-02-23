@@ -41,7 +41,7 @@ public class MouseHandlerMixin {
 
         boolean pressed = action != 0;
 
-        if (avatar.luaRuntime != null && FiguraKeybind.set(avatar.luaRuntime.keybinds.keyBindings, InputConstants.Type.MOUSE.getOrCreate(button), pressed))
+        if (avatar.luaRuntime != null && FiguraKeybind.set(avatar.luaRuntime.keybinds.keyBindings, InputConstants.Type.MOUSE.getOrCreate(button), pressed, modifiers))
             ci.cancel();
 
         if (avatar.luaRuntime != null && pressed && avatar.luaRuntime.host.unlockCursor && this.minecraft.screen == null)
