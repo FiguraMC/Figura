@@ -1,6 +1,5 @@
 package org.moon.figura.gui.widgets.lists;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -14,9 +13,9 @@ import org.moon.figura.FiguraMod;
 import org.moon.figura.gui.widgets.SliderWidget;
 import org.moon.figura.gui.widgets.SwitchButton;
 import org.moon.figura.gui.widgets.TextField;
-import org.moon.figura.permissions.Permissions;
-import org.moon.figura.permissions.PermissionPack;
 import org.moon.figura.permissions.PermissionManager;
+import org.moon.figura.permissions.PermissionPack;
+import org.moon.figura.permissions.Permissions;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.ui.UIHelper;
@@ -85,7 +84,7 @@ public class PermissionsList extends AbstractList {
         super.render(stack, mouseX, mouseY, delta);
 
         //reset scissor
-        RenderSystem.disableScissor();
+        UIHelper.disableScissor();
     }
 
     public void updateList(PermissionPack container) {

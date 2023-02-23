@@ -140,6 +140,7 @@
   "figura.gui.text_hint.int": "Integer",
   "figura.gui.text_hint.positive_int": "Integer",
   "figura.gui.text_hint.float": "Number",
+  "figura.gui.text_hint.positive_float": "Number",
   "figura.gui.text_hint.hex_color": "Color",
   "figura.gui.text_hint.folder_path": "Path",
   "figura.gui.text_hint.ip": "IP Address",
@@ -408,6 +409,12 @@
 
   "figura.config.preview_head_rotation": "GUI Head Rotation",
   "figura.config.preview_head_rotation.tooltip": "Toggles if the player head rotation should be applied in avatar previews through the GUI\nWhen off, the avatar will always be rendered looking forwards",
+
+  "figura.config.text_scroll_speed": "Text Scroll Speed",
+  "figura.config.text_scroll_speed.tooltip": "Changes how fast the Text should scroll",
+
+  "figura.config.text_scroll_delay": "Text Scroll Delay",
+  "figura.config.text_scroll_delay.tooltip": "Changes the delay (in ticks) that the Text should wait before scrolling",
 
 
   "figura.config.paperdoll": "Paperdoll",

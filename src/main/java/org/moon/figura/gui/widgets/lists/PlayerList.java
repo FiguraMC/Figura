@@ -1,6 +1,5 @@
 package org.moon.figura.gui.widgets.lists;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -38,6 +37,7 @@ public class PlayerList extends AbstractList {
     private static boolean showFiguraBl, showDisconnectedBl;
 
     private int totalHeight = 0;
+    private AbstractPermPackElement maxCategory;
     public AbstractPermPackElement selectedEntry;
     private String filter = "";
 
@@ -117,7 +117,7 @@ public class PlayerList extends AbstractList {
         }
 
         //reset scissor
-        RenderSystem.disableScissor();
+        UIHelper.disableScissor();
 
         //render children
         super.render(stack, mouseX, mouseY, delta);
@@ -133,6 +133,7 @@ public class PlayerList extends AbstractList {
             CategoryPermPackElement group = new CategoryPermPackElement(container, this);
             permissionsList.add(group);
             children.add(group);
+            maxCategory = group;
         }
     }
 
@@ -219,7 +220,11 @@ public class PlayerList extends AbstractList {
 
     private void selectLocalPlayer() {
         PlayerPermPackElement local = Minecraft.getInstance().player != null ? players.get(Minecraft.getInstance().player.getUUID()) : null;
-        if (local != null) local.onPress();
+        if (local != null) {
+            local.onPress();
+        } else {
+            maxCategory.onPress();
+        }
 
         scrollToSelected();
     }
