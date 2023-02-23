@@ -1,6 +1,5 @@
 package org.moon.figura.gui.widgets.lists;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
@@ -136,7 +135,7 @@ public class AvatarList extends AbstractList {
         }
 
         //reset scissor
-        RenderSystem.disableScissor();
+        UIHelper.disableScissor();
 
         //render children
         super.render(stack, mouseX, mouseY, delta);

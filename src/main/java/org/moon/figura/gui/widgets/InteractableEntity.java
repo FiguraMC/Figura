@@ -1,6 +1,5 @@
 package org.moon.figura.gui.widgets;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Quaternion;
 import net.minecraft.client.Minecraft;
@@ -64,24 +63,9 @@ public class InteractableEntity extends AbstractContainerElement {
                 FiguraText.of("gui.expand"),
                 bx -> {
                     if (button.isToggled()) {
-                        //backup pos to fix model pos
-                        int oldX = this.x;
-                        int oldY = this.y;
-
-                        //set screen (also updates pos/size)
-                        Minecraft.getInstance().setScreen(new AvatarScreen(parentScreen, this));
-
-                        //update button
-                        button.x = this.x + 4;
-                        button.y = this.y + 4;
-                        button.setTooltip(FiguraText.of("gui.minimise"));
-
-                        //update entity
-                        this.modelX += oldX - this.x;
-                        this.modelY += oldY - this.y;
+                        Minecraft.getInstance().setScreen(new AvatarScreen(scale, pitch, yaw, entity, parentScreen));
                     } else {
                         Minecraft.getInstance().setScreen(parentScreen);
-                        //no need to reset the widget since were not keeping this instance
                     }
                 }));
     }
@@ -125,7 +109,7 @@ public class InteractableEntity extends AbstractContainerElement {
             stack.popPose();
         }
 
-        RenderSystem.disableScissor();
+        UIHelper.disableScissor();
 
         super.render(stack, mouseX, mouseY, delta);
     }
@@ -268,5 +252,10 @@ public class InteractableEntity extends AbstractContainerElement {
 
     public void setEntity(LivingEntity entity) {
         this.entity = entity;
+    }
+
+    public void setToggled(boolean toggled) {
+        this.button.setToggled(toggled);
+        this.button.setTooltip(toggled ? FiguraText.of("gui.minimise") : FiguraText.of("gui.expand"));
     }
 }

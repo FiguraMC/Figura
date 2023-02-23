@@ -47,7 +47,6 @@ import org.moon.figura.lua.api.world.ItemStackAPI;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec3;
-import org.moon.figura.math.vector.FiguraVec4;
 import org.moon.figura.model.ParentType;
 import org.moon.figura.model.PartCustomization;
 import org.moon.figura.model.rendering.AvatarRenderer;
@@ -685,7 +684,7 @@ public class Avatar {
         return comp > 0 && luaRuntime != null && !luaRuntime.vanilla_model.HEAD.checkVisible();
     }
 
-    public boolean renderPortrait(PoseStack stack, int x, int y, int screenSize, float modelScale, boolean scissors) {
+    public boolean renderPortrait(PoseStack stack, int x, int y, int size, float modelScale) {
         if (!Config.AVATAR_PORTRAITS.asBool() || renderer == null || !loaded)
             return false;
 
@@ -696,20 +695,12 @@ public class Avatar {
         stack.mulPose(Vector3f.XP.rotationDegrees(180f));
 
         //scissors
-        FiguraVec4 oldScissors = UIHelper.scissors.copy();
         FiguraVec3 pos = FiguraMat4.fromMatrix4f(stack.last().pose()).apply(0d, 0d, 0d);
 
         int x1 = (int) pos.x;
         int y1 = (int) pos.y;
-        int x2 = (int) pos.x + screenSize;
-        int y2 = (int) pos.y + screenSize;
-
-        if (scissors) {
-            x1 = (int) Math.round(Math.max(x1, oldScissors.x));
-            y1 = (int) Math.round(Math.max(y1, oldScissors.y));
-            x2 = (int) Math.round(Math.min(x2, oldScissors.x + oldScissors.z));
-            y2 = (int) Math.round(Math.min(y2, oldScissors.y + oldScissors.w));
-        }
+        int x2 = (int) pos.x + size;
+        int y2 = (int) pos.y + size;
 
         UIHelper.setupScissor(x1, y1, x2 - x1, y2 - y1);
         UIHelper.paperdoll = true;
@@ -738,11 +729,7 @@ public class Avatar {
         boolean ret = comp > 0 || headRender(stack, buffer, light);
 
         //return
-        if (scissors)
-            UIHelper.setupScissor((int) oldScissors.x, (int) oldScissors.y, (int) oldScissors.z, (int) oldScissors.w);
-        else
-            RenderSystem.disableScissor();
-
+        UIHelper.disableScissor();
         UIHelper.paperdoll = false;
         renderer.allowPivotParts = true;
         renderer.allowRenderTasks = true;

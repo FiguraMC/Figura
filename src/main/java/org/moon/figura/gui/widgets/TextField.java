@@ -140,6 +140,7 @@ public class TextField extends AbstractContainerElement {
         INT,
         POSITIVE_INT,
         FLOAT,
+        POSITIVE_FLOAT,
         HEX_COLOR,
         FOLDER_PATH,
         IP,

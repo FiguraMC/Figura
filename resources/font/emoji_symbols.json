@@ -1,0 +1,23 @@
+{
+  "providers": [
+    {
+      "type": "space",
+      "advances": {
+        " ": 4,
+        "\u200C": 0
+      }
+    },
+    {
+      "type": "bitmap",
+      "file": "figura:font/emojis/symbols.png",
+      "ascent": 8,
+      "chars": [
+        "™\uD83D\uDCA4⬆\uD83D\uDCAF",
+        "\uD83C\uDF11△\uD83D\uDCDE\uD83D\uDD79",
+        "\uD83E\uDDF5\uD83D\uDC58\uD83C\uDF8F⚧",
+        "\uD83D\uDDB1\uD83D\uDDB2\uD83D\uDD14\uD83D\uDD3A",
+        "1234"
+      ]
+    }
+  ]
+}
