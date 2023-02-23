@@ -34,7 +34,7 @@ public class KeyboardHandlerMixin {
             return;
         }
 
-        if (avatar.luaRuntime != null && FiguraKeybind.set(avatar.luaRuntime.keybinds.keyBindings, InputConstants.getKey(key, scancode), action != 0)) {
+        if (avatar.luaRuntime != null && FiguraKeybind.set(avatar.luaRuntime.keybinds.keyBindings, InputConstants.getKey(key, scancode), action != 0, modifiers)) {
             KeyMapping.setAll();
             ci.cancel();
         }
