@@ -17,7 +17,6 @@ import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.ducks.SkullBlockRendererAccessor;
 import org.moon.figura.lua.api.vanilla_model.VanillaModelPart;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Coerce;
@@ -27,8 +26,6 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(ItemInHandRenderer.class)
 public abstract class ItemInHandRendererMixin {
-
-    @Shadow protected abstract void renderPlayerArm(PoseStack matrices, MultiBufferSource vertexConsumers, int light, float equipProgress, float swingProgress, HumanoidArm arm);
 
     @Unique private Avatar avatar;
 
@@ -47,14 +44,8 @@ public abstract class ItemInHandRendererMixin {
         HumanoidArm arm = hand == InteractionHand.MAIN_HAND ? player.getMainArm() : player.getMainArm().getOpposite();
         VanillaModelPart part = arm == HumanoidArm.LEFT ? avatar.luaRuntime.vanilla_model.LEFT_ITEM : avatar.luaRuntime.vanilla_model.RIGHT_ITEM;
 
-        if (!part.checkVisible()) {
+        if (!part.checkVisible())
             ci.cancel();
-            if (!player.isInvisible()) {
-                matrices.pushPose();
-                this.renderPlayerArm(matrices, vertexConsumers, light, equipProgress, swingProgress, arm);
-                matrices.popPose();
-            }
-        }
     }
 
     @Inject(method = "renderItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/ItemRenderer;renderStatic(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemDisplayContext;ZLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/world/level/Level;III)V"))

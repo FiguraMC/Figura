@@ -17,6 +17,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class FiguraRuntimeResources {
 
+    public static final String ASSETS_VERSION = FiguraMod.METADATA.getCustomValue("assets_version").getAsString();
     public static final PathPackResources PACK = new PathPackResources(FiguraMod.MOD_NAME + " runtime resource pack", getRootDirectory(), true);
 
     public static Path getRootDirectory() {
@@ -44,7 +45,7 @@ public class FiguraRuntimeResources {
             }
 
             //get new hashes
-            try (InputStream stream = NetworkStuff.getResourcesHashes()) {
+            try (InputStream stream = NetworkStuff.getResourcesHashes(ASSETS_VERSION)) {
                 byte[] bytes = stream.readAllBytes();
                 String s = new String(bytes);
                 hashes = JsonParser.parseString(s).getAsJsonObject();
@@ -78,7 +79,7 @@ public class FiguraRuntimeResources {
     private static void getAndSaveResource(String path) throws Exception {
         Path target = getAssetsDirectory().resolve(path);
         IOUtils.createDirIfNeeded(target.getParent());
-        try (InputStream resource = NetworkStuff.getResource(path); FileOutputStream fs = new FileOutputStream(target.toFile())) {
+        try (InputStream resource = NetworkStuff.getResource(ASSETS_VERSION, path); FileOutputStream fs = new FileOutputStream(target.toFile())) {
             fs.write(resource.readAllBytes());
             FiguraMod.debug("Downloaded resource \"" + path + "\"");
         }

@@ -52,6 +52,7 @@ processResources {
 	properties.put("java_version", java_version)
 	properties.put("minecraft_version", minecraft)
 	properties.put("loader_version", loader_version)
+	properties.put("assets_version", project.assets_version)
 
 	properties.forEach((k, v) -> inputs.property(k, v.toString()))
 	filesMatching("fabric.mod.json") {
