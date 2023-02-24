@@ -501,12 +501,12 @@ public class NetworkStuff {
         return response.body();
     }
 
-    public static InputStream getResourcesHashes() throws Exception {
-        return request(HttpRequest.newBuilder(HttpAPI.getUri("/resources")).timeout(Duration.ofSeconds(15)).build());
+    public static InputStream getResourcesHashes(String version) throws Exception {
+        return request(HttpRequest.newBuilder(HttpAPI.getUri("/assets/" + version)).timeout(Duration.ofSeconds(15)).build());
     }
 
-    public static InputStream getResource(String resource) throws Exception {
-        return request(HttpRequest.newBuilder(HttpAPI.getUri("/resources/" + resource)).build());
+    public static InputStream getResource(String version, String resource) throws Exception {
+        return request(HttpRequest.newBuilder(HttpAPI.getUri("/assets/" + version + "/" + resource)).build());
     }
 
 
