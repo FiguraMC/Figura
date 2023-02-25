@@ -444,13 +444,16 @@ public class Avatar {
         render();
     }
 
-    public synchronized void worldRender(Entity entity, double camX, double camY, double camZ, PoseStack matrices, MultiBufferSource bufferSource, int lightFallback, float tickDelta) {
+    public synchronized void worldRender(Entity entity, double camX, double camY, double camZ, PoseStack matrices, MultiBufferSource bufferSource, int lightFallback, float tickDelta, EntityRenderMode mode) {
         if (renderer == null || !loaded)
             return;
 
+        EntityRenderMode prevRenderMode = renderMode;
+        renderMode = mode;
+        boolean update = prevRenderMode != EntityRenderMode.OTHER || renderMode == EntityRenderMode.FIRST_PERSON_WORLD;
+
         renderer.pivotCustomizations.values().clear();
-        renderer.allowMatrixUpdate = true;
-        renderer.updateLight = renderMode != EntityRenderMode.OTHER;
+        renderer.allowMatrixUpdate = renderer.updateLight = update;
         renderer.entity = entity;
         renderer.currentFilterScheme = PartFilterScheme.WORLD;
         renderer.bufferSource = bufferSource;
@@ -468,6 +471,7 @@ public class Avatar {
         complexity.use(renderer.renderSpecialParts());
         matrices.popPose();
 
+        renderMode = prevRenderMode;
         renderer.updateLight = false;
     }
 
@@ -536,12 +540,7 @@ public class Avatar {
         int light = Minecraft.getInstance().getEntityRenderDispatcher().getPackedLightCoords(watcher, tickDelta);
         Vec3 camPos = camera.getPosition();
 
-        EntityRenderMode oldMode = renderMode;
-        renderMode = EntityRenderMode.FIRST_PERSON_WORLD;
-
-        worldRender(watcher, camPos.x, camPos.y, camPos.z, matrices, bufferSource, light, tickDelta);
-
-        renderMode = oldMode;
+        worldRender(watcher, camPos.x, camPos.y, camPos.z, matrices, bufferSource, light, tickDelta, EntityRenderMode.FIRST_PERSON_WORLD);
 
         FiguraMod.popProfiler(3);
     }
@@ -557,6 +556,7 @@ public class Avatar {
         PartFilterScheme filter = arm == playerRenderer.getModel().leftArm ? PartFilterScheme.LEFT_ARM : PartFilterScheme.RIGHT_ARM;
         boolean config = Config.ALLOW_FP_HANDS.asBool();
         renderer.allowHiddenTransforms = config;
+        renderer.allowMatrixUpdate = false;
 
         stack.pushPose();
         if (!config) {
