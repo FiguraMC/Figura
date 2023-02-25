@@ -872,9 +872,7 @@
   "figura.docs.entity.is_hamburger": "\"Refused to elaborate\"",
   "figura.docs.entity.get_velocity": "Gets the current velocity of this entity in world coordinates, calculated as its position this tick minus its position last tick",
   "figura.docs.entity.get_look_dir": "Returns a unit vector pointing in the direction that this entity is looking\nSee the blue line in the F3+B screen for an example",
-  "figura.docs.entity.get_fire_ticks": "Returns the remaining number of ticks this entity will be on fire for",
   "figura.docs.entity.get_frozen_ticks": "Gets the number of ticks this entity has been freezing in powder snow for",
-  "figura.docs.entity.get_air": "Gets the current amount of air this entity has remaining",
   "figura.docs.entity.get_max_air": "Gets the maximum amount of air this entity can have",
   "figura.docs.entity.get_dimension_name": "Gets the Minecraft identifier of the dimension this entity is in",
   "figura.docs.entity.get_pose": "Returns the current pose of the player\nThis can be one of: \"STANDING\", \"FALL_FLYING\", \"SLEEPING\", \"SWIMMING\", \"SPIN_ATTACK\", \"CROUCHING\", \"LONG_JUMPING\", or \"DYING\"",
@@ -1010,6 +1008,7 @@
   "figura.docs.host.is_jumping": "Checks if the player is jumping\nNote this is only true during the first tick the player started jumping",
   "figura.docs.host.is_flying": "Checks if the player is currently flying",
   "figura.docs.host.get_reach_distance": "Returns the current reach distance of the player",
+  "figura.docs.host.get_air": "Gets the remaining amount of air of the player",
 
 
   "figura.docs.itemstack": "A proxy for an item stack from Minecraft",

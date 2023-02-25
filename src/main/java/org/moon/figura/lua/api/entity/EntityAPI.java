@@ -156,24 +156,10 @@ public class EntityAPI<T extends Entity> {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("entity.get_fire_ticks")
-    public int getFireTicks() {
-        checkEntity();
-        return entity.getRemainingFireTicks();
-    }
-
-    @LuaWhitelist
     @LuaMethodDoc("entity.get_frozen_ticks")
     public int getFrozenTicks() {
         checkEntity();
         return entity.getTicksFrozen();
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc("entity.get_air")
-    public int getAir() {
-        checkEntity();
-        return entity.getAirSupply();
     }
 
     @LuaWhitelist
