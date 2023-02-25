@@ -63,7 +63,7 @@ public class InteractableEntity extends AbstractContainerElement {
                 FiguraText.of("gui.expand"),
                 bx -> {
                     if (button.isToggled()) {
-                        Minecraft.getInstance().setScreen(new AvatarScreen(scale, pitch, yaw, entity, parentScreen));
+                        Minecraft.getInstance().setScreen(new AvatarScreen(scale, pitch, yaw, this.entity, parentScreen));
                     } else {
                         Minecraft.getInstance().setScreen(parentScreen);
                     }
