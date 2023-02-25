@@ -59,10 +59,7 @@ public abstract class LevelRendererMixin {
         FiguraMod.pushProfiler(avatar);
         FiguraMod.pushProfiler("worldRender");
 
-        EntityRenderMode prev = avatar.renderMode;
-        avatar.renderMode = EntityRenderMode.WORLD;
-        avatar.worldRender(entity, cameraX, cameraY, cameraZ, matrices, bufferSource, entityRenderDispatcher.getPackedLightCoords(entity, tickDelta), tickDelta);
-        avatar.renderMode = prev;
+        avatar.worldRender(entity, cameraX, cameraY, cameraZ, matrices, bufferSource, entityRenderDispatcher.getPackedLightCoords(entity, tickDelta), tickDelta, EntityRenderMode.WORLD);
 
         FiguraMod.popProfiler(3);
     }
