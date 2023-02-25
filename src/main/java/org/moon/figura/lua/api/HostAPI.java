@@ -494,6 +494,15 @@ public class HostAPI {
         return this.minecraft.gameMode == null ? 0 : this.minecraft.gameMode.getPickRange();
     }
 
+    @LuaWhitelist
+    @LuaMethodDoc("host.get_air")
+    public int getAir() {
+        LocalPlayer player = this.minecraft.player;
+        if (isHost() && player != null)
+            return player.getAirSupply();
+        return 0;
+    }
+
     public Object __index(String arg) {
         if ("unlockCursor".equals(arg))
             return unlockCursor;
