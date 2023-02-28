@@ -1056,6 +1056,7 @@
   "figura.docs.keybind.get_key": "Gets the current key for this keybind",
   "figura.docs.keybind.get_key_name": "Gets the name of the current key for this keybind",
   "figura.docs.keybind.get_name": "Gets the name of the keybind, which you set when you created the keybind",
+  "figura.docs.keybind.get_id": "Returns the numeric ID of this keybind",
   "figura.docs.keybind.is_pressed": "Gets whether this keybind is currently pressed down",
   "figura.docs.keybind.is_enabled": "Returns if this keybind is enabled or not",
   "figura.docs.keybind.set_enabled": "Toggles if this keybind should be processed or not",

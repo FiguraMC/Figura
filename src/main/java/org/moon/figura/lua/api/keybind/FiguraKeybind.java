@@ -203,6 +203,12 @@ public class FiguraKeybind {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("keybind.get_id")
+    public int getID() {
+        return this.key.getValue();
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc("keybind.is_pressed")
     public boolean isPressed() {
         return (this.gui || Minecraft.getInstance().screen == null) && this.isDown;

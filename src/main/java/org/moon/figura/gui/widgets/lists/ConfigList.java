@@ -1,5 +1,6 @@
 package org.moon.figura.gui.widgets.lists;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -125,5 +126,21 @@ public class ConfigList extends AbstractList {
             if (config.isChanged())
                 return true;
         return false;
+    }
+
+    public boolean updateKey(InputConstants.Key key) {
+        if (focusedBinding == null)
+            return false;
+
+        focusedBinding.setKey(key);
+        focusedBinding = null;
+
+        updateKeybinds();
+        return true;
+    }
+
+    public void updateKeybinds() {
+        for (ConfigWidget widget : configs)
+            widget.updateKeybinds();
     }
 }
