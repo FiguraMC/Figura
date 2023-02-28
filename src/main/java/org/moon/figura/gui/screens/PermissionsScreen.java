@@ -293,8 +293,10 @@ public class PermissionsScreen extends AbstractPanelScreen {
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        boolean bool = super.mouseReleased(mouseX, mouseY, button);
+
         if (dragged == null || !dragged.dragged)
-            return super.mouseReleased(mouseX, mouseY, button);
+            return bool;
 
         PermissionPack pack = dragged.getPack();
         Permissions.Category category = Permissions.Category.indexOf(Math.min(dragged.index, Permissions.Category.values().length - 1));
@@ -304,7 +306,7 @@ public class PermissionsScreen extends AbstractPanelScreen {
 
         dragged.dragged = false;
         dragged = null;
-        return true;
+        return bool;
     }
 
     public void updatePermissions(PermissionPack pack) {

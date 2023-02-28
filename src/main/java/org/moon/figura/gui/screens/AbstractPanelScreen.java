@@ -10,9 +10,10 @@ import org.moon.figura.config.Config;
 import org.moon.figura.gui.widgets.ContextMenu;
 import org.moon.figura.gui.widgets.FiguraTickable;
 import org.moon.figura.gui.widgets.PanelSelectorWidget;
-import org.moon.figura.gui.widgets.TextField;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.ui.UIHelper;
+
+import java.util.List;
 
 public abstract class AbstractPanelScreen extends Screen {
 
@@ -45,6 +46,10 @@ public abstract class AbstractPanelScreen extends Screen {
 
         //add panel selector
         this.addRenderableWidget(panels = new PanelSelectorWidget(parentScreen, 0, 0, width, index));
+
+        //clear overlays
+        contextMenu = null;
+        tooltip = null;
     }
 
     @Override
@@ -106,13 +111,29 @@ public abstract class AbstractPanelScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        //fix mojang focusing for text fields
-        for (GuiEventListener listener : this.children()) {
-            if (listener instanceof TextField field)
-                field.getField().setFocus(field.isEnabled() && field.isMouseOver(mouseX, mouseY));
+        //context menu first
+        if (this.contextMenuClick(mouseX, mouseY, button))
+            return true;
+
+        GuiEventListener widget = null;
+
+        //update children focused
+        for (GuiEventListener children : List.copyOf(this.children())) {
+            boolean clicked = children.mouseClicked(mouseX, mouseY, button);
+            children.changeFocus(clicked);
+            if (clicked) widget = children;
         }
 
-        return this.contextMenuClick(mouseX, mouseY, button) || super.mouseClicked(mouseX, mouseY, button);
+        //set this focused
+        if (getFocused() != widget)
+            setFocused(widget);
+
+        if (widget != null) {
+            if (button == 0) this.setDragging(true);
+            return true;
+        }
+
+        return false;
     }
 
     public boolean contextMenuClick(double mouseX, double mouseY, int button) {
@@ -144,7 +165,13 @@ public abstract class AbstractPanelScreen extends Screen {
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
         //better check for mouse released when outside element boundaries
-        return this.getFocused() != null && this.getFocused().mouseReleased(mouseX, mouseY, button);
+        boolean bool = this.getFocused() != null && this.getFocused().mouseReleased(mouseX, mouseY, button);
+
+        //remove focused when clicking
+        if (bool) setFocused(null);
+
+        this.setDragging(false);
+        return bool;
     }
 
     @Override

@@ -1,7 +1,6 @@
 package org.moon.figura.gui.screens;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -87,28 +86,12 @@ public class ConfigScreen extends AbstractPanelScreen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        KeyMapping bind = list.focusedBinding;
-        //attempt to set keybind
-        if (bind != null) {
-            bind.setKey(InputConstants.Type.MOUSE.getOrCreate(button));
-            list.focusedBinding = null;
-            return true;
-        } else {
-            return super.mouseClicked(mouseX, mouseY, button);
-        }
+        return list.updateKey(InputConstants.Type.MOUSE.getOrCreate(button)) || super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        KeyMapping bind = list.focusedBinding;
-        //attempt to set keybind
-        if (bind != null) {
-            bind.setKey(keyCode == 256 ? InputConstants.UNKNOWN: InputConstants.getKey(keyCode, scanCode));
-            list.focusedBinding = null;
-            return true;
-        } else {
-            return super.keyPressed(keyCode, scanCode, modifiers);
-        }
+        return list.updateKey(keyCode == 256 ? InputConstants.UNKNOWN : InputConstants.getKey(keyCode, scanCode)) || super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     private void loadNbt() {

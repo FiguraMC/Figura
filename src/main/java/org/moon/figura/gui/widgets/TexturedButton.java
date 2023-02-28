@@ -54,11 +54,11 @@ public class TexturedButton extends Button {
         if (!this.visible)
             return;
 
-         //render button
-        this.renderButton(stack, mouseX, mouseY, delta);
-
         //update hovered
         this.setHovered(this.isMouseOver(mouseX, mouseY));
+
+         //render button
+        this.renderButton(stack, mouseX, mouseY, delta);
     }
 
     @Override
@@ -83,7 +83,8 @@ public class TexturedButton extends Button {
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
         boolean over = UIHelper.isMouseOver(x, y, width, height, mouseX, mouseY);
-        if (over) UIHelper.setTooltip(this.tooltip);
+        if (over && this.tooltip != null)
+            UIHelper.setTooltip(this.tooltip);
         return over;
     }
 
