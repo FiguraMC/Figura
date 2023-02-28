@@ -35,14 +35,11 @@ public class KeybindScreen extends AbstractPanelScreen {
 
         Avatar owner = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
 
-        //list
-        int listWidth = Math.min(this.width - 8, 420);
-        this.addRenderableWidget(list = new KeybindList((this.width - listWidth) / 2, 28, listWidth, height - 56, owner));
-
         // -- bottom buttons -- //
 
-        //discard
-        this.addRenderableWidget(new TexturedButton(width / 2 - 122, height - 24, 120, 20, new FiguraText("gui.reset_all"), null, button -> {
+        //reset
+        TexturedButton reset;
+        this.addRenderableWidget(reset = new TexturedButton(width / 2 - 122, height - 24, 120, 20, new FiguraText("gui.reset_all"), null, button -> {
             if (owner == null || owner.luaRuntime == null)
                 return;
 
@@ -50,11 +47,17 @@ public class KeybindScreen extends AbstractPanelScreen {
                 keybind.resetDefaultKey();
             list.updateBindings();
         }));
+        reset.active = false;
 
         //back
         addRenderableWidget(new TexturedButton(width / 2 + 4, height - 24, 120, 20, new FiguraText("gui.done"), null,
                 bx -> this.minecraft.setScreen(sourcePanel)
         ));
+
+        // -- list -- //
+
+        int listWidth = Math.min(this.width - 8, 420);
+        this.addRenderableWidget(list = new KeybindList((this.width - listWidth) / 2, 28, listWidth, height - 56, owner, reset));
     }
 
     @Override

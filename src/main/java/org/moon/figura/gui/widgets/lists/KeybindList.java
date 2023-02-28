@@ -21,12 +21,14 @@ public class KeybindList extends AbstractList {
 
     private final List<KeybindElement> keybinds = new ArrayList<>();
     private final Avatar owner;
+    private final TexturedButton resetAllButton;
 
     private FiguraKeybind focusedKeybind;
 
-    public KeybindList(int x, int y, int width, int height, Avatar owner) {
+    public KeybindList(int x, int y, int width, int height, Avatar owner, TexturedButton resetAllButton) {
         super(x, y, width, height);
         this.owner = owner;
+        this.resetAllButton = resetAllButton;
         updateList();
 
         Label noOwner, noKeys;
@@ -101,8 +103,15 @@ public class KeybindList extends AbstractList {
     }
 
     public void updateBindings() {
-        for (KeybindElement keybind : keybinds)
+        boolean active = false;
+
+        for (KeybindElement keybind : keybinds) {
             keybind.updateText();
+            if (!active && !keybind.keybind.isDefault())
+                active = true;
+        }
+
+        resetAllButton.active = active;
     }
 
     private static class KeybindElement extends AbstractContainerElement {
@@ -145,7 +154,7 @@ public class KeybindList extends AbstractList {
             setHovered(isMouseOver(mouseX, mouseY));
             if (isHovered()) {
                 font.draw(stack, HOVERED_ARROW, x + 4, textY, 0xFFFFFF);
-                if (!resetButton.isHoveredOrFocused())
+                if (keybindButton.isHoveredOrFocused())
                     helper.renderTooltip();
             }
 
