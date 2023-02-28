@@ -384,6 +384,14 @@ public class UIHelper extends GuiComponent {
         }
     }
 
+    public static void renderWithoutScissors(Runnable toRun) {
+        RenderSystem.disableScissor();
+        toRun.run();
+        if (!SCISSORS_STACK.isEmpty()) {
+            setupScissor(SCISSORS_STACK.peek());
+        }
+    }
+
     public static void highlight(PoseStack stack, Object component, Component text) {
         //object
         int x, y, width, height;
