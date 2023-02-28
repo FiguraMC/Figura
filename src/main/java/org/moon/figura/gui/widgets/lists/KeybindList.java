@@ -145,7 +145,7 @@ public class KeybindList extends AbstractList {
             setHovered(isMouseOver(mouseX, mouseY));
             if (isHovered()) {
                 font.draw(stack, HOVERED_ARROW, x + 4, textY, 0xFFFFFF);
-                if (!resetButton.isHovered())
+                if (!resetButton.isHoveredOrFocused())
                     helper.renderTooltip();
             }
 

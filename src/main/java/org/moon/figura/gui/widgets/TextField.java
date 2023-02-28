@@ -134,8 +134,8 @@ public class TextField extends AbstractContainerElement {
     }
 
     @Override
-    public void setFocused(boolean bl) {
-        this.field.setFocused(bl);
+    public boolean changeFocus(boolean bl) {
+        return this.field.changeFocus(bl);
     }
 
     public boolean isEnabled() {
