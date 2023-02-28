@@ -135,6 +135,7 @@
   "figura.gui.panic.1": "Panic mode active! Figura features are disabled!",
   "figura.gui.panic.2": "toggle panic mode with [%s] key",
   "figura.gui.help.tooltip": "Help",
+  "figura.gui.duplicate_keybind": "This key is also used for:\n%s",
 
   "figura.gui.text_hint.any": "Text",
   "figura.gui.text_hint.int": "Integer",

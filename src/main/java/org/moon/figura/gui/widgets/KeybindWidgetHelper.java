@@ -8,6 +8,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.lua.api.keybind.FiguraKeybind;
+import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.ui.UIHelper;
 
 import java.util.List;
@@ -76,7 +77,7 @@ public class KeybindWidgetHelper {
 
     private void setTooltipTail(Component text) {
         if (vanillaConflict || avatarConflict) {
-            this.tooltip = Component.translatable("controls.keybinds.duplicateKeybinds", text);
+            this.tooltip = FiguraText.of("gui.duplicate_keybind", text);
         } else {
             this.tooltip = null;
         }
