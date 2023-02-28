@@ -15,12 +15,12 @@ public class PaperDoll {
 
     private static Long lastActivityTime = 0L;
 
-    public static void render(PoseStack stack) {
+    public static void render(PoseStack stack, boolean force) {
         Minecraft minecraft = Minecraft.getInstance();
         LivingEntity entity = minecraft.getCameraEntity() instanceof LivingEntity e ? e : null;
         Avatar avatar;
 
-        if (!Config.HAS_PAPERDOLL.asBool() ||
+        if ((!Config.HAS_PAPERDOLL.asBool() && !force) ||
                 entity == null ||
                 !Minecraft.renderNames() ||
                 minecraft.options.renderDebug ||
@@ -29,7 +29,7 @@ public class PaperDoll {
             return;
 
         //check if should stay always on
-        if (!Config.PAPERDOLL_ALWAYS_ON.asBool() && (avatar = AvatarManager.getAvatar(entity)) != null && avatar.luaRuntime != null && !avatar.luaRuntime.renderer.forcePaperdoll) {
+        if (!Config.PAPERDOLL_ALWAYS_ON.asBool() && !force && (avatar = AvatarManager.getAvatar(entity)) != null && avatar.luaRuntime != null && !avatar.luaRuntime.renderer.forcePaperdoll) {
             //if action - reset activity time and enable can draw
             if (entity.isSprinting() ||
                     entity.isCrouching() ||

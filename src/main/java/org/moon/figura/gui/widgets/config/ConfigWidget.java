@@ -3,6 +3,7 @@ package org.moon.figura.gui.widgets.config;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.network.chat.Component;
 import org.moon.figura.config.Config;
+import org.moon.figura.gui.PaperDoll;
 import org.moon.figura.gui.screens.ConfigScreen;
 import org.moon.figura.gui.widgets.AbstractContainerElement;
 import org.moon.figura.gui.widgets.ContainerButton;
@@ -15,11 +16,13 @@ import java.util.List;
 public class ConfigWidget extends AbstractContainerElement {
 
     protected final List<AbstractConfigElement> entries = new ArrayList<>();
+    private final Config config;
     private final ConfigList parent;
     private ContainerButton parentConfig;
 
     public ConfigWidget(int width, Config config, ConfigList parent) {
         super(0, 0, width, 20);
+        this.config = config;
         this.parent = parent;
 
         this.parentConfig = new ContainerButton(parent, x, y, width, 20, config == null ? Component.empty() : config.name, config == null ? null : config.tooltip, button -> {
@@ -40,6 +43,9 @@ public class ConfigWidget extends AbstractContainerElement {
         //children background
         if (parentConfig.isToggled() && entries.size() > 0)
             UIHelper.fill(stack, x, y + 21, x + width, y + height, 0x11FFFFFF);
+
+        if (config == Config.Paperdoll && isMouseOver(mouseX, mouseY))
+            UIHelper.renderWithoutScissors(() -> PaperDoll.render(stack, true));
 
         //children
         super.render(stack, mouseX, mouseY, delta);
