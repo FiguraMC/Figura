@@ -48,6 +48,7 @@ public class KeybindScreen extends AbstractPanelScreen {
 
             for (FiguraKeybind keybind : owner.luaRuntime.keybinds.keyBindings)
                 keybind.resetDefaultKey();
+            list.updateBindings();
         }));
 
         //back
@@ -58,27 +59,11 @@ public class KeybindScreen extends AbstractPanelScreen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        FiguraKeybind bind = list.focusedKeybind;
-        //attempt to set keybind
-        if (bind != null) {
-            bind.setKey(InputConstants.Type.MOUSE.getOrCreate(button));
-            list.focusedKeybind = null;
-            return true;
-        } else {
-            return super.mouseClicked(mouseX, mouseY, button);
-        }
+        return list.updateKey(InputConstants.Type.MOUSE.getOrCreate(button)) || super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        FiguraKeybind bind = list.focusedKeybind;
-        //attempt to set keybind
-        if (bind != null) {
-            bind.setKey(keyCode == 256 ? InputConstants.UNKNOWN: InputConstants.getKey(keyCode, scanCode));
-            list.focusedKeybind = null;
-            return true;
-        } else {
-            return super.keyPressed(keyCode, scanCode, modifiers);
-        }
+        return list.updateKey(keyCode == 256 ? InputConstants.UNKNOWN : InputConstants.getKey(keyCode, scanCode)) || super.keyPressed(keyCode, scanCode, modifiers);
     }
 }

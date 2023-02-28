@@ -28,9 +28,11 @@ public class AvatarScreen extends AbstractPanelScreen {
 
     @Override
     protected void init() {
+        super.init();
         //entity
         InteractableEntity widget = new InteractableEntity(0, 0, width, height, scale, pitch, yaw, entity, (AbstractPanelScreen) parentScreen);
         widget.setToggled(true);
         addRenderableWidget(widget);
+        removeWidget(panels); //no panels :p
     }
 }

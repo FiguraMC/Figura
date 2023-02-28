@@ -81,6 +81,11 @@ public class TextField extends AbstractContainerElement {
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        return !field.isFocused();
+    }
+
     public void setPos(int x, int y) {
         this.x = x;
         this.y = y;
@@ -126,6 +131,11 @@ public class TextField extends AbstractContainerElement {
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
         setColor(ENABLED_COLOR);
+    }
+
+    @Override
+    public void setFocused(boolean bl) {
+        this.field.setFocused(bl);
     }
 
     public boolean isEnabled() {

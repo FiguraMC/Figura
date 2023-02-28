@@ -94,4 +94,11 @@ public class ConfigWidget extends AbstractContainerElement {
     public boolean isShowingChildren() {
         return parentConfig.isToggled();
     }
+
+    public void updateKeybinds() {
+        for (AbstractConfigElement element : entries) {
+            if (element instanceof KeybindElement keybind)
+                keybind.updateText();
+        }
+    }
 }
