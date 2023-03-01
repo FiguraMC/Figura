@@ -108,6 +108,7 @@ public class UIHelper extends GuiComponent {
         RenderSystem.enableBlend();
     }
 
+    @SuppressWarnings("deprecation")
     public static void drawEntity(float x, float y, float scale, float pitch, float yaw, LivingEntity entity, PoseStack stack, EntityRenderMode renderMode) {
         //backup entity variables
         float headX = entity.getXRot();
@@ -218,7 +219,6 @@ public class UIHelper extends GuiComponent {
 
         double finalXPos = xPos;
         double finalYPos = yPos;
-        //noinspection deprecation
         RenderSystem.runAsFancy(() -> dispatcher.render(entity, finalXPos, finalYPos, 0d, 0f, 1f, stack, immediate, LightTexture.FULL_BRIGHT));
         immediate.endBatch();
 
