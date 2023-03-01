@@ -4,7 +4,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.config.Config;
+import org.moon.figura.config.Configs;
 import org.moon.figura.utils.IOUtils;
 
 import java.util.*;
@@ -105,7 +105,7 @@ public class PermissionManager {
                 if (isLocal(pack))
                     continue;
 
-                Permissions.Category category = Permissions.Category.indexOf(Config.DEFAULT_PERMISSION_LEVEL.asInt());
+                Permissions.Category category = Permissions.Category.indexOf(Configs.DEFAULT_PERMISSION_LEVEL.value);
                 if (category == null) category = Permissions.Category.DEFAULT;
                 if ((!pack.hasChanges() && pack.getCategory() == category))
                     continue;
@@ -128,7 +128,7 @@ public class PermissionManager {
         if (PLAYERS.containsKey(id))
             return PLAYERS.get(id);
 
-        Permissions.Category category = Permissions.Category.indexOf(Config.DEFAULT_PERMISSION_LEVEL.asInt());
+        Permissions.Category category = Permissions.Category.indexOf(Configs.DEFAULT_PERMISSION_LEVEL.value);
         if (FiguraMod.isLocal(id)) {
             category = Permissions.Category.MAX;
         } else if (category == null) {

@@ -3,7 +3,7 @@ package org.moon.figura.gui.widgets.config;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.network.chat.Component;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.config.Config;
+import org.moon.figura.config.ConfigType;
 import org.moon.figura.gui.widgets.ParentedButton;
 import org.moon.figura.gui.widgets.SwitchButton;
 import org.moon.figura.gui.widgets.lists.ConfigList;
@@ -12,11 +12,11 @@ public class BooleanElement extends AbstractConfigElement {
 
     private final ParentedButton button;
 
-    public BooleanElement(int width, Config config, ConfigList parent) {
+    public BooleanElement(int width, ConfigType.BoolConfig config, ConfigList parent) {
         super(width, config, parent);
 
         //button
-        children.add(0, button = new ParentedButton(0, 0, 90, 20, (boolean) config.tempValue ? SwitchButton.ON : SwitchButton.OFF, this, button -> config.tempValue = !(boolean) config.tempValue));
+        children.add(0, button = new ParentedButton(0, 0, 90, 20, config.tempValue ? SwitchButton.ON : SwitchButton.OFF, this, button -> config.tempValue = !(boolean) config.tempValue));
         button.active = FiguraMod.DEBUG_MODE || !config.disabled;
     }
 
@@ -25,7 +25,7 @@ public class BooleanElement extends AbstractConfigElement {
         if (!this.isVisible()) return;
 
         //reset enabled
-        this.resetButton.active = this.isDefault();
+        this.resetButton.active = !this.isDefault();
 
         //button text
         Component text = (boolean) config.tempValue ? SwitchButton.ON : SwitchButton.OFF;

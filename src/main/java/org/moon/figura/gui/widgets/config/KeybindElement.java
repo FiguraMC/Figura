@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.network.chat.Component;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.config.Config;
+import org.moon.figura.config.ConfigType;
 import org.moon.figura.gui.widgets.KeybindWidgetHelper;
 import org.moon.figura.gui.widgets.ParentedButton;
 import org.moon.figura.gui.widgets.lists.ConfigList;
@@ -15,7 +15,7 @@ public class KeybindElement extends AbstractConfigElement {
     private final KeyMapping binding;
     private final ParentedButton button;
 
-    public KeybindElement(int width, Config config, ConfigList parent) {
+    public KeybindElement(int width, ConfigType.KeybindConfig config, ConfigList parent) {
         super(width, config, parent);
         this.binding = config.keyBind;
 

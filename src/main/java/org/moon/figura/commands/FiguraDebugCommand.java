@@ -19,7 +19,8 @@ import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.avatar.local.LocalAvatarFetcher;
 import org.moon.figura.backend2.NetworkStuff;
-import org.moon.figura.config.Config;
+import org.moon.figura.config.ConfigManager;
+import org.moon.figura.config.ConfigType;
 import org.moon.figura.permissions.PermissionManager;
 import org.moon.figura.permissions.PermissionPack;
 import org.moon.figura.permissions.Permissions;
@@ -99,9 +100,9 @@ public class FiguraDebugCommand {
         //config
         JsonObject config = new JsonObject();
 
-        for (Config value : Config.values())
+        for (ConfigType<?> value : ConfigManager.REGISTRY)
             if (value.value != null)
-                config.addProperty(value.name(), value.value.toString());
+                config.addProperty(value.id, value.value.toString());
 
         root.add("config", config);
 

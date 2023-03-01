@@ -14,7 +14,7 @@ import net.minecraft.world.item.ItemStack;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
-import org.moon.figura.config.Config;
+import org.moon.figura.config.Configs;
 import org.moon.figura.lua.api.action_wheel.Action;
 import org.moon.figura.lua.api.action_wheel.Page;
 import org.moon.figura.math.vector.FiguraVec3;
@@ -53,7 +53,7 @@ public class ActionWheel {
         stack.pushPose();
         stack.translate(x, y, 0d);
 
-        scale = Config.ACTION_WHEEL_SCALE.asFloat();
+        scale = Configs.ACTION_WHEEL_SCALE.value;
         stack.scale(scale, scale, scale);
 
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
@@ -217,7 +217,7 @@ public class ActionWheel {
             modelStack.scale(scale, scale, scale);
 
             minecraft.getItemRenderer().renderGuiItem(item, (int) Math.round(xOff - 8), (int) Math.round(yOff - 8));
-            if (Config.ACTION_WHEEL_DECORATIONS.asBool())
+            if (Configs.ACTION_WHEEL_DECORATIONS.value)
                 minecraft.getItemRenderer().renderGuiItemDecorations(minecraft.font, item, (int) Math.round(xOff - 8), (int) Math.round(yOff - 8));
 
             modelStack.popPose();
@@ -227,8 +227,8 @@ public class ActionWheel {
 
     private static void renderTexts(PoseStack stack, Page page, String title) {
         Font font = minecraft.font;
-        int titlePosition = Config.ACTION_WHEEL_TITLE.asInt();
-        int indicatorPosition = Config.ACTION_WHEEL_SLOTS_INDICATOR.asInt();
+        int titlePosition = Configs.ACTION_WHEEL_TITLE.value;
+        int indicatorPosition = Configs.ACTION_WHEEL_SLOTS_INDICATOR.value;
 
         //page indicator
         int groupCount = page.getGroupCount();

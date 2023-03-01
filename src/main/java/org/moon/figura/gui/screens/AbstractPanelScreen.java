@@ -6,7 +6,7 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import org.moon.figura.config.Config;
+import org.moon.figura.config.Configs;
 import org.moon.figura.gui.widgets.ContextMenu;
 import org.moon.figura.gui.widgets.FiguraTickable;
 import org.moon.figura.gui.widgets.PanelSelectorWidget;
@@ -83,7 +83,7 @@ public abstract class AbstractPanelScreen extends Screen {
         //render
         double scale = this.minecraft.getWindow().getGuiScale();
         float textureSize = (float) (64f / scale);
-        double speed = 1d / 0.5 * scale / Config.BACKGROUND_SCROLL_SPEED.asFloat();
+        double speed = 1d / 0.5 * scale / Configs.BACKGROUND_SCROLL_SPEED.value;
         UIHelper.renderAnimatedBackground(BACKGROUND, 0, 0, this.width, this.height, textureSize, textureSize, speed, delta);
     }
 

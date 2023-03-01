@@ -13,7 +13,7 @@ import net.minecraft.world.entity.LivingEntity;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
-import org.moon.figura.config.Config;
+import org.moon.figura.config.Configs;
 import org.moon.figura.gui.PopupMenu;
 import org.moon.figura.lua.api.vanilla_model.VanillaPart;
 import org.moon.figura.model.rendering.PartFilterScheme;
@@ -117,13 +117,13 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
     @Inject(method = "shouldShowName(Lnet/minecraft/world/entity/LivingEntity;)Z", at = @At("HEAD"), cancellable = true)
     public void shouldShowName(T livingEntity, CallbackInfoReturnable<Boolean> cir) {
         if (UIHelper.paperdoll)
-            cir.setReturnValue(Config.PREVIEW_NAMEPLATE.asBool());
+            cir.setReturnValue(Configs.PREVIEW_NAMEPLATE.value);
         else if (!Minecraft.renderNames() || livingEntity.getUUID().equals(PopupMenu.getEntityId()))
             cir.setReturnValue(false);
         else if (!AvatarManager.panic) {
-            if (Config.SELF_NAMEPLATE.asBool() && livingEntity == Minecraft.getInstance().player)
+            if (Configs.SELF_NAMEPLATE.value && livingEntity == Minecraft.getInstance().player)
                 cir.setReturnValue(true);
-            else if (Config.NAMEPLATE_RENDER.asInt() == 2 || (Config.NAMEPLATE_RENDER.asInt() == 1 && livingEntity != FiguraMod.extendedPickEntity))
+            else if (Configs.NAMEPLATE_RENDER.value == 2 || (Configs.NAMEPLATE_RENDER.value == 1 && livingEntity != FiguraMod.extendedPickEntity))
                 cir.setReturnValue(false);
         }
     }

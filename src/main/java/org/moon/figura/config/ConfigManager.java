@@ -1,9 +1,6 @@
 package org.moon.figura.config;
 
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.loader.api.FabricLoader;
 import org.moon.figura.FiguraMod;
@@ -13,22 +10,21 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 public final class ConfigManager {
 
     private static final File FILE = new File(FabricLoader.getInstance().getConfigDir().resolve(FiguraMod.MOD_ID + ".json").toString());
-    private static final List<Config> CONFIG_ENTRIES = new ArrayList<>() {{
-        for (Config value : Config.values()) {
-            if (value.type != Config.ConfigType.CATEGORY)
-                this.add(value);
-        }
-    }};
+    private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
+    public static final List<ConfigType<?>> REGISTRY = new ArrayList<>();
+    public static final Map<String, ConfigType.Category> CATEGORIES_REGISTRY = new LinkedHashMap<>();
 
     private static boolean initializing = false;
 
     public static void init() {
+        Configs.init();
         loadConfig();
         saveConfig();
     }
@@ -41,22 +37,22 @@ public final class ConfigManager {
                 JsonObject json = JsonParser.parseReader(br).getAsJsonObject();
 
                 JsonElement version = json.get("CONFIG_VERSION");
-                if (version != null && version.getAsInt() != Config.CONFIG_VERSION) {
+                if (version != null && version.getAsInt() != Configs.CONFIG_VERSION) {
                     update(json, version.getAsInt());
                 } else {
-                    for (Config config : CONFIG_ENTRIES) {
-                        JsonElement object = json.get(config.name().toLowerCase());
+                    for (ConfigType<?> config : REGISTRY) {
+                        JsonElement object = json.get(config.id.toLowerCase());
                         if (object == null)
                             continue;
 
                         String obj = object.getAsString();
-                        switch (config.type) {
-                            case KEYBIND -> config.keyBind.setKey(InputConstants.getKey(obj));
-                            case INPUT -> {
-                                if (config.inputType.validator.test(obj))
-                                    config.setValue(obj);
-                            }
-                            default -> config.setValue(obj);
+                        if (config instanceof ConfigType.KeybindConfig keybind) {
+                            keybind.keyBind.setKey(InputConstants.getKey(obj));
+                        } else if (config instanceof ConfigType.InputConfig<?> input) {
+                            if (input.inputType.validator.test(obj))
+                                config.setValue(obj);
+                        } else {
+                            config.setValue(obj);
                         }
                     }
                 }
@@ -78,21 +74,21 @@ public final class ConfigManager {
 
         try {
             JsonObject configJson = new JsonObject();
-            configJson.addProperty("CONFIG_VERSION", Config.CONFIG_VERSION);
+            configJson.addProperty("CONFIG_VERSION", Configs.CONFIG_VERSION);
 
-            for (Config config : CONFIG_ENTRIES) {
-                String name = config.name().toLowerCase();
+            for (ConfigType<?> config : REGISTRY) {
+                String id = config.id;
                 if (config.value instanceof Number n)
-                    configJson.addProperty(name, n);
+                    configJson.addProperty(id, n);
                 else if (config.value instanceof Character c)
-                    configJson.addProperty(name, c);
+                    configJson.addProperty(id, c);
                 else if (config.value instanceof Boolean b)
-                    configJson.addProperty(name, b);
-                else
-                    configJson.addProperty(name, String.valueOf(config.value));
+                    configJson.addProperty(id, b);
+                else if (config.value != null)
+                    configJson.addProperty(id, String.valueOf(config.value));
             }
 
-            String jsonString = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create().toJson(configJson);
+            String jsonString = GSON.toJson(configJson);
             FileWriter fileWriter = new FileWriter(FILE);
             fileWriter.write(jsonString);
             fileWriter.close();
@@ -104,33 +100,33 @@ public final class ConfigManager {
     }
 
     public static void applyConfig() {
-        for (Config config : CONFIG_ENTRIES)
+        for (ConfigType<?> config : REGISTRY)
             config.setValue(String.valueOf(config.tempValue));
     }
 
     public static void discardConfig() {
-        for (Config config : CONFIG_ENTRIES)
-            config.tempValue = config.value;
+        for (ConfigType<?> config : REGISTRY)
+            config.discardConfig();
     }
 
     public static void setDefaults() {
-        for (Config config : CONFIG_ENTRIES)
-            config.value = config.defaultValue;
+        for (ConfigType<?> config : REGISTRY)
+            config.setDefault();
     }
 
     public static void update(JsonObject json, int version) {
-        Map<Config, String> versionMap = Config.CONFIG_UPDATES.get(version);
+        Map<ConfigType<?>, String> versionMap = Configs.CONFIG_UPDATES.get(version);
         if (versionMap == null)
             return;
 
-        for (Map.Entry<Config, String> config : versionMap.entrySet()) {
+        for (Map.Entry<ConfigType<?>, String> config : versionMap.entrySet()) {
             JsonElement object = json.get(config.getValue());
 
             if (object == null)
                 continue;
 
             String jsonValue = object.getAsString();
-            Config.valueOf(config.getKey().toString()).setValue(jsonValue);
+            config.getKey().setValue(jsonValue);
         }
 
         FiguraMod.debug("Config updated from version " + version);

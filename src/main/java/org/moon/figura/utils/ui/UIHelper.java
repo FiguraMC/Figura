@@ -28,7 +28,7 @@ import org.lwjgl.opengl.GL30;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
-import org.moon.figura.config.Config;
+import org.moon.figura.config.Configs;
 import org.moon.figura.gui.screens.AbstractPanelScreen;
 import org.moon.figura.gui.widgets.AbstractContainerElement;
 import org.moon.figura.gui.widgets.ContextMenu;
@@ -145,7 +145,7 @@ public class UIHelper extends GuiComponent {
                 Lighting.setupForEntityInInventory();
 
                 //invisibility
-                if (Config.PAPERDOLL_INVISIBLE.asBool())
+                if (Configs.PAPERDOLL_INVISIBLE.value)
                     entity.setInvisible(false);
             }
             case FIGURA_GUI -> {
@@ -153,7 +153,7 @@ public class UIHelper extends GuiComponent {
                 xRot = pitch;
                 yRot = yaw + bodyY + 180;
 
-                if (!Config.PREVIEW_HEAD_ROTATION.asBool()) {
+                if (!Configs.PREVIEW_HEAD_ROTATION.value) {
                     entity.setXRot(0f);
                     entity.yHeadRot = bodyY;
                 }
@@ -499,10 +499,10 @@ public class UIHelper extends GuiComponent {
 
         //oh, no it doesn't fit
 
-        float speed = Config.TEXT_SCROLL_SPEED.asFloat();
+        float speed = Configs.TEXT_SCROLL_SPEED.value;
         int scrollLen = textWidth - (width - 4);
         int startingOffset = scrollLen / 2;
-        int stopDelay = (int) (Config.TEXT_SCROLL_DELAY.asInt() * speed);
+        int stopDelay = (int) (Configs.TEXT_SCROLL_DELAY.value * speed);
         int time = scrollLen + stopDelay;
         int totalTime = time * 2;
         int ticks = (int) (FiguraMod.ticks * speed);
