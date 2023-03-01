@@ -4,7 +4,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.network.chat.Component;
 import org.moon.figura.config.ConfigType;
 import org.moon.figura.config.Configs;
-import org.moon.figura.gui.PaperDoll;
 import org.moon.figura.gui.screens.ConfigScreen;
 import org.moon.figura.gui.widgets.AbstractContainerElement;
 import org.moon.figura.gui.widgets.ContainerButton;
@@ -45,8 +44,8 @@ public class ConfigWidget extends AbstractContainerElement {
         if (parentConfig.isToggled() && entries.size() > 0)
             UIHelper.fill(stack, x, y + 21, x + width, y + height, 0x11FFFFFF);
 
-        if (config == Configs.PAPERDOLL && parent.isMouseOver(mouseX, mouseY) && isMouseOver(mouseX, mouseY))
-            UIHelper.renderWithoutScissors(() -> PaperDoll.render(stack, true));
+        if (config == Configs.PAPERDOLL)
+            parent.parentScreen.renderPaperdoll = parent.isMouseOver(mouseX, mouseY) && isMouseOver(mouseX, mouseY);
 
         //children
         super.render(stack, mouseX, mouseY, delta);

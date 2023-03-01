@@ -7,6 +7,7 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.util.Mth;
 import org.moon.figura.config.ConfigManager;
 import org.moon.figura.config.ConfigType;
+import org.moon.figura.gui.screens.ConfigScreen;
 import org.moon.figura.gui.widgets.TextField;
 import org.moon.figura.gui.widgets.config.ConfigWidget;
 import org.moon.figura.gui.widgets.config.InputElement;
@@ -18,12 +19,14 @@ import java.util.List;
 public class ConfigList extends AbstractList {
 
     private final List<ConfigWidget> configs = new ArrayList<>();
+    public final ConfigScreen parentScreen;
     public KeyMapping focusedBinding;
 
     private int totalHeight = 0;
 
-    public ConfigList(int x, int y, int width, int height) {
+    public ConfigList(int x, int y, int width, int height, ConfigScreen parentScreen) {
         super(x, y, width, height);
+        this.parentScreen = parentScreen;
         updateList();
     }
 
