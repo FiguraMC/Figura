@@ -4,11 +4,11 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.config.Config;
+import org.moon.figura.config.ConfigType;
+import org.moon.figura.config.InputType;
 import org.moon.figura.gui.widgets.ParentedButton;
 import org.moon.figura.gui.widgets.TextField;
 import org.moon.figura.gui.widgets.lists.ConfigList;
-import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.ui.UIHelper;
 
@@ -17,20 +17,19 @@ import java.util.function.Consumer;
 public class InputElement extends AbstractConfigElement {
 
     private final TextField textField;
-    private final boolean isHex;
+    private final InputType inputType;
 
-    public InputElement(int width, Config config, ConfigList parent) {
+    public InputElement(int width, ConfigType.InputConfig<?> config, ConfigList parent) {
         super(width, config, parent);
 
         //get input type
-        Config.InputType inputType = config.inputType;
-        isHex = inputType == Config.InputType.HEX_COLOR;
+        this.inputType = config.inputType;
 
         //text field
         textField = new InputField(0, 0, 90, 20, inputType.hint, this, text -> {
             //only write config value if it's valid
             if (inputType.validator.test(text))
-                config.tempValue = isHex ? ColorUtils.rgbToInt(ColorUtils.userInputHex(text, FiguraVec3.of())) : text;
+                config.setTempValue(text);
         });
         updateTextFieldText(formatText(config.tempValue));
         textField.getField().moveCursorToStart();
@@ -41,7 +40,7 @@ public class InputElement extends AbstractConfigElement {
         //overwrite reset button to update the text field
         children.remove(resetButton);
         children.add(resetButton = new ParentedButton(x + width - 60, y, 60, 20, Component.translatable("controls.reset"), this, button -> {
-            config.tempValue = config.defaultValue;
+            config.resetTemp();
             updateTextFieldText(formatText(config.tempValue));
         }));
     }
@@ -51,14 +50,14 @@ public class InputElement extends AbstractConfigElement {
         if (!this.isVisible()) return;
 
         //reset enabled
-        this.resetButton.active = isDefault();
+        this.resetButton.active = !isDefault();
 
         //text colour
         int color = 0xFFFFFF;
 
         //invalid config
         String text = textField.getField().getValue();
-        if (!config.inputType.validator.test(text)) {
+        if (!inputType.validator.test(text)) {
             color = 0xFF5555;
         }
         //config was changed
@@ -75,7 +74,7 @@ public class InputElement extends AbstractConfigElement {
         super.render(stack, mouseX, mouseY, delta);
 
         //hex colour preview
-        if (isHex) {
+        if (inputType == InputType.HEX_COLOR) {
             //border
             UIHelper.fillRounded(stack, x + width - 178, y, 20, 20, getTextField().isFocused() ? getTextField().getBorderColour() : 0xFF404040);
             //inside
@@ -91,7 +90,7 @@ public class InputElement extends AbstractConfigElement {
 
     @Override
     public boolean isDefault() {
-        return !textField.getField().getValue().equals(formatText(config.defaultValue));
+        return textField.getField().getValue().equals(formatText(config.defaultValue));
     }
 
     @Override
@@ -108,7 +107,7 @@ public class InputElement extends AbstractConfigElement {
     }
 
     private String formatText(Object configValue) {
-        return config.inputType == Config.InputType.HEX_COLOR ? String.format("#%06X", (int) configValue) : configValue.toString();
+        return inputType == InputType.HEX_COLOR ? String.format("#%06X", (int) configValue) : configValue.toString();
     }
 
     private static class InputField extends TextField {

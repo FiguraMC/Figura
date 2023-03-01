@@ -6,7 +6,7 @@ import net.minecraft.client.gui.screens.PauseScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import org.moon.figura.config.Config;
+import org.moon.figura.config.Configs;
 import org.moon.figura.config.ConfigManager;
 import org.moon.figura.gui.screens.WardrobeScreen;
 import org.moon.figura.utils.FiguraIdentifier;
@@ -31,7 +31,7 @@ public class PauseScreenMixin extends Screen {
     void createPauseMenu(CallbackInfo ci) {
         int x, y;
 
-        int config = Config.BUTTON_LOCATION.asInt();
+        int config = Configs.BUTTON_LOCATION.value;
         switch (config) {
             case 1 -> { //top left
                 x = 5;

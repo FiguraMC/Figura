@@ -4,7 +4,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.config.Config;
+import org.moon.figura.config.Configs;
 import org.moon.figura.gui.cards.CardBackground;
 import org.moon.figura.parsers.AvatarMetadataParser;
 import org.moon.figura.utils.IOUtils;
@@ -114,7 +114,7 @@ public class LocalAvatarFetcher {
                     String str = IOUtils.readFile(path.resolve("avatar.json").toFile());
                     AvatarMetadataParser.Metadata metadata = AvatarMetadataParser.read(str);
 
-                    name = Config.WARDROBE_FILE_NAMES.asBool() || metadata.name == null || metadata.name.isBlank() ? filename : metadata.name;
+                    name = Configs.WARDROBE_FILE_NAMES.value || metadata.name == null || metadata.name.isBlank() ? filename : metadata.name;
                     bg = CardBackground.parse(metadata.background);
                 } catch (Exception ignored) {
                     name = filename;

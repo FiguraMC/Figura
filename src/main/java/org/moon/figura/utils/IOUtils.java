@@ -126,4 +126,15 @@ public class IOUtils {
 
         return path;
     }
+
+    public static void deleteCacheFiles(String... files) {
+        for (String file : files) {
+            try {
+                Path path = FiguraMod.getCacheDirectory().resolve(file);
+                Files.deleteIfExists(path);
+            } catch (Exception e) {
+                FiguraMod.LOGGER.error("", e);
+            }
+        }
+    }
 }

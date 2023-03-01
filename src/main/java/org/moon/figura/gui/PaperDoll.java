@@ -7,7 +7,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
-import org.moon.figura.config.Config;
+import org.moon.figura.config.Configs;
 import org.moon.figura.model.rendering.EntityRenderMode;
 import org.moon.figura.utils.ui.UIHelper;
 
@@ -20,16 +20,16 @@ public class PaperDoll {
         LivingEntity entity = minecraft.getCameraEntity() instanceof LivingEntity e ? e : null;
         Avatar avatar;
 
-        if ((!Config.HAS_PAPERDOLL.asBool() && !force) ||
+        if ((!Configs.HAS_PAPERDOLL.value && !force) ||
                 entity == null ||
                 !Minecraft.renderNames() ||
                 minecraft.options.renderDebug ||
-                (Config.FIRST_PERSON_PAPERDOLL.asBool() && !minecraft.options.getCameraType().isFirstPerson()) ||
+                (Configs.FIRST_PERSON_PAPERDOLL.value && !minecraft.options.getCameraType().isFirstPerson()) ||
                 entity.isSleeping())
             return;
 
         //check if should stay always on
-        if (!Config.PAPERDOLL_ALWAYS_ON.asBool() && !force && (avatar = AvatarManager.getAvatar(entity)) != null && avatar.luaRuntime != null && !avatar.luaRuntime.renderer.forcePaperdoll) {
+        if (!Configs.PAPERDOLL_ALWAYS_ON.value && !force && (avatar = AvatarManager.getAvatar(entity)) != null && avatar.luaRuntime != null && !avatar.luaRuntime.renderer.forcePaperdoll) {
             //if action - reset activity time and enable can draw
             if (entity.isSprinting() ||
                     entity.isCrouching() ||
@@ -52,16 +52,16 @@ public class PaperDoll {
         float screenHeight = window.getHeight();
         float guiScale = (float) window.getGuiScale();
 
-        float scale = Config.PAPERDOLL_SCALE.asFloat();
+        float scale = Configs.PAPERDOLL_SCALE.tempValue;
         float x = scale * 25f;
         float y = scale * 45f;
-        x += (Config.PAPERDOLL_X.asFloat() / 100f) * screenWidth / guiScale;
-        y += (Config.PAPERDOLL_Y.asFloat() / 100f) * screenHeight / guiScale;
+        x += (Configs.PAPERDOLL_X.tempValue / 100f) * screenWidth / guiScale;
+        y += (Configs.PAPERDOLL_Y.tempValue / 100f) * screenHeight / guiScale;
 
         UIHelper.drawEntity(
                 x, y,
                 scale * 30f,
-                Config.PAPERDOLL_PITCH.asFloat(), Config.PAPERDOLL_YAW.asFloat(),
+                Configs.PAPERDOLL_PITCH.tempValue, Configs.PAPERDOLL_YAW.tempValue,
                 entity, stack, EntityRenderMode.PAPERDOLL
         );
     }

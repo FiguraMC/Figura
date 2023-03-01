@@ -17,7 +17,7 @@ import org.luaj.vm2.LuaError;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
-import org.moon.figura.config.Config;
+import org.moon.figura.config.Configs;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.world.ItemStackAPI;
@@ -191,7 +191,7 @@ public class HostAPI {
             value = "host.send_chat_message"
     )
     public HostAPI sendChatMessage(@LuaNotNil String message) {
-        if (!isHost() || !Config.CHAT_MESSAGES.asBool()) return this;
+        if (!isHost() || !Configs.CHAT_MESSAGES.value) return this;
         ClientPacketListener connection = this.minecraft.getConnection();
         if (connection != null) connection.sendChat(message);
         return this;
@@ -206,7 +206,7 @@ public class HostAPI {
             value = "host.send_chat_command"
     )
     public HostAPI sendChatCommand(@LuaNotNil String command) {
-        if (!isHost() || !Config.CHAT_MESSAGES.asBool()) return this;
+        if (!isHost() || !Configs.CHAT_MESSAGES.value) return this;
         ClientPacketListener connection = this.minecraft.getConnection();
         if (connection != null) connection.sendCommand(command.startsWith("/") ? command.substring(1) : command);
         return this;
@@ -347,7 +347,7 @@ public class HostAPI {
             value = "host.set_chat_text"
     )
     public HostAPI setChatText(@LuaNotNil String text) {
-        if (isHost() && Config.CHAT_MESSAGES.asBool() && this.minecraft.screen instanceof ChatScreen chat)
+        if (isHost() && Configs.CHAT_MESSAGES.value && this.minecraft.screen instanceof ChatScreen chat)
             ((ChatScreenAccessor) chat).getInput().setValue(text);
         return this;
     }

@@ -7,7 +7,7 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.util.RandomSource;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Badges;
-import org.moon.figura.config.Config;
+import org.moon.figura.config.Configs;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.ui.UIHelper;
 import org.spongepowered.asm.mixin.Final;
@@ -38,7 +38,7 @@ public class SplashManagerMixin {
     @Inject(at = @At("RETURN"), method = "getSplash")
     private void init(CallbackInfoReturnable<String> cir) {
         FiguraMod.splashText = null;
-        if (!Config.EASTER_EGGS.asBool())
+        if (!Configs.EASTER_EGGS.value)
             return;
 
         Calendar calendar = FiguraMod.CALENDAR;

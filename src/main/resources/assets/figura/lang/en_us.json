@@ -341,8 +341,8 @@
   "figura.config.first_person_matrices.tooltip": "Toggles if the model part matrices should be updated while in first person",
 
 
-  "figura.config.actionwheel": "Action Wheel",
-  "figura.config.actionwheel.tooltip": "Action Wheel settings",
+  "figura.config.action_wheel": "Action Wheel",
+  "figura.config.action_wheel.tooltip": "Action Wheel settings",
 
   "figura.config.action_wheel_button": "Action Wheel Button",
   "figura.config.action_wheel_button.tooltip": "Button to open the Action Wheel",
@@ -522,6 +522,9 @@
 
   "figura.config.server_ip": "Figura Server IP",
   "figura.config.server_ip.tooltip": "Sets the IP of the server used for Figura's multiplayer features",
+
+  "figura.config.clear_cache": "Clear Cache",
+  "figura.config.clear_cache.tooltip": "Clears the cache files\nRemoves things like cached Avatars and UI states\nWill not clear settings nor saved permissions",
 
 
   "figura.command.click_to_open": "Click here to open",

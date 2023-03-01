@@ -13,7 +13,7 @@ import org.joml.Matrix4f;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
-import org.moon.figura.config.Config;
+import org.moon.figura.config.Configs;
 import org.moon.figura.model.rendering.EntityRenderMode;
 import org.moon.figura.permissions.Permissions;
 import org.moon.figura.utils.ColorUtils;
@@ -80,7 +80,7 @@ public abstract class LevelRendererMixin {
         avatar.firstPersonWorldRender(e, bufferSource, stack, camera, tickDelta);
 
         //first person matrices
-        if (!(e instanceof LivingEntity livingEntity) || !Config.FIRST_PERSON_MATRICES.asBool())
+        if (!(e instanceof LivingEntity livingEntity) || !Configs.FIRST_PERSON_MATRICES.value)
             return;
 
         Avatar.firstPerson = true;

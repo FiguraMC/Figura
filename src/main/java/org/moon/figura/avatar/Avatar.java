@@ -33,7 +33,7 @@ import org.moon.figura.FiguraMod;
 import org.moon.figura.animation.Animation;
 import org.moon.figura.animation.AnimationPlayer;
 import org.moon.figura.backend2.NetworkStuff;
-import org.moon.figura.config.Config;
+import org.moon.figura.config.Configs;
 import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.lua.FiguraLuaRuntime;
 import org.moon.figura.lua.api.entity.EntityAPI;
@@ -382,7 +382,7 @@ public class Avatar {
 
     public String chatSendMessageEvent(String message) {
         Varargs val = loaded ? run("CHAT_SEND_MESSAGE", tick, message) : null;
-        return val == null || (!val.isnil(1) && !Config.CHAT_MESSAGES.asBool()) ? message : val.isnil(1) ? "" : val.arg(1).tojstring();
+        return val == null || (!val.isnil(1) && !Configs.CHAT_MESSAGES.value) ? message : val.isnil(1) ? "" : val.arg(1).tojstring();
     }
 
     public void chatReceivedMessageEvent(Component message) {
@@ -554,7 +554,7 @@ public class Avatar {
         FiguraMod.pushProfiler("firstPersonRender");
 
         PartFilterScheme filter = arm == playerRenderer.getModel().leftArm ? PartFilterScheme.LEFT_ARM : PartFilterScheme.RIGHT_ARM;
-        boolean config = Config.ALLOW_FP_HANDS.asBool();
+        boolean config = Configs.ALLOW_FP_HANDS.value;
         renderer.allowHiddenTransforms = config;
         renderer.allowMatrixUpdate = false;
 
@@ -685,7 +685,7 @@ public class Avatar {
     }
 
     public boolean renderPortrait(PoseStack stack, int x, int y, int size, float modelScale) {
-        if (!Config.AVATAR_PORTRAITS.asBool() || renderer == null || !loaded)
+        if (!Configs.AVATAR_PORTRAITS.value || renderer == null || !loaded)
             return false;
 
         //matrices

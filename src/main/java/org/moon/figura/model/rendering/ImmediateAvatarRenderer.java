@@ -13,7 +13,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
-import org.moon.figura.config.Config;
+import org.moon.figura.config.Configs;
 import org.moon.figura.lua.api.ClientAPI;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
@@ -121,7 +121,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         customization.free();
 
         //iris fix
-        int irisConfig = UIHelper.paperdoll || !ClientAPI.hasIris() ? 0 : Config.IRIS_COMPATIBILITY_FIX.asInt();
+        int irisConfig = UIHelper.paperdoll || !ClientAPI.hasIris() ? 0 : Configs.IRIS_COMPATIBILITY_FIX.value;
         doIrisEmissiveFix = irisConfig >= 2 && (ClientAPI.hasIrisShader() || (avatar.renderMode != EntityRenderMode.RENDER && avatar.renderMode != EntityRenderMode.WORLD));
         offsetRenderLayers = irisConfig >= 1;
 
@@ -138,7 +138,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
             texture.uploadIfDirty();
 
         //Set shouldRenderPivots
-        int config = Config.RENDER_DEBUG_PARTS_PIVOT.asInt();
+        int config = Configs.RENDER_DEBUG_PARTS_PIVOT.value;
         if (!Minecraft.getInstance().getEntityRenderDispatcher().shouldRenderHitBoxes() || (!avatar.isHost && config < 3))
             shouldRenderPivots = 0;
         else
