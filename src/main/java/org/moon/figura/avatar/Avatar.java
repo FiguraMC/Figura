@@ -26,6 +26,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Quaternionf;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
@@ -378,6 +379,12 @@ public class Avatar {
         return result != null && result.arg(1).isboolean() && result.arg(1).checkboolean();
     }
 
+    public boolean arrowRenderEvent(float delta, EntityAPI<?> arrow) {
+        Varargs result = null;
+        if (loaded) result = run("ARROW_RENDER", render, delta, arrow);
+        return result != null && result.arg(1).isboolean() && result.arg(1).checkboolean();
+    }
+
     // -- host only events -- //
 
     public String chatSendMessageEvent(String message) {
@@ -653,7 +660,6 @@ public class Avatar {
             return false;
 
         stack.pushPose();
-        stack.translate(0d, 24d / 16d, 0d);
         boolean oldMat = renderer.allowMatrixUpdate;
 
         //pre render
@@ -672,7 +678,7 @@ public class Avatar {
         renderer.allowMatrixUpdate = false;
 
         //render
-        int comp = renderer.renderSpecialParts();
+        int comp = renderer.render();
 
         //pos render
         renderer.allowMatrixUpdate = oldMat;
@@ -735,6 +741,33 @@ public class Avatar {
         renderer.allowRenderTasks = true;
         stack.popPose();
         return ret;
+    }
+    public boolean renderArrow(PoseStack stack, MultiBufferSource bufferSource, float delta, int light) {
+        if (renderer == null || !loaded)
+            return false;
+
+        renderer.allowPivotParts = false;
+        renderer.allowRenderTasks = false;
+        renderer.currentFilterScheme = PartFilterScheme.ARROW;
+        renderer.tickDelta = delta;
+        renderer.overlay = OverlayTexture.NO_OVERLAY;
+        renderer.light = light;
+        renderer.alpha = 1f;
+        renderer.matrices = stack;
+        renderer.bufferSource = bufferSource;
+        renderer.translucent = false;
+        renderer.glowing = false;
+
+        stack.pushPose();
+        Quaternionf quaternionf = Axis.XP.rotationDegrees(135f);
+        Quaternionf quaternionf2 = Axis.YP.rotationDegrees(-90f);
+        quaternionf.mul(quaternionf2);
+        stack.mulPose(quaternionf);
+
+        int comp = renderer.renderSpecialParts();
+
+        stack.popPose();
+        return comp > 0;
     }
 
     private static final PartCustomization PIVOT_PART_RENDERING_CUSTOMIZATION = PartCustomization.of();

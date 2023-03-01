@@ -68,6 +68,9 @@ public class EventsAPI {
     @LuaWhitelist
     @LuaFieldDoc("events.use_item")
     public final LuaEvent USE_ITEM = new LuaEvent();
+    @LuaWhitelist
+    @LuaFieldDoc("events.arrow_render")
+    public final LuaEvent ARROW_RENDER = new LuaEvent();
 
     @LuaWhitelist
     @LuaMethodDoc("events.get_events")
@@ -87,7 +90,8 @@ public class EventsAPI {
                 MOUSE_MOVE,
                 MOUSE_PRESS,
                 KEY_PRESS,
-                USE_ITEM
+                USE_ITEM,
+                ARROW_RENDER
         );
     }
 
@@ -114,6 +118,7 @@ public class EventsAPI {
             case "MOUSE_PRESS" -> MOUSE_PRESS;
             case "KEY_PRESS" -> KEY_PRESS;
             case "USE_ITEM" -> USE_ITEM;
+            case "ARROW_RENDER" -> ARROW_RENDER;
             default -> null;
         };
     }
