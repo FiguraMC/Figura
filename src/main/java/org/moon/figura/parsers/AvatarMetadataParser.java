@@ -7,7 +7,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.config.Config;
+import org.moon.figura.config.Configs;
 import org.moon.figura.model.ParentType;
 import org.moon.figura.model.rendering.texture.RenderTypes;
 import org.moon.figura.utils.Version;
@@ -71,7 +71,7 @@ public class AvatarMetadataParser {
             nbt.put("autoScripts", autoScripts);
         }
 
-        if (Config.FORMAT_SCRIPT.asInt() == 2)
+        if (Configs.FORMAT_SCRIPT.value == 2)
             nbt.putBoolean("minify", true);
 
         if (metadata.autoAnims != null) {

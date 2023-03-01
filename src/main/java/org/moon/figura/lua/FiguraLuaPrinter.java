@@ -7,7 +7,7 @@ import org.luaj.vm2.*;
 import org.luaj.vm2.lib.VarArgFunction;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
-import org.moon.figura.config.Config;
+import org.moon.figura.config.Configs;
 import org.moon.figura.permissions.Permissions;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.TextUtils;
@@ -29,7 +29,7 @@ public class FiguraLuaPrinter {
     }
 
     public static void updateDecimalFormatting() {
-        int config = Config.LOG_NUMBER_LENGTH.asInt();
+        int config = Configs.LOG_NUMBER_LENGTH.value;
         df = new DecimalFormat("0" + (config > 0 ? "." + "#".repeat(config) : ""));
         df.setRoundingMode(RoundingMode.DOWN);
     }
@@ -57,7 +57,7 @@ public class FiguraLuaPrinter {
                 .append(message instanceof Component c ? c : new TextComponent(message.toString()))
                 .append(new TextComponent("\n"));
 
-        if (Config.LOG_LOCATION.asInt() == 0)
+        if (Configs.LOG_LOCATION.value == 0)
             sendLuaChatMessage(component);
         else
             FiguraMod.LOGGER.info(component.getString());
@@ -110,7 +110,7 @@ public class FiguraLuaPrinter {
 
         owner.errorText = TextUtils.replaceTabs(new TextComponent(message).withStyle(ColorUtils.Colors.LUA_ERROR.style));
 
-        if ((owner.entityType == EntityType.PLAYER && !Config.LOG_OTHERS.asBool() && !FiguraMod.isLocal(owner.owner)) || owner.permissions.getCategory() == Permissions.Category.BLOCKED)
+        if ((owner.entityType == EntityType.PLAYER && !Configs.LOG_OTHERS.value && !FiguraMod.isLocal(owner.owner)) || owner.permissions.getCategory() == Permissions.Category.BLOCKED)
             return;
 
         chatQueue.offer(component); //bypass the char limit filter
@@ -119,7 +119,7 @@ public class FiguraLuaPrinter {
 
     //print an ping!
     public static void sendPingMessage(Avatar owner, String ping, int size, LuaValue[] args) {
-        int config = Config.LOG_PINGS.asInt();
+        int config = Configs.LOG_PINGS.value;
 
         //no ping? *megamind.png*
         if (config == 0)
@@ -149,7 +149,7 @@ public class FiguraLuaPrinter {
     private static final Function<FiguraLuaRuntime, LuaValue> PRINT_FUNCTION = runtime -> new VarArgFunction() {
         @Override
         public Varargs invoke(Varargs args) {
-            if (!Config.LOG_OTHERS.asBool() && !FiguraMod.isLocal(runtime.owner.owner))
+            if (!Configs.LOG_OTHERS.value && !FiguraMod.isLocal(runtime.owner.owner))
                 return NIL;
 
             MutableComponent text = TextComponent.EMPTY.copy();
@@ -171,7 +171,7 @@ public class FiguraLuaPrinter {
     private static final Function<FiguraLuaRuntime, LuaValue> PRINT_JSON_FUNCTION = runtime -> new VarArgFunction() {
         @Override
         public Varargs invoke(Varargs args) {
-            if (!Config.LOG_OTHERS.asBool() && !FiguraMod.isLocal(runtime.owner.owner))
+            if (!Configs.LOG_OTHERS.value && !FiguraMod.isLocal(runtime.owner.owner))
                 return NIL;
 
             MutableComponent text = TextComponent.EMPTY.copy();
@@ -191,7 +191,7 @@ public class FiguraLuaPrinter {
     private static final Function<FiguraLuaRuntime, LuaValue> PRINT_TABLE_FUNCTION = runtime -> new VarArgFunction() {
         @Override
         public Varargs invoke(Varargs args) {
-            if (!Config.LOG_OTHERS.asBool() && !FiguraMod.isLocal(runtime.owner.owner))
+            if (!Configs.LOG_OTHERS.value && !FiguraMod.isLocal(runtime.owner.owner))
                 return NIL;
 
             boolean silent = false;

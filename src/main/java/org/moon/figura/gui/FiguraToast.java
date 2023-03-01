@@ -12,7 +12,7 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.config.Config;
+import org.moon.figura.config.Configs;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.ui.UIHelper;
@@ -42,8 +42,8 @@ public class FiguraToast implements Toast {
 
     @Override
     public Visibility render(PoseStack stack, ToastComponent component, long startTime) {
-        int time = Math.round(Config.TOAST_TIME.asFloat() * 1000);
-        int titleTime = Math.round(Config.TOAST_TITLE_TIME.asFloat() * 1000);
+        int time = Math.round(Configs.TOAST_TIME.value * 1000);
+        int titleTime = Math.round(Configs.TOAST_TITLE_TIME.value * 1000);
 
         if (this.update) {
             if (startTime - this.startTime < time)
@@ -123,7 +123,7 @@ public class FiguraToast implements Toast {
         Component text = title instanceof Component t ? t : new TranslatableComponent(title.toString());
         Component text2 = message instanceof Component m ? m : new TranslatableComponent(message.toString());
 
-        if (type == ToastType.DEFAULT && Config.EASTER_EGGS.asBool()) {
+        if (type == ToastType.DEFAULT && Configs.EASTER_EGGS.value) {
             Calendar calendar = FiguraMod.CALENDAR;
             calendar.setTime(new Date());
 

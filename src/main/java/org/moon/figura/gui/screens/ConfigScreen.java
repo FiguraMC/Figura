@@ -6,8 +6,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import org.moon.figura.config.Config;
 import org.moon.figura.config.ConfigManager;
+import org.moon.figura.config.ConfigType;
 import org.moon.figura.gui.widgets.Label;
 import org.moon.figura.gui.widgets.TexturedButton;
 import org.moon.figura.gui.widgets.lists.ConfigList;
@@ -21,7 +21,7 @@ public class ConfigScreen extends AbstractPanelScreen {
 
     public static final Component TITLE = new FiguraText("gui.panels.title.settings");
 
-    public static final Map<Config, Boolean> CATEGORY_DATA = new HashMap<>();
+    public static final Map<ConfigType.Category, Boolean> CATEGORY_DATA = new HashMap<>();
 
     private ConfigList list;
     private TexturedButton cancel;
@@ -102,7 +102,7 @@ public class ConfigScreen extends AbstractPanelScreen {
 
                 String config = compound.getString("config");
                 boolean expanded = compound.getBoolean("expanded");
-                CATEGORY_DATA.put(Config.valueOf(config), expanded);
+                CATEGORY_DATA.put(ConfigManager.CATEGORIES_REGISTRY.get(config), expanded);
             }
         });
     }
@@ -111,9 +111,9 @@ public class ConfigScreen extends AbstractPanelScreen {
         IOUtils.saveCacheFile("settings", nbt -> {
             ListTag list = new ListTag();
 
-            for (Map.Entry<Config, Boolean> entry : CATEGORY_DATA.entrySet()) {
+            for (Map.Entry<ConfigType.Category, Boolean> entry : CATEGORY_DATA.entrySet()) {
                 CompoundTag compound = new CompoundTag();
-                compound.putString("config", entry.getKey().name());
+                compound.putString("config", entry.getKey().id);
                 compound.putBoolean("expanded", entry.getValue());
                 list.add(compound);
             }

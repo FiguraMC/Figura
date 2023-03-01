@@ -15,7 +15,7 @@ import org.moon.figura.avatar.UserData;
 import org.moon.figura.avatar.local.CacheAvatarLoader;
 import org.moon.figura.backend2.websocket.C2SMessageHandler;
 import org.moon.figura.backend2.websocket.WebsocketThingy;
-import org.moon.figura.config.Config;
+import org.moon.figura.config.Configs;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.RefilledNumber;
@@ -250,7 +250,7 @@ public class NetworkStuff {
             JsonObject json = JsonParser.parseString(data).getAsJsonObject();
             latestVersion = new Version(json.get("prerelease").getAsString());
 
-            int config = Config.UPDATE_CHANNEL.asInt();
+            int config = Configs.UPDATE_CHANNEL.value;
             if (config != 0) {
                 Version compare = config == 1 ? new Version(json.get("release").getAsString()) : latestVersion;
                 if (compare.compareTo(FiguraMod.VERSION) > 0)
@@ -283,7 +283,7 @@ public class NetworkStuff {
 
             //error
             if (code != 200) {
-                if (code == 404 && Config.CONNECTION_TOASTS.asBool())
+                if (code == 404 && Configs.CONNECTION_TOASTS.value)
                     FiguraToast.sendToast(new FiguraText("backend.user_not_found"), FiguraToast.ToastType.ERROR);
                 return;
             }
@@ -332,7 +332,7 @@ public class NetworkStuff {
             queueString(Util.NIL_UUID, api -> api.uploadAvatar(id, baos.toByteArray()), (code, data) -> {
                 responseDebug("uploadAvatar", code, data);
 
-                if (!Config.CONNECTION_TOASTS.asBool())
+                if (!Configs.CONNECTION_TOASTS.value)
                     return;
 
                 switch (code) {
@@ -360,7 +360,7 @@ public class NetworkStuff {
         queueString(Util.NIL_UUID, api -> api.deleteAvatar(id), (code, data) -> {
             responseDebug("deleteAvatar", code, data);
 
-            if (!Config.CONNECTION_TOASTS.asBool())
+            if (!Configs.CONNECTION_TOASTS.value)
                 return;
 
             switch (code) {
@@ -383,7 +383,7 @@ public class NetworkStuff {
 
         queueString(Util.NIL_UUID, api -> api.setEquipped(GSON.toJson(json)), (code, data) -> {
             responseDebug("equipAvatar", code, data);
-            if (code != 200 && Config.CONNECTION_TOASTS.asBool())
+            if (code != 200 && Configs.CONNECTION_TOASTS.value)
                 FiguraToast.sendToast(new FiguraText("backend.equip_error"), FiguraToast.ToastType.ERROR);
         });
     }

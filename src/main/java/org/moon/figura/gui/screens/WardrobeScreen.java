@@ -13,7 +13,7 @@ import org.moon.figura.avatar.local.LocalAvatarFetcher;
 import org.moon.figura.avatar.local.LocalAvatarLoader;
 import org.moon.figura.backend2.NetworkStuff;
 import org.moon.figura.commands.FiguraLinkCommand;
-import org.moon.figura.config.Config;
+import org.moon.figura.config.Configs;
 import org.moon.figura.gui.widgets.*;
 import org.moon.figura.gui.widgets.lists.AvatarList;
 import org.moon.figura.utils.FiguraIdentifier;
@@ -149,7 +149,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
         addRenderableOnly(avatarInfo = new AvatarInfoWidget(this.width - panels - 4, 56, panels, back.y - 60));
 
         //panic warning - always added last, on top
-        addRenderableOnly(panic = new Label(new FiguraText("gui.panic.1").withStyle(ChatFormatting.YELLOW).append("\n").append(new FiguraText("gui.panic.2", Config.PANIC_BUTTON.keyBind.getTranslatedKeyMessage())),
+        addRenderableOnly(panic = new Label(new FiguraText("gui.panic.1").withStyle(ChatFormatting.YELLOW).append("\n").append(new FiguraText("gui.panic.2", Configs.PANIC_BUTTON.keyBind.getTranslatedKeyMessage())),
                 middle, this.height - 23, true, 0)
         );
         panic.setVisible(false);

@@ -5,7 +5,7 @@ import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.backend2.NetworkStuff;
-import org.moon.figura.config.Config;
+import org.moon.figura.config.Configs;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.utils.FiguraText;
 
@@ -95,12 +95,12 @@ public class WebsocketThingy extends WebSocketClient {
     }
 
     private static String getBackendAddress() {
-        ServerAddress backendIP = ServerAddress.parseString(Config.SERVER_IP.asString());
+        ServerAddress backendIP = ServerAddress.parseString(Configs.SERVER_IP.value);
         return "wss://" + backendIP.getHost() + "/ws";
     }
 
     private void handleClose(int code, String reason) {
-        if (Config.CONNECTION_TOASTS.asBool())
+        if (Configs.CONNECTION_TOASTS.value)
             FiguraToast.sendToast(new FiguraText("backend.disconnected"), FiguraToast.ToastType.ERROR);
 
         NetworkStuff.disconnect(reason);

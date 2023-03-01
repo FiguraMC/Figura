@@ -13,7 +13,7 @@ import net.minecraft.world.scores.Scoreboard;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.avatar.Badges;
-import org.moon.figura.config.Config;
+import org.moon.figura.config.Configs;
 import org.moon.figura.lua.api.nameplate.NameplateCustomization;
 import org.moon.figura.permissions.Permissions;
 import org.moon.figura.utils.TextUtils;
@@ -39,7 +39,7 @@ public class PlayerTabOverlayMixin {
     @Inject(at = @At("RETURN"), method = "getNameForDisplay", cancellable = true)
     private void getPlayerName(PlayerInfo playerInfo, CallbackInfoReturnable<Component> cir) {
         //get config
-        int config = Config.LIST_NAMEPLATE.asInt();
+        int config = Configs.LIST_NAMEPLATE.value;
         if (config == 0 || AvatarManager.panic)
             return;
 

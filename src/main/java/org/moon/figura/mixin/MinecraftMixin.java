@@ -13,7 +13,7 @@ import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.backend2.NetworkStuff;
-import org.moon.figura.config.Config;
+import org.moon.figura.config.Configs;
 import org.moon.figura.gui.ActionWheel;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.PopupMenu;
@@ -46,7 +46,7 @@ public abstract class MinecraftMixin {
     @Inject(at = @At("RETURN"), method = "handleKeybinds")
     private void handleKeybinds(CallbackInfo ci) {
         //panic button
-        if (Config.PANIC_BUTTON.keyBind.consumeClick()) {
+        if (Configs.PANIC_BUTTON.keyBind.consumeClick()) {
             AvatarManager.panic = !AvatarManager.panic;
             FiguraToast.sendToast(new FiguraText(AvatarManager.panic ? "toast.panic_enabled" : "toast.panic_disabled"), FiguraToast.ToastType.WARNING);
             SoundAPI.getSoundEngine().figura$stopAllSounds();
@@ -59,21 +59,21 @@ public abstract class MinecraftMixin {
             return;
 
         //reload avatar button
-        if (Config.RELOAD_BUTTON.keyBind.consumeClick()) {
+        if (Configs.RELOAD_BUTTON.keyBind.consumeClick()) {
             AvatarManager.reloadAvatar(FiguraMod.getLocalPlayerUUID());
             FiguraToast.sendToast(new FiguraText("toast.reload"));
         }
 
         //reload avatar button
-        if (Config.WARDROBE_BUTTON.keyBind.consumeClick())
+        if (Configs.WARDROBE_BUTTON.keyBind.consumeClick())
             this.setScreen(new WardrobeScreen(null));
 
         //action wheel button
         Boolean wheel = null;
-        if (Config.ACTION_WHEEL_MODE.asInt() % 2 == 1) {
-            if (Config.ACTION_WHEEL_BUTTON.keyBind.consumeClick())
+        if (Configs.ACTION_WHEEL_MODE.value % 2 == 1) {
+            if (Configs.ACTION_WHEEL_BUTTON.keyBind.consumeClick())
                 wheel = !ActionWheel.isEnabled();
-        } else if (Config.ACTION_WHEEL_BUTTON.keyBind.isDown()) {
+        } else if (Configs.ACTION_WHEEL_BUTTON.keyBind.isDown()) {
             wheel = true;
         } else if (ActionWheel.isEnabled()) {
             wheel = false;
@@ -83,7 +83,7 @@ public abstract class MinecraftMixin {
                 ActionWheel.setEnabled(true);
                 this.mouseHandler.releaseMouse();
             } else {
-                if (Config.ACTION_WHEEL_MODE.asInt() >= 2)
+                if (Configs.ACTION_WHEEL_MODE.value >= 2)
                     ActionWheel.execute(ActionWheel.getSelected(), true);
                 ActionWheel.setEnabled(false);
                 this.mouseHandler.grabMouse();
@@ -91,7 +91,7 @@ public abstract class MinecraftMixin {
         }
 
         //popup menu button
-        if (Config.POPUP_BUTTON.keyBind.isDown()) {
+        if (Configs.POPUP_BUTTON.keyBind.isDown()) {
             PopupMenu.setEnabled(true);
 
             if (!PopupMenu.hasEntity()) {
