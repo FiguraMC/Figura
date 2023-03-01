@@ -1,6 +1,7 @@
 package org.moon.figura.gui.screens;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -8,11 +9,13 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import org.moon.figura.config.ConfigManager;
 import org.moon.figura.config.ConfigType;
+import org.moon.figura.gui.PaperDoll;
 import org.moon.figura.gui.widgets.Label;
 import org.moon.figura.gui.widgets.TexturedButton;
 import org.moon.figura.gui.widgets.lists.ConfigList;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.IOUtils;
+import org.moon.figura.utils.ui.UIHelper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +29,7 @@ public class ConfigScreen extends AbstractPanelScreen {
     private ConfigList list;
     private TexturedButton cancel;
     private final boolean hasPanels;
+    public boolean renderPaperdoll;
 
     public ConfigScreen(Screen parentScreen) {
         this(parentScreen, true);
@@ -67,7 +71,7 @@ public class ConfigScreen extends AbstractPanelScreen {
         // -- config list -- //
 
         int width = Math.min(this.width - 8, 420);
-        this.addRenderableWidget(list = new ConfigList((this.width - width) / 2, 28, width, height - 56));
+        this.addRenderableWidget(list = new ConfigList((this.width - width) / 2, 28, width, height - 56, this));
     }
 
     @Override
@@ -82,6 +86,13 @@ public class ConfigScreen extends AbstractPanelScreen {
         ConfigManager.saveConfig();
         saveNbt();
         super.removed();
+    }
+
+    @Override
+    public void renderBackground(PoseStack stack, float delta) {
+        super.renderBackground(stack, delta);
+        if (renderPaperdoll)
+            UIHelper.renderWithoutScissors(() -> PaperDoll.render(stack, true));
     }
 
     @Override
