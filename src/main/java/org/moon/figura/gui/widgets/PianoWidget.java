@@ -23,6 +23,7 @@ public class PianoWidget extends AbstractContainerElement {
 
     private final Supplier<LuaSound> soundSupplier;
     private Key hovered;
+    private boolean pressed;
 
     public PianoWidget(int x, int y, int width, int height, Supplier<LuaSound> soundSupplier) {
         super(x, y, width, height);
@@ -59,10 +60,22 @@ public class PianoWidget extends AbstractContainerElement {
         this.setHovered(this.isMouseOver(mouseX, mouseY));
 
         //background
-        UIHelper.renderSliced(stack, x, y, width, height, UIHelper.OUTLINE);
+        UIHelper.renderSliced(stack, x, y, width, height, UIHelper.OUTLINE_FILL);
 
         //render children
         super.render(stack, mouseX, mouseY, delta);
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        pressed = button == 0;
+        return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        pressed = false;
+        return super.mouseReleased(mouseX, mouseY, button);
     }
 
     private static class Key extends ParentedButton {
@@ -91,7 +104,7 @@ public class PianoWidget extends AbstractContainerElement {
         @Override
         public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
             UIHelper.fillRounded(stack, getX(), getY(), width, height, (isSharp ? 0 : 0xFFFFFF) + (0xFF << 24));
-            UIHelper.fillOutline(stack, getX(), getY(), width, height, 0xFF404040);
+            UIHelper.renderSliced(stack, getX(), getY(), width, height, UIHelper.OUTLINE);
 
             if (isHoveredOrFocused())
                 UIHelper.fillRounded(stack, getX(), getY(), width, height, (FiguraMod.getAccentColor().getColor().getValue()) + (0xA0 << 24));
@@ -121,6 +134,8 @@ public class PianoWidget extends AbstractContainerElement {
             //checking against no one
             if (parent.hovered == null) {
                 parent.hovered = this;
+                if (parent.pressed)
+                    playDownSound(Minecraft.getInstance().getSoundManager());
                 return true;
             }
 
@@ -133,6 +148,8 @@ public class PianoWidget extends AbstractContainerElement {
             if (this.isSharp) {
                 parent.hovered.setHovered(false);
                 parent.hovered = this;
+                if (parent.pressed)
+                    playDownSound(Minecraft.getInstance().getSoundManager());
                 return true;
             }
 

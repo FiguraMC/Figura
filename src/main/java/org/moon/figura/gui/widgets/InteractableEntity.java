@@ -77,7 +77,7 @@ public class InteractableEntity extends AbstractContainerElement {
 
         if (!button.isToggled()) {
             //border
-            UIHelper.renderSliced(stack, x, y, width, height, UIHelper.OUTLINE);
+            UIHelper.renderSliced(stack, x, y, width, height, UIHelper.OUTLINE_FILL);
             //overlay
             UIHelper.renderTexture(stack, x + 1, y + 1, width - 2, height - 2, OVERLAY);
         }
