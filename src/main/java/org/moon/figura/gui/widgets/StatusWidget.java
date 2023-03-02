@@ -82,7 +82,7 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
 
         //background
         if (background)
-            UIHelper.renderSliced(stack, x, y, width, height, UIHelper.OUTLINE);
+            UIHelper.renderSliced(stack, x, y, width, height, UIHelper.OUTLINE_FILL);
 
         //hover
         boolean hovered = this.isMouseOver(mouseX, mouseY);

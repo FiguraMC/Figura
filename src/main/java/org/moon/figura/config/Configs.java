@@ -28,7 +28,15 @@ public class Configs {
     public static final HashMap<Integer, HashMap<ConfigType<?>, String>> CONFIG_UPDATES = new HashMap<>();
 
     //code to run when the config is initialized
-    public static void init() {}
+    public static void init() {
+        //test for unused configs
+        if (FiguraMod.DEBUG_MODE) {
+            Category debug = new Category("debug");
+            new ColorConfig("color_test", debug, 0xFF72AD);
+            new StringConfig("string_test", debug, "text");
+            new IntConfig("int_test", debug, 2147483647);
+        }
+    }
 
 
     // -- categories -- //

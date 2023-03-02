@@ -47,7 +47,7 @@ public class SoundsList extends AbstractList {
     @Override
     public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
         //background and scissors
-        UIHelper.renderSliced(stack, x, y, width, height, UIHelper.OUTLINE);
+        UIHelper.renderSliced(stack, x, y, width, height, UIHelper.OUTLINE_FILL);
         UIHelper.setupScissor(x + scissorsX, y + scissorsY, width + scissorsWidth, height + scissorsHeight);
 
         if (!sounds.isEmpty())
@@ -171,9 +171,14 @@ public class SoundsList extends AbstractList {
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            if (isMouseOver(mouseX, mouseY))
-                parent.selected = this;
-            return super.mouseClicked(mouseX, mouseY, button);
+            boolean clicked = super.mouseClicked(mouseX, mouseY, button);
+            if (!clicked) {
+                if (isMouseOver(mouseX, mouseY)) {
+                    parent.selected = this;
+                    return true;
+                }
+            }
+            return clicked;
         }
 
         public void setPos(int x, int y) {
