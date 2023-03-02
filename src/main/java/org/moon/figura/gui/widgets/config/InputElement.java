@@ -75,10 +75,16 @@ public class InputElement extends AbstractConfigElement {
 
         //hex colour preview
         if (inputType == InputType.HEX_COLOR) {
+            int x = this.x + width - 178;
+
             //border
-            UIHelper.fillRounded(stack, x + width - 178, y, 20, 20, getTextField().isFocused() ? getTextField().getBorderColour() : 0xFF404040);
+            if (getTextField().isFocused())
+                UIHelper.fillRounded(stack, x, y, 20, 20, getTextField().getBorderColour());
+            else
+                UIHelper.renderSliced(stack, x, y, 20, 20, UIHelper.OUTLINE);
+
             //inside
-            UIHelper.fillRounded(stack, x + width - 177, y + 1, 18, 18, 0xFF000000 + (int) config.tempValue);
+            UIHelper.fillRounded(stack, x + 1, y + 1, 18, 18, (int) config.tempValue + (0xFF << 24));
         }
     }
 

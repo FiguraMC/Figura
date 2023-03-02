@@ -4,7 +4,7 @@
   "version": "${version}",
 
   "name": "Figura",
-  "description": "Figura is a client-side mod that allows players to change their player model and customize it, extensively",
+  "description": "Allows you to customize your player model, extensively",
   "authors": [
     "Francy-Chan",
     "Moonlight-Maya",

@@ -98,7 +98,7 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
         y += (this.height - newHeight) / 2;
 
         //render background
-        UIHelper.renderSliced(stack, this.x, this.y, this.width, this.height, UIHelper.OUTLINE);
+        UIHelper.renderSliced(stack, this.x, this.y, this.width, this.height, UIHelper.OUTLINE_FILL);
 
         //render texts
         for (int i = 0; i < TITLES.size(); i++) {
