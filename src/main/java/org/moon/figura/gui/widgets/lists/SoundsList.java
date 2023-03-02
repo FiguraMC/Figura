@@ -29,6 +29,7 @@ public class SoundsList extends AbstractList {
     private final List<SoundElement> sounds = new ArrayList<>();
 
     private final Avatar owner;
+    private SoundElement selected;
 
     public SoundsList(int x, int y, int width, int height, Avatar owner) {
         super(x, y, width, height);
@@ -93,12 +94,21 @@ public class SoundsList extends AbstractList {
         }
 
         sounds.sort(SoundElement::compareTo);
+
+        if (!sounds.isEmpty())
+            selected = sounds.get(0);
+    }
+
+    public LuaSound getSound() {
+        return selected != null ? selected.getSound() : null;
     }
 
     private static class SoundElement extends AbstractContainerElement implements Comparable<SoundElement> {
 
         private final Component size;
         private final String name;
+        private final SoundBuffer sound;
+        private final Avatar owner;
         private final SoundsList parent;
 
         private final ParentedButton play, stop;
@@ -106,19 +116,19 @@ public class SoundsList extends AbstractList {
         public SoundElement(int width, String name, SoundBuffer sound, SoundsList parent, Avatar owner) {
             super(0, 0, width, 20);
             this.name = name;
+            this.sound = sound;
+            this.owner = owner;
             this.parent = parent;
 
             int len = owner.nbt.getCompound("sounds").getByteArray(name).length;
             this.size = Component.literal("(" + MathUtils.asFileSize(len) + ")").withStyle(ChatFormatting.GRAY);
 
             //play button
-            children.add(0, play = new ParentedButton(0, 0, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/play.png"), 60, 20, FiguraText.of("gui.sound.play"), this, button -> {
-                Vec3 vec =  Minecraft.getInstance().player == null ? new Vec3(0, 0, 0) : Minecraft.getInstance().player.position();
-                new LuaSound(sound, name, owner).pos(vec.x, vec.y, vec.z).play();
-            }) {
+            children.add(0, play = new ParentedButton(0, 0, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/play.png"), 60, 20, FiguraText.of("gui.sound.play"), this, button -> {}) {
                 @Override
                 public void playDownSound(SoundManager soundManager) {
-                    //do nothing
+                    Vec3 vec =  Minecraft.getInstance().player == null ? new Vec3(0, 0, 0) : Minecraft.getInstance().player.position();
+                    getSound().pos(vec.x, vec.y, vec.z).play();
                 }
             });
 
@@ -131,6 +141,10 @@ public class SoundsList extends AbstractList {
         @Override
         public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
             if (!this.isVisible()) return;
+
+            //selected outline
+            if (parent.selected == this)
+                UIHelper.fillOutline(stack, x - 1, y - 1, width + 2, height + 2, 0xFFFFFFFF);
 
             //vars
             Font font = Minecraft.getInstance().font;
@@ -155,6 +169,13 @@ public class SoundsList extends AbstractList {
             return this.parent.isInsideScissors(mouseX, mouseY) && super.isMouseOver(mouseX, mouseY);
         }
 
+        @Override
+        public boolean mouseClicked(double mouseX, double mouseY, int button) {
+            if (isMouseOver(mouseX, mouseY))
+                parent.selected = this;
+            return super.mouseClicked(mouseX, mouseY, button);
+        }
+
         public void setPos(int x, int y) {
             this.x = x;
             this.y = y;
@@ -164,6 +185,10 @@ public class SoundsList extends AbstractList {
 
             stop.x = x + width - 40;
             stop.y = y;
+        }
+
+        public LuaSound getSound() {
+            return new LuaSound(sound, name, owner);
         }
 
         @Override
