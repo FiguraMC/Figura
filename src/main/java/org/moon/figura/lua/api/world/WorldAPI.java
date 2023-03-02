@@ -90,7 +90,7 @@ public class WorldAPI {
         FiguraVec3 pos = LuaUtils.parseVec3("getBlockState", x, y, z);
         BlockPos blockPos = pos.asBlockPos();
         Level world = getCurrentWorld();
-        if (world.hasChunkAt(blockPos))
+        if (!world.hasChunkAt(blockPos))
             return new BlockStateAPI(Blocks.AIR.defaultBlockState(), blockPos);
         return new BlockStateAPI(world.getBlockState(blockPos), blockPos);
     }
