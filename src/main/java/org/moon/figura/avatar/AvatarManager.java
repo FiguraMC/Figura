@@ -15,8 +15,12 @@ import net.minecraft.world.entity.player.Player;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.local.LocalAvatarLoader;
 import org.moon.figura.backend2.NetworkStuff;
+import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.widgets.lists.AvatarList;
+import org.moon.figura.lua.api.particle.ParticleAPI;
+import org.moon.figura.lua.api.sound.SoundAPI;
 import org.moon.figura.utils.EntityUtils;
+import org.moon.figura.utils.FiguraText;
 
 import java.nio.file.Path;
 import java.util.*;
@@ -36,6 +40,15 @@ public class AvatarManager {
 
     public static boolean localUploaded = true; //init as true :3
     public static boolean panic = false;
+
+    // -- panic mode -- //
+
+    public static void togglePanic() {
+        AvatarManager.panic = !AvatarManager.panic;
+        FiguraToast.sendToast(FiguraText.of(AvatarManager.panic ? "toast.panic_enabled" : "toast.panic_disabled"), FiguraToast.ToastType.WARNING);
+        SoundAPI.getSoundEngine().figura$stopAllSounds();
+        ParticleAPI.getParticleEngine().figura$clearParticles(null);
+    }
 
     // -- avatar events -- //
 
