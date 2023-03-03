@@ -770,7 +770,7 @@ public class Avatar {
         return comp > 0;
     }
 
-    private static final PartCustomization PIVOT_PART_RENDERING_CUSTOMIZATION = PartCustomization.of();
+    private static final PartCustomization PIVOT_PART_RENDERING_CUSTOMIZATION = new PartCustomization();
     public synchronized boolean pivotPartRender(ParentType parent, Consumer<PoseStack> consumer) {
         if (renderer == null || !loaded || !parent.isPivot)
             return false;

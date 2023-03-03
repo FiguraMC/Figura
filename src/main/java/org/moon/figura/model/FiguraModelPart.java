@@ -152,12 +152,6 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
         customization.setMatrix(prevPartToView);
     }
 
-    public void clean() {
-        customization.free();
-        for (FiguraModelPart child : children)
-            child.clean();
-    }
-
     // -- animations -- //
 
     public void animPosition(FiguraVec3 vec, boolean merge) {
