@@ -2,16 +2,16 @@ package org.moon.figura.model;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
-import org.moon.figura.model.rendering.texture.FiguraTextureSet;
-import org.moon.figura.model.rendering.texture.RenderTypes;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec3;
-import org.moon.figura.utils.caching.CacheStack;
-import org.moon.figura.utils.caching.CacheUtils;
-import org.moon.figura.utils.caching.CachedType;
+import org.moon.figura.model.rendering.texture.FiguraTextureSet;
+import org.moon.figura.model.rendering.texture.RenderTypes;
 
-public class PartCustomization implements CachedType<PartCustomization> {
+import java.util.ArrayDeque;
+import java.util.Deque;
+
+public class PartCustomization {
 
     //-- Matrix thingies --//
     /**
@@ -30,21 +30,21 @@ public class PartCustomization implements CachedType<PartCustomization> {
     public Boolean visible = null;
     public Boolean vanillaVisible = null;
 
-    private FiguraVec3 position = FiguraVec3.of();
-    private FiguraVec3 rotation = FiguraVec3.of();
-    private FiguraVec3 scale = FiguraVec3.of(1, 1, 1);
-    private FiguraVec3 pivot = FiguraVec3.of();
+    private final FiguraVec3 position = FiguraVec3.of();
+    private final FiguraVec3 rotation = FiguraVec3.of();
+    private final FiguraVec3 scale = FiguraVec3.of(1, 1, 1);
+    private final FiguraVec3 pivot = FiguraVec3.of();
 
     //The "offset" values are for vanilla part scaling. The offset pivot and rot can be get and set from script.
-    private FiguraVec3 offsetPivot = FiguraVec3.of();
-    private FiguraVec3 offsetPos = FiguraVec3.of();
-    private FiguraVec3 offsetRot = FiguraVec3.of();
-    private FiguraVec3 offsetScale = FiguraVec3.of(1, 1, 1);
+    private final FiguraVec3 offsetPivot = FiguraVec3.of();
+    private final FiguraVec3 offsetPos = FiguraVec3.of();
+    private final FiguraVec3 offsetRot = FiguraVec3.of();
+    private final FiguraVec3 offsetScale = FiguraVec3.of(1, 1, 1);
 
     //These values are set by animation players. They can be queried, though not set, by script.
-    private FiguraVec3 animPos = FiguraVec3.of();
-    private FiguraVec3 animRot = FiguraVec3.of();
-    private FiguraVec3 animScale = FiguraVec3.of(1, 1, 1);
+    private final FiguraVec3 animPos = FiguraVec3.of();
+    private final FiguraVec3 animRot = FiguraVec3.of();
+    private final FiguraVec3 animScale = FiguraVec3.of(1, 1, 1);
 
     public FiguraVec3 stackScale = FiguraVec3.of(1, 1, 1);
     public FiguraVec3 color = FiguraVec3.of(1, 1, 1);
@@ -55,8 +55,6 @@ public class PartCustomization implements CachedType<PartCustomization> {
 
     private RenderTypes primaryRenderType, secondaryRenderType;
     public Pair<FiguraTextureSet.OverrideType, Object> primaryTexture, secondaryTexture;
-
-    public Stack cachedStack;
 
     public void applyToStack(PoseStack stack) {
         stack.mulPoseMatrix(positionMatrix.toMatrix4f());
@@ -287,85 +285,33 @@ public class PartCustomization implements CachedType<PartCustomization> {
         return secondaryRenderType;
     }
 
-
-    //-- Caching thingies --//
-
-    private static final CacheUtils.Cache<PartCustomization> CACHE = CacheUtils.getCache(PartCustomization::new);
-    private PartCustomization() {}
-    public PartCustomization reset() {
-        positionMatrix = FiguraMat4.of();
-        uvMatrix = FiguraMat3.of();
-        normalMatrix = FiguraMat3.of();
-        partType = PartType.GROUP;
-        position = FiguraVec3.of();
-        rotation = FiguraVec3.of();
-        scale = FiguraVec3.of(1, 1, 1);
-        pivot = FiguraVec3.of();
-        offsetPivot = FiguraVec3.of();
-        offsetPos = FiguraVec3.of();
-        offsetRot = FiguraVec3.of();
-        offsetScale = FiguraVec3.of(1, 1, 1);
-        color = FiguraVec3.of(1, 1, 1);
-        color2 = FiguraVec3.of(1, 1, 1);
-        animPos = FiguraVec3.of();
-        animRot = FiguraVec3.of();
-        animScale = FiguraVec3.of(1, 1, 1);
-        alpha = null;
-        light = null;
-        needsMatrixRecalculation = false;
-        visible = null;
-        vanillaVisible = null;
-        primaryTexture = null;
-        secondaryTexture = null;
-        return this;
-    }
-    public void free() {
-    }
-    public static PartCustomization of() {
-        return CACHE.getFresh();
-    }
-    public static class Stack extends CacheStack<PartCustomization, PartCustomization> {
-
-        public Stack() {
-            this(CACHE);
-        }
-        public Stack(CacheUtils.Cache<PartCustomization> cache) {
-            super(cache);
-        }
-
-        @Override
-        protected void modify(PartCustomization valueToModify, PartCustomization modifierArg) {
-            valueToModify.modify(modifierArg);
-        }
-        @Override
-        protected void copy(PartCustomization from, PartCustomization to) {
-            to.partType = from.partType;
-            to.positionMatrix.set(from.positionMatrix);
-            to.uvMatrix.set(from.uvMatrix);
-            to.normalMatrix.set(from.normalMatrix);
-            to.setPos(from.position);
-            to.setRot(from.rotation);
-            to.setScale(from.scale);
-            to.setPivot(from.pivot);
-            to.offsetPivot(from.offsetPivot);
-            to.offsetPos(from.offsetPos);
-            to.offsetRot(from.offsetRot);
-            to.offsetScale(from.offsetScale);
-            to.stackScale.set(from.stackScale);
-            to.color.set(from.color);
-            to.color2.set(from.color2);
-            to.alpha = from.alpha;
-            to.light = from.light;
-            to.overlay = from.overlay;
-            to.needsMatrixRecalculation = from.needsMatrixRecalculation;
-            to.render = from.render;
-            to.visible = from.visible;
-            to.vanillaVisible = from.vanillaVisible;
-            to.setPrimaryRenderType(from.primaryRenderType);
-            to.setSecondaryRenderType(from.secondaryRenderType);
-            to.primaryTexture = from.primaryTexture;
-            to.secondaryTexture = from.secondaryTexture;
-        }
+    protected void copyTo(PartCustomization target) {
+        target.partType = partType;
+        target.positionMatrix.set(positionMatrix);
+        target.uvMatrix.set(uvMatrix);
+        target.normalMatrix.set(normalMatrix);
+        target.setPos(position);
+        target.setRot(rotation);
+        target.setScale(scale);
+        target.setPivot(pivot);
+        target.offsetPivot(offsetPivot);
+        target.offsetPos(offsetPos);
+        target.offsetRot(offsetRot);
+        target.offsetScale(offsetScale);
+        target.stackScale.set(stackScale);
+        target.color.set(color);
+        target.color2.set(color2);
+        target.alpha = alpha;
+        target.light = light;
+        target.overlay = overlay;
+        target.needsMatrixRecalculation = needsMatrixRecalculation;
+        target.render = render;
+        target.visible = visible;
+        target.vanillaVisible = vanillaVisible;
+        target.setPrimaryRenderType(primaryRenderType);
+        target.setSecondaryRenderType(secondaryRenderType);
+        target.primaryTexture = primaryTexture;
+        target.secondaryTexture = secondaryTexture;
     }
 
     //Modify this object using the information contained in the other object
@@ -423,5 +369,36 @@ public class PartCustomization implements CachedType<PartCustomization> {
         MESH,
         CUBE,
         GROUP
+    }
+
+    public static class PartCustomizationStack {
+
+        private final Deque<PartCustomization> stack = new ArrayDeque<>() {{
+            add(new PartCustomization());
+        }};
+
+        public void push(PartCustomization customization) {
+            //copy stack
+            PartCustomization newCustomization = new PartCustomization();
+            stack.getLast().copyTo(newCustomization);
+
+            //modify
+            newCustomization.modify(customization);
+
+            //add
+            stack.addLast(newCustomization);
+        }
+
+        public void pop() {
+            stack.removeLast();
+        }
+
+        public PartCustomization peek() {
+            return stack.getLast();
+        }
+
+        public boolean isEmpty() {
+            return stack.size() == 1;
+        }
     }
 }
