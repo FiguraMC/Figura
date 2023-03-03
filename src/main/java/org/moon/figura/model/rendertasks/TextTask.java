@@ -47,7 +47,7 @@ public class TextTask extends RenderTask {
     }
 
     @Override
-    public boolean render(PartCustomization.Stack stack, MultiBufferSource buffer, int light, int overlay) {
+    public boolean render(PartCustomization.PartCustomizationStack stack, MultiBufferSource buffer, int light, int overlay) {
         if (!enabled || text == null || text.size() == 0)
             return false;
 

@@ -37,7 +37,7 @@ public class ItemTask extends RenderTask {
     }
 
     @Override
-    public boolean render(PartCustomization.Stack stack, MultiBufferSource buffer, int light, int overlay) {
+    public boolean render(PartCustomization.PartCustomizationStack stack, MultiBufferSource buffer, int light, int overlay) {
         if (!enabled || item == null || item.isEmpty())
             return false;
 

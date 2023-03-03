@@ -38,10 +38,10 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class ImmediateAvatarRenderer extends AvatarRenderer {
 
     protected final List<FiguraImmediateBuffer> buffers = new ArrayList<>(0);
-    protected final PartCustomization.Stack customizationStack = new PartCustomization.Stack();
+    protected final PartCustomization.PartCustomizationStack customizationStack = new PartCustomization.PartCustomizationStack();
 
     public static final FiguraMat4 VIEW_TO_WORLD_MATRIX = FiguraMat4.of();
-    private static final PartCustomization pivotOffsetter = PartCustomization.of();
+    private static final PartCustomization pivotOffsetter = new PartCustomization();
     protected static final VertexBuffer VERTEX_BUFFER = new VertexBuffer();
 
     public ImmediateAvatarRenderer(Avatar avatar) {
@@ -60,7 +60,6 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
     @Override
     protected void clean() {
         super.clean();
-        customizationStack.fullClear();
         for (FiguraImmediateBuffer buffer : buffers)
             buffer.clean();
     }
@@ -91,9 +90,6 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         //Push transform
         customizationStack.push(customization);
 
-        //Free customization after use
-        customization.free();
-
         //world matrices
         VIEW_TO_WORLD_MATRIX.set(AvatarRenderer.worldToViewMatrix().invert());
 
@@ -103,7 +99,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         //finish rendering
         customizationStack.pop();
         checkEmpty();
-        customizationStack.fullClear();
+
         this.isRendering = false;
     }
 
@@ -116,9 +112,6 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
         //Push transform
         customizationStack.push(customization);
-
-        //Free customization after use
-        customization.free();
 
         //iris fix
         int irisConfig = UIHelper.paperdoll || !ClientAPI.hasIris() ? 0 : Configs.IRIS_COMPATIBILITY_FIX.value;
@@ -177,7 +170,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
     }
 
     protected PartCustomization setupRootCustomization(double vertOffset) {
-        PartCustomization customization = PartCustomization.of();
+        PartCustomization customization = new PartCustomization();
 
         customization.setPrimaryRenderType(RenderTypes.TRANSLUCENT);
         customization.setSecondaryRenderType(RenderTypes.EMISSIVE);

@@ -30,7 +30,7 @@ public abstract class RenderTask {
     protected Integer light = null;
     protected Integer overlay = null;
 
-    private final PartCustomization customization = PartCustomization.of();
+    private final PartCustomization customization = new PartCustomization();
 
     public RenderTask(String name, Avatar owner) {
         this.name = name;
@@ -38,10 +38,10 @@ public abstract class RenderTask {
     }
 
     //Return true if something was rendered, false if the function cancels for some reason
-    public abstract boolean render(PartCustomization.Stack stack, MultiBufferSource buffer, int light, int overlay);
+    public abstract boolean render(PartCustomization.PartCustomizationStack stack, MultiBufferSource buffer, int light, int overlay);
     public abstract int getComplexity();
 
-    public void pushOntoStack(PartCustomization.Stack stack) {
+    public void pushOntoStack(PartCustomization.PartCustomizationStack stack) {
         customization.recalculate();
         stack.push(customization);
     }

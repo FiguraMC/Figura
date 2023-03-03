@@ -105,7 +105,6 @@ public abstract class AvatarRenderer {
     public abstract void updateMatrices();
 
     protected void clean() {
-        root.clean();
         for (FiguraTexture texture : customTextures.values())
             texture.close();
     }

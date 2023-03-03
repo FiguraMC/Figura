@@ -32,7 +32,7 @@ public class BlockTask extends RenderTask {
     }
 
     @Override
-    public boolean render(PartCustomization.Stack stack, MultiBufferSource buffer, int light, int overlay) {
+    public boolean render(PartCustomization.PartCustomizationStack stack, MultiBufferSource buffer, int light, int overlay) {
         if (!enabled || block == null || block.isAir())
             return false;
 

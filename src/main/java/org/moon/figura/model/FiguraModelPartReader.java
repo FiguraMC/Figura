@@ -36,7 +36,7 @@ public class FiguraModelPartReader {
         String name = partCompound.getString("name");
 
         //Read transformation
-        PartCustomization customization = PartCustomization.of();
+        PartCustomization customization = new PartCustomization();
         FiguraVec3 target = FiguraVec3.of();
         readVec3(target, partCompound, "rot");
         customization.setRot(target);
