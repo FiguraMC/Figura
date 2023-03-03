@@ -19,8 +19,6 @@ import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.PopupMenu;
 import org.moon.figura.gui.screens.WardrobeScreen;
 import org.moon.figura.lua.FiguraLuaPrinter;
-import org.moon.figura.lua.api.particle.ParticleAPI;
-import org.moon.figura.lua.api.sound.SoundAPI;
 import org.moon.figura.utils.FiguraText;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -45,15 +43,6 @@ public abstract class MinecraftMixin {
 
     @Inject(at = @At("RETURN"), method = "handleKeybinds")
     private void handleKeybinds(CallbackInfo ci) {
-        //panic button
-        if (Configs.PANIC_BUTTON.keyBind.consumeClick()) {
-            AvatarManager.panic = !AvatarManager.panic;
-            FiguraToast.sendToast(FiguraText.of(AvatarManager.panic ? "toast.panic_enabled" : "toast.panic_disabled"), FiguraToast.ToastType.WARNING);
-            SoundAPI.getSoundEngine().figura$stopAllSounds();
-            ParticleAPI.getParticleEngine().figura$clearParticles(null);
-            return;
-        }
-
         //dont handle keybinds on panic
         if (AvatarManager.panic)
             return;

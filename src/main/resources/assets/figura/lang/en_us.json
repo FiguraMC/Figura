@@ -133,7 +133,7 @@
   "figura.gui.minimise": "Minimise",
   "figura.gui.reset_all": "Reset All",
   "figura.gui.panic.1": "Panic mode active! Figura features are disabled!",
-  "figura.gui.panic.2": "toggle panic mode with [%s] key",
+  "figura.gui.panic.2": "toggle panic mode with the [%s] key",
   "figura.gui.help.tooltip": "Help",
   "figura.gui.duplicate_keybind": "This key is also used for:\n%s",
 

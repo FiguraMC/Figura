@@ -21,9 +21,10 @@ public class PianoWidget extends AbstractContainerElement {
     private static final int TOTAL_KEYS = 29; //includes "missing" black keys
     private static final String[] NOTES = {"F", "G", "A", "B", "C", "D", "E"};
 
+    private final List<Key> keys = new ArrayList<>();
     private final Supplier<LuaSound> soundSupplier;
     private Key hovered;
-    private boolean pressed;
+    public boolean pressed;
 
     public PianoWidget(int x, int y, int width, int height, Supplier<LuaSound> soundSupplier) {
         super(x, y, width, height);
@@ -33,7 +34,7 @@ public class PianoWidget extends AbstractContainerElement {
         float j = 0f;
 
         List<Key> sharpKeys = new ArrayList<>();
-        for (int i = 1, note = 0, keys = 0; i <= TOTAL_KEYS; i++, j += 0.5f) {
+        for (int i = 1, note = 0, count = 0; i <= TOTAL_KEYS; i++, j += 0.5f) {
             //skip "empty" black keys
             if (i % 2 == 1 && (i % 7 == 0 || (i + 1) % 7 == 0))
                 continue;
@@ -44,12 +45,13 @@ public class PianoWidget extends AbstractContainerElement {
             if (!isSharp) note = (note + 1) % NOTES.length;
 
             //create key
-            Key key = new Key(keyX, y + 1, (int) Math.round(keyWidth), isSharp ? height / 2 : height - 2, NOTES[note] + (isSharp ? "#" : ""), (float) Math.pow(2, (keys - 12) / 12f), isSharp, this);
+            Key key = new Key(keyX, y + 1, (int) Math.round(keyWidth), isSharp ? height / 2 : height - 2, NOTES[note] + (isSharp ? "#" : ""), (float) Math.pow(2, (count - 12) / 12f), isSharp, this);
 
             //add key
-            keys++;
+            count++;
             if (!isSharp) children.add(key);
             else sharpKeys.add(key);
+            keys.add(key);
         }
 
         children.addAll(sharpKeys);
@@ -62,20 +64,17 @@ public class PianoWidget extends AbstractContainerElement {
         //background
         UIHelper.renderSliced(stack, x, y, width, height, UIHelper.OUTLINE_FILL);
 
+        Key lastHovered = hovered;
+
+        //define visible key
+        for (Key key : keys)
+            key.setHovered(key.isMouseOver(mouseX, mouseY));
+
         //render children
         super.render(stack, mouseX, mouseY, delta);
-    }
 
-    @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        pressed = button == 0;
-        return super.mouseClicked(mouseX, mouseY, button);
-    }
-
-    @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        pressed = false;
-        return super.mouseReleased(mouseX, mouseY, button);
+        if (pressed && hovered != lastHovered && hovered != null)
+            hovered.playDownSound(Minecraft.getInstance().getSoundManager());
     }
 
     private static class Key extends ParentedButton {
@@ -99,6 +98,15 @@ public class PianoWidget extends AbstractContainerElement {
             } else {
                 soundManager.play(SimpleSoundInstance.forUI(SoundEvents.NOTE_BLOCK_HARP.value(), pitch, 1f));
             }
+        }
+
+        @Override
+        public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
+            if (!this.visible)
+                return;
+
+            //render button
+            this.renderButton(stack, mouseX, mouseY, delta);
         }
 
         @Override
@@ -134,8 +142,6 @@ public class PianoWidget extends AbstractContainerElement {
             //checking against no one
             if (parent.hovered == null) {
                 parent.hovered = this;
-                if (parent.pressed)
-                    playDownSound(Minecraft.getInstance().getSoundManager());
                 return true;
             }
 
@@ -148,8 +154,6 @@ public class PianoWidget extends AbstractContainerElement {
             if (this.isSharp) {
                 parent.hovered.setHovered(false);
                 parent.hovered = this;
-                if (parent.pressed)
-                    playDownSound(Minecraft.getInstance().getSoundManager());
                 return true;
             }
 
