@@ -74,7 +74,7 @@ public class PianoWidget extends AbstractContainerElement {
         super.render(stack, mouseX, mouseY, delta);
 
         if (pressed && hovered != lastHovered && hovered != null)
-            hovered.playDownSound(Minecraft.getInstance().getSoundManager());
+            hovered.run();
     }
 
     private static class Key extends ParentedButton {

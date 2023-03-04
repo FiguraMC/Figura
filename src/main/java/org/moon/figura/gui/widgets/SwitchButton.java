@@ -2,7 +2,6 @@ package org.moon.figura.gui.widgets;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -57,12 +56,8 @@ public class SwitchButton extends TexturedButton {
     @Override
     protected void renderText(PoseStack stack) {
         //draw text
-        drawCenteredString(
-                stack, Minecraft.getInstance().font,
-                (this.toggled && underline ? getMessage().copy().withStyle(ChatFormatting.UNDERLINE) : getMessage()),
-                this.x + this.width / 2, this.y + this.height / 2 - 4,
-                (!this.active ? ChatFormatting.DARK_GRAY : ChatFormatting.WHITE).getColor()
-        );
+        int color = (!this.active ? ChatFormatting.DARK_GRAY : ChatFormatting.WHITE).getColor();
+        UIHelper.renderScrollingText(stack, this.toggled && underline ? getMessage().copy().withStyle(ChatFormatting.UNDERLINE) : getMessage(), x, y, getWidth(), getHeight(), color);
     }
 
     protected void renderDefaultTexture(PoseStack stack, float delta) {
