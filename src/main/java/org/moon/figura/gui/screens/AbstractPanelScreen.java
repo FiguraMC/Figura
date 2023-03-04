@@ -213,7 +213,7 @@ public abstract class AbstractPanelScreen extends Screen {
         if (style != null) {
             ClickEvent e = style.getClickEvent();
             if (e instanceof TextUtils.FiguraClickEvent fce) {
-                fce.run();
+                fce.onClick.run();
                 return true;
             }
         }
