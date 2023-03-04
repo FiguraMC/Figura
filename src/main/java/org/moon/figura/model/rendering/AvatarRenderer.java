@@ -36,7 +36,7 @@ public abstract class AvatarRenderer {
     protected final Avatar avatar;
     public FiguraModelPart root;
 
-    private final HashMap<ParentType, List<FiguraModelPart>> separatedParts = new HashMap<>();
+    protected final HashMap<ParentType, List<FiguraModelPart>> separatedParts = new HashMap<>();
 
     protected boolean isRendering, dirty;
 

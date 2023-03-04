@@ -285,7 +285,7 @@ public class PartCustomization {
         return secondaryRenderType;
     }
 
-    protected void copyTo(PartCustomization target) {
+    public void copyTo(PartCustomization target) {
         target.partType = partType;
         target.positionMatrix.set(positionMatrix);
         target.uvMatrix.set(uvMatrix);
@@ -315,7 +315,7 @@ public class PartCustomization {
     }
 
     //Modify this object using the information contained in the other object
-    private void modify(PartCustomization other) {
+    public void modify(PartCustomization other) {
         positionMatrix.rightMultiply(other.positionMatrix);
         uvMatrix.rightMultiply(other.uvMatrix);
         normalMatrix.rightMultiply(other.normalMatrix);
