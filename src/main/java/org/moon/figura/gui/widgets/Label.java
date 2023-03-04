@@ -20,6 +20,7 @@ public class Label implements FiguraWidget, GuiEventListener {
     public int x, y;
     public int width = 0;
     public int height = 0;
+    public float labelScale = 1;
     private boolean visible = true;
 
     private final Font font;
@@ -49,21 +50,27 @@ public class Label implements FiguraWidget, GuiEventListener {
             Component line = split.get(i);
 
             int x = this.x;
-            int y = this.y + font.lineHeight * i;
-            int width = font.width(line);
+            int y = this.y + (int)(font.lineHeight * i * labelScale);
+            int width = (int)(font.width(line) * labelScale);
 
             if (centred) {
                 x -= width / 2;
-                y -= font.lineHeight / 2;
+                y -= (font.lineHeight*labelScale) / 2;
             }
 
+            //resizing, moving, and rendering text
+            int scaledX = (int)(x / labelScale);
+            int scaledY = (int)(y / labelScale);
+            stack.pushPose();
+            stack.scale(labelScale,labelScale,labelScale);
             if (outlineColor != null)
-                UIHelper.renderOutlineText(stack, font, line, x, y, color, outlineColor);
+                UIHelper.renderOutlineText(stack, font, line, scaledX, scaledY, color, outlineColor);
             else
-                font.drawShadow(stack, line, x, y, color);
+                font.drawShadow(stack, line, scaledX, scaledY, color);
+            stack.popPose();
 
-            if (mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + font.lineHeight)
-                UIHelper.setTooltip(font.getSplitter().componentStyleAtWidth(line, mouseX - x));
+            if (mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + (font.lineHeight*labelScale))
+                UIHelper.setTooltip(font.getSplitter().componentStyleAtWidth(line, (int)((mouseX - x)/labelScale)));
         }
     }
 
@@ -98,5 +105,25 @@ public class Label implements FiguraWidget, GuiEventListener {
 
     public void setOutlineColor(Integer outlineColor) {
         this.outlineColor = outlineColor;
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        var client = Minecraft.getInstance();
+        var splitter = font.getSplitter();
+        var lines = TextUtils.splitText(text, "\n");
+        int x = (int) Math.floor((mouseX - this.x) / labelScale);
+        int y = (int) Math.floor((mouseY - this.y) / labelScale);
+        if (x >= 0 && y >= 0 && y / 9 < lines.size()) {
+            var line = lines.get(y/9);
+            var style = splitter.componentStyleAtWidth(line, x);
+            if (style != null) {
+                if (client.screen != null) {
+                    client.screen.handleComponentClicked(style);
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
