@@ -44,6 +44,7 @@ public class UIHelper extends GuiComponent {
 
     // -- Variables -- //
 
+    public static final ResourceLocation FILL = new FiguraIdentifier("textures/gui/fill.png");
     public static final ResourceLocation OUTLINE_FILL = new FiguraIdentifier("textures/gui/outline_fill.png");
     public static final ResourceLocation OUTLINE = new FiguraIdentifier("textures/gui/outline.png");
     public static final ResourceLocation TOOLTIP = new FiguraIdentifier("textures/gui/tooltip.png");
