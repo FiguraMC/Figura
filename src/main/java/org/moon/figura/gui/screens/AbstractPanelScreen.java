@@ -4,13 +4,17 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
 import org.moon.figura.config.Configs;
 import org.moon.figura.gui.widgets.ContextMenu;
 import org.moon.figura.gui.widgets.FiguraTickable;
 import org.moon.figura.gui.widgets.PanelSelectorWidget;
 import org.moon.figura.utils.FiguraIdentifier;
+import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.ui.UIHelper;
 
 import java.util.List;
@@ -202,5 +206,17 @@ public abstract class AbstractPanelScreen extends Screen {
             return true;
 
         return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    @Override
+    public boolean handleComponentClicked(@Nullable Style style) {
+        if (style != null) {
+            ClickEvent e = style.getClickEvent();
+            if (e instanceof TextUtils.FiguraClickEvent fce) {
+                fce.run();
+                return true;
+            }
+        }
+        return super.handleComponentClicked(style);
     }
 }
