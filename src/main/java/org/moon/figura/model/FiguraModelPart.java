@@ -40,6 +40,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     public FiguraModelPart parent;
 
     public final PartCustomization customization;
+    public PartCustomization savedCustomization;
     public ParentType parentType = ParentType.None;
 
     private final Map<String, FiguraModelPart> childCache = new HashMap<>();
@@ -1033,11 +1034,12 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
             aliases = "parentType",
             value = "model_part.set_parent_type")
     public FiguraModelPart setParentType(@LuaNotNil String parent) {
-        ParentType newParent = ParentType.get(parent);
-        if ((newParent.isSeparate || this.parentType.isSeparate) && newParent != this.parentType)
+        ParentType oldParent = this.parentType;
+        this.parentType = ParentType.get(parent);
+
+        if ((oldParent.isSeparate || this.parentType.isSeparate) && oldParent != this.parentType)
             owner.renderer.sortParts();
 
-        this.parentType = newParent;
         this.customization.vanillaVisible = null;
         this.customization.needsMatrixRecalculation = true;
         return this;

@@ -146,7 +146,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         int[] remainingComplexity = new int[] {prev};
 
         //render all model parts
-        Boolean initialValue = currentFilterScheme.initialValue(root);
+        Boolean initialValue = currentFilterScheme.initialValueForPart(root);
         if (initialValue != null)
             renderPart(root, remainingComplexity, initialValue);
 
@@ -207,7 +207,6 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         FiguraMod.pushProfiler("predicate");
         Boolean thisPassedPredicate = currentFilterScheme.test(part.parentType, prevPredicate);
         if (thisPassedPredicate == null) {
-            part.advanceVerticesImmediate(this); //stinky
             FiguraMod.popProfiler(2);
             return true;
         }
@@ -224,11 +223,11 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
         if (thisPassedPredicate) {
             Boolean vanillaVisible = custom.vanillaVisible == null ? customizationStack.peek().vanillaVisible : custom.vanillaVisible;
-            if (!currentFilterScheme.ignoreVanillaVisible && vanillaVisible != null && !vanillaVisible) {
+            if (currentFilterScheme.initialValue && vanillaVisible != null && !vanillaVisible) {
                 custom.render = false;
             } else {
                 Boolean visible = custom.visible == null ? customizationStack.peek().visible : custom.visible;
-                custom.render = (visible == null || visible) && (currentFilterScheme.ignoreVanillaVisible || vanillaVisible == null || vanillaVisible);
+                custom.render = (visible == null || visible) && (!currentFilterScheme.initialValue || vanillaVisible == null || vanillaVisible);
             }
         } else {
             custom.render = false;
