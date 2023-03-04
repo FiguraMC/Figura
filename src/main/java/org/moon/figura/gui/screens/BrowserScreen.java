@@ -1,6 +1,5 @@
 package org.moon.figura.gui.screens;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import org.moon.figura.gui.FiguraToast;
@@ -9,7 +8,7 @@ import org.moon.figura.utils.FiguraText;
 
 public class BrowserScreen extends AbstractPanelScreen {
 
-    public static final Component TITLE = FiguraText.of("gui.panels.title.browser").withStyle(ChatFormatting.RED);
+    public static final Component TITLE = FiguraText.of("gui.panels.title.browser");
 
     public BrowserScreen(Screen parentScreen) {
         super(parentScreen, TITLE, BrowserScreen.class);
@@ -23,8 +22,6 @@ public class BrowserScreen extends AbstractPanelScreen {
     @Override
     public void init() {
         super.init();
-
-        FiguraToast.sendToast("not yet!", "<3");
 
         int y = -84;
         this.addRenderableWidget(new TexturedButton(width / 2 - 30, height / 2 + (y += 24), 60, 20, Component.literal("default toast"), FiguraText.of("backend.error"), button -> {

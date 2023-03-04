@@ -167,6 +167,7 @@
   "figura.gui.panels.title.wardrobe": "Wardrobe",
   "figura.gui.panels.title.permissions": "Permissions",
   "figura.gui.panels.title.settings": "Settings",
+  "figura.gui.panels.title.docs": "Lua Docs",
 
   "figura.gui.panels.title.sound": "Avatar Sounds",
   "figura.gui.panels.title.keybind": "Avatar Keybinds",

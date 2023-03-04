@@ -2,6 +2,7 @@ package org.moon.figura.gui.widgets;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -133,5 +134,14 @@ public class TexturedButton extends Button {
 
     public void setHovered(boolean hovered) {
         this.isHovered = hovered;
+    }
+
+    public void run() {
+        playDownSound(Minecraft.getInstance().getSoundManager());
+        onPress();
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
     }
 }
