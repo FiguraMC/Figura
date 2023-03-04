@@ -332,4 +332,12 @@ public class TextUtils {
             return function.apply(font, component);
         }
     }
+
+    public static abstract class FiguraClickEvent extends ClickEvent {
+        public FiguraClickEvent() {
+            super(Action.SUGGEST_COMMAND, "");
+        }
+
+        public abstract void run();
+    }
 }
