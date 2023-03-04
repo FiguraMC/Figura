@@ -33,7 +33,7 @@ public class PermissionsScreen extends AbstractPanelScreen {
 
     // -- widgets -- //
     private PlayerList playerList;
-    private InteractableEntity entityWidget;
+    private EntityPreview entityWidget;
 
     private SliderWidget slider;
 
@@ -78,7 +78,7 @@ public class PermissionsScreen extends AbstractPanelScreen {
         int entityX = Math.max(middle + (listWidth - entitySize) / 2 + 1, middle + 2);
 
         //entity widget
-        entityWidget = new InteractableEntity(entityX, 28, entitySize, entitySize, modelSize, -15f, 30f, Minecraft.getInstance().player, this);
+        entityWidget = new EntityPreview(entityX, 28, entitySize, entitySize, modelSize, -15f, 30f, Minecraft.getInstance().player, this);
 
         //permission slider and list
         slider = new SliderWidget(middle + 2, (int) (entityWidget.y + entityWidget.height + lineHeight * 1.5 + 20), listWidth, 11, 1d, 5, true) {

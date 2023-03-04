@@ -13,7 +13,7 @@ import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.ui.UIHelper;
 
-public class InteractableEntity extends AbstractContainerElement {
+public class EntityPreview extends AbstractContainerElement {
 
     public static final ResourceLocation UNKNOWN = new FiguraIdentifier("textures/gui/unknown_entity.png");
     public static final ResourceLocation OVERLAY = new FiguraIdentifier("textures/gui/entity_overlay.png");
@@ -41,7 +41,7 @@ public class InteractableEntity extends AbstractContainerElement {
     private float dragDeltaX, dragDeltaY;
     private float dragAnchorX, dragAnchorY;
 
-    public InteractableEntity(int x, int y, int width, int height, int scale, float pitch, float yaw, LivingEntity entity, AbstractPanelScreen parentScreen) {
+    public EntityPreview(int x, int y, int width, int height, float scale, float pitch, float yaw, LivingEntity entity, AbstractPanelScreen parentScreen) {
         super(x, y, width, height);
 
         this.scale = scale;
