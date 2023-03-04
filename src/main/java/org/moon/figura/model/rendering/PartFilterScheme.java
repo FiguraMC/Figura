@@ -7,38 +7,38 @@ public enum PartFilterScheme {
 
     //Assume that, when rendering model, everything is good to go in the beginning, and prune off things that aren't connected to main model.
     //Cancel when we find a part that's separate (special)
-    MODEL(true, SchemeFunction.cancelOnSeparate()),
+    MODEL(true, SchemeFunction.cancelOnSeparate(), ParentType.None),
 
 
-    HEAD(false, SchemeFunction.allowOnThisAndCancelOnSeparate(ParentType.Head)),
-    LEFT_ARM(false, SchemeFunction.allowOnThisAndCancelOnSeparate(ParentType.LeftArm)),
-    RIGHT_ARM(false, SchemeFunction.allowOnThisAndCancelOnSeparate(ParentType.RightArm)),
+    HEAD(false, SchemeFunction.allowOnThisAndCancelOnSeparate(ParentType.Head), ParentType.Head),
+    LEFT_ARM(false, SchemeFunction.allowOnThisAndCancelOnSeparate(ParentType.LeftArm), ParentType.LeftArm),
+    RIGHT_ARM(false, SchemeFunction.allowOnThisAndCancelOnSeparate(ParentType.RightArm), ParentType.RightArm),
 
 
-    CAPE(false, SchemeFunction.onlyThisSeparate(ParentType.Cape)),
-    LEFT_ELYTRA(false, SchemeFunction.onlyThisSeparate(ParentType.LeftElytra)),
-    RIGHT_ELYTRA(false, SchemeFunction.onlyThisSeparate(ParentType.RightElytra)),
+    CAPE(false, SchemeFunction.onlyThisSeparate(ParentType.Cape), ParentType.Cape),
+    LEFT_ELYTRA(false, SchemeFunction.onlyThisSeparate(ParentType.LeftElytra), ParentType.LeftElytra),
+    RIGHT_ELYTRA(false, SchemeFunction.onlyThisSeparate(ParentType.RightElytra), ParentType.RightElytra),
 
 
-    WORLD(false, SchemeFunction.onlyThisSeparate(ParentType.World)),
-    HUD(false, SchemeFunction.onlyThisSeparate(ParentType.Hud)),
-    SKULL(false, SchemeFunction.onlyThisSeparate(ParentType.Skull)),
-    PORTRAIT(false, SchemeFunction.onlyThisSeparate(ParentType.Portrait)),
-    ARROW(false, SchemeFunction.onlyThisSeparate(ParentType.Arrow)),
+    WORLD(false, SchemeFunction.onlyThisSeparate(ParentType.World), ParentType.World),
+    HUD(false, SchemeFunction.onlyThisSeparate(ParentType.Hud), ParentType.Hud),
+    SKULL(false, SchemeFunction.onlyThisSeparate(ParentType.Skull), ParentType.Skull),
+    PORTRAIT(false, SchemeFunction.onlyThisSeparate(ParentType.Portrait), ParentType.Portrait),
+    ARROW(false, SchemeFunction.onlyThisSeparate(ParentType.Arrow), ParentType.Arrow),
 
-    PIVOTS(false, SchemeFunction.onlyPivotsAndCancelOnSeparate());
+    PIVOTS(false, SchemeFunction.onlyPivotsAndCancelOnSeparate(), ParentType.HelmetItemPivot);
 
-    public final boolean ignoreVanillaVisible;
-    private final boolean initialValue;
-    private final SchemeFunction predicate;
+    public final boolean initialValue;
+    public final SchemeFunction predicate;
+    public final ParentType parentType;
 
-    PartFilterScheme(boolean initialValue, SchemeFunction predicate) {
-        this.ignoreVanillaVisible = !initialValue;
+    PartFilterScheme(boolean initialValue, SchemeFunction predicate, ParentType parentType) {
         this.initialValue = initialValue;
         this.predicate = predicate;
+        this.parentType = parentType;
     }
 
-    public Boolean initialValue(FiguraModelPart root) {
+    public Boolean initialValueForPart(FiguraModelPart root) {
         return test(root.parentType, initialValue);
     }
 

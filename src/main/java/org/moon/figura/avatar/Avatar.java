@@ -813,7 +813,7 @@ public class Avatar {
     // -- animations -- //
 
     public void applyAnimations() {
-        if (!loaded)
+        if (!loaded || scriptError)
             return;
 
         int animationsLimit = permissions.get(Permissions.BB_ANIMATIONS);
@@ -830,7 +830,7 @@ public class Avatar {
     }
 
     public void clearAnimations() {
-        if (!loaded)
+        if (!loaded || scriptError)
             return;
 
         for (Animation animation : animations.values())
