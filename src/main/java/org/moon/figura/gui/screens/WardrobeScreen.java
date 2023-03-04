@@ -6,6 +6,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.Style;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
@@ -42,7 +44,6 @@ public class WardrobeScreen extends AbstractPanelScreen {
     @Override
     protected void init() {
         super.init();
-
         //screen
         int middle = width / 2;
         int panels = Math.min(width / 3, 256) - 8;
