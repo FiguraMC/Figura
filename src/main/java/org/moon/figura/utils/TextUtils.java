@@ -334,10 +334,10 @@ public class TextUtils {
     }
 
     public static abstract class FiguraClickEvent extends ClickEvent {
-        public FiguraClickEvent() {
+        public final Runnable onClick;
+        public FiguraClickEvent(Runnable onClick) {
             super(Action.SUGGEST_COMMAND, "");
+            this.onClick = onClick;
         }
-
-        public abstract void run();
     }
 }
