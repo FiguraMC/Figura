@@ -1,82 +1,121 @@
 package org.moon.figura.gui.widgets;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.client.gui.narration.NarratedElementType;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.ui.UIHelper;
 
 import java.util.List;
 
-public class Label implements FiguraWidget, GuiEventListener {
+public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
 
-    private Component text;
-    private Integer outlineColor;
-    private int color = 0xFFFFFFFF;
+    //text
+    private final Font font;
+    private Component rawText;
+    private List<Component> formattedText;
+    public TextUtils.Alignment alignment;
+    public Integer outlineColor;
+    public int alpha = 0xFF;
+    public int maxWidth;
+    public boolean wrap;
 
+    private Style hovered;
+
+    //widget
     public int x, y;
-    public int width = 0;
-    public int height = 0;
-    public float labelScale = 1;
+    private int width, height;
+    private float scale;
     private boolean visible = true;
 
-    private final Font font;
-    private final boolean centred;
-
-    public Label(Object text, int x, int y, boolean centred) {
+    public Label(Object text, int x, int y, float scale, int maxWidth, boolean wrap, TextUtils.Alignment alignment, Integer outlineColor) {
         this.font = Minecraft.getInstance().font;
+        this.rawText = text instanceof Component c ? c : Component.literal(String.valueOf(text));
         this.x = x;
         this.y = y;
-        this.centred = centred;
-        setText(text);
+        this.scale = scale;
+        this.maxWidth = maxWidth;
+        this.wrap = wrap;
+        this.alignment = alignment;
+        this.outlineColor = outlineColor;
+        updateText();
     }
 
-    public Label(Object text, int x, int y, boolean centred, Integer outlineColor) {
-        this(text, x, y, centred);
-        setOutlineColor(outlineColor);
+    public Label(Object text, int x, int y, int outlineColor) {
+        this(text, x, y, 1f, -1, false, TextUtils.Alignment.LEFT, outlineColor);
+    }
+
+    public Label(Object text, int x, int y, TextUtils.Alignment alignment) {
+        this(text, x, y, 1f, -1, false, alignment, null);
+    }
+
+    public Label(Object text, int x, int y, TextUtils.Alignment alignment, int outlineColor) {
+        this(text, x, y, 1f, -1, false, alignment, outlineColor);
+    }
+
+    public Label(Object text, int x, int y, int maxWidth, boolean wrap) {
+        this(text, x, y, 1f, maxWidth, wrap, TextUtils.Alignment.LEFT, null);
     }
 
     @Override
     public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
+        hovered = null;
+
         if (!isVisible())
             return;
 
-        //split new lines
-        List<Component> split = TextUtils.splitText(text, "\n");
-        for (int i = 0; i < split.size(); i++) {
-            Component line = split.get(i);
+        stack.pushPose();
+        stack.translate(this.x, this.y, 0);
+        stack.scale(scale, scale, scale);
 
-            int x = this.x;
-            int y = this.y + (int)(font.lineHeight * i * labelScale);
-            int width = (int)(font.width(line) * labelScale);
+        //prepare pos
+        int y = 0;
+        int height = font.lineHeight + 1;
 
-            if (centred) {
-                x -= width / 2;
-                y -= (font.lineHeight*labelScale) / 2;
+        if (alignment == TextUtils.Alignment.CENTER)
+            y -= height * formattedText.size() / 2f;
+
+        for (Component text : formattedText) {
+            //dimensions
+            int x = -alignment.apply(font, text);
+            int width = font.width(text);
+
+            //hovered
+            if (mouseX >= this.x + x * scale && mouseX < this.x + (x + width) * scale && mouseY >= this.y + y * scale && mouseY < this.y + (y + height) * scale) {
+                hovered = font.getSplitter().componentStyleAtWidth(text, (int) ((mouseX - this.x - x * scale) / scale));
+                if (hovered != null && hovered.getClickEvent() != null)
+                    text = text.copy().withStyle(ChatFormatting.UNDERLINE);
+                UIHelper.setTooltip(hovered);
             }
 
-            //resizing, moving, and rendering text
-            int scaledX = (int)(x / labelScale);
-            int scaledY = (int)(y / labelScale);
-            stack.pushPose();
-            stack.scale(labelScale,labelScale,labelScale);
-            if (outlineColor != null)
-                UIHelper.renderOutlineText(stack, font, line, scaledX, scaledY, color, outlineColor);
-            else
-                font.drawShadow(stack, line, scaledX, scaledY, color);
-            stack.popPose();
+            //render text
+            if (outlineColor != null) {
+                UIHelper.renderOutlineText(stack, font, text, x, y, 0xFFFFFF, outlineColor);
+            } else {
+                font.drawShadow(stack, text, x, y, 0xFFFFFF + (alpha << 24));
+            }
 
-            if (mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + (font.lineHeight*labelScale))
-                UIHelper.setTooltip(font.getSplitter().componentStyleAtWidth(line, (int)((mouseX - x)/labelScale)));
+            y += height;
         }
+
+        stack.popPose();
     }
 
-    private void calculateDimensions() {
-        List<Component> split = TextUtils.splitText(text, "\n");
-        this.width = TextUtils.getWidth(split, font);
-        this.height = font.lineHeight * split.size();
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (hovered != null && Minecraft.getInstance().screen != null) {
+            Minecraft.getInstance().screen.handleComponentClicked(hovered);
+            return true;
+        }
+
+        return GuiEventListener.super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
@@ -89,40 +128,37 @@ public class Label implements FiguraWidget, GuiEventListener {
         this.visible = visible;
     }
 
-    public Component getText() {
-        return text;
-    }
-
-    public void setText(Object text) {
-        this.text = text instanceof Component c ? c : Component.literal(String.valueOf(text));
-        calculateDimensions();
-    }
-
-    public void setColor(int color) {
-        this.color = color;
-    }
-
-    public void setOutlineColor(Integer outlineColor) {
-        this.outlineColor = outlineColor;
+    @Override
+    public NarrationPriority narrationPriority() {
+        return NarrationPriority.HOVERED;
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        var client = Minecraft.getInstance();
-        var splitter = font.getSplitter();
-        var lines = TextUtils.splitText(text, "\n");
-        int x = (int) Math.floor((mouseX - this.x) / labelScale);
-        int y = (int) Math.floor((mouseY - this.y) / labelScale);
-        if (x >= 0 && y >= 0 && y / 9 < lines.size()) {
-            var line = lines.get(y/9);
-            var style = splitter.componentStyleAtWidth(line, x);
-            if (style != null) {
-                if (client.screen != null) {
-                    client.screen.handleComponentClicked(style);
-                    return true;
-                }
-            }
-        }
-        return false;
+    public void updateNarration(NarrationElementOutput builder) {
+        builder.add(NarratedElementType.POSITION, rawText);
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setScale(float scale) {
+        this.scale = scale;
+        updateText();
+    }
+
+    public void setText(Component text) {
+        this.rawText = text;
+        updateText();
+    }
+
+    private void updateText() {
+        this.formattedText = TextUtils.formatInBounds(rawText, font, (int) (maxWidth / scale), wrap);
+        this.width = (int) (TextUtils.getWidth(formattedText, font) * scale);
+        this.height = (int) ((font.lineHeight + 1) * formattedText.size() * scale);
     }
 }

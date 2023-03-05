@@ -52,7 +52,7 @@ public class GameScreen extends AbstractPanelScreen {
         ));
 
         //text
-        addRenderableOnly(keys = new Label(
+        addRenderableWidget(keys = new Label(
                 Component.empty()
                         .append(Component.literal("[R]").withStyle(FiguraMod.getAccentColor()))
                         .append(" restart, ")
@@ -65,9 +65,9 @@ public class GameScreen extends AbstractPanelScreen {
                         .append(" hide text, ")
                         .append(Component.literal("[Scroll]").withStyle(FiguraMod.getAccentColor()))
                         .append(" scale (restarts)"),
-                4, 4, false, 0)
+                4, 4, 0)
         );
-        addRenderableOnly(stats = new Label("", 4, keys.y + keys.height, false, 0));
+        addRenderableWidget(stats = new Label("", 4, keys.y + keys.getHeight(), 0));
     }
 
     @Override

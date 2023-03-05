@@ -23,6 +23,7 @@
     "gui.InventoryScreenMixin",
     "gui.PauseScreenMixin",
     "gui.PlayerTabOverlayMixin",
+    "gui.ScreenMixin",
     "gui.SplashManagerMixin",
     "gui.TitleScreenMixin",
 

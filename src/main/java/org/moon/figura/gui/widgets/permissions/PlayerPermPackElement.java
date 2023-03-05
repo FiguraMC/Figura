@@ -57,7 +57,7 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
         this.owner = owner;
         this.context = new ContextMenu(this);
 
-        this.nameLabel = new Label(name, 0, 0, false, 0);
+        this.nameLabel = new Label(name, 0, 0, 0);
         this.status = new PlayerStatusWidget(0, 0, 70, owner);
 
         generateContext();
