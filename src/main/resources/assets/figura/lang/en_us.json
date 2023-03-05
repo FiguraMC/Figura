@@ -241,6 +241,7 @@
 
   "figura.gui.avatar_wizard.meta": "Avatar Metadata",
   "figura.gui.avatar_wizard.name": "Name",
+  "figura.gui.avatar_wizard.description": "Description",
   "figura.gui.avatar_wizard.authors": "Authors",
 
   "figura.gui.avatar_wizard.model": "Model",

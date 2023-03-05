@@ -6,23 +6,17 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
-import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.apache.commons.codec.binary.Base64;
-import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.local.LocalAvatarFetcher;
 import org.moon.figura.exporters.BlockBenchModel;
 import org.moon.figura.exporters.BlockBenchModel.Cube;
 import org.moon.figura.exporters.BlockBenchModel.Group;
 import org.moon.figura.math.vector.FiguraVec3;
-import org.moon.figura.utils.ColorUtils;
-import org.moon.figura.utils.FiguraIdentifier;
-import org.moon.figura.utils.FiguraResourceListener;
-import org.moon.figura.utils.IOUtils;
+import org.moon.figura.utils.*;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -35,22 +29,18 @@ public class AvatarWizard {
     private static String playerTexture = "";
     private static String playerTextureSlim = "";
     private static String capeTexture = "";
+    private static byte[] iconTexture;
 
     private static final BiFunction<ResourceManager, String, String> GET_TEXTURE_DATA = (manager, path) -> {
-        try {
-            Resource resource = manager.getResource(new FiguraIdentifier(path));
-            InputStream is = resource.getInputStream();
-            return Base64.encodeBase64String(is.readAllBytes());
-        } catch (Exception e) {
-            FiguraMod.LOGGER.error("", e);
-        }
-        return "";
+        byte[] bytes = ResourceUtils.getResource(manager, new FiguraIdentifier(path));
+        return bytes != null ? Base64.encodeBase64String(bytes) : "";
     };
 
     public static final FiguraResourceListener RESOURCE_LISTENER = new FiguraResourceListener("avatar_wizard", manager -> {
         playerTexture = GET_TEXTURE_DATA.apply(manager, "textures/avatar_wizard/texture.png");
         playerTextureSlim = GET_TEXTURE_DATA.apply(manager, "textures/avatar_wizard/texture_slim.png");
         capeTexture = GET_TEXTURE_DATA.apply(manager, "textures/avatar_wizard/cape.png");
+        iconTexture = ResourceUtils.getResource(manager, new FiguraIdentifier("textures/avatar_wizard/icon.png"));
     });
 
     private final HashMap<WizardEntry, Object> map = new HashMap<>();
@@ -120,6 +110,12 @@ public class AvatarWizard {
         if (WizardEntry.DUMMY_MODEL.asBool(map))
             buildModel(folder);
 
+        //avatar icon
+        Path path = folder.resolve("avatar.png");
+        try (FileOutputStream fs = new FileOutputStream(path.toFile())) {
+            fs.write(iconTexture);
+        }
+
         //open file manager
         Util.getPlatform().openFile(folder.toFile());
     }
@@ -129,6 +125,10 @@ public class AvatarWizard {
 
         //name
         root.addProperty("name", name);
+
+        //description
+        String description = (String) map.get(WizardEntry.DESCRIPTION);
+        root.addProperty("description", description == null ? "" : description);
 
         //authors
         String authorStr = (String) map.get(WizardEntry.AUTHORS);
@@ -335,6 +335,7 @@ public class AvatarWizard {
         //metadata
         Meta(Type.CATEGORY),
         NAME(Type.TEXT),
+        DESCRIPTION(Type.TEXT, NAME),
         AUTHORS(Type.TEXT, NAME),
         //model stuff
         Model(Type.CATEGORY, NAME),

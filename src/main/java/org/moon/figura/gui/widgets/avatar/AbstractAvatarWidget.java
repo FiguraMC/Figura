@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.avatar.local.LocalAvatarFetcher;
 import org.moon.figura.gui.FiguraToast;
@@ -18,6 +19,7 @@ import java.io.File;
 
 public abstract class AbstractAvatarWidget extends AbstractContainerElement implements Comparable<AbstractAvatarWidget> {
 
+    protected static final Component SPACING = new TextComponent("  ");
     protected final AvatarList parent;
     protected final int depth;
     protected final ContextMenu context;
@@ -26,8 +28,8 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
     protected TexturedButton button;
     protected String filter = "";
 
-    public AbstractAvatarWidget(int depth, int width, LocalAvatarFetcher.AvatarPath avatar, AvatarList parent) {
-        super(0, 0, width, 20);
+    public AbstractAvatarWidget(int depth, int width, int height, LocalAvatarFetcher.AvatarPath avatar, AvatarList parent) {
+        super(0, 0, width, height);
         this.parent = parent;
         this.avatar = avatar;
         this.depth = depth;
@@ -86,7 +88,13 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
     }
 
     public void updateName() {
-        this.button.setMessage(new TextComponent("  ".repeat(depth)).append(getName()));
+        MutableComponent text = TextComponent.EMPTY.copy();
+
+        for (int i = 0; i < depth; i++)
+            text.append(SPACING);
+        text.append(getName());
+
+        this.button.setMessage(text);
     }
 
     public Component getName() {

@@ -1,5 +1,6 @@
 package org.moon.figura.utils;
 
+import net.minecraft.Util;
 import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.FiguraMod;
 
@@ -10,6 +11,6 @@ public class FiguraIdentifier extends ResourceLocation {
     }
 
     public static String formatPath(String path) {
-        return path.toLowerCase().replaceAll("[^a-z\\d/._-]", "_");
+        return Util.sanitizeName(path, ResourceLocation::validPathChar);
     }
 }
