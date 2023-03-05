@@ -63,7 +63,6 @@ processResources {
 tasks.withType(JavaCompile) {
 	it.options.encoding = "UTF-8"
 	it.options.release = Integer.valueOf(java_version)
-	it.options.compilerArgs += ["-Xlint:unchecked"]
 }
 
 java {

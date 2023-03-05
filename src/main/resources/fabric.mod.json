@@ -24,9 +24,6 @@
     "client": [
       "org.moon.figura.FiguraMod"
     ],
-    "preLaunch": [
-      "org.moon.figura.FiguraModPreLaunch"
-    ],
     "modmenu": [
       "org.moon.figura.config.ModMenuConfig"
     ]

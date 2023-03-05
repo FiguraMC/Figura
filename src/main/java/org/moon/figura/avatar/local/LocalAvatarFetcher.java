@@ -7,6 +7,7 @@ import org.moon.figura.FiguraMod;
 import org.moon.figura.config.Configs;
 import org.moon.figura.gui.cards.CardBackground;
 import org.moon.figura.parsers.AvatarMetadataParser;
+import org.moon.figura.utils.FileTexture;
 import org.moon.figura.utils.IOUtils;
 
 import java.io.File;
@@ -96,34 +97,42 @@ public class LocalAvatarFetcher {
     public static class AvatarPath {
 
         protected final Path path;
-        protected final String name;
+        protected final String name, description;
         protected final CardBackground background;
+        protected final FileTexture iconTexture;
 
         public AvatarPath(Path path) {
             this.path = path;
             String filename = path.getFileName().toString();
 
-            String name;
-            CardBackground bg;
+            String name = filename;
+            String description = "";
+            CardBackground bg = CardBackground.DEFAULT;
+            FileTexture iconTexture = null;
 
-            if (path.toString().toLowerCase().endsWith(".moon") || this instanceof FolderPath) {
-                name = filename;
-                bg = CardBackground.DEFAULT;
-            } else {
+            if (!path.toString().toLowerCase().endsWith(".moon") && !(this instanceof FolderPath)) {
+                //metadata
                 try {
                     String str = IOUtils.readFile(path.resolve("avatar.json").toFile());
                     AvatarMetadataParser.Metadata metadata = AvatarMetadataParser.read(str);
 
                     name = Configs.WARDROBE_FILE_NAMES.value || metadata.name == null || metadata.name.isBlank() ? filename : metadata.name;
+                    description = metadata.description == null ? "" : metadata.description;
                     bg = CardBackground.parse(metadata.background);
-                } catch (Exception ignored) {
-                    name = filename;
-                    bg = CardBackground.DEFAULT;
-                }
+                } catch (Exception ignored) {}
+
+                //icon
+                try {
+                    Path p = path.resolve("avatar.png");
+                    if (p.toFile().exists())
+                        iconTexture = FileTexture.of(p);
+                } catch (Exception ignored) {}
             }
 
             this.name = name;
+            this.description = description;
             this.background = bg;
+            this.iconTexture = iconTexture;
         }
 
         public boolean search(String query) {
@@ -139,8 +148,16 @@ public class LocalAvatarFetcher {
             return name;
         }
 
+        public String getDescription() {
+            return description;
+        }
+
         public CardBackground getBackground() {
             return background;
+        }
+
+        public FileTexture getIcon() {
+            return iconTexture;
         }
     }
 
