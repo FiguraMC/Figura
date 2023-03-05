@@ -6,8 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
@@ -20,6 +19,7 @@ import org.moon.figura.gui.widgets.*;
 import org.moon.figura.gui.widgets.lists.AvatarList;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FiguraText;
+import org.moon.figura.utils.TextUtils;
 
 public class WardrobeScreen extends AbstractPanelScreen {
 
@@ -44,7 +44,9 @@ public class WardrobeScreen extends AbstractPanelScreen {
     @Override
     protected void init() {
         super.init();
+
         //screen
+        Minecraft minecraft = Minecraft.getInstance();
         int middle = width / 2;
         int panels = Math.min(width / 3, 256) - 8;
 
@@ -63,7 +65,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
         int entityX = middle - modelBgSize / 2;
         int entityY = this.height / 2 - modelBgSize / 2;
 
-        EntityPreview entity = new EntityPreview(entityX, entityY, modelBgSize, modelBgSize, entitySize, -15f, 30f, Minecraft.getInstance().player, this);
+        EntityPreview entity = new EntityPreview(entityX, entityY, modelBgSize, modelBgSize, entitySize, -15f, 30f, minecraft.player, this);
         addRenderableWidget(entity);
 
         int buttX = entity.x + entity.width / 2;
@@ -105,9 +107,9 @@ public class WardrobeScreen extends AbstractPanelScreen {
         // -- bottom -- //
 
         //version
-        Label version = new Label(new FiguraText().append(" " + FiguraMod.VERSION.noBuildString()).withStyle(ChatFormatting.ITALIC), middle, this.height - 5, true);
-        addRenderableOnly(version);
-        version.setColor(0x33FFFFFF);
+        Label version = new Label(new FiguraText().append(" " + FiguraMod.VERSION.noBuildString()).withStyle(ChatFormatting.ITALIC), middle, this.height - 5, TextUtils.Alignment.CENTER);
+        addRenderableWidget(version);
+        version.alpha = 0x33;
 
         int rightSide = Math.min(panels, 134);
 
@@ -150,8 +152,12 @@ public class WardrobeScreen extends AbstractPanelScreen {
         addRenderableOnly(avatarInfo = new AvatarInfoWidget(this.width - panels - 4, 56, panels, back.y - 60));
 
         //panic warning - always added last, on top
-        addRenderableOnly(panic = new Label(new FiguraText("gui.panic.1").withStyle(ChatFormatting.YELLOW).append("\n").append(new FiguraText("gui.panic.2", Configs.PANIC_BUTTON.keyBind.getTranslatedKeyMessage())),
-                middle, this.height - 23, true, 0)
+        addRenderableWidget(panic = new Label(
+                TextComponent.EMPTY.copy().withStyle(ChatFormatting.YELLOW)
+                        .append(new FiguraText("gui.panic.1"))
+                        .append("\n")
+                        .append(new FiguraText("gui.panic.2", Configs.PANIC_BUTTON.keyBind.getTranslatedKeyMessage())),
+                middle, this.height - (minecraft.font.lineHeight + 1) * 2, TextUtils.Alignment.CENTER, 0)
         );
         panic.setVisible(false);
     }
