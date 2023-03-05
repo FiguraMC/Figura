@@ -15,6 +15,7 @@ import org.moon.figura.gui.widgets.TexturedButton;
 import org.moon.figura.gui.widgets.lists.ConfigList;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.IOUtils;
+import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.ui.UIHelper;
 
 import java.util.HashMap;
@@ -52,7 +53,7 @@ public class ConfigScreen extends AbstractPanelScreen {
 
         if (!hasPanels) {
             this.removeWidget(panels);
-            this.addRenderableOnly(new Label(TITLE, this.width / 2, 14, true));
+            this.addRenderableWidget(new Label(TITLE, this.width / 2, 14, TextUtils.Alignment.CENTER));
         }
 
         // -- bottom buttons -- //
