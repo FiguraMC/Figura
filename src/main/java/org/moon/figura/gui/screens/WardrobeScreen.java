@@ -106,9 +106,10 @@ public class WardrobeScreen extends AbstractPanelScreen {
         // -- bottom -- //
 
         //version
-        Label version = new Label(FiguraText.of().append(" " + FiguraMod.VERSION.noBuildString()).withStyle(ChatFormatting.ITALIC), middle, this.height - 5, TextUtils.Alignment.CENTER);
+        Label version = new Label(FiguraText.of().append(" " + FiguraMod.VERSION.noBuildString()).withStyle(ChatFormatting.ITALIC), middle, this.height, TextUtils.Alignment.CENTER);
         addRenderableWidget(version);
         version.alpha = 0x33;
+        version.y -= version.getHeight() / 2 + 1;
 
         int rightSide = Math.min(panels, 134);
 
@@ -156,8 +157,9 @@ public class WardrobeScreen extends AbstractPanelScreen {
                         .append(FiguraText.of("gui.panic.1"))
                         .append("\n")
                         .append(FiguraText.of("gui.panic.2", Configs.PANIC_BUTTON.keyBind.getTranslatedKeyMessage())),
-                middle, this.height - (minecraft.font.lineHeight + 1) * 2, TextUtils.Alignment.CENTER, 0)
+                middle, this.height - version.getHeight(), TextUtils.Alignment.CENTER, 0)
         );
+        panic.y -= panic.getHeight() / 2;
         panic.setVisible(false);
     }
 

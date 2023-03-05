@@ -77,7 +77,7 @@ public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
 
         //prepare pos
         int y = 0;
-        int height = font.lineHeight + 1;
+        int height = font.lineHeight;
 
         if (alignment == TextUtils.Alignment.CENTER)
             y -= height * formattedText.size() / 2f;
@@ -116,6 +116,23 @@ public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
         }
 
         return GuiEventListener.super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean isMouseOver(double mouseX, double mouseY) {
+        int x = this.x;
+        int y = this.y;
+
+        if (alignment == TextUtils.Alignment.RIGHT) {
+            x -= width;
+        } else if (alignment == TextUtils.Alignment.CENTER) {
+            x -= width / 2;
+            y -= height / 2;
+        }
+
+        if (mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + height)
+            return true;
+        return GuiEventListener.super.isMouseOver(mouseX, mouseY);
     }
 
     @Override
@@ -159,6 +176,6 @@ public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
     private void updateText() {
         this.formattedText = TextUtils.formatInBounds(rawText, font, (int) (maxWidth / scale), wrap);
         this.width = (int) (TextUtils.getWidth(formattedText, font) * scale);
-        this.height = (int) ((font.lineHeight + 1) * formattedText.size() * scale);
+        this.height = (int) (font.lineHeight * formattedText.size() * scale);
     }
 }
