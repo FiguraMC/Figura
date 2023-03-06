@@ -137,9 +137,12 @@ public class LuaTypeManager {
                 if (!isStatic)
                     caller = args.checkuserdata(1, clazz);
 
+                //dirty hack for QOL of ignoring the first argument if the method is static and the arg matches the class type
+                int offset = isStatic && argumentTypes.length > 0 && !argumentTypes[0].isAssignableFrom(clazz) && args.isuserdata(1) && clazz.isAssignableFrom(args.checkuserdata(1).getClass()) ? 1 : 0;
+
                 //Fill in actualArgs from args
                 for (int i = 0; i < argumentTypes.length; i++) {
-                    int argIndex = i + (isStatic ? 1 : 2);
+                    int argIndex = i + (isStatic ? 1 : 2) + offset;
                     boolean nil = args.isnil(argIndex);
                     if (nil && requiredNotNil[i])
                         throw new LuaError("bad argument: " + method.getName() + " " + argIndex + " do not allow nil values, expected " + FiguraDocsManager.getNameFor(argumentTypes[i]));

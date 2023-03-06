@@ -62,7 +62,8 @@ public class SpriteTask extends RenderTask {
         float v2 = v + regionH / (float) textureH;
 
         //setup texture render
-        VertexConsumer consumer = buffer.getBuffer(renderType.get(texture));
+        ResourceLocation resource = Minecraft.getInstance().getTextureManager().getTexture(texture) != null ? texture : MissingTextureAtlasSprite.getLocation();
+        VertexConsumer consumer = buffer.getBuffer(renderType.get(resource));
 
         //create vertices
         consumer.vertex(pose, 0f, height, 0f).color(r, g, b, a).uv(u, v2).overlayCoords(newOverlay).uv2(newLight).normal(normal, 0f, 0f, -1f).endVertex();
@@ -116,8 +117,7 @@ public class SpriteTask extends RenderTask {
 
         if (texture instanceof String s) {
             try {
-                ResourceLocation resource = new ResourceLocation(s);
-                this.texture = Minecraft.getInstance().getTextureManager().getTexture(resource, null) != null ? resource : MissingTextureAtlasSprite.getLocation();
+                this.texture = new ResourceLocation(s);
             } catch (Exception e) {
                 throw new LuaError(e.getMessage());
             }
