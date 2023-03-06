@@ -8,8 +8,7 @@ import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.model.rendering.texture.FiguraTextureSet;
 import org.moon.figura.model.rendering.texture.RenderTypes;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
+import java.util.Stack;
 
 public class PartCustomization {
 
@@ -21,11 +20,11 @@ public class PartCustomization {
      */
     public PartType partType = PartType.GROUP;
 
-    public FiguraMat4 positionMatrix = FiguraMat4.of();
-    public FiguraMat3 uvMatrix = FiguraMat3.of();
-    public FiguraMat3 normalMatrix = FiguraMat3.of();
+    public final FiguraMat4 positionMatrix = FiguraMat4.of();
+    public final FiguraMat3 uvMatrix = FiguraMat3.of();
+    public final FiguraMat3 normalMatrix = FiguraMat3.of();
 
-    public boolean needsMatrixRecalculation = true;
+    public boolean needsMatrixRecalculation = false;
     public boolean render = true;
     public Boolean visible = null;
     public Boolean vanillaVisible = null;
@@ -46,9 +45,9 @@ public class PartCustomization {
     private final FiguraVec3 animRot = FiguraVec3.of();
     private final FiguraVec3 animScale = FiguraVec3.of(1, 1, 1);
 
-    public FiguraVec3 stackScale = FiguraVec3.of(1, 1, 1);
-    public FiguraVec3 color = FiguraVec3.of(1, 1, 1);
-    public FiguraVec3 color2 = FiguraVec3.of(1, 1, 1);
+    public final FiguraVec3 stackScale = FiguraVec3.of(1, 1, 1);
+    public final FiguraVec3 color = FiguraVec3.of(1, 1, 1);
+    public final FiguraVec3 color2 = FiguraVec3.of(1, 1, 1);
     public Float alpha = null;
     public Integer light = null;
     public Integer overlay = null;
@@ -65,71 +64,72 @@ public class PartCustomization {
      * Recalculates the matrix if necessary.
      */
     public void recalculate() {
-        if (needsMatrixRecalculation) {
-            positionMatrix.reset();
+        if (!needsMatrixRecalculation)
+            return;
 
-            //Position the pivot point at 0, 0, 0, and translate the part
-            positionMatrix.translate(
-                    offsetPos.x - pivot.x - offsetPivot.x,
-                    offsetPos.y - pivot.y - offsetPivot.y,
-                    offsetPos.z - pivot.z - offsetPivot.z
+        positionMatrix.reset();
+
+        //Position the pivot point at 0, 0, 0, and translate the part
+        positionMatrix.translate(
+                offsetPos.x - pivot.x - offsetPivot.x,
+                offsetPos.y - pivot.y - offsetPivot.y,
+                offsetPos.z - pivot.z - offsetPivot.z
+        );
+
+        //Scale the model part around the pivot
+        stackScale.set(
+                offsetScale.x * scale.x * animScale.x,
+                offsetScale.y * scale.y * animScale.y,
+                offsetScale.z * scale.z * animScale.z
+        );
+        positionMatrix.scale(stackScale);
+
+        //Rotate the model part around the pivot
+        if (partType == PartType.MESH) {
+            positionMatrix.rotateZ(rotation.z + offsetRot.z + animRot.z);
+            positionMatrix.rotateY(rotation.y + offsetRot.y + animRot.y);
+            positionMatrix.rotateX(rotation.x + offsetRot.x + animRot.x);
+        } else {
+            positionMatrix.rotateZYX(
+                    rotation.x + offsetRot.x + animRot.x,
+                    rotation.y + offsetRot.y + animRot.y,
+                    rotation.z + offsetRot.z + animRot.z
             );
-
-            //Scale the model part around the pivot
-            stackScale.set(
-                    offsetScale.x * scale.x * animScale.x,
-                    offsetScale.y * scale.y * animScale.y,
-                    offsetScale.z * scale.z * animScale.z
-            );
-            positionMatrix.scale(stackScale);
-
-            //Rotate the model part around the pivot
-            if (partType == PartType.MESH) {
-                positionMatrix.rotateZ(rotation.z + offsetRot.z + animRot.z);
-                positionMatrix.rotateY(rotation.y + offsetRot.y + animRot.y);
-                positionMatrix.rotateX(rotation.x + offsetRot.x + animRot.x);
-            } else {
-                positionMatrix.rotateZYX(
-                        rotation.x + offsetRot.x + animRot.x,
-                        rotation.y + offsetRot.y + animRot.y,
-                        rotation.z + offsetRot.z + animRot.z
-                );
-            }
-
-            //Undo the effects of the pivot translation
-            positionMatrix.translate(
-                    position.x + animPos.x + pivot.x + offsetPivot.x,
-                    position.y + animPos.y + pivot.y + offsetPivot.y,
-                    position.z + animPos.z + pivot.z + offsetPivot.z
-            );
-
-            //Set up the normal matrix as well
-            normalMatrix.reset();
-            double x = scale.x * animScale.x;
-            double y = scale.y * animScale.y;
-            double z = scale.z * animScale.z;
-            double c = Math.cbrt(x * y * z);
-            normalMatrix.scale(
-                    c == 0 && x == 0 ? 1 : c / x,
-                    c == 0 && y == 0 ? 1 : c / y,
-                    c == 0 && z == 0 ? 1 : c / z
-            );
-
-            //Perform rotation of normals
-            if (partType == PartType.MESH) {
-                normalMatrix.rotateZ(rotation.z + offsetRot.z + animRot.z);
-                normalMatrix.rotateY(rotation.y + offsetRot.y + animRot.y);
-                normalMatrix.rotateX(rotation.x + offsetRot.x + animRot.x);
-            } else {
-                normalMatrix.rotateZYX(
-                        rotation.x + offsetRot.x + animRot.x,
-                        rotation.y + offsetRot.y + animRot.y,
-                        rotation.z + offsetRot.z + animRot.z
-                );
-            }
-
-            needsMatrixRecalculation = false;
         }
+
+        //Undo the effects of the pivot translation
+        positionMatrix.translate(
+                position.x + animPos.x + pivot.x + offsetPivot.x,
+                position.y + animPos.y + pivot.y + offsetPivot.y,
+                position.z + animPos.z + pivot.z + offsetPivot.z
+        );
+
+        //Set up the normal matrix as well
+        normalMatrix.reset();
+        double x = scale.x * animScale.x;
+        double y = scale.y * animScale.y;
+        double z = scale.z * animScale.z;
+        double c = Math.cbrt(x * y * z);
+        normalMatrix.scale(
+                c == 0 && x == 0 ? 1 : c / x,
+                c == 0 && y == 0 ? 1 : c / y,
+                c == 0 && z == 0 ? 1 : c / z
+        );
+
+        //Perform rotation of normals
+        if (partType == PartType.MESH) {
+            normalMatrix.rotateZ(rotation.z + offsetRot.z + animRot.z);
+            normalMatrix.rotateY(rotation.y + offsetRot.y + animRot.y);
+            normalMatrix.rotateX(rotation.x + offsetRot.x + animRot.x);
+        } else {
+            normalMatrix.rotateZYX(
+                    rotation.x + offsetRot.x + animRot.x,
+                    rotation.y + offsetRot.y + animRot.y,
+                    rotation.z + offsetRot.z + animRot.z
+            );
+        }
+
+        needsMatrixRecalculation = false;
     }
 
     public void setPos(FiguraVec3 pos) {
@@ -373,28 +373,28 @@ public class PartCustomization {
 
     public static class PartCustomizationStack {
 
-        private final Deque<PartCustomization> stack = new ArrayDeque<>() {{
+        private final Stack<PartCustomization> stack = new Stack<>() {{
             add(new PartCustomization());
         }};
 
         public void push(PartCustomization customization) {
             //copy stack
             PartCustomization newCustomization = new PartCustomization();
-            stack.getLast().copyTo(newCustomization);
+            stack.peek().copyTo(newCustomization);
 
             //modify
             newCustomization.modify(customization);
 
             //add
-            stack.addLast(newCustomization);
+            stack.push(newCustomization);
         }
 
         public void pop() {
-            stack.removeLast();
+            stack.pop();
         }
 
         public PartCustomization peek() {
-            return stack.getLast();
+            return stack.peek();
         }
 
         public boolean isEmpty() {
