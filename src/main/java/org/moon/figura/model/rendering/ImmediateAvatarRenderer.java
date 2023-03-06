@@ -207,6 +207,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         FiguraMod.pushProfiler("predicate");
         Boolean thisPassedPredicate = currentFilterScheme.test(part.parentType, prevPredicate);
         if (thisPassedPredicate == null) {
+            part.advanceVerticesImmediate(this); //stinky
             FiguraMod.popProfiler(2);
             return true;
         }
@@ -296,11 +297,10 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         //render extras
         FiguraMod.popPushProfiler("extras");
         if (thisPassedPredicate) {
-            PartCustomization peek = customizationStack.peek();
-
-            boolean renderPivot = shouldRenderPivots > 0 && (shouldRenderPivots % 2 == 0 || peek.render);
-            boolean renderTasks = peek.render && allowRenderTasks && !part.renderTasks.isEmpty();
-            boolean renderPivotParts = peek.render && part.parentType.isPivot && allowPivotParts;
+            boolean render = customizationStack.peek().render;
+            boolean renderPivot = shouldRenderPivots > 0 && (shouldRenderPivots % 2 == 0 || render);
+            boolean renderTasks = render && allowRenderTasks && !part.renderTasks.isEmpty();
+            boolean renderPivotParts = render && part.parentType.isPivot && allowPivotParts;
 
             if (renderPivot || renderTasks || renderPivotParts) {
                 //fix pivots
@@ -311,10 +311,12 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
                 pivotOffsetter.recalculate();
                 customizationStack.push(pivotOffsetter);
 
+                PartCustomization peek = customizationStack.peek();
+
                 //render pivot indicators
                 if (renderPivot) {
                     FiguraMod.popPushProfiler("renderPivotCube");
-                    renderPivot(part);
+                    renderPivot(part, peek);
                 }
 
                 //render tasks
@@ -339,7 +341,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
                 if (renderPivotParts) {
                     FiguraMod.popPushProfiler("savePivotParts");
                     if (part.parentType.isPivot && allowPivotParts)
-                        savePivotTransform(part.parentType);
+                        savePivotTransform(part.parentType, peek);
                 }
 
                 customizationStack.pop();
@@ -367,13 +369,13 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         return true;
     }
 
-    protected void renderPivot(FiguraModelPart part) {
+    protected void renderPivot(FiguraModelPart part, PartCustomization customization) {
         boolean group = part.customization.partType == PartCustomization.PartType.GROUP;
         FiguraVec3 color = group ? ColorUtils.Colors.MAYA_BLUE.vec : ColorUtils.Colors.FRAN_PINK.vec;
         double boxSize = group ? 1 / 16d : 1 / 32d;
         boxSize /= Math.max(Math.cbrt(part.savedPartToWorldMat.det()), 0.02);
 
-        PoseStack stack = customizationStack.peek().copyIntoGlobalPoseStack();
+        PoseStack stack = customization.copyIntoGlobalPoseStack();
 
         LevelRenderer.renderLineBox(stack, bufferSource.getBuffer(RenderType.LINES),
                 -boxSize, -boxSize, -boxSize,
@@ -381,9 +383,9 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
                 (float) color.x, (float) color.y, (float) color.z, 1f);
     }
 
-    protected void savePivotTransform(ParentType parentType) {
-        FiguraMat4 currentPosMat = customizationStack.peek().getPositionMatrix();
-        FiguraMat3 currentNormalMat = customizationStack.peek().getNormalMatrix();
+    protected void savePivotTransform(ParentType parentType, PartCustomization customization) {
+        FiguraMat4 currentPosMat = customization.getPositionMatrix();
+        FiguraMat3 currentNormalMat = customization.getNormalMatrix();
         ConcurrentLinkedQueue<Pair<FiguraMat4, FiguraMat3>> queue = pivotCustomizations.computeIfAbsent(parentType, p -> new ConcurrentLinkedQueue<>());
         queue.add(new Pair<>(currentPosMat, currentNormalMat)); //These are COPIES, so ok to add
     }

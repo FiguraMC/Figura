@@ -852,7 +852,9 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
             aliases = "color",
             value = "model_part.set_color")
     public FiguraModelPart setColor(Object r, Double g, Double b) {
-        this.customization.color = this.customization.color2 = LuaUtils.parseVec3("setColor", r, g, b, 1, 1, 1);
+        FiguraVec3 vec = LuaUtils.parseVec3("setColor", r, g, b, 1, 1, 1);
+        this.customization.color.set(vec);
+        this.customization.color2.set(vec);
         return this;
     }
 
@@ -882,7 +884,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
             aliases = "primaryColor",
             value = "model_part.set_primary_color")
     public FiguraModelPart setPrimaryColor(Object r, Double g, Double b) {
-        this.customization.color = LuaUtils.parseVec3("setPrimaryColor", r, g, b, 1, 1, 1);
+        this.customization.color.set(LuaUtils.parseVec3("setPrimaryColor", r, g, b, 1, 1, 1));
         return this;
     }
 
@@ -912,7 +914,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
             aliases = "secondaryColor",
             value = "model_part.set_secondary_color")
     public FiguraModelPart setSecondaryColor(Object r, Double g, Double b) {
-        this.customization.color2 = LuaUtils.parseVec3("setSecondaryColor", r, g, b, 1, 1, 1);
+        this.customization.color2.set(LuaUtils.parseVec3("setSecondaryColor", r, g, b, 1, 1, 1));
         return this;
     }
 
