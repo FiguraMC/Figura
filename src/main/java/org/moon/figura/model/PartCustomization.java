@@ -354,6 +354,8 @@ public class PartCustomization {
             primaryTexture = other.primaryTexture;
         if (other.secondaryTexture != null)
             secondaryTexture = other.secondaryTexture;
+
+        needsMatrixRecalculation = false;
     }
 
     public static final PoseStack GLOBAL_CUSTOMIZATION_POSE_STACK = new PoseStack();

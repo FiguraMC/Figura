@@ -781,9 +781,11 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
             value = "model_part.set_uv_pixels")
     public FiguraModelPart setUVPixels(Object x, Double y) {
         if (this.textureWidth == -1 || this.textureHeight == -1) {
-            if (this.customization.partType == PartCustomization.PartType.GROUP)
-                throw new LuaError("Cannot call setUVPixels on groups!");
-            else
+            if (this.customization.partType == PartCustomization.PartType.GROUP) {
+                for (FiguraModelPart child : children)
+                    child.setUVPixels(x, y);
+                return this;
+            } else
                 throw new LuaError("Cannot call setUVPixels on parts with multiple texture sizes!");
         }
 
