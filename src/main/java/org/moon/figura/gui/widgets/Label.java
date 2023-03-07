@@ -23,6 +23,7 @@ public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
     private List<Component> formattedText;
     public TextUtils.Alignment alignment;
     public Integer outlineColor;
+    public Integer backgroundColor;
     public int alpha = 0xFF;
     public int maxWidth;
     public boolean wrap;
@@ -71,6 +72,21 @@ public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
         if (!isVisible())
             return;
 
+        renderBackground(stack);
+        renderText(stack, mouseX, mouseY);
+    }
+
+    private void renderBackground(PoseStack stack) {
+        if (backgroundColor == null)
+            return;
+
+        int x = getX();
+        int y = getY();
+
+        UIHelper.fill(stack, x, y, x + width, y + height, backgroundColor);
+    }
+
+    private void renderText(PoseStack stack, int mouseX, int mouseY) {
         stack.pushPose();
         stack.translate(this.x, this.y, 0);
         stack.scale(scale, scale, scale);
@@ -129,15 +145,8 @@ public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
         if (!isVisible())
             return false;
 
-        int x = this.x;
-        int y = this.y;
-
-        if (alignment == TextUtils.Alignment.RIGHT) {
-            x -= width;
-        } else if (alignment == TextUtils.Alignment.CENTER) {
-            x -= width / 2;
-            y -= height / 2;
-        }
+        int x = getX();
+        int y = getY();
 
         if (mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + height)
             return true;
@@ -186,5 +195,25 @@ public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
         this.formattedText = TextUtils.formatInBounds(rawText, font, (int) (maxWidth / scale), wrap);
         this.width = (int) (TextUtils.getWidth(formattedText, font) * scale);
         this.height = (int) (font.lineHeight * formattedText.size() * scale);
+    }
+
+    private int getX() {
+        int x = this.x;
+
+        if (alignment == TextUtils.Alignment.RIGHT)
+            x -= width;
+        else if (alignment == TextUtils.Alignment.CENTER)
+            x -= width / 2;
+
+        return x;
+    }
+
+    private int getY() {
+        int y = this.y;
+
+        if (alignment == TextUtils.Alignment.CENTER)
+            y -= height / 2;
+
+        return y;
     }
 }
