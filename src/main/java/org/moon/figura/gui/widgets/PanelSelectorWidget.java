@@ -4,9 +4,10 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.gui.screens.*;
+import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.ui.UIHelper;
 
 import java.util.ArrayList;
@@ -15,17 +16,19 @@ import java.util.function.Function;
 
 public class PanelSelectorWidget extends AbstractContainerElement {
 
+    private static final ResourceLocation OVERLAY = new FiguraIdentifier("textures/gui/panels_overlay.png");
+
     private static final List<Function<Screen, AbstractPanelScreen>> PANELS = List.of(
             ProfileScreen::new,
             BrowserScreen::new,
             WardrobeScreen::new,
             PermissionsScreen::new,
-            ConfigScreen::new,
-            DocsScreen::new
+            DocsScreen::new,
+            ConfigScreen::new
     );
 
     //TODO - remove this when we actually implement those panels
-    private static final List<Integer> PANELS_BLACKLIST = List.of(0, 1, 5);
+    private static final List<Integer> PANELS_BLACKLIST = List.of(0, 1, 4);
 
     private final List<SwitchButton> buttons = new ArrayList<>();
 
@@ -35,22 +38,26 @@ public class PanelSelectorWidget extends AbstractContainerElement {
         super(x, y, width, 28);
 
         //buttons
-        for (Function<Screen, AbstractPanelScreen> func : PANELS) {
-            AbstractPanelScreen panel = func.apply(parentScreen);
+        for (int i = 0; i < PANELS.size(); i++) {
+            if (!FiguraMod.DEBUG_MODE && PANELS_BLACKLIST.contains(i))
+                continue;
+
+            AbstractPanelScreen panel = PANELS.get(i).apply(parentScreen);
             createPanelButton(panel, panel.getClass() == selected);
         }
 
-        for (int i : PANELS_BLACKLIST) {
-            SwitchButton button = buttons.get(i);
-            button.setMessage(button.getMessage().copy().withStyle(ChatFormatting.RED));
-            button.setTooltip(new TextComponent("Not yet ❤"));
-            button.active = FiguraMod.DEBUG_MODE;
+        if (FiguraMod.DEBUG_MODE) {
+            for (int i : PANELS_BLACKLIST) {
+                SwitchButton button = buttons.get(i);
+                button.setMessage(button.getMessage().copy().withStyle(ChatFormatting.RED));
+            }
         }
     }
 
     private void createPanelButton(AbstractPanelScreen panel, boolean toggled) {
         //create button
-        SwitchButton button = new SwitchButton(width / 2 - 76 * PANELS.size() / 2 + 6 + 76 * buttons.size(), y + 4, 64, 20, panel.getTitle(), null, bx -> Minecraft.getInstance().setScreen(panel));
+        int size = PANELS.size() - (FiguraMod.DEBUG_MODE ? 0 : PANELS_BLACKLIST.size());
+        SwitchButton button = new SwitchButton(width / 2 - 76 * size / 2 + 6 + 76 * buttons.size(), y + 4, 64, 20, panel.getTitle(), null, bx -> Minecraft.getInstance().setScreen(panel));
         button.shouldHaveBackground(false);
         button.setUnderline(false);
         button.setToggled(toggled);
@@ -68,7 +75,11 @@ public class PanelSelectorWidget extends AbstractContainerElement {
     @Override
     public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
         int x = selected.x;
+        int y = selected.y;
         int width = selected.getWidth();
+        int height = selected.getHeight();
+        int left = x + width;
+        int right = this.width - left;
 
         //background
 
@@ -77,34 +88,26 @@ public class PanelSelectorWidget extends AbstractContainerElement {
         //center
         UIHelper.renderTexture(stack, x, 0, width, 1, UIHelper.FILL);
         //right
-        UIHelper.renderTexture(stack, x + width, 0, this.width, 24, UIHelper.FILL);
+        UIHelper.renderTexture(stack, left, 0, right, 24, UIHelper.FILL);
 
         //buttons
         super.render(stack, mouseX, mouseY, delta);
 
-        //lines
+        //selected overlay
 
         //left
-        UIHelper.fill(stack, 1, 23, x + 1, 24, 0xFF404040);
-        //left up
-        UIHelper.fill(stack, x, 2, x + 1, 23, 0xFFFFFFFF);
-
-        //center up
-        UIHelper.fill(stack, x + 1, 1, x + width - 1, 2, 0xFFFFFFFF);
-        //center down
-        UIHelper.fill(stack, x + width / 3, 22, x + (int) (width / 1.5), 23, 0xFFFFFFFF);
-
-        //right up
-        UIHelper.fill(stack, x + width - 1, 2, x + width, 23, 0xFFFFFFFF);
+        UIHelper.renderSliced(stack, 0, 0, x, 24, 0f, 0f, 16, 16, 32, 16, OVERLAY);
+        //center
+        UIHelper.renderSliced(stack, x, y, width, height, 16f, 0f, 16, 16, 32, 16, OVERLAY);
         //right
-        UIHelper.fill(stack, x + width - 1, 23, x + width + this.width, 24, 0xFF404040);
+        UIHelper.renderSliced(stack, left, 0, right, 24, 0f, 0f, 16, 16, 32, 16, OVERLAY);
     }
 
     public boolean cycleTab(int keyCode) {
         if (Screen.hasControlDown()) {
-            int index = this.getNextPanel(keyCode);
-            if (index != -1) {
-                SwitchButton button = buttons.get(index);
+            int i = this.getNextPanel(keyCode);
+            if (i >= 0 && i < buttons.size()) {
+                SwitchButton button = buttons.get(i);
                 button.run();
                 return true;
             }
@@ -115,10 +118,8 @@ public class PanelSelectorWidget extends AbstractContainerElement {
 
     private int getNextPanel(int keyCode) {
         //numbers
-        if (keyCode >= 49 && keyCode <= 57) {
-            int panel = keyCode - 49;
-            return PANELS_BLACKLIST.contains(panel) ? -1 : panel;
-        }
+        if (keyCode >= 49 && keyCode <= 57)
+            return keyCode - 49;
 
         //tab
         if (keyCode == 258) {
@@ -126,12 +127,7 @@ public class PanelSelectorWidget extends AbstractContainerElement {
             int index = buttons.indexOf(selected);
 
             int i = Screen.hasShiftDown() ? index - 1 : index + 1;
-            while (true) {
-                i = Math.floorMod(i, buttons.size());
-                if (!PANELS_BLACKLIST.contains(i))
-                    return i;
-                i = Screen.hasShiftDown() ? i - 1 : i + 1;
-            }
+            return Math.floorMod(i, buttons.size());
         }
 
         return -1;

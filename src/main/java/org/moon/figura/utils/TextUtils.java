@@ -187,6 +187,22 @@ public class TextUtils {
         return ret;
     }
 
+    public static Component setStyleAtWidth(FormattedText text, int width, Font font, Style newStyle) {
+        MutableComponent ret = Component.empty();
+        text.visit((style, string) -> {
+            MutableComponent current = Component.literal(string).withStyle(style);
+
+            int prevWidth = font.width(ret);
+            int currentWidth = font.width(current);
+            if (prevWidth <= width && prevWidth + currentWidth > width)
+                current.withStyle(newStyle);
+
+            ret.append(current);
+            return Optional.empty();
+        }, Style.EMPTY);
+        return ret;
+    }
+
     public static List<FormattedCharSequence> wrapText(FormattedText text, int width, Font font) {
         List<FormattedCharSequence> warp = new ArrayList<>();
         font.getSplitter().splitLines(text, width, Style.EMPTY, (formattedText, aBoolean) -> warp.add(Language.getInstance().getVisualOrder(formattedText)));

@@ -1,7 +1,6 @@
 package org.moon.figura.gui.widgets;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -90,9 +89,15 @@ public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
 
             //hovered
             if (mouseX >= this.x + x * scale && mouseX < this.x + (x + width) * scale && mouseY >= this.y + y * scale && mouseY < this.y + (y + height) * scale) {
-                hovered = font.getSplitter().componentStyleAtWidth(text, (int) ((mouseX - this.x - x * scale) / scale));
+                //get style at the mouse pos
+                int pos = (int) ((mouseX - this.x - x * scale) / scale);
+                hovered = font.getSplitter().componentStyleAtWidth(text, pos);
+
+                //add underline for the text with the click event
                 if (hovered != null && hovered.getClickEvent() != null)
-                    text = text.copy().withStyle(ChatFormatting.UNDERLINE);
+                    text = TextUtils.setStyleAtWidth(text, pos, font, Style.EMPTY.withUnderlined(true));
+
+                //set tooltip for hovered text, if any
                 UIHelper.setTooltip(hovered);
             }
 
@@ -121,6 +126,9 @@ public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
 
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
+        if (!isVisible())
+            return false;
+
         int x = this.x;
         int y = this.y;
 
