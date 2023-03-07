@@ -4,7 +4,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Matrix3f;
 import com.mojang.math.Matrix4f;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
@@ -62,8 +61,7 @@ public class SpriteTask extends RenderTask {
         float v2 = v + regionH / (float) textureH;
 
         //setup texture render
-        ResourceLocation resource = Minecraft.getInstance().getTextureManager().getTexture(texture) != null ? texture : MissingTextureAtlasSprite.getLocation();
-        VertexConsumer consumer = buffer.getBuffer(renderType.get(resource));
+        VertexConsumer consumer = buffer.getBuffer(renderType.get(texture));
 
         //create vertices
         consumer.vertex(pose, 0f, height, 0f).color(r, g, b, a).uv(u, v2).overlayCoords(newOverlay).uv2(newLight).normal(normal, 0f, 0f, -1f).endVertex();
@@ -119,7 +117,7 @@ public class SpriteTask extends RenderTask {
             try {
                 this.texture = new ResourceLocation(s);
             } catch (Exception e) {
-                throw new LuaError(e.getMessage());
+                this.texture = MissingTextureAtlasSprite.getLocation();
             }
             if (width == null || height == null)
                 throw new LuaError("Texture dimensions cannot be null");
