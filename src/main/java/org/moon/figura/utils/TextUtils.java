@@ -215,7 +215,7 @@ public class TextUtils {
         Style[] lastStyle = new Style[1];
 
         charSequence.accept((index, style, codePoint) -> {
-            if (lastStyle[0] != style) {
+            if (!style.equals(lastStyle[0])) {
                 if (buffer.length() > 0) {
                     builder.append(new TextComponent(buffer.toString()).withStyle(lastStyle[0]));
                     buffer.setLength(0);
