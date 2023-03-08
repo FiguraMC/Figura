@@ -188,9 +188,9 @@ public class TextUtils {
     }
 
     public static Component setStyleAtWidth(FormattedText text, int width, Font font, Style newStyle) {
-        MutableComponent ret = Component.empty();
+        MutableComponent ret = TextComponent.EMPTY.copy();
         text.visit((style, string) -> {
-            MutableComponent current = Component.literal(string).withStyle(style);
+            MutableComponent current = new TextComponent(string).withStyle(style);
 
             int prevWidth = font.width(ret);
             int currentWidth = font.width(current);
@@ -211,14 +211,32 @@ public class TextUtils {
 
     public static Component charSequenceToText(FormattedCharSequence charSequence) {
         MutableComponent builder = TextComponent.EMPTY.copy();
+        StringBuilder buffer = new StringBuilder();
+        Style[] lastStyle = new Style[1];
+
         charSequence.accept((index, style, codePoint) -> {
-            builder.append(new TextComponent(String.valueOf(Character.toChars(codePoint))).withStyle(style));
+            if (lastStyle[0] != style) {
+                if (buffer.length() > 0) {
+                    builder.append(new TextComponent(buffer.toString()).withStyle(lastStyle[0]));
+                    buffer.setLength(0);
+                }
+                lastStyle[0] = style;
+            }
+
+            buffer.append(Character.toChars(codePoint));
             return true;
         });
+
+        if (buffer.length() > 0)
+            builder.append(new TextComponent(buffer.toString()).withStyle(lastStyle[0]));
+
         return builder;
     }
 
     public static Component formattedTextToText(FormattedText formattedText) {
+        if (formattedText instanceof Component c)
+            return c;
+
         MutableComponent builder = TextComponent.EMPTY.copy();
         formattedText.visit((style, string) -> {
             builder.append(new TextComponent(string).withStyle(style));
