@@ -211,14 +211,32 @@ public class TextUtils {
 
     public static Component charSequenceToText(FormattedCharSequence charSequence) {
         MutableComponent builder = Component.empty();
+        StringBuilder buffer = new StringBuilder();
+        Style[] lastStyle = new Style[1];
+
         charSequence.accept((index, style, codePoint) -> {
-            builder.append(Component.literal(String.valueOf(Character.toChars(codePoint))).withStyle(style));
+            if (lastStyle[0] != style) {
+                if (buffer.length() > 0) {
+                    builder.append(Component.literal(buffer.toString()).withStyle(lastStyle[0]));
+                    buffer.setLength(0);
+                }
+                lastStyle[0] = style;
+            }
+
+            buffer.append(Character.toChars(codePoint));
             return true;
         });
+
+        if (buffer.length() > 0)
+            builder.append(Component.literal(buffer.toString()).withStyle(lastStyle[0]));
+
         return builder;
     }
 
     public static Component formattedTextToText(FormattedText formattedText) {
+        if (formattedText instanceof Component c)
+            return c;
+
         MutableComponent builder = Component.empty();
         formattedText.visit((style, string) -> {
             builder.append(Component.literal(string).withStyle(style));
