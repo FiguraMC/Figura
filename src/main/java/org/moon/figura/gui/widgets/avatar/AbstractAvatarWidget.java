@@ -3,8 +3,10 @@ package org.moon.figura.gui.widgets.avatar;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import org.moon.figura.avatar.local.LocalAvatarFetcher;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.widgets.AbstractContainerElement;
@@ -19,6 +21,10 @@ import java.io.File;
 public abstract class AbstractAvatarWidget extends AbstractContainerElement implements Comparable<AbstractAvatarWidget> {
 
     protected static final Component SPACING = Component.literal("  ");
+    protected static final Component FAVOURITE = Component.literal("★").withStyle(Style.EMPTY.withFont(UIHelper.UI_FONT));
+    protected static final Component ADD_FAVOURITE = FiguraText.of("gui.context.favorite.add");
+    protected static final Component REMOVE_FAVOURITE = FiguraText.of("gui.context.favorite.remove");
+
     protected final AvatarList parent;
     protected final int depth;
     protected final ContextMenu context;
@@ -26,6 +32,7 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
     protected LocalAvatarFetcher.AvatarPath avatar;
     protected TexturedButton button;
     protected String filter = "";
+    protected boolean favourite;
 
     public AbstractAvatarWidget(int depth, int width, int height, LocalAvatarFetcher.AvatarPath avatar, AvatarList parent) {
         super(0, 0, width, height);
@@ -33,7 +40,14 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
         this.avatar = avatar;
         this.depth = depth;
         this.context = new ContextMenu(this);
+        this.favourite = avatar.isFavourite();
 
+        context.addAction(favourite ? REMOVE_FAVOURITE : ADD_FAVOURITE, button -> {
+            favourite = !favourite;
+            avatar.setFavourite(favourite);
+            button.setMessage(favourite ? REMOVE_FAVOURITE : ADD_FAVOURITE);
+            context.updateDimensions();
+        });
         context.addAction(FiguraText.of("gui.context.open_folder"), button -> {
             File f = avatar.getPath().toFile();
             Util.getPlatform().openFile(f.isDirectory() ? f : f.getParentFile());
@@ -46,10 +60,25 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
 
     @Override
     public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
+        if (!isVisible())
+            return;
+
         if (UIHelper.getContext() == this.context && this.context.isVisible())
             this.button.setHovered(true);
 
         super.render(stack, mouseX, mouseY, delta);
+
+        if (favourite) {
+            Font font = Minecraft.getInstance().font;
+            int width = font.width(FAVOURITE);
+            int x = this.x + this.width - width;
+            int y = this.y + 2;
+
+            font.draw(stack, FAVOURITE, x, y, 0xFFFFFF);
+
+            if (mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + font.lineHeight)
+                UIHelper.setTooltip(FiguraText.of("gui.favorited").append(" ").append(FAVOURITE));
+        }
     }
 
     @Override
@@ -119,6 +148,12 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
 
     @Override
     public int compareTo(AbstractAvatarWidget other) {
+        //compare favourite
+        if (this.favourite && !other.favourite)
+            return -1;
+        else if (other.favourite && !this.favourite)
+            return 1;
+
         //compare types
         if (this instanceof AvatarFolderWidget && other instanceof AvatarWidget)
             return -1;

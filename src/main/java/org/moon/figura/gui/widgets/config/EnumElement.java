@@ -123,7 +123,7 @@ public class EnumElement extends AbstractConfigElement {
 
     private void updateContextText() {
         //cache entries
-        List<AbstractWidget> entries = context.getEntries();
+        List<? extends AbstractWidget> entries = context.getEntries();
 
         //entries should have the same size as names
         //otherwise something went really wrong
