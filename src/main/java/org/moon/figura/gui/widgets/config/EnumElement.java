@@ -55,6 +55,14 @@ public class EnumElement extends AbstractConfigElement {
                 //draw arrow
                 font.drawShadow(stack, arrow, x + getWidth() - arrowWidth - 3, y + getHeight() / 2 - font.lineHeight / 2, color);
             }
+
+            @Override
+            public void setHovered(boolean hovered) {
+                if (!hovered && UIHelper.getContext() == context && context.isVisible())
+                    hovered = true;
+
+                super.setHovered(hovered);
+            }
         });
         button.active = FiguraMod.DEBUG_MODE || !config.disabled;
 
@@ -98,16 +106,6 @@ public class EnumElement extends AbstractConfigElement {
 
         //update context pos
         this.context.setPos(this.button.x + this.button.getWidth() / 2 - this.context.width / 2, this.button.y + 20);
-    }
-
-    @Override
-    public boolean isMouseOver(double mouseX, double mouseY) {
-        if (UIHelper.getContext() == this.context && this.context.isVisible()) {
-            this.button.setHovered(true);
-            return true;
-        }
-
-        return super.isMouseOver(mouseX, mouseY);
     }
 
     @Override
