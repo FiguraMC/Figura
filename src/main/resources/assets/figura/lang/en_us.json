@@ -136,6 +136,7 @@
   "figura.gui.panic.2": "toggle panic mode with the [%s] key",
   "figura.gui.help.tooltip": "Help",
   "figura.gui.duplicate_keybind": "This key is also used for:\n%s",
+  "figura.gui.favorited": "Favorited",
 
   "figura.gui.text_hint.any": "Text",
   "figura.gui.text_hint.int": "Integer",
@@ -161,6 +162,8 @@
   "figura.gui.context.copy_uuid": "Copy UUID",
   "figura.gui.context.copy_path": "Copy Path",
   "figura.gui.context.open_folder": "Open Folder",
+  "figura.gui.context.favorite.add": "Add to Favorites",
+  "figura.gui.context.favorite.remove": "Remove from Favorites",
 
   "figura.gui.panels.title.profile": "Profile",
   "figura.gui.panels.title.browser": "Browser",

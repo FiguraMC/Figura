@@ -264,6 +264,6 @@ public class Configs {
     public static final ButtonConfig
             CLEAR_CACHE = new ButtonConfig("clear_cache", DEV, () -> {
                 CacheAvatarLoader.clearCache();
-                IOUtils.deleteCacheFiles("folders.nbt", "settings.nbt", "saved_texture.png");
+                IOUtils.deleteCacheFiles("avatars.nbt", "settings.nbt", "saved_texture.png");
             });
 }

@@ -19,6 +19,13 @@
       "ascent": 8,
       "height": 10,
       "chars": ["-*/+="]
+    },
+    {
+      "type": "bitmap",
+      "file": "figura:font/icons.png",
+      "ascent": 8,
+      "height": 10,
+      "chars": ["★"]
     }
   ]
 }
