@@ -64,9 +64,6 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
         if (!isVisible())
             return;
 
-        if (UIHelper.getContext() == this.context && this.context.isVisible())
-            this.button.setHovered(true);
-
         super.render(stack, mouseX, mouseY, delta);
 
         if (favourite) {

@@ -71,6 +71,14 @@ public class AvatarWidget extends AbstractAvatarWidget {
             public boolean isMouseOver(double mouseX, double mouseY) {
                 return parent.isInsideScissors(mouseX, mouseY) && super.isMouseOver(mouseX, mouseY);
             }
+
+            @Override
+            public void setHovered(boolean hovered) {
+                if (!hovered && UIHelper.getContext() == context && context.isVisible())
+                    hovered = true;
+
+                super.setHovered(hovered);
+            }
         };
 
         this.button.shouldHaveBackground(false);
