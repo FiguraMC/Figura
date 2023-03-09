@@ -57,7 +57,7 @@ public class PanelSelectorWidget extends AbstractContainerElement {
     private void createPanelButton(AbstractPanelScreen panel, boolean toggled) {
         //create button
         int size = PANELS.size() - (FiguraMod.DEBUG_MODE ? 0 : PANELS_BLACKLIST.size());
-        SwitchButton button = new SwitchButton(width / 2 - 76 * size / 2 + 6 + 76 * buttons.size(), y + 4, 64, 20, panel.getTitle(), null, bx -> Minecraft.getInstance().setScreen(panel));
+        SwitchButton button = new SwitchButton(width / 2 - 76 * size / 2 + 6 + 76 * buttons.size(), y + 4, 64, height - 8, panel.getTitle(), null, bx -> Minecraft.getInstance().setScreen(panel));
         button.shouldHaveBackground(false);
         button.setUnderline(false);
         button.setToggled(toggled);
@@ -74,33 +74,24 @@ public class PanelSelectorWidget extends AbstractContainerElement {
 
     @Override
     public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
+        //selected overlay
+
         int x = selected.getX();
-        int y = selected.getY();
         int width = selected.getWidth();
-        int height = selected.getHeight();
         int left = x + width;
         int right = this.width - left;
-
-        //background
-
-        //left
-        UIHelper.renderTexture(stack, 0, 0, x, 24, UIHelper.FILL);
-        //center
-        UIHelper.renderTexture(stack, x, 0, width, 1, UIHelper.FILL);
-        //right
-        UIHelper.renderTexture(stack, left, 0, right, 24, UIHelper.FILL);
-
-        //buttons
-        super.render(stack, mouseX, mouseY, delta);
-
-        //selected overlay
 
         //left
         UIHelper.renderSliced(stack, 0, 0, x, 24, 0f, 0f, 16, 16, 32, 16, OVERLAY);
         //center
-        UIHelper.renderSliced(stack, x, y, width, height, 16f, 0f, 16, 16, 32, 16, OVERLAY);
+        UIHelper.renderSliced(stack, x, 0, width, 24, 16f, 0f, 16, 16, 32, 16, OVERLAY);
         //right
         UIHelper.renderSliced(stack, left, 0, right, 24, 0f, 0f, 16, 16, 32, 16, OVERLAY);
+
+        //buttons
+        UIHelper.setupScissor(0, 0, this.width, 23);
+        super.render(stack, mouseX, mouseY, delta);
+        UIHelper.disableScissor();
     }
 
     public boolean cycleTab(int keyCode) {

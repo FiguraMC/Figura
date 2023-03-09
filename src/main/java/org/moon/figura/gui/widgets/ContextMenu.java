@@ -7,7 +7,6 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.events.GuiEventListener;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
@@ -21,13 +20,16 @@ public class ContextMenu extends AbstractContainerElement {
 
     public static final ResourceLocation BACKGROUND = new FiguraIdentifier("textures/gui/context.png");
 
-    private final List<AbstractWidget> entries = new ArrayList<>();
+    private final int minWidth;
+    private final List<ContextButton> entries = new ArrayList<>();
+
     public GuiEventListener parent;
 
     private ContextMenu nestedContext;
 
     public ContextMenu(GuiEventListener parent, int minWidth) {
         super(0, 0, minWidth, 2);
+        this.minWidth = minWidth;
         this.parent = parent;
         this.setVisible(false);
     }
@@ -84,18 +86,13 @@ public class ContextMenu extends AbstractContainerElement {
         this.children.add(context);
     }
 
-    private void addElement(AbstractWidget element) {
+    private void addElement(ContextButton element) {
         //add element
         children.add(element);
         entries.add(element);
 
-        //update sizes
-        this.width = Math.max(element.getWidth(), width);
-        this.height += element.getHeight();
-
-        //fix buttons width
-        for (AbstractWidget entry : entries)
-            entry.setWidth(this.width - 2);
+        //update size
+        updateDimensions();
     }
 
     private void clearNest() {
@@ -103,6 +100,20 @@ public class ContextMenu extends AbstractContainerElement {
             this.nestedContext.clearNest();
             this.nestedContext = null;
         }
+    }
+
+    public void updateDimensions() {
+        this.width = minWidth;
+        this.height = 2;
+
+        for (ContextButton entry : entries) {
+            this.width = Math.max(entry.getMessageWidth() + 8, width);
+            this.height += entry.getHeight();
+        }
+
+        //fix buttons width
+        for (ContextButton entry : entries)
+            entry.setWidth(this.width - 2);
     }
 
     @Override
@@ -128,7 +139,7 @@ public class ContextMenu extends AbstractContainerElement {
         this.y = y;
 
         int heigth = y + 1;
-        for (AbstractWidget button : entries) {
+        for (ContextButton button : entries) {
             button.x = x + 1;
             button.y = heigth;
             heigth += button.getHeight();
@@ -138,7 +149,7 @@ public class ContextMenu extends AbstractContainerElement {
         }
     }
 
-    public List<AbstractWidget> getEntries() {
+    public List<? extends AbstractWidget> getEntries() {
         return entries;
     }
 
@@ -147,9 +158,15 @@ public class ContextMenu extends AbstractContainerElement {
         protected final ContextMenu parent;
 
         public ContextButton(int x, int y, Component text, ContextMenu parent, OnPress pressAction) {
-            super(x, y, Minecraft.getInstance().font.width(text) + 8, 16, text, null, pressAction);
+            super(x, y, 0, 16, text, null, pressAction);
             this.shouldHaveBackground(false);
             this.parent = parent;
+        }
+
+        public ContextButton(int x, int y, int height) {
+            super(x, y, 0, height, Component.empty(), null, button -> {});
+            this.shouldHaveBackground(false);
+            this.parent = null;
         }
 
         @Override
@@ -173,12 +190,16 @@ public class ContextMenu extends AbstractContainerElement {
 
             return false;
         }
+
+        public int getMessageWidth() {
+            return Minecraft.getInstance().font.width(getMessage());
+        }
     }
 
-    private static class ContextDivisor extends AbstractWidget {
+    private static class ContextDivisor extends ContextButton {
 
         public ContextDivisor(int x, int y) {
-            super(x, y, 0, 9, Component.empty());
+            super(x, y, 9);
         }
 
         @Override
@@ -190,10 +211,6 @@ public class ContextMenu extends AbstractContainerElement {
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             return false;
-        }
-
-        @Override
-        public void updateNarration(NarrationElementOutput narrationElementOutput) {
         }
     }
 

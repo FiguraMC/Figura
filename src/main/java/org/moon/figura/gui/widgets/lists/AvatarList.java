@@ -113,12 +113,12 @@ public class AvatarList extends AbstractList {
             totalHeight += avatar.height + 2;
         int entryHeight = avatarList.isEmpty() ? 0 : totalHeight / avatarList.size();
 
-        scrollBar.visible = totalHeight > height - 56;
-        scrollBar.setScrollRatio(entryHeight, totalHeight - (height - 56));
+        scrollBar.visible = totalHeight > height - 50;
+        scrollBar.setScrollRatio(entryHeight, totalHeight - (height - 50));
 
         //render list
         int xOffset = scrollBar.visible ? 4 : 11;
-        int yOffset = scrollBar.visible ? (int) -(Mth.lerp(scrollBar.getScrollProgress(), -49, totalHeight - height)) : 56;
+        int yOffset = scrollBar.visible ? (int) -(Mth.lerp(scrollBar.getScrollProgress(), -50, totalHeight - height)) : 50;
         boolean hidden = false;
 
         for (AbstractAvatarWidget avatar : avatarList) {
@@ -204,7 +204,7 @@ public class AvatarList extends AbstractList {
         double y = 0;
 
         //get height
-        totalHeight = 2;
+        totalHeight = 0;
         for (AbstractAvatarWidget avatar : avatarList) {
             if (avatar.equals(selectedEntry))
                 y = totalHeight;
