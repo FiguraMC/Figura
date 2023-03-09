@@ -5,6 +5,7 @@ import net.minecraft.network.chat.Component;
 import org.moon.figura.avatar.local.LocalAvatarFetcher;
 import org.moon.figura.gui.widgets.ContainerButton;
 import org.moon.figura.gui.widgets.lists.AvatarList;
+import org.moon.figura.utils.ui.UIHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,6 +31,14 @@ public class AvatarFolderWidget extends AbstractAvatarWidget {
                 //fix tooltip
                 if (getTooltip() == getMessage())
                     setTooltip(instance.getName());
+            }
+
+            @Override
+            public void setHovered(boolean hovered) {
+                if (!hovered && UIHelper.getContext() == context && context.isVisible())
+                    hovered = true;
+
+                super.setHovered(hovered);
             }
         };
 
