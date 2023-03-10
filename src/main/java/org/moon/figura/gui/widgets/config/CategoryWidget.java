@@ -13,14 +13,14 @@ import org.moon.figura.utils.ui.UIHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ConfigWidget extends AbstractContainerElement {
+public class CategoryWidget extends AbstractContainerElement {
 
     protected final List<AbstractConfigElement> entries = new ArrayList<>();
     private final ConfigType.Category config;
     private final ConfigList parent;
     private ContainerButton parentConfig;
 
-    public ConfigWidget(int width, ConfigType.Category config, ConfigList parent) {
+    public CategoryWidget(int width, ConfigType.Category config, ConfigList parent) {
         super(0, 0, width, 20);
         this.config = config;
         this.parent = parent;
@@ -45,10 +45,15 @@ public class ConfigWidget extends AbstractContainerElement {
             UIHelper.fill(stack, x, y + 21, x + width, y + height, 0x11FFFFFF);
 
         if (config == Configs.PAPERDOLL)
-            parent.parentScreen.renderPaperdoll = parent.isMouseOver(mouseX, mouseY) && isMouseOver(mouseX, mouseY);
+            parent.parentScreen.renderPaperdoll = parentConfig.isToggled() && parent.isMouseOver(mouseX, mouseY) && isMouseOver(mouseX, mouseY);
 
         //children
         super.render(stack, mouseX, mouseY, delta);
+    }
+
+    @Override
+    public boolean isMouseOver(double mouseX, double mouseY) {
+        return UIHelper.isMouseOver(x, y, width, getHeight(), mouseX, mouseY);
     }
 
     public void addConfig(ConfigType<?> config) {

@@ -9,7 +9,7 @@ import org.moon.figura.config.ConfigManager;
 import org.moon.figura.config.ConfigType;
 import org.moon.figura.gui.screens.ConfigScreen;
 import org.moon.figura.gui.widgets.TextField;
-import org.moon.figura.gui.widgets.config.ConfigWidget;
+import org.moon.figura.gui.widgets.config.CategoryWidget;
 import org.moon.figura.gui.widgets.config.InputElement;
 import org.moon.figura.utils.ui.UIHelper;
 
@@ -18,7 +18,7 @@ import java.util.List;
 
 public class ConfigList extends AbstractList {
 
-    private final List<ConfigWidget> configs = new ArrayList<>();
+    private final List<CategoryWidget> configs = new ArrayList<>();
     public final ConfigScreen parentScreen;
     public KeyMapping focusedBinding;
 
@@ -38,7 +38,7 @@ public class ConfigList extends AbstractList {
 
         //scrollbar
         totalHeight = -4;
-        for (ConfigWidget config : configs)
+        for (CategoryWidget config : configs)
             totalHeight += config.getHeight() + 8;
         int entryHeight = configs.isEmpty() ? 0 : totalHeight / configs.size();
 
@@ -48,7 +48,7 @@ public class ConfigList extends AbstractList {
         //render list
         int xOffset = scrollBar.visible ? 4 : 11;
         int yOffset = scrollBar.visible ? (int) -(Mth.lerp(scrollBar.getScrollProgress(), -4, totalHeight - height)) : 4;
-        for (ConfigWidget config : configs) {
+        for (CategoryWidget config : configs) {
             config.setPos(x + xOffset, y + yOffset);
             yOffset += config.getHeight() + 8;
         }
@@ -63,8 +63,8 @@ public class ConfigList extends AbstractList {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         //fix mojang focusing for text fields
-        for (ConfigWidget configWidget : configs) {
-            for (GuiEventListener children : configWidget.children()) {
+        for (CategoryWidget categoryWidget : configs) {
+            for (GuiEventListener children : categoryWidget.children()) {
                 if (children instanceof InputElement inputElement) {
                     TextField field = inputElement.getTextField();
                     field.getField().setFocus(field.isEnabled() && field.isMouseOver(mouseX, mouseY));
@@ -77,13 +77,13 @@ public class ConfigList extends AbstractList {
 
     public void updateList() {
         //clear old widgets
-        for (ConfigWidget config : configs)
+        for (CategoryWidget config : configs)
             children.remove(config);
         configs.clear();
 
         //add configs
         for (ConfigType.Category category : ConfigManager.CATEGORIES_REGISTRY.values()) {
-            ConfigWidget widget = new ConfigWidget(width - 22, category, this);
+            CategoryWidget widget = new CategoryWidget(width - 22, category, this);
 
             for (ConfigType<?> config : category.children)
                 widget.addConfig(config);
@@ -93,7 +93,7 @@ public class ConfigList extends AbstractList {
         }
 
         //fix expanded status
-        for (ConfigWidget config : configs)
+        for (CategoryWidget config : configs)
             config.setShowChildren(config.isShowingChildren());
     }
 
@@ -103,7 +103,7 @@ public class ConfigList extends AbstractList {
 
         //get new height
         totalHeight = -4;
-        for (ConfigWidget config : configs)
+        for (CategoryWidget config : configs)
             totalHeight += config.getHeight() + 8;
 
         //set new scroll percentage
@@ -111,7 +111,7 @@ public class ConfigList extends AbstractList {
     }
 
     public boolean hasChanges() {
-        for (ConfigWidget config : configs)
+        for (CategoryWidget config : configs)
             if (config.isChanged())
                 return true;
         return false;
@@ -129,7 +129,7 @@ public class ConfigList extends AbstractList {
     }
 
     public void updateKeybinds() {
-        for (ConfigWidget widget : configs)
+        for (CategoryWidget widget : configs)
             widget.updateKeybinds();
     }
 }
