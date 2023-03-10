@@ -40,6 +40,7 @@ import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec4;
 import org.moon.figura.model.FiguraModelPart;
+import org.moon.figura.model.rendering.Vertex;
 import org.moon.figura.model.rendering.texture.FiguraTexture;
 import org.moon.figura.model.rendertasks.*;
 import org.moon.figura.utils.IOUtils;
@@ -77,6 +78,7 @@ public class FiguraAPIManager {
         add(EventsAPI.class);
         add(LuaEvent.class);
 
+        add(Vertex.class);
         add(FiguraModelPart.class);
         add(RenderTask.class);
         add(ItemTask.class);
