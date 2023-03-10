@@ -525,13 +525,13 @@ public class Avatar {
         FiguraMod.pushProfiler("leftWing");
         renderer.vanillaModelData.update(ParentType.LeftElytra, model);
         renderer.currentFilterScheme = PartFilterScheme.LEFT_ELYTRA;
-        render();
+        renderer.renderSpecialParts();
 
         //right
         FiguraMod.popPushProfiler("rightWing");
         renderer.vanillaModelData.update(ParentType.RightElytra, model);
         renderer.currentFilterScheme = PartFilterScheme.RIGHT_ELYTRA;
-        render();
+        renderer.renderSpecialParts();
 
         FiguraMod.popProfiler(4);
     }
