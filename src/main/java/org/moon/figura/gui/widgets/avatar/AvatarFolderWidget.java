@@ -112,7 +112,7 @@ public class AvatarFolderWidget extends AbstractAvatarWidget {
 
     public void toggleEntries(boolean toggle) {
         toggle = toggle && ((ContainerButton) this.button).isToggled();
-        ((LocalAvatarFetcher.FolderPath) avatar).setExpanded(toggle);
+        avatar.setExpanded(toggle);
 
         for (AbstractAvatarWidget widget : entries.values()) {
             widget.setVisible(toggle);
