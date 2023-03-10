@@ -52,6 +52,7 @@ import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec4;
 import org.moon.figura.math.vector.FiguraVector;
 import org.moon.figura.model.FiguraModelPart;
+import org.moon.figura.model.rendering.Vertex;
 import org.moon.figura.model.rendering.texture.FiguraTexture;
 import org.moon.figura.model.rendertasks.*;
 import org.moon.figura.utils.FiguraText;
@@ -144,6 +145,7 @@ public class FiguraDocsManager {
         ));
 
         put("models", List.of(
+                Vertex.class,
                 FiguraModelPart.class,
                 RenderTask.class,
                 BlockTask.class,

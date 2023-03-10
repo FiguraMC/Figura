@@ -1168,6 +1168,24 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
         return this;
     }
 
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = Integer.class,
+                    argumentNames = "textureID"
+            ),
+            value = "model_part.get_vertices"
+    )
+    public List<Vertex> getVertices(int textureID) {
+        return vertices.get(textureID);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("model_part.get_all_vertices")
+    public Map<Integer, List<Vertex>> getAllVertices() {
+        return vertices;
+    }
+
     //-- METAMETHODS --//
     @LuaWhitelist
     public Object __index(String key) {
