@@ -15,6 +15,7 @@ import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.model.rendering.ImmediateAvatarRenderer;
+import org.moon.figura.model.rendering.Vertex;
 import org.moon.figura.model.rendering.texture.FiguraTexture;
 import org.moon.figura.model.rendering.texture.FiguraTextureSet;
 import org.moon.figura.model.rendering.texture.RenderTypes;
@@ -59,10 +60,13 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
 
     public final FiguraMat4 savedPartToWorldMat = FiguraMat4.of().scale(1 / 16d, 1 / 16d, 1 / 16d);
 
-    public FiguraModelPart(Avatar owner, String name, PartCustomization customization, List<FiguraModelPart> children) {
+    public final Map<Integer, List<Vertex>> vertices;
+
+    public FiguraModelPart(Avatar owner, String name, PartCustomization customization, Map<Integer, List<Vertex>> vertices, List<FiguraModelPart> children) {
         this.owner = owner;
         this.name = name;
         this.customization = customization;
+        this.vertices = vertices;
         this.children = children;
         for (FiguraModelPart child : children)
             child.parent = this;
@@ -73,17 +77,9 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
             if (remainingComplexity[0] <= 0)
                 return false;
             remainingComplexity[0] -= facesByTexture.get(i);
-            avatarRenderer.pushFaces(i, facesByTexture.get(i) + Math.min(remainingComplexity[0], 0), remainingComplexity);
+            avatarRenderer.pushFaces(facesByTexture.get(i) + Math.min(remainingComplexity[0], 0), remainingComplexity, textures.get(i), vertices.get(i));
         }
         return true;
-    }
-
-    public void advanceVerticesImmediate(ImmediateAvatarRenderer avatarRenderer) {
-        for (int i = 0; i < facesByTexture.size(); i++)
-            avatarRenderer.advanceFaces(i, facesByTexture.get(i));
-
-        for (FiguraModelPart child : this.children)
-            child.advanceVerticesImmediate(avatarRenderer);
     }
 
     public void applyVanillaTransforms(VanillaModelData vanillaModelData) {
