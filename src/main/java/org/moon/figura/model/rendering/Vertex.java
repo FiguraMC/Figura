@@ -25,6 +25,10 @@ public class Vertex {
         this.nx = nx; this.ny = ny; this.nz = nz;
     }
 
+    public Vertex copy() {
+        return new Vertex(x, y, z, u, v, nx, ny, nz);
+    }
+
     @LuaWhitelist
     @LuaMethodDoc("vertex.get_pos")
     public FiguraVec3 getPos() {
