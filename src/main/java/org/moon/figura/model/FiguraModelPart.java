@@ -82,6 +82,17 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
         return true;
     }
 
+    private Map<Integer, List<Vertex>> copyVertices() {
+        Map<Integer, List<Vertex>> map = new HashMap<>();
+        for (Map.Entry<Integer, List<Vertex>> entry : vertices.entrySet()) {
+            List<Vertex> list = new ArrayList<>();
+            for (Vertex vertex : entry.getValue())
+                list.add(vertex.copy());
+            map.put(entry.getKey(), list);
+        }
+        return map;
+    }
+
     public void applyVanillaTransforms(VanillaModelData vanillaModelData) {
         if (vanillaModelData == null)
             return;
@@ -1184,6 +1195,67 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     @LuaMethodDoc("model_part.get_all_vertices")
     public Map<Integer, List<Vertex>> getAllVertices() {
         return vertices;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = FiguraModelPart.class,
+                    argumentNames = "part"
+            ),
+            value = "model_part.move_to"
+    )
+    public FiguraModelPart moveTo(@LuaNotNil FiguraModelPart part) {
+        parent.children.remove(this);
+        part.children.add(this);
+        this.parent = part;
+        return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = FiguraModelPart.class,
+                    argumentNames = "part"
+            ),
+            value = "model_part.add_child"
+    )
+    public FiguraModelPart addChild(@LuaNotNil FiguraModelPart part) {
+        this.children.add(part);
+        return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = FiguraModelPart.class,
+                    argumentNames = "part"
+            ),
+            value = "model_part.remove_child"
+    )
+    public FiguraModelPart removeChild(@LuaNotNil FiguraModelPart part) {
+        this.children.remove(part);
+        return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = String.class,
+                    argumentNames = "name"
+            ),
+            value = "model_part.copy"
+    )
+    public FiguraModelPart copy(@LuaNotNil String name) {
+        PartCustomization customization = new PartCustomization();
+        this.customization.copyTo(customization);
+        FiguraModelPart result = new FiguraModelPart(owner, name, customization, copyVertices(), new ArrayList<>(children));
+        result.facesByTexture = new ArrayList<>(facesByTexture);
+        result.textures = new ArrayList<>(textures);
+        result.parentType = parentType;
+        result.textureHeight = textureHeight;
+        result.textureWidth = textureWidth;
+        return result;
     }
 
     //-- METAMETHODS --//
