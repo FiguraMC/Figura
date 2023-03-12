@@ -1,18 +1,22 @@
 package org.moon.figura.config;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.avatar.local.CacheAvatarLoader;
+import org.moon.figura.avatar.local.LocalAvatarFetcher;
 import org.moon.figura.backend2.NetworkStuff;
 import org.moon.figura.config.ConfigType.*;
+import org.moon.figura.gui.screens.ConfigScreen;
 import org.moon.figura.lua.FiguraLuaPrinter;
+import org.moon.figura.model.rendering.texture.FiguraTexture;
 import org.moon.figura.permissions.PermissionManager;
 import org.moon.figura.permissions.Permissions;
+import org.moon.figura.resources.FiguraRuntimeResources;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.FiguraText;
-import org.moon.figura.utils.IOUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -264,6 +268,13 @@ public class Configs {
     public static final ButtonConfig
             CLEAR_CACHE = new ButtonConfig("clear_cache", DEV, () -> {
                 CacheAvatarLoader.clearCache();
-                IOUtils.deleteCacheFiles("avatars.nbt", "settings.nbt", "saved_texture.png");
+                LocalAvatarFetcher.clearCache();
+                ConfigScreen.clearCache();
+                FiguraTexture.deleteCache();
+                FiguraRuntimeResources.clearCache();
+            }),
+            REDOWNLOAD_ASSETS = new ButtonConfig("redownload_assets", DEV, () -> {
+                FiguraRuntimeResources.init();
+                Minecraft.getInstance().reloadResourcePacks();
             });
 }
