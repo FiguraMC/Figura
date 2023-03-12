@@ -96,6 +96,11 @@ public class IOUtils {
         }
     }
 
+    public static void deleteCacheFile(String name) {
+        Path path = FiguraMod.getCacheDirectory().resolve(name + ".nbt");
+        deleteFile(path.toFile());
+    }
+
     public static <T> Set<T> loadEntryPoints(String name, Class<T> clazz) {
         Set<T> ret = new HashSet<>();
 
@@ -127,14 +132,21 @@ public class IOUtils {
         return path;
     }
 
-    public static void deleteCacheFiles(String... files) {
-        for (String file : files) {
-            try {
-                Path path = FiguraMod.getCacheDirectory().resolve(file);
-                Files.deleteIfExists(path);
-            } catch (Exception e) {
-                FiguraMod.LOGGER.error("", e);
+    public static void deleteFile(File file) {
+        if (!file.exists())
+            return;
+
+        File[] files = file.listFiles();
+        if (files != null) {
+            for (File f : files) {
+                if (f.isDirectory()) {
+                    deleteFile(f);
+                } else {
+                    f.delete();
+                }
             }
         }
+
+        file.delete();
     }
 }

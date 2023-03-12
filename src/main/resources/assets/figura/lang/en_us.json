@@ -531,6 +531,9 @@
   "figura.config.clear_cache": "Clear Cache",
   "figura.config.clear_cache.tooltip": "Clears the cache files\nRemoves things like cached Avatars and UI states\nWill not clear settings nor saved permissions",
 
+  "figura.config.redownload_assets": "Redownload Assets",
+  "figura.config.redownload_assets.tooltip": "This button allows for redownloading the runtime assets (emojis, translation files, etc) from the backend\nNormally the assets are downloaded only when the game launches\nThis process might hang the game for a while, since a resource reload is executed",
+
 
   "figura.command.click_to_open": "Click here to open",
   "figura.command.run.not_local_error": "No local avatar equipped!",

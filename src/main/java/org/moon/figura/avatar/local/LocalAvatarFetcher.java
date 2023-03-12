@@ -94,6 +94,10 @@ public class LocalAvatarFetcher {
         });
     }
 
+    public static void clearCache() {
+        IOUtils.deleteCacheFile("avatars");
+    }
+
     /**
      * Returns the directory where all local avatars are stored.
      * The directory is always under main directory.

@@ -106,7 +106,7 @@ public class ConfigScreen extends AbstractPanelScreen {
         return list.updateKey(keyCode == 256 ? InputConstants.UNKNOWN : InputConstants.getKey(keyCode, scanCode)) || super.keyPressed(keyCode, scanCode, modifiers);
     }
 
-    private void loadNbt() {
+    private static void loadNbt() {
         IOUtils.readCacheFile("settings", nbt -> {
             ListTag groupList = nbt.getList("settings", Tag.TAG_COMPOUND);
             for (Tag tag : groupList) {
@@ -119,7 +119,7 @@ public class ConfigScreen extends AbstractPanelScreen {
         });
     }
 
-    private void saveNbt() {
+    private static void saveNbt() {
         IOUtils.saveCacheFile("settings", nbt -> {
             ListTag list = new ListTag();
 
@@ -132,5 +132,9 @@ public class ConfigScreen extends AbstractPanelScreen {
 
             nbt.put("settings", list);
         });
+    }
+
+    public static void clearCache() {
+        IOUtils.deleteCacheFile("settings");
     }
 }
