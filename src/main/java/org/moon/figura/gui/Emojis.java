@@ -33,6 +33,16 @@ public class Emojis {
             //read a pair or String, JsonObject from this json
             for (Map.Entry<String, JsonElement> entry : emojis.entrySet())
                 EMOJIS.add(new EmojiContainer(entry.getKey(), entry.getValue().getAsJsonObject()));
+
+            //check for duplicates
+            Set<String> set = new HashSet<>();
+            for (EmojiContainer emoji : EMOJIS) {
+                for (String s : emoji.map.keySet()) {
+                    if (!set.add(s)) {
+                        FiguraMod.LOGGER.warn("Duplicate emoji id registered {}", s);
+                    }
+                }
+            }
         } catch (Exception e) {
             FiguraMod.LOGGER.error("Failed to load emojis", e);
         }

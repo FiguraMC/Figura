@@ -30,6 +30,10 @@ public class FiguraRuntimeResources {
 
     private static CompletableFuture<Void> future;
 
+    public static void clearCache() {
+        IOUtils.deleteFile(getRootDirectory().toFile());
+    }
+
     public static CompletableFuture<Void> init() {
         return future = CompletableFuture.runAsync(() -> {
             FiguraMod.LOGGER.info("Fetching backend resources...");
