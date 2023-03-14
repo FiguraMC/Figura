@@ -6,6 +6,7 @@ import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.math.Quaternion;
 import com.mojang.math.Vector3f;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -26,7 +27,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Quaternionf;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
@@ -759,8 +759,8 @@ public class Avatar {
         renderer.glowing = false;
 
         stack.pushPose();
-        Quaternionf quaternionf = Axis.XP.rotationDegrees(135f);
-        Quaternionf quaternionf2 = Axis.YP.rotationDegrees(-90f);
+        Quaternion quaternionf = Vector3f.XP.rotationDegrees(135f);
+        Quaternion quaternionf2 = Vector3f.YP.rotationDegrees(-90f);
         quaternionf.mul(quaternionf2);
         stack.mulPose(quaternionf);
 
