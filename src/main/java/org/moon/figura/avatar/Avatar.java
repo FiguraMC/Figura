@@ -552,7 +552,7 @@ public class Avatar {
         FiguraMod.popProfiler(3);
     }
 
-    public void firstPersonRender(PoseStack stack, MultiBufferSource bufferSource, Player player, PlayerRenderer playerRenderer, ModelPart arm, int light, int overlay, float tickDelta) {
+    public void firstPersonRender(PoseStack stack, MultiBufferSource bufferSource, Player player, PlayerRenderer playerRenderer, ModelPart arm, int light, float tickDelta) {
         if (renderer == null || !loaded)
             return;
 
@@ -571,7 +571,7 @@ public class Avatar {
             stack.mulPose(Axis.YP.rotation(arm.yRot));
             stack.mulPose(Axis.XP.rotation(arm.xRot));
         }
-        render(player, 0f, tickDelta, 1f, stack, bufferSource, light, overlay, playerRenderer, filter, false, false);
+        render(player, 0f, tickDelta, 1f, stack, bufferSource, light, OverlayTexture.NO_OVERLAY, playerRenderer, filter, false, false);
         stack.popPose();
 
         renderer.allowHiddenTransforms = true;
@@ -746,8 +746,6 @@ public class Avatar {
         if (renderer == null || !loaded)
             return false;
 
-        renderer.allowPivotParts = false;
-        renderer.allowRenderTasks = false;
         renderer.currentFilterScheme = PartFilterScheme.ARROW;
         renderer.tickDelta = delta;
         renderer.overlay = OverlayTexture.NO_OVERLAY;
