@@ -90,6 +90,7 @@ public abstract class AvatarRenderer {
         for (Tag t : texturesList) {
             CompoundTag tag = (CompoundTag) t;
             textureSets.add(new FiguraTextureSet(
+                    getTextureName(tag),
                     textures.get(tag.getString("d")),
                     textures.get(tag.getString("e")),
                     textures.get(tag.getString("s")),
@@ -98,6 +99,18 @@ public abstract class AvatarRenderer {
         }
 
         avatar.hasTexture = !texturesList.isEmpty();
+    }
+
+    private String getTextureName(CompoundTag tag) {
+        String s = tag.getString("d");
+        if (!s.isEmpty()) return s;
+        s = tag.getString("e");
+        if (!s.isEmpty()) return s.substring(0, s.length() - 2);
+        s = tag.getString("s");
+        if (!s.isEmpty()) return s.substring(0, s.length() - 2);
+        s = tag.getString("n");
+        if (!s.isEmpty()) return s.substring(0, s.length() - 2);
+        return "";
     }
 
     public abstract int render();
