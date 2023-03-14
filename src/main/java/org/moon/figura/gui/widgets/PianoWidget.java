@@ -6,6 +6,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.phys.Vec3;
 import org.moon.figura.FiguraMod;
@@ -83,7 +84,7 @@ public class PianoWidget extends AbstractContainerElement {
         private final boolean isSharp;
 
         public Key(int x, int y, int width, int height, String key, float pitch, boolean isSharp, PianoWidget parent) {
-            super(x, y, width, height, Component.literal(key), parent, button -> {});
+            super(x, y, width, height, new TextComponent(key), parent, button -> {});
             this.parent = parent;
             this.pitch = pitch;
             this.isSharp = isSharp;

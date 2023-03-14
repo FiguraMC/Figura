@@ -6,6 +6,8 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.lua.api.keybind.FiguraKeybind;
 import org.moon.figura.utils.FiguraText;
@@ -43,7 +45,7 @@ public class KeybindWidgetHelper {
 
     //must be called before getText()
     public void setTooltip(FiguraKeybind keybind, List<FiguraKeybind> keyBindings) {
-        MutableComponent text = Component.empty();
+        MutableComponent text = TextComponent.EMPTY.copy();
 
         //avatar conflicts
         Component avatar = checkForAvatarConflicts(keybind, keyBindings);
@@ -64,7 +66,7 @@ public class KeybindWidgetHelper {
     }
 
     public void setTooltip(KeyMapping keybind) {
-        MutableComponent text = Component.empty();
+        MutableComponent text = TextComponent.EMPTY.copy();
 
         //vanilla conflicts
         Component vanilla = checkForVanillaConflicts(keybind);
@@ -77,7 +79,7 @@ public class KeybindWidgetHelper {
 
     private void setTooltipTail(Component text) {
         if (vanillaConflict || avatarConflict) {
-            this.tooltip = FiguraText.of("gui.duplicate_keybind", text);
+            this.tooltip = new FiguraText("gui.duplicate_keybind", text);
         } else {
             this.tooltip = null;
         }
@@ -92,14 +94,14 @@ public class KeybindWidgetHelper {
         if (isSelected) message.withStyle(ChatFormatting.UNDERLINE);
 
         if (this.avatarConflict || this.vanillaConflict) {
-            MutableComponent left = Component.literal("[ ").withStyle(this.vanillaConflict ? ChatFormatting.RED : ChatFormatting.YELLOW);
-            MutableComponent right = Component.literal(" ]").withStyle(this.avatarConflict ? ChatFormatting.YELLOW : ChatFormatting.RED);
+            MutableComponent left = new TextComponent("[ ").withStyle(this.vanillaConflict ? ChatFormatting.RED : ChatFormatting.YELLOW);
+            MutableComponent right = new TextComponent(" ]").withStyle(this.avatarConflict ? ChatFormatting.YELLOW : ChatFormatting.RED);
             message = left.append(message).append(right);
         }
 
         //selected
         if (isSelected)
-            message = Component.literal("> ").append(message).append(" <").withStyle(FiguraMod.getAccentColor());
+            message = new TextComponent("> ").append(message).append(" <").withStyle(FiguraMod.getAccentColor());
 
         return message;
     }
@@ -115,11 +117,11 @@ public class KeybindWidgetHelper {
         if (id == -1)
             return null;
 
-        MutableComponent message = Component.empty();
+        MutableComponent message = TextComponent.EMPTY.copy();
         for (FiguraKeybind keyBinding : keyBindings) {
             if (keyBinding != keybind && keyBinding.getID() == id) {
                 this.avatarConflict = true;
-                message.append(Component.literal("\n• ").withStyle(ChatFormatting.YELLOW).append(keyBinding.getName()));
+                message.append(new TextComponent("\n• ").withStyle(ChatFormatting.YELLOW).append(keyBinding.getName()));
             }
         }
 
@@ -136,14 +138,14 @@ public class KeybindWidgetHelper {
             return null;
 
         String keyName = keybind.getKey();
-        MutableComponent message = Component.empty();
+        MutableComponent message = TextComponent.EMPTY.copy();
         for (KeyMapping key : Minecraft.getInstance().options.keyMappings) {
             if (key.saveString().equals(keyName)) {
                 this.vanillaConflict = true;
-                message.append(Component.literal("\n• ").withStyle(ChatFormatting.RED)
-                        .append(Component.translatable(key.getCategory()))
+                message.append(new TextComponent("\n• ").withStyle(ChatFormatting.RED)
+                        .append(new TranslatableComponent(key.getCategory()))
                         .append(": ")
-                        .append(Component.translatable(key.getName()))
+                        .append(new TranslatableComponent(key.getName()))
                 );
             }
         }
@@ -157,14 +159,14 @@ public class KeybindWidgetHelper {
             return null;
 
         String keyName = keybind.saveString();
-        MutableComponent message = Component.empty();
+        MutableComponent message = TextComponent.EMPTY.copy();
         for (KeyMapping key : Minecraft.getInstance().options.keyMappings) {
             if (key != keybind && key.saveString().equals(keyName)) {
                 this.vanillaConflict = true;
-                message.append(Component.literal("\n• ").withStyle(ChatFormatting.RED)
-                        .append(Component.translatable(key.getCategory()))
+                message.append(new TextComponent("\n• ").withStyle(ChatFormatting.RED)
+                        .append(new TranslatableComponent(key.getCategory()))
                         .append(": ")
-                        .append(Component.translatable(key.getName()))
+                        .append(new TranslatableComponent(key.getName()))
                 );
             }
         }

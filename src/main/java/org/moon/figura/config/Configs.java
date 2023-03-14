@@ -69,29 +69,29 @@ public class Configs {
             NAMEPLATE_RENDER = new EnumConfig("nameplate_render", NAMEPLATE, 0, 3),
             CHAT_NAMEPLATE = new EnumConfig("chat_nameplate", NAMEPLATE, 2, 3) {{
                 String path = "config.nameplate_level";
-                this.enumTooltip = FiguraText.of(path + ".enum");
+                this.enumTooltip = new FiguraText(path + ".enum");
                 this.enumList = List.of(
-                        FiguraText.of(path + ".1"),
-                        FiguraText.of(path + ".2"),
-                        FiguraText.of(path + ".3")
+                        new FiguraText(path + ".1"),
+                        new FiguraText(path + ".2"),
+                        new FiguraText(path + ".3")
                 );
             }},
             ENTITY_NAMEPLATE = new EnumConfig("entity_nameplate", NAMEPLATE, 2, 3) {{
                 String path = "config.nameplate_level";
-                this.enumTooltip = FiguraText.of(path + ".enum");
+                this.enumTooltip = new FiguraText(path + ".enum");
                 this.enumList = List.of(
-                        FiguraText.of(path + ".1"),
-                        FiguraText.of(path + ".2"),
-                        FiguraText.of(path + ".3")
+                        new FiguraText(path + ".1"),
+                        new FiguraText(path + ".2"),
+                        new FiguraText(path + ".3")
                 );
             }},
             LIST_NAMEPLATE = new EnumConfig("list_nameplate", NAMEPLATE, 2, 3) {{
                 String path = "config.nameplate_level";
-                this.enumTooltip = FiguraText.of(path + ".enum");
+                this.enumTooltip = new FiguraText(path + ".enum");
                 this.enumList = List.of(
-                        FiguraText.of(path + ".1"),
-                        FiguraText.of(path + ".2"),
-                        FiguraText.of(path + ".3")
+                        new FiguraText(path + ".1"),
+                        new FiguraText(path + ".2"),
+                        new FiguraText(path + ".3")
                 );
             }};
 
@@ -103,9 +103,9 @@ public class Configs {
             FORMAT_SCRIPT = new EnumConfig("format_script", SCRIPT, 1, 3) {
                 {
                     String tooltip = "config.format_script.tooltip.";
-                    this.tooltip = FiguraText.of(tooltip + "1")
+                    this.tooltip = new FiguraText(tooltip + "1")
                             .append("\n")
-                            .append(FiguraText.of(tooltip + "2").withStyle(ChatFormatting.RED));
+                            .append(new FiguraText(tooltip + "2").withStyle(ChatFormatting.RED));
                 }
 
                 @Override
@@ -131,9 +131,9 @@ public class Configs {
             IRIS_COMPATIBILITY_FIX = new EnumConfig("iris_compatibility_fix", RENDERING, 2, 3),
             RENDER_DEBUG_PARTS_PIVOT = new EnumConfig("render_debug_parts_pivot", RENDERING, 1, 5) {{
                     String tooltip = "config.render_debug_parts_pivot.tooltip";
-                    this.tooltip = FiguraText.of(tooltip,
-                            FiguraText.of(tooltip + ".cubes").setStyle(ColorUtils.Colors.FRAN_PINK.style),
-                            FiguraText.of(tooltip + ".groups").setStyle(ColorUtils.Colors.MAYA_BLUE.style));
+                    this.tooltip = new FiguraText(tooltip,
+                            new FiguraText(tooltip + ".cubes").setStyle(ColorUtils.Colors.FRAN_PINK.style),
+                            new FiguraText(tooltip + ".groups").setStyle(ColorUtils.Colors.MAYA_BLUE.style));
             }};
     public static final BoolConfig
             ALLOW_FP_HANDS = new BoolConfig("allow_fp_hands", RENDERING, false),
@@ -242,18 +242,18 @@ public class Configs {
     public static final BoolConfig
             SYNC_PINGS = new BoolConfig("sync_pings", DEV, false) {{
                 String tooltip = "config.sync_pings.tooltip.";
-                this.tooltip = FiguraText.of(tooltip + "1")
+                this.tooltip = new FiguraText(tooltip + "1")
                         .append("\n")
-                        .append(FiguraText.of(tooltip + "2").withStyle(ChatFormatting.RED));
+                        .append(new FiguraText(tooltip + "2").withStyle(ChatFormatting.RED));
             }},
             CHAT_MESSAGES = new BoolConfig("chat_messages", DEV, false) {{
                 this.name = this.name.copy().withStyle(ChatFormatting.RED);
                 String tooltip = "config.chat_messages.tooltip.";
-                this.tooltip = FiguraText.of(tooltip + "1")
+                this.tooltip = new FiguraText(tooltip + "1")
                         .append("\n\n")
-                        .append(FiguraText.of(tooltip + "2").withStyle(ChatFormatting.RED))
+                        .append(new FiguraText(tooltip + "2").withStyle(ChatFormatting.RED))
                         .append("\n\n")
-                        .append(FiguraText.of(tooltip + "3").withStyle(ChatFormatting.RED, ChatFormatting.BOLD));
+                        .append(new FiguraText(tooltip + "3").withStyle(ChatFormatting.RED, ChatFormatting.BOLD));
             }};
     public static final FolderConfig
             MAIN_DIR = new FolderConfig("main_dir", DEV, "");

@@ -14,7 +14,6 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.SoundType;
@@ -324,7 +323,7 @@ public class BlockStateAPI {
 
         BlockRenderDispatcher blockRenderer = Minecraft.getInstance().getBlockRenderer();
         BakedModel bakedModel = blockRenderer.getBlockModel(blockState);
-        RandomSource randomSource = RandomSource.create();
+        Random randomSource = new Random();
         long seed = 42L;
 
         for (Direction direction : Direction.values())
@@ -337,7 +336,7 @@ public class BlockStateAPI {
         return map;
     }
 
-    private static Set<String> getTexturesForFace(BlockState blockState, Direction direction, RandomSource randomSource, BakedModel bakedModel, long seed) {
+    private static Set<String> getTexturesForFace(BlockState blockState, Direction direction, Random randomSource, BakedModel bakedModel, long seed) {
         randomSource.setSeed(seed);
         List<BakedQuad> quads = bakedModel.getQuads(blockState, direction, randomSource);
         Set<String> textures = new HashSet<>();

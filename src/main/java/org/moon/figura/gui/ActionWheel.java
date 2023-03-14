@@ -9,6 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.moon.figura.FiguraMod;
@@ -238,7 +239,7 @@ public class ActionWheel {
             int index = page.getSlotsShift();
             int greatest = page.getGreatestSlot() + 1;
 
-            MutableComponent indicator = Component.empty();
+            MutableComponent indicator = TextComponent.EMPTY.copy();
             int extraWidth = 0;
 
             //down arrow
@@ -248,14 +249,14 @@ public class ActionWheel {
                 extraWidth -= font.width(arrow);
             }
             //text
-            indicator.append(FiguraText.of("gui.action_wheel.slots_indicator",
-                    Component.literal(String.valueOf((index - 1) * 8 + 1)).withStyle(FiguraMod.getAccentColor()),
-                    Component.literal(String.valueOf(Math.min(index * 8, greatest))).withStyle(FiguraMod.getAccentColor()),
-                    Component.literal(String.valueOf(greatest)).withStyle(FiguraMod.getAccentColor())
+            indicator.append(new FiguraText("gui.action_wheel.slots_indicator",
+                    new TextComponent(String.valueOf((index - 1) * 8 + 1)).withStyle(FiguraMod.getAccentColor()),
+                    new TextComponent(String.valueOf(Math.min(index * 8, greatest))).withStyle(FiguraMod.getAccentColor()),
+                    new TextComponent(String.valueOf(greatest)).withStyle(FiguraMod.getAccentColor())
             ));
             //up arrow
             if (index < groupCount) {
-                Component arrow = Component.literal(" ").append(UIHelper.DOWN_ARROW);
+                Component arrow = new TextComponent(" ").append(UIHelper.DOWN_ARROW);
                 indicator.append(arrow);
                 extraWidth += font.width(arrow);
             }

@@ -24,7 +24,6 @@ public class VanillaModelPart extends VanillaPart {
     //backup
     private float backupPosX, backupPosY, backupPosZ;
     private float backupRotX, backupRotY, backupRotZ;
-    private float backupScaleX, backupScaleY, backupScaleZ;
     private boolean originVisible;
     private boolean saved;
 
@@ -73,11 +72,6 @@ public class VanillaModelPart extends VanillaPart {
         backupRotY = part.yRot;
         backupRotZ = part.zRot;
 
-        //save scale
-        backupScaleX = part.xScale;
-        backupScaleY = part.yScale;
-        backupScaleZ = part.zScale;
-
         saved = true;
     }
 
@@ -100,17 +94,12 @@ public class VanillaModelPart extends VanillaPart {
             FiguraVec3 rot = this.rot.toRad();
             part.setRotation((float) -rot.x, (float) -rot.y, (float) rot.z);
         }
-        if (offsetRot != null)
-            part.offsetRotation(offsetRot.toRad().mul(-1, -1, 1).asVec3f());
-
-        //scale
-        if (scale != null) {
-            part.xScale = (float) scale.x;
-            part.yScale = (float) scale.y;
-            part.zScale = (float) scale.z;
+        if (offsetRot != null) {
+            FiguraVec3 rot = offsetRot.toRad();
+            part.xRot += (float) -rot.x;
+            part.yRot += (float) -rot.y;
+            part.zRot += (float) rot.z;
         }
-        if (offsetScale != null)
-            part.offsetScale(offsetScale.asVec3f());
     }
 
     @Override
@@ -142,11 +131,6 @@ public class VanillaModelPart extends VanillaPart {
         part.xRot = backupRotX;
         part.yRot = backupRotY;
         part.zRot = backupRotZ;
-
-        //restore scale
-        part.xScale = backupScaleX;
-        part.yScale = backupScaleY;
-        part.zScale = backupScaleZ;
     }
 
     @LuaWhitelist

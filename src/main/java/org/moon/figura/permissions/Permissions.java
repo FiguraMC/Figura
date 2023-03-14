@@ -122,13 +122,13 @@ public class Permissions {
         Category(int index, ColorUtils.Colors color) {
             this.index = index;
             this.color = color.hex;
-            text = FiguraText.of("permissions.category." + name().toLowerCase()).withStyle(color.style);
+            text = new FiguraText("permissions.category." + name().toLowerCase()).withStyle(color.style);
         }
 
         Category(int index, ChatFormatting formatting) {
             this.index = index;
             this.color = formatting.getColor();
-            text = FiguraText.of("permissions.category." + name().toLowerCase()).withStyle(formatting);
+            text = new FiguraText("permissions.category." + name().toLowerCase()).withStyle(formatting);
         }
 
         public static Category indexOf(int i) {

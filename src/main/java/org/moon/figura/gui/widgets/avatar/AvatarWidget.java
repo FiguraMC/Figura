@@ -5,6 +5,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.avatar.local.LocalAvatarFetcher;
@@ -23,7 +24,7 @@ public class AvatarWidget extends AbstractAvatarWidget {
         super(depth, width, 24, avatar, parent);
 
         AvatarWidget instance = this;
-        this.button = new TexturedButton(x, y, width, 24, Component.empty(), null, button -> {
+        this.button = new TexturedButton(x, y, width, 24, TextComponent.EMPTY.copy(), null, button -> {
             AvatarManager.loadLocalAvatar(avatar == null ? null : avatar.getPath());
             AvatarList.selectedEntry = instance;
         }) {
@@ -54,7 +55,7 @@ public class AvatarWidget extends AbstractAvatarWidget {
                 font.drawShadow(stack, name, x + 22, y, 0xFFFFFFFF);
 
                 //description
-                Component description = Component.literal(avatar.getDescription());
+                Component description = new TextComponent(avatar.getDescription());
                 Component parsedDescription = TextUtils.trimToWidthEllipsis(font, description, this.width - 26, TextUtils.ELLIPSIS.copy().withStyle(description.getStyle()));
                 font.drawShadow(stack, parsedDescription, x + 22, y + font.lineHeight + 1, ChatFormatting.GRAY.getColor());
 

@@ -48,8 +48,8 @@ public class BackendCommands {
         //check resources
         LiteralArgumentBuilder<FabricClientCommandSource> resources = LiteralArgumentBuilder.literal("checkResources");
         resources.executes(context -> {
-            context.getSource().sendFeedback(Component.literal("Checking for resources..."));
-            FiguraRuntimeResources.init().thenRun(() -> context.getSource().sendFeedback(Component.literal("Resources checked!")));
+            context.getSource().sendFeedback(new TextComponent("Checking for resources..."));
+            FiguraRuntimeResources.init().thenRun(() -> context.getSource().sendFeedback(new TextComponent("Resources checked!")));
             return 1;
         });
 
