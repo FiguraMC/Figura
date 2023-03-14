@@ -5,10 +5,7 @@ import org.moon.figura.lua.api.*;
 import org.moon.figura.lua.api.action_wheel.Action;
 import org.moon.figura.lua.api.action_wheel.ActionWheelAPI;
 import org.moon.figura.lua.api.action_wheel.Page;
-import org.moon.figura.lua.api.entity.EntityAPI;
-import org.moon.figura.lua.api.entity.LivingEntityAPI;
-import org.moon.figura.lua.api.entity.NullEntity;
-import org.moon.figura.lua.api.entity.PlayerAPI;
+import org.moon.figura.lua.api.entity.*;
 import org.moon.figura.lua.api.event.EventsAPI;
 import org.moon.figura.lua.api.event.LuaEvent;
 import org.moon.figura.lua.api.keybind.FiguraKeybind;
@@ -74,6 +71,7 @@ public class FiguraAPIManager {
         add(EntityAPI.class);
         add(LivingEntityAPI.class);
         add(PlayerAPI.class);
+        add(ViewerAPI.class);
 
         add(EventsAPI.class);
         add(LuaEvent.class);
