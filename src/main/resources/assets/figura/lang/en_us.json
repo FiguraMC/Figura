@@ -132,11 +132,11 @@
   "figura.gui.expand": "Expand",
   "figura.gui.minimise": "Minimise",
   "figura.gui.reset_all": "Reset All",
-  "figura.gui.panic.1": "Panic mode active! Figura features are disabled!",
-  "figura.gui.panic.2": "toggle panic mode with the [%s] key",
+  "figura.gui.panic": "Panic mode active! Figura features are disabled!\ntoggle panic mode with the [%s] key",
   "figura.gui.help.tooltip": "Help",
   "figura.gui.duplicate_keybind": "This key is also used for:\n%s",
   "figura.gui.favorited": "Favorited",
+  "figura.gui.new_version.tooltip": "A new version of Figura is available! %s",
 
   "figura.gui.text_hint.any": "Text",
   "figura.gui.text_hint.int": "Integer",
@@ -959,6 +959,8 @@
   "figura.docs.player.get_charged_attack_delay": "Returns the delay (in ticks) of charged attacks",
   "figura.docs.player.get_shoulder_entity": "Returns a table of the nbt of this entity left or right shoulder entity",
   "figura.docs.player.get_ip_address": "Returns this player's IP address",
+
+  "figura.docs.viewer": "An extension of the Player, used for the viewer only, meant as proxy to allow access to some host only functions",
 
 
   "figura.docs.events": "A global API that contains all of the figura Events\nAccessed using the name \"events\"",

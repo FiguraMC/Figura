@@ -265,6 +265,7 @@ public class Configs {
                     NetworkStuff.reAuth();
                 }
             };
+    @SuppressWarnings("unused")
     public static final ButtonConfig
             CLEAR_CACHE = new ButtonConfig("clear_cache", DEV, () -> {
                 CacheAvatarLoader.clearCache();

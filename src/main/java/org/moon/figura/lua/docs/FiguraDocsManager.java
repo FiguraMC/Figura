@@ -19,6 +19,7 @@ import org.moon.figura.lua.api.action_wheel.Page;
 import org.moon.figura.lua.api.entity.EntityAPI;
 import org.moon.figura.lua.api.entity.LivingEntityAPI;
 import org.moon.figura.lua.api.entity.PlayerAPI;
+import org.moon.figura.lua.api.entity.ViewerAPI;
 import org.moon.figura.lua.api.event.EventsAPI;
 import org.moon.figura.lua.api.event.LuaEvent;
 import org.moon.figura.lua.api.keybind.FiguraKeybind;
@@ -157,7 +158,8 @@ public class FiguraDocsManager {
         put("player", List.of(
                 EntityAPI.class,
                 LivingEntityAPI.class,
-                PlayerAPI.class
+                PlayerAPI.class,
+                ViewerAPI.class
         ));
 
         put("events", List.of(

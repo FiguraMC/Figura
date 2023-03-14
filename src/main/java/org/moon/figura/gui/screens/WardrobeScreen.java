@@ -6,6 +6,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
@@ -19,6 +22,7 @@ import org.moon.figura.gui.widgets.lists.AvatarList;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.TextUtils;
+import org.moon.figura.utils.ui.UIHelper;
 
 public class WardrobeScreen extends AbstractPanelScreen {
 
@@ -106,9 +110,25 @@ public class WardrobeScreen extends AbstractPanelScreen {
         // -- bottom -- //
 
         //version
-        Label version = new Label(FiguraText.of().append(" " + FiguraMod.VERSION.noBuildString()).withStyle(ChatFormatting.ITALIC), middle, this.height, TextUtils.Alignment.CENTER);
+        MutableComponent versionText = FiguraText.of().append(" " + FiguraMod.VERSION.noBuildString()).withStyle(ChatFormatting.ITALIC);
+        boolean oldVersion = NetworkStuff.latestVersion != null && NetworkStuff.latestVersion.compareTo(FiguraMod.VERSION) > 0;
+        if (oldVersion) {
+            versionText
+                    .append(Component.literal(" =")
+                            .withStyle(Style.EMPTY
+                                    .withFont(UIHelper.UI_FONT)
+                                    .withItalic(false)
+                                    .applyLegacyFormat(ChatFormatting.WHITE)
+                            ))
+                    .withStyle(Style.EMPTY
+                            .applyFormat(ChatFormatting.AQUA)
+                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, FiguraText.of("gui.new_version.tooltip", NetworkStuff.latestVersion)))
+                    );
+        }
+
+        Label version = new Label(versionText, middle, this.height, TextUtils.Alignment.CENTER);
         addRenderableWidget(version);
-        version.alpha = 0x33;
+        if (!oldVersion) version.alpha = 0x33;
         version.y -= version.getHeight() / 2 + 1;
 
         int rightSide = Math.min(panels, 134);
@@ -153,10 +173,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
 
         //panic warning - always added last, on top
         addRenderableWidget(panic = new Label(
-                Component.empty().withStyle(ChatFormatting.YELLOW)
-                        .append(FiguraText.of("gui.panic.1"))
-                        .append("\n")
-                        .append(FiguraText.of("gui.panic.2", Configs.PANIC_BUTTON.keyBind.getTranslatedKeyMessage())),
+                FiguraText.of("gui.panic", Configs.PANIC_BUTTON.keyBind.getTranslatedKeyMessage()).withStyle(ChatFormatting.YELLOW),
                 middle, this.height - version.getHeight(), TextUtils.Alignment.CENTER, 0)
         );
         panic.y -= panic.getHeight() / 2;
