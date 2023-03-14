@@ -110,6 +110,7 @@
   "figura.badges.special.donator": "Thank you for supporting the Figura mod!",
   "figura.badges.special.translator": "Figura mod Translator!",
   "figura.badges.special.texture_artist": "Figura mod Texture Artist!",
+  "figura.badges.special.immortalized": "Immortalized Figura Avatar!",
 
   "figura.badges.no_permissions.init_inst": "Script overran resource limits",
   "figura.badges.no_permissions.complexity": "Model too complex",
