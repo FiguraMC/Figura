@@ -106,11 +106,11 @@ public class PianoWidget extends AbstractContainerElement {
                 return;
 
             //render button
-            this.renderButton(stack, mouseX, mouseY, delta);
+            this.renderWidget(stack, mouseX, mouseY, delta);
         }
 
         @Override
-        public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
+        public void renderWidget(PoseStack stack, int mouseX, int mouseY, float delta) {
             UIHelper.fillRounded(stack, getX(), getY(), width, height, (isSharp ? 0 : 0xFFFFFF) + (0xFF << 24));
             UIHelper.renderSliced(stack, getX(), getY(), width, height, UIHelper.OUTLINE);
 
