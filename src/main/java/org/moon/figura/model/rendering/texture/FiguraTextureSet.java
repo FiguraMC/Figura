@@ -11,9 +11,12 @@ import org.moon.figura.mixin.render.layers.elytra.ElytraLayerAccessor;
 import java.util.UUID;
 
 public class FiguraTextureSet {
+
+    public final String name;
     public final FiguraTexture[] textures = new FiguraTexture[4];
 
-    public FiguraTextureSet(FiguraTexture mainData, FiguraTexture emissiveData, FiguraTexture specularData, FiguraTexture normalData) {
+    public FiguraTextureSet(String name, FiguraTexture mainData, FiguraTexture emissiveData, FiguraTexture specularData, FiguraTexture normalData) {
+        this.name = name;
         textures[0] = mainData;
         textures[1] = emissiveData;
         textures[2] = specularData;
