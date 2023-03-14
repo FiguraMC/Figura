@@ -63,7 +63,7 @@ public class PanelSelectorWidget extends AbstractContainerElement {
         button.setToggled(toggled);
         if (toggled) {
             this.selected = button;
-            button.setY(1);
+            button.y = 1;
             button.setHeight(23);
         }
 
@@ -76,7 +76,7 @@ public class PanelSelectorWidget extends AbstractContainerElement {
     public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
         //selected overlay
 
-        int x = selected.getX();
+        int x = selected.x;
         int width = selected.getWidth();
         int left = x + width;
         int right = this.width - left;

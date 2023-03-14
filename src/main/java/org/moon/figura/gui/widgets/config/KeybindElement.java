@@ -41,7 +41,7 @@ public class KeybindElement extends AbstractConfigElement {
         if (!this.isVisible()) return;
 
         //reset enabled
-        helper.renderConflictBars(stack, button.getX() - 8, button.getY() + 2, 4, 16);
+        helper.renderConflictBars(stack, button.x - 8, button.y + 2, 4, 16);
 
         //super render
         super.render(stack, mouseX, mouseY, delta);

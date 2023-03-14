@@ -96,7 +96,7 @@ public class PianoWidget extends AbstractContainerElement {
                 Vec3 vec =  Minecraft.getInstance().player == null ? new Vec3(0, 0, 0) : Minecraft.getInstance().player.position();
                 sound.pos(vec.x, vec.y, vec.z).pitch(pitch).play();
             } else {
-                soundManager.play(SimpleSoundInstance.forUI(SoundEvents.NOTE_BLOCK_HARP.value(), pitch, 1f));
+                soundManager.play(SimpleSoundInstance.forUI(SoundEvents.NOTE_BLOCK_HARP, pitch, 1f));
             }
         }
 
@@ -111,16 +111,16 @@ public class PianoWidget extends AbstractContainerElement {
 
         @Override
         public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
-            UIHelper.fillRounded(stack, getX(), getY(), width, height, (isSharp ? 0 : 0xFFFFFF) + (0xFF << 24));
-            UIHelper.renderSliced(stack, getX(), getY(), width, height, UIHelper.OUTLINE);
+            UIHelper.fillRounded(stack, x, y, width, height, (isSharp ? 0 : 0xFFFFFF) + (0xFF << 24));
+            UIHelper.renderSliced(stack, x, y, width, height, UIHelper.OUTLINE);
 
             if (isHoveredOrFocused())
-                UIHelper.fillRounded(stack, getX(), getY(), width, height, (FiguraMod.getAccentColor().getColor().getValue()) + (0xA0 << 24));
+                UIHelper.fillRounded(stack, x, y, width, height, (FiguraMod.getAccentColor().getColor().getValue()) + (0xA0 << 24));
 
             Font font = Minecraft.getInstance().font;
             Component message = getMessage();
-            int x = getX() + width / 2 - font.width(message) / 2;
-            int y = getY() + height / 2 - font.lineHeight / 2;
+            int x = this.x + width / 2 - font.width(message) / 2;
+            int y = this.y + height / 2 - font.lineHeight / 2;
             if (!isSharp)
                 y += height / 4;
             font.draw(stack, getMessage(), x, y, (isSharp ? 0xFFFFFF : 0));

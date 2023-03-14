@@ -144,7 +144,7 @@ public class KeybindList extends AbstractList {
         public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
             if (!this.isVisible()) return;
 
-            helper.renderConflictBars(stack, keybindButton.getX() - 8, keybindButton.getY() + 2, 4, 16);
+            helper.renderConflictBars(stack, keybindButton.x - 8, keybindButton.y + 2, 4, 16);
 
             //vars
             Font font = Minecraft.getInstance().font;
