@@ -105,6 +105,7 @@ public abstract class FiguraDoc {
             if (foundIndices.contains(name) || !method.isAnnotationPresent(LuaMethodDoc.class))
                 return;
 
+            foundIndices.add(name);
             LuaMethodDoc doc = method.getAnnotation(LuaMethodDoc.class);
             List<FiguraDoc> childList = children == null ? null : children.get(name);
             documentedMethods.add(new MethodDoc(method, doc, childList, typeDoc.name()));
@@ -116,6 +117,7 @@ public abstract class FiguraDoc {
             if (foundIndices.contains(name) || !field.isAnnotationPresent(LuaFieldDoc.class))
                 return;
 
+            foundIndices.add(name);
             List<FiguraDoc> childList = children == null ? null : children.get(name);
             documentedFields.add(new FieldDoc(field, field.getAnnotation(LuaFieldDoc.class), childList));
         }
