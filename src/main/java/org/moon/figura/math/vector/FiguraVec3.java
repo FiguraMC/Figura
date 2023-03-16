@@ -523,7 +523,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
     }
 
     public BlockPos asBlockPos() {
-        return new BlockPos((int) x, (int) y, (int) z);
+        return new BlockPos((int) Math.floor(x), (int) Math.floor(y), (int) Math.floor(z));
     }
     public static FiguraVec3 fromBlockPos(BlockPos pos) {
         return of(pos.getX(), pos.getY(), pos.getZ());
