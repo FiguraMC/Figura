@@ -118,4 +118,4 @@ Donate:
 
 
 * Do you use VSCode and wish Figura's documentation autocompleted in the editor?
-  GrandpaScout saves the day their [VSDocs](https://github.com/GrandpaScout/FiguraRewriteVSDocs/wiki)!
+  GrandpaScout saves the day with their [VSDocs](https://github.com/GrandpaScout/FiguraRewriteVSDocs/wiki)!
