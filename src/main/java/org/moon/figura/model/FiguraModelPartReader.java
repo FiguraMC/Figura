@@ -143,7 +143,7 @@ public class FiguraModelPartReader {
                         bezierLeftTime = MathUtils.clamp(bezierLeftTime, 0, 1);
                         bezierRightTime = MathUtils.clamp(bezierRightTime, 0, 1);
 
-                        keyframes.add(new Keyframe(owner, time, interpolation, pre, end, bezierLeft, bezierRight, bezierLeftTime, bezierRightTime));
+                        keyframes.add(new Keyframe(owner, animation, time, interpolation, pre, end, bezierLeft, bezierRight, bezierLeftTime, bezierRightTime));
                     }
 
                     keyframes.sort(Keyframe::compareTo);
