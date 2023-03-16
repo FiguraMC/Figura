@@ -376,6 +376,20 @@ public class EntityAPI<T extends Entity> {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("entity.get_controlling_passenger")
+    public EntityAPI<?> getControllingPassenger() {
+        checkEntity();
+        return wrap(entity.getControllingPassenger());
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("entity.get_controlled_vehicle")
+    public EntityAPI<?> getControlledVehicle() {
+        checkEntity();
+        return wrap(entity.getControlledVehicle());
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc("entity.has_container")
     public boolean hasContainer() {
         checkEntity();

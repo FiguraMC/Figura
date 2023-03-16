@@ -23,8 +23,9 @@ public class AvatarWidget extends AbstractAvatarWidget {
         super(depth, width, 24, avatar, parent);
 
         AvatarWidget instance = this;
-        this.button = new TexturedButton(x, y, width, 24, Component.empty(), null, button -> {
-            AvatarManager.loadLocalAvatar(avatar == null ? null : avatar.getPath());
+        Component description = Component.literal(avatar.getDescription());
+        this.button = new TexturedButton(x, y, width, 24, getName(), null, button -> {
+            AvatarManager.loadLocalAvatar(avatar.getPath());
             AvatarList.selectedEntry = instance;
         }) {
             @Override
@@ -41,26 +42,26 @@ public class AvatarWidget extends AbstractAvatarWidget {
                 //variables
                 Font font = Minecraft.getInstance().font;
 
-                int spacing = font.width(SPACING) * depth;
-                int x = getX() + 2;
+                int space = font.width(spacing);
+                int width = this.width - 26 - space;
+                int x = getX() + 2 + space;
                 int y = getY() + 2;
 
                 //icon
                 FileTexture texture = avatar.getIcon();
                 ResourceLocation icon = texture == null ? MISSING_ICON : texture.getLocation();
-                UIHelper.renderTexture(stack, x + spacing, y, 20, 20, icon);
+                UIHelper.renderTexture(stack, x, y, 20, 20, icon);
 
                 //name
-                Component name = TextUtils.trimToWidthEllipsis(font, getMessage(), this.width - 26, TextUtils.ELLIPSIS.copy().withStyle(getMessage().getStyle()));
-                font.drawShadow(stack, name, x + 22, y, 0xFFFFFFFF);
+                Component parsedName = TextUtils.trimToWidthEllipsis(font, getMessage(), width, TextUtils.ELLIPSIS.copy().withStyle(getMessage().getStyle()));
+                font.drawShadow(stack, parsedName, x + 22, y, 0xFFFFFFFF);
 
                 //description
-                Component description = Component.literal(avatar.getDescription());
-                Component parsedDescription = TextUtils.trimToWidthEllipsis(font, description, this.width - 26, TextUtils.ELLIPSIS.copy().withStyle(description.getStyle()));
+                Component parsedDescription = TextUtils.trimToWidthEllipsis(font, description, width, TextUtils.ELLIPSIS.copy().withStyle(description.getStyle()));
                 font.drawShadow(stack, parsedDescription, x + 22, y + font.lineHeight + 1, ChatFormatting.GRAY.getColor());
 
                 //tooltip
-                if (name != getMessage() || parsedDescription != description) {
+                if (parsedName != getMessage() || parsedDescription != description) {
                     Component tooltip = instance.getName();
                     if (!description.getString().isBlank())
                         tooltip = tooltip.copy().append("\n\n").append(description);
@@ -84,6 +85,5 @@ public class AvatarWidget extends AbstractAvatarWidget {
 
         this.button.shouldHaveBackground(false);
         children.add(this.button);
-        updateName();
     }
 }
