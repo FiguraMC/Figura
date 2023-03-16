@@ -1,7 +1,6 @@
 package org.moon.figura.gui.widgets.avatar;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.network.chat.Component;
 import org.moon.figura.avatar.local.LocalAvatarFetcher;
 import org.moon.figura.gui.widgets.ContainerButton;
 import org.moon.figura.gui.widgets.lists.AvatarList;
@@ -20,7 +19,7 @@ public class AvatarFolderWidget extends AbstractAvatarWidget {
         super(depth, width, 20, avatar, parent);
 
         AvatarFolderWidget instance = this;
-        this.button = new ContainerButton(parent, x, y, width, 20, Component.empty(), null, button -> {
+        this.button = new ContainerButton(parent, x, y, width, 20, getName(), null, button -> {
             toggleEntries(((ContainerButton) this.button).isToggled());
             parent.updateScroll();
         }) {
@@ -43,7 +42,6 @@ public class AvatarFolderWidget extends AbstractAvatarWidget {
         };
 
         children.add(this.button);
-        updateName();
 
         update(avatar, "");
 
