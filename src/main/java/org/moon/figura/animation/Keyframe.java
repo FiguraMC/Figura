@@ -49,7 +49,7 @@ public class Keyframe implements Comparable<Keyframe> {
                 return FiguraMod.popReturnProfiler(0f);
 
             try {
-                Varargs val = owner.run(Pair.of("keyframe_data", String.format("local self={time=%f,blend=%f,anim=animations[\"%s\"][\"%s\"]},%f,%f;return (%s);", animation.getTime(), animation.blend, animation.modelName, animation.name,animation.getTime(),animation.blend, data)), owner.render);
+                Varargs val = owner.run(Pair.of("keyframe_data", String.format("local self={time=%f,blend=%f,anim=animations[\"%s\"][\"%s\"]};return (%s);", animation.getTime(), animation.blend, animation.modelName, animation.name, data)), owner.render);
                 if (val.isnumber(1))
                     return FiguraMod.popReturnProfiler(val.tofloat(1));
             } catch (Exception e) {
