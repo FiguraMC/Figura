@@ -9,6 +9,7 @@ import org.moon.figura.math.vector.FiguraVec3;
 public class Keyframe implements Comparable<Keyframe> {
 
     private final Avatar owner;
+    private final Animation animation;
     private final float time;
     private final Interpolation interpolation;
     private final FiguraVec3 targetA, targetB;
@@ -16,8 +17,9 @@ public class Keyframe implements Comparable<Keyframe> {
     private final FiguraVec3 bezierLeft, bezierRight;
     private final FiguraVec3 bezierLeftTime, bezierRightTime;
 
-    public Keyframe(Avatar owner, float time, Interpolation interpolation, Pair<FiguraVec3, String[]> a, Pair<FiguraVec3, String[]> b, FiguraVec3 bezierLeft, FiguraVec3 bezierRight, FiguraVec3 bezierLeftTime, FiguraVec3 bezierRightTime) {
+    public Keyframe(Avatar owner, Animation animation, float time, Interpolation interpolation, Pair<FiguraVec3, String[]> a, Pair<FiguraVec3, String[]> b, FiguraVec3 bezierLeft, FiguraVec3 bezierRight, FiguraVec3 bezierLeftTime, FiguraVec3 bezierRightTime) {
         this.owner = owner;
+        this.animation = animation;
         this.time = time;
         this.interpolation = interpolation;
         this.targetA = a.getFirst();
@@ -47,7 +49,7 @@ public class Keyframe implements Comparable<Keyframe> {
                 return FiguraMod.popReturnProfiler(0f);
 
             try {
-                Varargs val = owner.run(Pair.of("keyframe_data", "return " + data), owner.render);
+                Varargs val = owner.run(Pair.of("keyframe_data", String.format("local self=animations[\"%s\"][\"%s\"];return (%s);", animation.modelName, animation.name, data)), owner.render);
                 if (val.isnumber(1))
                     return FiguraMod.popReturnProfiler(val.tofloat(1));
             } catch (Exception e) {
