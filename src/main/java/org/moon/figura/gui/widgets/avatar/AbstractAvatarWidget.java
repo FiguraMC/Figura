@@ -5,7 +5,6 @@ import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.avatar.local.LocalAvatarFetcher;
@@ -21,7 +20,7 @@ import java.io.File;
 
 public abstract class AbstractAvatarWidget extends AbstractContainerElement implements Comparable<AbstractAvatarWidget> {
 
-    protected static final Component SPACING = new TextComponent("  ");
+    protected static final String SPACING = "  ";
     protected static final Component FAVOURITE = new TextComponent("★").withStyle(Style.EMPTY.withFont(UIHelper.UI_FONT));
     protected static final Component ADD_FAVOURITE = new FiguraText("gui.context.favorite.add");
     protected static final Component REMOVE_FAVOURITE = new FiguraText("gui.context.favorite.remove");
@@ -29,6 +28,7 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
     protected final AvatarList parent;
     protected final int depth;
     protected final ContextMenu context;
+    protected String spacing = "";
 
     protected LocalAvatarFetcher.AvatarPath avatar;
     protected TexturedButton button;
@@ -110,17 +110,7 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
     public void update(LocalAvatarFetcher.AvatarPath path, String filter) {
         this.avatar = path;
         this.filter = filter.toLowerCase();
-        updateName();
-    }
-
-    public void updateName() {
-        MutableComponent text = TextComponent.EMPTY.copy();
-
-        for (int i = 0; i < depth; i++)
-            text.append(SPACING);
-        text.append(getName());
-
-        this.button.setMessage(text);
+        this.spacing = SPACING.repeat(depth);
     }
 
     public Component getName() {
