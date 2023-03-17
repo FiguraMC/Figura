@@ -8,15 +8,8 @@ import org.moon.figura.utils.FiguraText;
 
 public class BrowserScreen extends AbstractPanelScreen {
 
-    public static final Component TITLE = FiguraText.of("gui.panels.title.browser");
-
     public BrowserScreen(Screen parentScreen) {
-        super(parentScreen, TITLE, BrowserScreen.class);
-    }
-
-    @Override
-    public Component getTitle() {
-        return TITLE;
+        super(parentScreen, FiguraText.of("gui.panels.title.browser"));
     }
 
     @Override

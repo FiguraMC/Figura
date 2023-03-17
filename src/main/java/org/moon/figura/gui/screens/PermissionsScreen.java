@@ -28,8 +28,6 @@ import java.util.UUID;
 
 public class PermissionsScreen extends AbstractPanelScreen {
 
-    public static final Component TITLE = FiguraText.of("gui.panels.title.permissions");
-
     // -- widgets -- //
     private PlayerList playerList;
     private EntityPreview entityWidget;
@@ -56,12 +54,7 @@ public class PermissionsScreen extends AbstractPanelScreen {
     private PlayerPermPackElement dragged = null;
 
     public PermissionsScreen(Screen parentScreen) {
-        super(parentScreen, TITLE, PermissionsScreen.class);
-    }
-
-    @Override
-    public Component getTitle() {
-        return TITLE;
+        super(parentScreen, FiguraText.of("gui.panels.title.permissions"));
     }
 
     @Override

@@ -31,13 +31,13 @@ public class GameScreen extends AbstractPanelScreen {
     private static final String EGG = "FRAN";
     private String egg = EGG;
 
-    protected GameScreen(Screen parentScreen, Class<? extends AbstractPanelScreen> index) {
-        super(parentScreen, Component.empty(), index);
+    protected GameScreen(Screen parentScreen) {
+        super(parentScreen, Component.empty());
     }
 
     @Override
-    public Component getTitle() {
-        return Component.empty();
+    public Class<? extends Screen> getSelectedPanel() {
+        return parentScreen.getClass();
     }
 
     protected void init() {
