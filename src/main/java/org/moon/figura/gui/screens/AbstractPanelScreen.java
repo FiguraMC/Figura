@@ -21,7 +21,6 @@ public abstract class AbstractPanelScreen extends Screen {
 
     //variables
     protected final Screen parentScreen;
-    protected final Class<? extends AbstractPanelScreen> index;
     public PanelSelectorWidget panels;
 
     //overlays
@@ -32,20 +31,21 @@ public abstract class AbstractPanelScreen extends Screen {
     private static final String EGG = "ĉĉĈĈćĆćĆBAā";
     private String egg = EGG;
 
-    protected AbstractPanelScreen(Screen parentScreen, Component title, Class<? extends AbstractPanelScreen> index) {
+    protected AbstractPanelScreen(Screen parentScreen, Component title) {
         super(title);
         this.parentScreen = parentScreen;
-        this.index = index;
     }
 
-    public abstract Component getTitle();
+    public Class<? extends Screen> getSelectedPanel() {
+        return this.getClass();
+    };
 
     @Override
     protected void init() {
         super.init();
 
         //add panel selector
-        this.addRenderableWidget(panels = new PanelSelectorWidget(parentScreen, 0, 0, width, index));
+        this.addRenderableWidget(panels = new PanelSelectorWidget(parentScreen, 0, 0, width, getSelectedPanel()));
 
         //clear overlays
         contextMenu = null;
@@ -194,7 +194,7 @@ public abstract class AbstractPanelScreen extends Screen {
         egg += (char) keyCode;
         egg = egg.substring(1);
         if (EGG.equals(egg)) {
-            Minecraft.getInstance().setScreen(new GameScreen(this, index));
+            Minecraft.getInstance().setScreen(new GameScreen(this));
             return true;
         }
 

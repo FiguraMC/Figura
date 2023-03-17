@@ -11,15 +11,8 @@ import org.moon.figura.utils.TextUtils;
 
 public class ProfileScreen extends AbstractPanelScreen {
 
-    public static final Component TITLE = FiguraText.of("gui.panels.title.profile");
-
     public ProfileScreen(Screen parentScreen) {
-        super(parentScreen, TITLE, ProfileScreen.class);
-    }
-
-    @Override
-    public Component getTitle() {
-        return TITLE;
+        super(parentScreen, FiguraText.of("gui.panels.title.profile"));
     }
 
     @Override

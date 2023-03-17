@@ -26,8 +26,6 @@ import org.moon.figura.utils.ui.UIHelper;
 
 public class WardrobeScreen extends AbstractPanelScreen {
 
-    public static final Component TITLE = FiguraText.of("gui.panels.title.wardrobe");
-
     private LoadingErrorWidget loadingErrorWidget;
     private StatusWidget statusWidget;
     private AvatarInfoWidget avatarInfo;
@@ -36,12 +34,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
     private TexturedButton upload, delete;
 
     public WardrobeScreen(Screen parentScreen) {
-        super(parentScreen, TITLE, WardrobeScreen.class);
-    }
-
-    @Override
-    public Component getTitle() {
-        return TITLE;
+        super(parentScreen, FiguraText.of("gui.panels.title.wardrobe"));
     }
 
     @Override
