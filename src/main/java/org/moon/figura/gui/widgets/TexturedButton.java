@@ -106,6 +106,13 @@ public class TexturedButton extends Button {
         UIHelper.renderScrollingText(stack, getMessage(), getX(), getY(), getWidth(), getHeight(), color);
     }
 
+    protected void renderVanillaBackground(PoseStack stack, int mouseX, int mouseY, float delta) {
+        Component message = getMessage();
+        setMessage(Component.empty());
+        super.renderWidget(stack, mouseX, mouseY, delta);
+        setMessage(message);
+    }
+
     protected int getUVStatus() {
         if (!this.active)
             return 0;
