@@ -1,20 +1,19 @@
 package org.moon.figura.gui.screens;
 
-import net.minecraft.network.chat.Component;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.world.entity.LivingEntity;
 import org.moon.figura.gui.widgets.EntityPreview;
 import org.moon.figura.utils.FiguraText;
 
 public class AvatarScreen extends AbstractPanelScreen {
 
-    public static final Component TITLE = new FiguraText("gui.panels.title.avatar");
     private final float scale;
     private final float pitch;
     private final float yaw;
     private final LivingEntity entity;
 
-    public AvatarScreen(float scale, float pitch, float yaw, LivingEntity entity, AbstractPanelScreen parentScreen) {
-        super(parentScreen, TITLE, parentScreen.index);
+    public AvatarScreen(float scale, float pitch, float yaw, LivingEntity entity, Screen parentScreen) {
+        super(parentScreen, new FiguraText("gui.panels.title.avatar"));
         this.scale = scale;
         this.pitch = pitch;
         this.yaw = yaw;
@@ -22,17 +21,18 @@ public class AvatarScreen extends AbstractPanelScreen {
     }
 
     @Override
-    public Component getTitle() {
-        return TITLE;
+    public Class<? extends Screen> getSelectedPanel() {
+        return parentScreen.getClass();
     }
 
     @Override
     protected void init() {
         super.init();
+        removeWidget(panels); //no panels :p
+
         //entity
-        EntityPreview widget = new EntityPreview(0, 0, width, height, scale, pitch, yaw, entity, (AbstractPanelScreen) parentScreen);
+        EntityPreview widget = new EntityPreview(0, 0, width, height, scale, pitch, yaw, entity, parentScreen);
         widget.setToggled(true);
         addRenderableWidget(widget);
-        removeWidget(panels); //no panels :p
     }
 }

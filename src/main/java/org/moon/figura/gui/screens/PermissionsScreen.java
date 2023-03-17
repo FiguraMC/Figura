@@ -4,7 +4,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.Mth;
@@ -28,8 +27,6 @@ import org.moon.figura.utils.ui.UIHelper;
 import java.util.UUID;
 
 public class PermissionsScreen extends AbstractPanelScreen {
-
-    public static final Component TITLE = new FiguraText("gui.panels.title.permissions");
 
     // -- widgets -- //
     private PlayerList playerList;
@@ -57,12 +54,7 @@ public class PermissionsScreen extends AbstractPanelScreen {
     private PlayerPermPackElement dragged = null;
 
     public PermissionsScreen(Screen parentScreen) {
-        super(parentScreen, TITLE, PermissionsScreen.class);
-    }
-
-    @Override
-    public Component getTitle() {
-        return TITLE;
+        super(parentScreen, new FiguraText("gui.panels.title.permissions"));
     }
 
     @Override

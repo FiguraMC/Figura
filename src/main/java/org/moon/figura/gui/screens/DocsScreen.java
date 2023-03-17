@@ -2,7 +2,6 @@ package org.moon.figura.gui.screens;
 
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.gui.widgets.Label;
@@ -11,15 +10,8 @@ import org.moon.figura.utils.TextUtils;
 
 public class DocsScreen extends AbstractPanelScreen {
 
-    public static final Component TITLE = new FiguraText("gui.panels.title.docs");
-
     public DocsScreen(Screen parentScreen) {
-        super(parentScreen, TITLE, DocsScreen.class);
-    }
-
-    @Override
-    public Component getTitle() {
-        return TITLE;
+        super(parentScreen, new FiguraText("gui.panels.title.docs"));
     }
 
     @Override

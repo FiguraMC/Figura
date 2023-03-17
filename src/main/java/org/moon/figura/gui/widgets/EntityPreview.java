@@ -3,10 +3,10 @@ package org.moon.figura.gui.widgets;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Quaternion;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
-import org.moon.figura.gui.screens.AbstractPanelScreen;
 import org.moon.figura.gui.screens.AvatarScreen;
 import org.moon.figura.model.rendering.EntityRenderMode;
 import org.moon.figura.utils.FiguraIdentifier;
@@ -41,7 +41,7 @@ public class EntityPreview extends AbstractContainerElement {
     private float dragDeltaX, dragDeltaY;
     private float dragAnchorX, dragAnchorY;
 
-    public EntityPreview(int x, int y, int width, int height, float scale, float pitch, float yaw, LivingEntity entity, AbstractPanelScreen parentScreen) {
+    public EntityPreview(int x, int y, int width, int height, float scale, float pitch, float yaw, LivingEntity entity, Screen parentScreen) {
         super(x, y, width, height);
 
         this.scale = scale;

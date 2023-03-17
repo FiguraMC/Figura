@@ -1,7 +1,6 @@
 package org.moon.figura.gui.screens;
 
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.Component;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.widgets.TexturedButton;
@@ -11,21 +10,19 @@ import org.moon.figura.wizards.AvatarWizard;
 
 public class AvatarWizardScreen extends AbstractPanelScreen {
 
-    public static final Component TITLE = new FiguraText("gui.panels.title.avatar_wizard");
-
     private final Screen sourcePanel;
 
     private final AvatarWizard wizard = new AvatarWizard();
     private TexturedButton build;
 
     public AvatarWizardScreen(AbstractPanelScreen parentScreen) {
-        super(parentScreen.parentScreen, TITLE, WardrobeScreen.class);
+        super(parentScreen.parentScreen, new FiguraText("gui.panels.title.avatar_wizard"));
         sourcePanel = parentScreen;
     }
 
     @Override
-    public Component getTitle() {
-        return TITLE;
+    public Class<? extends Screen> getSelectedPanel() {
+        return parentScreen.getClass();
     }
 
     @Override

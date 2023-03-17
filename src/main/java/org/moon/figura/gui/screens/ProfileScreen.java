@@ -2,7 +2,6 @@ package org.moon.figura.gui.screens;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.gui.FiguraToast;
@@ -12,15 +11,8 @@ import org.moon.figura.utils.TextUtils;
 
 public class ProfileScreen extends AbstractPanelScreen {
 
-    public static final Component TITLE = new FiguraText("gui.panels.title.profile");
-
     public ProfileScreen(Screen parentScreen) {
-        super(parentScreen, TITLE, ProfileScreen.class);
-    }
-
-    @Override
-    public Component getTitle() {
-        return TITLE;
+        super(parentScreen, new FiguraText("gui.panels.title.profile"));
     }
 
     @Override

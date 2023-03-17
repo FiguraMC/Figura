@@ -2,7 +2,6 @@ package org.moon.figura.gui.screens;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.Component;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
@@ -13,20 +12,18 @@ import org.moon.figura.utils.FiguraText;
 
 public class KeybindScreen extends AbstractPanelScreen {
 
-    public static final Component TITLE = new FiguraText("gui.panels.title.keybind");
-
     private final Screen sourcePanel;
 
     private KeybindList list;
 
     public KeybindScreen(AbstractPanelScreen parentScreen) {
-        super(parentScreen.parentScreen, TITLE, WardrobeScreen.class);
+        super(parentScreen.parentScreen, new FiguraText("gui.panels.title.keybind"));
         sourcePanel = parentScreen;
     }
 
     @Override
-    public Component getTitle() {
-        return TITLE;
+    public Class<? extends Screen> getSelectedPanel() {
+        return sourcePanel.getClass();
     }
 
     @Override
