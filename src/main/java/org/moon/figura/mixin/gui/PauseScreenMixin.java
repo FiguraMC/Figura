@@ -1,14 +1,16 @@
 package org.moon.figura.mixin.gui;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.PauseScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import org.moon.figura.config.Configs;
+import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.config.ConfigManager;
+import org.moon.figura.config.Configs;
 import org.moon.figura.gui.screens.WardrobeScreen;
+import org.moon.figura.gui.widgets.TexturedButton;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FiguraText;
 import org.spongepowered.asm.mixin.Mixin;
@@ -62,7 +64,21 @@ public class PauseScreenMixin extends Screen {
             addRenderableWidget(new Button(x, y, 64, 20, new FiguraText(),
                     btn -> this.minecraft.setScreen(new WardrobeScreen(this))));
         } else { //icon
-            addRenderableWidget(new ImageButton(x, y, 20, 20, 0, 0, 20, FIGURA_ICON, 20, 40, btn -> this.minecraft.setScreen(new WardrobeScreen(this))));
+            addRenderableWidget(new TexturedButton(x, y, 20, 20, 0, 0, 20, FIGURA_ICON, 60, 20, null, btn -> this.minecraft.setScreen(new WardrobeScreen(this))) {
+                @Override
+                public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
+                    renderVanillaBackground(stack, mouseX, mouseY, delta);
+                    super.renderButton(stack, mouseX, mouseY, delta);
+                }
+
+                @Override
+                protected int getUVStatus() {
+                    int uv = super.getUVStatus();;
+                    if (uv == 1 && AvatarManager.panic)
+                        return 0;
+                    return uv;
+                }
+            });
         }
     }
 }
