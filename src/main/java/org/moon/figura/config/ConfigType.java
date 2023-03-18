@@ -76,7 +76,7 @@ public abstract class ConfigType<T> {
     }
 
     public boolean isDefault() {
-        return tempValue == defaultValue;
+        return defaultValue == null || defaultValue.equals(tempValue);
     }
 
     public void onChange() {}

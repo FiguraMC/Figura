@@ -77,6 +77,9 @@ public final class ConfigManager {
             configJson.addProperty("CONFIG_VERSION", Configs.CONFIG_VERSION);
 
             for (ConfigType<?> config : REGISTRY) {
+                if (config.isDefault())
+                    continue;
+
                 String id = config.id;
                 if (config.value instanceof Number n)
                     configJson.addProperty(id, n);

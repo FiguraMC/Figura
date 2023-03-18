@@ -162,9 +162,7 @@ public class Configs {
     public static final BoolConfig
             FIGURA_INVENTORY = new BoolConfig("figura_inventory", UI, true),
             PREVIEW_HEAD_ROTATION = new BoolConfig("preview_head_rotation", UI, false),
-            AVATAR_PORTRAITS = new BoolConfig("avatar_portraits", UI, false) {{
-                this.disabled = true;
-            }},
+            AVATAR_PORTRAIT = new BoolConfig("avatar_portraits", UI, true),
             WARDROBE_FILE_NAMES = new BoolConfig("wardrobe_file_names", UI, false);
     public static final FloatConfig
             BACKGROUND_SCROLL_SPEED = new FloatConfig("background_scroll_speed", UI, 1f);
@@ -258,7 +256,7 @@ public class Configs {
     public static final FolderConfig
             MAIN_DIR = new FolderConfig("main_dir", DEV, "");
     public static final IPConfig
-            SERVER_IP = new IPConfig("server_ip", DEV, "figura.moonlight-devs.org:25565") {
+            SERVER_IP = new IPConfig("server_ip", DEV, "figura.moonlight-devs.org") {
                 @Override
                 public void onChange() {
                     super.onChange();
