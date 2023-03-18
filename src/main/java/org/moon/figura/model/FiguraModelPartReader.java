@@ -1,6 +1,5 @@
 package org.moon.figura.model;
 
-import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.nbt.ByteTag;
 import net.minecraft.nbt.CompoundTag;
@@ -276,64 +275,64 @@ public class FiguraModelPartReader {
         return false;
     }
 
-    private static final Map<String, FiguraVec3[]> faceData = new ImmutableMap.Builder<String, FiguraVec3[]>()
-            .put("n", new FiguraVec3[] {
+    private static final Map<String, FiguraVec3[]> faceData = Map.of(
+            "n", new FiguraVec3[] {
                     FiguraVec3.of(1, 0, 0),
                     FiguraVec3.of(0, 0, 0),
                     FiguraVec3.of(0, 1, 0),
                     FiguraVec3.of(1, 1, 0),
                     FiguraVec3.of(0, 0, -1)
-            })
-            .put("s", new FiguraVec3[] {
+            },
+            "s", new FiguraVec3[] {
                     FiguraVec3.of(0, 0, 1),
                     FiguraVec3.of(1, 0, 1),
                     FiguraVec3.of(1, 1, 1),
                     FiguraVec3.of(0, 1, 1),
                     FiguraVec3.of(0, 0, 1)
-            })
-            .put("e", new FiguraVec3[] {
+            },
+            "e", new FiguraVec3[] {
                     FiguraVec3.of(1, 0, 1),
                     FiguraVec3.of(1, 0, 0),
                     FiguraVec3.of(1, 1, 0),
                     FiguraVec3.of(1, 1, 1),
                     FiguraVec3.of(1, 0, 0)
-            })
-            .put("w", new FiguraVec3[] {
+            },
+            "w", new FiguraVec3[] {
                     FiguraVec3.of(0, 0, 0),
                     FiguraVec3.of(0, 0, 1),
                     FiguraVec3.of(0, 1, 1),
                     FiguraVec3.of(0, 1, 0),
                     FiguraVec3.of(-1, 0, 0)
-            })
-            .put("u", new FiguraVec3[] {
+            },
+            "u", new FiguraVec3[] {
                     FiguraVec3.of(0, 1, 1),
                     FiguraVec3.of(1, 1, 1),
                     FiguraVec3.of(1, 1, 0),
                     FiguraVec3.of(0, 1, 0),
                     FiguraVec3.of(0, 1, 0)
-            })
-            .put("d", new FiguraVec3[] {
+            },
+            "d", new FiguraVec3[] {
                     FiguraVec3.of(0, 0, 0),
                     FiguraVec3.of(1, 0, 0),
                     FiguraVec3.of(1, 0, 1),
                     FiguraVec3.of(0, 0, 1),
                     FiguraVec3.of(0, -1, 0)
-            }).build();
+            }
+    );
 
-    private static final FiguraVec2[] uvValues = new FiguraVec2[] {
+    private static final FiguraVec2[] uvValues = {
             FiguraVec2.of(0, 1),
             FiguraVec2.of(1, 1),
             FiguraVec2.of(1, 0),
             FiguraVec2.of(0, 0)
     };
 
-    private static final FiguraVec3 from = FiguraVec3.of();
-    private static final FiguraVec3 to = FiguraVec3.of();
-    private static final FiguraVec3 ftDiff = FiguraVec3.of();
 
     private static void readCuboid(List<Integer> facesByTexture, CompoundTag data, Map<Integer, List<Vertex>> vertices) {
         //Read from and to
+        FiguraVec3 from = FiguraVec3.of();
         readVec3(from, data, "f");
+        FiguraVec3 to = FiguraVec3.of();
         readVec3(to, data, "t");
 
         //Read inflate
@@ -344,18 +343,15 @@ public class FiguraModelPartReader {
         to.add(inflate, inflate, inflate);
 
         //Cache difference between from and to
-        ftDiff.set(to);
+        FiguraVec3 ftDiff = to.copy();
         ftDiff.subtract(from);
 
         //Iterate over faces, add them
         for (String direction : faceData.keySet())
-            readFace(data.getCompound("cube_data"), facesByTexture, direction, vertices);
+            readFace(data.getCompound("cube_data"), facesByTexture, direction, vertices, from, ftDiff);
     }
 
-    private static final FiguraVec3 tempPos = FiguraVec3.of();
-    private static final FiguraVec4 uv = FiguraVec4.of();
-
-    private static void readFace(CompoundTag faces, List<Integer> facesByTexture, String direction, Map<Integer, List<Vertex>> vertices) {
+    private static void readFace(CompoundTag faces, List<Integer> facesByTexture, String direction, Map<Integer, List<Vertex>> vertices, FiguraVec3 from, FiguraVec3 ftDiff) {
         if (faces.contains(direction)) {
             CompoundTag face = faces.getCompound(direction);
             short texId = face.getShort("tex");
@@ -363,13 +359,14 @@ public class FiguraModelPartReader {
 
             FiguraVec3 normal = faceData.get(direction)[4];
             int rotation = (int) (face.getFloat("rot") / 90f);
+            FiguraVec4 uv = FiguraVec4.of();
             readVec4(uv, face, "uv");
             for (int i = 0; i < 4; i++) {
-                tempPos.set(ftDiff);
+                FiguraVec3 tempPos = ftDiff.copy();
                 tempPos.multiply(faceData.get(direction)[i]);
                 tempPos.add(from);
 
-                FiguraVec2 normalizedUv = uvValues[(i + rotation)%4];
+                FiguraVec2 normalizedUv = uvValues[(i + rotation) % 4];
 
                 List<Vertex> list = vertices.getOrDefault((int) texId, new ArrayList<>());
                 list.add(new Vertex(
@@ -397,8 +394,6 @@ public class FiguraModelPartReader {
         else
             readMeshFlat(facesByTexture, meshData, vertices);
     }
-
-    private static final FiguraVec3 p1 = FiguraVec3.of(), p2 = FiguraVec3.of(), p3 = FiguraVec3.of();
 
     private static void readMeshFlat(List<Integer> facesByTexture, CompoundTag meshData, Map<Integer, List<Vertex>> vertices) {
         // Get the vertex, UV, and texture lists from the mesh data
@@ -444,18 +439,18 @@ public class FiguraModelPartReader {
                     default -> fac.getInt(vi + j);
                 };
                 // Get the vertex position and UV data from the lists
-                posArr[3*j] = verts.getFloat(3*vid);
-                posArr[3*j+1] = verts.getFloat(3*vid+1);
-                posArr[3*j+2] = verts.getFloat(3*vid+2);
+                posArr[3 * j] = verts.getFloat(3 * vid);
+                posArr[3 * j + 1] = verts.getFloat(3 * vid + 1);
+                posArr[3 * j + 2] = verts.getFloat(3 * vid + 2);
 
-                uvArr[2*j] = uvs.getFloat(uvi + 2*j);
-                uvArr[2*j+1] = uvs.getFloat(uvi + 2*j + 1);
+                uvArr[2 * j] = uvs.getFloat(uvi + 2 * j);
+                uvArr[2 * j + 1] = uvs.getFloat(uvi + 2 * j + 1);
             }
 
             // Calculate the normal vector for the current texture
-            p1.set(posArr[0], posArr[1], posArr[2]);
-            p2.set(posArr[3], posArr[4], posArr[5]);
-            p3.set(posArr[6], posArr[7], posArr[8]);
+            FiguraVec3 p1 = FiguraVec3.of(posArr[0], posArr[1], posArr[2]);
+            FiguraVec3 p2 = FiguraVec3.of(posArr[3], posArr[4], posArr[5]);
+            FiguraVec3 p3 = FiguraVec3.of(posArr[6], posArr[7], posArr[8]);
             p3.subtract(p2);
             p1.subtract(p2);
             p3.cross(p1);
@@ -466,8 +461,8 @@ public class FiguraModelPartReader {
             for (int j = 0; j < numVerts; j++) {
                 List<Vertex> list = vertices.getOrDefault(texId, new ArrayList<>());
                 list.add(new Vertex(
-                        posArr[3*j], posArr[3*j+1], posArr[3*j+2],
-                        uvArr[2*j], uvArr[2*j+1],
+                        posArr[3 * j], posArr[3 * j + 1], posArr[3 * j + 2],
+                        uvArr[2 * j], uvArr[2 * j + 1],
                         (float) p3.x, (float) p3.y, (float) p3.z
                 ));
                 vertices.put(texId, list);
@@ -485,7 +480,7 @@ public class FiguraModelPartReader {
 
             // Increment the counters for the vertex and UV lists
             vi += numVerts;
-            uvi += 2*numVerts;
+            uvi += 2 * numVerts;
         }
     }
 
