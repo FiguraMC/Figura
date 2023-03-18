@@ -55,7 +55,7 @@ public class PanelSelectorWidget extends AbstractContainerElement {
             Pair<Screen, PanelIcon> panel = PANELS.get(i).apply(parentScreen);
             Screen s = panel.getFirst();
             PanelIcon icon = panel.getSecond();
-            int buttonX = 4 + buttonWidth * i + spacing;
+            int buttonX = 4 + buttonWidth * buttons.size() + spacing;
 
             //create button
             createPanelButton(s, icon, s.getClass() == selected, buttonX, buttonWidth - 4);
