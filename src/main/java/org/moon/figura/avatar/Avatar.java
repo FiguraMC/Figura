@@ -602,7 +602,7 @@ public class Avatar {
         stack.pushPose();
         stack.scale(16, 16, -16);
         RenderSystem.disableDepthTest();
-        complexity.use(renderer.renderSpecialParts());
+        renderer.renderSpecialParts();
         ((MultiBufferSource.BufferSource) renderer.bufferSource).endBatch();
         RenderSystem.enableDepthTest();
         stack.popPose();
@@ -649,13 +649,13 @@ public class Avatar {
         }
 
         //head
-        boolean bool = headRender(stack, bufferSource, light);
+        boolean bool = headRender(stack, bufferSource, light, true);
 
         stack.popPose();
         return bool;
     }
 
-    public boolean headRender(PoseStack stack, MultiBufferSource bufferSource, int light) {
+    public boolean headRender(PoseStack stack, MultiBufferSource bufferSource, int light, boolean useComplexity) {
         if (renderer == null || !loaded)
             return false;
 
@@ -679,6 +679,8 @@ public class Avatar {
 
         //render
         int comp = renderer.render();
+        if (useComplexity)
+            complexity.use(comp);
 
         //pos render
         renderer.allowMatrixUpdate = oldMat;
@@ -691,7 +693,7 @@ public class Avatar {
     }
 
     public boolean renderPortrait(PoseStack stack, int x, int y, int size, float modelScale) {
-        if (!Configs.AVATAR_PORTRAITS.value || renderer == null || !loaded)
+        if (!Configs.AVATAR_PORTRAIT.value || renderer == null || !loaded)
             return false;
 
         //matrices
@@ -723,7 +725,8 @@ public class Avatar {
         int light = renderer.light = LightTexture.FULL_BRIGHT;
         renderer.alpha = 1f;
         renderer.matrices = stack;
-        MultiBufferSource buffer = renderer.bufferSource = getBufferSource();
+        MultiBufferSource.BufferSource buffer = Minecraft.getInstance().renderBuffers().bufferSource();
+        renderer.bufferSource = buffer;
         renderer.translucent = false;
         renderer.glowing = false;
 
@@ -731,17 +734,22 @@ public class Avatar {
 
         //render
         int comp = renderer.renderSpecialParts();
-        complexity.use(comp);
-        boolean ret = comp > 0 || headRender(stack, buffer, light);
+        boolean ret = comp > 0 || headRender(stack, buffer, light, false);
 
-        //return
+        //after render
+        buffer.endLastBatch();
+        stack.popPose();
+
         UIHelper.disableScissor();
         UIHelper.paperdoll = false;
+
         renderer.allowPivotParts = true;
         renderer.allowRenderTasks = true;
-        stack.popPose();
+
+        //return
         return ret;
     }
+
     public boolean renderArrow(PoseStack stack, MultiBufferSource bufferSource, float delta, int light) {
         if (renderer == null || !loaded)
             return false;
@@ -854,10 +862,6 @@ public class Avatar {
         ParticleAPI.getParticleEngine().figura$clearParticles(owner);
 
         events.clear();
-    }
-
-    public MultiBufferSource getBufferSource() {
-        return renderer != null && renderer.bufferSource != null ? renderer.bufferSource : Minecraft.getInstance().renderBuffers().bufferSource();
     }
 
     private int getFileSize() {
