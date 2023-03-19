@@ -22,34 +22,34 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(PauseScreen.class)
 public class PauseScreenMixin extends Screen {
 
-    @Unique
-    private static final ResourceLocation FIGURA_ICON = new FiguraIdentifier("textures/gui/icon.png");
-
     protected PauseScreenMixin(Component title) {
         super(title);
     }
 
-    @Inject(at = @At("RETURN"), method = "createPauseMenu")
-    void createPauseMenu(CallbackInfo ci) {
+    @Unique
+    private static final ResourceLocation FIGURA_ICON = new FiguraIdentifier("textures/gui/icon.png");
+
+    @Inject(method = "createPauseMenu", at = @At("RETURN"))
+    private void createPauseMenuButton(CallbackInfo ci) {
         int x, y;
 
         int config = Configs.BUTTON_LOCATION.value;
         switch (config) {
             case 1 -> { //top left
-                x = 5;
-                y = 5;
+                x = 4;
+                y = 4;
             }
             case 2 -> {//top right
-                x = this.width - 69;
-                y = 5;
+                x = this.width - 68;
+                y = 4;
             }
             case 3 -> { //bottom left
-                x = 5;
-                y = this.height - 25;
+                x = 4;
+                y = this.height - 24;
             }
             case 4 -> { //bottom right
-                x = this.width - 69;
-                y = this.height - 25;
+                x = this.width - 68;
+                y = this.height - 24;
             }
             default -> { //icon
                 x = this.width / 2 + 106;
@@ -73,7 +73,7 @@ public class PauseScreenMixin extends Screen {
 
                 @Override
                 protected int getUVStatus() {
-                    int uv = super.getUVStatus();;
+                    int uv = super.getUVStatus();
                     if (uv == 1 && AvatarManager.panic)
                         return 0;
                     return uv;
