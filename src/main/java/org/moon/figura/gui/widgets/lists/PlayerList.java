@@ -35,6 +35,7 @@ public class PlayerList extends AbstractList {
     private final TextField searchBar;
     private final SwitchButton showFigura, showDisconnected;
     private static boolean showFiguraBl, showDisconnectedBl;
+    private final int entryWidth;
 
     private int totalHeight = 0;
     private AbstractPermPackElement maxCategory;
@@ -46,6 +47,7 @@ public class PlayerList extends AbstractList {
         updateScissors(1, 24, -2, -25);
 
         this.parent = parent;
+        this.entryWidth = Math.min(width - scrollBar.getWidth() - 12, 174);
 
         //fix scrollbar y and height
         scrollBar.setY(y + 28);
@@ -130,7 +132,7 @@ public class PlayerList extends AbstractList {
 
     private void loadGroups() {
         for (PermissionPack container : PermissionManager.CATEGORIES.values()) {
-            CategoryPermPackElement group = new CategoryPermPackElement(container, this);
+            CategoryPermPackElement group = new CategoryPermPackElement(entryWidth, container, this);
             permissionsList.add(group);
             children.add(group);
             maxCategory = group;
@@ -164,7 +166,7 @@ public class PlayerList extends AbstractList {
             missingPlayers.remove(uuid);
 
             PlayerPermPackElement element = players.computeIfAbsent(uuid, uuid1 -> {
-                PlayerPermPackElement entry = new PlayerPermPackElement(name, PermissionManager.get(uuid1), skin, uuid1, this);
+                PlayerPermPackElement entry = new PlayerPermPackElement(entryWidth, name, PermissionManager.get(uuid1), skin, uuid1, this);
 
                 permissionsList.add(entry);
                 children.add(entry);
@@ -184,7 +186,7 @@ public class PlayerList extends AbstractList {
                 missingPlayers.remove(id);
 
                 PlayerPermPackElement element = players.computeIfAbsent(id, uuid -> {
-                    PlayerPermPackElement entry = new PlayerPermPackElement(avatar.entityName, PermissionManager.get(uuid), null, uuid, this);
+                    PlayerPermPackElement entry = new PlayerPermPackElement(entryWidth, avatar.entityName, PermissionManager.get(uuid), null, uuid, this);
 
                     permissionsList.add(entry);
                     children.add(entry);

@@ -175,13 +175,11 @@ public class AvatarWizardList extends AbstractList {
 
         private final AvatarWizardList parent;
         private final AvatarWizard.WizardEntry entry;
-        private final Component name;
 
         public WizardToggleButton(int x, int width, AvatarWizardList parent, AvatarWizard.WizardEntry entry) {
-            super(x, 0, width, 20, false);
+            super(x, 0, width, 20, FiguraText.of("gui.avatar_wizard." + entry.name().toLowerCase()), false);
             this.parent = parent;
             this.entry = entry;
-            this.name = FiguraText.of("gui.avatar_wizard." + entry.name().toLowerCase());
             this.setToggled((boolean) parent.wizard.getEntry(entry, false));
         }
 
@@ -192,16 +190,21 @@ public class AvatarWizardList extends AbstractList {
         }
 
         @Override
-        protected void renderTexture(PoseStack stack, float delta) {
+        protected void renderDefaultTexture(PoseStack stack, float delta) {
             //button
             stack.pushPose();
-            stack.translate(width - textureWidth, 0, 0);
-            super.renderTexture(stack, delta);
+            stack.translate(width - 30, 0, 0);
+            super.renderDefaultTexture(stack, delta);
             stack.popPose();
+        }
+
+        @Override
+        protected void renderText(PoseStack stack, float delta) {
+            UIHelper.fill(stack, getX(), getY(), getX() + width, getY() + height, 0x88FF72AD);
 
             //name
             Font font = Minecraft.getInstance().font;
-            MutableComponent name = this.name.copy();
+            MutableComponent name = getMessage().copy();
             if (this.isToggled())
                 name.withStyle(FiguraMod.getAccentColor());
             font.draw(stack, name, getX() - width - 8, getY() + (height - font.lineHeight) / 2, 0xFFFFFF);

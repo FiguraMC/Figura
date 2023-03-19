@@ -282,9 +282,9 @@ public class AvatarAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("avatar.can_have_custom_heads")
-    public boolean canHaveCustomHeads() {
-        return bool(Permissions.CUSTOM_HEADS);
+    @LuaMethodDoc("avatar.can_have_custom_skull")
+    public boolean canHaveCustomSkull() {
+        return bool(Permissions.CUSTOM_SKULL);
     }
 
     @Override

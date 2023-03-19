@@ -31,8 +31,8 @@ public class SwitchButton extends TexturedButton {
     }
 
     //default texture constructor
-    public SwitchButton(int x, int y, int width, int height, boolean toggled) {
-        super(x, y, width, height, 0, 0, 10, SWITCH_TEXTURE, 30, 40, null, button -> {});
+    public SwitchButton(int x, int y, int width, int height, Component text, boolean toggled) {
+        super(x, y, width, height, text, null, button -> {});
         this.toggled = toggled;
         this.headPos = toggled ? 20f : 0f;
         defaultTexture = true;
@@ -45,22 +45,28 @@ public class SwitchButton extends TexturedButton {
     }
 
     @Override
-    protected void renderTexture(PoseStack stack, float delta) {
+    protected void renderText(PoseStack stack, float delta) {
+        //draw text
+        int color = (!this.active ? ChatFormatting.DARK_GRAY : ChatFormatting.WHITE).getColor();
+        Component text = this.toggled && underline ? getMessage().copy().withStyle(ChatFormatting.UNDERLINE) : getMessage();
+        int x = getX() + 1;
+        int width = getWidth() - 2;
+
         if (defaultTexture) {
-            renderDefaultTexture(stack, delta);
-        } else {
-            super.renderTexture(stack, delta);
+            x += 31;
+            width -= 31;
         }
+
+        UIHelper.renderCenteredScrollingText(stack, text, x, getY(), width, getHeight(), color);
     }
 
     @Override
-    protected void renderText(PoseStack stack) {
-        //draw text
-        int color = (!this.active ? ChatFormatting.DARK_GRAY : ChatFormatting.WHITE).getColor();
-        UIHelper.renderScrollingText(stack, this.toggled && underline ? getMessage().copy().withStyle(ChatFormatting.UNDERLINE) : getMessage(), getX(), getY(), getWidth(), getHeight(), color);
-    }
-
     protected void renderDefaultTexture(PoseStack stack, float delta) {
+        if (!defaultTexture) {
+            super.renderDefaultTexture(stack, delta);
+            return;
+        }
+
         //set texture
         UIHelper.setupTexture(SWITCH_TEXTURE);
         int x = getX();

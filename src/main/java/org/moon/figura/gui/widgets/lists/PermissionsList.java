@@ -172,9 +172,10 @@ public class PermissionsList extends AbstractList {
             //texts
             MutableComponent name = Component.translatable(id + ".permissions.value." + permissions.name.toLowerCase());
             if (changed) name = Component.literal("*").setStyle(FiguraMod.getAccentColor()).append(name).append("*");
+            int valueX = getX() + width - font.width(value) - 1;
 
-            font.draw(stack, name, getX() + 1, getY() + 1, 0xFFFFFF);
-            font.draw(stack, value.copy().setStyle(FiguraMod.getAccentColor()), getX() + width - font.width(value) - 1, getY() + 1, 0xFFFFFF);
+            UIHelper.renderScrollingText(stack, name, getX() + 1, getY() + 1, valueX - getX() - 2, 0xFFFFFF);
+            font.draw(stack, value.copy().setStyle(FiguraMod.getAccentColor()), valueX, getY() + 1, 0xFFFFFF);
         }
 
         @Override
@@ -208,7 +209,7 @@ public class PermissionsList extends AbstractList {
         private boolean changed;
 
         public PermissionSwitch(int x, int y, int width, int height, PermissionPack container, Permissions permissions, PermissionsList parent, String id) {
-            super(x, y, width, height, permissions.asBoolean(container.get(permissions)));
+            super(x, y, width, height, Component.translatable(id + ".permissions.value." + permissions.name.toLowerCase()), permissions.asBoolean(container.get(permissions)));
             this.container = container;
             this.permissions = permissions;
             this.parent = parent;
@@ -232,21 +233,28 @@ public class PermissionsList extends AbstractList {
         }
 
         @Override
-        protected void renderTexture(PoseStack stack, float delta) {
+        protected void renderDefaultTexture(PoseStack stack, float delta) {
             Font font = Minecraft.getInstance().font;
 
             //button
             stack.pushPose();
             stack.translate(0f, font.lineHeight, 0f);
-            super.renderTexture(stack, delta);
+            super.renderDefaultTexture(stack, delta);
             stack.popPose();
+        }
+
+        @Override
+        protected void renderText(PoseStack stack, float delta) {
+            Font font = Minecraft.getInstance().font;
 
             //texts
-            MutableComponent name = Component.translatable(id + ".permissions.value." + permissions.name.toLowerCase());
+            MutableComponent name = getMessage().copy();
             if (changed) name = Component.literal("*").setStyle(FiguraMod.getAccentColor()).append(name).append("*");
+            int valueX = getX() + width - font.width(value) - 1;
+            int valueY = getY() + font.lineHeight + 11 - font.lineHeight / 2;
 
-            font.draw(stack, name, getX() + 1, getY() + 1, 0xFFFFFF);
-            font.draw(stack, value.copy().setStyle(FiguraMod.getAccentColor()), getX() + width - font.width(value) - 1, getY() + 1, 0xFFFFFF);
+            UIHelper.renderScrollingText(stack, name, getX() + 1, getY() + 1, width - 2, 0xFFFFFF);
+            font.draw(stack, value.copy().setStyle(FiguraMod.getAccentColor()), valueX, valueY, 0xFFFFFF);
         }
 
         @Override
@@ -345,9 +353,10 @@ public class PermissionsList extends AbstractList {
             //texts
             MutableComponent name = Component.translatable(id + ".permissions.value." + permissions.name.toLowerCase());
             if (changed) name = Component.literal("*").setStyle(FiguraMod.getAccentColor()).append(name).append("*");
+            int valueX = x + width - font.width(value) - 1;
 
-            font.draw(stack, name, x + 1, y + 1 - font.lineHeight, 0xFFFFFF);
-            font.draw(stack, value.copy().setStyle(FiguraMod.getAccentColor()), x + width - font.width(value) - 1, y + 1 - font.lineHeight, 0xFFFFFF);
+            UIHelper.renderScrollingText(stack, name, x + 1, y + 1 - font.lineHeight, valueX - x - 2, 0xFFFFFF);
+            font.draw(stack, value.copy().setStyle(FiguraMod.getAccentColor()), valueX, y + 1 - font.lineHeight, 0xFFFFFF);
         }
 
         @Override

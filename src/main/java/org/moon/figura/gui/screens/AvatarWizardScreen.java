@@ -22,7 +22,7 @@ public class AvatarWizardScreen extends AbstractPanelScreen {
 
     @Override
     public Class<? extends Screen> getSelectedPanel() {
-        return parentScreen.getClass();
+        return sourcePanel.getClass();
     }
 
     @Override

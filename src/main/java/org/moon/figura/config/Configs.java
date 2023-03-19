@@ -162,7 +162,7 @@ public class Configs {
     public static final BoolConfig
             FIGURA_INVENTORY = new BoolConfig("figura_inventory", UI, true),
             PREVIEW_HEAD_ROTATION = new BoolConfig("preview_head_rotation", UI, false),
-            AVATAR_PORTRAIT = new BoolConfig("avatar_portraits", UI, true),
+            AVATAR_PORTRAIT = new BoolConfig("avatar_portrait", UI, true),
             WARDROBE_FILE_NAMES = new BoolConfig("wardrobe_file_names", UI, false);
     public static final FloatConfig
             BACKGROUND_SCROLL_SPEED = new FloatConfig("background_scroll_speed", UI, 1f);

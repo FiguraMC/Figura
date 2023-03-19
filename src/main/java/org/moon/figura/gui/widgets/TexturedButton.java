@@ -68,12 +68,12 @@ public class TexturedButton extends Button {
         if (this.texture != null) {
             renderTexture(stack, delta);
         } else {
-            UIHelper.renderSliced(stack, getX(), getY(), width, height, getUVStatus() * 16f, this.hasBackground ? 0f : 16f, 16, 16, 48, 32, TEXTURE);
+            renderDefaultTexture(stack, delta);
         }
 
         //render text
-        if (this.getMessage() != null && !this.getMessage().getString().isBlank())
-            renderText(stack);
+        if (this.getMessage() != null)
+            renderText(stack, delta);
     }
 
     @Override
@@ -89,6 +89,10 @@ public class TexturedButton extends Button {
         return over;
     }
 
+    protected void renderDefaultTexture(PoseStack stack, float delta) {
+        UIHelper.renderSliced(stack, getX(), getY(), width, height, getUVStatus() * 16f, this.hasBackground ? 0f : 16f, 16, 16, 48, 32, TEXTURE);
+    }
+
     protected void renderTexture(PoseStack stack, float delta) {
         //uv transforms
         int u = this.u + this.getUVStatus() * this.regionSize;
@@ -101,9 +105,9 @@ public class TexturedButton extends Button {
         blit(stack, this.getX() + this.width / 2 - size / 2, this.getY() + this.height / 2 - size / 2, u, v, size, size, this.textureWidth, this.textureHeight);
     }
 
-    protected void renderText(PoseStack stack) {
+    protected void renderText(PoseStack stack, float delta) {
         int color = (!this.active ? ChatFormatting.DARK_GRAY : ChatFormatting.WHITE).getColor();
-        UIHelper.renderScrollingText(stack, getMessage(), getX(), getY(), getWidth(), getHeight(), color);
+        UIHelper.renderCenteredScrollingText(stack, getMessage(), getX() + 1, getY(), getWidth() - 2, getHeight(), color);
     }
 
     protected void renderVanillaBackground(PoseStack stack, int mouseX, int mouseY, float delta) {

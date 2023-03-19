@@ -2,7 +2,6 @@ package org.moon.figura.gui.screens;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -182,7 +181,7 @@ public class PermissionsScreen extends AbstractPanelScreen {
             updatePermissions(pack);
         }));
 
-        addRenderableWidget(precisePermissions = new SwitchButton(middle + 72, height, 30, 20, false) {
+        addRenderableWidget(precisePermissions = new SwitchButton(middle + 66, height, listWidth - 88, 20, FiguraText.of("gui.permissions.precise"), false) {
             @Override
             public void onPress() {
                 super.onPress();
@@ -191,12 +190,12 @@ public class PermissionsScreen extends AbstractPanelScreen {
             }
 
             @Override
-            protected void renderText(PoseStack stack) {
-                Font font = Minecraft.getInstance().font;
-                drawString(stack, font, this.getMessage(), getX() + width + 4, getY() + height / 2 - font.lineHeight / 2, 0xFFFFFF);
+            public void renderWidget(PoseStack stack, int mouseX, int mouseY, float delta) {
+                //super.renderDefaultTexture(stack, delta);
+                super.renderWidget(stack, mouseX, mouseY, delta);
             }
         });
-        precisePermissions.setMessage(FiguraText.of("gui.permissions.precise"));
+        precisePermissions.setUnderline(false);
 
         //add permissions list
         addRenderableWidget(permissionsList);

@@ -19,7 +19,7 @@ public class ContainerButton extends SwitchButton {
     }
 
     @Override
-    protected void renderText(PoseStack stack) {
+    protected void renderText(PoseStack stack, float delta) {
         //variables
         Font font = Minecraft.getInstance().font;
         int color = (!this.active || !this.isToggled() ? ChatFormatting.DARK_GRAY : ChatFormatting.WHITE).getColor();

@@ -30,9 +30,9 @@ public class Permissions {
             VANILLA_MODEL_EDIT = new Permissions("VANILLA_MODEL_EDIT", 0, 0, 1, 1, 1),
             NAMEPLATE_EDIT = new Permissions("NAMEPLATE_EDIT", 0, 0, 0, 1, 1),
             OFFSCREEN_RENDERING = new Permissions("OFFSCREEN_RENDERING", 0, 0, 0, 1, 1),
-            //CUSTOM_RENDER_LAYER = new Permissions("CUSTOM_RENDER_LAYER", 0, 0, 1, 1, 1),
+            //CUSTOM_SHADERS = new Permissions("CUSTOM_SHADERS", 0, 0, 1, 1, 1),
             CUSTOM_SOUNDS = new Permissions("CUSTOM_SOUNDS", 0, 0, 1, 1, 1),
-            CUSTOM_HEADS = new Permissions("CUSTOM_HEADS", 0, 0, 0, 1, 1);
+            CUSTOM_SKULL = new Permissions("CUSTOM_SKULL", 0, 0, 0, 1, 1);
 
     public static final List<Permissions> DEFAULT = List.of(
             INIT_INST,
@@ -50,7 +50,7 @@ public class Permissions {
             NAMEPLATE_EDIT,
             OFFSCREEN_RENDERING,
             CUSTOM_SOUNDS,
-            CUSTOM_HEADS
+            CUSTOM_SKULL
     );
 
 

@@ -50,8 +50,8 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
     public int anchorX, anchorY, initialY;
     public int index;
 
-    public PlayerPermPackElement(String name, PermissionPack pack, ResourceLocation skin, UUID owner, PlayerList parent) {
-        super(40, pack, parent);
+    public PlayerPermPackElement(int width, String name, PermissionPack pack, ResourceLocation skin, UUID owner, PlayerList parent) {
+        super(width, 40, pack, parent);
         this.name = name;
         this.skin = skin;
         this.owner = owner;
@@ -151,7 +151,7 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
         }
 
         //background
-        UIHelper.renderTexture(stack, x, y, width, height, BACKGROUND);
+        UIHelper.renderHalfTexture(stack, x, y, width, height, 174, BACKGROUND);
 
         //head
         Component name = null;
