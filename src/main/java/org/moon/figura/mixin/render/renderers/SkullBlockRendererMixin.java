@@ -55,7 +55,7 @@ public abstract class SkullBlockRendererMixin implements BlockEntityRenderer<Sku
         Avatar localAvatar = avatar;
         avatar = null;
 
-        if (localAvatar == null || localAvatar.permissions.get(Permissions.CUSTOM_HEADS) == 0)
+        if (localAvatar == null || localAvatar.permissions.get(Permissions.CUSTOM_SKULL) == 0)
             return;
 
         FiguraMod.pushProfiler(FiguraMod.MOD_ID);
@@ -89,7 +89,7 @@ public abstract class SkullBlockRendererMixin implements BlockEntityRenderer<Sku
 
     @Override
     public boolean shouldRenderOffScreen(SkullBlockEntity blockEntity) {
-        return avatar != null && avatar.permissions.get(Permissions.OFFSCREEN_RENDERING) == 1;
+        return avatar == null ? BlockEntityRenderer.super.shouldRenderOffScreen(blockEntity) : avatar.permissions.get(Permissions.OFFSCREEN_RENDERING) == 1;
     }
 
     @Inject(at = @At("HEAD"), method = "getRenderType")

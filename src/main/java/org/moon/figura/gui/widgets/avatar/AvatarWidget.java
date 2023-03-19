@@ -34,11 +34,11 @@ public class AvatarWidget extends AbstractAvatarWidget {
 
                 //selected border
                 if (instance.equals(AvatarList.selectedEntry))
-                    UIHelper.fillOutline(stack, x - 1, y - 1, width + 2, height + 2, 0xFFFFFFFF);
+                    UIHelper.fillOutline(stack, x, y, width, height, 0xFFFFFFFF);
             }
 
             @Override
-            protected void renderText(PoseStack stack) {
+            protected void renderText(PoseStack stack, float delta) {
                 //variables
                 Font font = Minecraft.getInstance().font;
 

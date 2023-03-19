@@ -352,6 +352,17 @@ public class UIHelper extends GuiComponent {
         bufferBuilder.vertex(matrix, x, y, 0f).uv(u0, v0).endVertex();
     }
 
+    public static void renderHalfTexture(PoseStack stack, int x, int y, int width, int height, int textureWidth, ResourceLocation texture) {
+        renderHalfTexture(stack, x, y, width, height, 0f, 0f, textureWidth, 1, textureWidth, 1, texture);
+    }
+
+    public static void renderHalfTexture(PoseStack stack, int x, int y, int width, int height, float u, float v, int regionWidth, int regionHeight, int textureWidth, int textureHeight, ResourceLocation texture) {
+        setupTexture(texture);
+        int w = width / 2;
+        blit(stack, x, y, w, height, u, v, w, regionHeight, textureWidth, textureHeight);
+        blit(stack, x + w, y, w, height, u + regionWidth - w, v, w, regionHeight, textureWidth, textureHeight);
+    }
+
     public static void setupScissor(int x, int y, int width, int height) {
         FiguraVec4 vec = FiguraVec4.of(x, y, width, height);
         if (!SCISSORS_STACK.isEmpty()) {
@@ -486,24 +497,52 @@ public class UIHelper extends GuiComponent {
         stack.popPose();
     }
 
-    public static void renderScrollingText(PoseStack stack, Component text, int x, int y, int width, int height, int color) {
+    public static void renderScrollingText(PoseStack stack, Component text, int x, int y, int width, int color) {
+        Font font = Minecraft.getInstance().font;
+        int textWidth = font.width(text);
+        int textX = x;
+
+        //the text fit :D
+        if (textWidth <= width) {
+            font.draw(stack, text, textX, y, color);
+            return;
+        }
+
+        //oh, no it doesn't fit
+        textX += getTextScrollingOffset(textWidth, width, false);
+
+        //draw text
+        setupScissor(x, y, width, font.lineHeight);
+        font.draw(stack, text, textX, y, color);
+        disableScissor();
+    }
+
+    public static void renderCenteredScrollingText(PoseStack stack, Component text, int x, int y, int width, int height, int color) {
         Font font = Minecraft.getInstance().font;
         int textWidth = font.width(text);
         int textX = x + width / 2;
         int textY = y + height / 2 - font.lineHeight / 2;
 
         //the text fit :D
-        if (textWidth <= width - 2) {
+        if (textWidth <= width) {
             drawCenteredString(stack, font, text, textX, textY, color);
             return;
         }
 
         //oh, no it doesn't fit
+        textX += getTextScrollingOffset(textWidth, width, true);
 
-        float speed = Configs.TEXT_SCROLL_SPEED.value;
-        int scrollLen = textWidth - (width - 4);
+        //draw text
+        setupScissor(x, y, width, height);
+        drawCenteredString(stack, font, text, textX, textY, color);
+        disableScissor();
+    }
+
+    private static int getTextScrollingOffset(int textWidth, int width, boolean centered) {
+        float speed = Configs.TEXT_SCROLL_SPEED.tempValue;
+        int scrollLen = textWidth - width;
         int startingOffset = scrollLen / 2;
-        int stopDelay = (int) (Configs.TEXT_SCROLL_DELAY.value * speed);
+        int stopDelay = (int) (Configs.TEXT_SCROLL_DELAY.tempValue * speed);
         int time = scrollLen + stopDelay;
         int totalTime = time * 2;
         int ticks = (int) (FiguraMod.ticks * speed);
@@ -511,11 +550,7 @@ public class UIHelper extends GuiComponent {
         int dir = (ticks % totalTime) > time - 1 ? 1 : -1;
 
         int clamp = Math.min(Math.max(currentTime - stopDelay, 0), scrollLen);
-        textX += (startingOffset - clamp) * dir;
-
-        setupScissor(x + 1, y, width - 2, height);
-        drawCenteredString(stack, font, text, textX, textY, color);
-        disableScissor();
+        return (startingOffset - clamp) * dir - (centered ? 0 : startingOffset);
     }
 
     public static void setContext(ContextMenu context) {

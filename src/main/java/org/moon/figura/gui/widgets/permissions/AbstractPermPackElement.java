@@ -18,8 +18,8 @@ public class AbstractPermPackElement extends AbstractButton implements Comparabl
 
     protected float scale = 1f;
 
-    protected AbstractPermPackElement(int height, PermissionPack pack, PlayerList parent) {
-        super(0, 0, 174, height, Component.empty());
+    protected AbstractPermPackElement(int width, int height, PermissionPack pack, PlayerList parent) {
+        super(0, 0, width, height, Component.empty());
         this.parent = parent;
         this.pack = pack;
     }
