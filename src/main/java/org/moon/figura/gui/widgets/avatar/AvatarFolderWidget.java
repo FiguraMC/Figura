@@ -24,8 +24,8 @@ public class AvatarFolderWidget extends AbstractAvatarWidget {
             parent.updateScroll();
         }) {
             @Override
-            protected  void renderText(PoseStack stack) {
-                super.renderText(stack);
+            protected  void renderText(PoseStack stack, float delta) {
+                super.renderText(stack, delta);
 
                 //fix tooltip
                 if (getTooltip() == getMessage())

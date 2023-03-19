@@ -171,7 +171,7 @@ public class ContextMenu extends AbstractContainerElement {
         }
 
         @Override
-        protected void renderText(PoseStack stack) {
+        protected void renderText(PoseStack stack, float delta) {
             //draw text
             Font font = Minecraft.getInstance().font;
             font.drawShadow(

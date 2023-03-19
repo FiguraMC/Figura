@@ -182,7 +182,7 @@ public class PanelSelectorWidget extends AbstractContainerElement {
         }
 
         @Override
-        protected void renderText(PoseStack stack) {
+        protected void renderText(PoseStack stack, float delta) {
             if (iconsOnly())
                 return;
 
@@ -190,7 +190,7 @@ public class PanelSelectorWidget extends AbstractContainerElement {
             int width = getWidth();
             this.x = x + 22;
             setWidth(width - 22);
-            super.renderText(stack);
+            super.renderText(stack, delta);
             this.x = x;
             setWidth(width);
         }

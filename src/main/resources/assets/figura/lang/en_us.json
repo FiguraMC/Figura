@@ -63,7 +63,7 @@
   "figura.permissions.value.offscreen_rendering": "Render Offscreen",
   "figura.permissions.value.custom_render_layer": "Custom Render Layers",
   "figura.permissions.value.custom_sounds": "Custom Sounds",
-  "figura.permissions.value.custom_heads": "Custom Player Heads",
+  "figura.permissions.value.custom_skull": "Custom Player Skull",
 
 
   "figura.popup_menu.cancel": "Cancel",
@@ -765,7 +765,7 @@
   "figura.docs.avatar.can_edit_nameplate": "Gets whether or not the viewer allows your avatar to edit your nameplate",
   "figura.docs.avatar.can_render_offscreen": "Gets whether or not the viewer allows you to render the avatar off-screen",
   "figura.docs.avatar.can_use_custom_sounds": "Gets whether or not the viewer allows your avatar to play custom sounds",
-  "figura.docs.avatar.can_have_custom_heads": "Gets whether or not your avatar is allowed to have custom player heads",
+  "figura.docs.avatar.can_have_custom_skull": "Gets whether or not your avatar is allowed to have custom player skull",
 
 
   "figura.docs.biome": "A proxy for a Minecraft biome\nInstances are obtained through the WorldAPI\nThis proxy also contains a saved position for the Biome",

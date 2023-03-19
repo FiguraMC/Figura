@@ -41,7 +41,7 @@ public class EnumElement extends AbstractConfigElement {
             }
         }) {
             @Override
-            protected void renderText(PoseStack stack) {
+            protected void renderText(PoseStack stack, float delta) {
                 Font font = Minecraft.getInstance().font;
                 Component arrow = context.isVisible() ? UIHelper.DOWN_ARROW : UIHelper.UP_ARROW;
                 int arrowWidth = font.width(arrow);
@@ -51,7 +51,7 @@ public class EnumElement extends AbstractConfigElement {
 
                 //draw text
                 int color = (!this.active ? ChatFormatting.DARK_GRAY : ChatFormatting.WHITE).getColor();
-                UIHelper.renderScrollingText(stack, message, x, y, getWidth() - (textWidth <= width - arrowWidth - 9 ? 0 : arrowWidth + 1), getHeight(), color);
+                UIHelper.renderCenteredScrollingText(stack, message, this.x + 1, this.y, getWidth() - (textWidth <= width - arrowWidth - 9 ? 0 : arrowWidth + 1) - 2, getHeight(), color);
 
                 //draw arrow
                 font.drawShadow(stack, arrow, x + getWidth() - arrowWidth - 3, y + getHeight() / 2 - font.lineHeight / 2, color);
