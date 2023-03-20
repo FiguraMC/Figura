@@ -1,4 +1,4 @@
-package org.moon.figura.lua;
+package org.moon.figura.entries;
 
 import org.moon.figura.avatar.Avatar;
 

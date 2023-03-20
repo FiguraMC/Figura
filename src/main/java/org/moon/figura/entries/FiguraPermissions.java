@@ -1,4 +1,6 @@
-package org.moon.figura.permissions;
+package org.moon.figura.entries;
+
+import org.moon.figura.permissions.Permissions;
 
 import java.util.Collection;
 

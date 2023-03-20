@@ -5,6 +5,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.config.Configs;
+import org.moon.figura.entries.FiguraPermissions;
 import org.moon.figura.utils.IOUtils;
 
 import java.util.*;
@@ -20,10 +21,6 @@ public class PermissionManager {
 
     //main method for loading the permissions
     public static void init() {
-        //custom permission
-        for (FiguraPermissions figuraPermissions : IOUtils.loadEntryPoints("figura_permissions", FiguraPermissions.class))
-            CUSTOM_PERMISSIONS.put(figuraPermissions.getTitle(), figuraPermissions.getPermissions());
-
         //load groups
         for (Permissions.Category category : Permissions.Category.values()) {
             PermissionPack.CategoryPermissionPack container = new PermissionPack.CategoryPermissionPack(category);
@@ -32,6 +29,12 @@ public class PermissionManager {
 
         //then load nbt
         IOUtils.readCacheFile("permissions", PermissionManager::readNbt);
+    }
+
+    public static void initEntryPoints(Set<FiguraPermissions> set) {
+        //custom permission
+        for (FiguraPermissions figuraPermissions : set)
+            CUSTOM_PERMISSIONS.put(figuraPermissions.getTitle(), figuraPermissions.getPermissions());
     }
 
     //read permissions from nbt, adding them into the hash maps
