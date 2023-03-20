@@ -1,11 +1,18 @@
 package org.moon.figura.lua.api.vanilla_model;
 
+import com.mojang.datafixers.util.Pair;
+import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.geom.ModelPart;
 import org.moon.figura.avatar.Avatar;
-import org.moon.figura.model.ParentType;
-import org.moon.figura.model.VanillaModelProvider;
+import org.moon.figura.entries.FiguraVanillaPart;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.model.ParentType;
+import org.moon.figura.model.VanillaModelProvider;
+
+import java.util.*;
+import java.util.function.Function;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -257,13 +264,57 @@ public class VanillaModelAPI {
 
         PARROTS = new VanillaGroupPart(owner, "PARROTS", LEFT_PARROT, RIGHT_PARROT);
 
-        ALL = new VanillaGroupPart(owner, "ALL", PLAYER, CAPE, ARMOR, ELYTRA, HELD_ITEMS, PARROTS);
+        List<VanillaGroupPart> groups = new ArrayList<>() {{
+            add(PLAYER);
+            add(CAPE);
+            add(ARMOR);
+            add(ELYTRA);
+            add(HELD_ITEMS);
+            add(PARROTS);
+        }};
+
+
+        // -- modded parts -- //
+
+
+        for (FiguraVanillaPart entrypoint : ENTRYPOINTS) {
+            //prepare group
+            List<VanillaModelPart> parts = new ArrayList<>();
+            String ID = entrypoint.getID().toUpperCase();
+
+            //get parts
+            for (Pair<String, Function<EntityModel<?>, ModelPart>> part : entrypoint.getParts()) {
+                String name = ID + "_" + part.getFirst().toUpperCase();
+                VanillaModelPart model = new VanillaModelPart(owner, name, ParentType.None, part.getSecond());
+                moddedParts.put(name, model);
+                parts.add(model);
+            }
+
+            //add to group list
+            VanillaGroupPart group = new VanillaGroupPart(owner, ID, parts.toArray(new VanillaModelPart[0]));
+            moddedParts.put(ID, group);
+            groups.add(group);
+        }
+
+
+        // -- all -- //
+
+
+        ALL = new VanillaGroupPart(owner, "ALL", groups.toArray(new VanillaGroupPart[0]));
+    }
+
+    private static final List<FiguraVanillaPart> ENTRYPOINTS = new ArrayList<>();
+    private final Map<String, VanillaPart> moddedParts = new HashMap<>();
+
+    public static void initEntryPoints(Set<FiguraVanillaPart> set) {
+        ENTRYPOINTS.addAll(set);
     }
 
     @LuaWhitelist
     public Object __index(String key) {
         if (key == null) return null;
-        return switch (key.toUpperCase()) {
+        String name = key.toUpperCase();
+        VanillaPart part = switch (name) {
             case "HEAD" -> HEAD;
             case "BODY" -> BODY;
             case "LEFT_ARM" -> LEFT_ARM;
@@ -310,6 +361,7 @@ public class VanillaModelAPI {
             case "ALL" -> ALL;
             default -> null;
         };
+        return part != null ? part : moddedParts.get(name);
     }
 
     @Override

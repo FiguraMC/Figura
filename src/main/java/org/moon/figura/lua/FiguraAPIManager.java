@@ -1,6 +1,7 @@
 package org.moon.figura.lua;
 
 import org.moon.figura.animation.Animation;
+import org.moon.figura.entries.FiguraAPI;
 import org.moon.figura.lua.api.*;
 import org.moon.figura.lua.api.action_wheel.Action;
 import org.moon.figura.lua.api.action_wheel.ActionWheelAPI;
@@ -40,7 +41,6 @@ import org.moon.figura.model.FiguraModelPart;
 import org.moon.figura.model.rendering.Vertex;
 import org.moon.figura.model.rendering.texture.FiguraTexture;
 import org.moon.figura.model.rendertasks.*;
-import org.moon.figura.utils.IOUtils;
 
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -158,8 +158,8 @@ public class FiguraAPIManager {
 
     private static final Set<FiguraAPI> ENTRYPOINTS = new HashSet<>();
 
-    public static void init() {
-        for (FiguraAPI api : IOUtils.loadEntryPoints("figura_api", FiguraAPI.class)) {
+    public static void initEntryPoints(Set<FiguraAPI> set) {
+        for (FiguraAPI api : set) {
             ENTRYPOINTS.add(api);
             WHITELISTED_CLASSES.addAll(api.getWhitelistedClasses());
         }

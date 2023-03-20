@@ -17,10 +17,10 @@ import org.moon.figura.avatar.local.LocalAvatarFetcher;
 import org.moon.figura.avatar.local.LocalAvatarLoader;
 import org.moon.figura.backend2.NetworkStuff;
 import org.moon.figura.commands.FiguraCommands;
-import org.moon.figura.config.Configs;
 import org.moon.figura.config.ConfigManager;
+import org.moon.figura.config.Configs;
+import org.moon.figura.entries.EntryPointManager;
 import org.moon.figura.gui.Emojis;
-import org.moon.figura.lua.FiguraAPIManager;
 import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.lua.docs.FiguraDocsManager;
 import org.moon.figura.mixin.SkullBlockEntityAccessor;
@@ -56,11 +56,11 @@ public class FiguraMod implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         //init managers
+        EntryPointManager.init();
         ConfigManager.init();
         PermissionManager.init();
         LocalAvatarFetcher.init();
         CacheAvatarLoader.init();
-        FiguraAPIManager.init();
         FiguraDocsManager.init();
         FiguraCommands.init();
         FiguraRuntimeResources.init();
