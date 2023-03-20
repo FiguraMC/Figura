@@ -8,26 +8,28 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.FiguraMod;
+import org.moon.figura.entries.FiguraScreen;
 import org.moon.figura.gui.screens.*;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.ui.UIHelper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 
 public class PanelSelectorWidget extends AbstractContainerElement {
 
     private static final ResourceLocation OVERLAY = new FiguraIdentifier("textures/gui/panels_overlay.png");
 
-    private static final List<Function<Screen, Pair<Screen, PanelIcon>>> PANELS = List.of(
-            s -> Pair.of(new ProfileScreen(s), PanelIcon.PROFILE),
-            s -> Pair.of(new BrowserScreen(s), PanelIcon.BROWSER),
-            s -> Pair.of(new WardrobeScreen(s), PanelIcon.WARDROBE),
-            s -> Pair.of(new PermissionsScreen(s), PanelIcon.PERMISSIONS),
-            s -> Pair.of(new DocsScreen(s), PanelIcon.DOCS),
-            s -> Pair.of(new ConfigScreen(s), PanelIcon.SETTINGS)
-    );
+    private static final List<Function<Screen, Pair<Screen, PanelIcon>>> PANELS = new ArrayList<>() {{
+                add(s -> Pair.of(new ProfileScreen(s), PanelIcon.PROFILE));
+                add(s -> Pair.of(new BrowserScreen(s), PanelIcon.BROWSER));
+                add(s -> Pair.of(new WardrobeScreen(s), PanelIcon.WARDROBE));
+                add(s -> Pair.of(new PermissionsScreen(s), PanelIcon.PERMISSIONS));
+                add(s -> Pair.of(new DocsScreen(s), PanelIcon.DOCS));
+                add(s -> Pair.of(new ConfigScreen(s), PanelIcon.SETTINGS));
+    }};
 
     //TODO - remove this when we actually implement those panels
     private static final List<Integer> PANELS_BLACKLIST = List.of(0, 1, 4);
@@ -67,6 +69,13 @@ public class PanelSelectorWidget extends AbstractContainerElement {
                 SwitchButton button = buttons.get(i);
                 button.setMessage(button.getMessage().copy().withStyle(ChatFormatting.RED));
             }
+        }
+    }
+
+    public static void initEntryPoints(Set<FiguraScreen> set) {
+        for (FiguraScreen figuraScreen : set) {
+            PanelIcon icon = figuraScreen.getPanelIcon();
+            PANELS.add(s -> Pair.of(figuraScreen.getScreen(s), icon == null ? PanelIcon.OTHER : icon));
         }
     }
 
