@@ -1,6 +1,7 @@
 package org.moon.figura.animation;
 
 import com.mojang.datafixers.util.Pair;
+import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
@@ -9,6 +10,7 @@ import org.moon.figura.math.vector.FiguraVec3;
 public class Keyframe implements Comparable<Keyframe> {
 
     private final Avatar owner;
+    private final Animation animation;
     private final float time;
     private final Interpolation interpolation;
     private final FiguraVec3 targetA, targetB;
@@ -16,8 +18,9 @@ public class Keyframe implements Comparable<Keyframe> {
     private final FiguraVec3 bezierLeft, bezierRight;
     private final FiguraVec3 bezierLeftTime, bezierRightTime;
 
-    public Keyframe(Avatar owner, float time, Interpolation interpolation, Pair<FiguraVec3, String[]> a, Pair<FiguraVec3, String[]> b, FiguraVec3 bezierLeft, FiguraVec3 bezierRight, FiguraVec3 bezierLeftTime, FiguraVec3 bezierRightTime) {
+    public Keyframe(Avatar owner, Animation animation, float time, Interpolation interpolation, Pair<FiguraVec3, String[]> a, Pair<FiguraVec3, String[]> b, FiguraVec3 bezierLeft, FiguraVec3 bezierRight, FiguraVec3 bezierLeftTime, FiguraVec3 bezierRightTime) {
         this.owner = owner;
+        this.animation = animation;
         this.time = time;
         this.interpolation = interpolation;
         this.targetA = a.getFirst();
@@ -30,15 +33,15 @@ public class Keyframe implements Comparable<Keyframe> {
         this.bezierRightTime = bezierRightTime;
     }
 
-    public FiguraVec3 getTargetA() {
-        return targetA != null ? targetA.copy() : FiguraVec3.of(parseStringData(aCode[0]), parseStringData(aCode[1]), parseStringData(aCode[2]));
+    public FiguraVec3 getTargetA(float delta) {
+        return targetA != null ? targetA.copy() : FiguraVec3.of(parseStringData(aCode[0], delta), parseStringData(aCode[1], delta), parseStringData(aCode[2], delta));
     }
 
-    public FiguraVec3 getTargetB() {
-        return targetB != null ? targetB.copy() : FiguraVec3.of(parseStringData(bCode[0]), parseStringData(bCode[1]), parseStringData(bCode[2]));
+    public FiguraVec3 getTargetB(float delta) {
+        return targetB != null ? targetB.copy() : FiguraVec3.of(parseStringData(bCode[0], delta), parseStringData(bCode[1], delta), parseStringData(bCode[2], delta));
     }
 
-    private float parseStringData(String data) {
+    private float parseStringData(String data, float delta) {
         FiguraMod.pushProfiler(data);
         try {
             return FiguraMod.popReturnProfiler(Float.parseFloat(data));
@@ -47,15 +50,28 @@ public class Keyframe implements Comparable<Keyframe> {
                 return FiguraMod.popReturnProfiler(0f);
 
             try {
-                Varargs val = owner.run(Pair.of("keyframe_data", "return " + data), owner.render);
-                if (val.isnumber(1))
-                    return FiguraMod.popReturnProfiler(val.tofloat(1));
-            } catch (Exception e) {
-                owner.luaRuntime.error(e);
+                return FiguraMod.popReturnProfiler(run(delta, "return " + data));
+            } catch (Exception ignored2) {
+                try {
+                    return FiguraMod.popReturnProfiler(run(delta, data));
+                } catch (Exception e) {
+                    owner.luaRuntime.error(e);
+                }
             }
         }
 
         return FiguraMod.popReturnProfiler(0f);
+    }
+
+    private float run(float delta, String chunk) {
+        LuaValue val = owner.load("keyframe_data", chunk);
+        Varargs args = owner.run(val, owner.render, delta, animation);
+        try {
+            return (float) args.checkdouble(1);
+        } catch (Exception e) {
+            owner.luaRuntime.error(e);
+        }
+        return 0f;
     }
 
     public float getTime() {
