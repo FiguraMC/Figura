@@ -27,7 +27,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.moon.figura.FiguraMod;
@@ -275,6 +274,10 @@ public class Avatar {
         });
     }
 
+    public LuaValue load(String name, String chunk) {
+        return scriptError || luaRuntime == null || !loaded ? null : luaRuntime.load(name, chunk);
+    }
+
     public Varargs run(Object toRun, Instructions limit, Object... args) {
         //create event
         Supplier<Varargs> ev = () -> {
@@ -298,10 +301,8 @@ public class Avatar {
                     ret = event.call(val);
                 else if (toRun instanceof String event)
                     ret = luaRuntime.events.__index(event).call(val);
-                else if (toRun instanceof LuaFunction func)
+                else if (toRun instanceof LuaValue func)
                     ret = func.invoke(val);
-                else if (toRun instanceof Pair<?, ?> pair)
-                    ret = luaRuntime.load(pair.getFirst().toString(), pair.getSecond().toString()).invoke(val);
                 else
                     throw new IllegalArgumentException("Internal event error - Invalid type to run!");
 

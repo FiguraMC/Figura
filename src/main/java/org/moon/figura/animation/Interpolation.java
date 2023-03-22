@@ -6,16 +6,16 @@ import org.moon.figura.utils.MathUtils;
 public enum Interpolation {
 
     LINEAR((frames, currentFrame, targetFrame, strength, delta, type) -> {
-        FiguraVec3 prev = frames[currentFrame].getTargetB();
-        FiguraVec3 next = frames[targetFrame].getTargetA();
+        FiguraVec3 prev = frames[currentFrame].getTargetB(delta);
+        FiguraVec3 next = frames[targetFrame].getTargetA(delta);
         FiguraVec3 result = MathUtils.lerp(delta, prev, next);
         return getResult(result, strength, type);
     }),
     CATMULLROM((frames, currentFrame, targetFrame, strength, delta, type) -> {
-        FiguraVec3 prevA = frames[Math.max(0, currentFrame - 1)].getTargetB();
-        FiguraVec3 prevB = frames[currentFrame].getTargetB();
-        FiguraVec3 nextA = frames[targetFrame].getTargetA();
-        FiguraVec3 nextB = frames[Math.min(frames.length - 1, targetFrame + 1)].getTargetA();
+        FiguraVec3 prevA = frames[Math.max(0, currentFrame - 1)].getTargetB(delta);
+        FiguraVec3 prevB = frames[currentFrame].getTargetB(delta);
+        FiguraVec3 nextA = frames[targetFrame].getTargetA(delta);
+        FiguraVec3 nextB = frames[Math.min(frames.length - 1, targetFrame + 1)].getTargetA(delta);
         FiguraVec3 result = MathUtils.catmullrom(delta, prevA, prevB, nextA, nextB);
         return getResult(result, strength, type);
     }),
@@ -26,8 +26,8 @@ public enum Interpolation {
         FiguraVec3 p1Time = prev.getBezierRightTime();
         FiguraVec3 p2Time = next.getBezierLeftTime();
 
-        FiguraVec3 p0 = prev.getTargetB();
-        FiguraVec3 p3 = next.getTargetA();
+        FiguraVec3 p0 = prev.getTargetB(delta);
+        FiguraVec3 p3 = next.getTargetA(delta);
         FiguraVec3 p1 = prev.getBezierRight().add(p0);
         FiguraVec3 p2 = next.getBezierLeft().add(p3);
 
@@ -39,7 +39,7 @@ public enum Interpolation {
 
         return getResult(result, strength, type);
     }),
-    STEP((frames, currentFrame, targetFrame, strength, delta, type) -> getResult(frames[currentFrame].getTargetB().copy(), strength, type));
+    STEP((frames, currentFrame, targetFrame, strength, delta, type) -> getResult(frames[currentFrame].getTargetB(delta).copy(), strength, type));
 
     private final IInterpolation function;
 
