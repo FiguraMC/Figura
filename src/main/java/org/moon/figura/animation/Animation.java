@@ -1,11 +1,14 @@
 package org.moon.figura.animation;
 
-import com.mojang.datafixers.util.Pair;
 import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaValue;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
-import org.moon.figura.lua.docs.*;
+import org.moon.figura.lua.docs.LuaFieldDoc;
+import org.moon.figura.lua.docs.LuaMethodDoc;
+import org.moon.figura.lua.docs.LuaMethodOverload;
+import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.model.FiguraModelPart;
 
 import java.util.*;
@@ -98,6 +101,7 @@ public class Animation {
                 else if (inverted && time < offset - loopDelay)
                     time += length + loopDelay - offset;
             }
+            case HOLD -> time = inverted ? Math.max(time, offset) : Math.min(time, length);
         }
 
         this.lastTime = this.frameTime;
@@ -111,7 +115,7 @@ public class Animation {
     }
 
     public void playCode(float minTime, float maxTime) {
-        if (codeFrames.keySet().isEmpty())
+        if (owner.luaRuntime == null || codeFrames.keySet().isEmpty())
             return;
 
         if (maxTime < minTime) {
@@ -121,8 +125,14 @@ public class Animation {
         }
 
         for (Float codeTime : codeFrames.keySet()) {
-            if (codeTime >= minTime && codeTime < maxTime)
-                owner.run(Pair.of("animations." + modelName + "." + name, codeFrames.get(codeTime)), owner.tick, this);
+            if (codeTime >= minTime && codeTime < maxTime) {
+                try {
+                    LuaValue value = owner.load("animations." + modelName + "." + name, codeFrames.get(codeTime));
+                    owner.run(value, owner.tick, this);
+                } catch (Exception e) {
+                    owner.luaRuntime.error(e);
+                }
+            }
         }
     }
 
