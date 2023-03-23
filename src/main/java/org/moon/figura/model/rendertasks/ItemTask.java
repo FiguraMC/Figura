@@ -6,6 +6,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import org.luaj.vm2.LuaError;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.lua.LuaNotNil;
@@ -37,10 +38,7 @@ public class ItemTask extends RenderTask {
     }
 
     @Override
-    public boolean render(PartCustomization.PartCustomizationStack stack, MultiBufferSource buffer, int light, int overlay) {
-        if (!enabled || item == null || item.isEmpty())
-            return false;
-
+    public void render(PartCustomization.PartCustomizationStack stack, MultiBufferSource buffer, int light, int overlay) {
         this.pushOntoStack(stack);
         PoseStack poseStack = stack.peek().copyIntoGlobalPoseStack();
         poseStack.scale(-16, 16, -16);
@@ -52,7 +50,6 @@ public class ItemTask extends RenderTask {
                 this.light != null ? this.light : light, this.overlay != null ? this.overlay : overlay, entity != null ? entity.getId() + displayMode.ordinal() : 0);
 
         stack.pop();
-        return true;
     }
 
     @Override
@@ -60,6 +57,10 @@ public class ItemTask extends RenderTask {
         return cachedComplexity;
     }
 
+    @Override
+    public boolean shouldRender() {
+        return enabled && item != null && !item.isEmpty();
+    }
 
     // -- lua -- //
 
