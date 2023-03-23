@@ -201,8 +201,6 @@ public class AvatarWizardList extends AbstractList {
 
         @Override
         protected void renderText(PoseStack stack, float delta) {
-            UIHelper.fill(stack, getX(), getY(), getX() + width, getY() + height, 0x88FF72AD);
-
             //name
             Font font = Minecraft.getInstance().font;
             MutableComponent name = getMessage().copy();

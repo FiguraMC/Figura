@@ -422,6 +422,21 @@ public class FiguraVec2 extends FiguraVector<FiguraVec2, FiguraMat2> {
         return this;
     }
 
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload,
+                    @LuaMethodOverload(
+                            argumentTypes = Double.class,
+                            argumentNames = "value"
+                    )
+            },
+            value = "vector_n.augmented"
+    )
+    public FiguraVec3 augmented(Double d) {
+        return FiguraVec3.of(x, y, d == null ? 1 : d);
+    }
+
     @Override
     public int size() {
         return 2;
