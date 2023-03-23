@@ -618,7 +618,6 @@ public class Avatar {
             return false;
 
         renderer.allowPivotParts = false;
-        renderer.allowRenderTasks = false;
         renderer.currentFilterScheme = PartFilterScheme.SKULL;
         renderer.tickDelta = 1f;
         renderer.overlay = OverlayTexture.NO_OVERLAY;
@@ -642,16 +641,10 @@ public class Avatar {
         int comp = renderer.renderSpecialParts();
         complexity.use(comp);
 
-        if (comp > 0) {
-            renderer.allowPivotParts = true;
-            renderer.allowRenderTasks = true;
-            stack.popPose();
-            return true;
-        }
-
         //head
-        boolean bool = headRender(stack, bufferSource, light, true);
+        boolean bool = comp > 0 || headRender(stack, bufferSource, light, true);
 
+        renderer.allowPivotParts = true;
         stack.popPose();
         return bool;
     }
@@ -664,8 +657,6 @@ public class Avatar {
         boolean oldMat = renderer.allowMatrixUpdate;
 
         //pre render
-        renderer.allowPivotParts = false;
-        renderer.allowRenderTasks = false;
         renderer.currentFilterScheme = PartFilterScheme.HEAD;
         renderer.tickDelta = 1f;
         renderer.overlay = OverlayTexture.NO_OVERLAY;
@@ -686,8 +677,6 @@ public class Avatar {
         //pos render
         renderer.allowMatrixUpdate = oldMat;
         renderer.allowHiddenTransforms = true;
-        renderer.allowRenderTasks = true;
-        renderer.allowPivotParts = true;
 
         stack.popPose();
         return comp > 0 && luaRuntime != null && !luaRuntime.vanilla_model.HEAD.checkVisible();
@@ -719,7 +708,6 @@ public class Avatar {
         Lighting.setupForFlatItems();
 
         renderer.allowPivotParts = false;
-        renderer.allowRenderTasks = false;
         renderer.currentFilterScheme = PartFilterScheme.PORTRAIT;
         renderer.tickDelta = 1f;
         renderer.overlay = OverlayTexture.NO_OVERLAY;
@@ -745,7 +733,6 @@ public class Avatar {
         UIHelper.paperdoll = false;
 
         renderer.allowPivotParts = true;
-        renderer.allowRenderTasks = true;
 
         //return
         return ret;

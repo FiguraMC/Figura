@@ -48,10 +48,7 @@ public class SpriteTask extends RenderTask {
     }
 
     @Override
-    public boolean render(PartCustomization.PartCustomizationStack stack, MultiBufferSource buffer, int light, int overlay) {
-        if (!enabled || texture == null || renderType == RenderTypes.NONE)
-            return false;
-
+    public void render(PartCustomization.PartCustomizationStack stack, MultiBufferSource buffer, int light, int overlay) {
         this.pushOntoStack(stack); //push
         PoseStack poseStack = stack.peek().copyIntoGlobalPoseStack();
         poseStack.scale(-1, -1, 1);
@@ -78,12 +75,16 @@ public class SpriteTask extends RenderTask {
         }
 
         stack.pop(); //pop
-        return true;
     }
 
     @Override
     public int getComplexity() {
         return 1; //1 face, 1 complexity
+    }
+
+    @Override
+    public boolean shouldRender() {
+        return enabled && texture != null && renderType != RenderTypes.NONE;
     }
 
     private void recalculateVertices() {
