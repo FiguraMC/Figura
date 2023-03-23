@@ -1554,10 +1554,10 @@
   "figura.docs.vector_n.floor": "Returns a copy of this vector with its values rounded down",
   "figura.docs.vector_n.ceil": "Returns a copy of this vector with its values rounded up",
   "figura.docs.vector_n.apply_func": "Calls the given function on each element of this vector, and sets the values of the vector to the returns\nThe current index and its value is given as arguments of the function\nReturns self for chaining",
+  "figura.docs.vector_n.augmented": "Returns the augmented form of this vector\nThe augmented form is a Vector of the same length + 1\nThe new axis will have the given value, or 1 when it is not specified",
 
   "figura.docs.vector3.cross": "Sets this vector to the cross product of itself and the other vector\nReturns self for chaining",
   "figura.docs.vector3.crossed": "Returns a new vector which is the cross product of this and the other one",
-  "figura.docs.vector3.augmented": "Returns the augmented form of this vector\nThe augmented form is Vector4 with given value in its W coordinate\nDefault to 1 when no value is specified",
 
 
   "figura.docs.vertex": "A vertex object",

@@ -37,7 +37,7 @@ public class BlockbenchModelParser {
 
         //meta check
         if (!model.meta.model_format.equals("free"))
-            throw new Exception("Model \"" + modelName + "\" not generic format");
+            throw new Exception("Model \"" + modelName + "\" not in generic format");
         if (Integer.parseInt(model.meta.format_version.split("\\.")[0]) < 4)
             throw new Exception("Model \"" + modelName + "\" blockbench version is too old (" + model.meta.format_version + "), minimum compatible blockbench version is 4.0");
 
@@ -66,7 +66,7 @@ public class BlockbenchModelParser {
         parseAnimations(animationList, model.animations, modelName, folders);
 
         //add and parse the outliner
-        nbt.put("chld", parseOutliner(model.outliner, null));
+        nbt.put("chld", parseOutliner(model.outliner, true));
 
         //clear variables used by the parser
         elementMap.clear();
@@ -230,8 +230,7 @@ public class BlockbenchModelParser {
             if (element.inflate != 0f)
                 nbt.putFloat("inf", element.inflate);
 
-            if (element.visibility != null && !element.visibility)
-                nbt.putBoolean("vsb", false);
+            nbt.putBoolean("vsb", element.visibility == null || element.visibility);
 
             //parse faces
             CompoundTag data;
@@ -575,7 +574,7 @@ public class BlockbenchModelParser {
         return nbt;
     }
 
-    private ListTag parseOutliner(JsonArray outliner, Boolean parentVsb) {
+    private ListTag parseOutliner(JsonArray outliner, boolean parentVsb) {
         ListTag children = new ListTag();
 
         if (outliner == null)
@@ -588,7 +587,7 @@ public class BlockbenchModelParser {
                     CompoundTag elementNbt = elementMap.get(element.getAsString());
 
                     //fix children visibility (very jank)
-                    if (parentVsb != null && elementNbt.contains("vsb") && elementNbt.getBoolean("vsb") == parentVsb)
+                    if (elementNbt.contains("vsb") && elementNbt.getBoolean("vsb") == parentVsb)
                         elementNbt.remove("vsb");
 
                     children.add(elementNbt);
@@ -605,8 +604,9 @@ public class BlockbenchModelParser {
             groupNbt.putString("name", group.name);
 
             //visibility
-            if (group.visibility != null && !group.visibility && (parentVsb == null || parentVsb))
-                groupNbt.putBoolean("vsb", false);
+            boolean thisVisibility = group.visibility == null || group.visibility;
+            if (thisVisibility != parentVsb)
+                groupNbt.putBoolean("vsb", thisVisibility);
 
             //parse transforms
             if (notZero(group.origin))
@@ -619,7 +619,7 @@ public class BlockbenchModelParser {
 
             //parse children
             if (group.children != null && group.children.size() > 0)
-                groupNbt.put("chld", parseOutliner(group.children, group.visibility));
+                groupNbt.put("chld", parseOutliner(group.children, thisVisibility));
 
             //add animations
             if (animationMap.containsKey(group.uuid))
