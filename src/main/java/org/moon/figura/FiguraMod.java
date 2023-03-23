@@ -89,7 +89,7 @@ public class FiguraMod implements ClientModInitializer {
 
     //debug print
     public static void debug(String str, Object... args) {
-        if (DEBUG_MODE) LOGGER.info(str, args);
+        if (DEBUG_MODE) LOGGER.info("[DEBUG] " + str, args);
         else LOGGER.debug(str, args);
     }
 

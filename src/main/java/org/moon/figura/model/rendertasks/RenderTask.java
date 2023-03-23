@@ -38,8 +38,9 @@ public abstract class RenderTask {
     }
 
     //Return true if something was rendered, false if the function cancels for some reason
-    public abstract boolean render(PartCustomization.PartCustomizationStack stack, MultiBufferSource buffer, int light, int overlay);
+    public abstract void render(PartCustomization.PartCustomizationStack stack, MultiBufferSource buffer, int light, int overlay);
     public abstract int getComplexity();
+    public abstract boolean shouldRender();
 
     public void pushOntoStack(PartCustomization.PartCustomizationStack stack) {
         customization.recalculate();

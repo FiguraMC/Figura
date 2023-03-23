@@ -47,10 +47,7 @@ public class TextTask extends RenderTask {
     }
 
     @Override
-    public boolean render(PartCustomization.PartCustomizationStack stack, MultiBufferSource buffer, int light, int overlay) {
-        if (!enabled || text == null || text.size() == 0)
-            return false;
-
+    public void render(PartCustomization.PartCustomizationStack stack, MultiBufferSource buffer, int light, int overlay) {
         this.pushOntoStack(stack);
         PoseStack poseStack = stack.peek().copyIntoGlobalPoseStack();
         poseStack.scale(-1, -1, 1);
@@ -86,12 +83,16 @@ public class TextTask extends RenderTask {
         }
 
         stack.pop();
-        return true;
     }
 
     @Override
     public int getComplexity() {
         return cachedComplexity;
+    }
+
+    @Override
+    public boolean shouldRender() {
+        return enabled && text != null && text.size() != 0;
     }
 
     private void updateText() {

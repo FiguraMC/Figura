@@ -308,7 +308,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         if (thisPassedPredicate) {
             boolean render = customizationStack.peek().render;
             boolean renderPivot = shouldRenderPivots > 0 && (shouldRenderPivots % 2 == 0 || render);
-            boolean renderTasks = render && allowRenderTasks && !part.renderTasks.isEmpty();
+            boolean renderTasks = render && !part.renderTasks.isEmpty();
             boolean renderPivotParts = render && part.parentType.isPivot && allowPivotParts;
 
             if (renderPivot || renderTasks || renderPivotParts) {
@@ -335,22 +335,23 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
                     int overlay = peek.overlay;
                     allowSkullRendering = false;
                     for (RenderTask task : part.renderTasks.values()) {
+                        if (!task.shouldRender())
+                            continue;
                         int neededComplexity = task.getComplexity();
                         if (neededComplexity > remainingComplexity[0])
                             continue;
                         FiguraMod.pushProfiler(task.getName());
-                        if (task.render(customizationStack, bufferSource, light, overlay))
-                            remainingComplexity[0] -= neededComplexity;
+                        task.render(customizationStack, bufferSource, light, overlay);
+                        remainingComplexity[0] -= neededComplexity;
                         FiguraMod.popProfiler();
                     }
                     allowSkullRendering = true;
                 }
 
                 //render pivot parts
-                if (renderPivotParts) {
+                if (renderPivotParts && part.parentType.isPivot) {
                     FiguraMod.popPushProfiler("savePivotParts");
-                    if (part.parentType.isPivot && allowPivotParts)
-                        savePivotTransform(part.parentType, peek);
+                    savePivotTransform(part.parentType, peek);
                 }
 
                 customizationStack.pop();

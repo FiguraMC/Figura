@@ -6,6 +6,8 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.block.AbstractSkullBlock;
+import net.minecraft.world.level.block.SkullBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.lua.LuaWhitelist;
@@ -31,10 +33,7 @@ public class BlockTask extends RenderTask {
     }
 
     @Override
-    public boolean render(PartCustomization.PartCustomizationStack stack, MultiBufferSource buffer, int light, int overlay) {
-        if (!enabled || block == null || block.isAir())
-            return false;
-
+    public void render(PartCustomization.PartCustomizationStack stack, MultiBufferSource buffer, int light, int overlay) {
         this.pushOntoStack(stack); //push
         PoseStack poseStack = stack.peek().copyIntoGlobalPoseStack();
         poseStack.scale(16, 16, 16);
@@ -42,7 +41,6 @@ public class BlockTask extends RenderTask {
         Minecraft.getInstance().getBlockRenderer().renderSingleBlock(block, poseStack, buffer, this.light != null ? this.light : light, this.overlay != null ? this.overlay : overlay);
 
         stack.pop(); //pop
-        return true;
     }
 
     @Override
@@ -50,6 +48,10 @@ public class BlockTask extends RenderTask {
         return cachedComplexity;
     }
 
+    @Override
+    public boolean shouldRender() {
+        return enabled && block != null && !block.isAir();
+    }
 
     // -- lua -- //
 
