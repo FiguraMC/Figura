@@ -116,7 +116,7 @@ public class Avatar {
     //limits
     public int animationComplexity;
     public final Instructions complexity;
-    public final Instructions init, render, worldRender, tick, worldTick;
+    public final Instructions init, render, worldRender, tick, worldTick, animation;
     public final RefilledNumber particlesRemaining, soundsRemaining;
 
     private Avatar(UUID owner, EntityType<?> type, String name) {
@@ -130,6 +130,7 @@ public class Avatar {
         this.worldRender = new Instructions(permissions.get(Permissions.WORLD_RENDER_INST));
         this.tick = new Instructions(permissions.get(Permissions.TICK_INST));
         this.worldTick = new Instructions(permissions.get(Permissions.WORLD_TICK_INST));
+        this.animation = new Instructions(permissions.get(Permissions.ANIMATION_INST));
         this.particlesRemaining = new RefilledNumber(permissions.get(Permissions.PARTICLES));
         this.soundsRemaining = new RefilledNumber(permissions.get(Permissions.SOUNDS));
         this.entityName = name == null ? "" : name;
@@ -809,6 +810,8 @@ public class Avatar {
     public void applyAnimations() {
         if (!loaded || scriptError)
             return;
+
+        animation.reset(permissions.get(Permissions.ANIMATION_INST));
 
         int animationsLimit = permissions.get(Permissions.BB_ANIMATIONS);
         int limit = animationsLimit;
