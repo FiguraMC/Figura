@@ -26,6 +26,7 @@ public class Permissions {
                 }
             },
             BB_ANIMATIONS = new Permissions("BB_ANIMATIONS", 0, 511, 0, 32, 128, 256, Integer.MAX_VALUE),
+            ANIMATION_INST = new Permissions("ANIMATION_INST", 0, 32767, 0, 2048, 4096, 8192, Integer.MAX_VALUE),
             TEXTURE_SIZE = new Permissions("TEXTURE_SIZE", 0, 2048, 64, 0, 128, 512, 2048, 2048),
             VANILLA_MODEL_EDIT = new Permissions("VANILLA_MODEL_EDIT", 0, 0, 1, 1, 1),
             NAMEPLATE_EDIT = new Permissions("NAMEPLATE_EDIT", 0, 0, 0, 1, 1),
@@ -45,6 +46,7 @@ public class Permissions {
             SOUNDS,
             VOLUME,
             BB_ANIMATIONS,
+            ANIMATION_INST,
             TEXTURE_SIZE,
             VANILLA_MODEL_EDIT,
             NAMEPLATE_EDIT,

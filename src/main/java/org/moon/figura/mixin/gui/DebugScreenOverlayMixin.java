@@ -39,12 +39,11 @@ public class DebugScreenOverlayMixin {
             //has script
             if (avatar.luaRuntime != null || avatar.scriptError) {
                 String color = (avatar.scriptError ? ChatFormatting.RED : "").toString();
+                lines.add(++i, color + String.format("Animations instructions: %d", avatar.animation.pre));
                 lines.add(++i, color + String.format("Init instructions: %d (W: %d E: %d)", avatar.init.getTotal(), avatar.init.pre, avatar.init.post) + ChatFormatting.RESET);
                 lines.add(++i, color + String.format("Tick instructions: %d (W: %d E: %d)", avatar.tick.getTotal() + avatar.worldTick.getTotal(), avatar.worldTick.pre, avatar.tick.pre)  + ChatFormatting.RESET);
-                lines.add(++i, color + String.format("Render instructions: %d (W: %d E: %d PE: %d PW: %d)",
-                        avatar.render.getTotal() + avatar.worldRender.getTotal(), avatar.worldRender.pre, avatar.render.pre, avatar.render.post, avatar.worldRender.post)
-                        + ChatFormatting.RESET
-                );
+                lines.add(++i, color + String.format("Render instructions: %d (E: %d PE: %d)", avatar.render.getTotal(), avatar.render.pre, avatar.render.post) + ChatFormatting.RESET);
+                lines.add(++i, color + String.format("World Render instructions: %d (W: %d PW: %d)", avatar.worldRender.getTotal(), avatar.worldRender.pre, avatar.worldRender.post) + ChatFormatting.RESET);
             }
         }
         lines.add(++i, String.format("Pings per second: ↑%d, ↓%d", NetworkStuff.pingsSent, NetworkStuff.pingsReceived));
