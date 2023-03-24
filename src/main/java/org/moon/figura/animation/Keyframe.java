@@ -46,7 +46,7 @@ public class Keyframe implements Comparable<Keyframe> {
         try {
             return FiguraMod.popReturnProfiler(Float.parseFloat(data));
         } catch (Exception ignored) {
-            if (data == null || owner.luaRuntime == null)
+            if (data == null)
                 return FiguraMod.popReturnProfiler(0f);
 
             try {
@@ -55,7 +55,8 @@ public class Keyframe implements Comparable<Keyframe> {
                 try {
                     return FiguraMod.popReturnProfiler(run(delta, data));
                 } catch (Exception e) {
-                    owner.luaRuntime.error(e);
+                    if (owner.luaRuntime != null)
+                        owner.luaRuntime.error(e);
                 }
             }
         }
@@ -65,12 +66,17 @@ public class Keyframe implements Comparable<Keyframe> {
 
     private float run(float delta, String chunk) {
         LuaValue val = owner.load("keyframe_data", chunk);
-        Varargs args = owner.run(val, owner.render, delta, animation);
+        if (val == null)
+            return 0f;
+
+        Varargs args = owner.run(val, owner.animation, delta, animation);
         try {
             return (float) args.checkdouble(1);
         } catch (Exception e) {
-            owner.luaRuntime.error(e);
+            if (owner.luaRuntime != null)
+                owner.luaRuntime.error(e);
         }
+
         return 0f;
     }
 

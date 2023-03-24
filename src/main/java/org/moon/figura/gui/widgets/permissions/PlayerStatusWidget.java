@@ -32,6 +32,7 @@ public class PlayerStatusWidget extends StatusWidget {
                     .append("\n• ").append(new FiguraText("gui.permissions.render.entity", avatar.render.pre))
                     .append("\n• ").append(new FiguraText("gui.permissions.render.post_entity", avatar.render.post))
                     .append("\n• ").append(new FiguraText("gui.permissions.render.post_world", avatar.worldRender.post))
+                    .append("\n• ").append(new FiguraText("gui.permissions.render.animations", avatar.animation.pre))
     );
 
     private final UUID owner;
