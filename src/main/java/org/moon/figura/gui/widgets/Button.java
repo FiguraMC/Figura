@@ -3,14 +3,13 @@ package org.moon.figura.gui.widgets;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.ui.UIHelper;
 
-public class TexturedButton extends Button {
+public class Button extends net.minecraft.client.gui.components.Button {
 
     //default textures
     private static final ResourceLocation TEXTURE = new FiguraIdentifier("textures/gui/button.png");
@@ -29,7 +28,7 @@ public class TexturedButton extends Button {
     private boolean hasBackground = true;
 
     //texture and text constructor
-    public TexturedButton(int x, int y, int width, int height, Integer u, Integer v, Integer regionSize, ResourceLocation texture, Integer textureWidth, Integer textureHeight, Component text, Component tooltip, Button.OnPress pressAction) {
+    public Button(int x, int y, int width, int height, Integer u, Integer v, Integer regionSize, ResourceLocation texture, Integer textureWidth, Integer textureHeight, Component text, Component tooltip, net.minecraft.client.gui.components.Button.OnPress pressAction) {
         super(x, y, width, height, text, pressAction);
 
         this.u = u;
@@ -42,12 +41,12 @@ public class TexturedButton extends Button {
     }
 
     //text constructor
-    public TexturedButton(int x, int y, int width, int height, Component text, Component tooltip, Button.OnPress pressAction) {
+    public Button(int x, int y, int width, int height, Component text, Component tooltip, net.minecraft.client.gui.components.Button.OnPress pressAction) {
         this(x, y, width, height, null, null, null, null, null, null, text, tooltip, pressAction);
     }
 
     //texture constructor
-    public TexturedButton(int x, int y, int width, int height, int u, int v, int regionSize, ResourceLocation texture, int textureWidth, int textureHeight, Component tooltip, Button.OnPress pressAction) {
+    public Button(int x, int y, int width, int height, int u, int v, int regionSize, ResourceLocation texture, int textureWidth, int textureHeight, Component tooltip, net.minecraft.client.gui.components.Button.OnPress pressAction) {
         this(x, y, width, height, u, v, regionSize, texture, textureWidth, textureHeight, TextComponent.EMPTY.copy(), tooltip, pressAction);
     }
 
@@ -73,8 +72,7 @@ public class TexturedButton extends Button {
         }
 
         //render text
-        if (this.getMessage() != null)
-            renderText(stack, delta);
+        renderText(stack, delta);
     }
 
     @Override
@@ -107,8 +105,7 @@ public class TexturedButton extends Button {
     }
 
     protected void renderText(PoseStack stack, float delta) {
-        int color = (!this.active ? ChatFormatting.DARK_GRAY : ChatFormatting.WHITE).getColor();
-        UIHelper.renderCenteredScrollingText(stack, getMessage(), this.x + 1, this.y, getWidth() - 2, getHeight(), color);
+        UIHelper.renderCenteredScrollingText(stack, getMessage(), this.x + 1, this.y, getWidth() - 2, getHeight(), getTextColor());
     }
 
     protected void renderVanillaBackground(PoseStack stack, int mouseX, int mouseY, float delta) {
@@ -125,6 +122,10 @@ public class TexturedButton extends Button {
             return 2;
         else
             return 1;
+    }
+
+    protected int getTextColor() {
+        return (!this.active ? ChatFormatting.DARK_GRAY : ChatFormatting.WHITE).getColor();
     }
 
     public void setUV(int x, int y) {

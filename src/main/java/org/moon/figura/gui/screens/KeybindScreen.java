@@ -5,7 +5,7 @@ import net.minecraft.client.gui.screens.Screen;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
-import org.moon.figura.gui.widgets.TexturedButton;
+import org.moon.figura.gui.widgets.Button;
 import org.moon.figura.gui.widgets.lists.KeybindList;
 import org.moon.figura.lua.api.keybind.FiguraKeybind;
 import org.moon.figura.utils.FiguraText;
@@ -35,8 +35,8 @@ public class KeybindScreen extends AbstractPanelScreen {
         // -- bottom buttons -- //
 
         //reset
-        TexturedButton reset;
-        this.addRenderableWidget(reset = new TexturedButton(width / 2 - 122, height - 24, 120, 20, new FiguraText("gui.reset_all"), null, button -> {
+        Button reset;
+        this.addRenderableWidget(reset = new Button(width / 2 - 122, height - 24, 120, 20, new FiguraText("gui.reset_all"), null, button -> {
             if (owner == null || owner.luaRuntime == null)
                 return;
 
@@ -47,7 +47,7 @@ public class KeybindScreen extends AbstractPanelScreen {
         reset.active = false;
 
         //back
-        addRenderableWidget(new TexturedButton(width / 2 + 4, height - 24, 120, 20, new FiguraText("gui.done"), null,
+        addRenderableWidget(new Button(width / 2 + 4, height - 24, 120, 20, new FiguraText("gui.done"), null,
                 bx -> this.minecraft.setScreen(sourcePanel)
         ));
 

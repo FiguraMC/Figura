@@ -5,11 +5,14 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
@@ -23,6 +26,7 @@ import org.moon.figura.lua.api.nameplate.NameplateCustomization;
 import org.moon.figura.permissions.PermissionManager;
 import org.moon.figura.permissions.PermissionPack;
 import org.moon.figura.permissions.Permissions;
+import org.moon.figura.utils.EntityUtils;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.TextUtils;
@@ -164,7 +168,9 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
             if (custom != null && custom.getJson() != null && avatar.permissions.get(Permissions.NAMEPLATE_EDIT) == 1)
                 name = custom.getJson().copy();
 
-            head = !dragged && avatar.renderPortrait(stack, x + 4, y + 4, Math.round(32 * scale), 64);
+            Entity e = EntityUtils.getEntityByUUID(owner);
+            boolean upsideDown = e instanceof LivingEntity entity && LivingEntityRenderer.isEntityUpsideDown(entity);
+            head = !dragged && avatar.renderPortrait(stack, x + 4, y + 4, Math.round(32 * scale), 64, upsideDown);
         }
 
         if (!head) {
@@ -190,12 +196,16 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
             name = ogName;
 
         name = TextUtils.replaceInText(name, "\\$\\{name\\}", ogName);
+        name = TextUtils.splitText(name, "\n").get(0);
         name = TextComponent.EMPTY.copy().append(name.copy().withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent(this.name + "\n" + this.owner)))));
 
         //badges
-        name = Badges.appendBadges(name, owner, true);
+        name = Badges.appendBadges(name, owner, false);
+        Component badges = Badges.fetchBadges(owner);
+        if (!badges.getString().isEmpty())
+            badges = new TextComponent(" ").append(badges);
 
-        nameLabel.setText(TextUtils.trimToWidthEllipsis(font, name, width - 40, TextUtils.ELLIPSIS));
+        nameLabel.setText(TextUtils.trimToWidthEllipsis(font, name, width - 44 - font.width(badges), TextUtils.ELLIPSIS).copy().append(badges));
         nameLabel.x = x + 40;
         nameLabel.y = y + 4;
         //nameLabel.setOutlineColor(ColorUtils.rgbToInt(ColorUtils.rainbow(2, 1, 0.5)) + ((int) (0.5f * 0xFF) << 24));

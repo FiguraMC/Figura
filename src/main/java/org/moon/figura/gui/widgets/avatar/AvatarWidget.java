@@ -9,7 +9,7 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.avatar.local.LocalAvatarFetcher;
-import org.moon.figura.gui.widgets.TexturedButton;
+import org.moon.figura.gui.widgets.Button;
 import org.moon.figura.gui.widgets.lists.AvatarList;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FileTexture;
@@ -25,7 +25,7 @@ public class AvatarWidget extends AbstractAvatarWidget {
 
         AvatarWidget instance = this;
         Component description = new TextComponent(avatar.getDescription());
-        this.button = new TexturedButton(x, y, width, 24, getName(), null, button -> {
+        this.button = new Button(x, y, width, 24, getName(), null, button -> {
             AvatarManager.loadLocalAvatar(avatar.getPath());
             AvatarList.selectedEntry = instance;
         }) {

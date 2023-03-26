@@ -5,7 +5,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -64,12 +63,12 @@ public class ContextMenu extends AbstractContainerElement {
 
         if (nestedContext != null) {
             nestedContext.render(stack, mouseX, mouseY, delta);
-            if (nestedContext.parent instanceof TexturedButton button)
+            if (nestedContext.parent instanceof Button button)
                 button.setHovered(true);
         }
     }
 
-    public void addAction(Component name, Button.OnPress action) {
+    public void addAction(Component name, net.minecraft.client.gui.components.Button.OnPress action) {
         addElement(new ContextButton(x, y + this.height, name, this, action));
     }
 
@@ -154,7 +153,7 @@ public class ContextMenu extends AbstractContainerElement {
         return entries;
     }
 
-    private static class ContextButton extends TexturedButton {
+    private static class ContextButton extends Button {
 
         protected final ContextMenu parent;
 
@@ -177,7 +176,7 @@ public class ContextMenu extends AbstractContainerElement {
             font.drawShadow(
                     stack, getMessage(),
                     this.x + 3, this.y + this.height / 2 - font.lineHeight / 2,
-                    (!this.active ? ChatFormatting.DARK_GRAY : ChatFormatting.WHITE).getColor()
+                    getTextColor()
             );
         }
 
@@ -237,7 +236,7 @@ public class ContextMenu extends AbstractContainerElement {
             font.drawShadow(
                     stack, ARROW,
                     this.x + this.width - font.width(ARROW) - 3, this.y + this.height / 2 - font.lineHeight / 2,
-                    (!this.active ? ChatFormatting.DARK_GRAY : ChatFormatting.WHITE).getColor()
+                    getTextColor()
             );
         }
 

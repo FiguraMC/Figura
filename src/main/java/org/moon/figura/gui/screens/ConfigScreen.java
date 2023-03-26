@@ -10,7 +10,7 @@ import org.moon.figura.config.ConfigManager;
 import org.moon.figura.config.ConfigType;
 import org.moon.figura.gui.PaperDoll;
 import org.moon.figura.gui.widgets.Label;
-import org.moon.figura.gui.widgets.TexturedButton;
+import org.moon.figura.gui.widgets.Button;
 import org.moon.figura.gui.widgets.lists.ConfigList;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.IOUtils;
@@ -25,7 +25,7 @@ public class ConfigScreen extends AbstractPanelScreen {
     public static final Map<ConfigType.Category, Boolean> CATEGORY_DATA = new HashMap<>();
 
     private ConfigList list;
-    private TexturedButton cancel;
+    private Button cancel;
     private final boolean hasPanels;
     public boolean renderPaperdoll;
 
@@ -51,13 +51,13 @@ public class ConfigScreen extends AbstractPanelScreen {
         // -- bottom buttons -- //
 
         //cancel
-        this.addRenderableWidget(cancel = new TexturedButton(width / 2 - 122, height - 24, 120, 20, new FiguraText("gui.cancel"), null, button -> {
+        this.addRenderableWidget(cancel = new Button(width / 2 - 122, height - 24, 120, 20, new FiguraText("gui.cancel"), null, button -> {
             ConfigManager.discardConfig();
             list.updateList();
         }));
 
         //done
-        addRenderableWidget(new TexturedButton(width / 2 + 4, height - 24, 120, 20, new FiguraText("gui.done"), null,
+        addRenderableWidget(new Button(width / 2 + 4, height - 24, 120, 20, new FiguraText("gui.done"), null,
                 button -> this.minecraft.setScreen(parentScreen)
         ));
 

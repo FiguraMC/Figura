@@ -1,10 +1,9 @@
 package org.moon.figura.gui.widgets;
 
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
-public class ParentedButton extends TexturedButton {
+public class ParentedButton extends Button {
 
     private final AbstractContainerElement parent;
 
@@ -13,7 +12,7 @@ public class ParentedButton extends TexturedButton {
         this.parent = parent;
     }
 
-    public ParentedButton(int x, int y, int width, int height, int u, int v, int regionSize, ResourceLocation texture, int textureWidth, int textureHeight, Component tooltip, AbstractContainerElement parent, Button.OnPress pressAction) {
+    public ParentedButton(int x, int y, int width, int height, int u, int v, int regionSize, ResourceLocation texture, int textureWidth, int textureHeight, Component tooltip, AbstractContainerElement parent, net.minecraft.client.gui.components.Button.OnPress pressAction) {
         super(x, y, width, height, u, v, regionSize, texture, textureWidth, textureHeight, tooltip, pressAction);
         this.parent = parent;
     }

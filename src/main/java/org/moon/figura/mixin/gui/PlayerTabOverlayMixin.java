@@ -77,7 +77,7 @@ public class PlayerTabOverlayMixin {
     private void doNotDrawFace(Args args) {
         if (uuid != null) {
             Avatar avatar = AvatarManager.getAvatarForPlayer(uuid);
-            if (avatar != null && avatar.renderPortrait(args.get(0), args.get(1), args.get(2), args.get(3), 16))
+            if (avatar != null && avatar.renderPortrait(args.get(0), args.get(1), args.get(2), args.get(3), 16, args.get(5)))
                 args.set(3, 0);
         }
     }
