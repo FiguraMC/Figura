@@ -11,7 +11,7 @@ import org.moon.figura.avatar.local.LocalAvatarFetcher;
 import org.moon.figura.gui.screens.AbstractPanelScreen;
 import org.moon.figura.gui.screens.AvatarWizardScreen;
 import org.moon.figura.gui.widgets.TextField;
-import org.moon.figura.gui.widgets.TexturedButton;
+import org.moon.figura.gui.widgets.Button;
 import org.moon.figura.gui.widgets.avatar.AbstractAvatarWidget;
 import org.moon.figura.gui.widgets.avatar.AvatarFolderWidget;
 import org.moon.figura.gui.widgets.avatar.AvatarWidget;
@@ -45,7 +45,7 @@ public class AvatarList extends AbstractList {
         children.add(new TextField(x + 4, y + 4, width - 8, 20, TextField.HintType.SEARCH, s -> filter = s));
 
         //new avatar
-        children.add(new TexturedButton(
+        children.add(new Button(
                 x + width / 2 - 46, y + 28,
                 20, 20, 0, 0, 20,
                 new FiguraIdentifier("textures/gui/new_avatar.png"),
@@ -55,7 +55,7 @@ public class AvatarList extends AbstractList {
         );
 
         //unselect
-        children.add(new TexturedButton(
+        children.add(new Button(
                 x + width / 2 - 10, y + 28,
                 20, 20, 0, 0, 20,
                 new FiguraIdentifier("textures/gui/unselect.png"),
@@ -68,7 +68,7 @@ public class AvatarList extends AbstractList {
         );
 
         //root folder
-        children.add(new TexturedButton(
+        children.add(new Button(
                 x + width / 2 + 26, y + 28,
                 20, 20, 0, 0, 20,
                 new FiguraIdentifier("textures/gui/folder.png"),

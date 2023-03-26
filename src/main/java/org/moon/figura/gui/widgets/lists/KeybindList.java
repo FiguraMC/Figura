@@ -21,11 +21,11 @@ public class KeybindList extends AbstractList {
 
     private final List<KeybindElement> keybinds = new ArrayList<>();
     private final Avatar owner;
-    private final TexturedButton resetAllButton;
+    private final Button resetAllButton;
 
     private FiguraKeybind focusedKeybind;
 
-    public KeybindList(int x, int y, int width, int height, Avatar owner, TexturedButton resetAllButton) {
+    public KeybindList(int x, int y, int width, int height, Avatar owner, Button resetAllButton) {
         super(x, y, width, height);
         this.owner = owner;
         this.resetAllButton = resetAllButton;
@@ -119,8 +119,8 @@ public class KeybindList extends AbstractList {
         private final KeybindWidgetHelper helper = new KeybindWidgetHelper();
         private final FiguraKeybind keybind;
         private final KeybindList parent;
-        private final TexturedButton resetButton;
-        private final TexturedButton keybindButton;
+        private final Button resetButton;
+        private final Button keybindButton;
 
         public KeybindElement(int width, FiguraKeybind keybind, KeybindList parent) {
             super(0, 0, width, 20);

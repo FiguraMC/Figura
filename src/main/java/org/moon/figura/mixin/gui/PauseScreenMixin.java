@@ -1,7 +1,6 @@
 package org.moon.figura.mixin.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.layouts.GridLayout;
 import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.client.gui.screens.PauseScreen;
@@ -11,7 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.config.Configs;
 import org.moon.figura.gui.screens.WardrobeScreen;
-import org.moon.figura.gui.widgets.TexturedButton;
+import org.moon.figura.gui.widgets.Button;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FiguraText;
 import org.spongepowered.asm.mixin.Mixin;
@@ -76,9 +75,9 @@ public class PauseScreenMixin extends Screen {
         }
 
         if (config > 0) { //button
-            addRenderableWidget(Button.builder(FiguraText.of(), btn -> this.minecraft.setScreen(new WardrobeScreen(this))).bounds(x, y, 64, 20).build());
+            addRenderableWidget(net.minecraft.client.gui.components.Button.builder(FiguraText.of(), btn -> this.minecraft.setScreen(new WardrobeScreen(this))).bounds(x, y, 64, 20).build());
         } else { //icon
-            addRenderableWidget(new TexturedButton(x, y, 20, 20, 0, 0, 20, FIGURA_ICON, 60, 20, null, btn -> this.minecraft.setScreen(new WardrobeScreen(this))) {
+            addRenderableWidget(new Button(x, y, 20, 20, 0, 0, 20, FIGURA_ICON, 60, 20, null, btn -> this.minecraft.setScreen(new WardrobeScreen(this))) {
                 @Override
                 public void renderWidget(PoseStack stack, int mouseX, int mouseY, float delta) {
                     renderVanillaBackground(stack, mouseX, mouseY, delta);

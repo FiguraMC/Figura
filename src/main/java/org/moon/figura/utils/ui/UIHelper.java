@@ -542,7 +542,7 @@ public class UIHelper extends GuiComponent {
     private static int getTextScrollingOffset(int textWidth, int width, boolean centered) {
         float speed = Configs.TEXT_SCROLL_SPEED.tempValue;
         int scrollLen = textWidth - width;
-        int startingOffset = scrollLen / 2;
+        int startingOffset = (int) Math.ceil(scrollLen / 2d);
         int stopDelay = (int) (Configs.TEXT_SCROLL_DELAY.tempValue * speed);
         int time = scrollLen + stopDelay;
         int totalTime = time * 2;

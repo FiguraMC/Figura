@@ -9,7 +9,7 @@ import net.minecraft.network.chat.MutableComponent;
 import org.moon.figura.config.ConfigType;
 import org.moon.figura.gui.widgets.AbstractContainerElement;
 import org.moon.figura.gui.widgets.ParentedButton;
-import org.moon.figura.gui.widgets.TexturedButton;
+import org.moon.figura.gui.widgets.Button;
 import org.moon.figura.gui.widgets.lists.ConfigList;
 import org.moon.figura.utils.ui.UIHelper;
 
@@ -20,7 +20,7 @@ public abstract class AbstractConfigElement extends AbstractContainerElement {
     protected final ConfigType<?> config;
     protected final ConfigList parent;
 
-    protected TexturedButton resetButton;
+    protected Button resetButton;
 
     protected Object initValue;
 

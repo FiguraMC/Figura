@@ -22,7 +22,7 @@ public class ContainerButton extends SwitchButton {
     protected void renderText(PoseStack stack, float delta) {
         //variables
         Font font = Minecraft.getInstance().font;
-        int color = (!this.active || !this.isToggled() ? ChatFormatting.DARK_GRAY : ChatFormatting.WHITE).getColor();
+        int color = getTextColor();
         Component arrow = this.toggled ? UIHelper.DOWN_ARROW : UIHelper.UP_ARROW;
         int arrowWidth = font.width(arrow);
         Component message = TextUtils.trimToWidthEllipsis(font, getMessage(), this.width - arrowWidth - 6, TextUtils.ELLIPSIS.copy().withStyle(getMessage().getStyle()));
@@ -49,5 +49,10 @@ public class ContainerButton extends SwitchButton {
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
         return this.parent.isInsideScissors(mouseX, mouseY) && super.isMouseOver(mouseX, mouseY);
+    }
+
+    @Override
+    protected int getTextColor() {
+        return !this.isToggled() ? ChatFormatting.DARK_GRAY.getColor() : super.getTextColor();
     }
 }

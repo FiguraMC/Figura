@@ -10,7 +10,7 @@ import org.moon.figura.avatar.local.LocalAvatarFetcher;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.widgets.AbstractContainerElement;
 import org.moon.figura.gui.widgets.ContextMenu;
-import org.moon.figura.gui.widgets.TexturedButton;
+import org.moon.figura.gui.widgets.Button;
 import org.moon.figura.gui.widgets.lists.AvatarList;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.ui.UIHelper;
@@ -30,7 +30,7 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
     protected String spacing = "";
 
     protected LocalAvatarFetcher.AvatarPath avatar;
-    protected TexturedButton button;
+    protected Button button;
     protected String filter = "";
     protected boolean favourite;
 
