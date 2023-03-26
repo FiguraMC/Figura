@@ -683,14 +683,14 @@ public class Avatar {
         return comp > 0 && luaRuntime != null && !luaRuntime.vanilla_model.HEAD.checkVisible();
     }
 
-    public boolean renderPortrait(PoseStack stack, int x, int y, int size, float modelScale) {
+    public boolean renderPortrait(PoseStack stack, int x, int y, int size, float modelScale, boolean upsideDown) {
         if (!Configs.AVATAR_PORTRAIT.value || renderer == null || !loaded)
             return false;
 
         //matrices
         stack.pushPose();
         stack.translate(x, y, 0d);
-        stack.scale(modelScale, -modelScale, modelScale);
+        stack.scale(modelScale, modelScale * (upsideDown ? 1 : -1), modelScale);
         stack.mulPose(Vector3f.XP.rotationDegrees(180f));
 
         //scissors

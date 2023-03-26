@@ -1,7 +1,6 @@
 package org.moon.figura.gui.widgets.config;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -49,7 +48,7 @@ public class EnumElement extends AbstractConfigElement {
                 int textWidth = font.width(message);
 
                 //draw text
-                int color = (!this.active ? ChatFormatting.DARK_GRAY : ChatFormatting.WHITE).getColor();
+                int color = getTextColor();
                 UIHelper.renderCenteredScrollingText(stack, message, this.x + 1, this.y, getWidth() - (textWidth <= width - arrowWidth - 9 ? 0 : arrowWidth + 1) - 2, getHeight(), color);
 
                 //draw arrow

@@ -135,7 +135,7 @@
   "figura.gui.minimise": "Minimise",
   "figura.gui.reset_all": "Reset All",
   "figura.gui.panic": "Panic mode active! Figura features are disabled!\ntoggle panic mode with the [%s] key",
-  "figura.gui.help.tooltip": "Help",
+  "figura.gui.avatar_settings.tooltip": "Avatar Settings",
   "figura.gui.duplicate_keybind": "This key is also used for:\n%s",
   "figura.gui.favorited": "Favorited",
   "figura.gui.new_version.tooltip": "A new version of Figura is available! %s",
@@ -172,11 +172,12 @@
   "figura.gui.panels.title.wardrobe": "Wardrobe",
   "figura.gui.panels.title.permissions": "Permissions",
   "figura.gui.panels.title.settings": "Settings",
-  "figura.gui.panels.title.docs": "Lua Docs",
+  "figura.gui.panels.title.help": "Help",
 
   "figura.gui.panels.title.sound": "Avatar Sounds",
   "figura.gui.panels.title.keybind": "Avatar Keybinds",
   "figura.gui.panels.title.avatar": "Avatar Preview",
+  "figura.gui.panels.title.docs": "Lua Docs",
 
   "figura.gui.wardrobe.expand_wardrobe.tooltip": "Expand wardrobe list",
   "figura.gui.wardrobe.minimize_wardrobe.tooltip": "Minimize wardrobe list",

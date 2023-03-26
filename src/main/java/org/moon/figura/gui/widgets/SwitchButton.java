@@ -9,7 +9,7 @@ import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.ui.UIHelper;
 
-public class SwitchButton extends TexturedButton {
+public class SwitchButton extends Button {
 
     public static final ResourceLocation SWITCH_TEXTURE = new FiguraIdentifier("textures/gui/switch.png");
     public static final Component ON = FiguraText.of("gui.on");
@@ -47,7 +47,6 @@ public class SwitchButton extends TexturedButton {
     @Override
     protected void renderText(PoseStack stack, float delta) {
         //draw text
-        int color = (!this.active ? ChatFormatting.DARK_GRAY : ChatFormatting.WHITE).getColor();
         Component text = this.toggled && underline ? getMessage().copy().withStyle(ChatFormatting.UNDERLINE) : getMessage();
         int x = this.x + 1;
         int width = getWidth() - 2;
@@ -57,7 +56,7 @@ public class SwitchButton extends TexturedButton {
             width -= 31;
         }
 
-        UIHelper.renderCenteredScrollingText(stack, text, x, this.y, width, getHeight(), color);
+        UIHelper.renderCenteredScrollingText(stack, text, x, this.y, width, getHeight(), getTextColor());
     }
 
     @Override

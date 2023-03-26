@@ -5,7 +5,7 @@ import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.gui.widgets.PianoWidget;
-import org.moon.figura.gui.widgets.TexturedButton;
+import org.moon.figura.gui.widgets.Button;
 import org.moon.figura.gui.widgets.lists.SoundsList;
 import org.moon.figura.utils.FiguraText;
 
@@ -40,7 +40,7 @@ public class SoundScreen extends AbstractPanelScreen {
         addRenderableWidget(piano = new PianoWidget(listX, height - 88, listWidth, 60, list::getSound));
 
         //back
-        addRenderableWidget(new TexturedButton(width / 2 - 60, height - 24, 120, 20, FiguraText.of("gui.done"), null,
+        addRenderableWidget(new Button(width / 2 - 60, height - 24, 120, 20, FiguraText.of("gui.done"), null,
                 bx -> this.minecraft.setScreen(sourcePanel)
         ));
     }

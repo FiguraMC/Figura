@@ -20,19 +20,19 @@ import java.util.function.Function;
 
 public class PanelSelectorWidget extends AbstractContainerElement {
 
-    private static final ResourceLocation OVERLAY = new FiguraIdentifier("textures/gui/panels_overlay.png");
+    public static final ResourceLocation BACKGROUND = new FiguraIdentifier("textures/gui/panels_background.png");
 
     private static final List<Function<Screen, Pair<Screen, PanelIcon>>> PANELS = new ArrayList<>() {{
                 add(s -> Pair.of(new ProfileScreen(s), PanelIcon.PROFILE));
                 add(s -> Pair.of(new BrowserScreen(s), PanelIcon.BROWSER));
                 add(s -> Pair.of(new WardrobeScreen(s), PanelIcon.WARDROBE));
                 add(s -> Pair.of(new PermissionsScreen(s), PanelIcon.PERMISSIONS));
-                add(s -> Pair.of(new DocsScreen(s), PanelIcon.DOCS));
                 add(s -> Pair.of(new ConfigScreen(s), PanelIcon.SETTINGS));
+                add(s -> Pair.of(new HelpScreen(s), PanelIcon.HELP));
     }};
 
     //TODO - remove this when we actually implement those panels
-    private static final List<Integer> PANELS_BLACKLIST = List.of(0, 1, 4);
+    private static final List<Integer> PANELS_BLACKLIST = List.of(0, 1, 5);
 
     private final List<PanelButton> buttons = new ArrayList<>();
 
@@ -66,7 +66,7 @@ public class PanelSelectorWidget extends AbstractContainerElement {
         //locked buttons
         if (FiguraMod.DEBUG_MODE) {
             for (int i : PANELS_BLACKLIST) {
-                SwitchButton button = buttons.get(i);
+                PanelButton button = buttons.get(i);
                 button.setMessage(button.getMessage().copy().withStyle(ChatFormatting.RED));
             }
         }
@@ -81,14 +81,9 @@ public class PanelSelectorWidget extends AbstractContainerElement {
 
     private void createPanelButton(Screen panel, PanelIcon icon, boolean toggled, int x, int width) {
         //create button
-        PanelButton button = new PanelButton(x, y + 4, width, height - 8, panel.getTitle(), icon, bx -> Minecraft.getInstance().setScreen(panel));
+        PanelButton button = new PanelButton(x, y, width, height - 4, panel.getTitle(), icon, this, bx -> Minecraft.getInstance().setScreen(panel));
         button.shouldHaveBackground(false);
-        button.setToggled(toggled);
-        if (toggled) {
-            this.selected = button;
-            button.y = 1;
-            button.setHeight(23);
-        }
+        if (toggled) this.selected = button;
 
         //add button
         buttons.add(button);
@@ -97,35 +92,16 @@ public class PanelSelectorWidget extends AbstractContainerElement {
 
     @Override
     public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
-        //selected overlay
-        if (selected != null)
-            renderSelectedOverlay(stack);
-
-        //buttons
-        UIHelper.setupScissor(0, 0, this.width, 23);
+        UIHelper.renderSliced(stack, x, y, selected.x - x, height - 4, BACKGROUND);
+        UIHelper.renderSliced(stack, selected.x + selected.getWidth(), y, width - selected.x - selected.getWidth(), height - 4, BACKGROUND);
         super.render(stack, mouseX, mouseY, delta);
-        UIHelper.disableScissor();
-    }
-
-    private void renderSelectedOverlay(PoseStack stack) {
-        int x = selected.x;
-        int width = selected.getWidth();
-        int left = x + width;
-        int right = this.width - left;
-
-        //center
-        UIHelper.renderSliced(stack, x, 0, width, 24, 24f, 0f, 24, 24, 48, 24, OVERLAY);
-        //left
-        UIHelper.blit(stack, 0, 0, x, 24, 0f, 0f, 24, 24, 48, 24);
-        //right
-        UIHelper.blit(stack, left, 0, right, 24, 0f, 0f, 24, 24, 48, 24);
     }
 
     public boolean cycleTab(int keyCode) {
         if (Screen.hasControlDown()) {
             int i = this.getNextPanel(keyCode);
             if (i >= 0 && i < buttons.size()) {
-                SwitchButton button = buttons.get(i);
+                PanelButton button = buttons.get(i);
                 button.run();
                 return true;
             }
@@ -156,8 +132,8 @@ public class PanelSelectorWidget extends AbstractContainerElement {
         BROWSER(1),
         WARDROBE(2),
         PERMISSIONS(3),
-        DOCS(4),
-        SETTINGS(5),
+        SETTINGS(4),
+        HELP(5),
         OTHER(6);
 
         public final int uv;
@@ -167,27 +143,34 @@ public class PanelSelectorWidget extends AbstractContainerElement {
         }
     }
 
-    private static class PanelButton extends SwitchButton {
+    private static class PanelButton extends IconButton {
 
+        public static final ResourceLocation TEXTURE = new FiguraIdentifier("textures/gui/panels_button.png");
         public static final ResourceLocation ICONS = new FiguraIdentifier("textures/gui/panels.png");
-        private final PanelIcon icon;
 
-        public PanelButton(int x, int y, int width, int height, Component text, PanelIcon icon, OnPress pressAction) {
-            super(x, y, width, height, text, null, pressAction);
-            this.icon = icon;
+        private final PanelSelectorWidget parent;
+
+        public PanelButton(int x, int y, int width, int height, Component text, PanelIcon icon, PanelSelectorWidget parent, OnPress pressAction) {
+            super(x, y, width, height, 20 * icon.uv, 0, 20, ICONS, 140, 20, text, null, pressAction);
+            this.parent = parent;
         }
 
         @Override
         public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
             super.renderButton(stack, mouseX, mouseY, delta);
-
             boolean iconOnly = iconsOnly();
-
-            UIHelper.setupTexture(ICONS);
-            blit(stack, x + (!iconOnly ? 2 : getWidth() / 2 - 10), y + getHeight() / 2 - 10, 20, 20, 20f * icon.uv, 0f, 20, 20, 140, 20);
 
             if (iconOnly && this.isMouseOver(mouseX, mouseY))
                 UIHelper.setTooltip(getMessage());
+        }
+
+        @Override
+        protected void renderTexture(PoseStack stack, float delta) {
+            UIHelper.renderSliced(stack, this.x, this.y, getWidth(), getHeight(), isSelected() ? 24f : 0f, this.isHoveredOrFocused() ? 24f : 0f, 24, 24, 48, 48, TEXTURE);
+
+            UIHelper.setupTexture(texture);
+            int size = getTextureSize();
+            blit(stack, this.x + (iconsOnly() ? (getWidth() - size) / 2 : 2), this.y + (getHeight() - size) / 2 + (!isSelected() ? 2 : 0), size, size, u, v, regionSize, regionSize, textureWidth, textureHeight);
         }
 
         @Override
@@ -195,17 +178,18 @@ public class PanelSelectorWidget extends AbstractContainerElement {
             if (iconsOnly())
                 return;
 
-            int x = this.x;
-            int width = getWidth();
-            this.x = x + 22;
-            setWidth(width - 22);
-            super.renderText(stack, delta);
-            this.x = x;
-            setWidth(width);
+            int size = getTextureSize();
+            int offset = !isSelected() ? 3 : 0;
+            Component message = isSelected() ? getMessage().copy().withStyle(ChatFormatting.UNDERLINE) : getMessage();
+            UIHelper.renderCenteredScrollingText(stack, message, this.x + 4 + size, this.y + offset, getWidth() - 6 - size, getHeight(), getTextColor());
         }
 
         private boolean iconsOnly() {
             return getWidth() < 72;
+        }
+
+        private boolean isSelected() {
+            return parent.selected == this;
         }
     }
 }

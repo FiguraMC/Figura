@@ -35,14 +35,14 @@ public class PermissionsScreen extends AbstractPanelScreen {
 
     private PermissionsList permissionsList;
     private SwitchButton expandButton;
-    private TexturedButton reloadAll;
-    private TexturedButton back;
-    private TexturedButton resetButton;
+    private Button reloadAll;
+    private Button back;
+    private Button resetButton;
     private SwitchButton precisePermissions;
 
     // -- debug -- //
     private TextField uuid;
-    private TexturedButton yoink;
+    private Button yoink;
 
     // -- widget logic -- //
     private float listYPrecise;
@@ -106,19 +106,19 @@ public class PermissionsScreen extends AbstractPanelScreen {
 
         //reload all
         int bottomButtonsWidth = (listWidth - 24) / 2 - 2;
-        addRenderableWidget(reloadAll = new TexturedButton(middle + 2, height - 24, bottomButtonsWidth, 20, FiguraText.of("gui.permissions.reload_all"), null, bx -> {
+        addRenderableWidget(reloadAll = new Button(middle + 2, height - 24, bottomButtonsWidth, 20, FiguraText.of("gui.permissions.reload_all"), null, bx -> {
             AvatarManager.clearAllAvatars();
             FiguraToast.sendToast(FiguraText.of("toast.reload_all"));
         }));
 
         //back button
-        addRenderableWidget(back = new TexturedButton(middle + 6 + bottomButtonsWidth, height - 24, bottomButtonsWidth, 20, FiguraText.of("gui.done"), null,
+        addRenderableWidget(back = new Button(middle + 6 + bottomButtonsWidth, height - 24, bottomButtonsWidth, 20, FiguraText.of("gui.done"), null,
                 bx -> this.minecraft.setScreen(parentScreen)
         ));
 
         //debug buttons
         uuid = new TextField(middle + 2, back.y - 24, listWidth - 24, 20, TextField.HintType.NAME, s -> yoink.active = !s.isBlank());
-        yoink = new TexturedButton(middle + listWidth - 18, back.y - 24, 20, 20, Component.literal("yoink"), Component.literal("Set the selected player's avatar"), button -> {
+        yoink = new Button(middle + listWidth - 18, back.y - 24, 20, 20, Component.literal("yoink"), Component.literal("Set the selected player's avatar"), button -> {
             String text = uuid.getField().getValue();
             UUID id;
 
@@ -174,7 +174,7 @@ public class PermissionsScreen extends AbstractPanelScreen {
         }));
 
         //reset all button
-        addRenderableWidget(resetButton = new TexturedButton(middle + 2, height, 60, 20, FiguraText.of("gui.permissions.reset"), null, btn -> {
+        addRenderableWidget(resetButton = new Button(middle + 2, height, 60, 20, FiguraText.of("gui.permissions.reset"), null, btn -> {
             //clear permissions
             PermissionPack pack = playerList.selectedEntry.getPack();
             pack.clear();
