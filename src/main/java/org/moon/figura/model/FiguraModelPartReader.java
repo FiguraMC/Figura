@@ -37,11 +37,16 @@ public class FiguraModelPartReader {
 
         //Read transformation
         PartCustomization customization = new PartCustomization();
-        FiguraVec3 target = FiguraVec3.of();
-        readVec3(target, partCompound, "rot");
-        customization.setRot(target);
-        readVec3(target, partCompound, "piv");
-        customization.setPivot(target);
+        customization.needsMatrixRecalculation = true;
+
+        FiguraVec3 rot = FiguraVec3.of();
+        readVec3(rot, partCompound, "rot");
+        customization.setRot(rot);
+
+        FiguraVec3 piv = FiguraVec3.of();
+        readVec3(piv, partCompound, "piv");
+        customization.setPivot(piv);
+
         if (partCompound.contains("primary")) {
             try {
                 customization.setPrimaryRenderType(RenderTypes.valueOf(partCompound.getString("primary")));
@@ -52,10 +57,9 @@ public class FiguraModelPartReader {
                 customization.setSecondaryRenderType(RenderTypes.valueOf(partCompound.getString("secondary")));
             } catch (Exception ignored) {}
         }
+
         if (partCompound.contains("vsb"))
             customization.visible = partCompound.getBoolean("vsb");
-
-        customization.needsMatrixRecalculation = true;
 
         //textures
         List<Integer> facesByTexture = new ArrayList<>(0);
@@ -68,7 +72,6 @@ public class FiguraModelPartReader {
             readCuboid(facesByTexture, partCompound, vertices);
             customization.partType = PartCustomization.PartType.CUBE;
         } else if (hasMeshData(partCompound)) {
-            //TODO: smooth normals
             readMesh(facesByTexture, partCompound, vertices);
             customization.partType = PartCustomization.PartType.MESH;
         }
@@ -388,6 +391,7 @@ public class FiguraModelPartReader {
         //"fac": List<Byte, Short, or Int>, just the indices of various vertices
         //"uvs": List<Float>, uv for each vertex
 
+        //TODO: smooth normals
         boolean smoothNormals = false;
         if (smoothNormals)
             readMeshSmooth(facesByTexture, meshData, vertices);
