@@ -34,6 +34,7 @@ public class KeybindList extends AbstractList {
         Label noOwner, noKeys;
         this.children.add(noOwner = new Label(FiguraText.of("gui.error.no_avatar").withStyle(ChatFormatting.YELLOW), x + width / 2, y + height / 2, TextUtils.Alignment.CENTER, 0));
         this.children.add(noKeys = new Label(FiguraText.of("gui.error.no_keybinds").withStyle(ChatFormatting.YELLOW), x + width / 2, y + height / 2, TextUtils.Alignment.CENTER, 0));
+        noOwner.centerVertically = noKeys.centerVertically = true;
 
         noOwner.setVisible(owner == null);
         noKeys.setVisible(!noOwner.isVisible() && keybinds.isEmpty());

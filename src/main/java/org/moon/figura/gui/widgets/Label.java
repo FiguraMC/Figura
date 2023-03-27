@@ -34,6 +34,7 @@ public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
     private int width, height;
     private float scale;
     private boolean visible = true;
+    public boolean centerVertically;
 
     public Label(Object text, int x, int y, float scale, int maxWidth, boolean wrap, TextUtils.Alignment alignment, Integer outlineColor) {
         this.font = Minecraft.getInstance().font;
@@ -87,15 +88,12 @@ public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
 
     private void renderText(PoseStack stack, int mouseX, int mouseY) {
         stack.pushPose();
-        stack.translate(this.x, this.y, 0);
+        stack.translate(this.x, getY(), 0);
         stack.scale(scale, scale, scale);
 
         //prepare pos
         int y = 0;
         int height = font.lineHeight;
-
-        if (alignment == TextUtils.Alignment.CENTER)
-            y -= height * formattedText.size() / 2f;
 
         for (Component text : formattedText) {
             //dimensions
@@ -218,7 +216,7 @@ public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
     private int getY() {
         int y = this.y;
 
-        if (alignment == TextUtils.Alignment.CENTER)
+        if (centerVertically)
             y -= height / 2;
 
         return y;
