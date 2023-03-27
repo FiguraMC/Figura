@@ -7,6 +7,7 @@ import org.moon.figura.FiguraMod;
 import org.moon.figura.gui.widgets.PanelSelectorWidget;
 import org.moon.figura.lua.FiguraAPIManager;
 import org.moon.figura.lua.api.vanilla_model.VanillaModelAPI;
+import org.moon.figura.lua.docs.FiguraDocsManager;
 import org.moon.figura.permissions.PermissionManager;
 
 import java.util.HashSet;
@@ -15,8 +16,13 @@ import java.util.Set;
 public class EntryPointManager {
 
     public static void init() {
+        //APIs
+        var apis = load("figura_api", FiguraAPI.class);
+        FiguraAPIManager.initEntryPoints(apis);
+        FiguraDocsManager.initEntryPoints(apis);
+
+        //other
         PermissionManager.initEntryPoints(load("figura_permissions", FiguraPermissions.class));
-        FiguraAPIManager.initEntryPoints(load("figura_api", FiguraAPI.class));
         PanelSelectorWidget.initEntryPoints(load("figura_screen", FiguraScreen.class));
         VanillaModelAPI.initEntryPoints(load("figura_vanilla_part", FiguraVanillaPart.class));
     }
