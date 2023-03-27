@@ -12,8 +12,8 @@ public enum ParentType {
     LeftLeg(VanillaModelProvider.LEFT_LEG, FiguraVec3.of(1.9, 12, 0), "LEFT_LEG"),
     RightLeg(VanillaModelProvider.RIGHT_LEG, FiguraVec3.of(-1.9, 12, 0), "RIGHT_LEG"),
 
-    LeftElytra(true, VanillaModelProvider.LEFT_ELYTRON, FiguraVec3.of(5, 0, -2), "LEFT_ELYTRA", "LeftElytron", "LEFT_ELYTRON"),
-    RightElytra(true, VanillaModelProvider.RIGHT_ELYTRON, FiguraVec3.of(-5, 0, -2), "RIGHT_ELYTRA", "RightElytron", "RIGHT_ELYTRON"),
+    LeftElytra(true, VanillaModelProvider.LEFT_ELYTRON, FiguraVec3.of(5, 0, 0), "LEFT_ELYTRA", "LeftElytron", "LEFT_ELYTRON"),
+    RightElytra(true, VanillaModelProvider.RIGHT_ELYTRON, FiguraVec3.of(-5, 0, 0), "RIGHT_ELYTRA", "RightElytron", "RIGHT_ELYTRON"),
 
     Cape(true, VanillaModelProvider.FAKE_CAPE, FiguraVec3.of(), "CAPE"),
 
