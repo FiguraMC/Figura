@@ -45,7 +45,9 @@ public class ConfigScreen extends AbstractPanelScreen {
 
         if (!hasPanels) {
             this.removeWidget(panels);
-            this.addRenderableWidget(new Label(getTitle(), this.width / 2, 14, TextUtils.Alignment.CENTER));
+            Label l;
+            this.addRenderableWidget(l = new Label(getTitle(), this.width / 2, 14, TextUtils.Alignment.CENTER));
+            l.centerVertically = true;
         }
 
         // -- bottom buttons -- //
