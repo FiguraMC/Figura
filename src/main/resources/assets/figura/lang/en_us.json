@@ -272,6 +272,16 @@
   "figura.gui.avatar_wizard.hide_elytra": "Hide Vanilla Elytra",
   "figura.gui.avatar_wizard.empty_events": "Include dummy events",
 
+  "figura.gui.help.docs": "Docs",
+  "figura.gui.help.links": "Links",
+  "figura.gui.help.about": "About",
+  "figura.gui.help.ingame_docs": "Figura Docs",
+  "figura.gui.help.lua_manual": "Lua Manual",
+  "figura.gui.help.external_wiki": "Online Wiki",
+  "figura.gui.help.lua_version": "Lua Version: %s",
+  "figura.gui.help.figura_version": "Figura Version: %s",
+  "figura.gui.help.credits": "Made with love ❤ - by %s",
+
 
   "figura.config.nameplate": "Nameplate",
   "figura.config.nameplate.tooltip": "Nameplate settings",

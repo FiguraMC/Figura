@@ -113,10 +113,10 @@ public class WardrobeScreen extends AbstractPanelScreen {
                     );
         }
 
-        Label version = new Label(versionText, middle, this.height, TextUtils.Alignment.CENTER);
+        Label version = new Label(versionText, middle, this.height - 4, TextUtils.Alignment.CENTER);
         addRenderableWidget(version);
         if (!oldVersion) version.alpha = 0x33;
-        version.y -= version.getHeight() / 2 + 1;
+        version.y -= version.getHeight();
 
         int rightSide = Math.min(panels, 134);
 
@@ -160,9 +160,9 @@ public class WardrobeScreen extends AbstractPanelScreen {
         //panic warning - always added last, on top
         addRenderableWidget(panic = new Label(
                 new FiguraText("gui.panic", Configs.PANIC_BUTTON.keyBind.getTranslatedKeyMessage()).withStyle(ChatFormatting.YELLOW),
-                middle, this.height - version.getHeight(), TextUtils.Alignment.CENTER, 0)
+                middle, version.y, TextUtils.Alignment.CENTER, 0)
         );
-        panic.y -= panic.getHeight() / 2;
+        panic.y -= panic.getHeight();
         panic.setVisible(false);
     }
 

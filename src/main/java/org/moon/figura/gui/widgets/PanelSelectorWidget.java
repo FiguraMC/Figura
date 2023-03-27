@@ -32,7 +32,7 @@ public class PanelSelectorWidget extends AbstractContainerElement {
     }};
 
     //TODO - remove this when we actually implement those panels
-    private static final List<Integer> PANELS_BLACKLIST = List.of(0, 1, 5);
+    private static final List<Integer> PANELS_BLACKLIST = List.of(0, 1);
 
     private final List<PanelButton> buttons = new ArrayList<>();
 

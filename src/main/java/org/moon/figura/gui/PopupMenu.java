@@ -134,7 +134,7 @@ public class PopupMenu {
         boolean noPermissions = false;
 
         Component badges = Badges.fetchBadges(id);
-        if (badges.getString().isEmpty())
+        if (!badges.getString().isEmpty())
             name.append(" ").append(badges);
 
         Avatar avatar = AvatarManager.getAvatarForPlayer(id);
