@@ -28,7 +28,7 @@ public class Button extends net.minecraft.client.gui.components.Button {
     private boolean hasBackground = true;
 
     //texture and text constructor
-    public Button(int x, int y, int width, int height, Integer u, Integer v, Integer regionSize, ResourceLocation texture, Integer textureWidth, Integer textureHeight, Component text, Component tooltip, net.minecraft.client.gui.components.Button.OnPress pressAction) {
+    public Button(int x, int y, int width, int height, Integer u, Integer v, Integer regionSize, ResourceLocation texture, Integer textureWidth, Integer textureHeight, Component text, Component tooltip, OnPress pressAction) {
         super(x, y, width, height, text, pressAction);
 
         this.u = u;
@@ -41,12 +41,12 @@ public class Button extends net.minecraft.client.gui.components.Button {
     }
 
     //text constructor
-    public Button(int x, int y, int width, int height, Component text, Component tooltip, net.minecraft.client.gui.components.Button.OnPress pressAction) {
+    public Button(int x, int y, int width, int height, Component text, Component tooltip, OnPress pressAction) {
         this(x, y, width, height, null, null, null, null, null, null, text, tooltip, pressAction);
     }
 
     //texture constructor
-    public Button(int x, int y, int width, int height, int u, int v, int regionSize, ResourceLocation texture, int textureWidth, int textureHeight, Component tooltip, net.minecraft.client.gui.components.Button.OnPress pressAction) {
+    public Button(int x, int y, int width, int height, int u, int v, int regionSize, ResourceLocation texture, int textureWidth, int textureHeight, Component tooltip, OnPress pressAction) {
         this(x, y, width, height, u, v, regionSize, texture, textureWidth, textureHeight, TextComponent.EMPTY.copy(), tooltip, pressAction);
     }
 
@@ -110,7 +110,7 @@ public class Button extends net.minecraft.client.gui.components.Button {
 
     protected void renderVanillaBackground(PoseStack stack, int mouseX, int mouseY, float delta) {
         Component message = getMessage();
-        setMessage(Component.empty());
+        setMessage(TextComponent.EMPTY.copy());
         super.renderButton(stack, mouseX, mouseY, delta);
         setMessage(message);
     }

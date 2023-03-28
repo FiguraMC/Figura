@@ -84,7 +84,7 @@ public abstract class AbstractPanelScreen extends Screen {
         double scale = this.minecraft.getWindow().getGuiScale();
         float textureSize = (float) (64f / scale);
         double speed = 1d / 0.5 * scale / Configs.BACKGROUND_SCROLL_SPEED.value;
-        UIHelper.renderAnimatedBackground(BACKGROUND, 0, 0, this.width, this.height, textureSize, textureSize, speed, delta);
+        UIHelper.renderAnimatedBackground(stack, BACKGROUND, 0, 0, this.width, this.height, textureSize, textureSize, speed, delta);
     }
 
     public void renderOverlays(PoseStack stack, int mouseX, int mouseY, float delta) {
