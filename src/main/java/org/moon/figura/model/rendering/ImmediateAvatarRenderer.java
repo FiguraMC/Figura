@@ -32,6 +32,7 @@ import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.ui.UIHelper;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -585,8 +586,8 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
     }
 
     protected static class VertexBuffer {
-        private final HashMap<RenderType, FloatArrayList> primaryBuffers = new HashMap<>();
-        private final HashMap<RenderType, FloatArrayList> secondaryBuffers = new HashMap<>();
+        private final HashMap<RenderType, FloatArrayList> primaryBuffers = new LinkedHashMap<>();
+        private final HashMap<RenderType, FloatArrayList> secondaryBuffers = new LinkedHashMap<>();
 
         public FloatArrayList getBufferFor(RenderType renderType, boolean primary) {
             HashMap<RenderType, FloatArrayList> buffer = primary ? primaryBuffers : secondaryBuffers;
