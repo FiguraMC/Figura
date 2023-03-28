@@ -2,13 +2,12 @@ package org.moon.figura.mixin.particle;
 
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleEngine;
+import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 import org.moon.figura.ducks.ParticleEngineAccessor;
-import org.spongepowered.asm.mixin.Intrinsic;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -18,6 +17,8 @@ import java.util.*;
 
 @Mixin(ParticleEngine.class)
 public abstract class ParticleEngineMixin implements ParticleEngineAccessor {
+
+    @Final @Shadow private Map<ResourceLocation, SpriteSet> spriteSets;
 
     @Shadow @Nullable protected abstract <T extends ParticleOptions> Particle makeParticle(T parameters, double x, double y, double z, double velocityX, double velocityY, double velocityZ);
 
@@ -53,5 +54,10 @@ public abstract class ParticleEngineMixin implements ParticleEngineAccessor {
                 iterator.remove();
             }
         }
+    }
+
+    @Override @Intrinsic
+    public SpriteSet figura$getParticleSprite(ResourceLocation particleID) {
+        return spriteSets.get(particleID);
     }
 }

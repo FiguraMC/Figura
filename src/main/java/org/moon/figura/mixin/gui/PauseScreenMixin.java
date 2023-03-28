@@ -75,7 +75,7 @@ public class PauseScreenMixin extends Screen {
         }
 
         if (config > 0) { //button
-            addRenderableWidget(net.minecraft.client.gui.components.Button.builder(FiguraText.of(), btn -> this.minecraft.setScreen(new WardrobeScreen(this))).bounds(x, y, 64, 20).build());
+            addRenderableWidget(Button.builder(FiguraText.of(), btn -> this.minecraft.setScreen(new WardrobeScreen(this))).bounds(x, y, 64, 20).build());
         } else { //icon
             addRenderableWidget(new Button(x, y, 20, 20, 0, 0, 20, FIGURA_ICON, 60, 20, null, btn -> this.minecraft.setScreen(new WardrobeScreen(this))) {
                 @Override
