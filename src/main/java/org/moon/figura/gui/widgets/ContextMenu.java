@@ -67,7 +67,7 @@ public class ContextMenu extends AbstractContainerElement {
         }
     }
 
-    public void addAction(Component name, net.minecraft.client.gui.components.Button.OnPress action) {
+    public void addAction(Component name, Button.OnPress action) {
         addElement(new ContextButton(x, y + this.height, name, this, action));
     }
 
