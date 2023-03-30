@@ -77,6 +77,13 @@ public class FiguraTexture extends SimpleTexture {
         this.owner = owner;
     }
 
+    public FiguraTexture(Avatar owner, String name, int width, int height) {
+        super(new FiguraIdentifier("avatar_tex/" + owner.owner + "/" + UUID.randomUUID()));
+        this.texture = new NativeImage(width, height, true);
+        this.name = name;
+        this.owner = owner;
+    }
+
     public FiguraTexture(Avatar owner, String name, NativeImage image) {
         super(new FiguraIdentifier("avatar_tex/" + owner.owner + "/custom/" + UUID.randomUUID()));
         this.texture = image;
