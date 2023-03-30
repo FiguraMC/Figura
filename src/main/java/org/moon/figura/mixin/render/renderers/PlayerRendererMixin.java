@@ -221,5 +221,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
 
         if (avatar.luaRuntime != null)
             avatar.luaRuntime.vanilla_model.PLAYER.restore(this.getModel());
+
+        avatar = null;
     }
 }

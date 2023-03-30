@@ -59,6 +59,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
             if (currentAvatar != null)
                 currentAvatar.updateMatrices((LivingEntityRenderer<?, ?>) (Object) this, matrices);
 
+            currentAvatar = null;
             matrices.popPose();
             ci.cancel();
             return;

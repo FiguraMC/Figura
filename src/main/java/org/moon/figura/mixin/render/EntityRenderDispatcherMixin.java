@@ -24,19 +24,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(EntityRenderDispatcher.class)
 public class EntityRenderDispatcherMixin {
 
-    @Unique private Avatar fireAvatar;
+    @Unique private Avatar avatar;
 
     @Inject(method = "renderFlame", at = @At("HEAD"), cancellable = true)
     private void renderFlame(PoseStack stack, MultiBufferSource multiBufferSource, Entity entity, CallbackInfo ci) {
-        this.fireAvatar = null;
-
-        Avatar avatar = AvatarManager.getAvatar(entity);
+        avatar = AvatarManager.getAvatar(entity);
         if (avatar == null || avatar.luaRuntime == null || avatar.permissions.get(Permissions.VANILLA_MODEL_EDIT) == 0)
             return;
 
-        if (!avatar.luaRuntime.renderer.renderFire)
+        if (!avatar.luaRuntime.renderer.renderFire) {
+            avatar = null;
             ci.cancel();
-        else this.fireAvatar = avatar;
+        }
     }
 
     @ModifyArg(method = "renderFlame", at = @At(value = "INVOKE", target = "Lcom/mojang/math/Vector3f;rotationDegrees(F)Lcom/mojang/math/Quaternion;"))
@@ -46,20 +45,22 @@ public class EntityRenderDispatcherMixin {
 
     @ModifyVariable(method = "renderFlame", at = @At("STORE"), ordinal = 0)
     private TextureAtlasSprite firstFireTexture(TextureAtlasSprite sprite) {
-        if (fireAvatar == null)
+        if (avatar == null)
             return sprite;
 
-        ResourceLocation layer = fireAvatar.luaRuntime.renderer.fireLayer1;
+        ResourceLocation layer = avatar.luaRuntime.renderer.fireLayer1;
         return layer != null ? Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(layer) : sprite;
     }
 
     @ModifyVariable(method = "renderFlame", at = @At("STORE"), ordinal = 1)
     private TextureAtlasSprite secondFireTexture(TextureAtlasSprite sprite) {
-        if (fireAvatar == null)
+        if (avatar == null)
             return sprite;
 
-        ResourceLocation layer1 = fireAvatar.luaRuntime.renderer.fireLayer1;
-        ResourceLocation layer2 = fireAvatar.luaRuntime.renderer.fireLayer2;
+        ResourceLocation layer1 = avatar.luaRuntime.renderer.fireLayer1;
+        ResourceLocation layer2 = avatar.luaRuntime.renderer.fireLayer2;
+        avatar = null;
+
         return layer2 != null ? Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(layer2) : layer1 != null ? Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(layer1) : sprite;
     }
 

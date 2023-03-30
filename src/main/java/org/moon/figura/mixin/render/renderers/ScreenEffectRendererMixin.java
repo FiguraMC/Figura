@@ -20,28 +20,29 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class ScreenEffectRendererMixin {
 
     @Unique
-    private static Avatar fireAvatar;
+    private static Avatar avatar;
 
     @Inject(method = "renderFire", at = @At("HEAD"), cancellable = true)
     private static void renderFire(Minecraft client, PoseStack matrices, CallbackInfo ci) {
-        fireAvatar = null;
-
-        Avatar avatar = AvatarManager.getAvatar(client.getCameraEntity());
+        avatar = AvatarManager.getAvatar(client.getCameraEntity());
         if (avatar == null || avatar.luaRuntime == null || avatar.permissions.get(Permissions.VANILLA_MODEL_EDIT) == 0)
             return;
 
-        if (!avatar.luaRuntime.renderer.renderFire)
+        if (!avatar.luaRuntime.renderer.renderFire) {
+            avatar = null;
             ci.cancel();
-        else fireAvatar = avatar;
+        }
     }
 
     @ModifyVariable(method = "renderFire", at = @At("STORE"), ordinal = 0)
     private static TextureAtlasSprite secondFireTexture(TextureAtlasSprite sprite) {
-        if (fireAvatar == null)
+        if (avatar == null)
             return sprite;
 
-        ResourceLocation layer1 = fireAvatar.luaRuntime.renderer.fireLayer1;
-        ResourceLocation layer2 = fireAvatar.luaRuntime.renderer.fireLayer2;
+        ResourceLocation layer1 = avatar.luaRuntime.renderer.fireLayer1;
+        ResourceLocation layer2 = avatar.luaRuntime.renderer.fireLayer2;
+        avatar = null;
+
         return layer2 != null ? Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(layer2) : layer1 != null ? Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(layer1) : sprite;
     }
 }
