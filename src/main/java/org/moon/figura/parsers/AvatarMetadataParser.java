@@ -175,21 +175,11 @@ public class AvatarMetadataParser {
         if (metadata == null || metadata.ignoredTextures == null)
             return;
 
-        ListTag list = textures.getList("data", Tag.TAG_COMPOUND);
         CompoundTag compound = textures.getCompound("src");
 
-        if (list == null || compound == null)
-            return;
-
         for (String texture : metadata.ignoredTextures) {
-            compound.remove(texture);
-            for (Tag t : list) {
-                CompoundTag tag = (CompoundTag) t;
-                if (tag.getString("default").equals(texture))
-                    tag.remove("default");
-                if (tag.getString("emissive").equals(texture))
-                    tag.remove("emissive");
-            }
+            CompoundTag texSrc = compound.getCompound(texture);
+            texSrc.remove("src");
         }
     }
 

@@ -160,7 +160,13 @@ public class BlockbenchModelParser {
             }
 
             //add source nbt
-            src.putByteArray(path, source);
+            int[] imageSize = getTextureSize(source);
+            CompoundTag sourceTag = new CompoundTag();
+            sourceTag.putInt("w", imageSize[0]);
+            sourceTag.putInt("h", imageSize[1]);
+            sourceTag.putByteArray("src", source);
+
+            src.put(path, sourceTag);
 
             //fix texture name
             if (!textureType.equals("d"))
@@ -188,7 +194,6 @@ public class BlockbenchModelParser {
                 int id = textureIndex.indexOf(name) + textureOffset;
 
                 //fix texture size for more speed
-                int[] imageSize = getTextureSize(source);
                 float[] fixedSize = new float[]{(float) imageSize[0] / resolution.width, (float) imageSize[1] / resolution.height};
 
                 //add the texture on the map
