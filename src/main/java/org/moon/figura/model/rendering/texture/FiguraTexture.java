@@ -22,6 +22,7 @@ import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec4;
+import org.moon.figura.mixin.render.TextureManagerAccessor;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.IOUtils;
@@ -99,6 +100,7 @@ public class FiguraTexture extends SimpleTexture {
             backup.close();
 
         this.releaseId();
+        ((TextureManagerAccessor) Minecraft.getInstance().getTextureManager()).getByPath().remove(this.location);
     }
 
     public void uploadIfDirty() {

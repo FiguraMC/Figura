@@ -45,6 +45,7 @@
     "render.GameRendererMixin",
     "render.LevelRendererMixin",
     "render.PlayerModelMixin",
+    "render.TextureManagerAccessor",
 
     "render.layers.CapeLayerMixin",
     "render.layers.CustomHeadLayerMixin",
