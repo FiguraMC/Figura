@@ -202,8 +202,11 @@ public class WardrobeScreen extends AbstractPanelScreen {
         super.onFilesDrop(paths);
 
         StringBuilder packs = new StringBuilder();
-        for (Path path : paths)
-            packs.append("\n").append(path.getFileName());
+        for (int i = 0; i < paths.size(); i++) {
+            if (i > 0)
+                packs.append("\n");
+            packs.append(paths.get(i).getFileName());
+        }
 
         this.minecraft.setScreen(new FiguraConfirmScreen(confirmed -> {
             if (confirmed) {
@@ -216,6 +219,6 @@ public class WardrobeScreen extends AbstractPanelScreen {
                 }
             }
             this.minecraft.setScreen(this);
-        }, FiguraText.of("gui.wardrobe.drop_files"), Component.literal(packs.toString())));
+        }, FiguraText.of("gui.wardrobe.drop_files"), packs.toString(), this));
     }
 }
