@@ -54,7 +54,11 @@ public class PlayerList extends AbstractList {
         scrollBar.setHeight(height - 32);
 
         //search bar
-        children.add(searchBar = new TextField(x + 4, y + 4, width - 56, 20, TextField.HintType.SEARCH, s -> filter = s));
+        children.add(searchBar = new TextField(x + 4, y + 4, width - 56, 20, TextField.HintType.SEARCH, s -> {
+            if (!filter.equals(s))
+                scrollBar.setScrollProgress(0f);
+            filter = s;
+        }));
 
         //show figura only button
         children.add(showFigura = new SwitchButton(x + width - 48, y + 4, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/show_figura.png"), 60, 40, new FiguraText("gui.permissions.figura_only.tooltip"), button -> showFiguraBl = ((SwitchButton) button).isToggled()));

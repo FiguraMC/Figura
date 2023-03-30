@@ -11,12 +11,16 @@ import org.moon.figura.avatar.local.LocalAvatarFetcher;
 import org.moon.figura.avatar.local.LocalAvatarLoader;
 import org.moon.figura.backend2.NetworkStuff;
 import org.moon.figura.config.Configs;
+import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.widgets.*;
 import org.moon.figura.gui.widgets.lists.AvatarList;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.ui.UIHelper;
+
+import java.nio.file.Path;
+import java.util.List;
 
 public class WardrobeScreen extends AbstractPanelScreen {
 
@@ -186,7 +190,29 @@ public class WardrobeScreen extends AbstractPanelScreen {
 
     @Override
     public void removed() {
-        LocalAvatarFetcher.save();
         super.removed();
+        LocalAvatarFetcher.save();
+    }
+
+    @Override
+    public void onFilesDrop(List<Path> paths) {
+        super.onFilesDrop(paths);
+
+        StringBuilder packs = new StringBuilder();
+        for (Path path : paths)
+            packs.append("\n").append(path.getFileName());
+
+        this.minecraft.setScreen(new FiguraConfirmScreen(confirmed -> {
+            if (confirmed) {
+                try {
+                    LocalAvatarFetcher.loadExternal(paths);
+                    FiguraToast.sendToast(FiguraText.of("toast.wardrobe_copy.success", paths.size()));
+                } catch (Exception e) {
+                    FiguraToast.sendToast(FiguraText.of("toast.wardrobe_copy.error"), FiguraToast.ToastType.ERROR);
+                    FiguraMod.LOGGER.error("Failed to copy files", e);
+                }
+            }
+            this.minecraft.setScreen(this);
+        }, FiguraText.of("gui.wardrobe.drop_files"), Component.literal(packs.toString())));
     }
 }
