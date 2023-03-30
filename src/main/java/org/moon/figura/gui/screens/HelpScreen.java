@@ -114,8 +114,7 @@ public class HelpScreen extends AbstractPanelScreen {
     private Runnable openLink(String url) {
         return () -> this.minecraft.setScreen(new FiguraConfirmScreen.FiguraConfirmLinkScreen((bl) -> {
             if (bl) Util.getPlatform().openUri(url);
-            this.minecraft.setScreen(this);
-        }, url, true));
+        }, url, this));
     }
 
     private static class Title extends Label {
