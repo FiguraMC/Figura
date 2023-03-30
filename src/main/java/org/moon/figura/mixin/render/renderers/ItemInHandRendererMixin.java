@@ -2,7 +2,6 @@ package org.moon.figura.mixin.render.renderers;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
@@ -17,28 +16,17 @@ import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.ducks.SkullBlockRendererAccessor;
 import org.moon.figura.lua.api.vanilla_model.VanillaModelPart;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Coerce;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(ItemInHandRenderer.class)
 public abstract class ItemInHandRendererMixin {
 
-    @Unique private Avatar avatar;
-
-    @Inject(method = "renderHandsWithItems", at = @At(value = "FIELD", target = "Lnet/minecraft/client/renderer/ItemInHandRenderer$HandRenderSelection;renderMainHand:Z", shift = At.Shift.BEFORE), locals = LocalCapture.CAPTURE_FAILSOFT)
-    private void preRender(float tickDelta, PoseStack matrices, MultiBufferSource.BufferSource vertexConsumers, LocalPlayer player, int light, CallbackInfo ci, float f, InteractionHand interactionHand, float g, @Coerce HandRenderSelectionAccessor handRenderSelection, float h, float i) {
-        avatar = null;
-        if (handRenderSelection.renderMainHand() || handRenderSelection.renderOffHand())
-            avatar = AvatarManager.getAvatarForPlayer(player.getUUID());
-    }
-
     @Inject(method = "renderArmWithItem", at = @At("HEAD"), cancellable = true)
     private void renderArmWithItem(AbstractClientPlayer player, float tickDelta, float pitch, InteractionHand hand, float swingProgress, ItemStack item, float equipProgress, PoseStack matrices, MultiBufferSource vertexConsumers, int light, CallbackInfo ci) {
-        if (avatar == null || avatar.luaRuntime == null || item.isEmpty())
+        Avatar avatar;
+        if (item.isEmpty() || (avatar = AvatarManager.getAvatarForPlayer(player.getUUID())) == null || avatar.luaRuntime == null)
             return;
 
         HumanoidArm arm = hand == InteractionHand.MAIN_HAND ? player.getMainArm() : player.getMainArm().getOpposite();
