@@ -2,11 +2,9 @@ package org.moon.figura.gui.screens;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.Util;
-import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
@@ -53,14 +51,14 @@ public class HelpScreen extends AbstractPanelScreen {
         IconButton docs;
         this.addRenderableWidget(docs = new IconButton(middle - 60, y += lineHeight + 4, 120, 24, 20, 0, 20, ICONS, 60, 40, FiguraText.of("gui.help.ingame_docs"), null, button -> this.minecraft.setScreen(new DocsScreen(this))));
         docs.active = false;
-        this.addRenderableWidget(new IconButton(middle - 60, y += 28, 120, 24, 0, 0, 20, ICONS, 60, 40, FiguraText.of("gui.help.lua_manual"), null, openLink(LUA_MANUAL)));
-        this.addRenderableWidget(new IconButton(middle - 60, y += 28, 120, 24, 40, 0, 20, ICONS, 60, 40, FiguraText.of("gui.help.external_wiki"), null, openLink(FiguraLinkCommand.LINK.WIKI.url)));
+        this.addRenderableWidget(new IconButton(middle - 60, y += 28, 120, 24, 0, 0, 20, ICONS, 60, 40, FiguraText.of("gui.help.lua_manual"), null, bx -> openLink(LUA_MANUAL).run()));
+        this.addRenderableWidget(new IconButton(middle - 60, y += 28, 120, 24, 40, 0, 20, ICONS, 60, 40, FiguraText.of("gui.help.external_wiki"), null, bx -> openLink(FiguraLinkCommand.LINK.WIKI.url).run()));
 
         //links
         this.addRenderableWidget(new Title(FiguraText.of("gui.help.links").withStyle(color), middle, y += 28, labelWidth));
 
-        this.addRenderableWidget(new IconButton(middle - 124, y += lineHeight + 4, 80, 24, 0, 20, 20, ICONS, 60, 40, Component.literal("Discord"), null, openLink(FiguraLinkCommand.LINK.DISCORD.url)));
-        this.addRenderableWidget(new IconButton(middle - 40, y, 80, 24, 20, 20, 20, ICONS, 60, 40, Component.literal("GitHub"), null, openLink(FiguraLinkCommand.LINK.GITHUB.url)) {
+        this.addRenderableWidget(new IconButton(middle - 124, y += lineHeight + 4, 80, 24, 0, 20, 20, ICONS, 60, 40, Component.literal("Discord"), null, bx -> openLink(FiguraLinkCommand.LINK.DISCORD.url).run()));
+        this.addRenderableWidget(new IconButton(middle - 40, y, 80, 24, 20, 20, 20, ICONS, 60, 40, Component.literal("GitHub"), null, bx -> openLink(FiguraLinkCommand.LINK.GITHUB.url).run()) {
             @Override
             public boolean mouseClicked(double mouseX, double mouseY, int button) {
                 if (this.isHoveredOrFocused() && this.isMouseOver(mouseX, mouseY) && button == 1) {
@@ -77,7 +75,7 @@ public class HelpScreen extends AbstractPanelScreen {
                 return super.mouseClicked(mouseX, mouseY, button);
             }
         });
-        this.addRenderableWidget(kofi = new IconButton(middle + 44, y, 80, 24, 40, 20, 20, ICONS, 60, 40, Component.literal("Ko-fi"), null, openLink(FiguraLinkCommand.LINK.KOFI.url)));
+        this.addRenderableWidget(kofi = new IconButton(middle + 44, y, 80, 24, 40, 20, 20, ICONS, 60, 40, Component.literal("Ko-fi"), null, b -> openLink(FiguraLinkCommand.LINK.KOFI.url).run()));
 
         //texts
         this.addRenderableWidget(new Title(FiguraText.of("gui.help.about").withStyle(color), middle, y += 28, labelWidth));
@@ -85,7 +83,7 @@ public class HelpScreen extends AbstractPanelScreen {
         this.addRenderableWidget(new Label(FiguraText.of("gui.help.lua_version", Component.literal(LUA_VERSION).withStyle(color)), middle, y += lineHeight + 4, TextUtils.Alignment.CENTER));
         this.addRenderableWidget(new Label(FiguraText.of("gui.help.figura_version", Component.literal(FiguraMod.VERSION.toString()).withStyle(color)), middle, y += lineHeight + 4, TextUtils.Alignment.CENTER));
 
-        this.addRenderableWidget(fran = new Label(FiguraText.of("gui.help.credits", Component.literal("Fran").withStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://github.com/Francy-chan")))).withStyle(ColorUtils.Colors.FRAN_PINK.style), middle, y + lineHeight + 4, TextUtils.Alignment.CENTER));
+        this.addRenderableWidget(fran = new Label(FiguraText.of("gui.help.credits", Component.literal("Fran").withStyle(Style.EMPTY.withClickEvent(new TextUtils.FiguraClickEvent(openLink("https://github.com/Francy-chan"))))).withStyle(ColorUtils.Colors.FRAN_PINK.style), middle, y + lineHeight + 4, TextUtils.Alignment.CENTER));
         fran.alpha = 64;
 
         //back
@@ -113,8 +111,8 @@ public class HelpScreen extends AbstractPanelScreen {
         fran.alpha = (int) Mth.lerp(lerpDelta, fran.alpha, fran.isMouseOver(mouseX, mouseY) ? 255 : 64);
     }
 
-    private Button.OnPress openLink(String url) {
-        return bx -> this.minecraft.setScreen(new ConfirmLinkScreen((bl) -> {
+    private Runnable openLink(String url) {
+        return () -> this.minecraft.setScreen(new FiguraConfirmScreen.FiguraConfirmLinkScreen((bl) -> {
             if (bl) Util.getPlatform().openUri(url);
             this.minecraft.setScreen(this);
         }, url, true));

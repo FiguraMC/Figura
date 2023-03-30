@@ -42,7 +42,11 @@ public class AvatarList extends AbstractList {
         super(x, y, width, height);
 
         //search bar
-        children.add(new TextField(x + 4, y + 4, width - 8, 20, TextField.HintType.SEARCH, s -> filter = s));
+        children.add(new TextField(x + 4, y + 4, width - 8, 20, TextField.HintType.SEARCH, s -> {
+            if (!filter.equals(s))
+                scrollBar.setScrollProgress(0f);
+            filter = s;
+        }));
 
         //new avatar
         children.add(new Button(
