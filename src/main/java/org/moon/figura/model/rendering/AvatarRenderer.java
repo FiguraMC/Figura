@@ -79,9 +79,12 @@ public abstract class AvatarRenderer {
 
         //src files
         for (String key : src.getAllKeys()) {
-            byte[] data = src.getByteArray(key);
-            if (data.length != 0)
-                textures.put(key, new FiguraTexture(avatar, key, data));
+            CompoundTag texSrc = src.getCompound(key);
+            if (texSrc.contains("src")) {
+                textures.put(key, new FiguraTexture(avatar, key, texSrc.getByteArray("src")));
+            } else {
+                textures.put(key, new FiguraTexture(avatar, key, texSrc.getInt("w"), texSrc.getInt("h")));
+            }
         }
 
         //data files
