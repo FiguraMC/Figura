@@ -255,7 +255,7 @@ public class UIHelper extends GuiComponent {
 
     public static void renderAnimatedBackground(PoseStack stack, ResourceLocation texture, float x, float y, float width, float height, float textureWidth, float textureHeight, double speed, float delta) {
         if (speed != 0) {
-            double d = (FiguraMod.ticks + delta) / speed;
+            double d = (FiguraMod.ticks + delta) * speed;
             x -= d % textureWidth;
             y -= d % textureHeight;
         }
@@ -348,11 +348,11 @@ public class UIHelper extends GuiComponent {
         blit(stack, x + w, y, w, height, u + regionWidth - w, v, w, regionHeight, textureWidth, textureHeight);
     }
 
-    public static void renderSprite(PoseStack stack, int x, int y, int width, int height, TextureAtlasSprite sprite) {
+    public static void renderSprite(PoseStack stack, int x, int y, int z, int width, int height, TextureAtlasSprite sprite) {
         setupTexture(sprite.atlasLocation());
         BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
         bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-        quad(bufferBuilder, stack.last().pose(), x, y, width, height, 0, sprite.getU0(), sprite.getU1(), sprite.getV0(), sprite.getV1());
+        quad(bufferBuilder, stack.last().pose(), x, y, width, height, z, sprite.getU0(), sprite.getU1(), sprite.getV0(), sprite.getV1());
         BufferUploader.drawWithShader(bufferBuilder.end());
     }
 
