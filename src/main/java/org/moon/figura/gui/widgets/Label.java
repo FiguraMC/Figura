@@ -62,8 +62,8 @@ public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
         this(text, x, y, 1f, -1, false, alignment, outlineColor);
     }
 
-    public Label(Object text, int x, int y, int maxWidth, boolean wrap) {
-        this(text, x, y, 1f, maxWidth, wrap, TextUtils.Alignment.LEFT, null);
+    public Label(Object text, int x, int y, int maxWidth, boolean wrap, TextUtils.Alignment alignment) {
+        this(text, x, y, 1f, maxWidth, wrap, alignment, null);
     }
 
     @Override

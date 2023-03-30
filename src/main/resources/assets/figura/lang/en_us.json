@@ -191,7 +191,7 @@
   "figura.gui.wardrobe.new_avatar.tooltip": "Create new Avatar",
   "figura.gui.wardrobe.unselect.tooltip": "Unselect current Avatar",
   "figura.gui.wardrobe.folder.tooltip": "Open avatars root folder",
-  "figura.gui.wardrobe.drop_files": "Do you want to copy the following files to Figura?",
+  "figura.gui.wardrobe.drop_files": "Do you want to copy the following files to your wardrobe?",
 
   "figura.gui.sound.play": "Play sound",
   "figura.gui.sound.stop": "Stop sound",
