@@ -35,6 +35,8 @@
   "figura.toast.avatar_wizard.error": "Failed to create Avatar!",
   "figura.toast.avatar_wizard.success": "Avatar Created!",
   "figura.toast.load_error": "Failed to load avatar!",
+  "figura.toast.wardrobe_copy.success": "Copied %s file(s)!",
+  "figura.toast.wardrobe_copy.error": "Failed to copy files!",
 
 
   "figura.permissions.category.blocked": "Blocked",
@@ -189,6 +191,7 @@
   "figura.gui.wardrobe.new_avatar.tooltip": "Create new Avatar",
   "figura.gui.wardrobe.unselect.tooltip": "Unselect current Avatar",
   "figura.gui.wardrobe.folder.tooltip": "Open avatars root folder",
+  "figura.gui.wardrobe.drop_files": "Do you want to copy the following files to Figura?",
 
   "figura.gui.sound.play": "Play sound",
   "figura.gui.sound.stop": "Stop sound",

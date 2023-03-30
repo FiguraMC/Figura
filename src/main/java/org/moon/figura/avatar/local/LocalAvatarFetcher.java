@@ -1,5 +1,6 @@
 package org.moon.figura.avatar.local;
 
+import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -11,12 +12,14 @@ import org.moon.figura.utils.FileTexture;
 import org.moon.figura.utils.IOUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 /**
  * Navigates through the file system, finding all folders
@@ -104,6 +107,27 @@ public class LocalAvatarFetcher {
      */
     public static Path getLocalAvatarDirectory() {
         return IOUtils.getOrCreateDir(FiguraMod.getFiguraDirectory(), "avatars");
+    }
+
+    public static boolean isAvatar(Path path) {
+        if (!Files.exists(path))
+            return false;
+        if (FiguraMod.DEBUG_MODE && path.toString().toLowerCase().endsWith(".moon"))
+            return true;
+
+        Path metadata = path.resolve("avatar.json");
+        return Files.exists(metadata) && !Files.isDirectory(metadata);
+    }
+
+    public static void loadExternal(List<Path> paths) throws IOException {
+        for (Path path : paths) {
+            Path dest = getLocalAvatarDirectory();
+            try (Stream<Path> stream = Files.walk(path)) {
+                for (Path p : stream.toList()) {
+                    Util.copyBetweenDirs(path.getParent(), dest, p);
+                }
+            }
+        }
     }
 
     /**
@@ -239,17 +263,11 @@ public class LocalAvatarFetcher {
             //but skip non-folders and non-moon
             for (File file : files) {
                 Path path = file.toPath();
-                boolean moon = FiguraMod.DEBUG_MODE && path.toString().toLowerCase().endsWith(".moon");
-
-                if (!Files.isDirectory(path) && !moon)
-                    continue;
-
-                Path metadata = path.resolve("avatar.json");
-                if (moon || (Files.exists(metadata) && !Files.isDirectory(metadata))) {
+                if (isAvatar(path)) {
                     children.add(new AvatarPath(path));
                     found = true;
-                } else {
-                    FolderPath folder = new FolderPath(file.toPath());
+                } else if (Files.isDirectory(path)) {
+                    FolderPath folder = new FolderPath(path);
                     if (folder.fetch()) {
                         children.add(folder);
                         found = true;
