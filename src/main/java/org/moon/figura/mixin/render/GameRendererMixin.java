@@ -125,6 +125,7 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
             FiguraMod.pushProfiler(avatar);
             FiguraMod.pushProfiler("postRenderEvent");
             avatar.postRenderEvent(tickDelta);
+            avatar = null;
             FiguraMod.popProfiler(3);
         }
     }
