@@ -55,8 +55,11 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
         Avatar avatar = AvatarManager.getAvatarForPlayer(player.getUUID());
         EntityNameplateCustomization custom = avatar == null || avatar.luaRuntime == null ? null : avatar.luaRuntime.nameplate.ENTITY;
 
+        //customization boolean, which also is the permission check
+        boolean hasCustom = custom != null && avatar.permissions.get(Permissions.NAMEPLATE_EDIT) == 1;
+
         //enabled
-        if (custom != null && !custom.visible) {
+        if (hasCustom && !custom.visible) {
             ci.cancel();
             return;
         }
@@ -64,9 +67,6 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
         FiguraMod.pushProfiler(FiguraMod.MOD_ID);
         FiguraMod.pushProfiler(player.getName().getString());
         FiguraMod.pushProfiler("nameplate");
-
-        //customization boolean, which also is the trust check
-        boolean hasCustom = avatar != null && avatar.permissions.get(Permissions.NAMEPLATE_EDIT) == 1 && custom != null;
 
         stack.pushPose();
 
