@@ -32,18 +32,18 @@ public class FiguraConfirmScreen extends AbstractPanelScreen {
         Label title = new Label(this.getTitle(), center, 0, width - 8, true, TextUtils.Alignment.CENTER);
         Label message = new Label(this.message, center, 0, width - 8, true, TextUtils.Alignment.CENTER);
 
-        int spacing = (minecraft.font.lineHeight + 1) * 2;
-        int totalWidth = message.getHeight() + title.getHeight() + spacing * 2 + 20;
-        int y = (this.height - totalWidth) / 2;
+        int titleY = (this.height - message.getHeight()) / 2;
+        titleY = Math.min(Math.max(titleY - 29, 4), 80);
+        int messageY = titleY + 20;
 
-        title.y = Math.max(y, 4);
-        message.y = title.y + title.getHeight() + spacing;
+        title.y = titleY;
+        message.y = messageY;
 
         addRenderableWidget(title);
         addRenderableWidget(message);
 
         //buttons
-        addButtons(center, Math.min(message.y + message.getHeight() + spacing, this.height - 24));
+        addButtons(center, Math.min(Math.max(messageY + message.getHeight() + 20, this.height / 6 + 96), this.height - 24));
     }
 
     protected void addButtons(int x, int y) {
