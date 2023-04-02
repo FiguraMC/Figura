@@ -16,4 +16,5 @@ public interface SoundEngineAccessor {
     ChannelAccess.ChannelHandle figura$createHandle(UUID owner, String name, Library.Pool pool);
     float figura$getVolume(SoundSource category);
     SoundBufferLibrary figura$getSoundBuffers();
+    boolean figura$isPlaying(UUID owner);
 }

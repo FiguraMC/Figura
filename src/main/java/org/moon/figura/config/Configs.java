@@ -64,7 +64,8 @@ public class Configs {
 
     public static final BoolConfig
             SELF_NAMEPLATE = new BoolConfig("self_nameplate", NAMEPLATE, false),
-            PREVIEW_NAMEPLATE = new BoolConfig("preview_nameplate", NAMEPLATE, false);
+            PREVIEW_NAMEPLATE = new BoolConfig("preview_nameplate", NAMEPLATE, false),
+            SOUND_BADGE = new BoolConfig("sound_badge", NAMEPLATE, true);
     public static final EnumConfig
             NAMEPLATE_RENDER = new EnumConfig("nameplate_render", NAMEPLATE, 0, 3),
             CHAT_NAMEPLATE = new EnumConfig("chat_nameplate", NAMEPLATE, 2, 3) {{

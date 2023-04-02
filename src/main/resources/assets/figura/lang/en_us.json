@@ -80,6 +80,7 @@
   "figura.badges.system.permissions": "This Avatar utilizes a higher Permission category!",
   "figura.badges.system.warning": "This Avatar targets a newer version of Figura, compatibility might be limited!",
   "figura.badges.system.error": "This Avatar Script contains an error!",
+  "figura.badges.system.sound": "This Avatar is playing a sound!",
 
   "figura.badges.pride.agender": "Figura Agender Mark!",
   "figura.badges.pride.aroace": "Figura Aroace Mark!",
@@ -301,6 +302,9 @@
 
   "figura.config.preview_nameplate": "Nameplate in GUI",
   "figura.config.preview_nameplate.tooltip": "Toggles the rendering of nameplates in the GUI",
+
+  "figura.config.sound_badge": "Sound Indicator",
+  "figura.config.sound_badge.tooltip": "Adds a little indicator in the nameplate for when an avatar is playing a sound\nRequires badges to be enabled",
 
   "figura.config.chat_nameplate": "Chat customizations",
   "figura.config.chat_nameplate.tooltip": "Set the level of nameplate customizations on the CHAT",
