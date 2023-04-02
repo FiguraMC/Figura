@@ -5,6 +5,8 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.*;
 import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.FiguraMod;
+import org.moon.figura.config.Configs;
+import org.moon.figura.lua.api.sound.SoundAPI;
 import org.moon.figura.permissions.PermissionManager;
 import org.moon.figura.permissions.Permissions;
 import org.moon.figura.utils.ColorUtils;
@@ -96,6 +98,16 @@ public class Badges {
                 badges.append(special[i].badge);
         }
 
+
+        // -- extra -- //
+
+
+        //sound
+        if (Configs.SOUND_BADGE.value && SoundAPI.getSoundEngine().figura$isPlaying(id))
+            badges.append(System.SOUND.badge);
+
+
+        // -- return -- //
         return badges;
     }
 
@@ -129,7 +141,8 @@ public class Badges {
         DEFAULT("△"),
         PERMISSIONS("\uD83D\uDEE1"),
         WARNING("❗"),
-        ERROR("❌");
+        ERROR("❌"),
+        SOUND("\uD83D\uDD0A");
 
         public final Component badge;
         public final Component desc;

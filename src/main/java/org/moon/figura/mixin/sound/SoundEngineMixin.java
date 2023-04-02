@@ -45,6 +45,21 @@ public abstract class SoundEngineMixin implements SoundEngineAccessor {
         figuraChannel.scheduleTick();
     }
 
+    @Inject(at = @At("RETURN"), method = "tickNonPaused")
+    private void tickNonPaused(CallbackInfo ci) {
+        Iterator<LuaSound> iterator = figuraHandlers.iterator();
+        while (iterator.hasNext()) {
+            LuaSound sound = iterator.next();
+            ChannelAccess.ChannelHandle handle = sound.getHandle();
+            if (getVolume(SoundSource.PLAYERS) <= 0f) {
+                handle.execute(Channel::stop);
+                iterator.remove();
+            } else if (handle.isStopped()) {
+                iterator.remove();
+            }
+        }
+    }
+
     @Inject(at = @At("RETURN"), method = "stopAll")
     private void stopAll(CallbackInfo ci) {
         figura$stopAllSounds();
@@ -125,5 +140,17 @@ public abstract class SoundEngineMixin implements SoundEngineAccessor {
     @Override @Intrinsic
     public SoundBufferLibrary figura$getSoundBuffers() {
         return this.soundBuffers;
+    }
+
+    @Override @Intrinsic
+    public boolean figura$isPlaying(UUID owner) {
+        if (!this.loaded)
+            return false;
+        for (LuaSound sound : figuraHandlers) {
+            ChannelHandleAccessor accessor = (ChannelHandleAccessor) sound.getHandle();
+            if (sound.isPlaying() && accessor != null && accessor.getOwner().equals(owner))
+                return true;
+        }
+        return false;
     }
 }
