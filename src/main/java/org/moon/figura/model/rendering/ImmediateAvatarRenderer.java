@@ -135,6 +135,9 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
                 }
 
                 for (FiguraModelPart part : parts) {
+                    if (currentFilterScheme.parentType == ParentType.Item && part != itemToRender)
+                        continue;
+
                     if (part.savedCustomization != null)
                         customizationStack.push(part.savedCustomization);
 

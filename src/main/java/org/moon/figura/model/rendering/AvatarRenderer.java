@@ -68,6 +68,7 @@ public abstract class AvatarRenderer {
     public boolean updateLight = false;
     public boolean doIrisEmissiveFix = false;
     public boolean offsetRenderLayers = false;
+    public FiguraModelPart itemToRender;
 
     public AvatarRenderer(Avatar avatar) {
         this.avatar = avatar;

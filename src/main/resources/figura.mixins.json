@@ -64,6 +64,7 @@
     "render.renderers.EntityRendererMixin",
     "render.renderers.HandRenderSelectionAccessor",
     "render.renderers.ItemInHandRendererMixin",
+    "render.renderers.ItemRendererMixin",
     "render.renderers.LivingEntityRendererMixin",
     "render.renderers.PlayerRendererMixin",
     "render.renderers.ScreenEffectRendererMixin",
