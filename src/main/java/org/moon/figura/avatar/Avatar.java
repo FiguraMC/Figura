@@ -47,6 +47,7 @@ import org.moon.figura.lua.api.world.ItemStackAPI;
 import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.model.FiguraModelPart;
 import org.moon.figura.model.ParentType;
 import org.moon.figura.model.PartCustomization;
 import org.moon.figura.model.rendering.AvatarRenderer;
@@ -419,6 +420,12 @@ public class Avatar {
         return result != null && result.arg(1).isboolean() && result.arg(1).checkboolean();
     }
 
+    public boolean itemRenderEvent(ItemStackAPI item, String mode, FiguraVec3 pos, FiguraVec3 rot, FiguraVec3 scale, boolean leftHanded, PoseStack stack, MultiBufferSource bufferSource, int light, int overlay) {
+        Varargs result = loaded ? run("ITEM_RENDER", render, item, mode, pos, rot, scale, leftHanded) : null;
+        FiguraModelPart part = result != null && result.arg(1).isuserdata(FiguraModelPart.class) ? (FiguraModelPart) result.arg(1).checkuserdata(FiguraModelPart.class) : null;
+        return part != null && renderItem(stack, bufferSource, part, leftHanded, light, overlay);
+    }
+
     // -- rendering events -- //
 
     private void render() {
@@ -654,7 +661,6 @@ public class Avatar {
         if (renderer == null || !loaded)
             return false;
 
-        stack.pushPose();
         boolean oldMat = renderer.allowMatrixUpdate;
 
         //pre render
@@ -679,7 +685,6 @@ public class Avatar {
         renderer.allowMatrixUpdate = oldMat;
         renderer.allowHiddenTransforms = true;
 
-        stack.popPose();
         return comp > 0 && luaRuntime != null && !luaRuntime.vanilla_model.HEAD.checkVisible();
     }
 
@@ -765,6 +770,32 @@ public class Avatar {
         return comp > 0;
     }
 
+    public boolean renderItem(PoseStack stack, MultiBufferSource bufferSource, FiguraModelPart part, boolean leftHanded, int light, int overlay) {
+        if (renderer == null || !loaded || part.parentType != ParentType.Item)
+            return false;
+
+        stack.pushPose();
+        stack.mulPose(Axis.ZP.rotationDegrees(180f));
+        if (leftHanded)
+            stack.last().pose().scale(-1, 1, 1);
+
+        renderer.currentFilterScheme = PartFilterScheme.ITEM;
+        renderer.tickDelta = 1f;
+        renderer.overlay = overlay;
+        renderer.light = light;
+        renderer.alpha = 1f;
+        renderer.matrices = stack;
+        renderer.bufferSource = bufferSource;
+        renderer.translucent = false;
+        renderer.glowing = false;
+        renderer.itemToRender = part;
+
+        int ret = renderer.renderSpecialParts();
+
+        stack.popPose();
+        return ret > 0;
+    }
+
     private static final PartCustomization PIVOT_PART_RENDERING_CUSTOMIZATION = new PartCustomization();
     public synchronized boolean pivotPartRender(ParentType parent, Consumer<PoseStack> consumer) {
         if (renderer == null || !loaded || !parent.isPivot)
@@ -805,7 +836,9 @@ public class Avatar {
         FiguraMod.popProfiler(3);
     }
 
+
     // -- animations -- //
+
 
     public void applyAnimations() {
         if (!loaded || scriptError)
@@ -927,10 +960,15 @@ public class Avatar {
 
                 String mdl = animNbt.getString("mdl");
                 String name = animNbt.getString("name");
+                Animation.LoopMode loop = Animation.LoopMode.ONCE;
+                if (animNbt.contains("loop")) {
+                    try {
+                        loop = Animation.LoopMode.valueOf(animNbt.getString("loop").toUpperCase());
+                    } catch (Exception ignored) {}
+                }
 
                 Animation animation = new Animation(this,
-                        mdl, name,
-                        animNbt.contains("loop") ? Animation.LoopMode.valueOf(animNbt.getString("loop").toUpperCase()) : Animation.LoopMode.ONCE,
+                        mdl, name, loop,
                         animNbt.contains("ovr") && animNbt.getBoolean("ovr"),
                         animNbt.contains("len") ? animNbt.getFloat("len") : 0f,
                         animNbt.contains("off") ? animNbt.getFloat("off") : 0f,

@@ -23,6 +23,7 @@ public enum ParentType {
     Skull(true, false, "SKULL", "☠"),
     Portrait(true, false, "PORTRAIT"),
     Arrow(true, false, "ARROW"),
+    Item(true, false, "ITEM"),
 
     LeftItemPivot(false, true,"LEFT_ITEM_PIVOT"),
     RightItemPivot(false, true,"RIGHT_ITEM_PIVOT"),

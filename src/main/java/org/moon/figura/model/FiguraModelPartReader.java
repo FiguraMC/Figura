@@ -87,8 +87,11 @@ public class FiguraModelPartReader {
         FiguraModelPart result = new FiguraModelPart(owner, name, customization, vertices, children);
         result.facesByTexture = facesByTexture;
         storeTextures(result, textureSets);
-        if (partCompound.contains("pt"))
-            result.parentType = ParentType.valueOf(partCompound.getString("pt"));
+        if (partCompound.contains("pt")) {
+            try {
+                result.parentType = ParentType.valueOf(partCompound.getString("pt"));
+            } catch (Exception ignored) {}
+        }
 
         //Read animations :D
         if (partCompound.contains("anim")) {
