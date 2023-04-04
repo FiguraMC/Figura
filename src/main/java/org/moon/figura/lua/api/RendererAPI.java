@@ -55,6 +55,7 @@ public class RendererAPI {
     public FiguraVec2 crosshairOffset;
     public FiguraVec3 outlineColor;
     public ResourceLocation fireLayer1, fireLayer2;
+    public Boolean renderLeftArm, renderRightArm;
 
     public RendererAPI(Avatar owner) {
         this.owner = owner.owner;
@@ -528,6 +529,44 @@ public class RendererAPI {
     @LuaWhitelist
     public RendererAPI secondaryFireTexture(String id) {
         return setSecondaryFireTexture(id);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = Boolean.class,
+                    argumentNames = "bool"
+            ),
+            aliases = "renderLeftArm",
+            value = "renderer.set_render_left_arm"
+    )
+    public RendererAPI setRenderLeftArm(Boolean bool) {
+        this.renderLeftArm = bool;
+        return this;
+    }
+
+    @LuaWhitelist
+    public RendererAPI renderLeftArm(Boolean bool) {
+        return setRenderLeftArm(bool);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = Boolean.class,
+                    argumentNames = "bool"
+            ),
+            aliases = "renderRightArm",
+            value = "renderer.set_render_right_arm"
+    )
+    public RendererAPI setRenderRightArm(Boolean bool) {
+        this.renderRightArm = bool;
+        return this;
+    }
+
+    @LuaWhitelist
+    public RendererAPI renderRightArm(Boolean bool) {
+        return setRenderRightArm(bool);
     }
 
     @LuaWhitelist
