@@ -59,13 +59,7 @@ public class LuaEvent {
         Varargs vars = args;
         for (LuaFunction function : functions) {
             FiguraMod.pushProfiler(function.name());
-            if (piped) {
-                vars = function.invoke(vars);
-            } else {
-                Varargs value = function.invoke(args);
-                if (value.arg(1).isboolean() && value.arg(1).checkboolean())
-                    vars = value;
-            }
+            vars = function.invoke(piped ? vars : args);
             FiguraMod.popProfiler();
         }
         return vars;
