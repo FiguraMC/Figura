@@ -18,7 +18,7 @@ import net.minecraft.world.entity.player.Player;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.model.ParentType;
-import org.moon.figura.permissions.Permissions;
+import org.moon.figura.utils.RenderUtils;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -38,7 +38,7 @@ public abstract class ParrotOnShoulderLayerMixin<T extends Player> extends Rende
     @Inject(at = @At("HEAD"), method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/player/Player;FFFFZ)V", cancellable = true)
     private void render(PoseStack matrices, MultiBufferSource vertexConsumers, int light, T player, float limbAngle, float limbDistance, float headYaw, float headPitch, boolean leftShoulder, CallbackInfo ci) {
         Avatar avatar = AvatarManager.getAvatar(player);
-        if (avatar == null || avatar.permissions.get(Permissions.VANILLA_MODEL_EDIT) == 0)
+        if (!RenderUtils.vanillaModel(avatar))
             return;
 
         //script hide

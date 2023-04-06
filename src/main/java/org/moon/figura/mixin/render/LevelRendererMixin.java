@@ -15,8 +15,8 @@ import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.config.Configs;
 import org.moon.figura.model.rendering.EntityRenderMode;
-import org.moon.figura.permissions.Permissions;
 import org.moon.figura.utils.ColorUtils;
+import org.moon.figura.utils.RenderUtils;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -45,7 +45,7 @@ public abstract class LevelRendererMixin {
         if (avatar == null)
             return;
 
-        if (bufferSource instanceof OutlineBufferSource outline && avatar.luaRuntime != null && avatar.luaRuntime.renderer.outlineColor != null && avatar.permissions.get(Permissions.VANILLA_MODEL_EDIT) == 1) {
+        if (bufferSource instanceof OutlineBufferSource outline && RenderUtils.vanillaModelAndScript(avatar) && avatar.luaRuntime.renderer.outlineColor != null) {
             int i = ColorUtils.rgbToInt(avatar.luaRuntime.renderer.outlineColor);
             outline.setColor(
                     i >> 16 & 0xFF,

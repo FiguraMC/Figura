@@ -27,7 +27,7 @@ import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.ducks.SkullBlockRendererAccessor;
 import org.moon.figura.model.ParentType;
-import org.moon.figura.permissions.Permissions;
+import org.moon.figura.utils.RenderUtils;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -51,11 +51,11 @@ public abstract class CustomHeadLayerMixin<T extends LivingEntity, M extends Ent
     @Inject(at = @At("HEAD"), method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V", cancellable = true)
     private void render(PoseStack poseStack, MultiBufferSource multiBufferSource, int i, T livingEntity, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
         ItemStack itemStack = livingEntity.getItemBySlot(EquipmentSlot.HEAD);
-        if (itemStack == null || (itemStack.getItem() instanceof ArmorItem armorItem && armorItem.getEquipmentSlot() == EquipmentSlot.HEAD))
+        if (itemStack.getItem() instanceof ArmorItem armorItem && armorItem.getEquipmentSlot() == EquipmentSlot.HEAD)
             return;
 
         Avatar avatar = AvatarManager.getAvatar(livingEntity);
-        if (avatar == null || avatar.permissions.get(Permissions.VANILLA_MODEL_EDIT) == 0)
+        if (!RenderUtils.vanillaModel(avatar))
             return;
 
         //script hide
