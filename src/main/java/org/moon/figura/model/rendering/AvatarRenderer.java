@@ -184,4 +184,16 @@ public abstract class AvatarRenderer {
         result.scale(-1, 1, -1);
         return result;
     }
+
+    public void setupRenderer(PartFilterScheme currentFilterScheme, MultiBufferSource bufferSource, PoseStack matrices, float tickDelta, int light, float alpha, int overlay, boolean translucent, boolean glowing) {
+        this.currentFilterScheme = currentFilterScheme;
+        this.bufferSource = bufferSource;
+        this.matrices = matrices;
+        this.tickDelta = tickDelta;
+        this.light = light;
+        this.alpha = alpha;
+        this.overlay = overlay;
+        this.translucent = translucent;
+        this.glowing = glowing;
+    }
 }

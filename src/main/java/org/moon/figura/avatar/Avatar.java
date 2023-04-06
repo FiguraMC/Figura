@@ -388,6 +388,12 @@ public class Avatar {
         return result != null && result.arg(1).isboolean() && result.arg(1).checkboolean();
     }
 
+    public boolean itemRenderEvent(ItemStackAPI item, String mode, FiguraVec3 pos, FiguraVec3 rot, FiguraVec3 scale, boolean leftHanded, PoseStack stack, MultiBufferSource bufferSource, int light, int overlay) {
+        Varargs result = loaded ? run("ITEM_RENDER", render, item, mode, pos, rot, scale, leftHanded) : null;
+        FiguraModelPart part = result != null && result.arg(1).isuserdata(FiguraModelPart.class) ? (FiguraModelPart) result.arg(1).checkuserdata(FiguraModelPart.class) : null;
+        return part != null && renderItem(stack, bufferSource, part, light, overlay);
+    }
+
     // -- host only events -- //
 
     public String chatSendMessageEvent(String message) {
@@ -395,9 +401,9 @@ public class Avatar {
         return val == null || (!val.isnil(1) && !Configs.CHAT_MESSAGES.value) ? message : val.isnil(1) ? "" : val.arg(1).tojstring();
     }
 
-    public void chatReceivedMessageEvent(Component message) {
-        if (loaded)
-            run("CHAT_RECEIVE_MESSAGE", tick, message.getString(), Component.Serializer.toJson(message));
+    public String chatReceivedMessageEvent(Component message) {
+        Varargs val = loaded ? run("CHAT_RECEIVE_MESSAGE", tick, message.getString(), Component.Serializer.toJson(message)) : null;
+        return val == null || val.isnil(1) ? null : val.arg(1).tojstring();
     }
 
     public boolean mouseScrollEvent(double delta) {
@@ -420,12 +426,6 @@ public class Avatar {
         return result != null && result.arg(1).isboolean() && result.arg(1).checkboolean();
     }
 
-    public boolean itemRenderEvent(ItemStackAPI item, String mode, FiguraVec3 pos, FiguraVec3 rot, FiguraVec3 scale, boolean leftHanded, PoseStack stack, MultiBufferSource bufferSource, int light, int overlay) {
-        Varargs result = loaded ? run("ITEM_RENDER", render, item, mode, pos, rot, scale, leftHanded) : null;
-        FiguraModelPart part = result != null && result.arg(1).isuserdata(FiguraModelPart.class) ? (FiguraModelPart) result.arg(1).checkuserdata(FiguraModelPart.class) : null;
-        return part != null && renderItem(stack, bufferSource, part, light, overlay);
-    }
-
     // -- rendering events -- //
 
     private void render() {
@@ -440,27 +440,24 @@ public class Avatar {
         complexity.remaining = prev;
     }
 
-    public void render(Entity entity, float yaw, float delta, float alpha, PoseStack matrices, MultiBufferSource bufferSource, int light, int overlay, LivingEntityRenderer<?, ?> entityRenderer, PartFilterScheme filter, boolean translucent, boolean glowing) {
+    public void render(Entity entity, float yaw, float delta, float alpha, PoseStack stack, MultiBufferSource bufferSource, int light, int overlay, LivingEntityRenderer<?, ?> entityRenderer, PartFilterScheme filter, boolean translucent, boolean glowing) {
         if (renderer == null || !loaded)
             return;
 
         renderer.vanillaModelData.update(entityRenderer);
-        renderer.currentFilterScheme = filter;
-        renderer.entity = entity;
         renderer.yaw = yaw;
-        renderer.tickDelta = delta;
-        renderer.alpha = alpha;
-        renderer.matrices = matrices;
-        renderer.bufferSource = bufferSource;
-        renderer.light = light;
-        renderer.overlay = overlay;
-        renderer.translucent = translucent;
-        renderer.glowing = glowing;
+        renderer.entity = entity;
+
+        renderer.setupRenderer(
+                filter, bufferSource, stack,
+                delta, light, alpha, overlay,
+                translucent, glowing
+        );
 
         render();
     }
 
-    public synchronized void worldRender(Entity entity, double camX, double camY, double camZ, PoseStack matrices, MultiBufferSource bufferSource, int lightFallback, float tickDelta, EntityRenderMode mode) {
+    public synchronized void worldRender(Entity entity, double camX, double camY, double camZ, PoseStack stack, MultiBufferSource bufferSource, int lightFallback, float tickDelta, EntityRenderMode mode) {
         if (renderer == null || !loaded)
             return;
 
@@ -471,21 +468,18 @@ public class Avatar {
         renderer.pivotCustomizations.values().clear();
         renderer.allowMatrixUpdate = renderer.updateLight = update;
         renderer.entity = entity;
-        renderer.currentFilterScheme = PartFilterScheme.WORLD;
-        renderer.bufferSource = bufferSource;
-        renderer.matrices = matrices;
-        renderer.tickDelta = tickDelta;
-        renderer.light = lightFallback;
-        renderer.alpha = 1f;
-        renderer.overlay = OverlayTexture.NO_OVERLAY;
-        renderer.translucent = false;
-        renderer.glowing = false;
 
-        matrices.pushPose();
-        matrices.translate(-camX, -camY, -camZ);
-        matrices.scale(-1, -1, 1);
+        renderer.setupRenderer(
+                PartFilterScheme.WORLD, bufferSource, stack,
+                tickDelta, lightFallback, 1f, OverlayTexture.NO_OVERLAY,
+                false, false
+        );
+
+        stack.pushPose();
+        stack.translate(-camX, -camY, -camZ);
+        stack.scale(-1, -1, 1);
         complexity.use(renderer.renderSpecialParts());
-        matrices.popPose();
+        stack.popPose();
 
         renderMode = prevRenderMode;
         renderer.updateLight = false;
@@ -501,13 +495,12 @@ public class Avatar {
 
         renderer.vanillaModelData.update(ParentType.Cape, cloak);
         renderer.entity = entity;
-        renderer.currentFilterScheme = PartFilterScheme.CAPE;
-        renderer.bufferSource = bufferSource;
-        renderer.matrices = stack;
-        renderer.tickDelta = tickDelta;
-        renderer.light = light;
-        renderer.alpha = 1f;
-        renderer.overlay = OverlayTexture.NO_OVERLAY;
+
+        renderer.setupRenderer(
+                PartFilterScheme.CAPE, bufferSource, stack,
+                tickDelta, light, 1f, OverlayTexture.NO_OVERLAY,
+                renderer.translucent, renderer.glowing
+        );
 
         render();
 
@@ -523,17 +516,16 @@ public class Avatar {
         FiguraMod.pushProfiler("elytraRender");
 
         renderer.entity = entity;
-        renderer.bufferSource = bufferSource;
-        renderer.matrices = stack;
-        renderer.tickDelta = tickDelta;
-        renderer.light = light;
-        renderer.alpha = 1f;
-        renderer.overlay = OverlayTexture.NO_OVERLAY;
+
+        renderer.setupRenderer(
+                PartFilterScheme.LEFT_ELYTRA, bufferSource, stack,
+                tickDelta, light, 1f, OverlayTexture.NO_OVERLAY,
+                renderer.translucent, renderer.glowing
+        );
 
         //left
         FiguraMod.pushProfiler("leftWing");
         renderer.vanillaModelData.update(ParentType.LeftElytra, model);
-        renderer.currentFilterScheme = PartFilterScheme.LEFT_ELYTRA;
         renderer.renderSpecialParts();
 
         //right
@@ -595,16 +587,13 @@ public class Avatar {
         FiguraMod.pushProfiler(this);
         FiguraMod.pushProfiler("hudRender");
 
-        renderer.currentFilterScheme = PartFilterScheme.HUD;
         renderer.entity = entity;
-        renderer.tickDelta = tickDelta;
-        renderer.overlay = OverlayTexture.NO_OVERLAY;
-        renderer.light = LightTexture.FULL_BRIGHT;
-        renderer.alpha = 1f;
-        renderer.matrices = stack;
-        renderer.bufferSource = bufferSource;
-        renderer.translucent = false;
-        renderer.glowing = false;
+
+        renderer.setupRenderer(
+                PartFilterScheme.HUD, bufferSource, stack,
+                tickDelta, LightTexture.FULL_BRIGHT, 1f, OverlayTexture.NO_OVERLAY,
+                false, false
+        );
 
         Lighting.setupForFlatItems();
 
@@ -626,15 +615,12 @@ public class Avatar {
             return false;
 
         renderer.allowPivotParts = false;
-        renderer.currentFilterScheme = PartFilterScheme.SKULL;
-        renderer.tickDelta = 1f;
-        renderer.overlay = OverlayTexture.NO_OVERLAY;
-        renderer.light = light;
-        renderer.alpha = 1f;
-        renderer.matrices = stack;
-        renderer.bufferSource = bufferSource;
-        renderer.translucent = false;
-        renderer.glowing = false;
+
+        renderer.setupRenderer(
+                PartFilterScheme.SKULL, bufferSource, stack,
+                1f, light, 1f, OverlayTexture.NO_OVERLAY,
+                false, false
+        );
 
         stack.pushPose();
 
@@ -664,15 +650,12 @@ public class Avatar {
         boolean oldMat = renderer.allowMatrixUpdate;
 
         //pre render
-        renderer.currentFilterScheme = PartFilterScheme.HEAD;
-        renderer.tickDelta = 1f;
-        renderer.overlay = OverlayTexture.NO_OVERLAY;
-        renderer.light = light;
-        renderer.alpha = 1f;
-        renderer.matrices = stack;
-        renderer.bufferSource = bufferSource;
-        renderer.translucent = false;
-        renderer.glowing = false;
+        renderer.setupRenderer(
+                PartFilterScheme.HEAD, bufferSource, stack,
+                1f, light, 1f, OverlayTexture.NO_OVERLAY,
+                false, false
+        );
+
         renderer.allowHiddenTransforms = false;
         renderer.allowMatrixUpdate = false;
 
@@ -713,17 +696,16 @@ public class Avatar {
         //setup render
         Lighting.setupForFlatItems();
 
-        renderer.allowPivotParts = false;
-        renderer.currentFilterScheme = PartFilterScheme.PORTRAIT;
-        renderer.tickDelta = 1f;
-        renderer.overlay = OverlayTexture.NO_OVERLAY;
-        int light = renderer.light = LightTexture.FULL_BRIGHT;
-        renderer.alpha = 1f;
-        renderer.matrices = stack;
         MultiBufferSource.BufferSource buffer = Minecraft.getInstance().renderBuffers().bufferSource();
-        renderer.bufferSource = buffer;
-        renderer.translucent = false;
-        renderer.glowing = false;
+        int light = LightTexture.FULL_BRIGHT;
+
+        renderer.allowPivotParts = false;
+
+        renderer.setupRenderer(
+                PartFilterScheme.PORTRAIT, buffer, stack,
+                1f, light, 1f, OverlayTexture.NO_OVERLAY,
+                false, false
+        );
 
         stack.translate(4d / 16d, 8d / 16d, 0d);
 
@@ -748,15 +730,11 @@ public class Avatar {
         if (renderer == null || !loaded)
             return false;
 
-        renderer.currentFilterScheme = PartFilterScheme.ARROW;
-        renderer.tickDelta = delta;
-        renderer.overlay = OverlayTexture.NO_OVERLAY;
-        renderer.light = light;
-        renderer.alpha = 1f;
-        renderer.matrices = stack;
-        renderer.bufferSource = bufferSource;
-        renderer.translucent = false;
-        renderer.glowing = false;
+        renderer.setupRenderer(
+                PartFilterScheme.ARROW, bufferSource, stack,
+                delta, light, 1f, OverlayTexture.NO_OVERLAY,
+                false, false
+        );
 
         stack.pushPose();
         Quaternion quaternionf = Vector3f.XP.rotationDegrees(135f);
@@ -777,15 +755,12 @@ public class Avatar {
         stack.pushPose();
         stack.mulPose(Axis.ZP.rotationDegrees(180f));
 
-        renderer.currentFilterScheme = PartFilterScheme.ITEM;
-        renderer.tickDelta = 1f;
-        renderer.overlay = overlay;
-        renderer.light = light;
-        renderer.alpha = 1f;
-        renderer.matrices = stack;
-        renderer.bufferSource = bufferSource;
-        renderer.translucent = false;
-        renderer.glowing = false;
+        renderer.setupRenderer(
+                PartFilterScheme.ITEM, bufferSource, stack,
+                1f, light, 1f, overlay,
+                false, false
+        );
+
         renderer.itemToRender = part;
 
         int ret = renderer.renderSpecialParts();
@@ -826,9 +801,9 @@ public class Avatar {
         FiguraMod.pushProfiler(this);
         FiguraMod.pushProfiler("updateMatrices");
 
+        renderer.vanillaModelData.update(entityRenderer);
         renderer.currentFilterScheme = PartFilterScheme.MODEL;
         renderer.matrices = stack;
-        renderer.vanillaModelData.update(entityRenderer);
         renderer.updateMatrices();
 
         FiguraMod.popProfiler(3);

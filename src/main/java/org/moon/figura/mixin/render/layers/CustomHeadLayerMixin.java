@@ -27,7 +27,7 @@ import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.ducks.SkullBlockRendererAccessor;
 import org.moon.figura.model.ParentType;
-import org.moon.figura.permissions.Permissions;
+import org.moon.figura.utils.RenderUtils;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -55,7 +55,7 @@ public abstract class CustomHeadLayerMixin<T extends LivingEntity, M extends Ent
             return;
 
         Avatar avatar = AvatarManager.getAvatar(livingEntity);
-        if (avatar == null || avatar.permissions.get(Permissions.VANILLA_MODEL_EDIT) == 0)
+        if (!RenderUtils.vanillaModel(avatar))
             return;
 
         //script hide
