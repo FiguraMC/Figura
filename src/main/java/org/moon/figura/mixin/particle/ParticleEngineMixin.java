@@ -9,11 +9,12 @@ import org.jetbrains.annotations.Nullable;
 import org.moon.figura.ducks.ParticleEngineAccessor;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.UUID;
 
 @Mixin(ParticleEngine.class)
 public abstract class ParticleEngineMixin implements ParticleEngineAccessor {
@@ -26,9 +27,10 @@ public abstract class ParticleEngineMixin implements ParticleEngineAccessor {
 
     @Unique private final HashMap<Particle, UUID> particleMap = new HashMap<>();
 
-    @Inject(at = @At(value = "INVOKE", target = "Ljava/util/Iterator;remove()V"), method = "tickParticleList", locals = LocalCapture.CAPTURE_FAILSOFT)
-    private void tickParticleList(Collection<Particle> particles, CallbackInfo ci, Iterator<Particle> iterator, Particle particle) {
+    @ModifyVariable(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/particle/ParticleEngine;tickParticle(Lnet/minecraft/client/particle/Particle;)V"), method = "tickParticleList", ordinal = 0)
+    private Particle tickParticleList(Particle particle) {
         particleMap.remove(particle);
+        return particle;
     }
 
     @Override @Intrinsic
