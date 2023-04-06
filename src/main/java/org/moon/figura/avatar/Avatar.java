@@ -423,7 +423,7 @@ public class Avatar {
     public boolean itemRenderEvent(ItemStackAPI item, String mode, FiguraVec3 pos, FiguraVec3 rot, FiguraVec3 scale, boolean leftHanded, PoseStack stack, MultiBufferSource bufferSource, int light, int overlay) {
         Varargs result = loaded ? run("ITEM_RENDER", render, item, mode, pos, rot, scale, leftHanded) : null;
         FiguraModelPart part = result != null && result.arg(1).isuserdata(FiguraModelPart.class) ? (FiguraModelPart) result.arg(1).checkuserdata(FiguraModelPart.class) : null;
-        return part != null && renderItem(stack, bufferSource, part, leftHanded, light, overlay);
+        return part != null && renderItem(stack, bufferSource, part, light, overlay);
     }
 
     // -- rendering events -- //
@@ -770,14 +770,12 @@ public class Avatar {
         return comp > 0;
     }
 
-    public boolean renderItem(PoseStack stack, MultiBufferSource bufferSource, FiguraModelPart part, boolean leftHanded, int light, int overlay) {
+    public boolean renderItem(PoseStack stack, MultiBufferSource bufferSource, FiguraModelPart part, int light, int overlay) {
         if (renderer == null || !loaded || part.parentType != ParentType.Item)
             return false;
 
         stack.pushPose();
         stack.mulPose(Axis.ZP.rotationDegrees(180f));
-        if (leftHanded)
-            stack.last().pose().scale(-1, 1, 1);
 
         renderer.currentFilterScheme = PartFilterScheme.ITEM;
         renderer.tickDelta = 1f;

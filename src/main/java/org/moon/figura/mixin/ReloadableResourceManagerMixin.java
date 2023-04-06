@@ -1,5 +1,6 @@
 package org.moon.figura.mixin;
 
+import net.fabricmc.fabric.impl.resource.loader.FabricModResourcePack;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import org.moon.figura.resources.FiguraRuntimeResources;
@@ -16,8 +17,15 @@ public class ReloadableResourceManagerMixin {
     @ModifyVariable(at = @At(value = "HEAD"), method = "createReload", argsOnly = true)
     private List<PackResources> createReload(List<PackResources> packs) {
         List<PackResources> list = new ArrayList<>(packs);
+
+        int index = 0;
+        for (int i = 0; i < list.size(); i++)
+            if (list.get(i) instanceof FabricModResourcePack)
+                index = i + 1;
+
         FiguraRuntimeResources.joinFuture();
-        list.add(FiguraRuntimeResources.PACK);
+        list.add(index, FiguraRuntimeResources.PACK);
+
         return list;
     }
 }
