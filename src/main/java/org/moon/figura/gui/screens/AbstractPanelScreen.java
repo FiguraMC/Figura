@@ -208,6 +208,11 @@ public abstract class AbstractPanelScreen extends Screen {
         if (children().contains(panels) && panels.cycleTab(keyCode))
             return true;
 
+        if (keyCode == 256 && contextMenu != null && contextMenu.isVisible()) {
+            contextMenu.setVisible(false);
+            return true;
+        }
+
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 }
