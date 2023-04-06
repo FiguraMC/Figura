@@ -35,9 +35,17 @@ public class ChatComponentMixin {
 
     @ModifyVariable(at = @At("HEAD"), method = "addMessage(Lnet/minecraft/network/chat/Component;IIZ)V", ordinal = 0, argsOnly = true)
     private Component addMessage(Component message, Component message2, int messageId, int timestamp, boolean refresh) {
-        //get config
+        //do not change the message on refresh
+        if (refresh || AvatarManager.panic)
+            return message;
+
+        //emojis
+        if (Configs.CHAT_EMOJIS.value)
+            message = Emojis.applyEmojis(message);
+
+        //nameplates
         int config = Configs.CHAT_NAMEPLATE.value;
-        if (refresh || config == 0 || AvatarManager.panic)
+        if (config == 0)
             return message;
 
         message = TextUtils.parseLegacyFormatting(message);
@@ -91,10 +99,5 @@ public class ChatComponentMixin {
         }
 
         return message;
-    }
-
-    @ModifyVariable(at = @At("HEAD"), method = "addMessage(Lnet/minecraft/network/chat/Component;IIZ)V", argsOnly = true)
-    private Component addMessageEmojis(Component message) {
-        return Configs.CHAT_EMOJIS.value ? Emojis.applyEmojis(message) : message;
     }
 }

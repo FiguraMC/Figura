@@ -1,12 +1,12 @@
 package org.moon.figura.gui.widgets;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Quaternion;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
+import org.moon.figura.FiguraMod;
 import org.moon.figura.gui.screens.AvatarScreen;
 import org.moon.figura.model.rendering.EntityRenderMode;
 import org.moon.figura.utils.FiguraIdentifier;
@@ -92,21 +92,10 @@ public class EntityPreview extends AbstractContainerElement {
             UIHelper.drawEntity(x + modelX, y + modelY, scale + scaledValue, angleX, angleY, entity, stack, EntityRenderMode.FIGURA_GUI);
             stack.popPose();
         } else {
-            stack.pushPose();
-
-            //transforms
-            stack.translate(x + modelX, y + modelY, 0f);
-            float scale = this.scale / 35;
-            stack.scale(scale, scale, scale);
-
-            float xRot = Mth.wrapDegrees((angleX - pitch) * 2) / 2f;
-            float yRot = Mth.wrapDegrees((angleY - yaw) * 2) / 2f;
-            stack.mulPose(Quaternion.fromXYZ((float) Math.toRadians(xRot), (float) Math.toRadians(yRot), 0f));
-
             //draw
-            UIHelper.renderTexture(stack, -24, -32, 48, 64, UNKNOWN);
-
-            stack.popPose();
+            int s = Math.min(width, height) * 2 / 3;
+            UIHelper.setupTexture(UNKNOWN);
+            UIHelper.blit(stack, x + (width - s) / 2, y + (height - s) / 2, s, s, 0f, 64 * ((int) (FiguraMod.ticks / 3f) % 8), 64, 64, 64, 512);
         }
 
         UIHelper.disableScissor();
