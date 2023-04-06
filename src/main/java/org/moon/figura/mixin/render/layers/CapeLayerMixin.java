@@ -18,6 +18,7 @@ import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.ducks.PlayerModelAccessor;
 import org.moon.figura.lua.api.vanilla_model.VanillaPart;
 import org.moon.figura.permissions.Permissions;
+import org.moon.figura.utils.RenderUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -117,7 +118,7 @@ public abstract class CapeLayerMixin extends RenderLayer<AbstractClientPlayer, P
         avatar.capeRender(entity, multiBufferSource, poseStack, light, tickDelta, fakeCloak);
 
         //Setup visibility for real cloak
-        if (avatar.luaRuntime != null && avatar.permissions.get(Permissions.VANILLA_MODEL_EDIT) == 1)
+        if (RenderUtils.vanillaModelAndScript(avatar))
             avatar.luaRuntime.vanilla_model.CAPE.posTransform(getParentModel());
     }
 

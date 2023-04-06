@@ -10,9 +10,8 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
-import org.moon.figura.lua.api.vanilla_model.VanillaModelAPI;
 import org.moon.figura.lua.api.vanilla_model.VanillaPart;
-import org.moon.figura.permissions.Permissions;
+import org.moon.figura.utils.RenderUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -27,35 +26,21 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
     }
 
     @Unique
-    private VanillaModelAPI vanillaModelAPI;
+    private Avatar avatar;
 
     @Inject(at = @At("HEAD"), method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V")
     public void onRender(PoseStack poseStack, MultiBufferSource multiBufferSource, int i, T livingEntity, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
-        Avatar avatar = AvatarManager.getAvatar(livingEntity);
-        if (avatar != null && avatar.luaRuntime != null && avatar.permissions.get(Permissions.VANILLA_MODEL_EDIT) == 1)
-            vanillaModelAPI = avatar.luaRuntime.vanilla_model;
-        else
-            vanillaModelAPI = null;
+         avatar = AvatarManager.getAvatar(livingEntity);
     }
 
     @Inject(at = @At("RETURN"), method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V")
     public void postRender(PoseStack poseStack, MultiBufferSource multiBufferSource, int i, T livingEntity, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
-        vanillaModelAPI = null;
+        avatar = null;
     }
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/layers/HumanoidArmorLayer;usesInnerModel(Lnet/minecraft/world/entity/EquipmentSlot;)Z"), method = "renderArmorPiece")
     public void onRenderArmorPiece(PoseStack poseStack, MultiBufferSource multiBufferSource, T livingEntity, EquipmentSlot equipmentSlot, int i, A humanoidModel, CallbackInfo ci) {
-        if (vanillaModelAPI == null)
-            return;
-
-        VanillaPart part = switch (equipmentSlot) {
-            case HEAD -> vanillaModelAPI.HELMET;
-            case CHEST -> vanillaModelAPI.CHESTPLATE;
-            case LEGS -> vanillaModelAPI.LEGGINGS;
-            case FEET -> vanillaModelAPI.BOOTS;
-            default -> null;
-        };
-
+        VanillaPart part = RenderUtils.partFromSlot(avatar, equipmentSlot);
         if (part != null) {
             part.save(humanoidModel);
             part.preTransform(humanoidModel);
@@ -65,17 +50,7 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
 
     @Inject(at = @At("RETURN"), method = "renderArmorPiece")
     public void postRenderArmorPiece(PoseStack poseStack, MultiBufferSource multiBufferSource, T livingEntity, EquipmentSlot equipmentSlot, int i, A humanoidModel, CallbackInfo ci) {
-        if (vanillaModelAPI == null)
-            return;
-
-        VanillaPart part = switch (equipmentSlot) {
-            case HEAD -> vanillaModelAPI.HELMET;
-            case CHEST -> vanillaModelAPI.CHESTPLATE;
-            case LEGS -> vanillaModelAPI.LEGGINGS;
-            case FEET -> vanillaModelAPI.BOOTS;
-            default -> null;
-        };
-
+        VanillaPart part = RenderUtils.partFromSlot(avatar, equipmentSlot);
         if (part != null)
             part.restore(humanoidModel);
     }

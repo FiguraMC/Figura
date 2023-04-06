@@ -15,9 +15,7 @@ import org.moon.figura.utils.EntityUtils;
 import org.moon.figura.utils.TextUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Map;
 import java.util.UUID;
@@ -26,18 +24,19 @@ import java.util.regex.Pattern;
 @Mixin(ChatComponent.class)
 public class ChatComponentMixin {
 
-    @Inject(at = @At("HEAD"), method = "addMessage(Lnet/minecraft/network/chat/Component;IIZ)V")
-    private void addMessageEvent(Component message, int messageId, int timestamp, boolean refresh, CallbackInfo ci) {
-        Avatar avatar;
-        if (!refresh && (avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID())) != null)
-            avatar.chatReceivedMessageEvent(message);
-    }
-
     @ModifyVariable(at = @At("HEAD"), method = "addMessage(Lnet/minecraft/network/chat/Component;IIZ)V", ordinal = 0, argsOnly = true)
     private Component addMessage(Component message, Component message2, int messageId, int timestamp, boolean refresh) {
         //do not change the message on refresh
         if (refresh || AvatarManager.panic)
             return message;
+
+        //receive event
+        Avatar localPlayer = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
+        if (localPlayer != null) {
+            String newMessage = localPlayer.chatReceivedMessageEvent(message);
+            if (newMessage != null)
+                message = TextUtils.tryParseJson(newMessage);
+        }
 
         //emojis
         if (Configs.CHAT_EMOJIS.value)
