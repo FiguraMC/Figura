@@ -116,6 +116,23 @@ public abstract class AbstractContainerElement extends AbstractContainerEventHan
         return children;
     }
 
+    protected void unfocusAll() {
+        for (GuiEventListener child : children())
+            child.setFocused(false);
+    }
+
+    @Override
+    public void setFocused(GuiEventListener child) {
+        unfocusAll();
+        super.setFocused(child);
+    }
+
+    @Override
+    public void setFocused(boolean focused) {
+        unfocusAll();
+        super.setFocused(focused);
+    }
+
     @Override
     public void updateNarration(NarrationElementOutput output) {
     }

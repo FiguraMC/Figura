@@ -152,6 +152,13 @@ public class ContextMenu extends AbstractContainerElement {
         return entries;
     }
 
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        boolean result = super.mouseClicked(mouseX, mouseY, button);
+        setFocused(null);
+        return result;
+    }
+
     private static class ContextButton extends Button {
 
         protected final ContextMenu parent;
