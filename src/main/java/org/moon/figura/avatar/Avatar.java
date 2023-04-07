@@ -598,10 +598,11 @@ public class Avatar {
         Lighting.setupForFlatItems();
 
         stack.pushPose();
-        stack.scale(16, 16, -16);
+        stack.last().pose().scale(16, 16, -16);
+        stack.last().normal().scale(1, 1, -1);
         RenderSystem.disableDepthTest();
-        renderer.renderSpecialParts();
-        ((MultiBufferSource.BufferSource) renderer.bufferSource).endBatch();
+        if (renderer.renderSpecialParts() > 0)
+            ((MultiBufferSource.BufferSource) renderer.bufferSource).endLastBatch();
         RenderSystem.enableDepthTest();
         stack.popPose();
 
