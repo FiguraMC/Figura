@@ -463,7 +463,7 @@ public class UIHelper extends GuiComponent {
 
     public static boolean isMouseOver(int x, int y, int width, int height, double mouseX, double mouseY, boolean force) {
         ContextMenu context = force ? null : getContext();
-        return (context == null || !context.isVisible()) && mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height;
+        return (context == null || !context.isVisible()) && mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + height;
     }
 
     public static void renderOutlineText(PoseStack stack, Font textRenderer, Component text, int x, int y, int color, int outline) {
