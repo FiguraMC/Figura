@@ -52,6 +52,8 @@ public class FiguraMod implements ClientModInitializer {
     public static int ticks;
     public static Entity extendedPickEntity;
     public static Component splashText;
+    public static boolean parseMessages = true;
+    public static boolean processingKeybind;
 
     @Override
     public void onInitializeClient() {
@@ -76,7 +78,8 @@ public class FiguraMod implements ClientModInitializer {
         pushProfiler("network");
         NetworkStuff.tick();
         popPushProfiler("files");
-        LocalAvatarLoader.tickWatchedKey();
+        LocalAvatarLoader.tick();
+        LocalAvatarFetcher.tick();
         popPushProfiler("avatars");
         AvatarManager.tickLoadedAvatars();
         popPushProfiler("chatPrint");
@@ -120,10 +123,13 @@ public class FiguraMod implements ClientModInitializer {
      * @param message - text to send
      */
     public static void sendChatMessage(Component message) {
-        if (Minecraft.getInstance().gui != null)
+        if (Minecraft.getInstance().gui != null) {
+            parseMessages = false;
             Minecraft.getInstance().gui.getChat().addMessage(TextUtils.replaceTabs(message));
-        else
+            parseMessages = true;
+        } else {
             LOGGER.info(message.getString());
+        }
     }
 
     /**

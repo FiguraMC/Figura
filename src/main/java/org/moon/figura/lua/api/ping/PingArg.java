@@ -84,12 +84,14 @@ public class PingArg {
 
     private static void writeVarInt(int value, DataOutputStream dos) throws IOException {
         boolean neg = value < 0;
-        value = neg ? - value : value;
+        value = neg ? -value : value;
         dos.writeByte(value & 63 | (neg ? 64 : 0) | (value > 63 ? 128 : 0));
+
         value >>>= 6;
-        if(value == 0)
+        if (value == 0)
             return;
-        while((value & -128) != 0) {
+
+        while ((value & -128) != 0) {
             dos.writeByte(value & 127 | 128);
             value >>>= 7;
         }
@@ -167,11 +169,13 @@ public class PingArg {
         byte b = dis.readByte();
         boolean neg = (b & 64) == 64;
         value |= b & 63;
+
         while (bytes <= 4 && (b & 128) == 128) {
             b = dis.readByte();
             value |= (b & 127) << bytes++ * 7 - 1;
         }
-        return neg ? - value : value;
+
+        return neg ? -value : value;
     }
 
     private static LuaValue readTable(DataInputStream dis, Avatar owner) throws IOException {

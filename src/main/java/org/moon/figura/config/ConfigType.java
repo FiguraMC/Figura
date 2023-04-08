@@ -134,22 +134,24 @@ public abstract class ConfigType<T> {
 
 
     public static class EnumConfig extends ParentedConfig<Integer> {
-        public Component enumTooltip;
-        public List<Component> enumList;
+        public List<Component> enumList, enumTooltip;
 
         public EnumConfig(String name, Category category, int defaultValue, int length) {
             super(name, category, defaultValue);
 
             name = "config." + name;
 
-            //tooltip
-            this.enumTooltip = FiguraText.of(name + ".enum");
-
             //generate enum list
             ArrayList<Component> enumList = new ArrayList<>();
-            for (int i = 1; i <= length; i++)
+            ArrayList<Component> enumTooltip = new ArrayList<>();
+
+            for (int i = 1; i <= length; i++) {
                 enumList.add(FiguraText.of(name + "." + i));
+                enumTooltip.add(FiguraText.of(name + "." + i + ".tooltip"));
+            }
+
             this.enumList = enumList;
+            this.enumTooltip = enumTooltip;
         }
 
         @Override

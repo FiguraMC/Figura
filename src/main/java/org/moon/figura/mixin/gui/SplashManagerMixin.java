@@ -48,9 +48,6 @@ public class SplashManagerMixin {
         int day = calendar.get(Calendar.DAY_OF_MONTH);
 
         switch (calendar.get(Calendar.MONTH)) {
-            case Calendar.JANUARY -> {
-                if (day == 1) who = "Foxes";
-            }
             case Calendar.MARCH -> {
                 switch (day) {
                     case 5 -> who = "Limits";

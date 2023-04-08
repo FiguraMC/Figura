@@ -56,7 +56,7 @@ public class LuaEvent {
     //If piped, the result of one function is passed through to the next, repeatedly, eventually returning the result.
     public Varargs call(Varargs args) {
         flushQueue();
-        Varargs vars = args;
+        Varargs vars = piped ? args : null;
         for (LuaFunction function : functions) {
             FiguraMod.pushProfiler(function.name());
             vars = function.invoke(piped ? vars : args);
