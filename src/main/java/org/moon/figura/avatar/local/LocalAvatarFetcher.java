@@ -13,8 +13,7 @@ import org.moon.figura.utils.IOUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,11 +33,13 @@ public class LocalAvatarFetcher {
     public static final List<AvatarPath> ALL_AVATARS = new ArrayList<>();
     private static final Map<String, Properties> SAVED_DATA = new HashMap<>();
 
+    private static final Map<Path, WatchKey> WATCHED_KEYS = new HashMap<>();
+
     /**
      * Clears out the root AvatarFolder, and regenerates it from the
      * file system.
      */
-    public static void load() {
+    public static void loadAvatars() {
         //clear loaded avatars
         ALL_AVATARS.clear();
 
@@ -50,11 +51,45 @@ public class LocalAvatarFetcher {
         ALL_AVATARS.addAll(root.getChildren());
     }
 
+    public static void tick() {
+        boolean reload = false;
+
+        for (Map.Entry<Path, WatchKey> entry : WATCHED_KEYS.entrySet()) {
+            WatchKey key = entry.getValue();
+            if (!key.isValid())
+                continue;
+
+            for (WatchEvent<?> event : key.pollEvents()) {
+                WatchEvent.Kind<?> kind = event.kind();
+                if (kind == StandardWatchEventKinds.OVERFLOW)
+                    continue;
+
+                if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
+                    Path child = entry.getKey().resolve(((WatchEvent<Path>) event).context());
+                    LocalAvatarLoader.addWatchKey(child, WATCHED_KEYS::put);
+                }
+
+                reload = true;
+            }
+
+            if (reload)
+                break;
+        }
+
+        if (reload)
+            loadAvatars();
+    }
+
+    public static void init() {
+        load();
+        LocalAvatarLoader.addWatchKey(getLocalAvatarDirectory(), WATCHED_KEYS::put);
+    }
+
     /**
      * Loads the folder data from the disk
      * the folder data contains information about the avatar folders
      */
-    public static void init() {
+    public static void load() {
         IOUtils.readCacheFile("avatars", nbt -> {
             //loading
             ListTag list = nbt.getList("properties", Tag.TAG_COMPOUND);

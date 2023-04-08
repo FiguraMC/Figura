@@ -25,7 +25,19 @@ public class AvatarFolderWidget extends AbstractAvatarWidget {
         }) {
             @Override
             protected  void renderText(PoseStack stack, float delta) {
+                //ugly hack
+                int x = getX();
+                int width = getWidth();
+
+                int space = Math.max(SPACING * depth - 2, 0);
+
+                setX(x + space);
+                setWidth(width - space);
+
                 super.renderText(stack, delta);
+
+                setX(x);
+                setWidth(width);
 
                 //fix tooltip
                 if (getTooltip() == getMessage())
@@ -57,7 +69,7 @@ public class AvatarFolderWidget extends AbstractAvatarWidget {
     public void update(LocalAvatarFetcher.AvatarPath path, String filter) {
         super.update(path, filter);
 
-        if (!(path instanceof LocalAvatarFetcher.FolderPath avatar))
+        if (!(path instanceof LocalAvatarFetcher.FolderPath folderPath))
             return;
 
         for (AbstractAvatarWidget value : entries.values())
@@ -65,7 +77,7 @@ public class AvatarFolderWidget extends AbstractAvatarWidget {
 
         //update children
         HashSet<String> missingPaths = new HashSet<>(entries.keySet());
-        for (LocalAvatarFetcher.AvatarPath child : avatar.getChildren()) {
+        for (LocalAvatarFetcher.AvatarPath child : folderPath.getChildren()) {
             String str = child.getPath() + child.getName();
 
             //skip unfiltered

@@ -35,9 +35,15 @@ public class ChatComponentMixin {
         Avatar localPlayer = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
         if (localPlayer != null) {
             String newMessage = localPlayer.chatReceivedMessageEvent(message);
-            if (newMessage != null)
+            //only allow editing if we can parse the messages
+            //however allow the event to run, so people can still get those special messages
+            if (FiguraMod.parseMessages && newMessage != null)
                 message = TextUtils.tryParseJson(newMessage);
         }
+
+        //stop here if we should not parse messages
+        if (!FiguraMod.parseMessages)
+            return message;
 
         //emojis
         if (Configs.CHAT_EMOJIS.value)

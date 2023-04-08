@@ -42,7 +42,7 @@ public class AvatarWidget extends AbstractAvatarWidget {
                 //variables
                 Font font = Minecraft.getInstance().font;
 
-                int space = font.width(spacing);
+                int space = SPACING * depth;
                 int width = this.width - 26 - space;
                 int x = getX() + 2 + space;
                 int y = getY() + 2;

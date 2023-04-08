@@ -135,7 +135,7 @@ public class FiguraDebugCommand {
         root.add("permissions", permissions);
 
         //avatars
-        LocalAvatarFetcher.load();
+        LocalAvatarFetcher.loadAvatars();
         root.add("avatars", getAvatarsPaths(LocalAvatarFetcher.ALL_AVATARS));
 
 

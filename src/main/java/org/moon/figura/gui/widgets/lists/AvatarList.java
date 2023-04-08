@@ -5,13 +5,12 @@ import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.util.Mth;
-import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.avatar.local.LocalAvatarFetcher;
 import org.moon.figura.gui.screens.AbstractPanelScreen;
 import org.moon.figura.gui.screens.AvatarWizardScreen;
-import org.moon.figura.gui.widgets.TextField;
 import org.moon.figura.gui.widgets.Button;
+import org.moon.figura.gui.widgets.TextField;
 import org.moon.figura.gui.widgets.avatar.AbstractAvatarWidget;
 import org.moon.figura.gui.widgets.avatar.AvatarFolderWidget;
 import org.moon.figura.gui.widgets.avatar.AvatarWidget;
@@ -89,7 +88,7 @@ public class AvatarList extends AbstractList {
         this.updateScissors(1, 49, -2, -50);
 
         //initial load
-        LocalAvatarFetcher.load();
+        LocalAvatarFetcher.loadAvatars();
         loadContents();
 
         scrollToSelected();
@@ -99,8 +98,6 @@ public class AvatarList extends AbstractList {
     @Override
     public void tick() {
         //update list
-        if (FiguraMod.ticks % 20 == 0)
-            LocalAvatarFetcher.load();
         loadContents();
         super.tick();
     }

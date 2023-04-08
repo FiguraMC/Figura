@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
 
 /**
@@ -37,13 +38,14 @@ import java.util.regex.Pattern;
  */
 public class LocalAvatarLoader {
 
-    private static CompletableFuture<Void> tasks;
-
-    private static WatchService watcher;
     private static final HashMap<Path, WatchKey> KEYS = new HashMap<>();
+
+    private static CompletableFuture<Void> tasks;
     private static Path lastLoadedPath;
     private static int loadState;
     private static String loadError;
+
+    private static WatchService watcher;
 
     public static final HashMap<ResourceLocation, CompoundTag> CEM_AVATARS = new HashMap<>();
     public static final FiguraResourceListener AVATAR_LISTENER = new FiguraResourceListener("cem", manager -> {
@@ -102,7 +104,7 @@ public class LocalAvatarLoader {
         loadState = 0;
         resetWatchKeys();
         lastLoadedPath = path;
-        addWatchKey(path);
+        addWatchKey(path, KEYS::put);
 
         if (path == null || target == null)
             return;
@@ -250,7 +252,7 @@ public class LocalAvatarLoader {
     /**
      * Tick the watched key for hotswapping avatars
      */
-    public static void tickWatchedKey() {
+    public static void tick() {
         WatchEvent<?> event = null;
         boolean reload = false;
 
@@ -296,8 +298,9 @@ public class LocalAvatarLoader {
      * register new watch keys
      *
      * @param path the path to register the watch key
+     * @param consumer a consumer that will process the watch key and its path
      */
-    private static void addWatchKey(Path path) {
+    protected static void addWatchKey(Path path, BiConsumer<Path, WatchKey> consumer) {
         if (watcher == null || path == null)
             return;
 
@@ -307,14 +310,14 @@ public class LocalAvatarLoader {
 
         try {
             WatchKey key = path.register(watcher, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY);
-            KEYS.put(path, key);
+            consumer.accept(path, key);
 
             File[] children = file.listFiles();
             if (children == null)
                 return;
 
             for (File child : children)
-                addWatchKey(child.toPath());
+                addWatchKey(child.toPath(), consumer);
         } catch (Exception e) {
             FiguraMod.LOGGER.error("Failed to register watcher for " + path, e);
         }

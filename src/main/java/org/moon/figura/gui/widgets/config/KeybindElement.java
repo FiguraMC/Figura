@@ -22,6 +22,7 @@ public class KeybindElement extends AbstractConfigElement {
         //toggle button
         children.add(0, button = new ParentedButton(0, 0, 90, 20, this.binding.getTranslatedKeyMessage(), this, button -> {
             parent.focusedBinding = binding;
+            FiguraMod.processingKeybind = true;
             updateText();
         }));
         button.active = FiguraMod.DEBUG_MODE || !config.disabled;

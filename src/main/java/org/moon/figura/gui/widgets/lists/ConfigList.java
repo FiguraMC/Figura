@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.util.Mth;
+import org.moon.figura.FiguraMod;
 import org.moon.figura.config.ConfigManager;
 import org.moon.figura.config.ConfigType;
 import org.moon.figura.gui.screens.ConfigScreen;
@@ -123,6 +124,7 @@ public class ConfigList extends AbstractList {
 
         focusedBinding.setKey(key);
         focusedBinding = null;
+        FiguraMod.processingKeybind = false;
 
         updateKeybinds();
         return true;

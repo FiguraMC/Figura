@@ -69,17 +69,17 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
 
     private void generateContext() {
         //name uuid
-        context.addAction(FiguraText.of("gui.context.copy_name"), button -> {
+        context.addAction(FiguraText.of("gui.context.copy_name"), null, button -> {
             Minecraft.getInstance().keyboardHandler.setClipboard(this.getName());
             FiguraToast.sendToast(FiguraText.of("toast.clipboard"));
         });
-        context.addAction(FiguraText.of("gui.context.copy_uuid"), button -> {
+        context.addAction(FiguraText.of("gui.context.copy_uuid"), null, button -> {
             Minecraft.getInstance().keyboardHandler.setClipboard(this.getOwner().toString());
             FiguraToast.sendToast(FiguraText.of("toast.clipboard"));
         });
 
         //reload
-        context.addAction(FiguraText.of("gui.context.reload"), button -> {
+        context.addAction(FiguraText.of("gui.context.reload"), null, button -> {
             AvatarManager.reloadAvatar(owner);
             FiguraToast.sendToast(FiguraText.of("toast.reload"));
         });
@@ -88,16 +88,16 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
         ContextMenu permissionsContext = new ContextMenu();
         for (Permissions.Category category : Permissions.Category.values()) {
             PermissionPack.CategoryPermissionPack categoryPack = PermissionManager.CATEGORIES.get(category);
-            permissionsContext.addAction(categoryPack.getCategoryName(), button -> {
+            permissionsContext.addAction(categoryPack.getCategoryName(), null, button -> {
                 pack.setCategory(categoryPack);
                 if (parent.selectedEntry == this)
                     parent.parent.updatePermissions(pack);
             });
         }
-        context.addTab(FiguraText.of("gui.context.set_permissions"), permissionsContext);
+        context.addTab(FiguraText.of("gui.context.set_permissions"), null, permissionsContext);
 
         if (FiguraMod.DEBUG_MODE) {
-            context.addAction(Component.literal("yoink to cache"), button -> {
+            context.addAction(Component.literal("yoink to cache"), null, button -> {
                 Avatar a = AvatarManager.getAvatarForPlayer(owner);
                 if (a != null) {
                     if (a.nbt != null) {

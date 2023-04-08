@@ -1,17 +1,16 @@
 package org.moon.figura.gui.widgets.config;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.config.ConfigType;
 import org.moon.figura.gui.widgets.ContextMenu;
 import org.moon.figura.gui.widgets.ParentedButton;
 import org.moon.figura.gui.widgets.lists.ConfigList;
-import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.ui.UIHelper;
 
 import java.util.List;
@@ -20,14 +19,12 @@ public class EnumElement extends AbstractConfigElement {
 
     private final List<Component> names;
     private final ParentedButton button;
-    private final Component enumTooltip;
     private ContextMenu context;
 
     public EnumElement(int width, ConfigType.EnumConfig config, ConfigList parent) {
         super(width, config, parent);
 
         names = config.enumList;
-        enumTooltip = config.enumTooltip;
 
         //toggle button
         children.add(0, button = new ParentedButton(0, 0, 90, 20, names.get((int) this.config.tempValue % this.names.size()), this, button -> {
@@ -68,8 +65,9 @@ public class EnumElement extends AbstractConfigElement {
         //context menu
         context = new ContextMenu(button, button.getWidth());
         for (int i = 0; i < names.size(); i++) {
-            int finalI = i; //bruh
-            context.addAction(names.get(i), button1 -> config.tempValue = finalI);
+            int finalI = i;
+            Component tooltip = config.enumTooltip != null ? config.enumTooltip.get(i) : null;
+            context.addAction(names.get(i), tooltip, button1 -> config.tempValue = finalI);
         }
     }
 
@@ -107,17 +105,6 @@ public class EnumElement extends AbstractConfigElement {
         this.context.setPos(this.button.getX() + this.button.getWidth() / 2 - this.context.width / 2, this.button.getY() + 20);
     }
 
-    @Override
-    public MutableComponent getTooltip() {
-        MutableComponent tooltip = super.getTooltip();
-        if (enumTooltip != null) {
-            tooltip.append("\n");
-            for (Component component : TextUtils.splitText(enumTooltip, "\n"))
-                tooltip.append("\n• ").append(component);
-        }
-        return tooltip;
-    }
-
     private void updateContextText() {
         //cache entries
         List<? extends AbstractWidget> entries = context.getEntries();
@@ -130,7 +117,7 @@ public class EnumElement extends AbstractConfigElement {
 
             //selected entry
             if (i == (int) this.config.tempValue % this.names.size())
-                text = Component.empty().setStyle(FiguraMod.getAccentColor()).append(text);
+                text = Component.empty().setStyle(FiguraMod.getAccentColor()).withStyle(ChatFormatting.UNDERLINE).append(text);
 
             //apply text
             entries.get(i).setMessage(text);
