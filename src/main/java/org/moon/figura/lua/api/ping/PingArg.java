@@ -21,7 +21,8 @@ public class PingArg {
             STRING = 4,
             TABLE = 5,
             VECTOR = 6,
-            MATRIX = 7;
+            MATRIX = 7,
+            VINT = 8;
 
     private final Varargs args;
 
@@ -55,8 +56,14 @@ public class PingArg {
             dos.writeByte(STRING);
             writeString(valStr, dos);
         } else if (val.isint()) {
-            dos.writeByte(INT);
-            dos.writeInt(val.checkinteger().v);
+            int value = val.checkint();
+            if (value >= -(1 << 20) && value < 1 << 20) {
+                dos.writeByte(VINT);
+                writeVarInt(value, dos);
+            } else {
+                dos.writeByte(INT);
+                dos.writeInt(value);
+            }
         } else if (val.isnumber()) {
             dos.writeByte(DOUBLE);
             dos.writeDouble(val.checkdouble());
@@ -75,6 +82,21 @@ public class PingArg {
         }
     }
 
+    private static void writeVarInt(int value, DataOutputStream dos) throws IOException {
+        boolean neg = value < 0;
+        value = neg ? - value : value;
+        dos.writeByte(value & 63 | (neg ? 64 : 0) | (value > 63 ? 128 : 0));
+        value >>>= 6;
+        if(value == 0)
+            return;
+        while((value & -128) != 0) {
+            dos.writeByte(value & 127 | 128);
+            value >>>= 7;
+        }
+
+        dos.writeByte(value);
+    }
+
     private static void writeString(LuaString string, DataOutputStream dos) throws IOException {
         int strLen = Math.min(string.length(), Short.MAX_VALUE * 2 + 1);
         dos.writeShort((short) strLen);
@@ -82,7 +104,7 @@ public class PingArg {
     }
 
     private static void writeTable(LuaTable table, DataOutputStream dos) throws IOException {
-        dos.writeInt(table.keyCount());
+        writeVarInt(table.keyCount(), dos);
 
         for (LuaValue key : table.keys()) {
             writeArg(key, dos);
@@ -134,12 +156,26 @@ public class PingArg {
             case TABLE -> readTable(dis, owner);
             case VECTOR -> owner.luaRuntime.typeManager.javaToLua(readVec(dis)).arg1();
             case MATRIX -> owner.luaRuntime.typeManager.javaToLua(readMat(dis)).arg1();
+            case VINT -> LuaValue.valueOf(readVarInt(dis));
             default -> LuaValue.NIL;
         };
     }
 
+    private static int readVarInt(DataInputStream dis) throws IOException {
+        int value = 0;
+        int bytes = 1;
+        byte b = dis.readByte();
+        boolean neg = (b & 64) == 64;
+        value |= b & 63;
+        while (bytes <= 4 && (b & 128) == 128) {
+            b = dis.readByte();
+            value |= (b & 127) << bytes++ * 7 - 1;
+        }
+        return neg ? - value : value;
+    }
+
     private static LuaValue readTable(DataInputStream dis, Avatar owner) throws IOException {
-        int size = dis.readInt();
+        int size = readVarInt(dis);
         LuaTable table = new LuaTable();
 
         for (int i = 0; i < size; i++)
