@@ -20,7 +20,7 @@ import java.io.File;
 
 public abstract class AbstractAvatarWidget extends AbstractContainerElement implements Comparable<AbstractAvatarWidget> {
 
-    protected static final String SPACING = "  ";
+    protected static final int SPACING = 6;
     protected static final Component FAVOURITE = new TextComponent("★").withStyle(Style.EMPTY.withFont(UIHelper.UI_FONT));
     protected static final Component ADD_FAVOURITE = new FiguraText("gui.context.favorite.add");
     protected static final Component REMOVE_FAVOURITE = new FiguraText("gui.context.favorite.remove");
@@ -28,7 +28,6 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
     protected final AvatarList parent;
     protected final int depth;
     protected final ContextMenu context;
-    protected String spacing = "";
 
     protected LocalAvatarFetcher.AvatarPath avatar;
     protected Button button;
@@ -43,17 +42,17 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
         this.context = new ContextMenu(this);
         this.favourite = avatar.isFavourite();
 
-        context.addAction(favourite ? REMOVE_FAVOURITE : ADD_FAVOURITE, button -> {
+        context.addAction(favourite ? REMOVE_FAVOURITE : ADD_FAVOURITE, null, button -> {
             favourite = !favourite;
             avatar.setFavourite(favourite);
             button.setMessage(favourite ? REMOVE_FAVOURITE : ADD_FAVOURITE);
             context.updateDimensions();
         });
-        context.addAction(new FiguraText("gui.context.open_folder"), button -> {
+        context.addAction(new FiguraText("gui.context.open_folder"), null, button -> {
             File f = avatar.getPath().toFile();
             Util.getPlatform().openFile(f.isDirectory() ? f : f.getParentFile());
         });
-        context.addAction(new FiguraText("gui.context.copy_path"), button -> {
+        context.addAction(new FiguraText("gui.context.copy_path"), null, button -> {
             Minecraft.getInstance().keyboardHandler.setClipboard(avatar.getPath().toString());
             FiguraToast.sendToast(new FiguraText("toast.clipboard"));
         });
@@ -110,7 +109,6 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
     public void update(LocalAvatarFetcher.AvatarPath path, String filter) {
         this.avatar = path;
         this.filter = filter.toLowerCase();
-        this.spacing = SPACING.repeat(depth);
     }
 
     public Component getName() {

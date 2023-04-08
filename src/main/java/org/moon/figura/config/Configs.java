@@ -66,38 +66,35 @@ public class Configs {
             SELF_NAMEPLATE = new BoolConfig("self_nameplate", NAMEPLATE, false),
             PREVIEW_NAMEPLATE = new BoolConfig("preview_nameplate", NAMEPLATE, false),
             SOUND_BADGE = new BoolConfig("sound_badge", NAMEPLATE, true);
+    private static final String NAMEPLATE_PATH = "config.nameplate_level.";
+    private static final List<Component> NAMEPLATE_ENUM = List.of(
+            new FiguraText(NAMEPLATE_PATH + "1"),
+            new FiguraText(NAMEPLATE_PATH + "2"),
+            new FiguraText(NAMEPLATE_PATH + "3")
+    );
+    private static final List<Component> NAMEPLATE_TOOLTIP = List.of(
+            new FiguraText(NAMEPLATE_PATH + "1.tooltip"),
+            new FiguraText(NAMEPLATE_PATH + "2.tooltip"),
+            new FiguraText(NAMEPLATE_PATH + "3.tooltip")
+    );
     public static final EnumConfig
             NAMEPLATE_RENDER = new EnumConfig("nameplate_render", NAMEPLATE, 0, 3),
             CHAT_NAMEPLATE = new EnumConfig("chat_nameplate", NAMEPLATE, 2, 3) {{
-                String path = "config.nameplate_level";
-                this.enumTooltip = new FiguraText(path + ".enum");
-                this.enumList = List.of(
-                        new FiguraText(path + ".1"),
-                        new FiguraText(path + ".2"),
-                        new FiguraText(path + ".3")
-                );
+                this.enumList = NAMEPLATE_ENUM;
+                this.enumTooltip = NAMEPLATE_TOOLTIP;
             }},
             ENTITY_NAMEPLATE = new EnumConfig("entity_nameplate", NAMEPLATE, 2, 3) {{
-                String path = "config.nameplate_level";
-                this.enumTooltip = new FiguraText(path + ".enum");
-                this.enumList = List.of(
-                        new FiguraText(path + ".1"),
-                        new FiguraText(path + ".2"),
-                        new FiguraText(path + ".3")
-                );
+                this.enumList = NAMEPLATE_ENUM;
+                this.enumTooltip = NAMEPLATE_TOOLTIP;
             }},
             LIST_NAMEPLATE = new EnumConfig("list_nameplate", NAMEPLATE, 2, 3) {{
-                String path = "config.nameplate_level";
-                this.enumTooltip = new FiguraText(path + ".enum");
-                this.enumList = List.of(
-                        new FiguraText(path + ".1"),
-                        new FiguraText(path + ".2"),
-                        new FiguraText(path + ".3")
-                );
+                this.enumList = NAMEPLATE_ENUM;
+                this.enumTooltip = NAMEPLATE_TOOLTIP;
             }};
 
 
     // -- script -- //
+
 
     public static final EnumConfig
             LOG_LOCATION = new EnumConfig("log_location", SCRIPT, 0, 2),

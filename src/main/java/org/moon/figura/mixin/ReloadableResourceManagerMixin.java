@@ -1,6 +1,5 @@
 package org.moon.figura.mixin;
 
-import net.fabricmc.fabric.impl.resource.loader.FabricModResourcePack;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import org.moon.figura.resources.FiguraRuntimeResources;
@@ -19,9 +18,11 @@ public class ReloadableResourceManagerMixin {
         List<PackResources> list = new ArrayList<>(packs);
 
         int index = 0;
-        for (int i = 0; i < list.size(); i++)
-            if (list.get(i) instanceof FabricModResourcePack)
+        for (int i = 0; i < list.size(); i++) {
+            String id = list.get(i).packId();
+            if ("Fabric Mods".equals(id) || "vanilla".equals(id))
                 index = i + 1;
+        }
 
         FiguraRuntimeResources.joinFuture();
         list.add(index, FiguraRuntimeResources.PACK);

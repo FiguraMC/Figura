@@ -70,17 +70,17 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
 
     private void generateContext() {
         //name uuid
-        context.addAction(new FiguraText("gui.context.copy_name"), button -> {
+        context.addAction(new FiguraText("gui.context.copy_name"), null, button -> {
             Minecraft.getInstance().keyboardHandler.setClipboard(this.getName());
             FiguraToast.sendToast(new FiguraText("toast.clipboard"));
         });
-        context.addAction(new FiguraText("gui.context.copy_uuid"), button -> {
+        context.addAction(new FiguraText("gui.context.copy_uuid"), null, button -> {
             Minecraft.getInstance().keyboardHandler.setClipboard(this.getOwner().toString());
             FiguraToast.sendToast(new FiguraText("toast.clipboard"));
         });
 
         //reload
-        context.addAction(new FiguraText("gui.context.reload"), button -> {
+        context.addAction(new FiguraText("gui.context.reload"), null, button -> {
             AvatarManager.reloadAvatar(owner);
             FiguraToast.sendToast(new FiguraText("toast.reload"));
         });
@@ -89,16 +89,16 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
         ContextMenu permissionsContext = new ContextMenu();
         for (Permissions.Category category : Permissions.Category.values()) {
             PermissionPack.CategoryPermissionPack categoryPack = PermissionManager.CATEGORIES.get(category);
-            permissionsContext.addAction(categoryPack.getCategoryName(), button -> {
+            permissionsContext.addAction(categoryPack.getCategoryName(), null, button -> {
                 pack.setCategory(categoryPack);
                 if (parent.selectedEntry == this)
                     parent.parent.updatePermissions(pack);
             });
         }
-        context.addTab(new FiguraText("gui.context.set_permissions"), permissionsContext);
+        context.addTab(new FiguraText("gui.context.set_permissions"), null, permissionsContext);
 
         if (FiguraMod.DEBUG_MODE) {
-            context.addAction(new TextComponent("yoink to cache"), button -> {
+            context.addAction(new TextComponent("yoink to cache"), null, button -> {
                 Avatar a = AvatarManager.getAvatarForPlayer(owner);
                 if (a != null) {
                     if (a.nbt != null) {

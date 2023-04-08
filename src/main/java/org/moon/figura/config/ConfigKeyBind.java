@@ -23,11 +23,12 @@ public class ConfigKeyBind extends KeyMapping {
     public void setKey(InputConstants.Key boundKey) {
         super.setKey(boundKey);
 
-        config.value = this.saveString();
+        config.value = config.tempValue = this.saveString();
         ConfigManager.saveConfig();
 
         Options options = Minecraft.getInstance().options;
         if (options != null) options.save();
+
         KeyMapping.resetMapping();
     }
 }

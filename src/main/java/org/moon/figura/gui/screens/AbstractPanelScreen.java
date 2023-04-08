@@ -17,7 +17,11 @@ import java.util.List;
 
 public abstract class AbstractPanelScreen extends Screen {
 
-    public static final ResourceLocation BACKGROUND = new FiguraIdentifier("textures/gui/background.png");
+    public static final List<ResourceLocation> BACKGROUNDS = List.of(
+            new FiguraIdentifier("textures/gui/background/background_0.png"),
+            new FiguraIdentifier("textures/gui/background/background_1.png"),
+            new FiguraIdentifier("textures/gui/background/background_2.png")
+    );
 
     //variables
     protected final Screen parentScreen;
@@ -88,8 +92,11 @@ public abstract class AbstractPanelScreen extends Screen {
 
     public void renderBackground(PoseStack stack, float delta) {
         //render
-        double speed = Configs.BACKGROUND_SCROLL_SPEED.tempValue * 0.5;
-        UIHelper.renderAnimatedBackground(stack, BACKGROUND, 0, 0, this.width, this.height, 64, 64, speed, delta);
+        float speed = Configs.BACKGROUND_SCROLL_SPEED.tempValue * 0.125f;
+        for (ResourceLocation background : BACKGROUNDS) {
+            UIHelper.renderAnimatedBackground(stack, background, 0, 0, this.width, this.height, 64, 64, speed, delta);
+            speed /= 0.5;
+        }
     }
 
     public void renderOverlays(PoseStack stack, int mouseX, int mouseY, float delta) {
@@ -101,8 +108,9 @@ public abstract class AbstractPanelScreen extends Screen {
             contextMenu.render(stack, mouseX, mouseY, delta);
             stack.popPose();
         }
+
         //render tooltip
-        else if (tooltip != null)
+        if (tooltip != null)
             UIHelper.renderTooltip(stack, tooltip, mouseX, mouseY, true);
 
         tooltip = null;

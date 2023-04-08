@@ -8,6 +8,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.Mth;
+import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.gui.widgets.*;
 import org.moon.figura.lua.api.keybind.FiguraKeybind;
@@ -99,6 +100,7 @@ public class KeybindList extends AbstractList {
 
         focusedKeybind.setKey(key);
         focusedKeybind = null;
+        FiguraMod.processingKeybind = false;
 
         updateBindings();
         return true;
@@ -132,6 +134,7 @@ public class KeybindList extends AbstractList {
             //toggle button
             children.add(0, keybindButton = new ParentedButton(0, 0, 90, 20, keybind.getTranslatedKeyMessage(), this, button -> {
                 parent.focusedKeybind = keybind;
+                FiguraMod.processingKeybind = true;
                 updateText();
             }));
 

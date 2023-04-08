@@ -68,17 +68,17 @@ public class ContextMenu extends AbstractContainerElement {
         }
     }
 
-    public void addAction(Component name, Button.OnPress action) {
-        addElement(new ContextButton(x, y + this.height, name, this, action));
+    public void addAction(Component name, Component tooltip, Button.OnPress action) {
+        addElement(new ContextButton(x, y + this.height, name, tooltip, this, action));
     }
 
     public void addDivisor() {
         addElement(new ContextDivisor(x, y + this.height));
     }
 
-    public void addTab(Component name, ContextMenu context) {
+    public void addTab(Component name, Component tooltip, ContextMenu context) {
         //button
-        ContextButton button = new TabButton(x, y + this.height, name, this, context);
+        ContextButton button = new TabButton(x, y + this.height, name, tooltip, this, context);
         addElement(button);
 
         //context
@@ -164,13 +164,13 @@ public class ContextMenu extends AbstractContainerElement {
 
         protected final ContextMenu parent;
 
-        public ContextButton(int x, int y, Component text, ContextMenu parent, OnPress pressAction) {
-            super(x, y, 0, 16, text, null, pressAction);
+        public ContextButton(int x, int y, Component text, Component tooltip, ContextMenu parent, OnPress pressAction) {
+            super(x, y, 0, 16, text, tooltip, pressAction);
             this.shouldHaveBackground(false);
             this.parent = parent;
         }
 
-        public ContextButton(int x, int y, int height) {
+        protected ContextButton(int x, int y, int height) {
             super(x, y, 0, height, TextComponent.EMPTY.copy(), null, button -> {});
             this.shouldHaveBackground(false);
             this.parent = null;
@@ -226,8 +226,8 @@ public class ContextMenu extends AbstractContainerElement {
         private static final Component ARROW = new TextComponent(">").setStyle(Style.EMPTY.withFont(UIHelper.UI_FONT));
         private final ContextMenu context;
 
-        public TabButton(int x, int y, Component text, ContextMenu parent, ContextMenu context) {
-            super(x, y, text.copy().append(" ").append(ARROW), parent, button -> {});
+        public TabButton(int x, int y, Component text, Component tooltip, ContextMenu parent, ContextMenu context) {
+            super(x, y, text.copy().append(" ").append(ARROW), tooltip, parent, button -> {});
             this.setMessage(text);
             this.context = context;
             this.context.setVisible(true);

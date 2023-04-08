@@ -30,14 +30,14 @@ public class ContainerButton extends SwitchButton {
         //draw text
         font.drawShadow(
                 stack, message,
-                this.x + 3, this.y + this.height / 2 - font.lineHeight / 2,
+                this.x + arrowWidth + 6, this.y + this.height / 2 - font.lineHeight / 2,
                 color
         );
 
         //draw arrow
         font.drawShadow(
                 stack, arrow,
-                this.x + this.width - arrowWidth - 3, this.y + this.height / 2 - font.lineHeight / 2,
+                this.x + 3, this.y + this.height / 2 - font.lineHeight / 2,
                 color
         );
 
