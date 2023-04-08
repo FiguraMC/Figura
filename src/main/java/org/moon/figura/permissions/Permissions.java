@@ -33,7 +33,7 @@ public class Permissions {
             OFFSCREEN_RENDERING = new Permissions("OFFSCREEN_RENDERING", 0, 0, 0, 1, 1),
             //CUSTOM_SHADERS = new Permissions("CUSTOM_SHADERS", 0, 0, 1, 1, 1),
             CUSTOM_SOUNDS = new Permissions("CUSTOM_SOUNDS", 0, 0, 1, 1, 1),
-            CUSTOM_SKULL = new Permissions("CUSTOM_SKULL", 0, 0, 0, 1, 1);
+            CUSTOM_SKULL = new Permissions("CUSTOM_SKULL", 0, 0, 1, 1, 1);
 
     public static final List<Permissions> DEFAULT = List.of(
             INIT_INST,

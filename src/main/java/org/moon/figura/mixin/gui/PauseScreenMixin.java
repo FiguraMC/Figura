@@ -1,6 +1,7 @@
 package org.moon.figura.mixin.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.layouts.GridLayout;
 import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.client.gui.screens.PauseScreen;
@@ -75,7 +76,26 @@ public class PauseScreenMixin extends Screen {
         }
 
         if (config > 0) { //button
-            addRenderableWidget(Button.builder(FiguraText.of(), btn -> this.minecraft.setScreen(new WardrobeScreen(this))).bounds(x, y, 64, 20).build());
+            addRenderableWidget(new Button(x, y, 64, 20, FiguraText.of(), null, btn -> this.minecraft.setScreen(new WardrobeScreen(this))) {
+                @Override
+                public void renderWidget(PoseStack stack, int mouseX, int mouseY, float delta) {
+                    ChatFormatting color;
+                    if (this.isHoveredOrFocused()) {
+                        color = ChatFormatting.AQUA;
+                    } else if (AvatarManager.panic) {
+                        color = ChatFormatting.GRAY;
+                    } else {
+                        color = ChatFormatting.WHITE;
+                    }
+                    setMessage(getMessage().copy().withStyle(color));
+
+                    renderVanillaBackground(stack, mouseX, mouseY, delta);
+                    super.renderWidget(stack, mouseX, mouseY, delta);
+                }
+
+                @Override
+                protected void renderDefaultTexture(PoseStack stack, float delta) {}
+            });
         } else { //icon
             addRenderableWidget(new Button(x, y, 20, 20, 0, 0, 20, FIGURA_ICON, 60, 20, null, btn -> this.minecraft.setScreen(new WardrobeScreen(this))) {
                 @Override
@@ -85,11 +105,11 @@ public class PauseScreenMixin extends Screen {
                 }
 
                 @Override
-                protected int getUVStatus() {
-                    int uv = super.getUVStatus();
-                    if (uv == 1 && AvatarManager.panic)
+                protected int getU() {
+                    int u = super.getU();
+                    if (u == 1 && AvatarManager.panic)
                         return 0;
-                    return uv;
+                    return u;
                 }
             });
         }

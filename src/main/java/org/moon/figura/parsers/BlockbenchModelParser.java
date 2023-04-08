@@ -37,9 +37,9 @@ public class BlockbenchModelParser {
 
         //meta check
         if (!model.meta.model_format.equals("free"))
-            throw new Exception("Model \"" + modelName + "\" not in generic format");
+            throw new Exception("Model \"" + modelName + "\" is not using the \"Generic Model\" format");
         if (Integer.parseInt(model.meta.format_version.split("\\.")[0]) < 4)
-            throw new Exception("Model \"" + modelName + "\" blockbench version is too old (" + model.meta.format_version + "), minimum compatible blockbench version is 4.0");
+            throw new Exception("Model \"" + modelName + "\" have a blockbench version too old (" + model.meta.format_version + "), minimum compatible version is 4.0");
 
         //return lists
         CompoundTag textures = new CompoundTag();

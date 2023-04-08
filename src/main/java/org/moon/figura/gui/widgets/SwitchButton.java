@@ -79,6 +79,11 @@ public class SwitchButton extends Button {
         blit(stack, Math.round(x + headPos), y, 10, 20, 0f, this.isHoveredOrFocused() ? 20f : 0f, 10, 20, 30, 40);
     }
 
+    @Override
+    protected int getV() {
+        return isToggled() ? 1 : super.getV();
+    }
+
     public boolean isToggled() {
         return this.toggled;
     }

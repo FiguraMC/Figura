@@ -88,13 +88,13 @@ public class Button extends net.minecraft.client.gui.components.Button {
     }
 
     protected void renderDefaultTexture(PoseStack stack, float delta) {
-        UIHelper.renderSliced(stack, getX(), getY(), width, height, getUVStatus() * 16f, this.hasBackground ? 0f : 16f, 16, 16, 48, 32, TEXTURE);
+        UIHelper.renderSliced(stack, getX(), getY(), width, height, getU() * 16f, getV() * 16f, 16, 16, 48, 32, TEXTURE);
     }
 
     protected void renderTexture(PoseStack stack, float delta) {
         //uv transforms
-        int u = this.u + this.getUVStatus() * this.regionSize;
-        int v = this.v + (this instanceof SwitchButton sw && sw.isToggled() ? this.regionSize : 0);
+        int u = this.u + this.getU() * this.regionSize;
+        int v = this.v + this.getV() * this.regionSize;
 
         //draw texture
         UIHelper.setupTexture(this.texture);
@@ -114,13 +114,17 @@ public class Button extends net.minecraft.client.gui.components.Button {
         setMessage(message);
     }
 
-    protected int getUVStatus() {
+    protected int getU() {
         if (!this.active)
             return 0;
         else if (this.isHoveredOrFocused())
             return 2;
         else
             return 1;
+    }
+
+    protected int getV() {
+        return hasBackground ? 0 : 1;
     }
 
     protected int getTextColor() {

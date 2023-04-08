@@ -100,7 +100,7 @@ public class PlayerList extends AbstractList {
         scrollBar.setScrollRatio(permissionsList.isEmpty() ? 0f : (float) totalHeight / permissionsList.size(), totalHeight - (height - 32));
 
         //render stuff
-        int xOffset = width / 2 - 87 - (scrollBar.visible ? 7 : 0);
+        int xOffset = (width - entryWidth - (scrollBar.visible ? 13 : 0)) / 2;
         int playerY = scrollBar.visible ? (int) -(Mth.lerp(scrollBar.getScrollProgress(), -32, totalHeight - height)) : 32;
         boolean hidden = false;
 
@@ -111,7 +111,7 @@ public class PlayerList extends AbstractList {
             }
 
             pack.visible = true;
-            pack.setX(x + Math.max(4, xOffset));
+            pack.setX(x + xOffset);
             pack.setY(y + playerY);
 
             if (pack.getY() + pack.getHeight() > y + scissorsY)
