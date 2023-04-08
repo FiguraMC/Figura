@@ -342,9 +342,15 @@ public class UIHelper extends GuiComponent {
 
     public static void renderHalfTexture(PoseStack stack, int x, int y, int width, int height, float u, float v, int regionWidth, int regionHeight, int textureWidth, int textureHeight, ResourceLocation texture) {
         setupTexture(texture);
+
+        //left
         int w = width / 2;
         blit(stack, x, y, w, height, u, v, w, regionHeight, textureWidth, textureHeight);
-        blit(stack, x + w, y, w, height, u + regionWidth - w, v, w, regionHeight, textureWidth, textureHeight);
+
+        //right
+        x += w;
+        if (width % 2 == 1) w++;
+        blit(stack, x, y, w, height, u + regionWidth - w, v, w, regionHeight, textureWidth, textureHeight);
     }
 
     public static void renderSprite(PoseStack stack, int x, int y, int z, int width, int height, TextureAtlasSprite sprite) {

@@ -1,12 +1,12 @@
 package org.moon.figura.mixin.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.PauseScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.avatar.AvatarManager;
-import org.moon.figura.config.ConfigManager;
 import org.moon.figura.config.Configs;
 import org.moon.figura.gui.screens.WardrobeScreen;
 import org.moon.figura.gui.widgets.Button;
@@ -57,11 +57,26 @@ public class PauseScreenMixin extends Screen {
         }
 
         if (config > 0) { //button
-            if (ConfigManager.modmenuShift())
-                y -= 12;
+            addRenderableWidget(new Button(x, y, 64, 20, FiguraText.of(), null, btn -> this.minecraft.setScreen(new WardrobeScreen(this))) {
+                @Override
+                public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
+                    ChatFormatting color;
+                    if (this.isHoveredOrFocused()) {
+                        color = ChatFormatting.AQUA;
+                    } else if (AvatarManager.panic) {
+                        color = ChatFormatting.GRAY;
+                    } else {
+                        color = ChatFormatting.WHITE;
+                    }
+                    setMessage(getMessage().copy().withStyle(color));
 
-            addRenderableWidget(new net.minecraft.client.gui.components.Button(x, y, 64, 20, FiguraText.of(),
-                    btn -> this.minecraft.setScreen(new WardrobeScreen(this))));
+                    renderVanillaBackground(stack, mouseX, mouseY, delta);
+                    super.renderButton(stack, mouseX, mouseY, delta);
+                }
+
+                @Override
+                protected void renderDefaultTexture(PoseStack stack, float delta) {}
+            });
         } else { //icon
             addRenderableWidget(new Button(x, y, 20, 20, 0, 0, 20, FIGURA_ICON, 60, 20, null, btn -> this.minecraft.setScreen(new WardrobeScreen(this))) {
                 @Override
@@ -71,11 +86,11 @@ public class PauseScreenMixin extends Screen {
                 }
 
                 @Override
-                protected int getUVStatus() {
-                    int uv = super.getUVStatus();
-                    if (uv == 1 && AvatarManager.panic)
+                protected int getU() {
+                    int u = super.getU();
+                    if (u == 1 && AvatarManager.panic)
                         return 0;
-                    return uv;
+                    return u;
                 }
             });
         }
