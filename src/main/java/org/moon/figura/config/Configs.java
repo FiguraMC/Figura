@@ -231,7 +231,7 @@ public class Configs {
 
 
     public static final BoolConfig
-            CONNECTION_TOASTS = new BoolConfig("connection_toasts", DEV, true),
+            CONNECTION_TOASTS = new BoolConfig("connection_toasts", DEV, false),
             LOG_OTHERS = new BoolConfig("log_others", DEV, false);
     public static final EnumConfig
             LOG_PINGS = new EnumConfig("log_pings", DEV, 0, 3);

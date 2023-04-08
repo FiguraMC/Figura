@@ -12,6 +12,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.commands.FiguraLinkCommand;
+import org.moon.figura.config.Configs;
 import org.moon.figura.gui.widgets.Button;
 import org.moon.figura.gui.widgets.IconButton;
 import org.moon.figura.gui.widgets.Label;
@@ -61,7 +62,7 @@ public class HelpScreen extends AbstractPanelScreen {
         this.addRenderableWidget(new IconButton(middle - 40, y, 80, 24, 20, 20, 20, ICONS, 60, 40, Component.literal("GitHub"), null, bx -> openLink(FiguraLinkCommand.LINK.GITHUB.url).run()) {
             @Override
             public boolean mouseClicked(double mouseX, double mouseY, int button) {
-                if (this.isHoveredOrFocused() && this.isMouseOver(mouseX, mouseY) && button == 1) {
+                if (Configs.EASTER_EGGS.value && this.isHoveredOrFocused() && this.isMouseOver(mouseX, mouseY) && button == 1) {
                     int dim = getTextureSize();
                     int x = (int) (Math.random() * dim) + getX() + 2;
                     int y = (int) (Math.random() * dim) + getY() + 2;

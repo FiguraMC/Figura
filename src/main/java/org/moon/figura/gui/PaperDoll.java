@@ -24,11 +24,11 @@ public class PaperDoll {
                 entity == null ||
                 !Minecraft.renderNames() ||
                 minecraft.options.renderDebug ||
-                (Configs.FIRST_PERSON_PAPERDOLL.value && !minecraft.options.getCameraType().isFirstPerson()) ||
+                (Configs.FIRST_PERSON_PAPERDOLL.value && !minecraft.options.getCameraType().isFirstPerson() && !force) ||
                 entity.isSleeping())
             return;
 
-        //check if should stay always on
+        //check if it should stay always on
         if (!Configs.PAPERDOLL_ALWAYS_ON.value && !force && (avatar = AvatarManager.getAvatar(entity)) != null && avatar.luaRuntime != null && !avatar.luaRuntime.renderer.forcePaperdoll) {
             //if action - reset activity time and enable can draw
             if (entity.isSprinting() ||
