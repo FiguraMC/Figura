@@ -3,6 +3,7 @@ package org.moon.figura.gui.widgets;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
@@ -17,9 +18,9 @@ import java.util.function.Consumer;
 
 public class TextField extends AbstractContainerElement {
 
-    private static final ResourceLocation BACKGROUND = new FiguraIdentifier("textures/gui/text_field.png");
-    private static final int ENABLED_COLOR = ChatFormatting.WHITE.getColor();
-    private static final int DISABLED_COLOR = ChatFormatting.DARK_GRAY.getColor();
+    public static final ResourceLocation BACKGROUND = new FiguraIdentifier("textures/gui/text_field.png");
+    public static final int ENABLED_COLOR = ChatFormatting.WHITE.getColor();
+    public static final int DISABLED_COLOR = ChatFormatting.DARK_GRAY.getColor();
 
     private final HintType hint;
     private final EditBox field;
@@ -55,16 +56,19 @@ public class TextField extends AbstractContainerElement {
             UIHelper.fillOutline(stack, x, y, width, height, borderColour);
 
         //hint text
-        if (hint != null && field.getValue().isEmpty() && !field.isFocused()) {
-            Minecraft.getInstance().font.drawShadow(
-                    stack, hint.hint.copy().append(TextUtils.ELLIPSIS).withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC),
-                    this.x + 4, this.y + (height - 8) / 2, 0xFFFFFF
-            );
-        }
-        //input text
-        else {
-            field.renderButton(stack, mouseX, mouseY, delta);
-        }
+        if (hint != null && field.getValue().isEmpty() && !field.isFocused())
+            renderHint(stack);
+
+        //children
+        super.render(stack, mouseX, mouseY, delta);
+    }
+
+    protected void renderHint(PoseStack stack) {
+        Font font = Minecraft.getInstance().font;
+        font.drawShadow(
+                stack, hint.hint.copy().append(TextUtils.ELLIPSIS).withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC),
+                this.x + 4, this.y + (int) ((height - font.lineHeight + 1) / 2f), 0xFFFFFF
+        );
     }
 
     @Override

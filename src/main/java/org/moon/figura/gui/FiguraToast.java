@@ -53,7 +53,7 @@ public class FiguraToast implements Toast {
         long timeDiff = startTime - this.startTime;
 
         UIHelper.setupTexture(type.texture);
-        UIHelper.blit(stack, 0, 0, 0f, (int) ((FiguraMod.ticks / 5f) % type.frames + 1) * height(), width(), height(), width(), height() * type.frames);
+        UIHelper.blit(stack, 0, 0, 0f, (int) ((FiguraMod.ticks / 5f) % type.frames) * height(), width(), height(), width(), height() * type.frames);
 
         Font font = component.getMinecraft().font;
         if (this.message.getString().isBlank()) {
