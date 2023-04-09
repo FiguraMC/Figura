@@ -15,17 +15,17 @@ public class PingArg {
 
     private static final int
             NIL = 0,
-            BOOL = 1,
-            DOUBLE = 2,
-            STRING = 3,
-            TABLE = 4,
-            VECTOR = 5,
-            MATRIX = 6,
-            // 7? (INT1-4B are 8 + byte count - 1  
-            INT1B = 8,
-            INT2B = 9,
-            INT3B = 10,
-            INT4B = 11;
+            BOOL_TRUE = 1,
+            BOOL_FALSE = 2,
+            DOUBLE = 3,
+            STRING = 4,
+            TABLE = 5,
+            VECTOR = 6,
+            MATRIX = 7,
+            INT_1B = 8,
+            INT_2B = 9,
+            INT_3B = 10,
+            INT_4B = 11;
 
     private final Varargs args;
 
@@ -53,8 +53,7 @@ public class PingArg {
 
     private static void writeArg(LuaValue val, DataOutputStream dos) throws IOException {
         if (val.isboolean()) {
-            dos.writeByte(BOOL);
-            dos.writeBoolean(val.checkboolean());
+            writeBool(val.checkboolean(), dos);
         } else if (val instanceof LuaString valStr) {
             dos.writeByte(STRING);
             writeString(valStr, dos);
@@ -78,19 +77,23 @@ public class PingArg {
         }
     }
 
+    private static void writeBool(boolean value, DataOutputStream dos) throws IOException {
+        dos.writeByte(value ? BOOL_TRUE : BOOL_FALSE);
+    }
+
     private static void writeInt(int value, DataOutputStream dos) throws IOException {
         if (Byte.MIN_VALUE <= value && value <= Byte.MAX_VALUE) {
-            dos.writeByte(INT1B);
+            dos.writeByte(INT_1B);
             dos.writeByte((byte) value);
         } else if (Short.MIN_VALUE <= value && value <= Short.MAX_VALUE) {
-            dos.writeByte(INT2B);
+            dos.writeByte(INT_2B);
             dos.writeShort((short) value);
-        } else if (-8388608 <= value && value < 8388608) {
-            dos.writeByte(INT3B);
-            dos.writeShort((short)(value >> 8));
-            dos.writeByte((byte)(value & 0xff));
+        } else if (-0x800000 <= value && value < 0x800000) {
+            dos.writeByte(INT_3B);
+            dos.writeShort((short) (value >> 8));
+            dos.writeByte((byte) (value & 0xFF));
         } else {
-            dos.writeByte(INT4B);
+            dos.writeByte(INT_4B);
             dos.writeInt(value);
         }
     }
@@ -147,8 +150,9 @@ public class PingArg {
         byte type = dis.readByte();
 
         return switch (type) {
-            case BOOL -> LuaValue.valueOf(dis.readBoolean());
-            case INT4B, INT1B, INT2B, INT3B -> LuaValue.valueOf(readInt(dis, type));
+            case BOOL_TRUE -> LuaValue.valueOf(true);
+            case BOOL_FALSE -> LuaValue.valueOf(false);
+            case INT_1B, INT_2B, INT_3B, INT_4B -> LuaValue.valueOf(readInt(dis, type));
             case DOUBLE -> LuaValue.valueOf(dis.readDouble());
             case STRING -> LuaValue.valueOf(dis.readNBytes(dis.readUnsignedShort()));
             case TABLE -> readTable(dis, owner);
@@ -159,11 +163,12 @@ public class PingArg {
     }
 
     private static int readInt(DataInputStream dis, byte type) throws IOException {
-        return switch (type){
-            case INT1B -> dis.readByte();
-            case INT2B -> dis.readShort();
-            case INT3B -> (int) dis.readShort() << 8 | dis.readByte() & 0x00000ff;
-            default -> dis.readInt();
+        return switch (type) {
+            case INT_1B -> dis.readByte();
+            case INT_2B -> dis.readShort();
+            case INT_3B -> (int) dis.readShort() << 8 | dis.readByte() & 0xFF;
+            case INT_4B -> dis.readInt();
+            default -> 0;
         };
     }
 
@@ -190,7 +195,7 @@ public class PingArg {
     private static FiguraMatrix<?, ?> readMat(DataInputStream dis) throws IOException {
         byte columns = dis.readByte();
 
-        FiguraVector<? ,?>[] vectors = new FiguraVector[columns];
+        FiguraVector<?, ?>[] vectors = new FiguraVector[columns];
         for (int i = 0; i < columns; i++)
             vectors[i] = readVec(dis);
 
