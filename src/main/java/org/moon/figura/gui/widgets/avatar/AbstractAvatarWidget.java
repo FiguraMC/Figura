@@ -1,6 +1,7 @@
 package org.moon.figura.gui.widgets.avatar;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -20,7 +21,7 @@ import java.io.File;
 public abstract class AbstractAvatarWidget extends AbstractContainerElement implements Comparable<AbstractAvatarWidget> {
 
     protected static final int SPACING = 6;
-    protected static final Component FAVOURITE = Component.literal("★").withStyle(Style.EMPTY.withFont(UIHelper.UI_FONT));
+    protected static final Component FAVOURITE = Component.literal("★").withStyle(Style.EMPTY.withFont(UIHelper.UI_FONT).withColor(ChatFormatting.YELLOW));
     protected static final Component ADD_FAVOURITE = FiguraText.of("gui.context.favorite.add");
     protected static final Component REMOVE_FAVOURITE = FiguraText.of("gui.context.favorite.remove");
 
