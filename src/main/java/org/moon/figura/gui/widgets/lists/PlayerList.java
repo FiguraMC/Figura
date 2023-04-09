@@ -11,8 +11,8 @@ import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.gui.screens.PermissionsScreen;
+import org.moon.figura.gui.widgets.SearchBar;
 import org.moon.figura.gui.widgets.SwitchButton;
-import org.moon.figura.gui.widgets.TextField;
 import org.moon.figura.gui.widgets.permissions.AbstractPermPackElement;
 import org.moon.figura.gui.widgets.permissions.CategoryPermPackElement;
 import org.moon.figura.gui.widgets.permissions.PlayerPermPackElement;
@@ -32,7 +32,7 @@ public class PlayerList extends AbstractList {
     private final ArrayList<AbstractPermPackElement> permissionsList = new ArrayList<>();
 
     public final PermissionsScreen parent;
-    private final TextField searchBar;
+    private final SearchBar searchBar;
     private final SwitchButton showFigura, showDisconnected;
     private static boolean showFiguraBl, showDisconnectedBl;
     private final int entryWidth;
@@ -54,7 +54,7 @@ public class PlayerList extends AbstractList {
         scrollBar.setHeight(height - 32);
 
         //search bar
-        children.add(searchBar = new TextField(x + 4, y + 4, width - 56, 20, TextField.HintType.SEARCH, s -> {
+        children.add(searchBar = new SearchBar(x + 4, y + 4, width - 56, 20, s -> {
             if (!filter.equals(s))
                 scrollBar.setScrollProgress(0f);
             filter = s;

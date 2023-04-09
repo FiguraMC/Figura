@@ -10,6 +10,7 @@ import org.moon.figura.avatar.local.LocalAvatarFetcher;
 import org.moon.figura.gui.screens.AbstractPanelScreen;
 import org.moon.figura.gui.screens.AvatarWizardScreen;
 import org.moon.figura.gui.widgets.Button;
+import org.moon.figura.gui.widgets.SearchBar;
 import org.moon.figura.gui.widgets.TextField;
 import org.moon.figura.gui.widgets.avatar.AbstractAvatarWidget;
 import org.moon.figura.gui.widgets.avatar.AvatarFolderWidget;
@@ -41,7 +42,7 @@ public class AvatarList extends AbstractList {
         super(x, y, width, height);
 
         //search bar
-        children.add(new TextField(x + 4, y + 4, width - 8, 20, TextField.HintType.SEARCH, s -> {
+        children.add(new SearchBar(x + 4, y + 4, width - 8, 20, s -> {
             if (!filter.equals(s))
                 scrollBar.setScrollProgress(0f);
             filter = s;
