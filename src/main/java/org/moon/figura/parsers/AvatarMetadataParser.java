@@ -101,9 +101,13 @@ public class AvatarMetadataParser {
     }
 
     private static void injectCustomization(String path, Customization customization, CompoundTag models) throws IOException {
-        CompoundTag modelPart = getTag(models, path, false);
+        boolean remove = customization.remove != null && customization.remove;
+        CompoundTag modelPart = getTag(models, path, remove);
 
         //Add more of these later
+        if (remove) {
+            return;
+        }
         if (customization.primaryRenderType != null) {
             try {
                 modelPart.putString("primary", RenderTypes.valueOf(customization.primaryRenderType.toUpperCase()).name());
@@ -200,6 +204,6 @@ public class AvatarMetadataParser {
         public String primaryRenderType, secondaryRenderType;
         public String parentType;
         public String moveTo;
-        public Boolean visible;
+        public Boolean visible, remove;
     }
 }
