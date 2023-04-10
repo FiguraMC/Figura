@@ -1,6 +1,7 @@
 package org.moon.figura.avatar.local;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtIo;
@@ -38,6 +39,7 @@ import java.util.regex.Pattern;
  */
 public class LocalAvatarLoader {
 
+    public static final boolean IS_WINDOWS = Util.getPlatform() == Util.OS.WINDOWS;
     private static final HashMap<Path, WatchKey> KEYS = new HashMap<>();
 
     private static CompletableFuture<Void> tasks;
@@ -262,7 +264,8 @@ public class LocalAvatarLoader {
                 continue;
 
             for (WatchEvent<?> watchEvent : key.pollEvents()) {
-                if (watchEvent.kind() == StandardWatchEventKinds.OVERFLOW)
+                WatchEvent.Kind<?> kind = watchEvent.kind();
+                if (kind == StandardWatchEventKinds.OVERFLOW)
                     continue;
 
                 event = watchEvent;
@@ -271,6 +274,9 @@ public class LocalAvatarLoader {
 
                 if (file.isHidden() || name.startsWith(".") || (!file.isDirectory() && !name.matches("(.*(\\.lua|\\.bbmodel|\\.ogg|\\.png)$|avatar\\.json)")))
                     continue;
+
+                if (kind == StandardWatchEventKinds.ENTRY_CREATE && !IS_WINDOWS)
+                    addWatchKey(file.toPath(), KEYS::put);
 
                 reload = true;
                 break;
@@ -309,11 +315,13 @@ public class LocalAvatarLoader {
             return;
 
         try {
-            WatchKey key = path.register(watcher, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY);
+            WatchEvent.Kind<?>[] events = {StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY};
+            WatchKey key = IS_WINDOWS ? path.register(watcher, events, com.sun.nio.file.ExtendedWatchEventModifier.FILE_TREE) : path.register(watcher, events);
+
             consumer.accept(path, key);
 
             File[] children = file.listFiles();
-            if (children == null)
+            if (children == null || IS_WINDOWS)
                 return;
 
             for (File child : children)

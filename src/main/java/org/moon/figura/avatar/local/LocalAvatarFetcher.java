@@ -49,6 +49,8 @@ public class LocalAvatarFetcher {
 
         //add new avatars
         ALL_AVATARS.addAll(root.getChildren());
+
+        FiguraMod.debug("Reloading Avatar List...");
     }
 
     public static void tick() {
@@ -64,7 +66,7 @@ public class LocalAvatarFetcher {
                 if (kind == StandardWatchEventKinds.OVERFLOW)
                     continue;
 
-                if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
+                if (kind == StandardWatchEventKinds.ENTRY_CREATE && !LocalAvatarLoader.IS_WINDOWS) {
                     Path child = entry.getKey().resolve(((WatchEvent<Path>) event).context());
                     LocalAvatarLoader.addWatchKey(child, WATCHED_KEYS::put);
                 }
