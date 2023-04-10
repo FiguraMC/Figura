@@ -51,7 +51,9 @@ public abstract class SoundEngineMixin implements SoundEngineAccessor {
         while (iterator.hasNext()) {
             LuaSound sound = iterator.next();
             ChannelAccess.ChannelHandle handle = sound.getHandle();
-            if (getVolume(SoundSource.PLAYERS) <= 0f) {
+            if (handle == null) {
+                iterator.remove();
+            } else if (getVolume(SoundSource.PLAYERS) <= 0f) {
                 handle.execute(Channel::stop);
                 iterator.remove();
             } else if (handle.isStopped()) {
