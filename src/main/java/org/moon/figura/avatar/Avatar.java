@@ -276,7 +276,7 @@ public class Avatar {
         });
     }
 
-    public LuaValue load(String name, String chunk) {
+    public LuaValue loadScript(String name, String chunk) {
         return scriptError || luaRuntime == null || !loaded ? null : luaRuntime.load(name, chunk);
     }
 
@@ -344,6 +344,16 @@ public class Avatar {
 
     // -- script events -- //
 
+    private boolean isCancelled(Varargs args) {
+        if (args == null)
+            return false;
+        for (int i = 1; i <= args.narg(); i++) {
+            if (args.arg(i).isboolean() && args.arg(i).checkboolean())
+                return true;
+        }
+        return false;
+    }
+
     public void tickEvent() {
         if (loaded && luaRuntime != null && luaRuntime.getUser() != null)
             run("TICK", tick);
@@ -374,56 +384,63 @@ public class Avatar {
         Varargs result = null;
         if (loaded && renderer != null && renderer.allowSkullRendering)
             result = run("SKULL_RENDER", render, delta, block, item, entity, mode);
-        return result != null && result.arg(1).isboolean() && result.arg(1).checkboolean();
+        return isCancelled(result);
     }
 
     public boolean useItemEvent(ItemStackAPI stack, String type, int particleCount) {
         Varargs result = loaded ? run("USE_ITEM", tick, stack, type, particleCount) : null;
-        return result != null && result.arg(1).isboolean() && result.arg(1).checkboolean();
+        return isCancelled(result);
     }
 
     public boolean arrowRenderEvent(float delta, EntityAPI<?> arrow) {
         Varargs result = null;
         if (loaded) result = run("ARROW_RENDER", render, delta, arrow);
-        return result != null && result.arg(1).isboolean() && result.arg(1).checkboolean();
+        return isCancelled(result);
     }
 
     public boolean itemRenderEvent(ItemStackAPI item, String mode, FiguraVec3 pos, FiguraVec3 rot, FiguraVec3 scale, boolean leftHanded, PoseStack stack, MultiBufferSource bufferSource, int light, int overlay) {
         Varargs result = loaded ? run("ITEM_RENDER", render, item, mode, pos, rot, scale, leftHanded) : null;
-        FiguraModelPart part = result != null && result.arg(1).isuserdata(FiguraModelPart.class) ? (FiguraModelPart) result.arg(1).checkuserdata(FiguraModelPart.class) : null;
-        return part != null && renderItem(stack, bufferSource, part, light, overlay);
+        if (result == null)
+            return false;
+
+        boolean rendered = false;
+        for (int i = 1; i <= result.narg(); i++) {
+            if (result.arg(i).isuserdata(FiguraModelPart.class))
+                rendered |= renderItem(stack, bufferSource, (FiguraModelPart) result.arg(i).checkuserdata(FiguraModelPart.class), light, overlay);
+        }
+        return rendered;
     }
 
     // -- host only events -- //
 
-    public String chatSendMessageEvent(String message) {
+    public String chatSendMessageEvent(String message) { //piped event
         Varargs val = loaded ? run("CHAT_SEND_MESSAGE", tick, message) : null;
         return val == null || (!val.isnil(1) && !Configs.CHAT_MESSAGES.value) ? message : val.isnil(1) ? "" : val.arg(1).tojstring();
     }
 
-    public String chatReceivedMessageEvent(Component message) {
+    public String chatReceivedMessageEvent(Component message) { //special case
         Varargs val = loaded ? run("CHAT_RECEIVE_MESSAGE", tick, message.getString(), Component.Serializer.toJson(message)) : null;
         return val == null || val.isnil(1) ? null : val.arg(1).tojstring();
     }
 
     public boolean mouseScrollEvent(double delta) {
         Varargs result = loaded ? run("MOUSE_SCROLL", tick, delta) : null;
-        return result != null && result.arg(1).isboolean() && result.arg(1).checkboolean();
+        return isCancelled(result);
     }
 
     public boolean mouseMoveEvent(double x, double y) {
         Varargs result = loaded ? run("MOUSE_MOVE", tick, x, y) : null;
-        return result != null && result.arg(1).isboolean() && result.arg(1).checkboolean();
+        return isCancelled(result);
     }
 
     public boolean mousePressEvent(int button, int action, int modifiers) {
         Varargs result = loaded ? run("MOUSE_PRESS", tick, button, action, modifiers) : null;
-        return result != null && result.arg(1).isboolean() && result.arg(1).checkboolean();
+        return isCancelled(result);
     }
 
     public boolean keyPressEvent(int key, int action, int modifiers) {
         Varargs result = loaded ? run("KEY_PRESS", tick, key, action, modifiers) : null;
-        return result != null && result.arg(1).isboolean() && result.arg(1).checkboolean();
+        return isCancelled(result);
     }
 
     // -- rendering events -- //
