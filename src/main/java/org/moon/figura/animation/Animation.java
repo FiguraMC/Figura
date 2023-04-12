@@ -127,7 +127,7 @@ public class Animation {
         for (Float codeTime : codeFrames.keySet()) {
             if (codeTime >= minTime && codeTime < maxTime) {
                 try {
-                    LuaValue value = owner.load("animations." + modelName + "." + name, codeFrames.get(codeTime));
+                    LuaValue value = owner.loadScript("animations." + modelName + "." + name, codeFrames.get(codeTime));
                     owner.run(value, owner.animation, this);
                 } catch (Exception e) {
                     owner.luaRuntime.error(e);

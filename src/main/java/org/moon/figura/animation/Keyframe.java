@@ -65,7 +65,7 @@ public class Keyframe implements Comparable<Keyframe> {
     }
 
     private float run(float delta, String chunk) {
-        LuaValue val = owner.load("keyframe_data", chunk);
+        LuaValue val = owner.loadScript("keyframe_data", chunk);
         if (val == null)
             return 0f;
 
