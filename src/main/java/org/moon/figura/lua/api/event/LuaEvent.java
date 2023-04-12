@@ -1,9 +1,7 @@
 package org.moon.figura.lua.api.event;
 
 import com.google.common.collect.HashMultimap;
-import org.luaj.vm2.LuaError;
-import org.luaj.vm2.LuaFunction;
-import org.luaj.vm2.Varargs;
+import org.luaj.vm2.*;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
@@ -56,10 +54,26 @@ public class LuaEvent {
     //If piped, the result of one function is passed through to the next, repeatedly, eventually returning the result.
     public Varargs call(Varargs args) {
         flushQueue();
-        Varargs vars = piped ? args : null;
+
+        if (piped)
+            return callPiped(args);
+
+        LuaTable result = new LuaTable();
         for (LuaFunction function : functions) {
             FiguraMod.pushProfiler(function.name());
-            vars = function.invoke(piped ? vars : args);
+            Varargs val = function.invoke(args);
+            for (int i = 0; i < val.narg(); i++)
+                result.insert(0, val.arg(i + 1));
+            FiguraMod.popProfiler();
+        }
+        return result.unpack();
+    }
+
+    private Varargs callPiped(Varargs args) {
+        Varargs vars = args;
+        for (LuaFunction function : functions) {
+            FiguraMod.pushProfiler(function.name());
+            vars = function.invoke(vars);
             FiguraMod.popProfiler();
         }
         return vars;
