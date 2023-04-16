@@ -1,34 +1,49 @@
 # Figura
 
-Figura is a Minecraft Java mod that allows you to change your player _extensively_ through the use of **Blockbench** models and **Lua** scripting
+## A Minecraft Java mod that allows you to customize your player model!
+![image](https://user-images.githubusercontent.com/40085587/232265398-f193b7c2-428f-41df-bc65-7c6b5a02e31b.png)
 
-Figura is capable of doing almost anything you have in mind with well-documented APIs that interact with the world around you
+## Utilizing the full potential of [Blockbench](https://www.blockbench.net/), including:
 
-Figura works in both Singleplayer and Multiplayer, with a custom server storing your avatar so others can see it
+![image](https://user-images.githubusercontent.com/40085587/232266646-72ea56aa-fb99-4706-bbac-dd242fbad57f.png)
 
-If you're concerned someone is cheating or an avatar is too complex for your framerate, you can filter players and tweak their available resources with the **permission system**
+![image](https://user-images.githubusercontent.com/40085587/232266641-0ef9d180-4190-46f5-a4a6-7e01e06fe6a1.png)
 
-**Note:** All avatar rights are reserved to their respective creators
+## But not only that, Figura also have a whole [Lua](https://www.lua.org/) API to make your own scripts!
 
-## Links
+![image](https://user-images.githubusercontent.com/40085587/232266708-9d6d9da6-a454-4ca0-83f2-a58c229ab03b.png)
+
+## But hold on, thats too good, what if someone is invisible, or very small?
+
+![image](https://user-images.githubusercontent.com/40085587/232266726-9d31c171-b16f-4246-adbe-30a337d7f15b.png)
+
+*\*Figura do not take responsability of cheaty Avatars, all Avatars are responsibility of their creators*
+
+## We also have some extras, like:
+
+![image](https://user-images.githubusercontent.com/40085587/232266831-5266010b-28c8-4fa1-987c-daad23657bac.png)
+
+Meet us on Discord for more info and help :)
+
+# Links
 [discord]: https://discord.com/api/guilds/125227483518861312/widget.png
 [reddit]: https://img.shields.io/badge/Reddit-ff4500?logo=reddit&logoColor=ffffff&labelColor=ff4500
 [modrinth]: https://img.shields.io/badge/Modrinth-1bd96a?logo=modrinth&logoColor=ffffff&labelColor=1bd96a
 [curseforge]: https://img.shields.io/badge/CurseForge-f16436?logo=curseforge&logoColor=ffffff&labelColor=f16436
 [kofi]: https://img.shields.io/badge/Ko--fi-00b9fe?logo=kofi&logoColor=ffffff&labelColor=00b9fe
 
-Social:
+## Social:
 [ ![discord][] ](https://discord.gg/ekHGHcH8Af)
 [ ![reddit][] ](https://www.reddit.com/r/Figura)
 
-Download:
+## Download:
 [ ![modrinth] ](https://modrinth.com/mod/figura)
 [ ![curseforge][] ](https://curseforge.com/minecraft/mc-mods/figura)
 
-Donate:
+## Donate:
 [ ![kofi][] ](https://ko-fi.com/francy_chan)
 
-## FAQ
+# FAQ
 
 ### • My avatars don't appear in the Figura list, even though they're in the correct folder?
 > Check if your avatar has a file called "avatar.json" (don't forget to check file extensions)
@@ -101,7 +116,7 @@ Donate:
 > Check out these [alternatives](https://lambdaurora.dev/optifine_alternatives/) instead
 
 ### • Forge port?
-> No, however if you want to develop it yourself, feel free to do so
+> No
 
 ### • Where can I find avatars to download?
 > For now you can find avatars in the showcase channel in the official Discord server
