@@ -1,6 +1,6 @@
 # Figura
 
-## A Minecraft Java mod that allows you to customize your player model!
+## A fully clientside Minecraft Java mod that allows you to customize your player model!
 ![image](https://user-images.githubusercontent.com/40085587/232265398-f193b7c2-428f-41df-bc65-7c6b5a02e31b.png)
 
 ## Utilizing the full potential of [Blockbench](https://www.blockbench.net/), including:
@@ -9,7 +9,7 @@
 
 ![image](https://user-images.githubusercontent.com/40085587/232266641-0ef9d180-4190-46f5-a4a6-7e01e06fe6a1.png)
 
-## But not only that, Figura also have a whole [Lua](https://www.lua.org/) API to make your own scripts!
+## But not only that, Figura also have a whole optional [Lua](https://www.lua.org/) API to make your own scripts!
 
 ![image](https://user-images.githubusercontent.com/40085587/232266708-9d6d9da6-a454-4ca0-83f2-a58c229ab03b.png)
 
