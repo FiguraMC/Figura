@@ -1,6 +1,6 @@
 plugins {
 	id 'maven-publish'
-	id 'fabric-loom' version '1.1-SNAPSHOT'
+	id 'org.quiltmc.loom' version '1.1-SNAPSHOT'
 	id "io.github.juuxel.loom-quiltflower" version "1.+"
 }
 
@@ -17,13 +17,13 @@ repositories {
 }
 
 dependencies {
-	// Fabric
+	// Quilt
 	minecraft "com.mojang:minecraft:$minecraft_version"
 	mappings loom.layered {
 		mappings("org.quiltmc:quilt-mappings:$minecraft_version+build.$mappings:intermediary-v2")
 		officialMojangMappings()
 	}
-	modImplementation "net.fabricmc:fabric-loader:$loader_version"
+	modImplementation "org.quiltmc:quilt-loader:$loader_version"
 
 	// Libraries
 	include(implementation("com.github.Kingdom-of-The-Moon.LuaJ:luaj-core:$luaj-figura"))
@@ -52,7 +52,6 @@ processResources {
 	properties.put("version", version + "-" + 'git rev-parse --short HEAD'.execute().getText().trim())
 	properties.put("java_version", java_version)
 	properties.put("minecraft_version", minecraft_version)
-	properties.put("loader_version", loader_version)
 	properties.put("assets_version", project.assets_version)
 
 	properties.forEach((k, v) -> inputs.property(k, v.toString()))
