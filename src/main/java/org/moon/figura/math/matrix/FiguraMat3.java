@@ -23,10 +23,10 @@ public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
 
     private static final FloatBuffer copyingBuffer = BufferUtils.createFloatBuffer(3 * 3);
 
-    public static FiguraMat3 fromMatrix3f(Matrix3f mat) {
+    public FiguraMat3 set(Matrix3f mat) {
         copyingBuffer.clear();
         mat.store(copyingBuffer);
-        return of(copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get(),
+        return set(copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get(),
                 copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get(),
                 copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get());
     }

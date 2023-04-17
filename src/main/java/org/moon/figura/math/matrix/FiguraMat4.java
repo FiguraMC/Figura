@@ -24,10 +24,10 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
 
     private static final FloatBuffer copyingBuffer = BufferUtils.createFloatBuffer(4 * 4);
 
-    public static FiguraMat4 fromMatrix4f(Matrix4f mat) {
+    public FiguraMat4 set(Matrix4f mat) {
         copyingBuffer.clear();
         mat.store(copyingBuffer);
-        return of(copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get(),
+        return set(copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get(),
                 copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get(),
                 copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get(),
                 copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get());
