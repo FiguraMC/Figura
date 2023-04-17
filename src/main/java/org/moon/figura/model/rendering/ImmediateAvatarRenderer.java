@@ -193,9 +193,6 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         customization.positionMatrix.translate(0, vertOffset, 0);
         customization.normalMatrix.rotateZ(180);
 
-        FiguraMat4 posMat = FiguraMat4.fromMatrix4f(matrices.last().pose());
-        FiguraMat3 normalMat = FiguraMat3.fromMatrix3f(matrices.last().normal());
-
         customization.positionMatrix.multiply(posMat);
         customization.normalMatrix.multiply(normalMat);
 

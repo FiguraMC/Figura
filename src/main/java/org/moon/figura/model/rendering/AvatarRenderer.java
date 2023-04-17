@@ -49,9 +49,10 @@ public abstract class AvatarRenderer {
     public int overlay;
     public float alpha;
     public boolean translucent, glowing;
+    public FiguraMat4 posMat = FiguraMat4.of();
+    public FiguraMat3 normalMat = FiguraMat3.of();
 
     //matrices
-    public PoseStack matrices;
     public MultiBufferSource bufferSource;
     public VanillaModelData vanillaModelData = new VanillaModelData();
 
@@ -180,21 +181,49 @@ public abstract class AvatarRenderer {
         FiguraMat4 result = FiguraMat4.of();
         Vec3 cameraPos = camera.getPosition().scale(-1);
         result.translate(cameraPos.x, cameraPos.y, cameraPos.z);
-        FiguraMat3 cameraMat = FiguraMat3.fromMatrix3f(cameraMat3f);
+        FiguraMat3 cameraMat = FiguraMat3.of().set(cameraMat3f);
         result.multiply(cameraMat.augmented());
         result.scale(-1, 1, -1);
         return result;
     }
 
     public void setupRenderer(PartFilterScheme currentFilterScheme, MultiBufferSource bufferSource, PoseStack matrices, float tickDelta, int light, float alpha, int overlay, boolean translucent, boolean glowing) {
+        this.setupRenderer(currentFilterScheme, bufferSource, tickDelta, light, alpha, overlay, translucent, glowing);
+        this.setMatrices(matrices);
+    }
+
+    public void setupRenderer(PartFilterScheme currentFilterScheme, MultiBufferSource bufferSource, PoseStack matrices, float tickDelta, int light, float alpha, int overlay, boolean translucent, boolean glowing, double camX, double camY, double camZ) {
+        this.setupRenderer(currentFilterScheme, bufferSource, tickDelta, light, alpha, overlay, translucent, glowing);
+        this.setMatrices(camX, camY, camZ, matrices);
+    }
+
+    private void setupRenderer(PartFilterScheme currentFilterScheme, MultiBufferSource bufferSource, float tickDelta, int light, float alpha, int overlay, boolean translucent, boolean glowing) {
         this.currentFilterScheme = currentFilterScheme;
         this.bufferSource = bufferSource;
-        this.matrices = matrices;
         this.tickDelta = tickDelta;
         this.light = light;
         this.alpha = alpha;
         this.overlay = overlay;
         this.translucent = translucent;
         this.glowing = glowing;
+    }
+
+    public void setMatrices(PoseStack matrices) {
+        PoseStack.Pose pose = matrices.last();
+        this.posMat.set(pose.pose());
+        this.normalMat.set(pose.normal());
+    }
+
+    public void setMatrices(double camX, double camY, double camZ, PoseStack matrices) {
+        PoseStack.Pose pose = matrices.last();
+
+        //pos
+        this.posMat.set(pose.pose());
+        this.posMat.translate(-camX, -camY, -camZ);
+        this.posMat.scale(-1, -1, 1);
+
+        //normal
+        this.normalMat.set(pose.normal());
+        this.normalMat.scale(-1, -1, 1);
     }
 }
