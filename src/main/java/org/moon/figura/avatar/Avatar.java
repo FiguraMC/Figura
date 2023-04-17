@@ -489,14 +489,11 @@ public class Avatar {
         renderer.setupRenderer(
                 PartFilterScheme.WORLD, bufferSource, stack,
                 tickDelta, lightFallback, 1f, OverlayTexture.NO_OVERLAY,
-                false, false
+                false, false,
+                camX, camY, camZ
         );
 
-        stack.pushPose();
-        stack.translate(-camX, -camY, -camZ);
-        stack.scale(-1, -1, 1);
         complexity.use(renderer.renderSpecialParts());
-        stack.popPose();
 
         renderMode = prevRenderMode;
         renderer.updateLight = false;
@@ -604,6 +601,13 @@ public class Avatar {
         FiguraMod.pushProfiler(this);
         FiguraMod.pushProfiler("hudRender");
 
+        stack.pushPose();
+        stack.last().pose().scale(16, 16, -16);
+        stack.last().normal().scale(1, 1, -1);
+
+        Lighting.setupForFlatItems();
+        RenderSystem.disableDepthTest();
+
         renderer.entity = entity;
 
         renderer.setupRenderer(
@@ -612,18 +616,12 @@ public class Avatar {
                 false, false
         );
 
-        Lighting.setupForFlatItems();
-
-        stack.pushPose();
-        stack.last().pose().scale(16, 16, -16);
-        stack.last().normal().scale(1, 1, -1);
-        RenderSystem.disableDepthTest();
         if (renderer.renderSpecialParts() > 0)
             ((MultiBufferSource.BufferSource) renderer.bufferSource).endLastBatch();
-        RenderSystem.enableDepthTest();
-        stack.popPose();
 
+        RenderSystem.enableDepthTest();
         Lighting.setupFor3DItems();
+        stack.popPose();
 
         FiguraMod.popProfiler(2);
     }
@@ -631,14 +629,6 @@ public class Avatar {
     public boolean skullRender(PoseStack stack, MultiBufferSource bufferSource, int light, Direction direction, float yaw) {
         if (renderer == null || !loaded || !renderer.allowSkullRendering)
             return false;
-
-        renderer.allowPivotParts = false;
-
-        renderer.setupRenderer(
-                PartFilterScheme.SKULL, bufferSource, stack,
-                1f, light, 1f, OverlayTexture.NO_OVERLAY,
-                false, false
-        );
 
         stack.pushPose();
 
@@ -649,6 +639,14 @@ public class Avatar {
 
         stack.scale(-1f, -1f, 1f);
         stack.mulPose(Axis.YP.rotationDegrees(yaw));
+
+        renderer.allowPivotParts = false;
+
+        renderer.setupRenderer(
+                PartFilterScheme.SKULL, bufferSource, stack,
+                1f, light, 1f, OverlayTexture.NO_OVERLAY,
+                false, false
+        );
 
         int comp = renderer.renderSpecialParts();
         complexity.use(comp);
@@ -700,7 +698,7 @@ public class Avatar {
         stack.mulPose(Axis.XP.rotationDegrees(180f));
 
         //scissors
-        FiguraVec3 pos = FiguraMat4.fromMatrix4f(stack.last().pose()).apply(0d, 0d, 0d);
+        FiguraVec3 pos = FiguraMat4.of().set(stack.last().pose()).apply(0d, 0d, 0d);
 
         int x1 = (int) pos.x;
         int y1 = (int) pos.y;
@@ -712,6 +710,8 @@ public class Avatar {
         UIHelper.dollScale = 16f;
 
         //setup render
+        stack.translate(4d / 16d, 8d / 16d, 0d);
+
         Lighting.setupForFlatItems();
 
         MultiBufferSource.BufferSource buffer = Minecraft.getInstance().renderBuffers().bufferSource();
@@ -724,8 +724,6 @@ public class Avatar {
                 1f, light, 1f, OverlayTexture.NO_OVERLAY,
                 false, false
         );
-
-        stack.translate(4d / 16d, 8d / 16d, 0d);
 
         //render
         int comp = renderer.renderSpecialParts();
@@ -748,17 +746,17 @@ public class Avatar {
         if (renderer == null || !loaded)
             return false;
 
-        renderer.setupRenderer(
-                PartFilterScheme.ARROW, bufferSource, stack,
-                delta, light, 1f, OverlayTexture.NO_OVERLAY,
-                false, false
-        );
-
         stack.pushPose();
         Quaternionf quaternionf = Axis.XP.rotationDegrees(135f);
         Quaternionf quaternionf2 = Axis.YP.rotationDegrees(-90f);
         quaternionf.mul(quaternionf2);
         stack.mulPose(quaternionf);
+
+        renderer.setupRenderer(
+                PartFilterScheme.ARROW, bufferSource, stack,
+                delta, light, 1f, OverlayTexture.NO_OVERLAY,
+                false, false
+        );
 
         int comp = renderer.renderSpecialParts();
 
@@ -821,7 +819,7 @@ public class Avatar {
 
         renderer.vanillaModelData.update(entityRenderer);
         renderer.currentFilterScheme = PartFilterScheme.MODEL;
-        renderer.matrices = stack;
+        renderer.setMatrices(stack);
         renderer.updateMatrices();
 
         FiguraMod.popProfiler(3);

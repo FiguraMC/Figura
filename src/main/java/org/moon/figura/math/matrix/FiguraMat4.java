@@ -1,6 +1,7 @@
 package org.moon.figura.math.matrix;
 
 import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix4d;
 import org.joml.Matrix4f;
 import org.luaj.vm2.LuaError;
 import org.moon.figura.lua.LuaNotNil;
@@ -19,8 +20,17 @@ import org.moon.figura.utils.LuaUtils;
 )
 public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
 
-    public static FiguraMat4 fromMatrix4f(Matrix4f mat) {
-        return of(
+    public FiguraMat4 set(Matrix4f mat) {
+        return set(
+                mat.m00(), mat.m01(), mat.m02(), mat.m03(),
+                mat.m10(), mat.m11(), mat.m12(), mat.m13(),
+                mat.m20(), mat.m21(), mat.m22(), mat.m23(),
+                mat.m30(), mat.m31(), mat.m32(), mat.m33()
+        );
+    }
+
+    public FiguraMat4 set(Matrix4d mat) {
+        return set(
                 mat.m00(), mat.m01(), mat.m02(), mat.m03(),
                 mat.m10(), mat.m11(), mat.m12(), mat.m13(),
                 mat.m20(), mat.m21(), mat.m22(), mat.m23(),

@@ -69,7 +69,7 @@ public class MathUtils {
     public static FiguraVec3 toCameraSpace(FiguraVec3 vec) {
         Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
 
-        FiguraMat3 transformMatrix = FiguraMat3.fromMatrix3f(new Matrix3f().rotation(camera.rotation()));
+        FiguraMat3 transformMatrix = FiguraMat3.of().set(new Matrix3f().rotation(camera.rotation()));
         Vec3 pos = camera.getPosition();
         transformMatrix.invert();
 
@@ -87,9 +87,11 @@ public class MathUtils {
         Matrix3f transformMatrix = new Matrix3f().rotation(camera.rotation());
         transformMatrix.invert();
 
-        Vector3f camSpace = new Vector3f((float) worldSpace.x, (float) worldSpace.y, (float) worldSpace.z);
         Vec3 camPos = camera.getPosition();
-        camSpace.sub(new Vector3f((float) camPos.x, (float) camPos.y, (float) camPos.z));
+        Vector3f camSpace = new Vector3f(
+                (float) (worldSpace.x - camPos.x),
+                (float) (worldSpace.y - camPos.y),
+                (float) (worldSpace.z - camPos.z));
         transformMatrix.transform(camSpace);
 
         Vector4f projectiveCamSpace = new Vector4f(camSpace, 1f);

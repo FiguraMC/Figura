@@ -332,17 +332,18 @@ public class NetworkStuff {
             queueString(Util.NIL_UUID, api -> api.uploadAvatar(id, baos.toByteArray()), (code, data) -> {
                 responseDebug("uploadAvatar", code, data);
 
+                if (code == 200) {
+                    //TODO - profile screen
+                    equipAvatar(List.of(Pair.of(avatar.owner, id)));
+                    AvatarManager.localUploaded = true;
+                }
+
+                //feedback
                 if (!Configs.CONNECTION_TOASTS.value)
                     return;
 
                 switch (code) {
-                    case 200 -> {
-                        FiguraToast.sendToast(FiguraText.of("backend.upload_success"));
-
-                        //TODO - profile screen
-                        equipAvatar(List.of(Pair.of(avatar.owner, id)));
-                        AvatarManager.localUploaded = true;
-                    }
+                    case 200 -> FiguraToast.sendToast(FiguraText.of("backend.upload_success"));
                     case 413 -> FiguraToast.sendToast(FiguraText.of("backend.upload_too_big"), FiguraToast.ToastType.ERROR);
                     case 507 -> FiguraToast.sendToast(FiguraText.of("backend.upload_too_many"), FiguraToast.ToastType.ERROR);
                     default -> FiguraToast.sendToast(FiguraText.of("backend.upload_error"), FiguraToast.ToastType.ERROR);
