@@ -24,12 +24,16 @@ import org.moon.figura.lua.api.ping.PingAPI;
 import org.moon.figura.lua.api.vanilla_model.VanillaModelAPI;
 import org.moon.figura.permissions.Permissions;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 import java.util.function.Function;
+
+import static org.moon.figura.FiguraMod.DEBUG_MODE;
 
 /**
  * One runtime per avatar
@@ -70,6 +74,9 @@ public class FiguraLuaRuntime {
         userGlobals.load(new TableLib());
         userGlobals.load(new StringLib());
         userGlobals.load(new JseMathLib());
+        // Install undumper field of Globals to allow loading bytecode
+        if(DEBUG_MODE)
+            LoadState.install(userGlobals);
 
         LuaC.install(userGlobals);
 
@@ -153,7 +160,34 @@ public class FiguraLuaRuntime {
         @Override
         public Varargs invoke(Varargs args) {
             try {
-                return runtime.userGlobals.load(args.arg(1).checkjstring(), "loadstring", runtime.userGlobals);
+                InputStream ld;
+                int i = 1;
+                // Get source provider function or get string value and create input stream out of that
+                LuaValue val = args.arg(i++);
+                if(val.isfunction()){
+                    ld = new FuncStream(val.checkfunction());
+                } else if(val.isstring()) {
+                    ld = new ByteArrayInputStream(val.checkstring().m_bytes);
+                } else {
+                    throw new LuaError("chunk source is neither string nor function");
+                }
+                // Get chunk name (this is what it will display as in the source name, like script)
+                val = args.arg(i++);
+                String chunkName = val.isstring() ? val.tojstring() : "=(loadstring)";
+                String mode;
+                // If Undumper is installed also get the loading mode, "t" for text source, "b" for bytecode
+                // having both in string makes load first check bytecode and if that fails it tries to load text
+                if(runtime.userGlobals.undumper != null) {
+                    val = args.arg(i++);
+                    mode = val.isstring() ? val.tojstring() : "t";
+                } else
+                    mode = "t";
+                // get environment in which will be used to get global values from, does not make extra lookups outside this table
+                val = args.arg(i);
+                LuaTable environment = val.istable() ? val.checktable() : runtime.userGlobals;
+                
+                // create the function from arguments
+                return runtime.userGlobals.load(ld, chunkName, mode, environment);
             } catch (LuaError e) {
                 return varargsOf(NIL, e.getMessageObject());
             }
@@ -162,6 +196,35 @@ public class FiguraLuaRuntime {
         @Override
         public String tojstring() {
             return "function: loadstring";
+        }
+        
+        // Class that creates input stream from 
+        static class FuncStream extends InputStream {
+            final LuaFunction function;
+            // start at the end of empty string so next index will get first result
+            String string = "";
+            int index = 0;
+            FuncStream(LuaFunction function){
+                this.function = function;
+            }
+
+            @Override
+            public int read() {
+                // if next index is out of bounds
+                if (++index >= string.length()){
+                    // reset index
+                    index = 0;
+                    // fetch next functon value
+                    Varargs result = function.invoke();
+                    // check if we hit the end, that is nil, no value or empty string
+                    if (!result.isstring(1) || result.arg1().length() < 1)
+                        return -1;
+                    // get string from result of calling function
+                    string = new String(result.checkstring(1).m_bytes, StandardCharsets.UTF_8);
+                }
+                // return next index
+                return string.charAt(index);
+            }
         }
     };
     private void loadExtraLibraries() {
