@@ -33,8 +33,6 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.function.Function;
 
-import static org.moon.figura.FiguraMod.DEBUG_MODE;
-
 /**
  * One runtime per avatar
  */
@@ -74,9 +72,6 @@ public class FiguraLuaRuntime {
         userGlobals.load(new TableLib());
         userGlobals.load(new StringLib());
         userGlobals.load(new JseMathLib());
-        // Install undumper field of Globals to allow loading bytecode
-        if(DEBUG_MODE)
-            LoadState.install(userGlobals);
 
         LuaC.install(userGlobals);
 
@@ -160,34 +155,27 @@ public class FiguraLuaRuntime {
         @Override
         public Varargs invoke(Varargs args) {
             try {
-                InputStream ld;
-                int i = 1;
                 // Get source provider function or get string value and create input stream out of that
-                LuaValue val = args.arg(i++);
-                if(val.isfunction()){
+                LuaValue val = args.arg(1);
+                InputStream ld;
+                if (val.isfunction()) {
                     ld = new FuncStream(val.checkfunction());
-                } else if(val.isstring()) {
+                } else if (val.isstring()) {
                     ld = new ByteArrayInputStream(val.checkstring().m_bytes);
                 } else {
-                    throw new LuaError("chunk source is neither string nor function");
+                    throw new LuaError("chunk source is neither a string nor function");
                 }
+
                 // Get chunk name (this is what it will display as in the source name, like script)
-                val = args.arg(i++);
-                String chunkName = val.isstring() ? val.tojstring() : "=(loadstring)";
-                String mode;
-                // If Undumper is installed also get the loading mode, "t" for text source, "b" for bytecode
-                // having both in string makes load first check bytecode and if that fails it tries to load text
-                if(runtime.userGlobals.undumper != null) {
-                    val = args.arg(i++);
-                    mode = val.isstring() ? val.tojstring() : "t";
-                } else
-                    mode = "t";
+                val = args.arg(2);
+                String chunkName = val.isstring() ? val.tojstring() : "loadstring";
+
                 // get environment in which will be used to get global values from, does not make extra lookups outside this table
-                val = args.arg(i);
+                val = args.arg(3);
                 LuaTable environment = val.istable() ? val.checktable() : runtime.userGlobals;
-                
+
                 // create the function from arguments
-                return runtime.userGlobals.load(ld, chunkName, mode, environment);
+                return runtime.userGlobals.load(ld, chunkName, "t", environment);
             } catch (LuaError e) {
                 return varargsOf(NIL, e.getMessageObject());
             }
@@ -199,19 +187,20 @@ public class FiguraLuaRuntime {
         }
         
         // Class that creates input stream from 
-        static class FuncStream extends InputStream {
-            final LuaFunction function;
+        private static class FuncStream extends InputStream {
+            private final LuaFunction function;
             // start at the end of empty string so next index will get first result
-            String string = "";
-            int index = 0;
-            FuncStream(LuaFunction function){
+            private String string = "";
+            private int index = 0;
+
+            public FuncStream(LuaFunction function) {
                 this.function = function;
             }
 
             @Override
             public int read() {
                 // if next index is out of bounds
-                if (++index >= string.length()){
+                if (++index >= string.length()) {
                     // reset index
                     index = 0;
                     // fetch next functon value
