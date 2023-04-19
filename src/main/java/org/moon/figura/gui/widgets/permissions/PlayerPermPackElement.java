@@ -115,7 +115,7 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
     @Override
     public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
         if (dragged)
-            UIHelper.fillRounded(stack, x - 1, y - 1, width + 2, height + 2, 0x40FFFFFF);
+            UIHelper.fillRounded(stack, getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0x40FFFFFF);
         else
             super.render(stack, mouseX, mouseY, delta);
     }
@@ -132,6 +132,9 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
 
     @Override
     public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
+        int width = getWidth();
+        int height = getHeight();
+
         stack.pushPose();
 
         float tx = x + width / 2f;
@@ -206,16 +209,16 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
             badges = new TextComponent(" ").append(badges);
 
         nameLabel.setText(TextUtils.trimToWidthEllipsis(font, name, width - 44 - font.width(badges), TextUtils.ELLIPSIS).copy().append(badges));
-        nameLabel.x = x + 40;
-        nameLabel.y = y + 4;
+        nameLabel.setX(x + 40);
+        nameLabel.setY(y + 4);
         //nameLabel.setOutlineColor(ColorUtils.rgbToInt(ColorUtils.rainbow(2, 1, 0.5)) + ((int) (0.5f * 0xFF) << 24));
         nameLabel.render(stack, mouseX, mouseY, delta);
 
         //status
         if (avatar != null && avatar.nbt != null) {
             status.tick(); //yes I know
-            status.x = x + 40;
-            status.y = y + 6 + font.lineHeight;
+            status.setX(x + 40);
+            status.setY(y + 6 + font.lineHeight);
             status.render(stack, mouseX, mouseY, delta);
         }
 
@@ -237,7 +240,8 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
 
         //context menu on right click
         if (button == 1) {
-            context.setPos((int) mouseX, (int) mouseY);
+            context.setX((int) mouseX);
+            context.setY((int) mouseY);
             context.setVisible(true);
             UIHelper.setContext(context);
             return true;

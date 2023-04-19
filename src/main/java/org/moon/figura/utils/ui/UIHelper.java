@@ -11,7 +11,6 @@ import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiComponent;
-import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -32,8 +31,8 @@ import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.config.Configs;
 import org.moon.figura.gui.screens.AbstractPanelScreen;
-import org.moon.figura.gui.widgets.AbstractContainerElement;
 import org.moon.figura.gui.widgets.ContextMenu;
+import org.moon.figura.gui.widgets.FiguraWidget;
 import org.moon.figura.math.vector.FiguraVec4;
 import org.moon.figura.model.rendering.EntityRenderMode;
 import org.moon.figura.utils.FiguraIdentifier;
@@ -355,7 +354,7 @@ public class UIHelper extends GuiComponent {
     }
 
     public static void renderSprite(PoseStack stack, int x, int y, int z, int width, int height, TextureAtlasSprite sprite) {
-        setupTexture(sprite.atlasLocation());
+        setupTexture(sprite.atlas().location());
         BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
         bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
         quad(bufferBuilder, stack.last().pose(), x, y, width, height, z, sprite.getU0(), sprite.getU1(), sprite.getV0(), sprite.getV1());
@@ -420,46 +419,64 @@ public class UIHelper extends GuiComponent {
         }
     }
 
-    public static void highlight(PoseStack stack, Object component, Component text) {
-        //object
-        int x, y, width, height;
-        if (component instanceof AbstractWidget w) {
-            x = w.x; y = w.y;
-            width = w.getWidth();
-            height = w.getHeight();
-        } else if (component instanceof AbstractContainerElement c) {
-            x = c.x; y = c.y;
-            width = c.width;
-            height = c.height;
-        } else {
-            return;
-        }
-
+    public static void highlight(PoseStack stack, FiguraWidget widget, Component text) {
         //screen
         int screenW, screenH;
         if (Minecraft.getInstance().screen instanceof AbstractPanelScreen panel) {
             screenW = panel.width;
             screenH = panel.height;
-
-            if (text != null)
-                panel.tooltip = text;
         } else {
             return;
         }
 
         //draw
 
+        int x = widget.getX();
+        int y = widget.getY();
+        int width = widget.getWidth();
+        int height = widget.getHeight();
+        int color = 0xDD000000;
+
         //left
-        fill(stack, 0, 0, x, y + height, 0xBB000000);
+        fill(stack, 0, 0, x, y + height, color);
         //right
-        fill(stack, x + width, y, screenW, screenH, 0xBB000000);
+        fill(stack, x + width, y, screenW, screenH, color);
         //up
-        fill(stack, x, 0, screenW, y, 0xBB000000);
+        fill(stack, x, 0, screenW, y, color);
         //down
-        fill(stack, 0, y + height, x + width, screenH, 0xBB000000);
+        fill(stack, 0, y + height, x + width, screenH, color);
 
         //outline
         fillOutline(stack, Math.max(x - 1, 0), Math.max(y - 1, 0), Math.min(width + 2, screenW), Math.min(height + 2, screenH), 0xFFFFFFFF);
+
+        //text
+
+        if (text == null)
+            return;
+
+        //Woolfy generated code
+        int bottomDistance = screenH - (y + height);
+        int rightDistance = screenW - (x + width);
+        int verArea = y * screenW - bottomDistance * screenW;
+        int horArea = x * screenH - rightDistance * screenH;
+        FiguraVec4 square = new FiguraVec4();
+
+        if (Math.abs(verArea) > Math.abs(horArea)) {
+            if (verArea >= 0) {
+                square.set(0, 0, screenW, y);
+            } else {
+                square.set(0, y + height, screenW, bottomDistance);
+            }
+        } else {
+            if (horArea >= 0) {
+                square.set(0, 0, x, screenH);
+            } else {
+                square.set(x + width, 0, rightDistance, screenH);
+            }
+        }
+
+        //fill(stack, (int) square.x, (int) square.y, (int) (square.x + square.z), (int) (square.y + square.w), 0xFFFF72AD);
+        //renderTooltip(stack, text, 0, 0, false);
     }
 
     //widget.isMouseOver() returns false if the widget is disabled or invisible

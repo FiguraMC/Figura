@@ -69,4 +69,44 @@ public class ParticleWidget implements FiguraWidget, FiguraTickable, FiguraRemov
     public boolean isRemoved() {
         return removed;
     }
+
+    @Override
+    public int getX() {
+        return x;
+    }
+
+    @Override
+    public void setX(int x) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int getY() {
+        return (int) y;
+    }
+
+    @Override
+    public void setY(int y) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int getWidth() {
+        return (int) size;
+    }
+
+    @Override
+    public void setWidth(int width) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int getHeight() {
+        return (int) size;
+    }
+
+    @Override
+    public void setHeight(int height) {
+        throw new UnsupportedOperationException();
+    }
 }

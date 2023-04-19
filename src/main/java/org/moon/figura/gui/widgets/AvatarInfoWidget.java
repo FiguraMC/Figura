@@ -33,8 +33,8 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
             new FiguraText("gui.complexity").withStyle(ChatFormatting.UNDERLINE)
     );
 
-    public int x, y;
-    public int width, height;
+    private int x, y;
+    private int width, height;
     private boolean visible = true;
     private final int maxSize;
 
@@ -157,5 +157,53 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
     @Override
     public void setVisible(boolean visible) {
         this.visible = visible;
+    }
+
+    @Override
+    public void setFocused(boolean bl) {}
+
+    @Override
+    public boolean isFocused() {
+        return false;
+    }
+
+    @Override
+    public int getX() {
+        return x;
+    }
+
+    @Override
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    @Override
+    public int getY() {
+        return y;
+    }
+
+    @Override
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    @Override
+    public int getWidth() {
+        return width;
+    }
+
+    @Override
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    @Override
+    public int getHeight() {
+        return height;
+    }
+
+    @Override
+    public void setHeight(int height) {
+        this.height = height;
     }
 }

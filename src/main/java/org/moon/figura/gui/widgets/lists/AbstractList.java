@@ -23,7 +23,7 @@ public abstract class AbstractList extends AbstractContainerElement {
         updateScissors(1, 1, -2, -2);
 
         children.add(scrollBar = new ScrollBarWidget(x + width - 14, y + 4, 10, height - 8, 0d));
-        scrollBar.visible = false;
+        scrollBar.setVisible(false);
     }
 
     public void updateScissors(int xOffset, int yOffset, int endXOffset, int endYOffset) {
@@ -34,7 +34,7 @@ public abstract class AbstractList extends AbstractContainerElement {
     }
 
     public boolean isInsideScissors(double mouseX, double mouseY) {
-        return UIHelper.isMouseOver(x + scissorsX, y + scissorsY, width + scissorsWidth, height + scissorsHeight, mouseX, mouseY);
+        return UIHelper.isMouseOver(getX() + scissorsX, getY() + scissorsY, getWidth() + scissorsWidth, getHeight() + scissorsHeight, mouseX, mouseY);
     }
 
     @Override

@@ -22,7 +22,7 @@ public class SearchBar extends TextField {
 
     public SearchBar(int x, int y, int width, int height, Consumer<String> changedListener) {
         super(x, y, width, height, TextField.HintType.SEARCH, changedListener);
-        clearButton = new Button(this.x + this.width - 18, this.y + ((this.height - 16) / 2), 16, 16, 0, 0, 16, CLEAR_TEXTURE, 48, 16, FiguraText.of("gui.clear"), button -> {
+        clearButton = new Button(getX() + getWidth() - 18, getY() + ((getHeight() - 16) / 2), 16, 16, 0, 0, 16, CLEAR_TEXTURE, 48, 16, FiguraText.of("gui.clear"), button -> {
             getField().setValue("");
             setFocused(false);
         });
@@ -32,7 +32,7 @@ public class SearchBar extends TextField {
 
     @Override
     public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
-        clearButton.visible = !getField().getValue().isEmpty();
+        clearButton.setVisible(!getField().getValue().isEmpty());
         super.render(stack, mouseX, mouseY, delta);
     }
 
@@ -40,16 +40,16 @@ public class SearchBar extends TextField {
     protected void renderHint(PoseStack stack) {
         super.renderHint(stack);
         Font font = Minecraft.getInstance().font;
-        font.drawShadow(stack, SEARCH_ICON, this.x + this.width - font.width(SEARCH_ICON) - 4, this.y + (int) ((this.height - font.lineHeight + 1) / 2f), 0xFFFFFF);
+        font.drawShadow(stack, SEARCH_ICON, getX() + getWidth() - font.width(SEARCH_ICON) - 4, getY() + (int) ((getHeight() - font.lineHeight + 1) / 2f), 0xFFFFFF);
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        return (!clearButton.visible || !clearButton.mouseClicked(mouseX, mouseY, button)) && super.mouseClicked(mouseX, mouseY, button);
+        return (!clearButton.isVisible() || !clearButton.mouseClicked(mouseX, mouseY, button)) && super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
-        return (!clearButton.visible || !clearButton.isMouseOver(mouseX, mouseY)) && super.isMouseOver(mouseX, mouseY);
+        return (!clearButton.isVisible() || !clearButton.isMouseOver(mouseX, mouseY)) && super.isMouseOver(mouseX, mouseY);
     }
 }

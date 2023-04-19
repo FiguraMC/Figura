@@ -3,11 +3,11 @@ package org.moon.figura.gui.widgets.lists;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.network.chat.*;
 import net.minecraft.util.Mth;
 import org.moon.figura.FiguraMod;
+import org.moon.figura.gui.widgets.FiguraWidget;
 import org.moon.figura.gui.widgets.SliderWidget;
 import org.moon.figura.gui.widgets.SwitchButton;
 import org.moon.figura.gui.widgets.TextField;
@@ -33,6 +33,11 @@ public class PermissionsList extends AbstractList {
 
     @Override
     public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
+        int x = getX();
+        int y = getY();
+        int width = getWidth();
+        int height = getHeight();
+
         //background and scissors
         UIHelper.renderSliced(stack, x, y, width, height, UIHelper.OUTLINE_FILL);
         UIHelper.setupScissor(x + scissorsX, y + scissorsY, width + scissorsWidth, height + scissorsHeight);
@@ -51,13 +56,13 @@ public class PermissionsList extends AbstractList {
         boolean titles = permissions.size() > 1;
         if (titles) totalHeight += permissions.size() * titleHeight;
 
-        scrollBar.y = y + 4;
-        scrollBar.visible = totalHeight > height;
+        scrollBar.setY(y + 4);
+        scrollBar.setVisible(totalHeight > height);
         scrollBar.setScrollRatio(entryHeight, totalHeight - height);
 
         //render
-        int xOffset = scrollBar.visible ? 8 : 15;
-        int yOffset = scrollBar.visible ? (int) -(Mth.lerp(scrollBar.getScrollProgress(), -16, totalHeight - height)) : 16;
+        int xOffset = scrollBar.isVisible() ? 8 : 15;
+        int yOffset = scrollBar.isVisible() ? (int) -(Mth.lerp(scrollBar.getScrollProgress(), -16, totalHeight - height)) : 16;
 
         for (Map.Entry<Component, List<GuiEventListener>> entry : permissions.entrySet()) {
             //titles
@@ -68,12 +73,8 @@ public class PermissionsList extends AbstractList {
 
             //elements
             for (GuiEventListener widget : entry.getValue()) {
-                if (widget instanceof AbstractWidget w) {
-                    w.x = x + xOffset;
-                    w.y = y + yOffset;
-                } else if (widget instanceof TextField t) {
-                    t.setPos(x + xOffset, y + yOffset);
-                }
+                ((FiguraWidget) widget).setX(x + xOffset);
+                ((FiguraWidget) widget).setY(y + yOffset);
                 yOffset += entryHeight;
             }
         }
@@ -103,6 +104,10 @@ public class PermissionsList extends AbstractList {
 
     private List<GuiEventListener> generateWidgets(PermissionPack container, Collection<Permissions> coll, String id) {
         List<GuiEventListener> list = new ArrayList<>();
+
+        int x = getX();
+        int y = getWidth();
+        int width = getWidth();
 
         for (Permissions permissions : coll) {
             int lineHeight = Minecraft.getInstance().font.lineHeight;
@@ -170,7 +175,7 @@ public class PermissionsList extends AbstractList {
             //texts
             MutableComponent name = new TranslatableComponent(id + ".permissions.value." + permissions.name.toLowerCase());
             if (changed) name = new TextComponent("*").setStyle(FiguraMod.getAccentColor()).append(name).append("*");
-            int valueX = this.x + width - font.width(value) - 1;
+            int valueX = getX() + getWidth() - font.width(value) - 1;
 
             UIHelper.renderScrollingText(stack, name, this.x + 1, this.y + 1, valueX - this.x - 2, 0xFFFFFF);
             font.draw(stack, value.copy().setStyle(FiguraMod.getAccentColor()), valueX, this.y + 1, 0xFFFFFF);
@@ -178,7 +183,7 @@ public class PermissionsList extends AbstractList {
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            if (!this.active || !this.isHoveredOrFocused() || !this.isMouseOver(mouseX, mouseY))
+            if (!this.isActive() || !this.isHoveredOrFocused() || !this.isMouseOver(mouseX, mouseY))
                 return false;
 
             if (button == 1) {
@@ -248,16 +253,16 @@ public class PermissionsList extends AbstractList {
             //texts
             MutableComponent name = getMessage().copy();
             if (changed) name = new TextComponent("*").setStyle(FiguraMod.getAccentColor()).append(name).append("*");
-            int valueX = this.x + width - font.width(value) - 1;
-            int valueY = this.y + font.lineHeight + 11 - font.lineHeight / 2;
+            int valueX = getX() + getWidth() - font.width(value) - 1;
+            int valueY = getY() + font.lineHeight + 11 - font.lineHeight / 2;
 
-            UIHelper.renderScrollingText(stack, name, this.x + 1, this.y + 1, width - 2, 0xFFFFFF);
+            UIHelper.renderScrollingText(stack, name, getX() + 1, getY() + 1, getWidth() - 2, 0xFFFFFF);
             font.draw(stack, value.copy().setStyle(FiguraMod.getAccentColor()), valueX, valueY, 0xFFFFFF);
         }
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            if (!this.active || !this.isHoveredOrFocused() || !this.isMouseOver(mouseX, mouseY))
+            if (!this.isActive() || !this.isHoveredOrFocused() || !this.isMouseOver(mouseX, mouseY))
                 return false;
 
             if (button == 1) {
@@ -351,10 +356,10 @@ public class PermissionsList extends AbstractList {
             //texts
             MutableComponent name = new TranslatableComponent(id + ".permissions.value." + permissions.name.toLowerCase());
             if (changed) name = new TextComponent("*").setStyle(FiguraMod.getAccentColor()).append(name).append("*");
-            int valueX = x + width - font.width(value) - 1;
+            int valueX = getX() + getWidth() - font.width(value) - 1;
 
-            UIHelper.renderScrollingText(stack, name, x + 1, y + 1 - font.lineHeight, valueX - x - 2, 0xFFFFFF);
-            font.draw(stack, value.copy().setStyle(FiguraMod.getAccentColor()), valueX, y + 1 - font.lineHeight, 0xFFFFFF);
+            UIHelper.renderScrollingText(stack, name, getX() + 1, getY() + 1 - font.lineHeight, valueX - getX() - 2, 0xFFFFFF);
+            font.draw(stack, value.copy().setStyle(FiguraMod.getAccentColor()), valueX, getY() + 1 - font.lineHeight, 0xFFFFFF);
         }
 
         @Override

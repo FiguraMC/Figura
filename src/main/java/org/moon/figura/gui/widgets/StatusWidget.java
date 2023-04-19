@@ -35,8 +35,8 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
     protected int status = 0;
     private Component scriptError, disconnectedReason;
 
-    public int x, y;
-    public int width, height;
+    private int x, y;
+    private int width, height;
     private boolean visible = true;
     private boolean background = true;
 
@@ -55,7 +55,7 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
 
     @Override
     public void tick() {
-        if (!visible) return;
+        if (!isVisible()) return;
 
         //update status indicators
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
@@ -79,7 +79,13 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
 
     @Override
     public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
-        if (!visible) return;
+        if (!isVisible()) return;
+
+        int x = getX();
+        int y = getY();
+        int width = getWidth();
+        int height = getHeight();
+        boolean background = hasBackground();
 
         //background
         if (background)
@@ -92,12 +98,12 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
         double spacing = (double) width / count;
         double hSpacing = spacing * 0.5;
         for (int i = 0; i < count; i++) {
-            int x = (int) (this.x + spacing * i + hSpacing);
+            int xx = (int) (x + spacing * i + hSpacing);
 
             Component text = getStatusIcon(i);
-            UIHelper.drawString(stack, font, text, x - font.width(text) / 2, y + (background ? 3 : 0), 0xFFFFFF);
+            UIHelper.drawString(stack, font, text, xx - font.width(text) / 2, y + (background ? 3 : 0), 0xFFFFFF);
 
-            if (hovered && mouseX >= x - hSpacing && mouseX < x + hSpacing && mouseY >= y && mouseY < y + font.lineHeight + (background ? 3 : 0))
+            if (hovered && mouseX >= xx - hSpacing && mouseX < xx + hSpacing && mouseY >= y && mouseY < y + font.lineHeight + (background ? 3 : 0))
                 UIHelper.setTooltip(getTooltipFor(i));
         }
     }
@@ -132,9 +138,17 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
         return text;
     }
 
+    public boolean hasBackground() {
+        return this.background;
+    }
+
+    public void setBackground(boolean background) {
+        this.background = background;
+    }
+
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
-        return UIHelper.isMouseOver(x, y, width, height, mouseX, mouseY);
+        return UIHelper.isMouseOver(getX(), getY(), getWidth(), getHeight(), mouseX, mouseY);
     }
 
     @Override
@@ -147,7 +161,43 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
         this.visible = visible;
     }
 
-    public void setBackground(boolean background) {
-        this.background = background;
+    @Override
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    @Override
+    public int getX() {
+        return x;
+    }
+
+    @Override
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    @Override
+    public int getY() {
+        return y;
+    }
+
+    @Override
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    @Override
+    public int getWidth() {
+        return width;
+    }
+
+    @Override
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    @Override
+    public int getHeight() {
+        return height;
     }
 }

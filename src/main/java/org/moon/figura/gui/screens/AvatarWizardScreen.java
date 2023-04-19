@@ -58,6 +58,6 @@ public class AvatarWizardScreen extends AbstractPanelScreen {
     @Override
     public void tick() {
         super.tick();
-        build.active = wizard.canBuild();
+        build.setActive(wizard.canBuild());
     }
 }

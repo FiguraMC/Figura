@@ -51,7 +51,7 @@ public class HelpScreen extends AbstractPanelScreen {
 
         IconButton docs;
         this.addRenderableWidget(docs = new IconButton(middle - 60, y += lineHeight + 4, 120, 24, 20, 0, 20, ICONS, 60, 40, FiguraText.of("gui.help.ingame_docs"), null, button -> this.minecraft.setScreen(new DocsScreen(this))));
-        docs.active = false;
+        docs.setActive(false);
         this.addRenderableWidget(new IconButton(middle - 60, y += 28, 120, 24, 0, 0, 20, ICONS, 60, 40, FiguraText.of("gui.help.lua_manual"), null, bx -> openLink(LUA_MANUAL).run()));
         this.addRenderableWidget(new IconButton(middle - 60, y += 28, 120, 24, 40, 0, 20, ICONS, 60, 40, FiguraText.of("gui.help.external_wiki"), null, bx -> openLink(FiguraLinkCommand.LINK.WIKI.url).run()));
 
@@ -129,6 +129,9 @@ public class HelpScreen extends AbstractPanelScreen {
 
         @Override
         public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
+            int x = getRawX();
+            int y = getRawY();
+
             //lines
             int y0 = y + getHeight() / 2;
             int y1 = y0 + 1;

@@ -47,10 +47,10 @@ public class EnumElement extends AbstractConfigElement {
 
                 //draw text
                 int color = getTextColor();
-                UIHelper.renderCenteredScrollingText(stack, message, this.x + 1, this.y, getWidth() - (textWidth <= width - arrowWidth - 9 ? 0 : arrowWidth + 1) - 2, getHeight(), color);
+                UIHelper.renderCenteredScrollingText(stack, message, getX() + 1, getY(), getWidth() - (textWidth <= getWidth() - arrowWidth - 9 ? 0 : arrowWidth + 1) - 2, getHeight(), color);
 
                 //draw arrow
-                font.drawShadow(stack, arrow, x + getWidth() - arrowWidth - 3, y + getHeight() / 2 - font.lineHeight / 2, color);
+                font.drawShadow(stack, arrow, getX() + getWidth() - arrowWidth - 3, (int) (getY() + getHeight() / 2f - font.lineHeight / 2f), color);
             }
 
             @Override
@@ -61,7 +61,7 @@ public class EnumElement extends AbstractConfigElement {
                 super.setHovered(hovered);
             }
         });
-        button.active = FiguraMod.DEBUG_MODE || !config.disabled;
+        button.setActive(FiguraMod.DEBUG_MODE || !config.disabled);
 
         //context menu
         context = new ContextMenu(button, button.getWidth());
@@ -77,7 +77,7 @@ public class EnumElement extends AbstractConfigElement {
         if (!this.isVisible()) return;
 
         //reset enabled
-        this.resetButton.active = !this.isDefault();
+        this.resetButton.setActive(!this.isDefault());
 
         //button text
         Component text = names.get((int) this.config.tempValue % this.names.size());
@@ -94,16 +94,25 @@ public class EnumElement extends AbstractConfigElement {
     }
 
     @Override
-    public void setPos(int x, int y) {
+    public void setX(int x) {
         //update self pos
-        super.setPos(x, y);
+        super.setX(x);
+        //update button pos
+        this.button.setX(x + getWidth() - 154);
+        //update context pos
+        this.context.setX(this.button.getX() + this.button.getWidth() / 2 - this.context.getWidth() / 2);
+    }
+
+    @Override
+    public void setY(int y) {
+        //update self pos
+        super.setY(y);
 
         //update button pos
-        this.button.x = x + width - 154;
-        this.button.y = y;
+        this.button.setY(y);
 
         //update context pos
-        this.context.setPos(this.button.x + this.button.getWidth() / 2 - this.context.width / 2, this.button.y + 20);
+        this.context.setY(this.button.getY() + 20);
     }
 
     private void updateContextText() {

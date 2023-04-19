@@ -36,8 +36,8 @@ public class FiguraConfirmScreen extends AbstractPanelScreen {
         titleY = Math.min(Math.max(titleY - 29, 4), 80);
         int messageY = titleY + 20;
 
-        title.y = titleY;
-        message.y = messageY;
+        title.setY(titleY);
+        message.setY(messageY);
 
         addRenderableWidget(title);
         addRenderableWidget(message);
