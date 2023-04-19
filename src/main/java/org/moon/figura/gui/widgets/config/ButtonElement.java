@@ -10,15 +10,19 @@ public class ButtonElement extends AbstractConfigElement {
 
     public ButtonElement(int width, ConfigType.ButtonConfig config, ConfigList parent) {
         super(width, config, parent);
-        resetButton.active = false;
+        resetButton.setActive(false);
         children.add(0, button = new ParentedButton(0, 0, 90, 20, config.name, this, button -> config.toRun.run()));
     }
 
     @Override
-    public void setPos(int x, int y) {
-        super.setPos(x, y);
+    public void setX(int x) {
+        super.setX(x);
+        this.button.setX(x + getWidth() - 154);
+    }
 
-        this.button.setX(x + width - 154);
+    @Override
+    public void setY(int y) {
+        super.setY(y);
         this.button.setY(y);
     }
 }

@@ -65,8 +65,8 @@ public class WardrobeScreen extends AbstractPanelScreen {
         EntityPreview entity = new EntityPreview(entityX, entityY, modelBgSize, modelBgSize, entitySize, -15f, 30f, minecraft.player, this);
         addRenderableWidget(entity);
 
-        int buttX = entity.x + entity.width / 2;
-        int buttY = entity.y + entity.height + 4;
+        int buttX = entity.getX() + entity.getWidth() / 2;
+        int buttY = entity.getY() + entity.getHeight() + 4;
 
         //upload
         addRenderableWidget(upload = new Button(buttX - 48, buttY, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/upload.png"), 72, 24, FiguraText.of("gui.wardrobe.upload.tooltip"), button -> {
@@ -77,7 +77,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
             NetworkStuff.uploadAvatar(avatar);
             AvatarList.selectedEntry = null;
         }));
-        upload.active = false;
+        upload.setActive(false);
 
         //reload
         addRenderableWidget(new Button(buttX - 12, buttY, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/reload.png"), 72, 24, FiguraText.of("gui.wardrobe.reload.tooltip"), button -> {
@@ -95,11 +95,11 @@ public class WardrobeScreen extends AbstractPanelScreen {
                 NetworkStuff.deleteAvatar(null))
         );
 
-        statusWidget = new StatusWidget(entity.x + entity.width - 64, 0, 64);
-        statusWidget.y = entity.y - statusWidget.height - 4;
+        statusWidget = new StatusWidget(entity.getX() + entity.getWidth() - 64, 0, 64);
+        statusWidget.setY(entity.getY() - statusWidget.getHeight() - 4);
         addRenderableOnly(statusWidget);
 
-        addRenderableOnly(loadingErrorWidget = new LoadingErrorWidget(statusWidget.x - 18, statusWidget.y, 14));
+        addRenderableOnly(loadingErrorWidget = new LoadingErrorWidget(statusWidget.getX() - 18, statusWidget.getY(), 14));
 
         // -- bottom -- //
 
@@ -123,7 +123,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
         Label version = new Label(versionText, middle, this.height - 4, TextUtils.Alignment.CENTER);
         addRenderableWidget(version);
         if (!oldVersion) version.alpha = 0x33;
-        version.y -= version.getHeight();
+        version.setY(version.getRawY() - version.getHeight());
 
         int rightSide = Math.min(panels, 134);
 
@@ -147,7 +147,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
                 FiguraText.of("gui.avatar_settings.tooltip"),
                 bx -> {}
         ));
-        avatarSettings.active = false;
+        avatarSettings.setActive(false);
 
         //sounds
         Button sounds = new Button(this.width - rightSide + 36, 28, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/sound.png"), 72, 24, FiguraText.of("gui.wardrobe.sound.tooltip"),
@@ -167,9 +167,9 @@ public class WardrobeScreen extends AbstractPanelScreen {
         //panic warning - always added last, on top
         addRenderableWidget(panic = new Label(
                 FiguraText.of("gui.panic", Configs.PANIC_BUTTON.keyBind.getTranslatedKeyMessage()).withStyle(ChatFormatting.YELLOW),
-                middle, version.y, TextUtils.Alignment.CENTER, 0)
+                middle, version.getRawY(), TextUtils.Alignment.CENTER, 0)
         );
-        panic.y -= panic.getHeight();
+        panic.setY(panic.getRawY() - panic.getHeight());
         panic.setVisible(false);
     }
 
@@ -187,8 +187,8 @@ public class WardrobeScreen extends AbstractPanelScreen {
         //backend buttons
         Avatar avatar;
         boolean backend = NetworkStuff.backendStatus == 3;
-        upload.active = NetworkStuff.canUpload() && !AvatarManager.localUploaded && (avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID())) != null && avatar.nbt != null;
-        delete.active = backend;
+        upload.setActive(NetworkStuff.canUpload() && !AvatarManager.localUploaded && (avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID())) != null && avatar.nbt != null);
+        delete.setActive(backend);
     }
 
     @Override

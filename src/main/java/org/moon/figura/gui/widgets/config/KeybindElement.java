@@ -25,11 +25,11 @@ public class KeybindElement extends AbstractConfigElement {
             FiguraMod.processingKeybind = true;
             updateText();
         }));
-        button.active = FiguraMod.DEBUG_MODE || !config.disabled;
+        button.setActive(FiguraMod.DEBUG_MODE || !config.disabled);
 
         //overwrite reset button to update the keybind
         children.remove(resetButton);
-        children.add(resetButton = new ParentedButton(x + width - 60, y, 60, 20, Component.translatable("controls.reset"), this, button -> {
+        children.add(resetButton = new ParentedButton(getX() + width - 60, getY(), 60, 20, Component.translatable("controls.reset"), this, button -> {
             binding.setKey(binding.getDefaultKey());
             parent.updateKeybinds();
         }));
@@ -57,10 +57,14 @@ public class KeybindElement extends AbstractConfigElement {
     }
 
     @Override
-    public void setPos(int x, int y) {
-        super.setPos(x, y);
+    public void setX(int x) {
+        super.setX(x);
+        this.button.setX(x + getWidth() - 154);
+    }
 
-        this.button.setX(x + width - 154);
+    @Override
+    public void setY(int y) {
+        super.setY(y);
         this.button.setY(y);
     }
 
@@ -80,7 +84,7 @@ public class KeybindElement extends AbstractConfigElement {
 
         //reset button
         boolean isDefault = isDefault();
-        this.resetButton.active = !isDefault;
+        this.resetButton.setActive(!isDefault);
 
         //text
         boolean selected = parent.focusedBinding == binding;

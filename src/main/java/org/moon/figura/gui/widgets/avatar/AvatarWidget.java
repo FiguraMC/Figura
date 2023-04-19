@@ -24,7 +24,7 @@ public class AvatarWidget extends AbstractAvatarWidget {
 
         AvatarWidget instance = this;
         Component description = Component.literal(avatar.getDescription());
-        this.button = new Button(x, y, width, 24, getName(), null, button -> {
+        this.button = new Button(getX(), getY(), width, 24, getName(), null, button -> {
             AvatarManager.loadLocalAvatar(avatar.getPath());
             AvatarList.selectedEntry = instance;
         }) {
@@ -34,7 +34,7 @@ public class AvatarWidget extends AbstractAvatarWidget {
 
                 //selected border
                 if (instance.equals(AvatarList.selectedEntry))
-                    UIHelper.fillOutline(stack, x, y, width, height, 0xFFFFFFFF);
+                    UIHelper.fillOutline(stack, getX(), getY(), getWidth(), getHeight(), 0xFFFFFFFF);
             }
 
             @Override
@@ -43,7 +43,7 @@ public class AvatarWidget extends AbstractAvatarWidget {
                 Font font = Minecraft.getInstance().font;
 
                 int space = SPACING * depth;
-                int width = this.width - 26 - space;
+                int width = this.getWidth() - 26 - space;
                 int x = getX() + 2 + space;
                 int y = getY() + 2;
 

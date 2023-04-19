@@ -25,7 +25,7 @@ public class CategoryWidget extends AbstractContainerElement {
         this.config = config;
         this.parent = parent;
 
-        this.parentConfig = new ContainerButton(parent, x, y, width, 20, config == null ? Component.empty() : config.name, config == null ? null : config.tooltip, button -> {
+        this.parentConfig = new ContainerButton(parent, getX(), getY(), width, 20, config == null ? Component.empty() : config.name, config == null ? null : config.tooltip, button -> {
             boolean toggled = this.parentConfig.isToggled();
             setShowChildren(toggled);
             ConfigScreen.CATEGORY_DATA.put(config, toggled);
@@ -42,7 +42,7 @@ public class CategoryWidget extends AbstractContainerElement {
     public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
         //children background
         if (parentConfig.isToggled() && entries.size() > 0)
-            UIHelper.fill(stack, x, y + 21, x + width, y + height, 0x11FFFFFF);
+            UIHelper.fill(stack, getX(), getY() + 21, getX() + getWidth(), getY() + getHeight(), 0x11FFFFFF);
 
         if (config == Configs.PAPERDOLL)
             parent.parentScreen.renderPaperdoll = parentConfig.isToggled() && parent.isMouseOver(mouseX, mouseY) && isMouseOver(mouseX, mouseY);
@@ -53,10 +53,11 @@ public class CategoryWidget extends AbstractContainerElement {
 
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
-        return UIHelper.isMouseOver(x, y, width, getHeight(), mouseX, mouseY);
+        return UIHelper.isMouseOver(getX(), getY(), getWidth(), getHeight(), mouseX, mouseY);
     }
 
     public void addConfig(ConfigType<?> config) {
+        int width = getWidth();
         AbstractConfigElement element;
         if (config instanceof ConfigType.BoolConfig boolConfig) {
             element = new BooleanElement(width, boolConfig, parent);
@@ -72,7 +73,7 @@ public class CategoryWidget extends AbstractContainerElement {
             return;
         }
 
-        this.height += 22;
+        this.setHeight(getHeight() + 22);
         this.children.add(element);
         this.entries.add(element);
     }
@@ -85,18 +86,23 @@ public class CategoryWidget extends AbstractContainerElement {
     }
 
     public int getHeight() {
-        return parentConfig.isToggled() ? height : 20;
+        return parentConfig.isToggled() ? super.getHeight() : 20;
     }
 
-    public void setPos(int x, int y) {
-        this.x = x;
-        this.y = y;
-
+    @Override
+    public void setX(int x) {
+        super.setX(x);
         this.parentConfig.setX(x);
-        this.parentConfig.setY(y);
+        for (AbstractConfigElement entry : entries)
+            entry.setX(x);
+    }
 
+    @Override
+    public void setY(int y) {
+        super.setY(y);
+        this.parentConfig.setY(y);
         for (int i = 0; i < entries.size(); i++)
-            entries.get(i).setPos(x, y + 22 * (i + 1));
+            entries.get(i).setY(y + 22 * (i + 1));
     }
 
     public void setShowChildren(boolean bool) {

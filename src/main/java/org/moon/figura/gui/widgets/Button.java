@@ -8,7 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.ui.UIHelper;
 
-public class Button extends net.minecraft.client.gui.components.Button {
+public class Button extends net.minecraft.client.gui.components.Button implements FiguraWidget {
 
     //default textures
     private static final ResourceLocation TEXTURE = new FiguraIdentifier("textures/gui/button.png");
@@ -51,7 +51,7 @@ public class Button extends net.minecraft.client.gui.components.Button {
 
     @Override
     public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
-        if (!this.visible)
+        if (!this.isVisible())
             return;
 
         //update hovered
@@ -81,14 +81,14 @@ public class Button extends net.minecraft.client.gui.components.Button {
 
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
-        boolean over = UIHelper.isMouseOver(getX(), getY(), width, height, mouseX, mouseY);
+        boolean over = UIHelper.isMouseOver(getX(), getY(), getWidth(), getHeight(), mouseX, mouseY);
         if (over && this.tooltip != null)
             UIHelper.setTooltip(this.tooltip);
         return over;
     }
 
     protected void renderDefaultTexture(PoseStack stack, float delta) {
-        UIHelper.renderSliced(stack, getX(), getY(), width, height, getU() * 16f, getV() * 16f, 16, 16, 48, 32, TEXTURE);
+        UIHelper.renderSliced(stack, getX(), getY(), getWidth(), getHeight(), getU() * 16f, getV() * 16f, 16, 16, 48, 32, TEXTURE);
     }
 
     protected void renderTexture(PoseStack stack, float delta) {
@@ -100,7 +100,7 @@ public class Button extends net.minecraft.client.gui.components.Button {
         UIHelper.setupTexture(this.texture);
 
         int size = this.regionSize;
-        blit(stack, this.getX() + this.width / 2 - size / 2, this.getY() + this.height / 2 - size / 2, u, v, size, size, this.textureWidth, this.textureHeight);
+        blit(stack, this.getX() + this.getWidth() / 2 - size / 2, this.getY() + this.getHeight() / 2 - size / 2, u, v, size, size, this.textureWidth, this.textureHeight);
     }
 
     protected void renderText(PoseStack stack, float delta) {
@@ -115,7 +115,7 @@ public class Button extends net.minecraft.client.gui.components.Button {
     }
 
     protected int getU() {
-        if (!this.active)
+        if (!this.isActive())
             return 0;
         else if (this.isHoveredOrFocused())
             return 2;
@@ -128,12 +128,7 @@ public class Button extends net.minecraft.client.gui.components.Button {
     }
 
     protected int getTextColor() {
-        return (!this.active ? ChatFormatting.DARK_GRAY : ChatFormatting.WHITE).getColor();
-    }
-
-    public void setUV(int x, int y) {
-        this.u = x;
-        this.v = y;
+        return (!this.isActive() ? ChatFormatting.DARK_GRAY : ChatFormatting.WHITE).getColor();
     }
 
     public void setTooltip(Component tooltip) {
@@ -157,7 +152,27 @@ public class Button extends net.minecraft.client.gui.components.Button {
         onPress();
     }
 
+    @Override
     public void setHeight(int height) {
         this.height = height;
+    }
+
+    @Override
+    public boolean isVisible() {
+        return this.visible;
+    }
+
+    @Override
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
+
+    @Override
+    public boolean isActive() {
+        return this.active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }

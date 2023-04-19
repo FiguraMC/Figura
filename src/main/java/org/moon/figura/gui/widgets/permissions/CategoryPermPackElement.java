@@ -22,6 +22,9 @@ public class CategoryPermPackElement extends AbstractPermPackElement {
 
     @Override
     public void renderWidget(PoseStack stack, int mouseX, int mouseY, float delta) {
+        int width = getWidth();
+        int height = getHeight();
+
         stack.pushPose();
         stack.translate(getX() + width / 2f, getY() + height / 2f, 100);
         stack.scale(scale, scale, 1f);

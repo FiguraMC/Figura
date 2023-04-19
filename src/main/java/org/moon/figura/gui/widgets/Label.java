@@ -30,7 +30,7 @@ public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
     private Style hovered;
 
     //widget
-    public int x, y;
+    private int x, y;
     private int width, height;
     private float scale;
     private boolean visible = true;
@@ -178,10 +178,12 @@ public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
         builder.add(NarratedElementType.POSITION, rawText);
     }
 
+    @Override
     public int getWidth() {
         return width;
     }
 
+    @Override
     public int getHeight() {
         return height;
     }
@@ -202,7 +204,8 @@ public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
         this.height = (int) (font.lineHeight * formattedText.size() * scale);
     }
 
-    private int getX() {
+    @Override
+    public int getX() {
         int x = this.x;
 
         if (alignment == TextUtils.Alignment.RIGHT)
@@ -213,12 +216,41 @@ public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
         return x;
     }
 
-    private int getY() {
+    public int getRawX() {
+        return x;
+    }
+
+    @Override
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    @Override
+    public int getY() {
         int y = this.y;
 
         if (centerVertically)
             y -= height / 2;
 
         return y;
+    }
+
+    public int getRawY() {
+        return y;
+    }
+
+    @Override
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    @Override
+    public void setWidth(int width) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setHeight(int height) {
+        throw new UnsupportedOperationException();
     }
 }

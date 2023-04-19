@@ -34,17 +34,17 @@ public class SliderWidget extends ScrollBarWidget {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
-        if (!this.active) return false;
-        scroll(stepSize * Math.signum(-amount) * (width - headWidth + 2d));
+        if (!this.isActive()) return false;
+        scroll(stepSize * Math.signum(-amount) * (getWidth() - headWidth + 2d));
         return true;
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (!this.active) return false;
+        if (!this.isActive()) return false;
 
         if (keyCode > 261 && keyCode < 266) {
-            scroll(stepSize * (keyCode % 2 == 0 ? 1 : -1) * Math.max(modifiers * 10, 1) * (width - headWidth + 2d));
+            scroll(stepSize * (keyCode % 2 == 0 ? 1 : -1) * Math.max(modifiers * 10, 1) * (getWidth() - headWidth + 2d));
             return true;
         }
 
@@ -75,7 +75,7 @@ public class SliderWidget extends ScrollBarWidget {
 
     @Override
     public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
-        if (this.visible) {
+        if (this.isVisible()) {
             //set hovered
             this.isHovered = this.isMouseOver(mouseX, mouseY);
 
@@ -89,6 +89,7 @@ public class SliderWidget extends ScrollBarWidget {
         UIHelper.setupTexture(SLIDER_TEXTURE);
         int x = getX();
         int y = getY();
+        int width = getWidth();
 
         //draw bar
         blit(stack, x, y + 3, width, 5, isScrolling ? 10f : 0f, 0f, 5, 5, 33, 16);
@@ -102,7 +103,7 @@ public class SliderWidget extends ScrollBarWidget {
 
         //draw header
         lerpPos(delta);
-        blit(stack, (int) (x + Math.round(Mth.lerp(scrollPos, 0, width - headWidth))), y, active ? (isHoveredOrFocused() || isScrolling ? headWidth * 2 : headWidth) : 0f, 5f, headWidth, headHeight, 33, 16);
+        blit(stack, (int) (x + Math.round(Mth.lerp(scrollPos, 0, width - headWidth))), y, isActive() ? (isHoveredOrFocused() || isScrolling ? headWidth * 2 : headWidth) : 0f, 5f, headWidth, headHeight, 33, 16);
     }
 
     // -- getters and setters -- //

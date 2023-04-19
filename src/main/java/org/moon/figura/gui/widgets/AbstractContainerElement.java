@@ -19,9 +19,8 @@ public abstract class AbstractContainerElement extends AbstractContainerEventHan
 
     protected final List<GuiEventListener> children = new ArrayList<>();
 
-    public int x, y;
-    public int width, height;
-
+    private int x, y;
+    private int width, height;
     private boolean hovered = false;
     private boolean visible = true;
 
@@ -73,7 +72,7 @@ public abstract class AbstractContainerElement extends AbstractContainerEventHan
 
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
-        return UIHelper.isMouseOver(x, y, width, height, mouseX, mouseY);
+        return UIHelper.isMouseOver(getX(), getY(), getWidth(), getHeight(), mouseX, mouseY);
     }
 
     @Override
@@ -128,6 +127,46 @@ public abstract class AbstractContainerElement extends AbstractContainerEventHan
     @Override
     public boolean isVisible() {
         return visible;
+    }
+
+    @Override
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    @Override
+    public int getX() {
+        return x;
+    }
+
+    @Override
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    @Override
+    public int getY() {
+        return y;
+    }
+
+    @Override
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    @Override
+    public int getHeight() {
+        return height;
+    }
+
+    @Override
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    @Override
+    public int getWidth() {
+        return width;
     }
 
     @Override

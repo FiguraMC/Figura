@@ -67,7 +67,7 @@ public class GameScreen extends AbstractPanelScreen {
                         .append(" scale (restarts)"),
                 4, 4, 0)
         );
-        addRenderableWidget(stats = new Label("", 4, keys.y + keys.getHeight(), 0));
+        addRenderableWidget(stats = new Label("", 4, keys.getRawY() + keys.getHeight(), 0));
     }
 
     @Override

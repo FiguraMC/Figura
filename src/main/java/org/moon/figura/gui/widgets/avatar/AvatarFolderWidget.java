@@ -19,7 +19,7 @@ public class AvatarFolderWidget extends AbstractAvatarWidget {
         super(depth, width, 20, avatar, parent);
 
         AvatarFolderWidget instance = this;
-        this.button = new ContainerButton(parent, x, y, width, 20, getName(), null, button -> {
+        this.button = new ContainerButton(parent, getX(), getY(), width, 20, getName(), null, button -> {
             toggleEntries(((ContainerButton) this.button).isToggled());
             parent.updateScroll();
         }) {
@@ -94,7 +94,7 @@ public class AvatarFolderWidget extends AbstractAvatarWidget {
 
             //add children
             this.entries.computeIfAbsent(str, s -> {
-                AbstractAvatarWidget entry = child instanceof LocalAvatarFetcher.FolderPath folder ? new AvatarFolderWidget(depth + 1, width, folder, parent) : new AvatarWidget(depth + 1, width, child, parent);
+                AbstractAvatarWidget entry = child instanceof LocalAvatarFetcher.FolderPath folder ? new AvatarFolderWidget(depth + 1, getWidth(), folder, parent) : new AvatarWidget(depth + 1, getWidth(), child, parent);
                 children.add(entry);
                 entry.setVisible(((ContainerButton) this.button).isToggled());
                 return entry;
@@ -135,26 +135,35 @@ public class AvatarFolderWidget extends AbstractAvatarWidget {
     }
 
     private void updateHeight() {
-        this.height = 20;
+        this.setHeight(20);
 
         for (AbstractAvatarWidget entry : entries.values()) {
             if (entry instanceof AvatarFolderWidget folder)
                 folder.updateHeight();
 
             if (entry.isVisible())
-                this.height += entry.height + 2;
+                this.setHeight(getHeight() + entry.getHeight() + 2);
         }
     }
 
     @Override
-    public void setPos(int x, int y) {
-        super.setPos(x, y);
+    public void setX(int x) {
+        super.setX(x);
+        for (AbstractAvatarWidget widget : sortedEntires) {
+            if (widget.isVisible())
+                widget.setX(x);
+        }
+    }
+
+    @Override
+    public void setY(int y) {
+        super.setY(y);
 
         y = 22;
         for (AbstractAvatarWidget widget : sortedEntires) {
             if (widget.isVisible()) {
-                widget.setPos(x, this.y + y);
-                y += widget.height + 2;
+                widget.setY(this.getY() + y);
+                y += widget.getHeight() + 2;
             }
         }
     }

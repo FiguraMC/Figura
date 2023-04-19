@@ -44,7 +44,7 @@ public class KeybindScreen extends AbstractPanelScreen {
                 keybind.resetDefaultKey();
             list.updateBindings();
         }));
-        reset.active = false;
+        reset.setActive(false);
 
         //back
         addRenderableWidget(new Button(width / 2 + 4, height - 24, 120, 20, FiguraText.of("gui.done"), null,

@@ -39,7 +39,7 @@ public class InputElement extends AbstractConfigElement {
 
         //overwrite reset button to update the text field
         children.remove(resetButton);
-        children.add(resetButton = new ParentedButton(x + width - 60, y, 60, 20, Component.translatable("controls.reset"), this, button -> {
+        children.add(resetButton = new ParentedButton(getX() + width - 60, getY(), 60, 20, Component.translatable("controls.reset"), this, button -> {
             config.resetTemp();
             updateTextFieldText(formatText(config.tempValue));
         }));
@@ -50,7 +50,7 @@ public class InputElement extends AbstractConfigElement {
         if (!this.isVisible()) return;
 
         //reset enabled
-        this.resetButton.active = !isDefault();
+        this.resetButton.setActive(!isDefault());
 
         //text colour
         int color = 0xFFFFFF;
@@ -75,7 +75,8 @@ public class InputElement extends AbstractConfigElement {
 
         //hex colour preview
         if (inputType == InputType.HEX_COLOR) {
-            int x = this.x + width - 178;
+            int x = this.getX() + getWidth() - 178;
+            int y = this.getY();
 
             //border
             if (getTextField().isFocused())
@@ -89,9 +90,15 @@ public class InputElement extends AbstractConfigElement {
     }
 
     @Override
-    public void setPos(int x, int y) {
-        this.textField.setPos(x + width - 154, y);
-        super.setPos(x, y);
+    public void setX(int x) {
+        super.setX(x);
+        this.textField.setX(x + getWidth() - 154);
+    }
+
+    @Override
+    public void setY(int y) {
+        super.setY(y);
+        this.textField.setY(y);
     }
 
     @Override

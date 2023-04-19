@@ -17,7 +17,7 @@ public class BooleanElement extends AbstractConfigElement {
 
         //button
         children.add(0, button = new ParentedButton(0, 0, 90, 20, config.tempValue ? SwitchButton.ON : SwitchButton.OFF, this, button -> config.tempValue = !(boolean) config.tempValue));
-        button.active = FiguraMod.DEBUG_MODE || !config.disabled;
+        button.setActive(FiguraMod.DEBUG_MODE || !config.disabled);
     }
 
     @Override
@@ -25,7 +25,7 @@ public class BooleanElement extends AbstractConfigElement {
         if (!this.isVisible()) return;
 
         //reset enabled
-        this.resetButton.active = !this.isDefault();
+        this.resetButton.setActive(!this.isDefault());
 
         //button text
         Component text = (boolean) config.tempValue ? SwitchButton.ON : SwitchButton.OFF;
@@ -42,10 +42,14 @@ public class BooleanElement extends AbstractConfigElement {
     }
 
     @Override
-    public void setPos(int x, int y) {
-        super.setPos(x, y);
+    public void setX(int x) {
+        super.setX(x);
+        this.button.setX(x + getWidth() - 154);
+    }
 
-        this.button.setX(x + width - 154);
+    @Override
+    public void setY(int y) {
+        super.setY(y);
         this.button.setY(y);
     }
 }

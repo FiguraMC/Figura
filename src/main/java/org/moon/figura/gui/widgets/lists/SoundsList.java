@@ -49,8 +49,8 @@ public class SoundsList extends AbstractList {
     @Override
     public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
         //background and scissors
-        UIHelper.renderSliced(stack, x, y, width, height, UIHelper.OUTLINE_FILL);
-        UIHelper.setupScissor(x + scissorsX, y + scissorsY, width + scissorsWidth, height + scissorsHeight);
+        UIHelper.renderSliced(stack, getX(), getY(), getWidth(), getHeight(), UIHelper.OUTLINE_FILL);
+        UIHelper.setupScissor(getX() + scissorsX, getY() + scissorsY, getWidth() + scissorsWidth, getHeight() + scissorsHeight);
 
         if (!sounds.isEmpty())
             updateEntries();
@@ -66,18 +66,19 @@ public class SoundsList extends AbstractList {
         //scrollbar
         int totalHeight = -4;
         for (SoundElement sound : sounds)
-            totalHeight += sound.height + 8;
+            totalHeight += sound.getHeight() + 8;
         int entryHeight = sounds.isEmpty() ? 0 : totalHeight / sounds.size();
 
-        scrollBar.visible = totalHeight > height;
-        scrollBar.setScrollRatio(entryHeight, totalHeight - height);
+        scrollBar.setVisible(totalHeight > getHeight());
+        scrollBar.setScrollRatio(entryHeight, totalHeight - getHeight());
 
         //render list
-        int xOffset = scrollBar.visible ? 4 : 11;
-        int yOffset = scrollBar.visible ? (int) -(Mth.lerp(scrollBar.getScrollProgress(), -4, totalHeight - height)) : 4;
+        int xOffset = scrollBar.isVisible() ? 4 : 11;
+        int yOffset = scrollBar.isVisible() ? (int) -(Mth.lerp(scrollBar.getScrollProgress(), -4, totalHeight - getHeight())) : 4;
         for (SoundElement sound : sounds) {
-            sound.setPos(x + xOffset, y + yOffset);
-            yOffset += sound.height + 8;
+            sound.setX(getX() + xOffset);
+            sound.setY(getY() + yOffset);
+            yOffset += sound.getHeight() + 8;
         }
     }
 
@@ -90,7 +91,7 @@ public class SoundsList extends AbstractList {
             return;
 
         for (Map.Entry<String, SoundBuffer> entry : owner.customSounds.entrySet()) {
-            SoundElement sound = new SoundElement(width - 22, entry.getKey(), entry.getValue(), this, owner);
+            SoundElement sound = new SoundElement(getWidth() - 22, entry.getKey(), entry.getValue(), this, owner);
             sounds.add(sound);
             children.add(sound);
         }
@@ -144,6 +145,11 @@ public class SoundsList extends AbstractList {
         public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
             if (!this.isVisible()) return;
 
+            int x = getX();
+            int y = getY();
+            int width = getWidth();
+            int height = getHeight();
+
             //selected outline
             if (parent.selected == this)
                 UIHelper.fillOutline(stack, x - 1, y - 1, width + 2, height + 2, 0xFFFFFFFF);
@@ -183,14 +189,17 @@ public class SoundsList extends AbstractList {
             return clicked;
         }
 
-        public void setPos(int x, int y) {
-            this.x = x;
-            this.y = y;
+        @Override
+        public void setX(int x) {
+            super.setX(x);
+            play.setX(x + getWidth() - 64);
+            stop.setX(x + getWidth() - 40);
+        }
 
-            play.setX(x + width - 64);
+        @Override
+        public void setY(int y) {
+            super.setY(y);
             play.setY(y);
-
-            stop.setX(x + width - 40);
             stop.setY(y);
         }
 

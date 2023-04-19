@@ -3,12 +3,12 @@ package org.moon.figura.gui.widgets.lists;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
 import org.moon.figura.FiguraMod;
+import org.moon.figura.gui.widgets.FiguraWidget;
 import org.moon.figura.gui.widgets.SwitchButton;
 import org.moon.figura.gui.widgets.TextField;
 import org.moon.figura.utils.FiguraText;
@@ -33,6 +33,11 @@ public class AvatarWizardList extends AbstractList {
 
     @Override
     public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
+        int x = getX();
+        int y = getY();
+        int width = getWidth();
+        int height = getHeight();
+
         //background and scissors
         UIHelper.renderSliced(stack, x, y, width, height, UIHelper.OUTLINE_FILL);
         UIHelper.setupScissor(x + scissorsX, y + scissorsY, width + scissorsWidth, height + scissorsHeight);
@@ -49,18 +54,18 @@ public class AvatarWizardList extends AbstractList {
                     ib.setVisible(wizard.checkDependency(ib.entry));
                     if (ib.isVisible()) size++;
                 } else if (widget instanceof WizardToggleButton tb) {
-                    tb.visible = wizard.checkDependency(tb.entry);
-                    if (tb.visible) size++;
+                    tb.setVisible(wizard.checkDependency(tb.entry));
+                    if (tb.isVisible()) size++;
                 }
             }
         }
         int totalHeight = entryHeight * size + lineHeight * map.size();
 
-        scrollBar.visible = totalHeight > height;
+        scrollBar.setVisible(totalHeight > height);
         scrollBar.setScrollRatio(entryHeight, totalHeight - height);
 
         //render list
-        int yOffset = scrollBar.visible ? (int) -(Mth.lerp(scrollBar.getScrollProgress(), -4, totalHeight - height)) : 4;
+        int yOffset = scrollBar.isVisible() ? (int) -(Mth.lerp(scrollBar.getScrollProgress(), -4, totalHeight - height)) : 4;
         for (Map.Entry<Component, List<GuiEventListener>> entry : map.entrySet()) {
             List<GuiEventListener> value = entry.getValue();
             if (value.isEmpty())
@@ -68,17 +73,11 @@ public class AvatarWizardList extends AbstractList {
 
             int newY = yOffset + lineHeight;
             //elements
-            for (GuiEventListener widget : entry.getValue()) {
-                if (widget instanceof AbstractWidget w) {
-                    if (w.visible) {
-                        w.setY(y + newY);
-                        newY += entryHeight;
-                    }
-                } else if (widget instanceof TextField t) {
-                    if (t.isVisible()) {
-                        t.setPos(t.x, y + newY);
-                        newY += entryHeight;
-                    }
+            for (GuiEventListener w : entry.getValue()) {
+                FiguraWidget widget = (FiguraWidget) w;
+                if (widget.isVisible()) {
+                    widget.setY(y + newY);
+                    newY += entryHeight;
                 }
             }
 
@@ -113,8 +112,8 @@ public class AvatarWizardList extends AbstractList {
             children.removeAll(value);
         map.clear();
 
-        int x = this.x + width / 2 + 4;
-        int width = this.width / 2 - 20;
+        int x = this.getX() + getWidth() / 2 + 4;
+        int width = this.getWidth() / 2 - 20;
 
         Component lastName = Component.empty();
         List<GuiEventListener> lastList = new ArrayList<>();
@@ -162,7 +161,7 @@ public class AvatarWizardList extends AbstractList {
             MutableComponent name = this.name.copy();
             if (!this.getField().getValue().isBlank())
                 name.setStyle(FiguraMod.getAccentColor());
-            font.draw(stack, name, x - width - 8, y + (height - font.lineHeight) / 2, 0xFFFFFF);
+            font.draw(stack, name, getX() - getWidth() - 8, (int) (getY() + (getHeight() - font.lineHeight) / 2f), 0xFFFFFF);
         }
 
         @Override
@@ -193,7 +192,7 @@ public class AvatarWizardList extends AbstractList {
         protected void renderDefaultTexture(PoseStack stack, float delta) {
             //button
             stack.pushPose();
-            stack.translate(width - 30, 0, 0);
+            stack.translate(getWidth() - 30, 0, 0);
             super.renderDefaultTexture(stack, delta);
             stack.popPose();
         }
@@ -205,7 +204,7 @@ public class AvatarWizardList extends AbstractList {
             MutableComponent name = getMessage().copy();
             if (this.isToggled())
                 name.withStyle(FiguraMod.getAccentColor());
-            font.draw(stack, name, getX() - width - 8, getY() + (height - font.lineHeight) / 2, 0xFFFFFF);
+            font.draw(stack, name, getX() - getWidth() - 8, (int) (getY() + (getHeight() - font.lineHeight) / 2f), 0xFFFFFF);
         }
 
         @Override

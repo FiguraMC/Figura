@@ -46,13 +46,13 @@ public class ContextMenu extends AbstractContainerElement {
         if (!isVisible()) return;
 
         //outline
-        UIHelper.renderSliced(stack, x, y, width, height, 0f, 0f, 16, 16, 48, 16, BACKGROUND);
+        UIHelper.renderSliced(stack, getX(), getY(), getWidth(), getHeight(), 0f, 0f, 16, 16, 48, 16, BACKGROUND);
 
-        for (int i = 0, y = this.y + 1; i < entries.size(); i++) {
+        for (int i = 0, y = getY() + 1; i < entries.size(); i++) {
             int height = entries.get(i).getHeight();
 
             //background
-            UIHelper.renderSliced(stack, x + 1, y, width - 2, height, i % 2 == 1 ? 32f : 16f, 0f, 16, 16, 48, 16, BACKGROUND);
+            UIHelper.renderSliced(stack, getX() + 1, y, getWidth() - 2, height, i % 2 == 1 ? 32f : 16f, 0f, 16, 16, 48, 16, BACKGROUND);
 
             //button
             entries.get(i).render(stack, mouseX, mouseY, delta);
@@ -68,16 +68,16 @@ public class ContextMenu extends AbstractContainerElement {
     }
 
     public void addAction(Component name, Component tooltip, Button.OnPress action) {
-        addElement(new ContextButton(x, y + this.height, name, tooltip, this, action));
+        addElement(new ContextButton(getX(), getY() + getHeight(), name, tooltip, this, action));
     }
 
     public void addDivisor() {
-        addElement(new ContextDivisor(x, y + this.height));
+        addElement(new ContextDivisor(getX(), getY() + getHeight()));
     }
 
     public void addTab(Component name, Component tooltip, ContextMenu context) {
         //button
-        ContextButton button = new TabButton(x, y + this.height, name, tooltip, this, context);
+        ContextButton button = new TabButton(getX(), getY() + getHeight(), name, tooltip, this, context);
         addElement(button);
 
         //context
@@ -102,17 +102,17 @@ public class ContextMenu extends AbstractContainerElement {
     }
 
     public void updateDimensions() {
-        this.width = minWidth;
-        this.height = 2;
+        this.setWidth(minWidth);
+        this.setHeight(2);
 
         for (ContextButton entry : entries) {
-            this.width = Math.max(entry.getMessageWidth() + 8, width);
-            this.height += entry.getHeight();
+            this.setWidth(Math.max(entry.getMessageWidth() + 8, getWidth()));
+            this.setHeight(getHeight() + entry.getHeight());
         }
 
         //fix buttons width
         for (ContextButton entry : entries)
-            entry.setWidth(this.width - 2);
+            entry.setWidth(getWidth() - 2);
     }
 
     @Override
@@ -121,30 +121,44 @@ public class ContextMenu extends AbstractContainerElement {
         clearNest();
     }
 
-    public void setPos(int x, int y) {
+    @Override
+    public void setX(int x) {
         //fix out of screen
-        int realWidth = x + width;
+        int realWidth = x + getWidth();
         int clientWidth = Minecraft.getInstance().getWindow().getGuiScaledWidth();
         if (realWidth > clientWidth)
             x -= (realWidth - clientWidth);
 
-        int realHeight = y + height;
+        //apply changes
+        super.setX(x);
+
+        //children
+        for (ContextButton button : entries) {
+            button.setX(x + 1);
+            if (button instanceof TabButton tab)
+                tab.context.setX(tab.getX() + tab.getWidth());
+        }
+    }
+
+    @Override
+    public void setY(int y) {
+        //fix out of screen
+        int realHeight = y + getHeight();
         int clientHeight = Minecraft.getInstance().getWindow().getGuiScaledHeight();
         if (realHeight > clientHeight)
             y -= (realHeight - clientHeight);
 
         //apply changes
-        this.x = x;
-        this.y = y;
+        super.setY(y);
 
+        //children
         int heigth = y + 1;
         for (ContextButton button : entries) {
-            button.setX(x + 1);
             button.setY(heigth);
             heigth += button.getHeight();
 
             if (button instanceof TabButton tab)
-                tab.context.setPos(tab.getX() + tab.getWidth(), tab.getY() - 1);
+                tab.context.setY(tab.getY() - 1);
         }
     }
 
@@ -181,14 +195,14 @@ public class ContextMenu extends AbstractContainerElement {
             Font font = Minecraft.getInstance().font;
             font.drawShadow(
                     stack, getMessage(),
-                    this.getX() + 3, this.getY() + this.height / 2 - font.lineHeight / 2,
+                    this.getX() + 3, (int) (this.getY() + this.getHeight() / 2f - font.lineHeight / 2f),
                     getTextColor()
             );
         }
 
         @Override
         public boolean isMouseOver(double mouseX, double mouseY) {
-            if (UIHelper.isMouseOver(getX(), getY(), width, height, mouseX, mouseY, true)) {
+            if (UIHelper.isMouseOver(getX(), getY(), getWidth(), getHeight(), mouseX, mouseY, true)) {
                 UIHelper.setTooltip(this.tooltip);
                 parent.clearNest();
                 return true;
@@ -211,7 +225,7 @@ public class ContextMenu extends AbstractContainerElement {
         @Override
         public void renderWidget(PoseStack stack, int mouseX, int mouseY, float delta) {
             //draw line
-            fill(stack, this.getX() + 4, getY() + 4, this.getX() + this.width - 4, getY() + 5, 0xFF000000 + ChatFormatting.DARK_GRAY.getColor());
+            fill(stack, this.getX() + 4, getY() + 4, this.getX() + this.getWidth() - 4, getY() + 5, 0xFF000000 + ChatFormatting.DARK_GRAY.getColor());
         }
 
         @Override
@@ -241,14 +255,14 @@ public class ContextMenu extends AbstractContainerElement {
             Font font = Minecraft.getInstance().font;
             font.drawShadow(
                     stack, ARROW,
-                    this.getX() + this.width - font.width(ARROW) - 3, this.getY() + this.height / 2 - font.lineHeight / 2,
+                    this.getX() + this.getWidth() - font.width(ARROW) - 3, (int) (this.getY() + this.getHeight() / 2f - font.lineHeight / 2f),
                     getTextColor()
             );
         }
 
         @Override
         public boolean isMouseOver(double mouseX, double mouseY) {
-            if (UIHelper.isMouseOver(getX(), getY(), width, height, mouseX, mouseY, true)) {
+            if (UIHelper.isMouseOver(getX(), getY(), getWidth(), getHeight(), mouseX, mouseY, true)) {
                 UIHelper.setTooltip(this.tooltip);
                 parent.nestedContext = context;
                 return true;

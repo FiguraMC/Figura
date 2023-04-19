@@ -81,7 +81,7 @@ public class PanelSelectorWidget extends AbstractContainerElement {
 
     private void createPanelButton(Screen panel, PanelIcon icon, boolean toggled, int x, int width) {
         //create button
-        PanelButton button = new PanelButton(x, y, width, height - 4, panel.getTitle(), icon, this, bx -> Minecraft.getInstance().setScreen(panel));
+        PanelButton button = new PanelButton(x, getY(), width, getHeight() - 4, panel.getTitle(), icon, this, bx -> Minecraft.getInstance().setScreen(panel));
         button.shouldHaveBackground(false);
         if (toggled) this.selected = button;
 
@@ -92,8 +92,8 @@ public class PanelSelectorWidget extends AbstractContainerElement {
 
     @Override
     public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
-        UIHelper.renderSliced(stack, x, y, selected.getX() - x, height - 4, BACKGROUND);
-        UIHelper.renderSliced(stack, selected.getX() + selected.getWidth(), y, width - selected.getX() - selected.getWidth(), height - 4, BACKGROUND);
+        UIHelper.renderSliced(stack, getX(), getY(), selected.getX() - getX(), getHeight() - 4, BACKGROUND);
+        UIHelper.renderSliced(stack, selected.getX() + selected.getWidth(), getY(), getWidth() - selected.getX() - selected.getWidth(), getHeight() - 4, BACKGROUND);
         super.render(stack, mouseX, mouseY, delta);
     }
 

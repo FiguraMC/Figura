@@ -49,11 +49,11 @@ public class TextField extends AbstractContainerElement {
         if (!isVisible()) return;
 
         //render background
-        UIHelper.renderSliced(stack, x, y, width, height, !isEnabled() ? 0f : this.isMouseOver(mouseX, mouseY) ? 32f : 16f, 0f, 16, 16, 48, 16, BACKGROUND);
+        UIHelper.renderSliced(stack, getX(), getY(), getWidth(), getHeight(), !isEnabled() ? 0f : this.isMouseOver(mouseX, mouseY) ? 32f : 16f, 0f, 16, 16, 48, 16, BACKGROUND);
 
         //render outline
         if (isFocused())
-            UIHelper.fillOutline(stack, x, y, width, height, borderColour);
+            UIHelper.fillOutline(stack, getX(), getY(), getWidth(), getHeight(), borderColour);
 
         //hint text
         if (hint != null && field.getValue().isEmpty() && !field.isFocused())
@@ -67,7 +67,7 @@ public class TextField extends AbstractContainerElement {
         Font font = Minecraft.getInstance().font;
         font.drawShadow(
                 stack, hint.hint.copy().append(TextUtils.ELLIPSIS).withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC),
-                this.x + 4, this.y + (int) ((height - font.lineHeight + 1) / 2f), 0xFFFFFF
+                getX() + 4, getY() + (int) ((getHeight() - font.lineHeight + 1) / 2f), 0xFFFFFF
         );
     }
 
@@ -89,11 +89,16 @@ public class TextField extends AbstractContainerElement {
         return !field.isFocused();
     }
 
-    public void setPos(int x, int y) {
-        this.x = x;
-        this.y = y;
+    @Override
+    public void setX(int x) {
+        super.setX(x);
         this.field.setX(x + 4);
-        this.field.setY(y + (this.height - 8) / 2);
+    }
+
+    @Override
+    public void setY(int y) {
+        super.setY(y);
+        this.field.setY(y + (this.getHeight() - 8) / 2);
     }
 
     public void setBorderColour(int borderColour) {

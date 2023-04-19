@@ -75,6 +75,11 @@ public class EntityPreview extends AbstractContainerElement {
         if (!this.isVisible())
             return;
 
+        int x = getX();
+        int y = getY();
+        int width = getWidth();
+        int height = getHeight();
+
         if (!button.isToggled()) {
             //border
             UIHelper.renderSliced(stack, x, y, width, height, UIHelper.OUTLINE_FILL);
@@ -154,8 +159,8 @@ public class EntityPreview extends AbstractContainerElement {
                 angleY = yaw;
                 scaledValue = 0f;
                 scaledPrecise = 0f;
-                modelX = width / 2;
-                modelY = height / 2;
+                modelX = getWidth() / 2;
+                modelY = getHeight() / 2;
                 return true;
             }
         }

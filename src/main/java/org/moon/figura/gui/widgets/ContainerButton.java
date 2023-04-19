@@ -25,19 +25,19 @@ public class ContainerButton extends SwitchButton {
         int color = getTextColor();
         Component arrow = this.toggled ? UIHelper.DOWN_ARROW : UIHelper.UP_ARROW;
         int arrowWidth = font.width(arrow);
-        Component message = TextUtils.trimToWidthEllipsis(font, getMessage(), this.width - arrowWidth - 6, TextUtils.ELLIPSIS.copy().withStyle(getMessage().getStyle()));
+        Component message = TextUtils.trimToWidthEllipsis(font, getMessage(), this.getWidth() - arrowWidth - 6, TextUtils.ELLIPSIS.copy().withStyle(getMessage().getStyle()));
 
         //draw text
         font.drawShadow(
                 stack, message,
-                this.getX() + arrowWidth + 6, this.getY() + this.height / 2 - font.lineHeight / 2,
+                this.getX() + arrowWidth + 6, (int) (this.getY() + this.getHeight() / 2f - font.lineHeight / 2f),
                 color
         );
 
         //draw arrow
         font.drawShadow(
                 stack, arrow,
-                this.getX() + 3, this.getY() + this.height / 2 - font.lineHeight / 2,
+                this.getX() + 3, (int) (this.getY() + this.getHeight() / 2f - font.lineHeight / 2f),
                 color
         );
 
