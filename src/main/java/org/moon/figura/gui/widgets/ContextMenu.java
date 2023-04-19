@@ -106,7 +106,7 @@ public class ContextMenu extends AbstractContainerElement {
         this.setHeight(2);
 
         for (ContextButton entry : entries) {
-            this.setWidth(Math.max(entry.getMessageWidth() + 8, getWidth()));
+            this.setWidth(Math.max(entry.getTrueWidth() + 8, getWidth()));
             this.setHeight(getHeight() + entry.getHeight());
         }
 
@@ -211,7 +211,7 @@ public class ContextMenu extends AbstractContainerElement {
             return false;
         }
 
-        public int getMessageWidth() {
+        public int getTrueWidth() {
             return Minecraft.getInstance().font.width(getMessage());
         }
     }
@@ -240,8 +240,7 @@ public class ContextMenu extends AbstractContainerElement {
         private final ContextMenu context;
 
         public TabButton(int x, int y, Component text, Component tooltip, ContextMenu parent, ContextMenu context) {
-            super(x, y, text.copy().append(" ").append(ARROW), tooltip, parent, button -> {});
-            this.setMessage(text);
+            super(x, y, text, tooltip, parent, button -> {});
             this.context = context;
             this.context.setVisible(true);
         }
@@ -262,13 +261,20 @@ public class ContextMenu extends AbstractContainerElement {
 
         @Override
         public boolean isMouseOver(double mouseX, double mouseY) {
-            if (UIHelper.isMouseOver(getX(), getY(), getWidth(), getHeight(), mouseX, mouseY, true)) {
+            boolean mouseOver = UIHelper.isMouseOver(getX(), getY(), getWidth(), getHeight(), mouseX, mouseY, true);
+            if (mouseOver || parent.nestedContext == context) {
                 UIHelper.setTooltip(this.tooltip);
                 parent.nestedContext = context;
+                if (mouseOver) context.nestedContext = null;
                 return true;
             }
 
             return false;
+        }
+
+        @Override
+        public int getTrueWidth() {
+            return super.getTrueWidth() + Minecraft.getInstance().font.width(Component.literal(" ").append(ARROW));
         }
     }
 }

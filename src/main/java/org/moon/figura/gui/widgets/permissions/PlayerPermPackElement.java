@@ -172,7 +172,7 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
 
             Entity e = EntityUtils.getEntityByUUID(owner);
             boolean upsideDown = e instanceof LivingEntity entity && LivingEntityRenderer.isEntityUpsideDown(entity);
-            head = !dragged && avatar.renderPortrait(stack, x + 4, y + 4, Math.round(32 * scale), 64, upsideDown);
+            head = avatar.renderPortrait(stack, x + 4, y + 4, Math.round(32f * scale), 64, upsideDown);
         }
 
         if (!head) {
