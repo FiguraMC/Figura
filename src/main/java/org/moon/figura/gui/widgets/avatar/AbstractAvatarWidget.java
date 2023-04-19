@@ -68,8 +68,8 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
         if (favourite) {
             Font font = Minecraft.getInstance().font;
             int width = font.width(FAVOURITE);
-            int x = this.x + this.width - width;
-            int y = this.y + 2;
+            int x = this.getX() + this.getWidth() - width;
+            int y = this.getY() + 2;
 
             font.draw(stack, FAVOURITE, x, y, 0xFFFFFF);
 
@@ -88,7 +88,8 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
 
         //context menu on right click
         if (button == 1) {
-            context.setPos((int) mouseX, (int) mouseY);
+            context.setX((int) mouseX);
+            context.setY((int) mouseY);
             context.setVisible(true);
             UIHelper.setContext(context);
             return true;
@@ -115,12 +116,16 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
         return Component.literal(avatar.getName());
     }
 
-    public void setPos(int x, int y) {
-        this.x = x;
-        this.y = y;
+    @Override
+    public void setX(int x) {
+        super.setX(x);
+        this.button.setX(x);
+    }
 
-        this.button.x = x;
-        this.button.y = y;
+    @Override
+    public void setY(int y) {
+        super.setY(y);
+        this.button.setY(y);
     }
 
     public boolean filtered() {

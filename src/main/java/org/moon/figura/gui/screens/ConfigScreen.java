@@ -72,7 +72,7 @@ public class ConfigScreen extends AbstractPanelScreen {
     @Override
     public void tick() {
         super.tick();
-        this.cancel.active = list.hasChanges();
+        this.cancel.setActive(list.hasChanges());
     }
 
     @Override

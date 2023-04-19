@@ -10,7 +10,7 @@ import net.minecraft.util.Mth;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.ui.UIHelper;
 
-public class ScrollBarWidget extends AbstractWidget {
+public class ScrollBarWidget extends AbstractWidget implements FiguraWidget {
 
     // -- fields -- //
 
@@ -40,12 +40,12 @@ public class ScrollBarWidget extends AbstractWidget {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (!this.active || !this.isHoveredOrFocused() || !this.isMouseOver(mouseX, mouseY))
+        if (!this.isActive() || !this.isHoveredOrFocused() || !this.isMouseOver(mouseX, mouseY))
             return false;
 
         if (button == 0) {
             //jump to pos when not clicking on head
-            double scrollPos = Mth.lerp(scrollPrecise, 0d, (vertical ? height - headHeight : width - headWidth) + 2d);
+            double scrollPos = Mth.lerp(scrollPrecise, 0d, (vertical ? getHeight() - headHeight : getWidth() - headWidth) + 2d);
 
             if (vertical && mouseY < y + scrollPos || mouseY > y + scrollPos + headHeight)
                 scroll(-(y + scrollPos + headHeight / 2d - mouseY));
@@ -76,7 +76,7 @@ public class ScrollBarWidget extends AbstractWidget {
             //vertical drag
             if (vertical) {
                 if (Math.signum(deltaY) == -1) {
-                    if (mouseY <= this.y + this.height) {
+                    if (mouseY <= this.getY() + this.getHeight()) {
                         scroll(deltaY);
                         return true;
                     }
@@ -88,7 +88,7 @@ public class ScrollBarWidget extends AbstractWidget {
             }
             //horizontal drag
             else if (Math.signum(deltaX) == -1) {
-                if (mouseX <= this.x + this.width) {
+                if (mouseX <= this.getX() + this.getWidth()) {
                     scroll(deltaX);
                     return true;
                 }
@@ -103,17 +103,17 @@ public class ScrollBarWidget extends AbstractWidget {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
-        if (!this.active) return false;
-        scroll(-amount * (vertical ? height : width) * 0.05d * scrollRatio);
+        if (!this.isActive()) return false;
+        scroll(-amount * (vertical ? getHeight() : getWidth()) * 0.05d * scrollRatio);
         return true;
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (!this.active) return false;
+        if (!this.isActive()) return false;
 
         if (keyCode > 261 && keyCode < 266) {
-            scroll((keyCode % 2 == 0 ? 1 : -1) * (vertical ? height : width) * 0.05d * scrollRatio);
+            scroll((keyCode % 2 == 0 ? 1 : -1) * (vertical ? getHeight() : getWidth()) * 0.05d * scrollRatio);
             return true;
         }
 
@@ -122,12 +122,12 @@ public class ScrollBarWidget extends AbstractWidget {
 
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
-        return UIHelper.isMouseOver(x, y, width, height, mouseX, mouseY);
+        return UIHelper.isMouseOver(getX(), getY(), getWidth(), getHeight(), mouseX, mouseY);
     }
 
     //apply scroll value
     protected void scroll(double amount) {
-        scrollPrecise += amount / ((vertical ? height - headHeight : width - headWidth) + 2d);
+        scrollPrecise += amount / ((vertical ? getHeight() - headHeight : getWidth() - headWidth) + 2d);
         setScrollProgress(scrollPrecise);
     }
 
@@ -138,7 +138,7 @@ public class ScrollBarWidget extends AbstractWidget {
 
     @Override
     public void render(PoseStack matrices, int mouseX, int mouseY, float delta) {
-        if (!visible)
+        if (!isVisible())
             return;
 
         isHovered = this.isMouseOver(mouseX, mouseY);
@@ -149,6 +149,10 @@ public class ScrollBarWidget extends AbstractWidget {
     @Override
     public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
         UIHelper.setupTexture(SCROLLBAR_TEXTURE);
+        int x = getX();
+        int y = getY();
+        int width = getWidth();
+        int height = getHeight();
 
         //render bar
         blit(stack, x, y, width, 1, 10f, isScrolling ? 20f : 0f, 10, 1, 20, 40);
@@ -166,7 +170,48 @@ public class ScrollBarWidget extends AbstractWidget {
 
     // -- getters and setters -- //
 
+
+    @Override
+    public int getX() {
+        return this.x;
+    }
+
+    @Override
+    public int getY() {
+        return this.y;
+    }
+
+    @Override
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    @Override
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    @Override
+    public boolean isVisible() {
+        return this.visible;
+    }
+
+    @Override
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
+
+    @Override
+    public boolean isActive() {
+        return this.active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
     //set scrollbar height
+    @Override
     public void setHeight(int height) {
         this.height = height;
     }
@@ -201,7 +246,7 @@ public class ScrollBarWidget extends AbstractWidget {
 
     //set scroll ratio
     public void setScrollRatio(double entryHeight, double heightDiff) {
-        scrollRatio = (height + entryHeight) / (heightDiff / 2d);
+        scrollRatio = (getHeight() + entryHeight) / (heightDiff / 2d);
     }
 
     //press action
