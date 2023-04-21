@@ -15,7 +15,6 @@ import org.moon.figura.exporters.BlockBenchModel.Group;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.*;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -111,12 +110,12 @@ public class AvatarWizard {
             model = buildModel();
 
         //write files
-        Files.createDirectories(folder);
-
-        write(folder.resolve("avatar.json"), metadata);
-        write(folder.resolve("script.lua"), script);
-        write(folder.resolve("model.bbmodel"), model);
-        write(folder.resolve("avatar.png"), iconTexture);
+        new IOUtils.DirWrapper(folder)
+                .create()
+                .write("avatar.json", metadata)
+                .write("script.lua", script)
+                .write("model.bbmodel", model)
+                .write("avatar.png", iconTexture);
 
         //open file manager
         Util.getPlatform().openFile(folder.toFile());
@@ -319,15 +318,6 @@ public class AvatarWizard {
         Cube l = model.addCube(layerName, position, size, parent);
         l.inflate = inflation;
         l.generateBoxFaces(x2, y2, texture);
-    }
-
-    private static void write(Path path, byte[] data) throws IOException {
-        if (data == null)
-            return;
-
-        try (FileOutputStream fs = new FileOutputStream(path.toFile())) {
-            fs.write(data);
-        }
     }
 
     public enum WizardEntry {
