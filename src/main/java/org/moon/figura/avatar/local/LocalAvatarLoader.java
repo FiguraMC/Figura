@@ -242,7 +242,7 @@ public class LocalAvatarLoader {
         Path directory = LocalAvatarFetcher.getLocalAvatarDirectory().resolve("[" + ChatFormatting.BLUE + FiguraMod.MOD_NAME + ChatFormatting.RESET + "] Cached Avatars");
         Path file = directory.resolve("cache-" + new SimpleDateFormat("yyyy_MM_dd-HH_mm_ss").format(new Date()) + ".moon");
         try {
-            Files.createDirectories(directory);
+            IOUtils.createDirIfNeeded(directory);
             NbtIo.writeCompressed(nbt, new FileOutputStream(file.toFile()));
         } catch (Exception e) {
             FiguraMod.LOGGER.error("Failed to save avatar: " + file.getFileName().toString(), e);

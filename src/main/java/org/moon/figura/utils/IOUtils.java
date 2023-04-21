@@ -128,4 +128,31 @@ public class IOUtils {
 
         file.delete();
     }
+
+    public static void writeFile(Path path, byte[] data) throws IOException {
+        if (data == null)
+            return;
+
+        try (FileOutputStream fs = new FileOutputStream(path.toFile())) {
+            fs.write(data);
+        }
+    }
+
+    public static class DirWrapper {
+        private final Path path;
+
+        public DirWrapper(Path path) {
+            this.path = path;
+        }
+
+        public DirWrapper create() {
+            createDirIfNeeded(path);
+            return this;
+        }
+
+        public DirWrapper write(String relativePath, byte[] data) throws IOException {
+            writeFile(path.resolve(relativePath), data);
+            return this;
+        }
+    }
 }
