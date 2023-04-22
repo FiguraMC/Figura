@@ -518,7 +518,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         if (types == null)
             return ret;
 
-        if (offsetRenderLayers && !primary && types.isOffset())
+        if (offsetRenderLayers && !primary)
             ret.vertexOffset = -0.005f;
 
         //Switch to cutout with fullbright if the iris emissive fix is enabled

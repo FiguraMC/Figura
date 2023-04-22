@@ -115,13 +115,14 @@ public class PermissionsList extends AbstractList {
             int lineHeight = Minecraft.getInstance().font.lineHeight;
 
             GuiEventListener widget;
+            String text = id + ".permissions.value." + permissions.name.toLowerCase();
             if (!permissions.isToggle) {
                 if (!precise)
-                    widget = new PermissionSlider(x + 8, y, width - 30, 11 + lineHeight, container, permissions, this, id);
+                    widget = new PermissionSlider(x + 8, y, width - 30, 11 + lineHeight, container, permissions, this, id, text);
                 else
-                    widget = new PermissionField(x + 8, y, width - 30, 11 + lineHeight, container, permissions, this, id);
+                    widget = new PermissionField(x + 8, y, width - 30, 11 + lineHeight, container, permissions, this, id, text);
             } else {
-                widget = new PermissionSwitch(x + 8, y, width - 30, 20 + lineHeight, container, permissions, this, id);
+                widget = new PermissionSwitch(x + 8, y, width - 30, 20 + lineHeight, container, permissions, this, id, text);
             }
 
             list.add(widget);
@@ -138,16 +139,16 @@ public class PermissionsList extends AbstractList {
         private final PermissionPack container;
         private final Permissions permissions;
         private final PermissionsList parent;
-        private final String id;
+        private final String text;
         private Component value;
         private boolean changed;
 
-        public PermissionSlider(int x, int y, int width, int height, PermissionPack container, Permissions permissions, PermissionsList parent, String id) {
+        public PermissionSlider(int x, int y, int width, int height, PermissionPack container, Permissions permissions, PermissionsList parent, String id, String text) {
             super(x, y, width, height, Mth.clamp(container.get(permissions) / (permissions.max + 1d), 0d, 1d), permissions.max / permissions.stepSize + 1, permissions.showSteps());
             this.container = container;
             this.permissions = permissions;
             this.parent = parent;
-            this.id = id;
+            this.text = text;
             this.value = container.get(permissions) == Integer.MAX_VALUE ? INFINITY : Component.literal(String.valueOf(container.get(permissions)));
             this.changed = container.isChanged(permissions);
 
@@ -175,12 +176,19 @@ public class PermissionsList extends AbstractList {
             stack.popPose();
 
             //texts
-            MutableComponent name = Component.translatable(id + ".permissions.value." + permissions.name.toLowerCase());
+            MutableComponent name = Component.translatable(this.text);
             if (changed) name = Component.literal("*").setStyle(FiguraMod.getAccentColor()).append(name).append("*");
             int valueX = getX() + getWidth() - font.width(value) - 1;
 
-            UIHelper.renderScrollingText(stack, name, this.x + 1, this.y + 1, valueX - this.x - 2, 0xFFFFFF);
-            font.draw(stack, value.copy().setStyle(FiguraMod.getAccentColor()), valueX, this.y + 1, 0xFFFFFF);
+            int x = getX() + 1;
+            int y = getY() + 1;
+            int width = valueX - getX() - 2;
+
+            UIHelper.renderScrollingText(stack, name, x, y, width, 0xFFFFFF);
+            font.draw(stack, value.copy().setStyle(FiguraMod.getAccentColor()), valueX, getY() + 1, 0xFFFFFF);
+
+            if (UIHelper.isMouseOver(x, y, width, font.lineHeight, mouseX, mouseY))
+                UIHelper.setTooltip(Component.translatable(this.text + ".tooltip"));
         }
 
         @Override
@@ -210,15 +218,17 @@ public class PermissionsList extends AbstractList {
         private final Permissions permissions;
         private final PermissionsList parent;
         private final String id;
+        private final String text;
         private Component value;
         private boolean changed;
 
-        public PermissionSwitch(int x, int y, int width, int height, PermissionPack container, Permissions permissions, PermissionsList parent, String id) {
-            super(x, y, width, height, Component.translatable(id + ".permissions.value." + permissions.name.toLowerCase()), permissions.asBoolean(container.get(permissions)));
+        public PermissionSwitch(int x, int y, int width, int height, PermissionPack container, Permissions permissions, PermissionsList parent, String id, String text) {
+            super(x, y, width, height, Component.translatable(text), permissions.asBoolean(container.get(permissions)));
             this.container = container;
             this.permissions = permissions;
             this.parent = parent;
             this.id = id;
+            this.text = text;
             this.changed = container.isChanged(permissions);
             this.value = FiguraText.of("permissions." + (toggled ? "enabled" : "disabled"));
         }
@@ -235,6 +245,13 @@ public class PermissionsList extends AbstractList {
             this.value = FiguraText.of("permissions." + (value ? "enabled" : "disabled"));
 
             super.onPress();
+        }
+
+        @Override
+        public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
+            super.renderButton(stack, mouseX, mouseY, delta);
+            if (UIHelper.isMouseOver(getX() + 1, getY() + 1, getWidth() - 2, Minecraft.getInstance().font.lineHeight, mouseX, mouseY))
+                UIHelper.setTooltip(Component.translatable(this.text + ".tooltip"));
         }
 
         @Override
@@ -297,27 +314,27 @@ public class PermissionsList extends AbstractList {
         private final PermissionPack container;
         private final Permissions permissions;
         private final PermissionsList parent;
-        private final String id;
+        private final String text;
         private Component value;
         private boolean changed;
 
-        public PermissionField(int x, int y, int width, int height, PermissionPack container, Permissions permissions, PermissionsList parent, String id) {
+        public PermissionField(int x, int y, int width, int height, PermissionPack container, Permissions permissions, PermissionsList parent, String id, String text) {
             super(x, y, width, height, null, null);
 
             this.container = container;
             this.permissions = permissions;
             this.parent = parent;
-            this.id = id;
+            this.text = text;
             String val = String.valueOf(container.get(permissions));
             this.value = Component.literal(val);
             this.changed = container.isChanged(permissions);
 
             this.getField().setValue(val);
-            this.getField().setResponder(text -> {
-                if (!validator.test(text))
+            this.getField().setResponder(txt -> {
+                if (!validator.test(txt))
                     return;
 
-                int value = Integer.parseInt(text);
+                int value = Integer.parseInt(txt);
 
                 container.insert(permissions, value, id);
                 changed = container.isChanged(permissions);
@@ -356,12 +373,19 @@ public class PermissionsList extends AbstractList {
             stack.popPose();
 
             //texts
-            MutableComponent name = Component.translatable(id + ".permissions.value." + permissions.name.toLowerCase());
+            MutableComponent name = Component.translatable(this.text);
             if (changed) name = Component.literal("*").setStyle(FiguraMod.getAccentColor()).append(name).append("*");
             int valueX = getX() + getWidth() - font.width(value) - 1;
 
-            UIHelper.renderScrollingText(stack, name, getX() + 1, getY() + 1 - font.lineHeight, valueX - getX() - 2, 0xFFFFFF);
+            int x = getX() + 1;
+            int y = getY() + 1 - font.lineHeight;
+            int width = valueX - getX() - 2;
+
+            UIHelper.renderScrollingText(stack, name, x, y, width, 0xFFFFFF);
             font.draw(stack, value.copy().setStyle(FiguraMod.getAccentColor()), valueX, getY() + 1 - font.lineHeight, 0xFFFFFF);
+
+            if (UIHelper.isMouseOver(x, y, width, font.lineHeight, mouseX, mouseY))
+                UIHelper.setTooltip(Component.translatable(this.text + ".tooltip"));
         }
 
         @Override
