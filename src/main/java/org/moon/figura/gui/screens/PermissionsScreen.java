@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import org.moon.figura.FiguraMod;
@@ -80,11 +81,28 @@ public class PermissionsScreen extends AbstractPanelScreen {
                 PermissionPack selectedPack = playerList.selectedEntry.getPack();
                 MutableComponent text = selectedPack.getCategoryName();
 
+                int x = (int) (this.getX() + this.getWidth() / 2f - font.width(text) * 0.75f);
+                int y = this.getY() - 4 - font.lineHeight * 2;
+
                 stack.pushPose();
-                stack.translate(this.getX() + this.getWidth() / 2f - font.width(text) * 0.75, this.getY() - 4 - font.lineHeight * 2, 0f);
+                stack.translate(x, y, 0f);
                 stack.scale(1.5f, 1.5f, 1f);
                 UIHelper.renderOutlineText(stack, font, text, 0, 0, 0xFFFFFF, 0x202020);
                 stack.popPose();
+
+                MutableComponent info = Component.literal("?").withStyle(Style.EMPTY.withFont(UIHelper.UI_FONT));
+                int color = 0x404040;
+
+                int width = font.width(info);
+                x = Math.min((int) (x + font.width(text) * 1.5f + font.width("  ")), PermissionsScreen.this.width - width);
+                y += font.lineHeight * 0.25f;
+
+                if (UIHelper.isMouseOver(x, y, width, font.lineHeight, mouseX, mouseY)) {
+                    color = 0xFFFFFF;
+                    UIHelper.setTooltip(selectedPack.getCategory().info);
+                }
+
+                font.drawShadow(stack, info, x, y, color);
             }
         };
         permissionsList = new PermissionsList(middle + 2, height, listWidth, height - 54);

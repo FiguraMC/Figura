@@ -19,13 +19,13 @@ public enum RenderTypes {
     TRANSLUCENT(RenderType::entityTranslucent),
     TRANSLUCENT_CULL(RenderType::entityTranslucentCull),
 
-    EMISSIVE(RenderType::eyes, false, true),
-    EMISSIVE_SOLID(resourceLocation -> RenderType.beaconBeam(resourceLocation, false), false, true),
-    EYES(RenderType::eyes, false, true),
+    EMISSIVE(RenderType::eyes, false),
+    EMISSIVE_SOLID(resourceLocation -> RenderType.beaconBeam(resourceLocation, false), false),
+    EYES(RenderType::eyes, false),
 
-    END_PORTAL(t -> RenderType.endPortal(), true, true),
-    END_GATEWAY(t -> RenderType.endGateway(), true, true),
-    TEXTURED_PORTAL(FiguraRenderType.TEXTURED_PORTAL, false, true),
+    END_PORTAL(t -> RenderType.endPortal(), true),
+    END_GATEWAY(t -> RenderType.endGateway(), true),
+    TEXTURED_PORTAL(FiguraRenderType.TEXTURED_PORTAL, false),
 
     GLINT(t -> RenderType.entityGlintDirect(), true),
     GLINT2(t -> RenderType.glintDirect(), true),
@@ -38,20 +38,14 @@ public enum RenderTypes {
 
     private final Function<ResourceLocation, RenderType> func;
     private final boolean force;
-    private final boolean offset;
 
     RenderTypes(Function<ResourceLocation, RenderType> func) {
-        this(func, false, false);
+        this(func, false);
     }
 
     RenderTypes(Function<ResourceLocation, RenderType> func, boolean force) {
-        this(func, force, false);
-    }
-
-    RenderTypes(Function<ResourceLocation, RenderType> func, boolean force, boolean offset) {
         this.func = func;
         this.force = force;
-        this.offset = offset;
     }
 
     public RenderType get(ResourceLocation id) {
@@ -59,10 +53,6 @@ public enum RenderTypes {
             return func.apply(id);
 
         return id == null || func == null ? null : func.apply(id);
-    }
-
-    public boolean isOffset() {
-        return offset;
     }
 
     private static class FiguraRenderType extends RenderType {

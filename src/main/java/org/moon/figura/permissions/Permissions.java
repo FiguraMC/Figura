@@ -2,6 +2,7 @@ package org.moon.figura.permissions;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.FiguraText;
 
@@ -119,18 +120,22 @@ public class Permissions {
 
         public final int index;
         public final int color;
-        public final MutableComponent text;
+        public final MutableComponent text, info;
 
         Category(int index, ColorUtils.Colors color) {
-            this.index = index;
-            this.color = color.hex;
-            text = FiguraText.of("permissions.category." + name().toLowerCase()).withStyle(color.style);
+            this(index, color.hex, color.style);
         }
 
         Category(int index, ChatFormatting formatting) {
+            this(index, formatting.getColor(), Style.EMPTY.applyFormat(formatting));
+        }
+
+        Category(int index, int color, Style style) {
             this.index = index;
-            this.color = formatting.getColor();
-            text = FiguraText.of("permissions.category." + name().toLowerCase()).withStyle(formatting);
+            this.color = color;
+            String name = "permissions.category." + name().toLowerCase();
+            text = FiguraText.of(name).withStyle(style);
+            info = FiguraText.of(name + ".info");
         }
 
         public static Category indexOf(int i) {
