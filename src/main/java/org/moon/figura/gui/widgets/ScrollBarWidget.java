@@ -181,18 +181,53 @@ public class ScrollBarWidget extends AbstractWidget implements FiguraWidget {
     }
 
     @Override
-    public boolean isActive() {
-        return this.active;
+    public int getX() {
+        return super.getX();
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
+    @Override
+    public void setX(int x) {
+        super.setX(x);
+    }
+
+    @Override
+    public int getY() {
+        return super.getY();
+    }
+
+    @Override
+    public void setY(int y) {
+        super.setY(y);
+    }
+
+    @Override
+    public int getWidth() {
+        return super.getWidth();
+    }
+
+    @Override
+    public void setWidth(int width) {
+        super.setWidth(width);
+    }
+
+    @Override
+    public int getHeight() {
+        return super.getHeight();
     }
 
     //set scrollbar height
     @Override
     public void setHeight(int height) {
         this.height = height;
+    }
+
+    @Override
+    public boolean isActive() {
+        return this.active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     //get scroll value
