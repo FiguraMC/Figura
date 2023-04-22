@@ -154,13 +154,18 @@ public class Button extends net.minecraft.client.gui.components.Button implement
     }
 
     @Override
-    public int getX() {
-        return this.x;
+    public boolean isVisible() {
+        return this.visible;
     }
 
     @Override
-    public int getY() {
-        return this.y;
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
+
+    @Override
+    public int getX() {
+        return this.x;
     }
 
     @Override
@@ -169,23 +174,33 @@ public class Button extends net.minecraft.client.gui.components.Button implement
     }
 
     @Override
+    public int getY() {
+        return this.y;
+    }
+
+    @Override
     public void setY(int y) {
         this.y = y;
     }
 
     @Override
+    public int getWidth() {
+        return super.getWidth();
+    }
+
+    @Override
+    public void setWidth(int width) {
+        super.setWidth(width);
+    }
+
+    @Override
+    public int getHeight() {
+        return super.getHeight();
+    }
+
+    @Override
     public void setHeight(int height) {
         this.height = height;
-    }
-
-    @Override
-    public boolean isVisible() {
-        return this.visible;
-    }
-
-    @Override
-    public void setVisible(boolean visible) {
-        this.visible = visible;
     }
 
     @Override
