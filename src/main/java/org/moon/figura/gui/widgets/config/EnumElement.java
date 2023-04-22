@@ -28,7 +28,8 @@ public class EnumElement extends AbstractConfigElement {
         names = config.enumList;
 
         //toggle button
-        children.add(0, button = new ParentedButton(0, 0, 90, 20, names.get((int) this.config.tempValue % this.names.size()), this, button -> {
+        int selectedIndex = (int) this.config.tempValue % this.names.size();
+        children.add(0, button = new ParentedButton(0, 0, 90, 20, names.get(selectedIndex), this, button -> {
             this.context.setVisible(!this.context.isVisible());
 
             if (context.isVisible()) {
@@ -62,6 +63,8 @@ public class EnumElement extends AbstractConfigElement {
             }
         });
         button.setActive(FiguraMod.DEBUG_MODE || !config.disabled);
+        if (config.enumTooltip != null)
+            button.setTooltip(config.enumTooltip.get(selectedIndex));
 
         //context menu
         context = new ContextMenu(button, button.getWidth());
