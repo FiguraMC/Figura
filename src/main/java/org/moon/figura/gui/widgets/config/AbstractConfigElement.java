@@ -31,7 +31,7 @@ public abstract class AbstractConfigElement extends AbstractContainerElement {
         this.initValue = config.value;
 
         //reset button
-        children.add(resetButton = new ParentedButton(getX() + width - 60, getY(), 60, 20, Component.translatable("controls.reset"), this, button -> config.resetTemp()));
+        children.add(resetButton = new ParentedButton(0, 0, 60, 20, Component.translatable("controls.reset"), this, button -> config.resetTemp()));
     }
 
     @Override
