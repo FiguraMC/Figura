@@ -1486,6 +1486,8 @@
   "figura.docs.sound.set_pitch": "Sets the pitch of this sound\nDefault 1",
   "figura.docs.sound.is_looping": "Checks if this sound is looping",
   "figura.docs.sound.set_loop": "Toggles if this sound should loop\nDefault false",
+  "figura.docs.sound.get_subtitle": "Gets the subtitle text from this sound",
+  "figura.docs.sound.set_subtitle": "Sets the subtitle text of this sound",
 
 
   "figura.docs.textures": "A global API which allows for creating textures at runtime",

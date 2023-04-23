@@ -3,6 +3,7 @@ package org.moon.figura.mixin.sound;
 import com.mojang.blaze3d.audio.Channel;
 import com.mojang.blaze3d.audio.Library;
 import net.minecraft.client.Options;
+import net.minecraft.client.gui.components.SubtitleOverlay;
 import net.minecraft.client.sounds.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -10,6 +11,7 @@ import net.minecraft.sounds.SoundSource;
 import org.jetbrains.annotations.Nullable;
 import org.moon.figura.ducks.ChannelHandleAccessor;
 import org.moon.figura.ducks.SoundEngineAccessor;
+import org.moon.figura.ducks.SubtitleOverlayAccessor;
 import org.moon.figura.lua.api.sound.LuaSound;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
@@ -18,6 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.UUID;
 
 @Mixin(SoundEngine.class)
@@ -30,6 +33,7 @@ public abstract class SoundEngineMixin implements SoundEngineAccessor {
 
     @Shadow protected abstract float getVolume(@Nullable SoundSource category);
 
+    @Shadow @Final private List<SoundEventListener> listeners;
     @Unique
     private ChannelAccess figuraChannel;
     @Unique
@@ -95,6 +99,10 @@ public abstract class SoundEngineMixin implements SoundEngineAccessor {
     @Override @Intrinsic
     public void figura$addSound(LuaSound sound) {
         figuraHandlers.add(sound);
+        for (SoundEventListener listener : this.listeners) {
+            if (listener instanceof SubtitleOverlay overlay)
+                ((SubtitleOverlayAccessor) overlay).figura$PlaySound(sound);
+        }
     }
 
     @Override @Intrinsic
