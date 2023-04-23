@@ -25,7 +25,7 @@ public class CategoryWidget extends AbstractContainerElement {
         this.config = config;
         this.parent = parent;
 
-        this.parentConfig = new ContainerButton(parent, getX(), getY(), width, 20, config == null ? TextComponent.EMPTY.copy() : config.name, config == null ? null : config.tooltip, button -> {
+        this.parentConfig = new ContainerButton(parent, 0, 0, width, 20, config == null ? TextComponent.EMPTY.copy() : config.name, config == null ? null : config.tooltip, button -> {
             boolean toggled = this.parentConfig.isToggled();
             setShowChildren(toggled);
             ConfigScreen.CATEGORY_DATA.put(config, toggled);
@@ -73,7 +73,7 @@ public class CategoryWidget extends AbstractContainerElement {
             return;
         }
 
-        this.setHeight(getHeight() + 22);
+        this.setHeight(super.getHeight() + 22);
         this.children.add(element);
         this.entries.add(element);
     }

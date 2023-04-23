@@ -57,6 +57,7 @@ public class ConfigScreen extends AbstractPanelScreen {
             ConfigManager.discardConfig();
             list.updateList();
         }));
+        cancel.setActive(false);
 
         //done
         addRenderableWidget(new Button(width / 2 + 4, height - 24, 120, 20, new FiguraText("gui.done"), null,
