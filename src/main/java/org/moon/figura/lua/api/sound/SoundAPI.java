@@ -186,10 +186,10 @@ public class SoundAPI {
                 Sound sound = events.getSound(RandomSource.create(WorldAPI.getCurrentWorld().random.nextLong()));
                 if (sound != SoundManager.EMPTY_SOUND) {
                     owner.noPermissions.remove(Permissions.CUSTOM_SOUNDS);
-                    return new LuaSound(sound, id, owner);
+                    return new LuaSound(sound, id, events.getSubtitle(), owner);
                 }
             }
-            return new LuaSound((SoundBuffer) null, id, owner);
+            return new LuaSound(null, id, owner);
         } catch (Exception e) {
             throw new LuaError(e.getMessage());
         }
