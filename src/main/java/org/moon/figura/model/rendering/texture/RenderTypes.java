@@ -19,37 +19,47 @@ public enum RenderTypes {
     TRANSLUCENT(RenderType::entityTranslucent),
     TRANSLUCENT_CULL(RenderType::entityTranslucentCull),
 
-    EMISSIVE(RenderType::eyes, false),
-    EMISSIVE_SOLID(resourceLocation -> RenderType.beaconBeam(resourceLocation, false), false),
-    EYES(RenderType::eyes, false),
+    EMISSIVE(RenderType::eyes, true),
+    EMISSIVE_SOLID(resourceLocation -> RenderType.beaconBeam(resourceLocation, false), true),
+    EYES(RenderType::eyes, true),
 
-    END_PORTAL(t -> RenderType.endPortal(), true),
-    END_GATEWAY(t -> RenderType.endGateway(), true),
-    TEXTURED_PORTAL(FiguraRenderType.TEXTURED_PORTAL, false),
+    END_PORTAL(t -> RenderType.endPortal(), false),
+    END_GATEWAY(t -> RenderType.endGateway(), false),
+    TEXTURED_PORTAL(FiguraRenderType.TEXTURED_PORTAL),
 
-    GLINT(t -> RenderType.entityGlintDirect(), true),
-    GLINT2(t -> RenderType.glintDirect(), true),
+    GLINT(t -> RenderType.entityGlintDirect(), false, false),
+    GLINT2(t -> RenderType.glintDirect(), false, false),
+    TEXTURED_GLINT(FiguraRenderType.TEXTURED_GLINT, true, false),
 
-    LINES(t -> RenderType.lines(), true),
-    LINES_STRIP(t -> RenderType.lineStrip(), true),
-    SOLID(t -> FiguraRenderType.SOLID, true),
+    LINES(t -> RenderType.lines(), false),
+    LINES_STRIP(t -> RenderType.lineStrip(), false),
+    SOLID(t -> FiguraRenderType.SOLID, false),
 
     BLURRY(FiguraRenderType.BLURRY);
 
     private final Function<ResourceLocation, RenderType> func;
-    private final boolean force;
+    private final boolean texture, offset;
 
     RenderTypes(Function<ResourceLocation, RenderType> func) {
-        this(func, false);
+        this(func, true);
     }
 
-    RenderTypes(Function<ResourceLocation, RenderType> func, boolean force) {
+    RenderTypes(Function<ResourceLocation, RenderType> func, boolean texture) {
+        this(func, texture, true);
+    }
+
+    RenderTypes(Function<ResourceLocation, RenderType> func, boolean texture, boolean offset) {
         this.func = func;
-        this.force = force;
+        this.texture = texture;
+        this.offset = offset;
+    }
+
+    public boolean isOffset() {
+        return offset;
     }
 
     public RenderType get(ResourceLocation id) {
-        if (force)
+        if (!texture)
             return func.apply(id);
 
         return id == null || func == null ? null : func.apply(id);
@@ -113,6 +123,26 @@ public enum RenderTypes {
                                 .setLightmapState(LIGHTMAP)
                                 .setOverlayState(OVERLAY)
                                 .createCompositeState(true)
+                )
+        );
+
+        public static final Function<ResourceLocation, RenderType> TEXTURED_GLINT = Util.memoize(
+                texture -> create(
+                        "figura_textured_glint_direct",
+                        DefaultVertexFormat.POSITION_TEX,
+                        VertexFormat.Mode.QUADS,
+                        256,
+                        false,
+                        false,
+                    RenderType.CompositeState.builder()
+                            .setShaderState(RENDERTYPE_ENTITY_GLINT_DIRECT_SHADER)
+                            .setTextureState(new RenderStateShard.TextureStateShard(texture, false, false))
+                            .setWriteMaskState(COLOR_WRITE)
+                            .setCullState(NO_CULL)
+                            .setDepthTestState(EQUAL_DEPTH_TEST)
+                            .setTransparencyState(GLINT_TRANSPARENCY)
+                            .setTexturingState(ENTITY_GLINT_TEXTURING)
+                            .createCompositeState(false)
                 )
         );
     }
