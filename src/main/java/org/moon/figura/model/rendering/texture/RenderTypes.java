@@ -3,7 +3,6 @@ package org.moon.figura.model.rendering.texture;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.Util;
-import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 
@@ -78,7 +77,7 @@ public enum RenderTypes {
                 256,
                 RenderType.CompositeState.builder()
                         .setShaderState(RENDERTYPE_LINES_SHADER)
-                        .setLineState(new RenderStateShard.LineStateShard(OptionalDouble.empty()))
+                        .setLineState(new LineStateShard(OptionalDouble.empty()))
                         .setLayeringState(VIEW_OFFSET_Z_LAYERING)
                         .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
                         .setOutputState(ITEM_ENTITY_TARGET)
@@ -117,7 +116,7 @@ public enum RenderTypes {
                         true,
                         CompositeState.builder()
                                 .setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_SHADER)
-                                .setTextureState(new RenderStateShard.TextureStateShard(texture, true, false))
+                                .setTextureState(new TextureStateShard(texture, true, false))
                                 .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
                                 .setCullState(NO_CULL)
                                 .setLightmapState(LIGHTMAP)
@@ -136,7 +135,7 @@ public enum RenderTypes {
                         false,
                     RenderType.CompositeState.builder()
                             .setShaderState(RENDERTYPE_ENTITY_GLINT_DIRECT_SHADER)
-                            .setTextureState(new RenderStateShard.TextureStateShard(texture, false, false))
+                            .setTextureState(new TextureStateShard(texture, false, false))
                             .setWriteMaskState(COLOR_WRITE)
                             .setCullState(NO_CULL)
                             .setDepthTestState(EQUAL_DEPTH_TEST)
