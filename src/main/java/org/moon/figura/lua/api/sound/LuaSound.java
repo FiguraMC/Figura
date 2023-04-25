@@ -8,6 +8,7 @@ import net.minecraft.client.sounds.ChannelAccess;
 import net.minecraft.client.sounds.SoundBufferLibrary;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundSource;
+import org.luaj.vm2.LuaError;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaMethodDoc;
@@ -320,7 +321,13 @@ public class LuaSound {
             value = "sound.set_subtitle")
     public LuaSound setSubtitle(String subtitle) {
         this.subtitle = subtitle;
-        this.subtitleText = subtitle == null ? null : TextUtils.tryParseJson(subtitle);
+        if (subtitle == null) {
+            this.subtitleText = null;
+        } else {
+            this.subtitleText = TextUtils.tryParseJson(subtitle);
+            if (this.subtitleText.getString().length() > 48)
+                throw new LuaError("Text length exceeded limit of 48 characters");
+        }
         return this;
     }
 
