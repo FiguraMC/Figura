@@ -190,7 +190,7 @@ public class UIHelper extends GuiComponent {
         stack.pushPose();
         stack.translate(x, y, renderMode == EntityRenderMode.MINECRAFT_GUI ? 250d : -250d);
         stack.scale(scale, scale, scale);
-        stack.last().pose().mul(new Matrix4f().scale(1f, 1f, -1f)); //Scale ONLY THE POSITIONS! Inverted normals don't work for whatever reason
+        stack.last().pose().scale(1f, 1f, -1f); //Scale ONLY THE POSITIONS! Inverted normals don't work for whatever reason
 
         //apply rotations
         Quaternionf quaternion = Axis.ZP.rotationDegrees(180f);

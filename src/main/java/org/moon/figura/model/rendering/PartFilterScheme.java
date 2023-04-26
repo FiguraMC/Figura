@@ -1,6 +1,5 @@
 package org.moon.figura.model.rendering;
 
-import org.moon.figura.model.FiguraModelPart;
 import org.moon.figura.model.ParentType;
 
 public enum PartFilterScheme {
@@ -10,9 +9,9 @@ public enum PartFilterScheme {
     MODEL(true, SchemeFunction.cancelOnSeparate(), ParentType.None),
 
 
-    HEAD(false, SchemeFunction.allowOnThisAndCancelOnSeparate(ParentType.Head), ParentType.Head),
-    LEFT_ARM(false, SchemeFunction.allowOnThisAndCancelOnSeparate(ParentType.LeftArm), ParentType.LeftArm),
-    RIGHT_ARM(false, SchemeFunction.allowOnThisAndCancelOnSeparate(ParentType.RightArm), ParentType.RightArm),
+    HEAD(false, SchemeFunction.onlyThis(ParentType.Head), ParentType.Head),
+    LEFT_ARM(false, SchemeFunction.onlyThis(ParentType.LeftArm), ParentType.LeftArm),
+    RIGHT_ARM(false, SchemeFunction.onlyThis(ParentType.RightArm), ParentType.RightArm),
 
 
     CAPE(false, SchemeFunction.onlyThisSeparate(ParentType.Cape), ParentType.Cape),
@@ -37,10 +36,6 @@ public enum PartFilterScheme {
         this.initialValue = initialValue;
         this.predicate = predicate;
         this.parentType = parentType;
-    }
-
-    public Boolean initialValueForPart(FiguraModelPart root) {
-        return test(root.parentType, initialValue);
     }
 
     public Boolean test(ParentType toTest, boolean prevResult) {
@@ -80,13 +75,14 @@ public enum PartFilterScheme {
             };
         }
 
-        static SchemeFunction allowOnThisAndCancelOnSeparate(ParentType typeToAllow) {
+        static SchemeFunction onlyThis(ParentType typeToAllow) {
             return (parent, prev) -> {
                 if (parent == typeToAllow)
                     return true;
-                if (parent.isSeparate)
+                else if (parent == ParentType.None)
+                    return prev;
+                else
                     return null;
-                return prev;
             };
         }
 
