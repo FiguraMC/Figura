@@ -579,6 +579,7 @@ public class Avatar {
         boolean config = Configs.ALLOW_FP_HANDS.value;
         renderer.allowHiddenTransforms = config;
         renderer.allowMatrixUpdate = false;
+        renderer.ignoreVanillaVisibility = true;
 
         stack.pushPose();
         if (!config) {
@@ -590,6 +591,7 @@ public class Avatar {
         stack.popPose();
 
         renderer.allowHiddenTransforms = true;
+        renderer.ignoreVanillaVisibility = false;
 
         FiguraMod.popProfiler(3);
     }
@@ -674,6 +676,7 @@ public class Avatar {
 
         renderer.allowHiddenTransforms = false;
         renderer.allowMatrixUpdate = false;
+        renderer.ignoreVanillaVisibility = true;
 
         //render
         int comp = renderer.render();
@@ -683,6 +686,7 @@ public class Avatar {
         //pos render
         renderer.allowMatrixUpdate = oldMat;
         renderer.allowHiddenTransforms = true;
+        renderer.ignoreVanillaVisibility = false;
 
         return comp > 0 && luaRuntime != null && !luaRuntime.vanilla_model.HEAD.checkVisible();
     }
