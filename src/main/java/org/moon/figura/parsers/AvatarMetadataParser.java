@@ -148,7 +148,7 @@ public class AvatarMetadataParser {
 
         for (int i = 0; i < keys.length; i++) {
             if (!current.contains("chld"))
-                throw new IOException("Invalid part path: \"" + path + "\".");
+                throw new IOException("Invalid part path: \"" + path + "\"");
 
             ListTag children = current.getList("chld", Tag.TAG_COMPOUND);
             int j = 0;
@@ -161,7 +161,7 @@ public class AvatarMetadataParser {
                 }
 
                 if (j == children.size() - 1)
-                    throw new IOException("Invalid part path: \"" + path + "\".");
+                    throw new IOException("Invalid part path: \"" + path + "\"");
             }
 
             if (remove && i == keys.length - 1)

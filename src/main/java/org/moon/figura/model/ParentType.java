@@ -3,7 +3,7 @@ package org.moon.figura.model;
 import org.moon.figura.math.vector.FiguraVec3;
 
 public enum ParentType {
-    None("NONE"),
+    None("NONE", "Model", "MODEL"),
 
     Head(VanillaModelProvider.HEAD, "HEAD"),
     Body(VanillaModelProvider.BODY, "BODY"),
