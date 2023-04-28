@@ -41,13 +41,13 @@ public abstract class CameraMixin {
         float y = yRot;
 
         FiguraVec3 rot = avatar.luaRuntime.renderer.cameraRot;
-        if (rot != null) {
+        if (rot != null && rot.notNaN()) {
             x = (float) rot.x;
             y = (float) rot.y;
         }
 
         FiguraVec3 offset = avatar.luaRuntime.renderer.cameraOffsetRot;
-        if (offset != null) {
+        if (offset != null && offset.notNaN()) {
             x += (float) offset.x;
             y += (float) offset.y;
         }
@@ -67,14 +67,14 @@ public abstract class CameraMixin {
             double z = args.get(i);
 
             FiguraVec3 piv = avatar.luaRuntime.renderer.cameraPivot;
-            if (piv != null) {
+            if (piv != null && piv.notNaN()) {
                x = piv.x;
                y = piv.y;
                z = piv.z;
             }
 
             FiguraVec3 offset = avatar.luaRuntime.renderer.cameraOffsetPivot;
-            if (offset != null) {
+            if (offset != null && offset.notNaN()) {
                 x += offset.x;
                 y += offset.y;
                 z += offset.z;
@@ -90,7 +90,7 @@ public abstract class CameraMixin {
     private void setupPos(BlockGetter area, Entity focusedEntity, boolean thirdPerson, boolean inverseView, float tickDelta, CallbackInfo ci) {
         if (avatar != null) {
             FiguraVec3 pos = avatar.luaRuntime.renderer.cameraPos;
-            if (pos != null)
+            if (pos != null && pos.notNaN())
                 move(-pos.z, pos.y, -pos.x);
 
             avatar = null;
