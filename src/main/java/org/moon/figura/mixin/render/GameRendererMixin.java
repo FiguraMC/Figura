@@ -13,13 +13,11 @@ import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.ducks.GameRendererAccessor;
 import org.moon.figura.math.vector.FiguraVec3;
-import org.moon.figura.model.rendering.EntityRenderMode;
 import org.moon.figura.utils.EntityUtils;
 import org.moon.figura.utils.RenderUtils;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GameRenderer.class)
@@ -36,8 +34,6 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
 
     @Unique
     private boolean avatarPostShader = false;
-    @Unique
-    private Avatar avatar;
 
     @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setup(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/world/entity/Entity;ZZF)V", shift = At.Shift.BEFORE))
     private void onCameraRotation(float tickDelta, long limitTime, PoseStack matrix, CallbackInfo ci) {
@@ -94,40 +90,6 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
     private void checkEntityPostEffect(Entity entity, CallbackInfo ci) {
         if (avatarPostShader)
             ci.cancel();
-    }
-
-    @Inject(method = "renderItemInHand", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Options;getCameraType()Lnet/minecraft/client/CameraType;", shift = At.Shift.BEFORE),
-            slice = @Slice(
-                    from = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;pushPose()V"),
-                    to = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;popPose()V")
-            ))
-    private void preRenderItemInHand(PoseStack matrices, Camera camera, float tickDelta, CallbackInfo ci) {
-        if (this.minecraft.player == null || !this.minecraft.options.getCameraType().isFirstPerson()) {
-            avatar = null;
-            return;
-        }
-
-        avatar = AvatarManager.getAvatarForPlayer(this.minecraft.player.getUUID());
-        if (avatar != null) {
-            FiguraMod.pushProfiler(FiguraMod.MOD_ID);
-            FiguraMod.pushProfiler(avatar);
-            FiguraMod.pushProfiler("renderEvent");
-            avatar.renderMode = EntityRenderMode.FIRST_PERSON;
-            avatar.renderEvent(tickDelta);
-            FiguraMod.popProfiler(3);
-        }
-    }
-
-    @Inject(method = "renderItemInHand", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;popPose()V", shift = At.Shift.BEFORE))
-    private void posRenderItemInHand(PoseStack matrices, Camera camera, float tickDelta, CallbackInfo ci) {
-        if (avatar != null) {
-            FiguraMod.pushProfiler(FiguraMod.MOD_ID);
-            FiguraMod.pushProfiler(avatar);
-            FiguraMod.pushProfiler("postRenderEvent");
-            avatar.postRenderEvent(tickDelta);
-            avatar = null;
-            FiguraMod.popProfiler(3);
-        }
     }
 
     @Inject(method = "tickFov", at = @At("RETURN"))

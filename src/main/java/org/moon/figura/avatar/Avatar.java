@@ -280,66 +280,56 @@ public class Avatar {
         return scriptError || luaRuntime == null || !loaded ? null : luaRuntime.load(name, chunk);
     }
 
-    public Varargs run(Object toRun, Instructions limit, Object... args) {
-        //create event
-        Supplier<Varargs> ev = () -> {
-            if (scriptError || luaRuntime == null || !loaded)
-                return null;
-
-            //parse args
-            LuaValue[] values = new LuaValue[args.length];
-            for (int i = 0; i < values.length; i++)
-                values[i] = luaRuntime.typeManager.javaToLua(args[i]).arg1();
-
-            Varargs val = LuaValue.varargsOf(values);
-
-            //instructions limit
-            luaRuntime.setInstructionLimit(limit.remaining);
-
-            //get and call event
-            try {
-                Varargs ret;
-                if (toRun instanceof LuaEvent event)
-                    ret = event.call(val);
-                else if (toRun instanceof String event)
-                    ret = luaRuntime.events.__index(event).call(val);
-                else if (toRun instanceof LuaValue func)
-                    ret = func.invoke(val);
-                else
-                    throw new IllegalArgumentException("Internal event error - Invalid type to run!");
-
-                limit.use(luaRuntime.getInstructions());
-                return ret;
-            } catch (Exception | StackOverflowError e) {
-                if (luaRuntime != null)
-                    luaRuntime.error(e);
-            }
-
-            return LuaValue.NIL;
-        };
-
-        //add event to the queue
-        events.offer(ev);
-
-        Varargs val = LuaValue.NIL;
-
+    private void flushQueuedEvents() {
         //run all queued events
         Supplier<Varargs> e;
         while ((e = events.poll()) != null) {
             try {
-                Varargs result = e.get();
-
-                //if the event is the same the one created, set the return value to it
-                if (e == ev)
-                    val = result;
+                e.get();
             } catch (Exception | StackOverflowError ex) {
                 if (luaRuntime != null)
                     luaRuntime.error(ex);
             }
         }
+    }
 
-        //return the new event result
-        return val;
+    public Varargs run(Object toRun, Instructions limit, Object... args) {
+        flushQueuedEvents();
+
+        //create event
+        if (scriptError || luaRuntime == null || !loaded)
+            return null;
+
+        //parse args
+        LuaValue[] values = new LuaValue[args.length];
+        for (int i = 0; i < values.length; i++)
+            values[i] = luaRuntime.typeManager.javaToLua(args[i]).arg1();
+
+        Varargs val = LuaValue.varargsOf(values);
+
+        //instructions limit
+        luaRuntime.setInstructionLimit(limit.remaining);
+
+        //get and call event
+        try {
+            Varargs ret;
+            if (toRun instanceof LuaEvent event)
+                ret = event.call(val);
+            else if (toRun instanceof String event)
+                ret = luaRuntime.events.__index(event).call(val);
+            else if (toRun instanceof LuaValue func)
+                ret = func.invoke(val);
+            else
+                throw new IllegalArgumentException("Internal event error - Invalid type to run!");
+
+            limit.use(luaRuntime.getInstructions());
+            return ret;
+        } catch (Exception | StackOverflowError e) {
+            if (luaRuntime != null)
+                luaRuntime.error(e);
+        }
+
+        return LuaValue.NIL;
     }
 
     // -- script events -- //
@@ -571,11 +561,14 @@ public class Avatar {
         if (renderer == null || !loaded)
             return;
 
+        boolean lefty = arm == playerRenderer.getModel().leftArm;
+
         FiguraMod.pushProfiler(FiguraMod.MOD_ID);
         FiguraMod.pushProfiler(this);
         FiguraMod.pushProfiler("firstPersonRender");
+        FiguraMod.pushProfiler(lefty ? "leftArm" : "rightArm");
 
-        PartFilterScheme filter = arm == playerRenderer.getModel().leftArm ? PartFilterScheme.LEFT_ARM : PartFilterScheme.RIGHT_ARM;
+        PartFilterScheme filter = lefty ? PartFilterScheme.LEFT_ARM : PartFilterScheme.RIGHT_ARM;
         boolean config = Configs.ALLOW_FP_HANDS.value;
         renderer.allowHiddenTransforms = config;
         renderer.allowMatrixUpdate = false;
@@ -593,7 +586,7 @@ public class Avatar {
         renderer.allowHiddenTransforms = true;
         renderer.ignoreVanillaVisibility = false;
 
-        FiguraMod.popProfiler(3);
+        FiguraMod.popProfiler(4);
     }
 
     public void hudRender(PoseStack stack, MultiBufferSource bufferSource, Entity entity, float tickDelta) {

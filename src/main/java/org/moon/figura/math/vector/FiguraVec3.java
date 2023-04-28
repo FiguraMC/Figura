@@ -540,6 +540,10 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
         return of(vec.x(), vec.y(), vec.z());
     }
 
+    public boolean notNaN() {
+        return !Double.isNaN(x) && !Double.isNaN(y) && !Double.isNaN(z);
+    }
+
     // -- metamethods -- //
 
     @LuaWhitelist
