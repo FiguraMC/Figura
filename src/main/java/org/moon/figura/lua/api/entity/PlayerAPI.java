@@ -56,6 +56,13 @@ public class PlayerAPI extends LivingEntityAPI<Player> {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("player.get_exhaustion")
+    public float getExhaustion() {
+        checkEntity();
+        return entity.getFoodData().getExhaustionLevel();
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc("player.get_experience_progress")
     public float getExperienceProgress() {
         checkEntity();

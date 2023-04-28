@@ -1025,6 +1025,7 @@
   "figura.docs.player": "Acts as a proxy for a player entity in the Minecraft world\nA global instance exists for the avatar's user, under the name \"player\"",
   "figura.docs.player.get_food": "Gets the current food level of the player, from 0 to 20",
   "figura.docs.player.get_saturation": "Gets the current saturation level of the player",
+  "figura.docs.player.get_exhaustion": "Gets the current exhaustion level of the player",
   "figura.docs.player.get_experience_progress": "Gets the progress of the way towards the player's next level, as a value from 0 to 1",
   "figura.docs.player.get_experience_level": "Gets the player's current level",
   "figura.docs.player.get_model_type": "Returns \"SLIM\" or \"DEFAULT\", depending on the player's model type",
