@@ -25,6 +25,7 @@ import org.moon.figura.model.rendering.texture.FiguraTextureSet;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -117,6 +118,19 @@ public abstract class AvatarRenderer {
         s = tag.getString("n");
         if (!s.isEmpty()) return s.substring(0, s.length() - 2);
         return "";
+    }
+
+    public FiguraTexture getTexture(String name) {
+        FiguraTexture texture = customTextures.get(name);
+        if (texture != null)
+            return texture;
+
+        for (Map.Entry<String, FiguraTexture> entry : textures.entrySet()) {
+            if (entry.getKey().equals(name))
+                return entry.getValue();
+        }
+
+        return null;
     }
 
     public abstract int render();

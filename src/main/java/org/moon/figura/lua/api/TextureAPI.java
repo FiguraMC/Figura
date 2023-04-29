@@ -17,7 +17,6 @@ import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
-import java.util.Map;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -150,17 +149,7 @@ public class TextureAPI {
     @LuaWhitelist
     public FiguraTexture __index(@LuaNotNil String name) {
         check();
-
-        FiguraTexture texture = get(name);
-        if (texture != null)
-            return texture;
-
-        for (Map.Entry<String, FiguraTexture> entry : owner.renderer.textures.entrySet()) {
-            if (entry.getKey().equals(name))
-                return entry.getValue();
-        }
-
-        return null;
+        return owner.renderer.getTexture(name);
     }
 
     @Override

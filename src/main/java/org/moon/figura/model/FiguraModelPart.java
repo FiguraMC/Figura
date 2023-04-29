@@ -555,7 +555,10 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     @LuaWhitelist
     @LuaMethodDoc("model_part.get_visible")
     public boolean getVisible() {
-        return customization.visible;
+        FiguraModelPart part = this;
+        while (part != null && part.customization.visible == null)
+            part = part.parent;
+        return part == null || part.customization.visible;
     }
 
     @LuaWhitelist
@@ -567,13 +570,13 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
             aliases = "visible",
             value = "model_part.set_visible"
     )
-    public FiguraModelPart setVisible(boolean bool) {
+    public FiguraModelPart setVisible(Boolean bool) {
         this.customization.visible = bool;
         return this;
     }
 
     @LuaWhitelist
-    public FiguraModelPart visible(boolean bool) {
+    public FiguraModelPart visible(Boolean bool) {
         return setVisible(bool);
     }
 

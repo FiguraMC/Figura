@@ -355,7 +355,7 @@ public class AvatarManager {
 
     public static LiteralArgumentBuilder<FabricClientCommandSource> getCommand() {
         //root
-        LiteralArgumentBuilder<FabricClientCommandSource> root = LiteralArgumentBuilder.literal("setAvatar");
+        LiteralArgumentBuilder<FabricClientCommandSource> root = LiteralArgumentBuilder.literal("set_avatar");
 
         //source
         RequiredArgumentBuilder<FabricClientCommandSource, String> target = RequiredArgumentBuilder.argument("target", StringArgumentType.word());
