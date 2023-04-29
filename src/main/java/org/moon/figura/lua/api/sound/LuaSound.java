@@ -56,7 +56,7 @@ public class LuaSound {
         this.buffer = buffer;
         this.sound = sound;
         this.subtitleText = subtitle;
-        this.subtitle = subtitle.getString();
+        this.subtitle = subtitle == null ? null : subtitle.getString();
     }
 
     public ChannelAccess.ChannelHandle getHandle() {
