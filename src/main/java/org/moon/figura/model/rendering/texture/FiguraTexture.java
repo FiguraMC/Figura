@@ -25,7 +25,6 @@ import org.moon.figura.math.vector.FiguraVec4;
 import org.moon.figura.mixin.render.TextureManagerAccessor;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.FiguraIdentifier;
-import org.moon.figura.utils.IOUtils;
 import org.moon.figura.utils.LuaUtils;
 
 import java.io.IOException;
@@ -133,14 +132,8 @@ public class FiguraTexture extends SimpleTexture {
         }
     }
 
-    public void saveCache() throws IOException {
-        Path path = FiguraMod.getCacheDirectory().resolve("saved_texture.png");
-        texture.writeToFile(path);
-    }
-
-    public static void deleteCache() {
-        Path path = FiguraMod.getCacheDirectory().resolve("saved_texture.png");
-        IOUtils.deleteFile(path.toFile());
+    public void writeTexture(Path dest) throws IOException {
+        texture.writeToFile(dest);
     }
 
     private void backupImage() {

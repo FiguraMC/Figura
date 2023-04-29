@@ -9,9 +9,10 @@ import org.moon.figura.avatar.local.CacheAvatarLoader;
 import org.moon.figura.avatar.local.LocalAvatarFetcher;
 import org.moon.figura.backend2.NetworkStuff;
 import org.moon.figura.config.ConfigType.*;
+import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.screens.ConfigScreen;
 import org.moon.figura.lua.FiguraLuaPrinter;
-import org.moon.figura.model.rendering.texture.FiguraTexture;
+import org.moon.figura.lua.api.ConfigAPI;
 import org.moon.figura.permissions.PermissionManager;
 import org.moon.figura.permissions.Permissions;
 import org.moon.figura.resources.FiguraRuntimeResources;
@@ -127,7 +128,7 @@ public class Configs {
 
     public static final EnumConfig
             IRIS_COMPATIBILITY_FIX = new EnumConfig("iris_compatibility_fix", RENDERING, 2, 3),
-            RENDER_DEBUG_PARTS_PIVOT = new EnumConfig("render_debug_parts_pivot", RENDERING, 1, 5) {{
+            RENDER_DEBUG_PARTS_PIVOT = new EnumConfig("render_debug_parts_pivot", RENDERING, 1, 3) {{
                     String tooltip = "config.render_debug_parts_pivot.tooltip";
                     this.tooltip = FiguraText.of(tooltip,
                             FiguraText.of(tooltip + ".cubes").setStyle(ColorUtils.Colors.FRAN_PINK.style),
@@ -267,11 +268,16 @@ public class Configs {
                 CacheAvatarLoader.clearCache();
                 LocalAvatarFetcher.clearCache();
                 ConfigScreen.clearCache();
-                FiguraTexture.deleteCache();
                 FiguraRuntimeResources.clearCache();
+                FiguraToast.sendToast(FiguraText.of("toast.cache_clear"));
             }),
             REDOWNLOAD_ASSETS = new ButtonConfig("redownload_assets", DEV, () -> {
                 FiguraRuntimeResources.init();
                 Minecraft.getInstance().reloadResourcePacks();
+            }),
+            CLEAR_AVATAR_DATA = new ButtonConfig("clear_avatar_data", DEV, () -> {
+                ConfigAPI.clearAllData();
+                FiguraToast.sendToast(FiguraText.of("toast.avatar_data_clear"));
             });
+    ;
 }

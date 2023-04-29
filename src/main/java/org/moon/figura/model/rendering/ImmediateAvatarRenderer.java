@@ -110,7 +110,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
         //Set shouldRenderPivots
         int config = Configs.RENDER_DEBUG_PARTS_PIVOT.value;
-        if (!Minecraft.getInstance().getEntityRenderDispatcher().shouldRenderHitBoxes() || (!avatar.isHost && config < 3))
+        if (!Minecraft.getInstance().getEntityRenderDispatcher().shouldRenderHitBoxes() || (!avatar.isHost && config < 2))
             shouldRenderPivots = 0;
         else
             shouldRenderPivots = config;
@@ -121,11 +121,10 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
         //complexity
         int prev = avatar.complexity.remaining;
+        int[] remainingComplexity = new int[] {prev};
 
         //render all model parts
-        if (root.customization.visible) {
-            int[] remainingComplexity = new int[] {prev};
-
+        if (root.customization.visible == null || root.customization.visible) {
             if (currentFilterScheme.parentType.isSeparate) {
                 List<FiguraModelPart> parts = separatedParts.get(currentFilterScheme.parentType);
                 if (parts != null) {
@@ -170,15 +169,13 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
             //finish rendering
             checkEmpty();
-
-            prev -= Math.max(remainingComplexity[0], 0);
         }
 
         this.isRendering = false;
         if (this.dirty)
             clean();
 
-        return prev;
+        return prev - Math.max(remainingComplexity[0], 0);
     }
 
     protected PartCustomization setupRootCustomization(double vertOffset) {
@@ -214,7 +211,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         //test the current filter scheme
         FiguraMod.pushProfiler("predicate");
         Boolean thisPassedPredicate = currentFilterScheme.test(part.parentType, prevPredicate);
-        if (thisPassedPredicate == null || !custom.visible) {
+        if (thisPassedPredicate == null || (custom.visible != null && !custom.visible)) {
             if (part.parentType.isRenderLayer)
                 part.savedCustomization = customizationStack.peek();
             FiguraMod.popProfiler(2);

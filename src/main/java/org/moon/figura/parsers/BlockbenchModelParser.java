@@ -66,7 +66,7 @@ public class BlockbenchModelParser {
         parseAnimations(animationList, model.animations, modelName, folders);
 
         //add and parse the outliner
-        nbt.put("chld", parseOutliner(model.outliner));
+        nbt.put("chld", parseOutliner(model.outliner, true));
 
         //clear variables used by the parser
         elementMap.clear();
@@ -230,8 +230,7 @@ public class BlockbenchModelParser {
             if (element.inflate != 0f)
                 nbt.putFloat("inf", element.inflate);
 
-            if (element.visibility != null && !element.visibility)
-                nbt.putBoolean("vsb", false);
+            nbt.putBoolean("vsb", element.visibility == null || element.visibility);
 
             //parse faces
             CompoundTag data;
@@ -575,7 +574,7 @@ public class BlockbenchModelParser {
         return nbt;
     }
 
-    private ListTag parseOutliner(JsonArray outliner) {
+    private ListTag parseOutliner(JsonArray outliner, boolean parentVsb) {
         ListTag children = new ListTag();
 
         if (outliner == null)
@@ -584,9 +583,14 @@ public class BlockbenchModelParser {
         for (JsonElement element : outliner) {
             //check if it is an ID first
             if (element instanceof JsonPrimitive) {
-                String string = element.getAsString();
-                if (elementMap.containsKey(string))
-                    children.add(elementMap.get(string));
+                String key = element.getAsString();
+                if (elementMap.containsKey(key)) {
+                    CompoundTag elementNbt = elementMap.get(key);
+                    //fix children visibility (very jank)
+                    if (elementNbt.contains("vsb") && elementNbt.getBoolean("vsb") == parentVsb)
+                        elementNbt.remove("vsb");
+                    children.add(elementNbt);
+                }
 
                 continue;
             }
@@ -599,8 +603,9 @@ public class BlockbenchModelParser {
             groupNbt.putString("name", group.name);
 
             //visibility
-            if (group.visibility != null && !group.visibility)
-                groupNbt.putBoolean("vsb", false);
+            boolean thisVisibility = group.visibility == null || group.visibility;
+            if (thisVisibility != parentVsb)
+                groupNbt.putBoolean("vsb", thisVisibility);
 
             //parse transforms
             if (notZero(group.origin))
@@ -613,7 +618,7 @@ public class BlockbenchModelParser {
 
             //parse children
             if (group.children != null && group.children.size() > 0)
-                groupNbt.put("chld", parseOutliner(group.children));
+                groupNbt.put("chld", parseOutliner(group.children, thisVisibility));
 
             //add animations
             if (animationMap.containsKey(group.uuid))

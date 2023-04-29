@@ -380,24 +380,6 @@ public class HostAPI {
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaMethodOverload(
-                    argumentTypes = FiguraTexture.class,
-                    argumentNames = "texture"
-            ),
-            value = "host.save_texture")
-    public HostAPI saveTexture(@LuaNotNil FiguraTexture texture) {
-        if (isHost()) {
-            try {
-                texture.saveCache();
-            } catch (Exception e) {
-                throw new LuaError(e.getMessage());
-            }
-        }
-        return this;
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc(
-            overloads = @LuaMethodOverload(
                     argumentTypes = String.class,
                     argumentNames = "name"
             ),
