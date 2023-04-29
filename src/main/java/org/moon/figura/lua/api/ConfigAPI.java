@@ -60,6 +60,10 @@ public class ConfigAPI {
         return IOUtils.getOrCreateDir(FiguraMod.getFiguraDirectory(), "data");
     }
 
+    public static void clearAllData() {
+        IOUtils.deleteFile(getConfigDataDir().toFile());
+    }
+
     private Path getPath() {
         try {
             Path dir = getConfigDataDir().toAbsolutePath();

@@ -37,6 +37,8 @@
   "figura.toast.load_error": "Failed to load avatar!",
   "figura.toast.wardrobe_copy.success": "Copied %s file(s)!",
   "figura.toast.wardrobe_copy.error": "Failed to copy files!",
+  "figura.toast.cache_clear": "Cleared Cache!",
+  "figura.toast.avatar_data_clear": "Cleared Avatar Data!",
 
 
   "figura.permissions.category.blocked": "Blocked",
@@ -395,10 +397,8 @@
   "figura.config.render_debug_parts_pivot.4": "Visible (Everyone)",
   "figura.config.render_debug_parts_pivot.5": "Everything (Everyone)",
   "figura.config.render_debug_parts_pivot.1.tooltip": "Do not render pivots",
-  "figura.config.render_debug_parts_pivot.2.tooltip": "Render only pivots of parts that are visible, only for the Host Avatar",
-  "figura.config.render_debug_parts_pivot.3.tooltip": "Render all pivots of this Avatar, only for the Host Avatar",
-  "figura.config.render_debug_parts_pivot.4.tooltip": "Render only pivots of parts that are visible, for all Avatars",
-  "figura.config.render_debug_parts_pivot.5.tooltip": "Render all pivots of this Avatar, for all Avatars",
+  "figura.config.render_debug_parts_pivot.2.tooltip": "Render pivots of only the Host Avatar",
+  "figura.config.render_debug_parts_pivot.3.tooltip": "Render pivots of all Avatars",
 
   "figura.config.first_person_matrices": "First Person Matrices",
   "figura.config.first_person_matrices.tooltip": "Toggles if the model part matrices should be updated while in first person",
@@ -607,10 +607,14 @@
   "figura.config.redownload_assets": "Redownload Assets",
   "figura.config.redownload_assets.tooltip": "This button allows for redownloading the runtime assets (emojis, translation files, etc) from the backend\nNormally the assets are downloaded only when the game launches\nThis process might hang the game for a while, since a resource reload is executed",
 
+  "figura.config.clear_avatar_data": "Clear Avatar Data",
+  "figura.config.clear_avatar_data.tooltip": "Clears ALL saved Avatar Data from the ConfigAPI\nRemoves every file present there, from all avatars",
 
+
+  "figura.command.no_avatar_error": "No avatar equipped!",
+  "figura.command.no_script_error": "Equipped Avatar has no active script!",
+  "figura.command.no_renderer_error": "Equipped Avatar has no active renderer!",
   "figura.command.click_to_open": "Click here to open",
-  "figura.command.run.not_local_error": "No local avatar equipped!",
-  "figura.command.run.no_script_error": "No active script to run code in!",
   "figura.command.load.loading": "Loading avatar!",
   "figura.command.load.invalid": "Invalid path \"%s\"",
   "figura.command.docs_export.success": "Exported Figura docs into the Figura directory",
@@ -618,6 +622,8 @@
   "figura.command.docs_type_hover": "Click to show %s docs",
   "figura.command.debug.success": "Saved debug data into the Figura directory",
   "figura.command.debug.error": "Failed to save debug data!",
+  "figura.command.export_texture.success": "Exported texture into the Figura directory",
+  "figura.command.export_texture.error": "Failed to export texture!",
 
 
   "figura.docs": "The \"/figura docs\" command allows you to access documentation for all types and functions Figura adds to its Lua scripting environment",
@@ -1092,7 +1098,6 @@
   "figura.docs.host.get_screen": "Gets the class name of the screen the player is currently on\nIf the player is not currently in a screen, returns nil",
   "figura.docs.host.is_chat_open": "Checks if the host has the chat screen opened",
   "figura.docs.host.is_container_open": "Checks if the host has a container screen opened",
-  "figura.docs.host.save_texture": "A debug function, saves the texture on the cache directory as png",
   "figura.docs.host.screenshot": "Takes a screenshot from the current screen and returns a Texture of it",
   "figura.docs.host.is_avatar_uploaded": "Checks if this avatar is currently uploaded",
   "figura.docs.host.get_status_effects": "Returns a table of all of the player's status effects\nThe table contains sub-tables, each of which contains the name, amplifier, duration, and particle visibility of each status effect",
@@ -1238,8 +1243,8 @@
   "figura.docs.model_part.get_normal_matrix": "Recalculates the normal matrix for this model part, based on its current position, rotation, scale, and pivot, then returns this matrix",
   "figura.docs.model_part.get_normal_matrix_raw": "Returns the normal matrix for this model part\nThe Raw version of the function is different in that it doesn't recalculate the matrix before returning it",
   "figura.docs.model_part.set_matrix": "Sets the given matrix as the position matrix for this model part\nThe normal matrix is automatically calculated as the inverse transpose of this matrix\nCalling this DOES NOT CHANGE the values of position, rot, or scale in the model part\nIf you call setPos() or a similar function, the effects of setMatrix() will be overwritten",
-  "figura.docs.model_part.get_visible": "Gets whether or not this model part is visible\nDefault true",
-  "figura.docs.model_part.set_visible": "Sets this part to be visible or not\nDefault true",
+  "figura.docs.model_part.get_visible": "Gets whether or not this model part is visible\nThe default value is nil, meaning it copies the visibility of its parent part during rendering",
+  "figura.docs.model_part.set_visible": "Sets this part to be visible or invisible\nThe default value is nil, meaning the part copies its visibility from its parent part",
   "figura.docs.model_part.get_primary_render_type": "Gets the current primary render type of this model part\nNil by default, meaning the part copies the primary render type of its parent",
   "figura.docs.model_part.get_secondary_render_type": "Gets the current secondary render type of this model part\nNil by default, meaning the part copies the secondary render type of its parent",
   "figura.docs.model_part.set_primary_render_type": "Sets the current primary render type of this model part\nNil by default, meaning the part copies the primary render type of its parent during rendering\nCheck the docs enum command for all render types",
