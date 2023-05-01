@@ -127,7 +127,7 @@ public class Configs {
 
 
     public static final EnumConfig
-            IRIS_COMPATIBILITY_FIX = new EnumConfig("iris_compatibility_fix", RENDERING, 2, 3),
+            IRIS_COMPATIBILITY_FIX = new EnumConfig("iris_compatibility_fix", RENDERING, 1, 3),
             RENDER_DEBUG_PARTS_PIVOT = new EnumConfig("render_debug_parts_pivot", RENDERING, 1, 3) {{
                     String tooltip = "config.render_debug_parts_pivot.tooltip";
                     this.tooltip = FiguraText.of(tooltip,
