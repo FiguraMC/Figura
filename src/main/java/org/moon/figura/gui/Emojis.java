@@ -153,6 +153,26 @@ public class Emojis {
         return text;
     }
 
+    public static List<String> getMatchingEmojis(String query) {
+        if (!query.startsWith(String.valueOf(DELIMITER)))
+            return List.of();
+
+        String name = query.substring(1);
+        if (name.isBlank())
+            return List.of();
+
+        List<String> emojis = new ArrayList<>();
+
+        for (EmojiContainer container : EMOJIS) {
+            for (String s : container.map.keySet()) {
+                if (s.startsWith(name))
+                    emojis.add(DELIMITER + s + DELIMITER);
+            }
+        }
+
+        return emojis;
+    }
+
     private static class EmojiContainer {
         private static final Style STYLE = Style.EMPTY.withColor(ChatFormatting.WHITE);
 
