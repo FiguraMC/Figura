@@ -18,6 +18,7 @@
     "gui.ChatComponentMixin",
     "gui.ChatScreenAccessor",
     "gui.ChatScreenMixin",
+    "gui.CommandSuggestionsMixin",
     "gui.DebugScreenOverlayMixin",
     "gui.GuiMixin",
     "gui.InventoryScreenMixin",
