@@ -1233,6 +1233,13 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
             value = "model_part.add_child"
     )
     public FiguraModelPart addChild(@LuaNotNil FiguraModelPart part) {
+        FiguraModelPart parent = this.parent;
+        while (parent != null) {
+            if (part == parent)
+                throw new LuaError("Cannot add child that's already parent of this part");
+            parent = parent.parent;
+        }
+
         this.children.add(part);
         return this;
     }
