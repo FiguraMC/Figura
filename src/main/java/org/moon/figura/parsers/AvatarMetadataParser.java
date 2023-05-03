@@ -140,6 +140,9 @@ public class AvatarMetadataParser {
                 modelPart.putBoolean("vsb", false);
             }
         }
+        if (customization.smooth != null) {
+            modelPart.putBoolean("smo", customization.smooth);
+        }
     }
 
     private static CompoundTag getTag(CompoundTag models, String path, boolean remove) throws IOException {
@@ -204,6 +207,6 @@ public class AvatarMetadataParser {
         public String primaryRenderType, secondaryRenderType;
         public String parentType;
         public String moveTo;
-        public Boolean visible, remove;
+        public Boolean visible, remove, smooth;
     }
 }

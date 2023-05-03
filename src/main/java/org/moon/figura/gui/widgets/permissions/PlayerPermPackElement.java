@@ -265,4 +265,9 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
     public UUID getOwner() {
         return owner;
     }
+
+    @Override
+    public boolean isVisible() {
+        return super.isVisible() && this.pack.isVisible();
+    }
 }
