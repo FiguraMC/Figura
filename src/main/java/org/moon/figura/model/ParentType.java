@@ -76,6 +76,9 @@ public enum ParentType {
     }
 
     public static ParentType get(String name) {
+        if (name == null)
+            return None;
+
         for (ParentType parentType : values()) {
             if (name.startsWith(parentType.name()))
                 return parentType;

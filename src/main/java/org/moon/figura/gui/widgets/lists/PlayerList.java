@@ -90,9 +90,8 @@ public class PlayerList extends AbstractList {
         int width = getWidth();
         int height = getHeight();
 
-        //background and scissors
+        //background
         UIHelper.renderSliced(stack, x, y, width, height, UIHelper.OUTLINE_FILL);
-        UIHelper.setupScissor(x + scissorsX, y + scissorsY, width + scissorsWidth, height + scissorsHeight);
 
         totalHeight = 0;
         for (AbstractPermPackElement pack : permissionsList) {
@@ -101,30 +100,31 @@ public class PlayerList extends AbstractList {
         }
 
         //scrollbar visible
-        scrollBar.setVisible(totalHeight > height - 32);
+        boolean hasScrollbar = totalHeight > height - 32;
+        scrollBar.setVisible(hasScrollbar);
         scrollBar.setScrollRatio(permissionsList.isEmpty() ? 0f : (float) totalHeight / permissionsList.size(), totalHeight - (height - 32));
+
+        //scissors
+        this.scissorsWidth = hasScrollbar ? -scrollBar.getWidth() - 5 : -2;
+        UIHelper.setupScissor(x + scissorsX, y + scissorsY, width + scissorsWidth, height + scissorsHeight);
 
         //render stuff
         int xOffset = (width - entryWidth - (scrollBar.isVisible() ? 13 : 0)) / 2;
         int playerY = scrollBar.isVisible() ? (int) -(Mth.lerp(scrollBar.getScrollProgress(), -32, totalHeight - height)) : 32;
-        boolean hidden = false;
 
+        int minY = y + scissorsY;
+        int maxY = minY + height + scissorsHeight;
         for (AbstractPermPackElement pack : permissionsList) {
-            if ((hidden || !pack.isVisible()) && (pack instanceof PlayerPermPackElement p && !p.dragged)) {
-                pack.setVisible(false);
+            if (!pack.isVisible())
                 continue;
-            }
 
-            pack.setVisible(true);
             pack.setX(x + xOffset);
             pack.setY(y + playerY);
 
-            if (pack.getY() + pack.getHeight() > y + scissorsY)
+            if (pack.getY() + pack.getHeight() > minY && pack.getY() < maxY)
                 pack.render(stack, mouseX, mouseY, delta);
 
             playerY += pack.getHeight() + 8;
-            if (playerY > height)
-                hidden = true;
         }
 
         //reset scissor

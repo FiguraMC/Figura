@@ -119,10 +119,14 @@ public class Vertex {
     )
     public Vertex setNormal(Object x, Double y, Double z) {
         FiguraVec3 vec = LuaUtils.parseVec3("setNormal", x, y, z);
+        setNormal(vec);
+        return this;
+    }
+
+    public void setNormal(FiguraVec3 vec) {
         this.nx = (float) vec.x;
         this.ny = (float) vec.y;
         this.nz = (float) vec.z;
-        return this;
     }
 
     @LuaWhitelist
