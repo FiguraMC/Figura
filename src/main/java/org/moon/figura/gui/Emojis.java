@@ -57,7 +57,7 @@ public class Emojis {
         }
     });
 
-    public static Component applyEmojis(Component text) {
+    public static MutableComponent applyEmojis(Component text) {
         Component newText = TextUtils.parseLegacyFormatting(text);
         MutableComponent ret = Component.empty();
         newText.visit((style, string) -> {
@@ -67,7 +67,7 @@ public class Emojis {
         return ret;
     }
 
-    private static Component convertEmoji(String string, Style style) {
+    private static MutableComponent convertEmoji(String string, Style style) {
         //if the string does not contain the delimiter, then return
         if (!string.contains(":"))
             return Component.literal(string).withStyle(style);

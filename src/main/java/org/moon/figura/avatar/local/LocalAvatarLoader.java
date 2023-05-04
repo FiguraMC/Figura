@@ -106,10 +106,11 @@ public class LocalAvatarLoader {
         loadState = 0;
         resetWatchKeys();
         lastLoadedPath = path;
-        addWatchKey(path, KEYS::put);
 
         if (path == null || target == null)
             return;
+
+        addWatchKey(path, KEYS::put);
 
         async(() -> {
             try {

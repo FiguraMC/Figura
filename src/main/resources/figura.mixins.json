@@ -28,6 +28,7 @@
     "gui.ScreenAccessor",
     "gui.ScreenMixin",
     "gui.SplashManagerMixin",
+    "gui.SuggestionsListMixin",
     "gui.TitleScreenMixin",
 
     "input.InputConstantsTypeMixin",

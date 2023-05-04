@@ -15,7 +15,7 @@ public class ColorUtils {
         MAYA_BLUE(0x00F0FF, "maya", "devnull", "limits"),
         SKYE_BLUE(0x99BBEE, "sky", "skye", "skylar"),
         LILY_RED(0xFF2400, "lily", "foxes", "fox"),
-        KIRI_PINK(0xFFECD2, "kiri"),
+        KIRI_ORANGE(0xFFC400, "kiri"),
 
         CHEESE(0xF8C53A, "largecheese", "large cheese"),
 
