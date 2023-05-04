@@ -276,6 +276,7 @@ public class AvatarManager {
 
         localUploaded = true;
         AvatarList.selectedEntry = null;
+        LocalAvatarLoader.loadAvatar(null, null);
         FiguraMod.LOGGER.info("Cleared all avatars");
     }
 
