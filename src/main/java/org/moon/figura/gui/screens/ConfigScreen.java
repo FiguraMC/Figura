@@ -11,6 +11,7 @@ import org.moon.figura.config.ConfigType;
 import org.moon.figura.gui.PaperDoll;
 import org.moon.figura.gui.widgets.Label;
 import org.moon.figura.gui.widgets.Button;
+import org.moon.figura.gui.widgets.SearchBar;
 import org.moon.figura.gui.widgets.lists.ConfigList;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.IOUtils;
@@ -50,24 +51,27 @@ public class ConfigScreen extends AbstractPanelScreen {
             l.centerVertically = true;
         }
 
+        // -- middle -- //
+
+        int width = Math.min(this.width - 8, 420);
+        list = new ConfigList((this.width - width) / 2, 52, width, height - 80, this);
+
+        this.addRenderableWidget(new SearchBar(this.width / 2 - 122, 28, 244, 20, query -> list.updateSearch(query.toLowerCase())));
+        this.addRenderableWidget(list);
+
         // -- bottom buttons -- //
 
         //cancel
-        this.addRenderableWidget(cancel = new Button(width / 2 - 122, height - 24, 120, 20, new FiguraText("gui.cancel"), null, button -> {
+        this.addRenderableWidget(cancel = new Button(this.width / 2 - 122, height - 24, 120, 20, new FiguraText("gui.cancel"), null, button -> {
             ConfigManager.discardConfig();
             list.updateList();
         }));
         cancel.setActive(false);
 
         //done
-        addRenderableWidget(new Button(width / 2 + 4, height - 24, 120, 20, new FiguraText("gui.done"), null,
+        addRenderableWidget(new Button(this.width / 2 + 2, height - 24, 120, 20, new FiguraText("gui.done"), null,
                 button -> this.minecraft.setScreen(parentScreen)
         ));
-
-        // -- config list -- //
-
-        int width = Math.min(this.width - 8, 420);
-        this.addRenderableWidget(list = new ConfigList((this.width - width) / 2, 28, width, height - 56, this));
     }
 
     @Override

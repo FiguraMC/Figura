@@ -16,13 +16,13 @@ public class KeybindElement extends AbstractConfigElement {
     private final KeyMapping binding;
     private final ParentedButton button;
 
-    public KeybindElement(int width, ConfigType.KeybindConfig config, ConfigList parent) {
-        super(width, config, parent);
+    public KeybindElement(int width, ConfigType.KeybindConfig config, ConfigList parentList, CategoryWidget parentCategory) {
+        super(width, config, parentList, parentCategory);
         this.binding = config.keyBind;
 
         //toggle button
         children.add(0, button = new ParentedButton(0, 0, 90, 20, this.binding.getTranslatedKeyMessage(), this, button -> {
-            parent.focusedBinding = binding;
+            parentList.focusedBinding = binding;
             FiguraMod.processingKeybind = true;
             updateText();
         }));
@@ -32,7 +32,7 @@ public class KeybindElement extends AbstractConfigElement {
         children.remove(resetButton);
         children.add(resetButton = new ParentedButton(getX() + width - 60, getY(), 60, 20, new TranslatableComponent("controls.reset"), this, button -> {
             binding.setKey(binding.getDefaultKey());
-            parent.updateKeybinds();
+            parentList.updateKeybinds();
         }));
 
         updateText();
@@ -88,7 +88,7 @@ public class KeybindElement extends AbstractConfigElement {
         this.resetButton.setActive(!isDefault);
 
         //text
-        boolean selected = parent.focusedBinding == binding;
+        boolean selected = parentList.focusedBinding == binding;
         Component text = helper.getText(isDefault, selected, binding.getTranslatedKeyMessage());
         button.setMessage(text);
     }

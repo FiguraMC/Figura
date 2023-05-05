@@ -12,8 +12,8 @@ public class BooleanElement extends AbstractConfigElement {
 
     private final ParentedButton button;
 
-    public BooleanElement(int width, ConfigType.BoolConfig config, ConfigList parent) {
-        super(width, config, parent);
+    public BooleanElement(int width, ConfigType.BoolConfig config, ConfigList parentList, CategoryWidget parentCategory) {
+        super(width, config, parentList, parentCategory);
 
         //button
         children.add(0, button = new ParentedButton(0, 0, 90, 20, config.tempValue ? SwitchButton.ON : SwitchButton.OFF, this, button -> config.tempValue = !(boolean) config.tempValue));

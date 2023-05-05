@@ -279,5 +279,6 @@ public class Configs {
                 ConfigAPI.clearAllData();
                 FiguraToast.sendToast(FiguraText.of("toast.avatar_data_clear"));
             });
-    ;
+    public static final BoolConfig
+            FORCE_SMOOTH_AVATAR = new BoolConfig("force_smooth_avatar", DEV, false);
 }

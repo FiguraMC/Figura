@@ -19,8 +19,8 @@ public class InputElement extends AbstractConfigElement {
     private final TextField textField;
     private final InputType inputType;
 
-    public InputElement(int width, ConfigType.InputConfig<?> config, ConfigList parent) {
-        super(width, config, parent);
+    public InputElement(int width, ConfigType.InputConfig<?> config, ConfigList parentList, CategoryWidget parentCategory) {
+        super(width, config, parentList, parentCategory);
 
         //get input type
         this.inputType = config.inputType;
