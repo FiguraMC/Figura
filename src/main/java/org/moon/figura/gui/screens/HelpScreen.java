@@ -88,7 +88,7 @@ public class HelpScreen extends AbstractPanelScreen {
         fran.alpha = 64;
 
         //back
-        addRenderableWidget(new Button(middle - 60, height - 24, 120, 20, FiguraText.of("gui.done"), null, bx -> this.minecraft.setScreen(parentScreen)));
+        addRenderableWidget(new Button(middle - 60, height - 24, 120, 20, FiguraText.of("gui.done"), null, bx -> onClose()));
     }
 
     @Override

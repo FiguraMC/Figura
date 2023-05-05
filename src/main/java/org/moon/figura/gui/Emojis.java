@@ -23,8 +23,8 @@ import java.util.*;
 public class Emojis {
 
     private static final List<EmojiContainer> EMOJIS = new ArrayList<>();
-    private static final char DELIMITER = ':';
-    private static final char ESCAPE = '\\';
+    public static final char DELIMITER = ':';
+    public static final char ESCAPE = '\\';
 
     //listener to load emojis from the resource pack
     public static final FiguraResourceListener RESOURCE_LISTENER = new FiguraResourceListener("emojis", manager -> {
@@ -154,13 +154,10 @@ public class Emojis {
     }
 
     public static List<String> getMatchingEmojis(String query) {
-        if (!query.startsWith(String.valueOf(DELIMITER)))
+        if (query.length() == 0 || query.charAt(0) != DELIMITER)
             return List.of();
 
         String name = query.substring(1);
-        if (name.isBlank())
-            return List.of();
-
         List<String> emojis = new ArrayList<>();
 
         for (EmojiContainer container : EMOJIS) {

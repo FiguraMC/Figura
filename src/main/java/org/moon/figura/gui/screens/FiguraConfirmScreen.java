@@ -68,7 +68,7 @@ public class FiguraConfirmScreen extends AbstractPanelScreen {
 
     protected void run(boolean bool) {
         this.callback.accept(bool);
-        this.minecraft.setScreen(parentScreen);
+        onClose();
     }
 
     @Override

@@ -128,9 +128,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
         int rightSide = Math.min(panels, 134);
 
         //back
-        Button back = new Button(width - rightSide - 4, height - 24, rightSide, 20, FiguraText.of("gui.done"), null,
-                bx -> this.minecraft.setScreen(parentScreen)
-        );
+        Button back = new Button(width - rightSide - 4, height - 24, rightSide, 20, FiguraText.of("gui.done"), null, bx -> onClose());
         addRenderableWidget(back);
 
         // -- right side -- //

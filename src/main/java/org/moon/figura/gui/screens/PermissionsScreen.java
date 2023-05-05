@@ -130,9 +130,7 @@ public class PermissionsScreen extends AbstractPanelScreen {
         }));
 
         //back button
-        addRenderableWidget(back = new Button(middle + 6 + bottomButtonsWidth, height - 24, bottomButtonsWidth, 20, FiguraText.of("gui.done"), null,
-                bx -> this.minecraft.setScreen(parentScreen)
-        ));
+        addRenderableWidget(back = new Button(middle + 6 + bottomButtonsWidth, height - 24, bottomButtonsWidth, 20, FiguraText.of("gui.done"), null, bx -> onClose()));
 
         //debug buttons
         uuid = new TextField(middle + 2, back.getY() - 24, listWidth - 24, 20, TextField.HintType.NAME, s -> yoink.setActive(!s.isBlank()));
