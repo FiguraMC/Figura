@@ -608,6 +608,9 @@
   "figura.config.clear_avatar_data": "Clear Avatar Data",
   "figura.config.clear_avatar_data.tooltip": "Clears ALL saved Avatar Data from the ConfigAPI\nRemoves every file present there, from all avatars",
 
+  "figura.config.force_smooth_avatar": "Force Smooth Avatar",
+  "figura.config.force_smooth_avatar.tooltip": "Force Avatars to always use smooth shading normals",
+
 
   "figura.command.no_avatar_error": "No avatar equipped!",
   "figura.command.no_script_error": "Equipped Avatar has no active script!",

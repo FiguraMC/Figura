@@ -8,8 +8,8 @@ public class ButtonElement extends AbstractConfigElement {
 
     private final ParentedButton button;
 
-    public ButtonElement(int width, ConfigType.ButtonConfig config, ConfigList parent) {
-        super(width, config, parent);
+    public ButtonElement(int width, ConfigType.ButtonConfig config, ConfigList parentList, CategoryWidget parentCategory) {
+        super(width, config, parentList, parentCategory);
         resetButton.setActive(false);
         children.add(0, button = new ParentedButton(0, 0, 90, 20, config.name, this, button -> config.toRun.run()));
     }

@@ -12,6 +12,7 @@ import org.moon.figura.animation.Interpolation;
 import org.moon.figura.animation.Keyframe;
 import org.moon.figura.animation.TransformType;
 import org.moon.figura.avatar.Avatar;
+import org.moon.figura.config.Configs;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec4;
@@ -80,7 +81,7 @@ public class FiguraModelPartReader {
         if (partCompound.contains("smo"))
             smoothNormals = partCompound.getBoolean("smo");
 
-        if (smoothNormals && !vertices.isEmpty())
+        if (Configs.FORCE_SMOOTH_AVATAR.value || (smoothNormals && !vertices.isEmpty()))
             smoothfy(vertices);
 
         //Read children

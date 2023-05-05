@@ -21,8 +21,8 @@ public class EnumElement extends AbstractConfigElement {
     private final ParentedButton button;
     private ContextMenu context;
 
-    public EnumElement(int width, ConfigType.EnumConfig config, ConfigList parent) {
-        super(width, config, parent);
+    public EnumElement(int width, ConfigType.EnumConfig config, ConfigList parentList, CategoryWidget parentCategory) {
+        super(width, config, parentList, parentCategory);
 
         names = config.enumList;
 
