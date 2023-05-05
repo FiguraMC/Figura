@@ -32,9 +32,7 @@ public class AvatarWizardScreen extends AbstractPanelScreen {
         // -- bottom buttons -- //
 
         //cancel
-        this.addRenderableWidget(new Button(width / 2 - 122, height - 24, 120, 20, FiguraText.of("gui.cancel"), null,
-                button -> this.minecraft.setScreen(sourcePanel)
-        ));
+        this.addRenderableWidget(new Button(width / 2 - 122, height - 24, 120, 20, FiguraText.of("gui.cancel"), null, button -> onClose()));
 
         //done
         addRenderableWidget(build = new Button(width / 2 + 4, height - 24, 120, 20, FiguraText.of("gui.create"), null, button -> {
@@ -46,7 +44,7 @@ public class AvatarWizardScreen extends AbstractPanelScreen {
                 FiguraMod.LOGGER.error("", e);
             }
 
-            this.minecraft.setScreen(sourcePanel);
+            onClose();
         }));
 
         // -- wizard -- //

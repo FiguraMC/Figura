@@ -40,9 +40,12 @@ public class SoundScreen extends AbstractPanelScreen {
         addRenderableWidget(piano = new PianoWidget(listX, height - 88, listWidth, 60, list::getSound));
 
         //back
-        addRenderableWidget(new Button(width / 2 - 60, height - 24, 120, 20, FiguraText.of("gui.done"), null,
-                bx -> this.minecraft.setScreen(sourcePanel)
-        ));
+        addRenderableWidget(new Button(width / 2 - 60, height - 24, 120, 20, FiguraText.of("gui.done"), null, bx -> onClose()));
+    }
+
+    @Override
+    public void onClose() {
+        this.minecraft.setScreen(sourcePanel);
     }
 
     @Override
