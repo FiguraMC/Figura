@@ -44,9 +44,14 @@ public class ConfigList extends AbstractList {
 
         //scrollbar
         totalHeight = -4;
-        for (CategoryWidget config : configs)
-            totalHeight += config.getHeight() + 8;
-        int entryHeight = configs.isEmpty() ? 0 : totalHeight / configs.size();
+        int visibleConfig = 0;
+        for (CategoryWidget config : configs) {
+            if (config.isVisible()) {
+                totalHeight += config.getHeight() + 8;
+                visibleConfig++;
+            }
+        }
+        int entryHeight = visibleConfig == 0 ? 0 : totalHeight / visibleConfig;
 
         scrollBar.setVisible(totalHeight > height);
         scrollBar.setScrollRatio(entryHeight, totalHeight - height);
@@ -55,6 +60,9 @@ public class ConfigList extends AbstractList {
         int xOffset = scrollBar.isVisible() ? 4 : 11;
         int yOffset = scrollBar.isVisible() ? (int) -(Mth.lerp(scrollBar.getScrollProgress(), -4, totalHeight - height)) : 4;
         for (CategoryWidget config : configs) {
+            if (!config.isVisible())
+                continue;
+
             config.setX(x + xOffset);
             config.setY(y + yOffset);
             yOffset += config.getHeight() + 8;
@@ -111,7 +119,8 @@ public class ConfigList extends AbstractList {
         //get new height
         totalHeight = -4;
         for (CategoryWidget config : configs)
-            totalHeight += config.getHeight() + 8;
+            if (config.isVisible())
+                totalHeight += config.getHeight() + 8;
 
         //set new scroll percentage
         scrollBar.setScrollProgress(pastScroll / (totalHeight - getHeight()));
@@ -139,5 +148,10 @@ public class ConfigList extends AbstractList {
     public void updateKeybinds() {
         for (CategoryWidget widget : configs)
             widget.updateKeybinds();
+    }
+
+    public void updateSearch(String query) {
+        for (CategoryWidget widget : configs)
+            widget.updateFilter(query);
     }
 }
