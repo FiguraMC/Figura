@@ -69,9 +69,7 @@ public class ConfigScreen extends AbstractPanelScreen {
         cancel.setActive(false);
 
         //done
-        addRenderableWidget(new Button(this.width / 2 + 2, height - 24, 120, 20, new FiguraText("gui.done"), null,
-                button -> this.minecraft.setScreen(parentScreen)
-        ));
+        addRenderableWidget(new Button(this.width / 2 + 2, height - 24, 120, 20, new FiguraText("gui.done"), null, button -> onClose()));
     }
 
     @Override

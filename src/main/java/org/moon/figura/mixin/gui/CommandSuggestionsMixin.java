@@ -20,28 +20,34 @@ public abstract class CommandSuggestionsMixin {
 
     @Shadow private CommandSuggestions.SuggestionsList suggestions;
 
-    @Unique private boolean figuraList;
+    @Shadow public abstract void showSuggestions(boolean narrateFirstSuggestion);
+
+    @Unique private boolean emojiSuggestions;
 
     @Inject(method = "updateCommandInfo", at = @At(value = "INVOKE", target = "Lnet/minecraft/commands/SharedSuggestionProvider;suggest(Ljava/lang/Iterable;Lcom/mojang/brigadier/suggestion/SuggestionsBuilder;)Ljava/util/concurrent/CompletableFuture;"), locals = LocalCapture.CAPTURE_FAILSOFT)
     private void addFiguraSuggestions(CallbackInfo ci, String string, StringReader stringReader, boolean bl2, int i, String string2, int j, Collection<String> collection) {
-        if (!Configs.CHAT_EMOJIS.value)
+        emojiSuggestions = Configs.CHAT_EMOJIS.value;
+        if (!emojiSuggestions)
             return;
 
         String lastWord = string2.substring(j);
         Collection<String> emojis = Emojis.getMatchingEmojis(lastWord);
-        if (!emojis.isEmpty()) {
+        emojiSuggestions = !emojis.isEmpty();
+        if (emojiSuggestions) {
             collection.clear();
             collection.addAll(emojis);
-            figuraList = true;
         }
     }
 
+    @Inject(method = "updateCommandInfo", at = @At("RETURN"))
+    private void afterUpdateCommandInfo(CallbackInfo ci) {
+        if (emojiSuggestions)
+            this.showSuggestions(false);
+    }
+
     @Inject(method = "showSuggestions", at = @At("RETURN"))
-    private void afterShowSuggestions(CallbackInfo ci) {
-        if (figuraList) {
-            if (this.suggestions != null)
-                ((SuggestionsListAccessor) this.suggestions).figura$setFiguraList(true);
-            figuraList = false;
-        }
+    private void showSuggestions(CallbackInfo ci) {
+        if (emojiSuggestions && this.suggestions != null)
+            ((SuggestionsListAccessor) this.suggestions).figura$setFiguraList(true);
     }
 }
