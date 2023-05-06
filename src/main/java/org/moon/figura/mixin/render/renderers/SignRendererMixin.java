@@ -15,7 +15,7 @@ public class SignRendererMixin {
 
     @ModifyVariable(method = "renderSignText", at = @At("STORE"))
     private FormattedCharSequence modifyText(FormattedCharSequence charSequence) {
-        if (!Configs.CHAT_EMOJIS.value)
+        if (Configs.EMOJIS.value == 0)
             return charSequence;
 
         Component text = TextUtils.charSequenceToText(charSequence);

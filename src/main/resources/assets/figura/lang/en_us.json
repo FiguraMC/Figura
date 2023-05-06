@@ -559,8 +559,14 @@
   "figura.config.default_permission_level": "Default Permission Level",
   "figura.config.default_permission_level.tooltip": "Changes the default Permission Level that new players will be assigned into",
 
-  "figura.config.chat_emojis": "Chat Emojis",
-  "figura.config.chat_emojis.tooltip": "Toggles the emoji parsing on chat messages, that converts \":emoji_name:\" into emojis",
+  "figura.config.emojis": "Emojis",
+  "figura.config.emojis.tooltip": "Toggles the emoji parsing on chat messages and signs, that converts \":emoji_name:\" into emojis",
+  "figura.config.emojis.1": "Disabled",
+  "figura.config.emojis.2": "On",
+  "figura.config.emojis.3": "On + Suggestions",
+  "figura.config.emojis.1.tooltip": "No Emojis",
+  "figura.config.emojis.2.tooltip": "Allow Emojis",
+  "figura.config.emojis.3.tooltip": "Allow Emojis and suggest them on chat (like commands)",
 
   "figura.config.easter_eggs": "Enable Easter eggs",
   "figura.config.easter_eggs.tooltip": "Toggles fun and unexpected aspects of Figura (boring!)",

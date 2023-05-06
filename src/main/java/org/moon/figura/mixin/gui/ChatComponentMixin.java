@@ -46,7 +46,7 @@ public class ChatComponentMixin {
             return message;
 
         //emojis
-        if (Configs.CHAT_EMOJIS.value)
+        if (Configs.EMOJIS.value > 0)
             message = Emojis.applyEmojis(message);
 
         //nameplates
