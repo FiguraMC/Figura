@@ -32,11 +32,17 @@ public class SuggestionsListMixin implements SuggestionsListAccessor {
         int color = args.get(4);
         Font font = Minecraft.getInstance().font;
 
+        //get emoji
+        Component emoji = Emojis.applyEmojis(Component.literal(text));
+
+        //dont render if no emoji was applied
+        if (emoji.getString().equals(text))
+            return;
+
         //change text x
         args.set(2, x + 8 + font.width(" "));
 
         //render emoji
-        Component emoji = Emojis.applyEmojis(Component.literal(text));
         font.drawShadow(stack, emoji, x + 4 - (int) (font.width(emoji) / 2f), y, color);
     }
 

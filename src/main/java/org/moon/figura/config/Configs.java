@@ -222,9 +222,9 @@ public class Configs {
                     super.onChange();
                     PermissionManager.saveToDisk();
                 }
-            };
+            },
+            EMOJIS = new EnumConfig("emojis", MISC, 0, 3);
     public static final BoolConfig
-            CHAT_EMOJIS = new BoolConfig("chat_emojis", MISC, false),
             EASTER_EGGS = new BoolConfig("easter_eggs", MISC, true);
 
 
