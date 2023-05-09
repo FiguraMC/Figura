@@ -33,10 +33,11 @@ public class ChatComponentMixin {
         //receive event
         Avatar localPlayer = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
         if (localPlayer != null) {
-            String newMessage = localPlayer.chatReceivedMessageEvent(message);
+            String json = Component.Serializer.toJson(message);
+            String newMessage = localPlayer.chatReceivedMessageEvent(message.getString(), json);
             //only allow editing if we can parse the messages
             //however allow the event to run, so people can still get those special messages
-            if (FiguraMod.parseMessages && newMessage != null)
+            if (FiguraMod.parseMessages && newMessage != null && !json.equals(newMessage))
                 message = TextUtils.tryParseJson(newMessage);
         }
 
@@ -58,7 +59,8 @@ public class ChatComponentMixin {
         Map<String, UUID> players = EntityUtils.getPlayerList();
         String owner = null;
 
-        String[] split = message.getString().split("\\W+");
+        String msgString = message.getString();
+        String[] split = msgString.split("\\W+");
         for (String s : split) {
             if (players.containsKey(s)) {
                 owner = s;
@@ -69,6 +71,10 @@ public class ChatComponentMixin {
         //iterate over ALL online players
         for (Map.Entry<String, UUID> entry : players.entrySet()) {
             String name = entry.getKey();
+
+            if (!msgString.contains(name)) //player is not here
+                continue;
+
             UUID uuid = entry.getValue();
 
             Component playerName = new TextComponent(name);
@@ -76,6 +82,9 @@ public class ChatComponentMixin {
             //apply customization
             Avatar avatar = AvatarManager.getAvatarForPlayer(uuid);
             NameplateCustomization custom = avatar == null || avatar.luaRuntime == null ? null : avatar.luaRuntime.nameplate.CHAT;
+
+            if (custom == null && config < 2) //no customization and no possible badges to append
+                continue;
 
             Component replacement = custom != null && custom.getJson() != null && avatar.permissions.get(Permissions.NAMEPLATE_EDIT) == 1 ?
                     TextUtils.replaceInText(custom.getJson().copy(), "\n|\\\\n", " ") : playerName;

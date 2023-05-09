@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -49,7 +50,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
 
     public List<Integer> facesByTexture;
 
-    public Map<String, RenderTask> renderTasks = new HashMap<>();
+    public Map<String, RenderTask> renderTasks = new ConcurrentHashMap<>();
 
     public List<FiguraTextureSet> textures;
     public int textureWidth, textureHeight; //If the part has multiple textures, then these are -1.

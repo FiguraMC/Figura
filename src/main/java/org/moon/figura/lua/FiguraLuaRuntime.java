@@ -18,6 +18,7 @@ import org.moon.figura.lua.api.action_wheel.ActionWheelAPI;
 import org.moon.figura.lua.api.entity.EntityAPI;
 import org.moon.figura.lua.api.entity.NullEntity;
 import org.moon.figura.lua.api.event.EventsAPI;
+import org.moon.figura.lua.api.event.LuaEvent;
 import org.moon.figura.lua.api.keybind.KeybindAPI;
 import org.moon.figura.lua.api.nameplate.NameplateAPI;
 import org.moon.figura.lua.api.ping.PingAPI;
@@ -88,10 +89,6 @@ public class FiguraLuaRuntime {
         LuaTable figuraMetatables = new LuaTable();
         typeManager.dumpMetatables(figuraMetatables);
         setGlobal("figuraMetatables", figuraMetatables);
-    }
-
-    public LuaValue load(String name, String src) {
-        return userGlobals.load(src, name, userGlobals);
     }
 
     public void registerClass(Class<?> clazz) {
@@ -413,5 +410,46 @@ public class FiguraLuaRuntime {
 
     public int getInstructions() {
         return userGlobals.running.state.bytecodes;
+    }
+
+    // script execution //
+
+    public LuaValue load(String name, String src) {
+        return userGlobals.load(src, name, userGlobals);
+    }
+
+    public Varargs run(Object toRun, Avatar.Instructions limit, Object... args) {
+        //parse args
+        LuaValue[] values = new LuaValue[args.length];
+        for (int i = 0; i < values.length; i++)
+            values[i] = typeManager.javaToLua(args[i]).arg1();
+
+        Varargs val = LuaValue.varargsOf(values);
+
+        //set instructions limit
+        setInstructionLimit(limit.remaining);
+
+        //get and call event
+        try {
+            Varargs ret;
+            if (toRun instanceof LuaEvent event)
+                ret = event.call(val);
+            else if (toRun instanceof String event)
+                ret = events.__index(event).call(val);
+            else if (toRun instanceof LuaValue func)
+                ret = func.invoke(val);
+            else
+                throw new IllegalArgumentException("Internal event error - Invalid type to run! (" + toRun.getClass().getSimpleName() + ")");
+
+            //use instructions
+            limit.use(getInstructions());
+            //and return the value
+            return ret;
+        } catch (Exception | StackOverflowError e) {
+            error(e);
+        }
+
+        //failsafe return
+        return null;
     }
 }
