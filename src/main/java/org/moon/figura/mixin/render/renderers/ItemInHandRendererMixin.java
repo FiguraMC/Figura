@@ -18,6 +18,7 @@ import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.ducks.SkullBlockRendererAccessor;
 import org.moon.figura.lua.api.vanilla_model.VanillaModelPart;
+import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.model.rendering.EntityRenderMode;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -45,7 +46,7 @@ public abstract class ItemInHandRendererMixin {
         FiguraMod.pushProfiler(avatar);
         FiguraMod.pushProfiler("renderEvent");
         avatar.renderMode = EntityRenderMode.FIRST_PERSON;
-        avatar.renderEvent(tickDelta);
+        avatar.renderEvent(tickDelta, new FiguraMat4().set(matrices.last().pose()));
         FiguraMod.popProfiler(3);
     }
 
@@ -57,7 +58,7 @@ public abstract class ItemInHandRendererMixin {
         FiguraMod.pushProfiler(FiguraMod.MOD_ID);
         FiguraMod.pushProfiler(avatar);
         FiguraMod.pushProfiler("postRenderEvent");
-        avatar.postRenderEvent(tickDelta);
+        avatar.postRenderEvent(tickDelta, new FiguraMat4().set(matrices.last().pose()));
         avatar = null;
         FiguraMod.popProfiler(3);
     }

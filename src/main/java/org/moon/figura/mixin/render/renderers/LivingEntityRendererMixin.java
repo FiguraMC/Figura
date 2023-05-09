@@ -16,6 +16,7 @@ import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.config.Configs;
 import org.moon.figura.gui.PopupMenu;
 import org.moon.figura.lua.api.vanilla_model.VanillaPart;
+import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.model.rendering.PartFilterScheme;
 import org.moon.figura.permissions.Permissions;
 import org.moon.figura.utils.ui.UIHelper;
@@ -89,13 +90,14 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
         FiguraMod.pushProfiler(currentAvatar);
 
         FiguraMod.pushProfiler("renderEvent");
-        currentAvatar.renderEvent(delta);
+        FiguraMat4 poseMatrix = new FiguraMat4().set(matrices.last().pose());
+        currentAvatar.renderEvent(delta, poseMatrix);
 
         FiguraMod.popPushProfiler("render");
         currentAvatar.render(entity, yaw, delta, translucent ? 0.15f : 1f, matrices, bufferSource, light, overlay, (LivingEntityRenderer<?, ?>) (Object) this, filter, translucent, glowing);
 
         FiguraMod.popPushProfiler("postRenderEvent");
-        currentAvatar.postRenderEvent(delta);
+        currentAvatar.postRenderEvent(delta, poseMatrix);
 
         FiguraMod.popProfiler(3);
 
