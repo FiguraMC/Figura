@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -38,7 +39,7 @@ public abstract class AvatarRenderer {
     protected final Avatar avatar;
     public FiguraModelPart root;
 
-    protected final HashMap<ParentType, List<FiguraModelPart>> separatedParts = new HashMap<>();
+    protected final Map<ParentType, List<FiguraModelPart>> separatedParts = new ConcurrentHashMap<>();
 
     protected boolean isRendering, dirty;
 

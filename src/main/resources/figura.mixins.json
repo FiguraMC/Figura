@@ -19,6 +19,7 @@
     "gui.ChatComponentMixin",
     "gui.ChatScreenAccessor",
     "gui.ChatScreenMixin",
+    "gui.ClickEventActionMixin",
     "gui.CommandSuggestionsMixin",
     "gui.DebugScreenOverlayMixin",
     "gui.GuiMixin",

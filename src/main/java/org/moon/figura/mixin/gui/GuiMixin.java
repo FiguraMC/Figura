@@ -12,10 +12,7 @@ import org.moon.figura.gui.PaperDoll;
 import org.moon.figura.gui.PopupMenu;
 import org.moon.figura.lua.api.RendererAPI;
 import org.moon.figura.math.vector.FiguraVec2;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -33,12 +30,9 @@ public class GuiMixin {
 
         FiguraMod.pushProfiler(FiguraMod.MOD_ID);
 
+        //render popup menu below everything, as if it were in the world
         FiguraMod.pushProfiler("popupMenu");
         PopupMenu.render(stack);
-
-        FiguraMod.popPushProfiler("paperdoll");
-        PaperDoll.render(stack, false);
-
         FiguraMod.popProfiler();
 
         //get avatar
@@ -51,11 +45,8 @@ public class GuiMixin {
 
             //hud hidden by script
             if (avatar.luaRuntime != null && !avatar.luaRuntime.renderer.renderHUD) {
-                //render wheel
-                FiguraMod.pushProfiler("actionWheel");
-                ActionWheel.render(stack);
-                FiguraMod.popProfiler();
-
+                //render figura overlays
+                figura$renderOverlays(stack);
                 //cancel this method
                 ci.cancel();
             }
@@ -66,16 +57,8 @@ public class GuiMixin {
 
     @Inject(at = @At("RETURN"), method = "render")
     private void afterRender(PoseStack stack, float tickDelta, CallbackInfo ci) {
-        if (AvatarManager.panic)
-            return;
-
-        //render wheel last, on top of everything
-        FiguraMod.pushProfiler(FiguraMod.MOD_ID);
-        FiguraMod.pushProfiler("actionWheel");
-
-        ActionWheel.render(stack);
-
-        FiguraMod.popProfiler(2);
+        if (!AvatarManager.panic)
+            figura$renderOverlays(stack);
     }
 
     @Inject(at = @At("HEAD"), method = "renderCrosshair", cancellable = true)
@@ -113,5 +96,20 @@ public class GuiMixin {
     private void afterBlitRenderCrosshair(PoseStack stack, CallbackInfo ci) {
         if (crosshairOffset != null)
             stack.popPose();
+    }
+
+    @Intrinsic
+    private void figura$renderOverlays(PoseStack stack) {
+        FiguraMod.pushProfiler(FiguraMod.MOD_ID);
+
+        //render aperdoll
+        FiguraMod.pushProfiler("paperdoll");
+        PaperDoll.render(stack, false);
+
+        //render wheel
+        FiguraMod.popPushProfiler("actionWheel");
+        ActionWheel.render(stack);
+
+        FiguraMod.popProfiler(2);
     }
 }
