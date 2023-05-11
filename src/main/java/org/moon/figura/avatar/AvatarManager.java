@@ -272,6 +272,8 @@ public class AvatarManager {
         for (UUID id : LOADED_USERS.keySet())
             clearAvatars(id);
 
+        LOADED_USERS.clear();
+        FETCHED_USERS.clear();
         clearCEMAvatars();
 
         localUploaded = true;
@@ -329,6 +331,11 @@ public class AvatarManager {
             return;
 
         FETCHED_USERS.add(id);
+
+        if (EntityUtils.checkInvalidPlayer(id)) {
+            FiguraMod.debug("Voiding userdata for " + id);
+            return;
+        }
 
         UserData user = LOADED_USERS.computeIfAbsent(id, UserData::new);
 

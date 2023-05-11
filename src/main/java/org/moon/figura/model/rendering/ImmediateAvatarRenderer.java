@@ -225,6 +225,8 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         //visibility
         FiguraMod.popPushProfiler("checkVanillaVisible");
         if (!ignoreVanillaVisibility && custom.vanillaVisible != null && !custom.vanillaVisible) {
+            FiguraMod.popPushProfiler("removeVanillaTransforms");
+            part.resetVanillaTransforms();
             FiguraMod.popProfiler(2);
             return true;
         }

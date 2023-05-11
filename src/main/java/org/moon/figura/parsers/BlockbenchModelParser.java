@@ -36,10 +36,10 @@ public class BlockbenchModelParser {
         BlockbenchModel model = GSON.fromJson(json, BlockbenchModel.class);
 
         //meta check
-        if (!model.meta.model_format.equals("free"))
-            throw new Exception("Model \"" + modelName + "\" is not using the \"Generic Model\" format");
+        if (!model.meta.model_format.equals("free") && !model.meta.model_format.contains(FiguraMod.MOD_ID))
+            throw new Exception("Model \"" + modelName + "\" have an incompatible model format. Compatibility is limited to \"Generic Model\" format and third-party " + FiguraMod.MOD_NAME + " specific formats");
         if (Integer.parseInt(model.meta.format_version.split("\\.")[0]) < 4)
-            throw new Exception("Model \"" + modelName + "\" have a blockbench version too old (" + model.meta.format_version + "), minimum compatible version is 4.0");
+            throw new Exception("Model \"" + modelName + "\" was created using a version too old (" + model.meta.format_version + ") of Blockbench. Minimum compatible version is 4.0");
 
         //return lists
         CompoundTag textures = new CompoundTag();

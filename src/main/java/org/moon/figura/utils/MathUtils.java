@@ -4,6 +4,7 @@ import com.mojang.math.*;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.Vec3;
+import org.moon.figura.config.Configs;
 import org.moon.figura.ducks.GameRendererAccessor;
 import org.moon.figura.math.matrix.FiguraMat2;
 import org.moon.figura.math.matrix.FiguraMat3;
@@ -112,6 +113,10 @@ public class MathUtils {
         DecimalFormat df = new DecimalFormat("0.00", new DecimalFormatSymbols(Locale.US));
         df.setRoundingMode(RoundingMode.HALF_UP);
         return df.format(size) + SIZE_UNITS[i];
+    }
+
+    public static float magicDelta(float force, float delta) {
+        return Configs.REDUCED_MOTION.value ? 1f : (float) (1f - Math.pow(force, delta));
     }
 
     public static FiguraVec3 min(FiguraVec3 val, double min) {

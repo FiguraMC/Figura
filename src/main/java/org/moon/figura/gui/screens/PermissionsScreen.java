@@ -22,6 +22,7 @@ import org.moon.figura.permissions.PermissionPack;
 import org.moon.figura.permissions.Permissions;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FiguraText;
+import org.moon.figura.utils.MathUtils;
 import org.moon.figura.utils.ui.UIHelper;
 
 import java.util.UUID;
@@ -232,7 +233,7 @@ public class PermissionsScreen extends AbstractPanelScreen {
             entityWidget.setEntity(null);
 
         //expand animation
-        float lerpDelta = (float) (1f - Math.pow(0.6f, delta));
+        float lerpDelta = MathUtils.magicDelta(0.6f, delta);
 
         listYPrecise = Mth.lerp(lerpDelta, listYPrecise, expandButton.isToggled() ? 50f : height + 1);
         this.permissionsList.setY((int) listYPrecise);

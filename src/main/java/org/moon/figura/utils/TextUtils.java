@@ -145,14 +145,13 @@ public class TextUtils {
         List<Component> splitText = TextUtils.splitText(text, "\n");
 
         //get the possible tooltip width
-        int left = mousePos - 12;
-        int right = screenWidth - mousePos - 12;
+        int right = screenWidth - mousePos;
 
         //get largest text size
         int largest = getWidth(splitText, font);
 
         //get the optimal side for warping
-        int side = largest <= right ? right : largest <= left ? left : Math.max(left, right);
+        int side = largest <= right ? right : largest <= mousePos ? mousePos : Math.max(mousePos, right);
 
         //warp the unmodified text
         return wrapText(text, side, font);

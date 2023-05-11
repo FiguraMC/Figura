@@ -17,10 +17,7 @@ import org.moon.figura.gui.widgets.Button;
 import org.moon.figura.gui.widgets.IconButton;
 import org.moon.figura.gui.widgets.Label;
 import org.moon.figura.gui.widgets.ParticleWidget;
-import org.moon.figura.utils.ColorUtils;
-import org.moon.figura.utils.FiguraIdentifier;
-import org.moon.figura.utils.FiguraText;
-import org.moon.figura.utils.TextUtils;
+import org.moon.figura.utils.*;
 import org.moon.figura.utils.ui.UIHelper;
 
 public class HelpScreen extends AbstractPanelScreen {
@@ -108,7 +105,7 @@ public class HelpScreen extends AbstractPanelScreen {
         super.render(stack, mouseX, mouseY, delta);
 
         //fran
-        float lerpDelta = (float) (1f - Math.pow(0.6f, delta));
+        float lerpDelta = MathUtils.magicDelta(0.6f, delta);
         fran.alpha = (int) Mth.lerp(lerpDelta, fran.alpha, fran.isMouseOver(mouseX, mouseY) ? 255 : 64);
     }
 
