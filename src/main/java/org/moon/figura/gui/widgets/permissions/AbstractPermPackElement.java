@@ -9,6 +9,7 @@ import org.moon.figura.gui.widgets.FiguraWidget;
 import org.moon.figura.gui.widgets.lists.PlayerList;
 import org.moon.figura.permissions.PermissionPack;
 import org.moon.figura.permissions.Permissions;
+import org.moon.figura.utils.MathUtils;
 import org.moon.figura.utils.ui.UIHelper;
 
 public class AbstractPermPackElement extends Button implements Comparable<AbstractPermPackElement>, FiguraWidget {
@@ -26,9 +27,11 @@ public class AbstractPermPackElement extends Button implements Comparable<Abstra
 
     protected void animate(float delta, boolean anim) {
         if (anim) {
-            scale = (float) Mth.lerp(1 - Math.pow(0.2, delta), scale, 1.2f);
+            float lerpDelta = MathUtils.magicDelta(0.2f, delta);
+            scale = Mth.lerp(lerpDelta, scale, 1.2f);
         } else {
-            scale = (float) Mth.lerp(1 - Math.pow(0.3, delta), scale, 1f);
+            float lerpDelta = MathUtils.magicDelta(0.3f, delta);
+            scale = Mth.lerp(lerpDelta, scale, 1f);
         }
     }
 

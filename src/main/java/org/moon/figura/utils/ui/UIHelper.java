@@ -498,21 +498,31 @@ public class UIHelper extends GuiComponent {
         Minecraft minecraft = Minecraft.getInstance();
 
         //window
-        double screenX = minecraft.getWindow().getGuiScaledWidth();
-        double screenY = minecraft.getWindow().getGuiScaledHeight();
+        int screenX = minecraft.getWindow().getGuiScaledWidth();
+        int screenY = minecraft.getWindow().getGuiScaledHeight();
+
+        boolean reduced = Configs.REDUCED_MOTION.value;
+
+        //calculate pos
+        int x = reduced ? 0 : mouseX + 12;
+        int y = reduced ? screenY : mouseY - 12;
 
         //prepare text
         Font font = minecraft.font;
-        List<FormattedCharSequence> text = TextUtils.wrapTooltip(tooltip, font, mouseX, (int) screenX);
+        List<FormattedCharSequence> text = TextUtils.wrapTooltip(tooltip, font, x, screenX);
         int height = font.lineHeight * text.size();
 
-        //calculate pos
-        int x = mouseX + 12;
-        int y = (int) Math.min(Math.max(mouseY - 12, 0), screenY - height);
-
+        //clamp position to bounds
+        y = Math.min(Math.max(y, 0), screenY - height);
         int width = TextUtils.getWidth(text, font);
         if (x + width > screenX)
-            x = Math.max(x - 24 - width, 0);
+            x = Math.max(x - width, 0);
+
+        if (reduced) {
+            x += (screenX - width) / 2;
+            if (background)
+                y -= 4;
+        }
 
         //render
         stack.pushPose();

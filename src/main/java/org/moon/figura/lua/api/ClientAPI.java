@@ -220,6 +220,12 @@ public class ClientAPI {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("client.get_camera_dir")
+    public static FiguraVec3 getCameraDir() {
+        return FiguraVec3.fromVec3f(Minecraft.getInstance().gameRenderer.getMainCamera().getLookVector());
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaMethodOverload(
                     argumentTypes = String.class,

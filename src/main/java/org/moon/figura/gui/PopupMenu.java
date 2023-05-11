@@ -110,7 +110,8 @@ public class PopupMenu {
         int width = LENGTH * 18;
 
         UIHelper.setupTexture(BACKGROUND);
-        UIHelper.blit(stack, width / -2, -24, width, 26, 0, (int) (FiguraMod.ticks / 5f % 4) * 26, width, 26, width, 104);
+        int frame = Configs.REDUCED_MOTION.value ? 0 : (int) ((FiguraMod.ticks / 5f) % 4);
+        UIHelper.blit(stack, width / -2, -24, width, 26, 0, frame * 26, width, 26, width, 104);
 
         //icons
         stack.translate(0f, 0f, -2f);
