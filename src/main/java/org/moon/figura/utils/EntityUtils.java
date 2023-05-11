@@ -1,5 +1,6 @@
 package org.moon.figura.utils;
 
+import com.mojang.authlib.GameProfile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.PlayerInfo;
@@ -79,5 +80,18 @@ public class EntityUtils {
         }
 
         return playerList;
+    }
+
+    public static boolean checkInvalidPlayer(UUID id) {
+        if (id.version() != 4)
+            return true;
+
+        PlayerInfo playerInfo = getPlayerInfo(id);
+        if (playerInfo == null)
+            return false;
+
+        GameProfile profile = playerInfo.getProfile();
+        String name = profile.getName();
+        return name != null && (name.isBlank() || name.charAt(0) == '\u0000');
     }
 }

@@ -8,6 +8,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.moon.figura.utils.FiguraIdentifier;
+import org.moon.figura.utils.MathUtils;
 import org.moon.figura.utils.ui.UIHelper;
 
 public class ScrollBarWidget extends AbstractWidget implements FiguraWidget {
@@ -132,8 +133,9 @@ public class ScrollBarWidget extends AbstractWidget implements FiguraWidget {
     }
 
     //animate scroll head
-    protected void lerpPos(double delta) {
-        scrollPos = Mth.lerp(1 - Math.pow(0.2d, delta), scrollPos, getScrollProgress());
+    protected void lerpPos(float delta) {
+        float lerpDelta = MathUtils.magicDelta(0.2f, delta);
+        scrollPos = Mth.lerp(lerpDelta, scrollPos, getScrollProgress());
     }
 
     @Override

@@ -175,6 +175,12 @@ public class FiguraTexture extends SimpleTexture {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("texture.get_path")
+    public String getPath() {
+        return getLocation().toString();
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc("texture.get_dimensions")
     public FiguraVec2 getDimensions() {
         return FiguraVec2.of(getWidth(), getHeight());

@@ -174,6 +174,8 @@ public class Configs {
             TEXT_SCROLL_SPEED = new PositiveFloatConfig("text_scroll_speed", UI, 1f);
     public static final PositiveIntConfig
             TEXT_SCROLL_DELAY = new PositiveIntConfig("text_scroll_delay", UI, 20);
+    public static final BoolConfig
+            REDUCED_MOTION = new BoolConfig("reduced_motion", UI, false);
 
 
     // -- PAPERDOLL -- //
