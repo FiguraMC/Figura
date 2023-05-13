@@ -45,6 +45,7 @@ public class BlockbenchModel {
         float inflate;
 
         Boolean visibility;
+        Boolean export;
 
         //do not reflection-parse faces nor vertices
         //since those are based on type
@@ -57,6 +58,7 @@ public class BlockbenchModel {
         String name;
         String uuid;
         Boolean visibility;
+        Boolean export;
         float[] origin;
         float[] rotation;
 
