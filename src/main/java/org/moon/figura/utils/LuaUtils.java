@@ -86,6 +86,11 @@ public class LuaUtils {
         throw new LuaError("Illegal argument to " + methodName + "(): " + x.getClass().getSimpleName());
     }
 
+    public static FiguraVec3 parseOneArgVec(String methodName, Object x, Number y, Number z, double defaultArg) {
+        double d = x instanceof Number n ? n.doubleValue() : defaultArg;
+        return parseVec3(methodName, x, y, z, d, d, d);
+    }
+
     public static FiguraVec2 parseVec2(String methodName, Object x, Number y) {
         return parseVec2(methodName, x, y, 0, 0);
     }
