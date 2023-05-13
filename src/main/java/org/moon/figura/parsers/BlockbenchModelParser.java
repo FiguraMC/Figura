@@ -210,6 +210,8 @@ public class BlockbenchModelParser {
                 element.type = "cube";
             if (!element.type.equalsIgnoreCase("cube") && !element.type.equalsIgnoreCase("mesh"))
                 continue;
+            if (element.export != null && !element.export)
+                continue;
 
             //temp variables
             String id = element.uuid;
@@ -598,6 +600,10 @@ public class BlockbenchModelParser {
             //then parse as GroupElement (outliner)
             CompoundTag groupNbt = new CompoundTag();
             BlockbenchModel.GroupElement group = GSON.fromJson(element, BlockbenchModel.GroupElement.class);
+
+            //skip not exported groups
+            if (group.export != null && !group.export)
+                continue;
 
             //parse fields
             groupNbt.putString("name", group.name);
