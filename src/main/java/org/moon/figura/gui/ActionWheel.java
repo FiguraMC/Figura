@@ -318,6 +318,10 @@ public class ActionWheel {
         selected = -1;
     }
 
+    public static void hotbarKeyPressed(int i) {
+        execute(i, true);
+    }
+
     public static void scroll(double delta) {
         Avatar avatar;
         if (!isEnabled() || (avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID())) == null || avatar.luaRuntime == null)

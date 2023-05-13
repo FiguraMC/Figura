@@ -32,6 +32,7 @@ import org.luaj.vm2.Varargs;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.animation.Animation;
 import org.moon.figura.animation.AnimationPlayer;
+import org.moon.figura.animation.TimeController;
 import org.moon.figura.backend2.NetworkStuff;
 import org.moon.figura.config.Configs;
 import org.moon.figura.lua.FiguraLuaPrinter;
@@ -375,6 +376,10 @@ public class Avatar {
                 rendered |= renderItem(stack, bufferSource, (FiguraModelPart) result.arg(i).checkuserdata(FiguraModelPart.class), light, overlay);
         }
         return rendered;
+    }
+
+    public void playSoundEvent(String id, FiguraVec3 pos, float vol, float pitch, boolean loop, String category, String file) {
+        if (loaded) run("ON_PLAY_SOUND", tick, id, pos, vol, pitch, loop, category, file);
     }
 
     // -- host only events -- //

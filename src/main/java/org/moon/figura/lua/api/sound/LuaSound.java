@@ -67,6 +67,10 @@ public class LuaSound {
         return subtitleText;
     }
 
+    public String getId() {
+        return id;
+    }
+
     private float calculateVolume() {
         return volume * SoundAPI.getSoundEngine().figura$getVolume(SoundSource.PLAYERS) * (owner.permissions.get(Permissions.VOLUME) / 100f);
     }

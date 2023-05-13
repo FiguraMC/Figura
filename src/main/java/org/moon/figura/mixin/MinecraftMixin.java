@@ -27,6 +27,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(Minecraft.class)
 public abstract class MinecraftMixin {
@@ -91,13 +92,6 @@ public abstract class MinecraftMixin {
                     PopupMenu.setEntity(this.cameraEntity);
                 }
             }
-
-            for (int i = this.options.keyHotbarSlots.length - 1; i >= 0; i--) {
-                if (this.options.keyHotbarSlots[i].isDown()) {
-                    PopupMenu.hotbarKeyPressed(i);
-                    break;
-                }
-            }
         } else if (PopupMenu.isEnabled()) {
             PopupMenu.run();
         }
@@ -111,6 +105,14 @@ public abstract class MinecraftMixin {
             this.mouseHandler.grabMouse();
             scriptMouseUnlock = false;
         }
+    }
+
+    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;getInventory()Lnet/minecraft/world/entity/player/Inventory;"), method = "handleKeybinds", locals = LocalCapture.CAPTURE_FAILSOFT)
+    private void handleHotbarSlots(CallbackInfo ci, int i) {
+        if (PopupMenu.isEnabled())
+            PopupMenu.hotbarKeyPressed(i);
+        if (ActionWheel.isEnabled())
+            ActionWheel.hotbarKeyPressed(i);
     }
 
     @Inject(at = @At("HEAD"), method = "setScreen")
@@ -136,18 +138,12 @@ public abstract class MinecraftMixin {
 
     @Inject(at = @At("HEAD"), method = "runTick")
     private void preTick(boolean tick, CallbackInfo ci) {
-        FiguraMod.pushProfiler(FiguraMod.MOD_ID);
-        FiguraMod.pushProfiler("applyBBAnimations");
-        AvatarManager.applyAnimations();
-        FiguraMod.popProfiler(2);
+        AvatarManager.executeAll("applyBBAnimations", Avatar::applyAnimations);
     }
 
     @Inject(at = @At("RETURN"), method = "runTick")
     private void afterTick(boolean tick, CallbackInfo ci) {
-        FiguraMod.pushProfiler(FiguraMod.MOD_ID);
-        FiguraMod.pushProfiler("clearBBAnimations");
-        AvatarManager.clearAnimations();
-        FiguraMod.popProfiler(2);
+        AvatarManager.executeAll("clearBBAnimations", Avatar::clearAnimations);
     }
 
     @Inject(at = @At("HEAD"), method = "tick")
