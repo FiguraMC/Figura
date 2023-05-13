@@ -25,6 +25,7 @@ import org.moon.figura.utils.FiguraText;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 
 /**
  * Manages all the avatars that are currently loaded in memory, and also
@@ -90,18 +91,17 @@ public class AvatarManager {
         }
     }
 
-    public static void onWorldRender(float tickDelta) {
-        if (panic)
-            return;
+    public static void executeAll(String src, Consumer<Avatar> consumer) {
+        if (panic) return;
 
         FiguraMod.pushProfiler(FiguraMod.MOD_ID);
-        FiguraMod.pushProfiler("worldRender");
+        FiguraMod.pushProfiler(src);
 
         for (UserData user : LOADED_USERS.values()) {
             Avatar avatar = user.getMainAvatar();
             if (avatar != null) {
                 FiguraMod.pushProfiler(avatar);
-                avatar.render(tickDelta);
+                consumer.accept(avatar);
                 FiguraMod.popProfiler();
             }
         }
@@ -109,83 +109,12 @@ public class AvatarManager {
         for (Avatar avatar : LOADED_CEM.values()) {
             if (avatar != null) {
                 FiguraMod.pushProfiler(avatar);
-                avatar.render(tickDelta);
+                consumer.accept(avatar);
                 FiguraMod.popProfiler();
             }
         }
 
         FiguraMod.popProfiler(2);
-    }
-
-    public static void afterWorldRender(float tickDelta) {
-        if (panic)
-            return;
-
-        FiguraMod.pushProfiler(FiguraMod.MOD_ID );
-        FiguraMod.pushProfiler("postWorldRender");
-
-        for (UserData user : LOADED_USERS.values()) {
-            Avatar avatar = user.getMainAvatar();
-            if (avatar != null) {
-                FiguraMod.pushProfiler(avatar);
-                avatar.postWorldRenderEvent(tickDelta);
-                FiguraMod.popProfiler();
-            }
-        }
-
-        for (Avatar avatar : LOADED_CEM.values()) {
-            if (avatar != null) {
-                FiguraMod.pushProfiler(avatar);
-                avatar.postWorldRenderEvent(tickDelta);
-                FiguraMod.popProfiler();
-            }
-        }
-
-        FiguraMod.popProfiler(2);
-    }
-
-    public static void applyAnimations() {
-        if (panic)
-            return;
-
-        for (UserData user : LOADED_USERS.values()) {
-            Avatar avatar = user.getMainAvatar();
-            if (avatar != null) {
-                FiguraMod.pushProfiler(avatar);
-                avatar.applyAnimations();
-                FiguraMod.popProfiler();
-            }
-        }
-
-        for (Avatar avatar : LOADED_CEM.values()) {
-            if (avatar != null) {
-                FiguraMod.pushProfiler(avatar);
-                avatar.applyAnimations();
-                FiguraMod.popProfiler();
-            }
-        }
-    }
-
-    public static void clearAnimations() {
-        if (panic)
-            return;
-
-        for (UserData user : LOADED_USERS.values()) {
-            Avatar avatar = user.getMainAvatar();
-            if (avatar != null) {
-                FiguraMod.pushProfiler(avatar);
-                avatar.clearAnimations();
-                FiguraMod.popProfiler();
-            }
-        }
-
-        for (Avatar avatar : LOADED_CEM.values()) {
-            if (avatar != null) {
-                FiguraMod.pushProfiler(avatar);
-                avatar.clearAnimations();
-                FiguraMod.popProfiler();
-            }
-        }
     }
 
     // -- avatar getters -- //

@@ -10,7 +10,8 @@ import org.moon.figura.lua.docs.LuaMetamethodDoc.LuaMetamethodOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -19,84 +20,87 @@ import java.util.List;
 )
 public class EventsAPI {
 
-    //Unsure on how to do the docs for these fields. Maybe we keep the @LuaFieldDoc, just don't allow them to be
-    //whitelisted and accessed automatically?
-    //Maybe in the __index comment we give a docs list of the events?
-
+    //docs only :woozy:
     @LuaWhitelist
     @LuaFieldDoc("events.entity_init")
-    public final LuaEvent ENTITY_INIT = new LuaEvent();
+    public final LuaEvent ENTITY_INIT = null;
     @LuaWhitelist
     @LuaFieldDoc("events.tick")
-    public final LuaEvent TICK = new LuaEvent();
+    public final LuaEvent TICK = null;
     @LuaWhitelist
     @LuaFieldDoc("events.world_tick")
-    public final LuaEvent WORLD_TICK = new LuaEvent();
+    public final LuaEvent WORLD_TICK = null;
     @LuaWhitelist
     @LuaFieldDoc("events.render")
-    public final LuaEvent RENDER = new LuaEvent();
+    public final LuaEvent RENDER = null;
     @LuaWhitelist
     @LuaFieldDoc("events.post_render")
-    public final LuaEvent POST_RENDER = new LuaEvent();
+    public final LuaEvent POST_RENDER = null;
     @LuaWhitelist
     @LuaFieldDoc("events.world_render")
-    public final LuaEvent WORLD_RENDER = new LuaEvent();
+    public final LuaEvent WORLD_RENDER = null;
     @LuaWhitelist
     @LuaFieldDoc("events.post_world_render")
-    public final LuaEvent POST_WORLD_RENDER = new LuaEvent();
+    public final LuaEvent POST_WORLD_RENDER = null;
     @LuaWhitelist
     @LuaFieldDoc("events.chat_send_message")
-    public final LuaEvent CHAT_SEND_MESSAGE = new LuaEvent(true);
+    public final LuaEvent CHAT_SEND_MESSAGE = null;
     @LuaWhitelist
     @LuaFieldDoc("events.chat_receive_message")
-    public final LuaEvent CHAT_RECEIVE_MESSAGE = new LuaEvent();
+    public final LuaEvent CHAT_RECEIVE_MESSAGE = null;
     @LuaWhitelist
     @LuaFieldDoc("events.skull_render")
-    public final LuaEvent SKULL_RENDER = new LuaEvent();
+    public final LuaEvent SKULL_RENDER = null;
     @LuaWhitelist
     @LuaFieldDoc("events.mouse_scroll")
-    public final LuaEvent MOUSE_SCROLL = new LuaEvent();
+    public final LuaEvent MOUSE_SCROLL = null;
     @LuaWhitelist
     @LuaFieldDoc("events.mouse_move")
-    public final LuaEvent MOUSE_MOVE = new LuaEvent();
+    public final LuaEvent MOUSE_MOVE = null;
     @LuaWhitelist
     @LuaFieldDoc("events.key_press")
-    public final LuaEvent KEY_PRESS = new LuaEvent();
+    public final LuaEvent KEY_PRESS = null;
     @LuaWhitelist
     @LuaFieldDoc("events.mouse_press")
-    public final LuaEvent MOUSE_PRESS = new LuaEvent();
+    public final LuaEvent MOUSE_PRESS = null;
     @LuaWhitelist
     @LuaFieldDoc("events.use_item")
-    public final LuaEvent USE_ITEM = new LuaEvent();
+    public final LuaEvent USE_ITEM = null;
     @LuaWhitelist
     @LuaFieldDoc("events.arrow_render")
-    public final LuaEvent ARROW_RENDER = new LuaEvent();
+    public final LuaEvent ARROW_RENDER = null;
     @LuaWhitelist
     @LuaFieldDoc("events.item_render")
-    public final LuaEvent ITEM_RENDER = new LuaEvent();
+    public final LuaEvent ITEM_RENDER = null;
+    @LuaWhitelist
+    @LuaFieldDoc("events.on_play_sound")
+    public final LuaEvent ON_PLAY_SOUND = null;
+
+    private final Map<String, LuaEvent> events = new HashMap<>() {{
+            put("ENTITY_INIT", new LuaEvent());
+            put("TICK", new LuaEvent());
+            put("WORLD_TICK", new LuaEvent());
+            put("RENDER", new LuaEvent());
+            put("POST_RENDER", new LuaEvent());
+            put("WORLD_RENDER", new LuaEvent());
+            put("POST_WORLD_RENDER", new LuaEvent());
+            put("CHAT_SEND_MESSAGE", new LuaEvent(true));
+            put("CHAT_RECEIVE_MESSAGE", new LuaEvent());
+            put("SKULL_RENDER", new LuaEvent());
+            put("MOUSE_SCROLL", new LuaEvent());
+            put("MOUSE_MOVE", new LuaEvent());
+            put("MOUSE_PRESS", new LuaEvent());
+            put("KEY_PRESS", new LuaEvent());
+            put("USE_ITEM", new LuaEvent());
+            put("ARROW_RENDER", new LuaEvent());
+            put("ITEM_RENDER", new LuaEvent());
+            put("ON_PLAY_SOUND", new LuaEvent());
+    }};
 
     @LuaWhitelist
     @LuaMethodDoc("events.get_events")
-    public List<LuaEvent> getEvents() {
-        return List.of(
-                ENTITY_INIT,
-                TICK,
-                WORLD_TICK,
-                RENDER,
-                POST_RENDER,
-                WORLD_RENDER,
-                POST_WORLD_RENDER,
-                CHAT_SEND_MESSAGE,
-                CHAT_RECEIVE_MESSAGE,
-                SKULL_RENDER,
-                MOUSE_SCROLL,
-                MOUSE_MOVE,
-                MOUSE_PRESS,
-                KEY_PRESS,
-                USE_ITEM,
-                ARROW_RENDER,
-                ITEM_RENDER
-        );
+    public Map<String, LuaEvent> getEvents() {
+        return events;
     }
 
     @LuaWhitelist
@@ -106,26 +110,7 @@ public class EventsAPI {
     ))
     public LuaEvent __index(String key) {
         if (key == null) return null;
-        return switch (key.toUpperCase()) {
-            case "ENTITY_INIT" -> ENTITY_INIT;
-            case "TICK" -> TICK;
-            case "WORLD_TICK" -> WORLD_TICK;
-            case "RENDER" -> RENDER;
-            case "POST_RENDER" -> POST_RENDER;
-            case "WORLD_RENDER" -> WORLD_RENDER;
-            case "POST_WORLD_RENDER" -> POST_WORLD_RENDER;
-            case "CHAT_SEND_MESSAGE" -> CHAT_SEND_MESSAGE;
-            case "CHAT_RECEIVE_MESSAGE" -> CHAT_RECEIVE_MESSAGE;
-            case "SKULL_RENDER" -> SKULL_RENDER;
-            case "MOUSE_SCROLL" -> MOUSE_SCROLL;
-            case "MOUSE_MOVE" -> MOUSE_MOVE;
-            case "MOUSE_PRESS" -> MOUSE_PRESS;
-            case "KEY_PRESS" -> KEY_PRESS;
-            case "USE_ITEM" -> USE_ITEM;
-            case "ARROW_RENDER" -> ARROW_RENDER;
-            case "ITEM_RENDER" -> ITEM_RENDER;
-            default -> null;
-        };
+        return events.get(key.toUpperCase());
     }
 
     @LuaWhitelist

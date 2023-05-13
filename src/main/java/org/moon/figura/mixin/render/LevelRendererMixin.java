@@ -105,11 +105,11 @@ public abstract class LevelRendererMixin {
 
     @Inject(method = "renderLevel", at = @At("HEAD"))
     private void onRenderLevel(PoseStack matrices, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightTexture lightmapTextureManager, Matrix4f matrix4f, CallbackInfo ci) {
-        AvatarManager.onWorldRender(tickDelta);
+        AvatarManager.executeAll("worldRender", avatar -> avatar.render(tickDelta));
     }
 
     @Inject(method = "renderLevel", at = @At("RETURN"))
     private void afterRenderLevel(PoseStack matrices, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightTexture lightmapTextureManager, Matrix4f matrix4f, CallbackInfo ci) {
-        AvatarManager.afterWorldRender(tickDelta);
+        AvatarManager.executeAll("postWorldRender", avatar -> avatar.postWorldRenderEvent(tickDelta));
     }
 }
