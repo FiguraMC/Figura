@@ -1076,6 +1076,7 @@
   "figura.docs.events.use_item": "The USE_ITEM event is run every time the entity uses an item\nThe item, action and amount of particles this item would produce is given as argument\nIf returned true, the event cancels its vanilla function",
   "figura.docs.events.arrow_render": "The ARROW_RENDER event is run for every arrow entity shot by the Avatar owner\nIt takes two arguments, the tick delta, and the arrow entity\nReturning \"true\" stops this arrow from rendering, including the Arrow parent parts\nRequires the \"Vanilla Model Change\" permission",
   "figura.docs.events.item_render": "Called on every one of your items that is being rendered\nIt takes six arguments, the item, the rendering mode, the position, rotation and scale that it would be applied, and if its being rendered from the left hand\nReturning a ModelPart parented to Item, stops the rendering of this item and will render the returned part instead",
+  "figura.docs.events.on_play_sound": "Called every time a new sound is played\nTake as arguments, the sound ID, its world position, volume, pitch, if the sound should loop, the sound category, and the sound file path",
   "figura.docs.events.get_events": "Returns a table with all events types",
 
   "figura.docs.event": "A hook for a certain event in Minecraft\nYou may register functions to one, and those functions will be called when the event occurs",
