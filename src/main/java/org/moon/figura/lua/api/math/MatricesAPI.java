@@ -269,7 +269,7 @@ public class MatricesAPI {
             value = "matrices.scale3"
     )
     public static FiguraMat3 scale3(Object x, Double y, Double z) {
-        FiguraVec3 scale = LuaUtils.parseVec3("scale3", x, y, z, 1, 1, 1);
+        FiguraVec3 scale = LuaUtils.parseOneArgVec("scale3", x, y, z, 1d);
         FiguraMat3 result = FiguraMat3.of();
         result.scale(scale);
         return result;
@@ -290,7 +290,7 @@ public class MatricesAPI {
             value = "matrices.scale4"
     )
     public static FiguraMat4 scale4(Object x, Double y, Double z) {
-        FiguraVec3 scale = LuaUtils.parseVec3("scale4", x, y, z, 1, 1, 1);
+        FiguraVec3 scale = LuaUtils.parseOneArgVec("scale4", x, y, z, 1d);
         FiguraMat4 result = FiguraMat4.of();
         result.scale(scale);
         return result;
