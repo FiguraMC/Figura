@@ -12,11 +12,22 @@ public enum Interpolation {
         return getResult(result, strength, type);
     }),
     CATMULLROM((frames, currentFrame, targetFrame, strength, delta, type) -> {
-        FiguraVec3 prevA = frames[Math.max(0, currentFrame - 1)].getTargetB(delta);
-        FiguraVec3 prevB = frames[currentFrame].getTargetB(delta);
-        FiguraVec3 nextA = frames[targetFrame].getTargetA(delta);
-        FiguraVec3 nextB = frames[Math.min(frames.length - 1, targetFrame + 1)].getTargetA(delta);
-        FiguraVec3 result = MathUtils.catmullrom(delta, prevA, prevB, nextA, nextB);
+        Keyframe prev = frames[currentFrame];
+        Keyframe next = frames[targetFrame];
+        Keyframe prevPrev = frames[Math.max(0, currentFrame - 1)];
+        Keyframe nextNext = frames[Math.min(frames.length - 1, targetFrame + 1)];
+
+        if (prevPrev == prev)
+            prevPrev = frames[frames.length - 1];
+        if (nextNext == next)
+            nextNext = frames[0];
+
+        FiguraVec3 p0 = prevPrev.getTargetB(delta);
+        FiguraVec3 p1 = prev.getTargetB(delta);
+        FiguraVec3 p2 = next.getTargetA(delta);
+        FiguraVec3 p3 = nextNext.getTargetA(delta);
+
+        FiguraVec3 result = MathUtils.catmullrom(delta, p0, p1, p2, p3);
         return getResult(result, strength, type);
     }),
     BEZIER((frames, currentFrame, targetFrame, strength, delta, type) -> {
