@@ -109,7 +109,7 @@ public class EntityNameplateCustomization extends NameplateCustomization {
             value = "nameplate_entity.set_scale"
     )
     public EntityNameplateCustomization setScale(Object x, Double y, Double z) {
-        this.scale = x == null ? null : LuaUtils.parseVec3("setScale", x, y, z, 1, 1, 1);
+        this.scale = x == null ? null : LuaUtils.parseOneArgVec("setScale", x, y, z, 1d);
         return this;
     }
 

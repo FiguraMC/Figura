@@ -240,7 +240,7 @@ public abstract class RenderTask {
             value = "render_task.set_scale"
     )
     public RenderTask setScale(Object x, Double y, Double z) {
-        FiguraVec3 vec = LuaUtils.parseVec3("setScale", x, y, z, 1, 1, 1);
+        FiguraVec3 vec = LuaUtils.parseOneArgVec("setScale", x, y, z, 1d);
         this.customization.setScale(vec);
         return this;
     }

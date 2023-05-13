@@ -436,7 +436,7 @@ public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
             value = "matrix_n.scale"
     )
     public FiguraMat3 scale(Object x, Double y, Double z) {
-        return scale(LuaUtils.parseVec3("scale", x, y, z, 1, 1, 1));
+        return scale(LuaUtils.parseOneArgVec("scale", x, y, z, 1d));
     }
 
     public FiguraMat3 translate(double x, double y) {

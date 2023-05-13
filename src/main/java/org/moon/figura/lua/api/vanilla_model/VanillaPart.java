@@ -180,7 +180,7 @@ public abstract class VanillaPart {
             value = "vanilla_part.set_scale"
     )
     public VanillaPart setScale(Object x, Double y, Double z) {
-        scale = x == null ? null : LuaUtils.parseVec3("setScale", x, y, z, 1, 1, 1);
+        scale = x == null ? null : LuaUtils.parseOneArgVec("setScale", x, y, z, 1d);
         return this;
     }
 
@@ -212,7 +212,7 @@ public abstract class VanillaPart {
             value = "vanilla_part.set_offset_scale"
     )
     public VanillaPart setOffsetScale(Object x, Double y, Double z) {
-        offsetScale = x == null ? null : LuaUtils.parseVec3("setOffsetScale", x, y, z, 1, 1, 1);
+        offsetScale = x == null ? null : LuaUtils.parseOneArgVec("setOffsetScale", x, y, z, 1d);
         return this;
     }
 

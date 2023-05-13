@@ -78,7 +78,7 @@ public class AvatarAPI {
             value = "avatar.set_color"
     )
     public AvatarAPI setColor(Object r, Double g, Double b) {
-        FiguraVec3 vec = LuaUtils.parseVec3("setColor", r, g, b, 1, 1, 1);
+        FiguraVec3 vec = LuaUtils.parseOneArgVec("setColor", r, g, b, 1d);
         avatar.color = ColorUtils.rgbToHex(vec);
         return this;
     }
