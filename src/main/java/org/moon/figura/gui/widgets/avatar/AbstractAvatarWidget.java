@@ -1,17 +1,17 @@
 package org.moon.figura.gui.widgets.avatar;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import org.moon.figura.avatar.local.LocalAvatarFetcher;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.widgets.AbstractContainerElement;
-import org.moon.figura.gui.widgets.ContextMenu;
 import org.moon.figura.gui.widgets.Button;
+import org.moon.figura.gui.widgets.ContextMenu;
 import org.moon.figura.gui.widgets.lists.AvatarList;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.ui.UIHelper;
@@ -59,11 +59,11 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
+    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
         if (!isVisible())
             return;
 
-        super.render(stack, mouseX, mouseY, delta);
+        super.render(gui, mouseX, mouseY, delta);
 
         if (favourite) {
             Font font = Minecraft.getInstance().font;
@@ -71,7 +71,7 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
             int x = this.getX() + this.getWidth() - width;
             int y = this.getY() + 2;
 
-            font.draw(stack, FAVOURITE, x, y, 0xFFFFFF);
+            gui.drawString(font, FAVOURITE, x, y, 0xFFFFFF, false);
 
             if (mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + font.lineHeight)
                 UIHelper.setTooltip(FiguraText.of("gui.favorited").append(" ").append(FAVOURITE));

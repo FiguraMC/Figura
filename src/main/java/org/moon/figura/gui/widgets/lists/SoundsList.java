@@ -1,10 +1,10 @@
 package org.moon.figura.gui.widgets.lists;
 
 import com.mojang.blaze3d.audio.SoundBuffer;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
@@ -47,19 +47,19 @@ public class SoundsList extends AbstractList {
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
+    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
         //background and scissors
-        UIHelper.renderSliced(stack, getX(), getY(), getWidth(), getHeight(), UIHelper.OUTLINE_FILL);
-        UIHelper.setupScissor(getX() + scissorsX, getY() + scissorsY, getWidth() + scissorsWidth, getHeight() + scissorsHeight);
+        UIHelper.blitSliced(gui, getX(), getY(), getWidth(), getHeight(), UIHelper.OUTLINE_FILL);
+        enableScissors(gui);
 
         if (!sounds.isEmpty())
             updateEntries();
 
         //children
-        super.render(stack, mouseX, mouseY, delta);
+        super.render(gui, mouseX, mouseY, delta);
 
         //reset scissor
-        UIHelper.disableScissor();
+        gui.disableScissor();
     }
 
     private void updateEntries() {
@@ -142,7 +142,7 @@ public class SoundsList extends AbstractList {
         }
 
         @Override
-        public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
+        public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
             if (!this.isVisible()) return;
 
             int x = getX();
@@ -152,7 +152,7 @@ public class SoundsList extends AbstractList {
 
             //selected outline
             if (parent.selected == this)
-                UIHelper.fillOutline(stack, x - 1, y - 1, width + 2, height + 2, 0xFFFFFFFF);
+                UIHelper.fillOutline(gui, x - 1, y - 1, width + 2, height + 2, 0xFFFFFFFF);
 
             //vars
             Font font = Minecraft.getInstance().font;
@@ -160,16 +160,16 @@ public class SoundsList extends AbstractList {
 
             //hovered arrow
             setHovered(isMouseOver(mouseX, mouseY));
-            if (isHovered()) font.draw(stack, HOVERED_ARROW, x + 4, textY, 0xFFFFFF);
+            if (isHovered()) gui.drawString(font, HOVERED_ARROW, x + 4, textY, 0xFFFFFF);
 
             //render name
-            font.draw(stack, this.name, x + 16, textY, 0xFFFFFF);
+            gui.drawString(font, this.name, x + 16, textY, 0xFFFFFF);
 
             //render size
-            font.draw(stack, size, x + width - 96 - font.width(size), textY, 0xFFFFFF);
+            gui.drawString(font, size, x + width - 96 - font.width(size), textY, 0xFFFFFF);
 
             //render children
-            super.render(stack, mouseX, mouseY, delta);
+            super.render(gui, mouseX, mouseY, delta);
         }
 
         @Override

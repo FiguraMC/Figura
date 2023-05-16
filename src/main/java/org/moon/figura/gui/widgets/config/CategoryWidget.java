@@ -1,6 +1,6 @@
 package org.moon.figura.gui.widgets.config;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import org.moon.figura.config.ConfigType;
 import org.moon.figura.config.Configs;
@@ -39,19 +39,19 @@ public class CategoryWidget extends AbstractContainerElement {
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
+    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
         if (!isVisible())
             return;
 
         //children background
         if (parentConfig.isToggled() && entries.size() > 0)
-            UIHelper.fill(stack, getX(), getY() + 21, getX() + getWidth(), getY() + getHeight(), 0x11FFFFFF);
+            gui.fill(getX(), getY() + 21, getX() + getWidth(), getY() + getHeight(), 0x11FFFFFF);
 
         if (config == Configs.PAPERDOLL)
             parent.parentScreen.renderPaperdoll = parentConfig.isToggled() && parent.isMouseOver(mouseX, mouseY) && isMouseOver(mouseX, mouseY);
 
         //children
-        super.render(stack, mouseX, mouseY, delta);
+        super.render(gui, mouseX, mouseY, delta);
     }
 
     @Override

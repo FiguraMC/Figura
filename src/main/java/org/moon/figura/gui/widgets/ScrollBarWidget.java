@@ -1,7 +1,7 @@
 package org.moon.figura.gui.widgets;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
@@ -139,31 +139,31 @@ public class ScrollBarWidget extends AbstractWidget implements FiguraWidget {
     }
 
     @Override
-    public void render(PoseStack matrices, int mouseX, int mouseY, float delta) {
+    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
         if (!isVisible())
             return;
 
         isHovered = this.isMouseOver(mouseX, mouseY);
-        renderWidget(matrices, mouseX, mouseY, delta);
+        renderWidget(gui, mouseX, mouseY, delta);
     }
 
     //render the scroll
     @Override
-    public void renderWidget(PoseStack stack, int mouseX, int mouseY, float delta) {
-        UIHelper.setupTexture(SCROLLBAR_TEXTURE);
+    public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+        UIHelper.enableBlend();
         int x = getX();
         int y = getY();
         int width = getWidth();
         int height = getHeight();
 
         //render bar
-        blit(stack, x, y, width, 1, 10f, isScrolling ? 20f : 0f, 10, 1, 20, 40);
-        blit(stack, x, y + 1, width, height - 2, 10f, isScrolling ? 21f : 1f, 10, 18, 20, 40);
-        blit(stack, x, y + height - 1, width, 1, 10f, isScrolling ? 39f : 19f, 10, 1, 20, 40);
+        gui.blit(SCROLLBAR_TEXTURE, x, y, width, 1, 10f, isScrolling ? 20f : 0f, 10, 1, 20, 40);
+        gui.blit(SCROLLBAR_TEXTURE, x, y + 1, width, height - 2, 10f, isScrolling ? 21f : 1f, 10, 18, 20, 40);
+        gui.blit(SCROLLBAR_TEXTURE, x, y + height - 1, width, 1, 10f, isScrolling ? 39f : 19f, 10, 1, 20, 40);
 
         //render head
         lerpPos(delta);
-        blit(stack, x, (int) (y + Math.round(Mth.lerp(scrollPos, 0, height - headHeight))), 0f, isHoveredOrFocused() || isScrolling ? headHeight : 0f, headWidth, headHeight, 20, 40);
+        gui.blit(SCROLLBAR_TEXTURE, x, (int) (y + Math.round(Mth.lerp(scrollPos, 0, height - headHeight))), 0f, isHoveredOrFocused() || isScrolling ? headHeight : 0f, headWidth, headHeight, 20, 40);
     }
 
     @Override

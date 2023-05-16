@@ -1,6 +1,6 @@
 package org.moon.figura.gui.widgets;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.utils.ui.UIHelper;
@@ -12,18 +12,18 @@ public class IconButton extends Button {
     }
 
     @Override
-    protected void renderTexture(PoseStack stack, float delta) {
-        this.renderDefaultTexture(stack, delta);
+    protected void renderTexture(GuiGraphics gui, float delta) {
+        this.renderDefaultTexture(gui, delta);
 
-        UIHelper.setupTexture(texture);
+        UIHelper.enableBlend();
         int size = getTextureSize();
-        blit(stack, getX() + 2, getY() + (getHeight() - size) / 2, size, size, u, v, regionSize, regionSize, textureWidth, textureHeight);
+        gui.blit(texture, getX() + 2, getY() + (getHeight() - size) / 2, size, size, u, v, regionSize, regionSize, textureWidth, textureHeight);
     }
 
     @Override
-    protected void renderText(PoseStack stack, float delta) {
+    protected void renderText(GuiGraphics gui, float delta) {
         int size = getTextureSize();
-        UIHelper.renderCenteredScrollingText(stack, getMessage(), getX() + 4 + size, getY(), getWidth() - 6 - size, getHeight(), getTextColor());
+        UIHelper.renderCenteredScrollingText(gui, getMessage(), getX() + 4 + size, getY(), getWidth() - 6 - size, getHeight(), getTextColor());
     }
 
     protected int getTextureSize() {

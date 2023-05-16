@@ -1,7 +1,7 @@
 package org.moon.figura.gui.screens;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -9,8 +9,8 @@ import net.minecraft.nbt.Tag;
 import org.moon.figura.config.ConfigManager;
 import org.moon.figura.config.ConfigType;
 import org.moon.figura.gui.PaperDoll;
-import org.moon.figura.gui.widgets.Label;
 import org.moon.figura.gui.widgets.Button;
+import org.moon.figura.gui.widgets.Label;
 import org.moon.figura.gui.widgets.SearchBar;
 import org.moon.figura.gui.widgets.lists.ConfigList;
 import org.moon.figura.utils.FiguraText;
@@ -87,10 +87,10 @@ public class ConfigScreen extends AbstractPanelScreen {
     }
 
     @Override
-    public void renderBackground(PoseStack stack, float delta) {
-        super.renderBackground(stack, delta);
+    public void renderBackground(GuiGraphics gui, float delta) {
+        super.renderBackground(gui, delta);
         if (renderPaperdoll)
-            UIHelper.renderWithoutScissors(() -> PaperDoll.render(stack, true));
+            UIHelper.renderWithoutScissors(gui, g -> PaperDoll.render(g, true));
     }
 
     @Override

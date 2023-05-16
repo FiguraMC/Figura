@@ -1,9 +1,9 @@
 package org.moon.figura.gui.widgets;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.network.chat.Component;
@@ -42,26 +42,26 @@ public class ContextMenu extends AbstractContainerElement {
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
+    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
         if (!isVisible()) return;
 
         //outline
-        UIHelper.renderSliced(stack, getX(), getY(), getWidth(), getHeight(), 0f, 0f, 16, 16, 48, 16, BACKGROUND);
+        UIHelper.blitSliced(gui, getX(), getY(), getWidth(), getHeight(), 0f, 0f, 16, 16, 48, 16, BACKGROUND);
 
         for (int i = 0, y = getY() + 1; i < entries.size(); i++) {
             int height = entries.get(i).getHeight();
 
             //background
-            UIHelper.renderSliced(stack, getX() + 1, y, getWidth() - 2, height, i % 2 == 1 ? 32f : 16f, 0f, 16, 16, 48, 16, BACKGROUND);
+            UIHelper.blitSliced(gui, getX() + 1, y, getWidth() - 2, height, i % 2 == 1 ? 32f : 16f, 0f, 16, 16, 48, 16, BACKGROUND);
 
             //button
-            entries.get(i).render(stack, mouseX, mouseY, delta);
+            entries.get(i).render(gui, mouseX, mouseY, delta);
 
             y += height;
         }
 
         if (nestedContext != null) {
-            nestedContext.render(stack, mouseX, mouseY, delta);
+            nestedContext.render(gui, mouseX, mouseY, delta);
             if (nestedContext.parent instanceof Button button)
                 button.setHovered(true);
         }
@@ -190,11 +190,11 @@ public class ContextMenu extends AbstractContainerElement {
         }
 
         @Override
-        protected void renderText(PoseStack stack, float delta) {
+        protected void renderText(GuiGraphics gui, float delta) {
             //draw text
             Font font = Minecraft.getInstance().font;
-            font.drawShadow(
-                    stack, getMessage(),
+            gui.drawString(
+                    font, getMessage(),
                     this.getX() + 3, (int) (this.getY() + this.getHeight() / 2f - font.lineHeight / 2f),
                     getTextColor()
             );
@@ -223,9 +223,9 @@ public class ContextMenu extends AbstractContainerElement {
         }
 
         @Override
-        public void renderWidget(PoseStack stack, int mouseX, int mouseY, float delta) {
+        public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float delta) {
             //draw line
-            fill(stack, this.getX() + 4, getY() + 4, this.getX() + this.getWidth() - 4, getY() + 5, 0xFF000000 + ChatFormatting.DARK_GRAY.getColor());
+            gui.fill(this.getX() + 4, getY() + 4, this.getX() + this.getWidth() - 4, getY() + 5, 0xFF000000 + ChatFormatting.DARK_GRAY.getColor());
         }
 
         @Override
@@ -246,14 +246,14 @@ public class ContextMenu extends AbstractContainerElement {
         }
 
         @Override
-        public void renderWidget(PoseStack stack, int mouseX, int mouseY, float delta) {
+        public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float delta) {
             //super
-            super.renderWidget(stack, mouseX, mouseY, delta);
+            super.renderWidget(gui, mouseX, mouseY, delta);
 
             //draw arrow
             Font font = Minecraft.getInstance().font;
-            font.drawShadow(
-                    stack, ARROW,
+            gui.drawString(
+                    font, ARROW,
                     this.getX() + this.getWidth() - font.width(ARROW) - 3, (int) (this.getY() + this.getHeight() / 2f - font.lineHeight / 2f),
                     getTextColor()
             );

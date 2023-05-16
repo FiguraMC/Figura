@@ -1,9 +1,9 @@
 package org.moon.figura.gui.widgets;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -91,10 +91,10 @@ public class PanelSelectorWidget extends AbstractContainerElement {
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
-        UIHelper.renderSliced(stack, getX(), getY(), selected.getX() - getX(), getHeight() - 4, BACKGROUND);
-        UIHelper.renderSliced(stack, selected.getX() + selected.getWidth(), getY(), getWidth() - selected.getX() - selected.getWidth(), getHeight() - 4, BACKGROUND);
-        super.render(stack, mouseX, mouseY, delta);
+    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+        UIHelper.blitSliced(gui, getX(), getY(), selected.getX() - getX(), getHeight() - 4, BACKGROUND);
+        UIHelper.blitSliced(gui, selected.getX() + selected.getWidth(), getY(), getWidth() - selected.getX() - selected.getWidth(), getHeight() - 4, BACKGROUND);
+        super.render(gui, mouseX, mouseY, delta);
     }
 
     public boolean cycleTab(int keyCode) {
@@ -156,8 +156,8 @@ public class PanelSelectorWidget extends AbstractContainerElement {
         }
 
         @Override
-        public void renderWidget(PoseStack stack, int mouseX, int mouseY, float delta) {
-            super.renderWidget(stack, mouseX, mouseY, delta);
+        public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+            super.renderWidget(gui, mouseX, mouseY, delta);
             boolean iconOnly = iconsOnly();
 
             if (iconOnly && this.isMouseOver(mouseX, mouseY))
@@ -165,23 +165,23 @@ public class PanelSelectorWidget extends AbstractContainerElement {
         }
 
         @Override
-        protected void renderTexture(PoseStack stack, float delta) {
-            UIHelper.renderSliced(stack, getX(), getY(), getWidth(), getHeight(), isSelected() ? 24f : 0f, this.isHoveredOrFocused() ? 24f : 0f, 24, 24, 48, 48, TEXTURE);
+        protected void renderTexture(GuiGraphics gui, float delta) {
+            UIHelper.blitSliced(gui, getX(), getY(), getWidth(), getHeight(), isSelected() ? 24f : 0f, this.isHoveredOrFocused() ? 24f : 0f, 24, 24, 48, 48, TEXTURE);
 
-            UIHelper.setupTexture(texture);
+            UIHelper.enableBlend();
             int size = getTextureSize();
-            blit(stack, getX() + (iconsOnly() ? (getWidth() - size) / 2 : 2), getY() + (getHeight() - size) / 2 + (!isSelected() ? 2 : 0), size, size, u, v, regionSize, regionSize, textureWidth, textureHeight);
+            gui.blit(texture, getX() + (iconsOnly() ? (getWidth() - size) / 2 : 2), getY() + (getHeight() - size) / 2 + (!isSelected() ? 2 : 0), size, size, u, v, regionSize, regionSize, textureWidth, textureHeight);
         }
 
         @Override
-        protected void renderText(PoseStack stack, float delta) {
+        protected void renderText(GuiGraphics gui, float delta) {
             if (iconsOnly())
                 return;
 
             int size = getTextureSize();
             int offset = !isSelected() ? 3 : 0;
             Component message = isSelected() ? getMessage().copy().withStyle(ChatFormatting.UNDERLINE) : getMessage();
-            UIHelper.renderCenteredScrollingText(stack, message, getX() + 4 + size, getY() + offset, getWidth() - 6 - size, getHeight(), getTextColor());
+            UIHelper.renderCenteredScrollingText(gui, message, getX() + 4 + size, getY() + offset, getWidth() - 6 - size, getHeight(), getTextColor());
         }
 
         private boolean iconsOnly() {

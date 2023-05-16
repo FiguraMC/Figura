@@ -12,6 +12,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import org.moon.figura.mixin.ClientLevelInvoker;
+import org.moon.figura.mixin.EntityAccessor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,7 +38,7 @@ public class EntityUtils {
         Vec3 raycastEnd = entityEye.add(viewVec);
 
         double raycastDistanceSquared; //Has to be squared for some reason, thanks minecraft for not making that clear
-        BlockHitResult blockResult = entity.level.clip(new ClipContext(entityEye, raycastEnd, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, entity));
+        BlockHitResult blockResult = ((EntityAccessor) entity).getLevel().clip(new ClipContext(entityEye, raycastEnd, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, entity));
         if (blockResult != null)
             raycastDistanceSquared = blockResult.getLocation().distanceToSqr(entityEye);
         else

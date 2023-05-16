@@ -1,7 +1,7 @@
 package org.moon.figura.gui.widgets;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -42,13 +42,13 @@ public class ParticleWidget implements FiguraWidget, FiguraTickable, FiguraRemov
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
+    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
         if (!visible || removed)
             return;
 
         float size = Mth.lerp(delta, lastSize, this.size);
         float y = Mth.lerp(delta, lastY, this.y);
-        UIHelper.renderSprite(stack, (int) (x - size / 2f), (int) (y - size / 2f), 0, (int) size, (int) size, sprite.get((int) (initialSize - size), (int) initialSize));
+        UIHelper.renderSprite(gui, (int) (x - size / 2f), (int) (y - size / 2f), 0, (int) size, (int) size, sprite.get((int) (initialSize - size), (int) initialSize));
     }
 
     private static SpriteSet getParticle(ParticleType<?> particleType) {

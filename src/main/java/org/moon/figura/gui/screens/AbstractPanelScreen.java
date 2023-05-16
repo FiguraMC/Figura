@@ -2,6 +2,7 @@ package org.moon.figura.gui.screens;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
@@ -76,45 +77,46 @@ public abstract class AbstractPanelScreen extends Screen {
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
+    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
         //setup figura framebuffer
         //UIHelper.useFiguraGuiFramebuffer();
 
         //render background
-        this.renderBackground(stack, delta);
+        this.renderBackground(gui, delta);
 
         //render contents
-        super.render(stack, mouseX, mouseY, delta);
+        super.render(gui, mouseX, mouseY, delta);
 
         //render overlays
-        this.renderOverlays(stack, mouseX, mouseY, delta);
+        this.renderOverlays(gui, mouseX, mouseY, delta);
 
         //restore vanilla framebuffer
         //UIHelper.useVanillaFramebuffer();
     }
 
-    public void renderBackground(PoseStack stack, float delta) {
+    public void renderBackground(GuiGraphics gui, float delta) {
         //render
         float speed = Configs.BACKGROUND_SCROLL_SPEED.tempValue * 0.125f;
         for (ResourceLocation background : BACKGROUNDS) {
-            UIHelper.renderAnimatedBackground(stack, background, 0, 0, this.width, this.height, 64, 64, speed, delta);
+            UIHelper.renderAnimatedBackground(gui, background, 0, 0, this.width, this.height, 64, 64, speed, delta);
             speed /= 0.5;
         }
     }
 
-    public void renderOverlays(PoseStack stack, int mouseX, int mouseY, float delta) {
+    public void renderOverlays(GuiGraphics gui, int mouseX, int mouseY, float delta) {
         //render context
         if (contextMenu != null && contextMenu.isVisible()) {
             //translate the stack here because of nested contexts
-            stack.pushPose();
-            stack.translate(0f, 0f, 500f);
-            contextMenu.render(stack, mouseX, mouseY, delta);
-            stack.popPose();
+            PoseStack pose = gui.pose();
+            pose.pushPose();
+            pose.translate(0f, 0f, 500f);
+            contextMenu.render(gui, mouseX, mouseY, delta);
+            pose.popPose();
         }
 
         //render tooltip
         if (tooltip != null)
-            UIHelper.renderTooltip(stack, tooltip, mouseX, mouseY, true);
+            UIHelper.renderTooltip(gui, tooltip, mouseX, mouseY, true);
 
         tooltip = null;
     }

@@ -3,6 +3,7 @@ package org.moon.figura.gui.widgets.lists;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -34,15 +35,15 @@ public class PermissionsList extends AbstractList {
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
+    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
         int x = getX();
         int y = getY();
         int width = getWidth();
         int height = getHeight();
 
         //background and scissors
-        UIHelper.renderSliced(stack, x, y, width, height, UIHelper.OUTLINE_FILL);
-        UIHelper.setupScissor(x + scissorsX, y + scissorsY, width + scissorsWidth, height + scissorsHeight);
+        UIHelper.blitSliced(gui, x, y, width, height, UIHelper.OUTLINE_FILL);
+        enableScissors(gui);
 
         //scrollbar
         Font font = Minecraft.getInstance().font;
@@ -69,7 +70,7 @@ public class PermissionsList extends AbstractList {
         for (Map.Entry<Component, List<GuiEventListener>> entry : permissions.entrySet()) {
             //titles
             if (titles) {
-                UIHelper.drawCenteredString(stack, font, entry.getKey(), x + (width - xOffset) / 2, y + yOffset, 0xFFFFFF);
+                gui.drawCenteredString(font, entry.getKey(), x + (width - xOffset) / 2, y + yOffset, 0xFFFFFF);
                 yOffset += titleHeight;
             }
 
@@ -82,10 +83,10 @@ public class PermissionsList extends AbstractList {
         }
 
         //render children
-        super.render(stack, mouseX, mouseY, delta);
+        super.render(gui, mouseX, mouseY, delta);
 
         //reset scissor
-        UIHelper.disableScissor();
+        gui.disableScissor();
     }
 
     public void updateList(PermissionPack container) {
@@ -166,14 +167,15 @@ public class PermissionsList extends AbstractList {
         }
 
         @Override
-        public void renderWidget(PoseStack stack, int mouseX, int mouseY, float delta) {
+        public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+            PoseStack pose = gui.pose();
             Font font = Minecraft.getInstance().font;
 
             //button
-            stack.pushPose();
-            stack.translate(0f, font.lineHeight, 0f);
-            super.renderWidget(stack, mouseX, mouseY, delta);
-            stack.popPose();
+            pose.pushPose();
+            pose.translate(0f, font.lineHeight, 0f);
+            super.renderWidget(gui, mouseX, mouseY, delta);
+            pose.popPose();
 
             //texts
             MutableComponent name = Component.translatable(this.text);
@@ -184,8 +186,8 @@ public class PermissionsList extends AbstractList {
             int y = getY() + 1;
             int width = valueX - getX() - 2;
 
-            UIHelper.renderScrollingText(stack, name, x, y, width, 0xFFFFFF);
-            font.draw(stack, value.copy().setStyle(FiguraMod.getAccentColor()), valueX, getY() + 1, 0xFFFFFF);
+            UIHelper.renderScrollingText(gui, name, x, y, width, 0xFFFFFF);
+            gui.drawString(font, value.copy().setStyle(FiguraMod.getAccentColor()), valueX, getY() + 1, 0xFFFFFF);
 
             if (UIHelper.isMouseOver(x, y, width, font.lineHeight, mouseX, mouseY))
                 UIHelper.setTooltip(Component.translatable(this.text + ".tooltip"));
@@ -248,25 +250,26 @@ public class PermissionsList extends AbstractList {
         }
 
         @Override
-        public void renderWidget(PoseStack stack, int mouseX, int mouseY, float delta) {
-            super.renderWidget(stack, mouseX, mouseY, delta);
+        public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+            super.renderWidget(gui, mouseX, mouseY, delta);
             if (UIHelper.isMouseOver(getX() + 1, getY() + 1, getWidth() - 2, Minecraft.getInstance().font.lineHeight, mouseX, mouseY))
                 UIHelper.setTooltip(Component.translatable(this.text + ".tooltip"));
         }
 
         @Override
-        protected void renderDefaultTexture(PoseStack stack, float delta) {
+        protected void renderDefaultTexture(GuiGraphics gui, float delta) {
+            PoseStack pose = gui.pose();
             Font font = Minecraft.getInstance().font;
 
             //button
-            stack.pushPose();
-            stack.translate(0f, font.lineHeight, 0f);
-            super.renderDefaultTexture(stack, delta);
-            stack.popPose();
+            pose.pushPose();
+            pose.translate(0f, font.lineHeight, 0f);
+            super.renderDefaultTexture(gui, delta);
+            pose.popPose();
         }
 
         @Override
-        protected void renderText(PoseStack stack, float delta) {
+        protected void renderText(GuiGraphics gui, float delta) {
             Font font = Minecraft.getInstance().font;
 
             //texts
@@ -275,8 +278,8 @@ public class PermissionsList extends AbstractList {
             int valueX = getX() + getWidth() - font.width(value) - 1;
             int valueY = getY() + font.lineHeight + 11 - font.lineHeight / 2;
 
-            UIHelper.renderScrollingText(stack, name, getX() + 1, getY() + 1, getWidth() - 2, 0xFFFFFF);
-            font.draw(stack, value.copy().setStyle(FiguraMod.getAccentColor()), valueX, valueY, 0xFFFFFF);
+            UIHelper.renderScrollingText(gui, name, getX() + 1, getY() + 1, getWidth() - 2, 0xFFFFFF);
+            gui.drawString(font, value.copy().setStyle(FiguraMod.getAccentColor()), valueX, valueY, 0xFFFFFF);
         }
 
         @Override
@@ -345,7 +348,7 @@ public class PermissionsList extends AbstractList {
         }
 
         @Override
-        public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
+        public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
             Font font = Minecraft.getInstance().font;
 
             //text colour
@@ -367,10 +370,7 @@ public class PermissionsList extends AbstractList {
             setBorderColour(0xFF000000 + color);
 
             //field
-            stack.pushPose();
-            //stack.translate(0f, font.lineHeight, 0f);
-            super.render(stack, mouseX, mouseY, delta);
-            stack.popPose();
+            super.render(gui, mouseX, mouseY, delta);
 
             //texts
             MutableComponent name = Component.translatable(this.text);
@@ -381,8 +381,8 @@ public class PermissionsList extends AbstractList {
             int y = getY() + 1 - font.lineHeight;
             int width = valueX - getX() - 2;
 
-            UIHelper.renderScrollingText(stack, name, x, y, width, 0xFFFFFF);
-            font.draw(stack, value.copy().setStyle(FiguraMod.getAccentColor()), valueX, getY() + 1 - font.lineHeight, 0xFFFFFF);
+            UIHelper.renderScrollingText(gui, name, x, y, width, 0xFFFFFF);
+            gui.drawString(font, value.copy().setStyle(FiguraMod.getAccentColor()), valueX, getY() + 1 - font.lineHeight, 0xFFFFFF);
 
             if (UIHelper.isMouseOver(x, y, width, font.lineHeight, mouseX, mouseY))
                 UIHelper.setTooltip(Component.translatable(this.text + ".tooltip"));

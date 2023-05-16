@@ -1,6 +1,6 @@
 package org.moon.figura.gui.widgets.config;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
 import org.moon.figura.FiguraMod;
@@ -46,7 +46,7 @@ public class InputElement extends AbstractConfigElement {
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
+    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
         if (!this.isVisible()) return;
 
         //reset enabled
@@ -71,7 +71,7 @@ public class InputElement extends AbstractConfigElement {
         textField.setBorderColour(0xFF000000 + color);
 
         //super render
-        super.render(stack, mouseX, mouseY, delta);
+        super.render(gui, mouseX, mouseY, delta);
 
         //hex colour preview
         if (inputType == InputType.HEX_COLOR) {
@@ -80,12 +80,12 @@ public class InputElement extends AbstractConfigElement {
 
             //border
             if (getTextField().isFocused())
-                UIHelper.fillRounded(stack, x, y, 20, 20, getTextField().getBorderColour());
+                UIHelper.fillRounded(gui, x, y, 20, 20, getTextField().getBorderColour());
             else
-                UIHelper.renderSliced(stack, x, y, 20, 20, UIHelper.OUTLINE);
+                UIHelper.blitSliced(gui, x, y, 20, 20, UIHelper.OUTLINE);
 
             //inside
-            UIHelper.fillRounded(stack, x + 1, y + 1, 18, 18, (int) config.tempValue + (0xFF << 24));
+            UIHelper.fillRounded(gui, x + 1, y + 1, 18, 18, (int) config.tempValue + (0xFF << 24));
         }
     }
 

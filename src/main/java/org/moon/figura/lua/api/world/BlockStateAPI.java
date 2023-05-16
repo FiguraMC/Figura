@@ -23,7 +23,6 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.luaj.vm2.LuaTable;
@@ -39,7 +38,6 @@ import org.moon.figura.mixin.BlockBehaviourAccessor;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.LuaUtils;
 
-import java.lang.reflect.Field;
 import java.util.*;
 
 @LuaWhitelist
@@ -240,19 +238,6 @@ public class BlockStateAPI {
             list.add(blockTagKey.location().toString());
 
         return list;
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc("blockstate.get_material")
-    public String getMaterial() {
-        for (Field field : Material.class.getFields()) {
-            try {
-                if (field.get(null) == blockState.getMaterial())
-                    return field.getName();
-            } catch (Exception ignored) {}
-        }
-
-        return null;
     }
 
     @LuaWhitelist

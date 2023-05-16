@@ -1,7 +1,7 @@
 package org.moon.figura.gui.widgets;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -45,7 +45,7 @@ public class SwitchButton extends Button {
     }
 
     @Override
-    protected void renderText(PoseStack stack, float delta) {
+    protected void renderText(GuiGraphics gui, float delta) {
         //draw text
         Component text = this.toggled && underline ? getMessage().copy().withStyle(ChatFormatting.UNDERLINE) : getMessage();
         int x = getX() + 1;
@@ -56,27 +56,27 @@ public class SwitchButton extends Button {
             width -= 31;
         }
 
-        UIHelper.renderCenteredScrollingText(stack, text, x, getY(), width, getHeight(), getTextColor());
+        UIHelper.renderCenteredScrollingText(gui, text, x, getY(), width, getHeight(), getTextColor());
     }
 
     @Override
-    protected void renderDefaultTexture(PoseStack stack, float delta) {
+    protected void renderDefaultTexture(GuiGraphics gui, float delta) {
         if (!defaultTexture) {
-            super.renderDefaultTexture(stack, delta);
+            super.renderDefaultTexture(gui, delta);
             return;
         }
 
         //set texture
-        UIHelper.setupTexture(SWITCH_TEXTURE);
+        UIHelper.enableBlend();
         int x = getX();
         int y = getY();
 
         //render switch
-        blit(stack, x + 5, y + 5, 20, 10, 10f, (this.toggled ? 20f : 0f) + (this.isHoveredOrFocused() ? 10f : 0f), 20, 10, 30, 40);
+        gui.blit(SWITCH_TEXTURE, x + 5, y + 5, 20, 10, 10f, (this.toggled ? 20f : 0f) + (this.isHoveredOrFocused() ? 10f : 0f), 20, 10, 30, 40);
 
         //render head
         headPos = (float) Mth.lerp(1f - Math.pow(0.2f, delta), headPos, this.toggled ? 20f : 0f);
-        blit(stack, Math.round(x + headPos), y, 10, 20, 0f, this.isHoveredOrFocused() ? 20f : 0f, 10, 20, 30, 40);
+        gui.blit(SWITCH_TEXTURE, Math.round(x + headPos), y, 10, 20, 0f, this.isHoveredOrFocused() ? 20f : 0f, 10, 20, 30, 40);
     }
 
     @Override

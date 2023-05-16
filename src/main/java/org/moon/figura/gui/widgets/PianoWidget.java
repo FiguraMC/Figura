@@ -1,8 +1,8 @@
 package org.moon.figura.gui.widgets;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
@@ -58,11 +58,11 @@ public class PianoWidget extends AbstractContainerElement {
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
+    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
         this.setHovered(this.isMouseOver(mouseX, mouseY));
 
         //background
-        UIHelper.renderSliced(stack, getX(), getY(), getWidth(), getHeight(), UIHelper.OUTLINE_FILL);
+        UIHelper.blitSliced(gui, getX(), getY(), getWidth(), getHeight(), UIHelper.OUTLINE_FILL);
 
         Key lastHovered = hovered;
 
@@ -71,7 +71,7 @@ public class PianoWidget extends AbstractContainerElement {
             key.setHovered(key.isMouseOver(mouseX, mouseY));
 
         //render children
-        super.render(stack, mouseX, mouseY, delta);
+        super.render(gui, mouseX, mouseY, delta);
 
         if (pressed && hovered != lastHovered && hovered != null)
             hovered.run();
@@ -101,21 +101,21 @@ public class PianoWidget extends AbstractContainerElement {
         }
 
         @Override
-        public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
+        public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
             if (!this.isVisible())
                 return;
 
             //render button
-            this.renderWidget(stack, mouseX, mouseY, delta);
+            this.renderWidget(gui, mouseX, mouseY, delta);
         }
 
         @Override
-        public void renderWidget(PoseStack stack, int mouseX, int mouseY, float delta) {
-            UIHelper.fillRounded(stack, getX(), getY(), getWidth(), getHeight(), (isSharp ? 0 : 0xFFFFFF) + (0xFF << 24));
-            UIHelper.renderSliced(stack, getX(), getY(), getWidth(), getHeight(), UIHelper.OUTLINE);
+        public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+            UIHelper.fillRounded(gui, getX(), getY(), getWidth(), getHeight(), (isSharp ? 0 : 0xFFFFFF) + (0xFF << 24));
+            UIHelper.blitSliced(gui, getX(), getY(), getWidth(), getHeight(), UIHelper.OUTLINE);
 
             if (isHovered())
-                UIHelper.fillRounded(stack, getX(), getY(), getWidth(), getHeight(), (FiguraMod.getAccentColor().getColor().getValue()) + (0xA0 << 24));
+                UIHelper.fillRounded(gui, getX(), getY(), getWidth(), getHeight(), (FiguraMod.getAccentColor().getColor().getValue()) + (0xA0 << 24));
 
             Font font = Minecraft.getInstance().font;
             Component message = getMessage();
@@ -123,7 +123,7 @@ public class PianoWidget extends AbstractContainerElement {
             int y = getY() + getHeight() / 2 - font.lineHeight / 2;
             if (!isSharp)
                 y += getHeight() / 4;
-            font.draw(stack, getMessage(), x, y, (isSharp ? 0xFFFFFF : 0));
+            gui.drawString(font, getMessage(), x, y, (isSharp ? 0xFFFFFF : 0));
         }
 
         @Override

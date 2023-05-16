@@ -1,6 +1,6 @@
 package org.moon.figura.gui.widgets.avatar;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import org.moon.figura.avatar.local.LocalAvatarFetcher;
 import org.moon.figura.gui.widgets.ContainerButton;
 import org.moon.figura.gui.widgets.lists.AvatarList;
@@ -24,7 +24,7 @@ public class AvatarFolderWidget extends AbstractAvatarWidget {
             parent.updateScroll();
         }) {
             @Override
-            protected  void renderText(PoseStack stack, float delta) {
+            protected void renderText(GuiGraphics gui, float delta) {
                 //ugly hack
                 int x = getX();
                 int width = getWidth();
@@ -34,13 +34,13 @@ public class AvatarFolderWidget extends AbstractAvatarWidget {
                 setX(x + space);
                 setWidth(width - space);
 
-                super.renderText(stack, delta);
+                super.renderText(gui, delta);
 
                 setX(x);
                 setWidth(width);
 
                 //fix tooltip
-                if (getTooltip() == getMessage())
+                if (tooltip() == getMessage())
                     setTooltip(instance.getName());
             }
 

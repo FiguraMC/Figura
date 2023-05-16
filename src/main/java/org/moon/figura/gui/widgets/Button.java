@@ -1,8 +1,9 @@
 package org.moon.figura.gui.widgets;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.moon.figura.utils.FiguraIdentifier;
@@ -24,6 +25,7 @@ public class Button extends net.minecraft.client.gui.components.Button implement
 
     //extra fields
     protected Component tooltip;
+    protected Tooltip actualTooltip;
     private boolean hasBackground = true;
 
     //texture and text constructor
@@ -50,7 +52,7 @@ public class Button extends net.minecraft.client.gui.components.Button implement
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
+    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
         if (!this.isVisible())
             return;
 
@@ -58,20 +60,20 @@ public class Button extends net.minecraft.client.gui.components.Button implement
         this.setHovered(this.isMouseOver(mouseX, mouseY));
 
          //render button
-        this.renderWidget(stack, mouseX, mouseY, delta);
+        this.renderWidget(gui, mouseX, mouseY, delta);
     }
 
     @Override
-    public void renderWidget(PoseStack stack, int mouseX, int mouseY, float delta) {
+    public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float delta) {
         //render texture
         if (this.texture != null) {
-            renderTexture(stack, delta);
+            renderTexture(gui, delta);
         } else {
-            renderDefaultTexture(stack, delta);
+            renderDefaultTexture(gui, delta);
         }
 
         //render text
-        renderText(stack, delta);
+        renderText(gui, delta);
     }
 
     @Override
@@ -87,30 +89,30 @@ public class Button extends net.minecraft.client.gui.components.Button implement
         return over;
     }
 
-    protected void renderDefaultTexture(PoseStack stack, float delta) {
-        UIHelper.renderSliced(stack, getX(), getY(), getWidth(), getHeight(), getU() * 16f, getV() * 16f, 16, 16, 48, 32, TEXTURE);
+    protected void renderDefaultTexture(GuiGraphics gui, float delta) {
+        UIHelper.blitSliced(gui, getX(), getY(), getWidth(), getHeight(), getU() * 16f, getV() * 16f, 16, 16, 48, 32, TEXTURE);
     }
 
-    protected void renderTexture(PoseStack stack, float delta) {
+    protected void renderTexture(GuiGraphics gui, float delta) {
         //uv transforms
         int u = this.u + this.getU() * this.regionSize;
         int v = this.v + this.getV() * this.regionSize;
 
         //draw texture
-        UIHelper.setupTexture(this.texture);
+        UIHelper.enableBlend();
 
         int size = this.regionSize;
-        blit(stack, this.getX() + this.getWidth() / 2 - size / 2, this.getY() + this.getHeight() / 2 - size / 2, u, v, size, size, this.textureWidth, this.textureHeight);
+        gui.blit(this.texture, this.getX() + this.getWidth() / 2 - size / 2, this.getY() + this.getHeight() / 2 - size / 2, u, v, size, size, this.textureWidth, this.textureHeight);
     }
 
-    protected void renderText(PoseStack stack, float delta) {
-        UIHelper.renderCenteredScrollingText(stack, getMessage(), getX() + 1, getY(), getWidth() - 2, getHeight(), getTextColor());
+    protected void renderText(GuiGraphics gui, float delta) {
+        UIHelper.renderCenteredScrollingText(gui, getMessage(), getX() + 1, getY(), getWidth() - 2, getHeight(), getTextColor());
     }
 
-    protected void renderVanillaBackground(PoseStack stack, int mouseX, int mouseY, float delta) {
+    protected void renderVanillaBackground(GuiGraphics gui, int mouseX, int mouseY, float delta) {
         Component message = getMessage();
         setMessage(Component.empty());
-        super.renderWidget(stack, mouseX, mouseY, delta);
+        super.renderWidget(gui, mouseX, mouseY, delta);
         setMessage(message);
     }
 
@@ -133,9 +135,15 @@ public class Button extends net.minecraft.client.gui.components.Button implement
 
     public void setTooltip(Component tooltip) {
         this.tooltip = tooltip;
+        this.actualTooltip = Tooltip.create(tooltip);
     }
 
-    public Component getTooltip() {
+    @Override
+    public Tooltip getTooltip() {
+        return actualTooltip;
+    }
+
+    public Component tooltip() {
         return tooltip;
     }
 

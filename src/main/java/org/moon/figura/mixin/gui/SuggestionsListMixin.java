@@ -1,8 +1,8 @@
 package org.moon.figura.mixin.gui;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.CommandSuggestions;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
@@ -10,7 +10,9 @@ import org.moon.figura.ducks.SuggestionsListAccessor;
 import org.moon.figura.gui.Emojis;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 @Mixin(CommandSuggestions.SuggestionsList.class)
@@ -19,18 +21,23 @@ public class SuggestionsListMixin implements SuggestionsListAccessor {
     @Shadow @Final private Rect2i rect;
 
     @Unique private boolean figuraList;
+    @Unique private static GuiGraphics gui;
 
-    @ModifyArgs(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Font;drawShadow(Lcom/mojang/blaze3d/vertex/PoseStack;Ljava/lang/String;FFI)I"))
+    @Inject(at = @At("HEAD"), method = "render")
+    private void onRender(GuiGraphics graphics, int mouseX, int mouseY, CallbackInfo ci) {
+        gui = graphics;
+    }
+
+    @ModifyArgs(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawString(Lnet/minecraft/client/gui/Font;Ljava/lang/String;III)I"))
     private void voidTextDraw(Args args) {
-        if (!figuraList)
+        if (!figuraList || gui == null)
             return;
 
-        PoseStack stack = args.get(0);
+        Font font = args.get(0);
         String text = args.get(1);
-        float x = args.get(2);
-        float y = args.get(3);
+        int x = args.get(2);
+        int y = args.get(3);
         int color = args.get(4);
-        Font font = Minecraft.getInstance().font;
 
         //get emoji
         Component emoji = Emojis.applyEmojis(Component.literal(text));
@@ -43,7 +50,7 @@ public class SuggestionsListMixin implements SuggestionsListAccessor {
         args.set(2, x + 8 + font.width(" "));
 
         //render emoji
-        font.drawShadow(stack, emoji, x + 4 - (int) (font.width(emoji) / 2f), y, color);
+        gui.drawString(font, emoji, x + 4 - font.width(emoji) / 2, y, color);
     }
 
     @Override

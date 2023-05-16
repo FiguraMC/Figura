@@ -3,6 +3,7 @@ package org.moon.figura.gui.widgets.lists;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -32,15 +33,15 @@ public class AvatarWizardList extends AbstractList {
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
+    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
         int x = getX();
         int y = getY();
         int width = getWidth();
         int height = getHeight();
 
         //background and scissors
-        UIHelper.renderSliced(stack, x, y, width, height, UIHelper.OUTLINE_FILL);
-        UIHelper.setupScissor(x + scissorsX, y + scissorsY, width + scissorsWidth, height + scissorsHeight);
+        UIHelper.blitSliced(gui, x, y, width, height, UIHelper.OUTLINE_FILL);
+        enableScissors(gui);
 
         //scrollbar
         Font font = Minecraft.getInstance().font;
@@ -85,15 +86,15 @@ public class AvatarWizardList extends AbstractList {
                 continue;
 
             //category
-            UIHelper.drawCenteredString(stack, font, entry.getKey(), x + width / 2, y + yOffset + 4, 0xFFFFFF);
+            gui.drawCenteredString(font, entry.getKey(), x + width / 2, y + yOffset + 4, 0xFFFFFF);
             yOffset = newY;
         }
 
         //children
-        super.render(stack, mouseX, mouseY, delta);
+        super.render(gui, mouseX, mouseY, delta);
 
         //reset scissor
-        UIHelper.disableScissor();
+        gui.disableScissor();
     }
 
     @Override
@@ -153,15 +154,15 @@ public class AvatarWizardList extends AbstractList {
         }
 
         @Override
-        public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
+        public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
             if (!isVisible()) return;
-            super.render(stack, mouseX, mouseY, delta);
+            super.render(gui, mouseX, mouseY, delta);
 
             Font font = Minecraft.getInstance().font;
             MutableComponent name = this.name.copy();
             if (!this.getField().getValue().isBlank())
                 name.setStyle(FiguraMod.getAccentColor());
-            font.draw(stack, name, getX() - getWidth() - 8, (int) (getY() + (getHeight() - font.lineHeight) / 2f), 0xFFFFFF);
+            gui.drawString(font, name, getX() - getWidth() - 8, (int) (getY() + (getHeight() - font.lineHeight) / 2f), 0xFFFFFF);
         }
 
         @Override
@@ -189,22 +190,23 @@ public class AvatarWizardList extends AbstractList {
         }
 
         @Override
-        protected void renderDefaultTexture(PoseStack stack, float delta) {
+        protected void renderDefaultTexture(GuiGraphics gui, float delta) {
             //button
-            stack.pushPose();
-            stack.translate(getWidth() - 30, 0, 0);
-            super.renderDefaultTexture(stack, delta);
-            stack.popPose();
+            PoseStack pose = gui.pose();
+            pose.pushPose();
+            pose.translate(getWidth() - 30, 0, 0);
+            super.renderDefaultTexture(gui, delta);
+            pose.popPose();
         }
 
         @Override
-        protected void renderText(PoseStack stack, float delta) {
+        protected void renderText(GuiGraphics gui, float delta) {
             //name
             Font font = Minecraft.getInstance().font;
             MutableComponent name = getMessage().copy();
             if (this.isToggled())
                 name.withStyle(FiguraMod.getAccentColor());
-            font.draw(stack, name, getX() - getWidth() - 8, (int) (getY() + (getHeight() - font.lineHeight) / 2f), 0xFFFFFF);
+            gui.drawString(font, name, getX() - getWidth() - 8, (int) (getY() + (getHeight() - font.lineHeight) / 2f), 0xFFFFFF);
         }
 
         @Override

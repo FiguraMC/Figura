@@ -7,6 +7,7 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
@@ -18,8 +19,8 @@ import org.moon.figura.avatar.Badges;
 import org.moon.figura.config.Configs;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec4;
-import org.moon.figura.permissions.PermissionPack;
 import org.moon.figura.permissions.PermissionManager;
+import org.moon.figura.permissions.PermissionPack;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.MathUtils;
@@ -72,7 +73,7 @@ public class PopupMenu {
     private static Entity entity;
     private static UUID id;
 
-    public static void render(PoseStack stack) {
+    public static void render(GuiGraphics gui) {
         if (!isEnabled()) return;
 
         if (entity == null) {
@@ -89,7 +90,8 @@ public class PopupMenu {
         }
 
         RenderSystem.disableDepthTest();
-        stack.pushPose();
+        PoseStack pose = gui.pose();
+        pose.pushPose();
 
         //world to screen space
         FiguraVec3 worldPos = FiguraVec3.fromVec3(entity.getPosition(minecraft.getFrameTime()));
@@ -103,21 +105,21 @@ public class PopupMenu {
         double h = window.getGuiScaledHeight();
         double s = Configs.POPUP_SCALE.value * Math.max(Math.min(window.getHeight() * 0.035 / vec.w * (1 / window.getGuiScale()), Configs.POPUP_MAX_SIZE.value), Configs.POPUP_MIN_SIZE.value);
 
-        stack.translate((vec.x + 1) / 2 * w, (vec.y + 1) / 2 * h, -100);
-        stack.scale((float) (s * 0.5), (float) (s * 0.5), 1);
+        pose.translate((vec.x + 1) / 2 * w, (vec.y + 1) / 2 * h, -100);
+        pose.scale((float) (s * 0.5), (float) (s * 0.5), 1);
 
         //background
         int width = LENGTH * 18;
 
-        UIHelper.setupTexture(BACKGROUND);
+        UIHelper.enableBlend();
         int frame = Configs.REDUCED_MOTION.value ? 0 : (int) ((FiguraMod.ticks / 5f) % 4);
-        UIHelper.blit(stack, width / -2, -24, width, 26, 0, frame * 26, width, 26, width, 104);
+        gui.blit(BACKGROUND, width / -2, -24, width, 26, 0, frame * 26, width, 26, width, 104);
 
         //icons
-        stack.translate(0f, 0f, -2f);
-        UIHelper.setupTexture(ICONS);
+        pose.translate(0f, 0f, -2f);
+        UIHelper.enableBlend();
         for (int i = 0; i < LENGTH; i++)
-            UIHelper.blit(stack, width / -2 + (18 * i), -24, 18, 18, 18 * i, i == index ? 18 : 0, 18, 18, width, 36);
+            gui.blit(ICONS, width / -2 + (18 * i), -24, 18, 18, 18 * i, i == index ? 18 : 0, 18, 18, width, 36);
 
         //texts
         Font font = minecraft.font;
@@ -145,23 +147,23 @@ public class PopupMenu {
         }
 
         //render texts
-        UIHelper.renderOutlineText(stack, font, name, -font.width(name) / 2, -36, 0xFFFFFF, 0x202020);
+        UIHelper.renderOutlineText(gui, font, name, -font.width(name) / 2, -36, 0xFFFFFF, 0x202020);
 
-        stack.scale(0.5f, 0.5f, 0.5f);
-        stack.translate(0f, 0f, -1f);
+        pose.scale(0.5f, 0.5f, 0.5f);
+        pose.translate(0f, 0f, -1f);
 
-        UIHelper.renderOutlineText(stack, font, permissionName, -font.width(permissionName) / 2, -54, 0xFFFFFF, 0x202020);
-        font.draw(stack, title, -width + 4, -12, 0xFFFFFF);
+        UIHelper.renderOutlineText(gui, font, permissionName, -font.width(permissionName) / 2, -54, 0xFFFFFF, 0x202020);
+        gui.drawString(font, title, -width + 4, -12, 0xFFFFFF);
 
         if (error)
-            UIHelper.renderOutlineText(stack, font, ERROR_WARN, -font.width(ERROR_WARN) / 2, 0, 0xFFFFFF, 0x202020);
+            UIHelper.renderOutlineText(gui, font, ERROR_WARN, -font.width(ERROR_WARN) / 2, 0, 0xFFFFFF, 0x202020);
         if (version)
-            UIHelper.renderOutlineText(stack, font, VERSION_WARN, -font.width(VERSION_WARN) / 2, error ? font.lineHeight : 0, 0xFFFFFF, 0x202020);
+            UIHelper.renderOutlineText(gui, font, VERSION_WARN, -font.width(VERSION_WARN) / 2, error ? font.lineHeight : 0, 0xFFFFFF, 0x202020);
         if (noPermissions)
-            UIHelper.renderOutlineText(stack, font, PERMISSION_WARN, -font.width(PERMISSION_WARN) / 2, (error ? font.lineHeight : 0) + (version ? font.lineHeight : 0), 0xFFFFFF, 0x202020);
+            UIHelper.renderOutlineText(gui, font, PERMISSION_WARN, -font.width(PERMISSION_WARN) / 2, (error ? font.lineHeight : 0) + (version ? font.lineHeight : 0), 0xFFFFFF, 0x202020);
 
         //finish rendering
-        stack.popPose();
+        pose.popPose();
     }
 
     public static void scroll(double d) {

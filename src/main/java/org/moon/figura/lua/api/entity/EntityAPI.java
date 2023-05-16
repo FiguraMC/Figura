@@ -13,6 +13,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.entity.vehicle.ContainerEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.*;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
@@ -67,12 +68,16 @@ public class EntityAPI<T extends Entity> {
     }
 
     protected final void checkEntity() {
-        if (entity.isRemoved() || entity.level != Minecraft.getInstance().level) {
+        if (entity.isRemoved() || getLevel() != Minecraft.getInstance().level) {
             T newEntityInstance = (T) EntityUtils.getEntityByUUID(entityUUID);
             thingy = newEntityInstance != null;
             if (thingy)
                 entity = newEntityInstance;
         }
+    }
+
+    protected Level getLevel() {
+        return ((EntityAccessor) entity).getLevel();
     }
 
     public T getEntity() {
@@ -173,7 +178,7 @@ public class EntityAPI<T extends Entity> {
     @LuaMethodDoc("entity.get_dimension_name")
     public String getDimensionName() {
         checkEntity();
-        return entity.level.dimension().location().toString();
+        return getLevel().dimension().location().toString();
     }
 
     @LuaWhitelist
@@ -194,7 +199,7 @@ public class EntityAPI<T extends Entity> {
     @LuaMethodDoc("entity.is_on_ground")
     public boolean isOnGround() {
         checkEntity();
-        return entity.isOnGround();
+        return entity.onGround();
     }
 
     @LuaWhitelist
@@ -252,7 +257,7 @@ public class EntityAPI<T extends Entity> {
     public boolean isInRain() {
         checkEntity();
         BlockPos blockPos = entity.blockPosition();
-        return entity.level.isRainingAt(blockPos) || entity.level.isRainingAt(new BlockPos(blockPos.getX(), (int) entity.getBoundingBox().maxY, (int) entity.getZ()));
+        return getLevel().isRainingAt(blockPos) || getLevel().isRainingAt(new BlockPos(blockPos.getX(), (int) entity.getBoundingBox().maxY, (int) entity.getZ()));
     }
 
     @LuaWhitelist

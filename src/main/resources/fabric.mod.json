@@ -4,10 +4,9 @@
   "version": "${version}",
 
   "name": "Figura",
-  "description": "Allows you to customize your player model, extensively",
+  "description": "Extensive customization of the Player model",
   "authors": [
     "Francy-Chan",
-    "Moonlight-Maya",
     "skyrina"
   ],
   "contact": {
@@ -34,7 +33,7 @@
 
   "depends": {
     "java": ">=${java_version}",
-    "minecraft": "${minecraft_version}",
+    "minecraft": "*",
     "fabricloader": "*"
   },
   "conflicts": {
@@ -43,7 +42,8 @@
   },
   "breaks": {
     "optifine": "*",
-    "optifabric": "*"
+    "optifabric": "*",
+    "aspect": "*"
   },
   "custom": {
     "assets_version": "${assets_version}",

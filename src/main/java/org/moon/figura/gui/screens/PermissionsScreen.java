@@ -2,6 +2,7 @@ package org.moon.figura.gui.screens;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -76,8 +77,8 @@ public class PermissionsScreen extends AbstractPanelScreen {
         //permission slider and list
         slider = new SliderWidget(middle + 2, (int) (entityWidget.getY() + entityWidget.getHeight() + lineHeight * 1.5 + 20), listWidth, 11, 1d, 5, true) {
             @Override
-            public void renderWidget(PoseStack stack, int mouseX, int mouseY, float delta) {
-                super.renderWidget(stack, mouseX, mouseY, delta);
+            public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+                super.renderWidget(gui, mouseX, mouseY, delta);
 
                 PermissionPack selectedPack = playerList.selectedEntry.getPack();
                 MutableComponent text = selectedPack.getCategoryName();
@@ -85,11 +86,12 @@ public class PermissionsScreen extends AbstractPanelScreen {
                 int x = (int) (this.getX() + this.getWidth() / 2f - font.width(text) * 0.75f);
                 int y = this.getY() - 4 - font.lineHeight * 2;
 
-                stack.pushPose();
-                stack.translate(x, y, 0f);
-                stack.scale(1.5f, 1.5f, 1f);
-                UIHelper.renderOutlineText(stack, font, text, 0, 0, 0xFFFFFF, 0x202020);
-                stack.popPose();
+                PoseStack pose = gui.pose();
+                pose.pushPose();
+                pose.translate(x, y, 0f);
+                pose.scale(1.5f, 1.5f, 1f);
+                UIHelper.renderOutlineText(gui, font, text, 0, 0, 0xFFFFFF, 0x202020);
+                pose.popPose();
 
                 MutableComponent info = Component.literal("?").withStyle(Style.EMPTY.withFont(UIHelper.UI_FONT));
                 int color = 0x404040;
@@ -103,7 +105,7 @@ public class PermissionsScreen extends AbstractPanelScreen {
                     UIHelper.setTooltip(selectedPack.getCategory().info);
                 }
 
-                font.drawShadow(stack, info, x, y, color);
+                gui.drawString(font, info, x, y, color);
             }
         };
         permissionsList = new PermissionsList(middle + 2, height, listWidth, height - 54);
@@ -205,12 +207,6 @@ public class PermissionsScreen extends AbstractPanelScreen {
                 permissionsList.precise = this.isToggled();
                 permissionsList.updateList(playerList.selectedEntry.getPack());
             }
-
-            @Override
-            public void renderWidget(PoseStack stack, int mouseX, int mouseY, float delta) {
-                //super.renderDefaultTexture(stack, delta);
-                super.renderWidget(stack, mouseX, mouseY, delta);
-            }
         });
         precisePermissions.setUnderline(false);
 
@@ -223,7 +219,7 @@ public class PermissionsScreen extends AbstractPanelScreen {
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
+    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
         //set entity to render
         AbstractPermPackElement entity = playerList.selectedEntry;
         Level world = Minecraft.getInstance().level;
@@ -246,15 +242,15 @@ public class PermissionsScreen extends AbstractPanelScreen {
         this.precisePermissions.setY((int) resetYPrecise);
 
         //render
-        super.render(stack, mouseX, mouseY, delta);
+        super.render(gui, mouseX, mouseY, delta);
     }
 
     @Override
-    public void renderOverlays(PoseStack stack, int mouseX, int mouseY, float delta) {
+    public void renderOverlays(GuiGraphics gui, int mouseX, int mouseY, float delta) {
         if (dragged != null && dragged.dragged)
-            dragged.renderDragged(stack, mouseX, mouseY, delta);
+            dragged.renderDragged(gui, mouseX, mouseY, delta);
 
-        super.renderOverlays(stack, mouseX, mouseY, delta);
+        super.renderOverlays(gui, mouseX, mouseY, delta);
     }
 
     @Override

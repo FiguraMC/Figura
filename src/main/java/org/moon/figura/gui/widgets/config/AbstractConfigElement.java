@@ -1,15 +1,15 @@
 package org.moon.figura.gui.widgets.config;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import org.moon.figura.config.ConfigType;
 import org.moon.figura.gui.widgets.AbstractContainerElement;
-import org.moon.figura.gui.widgets.ParentedButton;
 import org.moon.figura.gui.widgets.Button;
+import org.moon.figura.gui.widgets.ParentedButton;
 import org.moon.figura.gui.widgets.lists.ConfigList;
 import org.moon.figura.utils.ui.UIHelper;
 
@@ -39,7 +39,7 @@ public abstract class AbstractConfigElement extends AbstractContainerElement {
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
+    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
         if (!this.isVisible()) return;
 
         //vars
@@ -48,17 +48,17 @@ public abstract class AbstractConfigElement extends AbstractContainerElement {
 
         //hovered arrow
         setHovered(isMouseOver(mouseX, mouseY));
-        if (isHovered()) font.draw(stack, HOVERED_ARROW, (int) (getX() + 8 - font.width(HOVERED_ARROW) / 2f), textY, 0xFFFFFF);
+        if (isHovered()) gui.drawString(font, HOVERED_ARROW, (int) (getX() + 8 - font.width(HOVERED_ARROW) / 2f), textY, 0xFFFFFF);
 
         //render name
-        renderTitle(stack, font, textY);
+        renderTitle(gui, font, textY);
 
         //render children
-        super.render(stack, mouseX, mouseY, delta);
+        super.render(gui, mouseX, mouseY, delta);
     }
 
-    public void renderTitle(PoseStack stack, Font font, int y) {
-        font.draw(stack, config.name, getX() + 16, y, (config.disabled ? ChatFormatting.DARK_GRAY : ChatFormatting.WHITE).getColor());
+    public void renderTitle(GuiGraphics gui, Font font, int y) {
+        gui.drawString(font, config.name, getX() + 16, y, (config.disabled ? ChatFormatting.DARK_GRAY : ChatFormatting.WHITE).getColor());
     }
 
     @Override

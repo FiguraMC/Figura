@@ -3,6 +3,7 @@ package org.moon.figura.gui.widgets;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.narration.NarratedElementType;
@@ -66,30 +67,31 @@ public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
+    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
         hovered = null;
 
         if (!isVisible())
             return;
 
-        renderBackground(stack);
-        renderText(stack, mouseX, mouseY);
+        renderBackground(gui);
+        renderText(gui, mouseX, mouseY);
     }
 
-    private void renderBackground(PoseStack stack) {
+    private void renderBackground(GuiGraphics gui) {
         if (backgroundColor == null)
             return;
 
         int x = getX();
         int y = getY();
 
-        UIHelper.fill(stack, x, y, x + width, y + height, backgroundColor);
+        gui.fill(x, y, x + width, y + height, backgroundColor);
     }
 
-    private void renderText(PoseStack stack, int mouseX, int mouseY) {
-        stack.pushPose();
-        stack.translate(this.x, getY(), 0);
-        stack.scale(scale, scale, scale);
+    private void renderText(GuiGraphics gui, int mouseX, int mouseY) {
+        PoseStack pose = gui.pose();
+        pose.pushPose();
+        pose.translate(this.x, getY(), 0);
+        pose.scale(scale, scale, scale);
 
         //prepare pos
         int y = 0;
@@ -116,15 +118,15 @@ public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
 
             //render text
             if (outlineColor != null) {
-                UIHelper.renderOutlineText(stack, font, text, x, y, 0xFFFFFF, outlineColor);
+                UIHelper.renderOutlineText(gui, font, text, x, y, 0xFFFFFF, outlineColor);
             } else {
-                font.drawShadow(stack, text, x, y, 0xFFFFFF + (alpha << 24));
+                gui.drawString(font, text, x, y, 0xFFFFFF + (alpha << 24));
             }
 
             y += height;
         }
 
-        stack.popPose();
+        pose.popPose();
     }
 
     @Override

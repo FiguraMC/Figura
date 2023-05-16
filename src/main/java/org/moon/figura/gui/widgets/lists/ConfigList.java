@@ -1,8 +1,8 @@
 package org.moon.figura.gui.widgets.lists;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.util.Mth;
 import org.moon.figura.FiguraMod;
@@ -32,15 +32,15 @@ public class ConfigList extends AbstractList {
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
+    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
         int x = getX();
         int y = getY();
         int width = getWidth();
         int height = getHeight();
 
         //background and scissors
-        UIHelper.renderSliced(stack, x, y, width, height, UIHelper.OUTLINE_FILL);
-        UIHelper.setupScissor(x + scissorsX, y + scissorsY, width + scissorsWidth, height + scissorsHeight);
+        UIHelper.blitSliced(gui, x, y, width, height, UIHelper.OUTLINE_FILL);
+        enableScissors(gui);
 
         //scrollbar
         totalHeight = -4;
@@ -69,10 +69,10 @@ public class ConfigList extends AbstractList {
         }
 
         //children
-        super.render(stack, mouseX, mouseY, delta);
+        super.render(gui, mouseX, mouseY, delta);
 
         //reset scissor
-        UIHelper.disableScissor();
+        gui.disableScissor();
     }
 
     @Override

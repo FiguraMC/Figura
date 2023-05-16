@@ -1,6 +1,6 @@
 package org.moon.figura.gui.widgets.config;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.config.ConfigType;
@@ -21,7 +21,7 @@ public class BooleanElement extends AbstractConfigElement {
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
+    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
         if (!this.isVisible()) return;
 
         //reset enabled
@@ -38,7 +38,7 @@ public class BooleanElement extends AbstractConfigElement {
         this.button.setMessage(text);
 
         //super render
-        super.render(stack, mouseX, mouseY, delta);
+        super.render(gui, mouseX, mouseY, delta);
     }
 
     @Override

@@ -1,18 +1,18 @@
 package org.moon.figura.gui.screens;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.gui.widgets.Label;
 import org.moon.figura.gui.widgets.Button;
+import org.moon.figura.gui.widgets.Label;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FiguraText;
-import org.moon.figura.utils.ui.UIHelper;
 
 import java.util.ArrayList;
 
@@ -158,18 +158,19 @@ public class GameScreen extends AbstractPanelScreen {
         }
 
         @Override
-        public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
-            stack.pushPose();
-            stack.scale(scale, scale, scale);
+        public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+            PoseStack pose = gui.pose();
+            pose.pushPose();
+            pose.scale(scale, scale, scale);
 
             for (Cell[] cells : grid) {
                 for (Cell cell : cells) {
                     if (yes) cell.color = 0xFF000000 + ColorUtils.rgbToInt(ColorUtils.hsvToRGB(FiguraVec3.of((FiguraMod.ticks % 360) / 360f, 1f, 1f)));
-                    cell.render(stack);
+                    cell.render(gui);
                 }
             }
 
-            stack.popPose();
+            pose.popPose();
         }
     }
 
@@ -198,10 +199,10 @@ public class GameScreen extends AbstractPanelScreen {
             this.future = RULES[this.alive][neigh];
         }
 
-        private void render(PoseStack stack) {
+        private void render(GuiGraphics gui) {
             this.alive = this.future;
             if (this.alive == 1)
-                UIHelper.fill(stack, this.x, this.y, this.x + 1, this.y + 1, color);
+                gui.fill(this.x, this.y, this.x + 1, this.y + 1, color);
         }
     }
 }
