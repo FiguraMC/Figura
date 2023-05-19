@@ -3,13 +3,17 @@ package org.moon.figura.gui.screens;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.*;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.avatar.local.LocalAvatarFetcher;
 import org.moon.figura.avatar.local.LocalAvatarLoader;
 import org.moon.figura.backend2.NetworkStuff;
+import org.moon.figura.commands.FiguraLinkCommand;
 import org.moon.figura.config.Configs;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.widgets.*;
@@ -105,7 +109,8 @@ public class WardrobeScreen extends AbstractPanelScreen {
         boolean oldVersion = NetworkStuff.latestVersion != null && NetworkStuff.latestVersion.compareTo(FiguraMod.VERSION) > 0;
         if (oldVersion) {
             versionText
-                    .append(new TextComponent(" =")
+                    .append(" ")
+                    .append(new TextComponent("=")
                             .withStyle(Style.EMPTY
                                     .withFont(UIHelper.UI_FONT)
                                     .withItalic(false)
@@ -113,13 +118,18 @@ public class WardrobeScreen extends AbstractPanelScreen {
                             ))
                     .withStyle(Style.EMPTY
                             .applyFormat(ChatFormatting.AQUA)
-                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new FiguraText("gui.new_version.tooltip", NetworkStuff.latestVersion)))
+                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                                    new FiguraText("gui.new_version.tooltip", new TextComponent(NetworkStuff.latestVersion.toString()).withStyle(ChatFormatting.GREEN))
+                                            .append("\n")
+                                            .append(new FiguraText("gui.new_version_download.tooltip"))
+                            ))
+                            .withClickEvent(new TextUtils.FiguraClickEvent(UIHelper.openURL(FiguraLinkCommand.LINK.MODRINTH.url + "/versions")))
                     );
         }
 
         Label version = new Label(versionText, middle, this.height - 4, TextUtils.Alignment.CENTER);
         addRenderableWidget(version);
-        if (!oldVersion) version.alpha = 0x33;
+        if (!oldVersion) version.setAlpha(0x33);
         version.setY(version.getRawY() - version.getHeight());
 
         int rightSide = Math.min(panels, 134);

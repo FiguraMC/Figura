@@ -179,10 +179,10 @@ public class TextUtils {
         return width;
     }
 
-    public static Component replaceStyle(FormattedText text, Style newStyle) {
+    public static Component replaceStyle(FormattedText text, Style newStyle, Predicate<Style> predicate) {
         MutableComponent ret = TextComponent.EMPTY.copy();
         text.visit((style, string) -> {
-            ret.append(new TextComponent(string).withStyle(newStyle));
+            ret.append(new TextComponent(string).withStyle(predicate.test(style) ? newStyle.applyTo(style) : style));
             return Optional.empty();
         }, Style.EMPTY);
         return ret;
