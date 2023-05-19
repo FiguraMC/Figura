@@ -62,7 +62,7 @@ public class TextTask extends RenderTask {
             poseStack.popPose();
         }
 
-        int l = this.light != null ? this.light : light;
+        int l = this.customization.light != null ? this.customization.light : light;
         int bgColor = backgroundColor != null ? backgroundColor : background ? (int) (Minecraft.getInstance().options.getBackgroundOpacity(0.25f) * 0xFF) << 24 : 0;
         int outlineColor = this.outlineColor != null ? this.outlineColor : 0x202020;
 
@@ -92,7 +92,7 @@ public class TextTask extends RenderTask {
 
     @Override
     public boolean shouldRender() {
-        return enabled && text != null && text.size() != 0;
+        return super.shouldRender() && text != null && text.size() != 0;
     }
 
     private void updateText() {
