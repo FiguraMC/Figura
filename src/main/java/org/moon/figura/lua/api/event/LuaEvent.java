@@ -1,7 +1,10 @@
 package org.moon.figura.lua.api.event;
 
 import com.google.common.collect.HashMultimap;
-import org.luaj.vm2.*;
+import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaFunction;
+import org.luaj.vm2.LuaTable;
+import org.luaj.vm2.Varargs;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
@@ -113,24 +116,37 @@ public class LuaEvent {
 
     @LuaWhitelist
     @LuaMethodDoc(
-            overloads = @LuaMethodOverload(
-                    argumentTypes = String.class,
-                    argumentNames = "name"
-            ),
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = String.class,
+                            argumentNames = "name"
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = LuaFunction.class,
+                            argumentNames = "function"
+                    )
+            },
             value = "event.remove"
     )
-    public int remove(@LuaNotNil String name) {
+    public int remove(@LuaNotNil Object toRemove) {
         flushQueue();
+        if (toRemove instanceof LuaFunction func) {
+            removalQueue.add(func);
+            names.values().remove(func);
+            return 1;
+        } else if (toRemove instanceof String name) {
+            int removed = 0;
 
-        int removed = 0;
+            Set<LuaFunction> set = names.removeAll(name);
+            for (LuaFunction function : set) {
+                if (removalQueue.add(function))
+                    removed++;
+            }
 
-        Set<LuaFunction> set = names.removeAll(name);
-        for (LuaFunction function : set) {
-            if (removalQueue.add(function))
-                removed++;
+            return removed;
+        } else {
+            throw new LuaError("Illegal argument to remove(): " + toRemove.getClass().getSimpleName());
         }
-
-        return removed;
     }
 
     @LuaWhitelist
