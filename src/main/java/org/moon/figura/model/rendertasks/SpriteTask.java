@@ -57,8 +57,8 @@ public class SpriteTask extends RenderTask {
         Matrix4f pose = poseStack.last().pose();
         Matrix3f normal = poseStack.last().normal();
 
-        int newLight = this.light != null ? this.light : light;
-        int newOverlay = this.overlay != null ? this.overlay : overlay;
+        int newLight = this.customization.light != null ? this.customization.light : light;
+        int newOverlay = this.customization.overlay != null ? this.customization.overlay : overlay;
 
         //setup texture render
         VertexConsumer consumer = buffer.getBuffer(renderType.get(texture));
@@ -84,7 +84,7 @@ public class SpriteTask extends RenderTask {
 
     @Override
     public boolean shouldRender() {
-        return enabled && texture != null && renderType != RenderTypes.NONE;
+        return super.shouldRender() && texture != null && renderType != RenderTypes.NONE;
     }
 
     private void recalculateVertices() {
