@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 
 public class TextUtils {
 
@@ -140,18 +141,19 @@ public class TextUtils {
         return TextUtils.replaceInText(text, "\\t", TAB);
     }
 
-    public static List<FormattedCharSequence> wrapTooltip(FormattedText text, Font font, int mousePos, int screenWidth) {
+    public static List<FormattedCharSequence> wrapTooltip(FormattedText text, Font font, int mousePos, int screenWidth, int offset) {
         //first split the new line text
         List<Component> splitText = TextUtils.splitText(text, "\n");
 
         //get the possible tooltip width
-        int right = screenWidth - mousePos;
+        int left = mousePos - offset;
+        int right = screenWidth - mousePos - offset;
 
         //get largest text size
         int largest = getWidth(splitText, font);
 
         //get the optimal side for warping
-        int side = largest <= right ? right : largest <= mousePos ? mousePos : Math.max(mousePos, right);
+        int side = largest <= right ? right : largest <= left ? left : Math.max(left, right);
 
         //warp the unmodified text
         return wrapText(text, side, font);
