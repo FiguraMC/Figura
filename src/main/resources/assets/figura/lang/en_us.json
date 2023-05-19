@@ -903,7 +903,6 @@
   "figura.docs.blockstate.get_blast_resistance": "Gets the blast resistance of this BlockState",
   "figura.docs.blockstate.as_item": "Returns an ItemStack representing this block in item form, whatever Minecraft deems that to be\nIf it cannot find an item for this block, it will return nil",
   "figura.docs.blockstate.get_tags": "Returns a table containing all the tags of this block, as strings",
-  "figura.docs.blockstate.get_material": "Gets the name of the material this block is made of",
   "figura.docs.blockstate.has_collision": "Returns true if this block has collision",
   "figura.docs.blockstate.get_collision_shape": "Returns a table representing the bounding boxes of the collision shape\nThe table a list of every shape, containing two Vector3, where the first vector is one corner of the box and the other vector is the other corner",
   "figura.docs.blockstate.get_outline_shape": "Returns a table representing the bounding boxes of the outline shape\nThe table a list of every shape, containing two Vector3, where the first vector is one corner of the box and the other vector is the other corner",
