@@ -167,6 +167,7 @@
   "figura.gui.duplicate_keybind": "This key is also used for:\n%s",
   "figura.gui.favorited": "Favorited",
   "figura.gui.new_version.tooltip": "A new version of Figura is available! %s",
+  "figura.gui.new_version_download.tooltip": "Click to download in your browser!",
   "figura.gui.clear": "Clear",
 
   "figura.gui.text_hint.any": "Text",

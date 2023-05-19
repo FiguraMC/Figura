@@ -569,6 +569,13 @@ public final class UIHelper {
         return (startingOffset - clamp) * dir - (centered ? 0 : startingOffset);
     }
 
+    public static Runnable openURL(String url) {
+        Minecraft minecraft = Minecraft.getInstance();
+        return () -> minecraft.setScreen(new FiguraConfirmScreen.FiguraConfirmLinkScreen((bl) -> {
+            if (bl) Util.getPlatform().openUri(url);
+        }, url, minecraft.screen));
+    }
+
     public static void setContext(ContextMenu context) {
         if (Minecraft.getInstance().screen instanceof AbstractPanelScreen panelScreen)
             panelScreen.contextMenu = context;

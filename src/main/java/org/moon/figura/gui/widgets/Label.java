@@ -8,8 +8,11 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.util.Mth;
+import org.moon.figura.utils.MathUtils;
 import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.ui.UIHelper;
 
@@ -24,7 +27,8 @@ public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
     public TextUtils.Alignment alignment;
     public Integer outlineColor;
     public Integer backgroundColor;
-    public int alpha = 0xFF;
+    private Integer alpha;
+    private int alphaPrecise = 0xFF;
     public int maxWidth;
     public boolean wrap;
 
@@ -74,7 +78,7 @@ public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
             return;
 
         renderBackground(gui);
-        renderText(gui, mouseX, mouseY);
+        renderText(gui, mouseX, mouseY, delta);
     }
 
     private void renderBackground(GuiGraphics gui) {
@@ -87,11 +91,17 @@ public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
         gui.fill(x, y, x + width, y + height, backgroundColor);
     }
 
-    private void renderText(GuiGraphics gui, int mouseX, int mouseY) {
+    private void renderText(GuiGraphics gui, int mouseX, int mouseY, float delta) {
         PoseStack pose = gui.pose();
         pose.pushPose();
         pose.translate(this.x, getY(), 0);
         pose.scale(scale, scale, scale);
+
+        //alpha
+        if (alpha != null) {
+            float lerpDelta = MathUtils.magicDelta(0.6f, delta);
+            alphaPrecise = (int) Mth.lerp(lerpDelta, alphaPrecise, isMouseOver(mouseX, mouseY) ? 0xFF : alpha);
+        }
 
         //prepare pos
         int y = 0;
@@ -109,8 +119,10 @@ public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
                 hovered = font.getSplitter().componentStyleAtWidth(text, pos);
 
                 //add underline for the text with the click event
-                if (hovered != null && hovered.getClickEvent() != null)
-                    text = TextUtils.setStyleAtWidth(text, pos, font, Style.EMPTY.withUnderlined(true));
+                ClickEvent event = hovered != null ? hovered.getClickEvent() : null;
+                if (event != null)
+                    text = TextUtils.replaceStyle(text, Style.EMPTY.withUnderlined(true), style -> event.equals(style.getClickEvent()));
+                    //text = TextUtils.setStyleAtWidth(text, pos, font, Style.EMPTY.withUnderlined(true));
 
                 //set tooltip for hovered text, if any
                 UIHelper.setTooltip(hovered);
@@ -120,7 +132,7 @@ public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
             if (outlineColor != null) {
                 UIHelper.renderOutlineText(gui, font, text, x, y, 0xFFFFFF, outlineColor);
             } else {
-                gui.drawString(font, text, x, y, 0xFFFFFF + (alpha << 24));
+                gui.drawString(font, text, x, y, 0xFFFFFF + (alphaPrecise << 24));
             }
 
             y += height;
@@ -254,5 +266,9 @@ public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
     @Override
     public void setHeight(int height) {
         throw new UnsupportedOperationException();
+    }
+
+    public void setAlpha(int alpha) {
+        this.alpha = this.alphaPrecise = alpha;
     }
 }
