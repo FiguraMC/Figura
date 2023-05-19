@@ -31,6 +31,7 @@ import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.config.Configs;
 import org.moon.figura.gui.screens.AbstractPanelScreen;
+import org.moon.figura.gui.screens.FiguraConfirmScreen;
 import org.moon.figura.gui.widgets.ContextMenu;
 import org.moon.figura.gui.widgets.FiguraWidget;
 import org.moon.figura.math.vector.FiguraVec4;
@@ -476,19 +477,20 @@ public final class UIHelper {
         boolean reduced = Configs.REDUCED_MOTION.value;
 
         //calculate pos
-        int x = reduced ? 0 : mouseX + 12;
+        int x = reduced ? 0 : mouseX;
         int y = reduced ? screenY : mouseY - 12;
 
         //prepare text
         Font font = minecraft.font;
-        List<FormattedCharSequence> text = TextUtils.wrapTooltip(tooltip, font, x, screenX);
+        List<FormattedCharSequence> text = TextUtils.wrapTooltip(tooltip, font, x, screenX, 12);
         int height = font.lineHeight * text.size();
 
         //clamp position to bounds
+        x += 12;
         y = Math.min(Math.max(y, 0), screenY - height);
         int width = TextUtils.getWidth(text, font);
         if (x + width > screenX)
-            x = Math.max(x - width, 0);
+            x = Math.max(x - width - 24, 0);
 
         if (reduced) {
             x += (screenX - width) / 2;
