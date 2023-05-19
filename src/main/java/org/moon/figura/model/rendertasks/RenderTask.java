@@ -25,22 +25,21 @@ public abstract class RenderTask {
 
     protected final String name;
     protected final Avatar owner;
-
-    protected boolean enabled = true;
-    protected Integer light = null;
-    protected Integer overlay = null;
-
-    private final PartCustomization customization = new PartCustomization();
+    protected final PartCustomization customization;
 
     public RenderTask(String name, Avatar owner) {
         this.name = name;
         this.owner = owner;
+        this.customization = new PartCustomization();
+        this.customization.visible = true;
     }
 
     //Return true if something was rendered, false if the function cancels for some reason
     public abstract void render(PartCustomization.PartCustomizationStack stack, MultiBufferSource buffer, int light, int overlay);
     public abstract int getComplexity();
-    public abstract boolean shouldRender();
+    public boolean shouldRender() {
+        return customization.visible;
+    }
 
     public void pushOntoStack(PartCustomization.PartCustomizationStack stack) {
         customization.recalculate();
@@ -58,33 +57,34 @@ public abstract class RenderTask {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("render_task.is_enabled")
-    public boolean isEnabled() {
-        return this.enabled;
+    @LuaMethodDoc("render_task.is_visible")
+    public boolean isVisible() {
+        return customization.visible;
     }
 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaMethodOverload(
                     argumentTypes = Boolean.class,
-                    argumentNames = "bool"
+                    argumentNames = "visible"
             ),
-            aliases = "enabled",
-            value = "render_task.set_enabled"
+            aliases = "visible",
+            value = "render_task.set_visible"
     )
-    public RenderTask setEnabled(boolean enabled) {
-        this.enabled = enabled;
+    public RenderTask setVisible(boolean visible) {
+        customization.visible = visible;
         return this;
     }
 
     @LuaWhitelist
-    public RenderTask enabled(boolean enabled) {
-        return setEnabled(enabled);
+    public RenderTask visible(boolean visible) {
+        return setVisible(visible);
     }
 
     @LuaWhitelist
     @LuaMethodDoc("render_task.get_light")
     public FiguraVec2 getLight() {
+        Integer light = customization.light;
         return light == null ? null : FiguraVec2.of(LightTexture.block(light), LightTexture.sky(light));
     }
 
@@ -104,12 +104,12 @@ public abstract class RenderTask {
             value = "render_task.set_light")
     public RenderTask setLight(Object blockLight, Double skyLight) {
         if (blockLight == null) {
-            light = null;
+            customization.light = null;
             return this;
         }
 
         FiguraVec2 lightVec = LuaUtils.parseVec2("setLight", blockLight, skyLight);
-        light = LightTexture.pack((int) lightVec.x, (int) lightVec.y);
+        customization.light = LightTexture.pack((int) lightVec.x, (int) lightVec.y);
         return this;
     }
 
@@ -121,6 +121,7 @@ public abstract class RenderTask {
     @LuaWhitelist
     @LuaMethodDoc("render_task.get_overlay")
     public FiguraVec2 getOverlay() {
+        Integer overlay = customization.overlay;
         return overlay == null ? null : FiguraVec2.of(overlay & 0xFFFF, overlay >> 16);
     }
 
@@ -140,12 +141,12 @@ public abstract class RenderTask {
             value = "render_task.set_overlay")
     public RenderTask setOverlay(Object whiteOverlay, Double hurtOverlay) {
         if (whiteOverlay == null) {
-            overlay = null;
+            customization.overlay = null;
             return this;
         }
 
         FiguraVec2 overlayVec = LuaUtils.parseVec2("setOverlay", whiteOverlay, hurtOverlay);
-        overlay = OverlayTexture.pack((int) overlayVec.x, (int) overlayVec.y);
+        customization.overlay = OverlayTexture.pack((int) overlayVec.x, (int) overlayVec.y);
         return this;
     }
 

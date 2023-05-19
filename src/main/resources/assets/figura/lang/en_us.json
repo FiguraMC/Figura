@@ -1369,8 +1369,8 @@
 
   "figura.docs.render_task": "Represents a rendering task for Figura to complete each frame\nAn abstract superclass of ItemTask, BlockTask, and TextTask",
   "figura.docs.render_task.get_name": "Get this task's name",
-  "figura.docs.render_task.is_enabled": "Checks if this task is enabled",
-  "figura.docs.render_task.set_enabled": "Sets whether or not this task should be rendered",
+  "figura.docs.render_task.is_visible": "Checks if this task is visible",
+  "figura.docs.render_task.set_visible": "Sets whether or not this task should be rendered",
   "figura.docs.render_task.get_light": "Returns the light override value of this task",
   "figura.docs.render_task.set_light": "Sets the light override value of this task\nValues are given from 0 to 15, indicating the block light and sky light levels you want to use\nPassing nil will reset the lighting override for this task",
   "figura.docs.render_task.get_overlay": "Returns the overlay override value of this task",

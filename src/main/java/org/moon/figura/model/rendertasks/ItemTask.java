@@ -7,7 +7,6 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import org.luaj.vm2.LuaError;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.lua.LuaNotNil;
@@ -43,10 +42,15 @@ public class ItemTask extends RenderTask {
         poseStack.scale(-16, 16, -16);
 
         LivingEntity entity = owner.renderer.entity instanceof LivingEntity living ? living : null;
+        int newLight = this.customization.light != null ? this.customization.light : light;
+        int newOverlay = this.customization.overlay != null ? this.customization.overlay : overlay;
+        int seed = entity != null ? entity.getId() + displayMode.ordinal() : 0;
+
         Minecraft.getInstance().getItemRenderer().renderStatic(
                 entity, item, displayMode, left,
                 poseStack, buffer, WorldAPI.getCurrentWorld(),
-                this.light != null ? this.light : light, this.overlay != null ? this.overlay : overlay, entity != null ? entity.getId() + displayMode.ordinal() : 0);
+                newLight, newOverlay, seed
+        );
 
         stack.pop();
     }
@@ -58,7 +62,7 @@ public class ItemTask extends RenderTask {
 
     @Override
     public boolean shouldRender() {
-        return enabled && item != null && !item.isEmpty();
+        return super.shouldRender() && item != null && !item.isEmpty();
     }
 
     // -- lua -- //
