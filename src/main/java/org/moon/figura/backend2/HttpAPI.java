@@ -52,7 +52,8 @@ public class HttpAPI {
             if (code == 401) NetworkStuff.reAuth();
             consumer.accept(code, response.body());
         } catch (Exception e) {
-            FiguraMod.LOGGER.error("", e);
+            if (!e.getMessage().contains("GOAWAY received"))
+                FiguraMod.LOGGER.error("", e);
         }
     }
 
@@ -64,7 +65,8 @@ public class HttpAPI {
             if (code == 401) NetworkStuff.reAuth();
             consumer.accept(code, response.body());
         } catch (Exception e) {
-            FiguraMod.LOGGER.error("", e);
+            if (!e.getMessage().contains("GOAWAY received"))
+                FiguraMod.LOGGER.error("", e);
         }
     }
 

@@ -54,6 +54,11 @@ public class AvatarWizardScreen extends AbstractPanelScreen {
     }
 
     @Override
+    public void onClose() {
+        this.minecraft.setScreen(sourcePanel);
+    }
+
+    @Override
     public void tick() {
         super.tick();
         build.setActive(wizard.canBuild());
