@@ -563,7 +563,7 @@
   "figura.config.default_permission_level.tooltip": "Changes the default Permission Level that new players will be assigned into",
 
   "figura.config.emojis": "Emojis",
-  "figura.config.emojis.tooltip": "Toggles the emoji parsing on chat messages and signs, that converts \":emoji_name:\" into emojis",
+  "figura.config.emojis.tooltip": "Toggles the emoji parsing on chat messages and signs, that converts \":emoji_name:\" into emojis\nChanges on signs are only updated once reloading the world",
   "figura.config.emojis.1": "Disabled",
   "figura.config.emojis.2": "On",
   "figura.config.emojis.3": "On + Suggestions",
