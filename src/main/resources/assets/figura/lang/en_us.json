@@ -168,6 +168,7 @@
   "figura.gui.favorited": "Favorited",
   "figura.gui.new_version.tooltip": "A new version of Figura is available! %s",
   "figura.gui.new_version_download.tooltip": "Click to download in your browser!",
+  "figura.gui.old_version.tooltip": "Are you a time traveller? The latest version is %s",
   "figura.gui.clear": "Clear",
 
   "figura.gui.text_hint.any": "Text",
@@ -551,8 +552,8 @@
   "figura.config.button_location.4.tooltip": "Renders the Figura button as text, anchored in the Bottom Left corner of the screen",
   "figura.config.button_location.5.tooltip": "Renders the Figura button as text, anchored in the Bottom Right corner of the screen",
 
-  "figura.config.update_channel": "Update Type",
-  "figura.config.update_channel.tooltip": "Changes the version type when looking for new Figura updates",
+  "figura.config.update_channel": "Figura Update Channel",
+  "figura.config.update_channel.tooltip": "Changes the version mode when looking for new Figura updates",
   "figura.config.update_channel.1": "None",
   "figura.config.update_channel.2": "Releases (Stable)",
   "figura.config.update_channel.3": "Pre-releases (Unstable)",
