@@ -3,10 +3,7 @@ package org.moon.figura.gui.screens;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.*;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
@@ -33,7 +30,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
     private AvatarInfoWidget avatarInfo;
     private Label panic;
 
-    private Button upload, delete;
+    private Button upload, reload, delete;
 
     public WardrobeScreen(Screen parentScreen) {
         super(parentScreen, new FiguraText("gui.panels.title.wardrobe"));
@@ -81,13 +78,12 @@ public class WardrobeScreen extends AbstractPanelScreen {
         upload.setActive(false);
 
         //reload
-        addRenderableWidget(new Button(buttX - 12, buttY, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/reload.png"), 72, 24, new FiguraText("gui.wardrobe.reload.tooltip"), button -> {
+        addRenderableWidget(reload = new Button(buttX - 12, buttY, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/reload.png"), 72, 24, new FiguraText("gui.wardrobe.reload.tooltip"), button -> {
             AvatarManager.clearAvatars(FiguraMod.getLocalPlayerUUID());
             try {
                 LocalAvatarLoader.loadAvatar(null, null);
             } catch (Exception ignored) {}
             AvatarManager.localUploaded = true;
-            NetworkStuff.auth();
             AvatarList.selectedEntry = null;
         }));
 
@@ -106,7 +102,8 @@ public class WardrobeScreen extends AbstractPanelScreen {
 
         //version
         MutableComponent versionText = new FiguraText().append(" " + FiguraMod.VERSION.noBuildString()).withStyle(ChatFormatting.ITALIC);
-        boolean oldVersion = NetworkStuff.latestVersion != null && NetworkStuff.latestVersion.compareTo(FiguraMod.VERSION) > 0;
+        int versionStatus = NetworkStuff.latestVersion != null ? NetworkStuff.latestVersion.compareTo(FiguraMod.VERSION) : 0;
+        boolean oldVersion = versionStatus > 0;
         if (oldVersion) {
             versionText
                     .append(" ")
@@ -125,6 +122,10 @@ public class WardrobeScreen extends AbstractPanelScreen {
                             ))
                             .withClickEvent(new TextUtils.FiguraClickEvent(UIHelper.openURL(FiguraLinkCommand.LINK.MODRINTH.url + "/versions")))
                     );
+        } else if (versionStatus < 0) {
+            versionText.withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                    new FiguraText("gui.old_version.tooltip", new TextComponent(NetworkStuff.latestVersion.toString()).withStyle(ChatFormatting.LIGHT_PURPLE))
+            )));
         }
 
         Label version = new Label(versionText, middle, this.height - 4, TextUtils.Alignment.CENTER);
@@ -191,9 +192,10 @@ public class WardrobeScreen extends AbstractPanelScreen {
 
         //backend buttons
         Avatar avatar;
-        boolean backend = NetworkStuff.backendStatus == 3;
-        upload.setActive(NetworkStuff.canUpload() && !AvatarManager.localUploaded && (avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID())) != null && avatar.nbt != null);
-        delete.setActive(backend);
+        boolean backend = NetworkStuff.isConnected();
+        upload.setActive(NetworkStuff.canUpload() && !AvatarManager.localUploaded && (avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID())) != null && avatar.nbt != null && avatar.loaded);
+        reload.setActive(backend);
+        delete.setActive(backend && AvatarManager.localUploaded);
     }
 
     @Override

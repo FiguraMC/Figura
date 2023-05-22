@@ -32,7 +32,6 @@ import org.luaj.vm2.Varargs;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.animation.Animation;
 import org.moon.figura.animation.AnimationPlayer;
-import org.moon.figura.animation.TimeController;
 import org.moon.figura.backend2.NetworkStuff;
 import org.moon.figura.config.Configs;
 import org.moon.figura.lua.FiguraLuaPrinter;
