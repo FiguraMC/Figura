@@ -46,7 +46,9 @@
     "render.GameRendererAccessor",
     "render.GameRendererMixin",
     "render.LevelRendererMixin",
+    "render.ModelManagerAccessor",
     "render.PlayerModelMixin",
+    "render.TextureAtlasAccessor",
     "render.TextureManagerAccessor",
 
     "render.layers.CapeLayerMixin",

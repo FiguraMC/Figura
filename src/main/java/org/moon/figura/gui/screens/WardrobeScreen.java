@@ -33,7 +33,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
     private AvatarInfoWidget avatarInfo;
     private Label panic;
 
-    private Button upload, reload, delete;
+    private Button upload, delete;
 
     public WardrobeScreen(Screen parentScreen) {
         super(parentScreen, FiguraText.of("gui.panels.title.wardrobe"));
@@ -81,7 +81,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
         upload.setActive(false);
 
         //reload
-        addRenderableWidget(reload = new Button(buttX - 12, buttY, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/reload.png"), 72, 24, FiguraText.of("gui.wardrobe.reload.tooltip"), button -> {
+        addRenderableWidget(new Button(buttX - 12, buttY, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/reload.png"), 72, 24, FiguraText.of("gui.wardrobe.reload.tooltip"), button -> {
             AvatarManager.clearAvatars(FiguraMod.getLocalPlayerUUID());
             try {
                 LocalAvatarLoader.loadAvatar(null, null);
@@ -94,6 +94,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
         addRenderableWidget(delete = new Button(buttX + 24, buttY, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/delete.png"), 72, 24, FiguraText.of("gui.wardrobe.delete.tooltip"), button ->
                 NetworkStuff.deleteAvatar(null))
         );
+        delete.setActive(false);
 
         statusWidget = new StatusWidget(entity.getX() + entity.getWidth() - 64, 0, 64);
         statusWidget.setY(entity.getY() - statusWidget.getHeight() - 4);
@@ -195,10 +196,8 @@ public class WardrobeScreen extends AbstractPanelScreen {
 
         //backend buttons
         Avatar avatar;
-        boolean backend = NetworkStuff.isConnected();
         upload.setActive(NetworkStuff.canUpload() && !AvatarManager.localUploaded && (avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID())) != null && avatar.nbt != null && avatar.loaded);
-        reload.setActive(backend);
-        delete.setActive(backend && AvatarManager.localUploaded);
+        delete.setActive(NetworkStuff.isConnected() && AvatarManager.localUploaded);
     }
 
     @Override

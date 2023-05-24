@@ -26,7 +26,10 @@ public class IOUtils {
         File[] children = rf.listFiles();
         if (children == null) return result;
         for (File child : children) {
-            if (child.isDirectory() && !child.isHidden() && !child.getName().startsWith("."))
+            if (child.isHidden() || child.getName().startsWith("."))
+                continue;
+
+            if (child.isDirectory())
                 result.addAll(getFilesByExtension(child.toPath(), extension));
             else if (child.toString().toLowerCase().endsWith(extension.toLowerCase()))
                 result.add(child);
