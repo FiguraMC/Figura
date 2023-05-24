@@ -23,6 +23,8 @@ import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.mixin.render.ModelManagerAccessor;
+import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.Version;
 
@@ -316,8 +318,8 @@ public class ClientAPI {
             value = "client.has_resource"
     )
     public static boolean hasResource(@LuaNotNil String path) {
+        ResourceLocation resource = LuaUtils.parsePath(path);
         try {
-            ResourceLocation resource = new ResourceLocation(path);
             return Minecraft.getInstance().getResourceManager().getResource(resource).isPresent();
         } catch (Exception ignored) {
             return false;
@@ -442,6 +444,32 @@ public class ClientAPI {
     @LuaMethodDoc("client.get_frame_time")
     public static double getFrameTime() {
         return Minecraft.getInstance().getFrameTime();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("client.list_atlases")
+    public static List<String> listAtlases() {
+        List<String> list = new ArrayList<>();
+        for (ResourceLocation res : ModelManagerAccessor.getVanillaAtlases().keySet())
+            list.add(res.toString());
+        return list;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = String.class,
+                    argumentNames = "path"
+            ),
+            value = "client.get_atlas"
+    )
+    public static TextureAtlasAPI getAtlas(@LuaNotNil String atlas) {
+        ResourceLocation path = LuaUtils.parsePath(atlas);
+        try {
+            return new TextureAtlasAPI(Minecraft.getInstance().getModelManager().getAtlas(path));
+        } catch (Exception ignored) {
+            return null;
+        }
     }
 
     @Override

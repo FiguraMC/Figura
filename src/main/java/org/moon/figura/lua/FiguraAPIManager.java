@@ -133,6 +133,8 @@ public class FiguraAPIManager {
         add(AvatarAPI.class);
 
         add(ConfigAPI.class);
+
+        add(TextureAtlasAPI.class);
     }};
 
     public static final Map<String, Function<FiguraLuaRuntime, Object>> API_GETTERS = new LinkedHashMap<>() {{

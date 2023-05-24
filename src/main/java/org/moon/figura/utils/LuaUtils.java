@@ -5,6 +5,7 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.arguments.blocks.BlockStateArgument;
 import net.minecraft.commands.arguments.item.ItemArgument;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -141,5 +142,13 @@ public class LuaUtils {
         }
 
         throw new LuaError("Illegal argument to " + methodName + "(): " + block);
+    }
+
+    public static ResourceLocation parsePath(String path) {
+        try {
+            return new ResourceLocation(path);
+        } catch (Exception e) {
+            throw new LuaError(e.getMessage());
+        }
     }
 }
