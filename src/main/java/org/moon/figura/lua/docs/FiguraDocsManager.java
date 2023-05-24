@@ -217,7 +217,8 @@ public class FiguraDocsManager {
 
         put("textures", List.of(
                 TextureAPI.class,
-                FiguraTexture.class
+                FiguraTexture.class,
+                TextureAtlasAPI.class
         ));
 
         put("config", List.of(

@@ -14,7 +14,6 @@ import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
-import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.LuaUtils;
 
 import java.util.UUID;
@@ -361,7 +360,7 @@ public class RendererAPI {
             value = "renderer.set_post_effect"
     )
     public RendererAPI setPostEffect(String effect) {
-        this.postShader = effect == null ? null : new ResourceLocation("shaders/post/" + FiguraIdentifier.formatPath(effect) + ".json");
+        this.postShader = effect == null ? null : LuaUtils.parsePath("shaders/post/" + effect + ".json");
         return this;
     }
 
@@ -486,14 +485,11 @@ public class RendererAPI {
             return this;
         }
 
-        try {
-            fireLayer1 = new ResourceLocation(id);
-            if (fireLayer1.getPath().startsWith("textures/"))
-                fireLayer1 = new ResourceLocation(fireLayer1.getNamespace(), fireLayer1.getPath().substring("textures/".length()));
-            return this;
-        } catch (Exception e) {
-            throw new LuaError(e.getMessage());
-        }
+        fireLayer1 = LuaUtils.parsePath(id);
+        if (fireLayer1.getPath().startsWith("textures/"))
+            fireLayer1 = new ResourceLocation(fireLayer1.getNamespace(), fireLayer1.getPath().substring("textures/".length()));
+
+        return this;
     }
 
     @LuaWhitelist
@@ -511,14 +507,11 @@ public class RendererAPI {
             return this;
         }
 
-        try {
-            fireLayer2 = new ResourceLocation(id);
-            if (fireLayer2.getPath().startsWith("textures/"))
-                fireLayer2 = new ResourceLocation(fireLayer2.getNamespace(), fireLayer2.getPath().substring("textures/".length()));
-            return this;
-        } catch (Exception e) {
-            throw new LuaError(e.getMessage());
-        }
+        fireLayer2 = LuaUtils.parsePath(id);
+        if (fireLayer2.getPath().startsWith("textures/"))
+            fireLayer2 = new ResourceLocation(fireLayer2.getNamespace(), fireLayer2.getPath().substring("textures/".length()));
+
+        return this;
     }
 
     @LuaWhitelist
