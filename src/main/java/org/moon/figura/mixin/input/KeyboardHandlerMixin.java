@@ -48,4 +48,11 @@ public class KeyboardHandlerMixin {
             ci.cancel();
         }
     }
+
+    @Inject(method = "charTyped", at = @At("HEAD"))
+    private void charTyped(long window, int codePoint, int modifiers, CallbackInfo ci) {
+        Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
+        if (avatar != null)
+            avatar.charTypedEvent(Character.toString(codePoint), modifiers, codePoint);
+    }
 }

@@ -58,7 +58,7 @@ public enum PartFilterScheme {
         static SchemeFunction onlyThisSeparate(ParentType typeToAllow) {
             return (parent, prev) -> {
                 if (parent == typeToAllow) //If it's our allowed type, we're good to go
-                    return true;
+                    return !prev;
                 if (parent.isSeparate) //If it is separate, but not this type, then we want to not render but continue
                     return false;
                 return prev; //Pass it along

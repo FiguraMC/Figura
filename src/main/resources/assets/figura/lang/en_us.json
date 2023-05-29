@@ -4,8 +4,8 @@
   "figura.ellipsis": "...",
 
 
-  "figura.backend.connected": "Backend Connected!",
-  "figura.backend.disconnected": "Backend Disconnected!",
+  "figura.backend.connected": "Cloud Connected!",
+  "figura.backend.disconnected": "Cloud Disconnected!",
 
   "figura.backend.user_not_found": "User not found",
   "figura.backend.avatar_not_found": "Avatar not found",
@@ -166,8 +166,7 @@
   "figura.gui.avatar_settings.tooltip": "Avatar Settings",
   "figura.gui.duplicate_keybind": "This key is also used for:\n%s",
   "figura.gui.favorited": "Favorited",
-  "figura.gui.new_version.tooltip": "A new version of Figura is available! %s",
-  "figura.gui.new_version_download.tooltip": "Click to download in your browser!",
+  "figura.gui.new_version.tooltip": "A new version of Figura is available! %s\nClick to download it in your browser!",
   "figura.gui.old_version.tooltip": "Are you a time traveller? The latest version is %s",
   "figura.gui.clear": "Clear",
 
@@ -212,9 +211,9 @@
 
   "figura.gui.wardrobe.expand_wardrobe.tooltip": "Expand wardrobe list",
   "figura.gui.wardrobe.minimize_wardrobe.tooltip": "Minimize wardrobe list",
-  "figura.gui.wardrobe.upload.tooltip": "Upload avatar to the Figura server\nOther players will see you as the uploaded avatar",
-  "figura.gui.wardrobe.reload.tooltip": "Reload avatar from the Figura server",
-  "figura.gui.wardrobe.delete.tooltip": "Delete avatar from the Figura server",
+  "figura.gui.wardrobe.upload.tooltip": "Upload avatar to cloud\nOther players can only see you as the uploaded avatar",
+  "figura.gui.wardrobe.reload.tooltip": "Reload avatar from cloud",
+  "figura.gui.wardrobe.delete.tooltip": "Delete avatar from cloud",
   "figura.gui.wardrobe.sound.tooltip": "Avatar Sounds",
   "figura.gui.wardrobe.keybind.tooltip": "Avatar Keybinds",
   "figura.gui.wardrobe.new_avatar.tooltip": "Create new Avatar",
@@ -259,8 +258,8 @@
   "figura.gui.status.reason": "Reason",
   "figura.gui.status.size": "Size",
   "figura.gui.status.size.0": "none",
-  "figura.gui.status.size.1": "Avatar size is greater than %s",
-  "figura.gui.status.size.2": "Avatar size is greater than %s",
+  "figura.gui.status.size.1": "Avatar size over upload limit (%s)",
+  "figura.gui.status.size.2": "Avatar size is over 75%% of the upload limit (%s)",
   "figura.gui.status.size.3": "ok",
 
   "figura.gui.status.texture": "Texture",
@@ -273,7 +272,7 @@
   "figura.gui.status.script.2": "This Avatar script targets a newer version of Figura",
   "figura.gui.status.script.3": "ok",
 
-  "figura.gui.status.backend": "Backend",
+  "figura.gui.status.backend": "Cloud",
   "figura.gui.status.backend.1": "Disconnected",
   "figura.gui.status.backend.2": "Connecting",
   "figura.gui.status.backend.3": "Connected",
@@ -580,8 +579,8 @@
   "figura.config.dev": "Dev",
   "figura.config.dev.tooltip": "Developer/Experimental settings",
 
-  "figura.config.connection_toasts": "Backend Connection Toasts",
-  "figura.config.connection_toasts.tooltip": "Toggles if the game should show up toasts related with the backend connection status",
+  "figura.config.connection_toasts": "Cloud Connection Toasts",
+  "figura.config.connection_toasts.tooltip": "Toggles if the game should show up toasts related with the cloud connection status",
 
   "figura.config.log_others": "Log non-host scripts",
   "figura.config.log_others.tooltip": "Allows debug logging and errors of non-host scripts",
@@ -607,8 +606,8 @@
   "figura.config.main_dir": "Figura Folder Location",
   "figura.config.main_dir.tooltip": "Changes the location of the Figura folder",
 
-  "figura.config.server_ip": "Figura Server IP",
-  "figura.config.server_ip.tooltip": "Sets the IP of the server used for Figura's multiplayer features",
+  "figura.config.server_ip": "Figura Cloud IP",
+  "figura.config.server_ip.tooltip": "Sets the IP of the cloud used for Figura's multiplayer features",
 
   "figura.config.clear_cache": "Clear Cache",
   "figura.config.clear_cache.tooltip": "Clears the cache files\nRemoves things like cached Avatars and UI states\nWill not clear settings nor saved permissions",
@@ -1076,6 +1075,7 @@
   "figura.docs.events.mouse_move": "The MOUSE_MOVE event runs every time the mouse is moved around\nTakes two parameters, x and y, which is the difference from the mouse position based on the latest saved position\nIf returned true, the event cancels its vanilla function\nNote that cancelling the vanilla function also cancels saving the last mouse position",
   "figura.docs.events.mouse_press": "The MOUSE_PRESS event runs every time a mouse button is pressed\nTakes three number parameters, a \"button\", which is the number id of the button that was been pressed, the \"action\", which is the status of the press event (0 for release, 1 for press, 2 for hold), and the \"modifier\", which is a bitmask number detecting if you have any modifier keys being pressed (like shift or alt, for example)\nIf returned true, the event cancels its vanilla function",
   "figura.docs.events.key_press": "The KEY_PRESS event runs every time a keyboard key is pressed\nTakes three number parameters, a \"key\", which is the number id of the key that was been pressed, the \"action\", which is the status of the press event (0 for release, 1 for press, 2 for hold), and the \"modifier\", which is a bitmask number detecting if you have any modifier keys being pressed (like shift or alt, for example)\nIf returned true, the event cancels its vanilla function",
+  "figura.docs.events.char_typed": "The CHAR_TYPED event runs every time a character is inputted\nTakes three parameters, the resulting \"string\" after converting the code point, the \"modifier\", which is a bitmask number detecting if you have any modifier keys being pressed (like shift or alt, for example), and the \"codepoint\" of the inputted char",
   "figura.docs.events.use_item": "The USE_ITEM event is run every time the entity uses an item\nThe item, action and amount of particles this item would produce is given as argument\nIf returned true, the event cancels its vanilla function",
   "figura.docs.events.arrow_render": "The ARROW_RENDER event is run for every arrow entity shot by the Avatar owner\nIt takes two arguments, the tick delta, and the arrow entity\nReturning \"true\" stops this arrow from rendering, including the Arrow parent parts\nRequires the \"Vanilla Model Change\" permission",
   "figura.docs.events.item_render": "Called on every one of your items that is being rendered\nIt takes six arguments, the item, the rendering mode, the position, rotation and scale that it would be applied, and if its being rendered from the left hand\nReturning a ModelPart parented to Item, stops the rendering of this item and will render the returned part instead",

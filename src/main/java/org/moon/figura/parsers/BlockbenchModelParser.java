@@ -300,10 +300,10 @@ public class BlockbenchModelParser {
         int index = 0;
         for (Map.Entry<String, JsonElement> entry : vertices.entrySet()) {
             verticesMap.put(entry.getKey(), index);
-            JsonArray arr = entry.getValue().getAsJsonArray();
-            verticesList.add(FloatTag.valueOf(arr.get(0).getAsFloat()+offset[0]));
-            verticesList.add(FloatTag.valueOf(arr.get(1).getAsFloat()+offset[1]));
-            verticesList.add(FloatTag.valueOf(arr.get(2).getAsFloat()+offset[2]));
+            float[] arr = jsonToFloat(entry.getValue().getAsJsonArray());
+            verticesList.add(FloatTag.valueOf(arr[0] + offset[0]));
+            verticesList.add(FloatTag.valueOf(arr[1] + offset[1]));
+            verticesList.add(FloatTag.valueOf(arr[2] + offset[2]));
             index++;
         }
 
@@ -348,9 +348,9 @@ public class BlockbenchModelParser {
                 facesList.add(bestVal);
 
                 //UVs
-                JsonArray uv = face.uv.getAsJsonArray(vertex);
-                float u = uv.get(0).getAsFloat() * texture.fixedSize[0];
-                float v = uv.get(1).getAsFloat() * texture.fixedSize[1];
+                float[] uv = jsonToFloat(face.uv.getAsJsonArray(vertex));
+                float u = uv[0] * texture.fixedSize[0];
+                float v = uv[1] * texture.fixedSize[1];
                 uvsList.add(FloatTag.valueOf(u));
                 uvsList.add(FloatTag.valueOf(v));
             }
@@ -716,6 +716,18 @@ public class BlockbenchModelParser {
         h = (h << 8) + ((int) texture[23] & 0xFF);
 
         return new int[]{w, h};
+    }
+
+    public static float[] jsonToFloat(JsonArray array) {
+        float[] f = new float[array.size()];
+
+        int i = 0;
+        for (JsonElement element : array) {
+            f[i] = element.isJsonNull() ? 0f : element.getAsFloat();
+            i++;
+        }
+
+        return f;
     }
 
     //dummy texture data
