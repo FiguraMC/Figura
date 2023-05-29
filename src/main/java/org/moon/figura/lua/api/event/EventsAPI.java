@@ -58,11 +58,14 @@ public class EventsAPI {
     @LuaFieldDoc("events.mouse_move")
     public final LuaEvent MOUSE_MOVE = null;
     @LuaWhitelist
+    @LuaFieldDoc("events.mouse_press")
+    public final LuaEvent MOUSE_PRESS = null;
+    @LuaWhitelist
     @LuaFieldDoc("events.key_press")
     public final LuaEvent KEY_PRESS = null;
     @LuaWhitelist
-    @LuaFieldDoc("events.mouse_press")
-    public final LuaEvent MOUSE_PRESS = null;
+    @LuaFieldDoc("events.char_typed")
+    public final LuaEvent CHAR_TYPED = null;
     @LuaWhitelist
     @LuaFieldDoc("events.use_item")
     public final LuaEvent USE_ITEM = null;
@@ -91,6 +94,7 @@ public class EventsAPI {
             put("MOUSE_MOVE", new LuaEvent());
             put("MOUSE_PRESS", new LuaEvent());
             put("KEY_PRESS", new LuaEvent());
+            put("CHAR_TYPED", new LuaEvent());
             put("USE_ITEM", new LuaEvent());
             put("ARROW_RENDER", new LuaEvent());
             put("ITEM_RENDER", new LuaEvent());

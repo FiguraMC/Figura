@@ -25,9 +25,6 @@ import java.util.List;
 
 public class WardrobeScreen extends AbstractPanelScreen {
 
-    private LoadingErrorWidget loadingErrorWidget;
-    private StatusWidget statusWidget;
-    private AvatarInfoWidget avatarInfo;
     private Label panic;
 
     private Button upload, delete;
@@ -93,11 +90,11 @@ public class WardrobeScreen extends AbstractPanelScreen {
         );
         delete.setActive(false);
 
-        statusWidget = new StatusWidget(entity.getX() + entity.getWidth() - 64, 0, 64);
+        StatusWidget statusWidget = new StatusWidget(entity.getX() + entity.getWidth() - 64, 0, 64);
         statusWidget.setY(entity.getY() - statusWidget.getHeight() - 4);
         addRenderableOnly(statusWidget);
 
-        addRenderableOnly(loadingErrorWidget = new LoadingErrorWidget(statusWidget.getX() - 18, statusWidget.getY(), 14));
+        addRenderableOnly(new LoadingErrorWidget(statusWidget.getX() - 18, statusWidget.getY(), 14));
 
         // -- bottom -- //
 
@@ -118,8 +115,6 @@ public class WardrobeScreen extends AbstractPanelScreen {
                             .applyFormat(ChatFormatting.AQUA)
                             .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
                                     new FiguraText("gui.new_version.tooltip", new TextComponent(NetworkStuff.latestVersion.toString()).withStyle(ChatFormatting.GREEN))
-                                            .append("\n")
-                                            .append(new FiguraText("gui.new_version_download.tooltip"))
                             ))
                             .withClickEvent(new TextUtils.FiguraClickEvent(UIHelper.openURL(FiguraLinkCommand.LINK.MODRINTH.url + "/versions")))
                     );
@@ -169,7 +164,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
         addRenderableWidget(keybinds);
 
         //avatar metadata
-        addRenderableOnly(avatarInfo = new AvatarInfoWidget(this.width - panels - 4, 56, panels, back.y - 60));
+        addRenderableOnly(new AvatarInfoWidget(this.width - panels - 4, 56, panels, back.getY() - 60));
 
         //panic warning - always added last, on top
         addRenderableWidget(panic = new Label(
@@ -184,9 +179,6 @@ public class WardrobeScreen extends AbstractPanelScreen {
     public void tick() {
         //children tick
         super.tick();
-        loadingErrorWidget.tick();
-        statusWidget.tick();
-        avatarInfo.tick();
 
         //panic visible
         panic.setVisible(AvatarManager.panic);

@@ -413,6 +413,10 @@ public class Avatar {
         return isCancelled(result);
     }
 
+    public void charTypedEvent(String chars, int modifiers, int codePoint) {
+        if (loaded) run("CHAR_TYPED", tick, chars, modifiers, codePoint);
+    }
+
     // -- rendering events -- //
 
     private void render() {

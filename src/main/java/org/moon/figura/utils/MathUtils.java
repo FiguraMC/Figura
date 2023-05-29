@@ -115,8 +115,8 @@ public class MathUtils {
         return df.format(size) + SIZE_UNITS[i];
     }
 
-    public static float magicDelta(float force, float delta) {
-        return Configs.REDUCED_MOTION.value ? 1f : (float) (1f - Math.pow(force, delta));
+    public static float magicDelta(float speed, float delta) {
+        return Configs.REDUCED_MOTION.value ? 1f : (float) (1f - Math.pow(speed, delta));
     }
 
     public static FiguraVec3 min(FiguraVec3 val, double min) {

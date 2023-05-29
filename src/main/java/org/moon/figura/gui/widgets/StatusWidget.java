@@ -119,7 +119,7 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
 
         MutableComponent info;
         if (i == 0) {
-            double size = color == 1 ? NetworkStuff.getSizeLimit() : NetworkStuff.getSizeLimit() * 0.75;
+            double size = NetworkStuff.getSizeLimit();
             info = new FiguraText(part + "." + color, MathUtils.asFileSize(size));
         } else {
             info = new FiguraText(part + "." + color);
