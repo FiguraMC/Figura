@@ -225,7 +225,7 @@ public class Configs {
                     PermissionManager.saveToDisk();
                 }
             },
-            EMOJIS = new EnumConfig("emojis", MISC, 0, 3);
+            EMOJIS = new EnumConfig("emojis", MISC, 1, 3);
     public static final BoolConfig
             EASTER_EGGS = new BoolConfig("easter_eggs", MISC, true);
 

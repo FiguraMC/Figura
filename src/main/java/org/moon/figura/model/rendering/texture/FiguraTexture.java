@@ -19,6 +19,7 @@ import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec4;
@@ -303,6 +304,25 @@ public class FiguraTexture extends SimpleTexture {
                 LuaValue result = function.call(owner.luaRuntime.typeManager.javaToLua(color).arg1(), LuaValue.valueOf(j), LuaValue.valueOf(i));
                 if (!result.isnil() && result.isuserdata(FiguraVec4.class))
                     setPixel(j, i, result.checkuserdata(FiguraVec4.class), null, null, null);
+            }
+        }
+        return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = {Integer.class, Integer.class, Integer.class, Integer.class, FiguraMat4.class},
+                    argumentNames = {"x", "y", "width", "height", "matrix"}
+            ),
+            value = "texture.apply_matrix"
+    )
+    public FiguraTexture applyMatrix(int x, int y, int width, int height, @LuaNotNil FiguraMat4 matrix) {
+        for (int i = y; i < y + height; i++) {
+            for (int j = x; j < x + width; j++) {
+                FiguraVec4 color = getPixel(j, i);
+                color.transform(matrix);
+                setPixel(j, i, color, null, null, null);
             }
         }
         return this;

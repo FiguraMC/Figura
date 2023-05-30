@@ -309,6 +309,11 @@ public class Avatar {
         return ret;
     }
 
+    public void punish(int amount) {
+        if (luaRuntime != null)
+            luaRuntime.takeInstructions(amount);
+    }
+
     // -- script events -- //
 
     private boolean isCancelled(Varargs args) {
