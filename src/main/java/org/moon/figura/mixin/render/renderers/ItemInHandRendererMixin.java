@@ -98,7 +98,14 @@ public abstract class ItemInHandRendererMixin {
     private void renderItem(LivingEntity entity, ItemStack stack, ItemTransforms.TransformType renderMode, boolean leftHanded, PoseStack matrices, MultiBufferSource vertexConsumers, int light, CallbackInfo ci) {
         if (stack.getItem() instanceof BlockItem bl && bl.getBlock() instanceof AbstractSkullBlock) {
             SkullBlockRendererAccessor.setEntity(entity);
-            SkullBlockRendererAccessor.setRenderMode(leftHanded ? SkullBlockRendererAccessor.SkullRenderMode.LEFT_HAND : SkullBlockRendererAccessor.SkullRenderMode.RIGHT_HAND);
+            SkullBlockRendererAccessor.setRenderMode(switch (itemDisplayContext) {
+                case FIRST_PERSON_LEFT_HAND -> SkullBlockRendererAccessor.SkullRenderMode.FIRST_PERSON_LEFT_HAND;
+                case FIRST_PERSON_RIGHT_HAND -> SkullBlockRendererAccessor.SkullRenderMode.FIRST_PERSON_RIGHT_HAND;
+                case THIRD_PERSON_LEFT_HAND -> SkullBlockRendererAccessor.SkullRenderMode.THIRD_PERSON_LEFT_HAND;
+                case THIRD_PERSON_RIGHT_HAND -> SkullBlockRendererAccessor.SkullRenderMode.THIRD_PERSON_RIGHT_HAND;
+                default -> leftHanded ? SkullBlockRendererAccessor.SkullRenderMode.THIRD_PERSON_LEFT_HAND //should never happen
+                        : SkullBlockRendererAccessor.SkullRenderMode.THIRD_PERSON_RIGHT_HAND; 
+            });
         }
     }
 }
