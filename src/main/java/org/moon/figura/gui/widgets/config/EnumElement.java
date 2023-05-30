@@ -82,7 +82,8 @@ public class EnumElement extends AbstractConfigElement {
         this.resetButton.setActive(!this.isDefault());
 
         //button text
-        Component text = names.get((int) this.config.tempValue % this.names.size());
+        int selectedIndex = (int) this.config.tempValue % this.names.size();
+        Component text = names.get(selectedIndex);
 
         //edited colour
         if (this.isChanged())
@@ -90,6 +91,11 @@ public class EnumElement extends AbstractConfigElement {
 
         //set text
         this.button.setMessage(text);
+
+        //set tooltip
+        List<Component> tooltip = ((ConfigType.EnumConfig) this.config).enumTooltip;
+        if (tooltip != null)
+            button.setTooltip(tooltip.get(selectedIndex));
 
         //super render
         super.render(stack, mouseX, mouseY, delta);

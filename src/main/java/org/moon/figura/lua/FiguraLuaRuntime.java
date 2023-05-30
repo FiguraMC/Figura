@@ -412,6 +412,10 @@ public class FiguraLuaRuntime {
         return userGlobals.running.state.bytecodes;
     }
 
+    public void takeInstructions(int amount) {
+        userGlobals.running.state.bytecodes += amount;
+    }
+
     // script execution //
 
     public LuaValue load(String name, String src) {
