@@ -368,9 +368,11 @@
   "figura.config.format_script.1":"Disabled",
   "figura.config.format_script.2":"Light",
   "figura.config.format_script.3":"Heavy",
+  "figura.config.format_script.4":"AST",
   "figura.config.format_script.1.tooltip":"No compacting",
   "figura.config.format_script.2.tooltip":"Minimal compacting, removes only comments and unnecessary whitespaces",
   "figura.config.format_script.3.tooltip":"Same as Light and also compacts everything into a single line",
+  "figura.config.format_script.4.tooltip":"Parses code into Abstract Syntax Tree and reconstructs code into theoretically optimal representation",
 
 
   "figura.config.rendering": "Rendering",
