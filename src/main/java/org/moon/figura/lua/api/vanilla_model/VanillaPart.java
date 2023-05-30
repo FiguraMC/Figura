@@ -85,7 +85,7 @@ public abstract class VanillaPart {
             value = "vanilla_part.set_pos"
     )
     public VanillaPart setPos(Object x, Double y, Double z) {
-        pos = x == null ? null : LuaUtils.parseVec3("setPos", x, y, z);
+        pos = LuaUtils.nullableVec3("setPos", x, y, z);
         return this;
     }
 
@@ -117,7 +117,7 @@ public abstract class VanillaPart {
             value = "vanilla_part.set_rot"
     )
     public VanillaPart setRot(Object x, Double y, Double z) {
-        rot = x == null ? null : LuaUtils.parseVec3("setRot", x, y, z);
+        rot = LuaUtils.nullableVec3("setRot", x, y, z);
         return this;
     }
 
@@ -149,7 +149,7 @@ public abstract class VanillaPart {
             value = "vanilla_part.set_offset_rot"
     )
     public VanillaPart setOffsetRot(Object x, Double y, Double z) {
-        offsetRot = x == null ? null : LuaUtils.parseVec3("setOffsetRot", x, y, z);
+        offsetRot = LuaUtils.nullableVec3("setOffsetRot", x, y, z);
         return this;
     }
 

@@ -165,7 +165,7 @@ public class Action {
             value = "wheel_action.set_color"
     )
     public Action setColor(Object x, Double y, Double z) {
-        this.color = x == null ? null : LuaUtils.parseVec3("color", x, y, z);
+        this.color = LuaUtils.nullableVec3("color", x, y, z);
         return this;
     }
 
@@ -196,7 +196,7 @@ public class Action {
             value = "wheel_action.set_hover_color"
     )
     public Action setHoverColor(Object x, Double y, Double z) {
-        this.hoverColor = x == null ? null : LuaUtils.parseVec3("hoverColor", x, y, z);
+        this.hoverColor = LuaUtils.nullableVec3("hoverColor", x, y, z);
         return this;
     }
 
@@ -471,7 +471,7 @@ public class Action {
             value = "wheel_action.set_toggle_color"
     )
     public Action setToggleColor(Object x, Double y, Double z) {
-        this.toggleColor = x == null ? null : LuaUtils.parseVec3("toggleColor", x, y, z);
+        this.toggleColor = LuaUtils.nullableVec3("toggleColor", x, y, z);
         return this;
     }
 

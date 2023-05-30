@@ -94,6 +94,10 @@ public class LuaUtils {
         return parseVec3(methodName, x, y, z, d, d, d);
     }
 
+    public static FiguraVec3 nullableVec3(String methodName, Object x, Number y, Number z) {
+        return x == null ? null : parseVec3(methodName, x, y, z);
+    }
+
     public static FiguraVec2 parseVec2(String methodName, Object x, Number y) {
         return parseVec2(methodName, x, y, 0, 0);
     }

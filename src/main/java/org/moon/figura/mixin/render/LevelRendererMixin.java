@@ -3,6 +3,7 @@ package org.moon.figura.mixin.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Matrix4f;
 import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -14,6 +15,7 @@ import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.config.Configs;
+import org.moon.figura.math.vector.FiguraVec4;
 import org.moon.figura.model.rendering.EntityRenderMode;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.RenderUtils;
@@ -23,13 +25,16 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 @Mixin(LevelRenderer.class)
 public abstract class LevelRendererMixin {
 
     @Shadow @Final private EntityRenderDispatcher entityRenderDispatcher;
     @Shadow @Final private RenderBuffers renderBuffers;
+    @Shadow @Final private Minecraft minecraft;
 
     @ModifyArg(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;renderEntity(Lnet/minecraft/world/entity/Entity;DDDFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;)V"))
     private Entity renderLevelRenderEntity(Entity entity) {
@@ -111,5 +116,19 @@ public abstract class LevelRendererMixin {
     @Inject(method = "renderLevel", at = @At("RETURN"))
     private void afterRenderLevel(PoseStack matrices, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightTexture lightmapTextureManager, Matrix4f matrix4f, CallbackInfo ci) {
         AvatarManager.executeAll("postWorldRender", avatar -> avatar.postWorldRenderEvent(tickDelta));
+    }
+
+    @ModifyArgs(method = "renderHitOutline", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;renderShape(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;Lnet/minecraft/world/phys/shapes/VoxelShape;DDDFFFF)V"))
+    private void renderHitOutline(Args args) {
+        Avatar avatar = AvatarManager.getAvatar(this.minecraft.getCameraEntity());
+        FiguraVec4 color;
+
+        if (avatar == null || avatar.luaRuntime == null || (color = avatar.luaRuntime.renderer.blockOutlineColor) == null)
+            return;
+
+        args.set(6, (float) color.x);
+        args.set(7, (float) color.y);
+        args.set(8, (float) color.z);
+        args.set(9, (float) color.w);
     }
 }
