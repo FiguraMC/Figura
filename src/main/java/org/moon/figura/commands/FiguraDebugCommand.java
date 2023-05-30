@@ -37,8 +37,11 @@ import java.io.DataOutputStream;
 import java.io.FileOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
 import java.util.zip.GZIPOutputStream;
 
 public class FiguraDebugCommand {
@@ -102,7 +105,7 @@ public class FiguraDebugCommand {
         meta.addProperty("backendConnected", NetworkStuff.isConnected());
         meta.addProperty("backendDisconnectedReason", NetworkStuff.disconnectedReason);
         meta.addProperty("uploaded", AvatarManager.localUploaded);
-        meta.addProperty("lastLoadedPath", LocalAvatarLoader.getLastLoadedPath().toString());
+        meta.addProperty("lastLoadedPath", Objects.toString(LocalAvatarLoader.getLastLoadedPath(), null));
         meta.addProperty("panicMode", AvatarManager.panic);
 
         root.add("meta", meta);
@@ -265,71 +268,46 @@ public class FiguraDebugCommand {
         JsonObject sizes = new JsonObject();
 
         //metadata
-        sizes.addProperty("metadata", getBytesFromNbt(nbt.getCompound("metadata")));
+        sizes.addProperty("metadata", parseSize(getBytesFromNbt(nbt.getCompound("metadata"))));
 
         //models
-        JsonObject models = new JsonObject();
-
         CompoundTag modelsNbt = nbt.getCompound("models");
         ListTag childrenNbt = modelsNbt.getList("chld", Tag.TAG_COMPOUND);
-
-        for (Tag tag : childrenNbt) {
-            CompoundTag compound = (CompoundTag) tag;
-            models.addProperty(compound.getString("name"), getBytesFromNbt(compound));
-        }
-
+        JsonObject models = parseListSize(childrenNbt, tag -> tag.getString("name"));
         sizes.add("models", models);
-        sizes.addProperty("models_total", getBytesFromNbt(modelsNbt));
-
-        //scripts
-        JsonObject scripts = new JsonObject();
-
-        CompoundTag scriptsNbt = nbt.getCompound("scripts");
-        for (String key : scriptsNbt.getAllKeys())
-            scripts.addProperty(key, getBytesFromNbt(scriptsNbt.get(key)));
-
-        sizes.add("scripts", scripts);
-        sizes.addProperty("scripts_total", getBytesFromNbt(scriptsNbt));
-
-        //sounds
-        JsonObject sounds = new JsonObject();
-
-        CompoundTag soundsNbt = nbt.getCompound("sounds");
-        for (String key : soundsNbt.getAllKeys())
-            sounds.addProperty(key, getBytesFromNbt(soundsNbt.get(key)));
-
-        sizes.add("sounds", sounds);
-        sizes.addProperty("sounds_total", getBytesFromNbt(soundsNbt));
-
-        //textures
-        JsonObject textures = new JsonObject();
-        CompoundTag texturesNbt = nbt.getCompound("textures");
-
-        CompoundTag textureSrc = texturesNbt.getCompound("src");
-        for (String key : textureSrc.getAllKeys())
-            textures.addProperty(key, getBytesFromNbt(textureSrc.get(key)));
-
-        sizes.add("textures", textures);
-        sizes.addProperty("textures_total", getBytesFromNbt(texturesNbt));
+        sizes.addProperty("models_total", parseSize(getBytesFromNbt(modelsNbt)));
 
         //animations
-        JsonObject animations = new JsonObject();
         ListTag animationsNbt = nbt.getList("animations", Tag.TAG_COMPOUND);
-
-        for (Tag tag : animationsNbt) {
-            CompoundTag compound = (CompoundTag) tag;
-            animations.addProperty(compound.getString("mdl") + "." + compound.getString("name"), getBytesFromNbt(compound));
-        }
-
+        JsonObject animations = parseListSize(animationsNbt, tag -> tag.getString("mdl") + "." + tag.getString("name"));
         sizes.add("animations", animations);
-        sizes.addProperty("animations_total", getBytesFromNbt(animationsNbt));
+        sizes.addProperty("animations_total", parseSize(getBytesFromNbt(animationsNbt)));
+
+        //textures
+        CompoundTag texturesNbt = nbt.getCompound("textures");
+        CompoundTag textureSrc = texturesNbt.getCompound("src");
+        JsonObject textures = parseCompoundSize(textureSrc);
+        sizes.add("textures", textures);
+        sizes.addProperty("textures_total", parseSize(getBytesFromNbt(texturesNbt)));
+
+        //scripts
+        CompoundTag scriptsNbt = nbt.getCompound("scripts");
+        JsonObject scripts = parseCompoundSize(scriptsNbt);
+        sizes.add("scripts", scripts);
+        sizes.addProperty("scripts_total", parseSize(getBytesFromNbt(scriptsNbt)));
+
+        //sounds
+        CompoundTag soundsNbt = nbt.getCompound("sounds");
+        JsonObject sounds = parseCompoundSize(soundsNbt);
+        sizes.add("sounds", sounds);
+        sizes.addProperty("sounds_total", parseSize(getBytesFromNbt(soundsNbt)));
 
         //total
-        sizes.addProperty("total", getBytesFromNbt(nbt));
+        sizes.addProperty("total", parseSize(getBytesFromNbt(nbt)));
         return sizes;
     }
 
-    private static String getBytesFromNbt(Tag nbt) {
+    private static int getBytesFromNbt(Tag nbt) {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(baos)));
@@ -339,9 +317,41 @@ public class FiguraDebugCommand {
             int size = baos.size();
             baos.close();
 
-            return size < 1000 ? size + "b" : MathUtils.asFileSize(size) + " (" + size + "b)";
+            return size;
         } catch (Exception ignored) {
-            return "?";
+            return -1;
         }
+    }
+
+    private static String parseSize(int size) {
+        return size < 1000 ? size + "b" : MathUtils.asFileSize(size) + " (" + size + "b)";
+    }
+
+    private static JsonObject parseListSize(ListTag listNbt, Function<CompoundTag, String> function) {
+        JsonObject target = new JsonObject();
+        HashMap<String, Integer> sizesMap = new HashMap<>();
+
+        for (Tag tag : listNbt) {
+            CompoundTag compound = (CompoundTag) tag;
+            sizesMap.put(function.apply(compound), getBytesFromNbt(compound));
+        }
+        insertJsonSortedData(sizesMap, target);
+
+        return target;
+    }
+
+    private static JsonObject parseCompoundSize(CompoundTag compoundNbt) {
+        JsonObject target = new JsonObject();
+        HashMap<String, Integer> sizesMap = new HashMap<>();
+
+        for (String key : compoundNbt.getAllKeys())
+            sizesMap.put(key, getBytesFromNbt(compoundNbt.get(key)));
+        insertJsonSortedData(sizesMap, target);
+
+        return target;
+    }
+
+    private static void insertJsonSortedData(HashMap<String, Integer> sizesMap, JsonObject json) {
+        sizesMap.entrySet().stream().sorted((Map.Entry.<String, Integer>comparingByValue().reversed())).forEach(e -> json.addProperty(e.getKey(), parseSize(e.getValue())));
     }
 }

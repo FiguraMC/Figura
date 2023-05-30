@@ -10,6 +10,7 @@
     "BlockBehaviourAccessor",
     "ClientLevelInvoker",
     "EntityAccessor",
+    "EntityMixin",
     "LivingEntityAccessor",
     "LivingEntityMixin",
     "MinecraftMixin",

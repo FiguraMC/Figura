@@ -14,6 +14,7 @@ import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.math.vector.FiguraVec4;
 import org.moon.figura.utils.LuaUtils;
 
 import java.util.UUID;
@@ -46,15 +47,15 @@ public class RendererAPI {
     public boolean renderHUD = true;
 
     public FiguraVec3 cameraPos;
-    public FiguraVec3 cameraPivot;
-    public FiguraVec3 cameraOffsetPivot;
-    public FiguraVec3 cameraRot;
-    public FiguraVec3 cameraOffsetRot;
+    public FiguraVec3 cameraPivot, cameraOffsetPivot;
+    public FiguraVec3 cameraRot, cameraOffsetRot;
     public ResourceLocation postShader;
     public FiguraVec2 crosshairOffset;
     public FiguraVec3 outlineColor;
     public ResourceLocation fireLayer1, fireLayer2;
     public Boolean renderLeftArm, renderRightArm;
+    public FiguraVec3 eyeOffset;
+    public FiguraVec4 blockOutlineColor;
 
     public RendererAPI(Avatar owner) {
         this.owner = owner.owner;
@@ -217,7 +218,7 @@ public class RendererAPI {
             value = "renderer.set_camera_pos"
     )
     public RendererAPI setCameraPos(Object x, Double y, Double z) {
-        this.cameraPos = x == null ? null : LuaUtils.parseVec3("setCameraPos", x, y, z);
+        this.cameraPos = LuaUtils.nullableVec3("setCameraPos", x, y, z);
         return this;
     }
 
@@ -248,7 +249,7 @@ public class RendererAPI {
             value = "renderer.set_camera_pivot"
     )
     public RendererAPI setCameraPivot(Object x, Double y, Double z) {
-        this.cameraPivot = x == null ? null : LuaUtils.parseVec3("setCameraPivot", x, y, z);
+        this.cameraPivot = LuaUtils.nullableVec3("setCameraPivot", x, y, z);
         return this;
     }
 
@@ -279,7 +280,7 @@ public class RendererAPI {
             value = "renderer.set_offset_camera_pivot"
     )
     public RendererAPI setOffsetCameraPivot(Object x, Double y, Double z) {
-        this.cameraOffsetPivot = x == null ? null : LuaUtils.parseVec3("setOffsetCameraPivot", x, y, z);
+        this.cameraOffsetPivot = LuaUtils.nullableVec3("setOffsetCameraPivot", x, y, z);
         return this;
     }
 
@@ -310,7 +311,7 @@ public class RendererAPI {
             value = "renderer.set_camera_rot"
     )
     public RendererAPI setCameraRot(Object x, Double y, Double z) {
-        this.cameraRot = x == null ? null : LuaUtils.parseVec3("setCameraRot", x, y, z);
+        this.cameraRot = LuaUtils.nullableVec3("setCameraRot", x, y, z);
         return this;
     }
 
@@ -341,7 +342,7 @@ public class RendererAPI {
             value = "renderer.set_offset_camera_rot"
     )
     public RendererAPI setOffsetCameraRot(Object x, Double y, Double z) {
-        this.cameraOffsetRot = x == null ? null : LuaUtils.parseVec3("setOffsetCameraRot", x, y, z);
+        this.cameraOffsetRot = LuaUtils.nullableVec3("setOffsetCameraRot", x, y, z);
         return this;
     }
 
@@ -444,7 +445,7 @@ public class RendererAPI {
             value = "renderer.set_outline_color"
     )
     public RendererAPI setOutlineColor(Object r, Double g, Double b) {
-        outlineColor = r == null ? null : LuaUtils.parseVec3("setOutlineColor", r, g, b);
+        outlineColor = LuaUtils.nullableVec3("setOutlineColor", r, g, b);
         return this;
     }
 
@@ -544,6 +545,12 @@ public class RendererAPI {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("renderer.get_render_left_arm")
+    public Boolean getRenderLeftArm() {
+        return this.renderLeftArm;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaMethodOverload(
                     argumentTypes = Boolean.class,
@@ -560,6 +567,77 @@ public class RendererAPI {
     @LuaWhitelist
     public RendererAPI renderRightArm(Boolean bool) {
         return setRenderRightArm(bool);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("renderer.get_render_right_arm")
+    public Boolean getRenderRightArm() {
+        return renderRightArm;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "pos"
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {Double.class, Double.class, Double.class},
+                            argumentNames = {"x", "y", "z"}
+                    )
+            },
+            aliases = "eyeOffset",
+            value = "renderer.set_eye_offset"
+    )
+    public RendererAPI setEyeOffset(Object x, Double y, Double z) {
+        this.eyeOffset = LuaUtils.nullableVec3("setEyeOffset", x, y, z);
+        return this;
+    }
+
+    @LuaWhitelist
+    public RendererAPI eyeOffset(Object x, Double y, Double z) {
+        return setEyeOffset(x, y, z);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("renderer.get_eye_offset")
+    public FiguraVec3 getEyeOffset() {
+        return eyeOffset;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = FiguraVec3.class,
+                            argumentNames = "rgb"
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = FiguraVec4.class,
+                            argumentNames = "rgba"
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {Double.class, Double.class, Double.class, Double.class},
+                            argumentNames = {"r", "g", "b", "a"}
+                    )
+            },
+            aliases = "blockOutlineColor",
+            value = "renderer.set_block_outline_color")
+    public RendererAPI setBlockOutlineColor(Object r, Double g, Double b, Double a) {
+        this.blockOutlineColor = r == null ? null : LuaUtils.parseVec4("setColor", r, g, b, a, 0, 0, 0, 0.4);
+        return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("renderer.get_block_outline_color")
+    public FiguraVec4 getBlockOutlineColor() {
+        return blockOutlineColor;
+    }
+
+    @LuaWhitelist
+    public RendererAPI blockOutlineColor(Object r, Double g, Double b, Double a) {
+        return setBlockOutlineColor(r, g, b, a);
     }
 
     @LuaWhitelist

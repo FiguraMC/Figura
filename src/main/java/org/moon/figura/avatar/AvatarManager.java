@@ -130,7 +130,7 @@ public class AvatarManager {
         return user == null ? null : user.getMainAvatar();
     }
 
-    public static Avatar getAvatarForEntity(Entity entity) {
+    private static Avatar getAvatarForEntity(Entity entity) {
         //get loaded
         Avatar loaded = LOADED_CEM.get(entity);
         if (loaded != null)
@@ -144,7 +144,7 @@ public class AvatarManager {
 
     //tries to get data from an entity
     public static Avatar getAvatar(Entity entity) {
-        if (panic || Minecraft.getInstance().level == null)
+        if (panic || Minecraft.getInstance().level == null || entity == null)
             return null;
 
         UUID uuid = entity.getUUID();
