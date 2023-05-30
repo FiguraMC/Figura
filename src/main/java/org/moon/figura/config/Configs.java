@@ -99,7 +99,7 @@ public class Configs {
 
     public static final EnumConfig
             LOG_LOCATION = new EnumConfig("log_location", SCRIPT, 0, 2),
-            FORMAT_SCRIPT = new EnumConfig("format_script", SCRIPT, 1, 3) {
+            FORMAT_SCRIPT = new EnumConfig("format_script", SCRIPT, 1, 4) {
                 {
                     String tooltip = "config.format_script.tooltip.";
                     this.tooltip = new FiguraText(tooltip + "1")

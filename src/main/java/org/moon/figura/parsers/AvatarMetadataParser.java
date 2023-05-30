@@ -68,7 +68,7 @@ public class AvatarMetadataParser {
             nbt.put("autoScripts", autoScripts);
         }
 
-        if (Configs.FORMAT_SCRIPT.value == 2)
+        if (Configs.FORMAT_SCRIPT.value >= 2)
             nbt.putBoolean("minify", true);
 
         if (metadata.autoAnims != null) {
