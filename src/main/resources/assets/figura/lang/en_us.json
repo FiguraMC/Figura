@@ -571,8 +571,8 @@
   "figura.config.emojis.2": "On",
   "figura.config.emojis.3": "On + Suggestions",
   "figura.config.emojis.1.tooltip": "No Emojis",
-  "figura.config.emojis.2.tooltip": "Allow Emojis",
-  "figura.config.emojis.3.tooltip": "Allow Emojis and suggest them on chat (like commands)",
+  "figura.config.emojis.2.tooltip": "Allow Emojis\nSuggestions can be given by pressing tab (like player names)",
+  "figura.config.emojis.3.tooltip": "Allow Emojis and automatically suggest them on chat (like commands)",
 
   "figura.config.easter_eggs": "Enable Easter eggs",
   "figura.config.easter_eggs.tooltip": "Toggles fun and unexpected aspects of Figura (boring!)",
@@ -1537,6 +1537,7 @@
   "figura.docs.texture.restore": "Restores the texture to its original state, before any modifications",
   "figura.docs.texture.save": "Returns a base64 string representation of this texture",
   "figura.docs.texture.apply_func": "Calls the given function on the specified area of this texture, it will iterate over each pixel, and their current x, y and color will be given as arguments, the color in a RGBA vec4 format, and the return value will set that pixel color\nInvalid return values or nil takes no effects",
+  "figura.docs.texture.apply_matrix": "Transforms all pixels in the specified area of this texture by the matrix",
 
   "figura.docs.texture_atlas": "A texture atlas object, with helper functions related to a texture atlas",
   "figura.docs.texture_atlas.list_sprites": "Returns a table with all sprite paths under this atlas",

@@ -27,7 +27,7 @@ public abstract class CommandSuggestionsMixin {
     @Inject(method = "updateCommandInfo", at = @At(value = "INVOKE", target = "Lnet/minecraft/commands/SharedSuggestionProvider;suggest(Ljava/lang/Iterable;Lcom/mojang/brigadier/suggestion/SuggestionsBuilder;)Ljava/util/concurrent/CompletableFuture;"), locals = LocalCapture.CAPTURE_FAILSOFT)
     private void addFiguraSuggestions(CallbackInfo ci, String string, StringReader stringReader, boolean bl2, int i, String string2, int j, Collection<String> collection) {
         emojiSuggestions = false;
-        if (Configs.EMOJIS.value < 2)
+        if (Configs.EMOJIS.value == 0)
             return;
 
         String lastWord = string2.substring(j);
@@ -39,7 +39,7 @@ public abstract class CommandSuggestionsMixin {
 
     @Inject(method = "updateCommandInfo", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/commands/SharedSuggestionProvider;suggest(Ljava/lang/Iterable;Lcom/mojang/brigadier/suggestion/SuggestionsBuilder;)Ljava/util/concurrent/CompletableFuture;", shift = At.Shift.AFTER))
     private void afterSuggesting(CallbackInfo ci) {
-        if (emojiSuggestions)
+        if (emojiSuggestions && Configs.EMOJIS.value >= 2)
             this.showSuggestions(false);
     }
 
