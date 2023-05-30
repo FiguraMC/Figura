@@ -42,8 +42,7 @@
   },
   "breaks": {
     "optifine": "*",
-    "optifabric": "*",
-    "aspect": "*"
+    "optifabric": "*"
   },
   "custom": {
     "assets_version": "${assets_version}",

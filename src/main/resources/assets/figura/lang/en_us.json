@@ -1483,7 +1483,13 @@
   "figura.docs.renderer.set_primary_fire_texture": "Sets a custom primary fire texture, to render while the entity is on fire\nThe effect is compound by two layers\nThe secondary layer is what renders in first person\nThe absence of a secondary layer uses the primary layer as fallback",
   "figura.docs.renderer.set_secondary_fire_texture": "Sets a custom secondary fire texture, to render while the entity is on fire\nThe effect is compound by two layers\nThe secondary layer is what renders in first person\nThe absence of a secondary layer uses the primary layer as fallback",
   "figura.docs.renderer.set_render_left_arm": "Toggle if the left arm should be rendered in first person, regardless if you are holding an item or not",
+  "figura.docs.renderer.get_render_left_arm": "Gets if the left arm should be rendered while in first person",
   "figura.docs.renderer.set_render_right_arm": "Toggle if the right arm should be rendered in first person, regardless if you are holding an item or not",
+  "figura.docs.renderer.get_render_right_arm": "Gets if the right arm should be rendered while in first person",
+  "figura.docs.renderer.set_eye_offset": "Sets an offset for the entity eye position, altering the targeted block and entity",
+  "figura.docs.renderer.get_eye_offset": "Returns the offset for the entity eye position\nDefault nil",
+  "figura.docs.renderer.set_block_outline_color": "Sets the color of the selected block outline\nDefault alpha is 0.4\nMight not be compatible with shaders",
+  "figura.docs.renderer.get_block_outline_color": "Returns the set color for the selected block outline\nDefault nil",
 
 
   "figura.docs.sounds": "A global API which is used to play Minecraft sounds\nAccessed using the name \"sounds\"",

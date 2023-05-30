@@ -433,7 +433,8 @@ public class BlockbenchModelParser {
             //animation metadata
             animNbt.putString("mdl", folders.isBlank() ? modelName : folders + modelName);
             animNbt.putString("name", animation.name);
-            animNbt.putString("loop", animation.loop);
+            if (!animation.loop.equals("once"))
+                animNbt.putString("loop", animation.loop);
             if (animation.override != null && animation.override)
                 animNbt.putBoolean("ovr", true);
             if (animation.length != 0f)
