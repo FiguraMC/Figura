@@ -149,7 +149,7 @@ public class Configs {
     public static final PositiveFloatConfig
             ACTION_WHEEL_SCALE = new PositiveFloatConfig("action_wheel_scale", ACTION_WHEEL, 1f);
     public static final EnumConfig
-            ACTION_WHEEL_TITLE = new EnumConfig("action_wheel_title", ACTION_WHEEL, 0, 5),
+            ACTION_WHEEL_TITLE = new EnumConfig("action_wheel_title", ACTION_WHEEL, 0, 7),
             ACTION_WHEEL_SLOTS_INDICATOR = new EnumConfig("action_wheel_slots_indicator", ACTION_WHEEL, 0, 3);
     public static final BoolConfig
             ACTION_WHEEL_DECORATIONS = new BoolConfig("action_wheel_decorations", ACTION_WHEEL, true);

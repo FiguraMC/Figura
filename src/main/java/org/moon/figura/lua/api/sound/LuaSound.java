@@ -155,7 +155,7 @@ public class LuaSound {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("sound.pause") //TODO - no worky
+    @LuaMethodDoc("sound.pause")
     public LuaSound pause() {
         this.playing = false;
         if (handle != null)

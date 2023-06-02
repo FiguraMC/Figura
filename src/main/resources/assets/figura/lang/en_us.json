@@ -432,11 +432,15 @@
   "figura.config.action_wheel_title.3": "Top",
   "figura.config.action_wheel_title.4": "Middle",
   "figura.config.action_wheel_title.5": "Bottom",
+  "figura.config.action_wheel_title.6": "Icon",
+  "figura.config.action_wheel_title.7": "Sides",
   "figura.config.action_wheel_title.1.tooltip": "Renders like the Figura GUI tooltips",
   "figura.config.action_wheel_title.2.tooltip": "Renders the text next to the mouse",
   "figura.config.action_wheel_title.3.tooltip": "Renders the text above the Action Wheel",
   "figura.config.action_wheel_title.4.tooltip": "Renders the text in the middle of the Action Wheel",
   "figura.config.action_wheel_title.5.tooltip": "Renders the text below the Action Wheel",
+  "figura.config.action_wheel_title.6.tooltip": "Renders all Action's text below its Icon",
+  "figura.config.action_wheel_title.7.tooltip": "Renders all Action's text in the sides of the Action Wheel",
 
   "figura.config.action_wheel_slots_indicator": "Slots Indicator Text",
   "figura.config.action_wheel_slots_indicator.tooltip": "Changes the position of this Page's Slots Indicator text, which is based on the slots shown in the action wheel\nIf the Selected Action Text is set to the same position as this, the action text will take priority when rendering",
@@ -1154,6 +1158,7 @@
   "figura.docs.itemstack.is_tool": "Check if this item is a Tool (Axe, Shovel, Pickaxe, ...)",
   "figura.docs.itemstack.get_equipment_slot": "Returns the slot name of where this item is used",
   "figura.docs.itemstack.copy": "Returns a copy of this item stack",
+  "figura.docs.itemstack.get_blockstate": "Returns the blockstate representation of this item stack\nIf this item has no block representation, returns nil",
 
 
   "figura.docs.keybinds": "A global API containing a function to create new Keybind instances",
