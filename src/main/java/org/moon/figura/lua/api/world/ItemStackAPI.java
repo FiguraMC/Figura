@@ -217,6 +217,12 @@ public class ItemStackAPI {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("itemstack.get_blockstate")
+    public BlockStateAPI getBlockstate() {
+        return itemStack.getItem() instanceof BlockItem blockItem ? new BlockStateAPI(blockItem.getBlock().defaultBlockState(), null) : null;
+    }
+
+    @LuaWhitelist
     public boolean __eq(ItemStackAPI other) {
         if (this == other)
             return true;

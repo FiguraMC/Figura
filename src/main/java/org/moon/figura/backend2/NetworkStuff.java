@@ -339,9 +339,6 @@ public class NetworkStuff {
                 }
 
                 //feedback
-                if (!Configs.CONNECTION_TOASTS.value)
-                    return;
-
                 switch (code) {
                     case 200 -> FiguraToast.sendToast(FiguraText.of("backend.upload_success"));
                     case 413 -> FiguraToast.sendToast(FiguraText.of("backend.upload_too_big"), FiguraToast.ToastType.ERROR);
@@ -360,9 +357,6 @@ public class NetworkStuff {
         String id = avatar == null || true ? "avatar" : avatar; //TODO - profile screen
         queueString(Util.NIL_UUID, api -> api.deleteAvatar(id), (code, data) -> {
             responseDebug("deleteAvatar", code, data);
-
-            if (!Configs.CONNECTION_TOASTS.value)
-                return;
 
             switch (code) {
                 case 200 -> FiguraToast.sendToast(FiguraText.of("backend.delete_success"));

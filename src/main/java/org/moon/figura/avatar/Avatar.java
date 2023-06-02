@@ -602,7 +602,7 @@ public class Avatar {
         );
 
         if (renderer.renderSpecialParts() > 0)
-            ((MultiBufferSource.BufferSource) renderer.bufferSource).endLastBatch();
+            ((MultiBufferSource.BufferSource) renderer.bufferSource).endBatch();
 
         RenderSystem.enableDepthTest();
         Lighting.setupFor3DItems();
@@ -718,7 +718,7 @@ public class Avatar {
         boolean ret = comp > 0 || headRender(pose, buffer, light, false);
 
         //after render
-        buffer.endLastBatch();
+        buffer.endBatch();
         pose.popPose();
 
         gui.disableScissor();

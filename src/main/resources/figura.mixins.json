@@ -11,6 +11,7 @@
     "ClientLevelInvoker",
     "EntityAccessor",
     "EntityMixin",
+    "ItemStackMixin",
     "LivingEntityAccessor",
     "LivingEntityMixin",
     "MinecraftMixin",

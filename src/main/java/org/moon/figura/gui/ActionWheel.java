@@ -31,6 +31,8 @@ public class ActionWheel {
 
     private static final ResourceLocation TEXTURE = new FiguraIdentifier("textures/gui/action_wheel.png");
     private static final ResourceLocation ICONS = new FiguraIdentifier("textures/gui/action_wheel_icons.png");
+    private static final double DISTANCE = 41;
+    private static final double DEADZONE = 19;
 
     private static boolean enabled = false;
     private static int selected = -1;
@@ -93,8 +95,7 @@ public class ActionWheel {
 
         //render title
         FiguraMod.popPushProfiler("texts");
-        Action action = selected == -1 ? null : currentPage.slots()[selected];
-        renderTexts(gui, currentPage, action == null ? null : action.getTitle());
+        renderTexts(gui, currentPage);
 
         FiguraMod.popProfiler();
     }
@@ -131,7 +132,7 @@ public class ActionWheel {
         double mouseDistance = Math.sqrt(Math.pow(x - mouseX, 2) + Math.pow(y - mouseY, 2));
 
         //no need to sum left side because if the right side is 0, the left side will also be 0
-        if (rightSlots == 0 || mouseDistance < (19 * scale)) {
+        if (rightSlots == 0 || mouseDistance < (DEADZONE * scale)) {
             selected = -1;
             return;
         }
@@ -185,20 +186,20 @@ public class ActionWheel {
     }
 
     private static void renderItemsAndIcons(GuiGraphics gui, Page page) {
-        double distance = 41;
-
         for (int i = 0; i < slots; i++) {
             Action action = page.slots()[i];
             if (action == null)
                 continue;
 
+            boolean isSelected = selected == i;
+
             //convert angle to x and y coordinates
             double angle = getAngle(i);
-            double xOff = Math.cos(angle) * distance;
-            double yOff = Math.sin(angle) * distance;
+            double xOff = Math.cos(angle) * DISTANCE;
+            double yOff = Math.sin(angle) * DISTANCE;
 
             //texture
-            Action.TextureData texture = action.getTexture(selected == i);
+            Action.TextureData texture = action.getTexture(isSelected);
             if (texture != null) {
                 UIHelper.enableBlend();
                 gui.blit(texture.texture.getLocation(),
@@ -211,7 +212,7 @@ public class ActionWheel {
             }
 
             //no item, no render
-            ItemStack item = action.getItem(selected == i);
+            ItemStack item = action.getItem(isSelected);
             if (item == null || item.isEmpty())
                 continue;
 
@@ -222,15 +223,18 @@ public class ActionWheel {
         }
     }
 
-    private static void renderTexts(GuiGraphics gui, Page page, String title) {
+    private static void renderTexts(GuiGraphics gui, Page page) {
         Font font = minecraft.font;
         int titlePosition = Configs.ACTION_WHEEL_TITLE.value;
         int indicatorPosition = Configs.ACTION_WHEEL_SLOTS_INDICATOR.value;
         PoseStack pose = gui.pose();
 
+        Action selectedTitleAction = selected == -1 ? null : page.slots()[selected];
+        String selectedTitle = selectedTitleAction == null ? null : selectedTitleAction.getTitle();
+
         //page indicator
         int groupCount = page.getGroupCount();
-        if (groupCount > 1 && (title == null || indicatorPosition != titlePosition - 2)) {
+        if (groupCount > 1 && (selectedTitle == null || indicatorPosition != titlePosition - 2)) {
             pose.pushPose();
             pose.translate(0d, 0d, 999d);
             int index = page.getSlotsShift();
@@ -259,16 +263,59 @@ public class ActionWheel {
             }
 
             //draw
-            gui.drawString(font, indicator, x - (font.width(indicator) - extraWidth) / 2, (int) Position.index(indicatorPosition).apply(font.lineHeight), 0xFFFFFF);
+            gui.drawString(font, indicator, x - (int) ((font.width(indicator) - extraWidth) / 2f), (int) Position.index(indicatorPosition).apply(font.lineHeight), 0xFFFFFF);
             pose.popPose();
         }
 
+        //all titles
+        if (titlePosition >= 5) {
+            boolean internal = titlePosition == 5;
+            double distance = (internal ? DISTANCE : 66) * scale;
+            pose.pushPose();
+            pose.translate(0f, 0f, 999f);
+            for (int i = 0; i < slots; i++) {
+                Action action = page.slots()[i];
+                if (action == null)
+                    continue;
+
+                String title = action.getTitle();
+                if (title == null)
+                    continue;
+
+                //convert angle to x and y coordinates
+                double angle = getAngle(i);
+                double xOff = Math.cos(angle) * distance;
+                double yOff = Math.sin(angle) * distance;
+
+                //render text
+                int textX = x + (int) (Math.round(xOff));
+                int textY = y + (int) (Math.round(yOff + (internal ? 9 * scale : -font.lineHeight / 2f)));
+
+                Component text = Emojis.applyEmojis(TextUtils.tryParseJson(title));
+                int textWidth = font.width(text);
+
+                if (internal) {
+                    textX -= textWidth / 2f;
+                    if (i >= rightSlots)
+                        textX = Math.min(textX, x - textWidth - 1);
+                    else
+                        textX = Math.max(textX, x + 1);
+                } else if (i >= rightSlots) {
+                    textX -= textWidth;
+                }
+
+                gui.drawString(font, text, textX, textY, 0xFFFFFF);
+            }
+            pose.popPose();
+            return;
+        }
+
         //title
-        if (title == null)
+        if (selectedTitle == null)
             return;
 
         //vars
-        Component text = Emojis.applyEmojis(TextUtils.tryParseJson(title));
+        Component text = Emojis.applyEmojis(TextUtils.tryParseJson(selectedTitle));
         List<Component> list = TextUtils.splitText(text, "\n");
         int height = font.lineHeight * list.size();
 
@@ -282,7 +329,7 @@ public class ActionWheel {
             int y = (int) Position.index(titlePosition - 2).apply(height);
             for (int i = 0; i < list.size(); i++) {
                 Component component = list.get(i);
-                gui.drawString(font, component, x - font.width(component) / 2, y + font.lineHeight * i, 0xFFFFFF);
+                gui.drawString(font, component, x - (int) (font.width(component) / 2f), y + font.lineHeight * i, 0xFFFFFF);
             }
 
             pose.popPose();
