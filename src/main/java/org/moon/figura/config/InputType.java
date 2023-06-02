@@ -4,6 +4,7 @@ import net.minecraft.client.multiplayer.resolver.ServerAddress;
 import org.moon.figura.gui.widgets.TextField;
 import org.moon.figura.utils.ColorUtils;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.Predicate;
 
@@ -44,7 +45,7 @@ public enum InputType {
     HEX_COLOR(s -> ColorUtils.userInputHex(s, null) != null),
     FOLDER_PATH(s -> {
         try {
-            return s.isBlank() || Path.of(s.trim()).toFile().isDirectory();
+            return s.isBlank() || Files.isDirectory(Path.of(s.trim()));
         } catch (Exception ignored) {
             return false;
         }

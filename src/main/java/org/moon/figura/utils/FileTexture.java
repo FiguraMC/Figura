@@ -28,7 +28,7 @@ public class FileTexture extends DynamicTexture {
     }
 
     public static NativeImage readImage(Path path) throws IOException {
-        byte[] bytes = IOUtils.readFileBytes(path.toFile());
+        byte[] bytes = IOUtils.readFileBytes(path);
         ByteBuffer wrapper = BufferUtils.createByteBuffer(bytes.length);
 
         wrapper.put(bytes);
