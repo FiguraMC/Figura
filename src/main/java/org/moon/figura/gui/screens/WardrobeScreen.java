@@ -20,6 +20,7 @@ import org.moon.figura.gui.widgets.*;
 import org.moon.figura.gui.widgets.lists.AvatarList;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FiguraText;
+import org.moon.figura.utils.IOUtils;
 import org.moon.figura.utils.TextUtils;
 import org.moon.figura.utils.ui.UIHelper;
 
@@ -206,7 +207,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
         for (int i = 0; i < paths.size(); i++) {
             if (i > 0)
                 packs.append("\n");
-            packs.append(paths.get(i).getFileName());
+            packs.append(IOUtils.getFileNameOrEmpty(paths.get(i)));
         }
 
         this.minecraft.setScreen(new FiguraConfirmScreen(confirmed -> {

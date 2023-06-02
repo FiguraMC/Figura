@@ -9,6 +9,7 @@ import org.moon.figura.utils.IOUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -31,7 +32,7 @@ public class BlockbenchModelParser {
     private final HashMap<Integer, String> textureIdMap = new HashMap<>();
 
     //parser
-    public ModelData parseModel(String avatarFolder, File sourceFile, String json, String modelName, String folders) throws Exception {
+    public ModelData parseModel(String avatarFolder, Path sourceFile, String json, String modelName, String folders) throws Exception {
         //parse json -> object
         BlockbenchModel model = GSON.fromJson(json, BlockbenchModel.class);
 
@@ -86,11 +87,11 @@ public class BlockbenchModelParser {
 
     // -- internal functions -- //
 
-    private void parseTextures(String avatar, File sourceFile, String folders, String modelName, CompoundTag texturesNbt, BlockbenchModel.Texture[] textures, BlockbenchModel.Resolution resolution) {
+    private void parseTextures(String avatar, Path sourceFile, String folders, String modelName, CompoundTag texturesNbt, BlockbenchModel.Texture[] textures, BlockbenchModel.Resolution resolution) {
         if (textures == null)
             return;
 
-        String pathRegex = Pattern.quote(avatar + File.separator);
+        String pathRegex = Pattern.quote(avatar.isEmpty() ? avatar : avatar + sourceFile.getFileSystem().getSeparator());
 
         //temp lists
 
@@ -131,14 +132,18 @@ public class BlockbenchModelParser {
             byte[] source;
             try {
                 //check the file to load
-                Path p = sourceFile.toPath().resolve(texture.relative_path);
-                File f = p.toFile().getCanonicalFile();
-                p = f.toPath();
-                if (!f.exists()) throw new IllegalStateException("File do not exists!");
+                Path p = sourceFile.resolve(texture.relative_path);
+                if (p.getFileSystem() == FileSystems.getDefault()) {
+                    File f = p.toFile().getCanonicalFile();
+                    p = f.toPath();
+                    if (!f.exists()) throw new IllegalStateException("File do not exists!");
+                } else {
+                    p = p.normalize();
+                }
                 if (!p.startsWith(avatar)) throw new IllegalStateException("File from outside the avatar folder!");
 
                 //load texture
-                source = IOUtils.readFileBytes(f);
+                source = IOUtils.readFileBytes(p);
                 path = p.toString()
                         .replaceFirst(pathRegex, "")
                         .replaceAll("[/\\\\]", ".");
@@ -148,7 +153,7 @@ public class BlockbenchModelParser {
                 name = folders + name;
 
                 //feedback
-                FiguraMod.debug("Loaded " + textureType.toUpperCase() + " Texture \"{}\" from {}", name, f);
+                FiguraMod.debug("Loaded {} Texture \"{}\" from {}", textureType.toUpperCase(), name, p);
             } catch (Exception e) {
                 if (e instanceof IOException)
                     FiguraMod.LOGGER.error("", e);
@@ -156,7 +161,7 @@ public class BlockbenchModelParser {
                 //otherwise, load from the source stored in the model
                 source = Base64.getDecoder().decode(texture.source.substring("data:image/png;base64,".length()));
                 path = folders + modelName + "." + name;
-                FiguraMod.debug("Loaded " + textureType.toUpperCase() + " Texture \"{}\" from {}", name, path);
+                FiguraMod.debug("Loaded {} Texture \"{}\" from {}", textureType.toUpperCase(), name, path);
             }
 
             //add source nbt
@@ -624,7 +629,7 @@ public class BlockbenchModelParser {
             parseParent(group.name, groupNbt);
 
             //parse children
-            if (group.children != null && group.children.size() > 0)
+            if (!(group.children == null || group.children.isEmpty()))
                 groupNbt.put("chld", parseOutliner(group.children, thisVisibility));
 
             //add animations

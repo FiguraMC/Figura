@@ -29,12 +29,13 @@ import org.moon.figura.permissions.PermissionPack;
 import org.moon.figura.permissions.Permissions;
 import org.moon.figura.resources.FiguraRuntimeResources;
 import org.moon.figura.utils.FiguraText;
+import org.moon.figura.utils.IOUtils;
 import org.moon.figura.utils.MathUtils;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
-import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -64,7 +65,7 @@ public class FiguraDebugCommand {
                 Files.createFile(targetPath);
 
             //write file
-            FileOutputStream fs = new FileOutputStream(targetPath.toFile());
+            OutputStream fs = Files.newOutputStream(targetPath);
             fs.write(fetchStatus(AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID())).getBytes());
             fs.close();
 
@@ -73,7 +74,7 @@ public class FiguraDebugCommand {
                     FiguraText.of("command.debug.success")
                             .append(" ")
                             .append(FiguraText.of("command.click_to_open")
-                                    .setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, targetPath.toFile().toString())).withUnderlined(true))
+                                    .setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, targetPath.toString())).withUnderlined(true))
                             )
             );
             return 1;
@@ -253,7 +254,7 @@ public class FiguraDebugCommand {
         JsonObject avatar = new JsonObject();
 
         for (LocalAvatarFetcher.AvatarPath path : list) {
-            String name = path.getPath().getFileName().toString();
+            String name = IOUtils.getFileNameOrEmpty(path.getPath());
 
             if (path instanceof LocalAvatarFetcher.FolderPath folder)
                 avatar.add(name, getAvatarsPaths(folder.getChildren()));

@@ -6,40 +6,38 @@ import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.UserData;
 import org.moon.figura.utils.IOUtils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class CacheAvatarLoader {
 
     public static void init() {
         LocalAvatarLoader.async(() -> {
-            File file = getAvatarCacheDirectory().toFile();
-            if (!file.exists() || !file.isDirectory())
+            Path file = getAvatarCacheDirectory();
+            if (!(Files.exists(file) && Files.isDirectory(file)))
                 return;
 
-            File[] children = file.listFiles();
+            List<Path> children = IOUtils.listPaths(file);
             if (children == null)
                 return;
 
-            for (File child : children) {
+            for (Path child : children) {
                 try {
-                    FileTime time = Files.getLastModifiedTime(child.toPath());
+                    FileTime time = Files.getLastModifiedTime(child);
                     long diff = System.currentTimeMillis() - time.toMillis();
                     long elapsed = TimeUnit.MILLISECONDS.toDays(diff);
                     if (elapsed > 7) {
-                        if (child.delete()) {
-                            FiguraMod.debug("Successfully deleted cache avatar \"{}\" with \"{}\" days old", child.getName(), elapsed);
+                        if (Files.deleteIfExists(child)) {
+                            FiguraMod.debug("Successfully deleted cache avatar \"{}\" with \"{}\" days old", IOUtils.getFileNameOrEmpty(child), elapsed);
                         } else {
                             throw new Exception();
                         }
                     }
                 } catch (Exception ignored) {
-                    FiguraMod.debug("Failed to delete cache avatar \"{}\"", child.getName());
+                    FiguraMod.debug("Failed to delete cache avatar \"{}\"", IOUtils.getFileNameOrEmpty(child));
                 }
             }
         });
@@ -61,7 +59,7 @@ public class CacheAvatarLoader {
         LocalAvatarLoader.async(() -> {
             Path path = getAvatarCacheDirectory().resolve(hash + ".moon");
             try {
-                target.loadAvatar(NbtIo.readCompressed(new FileInputStream(path.toFile())));
+                target.loadAvatar(NbtIo.readCompressed(Files.newInputStream(path)));
                 FiguraMod.debug("Loaded avatar \"{}\" from cache to \"{}\"", hash, target.id);
             } catch (Exception e) {
                 FiguraMod.LOGGER.error("Failed to load cache avatar: " + hash, e);
@@ -73,7 +71,7 @@ public class CacheAvatarLoader {
         LocalAvatarLoader.async(() -> {
             Path file = getAvatarCacheDirectory().resolve(hash + ".moon");
             try {
-                NbtIo.writeCompressed(nbt, new FileOutputStream(file.toFile()));
+                NbtIo.writeCompressed(nbt, Files.newOutputStream(file));
                 FiguraMod.debug("Saved avatar \"{}\" on cache", hash);
             } catch (Exception e) {
                 FiguraMod.LOGGER.error("Failed to save avatar on cache: " + hash, e);
@@ -83,21 +81,21 @@ public class CacheAvatarLoader {
 
     public static void clearCache() {
         LocalAvatarLoader.async(() -> {
-            File file = getAvatarCacheDirectory().toFile();
+            Path file = getAvatarCacheDirectory();
 
-            if (!file.exists() || !file.isDirectory())
+            if (!(Files.exists(file) && Files.isDirectory(file)))
                 return;
 
-            File[] children = file.listFiles();
+            List<Path> children = IOUtils.listPaths(file);
             if (children == null)
                 return;
 
-            for (File child : children) {
+            for (Path child : children) {
                 try {
-                    if (!child.delete())
+                    if (!Files.deleteIfExists(child))
                         throw new Exception();
                 } catch (Exception ignored) {
-                    FiguraMod.debug("Failed to delete cache avatar \"{}\"", child.getName());
+                    FiguraMod.debug("Failed to delete cache avatar \"{}\"", IOUtils.getFileNameOrEmpty(child));
                 }
             }
 

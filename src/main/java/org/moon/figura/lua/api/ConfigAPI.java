@@ -15,8 +15,9 @@ import org.moon.figura.math.vector.FiguraVector;
 import org.moon.figura.utils.IOUtils;
 import org.moon.figura.utils.MathUtils;
 
-import java.io.FileOutputStream;
-import java.io.FileReader;
+import java.io.BufferedReader;
+import java.io.OutputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Base64;
@@ -61,7 +62,7 @@ public class ConfigAPI {
     }
 
     public static void clearAllData() {
-        IOUtils.deleteFile(getConfigDataDir().toFile());
+        IOUtils.deleteFile(getConfigDataDir());
     }
 
     private Path getPath() {
@@ -89,7 +90,7 @@ public class ConfigAPI {
             root.add(key.toString(), writeArg(luaTable.get(key), new JsonObject()));
 
         //write file
-        try (FileOutputStream fs = new FileOutputStream(path.toFile())) {
+        try (OutputStream fs = Files.newOutputStream(path)) {
             fs.write(GSON.toJson(root).getBytes());
         } catch (Exception e) {
             FiguraMod.LOGGER.error("", e);
@@ -179,10 +180,10 @@ public class ConfigAPI {
         Path path = getPath();
         JsonObject root;
 
-        if (!path.toFile().exists())
+        if (!Files.exists(path))
             return;
 
-        try (FileReader reader = new FileReader(path.toFile())) {
+        try (BufferedReader reader = Files.newBufferedReader(path)) {
             JsonElement element = JsonParser.parseReader(reader);
             if (element.isJsonNull())
                 return;

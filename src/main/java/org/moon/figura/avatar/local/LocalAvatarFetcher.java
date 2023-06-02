@@ -11,7 +11,6 @@ import org.moon.figura.parsers.AvatarMetadataParser;
 import org.moon.figura.utils.FileTexture;
 import org.moon.figura.utils.IOUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.ArrayList;
@@ -67,7 +66,7 @@ public class LocalAvatarFetcher {
                     continue;
 
                 if (kind == StandardWatchEventKinds.ENTRY_CREATE && !LocalAvatarLoader.IS_WINDOWS) {
-                    Path child = entry.getKey().resolve(((WatchEvent<Path>) event).context());
+                    Path child = entry.getKey().resolve((Path) event.context());
                     LocalAvatarLoader.addWatchKey(child, WATCHED_KEYS::put);
                 }
 
@@ -179,18 +178,21 @@ public class LocalAvatarFetcher {
 
         protected Properties properties;
 
+        protected AvatarPath(Path path, String name) {
+            this.path = path;
+            this.name = name;
+            this.description = "";
+            this.background = CardBackground.DEFAULT;
+            this.iconTexture = null;
+            this.properties = SAVED_DATA.computeIfAbsent(path.toAbsolutePath().toString(), __ -> new Properties());
+        }
+
         public AvatarPath(Path path) {
             this.path = path;
 
-            Properties properties = SAVED_DATA.get(this.path.toFile().getAbsolutePath());
-            if (properties != null) {
-                this.properties = properties;
-            } else {
-                this.properties = new Properties();
-                saveProperties();
-            }
+            properties = SAVED_DATA.computeIfAbsent(path.toAbsolutePath().toString(), __ -> new Properties());
 
-            String filename = path.getFileName().toString();
+            String filename = IOUtils.getFileNameOrEmpty(path);
 
             String name = filename;
             String description = "";
@@ -200,7 +202,7 @@ public class LocalAvatarFetcher {
             if (!path.toString().toLowerCase().endsWith(".moon") && !(this instanceof FolderPath)) {
                 //metadata
                 try {
-                    String str = IOUtils.readFile(path.resolve("avatar.json").toFile());
+                    String str = IOUtils.readFile(path.resolve("avatar.json"));
                     AvatarMetadataParser.Metadata metadata = AvatarMetadataParser.read(str);
 
                     name = Configs.WARDROBE_FILE_NAMES.value || metadata.name == null || metadata.name.isBlank() ? filename : metadata.name;
@@ -211,7 +213,7 @@ public class LocalAvatarFetcher {
                 //icon
                 try {
                     Path p = path.resolve("avatar.png");
-                    if (p.toFile().exists())
+                    if (Files.exists(p))
                         iconTexture = FileTexture.of(p);
                 } catch (Exception ignored) {}
             }
@@ -224,7 +226,7 @@ public class LocalAvatarFetcher {
 
         public boolean search(String query) {
             String q = query.toLowerCase();
-            return this.getName().toLowerCase().contains(q) || path.getFileName().toString().contains(q);
+            return this.getName().toLowerCase().contains(q) || IOUtils.getFileNameOrEmpty(path).contains(q);
         }
 
         public Path getPath() {
@@ -266,20 +268,27 @@ public class LocalAvatarFetcher {
         }
 
         private void saveProperties() {
-            String key = this.path.toFile().getAbsolutePath();
+            String key = this.path.toAbsolutePath().toString();
             SAVED_DATA.put(key, properties);
         }
     }
 
     /**
-     * Represents a path were its sub paths contains an avatar.
+     * Represents a path which contains avatar(s) in it's sub-paths.
      */
     public static class FolderPath extends AvatarPath {
 
         protected final List<AvatarPath> children = new ArrayList<>();
+        protected final FileSystem fileSystem;
+
+        public FolderPath(FileSystem fileSystem, Path path) {
+            super(fileSystem.getPath(""), IOUtils.getFileNameOrEmpty(path));
+            this.fileSystem = fileSystem;
+        }
 
         public FolderPath(Path path) {
             super(path);
+            this.fileSystem = path.getFileSystem();
         }
 
         /**
@@ -290,7 +299,7 @@ public class LocalAvatarFetcher {
          * We only want our FolderPath to contain sub-folders that actually have avatars.
          */
         public boolean fetch() {
-            File[] files = path.toFile().listFiles();
+            List<Path> files = IOUtils.listPaths(getPath());
             if (files == null)
                 return false;
 
@@ -298,8 +307,7 @@ public class LocalAvatarFetcher {
 
             //iterate over all files on this path
             //but skip non-folders and non-moon
-            for (File file : files) {
-                Path path = file.toPath();
+            for (Path path : files) {
                 if (isAvatar(path)) {
                     children.add(new AvatarPath(path));
                     found = true;
@@ -308,6 +316,26 @@ public class LocalAvatarFetcher {
                     if (folder.fetch()) {
                         children.add(folder);
                         found = true;
+                    }
+                } else if ("file".equalsIgnoreCase(fileSystem.provider().getScheme()) && IOUtils.getFileNameOrEmpty(path).endsWith(".zip")) {
+                    try {
+                        FileSystem opened = FileSystems.newFileSystem(path);
+                        if ("jar".equalsIgnoreCase(opened.provider().getScheme())){
+                            Path newPath = opened.getPath("");
+                            if (isAvatar(newPath)) {
+                                children.add(new AvatarPath(newPath));
+                                found = true;
+                            } else {
+                                FolderPath folder = new FolderPath(opened, path);
+                                if (folder.fetch()) {
+                                    children.add(folder);
+                                    found = true;
+                                } else
+                                    opened.close();
+                            }
+                        } else
+                            opened.close();
+                    } catch (IOException ignored) {
                     }
                 }
             }

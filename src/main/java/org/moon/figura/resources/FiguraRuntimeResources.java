@@ -8,9 +8,10 @@ import org.moon.figura.FiguraMod;
 import org.moon.figura.backend2.NetworkStuff;
 import org.moon.figura.utils.IOUtils;
 
-import java.io.FileOutputStream;
-import java.io.FileReader;
+import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -31,7 +32,7 @@ public class FiguraRuntimeResources {
     private static CompletableFuture<Void> future;
 
     public static void clearCache() {
-        IOUtils.deleteFile(getRootDirectory().toFile());
+        IOUtils.deleteFile(getRootDirectory());
     }
 
     public static CompletableFuture<Void> init() {
@@ -42,7 +43,7 @@ public class FiguraRuntimeResources {
 
             //get old hashes
             Path hashesPath = getRootDirectory().resolve("hashes.json");
-            try (FileReader reader = new FileReader(hashesPath.toFile())) {
+            try (BufferedReader reader = Files.newBufferedReader(hashesPath)) {
                 oldHashes = JsonParser.parseReader(reader).getAsJsonObject();
             } catch (Exception ignored) {
                 oldHashes = new JsonObject();
@@ -55,7 +56,7 @@ public class FiguraRuntimeResources {
                 hashes = JsonParser.parseString(s).getAsJsonObject();
 
                 //save new hashes
-                try (FileOutputStream fs = new FileOutputStream(hashesPath.toFile())) {
+                try (OutputStream fs = Files.newOutputStream(hashesPath)) {
                     fs.write(bytes);
                 } catch (Exception e) {
                     FiguraMod.LOGGER.error("Failed to save resource hashes", e);
@@ -83,7 +84,7 @@ public class FiguraRuntimeResources {
     private static void getAndSaveResource(String path) throws Exception {
         Path target = getAssetsDirectory().resolve(path);
         IOUtils.createDirIfNeeded(target.getParent());
-        try (InputStream resource = NetworkStuff.getResource(ASSETS_VERSION, path); FileOutputStream fs = new FileOutputStream(target.toFile())) {
+        try (InputStream resource = NetworkStuff.getResource(ASSETS_VERSION, path); OutputStream fs = Files.newOutputStream(target)) {
             fs.write(resource.readAllBytes());
             FiguraMod.debug("Downloaded resource \"" + path + "\"");
         }
