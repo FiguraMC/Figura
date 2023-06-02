@@ -317,7 +317,7 @@ public class LocalAvatarFetcher {
                         children.add(folder);
                         found = true;
                     }
-                } else if ("file".equalsIgnoreCase(fileSystem.provider().getScheme()) && IOUtils.getFileNameOrEmpty(path).endsWith(".zip")) {
+                } else if (IOUtils.getFileNameOrEmpty(path).endsWith(".zip")) {
                     try {
                         FileSystem opened = FileSystems.newFileSystem(path);
                         if ("jar".equalsIgnoreCase(opened.provider().getScheme())){
