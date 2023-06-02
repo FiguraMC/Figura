@@ -59,7 +59,7 @@ import org.moon.figura.model.rendering.texture.FiguraTexture;
 import org.moon.figura.model.rendertasks.*;
 import org.moon.figura.utils.FiguraText;
 
-import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -341,7 +341,7 @@ public class FiguraDocsManager {
                 Files.createFile(targetPath);
 
             //write file
-            FileOutputStream fs = new FileOutputStream(targetPath.toFile());
+            OutputStream fs = Files.newOutputStream(targetPath);
             fs.write(exportAsJsonString(translate).getBytes());
             fs.close();
 
@@ -350,7 +350,7 @@ public class FiguraDocsManager {
                     new FiguraText("command.docs_export.success")
                             .append(" ")
                             .append(new FiguraText("command.click_to_open")
-                                    .setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, targetPath.toFile().toString())).withUnderlined(true))
+                                    .setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, targetPath.toString())).withUnderlined(true))
                             )
             );
             return 1;

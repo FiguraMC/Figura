@@ -18,9 +18,6 @@ import org.moon.figura.utils.FiguraResourceListener;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.IOUtils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.*;
 import java.text.SimpleDateFormat;
@@ -34,7 +31,7 @@ import java.util.regex.Pattern;
 
 /**
  * class used to load avatars from a file
- * and used for hotswapping
+ * and used for hot-swapping
  */
 public class LocalAvatarLoader {
 
@@ -116,7 +113,7 @@ public class LocalAvatarLoader {
                 loadState++;
                 if (path.toString().endsWith(".moon")) {
                     //NbtIo already closes the file stream
-                    target.loadAvatar(NbtIo.readCompressed(new FileInputStream(path.toFile())));
+                    target.loadAvatar(NbtIo.readCompressed(Files.newInputStream(path)));
                     return;
                 }
 
@@ -137,13 +134,13 @@ public class LocalAvatarLoader {
                 BlockbenchModelParser modelParser = new BlockbenchModelParser();
 
                 loadState++;
-                CompoundTag models = loadModels(path.toFile().getCanonicalPath(), path, modelParser, textures, animations, "");
+                CompoundTag models = loadModels(path.getFileSystem() == FileSystems.getDefault() ? path.toFile().getCanonicalPath() : path.toString(), path, modelParser, textures, animations, "");
                 models.putString("name", "models");
 
                 //metadata
                 loadState++;
-                String metadata = IOUtils.readFile(path.resolve("avatar.json").toFile());
-                nbt.put("metadata", AvatarMetadataParser.parse(metadata, path.getFileName().toString()));
+                String metadata = IOUtils.readFile(path.resolve("avatar.json"));
+                nbt.put("metadata", AvatarMetadataParser.parse(metadata, IOUtils.getFileNameOrEmpty(path)));
                 AvatarMetadataParser.injectToModels(metadata, models);
                 AvatarMetadataParser.injectToTextures(metadata, textures);
 
@@ -166,12 +163,12 @@ public class LocalAvatarLoader {
     }
 
     private static void loadScripts(Path path, CompoundTag nbt) throws IOException {
-        List<File> scripts = IOUtils.getFilesByExtension(path, ".lua");
+        List<Path> scripts = IOUtils.getFilesByExtension(path, ".lua");
         if (scripts.size() > 0) {
             CompoundTag scriptsNbt = new CompoundTag();
-            String pathRegex = Pattern.quote(path + File.separator);
-            for (File script : scripts) {
-                String name = script.toPath().toString()
+            String pathRegex = path.toString().isEmpty() ? "\\Q\\E" : Pattern.quote(path + path.getFileSystem().getSeparator());
+            for (Path script : scripts) {
+                String name = script.toString()
                         .replaceFirst(pathRegex, "")
                         .replaceAll("[/\\\\]", ".");
                 name = name.substring(0, name.length() - 4);
@@ -182,12 +179,12 @@ public class LocalAvatarLoader {
     }
 
     private static void loadSounds(Path path, CompoundTag nbt) throws IOException {
-        List<File> sounds = IOUtils.getFilesByExtension(path, ".ogg");
+        List<Path> sounds = IOUtils.getFilesByExtension(path, ".ogg");
         if (sounds.size() > 0) {
             CompoundTag soundsNbt = new CompoundTag();
-            String pathRegex = Pattern.quote(path + File.separator);
-            for (File sound : sounds) {
-                String name = sound.toPath().toString()
+            String pathRegex = Pattern.quote(path.toString().isEmpty() ? path.toString() : path + path.getFileSystem().getSeparator());
+            for (Path sound : sounds) {
+                String name = sound.toString()
                         .replaceFirst(pathRegex, "")
                         .replaceAll("[/\\\\]", ".");
                 name = name.substring(0, name.length() - 4);
@@ -199,13 +196,15 @@ public class LocalAvatarLoader {
 
     private static CompoundTag loadModels(String avatarFolder, Path currentFile, BlockbenchModelParser parser, CompoundTag textures, ListTag animations, String folders) throws Exception {
         CompoundTag result = new CompoundTag();
-        File[] subFiles = currentFile.toFile().listFiles(f -> !f.isHidden() && !f.getName().startsWith("."));
+        List<Path> subFiles = IOUtils.listPaths(currentFile);
         ListTag children = new ListTag();
         if (subFiles != null)
-            for (File file : subFiles) {
-                String name = file.getName();
-                if (file.isDirectory()) {
-                    CompoundTag subfolder = loadModels(avatarFolder, file.toPath(), parser, textures, animations, folders + name + ".");
+            for (Path file : subFiles) {
+                if (IOUtils.isHidden(file))
+                    continue;
+                String name = IOUtils.getFileNameOrEmpty(file);
+                if (Files.isDirectory(file)) {
+                    CompoundTag subfolder = loadModels(avatarFolder, file, parser, textures, animations, folders + name + ".");
                     if (!subfolder.isEmpty()) {
                         subfolder.putString("name", name);
                         BlockbenchModelParser.parseParent(name, subfolder);
@@ -244,9 +243,9 @@ public class LocalAvatarLoader {
         Path file = directory.resolve("cache-" + new SimpleDateFormat("yyyy_MM_dd-HH_mm_ss").format(new Date()) + ".moon");
         try {
             IOUtils.createDirIfNeeded(directory);
-            NbtIo.writeCompressed(nbt, new FileOutputStream(file.toFile()));
+            NbtIo.writeCompressed(nbt, Files.newOutputStream(file));
         } catch (Exception e) {
-            FiguraMod.LOGGER.error("Failed to save avatar: " + file.getFileName().toString(), e);
+            FiguraMod.LOGGER.error("Failed to save avatar: " + IOUtils.getFileNameOrEmpty(file), e);
         }
     }
 
@@ -268,14 +267,14 @@ public class LocalAvatarLoader {
                     continue;
 
                 event = watchEvent;
-                File file = entry.getKey().resolve(((WatchEvent<Path>) event).context()).toFile();
-                String name = file.getName();
+                Path path = entry.getKey().resolve((Path) event.context());
+                String name = IOUtils.getFileNameOrEmpty(path);
 
-                if (file.isHidden() || name.startsWith(".") || (!file.isDirectory() && !name.matches("(.*(\\.lua|\\.bbmodel|\\.ogg|\\.png)$|avatar\\.json)")))
+                if (IOUtils.isHidden(path) || !(Files.isDirectory(path) || name.matches("(.*(\\.lua|\\.bbmodel|\\.ogg|\\.png)$|avatar\\.json)")))
                     continue;
 
                 if (kind == StandardWatchEventKinds.ENTRY_CREATE && !IS_WINDOWS)
-                    addWatchKey(file.toPath(), KEYS::put);
+                    addWatchKey(path, KEYS::put);
 
                 reload = true;
                 break;
@@ -306,11 +305,10 @@ public class LocalAvatarLoader {
      * @param consumer a consumer that will process the watch key and its path
      */
     protected static void addWatchKey(Path path, BiConsumer<Path, WatchKey> consumer) {
-        if (watcher == null || path == null)
+        if (watcher == null || path == null || path.getFileSystem() != FileSystems.getDefault())
             return;
 
-        File file = path.toFile();
-        if (!file.isDirectory() || file.isHidden() || file.getName().startsWith("."))
+        if (!Files.isDirectory(path) || IOUtils.isHidden(path))
             return;
 
         try {
@@ -319,12 +317,12 @@ public class LocalAvatarLoader {
 
             consumer.accept(path, key);
 
-            File[] children = file.listFiles();
+            List<Path> children = IOUtils.listPaths(path);
             if (children == null || IS_WINDOWS)
                 return;
 
-            for (File child : children)
-                addWatchKey(child.toPath(), consumer);
+            for (Path child : children)
+                addWatchKey(child, consumer);
         } catch (Exception e) {
             FiguraMod.LOGGER.error("Failed to register watcher for " + path, e);
         }

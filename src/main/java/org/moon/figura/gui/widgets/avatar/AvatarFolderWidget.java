@@ -13,7 +13,7 @@ import java.util.HashSet;
 public class AvatarFolderWidget extends AbstractAvatarWidget {
 
     private final HashMap<String, AbstractAvatarWidget> entries = new HashMap<>();
-    private final ArrayList<AbstractAvatarWidget> sortedEntires = new ArrayList<>();
+    private final ArrayList<AbstractAvatarWidget> sortedEntries = new ArrayList<>();
 
     public AvatarFolderWidget(int depth, int width, LocalAvatarFetcher.FolderPath avatar, AvatarList parent) {
         super(depth, width, 20, avatar, parent);
@@ -105,8 +105,8 @@ public class AvatarFolderWidget extends AbstractAvatarWidget {
         for (String str : missingPaths)
             children.remove(entries.remove(str));
 
-        sortedEntires.clear();
-        sortedEntires.addAll(entries.values());
+        sortedEntries.clear();
+        sortedEntries.addAll(entries.values());
 
         //sort children
         children.sort((children1, children2) -> {
@@ -114,7 +114,7 @@ public class AvatarFolderWidget extends AbstractAvatarWidget {
                 return avatar1.compareTo(avatar2);
             return 0;
         });
-        sortedEntires.sort(AbstractAvatarWidget::compareTo);
+        sortedEntries.sort(AbstractAvatarWidget::compareTo);
 
         //update height
         updateHeight();
@@ -149,7 +149,7 @@ public class AvatarFolderWidget extends AbstractAvatarWidget {
     @Override
     public void setX(int x) {
         super.setX(x);
-        for (AbstractAvatarWidget widget : sortedEntires) {
+        for (AbstractAvatarWidget widget : sortedEntries) {
             if (widget.isVisible())
                 widget.setX(x);
         }
@@ -160,7 +160,7 @@ public class AvatarFolderWidget extends AbstractAvatarWidget {
         super.setY(y);
 
         y = 22;
-        for (AbstractAvatarWidget widget : sortedEntires) {
+        for (AbstractAvatarWidget widget : sortedEntries) {
             if (widget.isVisible()) {
                 widget.setY(this.getY() + y);
                 y += widget.getHeight() + 2;

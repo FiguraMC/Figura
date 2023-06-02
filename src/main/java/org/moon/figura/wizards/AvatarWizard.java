@@ -118,7 +118,7 @@ public class AvatarWizard {
                 .write("avatar.png", iconTexture);
 
         //open file manager
-        Util.getPlatform().openFile(folder.toFile());
+        Util.getPlatform().openUri(folder.toUri());
     }
 
     private byte[] buildMetadata(String name) {
