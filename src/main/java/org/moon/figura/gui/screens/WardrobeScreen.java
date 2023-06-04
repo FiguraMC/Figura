@@ -83,6 +83,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
             } catch (Exception ignored) {}
             AvatarManager.localUploaded = true;
             AvatarList.selectedEntry = null;
+            NetworkStuff.auth();
         }));
 
         //delete
