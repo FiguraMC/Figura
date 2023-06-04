@@ -189,7 +189,7 @@ public class PermissionsList extends AbstractList {
             UIHelper.renderScrollingText(gui, name, x, y, width, 0xFFFFFF);
             gui.drawString(font, value.copy().setStyle(FiguraMod.getAccentColor()), valueX, getY() + 1, 0xFFFFFF);
 
-            if (UIHelper.isMouseOver(x, y, width, font.lineHeight, mouseX, mouseY))
+            if (parent.isInsideScissors(mouseX, mouseY) && UIHelper.isMouseOver(x, y, width, font.lineHeight, mouseX, mouseY))
                 UIHelper.setTooltip(Component.translatable(this.text + ".tooltip"));
         }
 
@@ -252,7 +252,7 @@ public class PermissionsList extends AbstractList {
         @Override
         public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float delta) {
             super.renderWidget(gui, mouseX, mouseY, delta);
-            if (UIHelper.isMouseOver(getX() + 1, getY() + 1, getWidth() - 2, Minecraft.getInstance().font.lineHeight, mouseX, mouseY))
+            if (parent.isInsideScissors(mouseX, mouseY) && UIHelper.isMouseOver(getX() + 1, getY() + 1, getWidth() - 2, Minecraft.getInstance().font.lineHeight, mouseX, mouseY))
                 UIHelper.setTooltip(Component.translatable(this.text + ".tooltip"));
         }
 
@@ -384,7 +384,7 @@ public class PermissionsList extends AbstractList {
             UIHelper.renderScrollingText(gui, name, x, y, width, 0xFFFFFF);
             gui.drawString(font, value.copy().setStyle(FiguraMod.getAccentColor()), valueX, getY() + 1 - font.lineHeight, 0xFFFFFF);
 
-            if (UIHelper.isMouseOver(x, y, width, font.lineHeight, mouseX, mouseY))
+            if (parent.isInsideScissors(mouseX, mouseY) && UIHelper.isMouseOver(x, y, width, font.lineHeight, mouseX, mouseY))
                 UIHelper.setTooltip(Component.translatable(this.text + ".tooltip"));
         }
 
