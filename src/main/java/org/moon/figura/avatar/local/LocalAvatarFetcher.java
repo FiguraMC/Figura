@@ -43,7 +43,7 @@ public class LocalAvatarFetcher {
         ALL_AVATARS.clear();
 
         //load avatars
-        FolderPath root = new FolderPath(getLocalAvatarDirectory(), getLocalAvatarDirectory());
+        FolderPath root = new FolderPath(getLocalAvatarDirectory());
         root.fetch();
 
         //add new avatars
@@ -239,6 +239,12 @@ public class LocalAvatarFetcher {
             return folder;
         }
 
+        public Path getFSPath() {
+            Path path = getPath();
+            Path folder = getFolder();
+            return path.getFileSystem() == folder.getFileSystem() ? path : folder;
+        }
+
         public String getName() {
             return name;
         }
@@ -295,6 +301,10 @@ public class LocalAvatarFetcher {
         public FolderPath(Path path, Path folder) {
             super(path, folder);
             this.fileSystem = path.getFileSystem();
+        }
+
+        public FolderPath(Path path) {
+            this(path, path);
         }
 
         /**
