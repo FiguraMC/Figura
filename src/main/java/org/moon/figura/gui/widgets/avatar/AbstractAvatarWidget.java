@@ -9,6 +9,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextComponent;
 import org.jetbrains.annotations.NotNull;
+import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.local.LocalAvatarFetcher;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.widgets.AbstractContainerElement;
@@ -17,10 +18,6 @@ import org.moon.figura.gui.widgets.ContextMenu;
 import org.moon.figura.gui.widgets.lists.AvatarList;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.ui.UIHelper;
-
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 public abstract class AbstractAvatarWidget extends AbstractContainerElement implements Comparable<AbstractAvatarWidget> {
 
@@ -53,12 +50,12 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
             context.updateDimensions();
         });
         context.addAction(new FiguraText("gui.context.open_folder"), null, button -> {
-            Path path = avatar.getPath();
-            if (path.getFileSystem() != FileSystems.getDefault()) {
-                String[] paths = path.toUri().toString().split("(?<=\\.zip)!/")[0].split("(?<=\\G[a-z]{1,}:)");
-                path = Path.of(paths[paths.length - 1]);
+            try {
+                Util.getPlatform().openUri(avatar.getFolder().toUri());
+            } catch (Exception e) {
+                FiguraMod.debug("failed to open avatar folder: ", e.getMessage());
+                Util.getPlatform().openUri(LocalAvatarFetcher.getLocalAvatarDirectory().toUri());
             }
-            Util.getPlatform().openUri(Files.isDirectory(path) ? path.toUri() : path.getParent().toUri());
         });
         context.addAction(new FiguraText("gui.context.copy_path"), null, button -> {
             Minecraft.getInstance().keyboardHandler.setClipboard(avatar.getPath().toString());

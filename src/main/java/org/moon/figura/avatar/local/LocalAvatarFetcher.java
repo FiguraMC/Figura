@@ -43,7 +43,7 @@ public class LocalAvatarFetcher {
         ALL_AVATARS.clear();
 
         //load avatars
-        FolderPath root = new FolderPath(getLocalAvatarDirectory());
+        FolderPath root = new FolderPath(getLocalAvatarDirectory(), getLocalAvatarDirectory());
         root.fetch();
 
         //add new avatars
@@ -171,15 +171,16 @@ public class LocalAvatarFetcher {
      */
     public static class AvatarPath {
 
-        protected final Path path;
+        protected final Path path, folder; // murder, why does everything needs to be protected/private :sob: 
         protected final String name, description;
         protected final CardBackground background;
         protected final FileTexture iconTexture;
 
         protected Properties properties;
 
-        protected AvatarPath(Path path, String name) {
+        protected AvatarPath(Path path, Path folder, String name) {
             this.path = path;
+            this.folder = folder;
             this.name = name;
             this.description = "";
             this.background = CardBackground.DEFAULT;
@@ -187,8 +188,9 @@ public class LocalAvatarFetcher {
             this.properties = SAVED_DATA.computeIfAbsent(path.toAbsolutePath().toString(), __ -> new Properties());
         }
 
-        public AvatarPath(Path path) {
+        public AvatarPath(Path path, Path folder) {
             this.path = path;
+            this.folder = folder;
 
             properties = SAVED_DATA.computeIfAbsent(path.toAbsolutePath().toString(), __ -> new Properties());
 
@@ -231,6 +233,10 @@ public class LocalAvatarFetcher {
 
         public Path getPath() {
             return path;
+        }
+
+        public Path getFolder() {
+            return folder;
         }
 
         public String getName() {
@@ -281,13 +287,13 @@ public class LocalAvatarFetcher {
         protected final List<AvatarPath> children = new ArrayList<>();
         protected final FileSystem fileSystem;
 
-        public FolderPath(FileSystem fileSystem, Path path) {
-            super(fileSystem.getPath(""), IOUtils.getFileNameOrEmpty(path));
+        public FolderPath(FileSystem fileSystem, Path folder, Path path) {
+            super(fileSystem.getPath(""), folder, IOUtils.getFileNameOrEmpty(path));
             this.fileSystem = fileSystem;
         }
 
-        public FolderPath(Path path) {
-            super(path);
+        public FolderPath(Path path, Path folder) {
+            super(path, folder);
             this.fileSystem = path.getFileSystem();
         }
 
@@ -305,14 +311,16 @@ public class LocalAvatarFetcher {
 
             boolean found = false;
 
+            Path folderPath = this.path.getFileSystem() == FileSystems.getDefault() ? path : this.folder;
+
             //iterate over all files on this path
             //but skip non-folders and non-moon
             for (Path path : files) {
                 if (isAvatar(path)) {
-                    children.add(new AvatarPath(path));
+                    children.add(new AvatarPath(path, folderPath));
                     found = true;
                 } else if (Files.isDirectory(path)) {
-                    FolderPath folder = new FolderPath(path);
+                    FolderPath folder = new FolderPath(path, folderPath);
                     if (folder.fetch()) {
                         children.add(folder);
                         found = true;
@@ -323,10 +331,10 @@ public class LocalAvatarFetcher {
                         if ("jar".equalsIgnoreCase(opened.provider().getScheme())){
                             Path newPath = opened.getPath("");
                             if (isAvatar(newPath)) {
-                                children.add(new AvatarPath(newPath));
+                                children.add(new AvatarPath(newPath, folderPath));
                                 found = true;
                             } else {
-                                FolderPath folder = new FolderPath(opened, path);
+                                FolderPath folder = new FolderPath(opened, folderPath, path);
                                 if (folder.fetch()) {
                                     children.add(folder);
                                     found = true;
