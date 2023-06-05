@@ -18,8 +18,6 @@ import org.moon.figura.gui.widgets.lists.AvatarList;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.ui.UIHelper;
 
-import java.nio.file.Path;
-
 public abstract class AbstractAvatarWidget extends AbstractContainerElement implements Comparable<AbstractAvatarWidget> {
 
     protected static final int SPACING = 6;
@@ -52,15 +50,14 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
         });
         context.addAction(FiguraText.of("gui.context.open_folder"), null, button -> {
             try {
-                Path folder = avatar.getPath().getFileSystem() == avatar.getFolder().getFileSystem() ? avatar.getPath() : avatar.getFolder();
-                Util.getPlatform().openUri(folder.toUri());
+                Util.getPlatform().openUri(avatar.getFSPath().toUri());
             } catch (Exception e) {
                 FiguraMod.debug("failed to open avatar folder: ", e.getMessage());
                 Util.getPlatform().openUri(LocalAvatarFetcher.getLocalAvatarDirectory().toUri());
             }
         });
         context.addAction(FiguraText.of("gui.context.copy_path"), null, button -> {
-            Minecraft.getInstance().keyboardHandler.setClipboard(avatar.getPath().toString());
+            Minecraft.getInstance().keyboardHandler.setClipboard(avatar.getFSPath().toString());
             FiguraToast.sendToast(FiguraText.of("toast.clipboard"));
         });
     }
