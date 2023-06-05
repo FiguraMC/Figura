@@ -19,6 +19,8 @@ import org.moon.figura.gui.widgets.lists.AvatarList;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.ui.UIHelper;
 
+import java.nio.file.Path;
+
 public abstract class AbstractAvatarWidget extends AbstractContainerElement implements Comparable<AbstractAvatarWidget> {
 
     protected static final int SPACING = 6;
@@ -51,7 +53,8 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
         });
         context.addAction(new FiguraText("gui.context.open_folder"), null, button -> {
             try {
-                Util.getPlatform().openUri(avatar.getFolder().toUri());
+                Path folder = avatar.getPath().getFileSystem() == avatar.getFolder().getFileSystem() ? avatar.getPath() : avatar.getFolder();
+                Util.getPlatform().openUri(folder.toUri());
             } catch (Exception e) {
                 FiguraMod.debug("failed to open avatar folder: ", e.getMessage());
                 Util.getPlatform().openUri(LocalAvatarFetcher.getLocalAvatarDirectory().toUri());
