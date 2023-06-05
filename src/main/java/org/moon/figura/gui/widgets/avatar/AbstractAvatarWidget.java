@@ -18,6 +18,7 @@ import org.moon.figura.gui.widgets.lists.AvatarList;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.ui.UIHelper;
 
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -53,6 +54,10 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
         });
         context.addAction(new FiguraText("gui.context.open_folder"), null, button -> {
             Path path = avatar.getPath();
+            if (path.getFileSystem() != FileSystems.getDefault()) {
+                String[] paths = path.toUri().toString().split("(?<=\\.zip)!/")[0].split("(?<=\\G[a-z]{1,}:)");
+                path = Path.of(paths[paths.length - 1]);
+            }
             Util.getPlatform().openUri(Files.isDirectory(path) ? path.toUri() : path.getParent().toUri());
         });
         context.addAction(new FiguraText("gui.context.copy_path"), null, button -> {
