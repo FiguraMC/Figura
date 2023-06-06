@@ -18,6 +18,7 @@
     "ReloadableResourceManagerMixin",
     "SkullBlockEntityAccessor",
 
+    "gui.ChatComponentAccessor",
     "gui.ChatComponentMixin",
     "gui.ChatScreenAccessor",
     "gui.ChatScreenMixin",

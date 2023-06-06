@@ -1108,6 +1108,8 @@
   "figura.docs.host.send_chat_message": "Sends the given message in the chat",
   "figura.docs.host.send_chat_command": "Sends the given command in the chat",
   "figura.docs.host.append_chat_history": "Appends the message on the recent chat history",
+  "figura.docs.host.get_chat_message": "Returns a table with information about a chat message\nTakes an index, were 1 means the last message on chat",
+  "figura.docs.host.set_chat_message": "Modifies a chat message with the given text\nTakes an index, were 1 means the last message on chat\nSetting the message to nil will effectively remove it from the chat",
   "figura.docs.host.swing_arm": "Animates swinging the player's arm\nIf the boolean is true, then the offhand is the one that swings",
   "figura.docs.host.is_first_person": "Returns true if the camera is in first person mode",
   "figura.docs.host.is_camera_backwards": "Returns true if the camera is facing backwards",
