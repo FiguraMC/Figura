@@ -35,9 +35,7 @@ public class ChatComponentMixin {
         if (localPlayer != null) {
             String json = Component.Serializer.toJson(message);
             String newMessage = localPlayer.chatReceivedMessageEvent(message.getString(), json);
-            //only allow editing if we can parse the messages
-            //however allow the event to run, so people can still get those special messages
-            if (FiguraMod.parseMessages && newMessage != null && !json.equals(newMessage))
+            if (newMessage != null && !json.equals(newMessage))
                 message = TextUtils.tryParseJson(newMessage);
         }
 
