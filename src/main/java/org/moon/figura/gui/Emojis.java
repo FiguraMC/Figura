@@ -13,6 +13,7 @@ import net.minecraft.server.packs.resources.Resource;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.FiguraResourceListener;
+import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.TextUtils;
 
 import java.io.InputStream;
@@ -30,30 +31,33 @@ public class Emojis {
     public static final FiguraResourceListener RESOURCE_LISTENER = new FiguraResourceListener("emojis", manager -> {
         EMOJIS.clear();
 
-        //get the resource
-        Optional<Resource> optional = manager.getResource(new FiguraIdentifier("emojis.json"));
-        if (optional.isEmpty())
-            return;
+        for (Map.Entry<ResourceLocation, Resource> emojis : manager.listResources("emojis", location -> location.getNamespace().equals(FiguraMod.MOD_ID) && location.getPath().endsWith(".json")).entrySet()) {
+            ResourceLocation location = emojis.getKey();
+            String[] split = location.getPath().split("/", 2);
 
-        //open the resource as json
-        try (InputStream stream = optional.get().open()) {
-            JsonObject emojis = JsonParser.parseReader(new InputStreamReader(stream, StandardCharsets.UTF_8)).getAsJsonObject();
+            if (split.length <= 1)
+                continue;
 
-            //read a pair or String, JsonObject from this json
-            for (Map.Entry<String, JsonElement> entry : emojis.entrySet())
-                EMOJIS.add(new EmojiContainer(entry.getKey(), entry.getValue().getAsJsonObject()));
+            String name = split[1].substring(0, split[1].length() - 5);
 
-            //check for duplicates
-            Set<String> set = new HashSet<>();
-            for (EmojiContainer emoji : EMOJIS) {
-                for (String s : emoji.map.keySet()) {
-                    if (!set.add(s)) {
-                        FiguraMod.LOGGER.warn("Duplicate emoji id registered {}", s);
+            //open the resource as json
+            try (InputStream stream = emojis.getValue().open()) {
+                //add emoji
+                JsonObject json = JsonParser.parseReader(new InputStreamReader(stream, StandardCharsets.UTF_8)).getAsJsonObject();
+                EMOJIS.add(new EmojiContainer(name, json));
+
+                //check for duplicates
+                Set<String> set = new HashSet<>();
+                for (EmojiContainer emoji : EMOJIS) {
+                    for (String s : emoji.map.keySet()) {
+                        if (!set.add(s)) {
+                            FiguraMod.LOGGER.warn("Duplicate emoji id registered {}", s);
+                        }
                     }
                 }
+            } catch (Exception e) {
+                FiguraMod.LOGGER.error("Failed to load {} emojis", name, e);
             }
-        } catch (Exception e) {
-            FiguraMod.LOGGER.error("Failed to load emojis", e);
         }
     });
 
@@ -173,11 +177,13 @@ public class Emojis {
     private static class EmojiContainer {
         private static final Style STYLE = Style.EMPTY.withColor(ChatFormatting.WHITE);
 
+        private final String name;
         private final ResourceLocation font;
         private final Map<String, String> map = new HashMap<>(); //<EmojiName, Unicode>
         private final String blacklist;
 
         public EmojiContainer(String name, JsonObject data) {
+            this.name = name;
             this.font = new FiguraIdentifier("emoji_" + name);
             this.blacklist = data.get("blacklist").getAsString();
 
@@ -193,7 +199,11 @@ public class Emojis {
             String emoji = map.get(key.toLowerCase());
             if (emoji == null)
                 return null;
-            return Component.literal(emoji).withStyle(STYLE.withFont(font).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(DELIMITER + key + DELIMITER))));
+            return Component.literal(emoji).withStyle(STYLE.withFont(font).withHoverEvent(
+                    new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(DELIMITER + key + DELIMITER)
+                            .append("\n")
+                            .append(FiguraText.of("emoji." + name).withStyle(ChatFormatting.DARK_GRAY)))
+            ));
         }
 
         public Component blacklist(Component text) {
