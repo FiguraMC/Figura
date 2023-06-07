@@ -73,7 +73,7 @@ public class Emojis {
 
     private static MutableComponent convertEmoji(String string, Style style) {
         //if the string does not contain the delimiter, then return
-        if (!string.contains(":"))
+        if (string.indexOf(DELIMITER) == -1)
             return Component.literal(string).withStyle(style);
 
         //string lists, every odd index is an emoji
@@ -105,6 +105,15 @@ public class Emojis {
             } else {
                 escaped = false;
                 current.append(c);
+
+                //space character breaks current emoji parsing
+                if (c == ' ' && inside) {
+                    inside = false;
+                    //removed last appended emoji, as were undoing the parsing of the emoji
+                    String removed = strings.remove(strings.size() - 1);
+                    //replace current with the removed string, adding back the delimiter and appending the current parsed text
+                    current = new StringBuilder(removed).append(DELIMITER).append(current);
+                }
             }
         }
 
@@ -190,8 +199,14 @@ public class Emojis {
             //key = emoji unicode, value = array of names
             for (Map.Entry<String, JsonElement> emoji : data.get("emojis").getAsJsonObject().entrySet()) {
                 String unicode = emoji.getKey();
-                for (JsonElement element : emoji.getValue().getAsJsonArray())
-                    map.put(element.getAsString(), unicode);
+                for (JsonElement element : emoji.getValue().getAsJsonArray()) {
+                    String key = element.getAsString();
+                    if (key.isBlank() || key.indexOf(' ') != -1 || key.indexOf(DELIMITER) != -1) {
+                        FiguraMod.LOGGER.warn("Invalid emoji name \"{}\" @ \"{}\"", key, name);
+                    } else {
+                        map.put(key, unicode);
+                    }
+                }
             }
         }
 
