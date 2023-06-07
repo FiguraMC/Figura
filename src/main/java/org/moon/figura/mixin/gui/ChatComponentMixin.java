@@ -35,8 +35,11 @@ public class ChatComponentMixin {
         if (localPlayer != null) {
             String json = Component.Serializer.toJson(message);
             String newMessage = localPlayer.chatReceivedMessageEvent(message.getString(), json);
-            if (newMessage != null && !json.equals(newMessage))
+            if (newMessage != null && !json.equals(newMessage)) {
+                TextUtils.allowScriptEvents = true;
                 message = TextUtils.tryParseJson(newMessage);
+                TextUtils.allowScriptEvents = false;
+            }
         }
 
         //stop here if we should not parse messages

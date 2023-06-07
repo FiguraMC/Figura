@@ -20,6 +20,8 @@ public class TextUtils {
     public static final Component ELLIPSIS = new FiguraText("ellipsis");
     public static final Component UNKNOWN = new TextComponent("�").withStyle(Style.EMPTY.withFont(Style.DEFAULT_FONT));
 
+    public static boolean allowScriptEvents;
+
     public static List<Component> splitText(FormattedText text, String regex) {
         //list to return
         ArrayList<Component> textList = new ArrayList<>();

@@ -171,14 +171,24 @@ public class FiguraLuaPrinter {
     private static final Function<FiguraLuaRuntime, LuaValue> PRINT_JSON_FUNCTION = runtime -> new VarArgFunction() {
         @Override
         public Varargs invoke(Varargs args) {
-            if (!Configs.LOG_OTHERS.value && !FiguraMod.isLocal(runtime.owner.owner))
+            boolean local = FiguraMod.isLocal(runtime.owner.owner);
+            if (!Configs.LOG_OTHERS.value && !local)
                 return NIL;
+
+            TextUtils.allowScriptEvents = true;
 
             MutableComponent text = TextComponent.EMPTY.copy();
             for (int i = 0; i < args.narg(); i++)
                 text.append(TextUtils.tryParseJson(args.arg(i + 1).tojstring()));
 
-            sendLuaChatMessage(TextUtils.removeClickableObjects(text));
+            TextUtils.allowScriptEvents = false;
+
+            if (!local) {
+                sendLuaChatMessage(TextUtils.removeClickableObjects(text));
+            } else {
+                sendLuaChatMessage(text);
+            }
+
             return LuaValue.valueOf(text.getString());
         }
 
