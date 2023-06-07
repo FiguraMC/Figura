@@ -33,7 +33,7 @@
 
   "depends": {
     "java": ">=${java_version}",
-    "minecraft": "*",
+    "minecraft": "${minecraft_version}",
     "fabricloader": "*"
   },
   "conflicts": {
