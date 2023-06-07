@@ -20,6 +20,8 @@ public class TextUtils {
     public static final Component ELLIPSIS = FiguraText.of("ellipsis");
     public static final Component UNKNOWN = Component.literal("�").withStyle(Style.EMPTY.withFont(Style.DEFAULT_FONT));
 
+    public static boolean allowScriptEvents;
+
     public static List<Component> splitText(FormattedText text, String regex) {
         //list to return
         ArrayList<Component> textList = new ArrayList<>();
@@ -53,9 +55,13 @@ public class TextUtils {
     }
 
     public static Component removeClickableObjects(FormattedText text) {
+        return removeClickableObjects(text, p -> true);
+    }
+
+    public static Component removeClickableObjects(FormattedText text, Predicate<ClickEvent> pred) {
         MutableComponent ret = Component.empty();
         text.visit((style, string) -> {
-            ret.append(Component.literal(string).withStyle(style.withClickEvent(null)));
+            ret.append(Component.literal(string).withStyle(style.getClickEvent() != null && pred.test(style.getClickEvent()) ? style.withClickEvent(null) : style));
             return Optional.empty();
         }, Style.EMPTY);
         return ret;
