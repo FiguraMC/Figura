@@ -18,8 +18,15 @@ public class ScreenMixin {
 
     @Inject(at = @At("HEAD"), method = "handleComponentClicked", cancellable = true)
     private void handleComponentClicked(Style style, CallbackInfoReturnable<Boolean> cir) {
-        if (style != null && style.getClickEvent() instanceof TextUtils.FiguraClickEvent event) {
-            event.onClick.run();
+        if (style == null)
+            return;
+
+        ClickEvent event = style.getClickEvent();
+        if (event == null)
+            return;
+
+        if (event instanceof TextUtils.FiguraClickEvent figuraEvent) {
+            figuraEvent.onClick.run();
             cir.setReturnValue(true);
         } else if (event.getAction() == ClickEvent.Action.getByName("figura_function")) {
             cir.setReturnValue(true);

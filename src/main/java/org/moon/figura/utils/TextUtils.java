@@ -55,9 +55,13 @@ public class TextUtils {
     }
 
     public static Component removeClickableObjects(FormattedText text) {
+        return removeClickableObjects(text, p -> true);
+    }
+
+    public static Component removeClickableObjects(FormattedText text, Predicate<ClickEvent> pred) {
         MutableComponent ret = Component.empty();
         text.visit((style, string) -> {
-            ret.append(Component.literal(string).withStyle(style.withClickEvent(null)));
+            ret.append(Component.literal(string).withStyle(style.getClickEvent() != null && pred.test(style.getClickEvent()) ? style.withClickEvent(null) : style));
             return Optional.empty();
         }, Style.EMPTY);
         return ret;
