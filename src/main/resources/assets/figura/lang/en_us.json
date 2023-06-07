@@ -1237,6 +1237,12 @@
 
 
   "figura.docs.model_part": "Represents a node in the model tree, basically a group/cube/mesh in Blockbench\nEach bbmodel file is itself a ModelPart, and all of your models are contained in a global ModelPart called \"models\"",
+  "figura.docs.model_part.pre_render": "Function to run before this part starts being rendered",
+  "figura.docs.model_part.mid_render": "Function to run during the middle of this part's rendering, after its matrices are calculated",
+  "figura.docs.model_part.post_render": "Function to run after this part and its children is rendered",
+  "figura.docs.model_part.set_pre_render": "Sets a function to run before this part starts being rendered",
+  "figura.docs.model_part.set_mid_render": "Sets a function to run during the middle of this part's rendering, after its matrices are calculated",
+  "figura.docs.model_part.set_post_render": "Sets a function to run after this part and its children is rendered",
   "figura.docs.model_part.get_name": "The name of this model part",
   "figura.docs.model_part.get_parent": "Gets the parent part of this part\nIf this part has no parent, returns nil",
   "figura.docs.model_part.get_children": "Gets the children of this part, stored in a table",

@@ -4,9 +4,11 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaFunction;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
@@ -62,6 +64,16 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     public final FiguraMat4 savedPartToWorldMat = FiguraMat4.of().scale(1 / 16d, 1 / 16d, 1 / 16d);
 
     public final Map<Integer, List<Vertex>> vertices;
+
+    @LuaWhitelist
+    @LuaFieldDoc("model_part.pre_render")
+    public LuaFunction preRender; //before calculations
+    @LuaWhitelist
+    @LuaFieldDoc("model_part.mid_render")
+    public LuaFunction midRender; //before pushing
+    @LuaWhitelist
+    @LuaFieldDoc("model_part.post_render")
+    public LuaFunction postRender; //after children
 
     public FiguraModelPart(Avatar owner, String name, PartCustomization customization, Map<Integer, List<Vertex>> vertices, List<FiguraModelPart> children) {
         this.owner = owner;
@@ -201,6 +213,46 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     }
 
     //-- LUA BUSINESS --//
+
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = LuaFunction.class,
+                    argumentNames = "function"
+            ),
+            value = "model_part.set_pre_render"
+    )
+    public FiguraModelPart setPreRender(LuaFunction function) {
+        this.preRender = function;
+        return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = LuaFunction.class,
+                    argumentNames = "function"
+            ),
+            value = "model_part.set_mid_render"
+    )
+    public FiguraModelPart setMidRender(LuaFunction function) {
+        this.midRender = function;
+        return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = LuaFunction.class,
+                    argumentNames = "function"
+            ),
+            value = "model_part.set_post_render"
+    )
+    public FiguraModelPart setPostRender(LuaFunction function) {
+        this.postRender = function;
+        return this;
+    }
 
     @LuaWhitelist
     @LuaMethodDoc("model_part.get_name")
@@ -1293,7 +1345,23 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
             }
 
         this.childCache.put(key, null);
-        return null;
+
+        return switch (key) {
+            case "preRender" -> preRender;
+            case "midRender" -> midRender;
+            case "postRender" -> postRender;
+            default -> null;
+        };
+    }
+
+    @LuaWhitelist
+    public void __newindex(@LuaNotNil String key, LuaFunction value) {
+        switch (key) {
+            case "preRender" -> preRender = value;
+            case "midRender" -> midRender = value;
+            case "postRender" -> postRender = value;
+            default -> throw new LuaError("Cannot assign value on key \"" + key + "\"");
+        }
     }
 
     @Override
