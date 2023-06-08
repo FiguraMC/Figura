@@ -159,14 +159,6 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
     }
 
     @Override
-    public void setFocused(boolean bl) {}
-
-    @Override
-    public boolean isFocused() {
-        return false;
-    }
-
-    @Override
     public int getX() {
         return x;
     }

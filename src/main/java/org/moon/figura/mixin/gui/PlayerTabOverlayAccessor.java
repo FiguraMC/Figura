@@ -4,14 +4,16 @@ import net.minecraft.client.gui.components.PlayerTabOverlay;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Invoker;
+import org.spongepowered.asm.mixin.gen.Accessor;
 
-import java.util.List;
+import java.util.Comparator;
 
 @Mixin(PlayerTabOverlay.class)
 public interface PlayerTabOverlayAccessor {
 
     @Intrinsic
-    @Invoker("getPlayerInfos")
-    List<PlayerInfo> getThePlayerInfos();
+    @Accessor("PLAYER_COMPARATOR")
+    static Comparator<PlayerInfo> getPlayerComparator() {
+        throw new AssertionError();
+    }
 }

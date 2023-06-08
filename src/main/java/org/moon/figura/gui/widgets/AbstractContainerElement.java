@@ -156,12 +156,6 @@ public abstract class AbstractContainerElement extends AbstractContainerEventHan
     }
 
     @Override
-    public void setFocused(boolean focused) {
-        if (!focused) setFocused(null);
-        super.setFocused(focused);
-    }
-
-    @Override
     public void updateNarration(NarrationElementOutput output) {
     }
 
