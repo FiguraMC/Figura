@@ -125,7 +125,7 @@ public class FiguraLuaPrinter {
         int config = Configs.LOG_PINGS.value;
 
         //no ping? *megamind.png*
-        if (config == 0)
+        if (config == 0 || config == 1 && !owner.isHost)
             return;
 
         MutableComponent text = Component.empty()
@@ -142,7 +142,7 @@ public class FiguraLuaPrinter {
 
         text.append(Component.literal("\n"));
 
-        if (config == 1)
+        if (Configs.LOG_LOCATION.value == 0)
             sendLuaChatMessage(text);
         else
             FiguraMod.LOGGER.info(text.getString());

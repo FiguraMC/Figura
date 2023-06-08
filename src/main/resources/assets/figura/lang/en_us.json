@@ -592,13 +592,13 @@
   "figura.config.log_others.tooltip": "Allows debug logging and errors of non-host scripts",
 
   "figura.config.log_pings": "Log Pings",
-  "figura.config.log_pings.tooltip": "Chooses wherever to log pings data",
+  "figura.config.log_pings.tooltip": "Toggle logging of pings messages\nThe logging output is controlled by the \"Print Output\" config",
   "figura.config.log_pings.1": "Off",
-  "figura.config.log_pings.2": "Chat",
-  "figura.config.log_pings.3": "Logger",
+  "figura.config.log_pings.2": "Host Only",
+  "figura.config.log_pings.3": "Everyone",
   "figura.config.log_pings.1.tooltip": "Do not log pings",
-  "figura.config.log_pings.2.tooltip": "The in-game chat (the chat also prints in the logger)",
-  "figura.config.log_pings.3.tooltip": "The output log of your client",
+  "figura.config.log_pings.2.tooltip": "Log pings of only the Host Avatar",
+  "figura.config.log_pings.3.tooltip": "Log pings of all Avatars",
 
   "figura.config.sync_pings": "Sync Pings",
   "figura.config.sync_pings.tooltip.1": "Toggles if host pings should be executed locally or received from the backend",
