@@ -856,13 +856,20 @@ public class Avatar {
         if (renderer != null)
             renderer.invalidate();
 
+        clearSounds();
+        clearParticles();
+
+        events.clear();
+    }
+
+    public void clearSounds() {
         SoundAPI.getSoundEngine().figura$stopSound(owner, null);
         for (SoundBuffer value : customSounds.values())
             value.releaseAlBuffer();
+    }
 
+    public void clearParticles() {
         ParticleAPI.getParticleEngine().figura$clearParticles(owner);
-
-        events.clear();
     }
 
     private int getFileSize() {
