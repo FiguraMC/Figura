@@ -98,11 +98,15 @@ public class TextUtils {
     }
 
     public static Component replaceInText(FormattedText text, String regex, Object replacement, BiPredicate<String, Style> predicate, int times) {
+        return replaceInText(text, regex, replacement, predicate, 0, times);
+    }
+
+    public static Component replaceInText(FormattedText text, String regex, Object replacement, BiPredicate<String, Style> predicate, int beginIndex, int times) {
         //fix replacement object
         Component replace = replacement instanceof Component c ? c : new TextComponent(replacement.toString());
         MutableComponent ret = TextComponent.EMPTY.copy();
 
-        int[] remaining = {times};
+        int[] ints = {beginIndex, times};
         text.visit((style, string) -> {
             //test predicate
             if (!predicate.test(string, style)) {
@@ -113,13 +117,19 @@ public class TextUtils {
             //split
             String[] split = string.split("((?<=" + regex + ")|(?=" + regex + "))");
             for (String s : split) {
-                //append the text if it does not match the split, otherwise append the replacement instead
-                if (!s.matches(regex) || remaining[0] <= 0)
+                if (!s.matches(regex)) {
                     ret.append(new TextComponent(s).withStyle(style));
-                else {
-                    ret.append(TextComponent.EMPTY.copy().withStyle(style).append(replace));
-                    remaining[0]--;
+                    continue;
                 }
+
+                if (ints[0] > 0 || ints[1] <= 0) {
+                    ret.append(new TextComponent(s).withStyle(style));
+                } else {
+                    ret.append(TextComponent.EMPTY.copy().withStyle(style).append(replace));
+                }
+
+                ints[0]--;
+                ints[1]--;
             }
 
             return Optional.empty();

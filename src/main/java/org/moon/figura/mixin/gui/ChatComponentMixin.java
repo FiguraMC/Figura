@@ -93,16 +93,6 @@ public class ChatComponentMixin {
             //name
             replacement = TextUtils.replaceInText(replacement, "\\$\\{name\\}", playerName);
 
-            //sender badges
-            if (config > 1 && name.equals(owner)) {
-                //badges
-                Component temp = Badges.appendBadges(replacement, uuid, true);
-                //trim
-                temp = TextUtils.trim(temp);
-                //modify message, only first, also no need for ignore case, since it is already matched with proper case
-                message = TextUtils.replaceInText(message, "\\b" + Pattern.quote(name) + "\\b", temp, (s, style) -> true, 1);
-            }
-
             //badges
             replacement = Badges.appendBadges(replacement, uuid, config > 1 && owner == null);
 
@@ -110,7 +100,15 @@ public class ChatComponentMixin {
             replacement = TextUtils.trim(replacement);
 
             //modify message
-            message = TextUtils.replaceInText(message, "(?i)\\b" + Pattern.quote(name) + "\\b", replacement);
+            message = TextUtils.replaceInText(message, "(?i)\\b" + Pattern.quote(name) + "\\b", replacement, (s, style) -> true, 1, Integer.MAX_VALUE);
+
+            //sender badges
+            if (config > 1 && name.equals(owner)) {
+                //badges
+                Component temp = Badges.appendBadges(replacement, uuid, true);
+                //modify message, only first, also no need for ignore case, since it is already matched with proper case
+                message = TextUtils.replaceInText(message, "\\b" + Pattern.quote(name) + "\\b", temp, (s, style) -> true, 1);
+            }
         }
 
         return message;
