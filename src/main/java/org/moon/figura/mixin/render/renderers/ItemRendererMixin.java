@@ -37,7 +37,7 @@ public abstract class ItemRendererMixin {
         BakedModel bakedModel = this.getModel(itemStack, world, livingEntity, seed);
         ItemTransform transform = bakedModel.getTransforms().getTransform(renderMode);
 
-        if (avatar.itemRenderEvent(ItemStackAPI.verify(itemStack), renderMode.name(), FiguraVec3.fromVec3f(transform.translation), FiguraVec3.of(transform.rotation.z, transform.rotation.y, transform.rotation.x), FiguraVec3.fromVec3f(transform.scale), leftHanded, stack, buffer, light, overlay))
+        if (avatar.itemRenderEvent(ItemStackAPI.verify(itemStack), renderMode.name(), FiguraVec3.fromVec3f(transform.translation), FiguraVec3.of(transform.rotation.z(), transform.rotation.y(), transform.rotation.x()), FiguraVec3.fromVec3f(transform.scale), leftHanded, stack, buffer, light, overlay))
             ci.cancel();
     }
 }

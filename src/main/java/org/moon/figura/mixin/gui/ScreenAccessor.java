@@ -1,6 +1,6 @@
 package org.moon.figura.mixin.gui;
 
-import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.screens.Screen;
 import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
@@ -12,5 +12,5 @@ import java.util.List;
 public interface ScreenAccessor {
     @Intrinsic
     @Accessor("renderables")
-    List<Renderable> getRenderables();
+    List<Widget> getRenderables();
 }

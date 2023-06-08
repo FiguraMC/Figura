@@ -1,6 +1,7 @@
 package org.moon.figura.mixin.render.renderers;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Matrix4f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -10,7 +11,6 @@ import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.world.entity.LivingEntity;
-import org.joml.Matrix4f;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
@@ -96,7 +96,9 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
         FiguraMod.pushProfiler(currentAvatar);
 
         FiguraMod.pushProfiler("calculateMatrix");
-        Matrix4f diff = new Matrix4f(lastPose).invert().mul(poseStack.last().pose());
+        Matrix4f diff = new Matrix4f(lastPose);
+        diff.invert();
+        diff.multiply(poseStack.last().pose());
         FiguraMat4 poseMatrix = new FiguraMat4().set(diff);
 
         FiguraMod.popPushProfiler("renderEvent");

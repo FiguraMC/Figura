@@ -2,7 +2,7 @@ package org.moon.figura.gui.screens;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -58,7 +58,7 @@ public abstract class AbstractPanelScreen extends Screen {
 
     @Override
     public void tick() {
-        for (Renderable renderable : this.renderables()) {
+        for (Widget renderable : this.renderables()) {
             if (renderable instanceof FiguraTickable tickable)
                 tickable.tick();
         }
@@ -68,7 +68,7 @@ public abstract class AbstractPanelScreen extends Screen {
         super.tick();
     }
 
-    public List<Renderable> renderables() {
+    public List<Widget> renderables() {
         return ((ScreenAccessor) this).getRenderables();
     }
 
