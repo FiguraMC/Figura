@@ -81,8 +81,6 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
         this.customization = customization;
         this.vertices = vertices;
         this.children = children;
-        for (FiguraModelPart child : children)
-            child.parent = this;
     }
 
     public boolean pushVerticesImmediate(ImmediateAvatarRenderer avatarRenderer, int[] remainingComplexity) {
@@ -1294,6 +1292,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
         }
 
         this.children.add(part);
+        part.parent = this;
         return this;
     }
 
@@ -1307,6 +1306,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     )
     public FiguraModelPart removeChild(@LuaNotNil FiguraModelPart part) {
         this.children.remove(part);
+        part.parent = null;
         return this;
     }
 
@@ -1327,6 +1327,10 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
         result.parentType = parentType;
         result.textureHeight = textureHeight;
         result.textureWidth = textureWidth;
+
+        if (parentType.isSeparate)
+            owner.renderer.sortParts();
+
         return result;
     }
 
