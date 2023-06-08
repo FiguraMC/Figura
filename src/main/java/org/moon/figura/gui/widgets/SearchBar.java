@@ -24,7 +24,7 @@ public class SearchBar extends TextField {
         super(x, y, width, height, TextField.HintType.SEARCH, changedListener);
         clearButton = new Button(getX() + getWidth() - 18, getY() + ((getHeight() - 16) / 2), 16, 16, 0, 0, 16, CLEAR_TEXTURE, 48, 16, FiguraText.of("gui.clear"), button -> {
             getField().setValue("");
-            setFocused(false);
+            setFocused(null);
         });
         children.add(clearButton);
         getField().setWidth(getField().getWidth() - 16);
