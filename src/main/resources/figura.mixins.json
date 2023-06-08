@@ -28,6 +28,7 @@
     "gui.GuiMixin",
     "gui.InventoryScreenMixin",
     "gui.PauseScreenMixin",
+    "gui.PlayerTabOverlayAccessor",
     "gui.PlayerTabOverlayMixin",
     "gui.ScreenAccessor",
     "gui.ScreenMixin",

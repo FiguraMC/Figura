@@ -13,8 +13,10 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import org.moon.figura.mixin.ClientLevelInvoker;
 import org.moon.figura.mixin.EntityAccessor;
+import org.moon.figura.mixin.gui.PlayerTabOverlayAccessor;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -81,6 +83,10 @@ public class EntityUtils {
         }
 
         return playerList;
+    }
+
+    public static List<PlayerInfo> getTabList() {
+        return ((PlayerTabOverlayAccessor) Minecraft.getInstance().gui.getTabList()).getThePlayerInfos();
     }
 
     public static boolean checkInvalidPlayer(UUID id) {
