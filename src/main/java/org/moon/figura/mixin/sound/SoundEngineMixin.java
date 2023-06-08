@@ -161,7 +161,7 @@ public abstract class SoundEngineMixin implements SoundEngineAccessor {
     public boolean figura$isPlaying(UUID owner) {
         if (!this.loaded)
             return false;
-        for (LuaSound sound : figuraHandlers) {
+        for (LuaSound sound : new ArrayList<>(figuraHandlers)) {
             ChannelHandleAccessor accessor = (ChannelHandleAccessor) sound.getHandle();
             if (sound.isPlaying() && accessor != null && accessor.getOwner().equals(owner))
                 return true;
