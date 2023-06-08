@@ -382,9 +382,11 @@ public class FiguraLuaRuntime {
     // error ^-^ //
 
     public void error(Throwable e) {
-        FiguraLuaPrinter.sendLuaError(parseError(e), owner);
         owner.scriptError = true;
         owner.luaRuntime = null;
+        owner.clearParticles();
+        owner.clearSounds();
+        FiguraLuaPrinter.sendLuaError(parseError(e), owner);
     }
 
     public static LuaError parseError(Throwable e) {
