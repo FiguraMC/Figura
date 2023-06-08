@@ -93,6 +93,10 @@ public class FiguraModelPartReader {
         }
 
         FiguraModelPart result = new FiguraModelPart(owner, name, customization, vertices, children);
+
+        for (FiguraModelPart child : children)
+            child.parent = result;
+
         result.facesByTexture = facesByTexture;
         storeTextures(result, textureSets);
         if (partCompound.contains("pt")) {
