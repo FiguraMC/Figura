@@ -6,6 +6,8 @@ import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.math.Matrix3f;
+import com.mojang.math.Matrix4f;
 import com.mojang.math.Quaternion;
 import com.mojang.math.Vector3f;
 import net.minecraft.client.Camera;
@@ -586,8 +588,8 @@ public class Avatar {
         FiguraMod.pushProfiler("hudRender");
 
         stack.pushPose();
-        stack.last().pose().scale(16, 16, -16);
-        stack.last().normal().scale(1, 1, -1);
+        stack.last().pose().multiply(Matrix4f.createScaleMatrix(16, 16, -16));
+        stack.last().normal().mul(Matrix3f.createScaleMatrix(1, 1, -1));
 
         Lighting.setupForFlatItems();
         RenderSystem.disableDepthTest();
@@ -755,7 +757,7 @@ public class Avatar {
             return false;
 
         stack.pushPose();
-        stack.mulPose(Axis.ZP.rotationDegrees(180f));
+        stack.mulPose(Vector3f.ZP.rotationDegrees(180f));
 
         renderer.setupRenderer(
                 PartFilterScheme.ITEM, bufferSource, stack,

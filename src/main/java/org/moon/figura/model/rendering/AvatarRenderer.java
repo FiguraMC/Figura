@@ -231,15 +231,14 @@ public abstract class AvatarRenderer {
     }
 
     public void setMatrices(double camX, double camY, double camZ, PoseStack matrices) {
+        matrices.pushPose();
+        matrices.translate(-camX, -camY, -camZ);
+        matrices.scale(-1, -1, 1);
+
         PoseStack.Pose pose = matrices.last();
-
-        //pos
         this.posMat.set(pose.pose());
-        this.posMat.translate(-camX, -camY, -camZ);
-        this.posMat.scale(-1, -1, 1);
-
-        //normal
         this.normalMat.set(pose.normal());
-        this.normalMat.scale(-1, -1, 1);
+
+        matrices.popPose();
     }
 }

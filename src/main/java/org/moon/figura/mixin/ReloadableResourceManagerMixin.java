@@ -19,7 +19,7 @@ public class ReloadableResourceManagerMixin {
 
         int index = 0;
         for (int i = 0; i < list.size(); i++) {
-            String id = list.get(i).packId();
+            String id = list.get(i).getName();
             if ("Fabric Mods".equals(id) || "vanilla".equals(id))
                 index = i + 1;
         }

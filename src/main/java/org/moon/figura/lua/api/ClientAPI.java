@@ -23,12 +23,7 @@ import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
-import org.moon.figura.mixin.render.ModelManagerAccessor;
-import org.moon.figura.utils.EntityUtils;
-import org.moon.figura.utils.LuaUtils;
-import org.moon.figura.utils.MathUtils;
-import org.moon.figura.utils.TextUtils;
-import org.moon.figura.utils.Version;
+import org.moon.figura.utils.*;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -448,10 +443,7 @@ public class ClientAPI {
     @LuaWhitelist
     @LuaMethodDoc("client.list_atlases")
     public static List<String> listAtlases() {
-        List<String> list = new ArrayList<>();
-        for (ResourceLocation res : ModelManagerAccessor.getVanillaAtlases().keySet())
-            list.add(res.toString());
-        return list;
+        return List.of();
     }
 
     @LuaWhitelist
