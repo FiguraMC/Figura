@@ -5,6 +5,7 @@ import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.PlayerModelPart;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.scores.PlayerTeam;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaTable;
 import org.moon.figura.lua.LuaNotNil;
@@ -15,6 +16,9 @@ import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.utils.EntityUtils;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -154,6 +158,33 @@ public class PlayerAPI extends LivingEntityAPI<Player> {
     public LuaTable getShoulderEntity(boolean right) {
         checkEntity();
         return new ReadOnlyLuaTable(NbtToLua.convert(right ? entity.getShoulderEntityRight() : entity.getShoulderEntityLeft()));
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("player.get_team_info")
+    public Map<String, Object> getTeamInfo() {
+        checkEntity();
+        if (!checkPlayerInfo())
+            return null;
+
+        PlayerTeam team = playerInfo.getTeam();
+        if (team == null)
+            return null;
+
+        Map<String, Object> map = new HashMap<>();
+
+        map.put("name", team.getName());
+        map.put("display_name", team.getDisplayName().getString());
+        map.put("color", team.getColor().getName());
+        map.put("prefix", team.getPlayerPrefix().getString());
+        map.put("suffix", team.getPlayerSuffix().getString());
+        map.put("friendly_fire", team.isAllowFriendlyFire());
+        map.put("see_friendly_invisibles", team.canSeeFriendlyInvisibles());
+        map.put("nametag_visibility", team.getNameTagVisibility().name);
+        map.put("death_message_visibility", team.getDeathMessageVisibility().name);
+        map.put("collision_rule", team.getCollisionRule().name);
+
+        return map;
     }
 
     private static final String[] IP_MESSAGES = {":trol:", "lol", "cope", "ratio'd", "192.168.0.1", "doxxed", "IP grabbed!"};
