@@ -966,6 +966,7 @@
   "figura.docs.client.get_frame_time": "Returns the current fraction between the last tick and the next tick\nThis is the value used as \"delta\" in the RENDER event",
   "figura.docs.client.list_atlases": "Returns a list of all registered atlases paths",
   "figura.docs.client.get_atlas": "Returns a TextureAtlasAPI object with information about the given atlas\nReturns nil if the atlas was not found",
+  "figura.docs.client.get_tab_list": "Returns a list of all player names shown in the tablist",
 
 
   "figura.docs.config": "A global API used to save and load avatar data between game sessions",
@@ -1061,6 +1062,7 @@
   "figura.docs.player.is_fishing": "Returns if the player is currently fishing",
   "figura.docs.player.get_charged_attack_delay": "Returns the delay (in ticks) of charged attacks",
   "figura.docs.player.get_shoulder_entity": "Returns a table of the nbt of this entity left or right shoulder entity",
+  "figura.docs.player.get_team_info": "Returns a table with information about the team of this player\nReturns nil if the player doesnt have a team",
   "figura.docs.player.get_ip_address": "Returns this player's IP address",
 
   "figura.docs.viewer": "An extension of the Player, used for the viewer only, meant as proxy to allow access to some host only functions",

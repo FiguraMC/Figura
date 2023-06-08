@@ -5,6 +5,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.core.SerializableUUID;
@@ -23,6 +24,7 @@ import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.mixin.render.ModelManagerAccessor;
+import org.moon.figura.utils.EntityUtils;
 import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.MathUtils;
 import org.moon.figura.utils.TextUtils;
@@ -467,6 +469,15 @@ public class ClientAPI {
         } catch (Exception ignored) {
             return null;
         }
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("client.get_tab_list")
+    public static List<String> getTabList() {
+        List<String> list = new ArrayList<>();
+        for (PlayerInfo entry : EntityUtils.getTabList())
+            list.add(entry.getTabListDisplayName() != null ? entry.getTabListDisplayName().getString() : entry.getProfile().getName());
+        return list;
     }
 
     @Override
