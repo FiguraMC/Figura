@@ -151,7 +151,7 @@ public class BiomeAPI {
     @LuaWhitelist
     @LuaMethodDoc("biome.is_hot")
     public boolean isHot() {
-        return ((BiomeAccessor) (Object) biome).getTemperature(getBlockPos()) > 1f;
+        return ((BiomeAccessor) (Object) biome).getTheTemperature(getBlockPos()) > 1f;
     }
 
     @LuaWhitelist

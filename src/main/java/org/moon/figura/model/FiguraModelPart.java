@@ -55,7 +55,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     public Map<String, RenderTask> renderTasks = new ConcurrentHashMap<>();
 
     public List<FiguraTextureSet> textures;
-    public int textureWidth, textureHeight; //If the part has multiple textures, then these are -1.
+    public int textureWidth = -1, textureHeight = -1; //If the part has multiple textures, then these are -1.
 
     public boolean animated = false;
     public int animationOverride = 0;
@@ -1332,6 +1332,34 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
             owner.renderer.sortParts();
 
         return result;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(
+                            argumentTypes = String.class,
+                            argumentNames = "name"
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {String.class, String.class},
+                            argumentNames = {"name", "parentType"}
+                    )
+            },
+            value = "model_part.new_part"
+    )
+    public FiguraModelPart newPart(@LuaNotNil String name, String parentType) {
+        FiguraModelPart newer = new FiguraModelPart(owner, name, new PartCustomization(), new HashMap<>(), new ArrayList<>());
+        newer.facesByTexture = new ArrayList<>();
+        newer.textures = new ArrayList<>();
+
+        addChild(newer);
+
+        newer.setPivot(this.getPivot(), null, null);
+        if (parentType != null)
+            newer.setParentType(parentType);
+
+        return newer;
     }
 
     //-- METAMETHODS --//

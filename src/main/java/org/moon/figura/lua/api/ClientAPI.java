@@ -2,6 +2,8 @@ package org.moon.figura.lua.api;
 
 import com.mojang.blaze3d.platform.Window;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.SharedConstants;
+import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.client.gui.Font;
@@ -68,13 +70,25 @@ public class ClientAPI {
     @LuaWhitelist
     @LuaMethodDoc("client.get_version")
     public static String getVersion() {
-        return Minecraft.getInstance().getLaunchedVersion();
+        return SharedConstants.getCurrentVersion().getId();
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("client.get_version_type")
-    public static String getVersionType() {
-        return Minecraft.getInstance().getVersionType();
+    @LuaMethodDoc("client.get_version_name")
+    public static String getVersionName() {
+        return SharedConstants.getCurrentVersion().getName();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("client.is_snapshot")
+    public static boolean isSnapshot() {
+        return !SharedConstants.getCurrentVersion().isStable();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("client.get_client_brand")
+    public static String getClientBrand() {
+        return ClientBrandRetriever.getClientModName();
     }
 
     @LuaWhitelist

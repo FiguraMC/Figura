@@ -7,7 +7,8 @@ public class Version implements Comparable<Version> {
 
     //slightly modified regex of semver
     //difference only is that build metadata can be anything
-    private static final Pattern PATTERN = Pattern.compile("^(?<major>0|[1-9]\\d*)\\.(?<minor>0|[1-9]\\d*)\\.(?<patch>0|[1-9]\\d*)(?:-(?<pre>(?:0|[1-9]\\d*|\\d*[a-zA-Z-][\\da-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][\\da-zA-Z-]*))*))?(?:\\+(?<build>[\\da-zA-Z-]+(?:\\.[\\da-zA-Z-]+)*))?$");
+    //also minor and patch are optionals
+    private static final Pattern PATTERN = Pattern.compile("^(?<major>0|[1-9]\\d*)(?:\\.(?<minor>0|[1-9]\\d*)(?:\\.(?<patch>0|[1-9]\\d*))?)?(?:-(?<pre>(?:0|[1-9]\\d*|\\d*[a-zA-Z-][\\da-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][\\da-zA-Z-]*))*))?(?:\\+(?<build>[\\da-zA-Z-]+(?:\\.[\\da-zA-Z-]+)*))?$");
 
     private final String src;
 
@@ -26,10 +27,18 @@ public class Version implements Comparable<Version> {
             Matcher matcher = PATTERN.matcher(version);
             if (matcher.matches()) {
                 major = Integer.parseInt(matcher.group("major"));
-                minor = Integer.parseInt(matcher.group("minor"));
-                patch = Integer.parseInt(matcher.group("patch"));
+
+                String m = matcher.group("minor");
+                if (m != null)
+                    minor = Integer.parseInt(m);
+
+                String p = matcher.group("patch");
+                if (p != null)
+                    patch = Integer.parseInt(p);
+
                 pre = matcher.group("pre");
                 build = matcher.group("build");
+
                 invalid = false;
             }
         } catch (Exception ignored) {}
