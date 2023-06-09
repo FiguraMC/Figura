@@ -1,6 +1,13 @@
 package org.moon.figura.lua.api;
 
 import com.mojang.blaze3d.platform.NativeImage;
+
+import net.minecraft.ResourceLocationException;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.Resource;
+
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaTable;
 import org.moon.figura.avatar.Avatar;
@@ -14,9 +21,11 @@ import org.moon.figura.permissions.Permissions;
 import org.moon.figura.utils.ColorUtils;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -144,6 +153,37 @@ public class TextureAPI {
     public List<FiguraTexture> getTextures() {
         check();
         return new ArrayList<>(owner.renderer.textures.values());
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("textures.from_vanilla_resource")
+    public FiguraTexture fromVanillaResource(@LuaNotNil String name, @LuaNotNil String resourceLocation) {
+        check();
+        Optional<Resource> resource;
+        try{
+            resource=Minecraft.getInstance().getResourceManager().getResource(new ResourceLocation(resourceLocation));
+        }
+        catch(ResourceLocationException e){
+            //spit an error if the player inputs a string with invalid characters
+            throw new LuaError(e.getMessage());
+        }
+        try{
+            NativeImage image;
+            if(resource.isPresent()){
+                image=NativeImage.read(resource.get().open());
+            }
+            else{
+                //if the string is a valid resourceLocation but does not point to a valid resource, missingno
+                NativeImage missingno= MissingTextureAtlasSprite.getTexture().getPixels();
+                image=new NativeImage(missingno.getWidth(), missingno.getHeight(), false);
+                image.copyFrom(missingno);
+            }
+            return register(name, image, false);
+        }
+        catch(IOException e){
+            //spit an error if the player inputs a resource location that does point to a thing, but not to an image
+            throw new LuaError(e.getMessage());
+        }        
     }
 
     @LuaWhitelist
