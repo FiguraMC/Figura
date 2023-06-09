@@ -19,10 +19,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Mixin(SoundEngine.class)
 public abstract class SoundEngineMixin implements SoundEngineAccessor {
@@ -39,7 +36,7 @@ public abstract class SoundEngineMixin implements SoundEngineAccessor {
     @Unique
     private ChannelAccess figuraChannel;
     @Unique
-    private final ArrayList<LuaSound> figuraHandlers = new ArrayList<>();
+    private final List<LuaSound> figuraHandlers = Collections.synchronizedList(new ArrayList<>());
 
     @Inject(at = @At("RETURN"), method = "<init>")
     private void soundEngineInit(SoundManager soundManager, Options options, ResourceManager resourceManager, CallbackInfo ci) {
@@ -161,7 +158,7 @@ public abstract class SoundEngineMixin implements SoundEngineAccessor {
     public boolean figura$isPlaying(UUID owner) {
         if (!this.loaded)
             return false;
-        for (LuaSound sound : new ArrayList<>(figuraHandlers)) {
+        for (LuaSound sound : figuraHandlers) {
             ChannelHandleAccessor accessor = (ChannelHandleAccessor) sound.getHandle();
             if (sound.isPlaying() && accessor != null && accessor.getOwner().equals(owner))
                 return true;

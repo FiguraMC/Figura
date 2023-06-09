@@ -107,6 +107,12 @@ public class AvatarAPI {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("avatar.get_entity_name")
+    public String getEntityName() {
+        return avatar.entityName;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc("avatar.get_size")
     public double getSize() {
         return avatar.fileSize;
