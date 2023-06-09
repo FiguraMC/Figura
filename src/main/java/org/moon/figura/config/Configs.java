@@ -271,7 +271,7 @@ public class Configs {
                 LocalAvatarFetcher.clearCache();
                 ConfigScreen.clearCache();
                 FiguraRuntimeResources.clearCache();
-                FiguraToast.sendToast(FiguraText.of("toast.cache_clear"));
+                FiguraToast.sendToast(new FiguraText("toast.cache_clear"));
             }),
             REDOWNLOAD_ASSETS = new ButtonConfig("redownload_assets", DEV, () -> {
                 FiguraRuntimeResources.init();
@@ -279,7 +279,7 @@ public class Configs {
             }),
             CLEAR_AVATAR_DATA = new ButtonConfig("clear_avatar_data", DEV, () -> {
                 ConfigAPI.clearAllData();
-                FiguraToast.sendToast(FiguraText.of("toast.avatar_data_clear"));
+                FiguraToast.sendToast(new FiguraText("toast.avatar_data_clear"));
             });
     public static final BoolConfig
             FORCE_SMOOTH_AVATAR = new BoolConfig("force_smooth_avatar", DEV, false);

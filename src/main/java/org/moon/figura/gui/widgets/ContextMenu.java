@@ -275,7 +275,7 @@ public class ContextMenu extends AbstractContainerElement {
 
         @Override
         public int getTrueWidth() {
-            return super.getTrueWidth() + Minecraft.getInstance().font.width(Component.literal(" ").append(ARROW));
+            return super.getTrueWidth() + Minecraft.getInstance().font.width(new TextComponent(" ").append(ARROW));
         }
     }
 }

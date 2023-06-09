@@ -7,6 +7,7 @@ import net.minecraft.client.resources.sounds.Sound;
 import net.minecraft.client.sounds.ChannelAccess;
 import net.minecraft.client.sounds.SoundBufferLibrary;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.sounds.SoundSource;
 import org.luaj.vm2.LuaError;
 import org.moon.figura.avatar.Avatar;
@@ -43,7 +44,7 @@ public class LuaSound {
     private String subtitle;
 
     public LuaSound(SoundBuffer buffer, String id, Avatar owner) {
-        this(null, buffer, id, Component.literal(id), owner);
+        this(null, buffer, id, new TextComponent(id), owner);
     }
 
     public LuaSound(Sound sound, String id, Component subtitle, Avatar owner) {
