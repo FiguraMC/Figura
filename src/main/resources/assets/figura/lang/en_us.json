@@ -832,6 +832,7 @@
   "figura.docs.avatar.get_version": "Gets the version string of this avatar",
   "figura.docs.avatar.get_authors": "Gets the authors string of this avatar",
   "figura.docs.avatar.get_name": "Gets the name string of this avatar",
+  "figura.docs.avatar.get_entity_name": "Attempts to get the entity name of this avatar, defaulting to the avatar name",
   "figura.docs.avatar.get_size": "Gets the file size of this avatar in bytes",
   "figura.docs.avatar.has_texture": "Gets whether or not this avatar has a texture",
   "figura.docs.avatar.has_script_error": "Gets whether this script currently has stopped due to an error (kinda useless lol)",
@@ -923,8 +924,10 @@
   "figura.docs.client.get_fps": "Gets the FPS of the client\nReturns 0 if the fps counter isn't ready yet (or if your pc is just that bad)",
   "figura.docs.client.get_fps_string": "Gets the FPS string of the client, displayed in the F3 menu\nContains info on the fps, the fps limit, vsync, cloud types, and biome blend radius",
   "figura.docs.client.is_paused": "Returns true if the client is paused",
-  "figura.docs.client.get_version": "Returns the \"version\" of your client\nIn testing, this returned \"Fabric\"",
-  "figura.docs.client.get_version_type": "Returns the \"version type\" of your client\nIn testing, this returned \"Fabric\"",
+  "figura.docs.client.get_version": "Returns the Minecraft version of your client",
+  "figura.docs.client.get_version_name": "Returns the extended name of the Minecraft version of your client",
+  "figura.docs.client.is_snapshot": "Returns if the client is running a snapshot or full release version",
+  "figura.docs.client.get_client_brand": "Returns the \"version type\" of your client, usually the client modloader brand",
   "figura.docs.client.get_server_brand": "Returns the type of server you're on\nIn singleplayer, this is \"Integrated\"",
   "figura.docs.client.get_chunk_statistics": "Returns a string containing information about the player's chunk\nThis string appears in the F3 menu",
   "figura.docs.client.get_entity_statistics": "Returns a string containing information about the loaded entities on the client\nThis string appears in the F3 menu",
@@ -1322,6 +1325,7 @@
   "figura.docs.model_part.add_child": "Adds the given part into this part's children list",
   "figura.docs.model_part.remove_child": "Removes the given part from this part's children list",
   "figura.docs.model_part.copy": "Returns a copy of this part, with all customizations and vertices copied\nChildren parts are passed as reference, in a new list",
+  "figura.docs.model_part.new_part": "Creates a new, empty, group model part as a child of this part, at the same pivot point\nTakes two arguments, the new part's name and optionally its parent type",
 
 
   "figura.docs.nameplate": "A global API which is used for customizing your player's nameplate in chat, above your head, and in the tab list",

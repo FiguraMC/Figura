@@ -14,7 +14,6 @@ import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @LuaWhitelist
@@ -91,7 +90,7 @@ public class FiguraKeybind {
 
     public static boolean set(List<FiguraKeybind> bindings, InputConstants.Key key, boolean pressed, int modifiers) {
         boolean overrided = false;
-        for (FiguraKeybind keybind : new ArrayList<>(bindings)) {
+        for (FiguraKeybind keybind : bindings) {
             if (keybind.key == key && keybind.enabled && (keybind.gui || Minecraft.getInstance().screen == null))
                 overrided = keybind.setDown(pressed, modifiers) || overrided;
         }

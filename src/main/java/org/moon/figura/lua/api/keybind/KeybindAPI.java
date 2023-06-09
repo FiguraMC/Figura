@@ -11,7 +11,9 @@ import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.mixin.input.KeyMappingAccessor;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -20,7 +22,7 @@ import java.util.HashMap;
 )
 public class KeybindAPI {
 
-    public final ArrayList<FiguraKeybind> keyBindings = new ArrayList<>();
+    public final List<FiguraKeybind> keyBindings = Collections.synchronizedList(new ArrayList<>());
     public final Avatar owner;
 
     public KeybindAPI(Avatar owner) {
