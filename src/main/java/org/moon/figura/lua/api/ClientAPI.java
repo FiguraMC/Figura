@@ -26,6 +26,7 @@ import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.mixin.gui.PlayerTabOverlayAccessor;
 import org.moon.figura.mixin.render.ModelManagerAccessor;
 import org.moon.figura.utils.EntityUtils;
 import org.moon.figura.utils.LuaUtils;
@@ -490,12 +491,34 @@ public class ClientAPI {
 
     @LuaWhitelist
     @LuaMethodDoc("client.get_tab_list")
-    public static List<String> getTabList() {
+    public static Map<String, Object> getTabList() {
+        Map<String, Object> map = new HashMap<>();
+        PlayerTabOverlayAccessor accessor = (PlayerTabOverlayAccessor) Minecraft.getInstance().gui.getTabList();
+
+        //header
+        Component header = accessor.getHeader();
+        if (header != null) {
+            map.put("header", header.getString());
+            map.put("headerJson", header);
+        }
+
+        //players
         List<String> list = new ArrayList<>();
         for (PlayerInfo entry : EntityUtils.getTabList())
             list.add(entry.getTabListDisplayName() != null ? entry.getTabListDisplayName().getString() : entry.getProfile().getName());
-        return list;
+        map.put("players", list);
+
+        //footer
+        Component footer = accessor.getFooter();
+        if (footer != null) {
+            map.put("footer", footer.getString());
+            map.put("footerJson", footer);
+        }
+
+        return map;
     }
+
+
 
     @Override
     public String toString() {
