@@ -117,9 +117,9 @@ public class PingArg {
 
     private static void writeVec(FiguraVector<?, ?> vector, DataOutputStream dos) throws IOException {
         dos.writeByte(switch(vector.size()){
-            case(2) -> VECTOR2;
-            case(3) -> VECTOR3;
-            case(4) -> VECTOR4;
+            case 2 -> VECTOR2;
+            case 3 -> VECTOR3;
+            case 4 -> VECTOR4;
             default -> throw new IOException("Vector to write has invalid size!");
         });
 
@@ -129,9 +129,9 @@ public class PingArg {
 
     private static void writeMat(FiguraMatrix<?, ?> matrix, DataOutputStream dos) throws IOException {
         dos.writeByte(switch(matrix.cols()){
-            case(2) -> MATRIX2;
-            case(3) -> MATRIX3;
-            case(4) -> MATRIX4;
+            case 2 -> MATRIX2;
+            case 3 -> MATRIX3;
+            case 4 -> MATRIX4;
             default -> throw new IOException("Vector to write has invalid size!");
         });
 
@@ -198,9 +198,9 @@ public class PingArg {
 
     private static FiguraVector<?, ?> readVec(DataInputStream dis, byte type) throws IOException {
         byte size = switch(type){
-            case(VECTOR2) -> 2;
-            case(VECTOR3) -> 3;
-            case(VECTOR4) -> 4;
+            case VECTOR2 -> 2;
+            case VECTOR3 -> 3;
+            case VECTOR4 -> 4;
             default-> throw new IOException("Vector to read has invalid size!");
         };
 
@@ -213,9 +213,9 @@ public class PingArg {
 
     private static FiguraMatrix<?, ?> readMat(DataInputStream dis, byte type) throws IOException {
         byte size = switch(type){
-            case(MATRIX2) -> 2;
-            case(MATRIX3) -> 3;
-            case(MATRIX4) -> 4;
+            case MATRIX2 -> 2;
+            case MATRIX3 -> 3;
+            case MATRIX4 -> 4;
             default-> throw new IOException("Matrix to read has invalid size!");
         };
 
