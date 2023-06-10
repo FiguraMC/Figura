@@ -72,6 +72,7 @@ public class FiguraMod implements ClientModInitializer {
         managerHelper.registerReloadListener(LocalAvatarLoader.AVATAR_LISTENER);
         managerHelper.registerReloadListener(Emojis.RESOURCE_LISTENER);
         managerHelper.registerReloadListener(AvatarWizard.RESOURCE_LISTENER);
+        managerHelper.registerReloadListener(AvatarManager.RESOURCE_RELOAD_EVENT);
     }
 
     public static void tick() {
