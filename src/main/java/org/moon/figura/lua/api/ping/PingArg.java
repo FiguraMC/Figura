@@ -201,7 +201,7 @@ public class PingArg {
             case VECTOR2 -> 2;
             case VECTOR3 -> 3;
             case VECTOR4 -> 4;
-            default-> throw new IOException("Vector to read has invalid size!");
+            default -> throw new IOException("Vector to read has invalid size!");
         };
 
         double[] array = new double[size];
@@ -216,7 +216,7 @@ public class PingArg {
             case MATRIX2 -> 2;
             case MATRIX3 -> 3;
             case MATRIX4 -> 4;
-            default-> throw new IOException("Matrix to read has invalid size!");
+            default -> throw new IOException("Matrix to read has invalid size!");
         };
 
         FiguraVector<?, ?>[] vectors = new FiguraVector[size];
