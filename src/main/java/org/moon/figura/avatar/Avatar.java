@@ -388,6 +388,10 @@ public class Avatar {
         if (loaded) run("ON_PLAY_SOUND", tick, id, pos, vol, pitch, loop, category, file);
     }
 
+    public void resourceReloadEvent() {
+        if (loaded) run("RESOURCE_RELOAD", tick);
+    }
+
     // -- host only events -- //
 
     public String chatSendMessageEvent(String message) { //piped event
