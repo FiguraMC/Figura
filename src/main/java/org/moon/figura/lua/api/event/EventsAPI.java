@@ -78,6 +78,9 @@ public class EventsAPI {
     @LuaWhitelist
     @LuaFieldDoc("events.on_play_sound")
     public final LuaEvent ON_PLAY_SOUND = new LuaEvent();
+    @LuaWhitelist
+    @LuaFieldDoc("events.resource_reload")
+    public final LuaEvent RESOURCE_RELOAD = new LuaEvent();
 
     private final Map<String, LuaEvent> events = new HashMap<>() {{
             put("ENTITY_INIT", ENTITY_INIT);
@@ -99,6 +102,7 @@ public class EventsAPI {
             put("ARROW_RENDER", ARROW_RENDER);
             put("ITEM_RENDER", ITEM_RENDER);
             put("ON_PLAY_SOUND", ON_PLAY_SOUND);
+            put("RESOURCE_RELOAD", RESOURCE_RELOAD);
     }};
 
     @LuaWhitelist
