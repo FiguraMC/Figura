@@ -142,6 +142,12 @@ public class EntityAPI<T extends Entity> {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("entity.is_cute")
+    public boolean isCute() {
+        return true;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc("entity.get_velocity")
     public FiguraVec3 getVelocity() {
         checkEntity();
