@@ -2,7 +2,7 @@ package org.moon.figura.lua.api;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
-import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.resources.ResourceLocation;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaTable;
 import org.moon.figura.avatar.Avatar;
@@ -21,7 +21,6 @@ import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
-import java.util.Optional;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -161,10 +160,15 @@ public class TextureAPI {
     )
     public FiguraTexture fromVanilla(@LuaNotNil String name, @LuaNotNil String path) {
         check();
-        Optional<Resource> resource = Minecraft.getInstance().getResourceManager().getResource(LuaUtils.parsePath(path));
+        ResourceLocation resourcePath = LuaUtils.parsePath(path);
         try {
-            //if the string is a valid resourceLocation but does not point to a valid resource, missingno
-            NativeImage image = resource.isPresent() ? NativeImage.read(resource.get().open()) : MissingTextureAtlasSpriteAccessor.getImageData().get();
+            NativeImage image;
+            try {
+                image = NativeImage.read(Minecraft.getInstance().getResourceManager().getResource(resourcePath).getInputStream());
+            } catch (Exception ignored) {
+                //if the string is a valid resourceLocation but does not point to a valid resource, missingno
+                image = MissingTextureAtlasSpriteAccessor.getImageData().get();
+            }
             return register(name, image, false);
         } catch (Exception e) {
             //spit an error if the player inputs a resource location that does point to a thing, but not to an image
