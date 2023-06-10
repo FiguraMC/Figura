@@ -100,7 +100,7 @@ public class ChatComponentMixin {
             replacement = TextUtils.trim(replacement);
 
             //modify message
-            message = TextUtils.replaceInText(message, "(?i)\\b" + Pattern.quote(name) + "\\b", replacement, (s, style) -> true, 1, Integer.MAX_VALUE);
+            message = TextUtils.replaceInText(message, "(?i)\\b" + Pattern.quote(name) + "\\b", replacement, (s, style) -> true, name.equals(owner) ? 1 : 0, Integer.MAX_VALUE);
 
             //sender badges
             if (config > 1 && name.equals(owner)) {
