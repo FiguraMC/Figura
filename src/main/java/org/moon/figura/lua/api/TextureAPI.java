@@ -1,6 +1,8 @@
 package org.moon.figura.lua.api;
 
 import com.mojang.blaze3d.platform.NativeImage;
+import net.minecraft.client.Minecraft;
+import net.minecraft.server.packs.resources.Resource;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaTable;
 import org.moon.figura.avatar.Avatar;
@@ -9,14 +11,17 @@ import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.mixin.render.MissingTextureAtlasSpriteAccessor;
 import org.moon.figura.model.rendering.texture.FiguraTexture;
 import org.moon.figura.permissions.Permissions;
 import org.moon.figura.utils.ColorUtils;
+import org.moon.figura.utils.LuaUtils;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -144,6 +149,27 @@ public class TextureAPI {
     public List<FiguraTexture> getTextures() {
         check();
         return new ArrayList<>(owner.renderer.textures.values());
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = {String.class, String.class},
+                    argumentNames = {"name", "path"}
+            ),
+            value = "textures.from_vanilla"
+    )
+    public FiguraTexture fromVanilla(@LuaNotNil String name, @LuaNotNil String path) {
+        check();
+        Optional<Resource> resource = Minecraft.getInstance().getResourceManager().getResource(LuaUtils.parsePath(path));
+        try {
+            //if the string is a valid resourceLocation but does not point to a valid resource, missingno
+            NativeImage image = resource.isPresent() ? NativeImage.read(resource.get().open()) : MissingTextureAtlasSpriteAccessor.generateImage(16, 16);
+            return register(name, image, false);
+        } catch (Exception e) {
+            //spit an error if the player inputs a resource location that does point to a thing, but not to an image
+            throw new LuaError(e.getMessage());
+        }
     }
 
     @LuaWhitelist

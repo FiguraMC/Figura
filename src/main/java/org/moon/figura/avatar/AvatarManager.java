@@ -20,6 +20,7 @@ import org.moon.figura.gui.widgets.lists.AvatarList;
 import org.moon.figura.lua.api.particle.ParticleAPI;
 import org.moon.figura.lua.api.sound.SoundAPI;
 import org.moon.figura.utils.EntityUtils;
+import org.moon.figura.utils.FiguraResourceListener;
 import org.moon.figura.utils.FiguraText;
 
 import java.nio.file.Path;
@@ -38,6 +39,8 @@ public class AvatarManager {
     private static final Set<UUID> FETCHED_USERS = new HashSet<>();
 
     private static final Map<Entity, Avatar> LOADED_CEM = new ConcurrentHashMap<>();
+
+    public static final FiguraResourceListener RESOURCE_RELOAD_EVENT = new FiguraResourceListener("resource_reload_event", manager -> executeAll("resourceReloadEvent", Avatar::resourceReloadEvent));
 
     public static boolean localUploaded = true; //init as true :3
     public static boolean panic = false;
