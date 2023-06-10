@@ -20,12 +20,16 @@ public class PingArg {
             DOUBLE = 3,
             STRING = 4,
             TABLE = 5,
-            VECTOR = 6,
-            MATRIX = 7,
-            INT_1B = 8,
-            INT_2B = 9,
-            INT_3B = 10,
-            INT_4B = 11;
+            VECTOR2 = 6,
+            VECTOR3 = 7,
+            VECTOR4 = 8,
+            MATRIX2 = 9,
+            MATRIX3 = 10,
+            MATRIX4 = 11,
+            INT_1B = 12,
+            INT_2B = 13,
+            INT_3B = 14,
+            INT_4B = 15;
 
     private final Varargs args;
 
@@ -66,10 +70,8 @@ public class PingArg {
             dos.writeByte(TABLE);
             writeTable(val.checktable(), dos);
         } else if (val.isuserdata(FiguraVector.class)) {
-            dos.writeByte(VECTOR);
             writeVec((FiguraVector<?, ?>) val.checkuserdata(), dos);
         } else if (val.isuserdata(FiguraMatrix.class)) {
-            dos.writeByte(MATRIX);
             writeMat((FiguraMatrix<?, ?>) val.checkuserdata(), dos);
         } else {
             dos.writeByte(NIL);
@@ -114,19 +116,28 @@ public class PingArg {
     }
 
     private static void writeVec(FiguraVector<?, ?> vector, DataOutputStream dos) throws IOException {
-        dos.writeByte(vector.size());
+        dos.writeByte(switch(vector.size()){
+            case(2) -> VECTOR2;
+            case(3) -> VECTOR3;
+            case(4) -> VECTOR4;
+            default -> throw new IOException("Vector to write has invalid size!");
+        });
 
         for (int i = 0; i < vector.size(); i++)
             dos.writeDouble(vector.index(i));
     }
 
     private static void writeMat(FiguraMatrix<?, ?> matrix, DataOutputStream dos) throws IOException {
-        dos.writeByte(matrix.cols());
-        dos.writeByte(matrix.rows());
+        dos.writeByte(switch(matrix.cols()){
+            case(2) -> MATRIX2;
+            case(3) -> MATRIX3;
+            case(4) -> MATRIX4;
+            default -> throw new IOException("Vector to write has invalid size!");
+        });
 
         for (int i = 0; i < matrix.cols(); i++) {
             FiguraVector<?, ?> vec = matrix.getColumn(i + 1);
-            for (int o = 0; o < matrix.rows(); o++){
+            for (int o = 0; o < matrix.cols(); o++){
                 dos.writeDouble(vec.index(o));
             }
         }
@@ -159,8 +170,8 @@ public class PingArg {
             case DOUBLE -> LuaValue.valueOf(dis.readDouble());
             case STRING -> LuaValue.valueOf(dis.readNBytes(dis.readUnsignedShort()));
             case TABLE -> readTable(dis, owner);
-            case VECTOR -> owner.luaRuntime.typeManager.javaToLua(readVec(dis)).arg1();
-            case MATRIX -> owner.luaRuntime.typeManager.javaToLua(readMat(dis)).arg1();
+            case VECTOR2, VECTOR3, VECTOR4 -> owner.luaRuntime.typeManager.javaToLua(readVec(dis, type)).arg1();
+            case MATRIX2, MATRIX3, MATRIX4 -> owner.luaRuntime.typeManager.javaToLua(readMat(dis, type)).arg1();
             default -> LuaValue.NIL;
         };
     }
@@ -185,8 +196,13 @@ public class PingArg {
         return table;
     }
 
-    private static FiguraVector<?, ?> readVec(DataInputStream dis) throws IOException {
-        byte size = dis.readByte();
+    private static FiguraVector<?, ?> readVec(DataInputStream dis, byte type) throws IOException {
+        byte size = switch(type){
+            case(VECTOR2) -> 2;
+            case(VECTOR3) -> 3;
+            case(VECTOR4) -> 4;
+            default-> throw new IOException("Vector to read has invalid size!");
+        };
 
         double[] array = new double[size];
         for (int i = 0; i < size; i++)
@@ -195,14 +211,18 @@ public class PingArg {
         return MathUtils.sizedVector(array);
     }
 
-    private static FiguraMatrix<?, ?> readMat(DataInputStream dis) throws IOException {
-        byte cols = dis.readByte();
-        byte rows = dis.readByte();
+    private static FiguraMatrix<?, ?> readMat(DataInputStream dis, byte type) throws IOException {
+        byte size = switch(type){
+            case(MATRIX2) -> 2;
+            case(MATRIX3) -> 3;
+            case(MATRIX4) -> 4;
+            default-> throw new IOException("Matrix to read has invalid size!");
+        };
 
-        FiguraVector<?, ?>[] vectors = new FiguraVector[cols];
-        for (int i = 0; i < cols; i++){
-            double[] array = new double[rows];
-            for (int o = 0; o < rows; o++)
+        FiguraVector<?, ?>[] vectors = new FiguraVector[size];
+        for (int i = 0; i < size; i++){
+            double[] array = new double[size];
+            for (int o = 0; o < size; o++)
                 array[o] = dis.readDouble();
             vectors[i] = MathUtils.sizedVector(array);
         }
