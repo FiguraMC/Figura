@@ -250,7 +250,7 @@ public class HostAPI {
 
         map.put("addedTime", message.getAddedTime());
         map.put("message", message.getMessage().getString());
-        map.put("json", Component.Serializer.toJson(message.getMessage()));
+        map.put("json", message.getMessage());
 
         return map;
     }

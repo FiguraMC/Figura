@@ -1,5 +1,6 @@
 package org.moon.figura.lua;
 
+import net.minecraft.network.chat.Component;
 import org.luaj.vm2.*;
 import org.luaj.vm2.lib.OneArgFunction;
 import org.luaj.vm2.lib.TwoArgFunction;
@@ -326,6 +327,8 @@ public class LuaTypeManager {
             return wrapCollection(collection);
         else if (val.getClass().isArray())
             return wrapArray(val);
+        else if (val instanceof Component c)
+            return LuaValue.valueOf(Component.Serializer.toJson(c));
         else
             return wrap(val);
     }
