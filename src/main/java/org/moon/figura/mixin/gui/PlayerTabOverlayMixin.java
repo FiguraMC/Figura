@@ -1,9 +1,12 @@
 package org.moon.figura.mixin.gui;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.PlayerTabOverlay;
 import net.minecraft.client.multiplayer.PlayerInfo;
+import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.entity.player.Player;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.avatar.Badges;
@@ -11,7 +14,9 @@ import org.moon.figura.config.Configs;
 import org.moon.figura.lua.api.nameplate.NameplateCustomization;
 import org.moon.figura.permissions.Permissions;
 import org.moon.figura.utils.TextUtils;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -25,6 +30,8 @@ import java.util.regex.Pattern;
 
 @Mixin(PlayerTabOverlay.class)
 public class PlayerTabOverlayMixin {
+
+    @Shadow @Final private Minecraft minecraft;
 
     @Unique private UUID uuid;
 
@@ -70,7 +77,11 @@ public class PlayerTabOverlayMixin {
     private void doNotDrawFace(Args args) {
         if (uuid != null) {
             Avatar avatar = AvatarManager.getAvatarForPlayer(uuid);
-            if (avatar != null && avatar.renderPortrait(args.get(0), args.get(1), args.get(2), args.get(3), 16, args.get(5)))
+
+            Player player = this.minecraft.level.getPlayerByUUID(uuid);
+            boolean upsideDown = player != null && LivingEntityRenderer.isEntityUpsideDown(player);
+
+            if (avatar != null && avatar.renderPortrait(args.get(0), args.get(1), args.get(2), args.get(3), 16, upsideDown))
                 args.set(3, 0);
         }
     }
