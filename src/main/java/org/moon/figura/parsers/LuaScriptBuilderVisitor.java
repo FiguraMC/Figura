@@ -25,8 +25,7 @@ public class LuaScriptBuilderVisitor extends Visitor {
     private final StringBuilder builder;
     private final Map<Variable, String> vars = new HashMap<>();
     private final Stack<NameScope> scopes = new Stack<>();
-    private boolean blockStandalone = true;
-    public boolean secondPass;
+    private boolean blockStandalone = false;
 
     public LuaScriptBuilderVisitor() {
         this(new StringBuilder());
@@ -205,7 +204,6 @@ public class LuaScriptBuilderVisitor extends Visitor {
         stat.block.accept(this);
         newlineIfName("until");
         stat.exp.accept(this);
-        spaceIfName("end");
     }
 
     @Override
