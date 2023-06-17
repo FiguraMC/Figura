@@ -147,7 +147,7 @@ public class PingArg {
 
             return luaValues.toArray(new LuaValue[0]);
         } catch (Exception e) {
-            FiguraMod.LOGGER.warn("Failed to read ping!", e);
+            FiguraMod.LOGGER.warn("Failed to read " + owner.owner + " ping!", e);
             return null;
         }
     }

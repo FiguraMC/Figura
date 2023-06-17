@@ -705,7 +705,7 @@ public class BlockbenchModelParser {
         try {
             return Float.parseFloat(input);
         } catch (Exception ignored) {
-            return input.isBlank() ? fallback : input;
+            return input == null || input.isBlank() ? fallback : input;
         }
     }
 
