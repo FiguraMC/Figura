@@ -90,7 +90,7 @@ public class FiguraKeybind {
 
     public static boolean set(List<FiguraKeybind> bindings, InputConstants.Key key, boolean pressed, int modifiers) {
         boolean overrided = false;
-        for (FiguraKeybind keybind : bindings) {
+        for (FiguraKeybind keybind : List.copyOf(bindings)) {
             if (keybind.key == key && keybind.enabled && (keybind.gui || Minecraft.getInstance().screen == null))
                 overrided = keybind.setDown(pressed, modifiers) || overrided;
         }

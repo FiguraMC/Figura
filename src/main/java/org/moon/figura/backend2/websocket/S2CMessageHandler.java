@@ -9,6 +9,7 @@ import org.moon.figura.config.Configs;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.FiguraText;
+import org.moon.figura.utils.TextUtils;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -81,7 +82,7 @@ public class S2CMessageHandler {
 
     private static void chat(ByteBuffer bytes) {
         String message = StandardCharsets.UTF_8.decode(bytes).toString();
-        FiguraMod.sendChatMessage(Component.empty().append(Component.literal("-- " + FiguraMod.MOD_NAME + " backend message --\n\n").withStyle(ColorUtils.Colors.SKYE_BLUE.style)).append(message));
+        FiguraMod.sendChatMessage(Component.empty().append(Component.literal("-- " + FiguraMod.MOD_NAME + " backend message --\n\n").withStyle(ColorUtils.Colors.SKYE_BLUE.style)).append(TextUtils.tryParseJson(message)));
     }
 
     private static void notice(ByteBuffer bytes) {

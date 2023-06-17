@@ -1,5 +1,6 @@
 package org.moon.figura.model;
 
+import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.nbt.ByteTag;
 import net.minecraft.nbt.CompoundTag;
@@ -293,7 +294,7 @@ public class FiguraModelPartReader {
         return false;
     }
 
-    private static final Map<String, FiguraVec3[]> faceData = Map.of(
+    private static final Map<String, FiguraVec3[]> faceData = ImmutableMap.of( //booze 🥴
             "n", new FiguraVec3[] {
                     FiguraVec3.of(1, 0, 0),
                     FiguraVec3.of(0, 0, 0),
