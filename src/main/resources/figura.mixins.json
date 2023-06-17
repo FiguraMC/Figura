@@ -9,6 +9,7 @@
     "BiomeAccessor",
     "BlockBehaviourAccessor",
     "ClientLevelInvoker",
+    "ClientPacketListenerMixin",
     "EntityAccessor",
     "EntityMixin",
     "ItemStackMixin",

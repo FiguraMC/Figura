@@ -10,8 +10,6 @@ import org.moon.figura.lua.FiguraLuaRuntime;
 
 public class FiguraRunCommand {
 
-    public static boolean canRun = false;
-
     public static LiteralArgumentBuilder<FabricClientCommandSource> getCommand() {
         LiteralArgumentBuilder<FabricClientCommandSource> run = LiteralArgumentBuilder.literal("run");
         RequiredArgumentBuilder<FabricClientCommandSource, String> arg = RequiredArgumentBuilder.argument("code", StringArgumentType.greedyString());
@@ -21,9 +19,6 @@ public class FiguraRunCommand {
     }
 
     private static int executeCode(CommandContext<FabricClientCommandSource> context) {
-        if (!canRun)
-            return 0;
-
         String lua = StringArgumentType.getString(context, "code");
         FiguraLuaRuntime luaRuntime = FiguraCommands.getRuntime(context);
         if (luaRuntime == null)
