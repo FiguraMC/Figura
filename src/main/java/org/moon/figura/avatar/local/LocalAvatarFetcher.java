@@ -20,8 +20,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 /**
- * Navigates through the file system, finding all folders
- * containing avatar.json as well as all .moon files.
+ * Navigates through the file system, finding all folders containing avatar.json
  */
 public class LocalAvatarFetcher {
 
@@ -148,8 +147,6 @@ public class LocalAvatarFetcher {
     public static boolean isAvatar(Path path) {
         if (!Files.exists(path))
             return false;
-        if (FiguraMod.DEBUG_MODE && path.toString().toLowerCase().endsWith(".moon"))
-            return true;
 
         Path metadata = path.resolve("avatar.json");
         return Files.exists(metadata) && !Files.isDirectory(metadata);
@@ -201,7 +198,7 @@ public class LocalAvatarFetcher {
             CardBackground bg = CardBackground.DEFAULT;
             FileTexture iconTexture = null;
 
-            if (!path.toString().toLowerCase().endsWith(".moon") && !(this instanceof FolderPath)) {
+            if (!(this instanceof FolderPath)) {
                 //metadata
                 try {
                     String str = IOUtils.readFile(path.resolve("avatar.json"));
@@ -324,7 +321,7 @@ public class LocalAvatarFetcher {
             Path folderPath = this.path.getFileSystem() == FileSystems.getDefault() ? path : this.folder;
 
             //iterate over all files on this path
-            //but skip non-folders and non-moon
+            //but skip non-folders
             for (Path path : files) {
                 if (isAvatar(path)) {
                     children.add(new AvatarPath(path, folderPath));
