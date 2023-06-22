@@ -434,7 +434,7 @@ public class HostAPI {
     @LuaMethodDoc("host.get_screen_slot_count")
     public Integer getScreenSlotCount() {
         if (isHost() && this.minecraft.screen instanceof HandledScreen<ScreenHandler> screen) {
-            return screen.getScreenHandler().slots.size()
+            return screen.getScreenHandler().slots.size();
         }
         return null;
     }
