@@ -486,6 +486,20 @@ public class WorldAPI {
         return getCurrentWorld() != null;
     }
 
+    @LuaWhitelist
+    @LuaMethodDoc("world.get_build_height")
+    public static int[] getBuildHeight() {
+        Level world = getCurrentWorld();
+        return new int[]{world.getMinBuildHeight(), world.getMaxBuildHeight()};
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("world.get_spawn_point")
+    public static FiguraVec3 getSpawnPoint() {
+        Level world = getCurrentWorld();
+        return FiguraVec3.fromBlockPos(world.getSharedSpawnPos());
+    }
+
     @Override
     public String toString() {
         return "WorldAPI";

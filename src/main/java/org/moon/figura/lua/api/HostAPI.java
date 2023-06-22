@@ -1,7 +1,6 @@
 package org.moon.figura.lua.api;
 
 import com.mojang.blaze3d.platform.NativeImage;
-import com.mojang.brigadier.StringReader;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.GuiMessage;
 import net.minecraft.client.GuiMessageTag;
@@ -9,12 +8,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.commands.arguments.SlotArgument;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
 import org.luaj.vm2.LuaError;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
@@ -22,6 +23,7 @@ import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.config.Configs;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.lua.api.entity.EntityAPI;
 import org.moon.figura.lua.api.world.ItemStackAPI;
 import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaMethodDoc;
@@ -321,23 +323,34 @@ public class HostAPI {
     )
     public ItemStackAPI getSlot(@LuaNotNil Object slot) {
         if (!isHost()) return null;
-
-        Integer index;
-        if (slot instanceof String s) {
-            try {
-                index = SlotArgument.slot().parse(new StringReader(s));
-            } catch (Exception e) {
-                throw new LuaError("Unable to get slot \"" + slot + "\"");
-            }
-        } else if (slot instanceof Integer i)
-            index = i;
-        else {
-            throw new LuaError("Invalid type for getSlot: " + slot.getClass().getSimpleName());
-        }
-
         Entity e = this.owner.luaRuntime.getUser();
-        return ItemStackAPI.verify(e.getSlot(index).get());
+        return ItemStackAPI.verify(e.getSlot(LuaUtils.parseEntitySlot(slot, null)).get());
     }
+
+	@LuaWhitelist
+	@LuaMethodDoc(
+			overloads = {
+					@LuaMethodOverload(argumentTypes = String.class, argumentNames = "slot"),
+					@LuaMethodOverload(argumentTypes = Integer.class, argumentNames = "slot"),
+					@LuaMethodOverload(argumentTypes = {String.class, String.class}, argumentNames = {"slot", "item"}),
+					@LuaMethodOverload(argumentTypes = {Integer.class, ItemStackAPI.class}, argumentNames = {"slot", "item"})
+			},
+			value = "host.set_slot"
+	)
+	public HostAPI setSlot(@LuaNotNil Object slot, Object item) {
+		if (!isHost() || (slot == null && item == null) || this.minecraft.gameMode == null || this.minecraft.player == null || !this.minecraft.gameMode.getPlayerMode().isCreative())
+			return this;
+
+		Inventory inventory = this.minecraft.player.getInventory();
+
+		int index = LuaUtils.parseEntitySlot(slot, inventory);
+		ItemStack stack = LuaUtils.parseItemStack("setSlot", item);
+
+		inventory.setItem(index, stack);
+		this.minecraft.gameMode.handleCreativeModeItemAdd(stack, index + 36);
+
+		return this;
+	}
 
     @LuaWhitelist
     public HostAPI setBadge(int index, boolean value, boolean pride) {
@@ -568,6 +581,27 @@ public class HostAPI {
         if (isHost() && player != null)
             return player.getAirSupply();
         return 0;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("host.get_pick_block")
+    public Object[] getPickBlock() {
+        return isHost() ? LuaUtils.parseBlockHitResult(minecraft.hitResult) : null;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("host.get_pick_entity")
+    public EntityAPI<?> getPickEntity() {
+        return isHost() && minecraft.crosshairPickEntity != null ? EntityAPI.wrap(minecraft.crosshairPickEntity) : null;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("host.is_chat_verified")
+    public boolean isChatVerified() {
+        if (!isHost()) return false;
+        ClientPacketListener connection = this.minecraft.getConnection();
+        PlayerInfo playerInfo = connection != null ? connection.getPlayerInfo(owner.owner) : null;
+        return playerInfo != null && playerInfo.getProfilePublicKey() != null;
     }
 
     public Object __index(String arg) {

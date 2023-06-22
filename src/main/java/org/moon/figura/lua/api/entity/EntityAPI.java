@@ -13,7 +13,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.entity.vehicle.ContainerEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.phys.*;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.moon.figura.avatar.Avatar;
@@ -21,9 +24,7 @@ import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.NbtToLua;
 import org.moon.figura.lua.ReadOnlyLuaTable;
-import org.moon.figura.lua.api.world.BlockStateAPI;
 import org.moon.figura.lua.api.world.ItemStackAPI;
-import org.moon.figura.lua.api.world.WorldAPI;
 import org.moon.figura.lua.docs.LuaMetamethodDoc;
 import org.moon.figura.lua.docs.LuaMetamethodDoc.LuaMetamethodOverload;
 import org.moon.figura.lua.docs.LuaMethodDoc;
@@ -33,6 +34,7 @@ import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.mixin.EntityAccessor;
 import org.moon.figura.utils.EntityUtils;
+import org.moon.figura.utils.LuaUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -429,11 +431,7 @@ public class EntityAPI<T extends Entity> {
         if (distance == null) distance = 20d;
         distance = Math.max(Math.min(distance, 20), -20);
         HitResult result = entity.pick(distance, 1f, !ignoreLiquids);
-        if (result instanceof BlockHitResult blockHit) {
-            BlockPos pos = blockHit.getBlockPos();
-            return new Object[]{new BlockStateAPI(WorldAPI.getCurrentWorld().getBlockState(pos), pos), FiguraVec3.fromVec3(blockHit.getLocation()), blockHit.getDirection().getName()};
-        }
-        return null;
+        return LuaUtils.parseBlockHitResult(result);
     }
 
     @LuaWhitelist
@@ -486,6 +484,18 @@ public class EntityAPI<T extends Entity> {
         LuaTable table = a == null || a.luaRuntime == null ? new LuaTable() : a.luaRuntime.avatar_meta.storedStuff;
         table = new ReadOnlyLuaTable(table);
         return key == null ? table : table.get(key);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("entity.is_living")
+    public boolean isLiving() {
+        return this instanceof LivingEntityAPI<?>;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("entity.is_player")
+    public boolean isPlayer() {
+        return this instanceof PlayerAPI;
     }
 
     @LuaWhitelist

@@ -262,6 +262,15 @@ public class VectorsAPI {
         return MathUtils.worldToScreenSpace(LuaUtils.parseVec3("worldToScreenSpace", x, y, z));
     }
 
+    @LuaWhitelist
+    @LuaMethodDoc(overloads = @LuaMethodOverload(argumentTypes = {Double.class, Double.class}, argumentNames = {"pitch", "yaw"}), value = "vectors.angle_to_dir")
+    public static FiguraVec3 angleToDir(double pitch, double yaw) {
+        double radPitch = Math.toRadians(pitch);
+        double radYaw = Math.toRadians(-yaw);
+        double cos = Math.cos(radPitch);
+        return FiguraVec3.of(Math.sin(radYaw) * cos, -Math.sin(radPitch), Math.cos(radYaw) * cos);
+    }
+
     @Override
     public String toString() {
         return "VectorsAPI";

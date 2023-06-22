@@ -17,9 +17,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.world.phys.Vec3;
 import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaValue;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
+import org.moon.figura.lua.api.entity.EntityAPI;
 import org.moon.figura.lua.api.entity.ViewerAPI;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
@@ -391,9 +393,31 @@ public class ClientAPI {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = String.class,
+                    argumentNames = "uuid"
+            ),
+            value = "client.uuid_to_int_array")
+    public static int[] uuidToIntArray(String uuid) {
+        try {
+            UUID id = UUID.fromString(uuid);
+            return UUIDUtil.uuidToIntArray(id);
+        } catch (Exception ignored) {
+            throw new LuaError("Failed to parse uuid");
+        }
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc("client.get_viewer")
     public static ViewerAPI getViewer() {
         return new ViewerAPI(Minecraft.getInstance().player);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("client.get_camera_entity")
+    public static EntityAPI<?> getCameraEntity() {
+        return EntityAPI.wrap(Minecraft.getInstance().getCameraEntity());
     }
 
     @LuaWhitelist
@@ -513,7 +537,33 @@ public class ClientAPI {
         return map;
     }
 
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(argumentTypes = String.class, argumentNames = "text"),
+                    @LuaMethodOverload(argumentTypes = {String.class, LuaValue.class}, argumentNames = {"text", "args"})
+            },
+            value = "client.get_translated_string"
+    )
+    public static String getTranslatedString(@LuaNotNil String text, LuaValue args) {
+        Component component;
 
+        if (args == null) {
+            component = Component.translatable(text);
+        } else if (!args.istable()) {
+            component = Component.translatable(text, args.tojstring());
+        } else {
+            int len = args.length();
+            Object[] arguments = new Object[len];
+
+            for (int i = 0; i < len; i++)
+                arguments[i] = args.get(i + 1).tojstring();
+
+            component = Component.translatable(text, arguments);
+        }
+
+        return component.getString();
+    }
 
     @Override
     public String toString() {
