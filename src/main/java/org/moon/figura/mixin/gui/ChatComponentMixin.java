@@ -74,10 +74,11 @@ public class ChatComponentMixin {
         for (Map.Entry<String, UUID> entry : players.entrySet()) {
             String name = entry.getKey();
 
-            if (!msgString.contains(name)) //player is not here
+            if (!msgString.toLowerCase().contains(name.toLowerCase())) //player is not here
                 continue;
 
             UUID uuid = entry.getValue();
+            boolean isOwner = name.equals(owner);
 
             Component playerName = Component.literal(name);
 
@@ -95,20 +96,23 @@ public class ChatComponentMixin {
             replacement = TextUtils.replaceInText(replacement, "\\$\\{name\\}", playerName);
 
             //badges
-            replacement = Badges.appendBadges(replacement, uuid, config > 1 && owner == null);
+            Component emptyReplacement = Badges.appendBadges(replacement, uuid, config > 1 && owner == null);
 
             //trim
-            replacement = TextUtils.trim(replacement);
+            emptyReplacement = TextUtils.trim(emptyReplacement);
 
             //modify message
-            message = TextUtils.replaceInText(message, "(?i)\\b" + Pattern.quote(name) + "\\b", replacement, (s, style) -> true, name.equals(owner) ? 1 : 0, Integer.MAX_VALUE);
+            String quotedName = "(?i)\\b" + Pattern.quote(name) + "\\b";
+            message = TextUtils.replaceInText(message, quotedName, emptyReplacement, (s, style) -> true, isOwner ? 1 : 0, Integer.MAX_VALUE);
 
             //sender badges
-            if (config > 1 && name.equals(owner)) {
+            if (config > 1 && isOwner) {
                 //badges
                 Component temp = Badges.appendBadges(replacement, uuid, true);
-                //modify message, only first, also no need for ignore case, since it is already matched with proper case
-                message = TextUtils.replaceInText(message, "\\b" + Pattern.quote(name) + "\\b", temp, (s, style) -> true, 1);
+                //trim
+                temp = TextUtils.trim(temp);
+                //modify message, only first
+                message = TextUtils.replaceInText(message, quotedName, temp, (s, style) -> true, 1);
             }
         }
 

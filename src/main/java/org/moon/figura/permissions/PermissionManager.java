@@ -104,10 +104,6 @@ public class PermissionManager {
 
             //get players nbt
             for (PermissionPack.PlayerPermissionPack pack : PLAYERS.values()) {
-                //dont save local
-                if (isLocal(pack))
-                    continue;
-
                 Permissions.Category category = Permissions.Category.indexOf(Configs.DEFAULT_PERMISSION_LEVEL.value);
                 if (category == null) category = Permissions.Category.DEFAULT;
                 if ((!pack.hasChanges() && pack.getCategory() == category))
