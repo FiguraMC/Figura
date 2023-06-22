@@ -13,11 +13,9 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.avatar.Badges;
-import org.moon.figura.avatar.local.LocalAvatarLoader;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.widgets.ContextMenu;
 import org.moon.figura.gui.widgets.Label;
@@ -96,20 +94,6 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
             });
         }
         context.addTab(FiguraText.of("gui.context.set_permissions"), null, permissionsContext);
-
-        if (FiguraMod.DEBUG_MODE) {
-            context.addAction(Component.literal("yoink to cache"), null, button -> {
-                Avatar a = AvatarManager.getAvatarForPlayer(owner);
-                if (a != null) {
-                    if (a.nbt != null) {
-                        LocalAvatarLoader.saveNbt(a.nbt);
-                        FiguraToast.sendToast("yoinked");
-                    } else {
-                        FiguraToast.sendToast("no avatar :(", FiguraToast.ToastType.ERROR);
-                    }
-                }
-            });
-        }
     }
 
     @Override

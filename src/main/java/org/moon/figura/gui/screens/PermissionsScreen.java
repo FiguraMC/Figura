@@ -10,10 +10,12 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.gui.FiguraToast;
-import org.moon.figura.gui.widgets.*;
+import org.moon.figura.gui.widgets.Button;
+import org.moon.figura.gui.widgets.EntityPreview;
+import org.moon.figura.gui.widgets.SliderWidget;
+import org.moon.figura.gui.widgets.SwitchButton;
 import org.moon.figura.gui.widgets.lists.PermissionsList;
 import org.moon.figura.gui.widgets.lists.PlayerList;
 import org.moon.figura.gui.widgets.permissions.AbstractPermPackElement;
@@ -42,10 +44,6 @@ public class PermissionsScreen extends AbstractPanelScreen {
     private Button back;
     private Button resetButton;
     private SwitchButton precisePermissions;
-
-    // -- debug -- //
-    private TextField uuid;
-    private Button yoink;
 
     // -- widget logic -- //
     private float listYPrecise;
@@ -135,43 +133,6 @@ public class PermissionsScreen extends AbstractPanelScreen {
         //back button
         addRenderableWidget(back = new Button(middle + 6 + bottomButtonsWidth, height - 24, bottomButtonsWidth, 20, FiguraText.of("gui.done"), null, bx -> onClose()));
 
-        //debug buttons
-        uuid = new TextField(middle + 2, back.getY() - 24, listWidth - 24, 20, TextField.HintType.NAME, s -> yoink.setActive(!s.isBlank()));
-        yoink = new Button(middle + listWidth - 18, back.getY() - 24, 20, 20, Component.literal("yoink"), Component.literal("Set the selected player's avatar"), button -> {
-            String text = uuid.getField().getValue();
-            UUID id;
-
-            try {
-                id = UUID.fromString(text);
-            } catch (Exception ignored) {
-                id = FiguraMod.playerNameToUUID(text);
-            }
-
-            if (id == null) {
-                FiguraToast.sendToast("oopsie", FiguraToast.ToastType.ERROR);
-                return;
-            }
-
-            Avatar avatar = AvatarManager.getAvatarForPlayer(id);
-            if (avatar == null || avatar.nbt == null)
-                return;
-
-            if (playerList.selectedEntry instanceof PlayerPermPackElement player) {
-                UUID target = player.getOwner();
-                if (FiguraMod.isLocal(target))
-                    AvatarManager.localUploaded = false;
-
-                AvatarManager.setAvatar(target, avatar.nbt);
-                FiguraToast.sendToast("yoinked");
-            }
-        });
-        yoink.setActive(false);
-
-        if (FiguraMod.DEBUG_MODE) {
-            addRenderableWidget(uuid);
-            addRenderableWidget(yoink);
-        }
-
         //expand button
         addRenderableWidget(expandButton = new SwitchButton( middle + listWidth - 18, height - 24, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/expand_v.png"), 60, 40, FiguraText.of("gui.permissions.expand_permissions.tooltip"), btn -> {
             expanded = expandButton.isToggled();
@@ -182,8 +143,6 @@ public class PermissionsScreen extends AbstractPanelScreen {
             slider.setActive(!expanded);
             reloadAll.setVisible(!expanded);
             back.setVisible(!expanded);
-            uuid.setVisible(!expanded);
-            yoink.setVisible(!expanded);
 
             //update expand button
             expandButton.setTooltip(expanded ? FiguraText.of("gui.permissions.minimize_permissions.tooltip") : FiguraText.of("gui.permissions.expand_permissions.tooltip"));

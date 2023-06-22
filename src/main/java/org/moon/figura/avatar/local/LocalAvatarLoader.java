@@ -1,6 +1,5 @@
 package org.moon.figura.avatar.local;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -21,8 +20,6 @@ import org.moon.figura.utils.IOUtils;
 
 import java.io.IOException;
 import java.nio.file.*;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -235,20 +232,6 @@ public class LocalAvatarLoader {
             result.put("chld", children);
 
         return result;
-    }
-
-    /**
-     * Saves the loaded NBT into a folder inside the avatar list
-     */
-    public static void saveNbt(CompoundTag nbt) {
-        Path directory = LocalAvatarFetcher.getLocalAvatarDirectory().resolve("[" + ChatFormatting.BLUE + FiguraMod.MOD_NAME + ChatFormatting.RESET + "] Cached Avatars");
-        Path file = directory.resolve("cache-" + new SimpleDateFormat("yyyy_MM_dd-HH_mm_ss").format(new Date()) + ".moon");
-        try {
-            IOUtils.createDirIfNeeded(directory);
-            NbtIo.writeCompressed(nbt, Files.newOutputStream(file));
-        } catch (Exception e) {
-            FiguraMod.LOGGER.error("Failed to save avatar: " + IOUtils.getFileNameOrEmpty(file), e);
-        }
     }
 
     /**
