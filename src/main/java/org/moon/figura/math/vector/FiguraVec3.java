@@ -764,7 +764,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
             default -> null;
         };
 
-        if (len > 6)
+        if (len > 4)
             return null;
         double[] vals = new double[len];
         boolean fail = false;
@@ -810,7 +810,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
             throw new LuaError("Invalid call to __newindex - value assigned to key " + key + " must be number.");
         }
         if (value instanceof FiguraVector<?,?> vecVal && len == vecVal.size()) {
-            double[] vals = new double[] {vecVal.x(), vecVal.y(), vecVal.z(), vecVal.w(), vecVal.t(), vecVal.h()};
+            double[] vals = new double[] {vecVal.x(), vecVal.y(), vecVal.z(), vecVal.w()};
             for (int i = 0; i < len; i++) {
                 switch (key.charAt(i)) {
                     case '1', 'x', 'r' -> x = vals[i];

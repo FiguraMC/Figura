@@ -2,6 +2,7 @@ package org.moon.figura.math.vector;
 
 import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.math.matrix.FiguraMatrix;
+import org.moon.figura.utils.MathUtils;
 
 public abstract class FiguraVector<T extends FiguraVector<T, M>, M extends FiguraMatrix<M, T>> {
 
@@ -83,11 +84,11 @@ public abstract class FiguraVector<T extends FiguraVector<T, M>, M extends Figur
     }
 
     public T toRad() {
-        return copy().scale(Math.PI/180);
+        return copy().scale(MathUtils.DEG_TO_RAD);
     }
 
     public T toDeg() {
-        return copy().scale(180/Math.PI);
+        return copy().scale(MathUtils.RAD_TO_DEG);
     }
 
     public abstract int size();
@@ -105,12 +106,6 @@ public abstract class FiguraVector<T extends FiguraVector<T, M>, M extends Figur
         return 0;
     }
     public double w() {
-        return 0;
-    }
-    public double t() {
-        return 0;
-    }
-    public double h() {
         return 0;
     }
 

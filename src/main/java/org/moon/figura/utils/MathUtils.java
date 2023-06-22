@@ -2,6 +2,7 @@ package org.moon.figura.utils;
 
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.joml.*;
 import org.moon.figura.config.Configs;
@@ -22,6 +23,9 @@ import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
 public class MathUtils {
+
+    public static final double DEG_TO_RAD = Math.PI / 180;
+    public static final double RAD_TO_DEG = 180 / Math.PI;
 
     public static FiguraVector<?, ?> sizedVector(double... vals) {
         return switch (vals.length) {

@@ -26,6 +26,11 @@ public class KeyboardHandlerMixin {
         if (window != this.minecraft.getWindow().getWindow())
             return;
 
+        if (action == 1 && Configs.PANIC_BUTTON.keyBind.matches(key, scancode)) {
+            AvatarManager.togglePanic();
+            ci.cancel();
+        }
+
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
         if (avatar == null || avatar.luaRuntime == null)
             return;
@@ -37,14 +42,6 @@ public class KeyboardHandlerMixin {
 
         if (avatar.luaRuntime != null && FiguraKeybind.set(avatar.luaRuntime.keybinds.keyBindings, InputConstants.getKey(key, scancode), action != 0, modifiers)) {
             KeyMapping.setAll();
-            ci.cancel();
-        }
-    }
-
-    @Inject(method = "keyPress", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/KeyMapping;matches(II)Z", ordinal = 0), cancellable = true)
-    private void processGlobalKeybinds(long window, int key, int scancode, int action, int modifiers, CallbackInfo ci) {
-        if (Configs.PANIC_BUTTON.keyBind.matches(key, scancode)) {
-            AvatarManager.togglePanic();
             ci.cancel();
         }
     }

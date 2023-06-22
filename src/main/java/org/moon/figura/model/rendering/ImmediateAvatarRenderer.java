@@ -137,7 +137,10 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
                             continue;
 
                         boolean saved = part.savedCustomization != null;
-                        if (saved) customizationStack.push(part.savedCustomization);
+                        if (saved) {
+                            customizationStack.push(part.savedCustomization);
+                            part.savedCustomization = null;
+                        }
 
                         renderPart(part, remainingComplexity, currentFilterScheme.initialValue);
 
@@ -549,26 +552,14 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
                 uv.divide(uvFixer);
                 uv.transform(customization.uvMatrix);
 
-                vertexConsumer.vertex(
-                        (float) pos.x,
-                        (float) pos.y,
-                        (float) pos.z,
-
-                        (float) vertexData.color.x,
-                        (float) vertexData.color.y,
-                        (float) vertexData.color.z,
-                        customization.alpha,
-
-                        (float) uv.x,
-                        (float) uv.y,
-
-                        overlay,
-                        light,
-
-                        (float) normal.x,
-                        (float) normal.y,
-                        (float) normal.z
-                );
+                vertexConsumer
+                        .vertex(pos.x, pos.y, pos.z)
+                        .color((float) vertexData.color.x, (float) vertexData.color.y, (float) vertexData.color.z, customization.alpha)
+                        .uv((float) uv.x, (float) uv.y)
+                        .overlayCoords(overlay)
+                        .uv2(light)
+                        .normal((float) normal.x, (float) normal.y, (float) normal.z)
+                        .endVertex();
             }
         });
     }

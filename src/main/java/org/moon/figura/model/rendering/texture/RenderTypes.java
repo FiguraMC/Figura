@@ -133,15 +133,15 @@ public enum RenderTypes {
                         256,
                         false,
                         false,
-                    RenderType.CompositeState.builder()
-                            .setShaderState(RENDERTYPE_ENTITY_GLINT_DIRECT_SHADER)
-                            .setTextureState(new TextureStateShard(texture, false, false))
-                            .setWriteMaskState(COLOR_WRITE)
-                            .setCullState(NO_CULL)
-                            .setDepthTestState(EQUAL_DEPTH_TEST)
-                            .setTransparencyState(GLINT_TRANSPARENCY)
-                            .setTexturingState(ENTITY_GLINT_TEXTURING)
-                            .createCompositeState(false)
+                        RenderType.CompositeState.builder()
+                                .setShaderState(RENDERTYPE_ENTITY_GLINT_DIRECT_SHADER)
+                                .setTextureState(new TextureStateShard(texture, false, false))
+                                .setWriteMaskState(COLOR_WRITE)
+                                .setCullState(NO_CULL)
+                                .setDepthTestState(EQUAL_DEPTH_TEST)
+                                .setTransparencyState(GLINT_TRANSPARENCY)
+                                .setTexturingState(ENTITY_GLINT_TEXTURING)
+                                .createCompositeState(false)
                 )
         );
     }
