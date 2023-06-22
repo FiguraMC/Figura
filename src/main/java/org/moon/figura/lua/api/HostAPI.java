@@ -7,6 +7,9 @@ import net.minecraft.client.GuiMessage;
 import net.minecraft.client.GuiMessageTag;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.gui.screen.ingame.ScreenHandler;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -426,6 +429,28 @@ public class HostAPI {
         if (!isHost() || this.minecraft.screen == null)
             return null;
         return this.minecraft.screen.getClass().getName();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("host.get_screen_slot_count")
+    public Integer getScreenSlotCount() {
+        if (isHost() && this.minecraft.screen instanceof HandledScreen<ScreenHandler> screen) {
+            return screen.getScreenHandler().slots.size()
+        }
+        return null;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("host.get_screen_slot_count")
+    public ItemStackAPI getScreenSlotCount(int slot) {
+        if (isHost() && this.minecraft.screen instanceof HandledScreen<ScreenHandler> screen) {
+            var slots = screen.getScreenHandler().slots;
+            if (slot > slots.size()) {
+                return null;
+            }
+            return ItemStackAPI.verify(slots.get(index).get());
+        }
+        return null;
     }
 
     @LuaWhitelist
