@@ -440,11 +440,11 @@ public class HostAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("host.get_screen_slot_count")
-    public ItemStackAPI getScreenSlotCount(int slot) {
+    @LuaMethodDoc("host.get_screen_slot")
+    public ItemStackAPI getScreenSlot(int index) {
         if (isHost() && this.minecraft.screen instanceof HandledScreen<ScreenHandler> screen) {
             var slots = screen.getScreenHandler().slots;
-            if (slot > slots.size()) {
+            if (index > slots.size()) {
                 return null;
             }
             return ItemStackAPI.verify(slots.get(index).get());
