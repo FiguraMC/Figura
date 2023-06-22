@@ -12,6 +12,7 @@ import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.ducks.GameRendererAccessor;
+import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.EntityUtils;
 import org.moon.figura.utils.RenderUtils;
@@ -36,7 +37,7 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
     private boolean avatarPostShader = false;
 
     @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setup(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/world/entity/Entity;ZZF)V", shift = At.Shift.BEFORE))
-    private void onCameraRotation(float tickDelta, long limitTime, PoseStack matrix, CallbackInfo ci) {
+    private void onCameraRotation(float tickDelta, long limitTime, PoseStack stack, CallbackInfo ci) {
         Avatar avatar = AvatarManager.getAvatar(this.minecraft.getCameraEntity() == null ? this.minecraft.player : this.minecraft.getCameraEntity());
         if (!RenderUtils.vanillaModelAndScript(avatar))
             return;
@@ -51,7 +52,11 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
         if (offset != null)
             z += (float) offset.z;
 
-        matrix.mulPose(Axis.ZP.rotationDegrees(z));
+        stack.mulPose(Axis.ZP.rotationDegrees(z));
+
+        FiguraMat4 mat = avatar.luaRuntime.renderer.cameraMat;
+        if (mat != null)
+            stack.last().pose().set(mat.toMatrix4f());
     }
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;doEntityOutline()V", shift = At.Shift.AFTER))

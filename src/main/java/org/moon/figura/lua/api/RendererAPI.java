@@ -12,6 +12,7 @@ import org.moon.figura.lua.docs.LuaFieldDoc;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec4;
@@ -49,6 +50,7 @@ public class RendererAPI {
     public FiguraVec3 cameraPos;
     public FiguraVec3 cameraPivot, cameraOffsetPivot;
     public FiguraVec3 cameraRot, cameraOffsetRot;
+    public FiguraMat4 cameraMat;
     public ResourceLocation postShader;
     public FiguraVec2 crosshairOffset;
     public FiguraVec3 outlineColor;
@@ -349,6 +351,31 @@ public class RendererAPI {
     @LuaWhitelist
     public RendererAPI offsetCameraRot(Object x, Double y, Double z) {
         return setOffsetCameraRot(x, y, z);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("renderer.get_camera_matrix")
+    public FiguraMat4 getCameraMatrix() {
+        return this.cameraMat;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = FiguraMat4.class,
+                    argumentNames = "matrix"
+            ),
+            aliases = "cameraMatrix",
+            value = "renderer.set_camera_matrix"
+    )
+    public RendererAPI setCameraMatrix(FiguraMat4 matrix) {
+        this.cameraMat = matrix;
+        return this;
+    }
+
+    @LuaWhitelist
+    public RendererAPI cameraMatrix(FiguraMat4 matrix) {
+        return setCameraMatrix(matrix);
     }
 
     @LuaWhitelist

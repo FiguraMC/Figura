@@ -3,13 +3,18 @@ package org.moon.figura.utils;
 import com.mojang.brigadier.StringReader;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.commands.CommandBuildContext;
+import net.minecraft.commands.arguments.SlotArgument;
 import net.minecraft.commands.arguments.blocks.BlockStateArgument;
 import net.minecraft.commands.arguments.item.ItemArgument;
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import org.luaj.vm2.LuaError;
 import org.moon.figura.lua.api.world.BlockStateAPI;
 import org.moon.figura.lua.api.world.ItemStackAPI;
@@ -153,6 +158,32 @@ public class LuaUtils {
             return new ResourceLocation(path);
         } catch (Exception e) {
             throw new LuaError(e.getMessage());
+        }
+    }
+
+    public static Object[] parseBlockHitResult(HitResult hitResult) {
+        if (hitResult instanceof BlockHitResult blockHit) {
+            BlockPos pos = blockHit.getBlockPos();
+            return new Object[]{new BlockStateAPI(WorldAPI.getCurrentWorld().getBlockState(pos), pos), FiguraVec3.fromVec3(blockHit.getLocation()), blockHit.getDirection().getName()};
+        }
+        return null;
+    }
+
+    public static int parseEntitySlot(Object slot, Inventory inventory) {
+        if (slot instanceof String s) {
+            try {
+                return SlotArgument.slot().parse(new StringReader(s));
+            } catch (Exception e) {
+                throw new LuaError("Unable to get slot \"" + slot + "\"");
+            }
+        } else if (slot instanceof Integer i) {
+            if (i == -1 && inventory != null) {
+                return inventory.getFreeSlot();
+            } else {
+                return i;
+            }
+        } else {
+            throw new LuaError("Invalid type for getSlot: " + slot.getClass().getSimpleName());
         }
     }
 }

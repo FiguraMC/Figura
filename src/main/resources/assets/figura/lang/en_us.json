@@ -963,13 +963,16 @@
   "figura.docs.client.get_figura_version": "Gets the client Figura version",
   "figura.docs.client.compare_versions": "Compares two versions if they are less than (-1), equals (0) or greater than (1)",
   "figura.docs.client.int_uuid_to_string": "Converts an int array UUID (as 4 separated arguments) into its hexadecimal string representation",
+  "figura.docs.client.uuid_to_int_array": "Converts a string UUID into its int array representation, returning a varargs of 4 ints",
   "figura.docs.client.get_viewer": "Returns the player entity from the running client",
+  "figura.docs.client.get_camera_entity": "Returns the entity the camera is currently targeting, so returns the entity you are currently spectating, including yourself",
   "figura.docs.client.get_server_data": "Returns a table with information of the current connected server (also for singleplayer worlds)",
   "figura.docs.client.get_date": "Returns a table with information about the client current time",
   "figura.docs.client.get_frame_time": "Returns the current fraction between the last tick and the next tick\nThis is the value used as \"delta\" in the RENDER event",
   "figura.docs.client.list_atlases": "Returns a list of all registered atlases paths",
   "figura.docs.client.get_atlas": "Returns a TextureAtlasAPI object with information about the given atlas\nReturns nil if the atlas was not found",
   "figura.docs.client.get_tab_list": "Returns a table with the text shown in the tablist",
+  "figura.docs.client.get_translated_string": "Returns the translated string of the given key\nTranslation is done using the current client language\nOptionally take a single argument, or a list with all arguments, that will populate the translation",
 
 
   "figura.docs.config": "A global API used to save and load avatar data between game sessions",
@@ -1021,9 +1024,11 @@
   "figura.docs.entity.get_controlled_vehicle": "Return the vehicle that this entity is controlling",
   "figura.docs.entity.has_container": "Checks if the entity has a container (Chest Boats, Minecarts with Chests, ...)",
   "figura.docs.entity.has_inventory": "Checks if the entity has an inventory (Horses, Camels, LLamas, ...)",
-  "figura.docs.entity.get_targeted_block": "Returns a proxy for your currently targeted BlockState\nThis BlockState appears on the F3 screen\nMaximum and Default distance is 20, Minimum is -20",
+  "figura.docs.entity.get_targeted_block": "Returns a proxy for your currently targeted BlockState\nThis BlockState appears on the F3 screen\nMaximum and Default distance is 20, Minimum is -20\nReturns a vararg of the block, the hit position and the block face the hit collided",
   "figura.docs.entity.get_targeted_entity": "Returns a proxy for your currently targeted Entity\nThis Entity appears on the F3 screen\nMaximum and Default distance is 20, Minimum is 0",
   "figura.docs.entity.get_variable": "Gets the value of a variable this entity stored in themselves using the Avatar api's store() function",
+  "figura.docs.entity.is_living": "Gets if this entity is a Living Entity",
+  "figura.docs.entity.is_player": "Gets if this entity is a Player Entity",
 
   "figura.docs.living_entity": "Acts as a proxy for a living entity in the Minecraft world",
   "figura.docs.living_entity.get_body_yaw": "Gets the yaw of this entity's body in degrees\nIf delta is passed in, then it will be used to linearly interpolate the rotation of the body between the previous tick and the current tick\nThe default value of delta is 1",
@@ -1121,6 +1126,7 @@
   "figura.docs.host.is_first_person": "Returns true if the camera is in first person mode",
   "figura.docs.host.is_camera_backwards": "Returns true if the camera is facing backwards",
   "figura.docs.host.get_slot": "Gets an ItemStack for the item in the given slot\nThe slot is either their numerical id (0 indexed) or the slot string, as used in the /item command",
+  "figura.docs.host.set_slot": "Sets a slot with an ItemStack\nThe slot is either their numerical id (0 indexed) or the slot string, as used in the /item command\nSlot -1 uses the first available slot\nOnly runs for creative mode",
   "figura.docs.host.get_chat_color": "Gets the chat window text color",
   "figura.docs.host.set_chat_color": "Sets the color of the text that is currently being typed into the chat window",
   "figura.docs.host.get_chat_text": "Gets the text that is currently being typed into the chat window",
@@ -1138,6 +1144,8 @@
   "figura.docs.host.is_flying": "Checks if the player is currently flying",
   "figura.docs.host.get_reach_distance": "Returns the current reach distance of the player",
   "figura.docs.host.get_air": "Gets the remaining amount of air of the player",
+  "figura.docs.host.get_pick_block": "Returns the current targeted block set by the client\nReturns a vararg of the block, the hit position and the block face the hit collided",
+  "figura.docs.host.get_pick_entity": "Returns the current targeted entity set by the client",
 
 
   "figura.docs.itemstack": "A proxy for an item stack from Minecraft",
@@ -1494,6 +1502,8 @@
   "figura.docs.renderer.set_camera_rot": "Sets the absolute rotation of the camera\nThe position is not taken into account for roll\nNil values for rotation are assumed to be 0\nFor relative rotation values, check out the \"offset\" rot function",
   "figura.docs.renderer.get_camera_offset_rot": "Gets the offset rotation for the camera",
   "figura.docs.renderer.set_offset_camera_rot": "Sets the offset rotation for the camera\nNil values for rotation are assumed to be 0\nAngles are given in degrees\nFor absolute rotation values, check out the non-offset rot function",
+  "figura.docs.renderer.get_camera_matrix": "Returns the modified camera matrix",
+  "figura.docs.renderer.set_camera_matrix": "Sets the camera matrix with the given matrix",
   "figura.docs.renderer.set_post_effect": "Sets the current rendering effect\nSame as the discontinued Super Secret Settings",
   "figura.docs.renderer.get_fov": "Gets the multiplier of your fov",
   "figura.docs.renderer.set_fov": "Sets the multiplier of your fov\nThe default value is nil, which means no changes will be applied to your fov",
@@ -1657,6 +1667,7 @@
   "figura.docs.vectors.rotate_around_axis": "Rotates a vector relative to a rotation vector",
   "figura.docs.vectors.to_camera_space": "Converts a position in the world into a position relative to the viewer's camera",
   "figura.docs.vectors.world_to_screen_space": "Converts a position in the world into a position relative to the viewer's screen",
+  "figura.docs.vectors.angle_to_dir": "Converts a pitch/yaw angle (in degrees) into a direction vector",
 
   "figura.docs.vector2": "A vector that holds 2 numbers\nCan be created using functions in the \"vectors\" api",
   "figura.docs.vector3": "A vector that holds 3 numbers\nCan be created using functions in the \"vectors\" api",
@@ -1728,5 +1739,7 @@
   "figura.docs.world.avatar_vars": "Returns a table containing variables stored from all loaded Avatars \"avatar:store()\" function\nThe table will be indexed by the avatar's owner UUID",
   "figura.docs.world.new_block": "Parses and create a new BlockState from the given string\nA world position can be optionally given for the blockstate functions that relies on its position",
   "figura.docs.world.new_item": "Parses and create a new ItemStack from the given string\nA count and damage can be given, to be applied on this itemstack",
-  "figura.docs.world.exists": "Checks whether or not a world currently exists\nThis will almost always be true, but might be false on some occasions such as while travelling between dimensions"
+  "figura.docs.world.exists": "Checks whether or not a world currently exists\nThis will almost always be true, but might be false on some occasions such as while travelling between dimensions",
+  "figura.docs.world.get_build_height": "Returns the minimum and maximum build height of the world, as varargs",
+  "figura.docs.world.get_spawn_point": "Returns a vector with the coordinates of the world spawn"
 }
