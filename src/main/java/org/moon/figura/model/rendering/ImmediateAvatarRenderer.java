@@ -572,7 +572,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         public boolean primary;
     }
 
-    protected static class VertexBuffer {
+    private static class VertexBuffer {
         private final HashMap<RenderType, List<Consumer<VertexConsumer>>> primaryBuffers = new LinkedHashMap<>();
         private final HashMap<RenderType, List<Consumer<VertexConsumer>>> secondaryBuffers = new LinkedHashMap<>();
 

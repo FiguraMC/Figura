@@ -263,10 +263,14 @@ public class VectorsAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc(overloads = @LuaMethodOverload(argumentTypes = {Double.class, Double.class}, argumentNames = {"pitch", "yaw"}), value = "vectors.angle_to_dir")
-    public static FiguraVec3 angleToDir(double pitch, double yaw) {
-        double radPitch = Math.toRadians(pitch);
-        double radYaw = Math.toRadians(-yaw);
+    @LuaMethodDoc(overloads = {
+            @LuaMethodOverload(argumentTypes = FiguraVec2.class, argumentNames = "vec"),
+            @LuaMethodOverload(argumentTypes = {Double.class, Double.class}, argumentNames = {"pitch", "yaw"})
+    }, value = "vectors.angle_to_dir")
+    public static FiguraVec3 angleToDir(Object pitch, double yaw) {
+        FiguraVec2 vec = LuaUtils.parseVec2("angleToDir", pitch, yaw);
+        double radPitch = Math.toRadians(vec.x);
+        double radYaw = Math.toRadians(-vec.y);
         double cos = Math.cos(radPitch);
         return FiguraVec3.of(Math.sin(radYaw) * cos, -Math.sin(radPitch), Math.cos(radYaw) * cos);
     }

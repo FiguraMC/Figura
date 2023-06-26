@@ -18,9 +18,9 @@ public enum RenderTypes {
     TRANSLUCENT(RenderType::entityTranslucent),
     TRANSLUCENT_CULL(RenderType::entityTranslucentCull),
 
-    EMISSIVE(RenderType::eyes, true),
-    EMISSIVE_SOLID(resourceLocation -> RenderType.beaconBeam(resourceLocation, false), true),
-    EYES(RenderType::eyes, true),
+    EMISSIVE(RenderType::eyes),
+    EMISSIVE_SOLID(resourceLocation -> RenderType.beaconBeam(resourceLocation, false)),
+    EYES(RenderType::eyes),
 
     END_PORTAL(t -> RenderType.endPortal(), false),
     END_GATEWAY(t -> RenderType.endGateway(), false),
