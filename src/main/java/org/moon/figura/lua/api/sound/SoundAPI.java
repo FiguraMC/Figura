@@ -23,6 +23,7 @@ import org.moon.figura.permissions.Permissions;
 import org.moon.figura.utils.LuaUtils;
 
 import java.util.Base64;
+import java.util.Set;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -167,6 +168,12 @@ public class SoundAPI {
         } catch (Exception ignored) {
             return false;
         }
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("sounds.get_custom_sounds")
+    public Set<String> getCustomSounds() {
+        return owner.customSounds.keySet();
     }
 
     @LuaWhitelist
