@@ -153,7 +153,7 @@ public class AvatarWizard {
     private byte[] buildScript() {
         String script = "-- Auto generated script file --\n";
 
-        boolean hasPlayerModel = WizardEntry.CUSTOM_PLAYER.asBool(map);
+        boolean hasPlayerModel = WizardEntry.PLAYER_MODEL.asBool(map);
 
         //hide player
         if (hasPlayerModel && WizardEntry.HIDE_PLAYER.asBool(map))
@@ -223,7 +223,7 @@ public class AvatarWizard {
     }
 
     private byte[] buildModel() {
-        boolean hasPlayer = WizardEntry.CUSTOM_PLAYER.asBool(map);
+        boolean hasPlayer = WizardEntry.PLAYER_MODEL.asBool(map);
         boolean hasElytra = WizardEntry.ELYTRA.asBool(map);
         boolean hasCape = WizardEntry.CAPE.asBool(map);
         boolean hasCapeOrElytra = hasCape || hasElytra;
@@ -244,6 +244,7 @@ public class AvatarWizard {
 
         //base bones
         Group root = model.addGroup("root", FiguraVec3.of());
+
         Group head = model.addGroup("Head", FiguraVec3.of(0, 24, 0), root);
         Group body = model.addGroup("Body", FiguraVec3.of(0, 24, 0), root);
         Group leftArm = model.addGroup("LeftArm", FiguraVec3.of(-5, 22, 0), root);
@@ -329,8 +330,8 @@ public class AvatarWizard {
         //model stuff
         Model(Type.CATEGORY, NAME),
         DUMMY_MODEL(Model),
-        CUSTOM_PLAYER(DUMMY_MODEL),
-        SLIM(CUSTOM_PLAYER),
+        PLAYER_MODEL(DUMMY_MODEL),
+        SLIM(PLAYER_MODEL),
         CAPE(DUMMY_MODEL),
         ELYTRA(DUMMY_MODEL),
         //pivots
@@ -342,7 +343,7 @@ public class AvatarWizard {
         //scripting
         Scripting(Type.CATEGORY, NAME),
         DUMMY_SCRIPT(Scripting),
-        HIDE_PLAYER(CUSTOM_PLAYER, DUMMY_SCRIPT),
+        HIDE_PLAYER(PLAYER_MODEL, DUMMY_SCRIPT),
         HIDE_ARMOR(DUMMY_SCRIPT),
         HIDE_CAPE(DUMMY_SCRIPT),
         HIDE_ELYTRA(DUMMY_SCRIPT),

@@ -324,6 +324,12 @@ public class BlockStateAPI {
         return map;
     }
 
+    @LuaWhitelist
+    @LuaMethodDoc("blockstate.is_air")
+    public boolean isAir() {
+        return blockState.isAir();
+    }
+
     private static Set<String> getTexturesForFace(BlockState blockState, Direction direction, RandomSource randomSource, BakedModel bakedModel, long seed) {
         randomSource.setSeed(seed);
         List<BakedQuad> quads = bakedModel.getQuads(blockState, direction, randomSource);

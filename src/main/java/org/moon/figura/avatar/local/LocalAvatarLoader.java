@@ -38,7 +38,7 @@ public class LocalAvatarLoader {
 
     private static CompletableFuture<Void> tasks;
     private static Path lastLoadedPath;
-    private static int loadState;
+    private static LoadState loadState = LoadState.UNKNOWN;
     private static String loadError;
 
     private static WatchService watcher;
@@ -97,7 +97,7 @@ public class LocalAvatarLoader {
      */
     public static void loadAvatar(Path path, UserData target) {
         loadError = null;
-        loadState = 0;
+        loadState = LoadState.UNKNOWN;
         resetWatchKeys();
         lastLoadedPath = path;
 
@@ -108,23 +108,15 @@ public class LocalAvatarLoader {
 
         async(() -> {
             try {
-                //load as nbt (.moon)
-                loadState++;
-                if (path.toString().endsWith(".moon")) {
-                    //NbtIo already closes the file stream
-                    target.loadAvatar(NbtIo.readCompressed(Files.newInputStream(path)));
-                    return;
-                }
-
                 //load as folder
                 CompoundTag nbt = new CompoundTag();
 
                 //scripts
-                loadState++;
+                loadState = LoadState.SCRIPTS;
                 loadScripts(path, nbt);
 
                 //custom sounds
-                loadState++;
+                loadState = LoadState.SOUNDS;
                 loadSounds(path, nbt);
 
                 //models
@@ -132,12 +124,12 @@ public class LocalAvatarLoader {
                 ListTag animations = new ListTag();
                 BlockbenchModelParser modelParser = new BlockbenchModelParser();
 
-                loadState++;
+                loadState = LoadState.MODELS;
                 CompoundTag models = loadModels(path.getFileSystem() == FileSystems.getDefault() ? path.toFile().getCanonicalPath() : path.toString(), path, modelParser, textures, animations, "");
                 models.putString("name", "models");
 
                 //metadata
-                loadState++;
+                loadState = LoadState.METADATA;
                 String metadata = IOUtils.readFile(path.resolve("avatar.json"));
                 nbt.put("metadata", AvatarMetadataParser.parse(metadata, IOUtils.getFileNameOrEmpty(path)));
                 AvatarMetadataParser.injectToModels(metadata, models);
@@ -317,11 +309,19 @@ public class LocalAvatarLoader {
         return lastLoadedPath;
     }
 
-    public static int getLoadState() {
-        return loadState;
+    public static String getLoadState() {
+        return loadState.name().toLowerCase();
     }
 
     public static String getLoadError() {
         return loadError;
+    }
+
+    private enum LoadState {
+        UNKNOWN,
+        SCRIPTS,
+        SOUNDS,
+        MODELS,
+        METADATA
     }
 }
