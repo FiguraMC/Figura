@@ -1,17 +1,24 @@
 package org.moon.figura.lua.api;
 
 import com.mojang.blaze3d.platform.NativeImage;
+import com.mojang.blaze3d.platform.TextureUtil;
+
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaTable;
+import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
+import org.moon.figura.entries.FiguraAPI;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.mixin.render.MissingTextureAtlasSpriteAccessor;
+import org.moon.figura.mixin.render.TextureAtlasAccessor;
 import org.moon.figura.model.rendering.texture.FiguraTexture;
 import org.moon.figura.permissions.Permissions;
 import org.moon.figura.utils.ColorUtils;
@@ -161,8 +168,18 @@ public class TextureAPI {
     )
     public FiguraTexture fromVanilla(@LuaNotNil String name, @LuaNotNil String path) {
         check();
-        Optional<Resource> resource = Minecraft.getInstance().getResourceManager().getResource(LuaUtils.parsePath(path));
+        ResourceLocation resourceLocation = LuaUtils.parsePath(path);
+        // is there a way to check if an atlas exists without getAtlas? cause that is the only thing that will cause an error, and try catch blocks can be pricy
+        try{
+            TextureAtlas atlas = Minecraft.getInstance().getModelManager().getAtlas(resourceLocation);
+            atlas.bind();
+            TextureAtlasAccessor atlasAccessor=(TextureAtlasAccessor) atlas;
+            NativeImage nativeImage = new NativeImage(atlasAccessor.getWidth(), atlasAccessor.getHeight(), false);
+            nativeImage.downloadTexture(0, false);
+            return register(name, nativeImage, false);
+        } catch(Exception ignored){}
         try {
+            Optional<Resource> resource = Minecraft.getInstance().getResourceManager().getResource(resourceLocation);
             //if the string is a valid resourceLocation but does not point to a valid resource, missingno
             NativeImage image = resource.isPresent() ? NativeImage.read(resource.get().open()) : MissingTextureAtlasSpriteAccessor.getImageData().get();
             return register(name, image, false);
