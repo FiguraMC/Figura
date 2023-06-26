@@ -1,7 +1,6 @@
 package org.moon.figura.lua.api;
 
 import com.mojang.blaze3d.platform.NativeImage;
-import com.mojang.blaze3d.platform.TextureUtil;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlas;
@@ -9,9 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaTable;
-import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
-import org.moon.figura.entries.FiguraAPI;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaMethodDoc;
