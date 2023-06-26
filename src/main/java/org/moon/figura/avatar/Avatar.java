@@ -112,6 +112,7 @@ public class Avatar {
     public Component errorText;
     public Set<Permissions> noPermissions = new HashSet<>();
     public Set<Permissions> permissionsToTick = new HashSet<>();
+    public int lastPlayingSound = 0;
     public int versionStatus = 0;
 
     //limits
@@ -222,6 +223,8 @@ public class Avatar {
                 noPermissions.add(t);
             }
         }
+        if (lastPlayingSound > 0)
+            lastPlayingSound--;
 
         //sound
         particlesRemaining.set(permissions.get(Permissions.PARTICLES));

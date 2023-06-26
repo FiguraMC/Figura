@@ -146,10 +146,13 @@ public class AvatarMetadataParser {
     }
 
     private static CompoundTag getTag(CompoundTag models, String path, boolean remove) throws IOException {
-        String[] keys = path.split("\\.");
+        String[] keys = path.replaceFirst("^models", "").split("\\.", 0);
         CompoundTag current = models;
 
         for (int i = 0; i < keys.length; i++) {
+            if (keys[i].isEmpty())
+                continue;
+
             if (!current.contains("chld"))
                 throw new IOException("Invalid part path: \"" + path + "\"");
 

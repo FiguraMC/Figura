@@ -103,8 +103,14 @@ public class Badges {
 
 
         //sound
-        if (Configs.SOUND_BADGE.value && SoundAPI.getSoundEngine().figura$isPlaying(id))
-            badges.append(System.SOUND.badge);
+        if (avatar != null && Configs.SOUND_BADGE.value) {
+            if (avatar.lastPlayingSound > 0) {
+                badges.append(System.SOUND.badge);
+            } else if (SoundAPI.getSoundEngine().figura$isPlaying(id)) {
+                avatar.lastPlayingSound = 20;
+                badges.append(System.SOUND.badge);
+            }
+        }
 
 
         // -- return -- //

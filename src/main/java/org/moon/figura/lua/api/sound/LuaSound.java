@@ -72,7 +72,7 @@ public class LuaSound {
     }
 
     private float calculateVolume() {
-        return volume * SoundAPI.getSoundEngine().figura$getVolume(SoundSource.PLAYERS) * (owner.permissions.get(Permissions.VOLUME) / 100f);
+        return SoundAPI.getSoundEngine().figura$getVolume(SoundSource.PLAYERS) * (owner.permissions.get(Permissions.VOLUME) / 100f);
     }
 
     @LuaWhitelist
@@ -92,6 +92,10 @@ public class LuaSound {
             handle.execute(Channel::unpause);
             this.playing = true;
         } else if (buffer != null) {
+            float vol = calculateVolume();
+            if (vol <= 0)
+                return this;
+
             this.handle = SoundAPI.getSoundEngine().figura$createHandle(owner.owner, id, Library.Pool.STATIC);
             if (handle == null)
                 return this;
@@ -100,7 +104,7 @@ public class LuaSound {
 
             handle.execute(channel -> {
                 channel.setPitch(pitch);
-                channel.setVolume(calculateVolume());
+                channel.setVolume(volume * vol);
                 channel.linearAttenuation(attenuation * 16f);
                 channel.setLooping(loop);
                 channel.setSelfPosition(pos.asVec3());
@@ -111,6 +115,10 @@ public class LuaSound {
 
             this.playing = true;
         } else if (sound != null) {
+            float vol = calculateVolume();
+            if (vol <= 0)
+                return this;
+
             boolean shouldStream = sound.shouldStream();
             this.handle = SoundAPI.getSoundEngine().figura$createHandle(owner.owner, id, shouldStream ? Library.Pool.STREAMING : Library.Pool.STATIC);
             if (handle == null)
@@ -120,7 +128,7 @@ public class LuaSound {
 
             handle.execute(channel -> {
                 channel.setPitch(pitch);
-                channel.setVolume(calculateVolume());
+                channel.setVolume(volume * vol);
                 channel.linearAttenuation(attenuation * 16f);
                 channel.setLooping(loop && !shouldStream);
                 channel.setSelfPosition(pos.asVec3());
@@ -222,7 +230,14 @@ public class LuaSound {
     public LuaSound setVolume(float volume) {
         this.volume = Math.min(volume, 1);
         if (handle != null)
-            handle.execute(channel -> channel.setVolume(calculateVolume()));
+            handle.execute(channel -> {
+                float f = calculateVolume();
+                if (f <= 0) {
+                    channel.stop();
+                } else {
+                    channel.setVolume(this.volume * f);
+                }
+            });
         return this;
     }
 

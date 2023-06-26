@@ -68,9 +68,6 @@ public class PermissionManager {
 
             try {
                 UUID uuid = UUID.fromString(name);
-                if (FiguraMod.isLocal(uuid)) //dont load permissions for local player
-                    continue;
-
                 String parent = compound.getString("category");
                 Permissions.Category category = Permissions.Category.valueOf(parent);
 
