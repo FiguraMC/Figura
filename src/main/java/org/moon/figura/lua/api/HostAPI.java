@@ -326,33 +326,33 @@ public class HostAPI {
     public ItemStackAPI getSlot(@LuaNotNil Object slot) {
         if (!isHost()) return null;
         Entity e = this.owner.luaRuntime.getUser();
-        return ItemStackAPI.verify(e.getSlot(LuaUtils.parseEntitySlot(slot, null)).get());
+        return ItemStackAPI.verify(e.getSlot(LuaUtils.parseSlot(slot, null)).get());
     }
 
-	@LuaWhitelist
-	@LuaMethodDoc(
-			overloads = {
-					@LuaMethodOverload(argumentTypes = String.class, argumentNames = "slot"),
-					@LuaMethodOverload(argumentTypes = Integer.class, argumentNames = "slot"),
-					@LuaMethodOverload(argumentTypes = {String.class, String.class}, argumentNames = {"slot", "item"}),
-					@LuaMethodOverload(argumentTypes = {Integer.class, ItemStackAPI.class}, argumentNames = {"slot", "item"})
-			},
-			value = "host.set_slot"
-	)
-	public HostAPI setSlot(@LuaNotNil Object slot, Object item) {
-		if (!isHost() || (slot == null && item == null) || this.minecraft.gameMode == null || this.minecraft.player == null || !this.minecraft.gameMode.getPlayerMode().isCreative())
-			return this;
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(argumentTypes = String.class, argumentNames = "slot"),
+                    @LuaMethodOverload(argumentTypes = Integer.class, argumentNames = "slot"),
+                    @LuaMethodOverload(argumentTypes = {String.class, String.class}, argumentNames = {"slot", "item"}),
+                    @LuaMethodOverload(argumentTypes = {Integer.class, ItemStackAPI.class}, argumentNames = {"slot", "item"})
+            },
+            value = "host.set_slot"
+    )
+    public HostAPI setSlot(@LuaNotNil Object slot, Object item) {
+        if (!isHost() || (slot == null && item == null) || this.minecraft.gameMode == null || this.minecraft.player == null || !this.minecraft.gameMode.getPlayerMode().isCreative())
+            return this;
 
-		Inventory inventory = this.minecraft.player.getInventory();
+        Inventory inventory = this.minecraft.player.getInventory();
 
-		int index = LuaUtils.parseEntitySlot(slot, inventory);
-		ItemStack stack = LuaUtils.parseItemStack("setSlot", item);
+        int index = LuaUtils.parseSlot(slot, inventory);
+        ItemStack stack = LuaUtils.parseItemStack("setSlot", item);
 
-		inventory.setItem(index, stack);
-		this.minecraft.gameMode.handleCreativeModeItemAdd(stack, index + 36);
+        inventory.setItem(index, stack);
+        this.minecraft.gameMode.handleCreativeModeItemAdd(stack, index + 36);
 
-		return this;
-	}
+        return this;
+    }
 
     @LuaWhitelist
     public HostAPI setBadge(int index, boolean value, boolean pride) {
@@ -451,12 +451,16 @@ public class HostAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("host.get_screen_slot")
-    public ItemStackAPI getScreenSlot(int index) {
+    @LuaMethodDoc(overloads = {
+            @LuaMethodOverload(argumentTypes = String.class, argumentNames = "slot"),
+            @LuaMethodOverload(argumentTypes = Integer.class, argumentNames = "slot")
+    }, value = "host.get_screen_slot")
+    public ItemStackAPI getScreenSlot(@LuaNotNil Object slot) {
         if (!isHost() || !(this.minecraft.screen instanceof AbstractContainerScreen<?> screen))
             return null;
 
         NonNullList<Slot> slots = screen.getMenu().slots;
+        int index = LuaUtils.parseSlot(slot, null);
         if (index < 0 || index >= slots.size())
             return null;
         return ItemStackAPI.verify(slots.get(index).getItem());
