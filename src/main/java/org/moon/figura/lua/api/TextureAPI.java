@@ -1,7 +1,6 @@
 package org.moon.figura.lua.api;
 
 import com.mojang.blaze3d.platform.NativeImage;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
@@ -167,14 +166,14 @@ public class TextureAPI {
         check();
         ResourceLocation resourceLocation = LuaUtils.parsePath(path);
         // is there a way to check if an atlas exists without getAtlas? cause that is the only thing that will cause an error, and try catch blocks can be pricy
-        try{
+        try {
             TextureAtlas atlas = Minecraft.getInstance().getModelManager().getAtlas(resourceLocation);
             atlas.bind();
-            TextureAtlasAccessor atlasAccessor=(TextureAtlasAccessor) atlas;
+            TextureAtlasAccessor atlasAccessor = (TextureAtlasAccessor) atlas;
             NativeImage nativeImage = new NativeImage(atlasAccessor.getWidth(), atlasAccessor.getHeight(), false);
             nativeImage.downloadTexture(0, false);
             return register(name, nativeImage, false);
-        } catch(Exception ignored){}
+        } catch (Exception ignored) {}
         try {
             Optional<Resource> resource = Minecraft.getInstance().getResourceManager().getResource(resourceLocation);
             //if the string is a valid resourceLocation but does not point to a valid resource, missingno
