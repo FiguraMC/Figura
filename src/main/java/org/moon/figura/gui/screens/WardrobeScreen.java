@@ -151,7 +151,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
                 0, 0, 24,
                 new FiguraIdentifier("textures/gui/avatar_settings.png"),
                 72, 24,
-                FiguraText.of("gui.avatar_settings.tooltip"),
+                FiguraText.of("gui.avatar_settings.tooltip").append("\n").append(FiguraText.of("gui.not_available_yet").withStyle(ChatFormatting.RED)),
                 bx -> {}
         ));
         avatarSettings.setActive(false);

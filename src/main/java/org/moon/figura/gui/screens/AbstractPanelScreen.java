@@ -13,6 +13,7 @@ import org.moon.figura.gui.widgets.ContextMenu;
 import org.moon.figura.gui.widgets.FiguraRemovable;
 import org.moon.figura.gui.widgets.FiguraTickable;
 import org.moon.figura.gui.widgets.PanelSelectorWidget;
+import org.moon.figura.lua.api.ClientAPI;
 import org.moon.figura.mixin.gui.ScreenAccessor;
 import org.moon.figura.utils.FiguraIdentifier;
 import org.moon.figura.utils.ui.UIHelper;
@@ -104,6 +105,10 @@ public abstract class AbstractPanelScreen extends Screen {
     }
 
     public void renderOverlays(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+        //fps
+        if (Configs.GUI_FPS.value)
+            gui.drawString(Minecraft.getInstance().font, ClientAPI.getFPS() + " fps", 1, 1, 0xFFFFFF);
+
         //render context
         if (contextMenu != null && contextMenu.isVisible()) {
             //translate the stack here because of nested contexts

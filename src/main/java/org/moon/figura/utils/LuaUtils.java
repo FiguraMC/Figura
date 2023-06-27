@@ -180,7 +180,7 @@ public class LuaUtils {
             if (i == -1 && inventory != null) {
                 return inventory.getFreeSlot();
             } else {
-                return i - 1;
+                return i;
             }
         } else {
             throw new LuaError("Invalid type for getSlot: " + slot.getClass().getSimpleName());

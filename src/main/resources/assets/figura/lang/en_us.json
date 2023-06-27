@@ -169,6 +169,7 @@
   "figura.gui.new_version.tooltip": "A new version of Figura is available! %s\nClick to download it in your browser!",
   "figura.gui.old_version.tooltip": "Are you a time traveller? The latest version is %s",
   "figura.gui.clear": "Clear",
+  "figura.gui.not_available_yet": "Not available yet ❤",
 
   "figura.gui.text_hint.any": "Text",
   "figura.gui.text_hint.int": "Integer",
@@ -629,6 +630,9 @@
 
   "figura.config.force_smooth_avatar": "Force Smooth Avatar",
   "figura.config.force_smooth_avatar.tooltip": "Force Avatars to always use smooth shading normals",
+
+  "figura.config.gui_fps": "GUI FPS",
+  "figura.config.gui_fps.tooltip": "Displays the FPS count in the top left of Figura GUIs",
 
 
   "figura.command.no_avatar_error": "No avatar equipped!",
@@ -1137,7 +1141,7 @@
   "figura.docs.host.set_chat_text": "Sets the text currently being typed in the chat window to the given string",
   "figura.docs.host.get_screen": "Gets the class name of the screen the player is currently on\nIf the player is not currently in a screen, returns nil",
   "figura.docs.host.get_screen_slot_count": "Gets the number of slots in the screen the player is currently in\nIf the player is not currently in a screen or the screen has no slots, returns nil",
-  "figura.docs.host.get_screen_slot": "Gets the item in a screen slot\nIf the player is not currently in a screen, the screen has no slots, or the slot index is greater than the maximum (host:getScreenSlotCount()), returns nil",
+  "figura.docs.host.get_screen_slot": "Gets the item in a screen slot\nThe slot is either their numerical id (0 indexed) or the slot string, as used in the /item command\nIf the player is not currently in a screen, the screen has no slots, or the slot index is greater than the maximum, returns nil",
   "figura.docs.host.is_chat_open": "Checks if the host has the chat screen opened",
   "figura.docs.host.is_container_open": "Checks if the host has a container screen opened",
   "figura.docs.host.screenshot": "Takes a screenshot from the current screen and returns a Texture of it",
