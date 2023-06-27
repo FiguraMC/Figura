@@ -169,7 +169,7 @@ public class LuaUtils {
         return null;
     }
 
-    public static int parseEntitySlot(Object slot, Inventory inventory) {
+    public static int parseSlot(Object slot, Inventory inventory) {
         if (slot instanceof String s) {
             try {
                 return SlotArgument.slot().parse(new StringReader(s));
@@ -180,7 +180,7 @@ public class LuaUtils {
             if (i == -1 && inventory != null) {
                 return inventory.getFreeSlot();
             } else {
-                return i;
+                return i - 1;
             }
         } else {
             throw new LuaError("Invalid type for getSlot: " + slot.getClass().getSimpleName());

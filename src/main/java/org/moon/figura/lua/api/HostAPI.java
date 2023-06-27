@@ -326,7 +326,7 @@ public class HostAPI {
     public ItemStackAPI getSlot(@LuaNotNil Object slot) {
         if (!isHost()) return null;
         Entity e = this.owner.luaRuntime.getUser();
-        return ItemStackAPI.verify(e.getSlot(LuaUtils.parseEntitySlot(slot, null)).get());
+        return ItemStackAPI.verify(e.getSlot(LuaUtils.parseSlot(slot, null)).get());
     }
 
     @LuaWhitelist
@@ -345,7 +345,7 @@ public class HostAPI {
 
         Inventory inventory = this.minecraft.player.getInventory();
 
-        int index = LuaUtils.parseEntitySlot(slot, inventory);
+        int index = LuaUtils.parseSlot(slot, inventory);
         ItemStack stack = LuaUtils.parseItemStack("setSlot", item);
 
         inventory.setItem(index, stack);
@@ -451,12 +451,16 @@ public class HostAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("host.get_screen_slot")
-    public ItemStackAPI getScreenSlot(int index) {
+    @LuaMethodDoc(overloads = {
+            @LuaMethodOverload(argumentTypes = String.class, argumentNames = "slot"),
+            @LuaMethodOverload(argumentTypes = Integer.class, argumentNames = "slot")
+    }, value = "host.get_screen_slot")
+    public ItemStackAPI getScreenSlot(@LuaNotNil Object slot) {
         if (!isHost() || !(this.minecraft.screen instanceof AbstractContainerScreen<?> screen))
             return null;
 
         NonNullList<Slot> slots = screen.getMenu().slots;
+        int index = LuaUtils.parseSlot(slot, null);
         if (index < 0 || index >= slots.size())
             return null;
         return ItemStackAPI.verify(slots.get(index).getItem());
