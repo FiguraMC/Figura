@@ -11,10 +11,12 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.NonNullList;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.luaj.vm2.LuaError;
 import org.moon.figura.FiguraMod;
@@ -438,6 +440,26 @@ public class HostAPI {
         if (!isHost() || this.minecraft.screen == null)
             return null;
         return this.minecraft.screen.getClass().getName();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("host.get_screen_slot_count")
+    public Integer getScreenSlotCount() {
+        if (isHost() && this.minecraft.screen instanceof AbstractContainerScreen<?> screen)
+            return screen.getMenu().slots.size();
+        return null;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("host.get_screen_slot")
+    public ItemStackAPI getScreenSlot(int index) {
+        if (!isHost() || !(this.minecraft.screen instanceof AbstractContainerScreen<?> screen))
+            return null;
+
+        NonNullList<Slot> slots = screen.getMenu().slots;
+        if (index < 0 || index >= slots.size())
+            return null;
+        return ItemStackAPI.verify(slots.get(index).getItem());
     }
 
     @LuaWhitelist
