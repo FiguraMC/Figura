@@ -137,6 +137,8 @@ public class Configs {
     public static final BoolConfig
             ALLOW_FP_HANDS = new BoolConfig("allow_fp_hands", RENDERING, false),
             FIRST_PERSON_MATRICES = new BoolConfig("first_person_matrices", RENDERING, true);
+    public static final FloatConfig
+            VERTEX_OFFSET = new FloatConfig("vertex_offset", RENDERING, -0.005f);
 
 
     // -- ACTION WHEEL -- //

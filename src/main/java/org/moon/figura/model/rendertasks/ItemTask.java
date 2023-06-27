@@ -16,7 +16,6 @@ import org.moon.figura.lua.api.world.WorldAPI;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
-import org.moon.figura.model.PartCustomization;
 import org.moon.figura.utils.LuaUtils;
 
 @LuaWhitelist
@@ -36,9 +35,7 @@ public class ItemTask extends RenderTask {
     }
 
     @Override
-    public void render(PartCustomization.PartCustomizationStack stack, MultiBufferSource buffer, int light, int overlay) {
-        this.pushOntoStack(stack);
-        PoseStack poseStack = stack.peek().copyIntoGlobalPoseStack();
+    public void render(PoseStack poseStack, MultiBufferSource buffer, int light, int overlay) {
         poseStack.scale(-16, 16, -16);
 
         LivingEntity entity = owner.renderer.entity instanceof LivingEntity living ? living : null;
@@ -51,8 +48,6 @@ public class ItemTask extends RenderTask {
                 poseStack, buffer, WorldAPI.getCurrentWorld(),
                 newLight, newOverlay, seed
         );
-
-        stack.pop();
     }
 
     @Override
