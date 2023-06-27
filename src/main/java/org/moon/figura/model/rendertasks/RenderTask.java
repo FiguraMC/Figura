@@ -1,5 +1,6 @@
 package org.moon.figura.model.rendertasks;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -34,16 +35,17 @@ public abstract class RenderTask {
         this.customization.visible = true;
     }
 
-    //Return true if something was rendered, false if the function cancels for some reason
-    public abstract void render(PartCustomization.PartCustomizationStack stack, MultiBufferSource buffer, int light, int overlay);
+    public void render(PartCustomization.PartCustomizationStack stack, MultiBufferSource buffer, int light, int overlay) {
+        customization.recalculate();
+        stack.push(customization);
+        PoseStack poseStack = stack.peek().copyIntoGlobalPoseStack();
+        render(poseStack, buffer, light, overlay);
+        stack.pop();
+    }
+    public abstract void render(PoseStack stack, MultiBufferSource buffer, int light, int overlay);
     public abstract int getComplexity();
     public boolean shouldRender() {
         return customization.visible;
-    }
-
-    public void pushOntoStack(PartCustomization.PartCustomizationStack stack) {
-        customization.recalculate();
-        stack.push(customization);
     }
 
 

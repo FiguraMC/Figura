@@ -17,7 +17,6 @@ import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec4;
-import org.moon.figura.model.PartCustomization;
 import org.moon.figura.model.rendering.Vertex;
 import org.moon.figura.model.rendering.texture.FiguraTexture;
 import org.moon.figura.model.rendering.texture.RenderTypes;
@@ -48,9 +47,7 @@ public class SpriteTask extends RenderTask {
     }
 
     @Override
-    public void render(PartCustomization.PartCustomizationStack stack, MultiBufferSource buffer, int light, int overlay) {
-        this.pushOntoStack(stack); //push
-        PoseStack poseStack = stack.peek().copyIntoGlobalPoseStack();
+    public void render(PoseStack poseStack, MultiBufferSource buffer, int light, int overlay) {
         poseStack.scale(-1, -1, 1);
 
         //prepare variables
@@ -73,8 +70,6 @@ public class SpriteTask extends RenderTask {
                     .normal(normal, v.nx, v.ny, v.nz)
                     .endVertex();
         }
-
-        stack.pop(); //pop
     }
 
     @Override

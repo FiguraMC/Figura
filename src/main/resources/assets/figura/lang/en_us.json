@@ -404,6 +404,9 @@
   "figura.config.first_person_matrices": "First Person Matrices",
   "figura.config.first_person_matrices.tooltip": "Toggles if the model part matrices should be updated while in first person",
 
+  "figura.config.vertex_offset": "Vertex Offset",
+  "figura.config.vertex_offset.tooltip": "Changes the offset applied during rendering to avoid z-fighting between layers",
+
 
   "figura.config.action_wheel": "Action Wheel",
   "figura.config.action_wheel.tooltip": "Action Wheel settings",
@@ -1454,6 +1457,8 @@
   "figura.docs.text_task.set_background": "Sets if this Text should render its background\nDefault false",
   "figura.docs.text_task.get_background_color": "Gets the this Text background color",
   "figura.docs.text_task.set_background_color": "Sets the background colour of this Text\nIf the alpha value is not given, it will uses the vanilla value (as in the accessibility settings)",
+  "figura.docs.text_task.get_opacity": "Gets the opacity of this text",
+  "figura.docs.text_task.set_opacity": "Sets the opacity of this text",
 
   "figura.docs.sprite_task": "A task for rendering a single Sprite",
   "figura.docs.sprite_task.get_texture": "Returns this task's current texture",

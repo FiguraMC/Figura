@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import org.luaj.vm2.LuaError;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.Badges;
@@ -17,7 +18,6 @@ import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec4;
-import org.moon.figura.model.PartCustomization;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.TextUtils;
@@ -34,55 +34,43 @@ public class TextTask extends RenderTask {
     private String textCached;
     private List<Component> text;
     private TextUtils.Alignment alignment = TextUtils.Alignment.LEFT;
+    private ResourceLocation bgResource = new ResourceLocation("textures/map/map_background.png");
     private boolean shadow = false, outline = false;
     private boolean background = false, seeThrough = false;
     private Integer outlineColor, backgroundColor;
+    private int opacity = 0xFF;
     private int width = 0;
     private boolean wrap = true;
 
-    private int cachedComplexity;
+    private int cachedComplexity, cacheWidth, cacheHeight;
 
     public TextTask(String name, Avatar owner) {
         super(name, owner);
     }
 
     @Override
-    public void render(PartCustomization.PartCustomizationStack stack, MultiBufferSource buffer, int light, int overlay) {
-        this.pushOntoStack(stack);
-        PoseStack poseStack = stack.peek().copyIntoGlobalPoseStack();
+    public void render(PoseStack poseStack, MultiBufferSource buffer, int light, int overlay) {
+        //prepare matrices
         poseStack.scale(-1, -1, 1);
-
-        Font font = Minecraft.getInstance().font;
         Matrix4f matrix = poseStack.last().pose();
-        Matrix4f textMatrix = matrix;
-        if (shadow) {
-            poseStack.pushPose();
-            poseStack.scale(1, 1, -1);
-            textMatrix = poseStack.last().pose();
-            poseStack.popPose();
-        }
 
+        //prepare variables
+        Font font = Minecraft.getInstance().font;
         int l = this.customization.light != null ? this.customization.light : light;
-        int bgColor = backgroundColor != null ? backgroundColor : background ? (int) (Minecraft.getInstance().options.getBackgroundOpacity(0.25f) * 0xFF) << 24 : 0;
-        int outlineColor = this.outlineColor != null ? this.outlineColor : 0x202020;
+        int bg = backgroundColor != null ? backgroundColor : background ? (int) (Minecraft.getInstance().options.getBackgroundOpacity(0.25f) * 0xFF) << 24 : 0;
+        int out = outlineColor != null ? outlineColor : 0x202020;
+        int op = opacity << 24 | 0xFFFFFF;
 
-        for (int i = 0; i < text.size(); i++) {
+        //text
+        for (int i = 0, j = 0; i < text.size(); i++, j += (font.lineHeight + 1)) {
             Component text = this.text.get(i);
             int x = -alignment.apply(font, text);
-            int y = (font.lineHeight + 1) * i;
-
-            if (background || seeThrough) {
-                font.drawInBatch(text, x, y, 0x20FFFFFF, false, matrix, buffer, seeThrough, bgColor, l);
-            }
 
             if (outline) {
-                font.drawInBatch8xOutline(text.getVisualOrderText(), x, y, -1, outlineColor, matrix, buffer, light);
-            } else {
-                font.drawInBatch(text, x, y, 0xFFFFFF, shadow, textMatrix, buffer, false, 0, l);
+                font.drawInBatch8xOutline(text.getVisualOrderText(), x, j, -1, out, matrix, buffer, l);
             }
+            font.drawInBatch(text, x, j, op, shadow, matrix, buffer, seeThrough, bg, l);
         }
-
-        stack.pop();
     }
 
     @Override
@@ -106,6 +94,10 @@ public class TextTask extends RenderTask {
         component = Emojis.applyEmojis(component);
         component = Emojis.removeBlacklistedEmojis(component);
         this.text = TextUtils.formatInBounds(component, Minecraft.getInstance().font, width, wrap);
+
+        Font font = Minecraft.getInstance().font;
+        cacheWidth = TextUtils.getWidth(this.text, font);
+        cacheHeight = this.text.size() * font.lineHeight;
     }
 
 
@@ -382,6 +374,24 @@ public class TextTask extends RenderTask {
     @LuaWhitelist
     public TextTask backgroundColor(Object r, Double g, Double b, Double a) {
         return setBackgroundColor(r, g, b, a);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("text_task.get_opacity")
+    public float getOpacity() {
+        return opacity / (float) 0xFF;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(overloads = @LuaMethodOverload(argumentTypes = Float.class, argumentNames = "opacity"), aliases = "opacity", value = "text_task.set_opacity")
+    public TextTask setOpacity(float opacity) {
+        this.opacity = (int) (opacity * 0xFF);
+        return this;
+    }
+
+    @LuaWhitelist
+    public TextTask opacity(float opacity) {
+        return setOpacity(opacity);
     }
 
     @Override

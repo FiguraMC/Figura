@@ -13,7 +13,6 @@ import org.moon.figura.lua.api.world.BlockStateAPI;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
-import org.moon.figura.model.PartCustomization;
 import org.moon.figura.utils.LuaUtils;
 
 @LuaWhitelist
@@ -31,17 +30,13 @@ public class BlockTask extends RenderTask {
     }
 
     @Override
-    public void render(PartCustomization.PartCustomizationStack stack, MultiBufferSource buffer, int light, int overlay) {
-        this.pushOntoStack(stack); //push
-        PoseStack poseStack = stack.peek().copyIntoGlobalPoseStack();
+    public void render(PoseStack poseStack, MultiBufferSource buffer, int light, int overlay) {
         poseStack.scale(16, 16, 16);
 
         int newLight = this.customization.light != null ? this.customization.light : light;
         int newOverlay = this.customization.overlay != null ? this.customization.overlay : overlay;
 
         Minecraft.getInstance().getBlockRenderer().renderSingleBlock(block, poseStack, buffer, newLight, newOverlay);
-
-        stack.pop(); //pop
     }
 
     @Override
