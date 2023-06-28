@@ -705,7 +705,7 @@ public class Avatar {
         UIHelper.dollScale = 16f;
 
         //setup render
-        stack.translate(4d / 16d, 8d / 16d, 0d);
+        stack.translate(4d / 16d, upsideDown ? 0 : (8d / 16d), 0d);
 
         Lighting.setupForFlatItems();
 
