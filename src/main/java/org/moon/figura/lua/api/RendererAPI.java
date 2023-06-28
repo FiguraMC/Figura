@@ -58,6 +58,7 @@ public class RendererAPI {
     public Boolean renderLeftArm, renderRightArm;
     public FiguraVec3 eyeOffset;
     public FiguraVec4 blockOutlineColor;
+    public Boolean upsideDown;
 
     public RendererAPI(Avatar owner) {
         this.owner = owner.owner;
@@ -156,6 +157,24 @@ public class RendererAPI {
     public RendererAPI setRenderHUD(boolean renderHUD) {
         this.renderHUD = renderHUD;
         return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("renderer.is_upside_down")
+    public boolean isUpsideDown() {
+        return upsideDown;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(overloads = @LuaMethodOverload(argumentTypes = Boolean.class, argumentNames = "upsideDown"), aliases = "upsideDown", value = "renderer.set_upside_down")
+    public RendererAPI setUpsideDown(Boolean upsideDown) {
+        this.upsideDown = upsideDown;
+        return this;
+    }
+
+    @LuaWhitelist
+    public RendererAPI upsideDown(Boolean upsideDown) {
+        return setUpsideDown(upsideDown);
     }
 
     @LuaWhitelist

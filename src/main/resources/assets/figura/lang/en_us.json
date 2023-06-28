@@ -1500,6 +1500,8 @@
   "figura.docs.renderer.set_force_paperdoll": "Sets if the paperdoll should forcefully be rendered",
   "figura.docs.renderer.should_render_hud": "Check if the vanilla HUD should be rendered",
   "figura.docs.renderer.set_render_hud": "Sets if the vanilla HUD should be rendered",
+  "figura.docs.renderer.is_upside_down": "Checks if this entity should be rendered upside down",
+  "figura.docs.renderer.set_upside_down": "Sets if this entity will be rendered upside down",
   "figura.docs.renderer.set_shadow_radius": "Sets the radius of your shadow\nThe default value is nil, which means to use the vanilla default of 0.5 for players\nThe maximum value is 12",
   "figura.docs.renderer.get_shadow_radius": "Gets the radius of your shadow",
   "figura.docs.renderer.is_first_person": "Checks if your camera is in the first person view",

@@ -20,6 +20,7 @@ import org.moon.figura.lua.api.vanilla_model.VanillaPart;
 import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.model.rendering.PartFilterScheme;
 import org.moon.figura.permissions.Permissions;
+import org.moon.figura.utils.RenderUtils;
 import org.moon.figura.utils.ui.UIHelper;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -128,7 +129,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
     }
 
     @Inject(method = "shouldShowName(Lnet/minecraft/world/entity/LivingEntity;)Z", at = @At("HEAD"), cancellable = true)
-    public void shouldShowName(T livingEntity, CallbackInfoReturnable<Boolean> cir) {
+    private void shouldShowName(T livingEntity, CallbackInfoReturnable<Boolean> cir) {
         if (UIHelper.paperdoll)
             cir.setReturnValue(Configs.PREVIEW_NAMEPLATE.value);
         else if (!Minecraft.renderNames() || livingEntity.getUUID().equals(PopupMenu.getEntityId()))
@@ -138,6 +139,16 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
                 cir.setReturnValue(true);
             else if (Configs.NAMEPLATE_RENDER.value == 2 || (Configs.NAMEPLATE_RENDER.value == 1 && livingEntity != FiguraMod.extendedPickEntity))
                 cir.setReturnValue(false);
+        }
+    }
+
+    @Inject(method = "isEntityUpsideDown", at = @At("HEAD"), cancellable = true)
+    private static void isEntityUpsideDown(LivingEntity entity, CallbackInfoReturnable<Boolean> cir) {
+        Avatar avatar = AvatarManager.getAvatar(entity);
+        if (RenderUtils.vanillaModelAndScript(avatar)) {
+            Boolean upsideDown = avatar.luaRuntime.renderer.upsideDown;
+            if (upsideDown != null)
+                cir.setReturnValue(upsideDown);
         }
     }
 }

@@ -28,6 +28,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionf;
+import org.joml.Vector3f;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.moon.figura.FiguraMod;
@@ -693,7 +694,7 @@ public class Avatar {
         pose.mulPose(Axis.XP.rotationDegrees(180f));
 
         //scissors
-        FiguraVec3 pos = FiguraMat4.of().set(pose.last().pose()).apply(0d, 0d, 0d);
+        Vector3f pos = pose.last().pose().transformPosition(new Vector3f());
 
         int x1 = (int) pos.x;
         int y1 = (int) pos.y;
@@ -705,7 +706,7 @@ public class Avatar {
         UIHelper.dollScale = 16f;
 
         //setup render
-        pose.translate(4d / 16d, 8d / 16d, 0d);
+        pose.translate(4d / 16d, upsideDown ? 0 : (8d / 16d), 0d);
 
         Lighting.setupForFlatItems();
 
