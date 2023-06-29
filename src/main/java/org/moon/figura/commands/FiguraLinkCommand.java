@@ -16,7 +16,6 @@ public class FiguraLinkCommand {
         Space1,
         DISCORD("[Discord]", "https://discord.gg/ekHGHcH8Af", ColorUtils.Colors.DISCORD.style),
         GITHUB("[Github]", "https://github.com/Kingdom-of-The-Moon/FiguraRewriteRewrite", ColorUtils.Colors.GITHUB.style),
-        REDDIT("[Reddit]", "https://www.reddit.com/r/Figura", ColorUtils.Colors.REDDIT.style),
         Space2,
         MODRINTH("[Modrinth]", "https://modrinth.com/mod/figura", ColorUtils.Colors.MODRINTH.style),
         CURSEFORGE("[Curseforge]", "https://www.curseforge.com/minecraft/mc-mods/figura", ColorUtils.Colors.CURSEFORGE.style);
