@@ -54,7 +54,7 @@ public class AvatarWidget extends AbstractAvatarWidget {
 
                 //name
                 Component parsedName = TextUtils.trimToWidthEllipsis(font, getMessage(), width, TextUtils.ELLIPSIS.copy().withStyle(getMessage().getStyle()));
-                gui.drawString(font, parsedName, x + 22, y, 0xFFFFFFFF);
+                gui.drawString(font, parsedName, x + 22, y, -1);
 
                 //description
                 Component parsedDescription = TextUtils.trimToWidthEllipsis(font, description, width, TextUtils.ELLIPSIS.copy().withStyle(description.getStyle()));

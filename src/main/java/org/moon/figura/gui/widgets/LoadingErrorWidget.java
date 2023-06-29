@@ -17,6 +17,7 @@ public class LoadingErrorWidget extends StatusWidget {
 
     public LoadingErrorWidget(int x, int y, int width) {
         super(x, y, width, 1);
+        setVisible(false);
     }
 
     @Override

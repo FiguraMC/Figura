@@ -151,7 +151,7 @@ public class AvatarList extends AbstractList {
     private void loadContents() {
         // Load avatars //
         HashSet<Path> missingPaths = new HashSet<>(avatars.keySet());
-        for (LocalAvatarFetcher.AvatarPath avatar : LocalAvatarFetcher.ALL_AVATARS) {
+        for (LocalAvatarFetcher.AvatarPath avatar : List.copyOf(LocalAvatarFetcher.ALL_AVATARS)) {
             Path path = avatar.getPath();
 
             //filter

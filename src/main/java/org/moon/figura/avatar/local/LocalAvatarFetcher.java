@@ -38,17 +38,15 @@ public class LocalAvatarFetcher {
      * file system.
      */
     public static void loadAvatars() {
-        //clear loaded avatars
-        ALL_AVATARS.clear();
+        FiguraMod.debug("Reloading Avatar List...");
 
         //load avatars
         FolderPath root = new FolderPath(getLocalAvatarDirectory());
         root.fetch();
 
         //add new avatars
+        ALL_AVATARS.clear();
         ALL_AVATARS.addAll(root.getChildren());
-
-        FiguraMod.debug("Reloading Avatar List...");
     }
 
     public static void tick() {
@@ -207,14 +205,18 @@ public class LocalAvatarFetcher {
                     name = Configs.WARDROBE_FILE_NAMES.value || metadata.name == null || metadata.name.isBlank() ? filename : metadata.name;
                     description = metadata.description == null ? "" : metadata.description;
                     bg = CardBackground.parse(metadata.background);
-                } catch (Exception ignored) {}
+                } catch (Exception e) {
+                    FiguraMod.LOGGER.error("Failed to load metadata for \"" + path + "\"", e);
+                }
 
                 //icon
                 try {
                     Path p = path.resolve("avatar.png");
                     if (Files.exists(p))
                         iconTexture = FileTexture.of(p);
-                } catch (Exception ignored) {}
+                } catch (Exception e) {
+                    FiguraMod.LOGGER.error("Failed to load icon for \"" + path + "\"", e);
+                }
             }
 
             this.name = name;
