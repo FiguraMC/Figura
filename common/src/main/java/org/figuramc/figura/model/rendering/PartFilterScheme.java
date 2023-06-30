@@ -24,6 +24,8 @@ public enum PartFilterScheme {
     SKULL(false, SchemeFunction.onlyThisSeparate(ParentType.Skull), ParentType.Skull),
     PORTRAIT(false, SchemeFunction.onlyThisSeparate(ParentType.Portrait), ParentType.Portrait),
     ARROW(false, SchemeFunction.onlyThisSeparate(ParentType.Arrow), ParentType.Arrow),
+    THROWN_ITEM(false, SchemeFunction.onlyThisSeparate(ParentType.ThrownItem), ParentType.ThrownItem),
+    TRIDENT(false, SchemeFunction.onlyThisSeparate(ParentType.Trident), ParentType.Trident),
     ITEM(false, SchemeFunction.onlyThisSeparate(ParentType.Item), ParentType.Item),
 
     PIVOTS(false, SchemeFunction.onlyPivotsAndCancelOnSeparate(), ParentType.HelmetItemPivot);
@@ -47,7 +49,7 @@ public enum PartFilterScheme {
      * Return true: this part should render, and also continue and render children, and pass true to the scheme function next time
      * Return false: this part should not render, however try to render children, and pass false to the scheme function next time
      * Return null: this part should not render, and also do not try children, so scheme function is not called again
-     *
+     * <p>
      * the second parameter cannot be null, since if the previous call returned null then
      * the function is not called again on the children.
      */
