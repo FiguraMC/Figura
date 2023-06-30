@@ -172,23 +172,34 @@ public class ActionWheelAPI {
 
     public boolean execute(Avatar avatar, boolean left) {
         LuaFunction function = left ? leftClick : rightClick;
+        LuaFunction pageFunc = currentPage == null ? null : left ? currentPage.leftClick : currentPage.rightClick;
 
         // execute
-        if (function != null) {
+        boolean runWheel = true;
+        if (pageFunc != null) {
+            Varargs result = avatar.run(pageFunc, avatar.tick);
+            runWheel = !(result != null && result.arg(1).isboolean() && result.arg(1).checkboolean());
+        }
+        if (runWheel && function != null) {
             Varargs result = avatar.run(function, avatar.tick);
             return result != null && result.arg(1).isboolean() && result.arg(1).checkboolean();
         }
 
-        return false;
+        return !runWheel;
     }
 
     public boolean mouseScroll(Avatar avatar, double delta) {
-        if (scroll != null) {
+        boolean runWheel = true;
+        if (currentPage != null && currentPage.scroll != null) {
+            Varargs result = avatar.run(currentPage.scroll, avatar.tick, delta);
+            runWheel = !(result != null && result.arg(1).isboolean() && result.arg(1).checkboolean());
+        }
+        if (runWheel && scroll != null) {
             Varargs result = avatar.run(scroll, avatar.tick, delta);
             return result != null && result.arg(1).isboolean() && result.arg(1).checkboolean();
         }
 
-        return false;
+        return !runWheel;
     }
 
     @LuaWhitelist
