@@ -32,7 +32,7 @@ public class ThrownItemRenderMixin {
 
         FiguraMod.pushProfiler(FiguraMod.MOD_ID);
         FiguraMod.pushProfiler(avatar);
-        FiguraMod.pushProfiler("arrowRender");
+        FiguraMod.pushProfiler("thrownItemRender");
 
         FiguraMod.pushProfiler("event");
         boolean bool = avatar.thrownItemRenderEvent(tickDelta, EntityAPI.wrap(projectile));
