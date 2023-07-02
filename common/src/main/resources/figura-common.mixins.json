@@ -19,11 +19,13 @@
     "MinecraftMixin",
     "ReloadableResourceManagerMixin",
     "SkullBlockEntityAccessor",
+
     "gui.ChatComponentAccessor",
     "gui.ChatComponentMixin",
     "gui.ChatScreenAccessor",
     "gui.ChatScreenMixin",
     "gui.ClickEventActionMixin",
+    "gui.CommandSuggestionsMixin",
     "gui.DebugScreenOverlayMixin",
     "gui.GuiMessageLineMixin",
     "gui.GuiMessageMixin",
@@ -37,14 +39,17 @@
     "gui.SplashManagerMixin",
     "gui.SplashRendererMixin",
     "gui.SuggestionsListMixin",
+
     "input.InputConstantsTypeMixin",
     "input.KeyboardHandlerMixin",
     "input.KeyMappingAccessor",
     "input.KeyMappingMixin",
     "input.MouseHandlerMixin",
+
     "particle.ParticleAccessor",
     "particle.ParticleEngineMixin",
     "particle.SingleQuadParticleMixin",
+
     "render.CameraMixin",
     "render.EntityRenderDispatcherMixin",
     "render.GameRendererAccessor",
@@ -55,16 +60,20 @@
     "render.PlayerModelMixin",
     "render.TextureAtlasAccessor",
     "render.TextureManagerAccessor",
+
     "render.layers.CapeLayerMixin",
     "render.layers.CustomHeadLayerMixin",
     "render.layers.HumanoidArmorLayerAccessor",
     "render.layers.HumanoidArmorLayerMixin",
     "render.layers.ParrotOnShoulderLayerMixin",
+
     "render.layers.elytra.ElytraLayerAccessor",
     "render.layers.elytra.ElytraLayerMixin",
     "render.layers.elytra.ElytraModelAccessor",
+
     "render.layers.items.ItemInHandLayerMixin",
     "render.layers.items.PlayerItemInHandLayerMixin",
+
     "render.renderers.ArrowRendererMixin",
     "render.renderers.BlockEntityWithoutLevelRendererMixin",
     "render.renderers.EntityRendererMixin",
@@ -76,6 +85,9 @@
     "render.renderers.ScreenEffectRendererMixin",
     "render.renderers.SignRendererMixin",
     "render.renderers.SkullBlockRendererMixin",
+    "render.renderers.ThrownItemRenderMixin",
+    "render.renderers.ThrownTridentRendererMixin",
+
     "sound.ChannelHandleMixin",
     "sound.SoundEngineMixin",
     "sound.SoundManagerAccessor",
