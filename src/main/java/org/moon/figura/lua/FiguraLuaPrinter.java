@@ -73,6 +73,12 @@ public class FiguraLuaPrinter {
                 .replace("\n\t[Java]: in ?", "")
                 .replace("'<eos>' expected", "Expected end of script");
 
+        if (Configs.EASTER_EGGS.value && Math.random() < 0.0001) {
+            message = message
+                    .replaceFirst("attempt to index ? (a nil value) with key", "attempt to key (a ? value) with index nil")
+                    .replaceFirst("attempt to call a nil value", "attempt to nil a call value");
+        }
+
         //get script line
         line: {
             if (owner.minify) {
