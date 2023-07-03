@@ -9,9 +9,9 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import org.joml.Matrix4f;
 import org.luaj.vm2.LuaError;
+import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.Badges;
-import org.moon.figura.config.Configs;
 import org.moon.figura.gui.Emojis;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
@@ -20,6 +20,7 @@ import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec4;
+import org.moon.figura.model.FiguraModelPart;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.TextUtils;
@@ -45,8 +46,8 @@ public class TextTask extends RenderTask {
 
     private int cachedComplexity, cacheWidth, cacheHeight;
 
-    public TextTask(String name, Avatar owner) {
-        super(name, owner);
+    public TextTask(String name, Avatar owner, FiguraModelPart parent) {
+        super(name, owner, parent);
     }
 
     @Override
@@ -62,15 +63,18 @@ public class TextTask extends RenderTask {
         int out = outlineColor != null ? outlineColor : 0x202020;
         int op = opacity << 24 | 0xFFFFFF;
         Font.DisplayMode displayMode = seeThrough ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.POLYGON_OFFSET;
-        float vertexOffset = outline ? Configs.VERTEX_OFFSET.value : 0f;
+        float vertexOffset = outline ? FiguraMod.VERTEX_OFFSET : 0f;
 
         //background
         if (bg != 0) {
+            int offset = alignment.apply(cacheWidth);
+            float x1 = -1 - offset;
+            float x2 = cacheWidth - offset;
             VertexConsumer vertexConsumer = buffer.getBuffer(seeThrough ? RenderType.textBackgroundSeeThrough() : RenderType.textBackground());
-            vertexConsumer.vertex(matrix, -1f, -1f, vertexOffset).color(bg).uv2(l).endVertex();
-            vertexConsumer.vertex(matrix, -1f, cacheHeight, vertexOffset).color(bg).uv2(l).endVertex();
-            vertexConsumer.vertex(matrix, cacheWidth, cacheHeight, vertexOffset).color(bg).uv2(l).endVertex();
-            vertexConsumer.vertex(matrix, cacheWidth, -1f, vertexOffset).color(bg).uv2(l).endVertex();
+            vertexConsumer.vertex(matrix, x1, -1f, vertexOffset).color(bg).uv2(l).endVertex();
+            vertexConsumer.vertex(matrix, x1, cacheHeight, vertexOffset).color(bg).uv2(l).endVertex();
+            vertexConsumer.vertex(matrix, x2, cacheHeight, vertexOffset).color(bg).uv2(l).endVertex();
+            vertexConsumer.vertex(matrix, x2, -1f, vertexOffset).color(bg).uv2(l).endVertex();
         }
 
         //text

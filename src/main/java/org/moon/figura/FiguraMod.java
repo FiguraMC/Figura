@@ -48,6 +48,7 @@ public class FiguraMod implements ClientModInitializer {
     public static final Calendar CALENDAR = Calendar.getInstance();
     public static final Path GAME_DIR = FabricLoader.getInstance().getGameDir().normalize();
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_NAME);
+    public static final float VERTEX_OFFSET = -0.0005f;
 
     public static int ticks;
     public static Entity extendedPickEntity;

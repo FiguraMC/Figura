@@ -14,6 +14,7 @@ import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.model.FiguraModelPart;
 import org.moon.figura.model.PartCustomization;
 import org.moon.figura.utils.LuaUtils;
 
@@ -26,11 +27,13 @@ public abstract class RenderTask {
 
     protected final String name;
     protected final Avatar owner;
+    protected final FiguraModelPart parent;
     protected final PartCustomization customization;
 
-    public RenderTask(String name, Avatar owner) {
+    public RenderTask(String name, Avatar owner, FiguraModelPart parent) {
         this.name = name;
         this.owner = owner;
+        this.parent = parent;
         this.customization = new PartCustomization();
         this.customization.visible = true;
     }
@@ -51,6 +54,13 @@ public abstract class RenderTask {
 
     // -- lua stuff -- //
 
+
+    @LuaWhitelist
+    @LuaMethodDoc("render_task.remove")
+    public RenderTask remove() {
+        this.parent.removeTask(this);
+        return this;
+    }
 
     @LuaWhitelist
     @LuaMethodDoc("render_task.get_name")

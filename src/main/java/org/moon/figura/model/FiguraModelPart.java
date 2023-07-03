@@ -1150,7 +1150,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
             ),
             value = "model_part.new_text")
     public TextTask newText(@LuaNotNil String name) {
-        TextTask task = new TextTask(name, owner);
+        TextTask task = new TextTask(name, owner, this);
         this.renderTasks.put(name, task);
         return task;
     }
@@ -1163,7 +1163,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
             ),
             value = "model_part.new_item")
     public ItemTask newItem(@LuaNotNil String name) {
-        ItemTask task = new ItemTask(name, owner);
+        ItemTask task = new ItemTask(name, owner, this);
         this.renderTasks.put(name, task);
         return task;
     }
@@ -1176,7 +1176,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
             ),
             value = "model_part.new_block")
     public BlockTask newBlock(@LuaNotNil String name) {
-        BlockTask task = new BlockTask(name, owner);
+        BlockTask task = new BlockTask(name, owner, this);
         this.renderTasks.put(name, task);
         return task;
     }
@@ -1189,9 +1189,16 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
             ),
             value = "model_part.new_sprite")
     public SpriteTask newSprite(@LuaNotNil String name) {
-        SpriteTask task = new SpriteTask(name, owner);
+        SpriteTask task = new SpriteTask(name, owner, this);
         this.renderTasks.put(name, task);
         return task;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(overloads = @LuaMethodOverload(argumentTypes = RenderTask.class, argumentNames = "renderTask"), value = "model_part.new_task")
+    public RenderTask newTask(@LuaNotNil RenderTask renderTask) {
+        this.renderTasks.put(renderTask.getName(), renderTask);
+        return renderTask;
     }
 
     @LuaWhitelist
@@ -1216,17 +1223,19 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
     @LuaMethodDoc(
             overloads = {
                     @LuaMethodOverload,
-                    @LuaMethodOverload(
-                            argumentTypes = String.class,
-                            argumentNames = "taskName"
-                    )
+                    @LuaMethodOverload(argumentTypes = String.class, argumentNames = "taskName"),
+                    @LuaMethodOverload(argumentTypes = RenderTask.class, argumentNames = "renderTask")
             },
             value = "model_part.remove_task")
-    public FiguraModelPart removeTask(String name) {
-        if (name != null)
-            this.renderTasks.remove(name);
-        else
+    public FiguraModelPart removeTask(Object x) {
+        if (x instanceof String s)
+            this.renderTasks.remove(s);
+        else if (x instanceof RenderTask t)
+            this.renderTasks.remove(t.getName());
+        else if (x == null)
             this.renderTasks.clear();
+        else
+            throw new LuaError("Illegal argument to removeTask(): " + x.getClass().getSimpleName());
         return this;
     }
 

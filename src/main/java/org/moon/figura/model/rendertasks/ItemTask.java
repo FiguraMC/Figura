@@ -16,6 +16,7 @@ import org.moon.figura.lua.api.world.WorldAPI;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.model.FiguraModelPart;
 import org.moon.figura.utils.LuaUtils;
 
 @LuaWhitelist
@@ -30,8 +31,8 @@ public class ItemTask extends RenderTask {
     private boolean left = false;
     private int cachedComplexity;
 
-    public ItemTask(String name, Avatar owner) {
-        super(name, owner);
+    public ItemTask(String name, Avatar owner, FiguraModelPart parent) {
+        super(name, owner, parent);
     }
 
     @Override
