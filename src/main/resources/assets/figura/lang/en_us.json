@@ -405,9 +405,6 @@
   "figura.config.first_person_matrices": "First Person Matrices",
   "figura.config.first_person_matrices.tooltip": "Toggles if the model part matrices should be updated while in first person",
 
-  "figura.config.vertex_offset": "Vertex Offset",
-  "figura.config.vertex_offset.tooltip": "Changes the offset applied during rendering to avoid z-fighting between layers",
-
 
   "figura.config.action_wheel": "Action Wheel",
   "figura.config.action_wheel.tooltip": "Action Wheel settings",
@@ -1413,6 +1410,7 @@
 
 
   "figura.docs.render_task": "Represents a rendering task for Figura to complete each frame\nAn abstract superclass of ItemTask, BlockTask, and TextTask",
+  "figura.docs.render_task.remove": "Removes this render task from the parent model part",
   "figura.docs.render_task.get_name": "Get this task's name",
   "figura.docs.render_task.is_visible": "Checks if this task is visible",
   "figura.docs.render_task.set_visible": "Sets whether or not this task should be rendered",

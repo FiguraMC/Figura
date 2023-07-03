@@ -67,7 +67,7 @@ public class AvatarFolderWidget extends AbstractAvatarWidget {
 
     @Override
     public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
-        if (!isVisible())
+        if (!isVisible() || !this.button.isVisible())
             return;
 
         if (showChildren()) {
@@ -75,12 +75,12 @@ public class AvatarFolderWidget extends AbstractAvatarWidget {
             int y1 = y0 + parent.getHeight() + parent.scissorsHeight;
 
             for (AbstractAvatarWidget value : entries.values())
-                value.setVisible(value.getY() < y1 && value.getY() + value.getHeight() > y0);
+                value.button.setVisible(value.getY() < y1 && value.getY() + value.getHeight() > y0);
 
             super.render(stack, mouseX, mouseY, delta);
 
             for (AbstractAvatarWidget value : entries.values())
-                value.setVisible(true);
+                value.button.setVisible(true);
         } else {
             super.render(stack, mouseX, mouseY, delta);
         }

@@ -64,7 +64,7 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
 
     @Override
     public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
-        if (!isVisible())
+        if (!isVisible() || !this.button.isVisible())
             return;
 
         super.render(stack, mouseX, mouseY, delta);

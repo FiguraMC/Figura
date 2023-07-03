@@ -13,6 +13,7 @@ import org.moon.figura.lua.api.world.BlockStateAPI;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
+import org.moon.figura.model.FiguraModelPart;
 import org.moon.figura.utils.LuaUtils;
 
 @LuaWhitelist
@@ -25,8 +26,8 @@ public class BlockTask extends RenderTask {
     private BlockState block;
     private int cachedComplexity;
 
-    public BlockTask(String name, Avatar owner) {
-        super(name, owner);
+    public BlockTask(String name, Avatar owner, FiguraModelPart parent) {
+        super(name, owner, parent);
     }
 
     @Override

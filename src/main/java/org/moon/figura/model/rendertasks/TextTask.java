@@ -6,7 +6,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import org.luaj.vm2.LuaError;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.Badges;
@@ -18,6 +17,7 @@ import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec4;
+import org.moon.figura.model.FiguraModelPart;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.LuaUtils;
 import org.moon.figura.utils.TextUtils;
@@ -34,7 +34,6 @@ public class TextTask extends RenderTask {
     private String textCached;
     private List<Component> text;
     private TextUtils.Alignment alignment = TextUtils.Alignment.LEFT;
-    private ResourceLocation bgResource = new ResourceLocation("textures/map/map_background.png");
     private boolean shadow = false, outline = false;
     private boolean background = false, seeThrough = false;
     private Integer outlineColor, backgroundColor;
@@ -44,8 +43,8 @@ public class TextTask extends RenderTask {
 
     private int cachedComplexity, cacheWidth, cacheHeight;
 
-    public TextTask(String name, Avatar owner) {
-        super(name, owner);
+    public TextTask(String name, Avatar owner, FiguraModelPart parent) {
+        super(name, owner, parent);
     }
 
     @Override

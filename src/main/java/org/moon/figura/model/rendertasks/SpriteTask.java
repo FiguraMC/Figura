@@ -17,6 +17,7 @@ import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.math.vector.FiguraVec4;
+import org.moon.figura.model.FiguraModelPart;
 import org.moon.figura.model.rendering.Vertex;
 import org.moon.figura.model.rendering.texture.FiguraTexture;
 import org.moon.figura.model.rendering.texture.RenderTypes;
@@ -42,8 +43,8 @@ public class SpriteTask extends RenderTask {
     private RenderTypes renderType = RenderTypes.TRANSLUCENT;
     private final List<Vertex> vertices = new ArrayList<>(4);
 
-    public SpriteTask(String name, Avatar owner) {
-        super(name, owner);
+    public SpriteTask(String name, Avatar owner, FiguraModelPart parent) {
+        super(name, owner, parent);
     }
 
     @Override

@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class TextUtils {
@@ -369,18 +370,24 @@ public class TextUtils {
     }
 
     public enum Alignment {
-        LEFT((font, component) -> 0),
-        RIGHT((font, component) -> font.width(component)),
-        CENTER((font, component) -> font.width(component) / 2);
+        LEFT((font, component) -> 0, i -> 0),
+        RIGHT((font, component) -> font.width(component), i -> i),
+        CENTER((font, component) -> font.width(component) / 2, i -> i / 2);
 
-        private final BiFunction<Font, FormattedText, Integer> function;
+        private final BiFunction<Font, FormattedText, Integer> textFunction;
+        private final Function<Integer, Integer> integerFunction;
 
-        Alignment(BiFunction<Font, FormattedText, Integer> function) {
-            this.function = function;
+        Alignment(BiFunction<Font, FormattedText, Integer> textFunction, Function<Integer, Integer> integerFunction) {
+            this.textFunction = textFunction;
+            this.integerFunction = integerFunction;
         }
 
         public int apply(Font font, FormattedText component) {
-            return function.apply(font, component);
+            return textFunction.apply(font, component);
+        }
+
+        public int apply(int width) {
+            return integerFunction.apply(width);
         }
     }
 

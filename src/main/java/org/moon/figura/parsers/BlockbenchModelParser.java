@@ -87,7 +87,7 @@ public class BlockbenchModelParser {
 
     // -- internal functions -- //
 
-    private void parseTextures(String avatar, Path sourceFile, String folders, String modelName, CompoundTag texturesNbt, BlockbenchModel.Texture[] textures, BlockbenchModel.Resolution resolution) {
+    private void parseTextures(String avatar, Path sourceFile, String folders, String modelName, CompoundTag texturesNbt, BlockbenchModel.Texture[] textures, BlockbenchModel.Resolution resolution) throws Exception {
         if (textures == null)
             return;
 
@@ -173,7 +173,10 @@ public class BlockbenchModelParser {
 
             //add textures nbt
             if (texturesTemp.containsKey(name)) {
-                texturesTemp.get(name).putString(textureType, path);
+                CompoundTag textureContainer = texturesTemp.get(name);
+                if (textureContainer.contains(textureType))
+                    throw new Exception("Model \"" + modelName + "\" contains texture with duplicate name \"" + name + "\"");
+                textureContainer.putString(textureType, path);
             } else {
                 //create nbt
                 CompoundTag compound = new CompoundTag();
