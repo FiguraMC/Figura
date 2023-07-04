@@ -237,7 +237,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         //pre render function
         if (part.preRender != null) {
             FiguraMod.popPushProfiler("preRenderFunction");
-            avatar.run(part.preRender, avatar.render, part);
+            avatar.run(part.preRender, avatar.render, tickDelta, avatar.renderMode.name(), part);
         }
 
         //recalculate stuff
@@ -292,7 +292,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         //mid render function
         if (part.midRender != null) {
             FiguraMod.popPushProfiler("midRenderFunction");
-            avatar.run(part.midRender, avatar.render, part);
+            avatar.run(part.midRender, avatar.render, tickDelta, avatar.renderMode.name(), part);
         }
 
         //render this
@@ -370,7 +370,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         //post render function
         if (part.postRender != null) {
             FiguraMod.popPushProfiler("postRenderFunction");
-            avatar.run(part.postRender, avatar.render, part);
+            avatar.run(part.postRender, avatar.render, tickDelta, avatar.renderMode.name(), part);
         }
 
         //pop

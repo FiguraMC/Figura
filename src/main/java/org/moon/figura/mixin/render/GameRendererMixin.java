@@ -14,6 +14,7 @@ import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.ducks.GameRendererAccessor;
 import org.moon.figura.lua.api.ClientAPI;
+import org.moon.figura.math.matrix.FiguraMat3;
 import org.moon.figura.math.matrix.FiguraMat4;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.utils.EntityUtils;
@@ -63,6 +64,10 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
         FiguraMat4 mat = avatar.luaRuntime.renderer.cameraMat;
         if (mat != null)
             stack.last().pose().load(mat.toMatrix4f());
+
+        FiguraMat3 normal = avatar.luaRuntime.renderer.cameraNormal;
+        if (normal != null)
+            stack.last().normal().load(normal.toMatrix3f());
     }
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;doEntityOutline()V", shift = At.Shift.AFTER))
@@ -122,7 +127,7 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
 
     //bobbing fix courtesy of Iris; https://github.com/IrisShaders/Iris/blob/1.20/src/main/java/net/coderbot/iris/mixin/MixinModelViewBobbing.java
     @Inject(method = "renderLevel", at = @At("HEAD"))
-    private void onRenderLevel(float pGameRenderer0, long pLong1, PoseStack pPoseStack2, CallbackInfo ci) {
+    private void onRenderLevel(float tickDelta, long limitTime, PoseStack stack, CallbackInfo ci) {
         hasShaders = ClientAPI.hasIrisShader();
     }
 
