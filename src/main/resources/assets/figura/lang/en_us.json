@@ -868,6 +868,7 @@
   "figura.docs.avatar.can_render_offscreen": "Gets whether or not the viewer allows you to render the avatar off-screen",
   "figura.docs.avatar.can_use_custom_sounds": "Gets whether or not the viewer allows your avatar to play custom sounds",
   "figura.docs.avatar.can_have_custom_skull": "Gets whether or not your avatar is allowed to have custom player skull",
+  "figura.docs.avatar.get_nbt": "Gets the NBT data this avatar is stored as",
 
 
   "figura.docs.biome": "A proxy for a Minecraft biome\nInstances are obtained through the WorldAPI\nThis proxy also contains a saved position for the Biome",
