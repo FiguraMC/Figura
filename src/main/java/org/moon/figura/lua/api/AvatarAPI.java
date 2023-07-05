@@ -32,6 +32,12 @@ public class AvatarAPI {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("avatar.get_nbt")
+    public LuaTable getNBT() {
+        return (LuaTable) NbtToLua.convert(avatar.nbt);
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaMethodOverload(
                     argumentTypes = {String.class, Object.class},
