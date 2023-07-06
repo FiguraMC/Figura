@@ -11,13 +11,13 @@ import org.moon.figura.utils.FiguraText;
 
 import java.nio.file.Path;
 
-public class FiguraLoadCommand {
+class LoadCommand {
 
     public static LiteralArgumentBuilder<FabricClientCommandSource> getCommand() {
         LiteralArgumentBuilder<FabricClientCommandSource> load = LiteralArgumentBuilder.literal("load");
 
         RequiredArgumentBuilder<FabricClientCommandSource, String> path = RequiredArgumentBuilder.argument("path", StringArgumentType.greedyString());
-        path.executes(FiguraLoadCommand::loadAvatar);
+        path.executes(LoadCommand::loadAvatar);
 
         return load.then(path);
     }

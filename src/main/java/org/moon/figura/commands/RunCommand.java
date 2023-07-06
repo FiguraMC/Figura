@@ -8,12 +8,12 @@ import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import org.moon.figura.lua.FiguraLuaPrinter;
 import org.moon.figura.lua.FiguraLuaRuntime;
 
-public class FiguraRunCommand {
+class RunCommand {
 
     public static LiteralArgumentBuilder<FabricClientCommandSource> getCommand() {
         LiteralArgumentBuilder<FabricClientCommandSource> run = LiteralArgumentBuilder.literal("run");
         RequiredArgumentBuilder<FabricClientCommandSource, String> arg = RequiredArgumentBuilder.argument("code", StringArgumentType.greedyString());
-        arg.executes(FiguraRunCommand::executeCode);
+        arg.executes(RunCommand::executeCode);
         run.then(arg);
         return run;
     }

@@ -182,4 +182,23 @@ public class FiguraMod implements ClientModInitializer {
         for (int i = 0; i < times; i++)
             profiler.pop();
     }
+
+    public enum Links {
+        Wiki("https://github.com/KitCat962/FiguraRewriteRewrite/wiki", ColorUtils.Colors.FRAN_PINK.style),
+        Kofi("https://ko-fi.com/francy_chan", ColorUtils.Colors.KOFI.style),
+        Discord("https://discord.gg/ekHGHcH8Af", ColorUtils.Colors.DISCORD.style),
+        Github("https://github.com/Kingdom-of-The-Moon/FiguraRewriteRewrite", ColorUtils.Colors.GITHUB.style),
+        Modrinth("https://modrinth.com/mod/figura", ColorUtils.Colors.MODRINTH.style),
+        Curseforge("https://www.curseforge.com/minecraft/mc-mods/figura", ColorUtils.Colors.CURSEFORGE.style),
+        LuaManual( "https://www.lua.org/manual/5.2/manual.html", ColorUtils.Colors.LUA_LOG.style),
+        FranGit( "https://github.com/Francy-chan", ColorUtils.Colors.FRAN_PINK.style);
+
+        public final String url;
+        public final Style style;
+
+        Links(String url, Style style) {
+            this.url = url;
+            this.style = style;
+        }
+    }
 }

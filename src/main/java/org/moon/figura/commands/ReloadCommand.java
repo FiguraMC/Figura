@@ -7,7 +7,7 @@ import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.utils.FiguraText;
 
-public class FiguraReloadCommand {
+class ReloadCommand {
 
     public static LiteralArgumentBuilder<FabricClientCommandSource> getCommand() {
         LiteralArgumentBuilder<FabricClientCommandSource> cmd = LiteralArgumentBuilder.literal("reload");
@@ -18,5 +18,4 @@ public class FiguraReloadCommand {
         });
         return cmd;
     }
-
 }

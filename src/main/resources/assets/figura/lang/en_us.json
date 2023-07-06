@@ -645,6 +645,8 @@
   "figura.command.debug.error": "Failed to save debug data!",
   "figura.command.export_texture.success": "Exported texture into the Figura directory",
   "figura.command.export_texture.error": "Failed to export texture!",
+  "figura.command.export_avatar.success": "Exported avatar into the Figura directory",
+  "figura.command.export_avatar.error": "Failed to export avatar!",
 
 
   "figura.docs": "The \"/figura docs\" command allows you to access documentation for all types and functions Figura adds to its Lua scripting environment",

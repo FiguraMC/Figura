@@ -9,7 +9,6 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import org.moon.figura.FiguraMod;
-import org.moon.figura.commands.FiguraLinkCommand;
 import org.moon.figura.config.Configs;
 import org.moon.figura.gui.widgets.Button;
 import org.moon.figura.gui.widgets.IconButton;
@@ -24,7 +23,6 @@ import org.moon.figura.utils.ui.UIHelper;
 public class HelpScreen extends AbstractPanelScreen {
 
     public static final ResourceLocation ICONS = new FiguraIdentifier("textures/gui/help_icons.png");
-    public static final String LUA_MANUAL = "https://www.lua.org/manual/5.2/manual.html";
     public static final String LUA_VERSION = "5.2 - Figura";
 
     private IconButton kofi;
@@ -49,14 +47,14 @@ public class HelpScreen extends AbstractPanelScreen {
         IconButton docs;
         this.addRenderableWidget(docs = new IconButton(middle - 60, y += lineHeight + 4, 120, 24, 20, 0, 20, ICONS, 60, 40, FiguraText.of("gui.help.ingame_docs"), null, button -> this.minecraft.setScreen(new DocsScreen(this))));
         docs.setActive(false);
-        this.addRenderableWidget(new IconButton(middle - 60, y += 28, 120, 24, 0, 0, 20, ICONS, 60, 40, FiguraText.of("gui.help.lua_manual"), null, bx -> UIHelper.openURL(LUA_MANUAL).run()));
-        this.addRenderableWidget(new IconButton(middle - 60, y += 28, 120, 24, 40, 0, 20, ICONS, 60, 40, FiguraText.of("gui.help.external_wiki"), null, bx -> UIHelper.openURL(FiguraLinkCommand.LINK.WIKI.url).run()));
+        this.addRenderableWidget(new IconButton(middle - 60, y += 28, 120, 24, 0, 0, 20, ICONS, 60, 40, FiguraText.of("gui.help.lua_manual"), null, bx -> UIHelper.openURL(FiguraMod.Links.LuaManual.url).run()));
+        this.addRenderableWidget(new IconButton(middle - 60, y += 28, 120, 24, 40, 0, 20, ICONS, 60, 40, FiguraText.of("gui.help.external_wiki"), null, bx -> UIHelper.openURL(FiguraMod.Links.Wiki.url).run()));
 
         //links
         this.addRenderableWidget(new Title(FiguraText.of("gui.help.links").withStyle(color), middle, y += 28, labelWidth));
 
-        this.addRenderableWidget(new IconButton(middle - 124, y += lineHeight + 4, 80, 24, 0, 20, 20, ICONS, 60, 40, Component.literal("Discord"), null, bx -> UIHelper.openURL(FiguraLinkCommand.LINK.DISCORD.url).run()));
-        this.addRenderableWidget(new IconButton(middle - 40, y, 80, 24, 20, 20, 20, ICONS, 60, 40, Component.literal("GitHub"), null, bx -> UIHelper.openURL(FiguraLinkCommand.LINK.GITHUB.url).run()) {
+        this.addRenderableWidget(new IconButton(middle - 124, y += lineHeight + 4, 80, 24, 0, 20, 20, ICONS, 60, 40, Component.literal("Discord"), null, bx -> UIHelper.openURL(FiguraMod.Links.Discord.url).run()));
+        this.addRenderableWidget(new IconButton(middle - 40, y, 80, 24, 20, 20, 20, ICONS, 60, 40, Component.literal("GitHub"), null, bx -> UIHelper.openURL(FiguraMod.Links.Github.url).run()) {
             @Override
             public boolean mouseClicked(double mouseX, double mouseY, int button) {
                 if (Configs.EASTER_EGGS.value && this.isHoveredOrFocused() && this.isMouseOver(mouseX, mouseY) && button == 1) {
@@ -73,7 +71,7 @@ public class HelpScreen extends AbstractPanelScreen {
                 return super.mouseClicked(mouseX, mouseY, button);
             }
         });
-        this.addRenderableWidget(kofi = new IconButton(middle + 44, y, 80, 24, 40, 20, 20, ICONS, 60, 40, Component.literal("Ko-fi"), null, b -> UIHelper.openURL(FiguraLinkCommand.LINK.KOFI.url).run()));
+        this.addRenderableWidget(kofi = new IconButton(middle + 44, y, 80, 24, 40, 20, 20, ICONS, 60, 40, Component.literal("Ko-fi"), null, b -> UIHelper.openURL(FiguraMod.Links.Kofi.url).run()));
 
         //texts
         this.addRenderableWidget(new Title(FiguraText.of("gui.help.about").withStyle(color), middle, y += 28, labelWidth));
@@ -81,7 +79,7 @@ public class HelpScreen extends AbstractPanelScreen {
         this.addRenderableWidget(new Label(FiguraText.of("gui.help.lua_version", Component.literal(LUA_VERSION).withStyle(color)), middle, y += lineHeight + 4, TextUtils.Alignment.CENTER));
         this.addRenderableWidget(new Label(FiguraText.of("gui.help.figura_version", Component.literal(FiguraMod.VERSION.toString()).withStyle(color)), middle, y += lineHeight + 4, TextUtils.Alignment.CENTER));
 
-        Label fran = new Label(FiguraText.of("gui.help.credits", Component.literal("Fran").withStyle(Style.EMPTY.withClickEvent(new TextUtils.FiguraClickEvent(UIHelper.openURL("https://github.com/Francy-chan"))))).withStyle(ColorUtils.Colors.FRAN_PINK.style), middle, y + lineHeight + 4, TextUtils.Alignment.CENTER);
+        Label fran = new Label(FiguraText.of("gui.help.credits", Component.literal("Fran").withStyle(Style.EMPTY.withClickEvent(new TextUtils.FiguraClickEvent(UIHelper.openURL(FiguraMod.Links.FranGit.url))))).withStyle(ColorUtils.Colors.FRAN_PINK.style), middle, y + lineHeight + 4, TextUtils.Alignment.CENTER);
         fran.setAlpha(0x40);
         this.addRenderableWidget(fran);
 

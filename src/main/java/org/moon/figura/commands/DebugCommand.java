@@ -45,13 +45,13 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.zip.GZIPOutputStream;
 
-public class FiguraDebugCommand {
+class DebugCommand {
 
     private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().serializeNulls().setPrettyPrinting().create();
 
     public static LiteralArgumentBuilder<FabricClientCommandSource> getCommand() {
         LiteralArgumentBuilder<FabricClientCommandSource> debug = LiteralArgumentBuilder.literal("debug");
-        debug.executes(FiguraDebugCommand::commandAction);
+        debug.executes(DebugCommand::commandAction);
         return debug;
     }
 
