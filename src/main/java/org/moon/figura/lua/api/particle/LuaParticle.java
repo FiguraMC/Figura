@@ -27,10 +27,7 @@ public class LuaParticle {
     private final Avatar owner;
     private final Particle particle;
 
-    private FiguraVec3 pos = FiguraVec3.of();
-    private FiguraVec3 vel = FiguraVec3.of();
-    private FiguraVec4 color = FiguraVec4.of(1, 1, 1, 1);
-    private float power, scale = 1f;
+    private float power;
 
     public LuaParticle(String name, Particle particle, Avatar owner) {
         this.name = name;
@@ -68,7 +65,8 @@ public class LuaParticle {
     @LuaWhitelist
     @LuaMethodDoc("particle.get_pos")
     public FiguraVec3 getPos() {
-        return pos.copy();
+        ParticleAccessor p = (ParticleAccessor) particle;
+        return FiguraVec3.of(p.getX(), p.getY(), p.getZ());
     }
 
     @LuaWhitelist
@@ -93,7 +91,6 @@ public class LuaParticle {
         p.setXo(vec.x);
         p.setYo(vec.y);
         p.setZo(vec.z);
-        this.pos = vec;
 
         return this;
     }
@@ -106,7 +103,8 @@ public class LuaParticle {
     @LuaWhitelist
     @LuaMethodDoc("particle.get_velocity")
     public FiguraVec3 getVelocity() {
-        return vel.copy();
+        ParticleAccessor p = (ParticleAccessor) particle;
+        return FiguraVec3.of(p.getXd(), p.getYd(), p.getZd());
     }
 
     @LuaWhitelist
@@ -126,7 +124,6 @@ public class LuaParticle {
     public LuaParticle setVelocity(Object x, Double y, Double z) {
         FiguraVec3 vec = LuaUtils.parseVec3("setVelocity", x, y, z);
         particle.setParticleSpeed(vec.x, vec.y, vec.z);
-        this.vel = vec;
         return this;
     }
 
@@ -138,7 +135,8 @@ public class LuaParticle {
     @LuaWhitelist
     @LuaMethodDoc("particle.get_color")
     public FiguraVec4 getColor() {
-        return color.copy();
+        ParticleAccessor p = (ParticleAccessor) particle;
+        return FiguraVec4.of(p.getRCol(), p.getGCol(), p.getBCol(), p.getAlpha());
     }
 
     @LuaWhitelist
@@ -163,7 +161,6 @@ public class LuaParticle {
         FiguraVec4 vec = LuaUtils.parseVec4("setColor", r, g, b, a, 1, 1, 1, 1);
         particle.setColor((float) vec.x, (float) vec.y, (float) vec.z);
         ((ParticleAccessor) particle).setParticleAlpha((float) vec.w);
-        this.color = vec;
         return this;
     }
 
@@ -222,9 +219,14 @@ public class LuaParticle {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("particle.get_scale")
+    @LuaMethodDoc(aliases = "getSize", value = "particle.get_scale")
     public float getScale() {
-        return scale;
+        return ((ParticleAccessor) particle).getBbWidth() / 0.2f;
+    }
+
+    @LuaWhitelist
+    public float getSize() {
+        return getScale();
     }
 
     @LuaWhitelist
@@ -233,18 +235,27 @@ public class LuaParticle {
                     argumentTypes = Float.class,
                     argumentNames = "scale"
             ),
-            aliases = "scale",
+            aliases = {"scale", "setSize", "size"},
             value = "particle.set_scale")
     public LuaParticle setScale(float scale) {
         if (particle instanceof SingleQuadParticle quadParticle)
             ((SingleQuadParticleAccessor) quadParticle).figura$fixQuadSize();
         particle.scale(scale);
-        this.scale = scale;
         return this;
     }
 
     @LuaWhitelist
     public LuaParticle scale(float scale) {
+        return setScale(scale);
+    }
+
+    @LuaWhitelist
+    public LuaParticle setSize(float scale) {
+        return setScale(scale);
+    }
+
+    @LuaWhitelist
+    public LuaParticle size(float scale) {
         return setScale(scale);
     }
 
