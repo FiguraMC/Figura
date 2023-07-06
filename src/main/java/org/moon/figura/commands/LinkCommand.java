@@ -8,33 +8,21 @@ import org.moon.figura.FiguraMod;
 import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.FiguraText;
 
-public class FiguraLinkCommand {
+import java.util.ArrayList;
+import java.util.List;
 
-    public enum LINK {
-        WIKI("[Wiki]", "https://github.com/KitCat962/FiguraRewriteRewrite/wiki", ColorUtils.Colors.FRAN_PINK.style),
-        KOFI("[Ko-fi]", "https://ko-fi.com/francy_chan", ColorUtils.Colors.KOFI.style),
-        Space1,
-        DISCORD("[Discord]", "https://discord.gg/ekHGHcH8Af", ColorUtils.Colors.DISCORD.style),
-        GITHUB("[Github]", "https://github.com/Kingdom-of-The-Moon/FiguraRewriteRewrite", ColorUtils.Colors.GITHUB.style),
-        Space2,
-        MODRINTH("[Modrinth]", "https://modrinth.com/mod/figura", ColorUtils.Colors.MODRINTH.style),
-        CURSEFORGE("[Curseforge]", "https://www.curseforge.com/minecraft/mc-mods/figura", ColorUtils.Colors.CURSEFORGE.style);
+class LinkCommand {
 
-        public final String name;
-        public final String url;
-        public final Style style;
-        public final boolean isSpace;
-
-        LINK(String name, String url, Style style) {
-            this.name = name;
-            this.url = url;
-            this.style = style;
-            this.isSpace = name == null;
-        }
-        LINK() {
-            this(null, null, null);
-        }
-    }
+    private static final List<FiguraMod.Links> LINKS = new ArrayList<>() {{
+            add(FiguraMod.Links.Wiki);
+            add(FiguraMod.Links.Kofi);
+            add(null);
+            add(FiguraMod.Links.Discord);
+            add(FiguraMod.Links.Github);
+            add(null);
+            add(FiguraMod.Links.Modrinth);
+            add(FiguraMod.Links.Curseforge);
+    }};
 
     public static LiteralArgumentBuilder<FabricClientCommandSource> getCommand() {
         //get links
@@ -48,13 +36,13 @@ public class FiguraLinkCommand {
                     .append("\n");
 
             //add links
-            for (LINK link : LINK.values()) {
+            for (FiguraMod.Links link : LINKS) {
                 message.append("\n");
 
-                if (link.isSpace)
+                if (link == null)
                     continue;
 
-                message.append(Component.literal("• " + link.name)
+                message.append(Component.literal("• [" + link.name() + "]")
                         .withStyle(link.style)
                         .withStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, link.url)))
                         .withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(link.url)))));

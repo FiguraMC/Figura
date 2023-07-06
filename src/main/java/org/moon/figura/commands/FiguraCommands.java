@@ -21,25 +21,24 @@ public class FiguraCommands {
 
         //docs
         root.then(FiguraDocsManager.getCommand());
-        root.then(FiguraDocsManager.getExportCommand());
 
         //links
-        root.then(FiguraLinkCommand.getCommand());
+        root.then(LinkCommand.getCommand());
 
         //run
-        root.then(FiguraRunCommand.getCommand());
+        root.then(RunCommand.getCommand());
 
         //load
-        root.then(FiguraLoadCommand.getCommand());
+        root.then(LoadCommand.getCommand());
 
         //reload
-        root.then(FiguraReloadCommand.getCommand());
+        root.then(ReloadCommand.getCommand());
 
         //debug
-        root.then(FiguraDebugCommand.getCommand());
+        root.then(DebugCommand.getCommand());
 
-        //debug
-        root.then(FiguraExportTextureCommand.getCommand());
+        //export
+        root.then(ExportCommand.getCommand());
 
         if (FiguraMod.DEBUG_MODE) {
             //backend debug

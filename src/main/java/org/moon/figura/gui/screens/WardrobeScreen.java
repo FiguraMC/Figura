@@ -13,7 +13,6 @@ import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.avatar.local.LocalAvatarFetcher;
 import org.moon.figura.avatar.local.LocalAvatarLoader;
 import org.moon.figura.backend2.NetworkStuff;
-import org.moon.figura.commands.FiguraLinkCommand;
 import org.moon.figura.config.Configs;
 import org.moon.figura.gui.FiguraToast;
 import org.moon.figura.gui.widgets.*;
@@ -121,7 +120,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
                             .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
                                     FiguraText.of("gui.new_version.tooltip", Component.literal(NetworkStuff.latestVersion.toString()).withStyle(ChatFormatting.GREEN))
                             ))
-                            .withClickEvent(new TextUtils.FiguraClickEvent(UIHelper.openURL(FiguraLinkCommand.LINK.MODRINTH.url + "/versions")))
+                            .withClickEvent(new TextUtils.FiguraClickEvent(UIHelper.openURL(FiguraMod.Links.Modrinth.url + "/versions")))
                     );
         } else if (versionStatus < 0) {
             versionText.withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,

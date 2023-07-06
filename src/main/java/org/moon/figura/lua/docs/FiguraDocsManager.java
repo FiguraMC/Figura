@@ -319,7 +319,7 @@ public class FiguraDocsManager {
     }
 
     public static LiteralArgumentBuilder<FabricClientCommandSource> getExportCommand() {
-        LiteralArgumentBuilder<FabricClientCommandSource> root = LiteralArgumentBuilder.literal("export_docs");
+        LiteralArgumentBuilder<FabricClientCommandSource> root = LiteralArgumentBuilder.literal("docs");
         root.executes(context -> exportDocsFunction(context, true));
 
         RequiredArgumentBuilder<FabricClientCommandSource, Boolean> e = RequiredArgumentBuilder.argument("translate", BoolArgumentType.bool());

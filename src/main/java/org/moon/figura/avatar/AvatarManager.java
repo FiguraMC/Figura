@@ -324,6 +324,8 @@ public class AvatarManager {
 
             if (LOADED_USERS.get(targetUUID) != null) {
                 setAvatar(targetUUID, avatar.nbt);
+                if (FiguraMod.isLocal(targetUUID))
+                    localUploaded = true;
                 context.getSource().sendFeedback(Component.literal("Set avatar for " + t));
                 return 1;
             }
