@@ -40,4 +40,48 @@ public interface ParticleAccessor {
     @Intrinsic
     @Invoker("setAlpha")
     void setParticleAlpha(float alpha);
+
+    @Intrinsic
+    @Accessor("x")
+    double getX();
+
+    @Intrinsic
+    @Accessor("y")
+    double getY();
+
+    @Intrinsic
+    @Accessor("z")
+    double getZ();
+
+    @Intrinsic
+    @Accessor
+    float getBbWidth();
+
+    @Intrinsic
+    @Accessor
+    float getRCol();
+
+    @Intrinsic
+    @Accessor
+    float getGCol();
+
+    @Intrinsic
+    @Accessor
+    float getBCol();
+
+    @Intrinsic
+    @Accessor
+    float getAlpha();
+
+    @Intrinsic
+    @Accessor
+    double getXd();
+
+    @Intrinsic
+    @Accessor
+    double getYd();
+
+    @Intrinsic
+    @Accessor
+    double getZd();
 }
