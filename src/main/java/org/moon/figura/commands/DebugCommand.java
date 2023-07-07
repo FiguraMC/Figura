@@ -149,7 +149,7 @@ class DebugCommand {
         root.add("permissions", permissions);
 
         //avatars
-        LocalAvatarFetcher.loadAvatars();
+        LocalAvatarFetcher.reloadAvatars().join();
         root.add("avatars", getAvatarsPaths(LocalAvatarFetcher.ALL_AVATARS));
 
 

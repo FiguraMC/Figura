@@ -26,14 +26,14 @@ public class AvatarWidget extends AbstractAvatarWidget {
         Component description = Component.literal(avatar.getDescription());
         this.button = new Button(getX(), getY(), width, 24, getName(), null, button -> {
             AvatarManager.loadLocalAvatar(avatar.getPath());
-            AvatarList.selectedEntry = instance;
+            AvatarList.selectedEntry = avatar.getTheActualPathForThis();
         }) {
             @Override
             public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
                 super.renderButton(stack, mouseX, mouseY, delta);
 
                 //selected border
-                if (instance.equals(AvatarList.selectedEntry))
+                if (instance.isOf(AvatarList.selectedEntry))
                     UIHelper.fillOutline(stack, getX(), getY(), getWidth(), getHeight(), 0xFFFFFFFF);
             }
 

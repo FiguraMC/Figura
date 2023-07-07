@@ -18,6 +18,8 @@ import org.moon.figura.gui.widgets.lists.AvatarList;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.ui.UIHelper;
 
+import java.nio.file.Path;
+
 public abstract class AbstractAvatarWidget extends AbstractContainerElement implements Comparable<AbstractAvatarWidget> {
 
     protected static final int SPACING = 6;
@@ -162,5 +164,9 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
     @Override
     public boolean equals(Object obj) {
         return obj == this || obj instanceof AbstractAvatarWidget other && other.avatar != null && this.avatar != null && this.avatar.getPath().equals(other.avatar.getPath());
+    }
+
+    public boolean isOf(Path path) {
+        return this.avatar != null && this.avatar.getTheActualPathForThis().equals(path);
     }
 }

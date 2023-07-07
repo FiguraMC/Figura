@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
 /**
@@ -33,11 +34,14 @@ public class LocalAvatarFetcher {
 
     private static final Map<Path, WatchKey> WATCHED_KEYS = new HashMap<>();
 
+    private static boolean requireReload = true, loaded;
+
     /**
      * Clears out the root AvatarFolder, and regenerates it from the
      * file system.
      */
     public static void loadAvatars() {
+        loaded = false;
         FiguraMod.debug("Reloading Avatar List...");
 
         //load avatars
@@ -47,6 +51,15 @@ public class LocalAvatarFetcher {
         //add new avatars
         ALL_AVATARS.clear();
         ALL_AVATARS.addAll(root.getChildren());
+        loaded = true;
+    }
+
+    public static CompletableFuture<Void> reloadAvatars() {
+        if (!requireReload)
+            return CompletableFuture.completedFuture(null);
+
+        requireReload = false;
+        return CompletableFuture.runAsync(LocalAvatarFetcher::loadAvatars);
     }
 
     public static void tick() {
@@ -75,7 +88,7 @@ public class LocalAvatarFetcher {
         }
 
         if (reload)
-            loadAvatars();
+            requireReload = true;
     }
 
     public static void init() {
@@ -161,31 +174,48 @@ public class LocalAvatarFetcher {
         }
     }
 
+    public static boolean isLoaded() {
+        return loaded && !isReloadRequired();
+    }
+
+    public static boolean isReloadRequired() {
+        return requireReload;
+    }
+
     /**
      * Represents a path which contains an avatar.
      */
     public static class AvatarPath {
 
-        protected final Path path, folder; // murder, why does everything needs to be protected/private :sob: 
+        //im going insane... or better saying, crazy, speaking of which, I was crazy once
+        protected final Path path, folder, theActualPathForThis; // murder, why does everything needs to be protected/private :sob:
         protected final String name, description;
         protected final CardBackground background;
-        protected final FileTexture iconTexture;
-
         protected Properties properties;
+        //icon
+        protected final Path iconPath;
+        protected boolean iconLoaded;
+        protected FileTexture iconTexture;
 
-        protected AvatarPath(Path path, Path folder, String name) {
+        protected AvatarPath(Path path, Path folder, Path theActualPathForThis, String name) {
             this.path = path;
             this.folder = folder;
+            this.theActualPathForThis = theActualPathForThis;
             this.name = name;
             this.description = "";
             this.background = CardBackground.DEFAULT;
-            this.iconTexture = null;
+            this.iconPath = null;
             this.properties = SAVED_DATA.computeIfAbsent(path.toAbsolutePath().toString(), __ -> new Properties());
         }
 
         public AvatarPath(Path path, Path folder) {
+            this(path, folder, path);
+        }
+
+        public AvatarPath(Path path, Path folder, Path theActualPathForThis) {
             this.path = path;
             this.folder = folder;
+            this.theActualPathForThis = theActualPathForThis;
 
             properties = SAVED_DATA.computeIfAbsent(path.toAbsolutePath().toString(), __ -> new Properties());
 
@@ -194,7 +224,7 @@ public class LocalAvatarFetcher {
             String name = filename;
             String description = "";
             CardBackground bg = CardBackground.DEFAULT;
-            FileTexture iconTexture = null;
+            Path iconPath = null;
 
             if (!(this instanceof FolderPath)) {
                 //metadata
@@ -210,19 +240,15 @@ public class LocalAvatarFetcher {
                 }
 
                 //icon
-                try {
-                    Path p = path.resolve("avatar.png");
-                    if (Files.exists(p))
-                        iconTexture = FileTexture.of(p);
-                } catch (Exception e) {
-                    FiguraMod.LOGGER.error("Failed to load icon for \"" + path + "\"", e);
-                }
+                Path p = path.resolve("avatar.png");
+                if (Files.exists(p))
+                    iconPath = p;
             }
 
             this.name = name;
             this.description = description;
             this.background = bg;
-            this.iconTexture = iconTexture;
+            this.iconPath = iconPath;
         }
 
         public boolean search(String query) {
@@ -244,6 +270,10 @@ public class LocalAvatarFetcher {
             return path.getFileSystem() == folder.getFileSystem() ? path : folder;
         }
 
+        public Path getTheActualPathForThis() {
+            return theActualPathForThis;
+        }
+
         public String getName() {
             return name;
         }
@@ -257,6 +287,15 @@ public class LocalAvatarFetcher {
         }
 
         public FileTexture getIcon() {
+            if (!iconLoaded) {
+                iconLoaded = true;
+                try {
+                    if (iconPath != null)
+                        this.iconTexture = FileTexture.of(iconPath);
+                } catch (Exception e) {
+                    FiguraMod.LOGGER.error("Failed to load icon for \"" + path + "\"", e);
+                }
+            }
             return iconTexture;
         }
 
@@ -293,7 +332,7 @@ public class LocalAvatarFetcher {
         protected final FileSystem fileSystem;
 
         public FolderPath(FileSystem fileSystem, Path folder, Path path) {
-            super(fileSystem.getPath(""), folder, IOUtils.getFileNameOrEmpty(path));
+            super(fileSystem.getPath(""), folder, path, IOUtils.getFileNameOrEmpty(path));
             this.fileSystem = fileSystem;
         }
 
@@ -337,10 +376,10 @@ public class LocalAvatarFetcher {
                 } else if (IOUtils.getFileNameOrEmpty(path).endsWith(".zip")) {
                     try {
                         FileSystem opened = FileSystems.newFileSystem(path);
-                        if ("jar".equalsIgnoreCase(opened.provider().getScheme())){
+                        if ("jar".equalsIgnoreCase(opened.provider().getScheme())) {
                             Path newPath = opened.getPath("");
                             if (isAvatar(newPath)) {
-                                children.add(new AvatarPath(newPath, folderPath));
+                                children.add(new AvatarPath(newPath, folderPath, path));
                                 found = true;
                             } else {
                                 FolderPath folder = new FolderPath(opened, folderPath, path);
@@ -352,8 +391,7 @@ public class LocalAvatarFetcher {
                             }
                         } else
                             opened.close();
-                    } catch (IOException ignored) {
-                    }
+                    } catch (IOException ignored) {}
                 }
             }
 
