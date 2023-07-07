@@ -33,7 +33,7 @@ public class AvatarList extends AbstractList {
     private int totalHeight = 0;
     private String filter = "";
 
-    public static AvatarWidget selectedEntry;
+    public static Path selectedEntry;
 
     // -- Constructors -- //
 
@@ -90,7 +90,6 @@ public class AvatarList extends AbstractList {
         //initial load
         LocalAvatarFetcher.loadAvatars();
         loadContents();
-
         scrollToSelected();
     }
 
@@ -146,13 +145,19 @@ public class AvatarList extends AbstractList {
 
         //render children
         super.render(gui, mouseX, mouseY, delta);
+
+        //loading badge
+        if (!LocalAvatarFetcher.isLoaded())
+            UIHelper.renderLoading(gui, x + width / 2, y + height / 2);
     }
 
     private void loadContents() {
+        LocalAvatarFetcher.reloadAvatars();
+
         // Load avatars //
         HashSet<Path> missingPaths = new HashSet<>(avatars.keySet());
         for (LocalAvatarFetcher.AvatarPath avatar : List.copyOf(LocalAvatarFetcher.ALL_AVATARS)) {
-            Path path = avatar.getPath();
+            Path path = avatar.getTheActualPathForThis();
 
             //filter
             if (!avatar.search(filter))
@@ -213,7 +218,7 @@ public class AvatarList extends AbstractList {
         //get height
         totalHeight = 0;
         for (AbstractAvatarWidget avatar : avatarList) {
-            if (avatar.equals(selectedEntry))
+            if (avatar.isOf(selectedEntry))
                 y = totalHeight;
             else
                 totalHeight += avatar.getHeight() + 2;

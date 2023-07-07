@@ -29,6 +29,7 @@ import org.lwjgl.opengl.GL30;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
+import org.moon.figura.avatar.Badges;
 import org.moon.figura.config.Configs;
 import org.moon.figura.gui.screens.AbstractPanelScreen;
 import org.moon.figura.gui.screens.FiguraConfirmScreen;
@@ -574,6 +575,12 @@ public final class UIHelper {
         return () -> minecraft.setScreen(new FiguraConfirmScreen.FiguraConfirmLinkScreen((bl) -> {
             if (bl) Util.getPlatform().openUri(url);
         }, url, minecraft.screen));
+    }
+
+    public static void renderLoading(GuiGraphics gui, int x, int y) {
+        Component text = Component.literal(Integer.toHexString(Math.abs(FiguraMod.ticks) % 16)).withStyle(Style.EMPTY.withFont(Badges.FONT));
+        Font font = Minecraft.getInstance().font;
+        gui.drawString(font, text, x - font.width(text) / 2, y - font.lineHeight / 2, -1, false);
     }
 
     public static void setContext(ContextMenu context) {

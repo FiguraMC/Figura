@@ -249,6 +249,7 @@ public class ScrollBarWidget extends AbstractWidget implements FiguraWidget {
 
     //manually set scroll with optional clamping
     public void setScrollProgress(double amount, boolean force) {
+        amount = Double.isNaN(amount) ? 0 : amount;
         scrollPrecise = force ? amount : Mth.clamp(amount, 0d, 1d);
 
         if (onPress != null)
