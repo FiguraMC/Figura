@@ -155,8 +155,6 @@ public class WorldAPI {
     public static int getRedstonePower(Object x, Double y, Double z) {
         FiguraVec3 pos = LuaUtils.parseVec3("getRedstonePower", x, y, z);
         BlockPos blockPos = pos.asBlockPos();
-        if (getCurrentWorld().getChunkAt(blockPos) == null)
-            return 0;
         return getCurrentWorld().getBestNeighborSignal(blockPos);
     }
 
@@ -177,8 +175,6 @@ public class WorldAPI {
     public static int getStrongRedstonePower(Object x, Double y, Double z) {
         FiguraVec3 pos = LuaUtils.parseVec3("getStrongRedstonePower", x, y, z);
         BlockPos blockPos = pos.asBlockPos();
-        if (getCurrentWorld().getChunkAt(blockPos) == null)
-            return 0;
         return getCurrentWorld().getDirectSignalTo(blockPos);
     }
 
@@ -261,8 +257,6 @@ public class WorldAPI {
         FiguraVec3 pos = LuaUtils.parseVec3("getLightLevel", x, y, z);
         BlockPos blockPos = pos.asBlockPos();
         Level world = getCurrentWorld();
-        if (world.getChunkAt(blockPos) == null)
-            return null;
         world.updateSkyBrightness();
         return world.getLightEngine().getRawBrightness(blockPos, world.getSkyDarken());
     }
@@ -285,8 +279,6 @@ public class WorldAPI {
         FiguraVec3 pos = LuaUtils.parseVec3("getSkyLightLevel", x, y, z);
         BlockPos blockPos = pos.asBlockPos();
         Level world = getCurrentWorld();
-        if (world.getChunkAt(blockPos) == null)
-            return null;
         return world.getBrightness(LightLayer.SKY, blockPos);
     }
 
@@ -308,8 +300,6 @@ public class WorldAPI {
         FiguraVec3 pos = LuaUtils.parseVec3("getBlockLightLevel", x, y, z);
         BlockPos blockPos = pos.asBlockPos();
         Level world = getCurrentWorld();
-        if (world.getChunkAt(blockPos) == null)
-            return null;
         return world.getBrightness(LightLayer.BLOCK, blockPos);
     }
 
@@ -331,8 +321,6 @@ public class WorldAPI {
         FiguraVec3 pos = LuaUtils.parseVec3("isOpenSky", x, y, z);
         BlockPos blockPos = pos.asBlockPos();
         Level world = getCurrentWorld();
-        if (world.getChunkAt(blockPos) == null)
-            return null;
         return world.canSeeSky(blockPos);
     }
 
@@ -369,6 +357,7 @@ public class WorldAPI {
     }
 
     // @LuaWhitelist
+    @SuppressWarnings("unused")
     public HashMap<String, Object> raycastBlock(boolean fluid, Object x, Object y, Double z, Object w, Double t, Double h) {
         FiguraVec3 start, end;
 
@@ -390,6 +379,7 @@ public class WorldAPI {
     }
 
     // @LuaWhitelist
+    @SuppressWarnings("unused")
     public HashMap<String, Object> raycastEntity(Object x, Object y, Double z, Object w, Double t, Double h) {
         FiguraVec3 start, end;
 
@@ -414,8 +404,13 @@ public class WorldAPI {
     public static Map<String, LuaTable> avatarVars() {
         HashMap<String, LuaTable> varList = new HashMap<>();
         for (Avatar avatar : AvatarManager.getLoadedAvatars()) {
-            LuaTable tbl = avatar.luaRuntime == null ? new LuaTable() : avatar.luaRuntime.avatar_meta.storedStuff;
-            varList.put(avatar.owner.toString(), new ReadOnlyLuaTable(tbl));
+            LuaTable table;
+            if (avatar.luaRuntime == null) {
+                table = new ReadOnlyLuaTable(new LuaTable());
+            } else {
+                table = new ReadOnlyLuaTable(avatar.luaRuntime.avatar_meta.storedStuff, avatar.luaRuntime.typeManager);
+            }
+            varList.put(avatar.owner.toString(), table);
         }
         return varList;
     }
