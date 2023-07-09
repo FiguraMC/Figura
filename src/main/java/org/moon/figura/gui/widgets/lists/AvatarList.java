@@ -88,7 +88,6 @@ public class AvatarList extends AbstractList {
         this.updateScissors(1, 49, -2, -50);
 
         //initial load
-        LocalAvatarFetcher.loadAvatars();
         loadContents();
         scrollToSelected();
     }
