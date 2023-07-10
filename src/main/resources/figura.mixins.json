@@ -26,6 +26,8 @@
     "gui.ClickEventActionMixin",
     "gui.CommandSuggestionsMixin",
     "gui.DebugScreenOverlayMixin",
+    "gui.GuiMessageLineMixin",
+    "gui.GuiMessageMixin",
     "gui.GuiMixin",
     "gui.InventoryScreenMixin",
     "gui.PauseScreenMixin",

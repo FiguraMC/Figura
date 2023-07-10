@@ -23,6 +23,7 @@ import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.config.Configs;
+import org.moon.figura.ducks.GuiMessageAccessor;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.api.entity.EntityAPI;
@@ -256,6 +257,7 @@ public class HostAPI {
         map.put("addedTime", message.addedTime());
         map.put("message", message.content().getString());
         map.put("json", message.content());
+        map.put("backgroundColor", ((GuiMessageAccessor) (Object) message).figura$getColor());
 
         return map;
     }
@@ -270,10 +272,14 @@ public class HostAPI {
                     @LuaMethodOverload(
                             argumentTypes = {Integer.class, String.class},
                             argumentNames = {"index", "newMessage"}
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {Integer.class, String.class, FiguraVec3.class},
+                            argumentNames = {"index", "newMessage", "backgroundColor"}
                     )
             },
             value = "host.set_chat_message")
-    public HostAPI setChatMessage(int index, String newMessage) {
+    public HostAPI setChatMessage(int index, String newMessage, FiguraVec3 backgroundColor) {
         if (!isHost()) return this;
 
         index--;
@@ -285,7 +291,9 @@ public class HostAPI {
             messages.remove(index);
         else {
             GuiMessage old = messages.get(index);
-            messages.set(index, new GuiMessage(this.minecraft.gui.getGuiTicks(), TextUtils.tryParseJson(newMessage), null, GuiMessageTag.chatModified(old.content().getString())));
+            GuiMessage neww = new GuiMessage(this.minecraft.gui.getGuiTicks(), TextUtils.tryParseJson(newMessage), null, GuiMessageTag.chatModified(old.content().getString()));
+            messages.set(index, neww);
+            ((GuiMessageAccessor) (Object) neww).figura$setColor(backgroundColor != null ? ColorUtils.rgbToInt(backgroundColor) : ((GuiMessageAccessor) (Object) old).figura$getColor());
         }
 
         this.minecraft.gui.getChat().rescaleChat();
