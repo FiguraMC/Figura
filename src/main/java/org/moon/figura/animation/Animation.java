@@ -213,11 +213,7 @@ public class Animation {
             value = "animation.set_playing"
     )
     public Animation setPlaying(boolean bool) {
-        if (bool)
-            play();
-        else
-            stop();
-        return this;
+        return bool ? play() : stop();
     }
 
     @LuaWhitelist

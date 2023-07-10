@@ -58,6 +58,7 @@ import org.moon.figura.model.rendering.PartFilterScheme;
 import org.moon.figura.permissions.PermissionManager;
 import org.moon.figura.permissions.PermissionPack;
 import org.moon.figura.permissions.Permissions;
+import org.moon.figura.utils.ColorUtils;
 import org.moon.figura.utils.EntityUtils;
 import org.moon.figura.utils.RefilledNumber;
 import org.moon.figura.utils.Version;
@@ -402,9 +403,20 @@ public class Avatar {
         return val == null || (!val.isnil(1) && !Configs.CHAT_MESSAGES.value) ? message : val.isnil(1) ? "" : val.arg(1).tojstring();
     }
 
-    public String chatReceivedMessageEvent(String message, String json) { //special case
+    public Pair<String, Integer> chatReceivedMessageEvent(String message, String json) { //special case
         Varargs val = loaded ? run("CHAT_RECEIVE_MESSAGE", tick, message, json) : null;
-        return val == null || val.isnil(1) ? null : val.arg(1).tojstring();
+        if (val == null)
+            return null;
+
+        if (val.arg(1).isboolean() && !val.arg(1).checkboolean())
+            return Pair.of(null, null);
+
+        String msg = val.isnil(1) ? null : val.arg(1).tojstring();
+        Integer color = null;
+        if (val.arg(2).isuserdata(FiguraVec3.class))
+            color = ColorUtils.rgbToInt((FiguraVec3) val.arg(2).checkuserdata(FiguraVec3.class));
+
+        return Pair.of(msg, color);
     }
 
     public boolean mouseScrollEvent(double delta) {

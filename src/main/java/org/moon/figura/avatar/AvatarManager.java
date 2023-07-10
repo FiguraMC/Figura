@@ -250,7 +250,7 @@ public class AvatarManager {
     public static void setAvatar(UUID id, CompoundTag nbt) {
         try {
             UserData user = LOADED_USERS.computeIfAbsent(id, UserData::new);
-            user.clear();
+            clearAvatars(id);
             user.loadAvatar(nbt);
         } catch (Exception e) {
             FiguraMod.LOGGER.error("Failed to set avatar for " + id, e);
