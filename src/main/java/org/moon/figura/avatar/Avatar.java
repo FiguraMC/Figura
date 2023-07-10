@@ -411,7 +411,7 @@ public class Avatar {
         if (val.arg(1).isboolean() && !val.arg(1).checkboolean())
             return Pair.of(null, null);
 
-        String msg = val.isnil(1) ? null : val.arg(1).tojstring();
+        String msg = val.isnil(1) ? json : val.arg(1).tojstring();
         Integer color = null;
         if (val.arg(2).isuserdata(FiguraVec3.class))
             color = ColorUtils.rgbToInt((FiguraVec3) val.arg(2).checkuserdata(FiguraVec3.class));

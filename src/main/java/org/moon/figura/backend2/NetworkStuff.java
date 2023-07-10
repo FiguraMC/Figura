@@ -17,6 +17,8 @@ import org.moon.figura.backend2.websocket.C2SMessageHandler;
 import org.moon.figura.backend2.websocket.WebsocketThingy;
 import org.moon.figura.config.Configs;
 import org.moon.figura.gui.FiguraToast;
+import org.moon.figura.permissions.PermissionManager;
+import org.moon.figura.permissions.Permissions;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.RefilledNumber;
 import org.moon.figura.utils.Version;
@@ -315,6 +317,13 @@ public class NetworkStuff {
             BitSet specialSet = badgesPair.getSecond();
             for (int i = 0; i < special.size(); i++)
                 specialSet.set(i, special.get(i).getAsInt() >= 1);
+
+            //default permission
+            JsonElement trust = json.get("trust");
+            if (trust != null) {
+                Permissions.Category cat = Permissions.Category.indexOf(trust.getAsInt());
+                if (cat != null) PermissionManager.setDefaultFor(user.id, cat);
+            }
 
             user.loadData(avatars, badgesPair);
         });
