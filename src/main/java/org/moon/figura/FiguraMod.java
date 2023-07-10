@@ -112,7 +112,8 @@ public class FiguraMod implements ClientModInitializer {
 
     //get local player uuid
     public static UUID getLocalPlayerUUID() {
-        return Minecraft.getInstance().getUser().getGameProfile().getId();
+        Entity player = Minecraft.getInstance().player;
+        return player != null ? player.getUUID() : Minecraft.getInstance().getUser().getGameProfile().getId();
     }
 
     public static boolean isLocal(UUID other) {

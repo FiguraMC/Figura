@@ -15,6 +15,7 @@ public class PermissionManager {
     //container maps
     public static final Map<Permissions.Category, PermissionPack.CategoryPermissionPack> CATEGORIES = new LinkedHashMap<>();
     private static final Map<UUID, PermissionPack.PlayerPermissionPack> PLAYERS = new HashMap<>();
+    private static final Set<UUID> BACKEND_CHECKED = new HashSet<>();
 
     //custom permissions
     public static final Map<String, Collection<Permissions>> CUSTOM_PERMISSIONS = new HashMap<>();
@@ -101,9 +102,9 @@ public class PermissionManager {
 
             //get players nbt
             for (PermissionPack.PlayerPermissionPack pack : PLAYERS.values()) {
-                Permissions.Category category = Permissions.Category.indexOf(Configs.DEFAULT_PERMISSION_LEVEL.value);
+                Permissions.Category category = getDefaultCategory();
                 if (category == null) category = Permissions.Category.DEFAULT;
-                if ((!pack.hasChanges() && pack.getCategory() == category))
+                if (!pack.hasChanges() && pack.getCategory() == category)
                     continue;
 
                 CompoundTag container = new CompoundTag();
@@ -124,7 +125,7 @@ public class PermissionManager {
         if (PLAYERS.containsKey(id))
             return PLAYERS.get(id);
 
-        Permissions.Category category = Permissions.Category.indexOf(Configs.DEFAULT_PERMISSION_LEVEL.value);
+        Permissions.Category category = getDefaultCategory();
         if (FiguraMod.isLocal(id)) {
             category = Permissions.Category.MAX;
         } else if (category == null) {
@@ -165,7 +166,35 @@ public class PermissionManager {
         return true;
     }
 
-    public static boolean isLocal(PermissionPack container) {
-        return container instanceof PermissionPack.PlayerPermissionPack p && FiguraMod.isLocal(UUID.fromString(p.name));
+    public static void setDefaultFor(UUID id, Permissions.Category defaultCat) {
+        //default category was already loaded once, do not attempt again
+        if (BACKEND_CHECKED.contains(id))
+            return;
+
+        boolean canAdd;
+        if (!PLAYERS.containsKey(id)) {
+            //player do not exist, so pass
+            canAdd = true;
+        } else {
+            //check if the player is still considered default by having no changes on them
+            PermissionPack.PlayerPermissionPack pack = PLAYERS.get(id);
+            Permissions.Category def = getDefaultCategory();
+            if (def == null) def = Permissions.Category.DEFAULT;
+            canAdd = !pack.hasChanges() && pack.getCategory() == def;
+        }
+
+        //set the new category for the player
+        if (canAdd) {
+            PermissionPack.PlayerPermissionPack pack = new PermissionPack.PlayerPermissionPack(CATEGORIES.get(defaultCat), id.toString());
+            PLAYERS.put(id, pack);
+            FiguraMod.debug("Set permissions of {} to {} based on backend userdata", id, defaultCat.name());
+        }
+
+        //add this player to not be changed again
+        BACKEND_CHECKED.add(id);
+    }
+
+    public static Permissions.Category getDefaultCategory() {
+        return Permissions.Category.indexOf(Configs.DEFAULT_PERMISSION_LEVEL.value);
     }
 }
