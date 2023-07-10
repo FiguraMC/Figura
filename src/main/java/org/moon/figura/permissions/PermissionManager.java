@@ -32,6 +32,13 @@ public class PermissionManager {
         IOUtils.readCacheFile("permissions", PermissionManager::readNbt);
     }
 
+    public static void reinit() {
+        BACKEND_CHECKED.clear();
+        CATEGORIES.clear();
+        PLAYERS.clear();
+        init();
+    }
+
     public static void initEntryPoints(Set<FiguraPermissions> set) {
         //custom permission
         for (FiguraPermissions figuraPermissions : set)
