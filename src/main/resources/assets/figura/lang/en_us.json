@@ -167,7 +167,7 @@
   "figura.gui.duplicate_keybind": "This key is also used for:\n%s",
   "figura.gui.favorited": "Favorited",
   "figura.gui.new_version.tooltip": "A new version of Figura is available! %s\nClick to download it in your browser!",
-  "figura.gui.old_version.tooltip": "Are you a time traveller? The latest version is %s",
+  "figura.gui.old_version.tooltip": "Are you a time traveler? The latest version is %s",
   "figura.gui.clear": "Clear",
   "figura.gui.not_available_yet": "Not available yet ❤",
 

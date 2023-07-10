@@ -255,7 +255,14 @@ public class Configs {
                         .append(FiguraText.of(tooltip + "3").withStyle(ChatFormatting.RED, ChatFormatting.BOLD));
             }};
     public static final FolderConfig
-            MAIN_DIR = new FolderConfig("main_dir", DEV, "");
+            MAIN_DIR = new FolderConfig("main_dir", DEV, "") {
+                @Override
+                public void onChange() {
+                    super.onChange();
+                    PermissionManager.reinit();
+                    LocalAvatarFetcher.reinit();
+                }
+    };
     public static final IPConfig
             SERVER_IP = new IPConfig("server_ip", DEV, "figura.moonlight-devs.org") {
                 @Override

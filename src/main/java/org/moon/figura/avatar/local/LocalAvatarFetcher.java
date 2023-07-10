@@ -96,6 +96,15 @@ public class LocalAvatarFetcher {
         LocalAvatarLoader.addWatchKey(getLocalAvatarDirectory(), WATCHED_KEYS::put);
     }
 
+    public static void reinit() {
+        WATCHED_KEYS.clear();
+        SAVED_DATA.clear();
+        ALL_AVATARS.clear();
+        requireReload = true;
+        loaded = false;
+        init();
+    }
+
     /**
      * Loads the folder data from the disk
      * the folder data contains information about the avatar folders
