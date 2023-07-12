@@ -8,12 +8,12 @@
   "client": [
     "BlockBehaviourAccessor",
     "ClientLevelInvoker",
-    "ClientPacketListenerMixin",
     "EntityAccessor",
     "EntityMixin",
     "ItemStackMixin",
     "LivingEntityAccessor",
     "LivingEntityMixin",
+    "LocalPlayerMixin",
     "MinecraftMixin",
     "ReloadableResourceManagerMixin",
     "SkullBlockEntityAccessor",
