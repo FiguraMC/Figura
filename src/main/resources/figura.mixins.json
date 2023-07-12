@@ -46,14 +46,17 @@
     "particle.ParticleEngineMixin",
     "particle.SingleQuadParticleMixin",
 
+    "render.AtlasSetAccessor",
     "render.CameraMixin",
     "render.EntityRenderDispatcherMixin",
     "render.GameRendererAccessor",
     "render.GameRendererMixin",
     "render.LevelRendererMixin",
     "render.MissingTextureAtlasSpriteAccessor",
+    "render.ModelManagerAccessor",
     "render.PlayerModelMixin",
-    "render.TextureAtlasAccessor",
+    "render.TextureAtlasMixin",
+    "render.TextureAtlasMixin$PreparationsAccessor",
     "render.TextureManagerAccessor",
 
     "render.layers.CapeLayerMixin",

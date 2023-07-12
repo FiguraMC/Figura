@@ -9,6 +9,7 @@ import net.minecraft.client.MouseHandler;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.multiplayer.ServerData;
+import net.minecraft.client.resources.model.ModelManager;
 import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.chat.Component;
@@ -26,6 +27,8 @@ import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.mixin.gui.PlayerTabOverlayAccessor;
+import org.moon.figura.mixin.render.AtlasSetAccessor;
+import org.moon.figura.mixin.render.ModelManagerAccessor;
 import org.moon.figura.utils.*;
 
 import java.text.SimpleDateFormat;
@@ -458,7 +461,10 @@ public class ClientAPI {
     @LuaWhitelist
     @LuaMethodDoc("client.list_atlases")
     public static List<String> listAtlases() {
-        return List.of();
+        List<String> list = new ArrayList<>();
+        for (ResourceLocation res : ((AtlasSetAccessor) ((ModelManagerAccessor)Minecraft.getInstance().getModelManager()).getAtlases()).getAtlases().keySet())
+            list.add(res.toString());
+        return list;
     }
 
     @LuaWhitelist

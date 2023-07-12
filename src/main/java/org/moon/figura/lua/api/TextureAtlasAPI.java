@@ -3,13 +3,13 @@ package org.moon.figura.lua.api;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
+import org.moon.figura.ducks.TextureAtlasAccessor;
 import org.moon.figura.lua.LuaNotNil;
 import org.moon.figura.lua.LuaWhitelist;
 import org.moon.figura.lua.docs.LuaMethodDoc;
 import org.moon.figura.lua.docs.LuaMethodOverload;
 import org.moon.figura.lua.docs.LuaTypeDoc;
 import org.moon.figura.math.vector.FiguraVec4;
-import org.moon.figura.mixin.render.TextureAtlasAccessor;
 import org.moon.figura.utils.LuaUtils;
 
 import java.util.ArrayList;
@@ -54,13 +54,13 @@ public class TextureAtlasAPI {
     @LuaWhitelist
     @LuaMethodDoc("texture_atlas.get_width")
     public int getWidth() {
-        return 64;
+        return ((TextureAtlasAccessor) atlas).getWidth();
     }
 
     @LuaWhitelist
     @LuaMethodDoc("texture_atlas.get_height")
     public int getHeight() {
-        return 64;
+        return ((TextureAtlasAccessor) atlas).getHeight();
     }
 
     @Override

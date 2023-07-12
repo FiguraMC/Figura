@@ -1,18 +1,17 @@
 package org.moon.figura.mixin.render;
 
+import net.minecraft.client.renderer.texture.AtlasSet;
 import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
-import org.spongepowered.asm.mixin.gen.Invoker;
 
 import java.util.Map;
 
-@Mixin(TextureAtlas.class)
-public interface TextureAtlasAccessor {
-    @Intrinsic
-    @Accessor("texturesByName")
-    Map<ResourceLocation, TextureAtlasSprite> getTexturesByName();
+@Mixin(AtlasSet.class)
+public interface AtlasSetAccessor {
+	@Intrinsic
+	@Accessor
+	Map<ResourceLocation, TextureAtlas> getAtlases();
 }
