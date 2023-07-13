@@ -66,7 +66,7 @@ public class AvatarFolderWidget extends AbstractAvatarWidget {
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
         if (!isVisible())
             return;
 
@@ -77,12 +77,12 @@ public class AvatarFolderWidget extends AbstractAvatarWidget {
             for (AbstractAvatarWidget value : entries.values())
                 value.setVisible(value.getY() < y1 && value.getY() + value.getHeight() > y0);
 
-            super.render(gui, mouseX, mouseY, delta);
+            super.render(stack, mouseX, mouseY, delta);
 
             for (AbstractAvatarWidget value : entries.values())
                 value.setVisible(true);
         } else {
-            super.render(gui, mouseX, mouseY, delta);
+            super.render(stack, mouseX, mouseY, delta);
         }
     }
 
