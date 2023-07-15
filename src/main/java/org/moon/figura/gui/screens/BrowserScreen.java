@@ -29,8 +29,5 @@ public class BrowserScreen extends AbstractPanelScreen {
         this.addRenderableWidget(new Button(width / 2 - 50, height / 2 + (y += 24), 100, 20, Component.literal("cheese toast"), Component.literal("test4\n\nhehe"), button -> {
             FiguraToast.sendToast("cheese", "test", FiguraToast.ToastType.CHEESE);
         }));
-        this.addRenderableWidget(new Button(width / 2 - 50, height / 2 + (y + 24), 100, 20, Component.literal("fran toast"), Component.literal("fran ❤❤❤"), button -> {
-            FiguraToast.sendToast("fran", "test", FiguraToast.ToastType.FRAN);
-        }));
     }
 }

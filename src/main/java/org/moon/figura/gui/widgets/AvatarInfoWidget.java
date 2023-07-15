@@ -23,8 +23,8 @@ import java.util.List;
 
 public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventListener {
 
-    private static final MutableComponent UNKNOWN = Component.literal("?").setStyle(ColorUtils.Colors.FRAN_PINK.style);
-    private static final MutableComponent ELLIPSIS = TextUtils.ELLIPSIS.copy().setStyle(ColorUtils.Colors.FRAN_PINK.style);
+    private static final MutableComponent UNKNOWN = Component.literal("?").setStyle(ColorUtils.Colors.PINK.style);
+    private static final MutableComponent ELLIPSIS = TextUtils.ELLIPSIS.copy().setStyle(ColorUtils.Colors.PINK.style);
     private static final List<Component> TITLES = List.of(
             FiguraText.of("gui.name").withStyle(ChatFormatting.UNDERLINE),
             FiguraText.of("gui.authors").withStyle(ChatFormatting.UNDERLINE),
