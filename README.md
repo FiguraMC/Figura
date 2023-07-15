@@ -1,3 +1,5 @@
+# NOTE: This readme file will be replaced soon.
+
 # Figura
 
 ## A fully clientside Minecraft Java mod that allows you to customize your player model!
