@@ -312,7 +312,7 @@
   "figura.gui.help.external_wiki": "Online Wiki",
   "figura.gui.help.lua_version": "Lua Version: %s",
   "figura.gui.help.figura_version": "Figura Version: %s",
-  "figura.gui.help.credits": "Made with love ❤ - by %s",
+  "figura.gui.help.credits": "%s",
 
 
   "figura.config.nameplate": "Nameplate",

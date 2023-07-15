@@ -39,7 +39,7 @@ Meet us on Discord for more info and help :)
 [ ![curseforge][] ](https://curseforge.com/minecraft/mc-mods/figura)
 
 ## Donate:
-[ ![kofi][] ](https://ko-fi.com/francy_chan)
+[ ![kofi][] ](https://ko-fi.com/skyrina)
 
 # FAQ
 

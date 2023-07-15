@@ -29,7 +29,7 @@ class LinkCommand {
         LiteralArgumentBuilder<FabricClientCommandSource> links = LiteralArgumentBuilder.literal("links");
         links.executes(context -> {
             //header
-            MutableComponent message = Component.empty().withStyle(ColorUtils.Colors.FRAN_PINK.style)
+            MutableComponent message = Component.empty().withStyle(ColorUtils.Colors.PINK.style)
                     .append(Component.literal("•*+•* ")
                             .append(FiguraText.of())
                             .append(" Links *•+*•").withStyle(ChatFormatting.UNDERLINE))

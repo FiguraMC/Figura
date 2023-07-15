@@ -28,7 +28,7 @@ public class GameScreen extends AbstractPanelScreen {
     private boolean paused = false;
     private static int scale = 5;
 
-    private static final String EGG = "FRAN";
+    private static final String EGG = "CHEESE";
     private String egg = EGG;
 
     protected GameScreen(Screen parentScreen) {
