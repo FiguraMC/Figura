@@ -141,12 +141,6 @@ public class EntityAPI<T extends Entity> {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("entity.is_hamburger")
-    public boolean isHamburger() {
-        return false;
-    }
-
-    @LuaWhitelist
     @LuaMethodDoc("entity.is_cute")
     public boolean isCute() {
         return true;
