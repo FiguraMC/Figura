@@ -6,7 +6,6 @@
   "name": "Figura",
   "description": "Extensive customization of the Player model",
   "authors": [
-    "Francy-Chan",
     "skyrina"
   ],
   "contact": {
@@ -49,8 +48,8 @@
     "assets_version": "${assets_version}",
     "modmenu": {
       "links": {
-        "Discord": "https://discord.gg/ekHGHcH8Af",
-        "Ko-fi": "https://ko-fi.com/francy_chan",
+        "Discord": "https://discord.gg/AsZmnapx",
+        "Ko-fi": "https://ko-fi.com/skyrina",
         "Modrinth":  "https://modrinth.com/mod/figura/",
         "GitHub":  "https://github.com/Kingdom-Of-The-Moon/FiguraRewriteRewrite/"
       }

@@ -54,9 +54,6 @@ public class SplashManagerMixin {
             case Calendar.JULY -> {
                 if (day == 4) who = "Skylar";
             }
-            case Calendar.SEPTEMBER -> {
-                if (day == 21) who = "Fran";
-            }
         }
 
         if (who != null) {

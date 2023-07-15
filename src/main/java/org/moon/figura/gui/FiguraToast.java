@@ -128,8 +128,6 @@ public class FiguraToast implements Toast {
 
             if ((calendar.get(Calendar.DAY_OF_MONTH) == 1 && calendar.get(Calendar.MONTH) == Calendar.APRIL) || Math.random() < 0.0001)
                 type = ToastType.CHEESE;
-            else if (calendar.get(Calendar.DAY_OF_MONTH) == 21 && calendar.get(Calendar.MONTH) == Calendar.SEPTEMBER)
-                type = ToastType.FRAN;
         }
 
         ToastComponent toasts = Minecraft.getInstance().getToasts();
@@ -147,8 +145,7 @@ public class FiguraToast implements Toast {
         DEFAULT(new FiguraIdentifier("textures/gui/toast/default.png"), 4, 160, 31, 0x55FFFF),
         WARNING(new FiguraIdentifier("textures/gui/toast/warning.png"), 4, 160, 31, 0xFFFF00),
         ERROR(new FiguraIdentifier("textures/gui/toast/error.png"), 4, 160, 31, 0xFF0000),
-        CHEESE(new FiguraIdentifier("textures/gui/toast/cheese.png"), 1, 160, 31, ColorUtils.Colors.CHEESE.hex),
-        FRAN(new FiguraIdentifier("textures/gui/toast/fran.png"), 4, 160, 31, ColorUtils.Colors.FRAN_PINK.hex);
+        CHEESE(new FiguraIdentifier("textures/gui/toast/cheese.png"), 1, 160, 31, ColorUtils.Colors.CHEESE.hex);
 
         private final ResourceLocation texture;
         private final int frames;

@@ -79,10 +79,6 @@ public class HelpScreen extends AbstractPanelScreen {
         this.addRenderableWidget(new Label(FiguraText.of("gui.help.lua_version", Component.literal(LUA_VERSION).withStyle(color)), middle, y += lineHeight + 4, TextUtils.Alignment.CENTER));
         this.addRenderableWidget(new Label(FiguraText.of("gui.help.figura_version", Component.literal(FiguraMod.VERSION.toString()).withStyle(color)), middle, y += lineHeight + 4, TextUtils.Alignment.CENTER));
 
-        Label fran = new Label(FiguraText.of("gui.help.credits", Component.literal("Fran").withStyle(Style.EMPTY.withClickEvent(new TextUtils.FiguraClickEvent(UIHelper.openURL(FiguraMod.Links.FranGit.url))))).withStyle(ColorUtils.Colors.FRAN_PINK.style), middle, y + lineHeight + 4, TextUtils.Alignment.CENTER);
-        fran.setAlpha(0x40);
-        this.addRenderableWidget(fran);
-
         //back
         addRenderableWidget(new Button(middle - 60, height - 24, 120, 20, FiguraText.of("gui.done"), null, bx -> onClose()));
     }
