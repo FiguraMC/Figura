@@ -1,7 +1,7 @@
 plugins {
 	id 'maven-publish'
 	id 'fabric-loom' version '1.2-SNAPSHOT'
-	id "io.github.juuxel.loom-quiltflower" version "1.+"
+	id "io.github.juuxel.loom-vineflower" version "1.+"
 }
 
 java_version = project.java_version
@@ -26,8 +26,8 @@ dependencies {
 	modImplementation "net.fabricmc:fabric-loader:$loader_version"
 
 	// Libraries
-	include(implementation("com.github.Kingdom-of-The-Moon.LuaJ:luaj-core:$luaj-figura"))
-	include(implementation("com.github.Kingdom-of-The-Moon.LuaJ:luaj-jse:$luaj-figura"))
+	include(implementation("com.github.Moonlight-MC-Temp.LuaJ:luaj-core:$luaj-figura"))
+	include(implementation("com.github.Moonlight-MC-Temp.LuaJ:luaj-jse:$luaj-figura"))
 	include(implementation("org.java-websocket:Java-WebSocket:$websocket"))
 
 	// Fabric API
