@@ -186,13 +186,13 @@ public class FiguraMod implements ClientModInitializer {
 
     public enum Links {
         Kofi("https://ko-fi.com/skyrina", ColorUtils.Colors.KOFI.style),
-        Discord("https://discord.gg/ekHGHcH8Af", ColorUtils.Colors.DISCORD.style),
+        Discord("https://discord.gg/nbN8KZyhUq", ColorUtils.Colors.DISCORD.style),
         Modrinth("https://modrinth.com/mod/figura", ColorUtils.Colors.MODRINTH.style),
         Github("https://github.com/Moonlight-MC-Temp/Figura", ColorUtils.Colors.GITHUB.style),
         Wiki("https://github.com/KitCat962/FiguraRewriteRewrite/wiki", ColorUtils.Colors.PINK.style),
         Curseforge("https://www.curseforge.com/minecraft/mc-mods/figura", ColorUtils.Colors.CURSEFORGE.style),
         LuaManual( "https://www.lua.org/manual/5.2/manual.html", ColorUtils.Colors.LUA_LOG.style),
-        KOTMGit( "https://github.com/Moonlight-MC-Temp/", ColorUtils.Colors.CHEESE.style);
+        MoonLightGit( "https://github.com/Moonlight-MC-Temp/", ColorUtils.Colors.CHEESE.style);
 
         public final String url;
         public final Style style;

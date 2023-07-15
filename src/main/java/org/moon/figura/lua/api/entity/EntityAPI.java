@@ -139,11 +139,6 @@ public class EntityAPI<T extends Entity> {
         checkEntity();
         return cacheType != null ? cacheType : (cacheType = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).toString());
     }
-    @LuaWhitelist
-    @LuaMethodDoc("entity.is_hamburger")
-    public boolean isHamburger() {
-        return false;
-    }
 
     @LuaWhitelist
     @LuaMethodDoc("entity.is_cute")
