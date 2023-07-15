@@ -34,7 +34,7 @@ Meet us on Discord for more info and help :)
 [kofi]: https://img.shields.io/badge/Ko--fi-00b9fe?logo=kofi&logoColor=ffffff&labelColor=00b9fe
 
 ## Social:
-[ ![discord][] ](https://discord.gg/AsZmnapx)
+[ ![discord][] ](https://discord.gg/nbN8KZyhUq)
 
 ## Download:
 [ ![modrinth] ](https://modrinth.com/mod/figura)
