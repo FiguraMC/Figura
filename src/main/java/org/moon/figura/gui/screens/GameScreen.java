@@ -28,9 +28,6 @@ public class GameScreen extends AbstractPanelScreen {
     private boolean paused = false;
     private static int scale = 5;
 
-    private static final String EGG = "CHEESE";
-    private String egg = EGG;
-
     protected GameScreen(Screen parentScreen) {
         super(parentScreen, Component.empty());
     }
@@ -82,22 +79,16 @@ public class GameScreen extends AbstractPanelScreen {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        egg += (char) keyCode;
-        egg = egg.substring(1);
-        if (EGG.equals(egg)) {
-            grid.yes = true;
-        } else {
-            switch (keyCode) {
-                case GLFW.GLFW_KEY_R -> grid.init();
-                case GLFW.GLFW_KEY_P -> paused = !paused;
-                case GLFW.GLFW_KEY_SPACE -> grid.tick();
-                case GLFW.GLFW_KEY_F1 -> {
-                    keys.setVisible(!keys.isVisible());
-                    stats.setVisible(!stats.isVisible());
-                }
-                default -> {
-                    return super.keyPressed(keyCode, scanCode, modifiers);
-                }
+        switch (keyCode) {
+            case GLFW.GLFW_KEY_R -> grid.init();
+            case GLFW.GLFW_KEY_P -> paused = !paused;
+            case GLFW.GLFW_KEY_SPACE -> grid.tick();
+            case GLFW.GLFW_KEY_F1 -> {
+                keys.setVisible(!keys.isVisible());
+                stats.setVisible(!stats.isVisible());
+            }
+            default -> {
+                return super.keyPressed(keyCode, scanCode, modifiers);
             }
         }
 
@@ -116,7 +107,6 @@ public class GameScreen extends AbstractPanelScreen {
         private Cell[][] grid;
         private final int width, height;
         private long gen = 0;
-        private boolean yes = false;
 
         private Grid(int width, int height) {
             this.width = width;
@@ -165,7 +155,6 @@ public class GameScreen extends AbstractPanelScreen {
 
             for (Cell[] cells : grid) {
                 for (Cell cell : cells) {
-                    if (yes) cell.color = 0xFF000000 + ColorUtils.rgbToInt(ColorUtils.hsvToRGB(FiguraVec3.of((FiguraMod.ticks % 360) / 360f, 1f, 1f)));
                     cell.render(gui);
                 }
             }

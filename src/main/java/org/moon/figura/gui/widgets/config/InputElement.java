@@ -63,7 +63,7 @@ public class InputElement extends AbstractConfigElement {
         //config was changed
         else if (!text.equals(formatText(initValue))) {
             TextColor textColor = FiguraMod.getAccentColor().getColor();
-            color = textColor == null ? ColorUtils.Colors.CHEESE.hex : textColor.getValue();
+            color = textColor == null ? ColorUtils.Colors.PINK.hex : textColor.getValue();
         }
 
         //set text colour

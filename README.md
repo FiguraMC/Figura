@@ -1,3 +1,5 @@
+# NOTE: This readme file will be replaced soon.
+
 # Figura
 
 ## A fully clientside Minecraft Java mod that allows you to customize your player model!
@@ -26,13 +28,13 @@
 Meet us on Discord for more info and help :)
 
 # Links
-[discord]: https://discord.com/api/guilds/125227483518861312/widget.png
+[discord]: https://discord.com/api/guilds/1129805506354085959/widget.png
 [modrinth]: https://img.shields.io/badge/Modrinth-1bd96a?logo=modrinth&logoColor=ffffff&labelColor=1bd96a
 [curseforge]: https://img.shields.io/badge/CurseForge-f16436?logo=curseforge&logoColor=ffffff&labelColor=f16436
 [kofi]: https://img.shields.io/badge/Ko--fi-00b9fe?logo=kofi&logoColor=ffffff&labelColor=00b9fe
 
 ## Social:
-[ ![discord][] ](https://discord.gg/ekHGHcH8Af)
+[ ![discord][] ](https://discord.gg/nbN8KZyhUq)
 
 ## Download:
 [ ![modrinth] ](https://modrinth.com/mod/figura)
@@ -108,13 +110,6 @@ Meet us on Discord for more info and help :)
 >
 > You can force your avatar to use the correct emissive render type by using the render type `EYES` on your model
 
-### • How can I use Figura with OptiFine?
-> You can't, OptiFine's closed-source nature and invasive code makes mod compatibility very difficult
-> 
-> Check out these [alternatives](https://lambdaurora.dev/optifine_alternatives/) instead
-
-### • Forge port?
-> No
 
 ### • Where can I find avatars to download?
 > For now you can find avatars in the showcase channel in the official Discord server

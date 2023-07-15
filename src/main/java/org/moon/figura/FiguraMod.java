@@ -151,7 +151,7 @@ public class FiguraMod implements ClientModInitializer {
 
     public static Style getAccentColor() {
         Avatar avatar = AvatarManager.getAvatarForPlayer(getLocalPlayerUUID());
-        int color = avatar != null ? ColorUtils.rgbToInt(ColorUtils.userInputHex(avatar.color, ColorUtils.Colors.CHEESE.vec)) : ColorUtils.Colors.CHEESE.hex;
+        int color = avatar != null ? ColorUtils.rgbToInt(ColorUtils.userInputHex(avatar.color, ColorUtils.Colors.PINK.vec)) : ColorUtils.Colors.PINK.hex;
         return Style.EMPTY.withColor(color);
     }
 
@@ -185,14 +185,13 @@ public class FiguraMod implements ClientModInitializer {
     }
 
     public enum Links {
+        Wiki("https://github.com/KitCat962/FiguraRewriteRewrite/wiki", ColorUtils.Colors.PINK.style),
         Kofi("https://ko-fi.com/skyrina", ColorUtils.Colors.KOFI.style),
         Discord("https://discord.gg/nbN8KZyhUq", ColorUtils.Colors.DISCORD.style),
+        Github("https://github.com/Kingdom-of-The-Moon/FiguraRewriteRewrite", ColorUtils.Colors.GITHUB.style),
         Modrinth("https://modrinth.com/mod/figura", ColorUtils.Colors.MODRINTH.style),
-        Github("https://github.com/Moonlight-MC-Temp/Figura", ColorUtils.Colors.GITHUB.style),
-        Wiki("https://github.com/KitCat962/FiguraRewriteRewrite/wiki", ColorUtils.Colors.PINK.style),
         Curseforge("https://www.curseforge.com/minecraft/mc-mods/figura", ColorUtils.Colors.CURSEFORGE.style),
-        LuaManual( "https://www.lua.org/manual/5.2/manual.html", ColorUtils.Colors.LUA_LOG.style),
-        MoonLightGit( "https://github.com/Moonlight-MC-Temp/", ColorUtils.Colors.CHEESE.style);
+        LuaManual( "https://www.lua.org/manual/5.2/manual.html", ColorUtils.Colors.LUA_LOG.style);
 
         public final String url;
         public final Style style;
