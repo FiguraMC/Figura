@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "org.figuramc.figura.mixin.fabric",
+  "compatibilityLevel": "JAVA_17",
+  "minVersion": "0.8",
+  "client": [
+    "CommandSuggestionsMixinFabric"
+  ],
+  "mixins": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

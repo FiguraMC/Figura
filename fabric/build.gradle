@@ -1,0 +1,106 @@
+plugins {
+    id "com.github.johnrengelman.shadow" version "7.1.2"
+}
+
+architectury {
+    platformSetupLoomIde()
+    fabric()
+}
+
+loom {
+    accessWidenerPath = project(":common").loom.accessWidenerPath
+}
+
+configurations {
+    common
+    shadowCommon // Don't use shadow from the shadow plugin since it *excludes* files.
+    compileClasspath.extendsFrom common
+    runtimeClasspath.extendsFrom common
+    developmentFabric.extendsFrom common
+}
+
+repositories {
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    // Libraries
+    include(implementation("com.github.Kingdom-of-The-Moon.LuaJ:luaj-core:$luaj-figura"))
+    include(implementation("com.github.Kingdom-of-The-Moon.LuaJ:luaj-jse:$luaj-figura"))
+    include(implementation("org.java-websocket:Java-WebSocket:$websocket"))
+
+    modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
+
+    // Fabric API
+	//modImplementation "net.fabricmc.fabric-api:fabric-api:$fabric_api"
+	include(modImplementation(fabricApi.module("fabric-api-base", rootProject.fabric_api)))
+	include(modImplementation(fabricApi.module("fabric-command-api-v2", rootProject.fabric_api)))
+	include(modImplementation(fabricApi.module("fabric-key-binding-api-v1", rootProject.fabric_api)))
+	include(modImplementation(fabricApi.module("fabric-resource-loader-v0", rootProject.fabric_api)))
+
+    // Mods
+	modCompileOnly "maven.modrinth:modmenu:$modmenu"
+
+    common(project(path: ":common", configuration: "namedElements")) { transitive false }
+    shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
+}
+
+processResources {
+    Map<String, Object> properties = new HashMap<>()
+
+    properties.put("version", project.version + "-" + 'git rev-parse --short HEAD'.execute().getText().trim())
+    properties.put("java_version", rootProject.java_version)
+    properties.put("minecraft_version", rootProject.minecraft_version)
+    properties.put("assets_version", rootProject.assets_version)
+
+    properties.forEach((k, v) -> inputs.property(k, v.toString()))
+    filesMatching("fabric.mod.json") {
+        expand properties
+    }
+}
+
+shadowJar {
+    exclude "architectury.common.json"
+
+    configurations = [project.configurations.shadowCommon]
+    archiveClassifier.set "dev-shadow"
+}
+
+remapJar {
+    injectAccessWidener = true
+    input.set shadowJar.archiveFile
+    dependsOn shadowJar
+    archiveClassifier.set "fabric-mc"
+}
+
+jar {
+    from("LICENSE") {
+        rename { String.valueOf("$archives_base_name").toUpperCase() + "_${it}"}
+    }
+}
+
+sourcesJar {
+    def commonSources = project(":common").sourcesJar
+    dependsOn commonSources
+    from commonSources.archiveFile.map { zipTree(it) }
+}
+
+components.java {
+    withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
+        skip()
+    }
+}
+
+publishing {
+    publications {
+        mavenFabric(MavenPublication) {
+            artifactId = rootProject.archives_base_name + "-" + project.name
+            from components.java
+        }
+    }
+
+    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
+    repositories {
+        // Add repositories to publish to here.
+    }
+}
