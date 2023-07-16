@@ -311,14 +311,14 @@ public class AvatarManager {
                 sourceUUID = UUID.fromString(s);
                 targetUUID = UUID.fromString(t);
             } catch (Exception e) {
-                context.getSource().sendError(Component.literal("Failed to parse uuids"));
+                context.getSource().figura$sendError(Component.literal("Failed to parse uuids"));
                 return 0;
             }
 
             UserData user = LOADED_USERS.get(sourceUUID);
             Avatar avatar = user == null ? null : user.getMainAvatar();
             if (avatar == null || avatar.nbt == null) {
-                context.getSource().sendError(Component.literal("No source Avatar found"));
+                context.getSource().figura$sendError(Component.literal("No source Avatar found"));
                 return 0;
             }
 
@@ -326,13 +326,13 @@ public class AvatarManager {
                 setAvatar(targetUUID, avatar.nbt);
                 if (FiguraMod.isLocal(targetUUID))
                     localUploaded = true;
-                context.getSource().sendFeedback(Component.literal("Set avatar for " + t));
+                context.getSource().figura$sendFeedback(Component.literal("Set avatar for " + t));
                 return 1;
             }
 
             Entity targetEntity = EntityUtils.getEntityByUUID(targetUUID);
             if (targetEntity == null) {
-                context.getSource().sendError(Component.literal("Target entity not found"));
+                context.getSource().figura$sendError(Component.literal("Target entity not found"));
                 return 0;
             }
 

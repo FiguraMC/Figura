@@ -4,7 +4,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.ChatFormatting;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
@@ -23,6 +22,7 @@ import org.moon.figura.model.rendering.EntityRenderMode;
 import org.moon.figura.model.rendering.texture.FiguraTextureSet;
 import org.moon.figura.model.rendering.texture.RenderTypes;
 import org.moon.figura.utils.ColorUtils;
+import org.moon.figura.utils.FiguraClientCommandSource;
 import org.moon.figura.utils.FiguraText;
 
 import java.util.*;
@@ -154,9 +154,9 @@ public class FiguraListDocs {
             return object;
         }
 
-        private LiteralArgumentBuilder<FabricClientCommandSource> generateCommand() {
+        private LiteralArgumentBuilder<FiguraClientCommandSource> generateCommand() {
             //command
-            LiteralArgumentBuilder<FabricClientCommandSource> command = LiteralArgumentBuilder.literal(id);
+            LiteralArgumentBuilder<FiguraClientCommandSource> command = LiteralArgumentBuilder.literal(id);
 
             //display everything
             command.executes(context -> {
@@ -209,7 +209,7 @@ public class FiguraListDocs {
             Collection<?> coll = get();
             for (Object o : coll) {
                 String text = o instanceof Map.Entry e ? e.getKey().toString() : o.toString();
-                LiteralArgumentBuilder<FabricClientCommandSource> entry = LiteralArgumentBuilder.literal(text);
+                LiteralArgumentBuilder<FiguraClientCommandSource> entry = LiteralArgumentBuilder.literal(text);
                 entry.executes(context -> {
                     FiguraMod.sendChatMessage(Component.literal(text).withStyle(ColorUtils.Colors.FRAN_PINK.style));
                     return 1;
@@ -217,7 +217,7 @@ public class FiguraListDocs {
 
                 if (o instanceof Map.Entry e) {
                     for (String s : (List<String>) e.getValue()) {
-                        LiteralArgumentBuilder<FabricClientCommandSource> child = LiteralArgumentBuilder.literal(s);
+                        LiteralArgumentBuilder<FiguraClientCommandSource> child = LiteralArgumentBuilder.literal(s);
                         child.executes(context -> {
                             FiguraMod.sendChatMessage(Component.literal(s).withStyle(ColorUtils.Colors.FRAN_PINK.style));
                             return 1;
@@ -236,9 +236,9 @@ public class FiguraListDocs {
 
     // -- doc methods -- //
 
-    public static LiteralArgumentBuilder<FabricClientCommandSource> getCommand() {
+    public static LiteralArgumentBuilder<FiguraClientCommandSource> getCommand() {
         //self
-        LiteralArgumentBuilder<FabricClientCommandSource> root = LiteralArgumentBuilder.literal("enums");
+        LiteralArgumentBuilder<FiguraClientCommandSource> root = LiteralArgumentBuilder.literal("enums");
         root.executes(context -> {
             FiguraMod.sendChatMessage(FiguraDoc.HEADER.copy()
                     .append("\n\n")

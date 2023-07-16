@@ -6,7 +6,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtIo;
@@ -28,6 +27,7 @@ import org.moon.figura.permissions.PermissionManager;
 import org.moon.figura.permissions.PermissionPack;
 import org.moon.figura.permissions.Permissions;
 import org.moon.figura.resources.FiguraRuntimeResources;
+import org.moon.figura.utils.FiguraClientCommandSource;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.IOUtils;
 import org.moon.figura.utils.MathUtils;
@@ -49,13 +49,13 @@ class DebugCommand {
 
     private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().serializeNulls().setPrettyPrinting().create();
 
-    public static LiteralArgumentBuilder<FabricClientCommandSource> getCommand() {
-        LiteralArgumentBuilder<FabricClientCommandSource> debug = LiteralArgumentBuilder.literal("debug");
+    public static LiteralArgumentBuilder<FiguraClientCommandSource> getCommand() {
+        LiteralArgumentBuilder<FiguraClientCommandSource> debug = LiteralArgumentBuilder.literal("debug");
         debug.executes(DebugCommand::commandAction);
         return debug;
     }
 
-    private static int commandAction(CommandContext<FabricClientCommandSource> context) {
+    private static int commandAction(CommandContext<FiguraClientCommandSource> context) {
         try {
             //get path
             Path targetPath = FiguraMod.getFiguraDirectory().resolve("debug_data.json");
@@ -70,7 +70,7 @@ class DebugCommand {
             fs.close();
 
             //feedback
-            context.getSource().sendFeedback(
+            context.getSource().figura$sendFeedback(
                     FiguraText.of("command.debug.success")
                             .append(" ")
                             .append(FiguraText.of("command.click_to_open")
@@ -79,7 +79,7 @@ class DebugCommand {
             );
             return 1;
         } catch (Exception e) {
-            context.getSource().sendError(FiguraText.of("command.debug.error"));
+            context.getSource().figura$sendError(FiguraText.of("command.debug.error"));
             FiguraMod.LOGGER.error("Failed to save " + FiguraMod.MOD_NAME + " debug data!", e);
             return 0;
         }

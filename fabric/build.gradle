@@ -19,7 +19,16 @@ configurations {
     developmentFabric.extendsFrom common
 }
 
+repositories {
+    maven { url 'https://jitpack.io' }
+}
+
 dependencies {
+    // Libraries
+    include(implementation("com.github.Kingdom-of-The-Moon.LuaJ:luaj-core:$luaj-figura"))
+    include(implementation("com.github.Kingdom-of-The-Moon.LuaJ:luaj-jse:$luaj-figura"))
+    include(implementation("org.java-websocket:Java-WebSocket:$websocket"))
+
     modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
 
     // Fabric API

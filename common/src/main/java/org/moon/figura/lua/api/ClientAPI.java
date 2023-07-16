@@ -1,7 +1,6 @@
 package org.moon.figura.lua.api;
 
 import com.mojang.blaze3d.platform.Window;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.Minecraft;
@@ -30,10 +29,7 @@ import org.moon.figura.math.vector.FiguraVec2;
 import org.moon.figura.math.vector.FiguraVec3;
 import org.moon.figura.mixin.gui.PlayerTabOverlayAccessor;
 import org.moon.figura.mixin.render.ModelManagerAccessor;
-import org.moon.figura.utils.EntityUtils;
-import org.moon.figura.utils.LuaUtils;
-import org.moon.figura.utils.TextUtils;
-import org.moon.figura.utils.Version;
+import org.moon.figura.utils.*;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -47,7 +43,7 @@ public class ClientAPI {
 
     public static final ClientAPI INSTANCE = new ClientAPI();
     private static final HashMap<String, Boolean> LOADED_MODS = new HashMap<>();
-    private static final boolean HAS_IRIS = FabricLoader.getInstance().isModLoaded("iris"); //separated to avoid indexing the list every frame
+    private static final boolean HAS_IRIS = PlatformUtils.isModLoaded("iris"); //separated to avoid indexing the list every frame
 
     @LuaWhitelist
     @LuaMethodDoc("client.get_fps")
@@ -312,7 +308,7 @@ public class ClientAPI {
             value = "client.is_mod_loaded"
     )
     public static boolean isModLoaded(String id) {
-        LOADED_MODS.putIfAbsent(id, FabricLoader.getInstance().isModLoaded(id));
+        LOADED_MODS.putIfAbsent(id, PlatformUtils.isModLoaded(id));
         return LOADED_MODS.get(id);
     }
 

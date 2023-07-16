@@ -27,7 +27,16 @@ configurations {
     developmentForge.extendsFrom common
 }
 
+repositories {
+    maven { url 'https://jitpack.io' }
+}
+
 dependencies {
+    // Libraries
+    include(forgeRuntimeLibrary("com.github.Kingdom-of-The-Moon.LuaJ:luaj-core:$luaj-figura"))
+    include(forgeRuntimeLibrary("com.github.Kingdom-of-The-Moon.LuaJ:luaj-jse:$luaj-figura"))
+    include(forgeRuntimeLibrary("org.java-websocket:Java-WebSocket:$websocket"))
+
     forge "net.minecraftforge:forge:${rootProject.forge_version}"
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }

@@ -1,11 +1,11 @@
 package org.moon.figura.commands;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.*;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.utils.ColorUtils;
+import org.moon.figura.utils.FiguraClientCommandSource;
 import org.moon.figura.utils.FiguraText;
 
 import java.util.ArrayList;
@@ -24,9 +24,9 @@ class LinkCommand {
             add(FiguraMod.Links.Curseforge);
     }};
 
-    public static LiteralArgumentBuilder<FabricClientCommandSource> getCommand() {
+    public static LiteralArgumentBuilder<FiguraClientCommandSource> getCommand() {
         //get links
-        LiteralArgumentBuilder<FabricClientCommandSource> links = LiteralArgumentBuilder.literal("links");
+        LiteralArgumentBuilder<FiguraClientCommandSource> links = LiteralArgumentBuilder.literal("links");
         links.executes(context -> {
             //header
             MutableComponent message = Component.empty().withStyle(ColorUtils.Colors.FRAN_PINK.style)

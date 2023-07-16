@@ -4,20 +4,20 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.resources.FiguraRuntimeResources;
+import org.moon.figura.utils.FiguraClientCommandSource;
 
 public class BackendCommands {
 
-    public static LiteralArgumentBuilder<FabricClientCommandSource> getCommand() {
+    public static LiteralArgumentBuilder<FiguraClientCommandSource> getCommand() {
         //root
-        LiteralArgumentBuilder<FabricClientCommandSource> backend = LiteralArgumentBuilder.literal("backend2");
+        LiteralArgumentBuilder<FiguraClientCommandSource> backend = LiteralArgumentBuilder.literal("backend2");
 
         //force backend connection
-        LiteralArgumentBuilder<FabricClientCommandSource> connect = LiteralArgumentBuilder.literal("connect");
+        LiteralArgumentBuilder<FiguraClientCommandSource> connect = LiteralArgumentBuilder.literal("connect");
         connect.executes(context -> {
             NetworkStuff.reAuth();
             return 1;
@@ -26,17 +26,17 @@ public class BackendCommands {
         backend.then(connect);
 
         //run
-        LiteralArgumentBuilder<FabricClientCommandSource> run = LiteralArgumentBuilder.literal("run");
+        LiteralArgumentBuilder<FiguraClientCommandSource> run = LiteralArgumentBuilder.literal("run");
         run.executes(context -> runRequest(context, ""));
 
-        RequiredArgumentBuilder<FabricClientCommandSource, String> request = RequiredArgumentBuilder.argument("request", StringArgumentType.greedyString());
+        RequiredArgumentBuilder<FiguraClientCommandSource, String> request = RequiredArgumentBuilder.argument("request", StringArgumentType.greedyString());
         request.executes(context -> runRequest(context, StringArgumentType.getString(context, "request")));
 
         run.then(request);
         backend.then(run);
 
         //debug mode
-        LiteralArgumentBuilder<FabricClientCommandSource> debug = LiteralArgumentBuilder.literal("debug");
+        LiteralArgumentBuilder<FiguraClientCommandSource> debug = LiteralArgumentBuilder.literal("debug");
         debug.executes(context -> {
             NetworkStuff.debug = !NetworkStuff.debug;
             FiguraMod.sendChatMessage(Component.literal("Backend Debug Mode set to: " + NetworkStuff.debug).withStyle(NetworkStuff.debug ? ChatFormatting.GREEN : ChatFormatting.RED));
@@ -46,10 +46,10 @@ public class BackendCommands {
         backend.then(debug);
 
         //check resources
-        LiteralArgumentBuilder<FabricClientCommandSource> resources = LiteralArgumentBuilder.literal("checkResources");
+        LiteralArgumentBuilder<FiguraClientCommandSource> resources = LiteralArgumentBuilder.literal("checkResources");
         resources.executes(context -> {
-            context.getSource().sendFeedback(Component.literal("Checking for resources..."));
-            FiguraRuntimeResources.init().thenRun(() -> context.getSource().sendFeedback(Component.literal("Resources checked!")));
+            context.getSource().figura$sendFeedback(Component.literal("Checking for resources..."));
+            FiguraRuntimeResources.init().thenRun(() -> context.getSource().figura$sendFeedback(Component.literal("Resources checked!")));
             return 1;
         });
 
@@ -59,7 +59,7 @@ public class BackendCommands {
         return backend;
     }
 
-    private static int runRequest(CommandContext<FabricClientCommandSource> context, String request) {
+    private static int runRequest(CommandContext<FiguraClientCommandSource> context, String request) {
         try {
             HttpAPI.runString(
                     NetworkStuff.api.header(request).build(),
@@ -67,7 +67,7 @@ public class BackendCommands {
             );
             return 1;
         } catch (Exception e) {
-            context.getSource().sendError(Component.literal(e.getMessage()));
+            context.getSource().figura$sendError(Component.literal(e.getMessage()));
             return 0;
         }
     }

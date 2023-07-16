@@ -3,13 +3,13 @@ package org.moon.figura.lua.docs;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.ChatFormatting;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import org.moon.figura.FiguraMod;
 import org.moon.figura.utils.ColorUtils;
+import org.moon.figura.utils.FiguraClientCommandSource;
 import org.moon.figura.utils.FiguraText;
 import org.moon.figura.utils.TextUtils;
 
@@ -36,8 +36,8 @@ public abstract class FiguraDoc {
 
     public abstract int print();
 
-    public LiteralArgumentBuilder<FabricClientCommandSource> getCommand() {
-        LiteralArgumentBuilder<FabricClientCommandSource> command = LiteralArgumentBuilder.literal(name);
+    public LiteralArgumentBuilder<FiguraClientCommandSource> getCommand() {
+        LiteralArgumentBuilder<FiguraClientCommandSource> command = LiteralArgumentBuilder.literal(name);
         command.executes(context -> print());
 
         return command;
@@ -161,9 +161,9 @@ public abstract class FiguraDoc {
         }
 
         @Override
-        public LiteralArgumentBuilder<FabricClientCommandSource> getCommand() {
+        public LiteralArgumentBuilder<FiguraClientCommandSource> getCommand() {
             //this
-            LiteralArgumentBuilder<FabricClientCommandSource> command = super.getCommand();
+            LiteralArgumentBuilder<FiguraClientCommandSource> command = super.getCommand();
 
             //methods
             for (FiguraDoc.MethodDoc methodDoc : documentedMethods)
@@ -310,8 +310,8 @@ public abstract class FiguraDoc {
         }
 
         @Override
-        public LiteralArgumentBuilder<FabricClientCommandSource> getCommand() {
-            LiteralArgumentBuilder<FabricClientCommandSource> command = super.getCommand();
+        public LiteralArgumentBuilder<FiguraClientCommandSource> getCommand() {
+            LiteralArgumentBuilder<FiguraClientCommandSource> command = super.getCommand();
 
             if (children != null)
                 for (FiguraDoc child : children)
@@ -411,8 +411,8 @@ public abstract class FiguraDoc {
         }
 
         @Override
-        public LiteralArgumentBuilder<FabricClientCommandSource> getCommand() {
-            LiteralArgumentBuilder<FabricClientCommandSource> command = super.getCommand();
+        public LiteralArgumentBuilder<FiguraClientCommandSource> getCommand() {
+            LiteralArgumentBuilder<FiguraClientCommandSource> command = super.getCommand();
 
             if (children != null)
                 for (FiguraDoc child : children)

@@ -18,28 +18,28 @@ abstract class ClientCommandSourceMixin implements FiguraClientCommandSource {
     private Minecraft minecraft;
 
     @Override
-    public void sendFeedback(Component message) {
+    public void figura$sendFeedback(Component message) {
         this.minecraft.gui.getChat().addMessage(message);
         this.minecraft.getNarrator().sayNow(message);
     }
 
     @Override
-    public void sendError(Component message) {
-        sendFeedback(Component.literal("").append(message).withStyle(ChatFormatting.RED));
+    public void figura$sendError(Component message) {
+        figura$sendFeedback(Component.literal("").append(message).withStyle(ChatFormatting.RED));
     }
 
     @Override
-    public Minecraft getClient() {
+    public Minecraft figura$getClient() {
         return minecraft;
     }
 
     @Override
-    public LocalPlayer getPlayer() {
+    public LocalPlayer figura$getPlayer() {
         return minecraft.player;
     }
 
     @Override
-    public ClientLevel getWorld() {
+    public ClientLevel figura$getWorld() {
         return minecraft.level;
     }
 }

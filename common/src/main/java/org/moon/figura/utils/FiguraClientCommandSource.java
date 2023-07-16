@@ -16,28 +16,28 @@ public interface FiguraClientCommandSource extends SharedSuggestionProvider {
      *
      * @param message the feedback message
      */
-    void sendFeedback(Component message);
+    void figura$sendFeedback(Component message);
 
     /**
      * Sends an error message to the player.
      *
      * @param message the error message
      */
-    void sendError(Component message);
+    void figura$sendError(Component message);
 
     /**
      * Gets the client instance used to run the command.
      *
      * @return the client
      */
-    Minecraft getClient();
+    Minecraft figura$getClient();
 
     /**
      * Gets the player that used the command.
      *
      * @return the player
      */
-    LocalPlayer getPlayer();
+    LocalPlayer figura$getPlayer();
 
     /**
      * Gets the entity that used the command.
@@ -45,7 +45,7 @@ public interface FiguraClientCommandSource extends SharedSuggestionProvider {
      * @return the entity
      */
     default Entity getEntity() {
-        return getPlayer();
+        return figura$getPlayer();
     }
 
     /**
@@ -54,7 +54,7 @@ public interface FiguraClientCommandSource extends SharedSuggestionProvider {
      * @return the position
      */
     default Vec3 getPosition() {
-        return getPlayer().position();
+        return figura$getPlayer().position();
     }
 
     /**
@@ -63,7 +63,7 @@ public interface FiguraClientCommandSource extends SharedSuggestionProvider {
      * @return the rotation
      */
     default Vec2 getRotation() {
-        return getPlayer().getRotationVector();
+        return figura$getPlayer().getRotationVector();
     }
 
     /**
@@ -71,7 +71,7 @@ public interface FiguraClientCommandSource extends SharedSuggestionProvider {
      *
      * @return the world
      */
-    ClientLevel getWorld();
+    ClientLevel figura$getWorld();
 
     /**
      * Gets the meta property under {@code key} that was assigned to this source.

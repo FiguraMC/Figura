@@ -58,7 +58,6 @@ public class FiguraMod {
         LocalAvatarFetcher.init();
         CacheAvatarLoader.init();
         FiguraDocsManager.init();
-        FiguraCommands.init();
         FiguraRuntimeResources.init();
     }
 

@@ -18,4 +18,8 @@ public class PlatformUtilsImpl {
     public static Path getConfigDir() {
         return FMLPaths.CONFIGDIR.relative();
     }
+
+    public static boolean isModLoaded(String modId) {
+        return ModList.get().isLoaded(modId);
+    }
 }

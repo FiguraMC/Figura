@@ -6,7 +6,16 @@ loom {
     accessWidenerPath = file("src/main/resources/figura.accesswidener")
 }
 
+repositories {
+    maven { url 'https://jitpack.io' }
+}
+
 dependencies {
+    // Libraries
+    include(implementation("com.github.Kingdom-of-The-Moon.LuaJ:luaj-core:$luaj-figura"))
+    include(implementation("com.github.Kingdom-of-The-Moon.LuaJ:luaj-jse:$luaj-figura"))
+    include(implementation("org.java-websocket:Java-WebSocket:$websocket"))
+
     // We depend on fabric loader here to use the fabric @Environment annotations and get the mixin dependencies
     // Do NOT use other classes from fabric loader
     modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"

@@ -26,7 +26,8 @@
     ]
   },
   "mixins": [
-    "figura.mixins.json"
+    "figura.mixins.json",
+    "figura-common.mixins.json"
   ],
   "depends": {
     "java": ">=${java_version}",

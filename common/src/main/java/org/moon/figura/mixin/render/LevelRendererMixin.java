@@ -25,9 +25,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 @Mixin(LevelRenderer.class)
 public abstract class LevelRendererMixin {
@@ -118,17 +116,47 @@ public abstract class LevelRendererMixin {
         AvatarManager.executeAll("postWorldRender", avatar -> avatar.postWorldRenderEvent(tickDelta));
     }
 
-    @ModifyArgs(method = "renderHitOutline", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;renderShape(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;Lnet/minecraft/world/phys/shapes/VoxelShape;DDDFFFF)V"))
-    private void renderHitOutline(Args args) {
+    @ModifyArg(method = "renderHitOutline", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;renderShape(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;Lnet/minecraft/world/phys/shapes/VoxelShape;DDDFFFF)V"), index = 6)
+    private float renderHitOutlineX(float x) {
         Avatar avatar = AvatarManager.getAvatar(this.minecraft.getCameraEntity());
         FiguraVec4 color;
 
         if (avatar == null || avatar.luaRuntime == null || (color = avatar.luaRuntime.renderer.blockOutlineColor) == null)
-            return;
+            return x;
 
-        args.set(6, (float) color.x);
-        args.set(7, (float) color.y);
-        args.set(8, (float) color.z);
-        args.set(9, (float) color.w);
+        return (float) color.x;
+    }
+
+    @ModifyArg(method = "renderHitOutline", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;renderShape(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;Lnet/minecraft/world/phys/shapes/VoxelShape;DDDFFFF)V"), index = 7)
+    private float renderHitOutlineY(float y) {
+        Avatar avatar = AvatarManager.getAvatar(this.minecraft.getCameraEntity());
+        FiguraVec4 color;
+
+        if (avatar == null || avatar.luaRuntime == null || (color = avatar.luaRuntime.renderer.blockOutlineColor) == null)
+            return y;
+
+        return (float) color.y;
+    }
+
+    @ModifyArg(method = "renderHitOutline", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;renderShape(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;Lnet/minecraft/world/phys/shapes/VoxelShape;DDDFFFF)V"), index = 8)
+    private float renderHitOutlineZ(float z) {
+        Avatar avatar = AvatarManager.getAvatar(this.minecraft.getCameraEntity());
+        FiguraVec4 color;
+
+        if (avatar == null || avatar.luaRuntime == null || (color = avatar.luaRuntime.renderer.blockOutlineColor) == null)
+            return z;
+
+        return (float) color.z;
+    }
+
+    @ModifyArg(method = "renderHitOutline", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;renderShape(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;Lnet/minecraft/world/phys/shapes/VoxelShape;DDDFFFF)V"), index = 9)
+    private float renderHitOutlineW(float w) {
+        Avatar avatar = AvatarManager.getAvatar(this.minecraft.getCameraEntity());
+        FiguraVec4 color;
+
+        if (avatar == null || avatar.luaRuntime == null || (color = avatar.luaRuntime.renderer.blockOutlineColor) == null)
+            return w;
+
+        return (float) color.w;
     }
 }

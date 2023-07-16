@@ -20,4 +20,9 @@ public class PlatformUtils {
     public static Path getConfigDir() {
         throw new AssertionError();
     }
+
+    @ExpectPlatform
+    public static boolean isModLoaded(String modId) {
+        throw new AssertionError();
+    }
 }
