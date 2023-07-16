@@ -1,4 +1,4 @@
-package org.moon.figura.mixin.gui;
+package org.moon.figura.mixin.fabric;
 
 import com.mojang.brigadier.StringReader;
 import net.minecraft.client.gui.components.CommandSuggestions;
@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import java.util.Collection;
 
 @Mixin(CommandSuggestions.class)
-public abstract class CommandSuggestionsMixin {
+public abstract class CommandSuggestionsMixinFabric {
 
     @Shadow private CommandSuggestions.SuggestionsList suggestions;
 

@@ -4,12 +4,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.Entity;
-import org.moon.figura.FiguraMod;
 import org.moon.figura.avatar.Avatar;
 import org.moon.figura.avatar.AvatarManager;
 import org.moon.figura.gui.ActionWheel;
-import org.moon.figura.gui.PaperDoll;
-import org.moon.figura.gui.PopupMenu;
+import org.moon.figura.gui.FiguraGui;
 import org.moon.figura.lua.api.RendererAPI;
 import org.moon.figura.math.vector.FiguraVec2;
 import org.spongepowered.asm.mixin.*;
@@ -25,40 +23,13 @@ public class GuiMixin {
 
     @Inject(at = @At("HEAD"), method = "render", cancellable = true)
     private void onRender(GuiGraphics guiGraphics, float tickDelta, CallbackInfo ci) {
-        if (AvatarManager.panic)
-            return;
-
-        FiguraMod.pushProfiler(FiguraMod.MOD_ID);
-
-        //render popup menu below everything, as if it were in the world
-        FiguraMod.pushProfiler("popupMenu");
-        PopupMenu.render(guiGraphics);
-        FiguraMod.popProfiler();
-
-        //get avatar
-        Entity entity = this.minecraft.getCameraEntity();
-        Avatar avatar = entity == null ? null : AvatarManager.getAvatar(entity);
-
-        if (avatar != null) {
-            //hud parent type
-            avatar.hudRender(guiGraphics.pose(), this.minecraft.renderBuffers().bufferSource(), entity, tickDelta);
-
-            //hud hidden by script
-            if (avatar.luaRuntime != null && !avatar.luaRuntime.renderer.renderHUD) {
-                //render figura overlays
-                figura$renderOverlays(guiGraphics);
-                //cancel this method
-                ci.cancel();
-            }
-        }
-
-        FiguraMod.popProfiler();
+        FiguraGui.onRender(guiGraphics, tickDelta, ci);
     }
 
     @Inject(at = @At("RETURN"), method = "render")
     private void afterRender(GuiGraphics guiGraphics, float tickDelta, CallbackInfo ci) {
         if (!AvatarManager.panic)
-            figura$renderOverlays(guiGraphics);
+            FiguraGui.renderOverlays(guiGraphics);
     }
 
     @Inject(at = @At("HEAD"), method = "renderCrosshair", cancellable = true)
@@ -96,20 +67,5 @@ public class GuiMixin {
     private void afterBlitRenderCrosshair(GuiGraphics guiGraphics, CallbackInfo ci) {
         if (crosshairOffset != null)
             guiGraphics.pose().popPose();
-    }
-
-    @Intrinsic
-    private void figura$renderOverlays(GuiGraphics guiGraphics) {
-        FiguraMod.pushProfiler(FiguraMod.MOD_ID);
-
-        //render aperdoll
-        FiguraMod.pushProfiler("paperdoll");
-        PaperDoll.render(guiGraphics, false);
-
-        //render wheel
-        FiguraMod.popPushProfiler("actionWheel");
-        ActionWheel.render(guiGraphics);
-
-        FiguraMod.popProfiler(2);
     }
 }

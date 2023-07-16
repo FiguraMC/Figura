@@ -1,9 +1,10 @@
 {
   "required": true,
-  "package": "org.moon.figura.mixin",
+  "package": "org.moon.figura.mixin.fabric",
   "compatibilityLevel": "JAVA_17",
   "minVersion": "0.8",
   "client": [
+    "CommandSuggestionsMixinFabric"
   ],
   "mixins": [
   ],
