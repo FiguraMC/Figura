@@ -9,8 +9,8 @@
     "skyrina"
   ],
   "contact": {
-    "homepage": "https://github.com/Kingdom-Of-The-Moon/FiguraRewriteRewrite/",
-    "issues": "https://github.com/Kingdom-Of-The-Moon/FiguraRewriteRewrite/issues"
+    "homepage": "https://github.com/FiguraMC/Figura",
+    "issues": "https://github.com/FiguraMC/Figura/issues"
   },
 
   "license": "LGPL-2.1",
@@ -19,10 +19,10 @@
   "environment": "client",
   "entrypoints": {
     "client": [
-      "org.moon.figura.fabric.FiguraModFabric"
+      "org.figuramc.figura.fabric.FiguraModFabric"
     ],
     "modmenu": [
-      "org.moon.figura.config.fabric.ModMenuConfig"
+      "org.figuramc.figura.config.fabric.ModMenuConfig"
     ]
   },
   "mixins": [
@@ -50,7 +50,7 @@
         "Discord": "https://discord.gg/nbN8KZyhUq",
         "Ko-fi": "https://ko-fi.com/skyrina",
         "Modrinth":  "https://modrinth.com/mod/figura/",
-        "GitHub":  "https://github.com/Kingdom-Of-The-Moon/FiguraRewriteRewrite/"
+        "GitHub":  "https://github.com/FiguraMC/Figura"
       }
     }
   }

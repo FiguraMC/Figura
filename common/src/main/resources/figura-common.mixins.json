@@ -1,7 +1,7 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "org.moon.figura.mixin",
+  "package": "org.figuramc.figura.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
   ],
