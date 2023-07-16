@@ -211,7 +211,7 @@ public class FiguraListDocs {
                 String text = o instanceof Map.Entry e ? e.getKey().toString() : o.toString();
                 LiteralArgumentBuilder<FiguraClientCommandSource> entry = LiteralArgumentBuilder.literal(text);
                 entry.executes(context -> {
-                    FiguraMod.sendChatMessage(Component.literal(text).withStyle(ColorUtils.Colors.FRAN_PINK.style));
+                    FiguraMod.sendChatMessage(Component.literal(text).withStyle(ColorUtils.Colors.PINK.style));
                     return 1;
                 });
 
@@ -219,7 +219,7 @@ public class FiguraListDocs {
                     for (String s : (List<String>) e.getValue()) {
                         LiteralArgumentBuilder<FiguraClientCommandSource> child = LiteralArgumentBuilder.literal(s);
                         child.executes(context -> {
-                            FiguraMod.sendChatMessage(Component.literal(s).withStyle(ColorUtils.Colors.FRAN_PINK.style));
+                            FiguraMod.sendChatMessage(Component.literal(s).withStyle(ColorUtils.Colors.PINK.style));
                             return 1;
                         });
                         entry.then(child);

@@ -20,7 +20,7 @@ import java.util.*;
 
 public abstract class FiguraDoc {
 
-    public static final MutableComponent HEADER = Component.empty().withStyle(ColorUtils.Colors.FRAN_PINK.style)
+    public static final MutableComponent HEADER = Component.empty().withStyle(ColorUtils.Colors.PINK.style)
                 .append(Component.literal("\n•*+•* ").append(FiguraText.of()).append(" Docs *•+*•")
                         .withStyle(ChatFormatting.UNDERLINE));
 

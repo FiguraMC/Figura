@@ -131,7 +131,7 @@ public class Configs {
             RENDER_DEBUG_PARTS_PIVOT = new EnumConfig("render_debug_parts_pivot", RENDERING, 1, 3) {{
                     String tooltip = "config.render_debug_parts_pivot.tooltip";
                     this.tooltip = FiguraText.of(tooltip,
-                            FiguraText.of(tooltip + ".cubes").setStyle(ColorUtils.Colors.FRAN_PINK.style),
+                            FiguraText.of(tooltip + ".cubes").setStyle(ColorUtils.Colors.PINK.style),
                             FiguraText.of(tooltip + ".groups").setStyle(ColorUtils.Colors.MAYA_BLUE.style));
             }};
     public static final BoolConfig
