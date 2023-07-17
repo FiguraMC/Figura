@@ -113,7 +113,7 @@ public class HttpRequestsAPI {
 
         @LuaWhitelist
         @LuaMethodDoc("http_request_builder.method")
-        public HttpRequestBuilder<R, P> method(@LuaNotNil String method) {
+        public HttpRequestBuilder<R, P> method(String method) {
             this.method = Objects.requireNonNullElse(method, "GET");
             return this;
         }

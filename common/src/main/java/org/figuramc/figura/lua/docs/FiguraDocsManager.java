@@ -15,6 +15,14 @@ import org.figuramc.figura.lua.api.*;
 import org.figuramc.figura.lua.api.action_wheel.Action;
 import org.figuramc.figura.lua.api.action_wheel.ActionWheelAPI;
 import org.figuramc.figura.lua.api.action_wheel.Page;
+import org.figuramc.figura.lua.api.data.DataAPI;
+import org.figuramc.figura.lua.api.data.FiguraFuture;
+import org.figuramc.figura.lua.api.data.FiguraInputStream;
+import org.figuramc.figura.lua.api.data.FiguraOutputStream;
+import org.figuramc.figura.lua.api.data.providers.FiguraProvider;
+import org.figuramc.figura.lua.api.data.providers.StringProvider;
+import org.figuramc.figura.lua.api.data.readers.FiguraReader;
+import org.figuramc.figura.lua.api.data.readers.StringReader;
 import org.figuramc.figura.lua.api.entity.EntityAPI;
 import org.figuramc.figura.lua.api.entity.LivingEntityAPI;
 import org.figuramc.figura.lua.api.entity.PlayerAPI;
@@ -29,6 +37,8 @@ import org.figuramc.figura.lua.api.nameplate.EntityNameplateCustomization;
 import org.figuramc.figura.lua.api.nameplate.NameplateAPI;
 import org.figuramc.figura.lua.api.nameplate.NameplateCustomization;
 import org.figuramc.figura.lua.api.nameplate.NameplateCustomizationGroup;
+import org.figuramc.figura.lua.api.networking.HttpRequestsAPI;
+import org.figuramc.figura.lua.api.networking.NetworkingAPI;
 import org.figuramc.figura.lua.api.particle.LuaParticle;
 import org.figuramc.figura.lua.api.particle.ParticleAPI;
 import org.figuramc.figura.lua.api.ping.PingAPI;
@@ -223,6 +233,28 @@ public class FiguraDocsManager {
 
         put("config", List.of(
                 ConfigAPI.class
+        ));
+
+        put("net", List.of(
+                NetworkingAPI.class,
+                HttpRequestsAPI.class,
+                HttpRequestsAPI.HttpRequestBuilder.class,
+                HttpRequestsAPI.HttpResponse.class
+        ));
+
+        put("data", List.of(
+                DataAPI.class,
+                DataAPI.Readers.class,
+                DataAPI.Providers.class,
+                FiguraReader.class,
+                FiguraProvider.class,
+                StringReader.class,
+                StringProvider.class,
+                StringReader.Readers.class,
+                StringProvider.Providers.class,
+                FiguraInputStream.class,
+                FiguraOutputStream.class,
+                FiguraFuture.class
         ));
     }};
     private static final Map<String, List<FiguraDoc>> GENERATED_CHILDREN = new HashMap<>();

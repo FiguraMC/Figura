@@ -3,6 +3,7 @@ package org.figuramc.figura.lua;
 import org.figuramc.figura.animation.Animation;
 import org.figuramc.figura.entries.FiguraAPI;
 import org.figuramc.figura.lua.api.*;
+import org.figuramc.figura.lua.api.data.DataAPI;
 import org.figuramc.figura.lua.api.data.FiguraFuture;
 import org.figuramc.figura.lua.api.data.FiguraInputStream;
 import org.figuramc.figura.lua.api.data.FiguraOutputStream;
@@ -14,11 +15,9 @@ import org.figuramc.figura.lua.api.entity.*;
 import org.figuramc.figura.lua.api.networking.HttpRequestsAPI;
 import org.figuramc.figura.lua.api.networking.NetworkingAPI;
 import org.figuramc.figura.model.rendertasks.*;
-import org.figuramc.figura.lua.api.*;
 import org.figuramc.figura.lua.api.action_wheel.Action;
 import org.figuramc.figura.lua.api.action_wheel.ActionWheelAPI;
 import org.figuramc.figura.lua.api.action_wheel.Page;
-import org.figuramc.figura.lua.api.entity.*;
 import org.figuramc.figura.lua.api.event.EventsAPI;
 import org.figuramc.figura.lua.api.event.LuaEvent;
 import org.figuramc.figura.lua.api.keybind.FiguraKeybind;
@@ -52,7 +51,6 @@ import org.figuramc.figura.math.vector.FiguraVec4;
 import org.figuramc.figura.model.FiguraModelPart;
 import org.figuramc.figura.model.rendering.Vertex;
 import org.figuramc.figura.model.rendering.texture.FiguraTexture;
-import org.figuramc.figura.model.rendertasks.*;
 
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -155,14 +153,20 @@ public class FiguraAPIManager {
 
         add(FiguraProvider.class);
         add(StringProvider.class);
+        add(StringProvider.Providers.class);
 
         add(FiguraReader.class);
         add(StringReader.class);
+        add(StringReader.Readers.class);
 
         add(NetworkingAPI.class);
         add(HttpRequestsAPI.class);
         add(HttpRequestsAPI.HttpRequestBuilder.class);
         add(HttpRequestsAPI.HttpResponse.class);
+
+        add(DataAPI.class);
+        add(DataAPI.Readers.class);
+        add(DataAPI.Providers.class);
     }};
 
     public static final Map<String, Function<FiguraLuaRuntime, Object>> API_GETTERS = new LinkedHashMap<>() {{
@@ -185,6 +189,7 @@ public class FiguraAPIManager {
         put("textures", r -> r.texture = new TextureAPI(r.owner));
         put("config", r -> new ConfigAPI(r.owner));
         put("net", r -> new NetworkingAPI(r.owner));
+        put("data", r -> new DataAPI());
     }};
 
     private static final Set<FiguraAPI> ENTRYPOINTS = new HashSet<>();

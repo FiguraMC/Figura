@@ -23,7 +23,7 @@ public class NetworkingAPI {
     private static final String NETWORKING_DISALLOWED_FOR_LINK_ERROR = "Networking disallowed for link %s";
     private final Avatar owner;
     @LuaWhitelist
-    @LuaFieldDoc("http")
+    @LuaFieldDoc("net.http")
     public final HttpRequestsAPI http;
 
     public NetworkingAPI(Avatar owner) {
