@@ -1,5 +1,6 @@
 <h1 align="center"> Figura </h1>
-<p align="center"> We support Fabric Forge and Quilt! </p>
+<p align="center"> We support Fabric and Quilt! </p>
+<p align="center"> (Forge coming soon!) </p>
 
 ```diff
 - Notice: The previous owner has deleted everything. We are currently rebuilding.
@@ -26,7 +27,7 @@
 
 ![skullemoji](https://github.com/Covkie/FiguraRME/assets/52550063/91c0f373-7048-4b2f-90db-e6891fa29589)
 
-Meet us on the [FiguraMC Discord Server](https://discord.figuramc.org) for more info and help :)
+Meet us on the [FiguraMC Discord Server](https://discord.gg/nbN8KZyhUq) for more info and help :)
 
 # Links
 [discord]: https://discord.com/api/guilds/1129805506354085959/widget.png
@@ -34,11 +35,11 @@ Meet us on the [FiguraMC Discord Server](https://discord.figuramc.org) for more 
 [curseforge]: https://img.shields.io/badge/CurseForge-f16436?logo=curseforge&logoColor=ffffff&labelColor=f16436
 [kofi]: https://img.shields.io/badge/Ko--fi-00b9fe?logo=kofi&logoColor=ffffff&labelColor=00b9fe
 
-## Social: [ ![discord][] ](https://discord.figuramc.org)
+## Social: [ ![discord][] ](https://discord.gg/nbN8KZyhUq)
 
 ## Download: [ ![modrinth] ](https://modrinth.com/mod/figura) [ ![curseforge][] ](https://curseforge.com/minecraft/mc-mods/figura)
 
-## Donate: [ ![kofi][] ](https://ko-fi.com/skyrina/commissions)
+## Donate: [ ![kofi][] ](https://ko-fi.com/skyrina)
 
 # FAQ
 
