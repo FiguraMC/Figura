@@ -5,13 +5,14 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.PlayerModelPart;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.UseAnim;
 import org.figuramc.figura.utils.FiguraClientCommandSource;
 import org.figuramc.figura.FiguraMod;
@@ -53,7 +54,7 @@ public class FiguraListDocs {
             add(value.name());
     }};
     private static final LinkedHashSet<String> ITEM_DISPLAY_MODES = new LinkedHashSet<>() {{
-        for (ItemDisplayContext value : ItemDisplayContext.values())
+        for (ItemTransforms.TransformType value : ItemTransforms.TransformType.values())
             add(value.name());
     }};
     private static final LinkedHashSet<String> POST_EFFECTS = new LinkedHashSet<>() {{

@@ -1,5 +1,6 @@
 package org.figuramc.figura.mixin.gui;
 
+import com.google.common.collect.Ordering;
 import net.minecraft.client.gui.components.PlayerTabOverlay;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.network.chat.Component;
@@ -22,6 +23,8 @@ public interface PlayerTabOverlayAccessor {
     Component getFooter();
 
     @Intrinsic
-    @Invoker("getPlayerInfos")
-    List<PlayerInfo> getThePlayerInfos();
+    @Accessor("PLAYER_ORDERING")
+    static Ordering<PlayerInfo> getPlayerOrdering() {
+        throw new AssertionError();
+    }
 }

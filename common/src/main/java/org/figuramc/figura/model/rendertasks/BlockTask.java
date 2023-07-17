@@ -5,16 +5,17 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
+import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.api.world.BlockStateAPI;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
-import org.figuramc.figura.model.FiguraModelPart;
+import org.figuramc.figura.model.PartCustomization;
 import org.figuramc.figura.utils.LuaUtils;
-import org.figuramc.figura.avatar.Avatar;
+
+import java.util.Random;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -26,18 +27,22 @@ public class BlockTask extends RenderTask {
     private BlockState block;
     private int cachedComplexity;
 
-    public BlockTask(String name, Avatar owner, FiguraModelPart parent) {
-        super(name, owner, parent);
+    public BlockTask(String name, Avatar owner) {
+        super(name, owner);
     }
 
     @Override
-    public void render(PoseStack poseStack, MultiBufferSource buffer, int light, int overlay) {
+    public void render(PartCustomization.PartCustomizationStack stack, MultiBufferSource buffer, int light, int overlay) {
+        this.pushOntoStack(stack); //push
+        PoseStack poseStack = stack.peek().copyIntoGlobalPoseStack();
         poseStack.scale(16, 16, 16);
 
         int newLight = this.customization.light != null ? this.customization.light : light;
         int newOverlay = this.customization.overlay != null ? this.customization.overlay : overlay;
 
         Minecraft.getInstance().getBlockRenderer().renderSingleBlock(block, poseStack, buffer, newLight, newOverlay);
+
+        stack.pop(); //pop
     }
 
     @Override
@@ -71,7 +76,7 @@ public class BlockTask extends RenderTask {
     public BlockTask setBlock(Object block) {
         this.block = LuaUtils.parseBlockState("block", block);
         Minecraft client = Minecraft.getInstance();
-        RandomSource random = client.level != null ? client.level.random : RandomSource.create();
+        Random random = client.level != null ? client.level.random : new Random();
 
         BakedModel blockModel = client.getBlockRenderer().getBlockModel(this.block);
         cachedComplexity = blockModel.getQuads(this.block, null, random).size();

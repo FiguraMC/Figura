@@ -2,10 +2,9 @@ package org.figuramc.figura.mixin.gui;
 
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.GuiMessage;
-import net.minecraft.client.GuiMessageTag;
 import net.minecraft.client.gui.components.ChatComponent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MessageSignature;
+import net.minecraft.network.chat.TextComponent;
 import org.figuramc.figura.ducks.GuiMessageAccessor;
 import org.figuramc.figura.gui.Emojis;
 import org.figuramc.figura.lua.api.nameplate.NameplateCustomization;
@@ -35,8 +34,8 @@ public class ChatComponentMixin {
     @Unique private Integer color;
     @Unique private int currColor;
 
-    @ModifyVariable(at = @At("HEAD"), method = "addMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/MessageSignature;ILnet/minecraft/client/GuiMessageTag;Z)V", ordinal = 0, argsOnly = true)
-    private Component addMessage(Component message, Component msg, MessageSignature signature, int k, GuiMessageTag tag, boolean refresh) {
+    @ModifyVariable(at = @At("HEAD"), method = "addMessage(Lnet/minecraft/network/chat/Component;IIZ)V", ordinal = 0, argsOnly = true)
+    private Component addMessage(Component message, Component msg, int k, int timestamp, boolean refresh) {
         //do not change the message on refresh
         if (refresh) return message;
 
@@ -48,20 +47,14 @@ public class ChatComponentMixin {
         Avatar localPlayer = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
         if (localPlayer != null) {
             String json = Component.Serializer.toJson(message);
-
-            Pair<String, Integer> event = localPlayer.chatReceivedMessageEvent(message.getString(), json);
-            if (event != null) {
-                String newMessage = event.getFirst();
-                if (newMessage == null)
-                    return null;
-                if (!json.equals(newMessage)) {
-                    TextUtils.allowScriptEvents = true;
-                    message = TextUtils.tryParseJson(newMessage);
-                    TextUtils.allowScriptEvents = false;
-                }
-                color = event.getSecond();
+            String newMessage = localPlayer.chatReceivedMessageEvent(message.getString(), json);
+            if (newMessage != null && !json.equals(newMessage)) {
+                TextUtils.allowScriptEvents = true;
+                message = TextUtils.tryParseJson(newMessage);
+                TextUtils.allowScriptEvents = false;
             }
         }
+
 
         //stop here if we should not parse messages
         if (!FiguraMod.parseMessages)
@@ -136,35 +129,6 @@ public class ChatComponentMixin {
             }
         }
 
-        return message;
-    }
-
-    @Inject(at = @At("HEAD"), method = "addMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/MessageSignature;ILnet/minecraft/client/GuiMessageTag;Z)V", cancellable = true)
-    private void addMessage(Component message, MessageSignature signature, int ticks, GuiMessageTag tag, boolean refresh, CallbackInfo ci) {
-        if (message == null)
-            ci.cancel();
-    }
-
-    @ModifyArg(at = @At(value = "INVOKE", target = "Ljava/util/List;add(ILjava/lang/Object;)V"), method = "addMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/MessageSignature;ILnet/minecraft/client/GuiMessageTag;Z)V")
-    private Object addMessages(int index, Object message) {
-        if (color != null) ((GuiMessageAccessor) message).figura$setColor(color);
-        return message;
-    }
-
-    @ModifyVariable(at = @At("STORE"), method = "render")
-    private GuiMessage.Line grabColor(GuiMessage.Line line) {
-        currColor = ((GuiMessageAccessor) (Object) line).figura$getColor();
-        return line;
-    }
-
-    @ModifyArg(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;fill(IIIII)V", ordinal = 0), method = "render", index = 4)
-    private int textBackgroundOnRender(int color) {
-        return color + currColor;
-    }
-
-    @ModifyVariable(at = @At("STORE"), method = "refreshTrimmedMessage")
-    private GuiMessage refreshMessages(GuiMessage message) {
-        color = ((GuiMessageAccessor) (Object) message).figura$getColor();
         return message;
     }
 }

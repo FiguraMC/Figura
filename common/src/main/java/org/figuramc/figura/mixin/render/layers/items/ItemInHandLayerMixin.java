@@ -1,17 +1,18 @@
 package org.figuramc.figura.mixin.render.layers.items;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
+import com.mojang.math.Vector3f;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ArmedModel;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
@@ -31,16 +32,14 @@ public abstract class ItemInHandLayerMixin<T extends LivingEntity, M extends Ent
         super(renderLayerParent);
     }
 
-    @Shadow @Final private ItemInHandRenderer itemInHandRenderer;
-
     @Inject(method = "renderArmWithItem", at = @At("HEAD"), cancellable = true)
-    protected void renderArmWithItem(LivingEntity livingEntity, ItemStack itemStack, ItemDisplayContext itemDisplayContext, HumanoidArm humanoidArm, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, CallbackInfo ci) {
+    protected void renderArmWithItem(LivingEntity entity, ItemStack itemStack, ItemTransforms.TransformType transformationMode, HumanoidArm arm, PoseStack matrices, MultiBufferSource vertexConsumers, int light, CallbackInfo ci) {
         if (itemStack.isEmpty())
             return;
 
-        boolean left = humanoidArm == HumanoidArm.LEFT;
+        boolean left = arm == HumanoidArm.LEFT;
 
-        Avatar avatar = AvatarManager.getAvatar(livingEntity);
+        Avatar avatar = AvatarManager.getAvatar(entity);
         if (!RenderUtils.renderArmItem(avatar, left, ci))
             return;
 
@@ -48,8 +47,8 @@ public abstract class ItemInHandLayerMixin<T extends LivingEntity, M extends Ent
         if (avatar.pivotPartRender(left ? ParentType.LeftItemPivot : ParentType.RightItemPivot, stack -> {
             float s = 16f;
             stack.scale(s, s, s);
-            stack.mulPose(Axis.XP.rotationDegrees(-90f));
-            this.itemInHandRenderer.renderItem(livingEntity, itemStack, itemDisplayContext, left, stack, multiBufferSource, i);
+            stack.mulPose(Vector3f.XP.rotationDegrees(-90f));
+            Minecraft.getInstance().getItemInHandRenderer().renderItem(entity, itemStack, transformationMode, left, stack, vertexConsumers, light);
         })) {
             ci.cancel();
         }

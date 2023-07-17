@@ -1,5 +1,6 @@
 package org.figuramc.figura.utils;
 
+import com.mojang.math.Matrix3f;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.Vec3;
@@ -73,14 +74,14 @@ public class MathUtils {
     public static FiguraVec3 toCameraSpace(FiguraVec3 vec) {
         Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
 
-        FiguraMat3 transformMatrix = FiguraMat3.of().set(new Matrix3f().rotation(camera.rotation()));
+        FiguraMat3 transformMatrix = FiguraMat3.of().set(new Matrix3f(camera.rotation()));
         Vec3 pos = camera.getPosition();
         transformMatrix.invert();
 
         FiguraVec3 ret = vec.copy();
         ret.subtract(pos.x, pos.y, pos.z);
         ret.transform(transformMatrix);
-        //ret.multiply(-1, 1, 1);
+        ret.multiply(-1, 1, 1);
 
         return ret;
     }
@@ -88,17 +89,17 @@ public class MathUtils {
     public static FiguraVec4 worldToScreenSpace(FiguraVec3 worldSpace) {
         Minecraft minecraft = Minecraft.getInstance();
         Camera camera = minecraft.gameRenderer.getMainCamera();
-        Matrix3f transformMatrix = new Matrix3f().rotation(camera.rotation());
+        com.mojang.math.Matrix3f transformMatrix = new com.mojang.math.Matrix3f(camera.rotation());
         transformMatrix.invert();
 
         Vec3 camPos = camera.getPosition();
         FiguraVec3 posDiff = worldSpace.copy().subtract(camPos.x, camPos.y, camPos.z);
-        Vector3f camSpace = posDiff.asVec3f();
-        transformMatrix.transform(camSpace);
+        com.mojang.math.Vector3f camSpace = new com.mojang.math.Vector3f((float) posDiff.x, (float) posDiff.y, (float) posDiff.z);
+        camSpace.transform(transformMatrix);
 
-        Vector4f projectiveCamSpace = new Vector4f(camSpace, 1f);
-        Matrix4f projMat = minecraft.gameRenderer.getProjectionMatrix(((GameRendererAccessor) minecraft.gameRenderer).figura$getFov(camera, minecraft.getFrameTime(), true));
-        projMat.transform(projectiveCamSpace);
+        com.mojang.math.Vector4f projectiveCamSpace = new com.mojang.math.Vector4f(camSpace);
+        com.mojang.math.Matrix4f projMat = minecraft.gameRenderer.getProjectionMatrix(((GameRendererAccessor) minecraft.gameRenderer).figura$getFov(camera, minecraft.getFrameTime(), true));
+        projectiveCamSpace.transform(projMat);
         float w = projectiveCamSpace.w();
 
         return FiguraVec4.of(projectiveCamSpace.x() / w, projectiveCamSpace.y() / w, projectiveCamSpace.z() / w, Math.sqrt(posDiff.dot(posDiff)));

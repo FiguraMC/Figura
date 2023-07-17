@@ -9,8 +9,9 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.server.IntegratedServer;
-import net.minecraft.core.UUIDUtil;
+import net.minecraft.core.SerializableUUID;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.world.phys.Vec3;
@@ -194,7 +195,7 @@ public class ClientAPI {
     @LuaWhitelist
     @LuaMethodDoc("client.get_fov")
     public static double getFOV() {
-        return Minecraft.getInstance().options.fov().get();
+        return Minecraft.getInstance().options.fov;
     }
 
     @LuaWhitelist
@@ -235,7 +236,7 @@ public class ClientAPI {
     public static FiguraVec3 getCameraRot() {
         var quaternion = Minecraft.getInstance().gameRenderer.getMainCamera().rotation();
         Vector3f vec = new Vector3f();
-        quaternion.getEulerAnglesYXZ(vec);
+        vec = new Vector3f(quaternion.toXYZ().x(), quaternion.toXYZ().y(), quaternion.toXYZ().z());
         double f = 180d / Math.PI;
         return FiguraVec3.fromVec3f(vec).multiply(f, -f, f); //degrees, and negate y
     }
@@ -243,7 +244,7 @@ public class ClientAPI {
     @LuaWhitelist
     @LuaMethodDoc("client.get_camera_dir")
     public static FiguraVec3 getCameraDir() {
-        return FiguraVec3.fromVec3f(Minecraft.getInstance().gameRenderer.getMainCamera().getLookVector());
+        return FiguraVec3.fromVec3f(new Vector3f(Minecraft.getInstance().gameRenderer.getMainCamera().getLookVector().x(), Minecraft.getInstance().gameRenderer.getMainCamera().getLookVector().y(), Minecraft.getInstance().gameRenderer.getMainCamera().getLookVector().z()));
     }
 
     @LuaWhitelist
@@ -336,7 +337,7 @@ public class ClientAPI {
     public static boolean hasResource(@LuaNotNil String path) {
         ResourceLocation resource = LuaUtils.parsePath(path);
         try {
-            return Minecraft.getInstance().getResourceManager().getResource(resource).isPresent();
+            return Minecraft.getInstance().getResourceManager().hasResource(resource);
         } catch (Exception ignored) {
             return false;
         }
@@ -387,7 +388,7 @@ public class ClientAPI {
             value = "client.int_uuid_to_string")
     public static String intUUIDToString(int a, int b, int c, int d) {
         try {
-            UUID uuid = UUIDUtil.uuidFromIntArray(new int[]{a, b, c, d});
+            UUID uuid = SerializableUUID.uuidFromIntArray(new int[]{a, b, c, d});
             return uuid.toString();
         } catch (Exception ignored) {
             throw new LuaError("Failed to parse uuid");
@@ -404,7 +405,7 @@ public class ClientAPI {
     public static int[] uuidToIntArray(String uuid) {
         try {
             UUID id = UUID.fromString(uuid);
-            return UUIDUtil.uuidToIntArray(id);
+            return SerializableUUID.uuidToIntArray(id);
         } catch (Exception ignored) {
             throw new LuaError("Failed to parse uuid");
         }
@@ -551,9 +552,9 @@ public class ClientAPI {
         Component component;
 
         if (args == null) {
-            component = Component.translatable(text);
+            component = new TranslatableComponent(text);
         } else if (!args.istable()) {
-            component = Component.translatable(text, args.tojstring());
+            component = new TranslatableComponent(text, args.tojstring());
         } else {
             int len = args.length();
             Object[] arguments = new Object[len];
@@ -561,7 +562,7 @@ public class ClientAPI {
             for (int i = 0; i < len; i++)
                 arguments[i] = args.get(i + 1).tojstring();
 
-            component = Component.translatable(text, arguments);
+            component = new TranslatableComponent(text, arguments);
         }
 
         return component.getString();

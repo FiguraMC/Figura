@@ -11,7 +11,7 @@ import java.util.Map;
 @Mixin(ModelManager.class)
 public interface ModelManagerAccessor {
     @Intrinsic
-    @Accessor("VANILLA_ATLASES")
+    @Accessor("bakedRegistry")
     static Map<ResourceLocation, ResourceLocation> getVanillaAtlases() {
         throw new AssertionError();
     }

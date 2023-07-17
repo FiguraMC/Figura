@@ -4,7 +4,8 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.SplashManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.util.RandomSource;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.level.levelgen.RandomSource;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Badges;
 import org.figuramc.figura.config.Configs;
@@ -21,11 +22,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 @Mixin(SplashManager.class)
 public class SplashManagerMixin {
 
-    @Shadow @Final private static RandomSource RANDOM;
+    @Shadow @Final private static Random RANDOM;
     @Shadow @Final private List<String> splashes;
 
     @Unique

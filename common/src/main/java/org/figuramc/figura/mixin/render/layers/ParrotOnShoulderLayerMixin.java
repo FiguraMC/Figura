@@ -2,7 +2,7 @@ package org.figuramc.figura.mixin.render.layers;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Axis;
+import com.mojang.math.Vector3f;
 import net.minecraft.client.model.ParrotModel;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -13,7 +13,6 @@ import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.animal.Parrot;
 import net.minecraft.world.entity.player.Player;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
@@ -53,14 +52,13 @@ public abstract class ParrotOnShoulderLayerMixin<T extends Player> extends Rende
         //pivot part
         CompoundTag compoundTag = leftShoulder ? player.getShoulderEntityLeft() : player.getShoulderEntityRight();
         EntityType.byString(compoundTag.getString("id")).filter((type) -> type == EntityType.PARROT).ifPresent((type) -> {
-            Parrot.Variant variant = Parrot.Variant.byId(compoundTag.getInt("Variant"));
-            VertexConsumer vertexConsumer = vertexConsumers.getBuffer(this.model.renderType(ParrotRenderer.getVariantTexture(variant)));
+            VertexConsumer vertexConsumer = vertexConsumers.getBuffer(this.model.renderType(ParrotRenderer.PARROT_LOCATIONS[compoundTag.getInt("Variant")]));
             if (avatar.pivotPartRender(leftShoulder ? ParentType.LeftParrotPivot : ParentType.RightParrotPivot, stack -> {
                 stack.translate(0d, 24d, 0d);
                 float s = 16f;
                 stack.scale(s, s, s);
-                stack.mulPose(Axis.XP.rotationDegrees(180f));
-                stack.mulPose(Axis.YP.rotationDegrees(180f));
+                stack.mulPose(Vector3f.XP.rotationDegrees(180f));
+                stack.mulPose(Vector3f.YP.rotationDegrees(180f));
                 this.model.renderOnShoulder(stack, vertexConsumer, light, OverlayTexture.NO_OVERLAY, limbAngle, limbDistance, headYaw, headPitch, player.tickCount);
             })) {
                 ci.cancel();

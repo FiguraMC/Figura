@@ -7,6 +7,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
 import org.figuramc.figura.utils.FiguraClientCommandSource;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.utils.ColorUtils;

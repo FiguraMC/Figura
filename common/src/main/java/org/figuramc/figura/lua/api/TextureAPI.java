@@ -175,9 +175,9 @@ public class TextureAPI {
             return register(name, nativeImage, false);
         } catch (Exception ignored) {}
         try {
-            Optional<Resource> resource = Minecraft.getInstance().getResourceManager().getResource(resourceLocation);
+            Optional<Resource> resource = Optional.of(Minecraft.getInstance().getResourceManager().getResource(resourceLocation));
             //if the string is a valid resourceLocation but does not point to a valid resource, missingno
-            NativeImage image = resource.isPresent() ? NativeImage.read(resource.get().open()) : MissingTextureAtlasSpriteAccessor.generateImage(16, 16);
+            NativeImage image = resource.isPresent() ? NativeImage.read(resource.get().getInputStream()) : MissingTextureAtlasSpriteAccessor.generateImage(16, 16);
             return register(name, image, false);
         } catch (Exception e) {
             //spit an error if the player inputs a resource location that does point to a thing, but not to an image

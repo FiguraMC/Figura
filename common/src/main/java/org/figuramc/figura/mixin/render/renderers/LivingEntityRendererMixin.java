@@ -1,6 +1,7 @@
 package org.figuramc.figura.mixin.render.renderers;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Matrix4f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -13,7 +14,6 @@ import net.minecraft.world.entity.LivingEntity;
 import org.figuramc.figura.gui.PopupMenu;
 import org.figuramc.figura.lua.api.vanilla_model.VanillaPart;
 import org.figuramc.figura.math.matrix.FiguraMat4;
-import org.joml.Matrix4f;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
@@ -51,7 +51,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
     @Unique
     private Avatar currentAvatar;
     @Unique
-    private Matrix4f lastPose;
+    private com.mojang.math.Matrix4f lastPose;
 
     @Inject(at = @At("HEAD"), method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V")
     private void onRender(T livingEntity, float f, float g, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, CallbackInfo ci) {
@@ -97,7 +97,9 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
         FiguraMod.pushProfiler(currentAvatar);
 
         FiguraMod.pushProfiler("calculateMatrix");
-        Matrix4f diff = new Matrix4f(lastPose).invert().mul(poseStack.last().pose());
+        Matrix4f diff = new com.mojang.math.Matrix4f(lastPose);
+        diff.invert();
+        diff.multiply(poseStack.last().pose());
         FiguraMat4 poseMatrix = new FiguraMat4().set(diff);
 
         FiguraMod.popPushProfiler("renderEvent");

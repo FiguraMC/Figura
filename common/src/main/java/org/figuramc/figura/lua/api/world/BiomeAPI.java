@@ -2,7 +2,7 @@ package org.figuramc.figura.lua.api.world;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.biome.Biome;
@@ -37,7 +37,7 @@ public class BiomeAPI {
     public BiomeAPI(Biome biome, BlockPos pos) {
         this.biome = biome;
         this.pos = pos;
-        this.id = WorldAPI.getCurrentWorld().registryAccess().registry(Registries.BIOME).get().getKey(biome).toString();
+        this.id = WorldAPI.getCurrentWorld().registryAccess().registry(Registry.BIOME_REGISTRY).get().getKey(biome).toString();
     }
 
     protected BlockPos getBlockPos() {
@@ -81,7 +81,7 @@ public class BiomeAPI {
     public List<String> getTags() {
         List<String> list = new ArrayList<>();
 
-        Registry<Biome> registry = WorldAPI.getCurrentWorld().registryAccess().registryOrThrow(Registries.BIOME);
+        Registry<Biome> registry = WorldAPI.getCurrentWorld().registryAccess().registryOrThrow(Registry.BIOME_REGISTRY);
         Optional<ResourceKey<Biome>> key = registry.getResourceKey(biome);
 
         if (key.isEmpty())
@@ -102,7 +102,7 @@ public class BiomeAPI {
     @LuaWhitelist
     @LuaMethodDoc("biome.get_precipitation")
     public String getPrecipitation() {
-        return biome.getPrecipitationAt(getBlockPos()).name();
+        return biome.getPrecipitation().name();
     }
 
     @LuaWhitelist
@@ -145,7 +145,7 @@ public class BiomeAPI {
     @LuaWhitelist
     @LuaMethodDoc("biome.get_downfall")
     public float getDownfall() {
-        return ((BiomeAccessor) (Object) biome).getClimateSettings().downfall();
+        return biome.getDownfall();
     }
 
     @LuaWhitelist
