@@ -44,7 +44,7 @@ public class ClientAPI {
 
     public static final ClientAPI INSTANCE = new ClientAPI();
     private static final HashMap<String, Boolean> LOADED_MODS = new HashMap<>();
-    private static final HashMap<String, Map<String, Object>> MOD_METADATA = new HashMap<>();
+    private static final HashMap<String, ModMetadataContainer> MOD_METADATA = new HashMap<>();
     private static final boolean HAS_IRIS = isModLoaded("iris"); // separated to avoid indexing the list every frame
 
     @LuaWhitelist
@@ -322,7 +322,7 @@ public class ClientAPI {
             value = "client.get_mod_metadata"
     )
     public static Map<String, Object> getModMetadata(String id) {
-        return MOD_METADATA.computeIfAbsent(id, PlatformUtils::getModMetadata);
+        return MOD_METADATA.computeIfAbsent(id, ModMetadataContainer::getMetadataForMod).getKeyToObjectMap();
     }
 
     @LuaWhitelist

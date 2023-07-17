@@ -26,9 +26,4 @@ public class PlatformUtils {
     public static boolean isModLoaded(String modId) {
         throw new AssertionError();
     }
-    
-    @ExpectPlatform
-    public static Map<String, Object> getModMetadata(String modId){
-        throw new AssertionError();
-    }
 }

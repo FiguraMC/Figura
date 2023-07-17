@@ -2,9 +2,11 @@ package org.figuramc.figura.utils;
 
 import dev.architectury.injectables.annotations.ExpectPlatform;
 
-public abstract class FiguraModMetadata {
+import java.util.Map;
+
+public abstract class ModMetadataContainer {
     private final String modId;
-    protected FiguraModMetadata(String modID) {
+    protected ModMetadataContainer(String modID) {
         this.modId = modID;
     }
 
@@ -14,12 +16,13 @@ public abstract class FiguraModMetadata {
     public abstract Object getCustomValueAsObject(String key);
 
     public abstract Version getModVersion();
+    public abstract Map<String, Object> getKeyToObjectMap();
 
     public String getModId() {
         return this.modId;
     }
     @ExpectPlatform
-    public static FiguraModMetadata getMetadataForMod(String modID) {
+    public static ModMetadataContainer getMetadataForMod(String modID) {
         throw new AssertionError();
     }
 }

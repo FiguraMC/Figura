@@ -35,7 +35,7 @@ public class FiguraMod {
 
     public static final String MOD_ID = "figura";
     public static final String MOD_NAME = "Figura";
-    public static final FiguraModMetadata METADATA = FiguraModMetadata.getMetadataForMod(MOD_ID);
+    public static final ModMetadataContainer METADATA = ModMetadataContainer.getMetadataForMod(MOD_ID);
     public static final Version VERSION = new Version(PlatformUtils.getModVersionString());
     public static final boolean DEBUG_MODE = false;
     public static final Calendar CALENDAR = Calendar.getInstance();
