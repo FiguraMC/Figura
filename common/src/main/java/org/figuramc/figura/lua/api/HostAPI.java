@@ -3,9 +3,9 @@ package org.figuramc.figura.lua.api;
 import com.google.common.collect.Iterables;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.GuiMessage;
 import net.minecraft.client.GuiMessageTag;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.client.gui.screens.ChatScreen;
@@ -200,7 +200,7 @@ public class HostAPI {
     private static final HashMap<Integer, String> boardNames = new HashMap<>() {{
        put(0, "list");
        put(1, "sidebar");
-       put(2, "below_name");
+       put(2, "belowName");
         for (int i = 0; i < 16; i++)
             put(3 + i, "sidebar_team_" + ChatFormatting.getById(i).getSerializedName());
     }};
@@ -236,7 +236,7 @@ public class HostAPI {
             toSkip = limit == null || limit > 0 ? scores.size() - toSkip : 0;
             for (Score score : Iterables.skip(scores, toSkip)) {
                 String scoreOwner = score.getOwner();
-                if (scoreOwner == null || scoreOwner.startsWith("#"))
+                if (scoreOwner.startsWith("#"))
                     objectiveMap.put(scoreOwner, score.getScore());
                 else {
                     Component key = PlayerTeam.formatNameForTeam(scoreboard.getPlayersTeam(scoreOwner), Component.literal(scoreOwner));
