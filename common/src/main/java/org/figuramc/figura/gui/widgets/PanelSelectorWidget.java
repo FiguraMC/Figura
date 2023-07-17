@@ -166,11 +166,11 @@ public class PanelSelectorWidget extends AbstractContainerElement {
 
         @Override
         protected void renderTexture(PoseStack stack, float delta) {
-            UIHelper.renderSliced(stack, getX(), getY(), getWidth(), getHeight(), isSelected() ? 24f : 0f, this.isHoveredOrFocused() ? 24f : 0f, 24, 24, 48, 48, TEXTURE);
+            UIHelper.renderSliced(stack, this.x, this.y, getWidth(), getHeight(), isSelected() ? 24f : 0f, this.isHoveredOrFocused() ? 24f : 0f, 24, 24, 48, 48, TEXTURE);
 
             UIHelper.setupTexture(texture);
             int size = getTextureSize();
-            blit(stack, getX() + (iconsOnly() ? (getWidth() - size) / 2 : 2), getY() + (getHeight() - size) / 2 + (!isSelected() ? 2 : 0), size, size, u, v, regionSize, regionSize, textureWidth, textureHeight);
+            blit(stack, this.x + (iconsOnly() ? (getWidth() - size) / 2 : 2), this.y + (getHeight() - size) / 2 + (!isSelected() ? 2 : 0), size, size, u, v, regionSize, regionSize, textureWidth, textureHeight);
         }
 
         @Override
@@ -181,7 +181,7 @@ public class PanelSelectorWidget extends AbstractContainerElement {
             int size = getTextureSize();
             int offset = !isSelected() ? 3 : 0;
             Component message = isSelected() ? getMessage().copy().withStyle(ChatFormatting.UNDERLINE) : getMessage();
-            UIHelper.renderCenteredScrollingText(stack, message, getX() + 4 + size, getY() + offset, getWidth() - 6 - size, getHeight(), getTextColor());
+            UIHelper.renderCenteredScrollingText(stack, message, this.x + 4 + size, this.y + offset, getWidth() - 6 - size, getHeight(), getTextColor());
         }
 
         private boolean iconsOnly() {

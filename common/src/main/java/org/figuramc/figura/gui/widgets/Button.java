@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.figuramc.figura.utils.FiguraIdentifier;
 import org.figuramc.figura.utils.ui.UIHelper;
@@ -46,7 +47,7 @@ public class Button extends net.minecraft.client.gui.components.Button implement
 
     //texture constructor
     public Button(int x, int y, int width, int height, int u, int v, int regionSize, ResourceLocation texture, int textureWidth, int textureHeight, Component tooltip, OnPress pressAction) {
-        this(x, y, width, height, u, v, regionSize, texture, textureWidth, textureHeight, Component.empty(), tooltip, pressAction);
+        this(x, y, width, height, u, v, regionSize, texture, textureWidth, textureHeight, TextComponent.EMPTY.copy(), tooltip, pressAction);
     }
 
     @Override
@@ -109,7 +110,7 @@ public class Button extends net.minecraft.client.gui.components.Button implement
 
     protected void renderVanillaBackground(PoseStack stack, int mouseX, int mouseY, float delta) {
         Component message = getMessage();
-        setMessage(Component.empty());
+        setMessage(TextComponent.EMPTY.copy());
         super.renderButton(stack, mouseX, mouseY, delta);
         setMessage(message);
     }

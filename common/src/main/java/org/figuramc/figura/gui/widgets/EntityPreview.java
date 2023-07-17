@@ -6,8 +6,8 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
-import org.figuramc.figura.gui.screens.AvatarScreen;
 import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.gui.screens.AvatarScreen;
 import org.figuramc.figura.model.rendering.EntityRenderMode;
 import org.figuramc.figura.utils.FiguraIdentifier;
 import org.figuramc.figura.utils.FiguraText;
@@ -60,7 +60,7 @@ public class EntityPreview extends AbstractContainerElement {
                 0, 0, 16,
                 new FiguraIdentifier("textures/gui/expand.png"),
                 48, 32,
-                FiguraText.of("gui.expand"),
+                new FiguraText("gui.expand"),
                 bx -> {
                     if (button.isToggled()) {
                         Minecraft.getInstance().setScreen(new AvatarScreen(scale, pitch, yaw, this.entity, parentScreen));
@@ -250,6 +250,6 @@ public class EntityPreview extends AbstractContainerElement {
 
     public void setToggled(boolean toggled) {
         this.button.setToggled(toggled);
-        this.button.setTooltip(toggled ? FiguraText.of("gui.minimise") : FiguraText.of("gui.expand"));
+        this.button.setTooltip(toggled ? new FiguraText("gui.minimise") : new FiguraText("gui.expand"));
     }
 }

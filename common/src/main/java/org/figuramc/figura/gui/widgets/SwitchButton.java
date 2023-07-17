@@ -12,8 +12,8 @@ import org.figuramc.figura.utils.ui.UIHelper;
 public class SwitchButton extends Button {
 
     public static final ResourceLocation SWITCH_TEXTURE = new FiguraIdentifier("textures/gui/switch.png");
-    public static final Component ON = FiguraText.of("gui.on");
-    public static final Component OFF = FiguraText.of("gui.off");
+    public static final Component ON = new FiguraText("gui.on");
+    public static final Component OFF = new FiguraText("gui.off");
 
     protected boolean toggled = false;
     private boolean defaultTexture = false;
@@ -48,7 +48,7 @@ public class SwitchButton extends Button {
     protected void renderText(PoseStack stack, float delta) {
         //draw text
         Component text = this.toggled && underline ? getMessage().copy().withStyle(ChatFormatting.UNDERLINE) : getMessage();
-        int x = getX() + 1;
+        int x = this.x + 1;
         int width = getWidth() - 2;
 
         if (defaultTexture) {
@@ -56,7 +56,7 @@ public class SwitchButton extends Button {
             width -= 31;
         }
 
-        UIHelper.renderCenteredScrollingText(stack, text, x, getY(), width, getHeight(), getTextColor());
+        UIHelper.renderCenteredScrollingText(stack, text, x, this.y, width, getHeight(), getTextColor());
     }
 
     @Override

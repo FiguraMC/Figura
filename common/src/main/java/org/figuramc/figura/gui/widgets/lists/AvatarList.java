@@ -5,6 +5,8 @@ import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.util.Mth;
+import org.figuramc.figura.avatar.AvatarManager;
+import org.figuramc.figura.avatar.local.LocalAvatarFetcher;
 import org.figuramc.figura.gui.screens.AbstractPanelScreen;
 import org.figuramc.figura.gui.screens.AvatarWizardScreen;
 import org.figuramc.figura.gui.widgets.Button;
@@ -12,8 +14,6 @@ import org.figuramc.figura.gui.widgets.SearchBar;
 import org.figuramc.figura.gui.widgets.avatar.AbstractAvatarWidget;
 import org.figuramc.figura.gui.widgets.avatar.AvatarFolderWidget;
 import org.figuramc.figura.gui.widgets.avatar.AvatarWidget;
-import org.figuramc.figura.avatar.AvatarManager;
-import org.figuramc.figura.avatar.local.LocalAvatarFetcher;
 import org.figuramc.figura.utils.FiguraIdentifier;
 import org.figuramc.figura.utils.FiguraText;
 import org.figuramc.figura.utils.ui.UIHelper;
@@ -53,7 +53,7 @@ public class AvatarList extends AbstractList {
                 20, 20, 0, 0, 20,
                 new FiguraIdentifier("textures/gui/new_avatar.png"),
                 60, 20,
-                FiguraText.of("gui.wardrobe.new_avatar.tooltip"),
+                new FiguraText("gui.wardrobe.new_avatar.tooltip"),
                 button -> Minecraft.getInstance().setScreen(new AvatarWizardScreen(parentScreen)))
         );
 
@@ -63,7 +63,7 @@ public class AvatarList extends AbstractList {
                 20, 20, 0, 0, 20,
                 new FiguraIdentifier("textures/gui/unselect.png"),
                 60, 20,
-                FiguraText.of("gui.wardrobe.unselect.tooltip"),
+                new FiguraText("gui.wardrobe.unselect.tooltip"),
                 button -> {
                     AvatarManager.loadLocalAvatar(null);
                     selectedEntry = null;
@@ -76,12 +76,12 @@ public class AvatarList extends AbstractList {
                 20, 20, 0, 0, 20,
                 new FiguraIdentifier("textures/gui/folder.png"),
                 60, 20,
-                FiguraText.of("gui.wardrobe.folder.tooltip"),
+                new FiguraText("gui.wardrobe.folder.tooltip"),
                 button -> Util.getPlatform().openUri(LocalAvatarFetcher.getLocalAvatarDirectory().toUri()))
         );
 
         //scrollbar
-        this.scrollBar.setY(y + 48);
+        this.scrollBar.y = y + 48;
         this.scrollBar.setHeight(height - 52);
 
         //scissors

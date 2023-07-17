@@ -5,6 +5,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.figuramc.figura.gui.widgets.Button;
 import org.figuramc.figura.avatar.AvatarManager;
@@ -23,7 +24,7 @@ public class AvatarWidget extends AbstractAvatarWidget {
         super(depth, width, 24, avatar, parent);
 
         AvatarWidget instance = this;
-        Component description = Component.literal(avatar.getDescription());
+        Component description = new TextComponent(avatar.getDescription());
         this.button = new Button(getX(), getY(), width, 24, getName(), null, button -> {
             AvatarManager.loadLocalAvatar(avatar.getPath());
             AvatarList.selectedEntry = instance;

@@ -13,7 +13,7 @@ public class DocsScreen extends AbstractPanelScreen {
     private final Screen sourcePanel;
 
     public DocsScreen(AbstractPanelScreen parentScreen) {
-        super(parentScreen.parentScreen, FiguraText.of("gui.panels.title.docs"));
+        super(parentScreen.parentScreen, new FiguraText("gui.panels.title.docs"));
         sourcePanel = parentScreen;
     }
 
@@ -25,6 +25,6 @@ public class DocsScreen extends AbstractPanelScreen {
     @Override
     protected void init() {
         super.init();
-        this.addRenderableWidget(new Label(Component.empty().append("TEST ").append(Component.literal("LABEL :3").withStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "")))), width / 2, height / 2, 3f, 200, true, TextUtils.Alignment.CENTER, 0xFF72AD));
+        this.addRenderableWidget(new Label(TextComponent.EMPTY.copy().append("TEST ").append(new TextComponent("LABEL :3").withStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "")))), width / 2, height / 2, 3f, 200, true, TextUtils.Alignment.CENTER, 0xFF72AD));
     }
 }

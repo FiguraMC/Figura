@@ -6,8 +6,8 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.Mth;
-import org.figuramc.figura.gui.widgets.*;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.gui.widgets.*;
@@ -34,8 +34,8 @@ public class KeybindList extends AbstractList {
         updateList();
 
         Label noOwner, noKeys;
-        this.children.add(noOwner = new Label(FiguraText.of("gui.error.no_avatar").withStyle(ChatFormatting.YELLOW), x + width / 2, y + height / 2, TextUtils.Alignment.CENTER, 0));
-        this.children.add(noKeys = new Label(FiguraText.of("gui.error.no_keybinds").withStyle(ChatFormatting.YELLOW), x + width / 2, y + height / 2, TextUtils.Alignment.CENTER, 0));
+        this.children.add(noOwner = new Label(new FiguraText("gui.error.no_avatar").withStyle(ChatFormatting.YELLOW), x + width / 2, y + height / 2, TextUtils.Alignment.CENTER, 0));
+        this.children.add(noKeys = new Label(new FiguraText("gui.error.no_keybinds").withStyle(ChatFormatting.YELLOW), x + width / 2, y + height / 2, TextUtils.Alignment.CENTER, 0));
         noOwner.centerVertically = noKeys.centerVertically = true;
 
         noOwner.setVisible(owner == null);
@@ -140,7 +140,7 @@ public class KeybindList extends AbstractList {
             }));
 
             //reset button
-            children.add(resetButton = new ParentedButton(0, 0, 60, 20, Component.translatable("controls.reset"), this, button -> {
+            children.add(resetButton = new ParentedButton(0, 0, 60, 20, new TranslatableComponent("controls.reset"), this, button -> {
                 keybind.resetDefaultKey();
                 parent.updateBindings();
             }));
@@ -150,7 +150,7 @@ public class KeybindList extends AbstractList {
         public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
             if (!this.isVisible()) return;
 
-            helper.renderConflictBars(stack, keybindButton.getX() - 8, keybindButton.getY() + 2, 4, 16);
+            helper.renderConflictBars(stack, keybindButton.x - 8, keybindButton.y + 2, 4, 16);
 
             //vars
             Font font = Minecraft.getInstance().font;

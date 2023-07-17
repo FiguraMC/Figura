@@ -35,7 +35,7 @@ public class PlayerTabOverlayMixin {
 
         //apply customization
         Component text = cir.getReturnValue();
-        Component name = Component.literal(playerInfo.getProfile().getName());
+        Component name = new TextComponent(playerInfo.getProfile().getName());
 
         UUID uuid = playerInfo.getProfile().getId();
         Avatar avatar = AvatarManager.getAvatarForPlayer(uuid);

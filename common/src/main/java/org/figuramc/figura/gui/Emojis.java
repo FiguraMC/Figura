@@ -4,10 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import org.figuramc.figura.FiguraMod;
@@ -31,8 +28,7 @@ public class Emojis {
     public static final FiguraResourceListener RESOURCE_LISTENER = FiguraResourceListener.createResourceListener("emojis", manager -> {
         EMOJIS.clear();
 
-        for (Map.Entry<ResourceLocation, Resource> emojis : manager.listResources("emojis", location -> location.getNamespace().equals(FiguraMod.MOD_ID) && location.getPath().endsWith(".json")).entrySet()) {
-            ResourceLocation location = emojis.getKey();
+        for (ResourceLocation location : manager.listResources("emojis", location -> location.endsWith(".json"))) {
             String[] split = location.getPath().split("/", 2);
 
             if (split.length <= 1)
@@ -41,7 +37,7 @@ public class Emojis {
             String name = split[1].substring(0, split[1].length() - 5);
 
             //open the resource as json
-            try (InputStream stream = emojis.getValue().open()) {
+            try (InputStream stream = manager.getResource(location).getInputStream()) {
                 //add emoji
                 JsonObject json = JsonParser.parseReader(new InputStreamReader(stream, StandardCharsets.UTF_8)).getAsJsonObject();
                 EMOJIS.add(new EmojiContainer(name, json));
@@ -63,7 +59,7 @@ public class Emojis {
 
     public static MutableComponent applyEmojis(Component text) {
         Component newText = TextUtils.parseLegacyFormatting(text);
-        MutableComponent ret = Component.empty();
+        MutableComponent ret = TextComponent.EMPTY.copy();
         newText.visit((style, string) -> {
             ret.append(convertEmoji(string, style));
             return Optional.empty();
@@ -74,7 +70,7 @@ public class Emojis {
     private static MutableComponent convertEmoji(String string, Style style) {
         //if the string does not contain the delimiter, then return
         if (string.indexOf(DELIMITER) == -1)
-            return Component.literal(string).withStyle(style);
+            return new TextComponent(string).withStyle(style);
 
         //string lists, every odd index is an emoji
         List<String> strings = new ArrayList<>();
@@ -132,7 +128,7 @@ public class Emojis {
             }
         }
 
-        MutableComponent result = Component.empty().withStyle(style);
+        MutableComponent result = TextComponent.EMPTY.copy().withStyle(style);
 
         //now we parse the list
         for (int i = 0; i < strings.size(); i++) {
@@ -214,10 +210,10 @@ public class Emojis {
             String emoji = map.get(key.toLowerCase());
             if (emoji == null)
                 return null;
-            return Component.literal(emoji).withStyle(STYLE.withFont(font).withHoverEvent(
-                    new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(DELIMITER + key + DELIMITER)
+            return new TextComponent(emoji).withStyle(STYLE.withFont(font).withHoverEvent(
+                    new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent(DELIMITER + key + DELIMITER)
                             .append("\n")
-                            .append(FiguraText.of("emoji." + name).withStyle(ChatFormatting.DARK_GRAY)))
+                            .append(new FiguraText("emoji." + name).withStyle(ChatFormatting.DARK_GRAY)))
             ));
         }
 

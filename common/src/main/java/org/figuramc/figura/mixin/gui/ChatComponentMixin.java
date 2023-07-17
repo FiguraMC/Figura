@@ -100,7 +100,7 @@ public class ChatComponentMixin {
             UUID uuid = entry.getValue();
             boolean isOwner = name.equals(owner);
 
-            Component playerName = Component.literal(name);
+            Component playerName = new TextComponent(name);
 
             //apply customization
             Avatar avatar = AvatarManager.getAvatarForPlayer(uuid);

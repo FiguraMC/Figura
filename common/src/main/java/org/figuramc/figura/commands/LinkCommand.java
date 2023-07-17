@@ -29,9 +29,9 @@ class LinkCommand {
         LiteralArgumentBuilder<FiguraClientCommandSource> links = LiteralArgumentBuilder.literal("links");
         links.executes(context -> {
             //header
-            MutableComponent message = Component.empty().withStyle(ColorUtils.Colors.PINK.style)
-                    .append(Component.literal("•*+•* ")
-                            .append(FiguraText.of())
+            MutableComponent message = TextComponent.EMPTY.copy().withStyle(ColorUtils.Colors.PINK.style)
+                    .append(new TextComponent("•*+•* ")
+                            .append(new FiguraText())
                             .append(" Links *•+*•").withStyle(ChatFormatting.UNDERLINE))
                     .append("\n");
 
@@ -42,10 +42,10 @@ class LinkCommand {
                 if (link == null)
                     continue;
 
-                message.append(Component.literal("• [" + link.name() + "]")
+                message.append(new TextComponent("• [" + link.name() + "]")
                         .withStyle(link.style)
                         .withStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, link.url)))
-                        .withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(link.url)))));
+                        .withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent(link.url)))));
             }
 
             FiguraMod.sendChatMessage(message);

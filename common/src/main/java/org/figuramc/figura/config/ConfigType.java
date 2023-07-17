@@ -29,8 +29,8 @@ public abstract class ConfigType<T> {
 
         //generate names
         name = "config." + name;
-        this.name = FiguraText.of(name);
-        this.tooltip = FiguraText.of(name + ".tooltip");
+        this.name = new FiguraText(name);
+        this.tooltip = new FiguraText(name + ".tooltip");
 
         //values
         this.value = this.defaultValue = this.tempValue = value;
@@ -146,8 +146,8 @@ public abstract class ConfigType<T> {
             ArrayList<Component> enumTooltip = new ArrayList<>();
 
             for (int i = 1; i <= length; i++) {
-                enumList.add(FiguraText.of(name + "." + i));
-                enumTooltip.add(FiguraText.of(name + "." + i + ".tooltip"));
+                enumList.add(new FiguraText(name + "." + i));
+                enumTooltip.add(new FiguraText(name + "." + i + ".tooltip"));
             }
 
             this.enumList = enumList;
