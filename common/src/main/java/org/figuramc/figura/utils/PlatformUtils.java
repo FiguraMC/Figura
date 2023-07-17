@@ -3,6 +3,7 @@ package org.figuramc.figura.utils;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 
 import java.nio.file.Path;
+import java.util.Map;
 
 public class PlatformUtils {
 
@@ -23,6 +24,11 @@ public class PlatformUtils {
 
     @ExpectPlatform
     public static boolean isModLoaded(String modId) {
+        throw new AssertionError();
+    }
+    
+    @ExpectPlatform
+    public static Map<String, Object> getModMetadata(String modId){
         throw new AssertionError();
     }
 }

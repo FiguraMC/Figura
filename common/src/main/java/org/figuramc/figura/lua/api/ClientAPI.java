@@ -1,13 +1,6 @@
 package org.figuramc.figura.lua.api;
 
 import com.mojang.blaze3d.platform.Window;
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.ModContainer;
-import net.fabricmc.loader.api.metadata.CustomValue;
-import net.fabricmc.loader.api.metadata.ModDependency;
-import net.fabricmc.loader.api.metadata.ModMetadata;
-import net.fabricmc.loader.api.metadata.Person;
-import net.fabricmc.loader.api.metadata.version.VersionInterval;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.Minecraft;
@@ -52,8 +45,7 @@ public class ClientAPI {
     public static final ClientAPI INSTANCE = new ClientAPI();
     private static final HashMap<String, Boolean> LOADED_MODS = new HashMap<>();
     private static final HashMap<String, Map<String, Object>> MOD_METADATA = new HashMap<>();
-    private static final boolean HAS_IRIS = PlatformUtils.isModLoaded("iris"); // separated to avoid indexing the list every frame
-    private static final boolean HAS_QUILT = PlatformUtils.isModLoaded("quilt_loader"); //separated to avoid indexing the list every frame
+    private static final boolean HAS_IRIS = isModLoaded("iris"); // separated to avoid indexing the list every frame
 
     @LuaWhitelist
     @LuaMethodDoc("client.get_fps")
@@ -318,7 +310,7 @@ public class ClientAPI {
             value = "client.is_mod_loaded"
     )
     public static boolean isModLoaded(String id) {
-        return LOADED_MODS.computeIfAbsent(id, d -> FabricLoader.getInstance().isModLoaded(d));
+        return LOADED_MODS.computeIfAbsent(id, PlatformUtils::isModLoaded);
     }
 
     @LuaWhitelist
@@ -329,69 +321,8 @@ public class ClientAPI {
             ),
             value = "client.get_mod_metadata"
     )
-    public static Object getModMetadata(String id) {
-        return MOD_METADATA.computeIfAbsent(id, d -> {
-            if (!isModLoaded(d)) return null;
-            Map<String, Object> map = new HashMap<>();
-            if (HAS_QUILT) {
-                org.figuramc.figura.lua.api.QuiltModMetaGetter.fill(map, d);
-                if(!map.isEmpty())
-                    return map;
-            }
-            Optional<ModContainer> modContainer = FabricLoader.getInstance().getModContainer(d);
-            if (modContainer.isEmpty()) return null;
-            ModMetadata metadata = modContainer.get().getMetadata();
-            map.put("id", metadata.getId());
-            map.put("name", metadata.getName());
-            map.put("description", metadata.getDescription());
-            map.put("contact_info", metadata.getContact().asMap());
-            map.put("version", metadata.getVersion().getFriendlyString());
-            map.put("icon", metadata.getIconPath(512).orElse(null));
-            map.put("type", metadata.getType());
-            map.put("licenses", metadata.getLicense());
-            map.put("provides", metadata.getProvides());
-            map.put("environment", metadata.getEnvironment().name().toLowerCase());
-            {
-                Map<String, Object> authors = new HashMap<>();
-                for (Person author : metadata.getAuthors()) {
-                    authors.put(author.getName(), author.getContact().asMap());
-                }
-                map.put("authors", authors);
-            } {
-                Map<String, Object> contributors = new HashMap<>();
-                for (Person author : metadata.getContributors()) {
-                    contributors.put(author.getName(), author.getContact().asMap());
-                }
-                map.put("contributors", contributors);
-            } {
-                Map<String, Object> values = new HashMap<>();
-                for (Map.Entry<String, CustomValue> entry : metadata.getCustomValues().entrySet()) {
-                    switch (entry.getValue().getType()) {
-                        case BOOLEAN -> values.put(entry.getKey(), entry.getValue().getAsBoolean());
-                        case STRING -> values.put(entry.getKey(), entry.getValue().getAsString());
-                        case NUMBER -> values.put(entry.getKey(), entry.getValue().getAsNumber().doubleValue());
-                    }
-                }
-                map.put("values", values);
-            } {
-                List<Map<String, Object>> dependencies = new ArrayList<>();
-                for (ModDependency dependency : metadata.getDependencies()) {
-                    Map<String, Object> dependencyData = new HashMap<>();
-                    dependencyData.put("id", dependency.getModId());
-                    dependencyData.put("kind", dependency.getKind().getKey());
-                    {
-                        List<String> versions = new ArrayList<>();
-                        for(VersionInterval interval : dependency.getVersionIntervals()) {
-                            versions.add(interval.toString());
-                        }
-                        dependencyData.put("versions", versions);
-                    }
-                    dependencies.add(dependencyData);
-                }
-                map.put("dependencies", dependencies);
-            }
-            return map;
-        });
+    public static Map<String, Object> getModMetadata(String id) {
+        return MOD_METADATA.computeIfAbsent(id, PlatformUtils::getModMetadata);
     }
 
     @LuaWhitelist

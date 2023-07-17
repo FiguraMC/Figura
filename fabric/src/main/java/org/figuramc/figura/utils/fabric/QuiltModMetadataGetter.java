@@ -1,4 +1,4 @@
-package org.moon.figura.lua.api;
+package org.figuramc.figura.utils.fabric;
 
 import org.quiltmc.loader.api.*;
 
@@ -8,9 +8,9 @@ import java.util.*;
  * interface that fills in relevant info for a mod in quilt loader context.
  * use <code>fill(map, id)</code> to fill in data about mod with <code>id</code>
  * into the given map (hopefully) fills in all the details available in
- * <code>quilt-loader-0.19.2-beta.6</code>.
+ * <code>quilt-loader-0.19.2</code>.
  */
-interface QuiltModMetaGetter {
+interface QuiltModMetadataGetter {
     static void fill(Map<String, Object> map, String id) {
         Optional<ModContainer> modContainer = QuiltLoader.getModContainer(id);
         if (modContainer.isEmpty()) return;
@@ -74,7 +74,7 @@ interface QuiltModMetaGetter {
             map.put("provides", provided);
         }
     }
-    
+
     private static Object makeDependency(ModDependency dependency) {
         if (dependency instanceof ModDependency.Only only) {
             Map<String, Object> map = new HashMap<>();
