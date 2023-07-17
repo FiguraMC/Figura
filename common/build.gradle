@@ -12,8 +12,8 @@ repositories {
 
 dependencies {
     // Libraries
-    implementation("com.github.Kingdom-of-The-Moon.LuaJ:luaj-core:$luaj-figura")
-    implementation("com.github.Kingdom-of-The-Moon.LuaJ:luaj-jse:$luaj-figura")
+    implementation("om.github.Moonlight-MC-Temp.LuaJ:luaj-core:$luaj-figura")
+    implementation("om.github.Moonlight-MC-Temp.LuaJ:luaj-jse:$luaj-figura")
     implementation("org.java-websocket:Java-WebSocket:$websocket")
 
     // We depend on fabric loader here to use the fabric @Environment annotations and get the mixin dependencies
