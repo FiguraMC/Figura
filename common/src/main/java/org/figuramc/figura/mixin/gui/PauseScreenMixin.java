@@ -76,7 +76,7 @@ public class PauseScreenMixin extends Screen {
         }
 
         if (config > 0) { //button
-            addRenderableWidget(new Button(x, y, 64, 20, FiguraText.of(), null, btn -> this.minecraft.setScreen(new WardrobeScreen(this))) {
+            addRenderableWidget(new Button(x, y, 64, 20, new FiguraText(), null, btn -> this.minecraft.setScreen(new WardrobeScreen(this))) {
                 @Override
                 public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float delta) {
                     ChatFormatting color;

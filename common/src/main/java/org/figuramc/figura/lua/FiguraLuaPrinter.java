@@ -53,12 +53,12 @@ public class FiguraLuaPrinter {
 
     //print a string either on chat or console
     public static void sendLuaMessage(Object message, String owner) {
-        MutableComponent component = Component.empty()
-                .append(Component.literal("[lua] ").withStyle(ColorUtils.Colors.LUA_LOG.style))
-                .append(Component.literal(owner))
-                .append(Component.literal(" : ").withStyle(ColorUtils.Colors.LUA_LOG.style))
-                .append(message instanceof Component c ? c : Component.literal(message.toString()))
-                .append(Component.literal("\n"));
+        MutableComponent component = TextComponent.EMPTY.copy()
+                .append(new TextComponent("[lua] ").withStyle(ColorUtils.Colors.LUA_LOG.style))
+                .append(new TextComponent(owner))
+                .append(new TextComponent(" : ").withStyle(ColorUtils.Colors.LUA_LOG.style))
+                .append(message instanceof Component c ? c : new TextComponent(message.toString()))
+                .append(new TextComponent("\n"));
 
         if (Configs.LOG_LOCATION.value == 0)
             sendLuaChatMessage(component);
@@ -111,13 +111,13 @@ public class FiguraLuaPrinter {
             } catch (Exception ignored) {}
         }
 
-        MutableComponent component = Component.empty()
-                .append(Component.literal("[error] ").withStyle(ColorUtils.Colors.LUA_ERROR.style))
-                .append(Component.literal(owner.entityName))
-                .append(Component.literal(" : " + message).withStyle(ColorUtils.Colors.LUA_ERROR.style))
-                .append(Component.literal("\n"));
+        MutableComponent component = TextComponent.EMPTY.copy()
+                .append(new TextComponent("[error] ").withStyle(ColorUtils.Colors.LUA_ERROR.style))
+                .append(new TextComponent(owner.entityName))
+                .append(new TextComponent(" : " + message).withStyle(ColorUtils.Colors.LUA_ERROR.style))
+                .append(new TextComponent("\n"));
 
-        owner.errorText = TextUtils.replaceTabs(Component.literal(message).withStyle(ColorUtils.Colors.LUA_ERROR.style));
+        owner.errorText = TextUtils.replaceTabs(new TextComponent(message).withStyle(ColorUtils.Colors.LUA_ERROR.style));
 
         if ((owner.entityType == EntityType.PLAYER && !Configs.LOG_OTHERS.value && !FiguraMod.isLocal(owner.owner)) || owner.permissions.getCategory() == Permissions.Category.BLOCKED)
             return;
@@ -134,19 +134,19 @@ public class FiguraLuaPrinter {
         if (config == 0 || config == 1 && !owner.isHost)
             return;
 
-        MutableComponent text = Component.empty()
-                .append(Component.literal("[ping] ").withStyle(ColorUtils.Colors.LUA_PING.style))
-                .append(Component.literal(owner.entityName))
-                .append(Component.literal(" : ").withStyle(ColorUtils.Colors.LUA_PING.style))
+        MutableComponent text = TextComponent.EMPTY.copy()
+                .append(new TextComponent("[ping] ").withStyle(ColorUtils.Colors.LUA_PING.style))
+                .append(new TextComponent(owner.entityName))
+                .append(new TextComponent(" : ").withStyle(ColorUtils.Colors.LUA_PING.style))
                 .append(ping)
-                .append(Component.literal(" :: ").withStyle(ColorUtils.Colors.LUA_PING.style))
+                .append(new TextComponent(" :: ").withStyle(ColorUtils.Colors.LUA_PING.style))
                 .append(size + " bytes")
-                .append(Component.literal(" :: ").withStyle(ColorUtils.Colors.LUA_PING.style));
+                .append(new TextComponent(" :: ").withStyle(ColorUtils.Colors.LUA_PING.style));
 
         for (LuaValue arg : args)
             text.append(getPrintText(owner.luaRuntime.typeManager, arg, true, false)).append("\t");
 
-        text.append(Component.literal("\n"));
+        text.append(new TextComponent("\n"));
 
         if (Configs.LOG_LOCATION.value == 0)
             sendLuaChatMessage(text);
@@ -161,7 +161,7 @@ public class FiguraLuaPrinter {
             if (!Configs.LOG_OTHERS.value && !FiguraMod.isLocal(runtime.owner.owner))
                 return NIL;
 
-            MutableComponent text = Component.empty();
+            MutableComponent text = TextComponent.EMPTY.copy();
             for (int i = 0; i < args.narg(); i++)
                 text.append(getPrintText(runtime.typeManager, args.arg(i + 1), true, false)).append("\t");
 
@@ -186,7 +186,7 @@ public class FiguraLuaPrinter {
 
             TextUtils.allowScriptEvents = true;
 
-            MutableComponent text = Component.empty();
+            MutableComponent text = TextComponent.EMPTY.copy();
             for (int i = 0; i < args.narg(); i++)
                 text.append(TextUtils.tryParseJson(args.arg(i + 1).tojstring()));
 
@@ -214,7 +214,7 @@ public class FiguraLuaPrinter {
                 return NIL;
 
             boolean silent = false;
-            MutableComponent text = Component.empty();
+            MutableComponent text = TextComponent.EMPTY.copy();
 
             if (args.narg() > 0) {
                 int depth = args.arg(2).isnumber() ? args.arg(2).checkint() : 1;
@@ -244,9 +244,9 @@ public class FiguraLuaPrinter {
             return getPrintText(typeManager, value, hasTooltip, true);
 
         //format text
-        MutableComponent text = Component.empty()
-                .append(Component.literal("table:").withStyle(getTypeColor(value)))
-                .append(Component.literal(" {\n").withStyle(ChatFormatting.GRAY));
+        MutableComponent text = TextComponent.EMPTY.copy()
+                .append(new TextComponent("table:").withStyle(getTypeColor(value)))
+                .append(new TextComponent(" {\n").withStyle(ChatFormatting.GRAY));
 
         String spacing = "\t".repeat(indent - 1);
 
@@ -254,7 +254,7 @@ public class FiguraLuaPrinter {
         for (LuaValue key : table.keys())
             text.append(getTableEntry(typeManager, spacing, key, table.get(key), hasTooltip, depth, indent));
 
-        text.append(spacing).append(Component.literal("}").withStyle(ChatFormatting.GRAY));
+        text.append(spacing).append(new TextComponent("}").withStyle(ChatFormatting.GRAY));
         return text;
     }
 
@@ -265,9 +265,9 @@ public class FiguraLuaPrinter {
             return getPrintText(typeManager, value, hasTooltip, true);
 
         //format text
-        MutableComponent text = Component.empty()
-                .append(Component.literal("userdata:").withStyle(getTypeColor(value)))
-                .append(Component.literal(" {\n").withStyle(ChatFormatting.GRAY));
+        MutableComponent text = TextComponent.EMPTY.copy()
+                .append(new TextComponent("userdata:").withStyle(getTypeColor(value)))
+                .append(new TextComponent(" {\n").withStyle(ChatFormatting.GRAY));
 
         String spacing = "\t".repeat(indent - 1);
 
@@ -301,18 +301,18 @@ public class FiguraLuaPrinter {
             }
         }
 
-        text.append(spacing).append(Component.literal("}").withStyle(ChatFormatting.GRAY));
+        text.append(spacing).append(new TextComponent("}").withStyle(ChatFormatting.GRAY));
         return text;
     }
 
     private static MutableComponent getTableEntry(LuaTypeManager typeManager, String spacing, LuaValue key, LuaValue value, boolean hasTooltip, int depth, int indent) {
-        MutableComponent text = Component.empty()
+        MutableComponent text = TextComponent.EMPTY.copy()
                 .append(spacing).append("\t");
 
         //key
-        text.append(Component.literal("[").withStyle(ChatFormatting.GRAY))
+        text.append(new TextComponent("[").withStyle(ChatFormatting.GRAY))
                 .append(getPrintText(typeManager, key, hasTooltip, true))
-                .append(Component.literal("] = ").withStyle(ChatFormatting.GRAY));
+                .append(new TextComponent("] = ").withStyle(ChatFormatting.GRAY));
 
         //value
         if (value.istable() || value.isuserdata())
@@ -338,7 +338,7 @@ public class FiguraLuaPrinter {
                 ret = "\"" + ret + "\"";
         }
 
-        MutableComponent text = Component.literal(ret).withStyle(getTypeColor(value));
+        MutableComponent text = new TextComponent(ret).withStyle(getTypeColor(value));
 
         //table tooltip
         if (hasTooltip && (value.istable() || value.isuserdata())) {
@@ -399,7 +399,7 @@ public class FiguraLuaPrinter {
         if (chatQueue.isEmpty())
             return;
 
-        MutableComponent toPrint = Component.empty();
+        MutableComponent toPrint = TextComponent.EMPTY.copy();
         int i = MAX_CHARS_PER_TICK;
 
         while (i > 0) {

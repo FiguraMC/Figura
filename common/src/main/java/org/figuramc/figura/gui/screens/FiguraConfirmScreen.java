@@ -17,9 +17,9 @@ public class FiguraConfirmScreen extends AbstractPanelScreen {
     private final Component message;
 
     public FiguraConfirmScreen(BooleanConsumer callback, Object title, Object message, Screen parentScreen) {
-        super(parentScreen, title instanceof Component c ? c : Component.literal(title.toString()));
+        super(parentScreen, title instanceof Component c ? c : new TextComponent(title.toString()));
         this.callback = callback;
-        this.message = message instanceof Component c ? c : Component.literal(message.toString()).withStyle(FiguraMod.getAccentColor());
+        this.message = message instanceof Component c ? c : new TextComponent(message.toString()).withStyle(FiguraMod.getAccentColor());
     }
 
     @Override
@@ -90,7 +90,7 @@ public class FiguraConfirmScreen extends AbstractPanelScreen {
             this.addRenderableWidget(new Button(x - 148, y, 96, 20, Component.translatable("chat.link.open"), null, button -> run(true)));
             this.addRenderableWidget(new Button(x - 48, y, 96, 20, Component.translatable("chat.copy"), null, button -> {
                 this.minecraft.keyboardHandler.setClipboard(this.url);
-                FiguraToast.sendToast(FiguraText.of("toast.clipboard"));
+                FiguraToast.sendToast(new FiguraText("toast.clipboard"));
                 run(false);
             }));
             this.addRenderableWidget(new Button(x + 52, y, 96, 20, CommonComponents.GUI_CANCEL, null, button -> run(false)));

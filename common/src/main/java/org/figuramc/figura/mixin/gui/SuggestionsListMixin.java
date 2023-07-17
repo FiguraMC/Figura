@@ -33,7 +33,7 @@ public class SuggestionsListMixin implements SuggestionsListAccessor {
             return x;
 
         //get emoji
-        Component emoji = Emojis.applyEmojis(Component.literal(text));
+        Component emoji = Emojis.applyEmojis(new TextComponent(text));
 
         //dont render if no emoji was applied
         if (emoji.getString().equals(text))

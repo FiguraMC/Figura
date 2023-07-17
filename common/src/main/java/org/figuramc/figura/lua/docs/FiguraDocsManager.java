@@ -288,13 +288,13 @@ public class FiguraDocsManager {
         String name = getNameFor(clazz);
         String doc = CLASS_COMMAND_MAP.get(clazz);
 
-        MutableComponent text = Component.literal(name);
+        MutableComponent text = new TextComponent(name);
         if (doc == null)
             return text;
 
         text.setStyle(
                 Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, doc))
-                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, FiguraText.of("command.docs_type_hover", Component.literal(name).withStyle(ChatFormatting.DARK_PURPLE))))
+                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new FiguraText("command.docs_type_hover", new TextComponent(name).withStyle(ChatFormatting.DARK_PURPLE))))
                 .withUnderlined(true));
         return text;
     }
@@ -349,15 +349,15 @@ public class FiguraDocsManager {
 
             //feedback
             context.getSource().figura$sendFeedback(
-                    FiguraText.of("command.docs_export.success")
+                    new FiguraText("command.docs_export.success")
                             .append(" ")
-                            .append(FiguraText.of("command.click_to_open")
+                            .append(new FiguraText("command.click_to_open")
                                     .setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, targetPath.toString())).withUnderlined(true))
                             )
             );
             return 1;
         } catch (Exception e) {
-            context.getSource().figura$sendError(FiguraText.of("command.docs_export.error"));
+            context.getSource().figura$sendError(new FiguraText("command.docs_export.error"));
             FiguraMod.LOGGER.error("Failed to export docs!", e);
             return 0;
         }

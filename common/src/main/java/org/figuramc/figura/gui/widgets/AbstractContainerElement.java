@@ -1,13 +1,14 @@
 package org.figuramc.figura.gui.widgets;
 
-import net.minecraft.client.gui.GuiGraphics;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.components.events.AbstractContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import org.figuramc.figura.utils.ui.UIHelper;
 
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ import java.util.List;
 
 public abstract class AbstractContainerElement extends AbstractContainerEventHandler implements FiguraTickable, FiguraWidget, NarratableEntry {
 
-    public static final Component HOVERED_ARROW = Component.literal("•");
+    public static final Component HOVERED_ARROW = new TextComponent("•");
 
     protected final List<GuiEventListener> children = new ArrayList<>();
 
@@ -40,34 +41,21 @@ public abstract class AbstractContainerElement extends AbstractContainerEventHan
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
         for (GuiEventListener listener : this.children) {
-            if (listener instanceof Renderable widget)
-                widget.render(gui, mouseX, mouseY, delta);
+            if (listener instanceof Widget widget)
+                widget.render(stack, mouseX, mouseY, delta);
         }
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        GuiEventListener widget = null;
-
-        //update children focused
-        for (GuiEventListener children : List.copyOf(this.children())) {
-            boolean clicked = children.mouseClicked(mouseX, mouseY, button);
-            children.setFocused(clicked);
-            if (clicked) widget = children;
+        //fix mojang focusing for text fields
+        for (GuiEventListener listener : this.children) {
+            if (listener instanceof TextField field)
+                field.getField().setFocus(field.isEnabled() && field.isMouseOver(mouseX, mouseY));
         }
-
-        //set this focused
-        if (getFocused() != widget)
-            setFocused(widget);
-
-        if (widget != null) {
-            if (button == 0) this.setDragging(true);
-            return true;
-        }
-
-        return false;
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
@@ -84,13 +72,7 @@ public abstract class AbstractContainerElement extends AbstractContainerEventHan
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
         //better check for mouse released when outside node's boundaries
-        boolean bool = this.getFocused() != null && this.getFocused().mouseReleased(mouseX, mouseY, button);
-
-        //remove focused when clicking
-        if (bool) setFocused(null);
-
-        this.setDragging(false);
-        return bool;
+        return this.getFocused() != null && this.getFocused().mouseReleased(mouseX, mouseY, button);
     }
 
     @Override
@@ -172,12 +154,6 @@ public abstract class AbstractContainerElement extends AbstractContainerEventHan
     @Override
     public List<? extends GuiEventListener> children() {
         return children;
-    }
-
-    @Override
-    public void setFocused(boolean focused) {
-        if (!focused) setFocused(null);
-        super.setFocused(focused);
     }
 
     @Override

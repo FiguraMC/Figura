@@ -3,7 +3,6 @@ package org.figuramc.figura.gui.widgets;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.narration.NarratedElementType;
@@ -11,6 +10,7 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.Mth;
 import org.figuramc.figura.utils.MathUtils;
 import org.figuramc.figura.utils.TextUtils;
@@ -43,7 +43,7 @@ public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
 
     public Label(Object text, int x, int y, float scale, int maxWidth, boolean wrap, TextUtils.Alignment alignment, Integer outlineColor) {
         this.font = Minecraft.getInstance().font;
-        this.rawText = text instanceof Component c ? c : Component.literal(String.valueOf(text));
+        this.rawText = text instanceof Component c ? c : new TextComponent(String.valueOf(text));
         this.x = x;
         this.y = y;
         this.scale = scale;
@@ -71,31 +71,30 @@ public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
         hovered = null;
 
         if (!isVisible())
             return;
 
-        renderBackground(gui);
-        renderText(gui, mouseX, mouseY, delta);
+        renderBackground(stack);
+        renderText(stack, mouseX, mouseY, delta);
     }
 
-    private void renderBackground(GuiGraphics gui) {
+    private void renderBackground(PoseStack stack) {
         if (backgroundColor == null)
             return;
 
         int x = getX();
         int y = getY();
 
-        gui.fill(x, y, x + width, y + height, backgroundColor);
+        UIHelper.fill(stack, x, y, x + width, y + height, backgroundColor);
     }
 
-    private void renderText(GuiGraphics gui, int mouseX, int mouseY, float delta) {
-        PoseStack pose = gui.pose();
-        pose.pushPose();
-        pose.translate(this.x, getY(), 0);
-        pose.scale(scale, scale, scale);
+    private void renderText(PoseStack stack, int mouseX, int mouseY, float delta) {
+        stack.pushPose();
+        stack.translate(this.x, getY(), 0);
+        stack.scale(scale, scale, scale);
 
         //alpha
         if (alpha != null) {
@@ -130,15 +129,15 @@ public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
 
             //render text
             if (outlineColor != null) {
-                UIHelper.renderOutlineText(gui, font, text, x, y, 0xFFFFFF, outlineColor);
+                UIHelper.renderOutlineText(stack, font, text, x, y, 0xFFFFFF, outlineColor);
             } else {
-                gui.drawString(font, text, x, y, 0xFFFFFF + (alphaPrecise << 24));
+                font.drawShadow(stack, text, x, y, 0xFFFFFF + (alphaPrecise << 24));
             }
 
             y += height;
         }
 
-        pose.popPose();
+        stack.popPose();
     }
 
     @Override
@@ -162,14 +161,6 @@ public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
         if (mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + height)
             return true;
         return GuiEventListener.super.isMouseOver(mouseX, mouseY);
-    }
-
-    @Override
-    public void setFocused(boolean focused) {}
-
-    @Override
-    public boolean isFocused() {
-        return false;
     }
 
     @Override

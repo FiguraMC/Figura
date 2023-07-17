@@ -43,7 +43,7 @@ public class LuaSound {
     private String subtitle;
 
     public LuaSound(SoundBuffer buffer, String id, Avatar owner) {
-        this(null, buffer, id, Component.literal(id), owner);
+        this(null, buffer, id, new TextComponent(id), owner);
     }
 
     public LuaSound(Sound sound, String id, Component subtitle, Avatar owner) {

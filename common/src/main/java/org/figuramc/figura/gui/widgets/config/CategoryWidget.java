@@ -1,7 +1,8 @@
 package org.figuramc.figura.gui.widgets.config;
 
-import net.minecraft.client.gui.GuiGraphics;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import org.figuramc.figura.gui.screens.ConfigScreen;
 import org.figuramc.figura.gui.widgets.AbstractContainerElement;
 import org.figuramc.figura.gui.widgets.ContainerButton;
@@ -25,7 +26,7 @@ public class CategoryWidget extends AbstractContainerElement {
         this.config = config;
         this.parent = parent;
 
-        this.parentConfig = new ContainerButton(parent, 0, 0, width, 20, config == null ? Component.empty() : config.name, config == null ? null : config.tooltip, button -> {
+        this.parentConfig = new ContainerButton(parent, 0, 0, width, 20, config == null ? TextComponent.EMPTY.copy() : config.name, config == null ? null : config.tooltip, button -> {
             boolean toggled = this.parentConfig.isToggled();
             setShowChildren(toggled);
             ConfigScreen.CATEGORY_DATA.put(config, toggled);
@@ -38,20 +39,21 @@ public class CategoryWidget extends AbstractContainerElement {
         children.add(this.parentConfig);
     }
 
+
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
         if (!isVisible())
             return;
 
         //children background
         if (parentConfig.isToggled() && entries.size() > 0)
-            gui.fill(getX(), getY() + 21, getX() + getWidth(), getY() + getHeight(), 0x11FFFFFF);
+            UIHelper.fill(stack, getX(), getY() + 21, getX() + getWidth(), getY() + getHeight(), 0x11FFFFFF);
 
         if (config == Configs.PAPERDOLL)
             parent.parentScreen.renderPaperdoll = parentConfig.isToggled() && parent.isMouseOver(mouseX, mouseY) && isMouseOver(mouseX, mouseY);
 
         //children
-        super.render(gui, mouseX, mouseY, delta);
+        super.render(stack, mouseX, mouseY, delta);
     }
 
     @Override

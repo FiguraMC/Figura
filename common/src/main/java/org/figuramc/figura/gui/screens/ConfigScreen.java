@@ -35,7 +35,7 @@ public class ConfigScreen extends AbstractPanelScreen {
     }
 
     public ConfigScreen(Screen parentScreen, boolean enablePanels) {
-        super(parentScreen, FiguraText.of("gui.panels.title.settings"));
+        super(parentScreen, new FiguraText("gui.panels.title.settings"));
         this.hasPanels = enablePanels;
     }
 
@@ -62,14 +62,14 @@ public class ConfigScreen extends AbstractPanelScreen {
         // -- bottom buttons -- //
 
         //cancel
-        this.addRenderableWidget(cancel = new Button(this.width / 2 - 122, height - 24, 120, 20, FiguraText.of("gui.cancel"), null, button -> {
+        this.addRenderableWidget(cancel = new Button(this.width / 2 - 122, height - 24, 120, 20, new FiguraText("gui.cancel"), null, button -> {
             ConfigManager.discardConfig();
             list.updateList();
         }));
         cancel.setActive(false);
 
         //done
-        addRenderableWidget(new Button(this.width / 2 + 2, height - 24, 120, 20, FiguraText.of("gui.done"), null, button -> onClose()));
+        addRenderableWidget(new Button(this.width / 2 + 2, height - 24, 120, 20, new FiguraText("gui.done"), null, button -> onClose()));
     }
 
     @Override

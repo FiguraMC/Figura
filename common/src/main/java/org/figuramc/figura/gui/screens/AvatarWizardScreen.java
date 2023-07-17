@@ -16,7 +16,7 @@ public class AvatarWizardScreen extends AbstractPanelScreen {
     private Button build;
 
     public AvatarWizardScreen(AbstractPanelScreen parentScreen) {
-        super(parentScreen.parentScreen, FiguraText.of("gui.panels.title.avatar_wizard"));
+        super(parentScreen.parentScreen, new FiguraText("gui.panels.title.avatar_wizard"));
         sourcePanel = parentScreen;
     }
 
@@ -32,15 +32,15 @@ public class AvatarWizardScreen extends AbstractPanelScreen {
         // -- bottom buttons -- //
 
         //cancel
-        this.addRenderableWidget(new Button(width / 2 - 122, height - 24, 120, 20, FiguraText.of("gui.cancel"), null, button -> onClose()));
+        this.addRenderableWidget(new Button(width / 2 - 122, height - 24, 120, 20, new FiguraText("gui.cancel"), null, button -> onClose()));
 
         //done
-        addRenderableWidget(build = new Button(width / 2 + 4, height - 24, 120, 20, FiguraText.of("gui.create"), null, button -> {
+        addRenderableWidget(build = new Button(width / 2 + 4, height - 24, 120, 20, new FiguraText("gui.create"), null, button -> {
             try {
                 wizard.build();
-                FiguraToast.sendToast(FiguraText.of("toast.avatar_wizard.success"));
+                FiguraToast.sendToast(new FiguraText("toast.avatar_wizard.success"));
             } catch (Exception e) {
-                FiguraToast.sendToast(FiguraText.of("toast.avatar_wizard.error"), FiguraToast.ToastType.ERROR);
+                FiguraToast.sendToast(new FiguraText("toast.avatar_wizard.error"), FiguraToast.ToastType.ERROR);
                 FiguraMod.LOGGER.error("", e);
             }
 

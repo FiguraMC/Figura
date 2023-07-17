@@ -25,7 +25,7 @@ abstract class ClientCommandSourceMixin implements FiguraClientCommandSource {
 
     @Override
     public void figura$sendError(Component message) {
-        figura$sendFeedback(Component.literal("").append(message).withStyle(ChatFormatting.RED));
+        figura$sendFeedback(new TextComponent("").append(message).withStyle(ChatFormatting.RED));
     }
 
     @Override

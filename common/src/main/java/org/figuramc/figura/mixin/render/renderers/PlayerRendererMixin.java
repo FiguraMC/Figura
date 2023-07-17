@@ -100,7 +100,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
         stack.scale((float) scaleVec.x, (float) scaleVec.y, (float) scaleVec.z);
 
         //text
-        Component name = Component.literal(player.getName().getString());
+        Component name = new TextComponent(player.getName().getString());
         FiguraMod.popPushProfiler("text");
         Component replacement = hasCustom && custom.getJson() != null ? custom.getJson().copy() : name;
 
@@ -151,7 +151,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
                 //render scoreboard
                 Score score = scoreboard.getOrCreatePlayerScore(player.getScoreboardName(), scoreboardObjective);
 
-                Component text1 = Component.literal(Integer.toString(score.getScore())).append(" ").append(scoreboardObjective.getDisplayName());
+                Component text1 = new TextComponent(Integer.toString(score.getScore())).append(" ").append(scoreboardObjective.getDisplayName());
                 float x = -font.width(text1) / 2f;
                 float y = deadmau ? -10f : 0f;
 

@@ -1,10 +1,11 @@
 package org.figuramc.figura.gui.widgets.avatar;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.figuramc.figura.gui.widgets.Button;
 import org.figuramc.figura.avatar.AvatarManager;
@@ -23,22 +24,22 @@ public class AvatarWidget extends AbstractAvatarWidget {
         super(depth, width, 24, avatar, parent);
 
         AvatarWidget instance = this;
-        Component description = Component.literal(avatar.getDescription());
+        Component description = new TextComponent(avatar.getDescription());
         this.button = new Button(getX(), getY(), width, 24, getName(), null, button -> {
             AvatarManager.loadLocalAvatar(avatar.getPath());
-            AvatarList.selectedEntry = avatar.getTheActualPathForThis();
+            AvatarList.selectedEntry = instance;
         }) {
             @Override
-            public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float delta) {
-                super.renderWidget(gui, mouseX, mouseY, delta);
+            public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
+                super.renderButton(stack, mouseX, mouseY, delta);
 
                 //selected border
-                if (instance.isOf(AvatarList.selectedEntry))
-                    UIHelper.fillOutline(gui, getX(), getY(), getWidth(), getHeight(), 0xFFFFFFFF);
+                if (instance.equals(AvatarList.selectedEntry))
+                    UIHelper.fillOutline(stack, getX(), getY(), getWidth(), getHeight(), 0xFFFFFFFF);
             }
 
             @Override
-            protected void renderText(GuiGraphics gui, float delta) {
+            protected void renderText(PoseStack pose, float delta) {
                 //variables
                 Font font = Minecraft.getInstance().font;
 
@@ -50,15 +51,15 @@ public class AvatarWidget extends AbstractAvatarWidget {
                 //icon
                 FileTexture texture = avatar.getIcon();
                 ResourceLocation icon = texture == null ? MISSING_ICON : texture.getLocation();
-                UIHelper.blit(gui, x, y, 20, 20, icon);
+                UIHelper.renderTexture(pose, x, y, 20, 20, icon);
 
                 //name
                 Component parsedName = TextUtils.trimToWidthEllipsis(font, getMessage(), width, TextUtils.ELLIPSIS.copy().withStyle(getMessage().getStyle()));
-                gui.drawString(font, parsedName, x + 22, y, -1);
+                font.drawShadow(pose, parsedName, x + 22, y, -1);
 
                 //description
                 Component parsedDescription = TextUtils.trimToWidthEllipsis(font, description, width, TextUtils.ELLIPSIS.copy().withStyle(description.getStyle()));
-                gui.drawString(font, parsedDescription, x + 22, y + font.lineHeight + 1, ChatFormatting.GRAY.getColor());
+                font.drawShadow(pose, parsedDescription, x + 22, y + font.lineHeight + 1, ChatFormatting.GRAY.getColor());
 
                 //tooltip
                 if (parsedName != getMessage() || parsedDescription != description) {

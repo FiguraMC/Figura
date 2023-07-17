@@ -30,8 +30,8 @@ public class SplashManagerMixin {
 
     @Unique
     private static final List<Component> FIGURA_SPLASHES = List.of(
-            Component.literal("Also try ears ")
-                    .append(Component.literal("\uD83D\uDC3E").withStyle(Style.EMPTY.withFont(UIHelper.SPECIAL_FONT).withColor(ChatFormatting.WHITE)))
+            new TextComponent("Also try ears ")
+                    .append(new TextComponent("\uD83D\uDC3E").withStyle(Style.EMPTY.withFont(UIHelper.SPECIAL_FONT).withColor(ChatFormatting.WHITE)))
                     .append("!")
     );
 
@@ -57,7 +57,7 @@ public class SplashManagerMixin {
         }
 
         if (who != null) {
-            FiguraMod.splashText = Component.literal("Happy birthday " + who + " ")
+            FiguraMod.splashText = new TextComponent("Happy birthday " + who + " ")
                     .append(Badges.System.DEFAULT.badge.copy().withStyle(Style.EMPTY.withFont(Badges.FONT).withColor(ColorUtils.Colors.DEFAULT.hex)))
                     .append("!");
         } else {

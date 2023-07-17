@@ -53,7 +53,7 @@ public class FiguraCommands {
     protected static Avatar checkAvatar(CommandContext<FiguraClientCommandSource> context) {
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
         if (avatar == null) {
-            context.getSource().figura$sendError(FiguraText.of("command.no_avatar_error"));
+            context.getSource().figura$sendError(new FiguraText("command.no_avatar_error"));
             return null;
         }
         return avatar;
@@ -64,7 +64,7 @@ public class FiguraCommands {
         if (avatar == null)
             return null;
         if (avatar.luaRuntime == null || avatar.scriptError) {
-            context.getSource().figura$sendError(FiguraText.of("command.no_script_error"));
+            context.getSource().figura$sendError(new FiguraText("command.no_script_error"));
             return null;
         }
         return avatar.luaRuntime;
@@ -75,7 +75,7 @@ public class FiguraCommands {
         if (avatar == null)
             return null;
         if (avatar.renderer == null) {
-            context.getSource().figura$sendError(FiguraText.of("command.no_renderer_error"));
+            context.getSource().figura$sendError(new FiguraText("command.no_renderer_error"));
             return null;
         }
         return avatar.renderer;
