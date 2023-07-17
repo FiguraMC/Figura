@@ -6,10 +6,11 @@ import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
-import com.mojang.math.Axis;
+import com.mojang.math.Matrix3f;
+import com.mojang.math.Matrix4f;
+import com.mojang.math.Vector3f;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.LightTexture;
@@ -50,7 +51,6 @@ import org.figuramc.figura.utils.ColorUtils;
 import org.figuramc.figura.utils.RefilledNumber;
 import org.figuramc.figura.utils.Version;
 import org.joml.Quaternionf;
-import org.joml.Vector3f;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.figuramc.figura.FiguraMod;
@@ -586,9 +586,9 @@ public class Avatar {
 
         stack.pushPose();
         if (!config) {
-            stack.mulPose(Axis.ZP.rotation(arm.zRot));
-            stack.mulPose(Axis.YP.rotation(arm.yRot));
-            stack.mulPose(Axis.XP.rotation(arm.xRot));
+            stack.mulPose(com.mojang.math.Vector3f.ZP.rotation(arm.zRot));
+            stack.mulPose(com.mojang.math.Vector3f.YP.rotation(arm.yRot));
+            stack.mulPose(com.mojang.math.Vector3f.XP.rotation(arm.xRot));
         }
         render(player, 0f, tickDelta, 1f, stack, bufferSource, light, OverlayTexture.NO_OVERLAY, playerRenderer, filter, false, false);
         stack.popPose();
@@ -607,8 +607,8 @@ public class Avatar {
         FiguraMod.pushProfiler("hudRender");
 
         stack.pushPose();
-        stack.last().pose().scale(16, 16, -16);
-        stack.last().normal().scale(1, 1, -1);
+        stack.last().pose().multiply(Matrix4f.createScaleMatrix(16, 16, -16));
+        stack.last().normal().mul(Matrix3f.createScaleMatrix(1, 1, -1));
 
         Lighting.setupForFlatItems();
         RenderSystem.disableDepthTest();
@@ -643,7 +643,7 @@ public class Avatar {
             stack.translate((0.5d - direction.getStepX() * 0.25d), 0.25d, (0.5d - direction.getStepZ() * 0.25d));
 
         stack.scale(-1f, -1f, 1f);
-        stack.mulPose(Axis.YP.rotationDegrees(yaw));
+        stack.mulPose(com.mojang.math.Vector3f.YP.rotationDegrees(yaw));
 
         renderer.allowPivotParts = false;
 
@@ -694,26 +694,25 @@ public class Avatar {
         return comp > 0 && luaRuntime != null && !luaRuntime.vanilla_model.HEAD.checkVisible();
     }
 
-    public boolean renderPortrait(GuiGraphics gui, int x, int y, int size, float modelScale, boolean upsideDown) {
+    public boolean renderPortrait(PoseStack pose, int x, int y, int size, float modelScale, boolean upsideDown) {
         if (!Configs.AVATAR_PORTRAIT.value || renderer == null || !loaded)
             return false;
 
         //matrices
-        PoseStack pose = gui.pose();
         pose.pushPose();
         pose.translate(x, y, 0d);
         pose.scale(modelScale, modelScale * (upsideDown ? 1 : -1), modelScale);
-        pose.mulPose(Axis.XP.rotationDegrees(180f));
+        pose.mulPose(com.mojang.math.Vector3f.XP.rotationDegrees(180f));
 
         //scissors
-        Vector3f pos = pose.last().pose().transformPosition(new Vector3f());
+        FiguraVec3 pos = FiguraMat4.of().set((pose.last().pose())).apply(0d, 0d, 0d);
 
         int x1 = (int) pos.x;
         int y1 = (int) pos.y;
         int x2 = (int) pos.x + size;
         int y2 = (int) pos.y + size;
 
-        gui.enableScissor(x1, y1, x2, y2);
+        UIHelper.setupScissor(x1, y1, x2-x1, y2-y1);
         UIHelper.paperdoll = true;
         UIHelper.dollScale = 16f;
 
@@ -741,7 +740,7 @@ public class Avatar {
         buffer.endBatch();
         pose.popPose();
 
-        gui.disableScissor();
+        UIHelper.disableScissor();
         UIHelper.paperdoll = false;
 
         renderer.allowPivotParts = true;
@@ -755,7 +754,7 @@ public class Avatar {
             return false;
 
         stack.pushPose();
-        Quaternionf quaternionf = Axis.XP.rotationDegrees(135f);
+        Quaternionf quaternionf = Vector3f.XP.rotationDegrees(135f);
         Quaternionf quaternionf2 = Axis.YP.rotationDegrees(-90f);
         quaternionf.mul(quaternionf2);
         stack.mulPose(quaternionf);

@@ -1,17 +1,19 @@
 package org.figuramc.figura.math.matrix;
 
+import com.mojang.math.Matrix4f;
 import net.minecraft.world.phys.Vec3;
+import org.luaj.vm2.LuaError;
+import org.lwjgl.BufferUtils;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
-import org.figuramc.figura.math.vector.FiguraVec4;
-import org.joml.Matrix4d;
-import org.joml.Matrix4f;
-import org.luaj.vm2.LuaError;
 import org.figuramc.figura.math.vector.FiguraVec3;
+import org.figuramc.figura.math.vector.FiguraVec4;
 import org.figuramc.figura.utils.LuaUtils;
+
+import java.nio.FloatBuffer;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -20,40 +22,36 @@ import org.figuramc.figura.utils.LuaUtils;
 )
 public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
 
-    public FiguraMat4 set(Matrix4f mat) {
-        return set(
-                mat.m00(), mat.m01(), mat.m02(), mat.m03(),
-                mat.m10(), mat.m11(), mat.m12(), mat.m13(),
-                mat.m20(), mat.m21(), mat.m22(), mat.m23(),
-                mat.m30(), mat.m31(), mat.m32(), mat.m33()
-        );
-    }
+    private static final FloatBuffer copyingBuffer = BufferUtils.createFloatBuffer(4 * 4);
 
-    public FiguraMat4 set(Matrix4d mat) {
-        return set(
-                mat.m00(), mat.m01(), mat.m02(), mat.m03(),
-                mat.m10(), mat.m11(), mat.m12(), mat.m13(),
-                mat.m20(), mat.m21(), mat.m22(), mat.m23(),
-                mat.m30(), mat.m31(), mat.m32(), mat.m33()
-        );
+    public FiguraMat4 set(Matrix4f mat) {
+        copyingBuffer.clear();
+        mat.store(copyingBuffer);
+        return set(copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get(),
+                copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get(),
+                copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get(),
+                copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get());
     }
 
     public Matrix4f toMatrix4f() {
-        return new Matrix4f(
-                (float) v11, (float) v21, (float) v31, (float) v41,
-                (float) v12, (float) v22, (float) v32, (float) v42,
-                (float) v13, (float) v23, (float) v33, (float) v43,
-                (float) v14, (float) v24, (float) v34, (float) v44
-        );
+        writeToBuffer();
+        Matrix4f result = new Matrix4f();
+        result.load(copyingBuffer);
+        return result;
     }
 
     public void copyDataTo(Matrix4f vanillaMatrix) {
-        vanillaMatrix.set(
-                (float) v11, (float) v21, (float) v31, (float) v41,
-                (float) v12, (float) v22, (float) v32, (float) v42,
-                (float) v13, (float) v23, (float) v33, (float) v43,
-                (float) v14, (float) v24, (float) v34, (float) v44
-        );
+        writeToBuffer();
+        vanillaMatrix.load(copyingBuffer);
+    }
+
+    private void writeToBuffer() {
+        copyingBuffer.clear();
+        copyingBuffer
+                .put((float) v11).put((float) v21).put((float) v31).put((float) v41)
+                .put((float) v12).put((float) v22).put((float) v32).put((float) v42)
+                .put((float) v13).put((float) v23).put((float) v33).put((float) v43)
+                .put((float) v14).put((float) v24).put((float) v34).put((float) v44);
     }
 
     //----------------------------IMPLEMENTATION BELOW-----------------------//
@@ -109,9 +107,9 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
     public boolean equals(FiguraMat4 o) {
         return
                 v11 == o.v11 && v12 == o.v12 && v13 == o.v13 && v14 == o.v14 &&
-                v21 == o.v21 && v22 == o.v22 && v23 == o.v23 && v24 == o.v24 &&
-                v31 == o.v31 && v32 == o.v32 && v33 == o.v33 && v34 == o.v34 &&
-                v41 == o.v41 && v42 == o.v42 && v43 == o.v43 && v44 == o.v44;
+                        v21 == o.v21 && v22 == o.v22 && v23 == o.v23 && v24 == o.v24 &&
+                        v31 == o.v31 && v32 == o.v32 && v33 == o.v33 && v34 == o.v34 &&
+                        v41 == o.v41 && v42 == o.v42 && v43 == o.v43 && v44 == o.v44;
     }
     @Override
     public boolean equals(Object other) {
@@ -187,9 +185,9 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
     }
 
     public FiguraMat4 set(double n11, double n21, double n31, double n41,
-                    double n12, double n22, double n32, double n42,
-                    double n13, double n23, double n33, double n43,
-                    double n14, double n24, double n34, double n44) {
+                          double n12, double n22, double n32, double n42,
+                          double n13, double n23, double n33, double n43,
+                          double n14, double n24, double n34, double n44) {
         v11 = n11;
         v12 = n12;
         v13 = n13;
