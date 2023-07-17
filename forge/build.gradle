@@ -33,8 +33,8 @@ repositories {
 
 dependencies {
     // Libraries
-    include(forgeRuntimeLibrary("om.github.Moonlight-MC-Temp.LuaJ:luaj-core:$luaj-figura"))
-    include(forgeRuntimeLibrary("om.github.Moonlight-MC-Temp.LuaJ:luaj-jse:$luaj-figura"))
+    include(forgeRuntimeLibrary("com.github.FiguraMC.LuaJ:luaj-core:$luaj-figura"))
+    include(forgeRuntimeLibrary("com.github.FiguraMC.LuaJ:luaj-jse:$luaj-figura"))
     include(forgeRuntimeLibrary("org.java-websocket:Java-WebSocket:$websocket"))
 
     forge "net.minecraftforge:forge:${rootProject.forge_version}"
