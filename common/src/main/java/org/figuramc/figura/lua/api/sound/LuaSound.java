@@ -7,6 +7,7 @@ import net.minecraft.client.resources.sounds.Sound;
 import net.minecraft.client.sounds.ChannelAccess;
 import net.minecraft.client.sounds.SoundBufferLibrary;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.sounds.SoundSource;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.luaj.vm2.LuaError;
