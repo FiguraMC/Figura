@@ -18,6 +18,9 @@ jobs:
         run: |
          chmod +x gradlew
          ./gradlew build
+      - name: Merge Fabric and Forge Jars
+        run: |
+          ./gradlew mergeJars
       - name: Upload Fabric artifacts to GitHub
         uses: actions/upload-artifact@v3
         with:
@@ -28,3 +31,8 @@ jobs:
         with:
           name: Forge-Artifacts
           path: forge/build/libs/
+      - name: Upload Merged Jar to GitHub
+        uses: actions/upload-artifact@v3
+        with:
+          name: Merged-Jar
+          path: Merged/
