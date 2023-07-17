@@ -51,6 +51,7 @@ public class TextureAtlasAPI {
         return FiguraVec4.of(s.getU0(), s.getV0(), s.getU1(), s.getV1());
     }
 
+
     @LuaWhitelist
     @LuaMethodDoc("texture_atlas.get_width")
     public int getWidth() {
