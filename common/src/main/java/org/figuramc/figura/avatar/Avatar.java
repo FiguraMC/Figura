@@ -62,6 +62,8 @@ import org.figuramc.figura.permissions.PermissionManager;
 import org.figuramc.figura.permissions.PermissionPack;
 import org.figuramc.figura.permissions.Permissions;
 import org.figuramc.figura.utils.EntityUtils;
+import org.figuramc.figura.utils.RefilledNumber;
+import org.figuramc.figura.utils.Version;
 import org.figuramc.figura.utils.ui.UIHelper;
 
 import java.io.ByteArrayInputStream;
@@ -403,20 +405,9 @@ public class Avatar {
         return val == null || (!val.isnil(1) && !Configs.CHAT_MESSAGES.value) ? message : val.isnil(1) ? "" : val.arg(1).tojstring();
     }
 
-    public Pair<String, Integer> chatReceivedMessageEvent(String message, String json) { //special case
+    public String chatReceivedMessageEvent(String message, String json) { //special case
         Varargs val = loaded ? run("CHAT_RECEIVE_MESSAGE", tick, message, json) : null;
-        if (val == null)
-            return null;
-
-        if (val.arg(1).isboolean() && !val.arg(1).checkboolean())
-            return Pair.of(null, null);
-
-        String msg = val.isnil(1) ? json : val.arg(1).tojstring();
-        Integer color = null;
-        if (val.arg(2).isuserdata(FiguraVec3.class))
-            color = ColorUtils.rgbToInt((FiguraVec3) val.arg(2).checkuserdata(FiguraVec3.class));
-
-        return Pair.of(msg, color);
+        return val == null || val.isnil(1) ? null : val.arg(1).tojstring();
     }
 
     public boolean mouseScrollEvent(double delta) {

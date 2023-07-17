@@ -6,6 +6,7 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import org.figuramc.figura.utils.FiguraClientCommandSource;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.resources.FiguraRuntimeResources;
@@ -39,7 +40,7 @@ public class BackendCommands {
         LiteralArgumentBuilder<FiguraClientCommandSource> debug = LiteralArgumentBuilder.literal("debug");
         debug.executes(context -> {
             NetworkStuff.debug = !NetworkStuff.debug;
-            FiguraMod.sendChatMessage(Component.literal("Backend Debug Mode set to: " + NetworkStuff.debug).withStyle(NetworkStuff.debug ? ChatFormatting.GREEN : ChatFormatting.RED));
+            FiguraMod.sendChatMessage(new TextComponent("Backend Debug Mode set to: " + NetworkStuff.debug).withStyle(NetworkStuff.debug ? ChatFormatting.GREEN : ChatFormatting.RED));
             return 1;
         });
 
@@ -48,8 +49,8 @@ public class BackendCommands {
         //check resources
         LiteralArgumentBuilder<FiguraClientCommandSource> resources = LiteralArgumentBuilder.literal("checkResources");
         resources.executes(context -> {
-            context.getSource().figura$sendFeedback(Component.literal("Checking for resources..."));
-            FiguraRuntimeResources.init().thenRun(() -> context.getSource().figura$sendFeedback(Component.literal("Resources checked!")));
+            context.getSource().figura$sendFeedback(new TextComponent("Checking for resources..."));
+            FiguraRuntimeResources.init().thenRun(() -> context.getSource().figura$sendFeedback(new TextComponent("Resources checked!")));
             return 1;
         });
 
@@ -63,11 +64,11 @@ public class BackendCommands {
         try {
             HttpAPI.runString(
                     NetworkStuff.api.header(request).build(),
-                    (code, data) -> FiguraMod.sendChatMessage(Component.literal(data))
+                    (code, data) -> FiguraMod.sendChatMessage(new TextComponent(data))
             );
             return 1;
         } catch (Exception e) {
-            context.getSource().figura$sendError(Component.literal(e.getMessage()));
+            context.getSource().figura$sendError(new TextComponent(e.getMessage()));
             return 0;
         }
     }
