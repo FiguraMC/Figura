@@ -32,7 +32,7 @@
   "depends": {
     "java": ">=${java_version}",
     "minecraft": "${minecraft_version}",
-    "fabricloader": ">=${fabric_loader_version}"
+    "fabricloader": ">=0.14.21"
   },
   "conflicts": {
     "immersive_portals": "*",
