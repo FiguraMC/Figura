@@ -12,6 +12,8 @@ public class FiguraCommandsFabric {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static void init() {
         //register
-        // todo: im stupid and cant figura this out
+        CommandDispatcher<FiguraClientCommandSource> casted = (CommandDispatcher)ClientCommandManager.DISPATCHER;
+        casted.register(FiguraCommands.getCommandRoot());
+
     }
 }
