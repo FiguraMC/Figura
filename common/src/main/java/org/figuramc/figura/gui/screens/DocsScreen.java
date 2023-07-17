@@ -4,6 +4,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
 import org.figuramc.figura.gui.widgets.Label;
 import org.figuramc.figura.utils.FiguraText;
 import org.figuramc.figura.utils.TextUtils;

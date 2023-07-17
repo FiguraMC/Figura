@@ -5,6 +5,7 @@ import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import org.figuramc.figura.utils.ui.UIHelper;
+import net.minecraft.network.chat.TextComponent;
 import org.lwjgl.glfw.GLFW;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.gui.widgets.Button;
