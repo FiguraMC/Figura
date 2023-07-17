@@ -49,7 +49,6 @@
     "render.GameRendererMixin",
     "render.LevelRendererMixin",
     "render.MissingTextureAtlasSpriteAccessor",
-    "render.ModelManagerAccessor",
     "render.PlayerModelMixin",
     "render.TextureAtlasAccessor",
     "render.TextureManagerAccessor",

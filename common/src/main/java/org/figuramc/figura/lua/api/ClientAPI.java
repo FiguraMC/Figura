@@ -30,7 +30,6 @@ import org.figuramc.figura.lua.docs.LuaTypeDoc;
 import org.figuramc.figura.math.vector.FiguraVec2;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.mixin.gui.PlayerTabOverlayAccessor;
-import org.figuramc.figura.mixin.render.ModelManagerAccessor;
 import org.figuramc.figura.utils.*;
 
 import java.text.SimpleDateFormat;
@@ -488,11 +487,9 @@ public class ClientAPI {
     @LuaWhitelist
     @LuaMethodDoc("client.list_atlases")
     public static List<String> listAtlases() {
-        List<String> list = new ArrayList<>();
-        for (ResourceLocation res : ModelManagerAccessor.getVanillaAtlases().keySet())
-            list.add(res.toString());
-        return list;
+        return List.of();
     }
+
 
     @LuaWhitelist
     @LuaMethodDoc(
