@@ -30,12 +30,12 @@ public abstract class ItemRendererMixin {
         if (livingEntity == null || itemStack.isEmpty())
             return;
 
-        Avatar avatar = AvatarManager.getAvatar(livingEntity);
+        Avatar avatar = AvatarManager.getAvatar(entity);
         if (avatar == null)
             return;
 
-        BakedModel bakedModel = this.getModel(itemStack, world, livingEntity, seed);
-        ItemTransform transform = bakedModel.getTransforms().getTransform(itemDisplayContext);
+        BakedModel bakedModel = this.getModel(item, world, entity, seed);
+        ItemTransform transform = bakedModel.getTransforms().getTransform(renderMode);
 
         if (avatar.itemRenderEvent(ItemStackAPI.verify(itemStack), itemDisplayContext.name(), FiguraVec3.fromVec3f(transform.translation), FiguraVec3.of(transform.rotation.z(), transform.rotation.y(), transform.rotation.x()), FiguraVec3.fromVec3f(transform.scale), leftHanded, stack, buffer, light, overlay))
             ci.cancel();

@@ -4,9 +4,10 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import org.luaj.vm2.LuaError;
+import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.api.world.ItemStackAPI;
@@ -14,11 +15,10 @@ import org.figuramc.figura.lua.api.world.WorldAPI;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
-import org.figuramc.figura.model.FiguraModelPart;
 import org.figuramc.figura.model.PartCustomization;
 import org.figuramc.figura.utils.LuaUtils;
-import org.luaj.vm2.LuaError;
-import org.figuramc.figura.avatar.Avatar;
+
+import java.util.Random;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -87,7 +87,7 @@ public class ItemTask extends RenderTask {
     public ItemTask setItem(Object item) {
         this.item = LuaUtils.parseItemStack("item", item);
         Minecraft client = Minecraft.getInstance();
-        RandomSource random = client.level != null ? client.level.random : RandomSource.create();
+        Random random = client.level != null ? client.level.random : new Random();
         cachedComplexity = client.getItemRenderer().getModel(this.item, null, null, 0).getQuads(null, null, random).size();
         return this;
     }

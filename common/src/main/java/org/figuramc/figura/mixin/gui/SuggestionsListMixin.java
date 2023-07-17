@@ -6,6 +6,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.CommandSuggestions;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import org.figuramc.figura.ducks.SuggestionsListAccessor;
 import org.figuramc.figura.gui.Emojis;
 import org.spongepowered.asm.mixin.*;

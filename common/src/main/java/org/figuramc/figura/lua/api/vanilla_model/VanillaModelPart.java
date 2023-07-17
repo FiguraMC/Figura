@@ -58,7 +58,7 @@ public class VanillaModelPart extends VanillaPart {
         pivot.multiply(1, -1, -1);
         originPos.set(pivot);
 
-        originScale.set(part.xScale, part.yScale, part.zScale);
+        //originScale.set(part.xScale, part.yScale, part.zScale);
 
         //save visible
         originVisible = part.visible;
@@ -74,9 +74,9 @@ public class VanillaModelPart extends VanillaPart {
         backupRotZ = part.zRot;
 
         //save scale
-        backupScaleX = part.xScale;
-        backupScaleY = part.yScale;
-        backupScaleZ = part.zScale;
+        //backupScaleX = part.xScale;
+        //backupScaleY = part.yScale;
+        //backupScaleZ = part.zScale;
 
         saved = true;
     }
@@ -100,17 +100,20 @@ public class VanillaModelPart extends VanillaPart {
             FiguraVec3 rot = this.rot.toRad();
             part.setRotation((float) -rot.x, (float) -rot.y, (float) rot.z);
         }
-        if (offsetRot != null)
-            part.offsetRotation(offsetRot.toRad().mul(-1, -1, 1).asVec3f());
-
-        //scale
-        if (scale != null) {
-            part.xScale = (float) scale.x;
-            part.yScale = (float) scale.y;
-            part.zScale = (float) scale.z;
+        if (offsetRot != null) {
+            FiguraVec3 rot = offsetRot.toRad();
+            part.xRot += (float) -rot.x;
+            part.yRot += (float) -rot.y;
+            part.zRot += (float) rot.z;
         }
-        if (offsetScale != null)
-            part.offsetScale(offsetScale.asVec3f());
+        //scale
+//        if (scale != null) {
+//            part.xScale = (float) scale.x;
+//            part.yScale = (float) scale.y;
+//            part.zScale = (float) scale.z;
+//        }
+//        if (offsetScale != null)
+//            part.offsetScale(offsetScale.asVec3f());
     }
 
     @Override
@@ -144,9 +147,9 @@ public class VanillaModelPart extends VanillaPart {
         part.zRot = backupRotZ;
 
         //restore scale
-        part.xScale = backupScaleX;
-        part.yScale = backupScaleY;
-        part.zScale = backupScaleZ;
+//        part.xScale = backupScaleX;
+//        part.yScale = backupScaleY;
+//        part.zScale = backupScaleZ;
     }
 
     @LuaWhitelist

@@ -24,7 +24,6 @@
     "gui.ChatScreenMixin",
     "gui.ClickEventActionMixin",
     "gui.DebugScreenOverlayMixin",
-    "gui.GuiMessageLineMixin",
     "gui.GuiMessageMixin",
     "gui.GuiMixin",
     "gui.InventoryScreenMixin",

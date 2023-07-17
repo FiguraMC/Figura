@@ -3,15 +3,16 @@ package org.figuramc.figura.lua.api.world;
 import com.mojang.brigadier.StringReader;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.Minecraft;
-import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.arguments.blocks.BlockStateArgument;
 import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Marker;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.item.CompassItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
@@ -443,7 +444,7 @@ public class WorldAPI {
         BlockPos pos = LuaUtils.parseVec3("newBlock", x, y, z).asBlockPos();
         try {
             Level level = getCurrentWorld();
-            BlockState block = BlockStateArgument.block(new CommandBuildContext(RegistryAccess.BUILTIN.get())).parse(new StringReader(string)).getState();
+            BlockState block = new BlockStateArgument().parse(new StringReader(string)).getState();
             return new BlockStateAPI(block, pos);
         } catch (Exception e) {
             throw new LuaError("Could not parse block state from string: " + string);
@@ -471,7 +472,7 @@ public class WorldAPI {
     public static ItemStackAPI newItem(@LuaNotNil String string, Integer count, Integer damage) {
         try {
             Level level = getCurrentWorld();
-            ItemStack item = ItemArgument.item(new CommandBuildContext(RegistryAccess.BUILTIN.get())).parse(new StringReader(string)).createItemStack(1, false);
+            ItemStack item = new ItemArgument().parse(new StringReader(string)).createItemStack(1, false);
             if (count != null)
                 item.setCount(count);
             if (damage != null)

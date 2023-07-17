@@ -128,7 +128,7 @@ public class LuaUtils {
         else if (item instanceof String string) {
             try {
                 Level level = WorldAPI.getCurrentWorld();
-                return ItemArgument.item(new CommandBuildContext(RegistryAccess.BUILTIN.get())).parse(new StringReader(string)).createItemStack(1, false);
+                return new ItemArgument().parse(new StringReader(string)).createItemStack(1, false);
             } catch (Exception e) {
                 throw new LuaError("Could not parse item stack from string: " + string);
             }
@@ -145,7 +145,7 @@ public class LuaUtils {
         else if (block instanceof String string) {
             try {
                 Level level = WorldAPI.getCurrentWorld();
-                return BlockStateArgument.block(new CommandBuildContext(RegistryAccess.BUILTIN.get())).parse(new StringReader(string)).getState();
+                return new BlockStateArgument().parse(new StringReader(string)).getState();
             } catch (Exception e) {
                 throw new LuaError("Could not parse block state from string: " + string);
             }

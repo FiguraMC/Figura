@@ -1,10 +1,7 @@
 package org.figuramc.figura.lua;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.*;
 import net.minecraft.world.entity.EntityType;
 import org.luaj.vm2.*;
 import org.luaj.vm2.lib.VarArgFunction;

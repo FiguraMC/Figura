@@ -2,6 +2,7 @@ package org.figuramc.figura.mixin.render.layers;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HeadedModel;
 import net.minecraft.client.model.SkullModelBase;
@@ -43,8 +44,6 @@ public abstract class CustomHeadLayerMixin<T extends LivingEntity, M extends Ent
     public CustomHeadLayerMixin(RenderLayerParent<T, M> renderLayerParent) {
         super(renderLayerParent);
     }
-
-    @Shadow @Final private ItemInHandRenderer itemInHandRenderer;
 
     @Shadow @Final private Map<SkullBlock.Type, SkullModelBase> skullModels;
 
@@ -96,7 +95,7 @@ public abstract class CustomHeadLayerMixin<T extends LivingEntity, M extends Ent
             float s = 10f;
             stack.translate(0d, 4d, 0d);
             stack.scale(s, s, s);
-            this.itemInHandRenderer.renderItem(livingEntity, itemStack, ItemTransforms.TransformType.HEAD, false, stack, multiBufferSource, i);
+            Minecraft.getInstance().getItemInHandRenderer().renderItem(livingEntity, itemStack, ItemTransforms.TransformType.HEAD, false, stack, multiBufferSource, i);
         })) {
             ci.cancel();
         }

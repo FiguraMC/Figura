@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.PlayerModelPart;

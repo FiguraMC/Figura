@@ -165,10 +165,19 @@ public class TextureAPI {
     public FiguraTexture fromVanilla(@LuaNotNil String name, @LuaNotNil String path) {
         check();
         ResourceLocation resourceLocation = LuaUtils.parsePath(path);
+        // is there a way to check if an atlas exists without getAtlas? cause that is the only thing that will cause an error, and try catch blocks can be pricy
         try {
-            Optional<Resource> resource = Minecraft.getInstance().getResourceManager().getResource(resourceLocation);
+            TextureAtlas atlas = Minecraft.getInstance().getModelManager().getAtlas(resourceLocation);
+            atlas.bind();
+            TextureAtlasAccessor atlasAccessor = (TextureAtlasAccessor) atlas;
+            NativeImage nativeImage = new NativeImage(atlasAccessor.getWidth(), atlasAccessor.getHeight(), false);
+            nativeImage.downloadTexture(0, false);
+            return register(name, nativeImage, false);
+        } catch (Exception ignored) {}
+        try {
+            Optional<Resource> resource = Optional.of(Minecraft.getInstance().getResourceManager().getResource(resourceLocation));
             //if the string is a valid resourceLocation but does not point to a valid resource, missingno
-            NativeImage image = resource.isPresent() ? NativeImage.read(resource.get().open()) : MissingTextureAtlasSpriteAccessor.getImageData().get();
+            NativeImage image = resource.isPresent() ? NativeImage.read(resource.get().getInputStream()) : MissingTextureAtlasSpriteAccessor.generateImage(16, 16);
             return register(name, image, false);
         } catch (Exception e) {
             //spit an error if the player inputs a resource location that does point to a thing, but not to an image

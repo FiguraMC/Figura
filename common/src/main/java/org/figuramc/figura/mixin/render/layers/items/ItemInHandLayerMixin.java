@@ -31,16 +31,14 @@ public abstract class ItemInHandLayerMixin<T extends LivingEntity, M extends Ent
         super(renderLayerParent);
     }
 
-    @Shadow @Final private ItemInHandRenderer itemInHandRenderer;
-
     @Inject(method = "renderArmWithItem", at = @At("HEAD"), cancellable = true)
-    protected void renderArmWithItem(LivingEntity livingEntity, ItemStack itemStack, ItemTransforms.TransformType itemDisplayContext, HumanoidArm humanoidArm, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, CallbackInfo ci) {
+    protected void renderArmWithItem(LivingEntity entity, ItemStack itemStack, ItemTransforms.TransformType transformationMode, HumanoidArm arm, PoseStack matrices, MultiBufferSource vertexConsumers, int light, CallbackInfo ci) {
         if (itemStack.isEmpty())
             return;
 
-        boolean left = humanoidArm == HumanoidArm.LEFT;
+        boolean left = arm == HumanoidArm.LEFT;
 
-        Avatar avatar = AvatarManager.getAvatar(livingEntity);
+        Avatar avatar = AvatarManager.getAvatar(entity);
         if (!RenderUtils.renderArmItem(avatar, left, ci))
             return;
 
@@ -49,7 +47,7 @@ public abstract class ItemInHandLayerMixin<T extends LivingEntity, M extends Ent
             float s = 16f;
             stack.scale(s, s, s);
             stack.mulPose(Vector3f.XP.rotationDegrees(-90f));
-            this.itemInHandRenderer.renderItem(livingEntity, itemStack, itemDisplayContext, left, stack, multiBufferSource, i);
+            Minecraft.getInstance().getItemInHandRenderer().renderItem(entity, itemStack, transformationMode, left, stack, vertexConsumers, light);
         })) {
             ci.cancel();
         }

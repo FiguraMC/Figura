@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.Score;
 import net.minecraft.world.scores.Scoreboard;
