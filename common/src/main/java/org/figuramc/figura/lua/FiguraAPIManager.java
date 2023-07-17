@@ -3,6 +3,18 @@ package org.figuramc.figura.lua;
 import org.figuramc.figura.animation.Animation;
 import org.figuramc.figura.entries.FiguraAPI;
 import org.figuramc.figura.lua.api.*;
+import org.figuramc.figura.lua.api.data.FiguraFuture;
+import org.figuramc.figura.lua.api.data.FiguraInputStream;
+import org.figuramc.figura.lua.api.data.FiguraOutputStream;
+import org.figuramc.figura.lua.api.data.providers.FiguraProvider;
+import org.figuramc.figura.lua.api.data.providers.StringProvider;
+import org.figuramc.figura.lua.api.data.readers.FiguraReader;
+import org.figuramc.figura.lua.api.data.readers.StringReader;
+import org.figuramc.figura.lua.api.entity.*;
+import org.figuramc.figura.lua.api.networking.HttpRequestsAPI;
+import org.figuramc.figura.lua.api.networking.NetworkingAPI;
+import org.figuramc.figura.model.rendertasks.*;
+import org.figuramc.figura.lua.api.*;
 import org.figuramc.figura.lua.api.action_wheel.Action;
 import org.figuramc.figura.lua.api.action_wheel.ActionWheelAPI;
 import org.figuramc.figura.lua.api.action_wheel.Page;
@@ -135,6 +147,22 @@ public class FiguraAPIManager {
         add(ConfigAPI.class);
 
         add(TextureAtlasAPI.class);
+
+        add(FiguraFuture.class);
+
+        add(FiguraInputStream.class);
+        add(FiguraOutputStream.class);
+
+        add(FiguraProvider.class);
+        add(StringProvider.class);
+
+        add(FiguraReader.class);
+        add(StringReader.class);
+
+        add(NetworkingAPI.class);
+        add(HttpRequestsAPI.class);
+        add(HttpRequestsAPI.HttpRequestBuilder.class);
+        add(HttpRequestsAPI.HttpResponse.class);
     }};
 
     public static final Map<String, Function<FiguraLuaRuntime, Object>> API_GETTERS = new LinkedHashMap<>() {{
@@ -156,6 +184,7 @@ public class FiguraAPIManager {
         put("pings", r -> r.ping = new PingAPI(r.owner));
         put("textures", r -> r.texture = new TextureAPI(r.owner));
         put("config", r -> new ConfigAPI(r.owner));
+        put("net", r -> new NetworkingAPI(r.owner));
     }};
 
     private static final Set<FiguraAPI> ENTRYPOINTS = new HashSet<>();
