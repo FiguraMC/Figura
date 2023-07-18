@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.math.vector.FiguraVec4;
+import org.figuramc.figura.model.ParentType;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -55,6 +56,10 @@ public class BlockBenchModel {
         Group g = new Group(name, pivot);
         addElement(g, parent);
         return g;
+    }
+
+    public Group addGroup(ParentType type, FiguraVec3 pivot, Group parent) {
+        return addGroup(type.name(), pivot, parent);
     }
 
     public Cube addCube(FiguraVec3 position, FiguraVec3 size, Group parent) {

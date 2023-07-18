@@ -15,11 +15,14 @@ import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.utils.FiguraText;
 import org.figuramc.figura.utils.ui.UIHelper;
 import org.figuramc.figura.wizards.AvatarWizard;
+import org.figuramc.figura.wizards.WizardEntry;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.figuramc.figura.wizards.WizardEntry.Type.CATEGORY;
 
 public class AvatarWizardList extends AbstractList {
 
@@ -119,15 +122,15 @@ public class AvatarWizardList extends AbstractList {
         Component lastName = Component.empty();
         List<GuiEventListener> lastList = new ArrayList<>();
 
-        for (AvatarWizard.WizardEntry value : AvatarWizard.WizardEntry.values()) {
-            switch (value.getType()) {
+        for (WizardEntry value : WizardEntry.all()) {
+            switch (value.type) {
                 case CATEGORY -> {
                     if (!lastList.isEmpty()) {
                         map.put(lastName, lastList);
                         children.addAll(lastList);
                     }
 
-                    lastName = FiguraText.of("gui.avatar_wizard." + value.name().toLowerCase());
+                    lastName = FiguraText.of("gui.avatar_wizard." + value.name.toLowerCase());
                     lastList = new ArrayList<>();
                 }
                 case TEXT -> lastList.add(new WizardInputBox(x, width, this, value));
@@ -142,14 +145,14 @@ public class AvatarWizardList extends AbstractList {
     private static class WizardInputBox extends TextField {
 
         private final AvatarWizardList parent;
-        private final AvatarWizard.WizardEntry entry;
+        private final WizardEntry entry;
         private final Component name;
 
-        public WizardInputBox(int x, int width, AvatarWizardList parent, AvatarWizard.WizardEntry entry) {
+        public WizardInputBox(int x, int width, AvatarWizardList parent, WizardEntry entry) {
             super(x, 0, width, 20, HintType.ANY, s -> parent.wizard.changeEntry(entry, s));
             this.parent = parent;
             this.entry = entry;
-            this.name = FiguraText.of("gui.avatar_wizard." + entry.name().toLowerCase());
+            this.name = FiguraText.of("gui.avatar_wizard." + entry.name.toLowerCase());
             this.getField().setValue(String.valueOf(parent.wizard.getEntry(entry, "")));
         }
 
@@ -174,10 +177,10 @@ public class AvatarWizardList extends AbstractList {
     private static class WizardToggleButton extends SwitchButton {
 
         private final AvatarWizardList parent;
-        private final AvatarWizard.WizardEntry entry;
+        private final WizardEntry entry;
 
-        public WizardToggleButton(int x, int width, AvatarWizardList parent, AvatarWizard.WizardEntry entry) {
-            super(x, 0, width, 20, FiguraText.of("gui.avatar_wizard." + entry.name().toLowerCase()), false);
+        public WizardToggleButton(int x, int width, AvatarWizardList parent, WizardEntry entry) {
+            super(x, 0, width, 20, FiguraText.of("gui.avatar_wizard." + entry.name.toLowerCase()), false);
             this.parent = parent;
             this.entry = entry;
             this.setToggled((boolean) parent.wizard.getEntry(entry, false));

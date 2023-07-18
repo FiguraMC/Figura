@@ -187,82 +187,88 @@ public class VanillaModelAPI {
     @LuaFieldDoc("vanilla_model.parrots")
     public final VanillaGroupPart PARROTS;
 
+    // Adds a VanillaPart to the list of all parts. Used for indexing
+    private <TPart extends VanillaPart>TPart addPart(TPart part) {
+        allParts.put(part.name, part);
+        return part;
+    }
+
     public VanillaModelAPI(Avatar owner) {
         // -- body -- //
 
-        HEAD = new VanillaModelPart(owner, "HEAD", ParentType.Head, VanillaModelProvider.HEAD.func);
-        BODY = new VanillaModelPart(owner, "BODY", ParentType.Body, VanillaModelProvider.BODY.func);
-        LEFT_ARM = new VanillaModelPart(owner, "LEFT_ARM", ParentType.LeftArm, VanillaModelProvider.LEFT_ARM.func);
-        RIGHT_ARM = new VanillaModelPart(owner, "RIGHT_ARM", ParentType.RightArm, VanillaModelProvider.RIGHT_ARM.func);
-        LEFT_LEG = new VanillaModelPart(owner, "LEFT_LEG", ParentType.LeftLeg, VanillaModelProvider.LEFT_LEG.func);
-        RIGHT_LEG = new VanillaModelPart(owner, "RIGHT_LEG", ParentType.RightLeg, VanillaModelProvider.RIGHT_LEG.func);
+        HEAD = addPart(new VanillaModelPart(owner, "HEAD", ParentType.Head, VanillaModelProvider.HEAD.func));
+        BODY = addPart(new VanillaModelPart(owner, "BODY", ParentType.Body, VanillaModelProvider.BODY.func));
+        LEFT_ARM = addPart(new VanillaModelPart(owner, "LEFT_ARM", ParentType.LeftArm, VanillaModelProvider.LEFT_ARM.func));
+        RIGHT_ARM = addPart(new VanillaModelPart(owner, "RIGHT_ARM", ParentType.RightArm, VanillaModelProvider.RIGHT_ARM.func));
+        LEFT_LEG = addPart(new VanillaModelPart(owner, "LEFT_LEG", ParentType.LeftLeg, VanillaModelProvider.LEFT_LEG.func));
+        RIGHT_LEG = addPart(new VanillaModelPart(owner, "RIGHT_LEG", ParentType.RightLeg, VanillaModelProvider.RIGHT_LEG.func));
 
-        HAT = new VanillaModelPart(owner, "HAT", ParentType.Head, VanillaModelProvider.HAT.func);
-        JACKET = new VanillaModelPart(owner, "JACKET", ParentType.Body, VanillaModelProvider.JACKET.func);
-        LEFT_SLEEVE = new VanillaModelPart(owner, "LEFT_SLEEVE", ParentType.LeftArm, VanillaModelProvider.LEFT_SLEEVE.func);
-        RIGHT_SLEEVE = new VanillaModelPart(owner, "RIGHT_SLEEVE", ParentType.RightArm, VanillaModelProvider.RIGHT_SLEEVE.func);
-        LEFT_PANTS = new VanillaModelPart(owner, "LEFT_PANTS", ParentType.LeftLeg, VanillaModelProvider.LEFT_PANTS.func);
-        RIGHT_PANTS = new VanillaModelPart(owner, "RIGHT_PANTS", ParentType.RightLeg, VanillaModelProvider.RIGHT_PANTS.func);
+        HAT = addPart(new VanillaModelPart(owner, "HAT", ParentType.Head, VanillaModelProvider.HAT.func));
+        JACKET = addPart(new VanillaModelPart(owner, "JACKET", ParentType.Body, VanillaModelProvider.JACKET.func));
+        LEFT_SLEEVE = addPart(new VanillaModelPart(owner, "LEFT_SLEEVE", ParentType.LeftArm, VanillaModelProvider.LEFT_SLEEVE.func));
+        RIGHT_SLEEVE = addPart(new VanillaModelPart(owner, "RIGHT_SLEEVE", ParentType.RightArm, VanillaModelProvider.RIGHT_SLEEVE.func));
+        LEFT_PANTS = addPart(new VanillaModelPart(owner, "LEFT_PANTS", ParentType.LeftLeg, VanillaModelProvider.LEFT_PANTS.func));
+        RIGHT_PANTS = addPart(new VanillaModelPart(owner, "RIGHT_PANTS", ParentType.RightLeg, VanillaModelProvider.RIGHT_PANTS.func));
 
         // -- cape -- //
 
-        CAPE_MODEL = new VanillaModelPart(owner, "CAPE_MODEL", ParentType.Cape, VanillaModelProvider.CAPE.func);
-        FAKE_CAPE = new VanillaModelPart(owner, "FAKE_CAPE", ParentType.Cape, VanillaModelProvider.FAKE_CAPE.func);
+        CAPE_MODEL = addPart(new VanillaModelPart(owner, "CAPE_MODEL", ParentType.Cape, VanillaModelProvider.CAPE.func));
+        FAKE_CAPE = addPart(new VanillaModelPart(owner, "FAKE_CAPE", ParentType.Cape, VanillaModelProvider.FAKE_CAPE.func));
 
         // -- armor -- //
 
-        HELMET_ITEM = new VanillaModelPart(owner, "HELMET_ITEM", ParentType.Head, null);
+        HELMET_ITEM = addPart(new VanillaModelPart(owner, "HELMET_ITEM", ParentType.Head, null));
 
-        HELMET_HEAD = new VanillaModelPart(owner, "HELMET_HEAD", ParentType.Head, VanillaModelProvider.HEAD.func);
-        HELMET_HAT = new VanillaModelPart(owner, "HELMET_HAT", ParentType.Head, VanillaModelProvider.HAT.func);
+        HELMET_HEAD = addPart(new VanillaModelPart(owner, "HELMET_HEAD", ParentType.Head, VanillaModelProvider.HEAD.func));
+        HELMET_HAT = addPart(new VanillaModelPart(owner, "HELMET_HAT", ParentType.Head, VanillaModelProvider.HAT.func));
 
-        CHESTPLATE_BODY = new VanillaModelPart(owner, "CHESTPLATE_BODY", ParentType.Body, VanillaModelProvider.BODY.func);
-        CHESTPLATE_LEFT_ARM = new VanillaModelPart(owner, "CHESTPLATE_LEFT_ARM", ParentType.LeftArm, VanillaModelProvider.LEFT_ARM.func);
-        CHESTPLATE_RIGHT_ARM = new VanillaModelPart(owner, "CHESTPLATE_RIGHT_ARM", ParentType.RightArm, VanillaModelProvider.RIGHT_ARM.func);
+        CHESTPLATE_BODY = addPart(new VanillaModelPart(owner, "CHESTPLATE_BODY", ParentType.Body, VanillaModelProvider.BODY.func));
+        CHESTPLATE_LEFT_ARM = addPart(new VanillaModelPart(owner, "CHESTPLATE_LEFT_ARM", ParentType.LeftArm, VanillaModelProvider.LEFT_ARM.func));
+        CHESTPLATE_RIGHT_ARM = addPart(new VanillaModelPart(owner, "CHESTPLATE_RIGHT_ARM", ParentType.RightArm, VanillaModelProvider.RIGHT_ARM.func));
 
-        LEGGINGS_BODY = new VanillaModelPart(owner, "LEGGINGS_BODY", ParentType.Body, VanillaModelProvider.BODY.func);
-        LEGGINGS_LEFT_LEG = new VanillaModelPart(owner, "LEGGINGS_LEFT_LEG", ParentType.LeftLeg, VanillaModelProvider.LEFT_LEG.func);
-        LEGGINGS_RIGHT_LEG = new VanillaModelPart(owner, "LEGGINGS_RIGHT_LEG", ParentType.RightLeg, VanillaModelProvider.RIGHT_LEG.func);
+        LEGGINGS_BODY = addPart(new VanillaModelPart(owner, "LEGGINGS_BODY", ParentType.Body, VanillaModelProvider.BODY.func));
+        LEGGINGS_LEFT_LEG = addPart(new VanillaModelPart(owner, "LEGGINGS_LEFT_LEG", ParentType.LeftLeg, VanillaModelProvider.LEFT_LEG.func));
+        LEGGINGS_RIGHT_LEG = addPart(new VanillaModelPart(owner, "LEGGINGS_RIGHT_LEG", ParentType.RightLeg, VanillaModelProvider.RIGHT_LEG.func));
 
-        BOOTS_LEFT_LEG = new VanillaModelPart(owner, "BOOTS_LEFT_LEG", ParentType.LeftLeg, VanillaModelProvider.LEFT_LEG.func);
-        BOOTS_RIGHT_LEG = new VanillaModelPart(owner, "BOOTS_RIGHT_LEG", ParentType.RightLeg, VanillaModelProvider.RIGHT_LEG.func);
+        BOOTS_LEFT_LEG = addPart(new VanillaModelPart(owner, "BOOTS_LEFT_LEG", ParentType.LeftLeg, VanillaModelProvider.LEFT_LEG.func));
+        BOOTS_RIGHT_LEG = addPart(new VanillaModelPart(owner, "BOOTS_RIGHT_LEG", ParentType.RightLeg, VanillaModelProvider.RIGHT_LEG.func));
 
         // -- elytra -- //
 
-        LEFT_ELYTRA = new VanillaModelPart(owner, "LEFT_ELYTRA", ParentType.LeftElytra, VanillaModelProvider.LEFT_ELYTRON.func);
-        RIGHT_ELYTRA = new VanillaModelPart(owner, "RIGHT_ELYTRA", ParentType.RightElytra, VanillaModelProvider.RIGHT_ELYTRON.func);
+        LEFT_ELYTRA = addPart(new VanillaModelPart(owner, "LEFT_ELYTRA", ParentType.LeftElytra, VanillaModelProvider.LEFT_ELYTRON.func));
+        RIGHT_ELYTRA = addPart(new VanillaModelPart(owner, "RIGHT_ELYTRA", ParentType.RightElytra, VanillaModelProvider.RIGHT_ELYTRON.func));
 
         // -- held items -- //
 
-        LEFT_ITEM = new VanillaModelPart(owner, "LEFT_ITEM", ParentType.LeftArm, null);
-        RIGHT_ITEM = new VanillaModelPart(owner, "RIGHT_ITEM", ParentType.RightArm, null);
+        LEFT_ITEM = addPart(new VanillaModelPart(owner, "LEFT_ITEM", ParentType.LeftArm, null));
+        RIGHT_ITEM = addPart(new VanillaModelPart(owner, "RIGHT_ITEM", ParentType.RightArm, null));
 
         // -- parrots -- //
 
-        LEFT_PARROT = new VanillaModelPart(owner, "LEFT_PARROT", ParentType.Body, null);
-        RIGHT_PARROT = new VanillaModelPart(owner, "RIGHT_PARROT", ParentType.Body, null);
+        LEFT_PARROT = addPart(new VanillaModelPart(owner, "LEFT_PARROT", ParentType.Body, null));
+        RIGHT_PARROT = addPart(new VanillaModelPart(owner, "RIGHT_PARROT", ParentType.Body, null));
 
 
         // -- groups -- //
 
 
-        INNER_LAYER = new VanillaGroupPart(owner, "INNER_LAYER", HEAD, BODY, LEFT_ARM, RIGHT_ARM, LEFT_LEG, RIGHT_LEG);
-        OUTER_LAYER = new VanillaGroupPart(owner, "OUTER_LAYER", HAT, JACKET, LEFT_SLEEVE, RIGHT_SLEEVE, LEFT_PANTS, RIGHT_PANTS);
-        PLAYER = new VanillaGroupPart(owner, "PLAYER", INNER_LAYER, OUTER_LAYER);
+        INNER_LAYER = addPart(new VanillaGroupPart(owner, "INNER_LAYER", HEAD, BODY, LEFT_ARM, RIGHT_ARM, LEFT_LEG, RIGHT_LEG));
+        OUTER_LAYER = addPart(new VanillaGroupPart(owner, "OUTER_LAYER", HAT, JACKET, LEFT_SLEEVE, RIGHT_SLEEVE, LEFT_PANTS, RIGHT_PANTS));
+        PLAYER = addPart(new VanillaGroupPart(owner, "PLAYER", INNER_LAYER, OUTER_LAYER));
 
-        CAPE = new VanillaGroupPart(owner, "CAPE", CAPE_MODEL, FAKE_CAPE);
+        CAPE = addPart(new VanillaGroupPart(owner, "CAPE", CAPE_MODEL, FAKE_CAPE));
 
-        HELMET = new VanillaGroupPart(owner, "HELMET", HELMET_ITEM, HELMET_HEAD, HELMET_HAT);
-        CHESTPLATE = new VanillaGroupPart(owner, "CHESTPLATE", CHESTPLATE_BODY, CHESTPLATE_LEFT_ARM, CHESTPLATE_RIGHT_ARM);
-        LEGGINGS = new VanillaGroupPart(owner, "LEGGINGS", LEGGINGS_BODY, LEGGINGS_LEFT_LEG, LEGGINGS_RIGHT_LEG);
-        BOOTS = new VanillaGroupPart(owner, "BOOTS", BOOTS_LEFT_LEG, BOOTS_RIGHT_LEG);
-        ARMOR = new VanillaGroupPart(owner, "ARMOR", HELMET, CHESTPLATE, LEGGINGS, BOOTS);
+        HELMET = addPart(new VanillaGroupPart(owner, "HELMET", HELMET_ITEM, HELMET_HEAD, HELMET_HAT));
+        CHESTPLATE = addPart(new VanillaGroupPart(owner, "CHESTPLATE", CHESTPLATE_BODY, CHESTPLATE_LEFT_ARM, CHESTPLATE_RIGHT_ARM));
+        LEGGINGS = addPart(new VanillaGroupPart(owner, "LEGGINGS", LEGGINGS_BODY, LEGGINGS_LEFT_LEG, LEGGINGS_RIGHT_LEG));
+        BOOTS = addPart(new VanillaGroupPart(owner, "BOOTS", BOOTS_LEFT_LEG, BOOTS_RIGHT_LEG));
+        ARMOR = addPart(new VanillaGroupPart(owner, "ARMOR", HELMET, CHESTPLATE, LEGGINGS, BOOTS));
 
-        ELYTRA = new VanillaGroupPart(owner, "ELYTRA", LEFT_ELYTRA, RIGHT_ELYTRA);
+        ELYTRA = addPart(new VanillaGroupPart(owner, "ELYTRA", LEFT_ELYTRA, RIGHT_ELYTRA));
 
-        HELD_ITEMS = new VanillaGroupPart(owner, "HELD_ITEMS", LEFT_ITEM, RIGHT_ITEM);
+        HELD_ITEMS = addPart(new VanillaGroupPart(owner, "HELD_ITEMS", LEFT_ITEM, RIGHT_ITEM));
 
-        PARROTS = new VanillaGroupPart(owner, "PARROTS", LEFT_PARROT, RIGHT_PARROT);
+        PARROTS = addPart(new VanillaGroupPart(owner, "PARROTS", LEFT_PARROT, RIGHT_PARROT));
 
         List<VanillaGroupPart> groups = new ArrayList<>() {{
             add(PLAYER);
@@ -275,36 +281,32 @@ public class VanillaModelAPI {
 
 
         // -- modded parts -- //
-
-
         for (FiguraVanillaPart entrypoint : ENTRYPOINTS) {
             //prepare group
             List<VanillaModelPart> parts = new ArrayList<>();
             String ID = entrypoint.getID().toUpperCase();
 
-            //get parts
+            // Iterate over parts added by the current entrypoint
             for (Pair<String, Function<EntityModel<?>, ModelPart>> part : entrypoint.getParts()) {
                 String name = ID + "_" + part.getFirst().toUpperCase();
                 VanillaModelPart model = new VanillaModelPart(owner, name, ParentType.None, part.getSecond());
-                moddedParts.put(name, model);
+                allParts.put(name, model);
                 parts.add(model);
             }
 
             //add to group list
             VanillaGroupPart group = new VanillaGroupPart(owner, ID, parts.toArray(new VanillaModelPart[0]));
-            moddedParts.put(ID, group);
+            allParts.put(ID, group);
             groups.add(group);
         }
 
 
         // -- all -- //
-
-
-        ALL = new VanillaGroupPart(owner, "ALL", groups.toArray(new VanillaGroupPart[0]));
+        ALL = addPart(new VanillaGroupPart(owner, "ALL", groups.toArray(new VanillaGroupPart[0])));
     }
 
     private static final List<FiguraVanillaPart> ENTRYPOINTS = new ArrayList<>();
-    private final Map<String, VanillaPart> moddedParts = new HashMap<>();
+    private final Map<String, VanillaPart> allParts = new HashMap<>();
 
     public static void initEntryPoints(Set<FiguraVanillaPart> set) {
         ENTRYPOINTS.addAll(set);
@@ -313,55 +315,7 @@ public class VanillaModelAPI {
     @LuaWhitelist
     public Object __index(String key) {
         if (key == null) return null;
-        String name = key.toUpperCase();
-        VanillaPart part = switch (name) {
-            case "HEAD" -> HEAD;
-            case "BODY" -> BODY;
-            case "LEFT_ARM" -> LEFT_ARM;
-            case "RIGHT_ARM" -> RIGHT_ARM;
-            case "LEFT_LEG" -> LEFT_LEG;
-            case "RIGHT_LEG" -> RIGHT_LEG;
-            case "HAT" -> HAT;
-            case "JACKET" -> JACKET;
-            case "LEFT_SLEEVE" -> LEFT_SLEEVE;
-            case "RIGHT_SLEEVE" -> RIGHT_SLEEVE;
-            case "LEFT_PANTS" -> LEFT_PANTS;
-            case "RIGHT_PANTS" -> RIGHT_PANTS;
-            case "CAPE_MODEL" -> CAPE_MODEL;
-            case "FAKE_CAPE" -> FAKE_CAPE;
-            case "HELMET_ITEM" -> HELMET_ITEM;
-            case "HELMET_HEAD" -> HELMET_HEAD;
-            case "HELMET_HAT" -> HELMET_HAT;
-            case "CHESTPLATE_BODY" -> CHESTPLATE_BODY;
-            case "CHESTPLATE_LEFT_ARM" -> CHESTPLATE_LEFT_ARM;
-            case "CHESTPLATE_RIGHT_ARM" -> CHESTPLATE_RIGHT_ARM;
-            case "LEGGINGS_BODY" -> LEGGINGS_BODY;
-            case "LEGGINGS_LEFT_LEG" -> LEGGINGS_LEFT_LEG;
-            case "LEGGINGS_RIGHT_LEG" -> LEGGINGS_RIGHT_LEG;
-            case "BOOTS_LEFT_LEG" -> BOOTS_LEFT_LEG;
-            case "BOOTS_RIGHT_LEG" -> BOOTS_RIGHT_LEG;
-            case "LEFT_ELYTRA" -> LEFT_ELYTRA;
-            case "RIGHT_ELYTRA" -> RIGHT_ELYTRA;
-            case "LEFT_ITEM" -> LEFT_ITEM;
-            case "RIGHT_ITEM" -> RIGHT_ITEM;
-            case "LEFT_PARROT" -> LEFT_PARROT;
-            case "RIGHT_PARROT" -> RIGHT_PARROT;
-            case "INNER_LAYER" -> INNER_LAYER;
-            case "OUTER_LAYER" -> OUTER_LAYER;
-            case "PLAYER" -> PLAYER;
-            case "CAPE" -> CAPE;
-            case "HELMET" -> HELMET;
-            case "CHESTPLATE" -> CHESTPLATE;
-            case "LEGGINGS" -> LEGGINGS;
-            case "BOOTS" -> BOOTS;
-            case "ARMOR" -> ARMOR;
-            case "ELYTRA" -> ELYTRA;
-            case "HELD_ITEMS" -> HELD_ITEMS;
-            case "PARROTS" -> PARROTS;
-            case "ALL" -> ALL;
-            default -> null;
-        };
-        return part != null ? part : moddedParts.get(name);
+        return allParts.getOrDefault(key.toUpperCase(), null);
     }
 
     @Override

@@ -14,7 +14,6 @@ import org.figuramc.figura.utils.*;
 import org.figuramc.figura.exporters.BlockBenchModel;
 import org.figuramc.figura.exporters.BlockBenchModel.Cube;
 import org.figuramc.figura.exporters.BlockBenchModel.Group;
-import org.figuramc.figura.utils.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -22,6 +21,27 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.function.BiFunction;
 
+import static org.figuramc.figura.model.ParentType.*;
+
+/*
+                  .
+
+                   .
+         /^\     .
+    /\   "V"
+   /__\   I      O  o
+  //..\\  I     .
+  \].`[/  I
+  /l\/j\  (]    .  O
+ /. ~~ ,\/I          .
+ \\L__j^\/I       o
+  \/--v}  I     o   .
+  |    |  I   _________
+  |    |  I c(`       ')o
+  |    l  I   \.     ,/
+_/j  L l\_!  _//^---^\\_
+
+ */
 public class AvatarWizard {
 
     private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
@@ -70,7 +90,7 @@ public class AvatarWizard {
                 continue;
 
             Object obj = map.get(dependency);
-            if (obj == null || !dependency.validade(obj))
+            if (obj == null || !dependency.validate(obj))
                 return false;
 
             boolean bl = switch (dependency.type) {
@@ -229,6 +249,7 @@ public class AvatarWizard {
         boolean hasCape = WizardEntry.CAPE.asBool(map);
         boolean hasCapeOrElytra = hasCape || hasElytra;
         boolean slim = WizardEntry.SLIM.asBool(map);
+        boolean hasArmor = WizardEntry.ARMOR_PIVOTS.asBool(map);
 
         //model
         BlockBenchModel model = new BlockBenchModel("free");
@@ -246,12 +267,12 @@ public class AvatarWizard {
         //base bones
         Group root = model.addGroup("root", FiguraVec3.of());
 
-        Group head = model.addGroup("Head", FiguraVec3.of(0, 24, 0), root);
-        Group body = model.addGroup("Body", FiguraVec3.of(0, 24, 0), root);
-        Group leftArm = model.addGroup("LeftArm", FiguraVec3.of(-5, 22, 0), root);
-        Group rightArm = model.addGroup("RightArm", FiguraVec3.of(5, 22, 0), root);
-        Group leftLeg = model.addGroup("LeftLeg", FiguraVec3.of(-1.9, 12, 0), root);
-        Group rightLeg = model.addGroup("RightLeg", FiguraVec3.of(1.9, 12, 0), root);
+        Group head = model.addGroup(Head, FiguraVec3.of(0, 24, 0), root);
+        Group body = model.addGroup(Body, FiguraVec3.of(0, 24, 0), root);
+        Group leftArm = model.addGroup(LeftArm, FiguraVec3.of(-5, 22, 0), root);
+        Group rightArm = model.addGroup(RightArm, FiguraVec3.of(5, 22, 0), root);
+        Group leftLeg = model.addGroup(LeftLeg, FiguraVec3.of(-1.9, 12, 0), root);
+        Group rightLeg = model.addGroup(RightLeg, FiguraVec3.of(1.9, 12, 0), root);
 
         //player
         if (hasPlayer) {
@@ -268,7 +289,7 @@ public class AvatarWizard {
 
         //cape
         if (hasCape) {
-            Group cape = model.addGroup("Cape", FiguraVec3.of(0, 24, 2), root);
+            Group cape = model.addGroup(Cape, FiguraVec3.of(0, 24, 2), root);
             Cube cube = model.addCube("Cape", FiguraVec3.of(-5, 8, 2), FiguraVec3.of(10, 16, 1), cape);
             cube.generateBoxFaces(0, 0, capeTex, 1, hasPlayer ? 2 : 1);
         }
@@ -278,13 +299,13 @@ public class AvatarWizard {
             Group elytra = model.addGroup("Elytra", FiguraVec3.of(0, 24, 2), root);
 
             //left wing
-            Group leftElytra = model.addGroup("LeftElytra", FiguraVec3.of(-5, 24, 2), elytra);
+            Group leftElytra = model.addGroup(LeftElytra, FiguraVec3.of(-5, 24, 2), elytra);
             Cube cube = model.addCube(FiguraVec3.of(-5, 4, 2), FiguraVec3.of(10, 20, 2), leftElytra);
             cube.inflate = 1;
             cube.generateBoxFaces(22, 0, capeTex, 1, hasPlayer ? 2 : 1);
 
             //right wing
-            Group rightElytra = model.addGroup("RightElytra", FiguraVec3.of(5, 24, 2), elytra);
+            Group rightElytra = model.addGroup(RightElytra, FiguraVec3.of(5, 24, 2), elytra);
             cube = model.addCube(FiguraVec3.of(-5, 4, 2), FiguraVec3.of(10, 20, 2), rightElytra);
             cube.inflate = 1;
             cube.generateBoxFaces(22, 0, capeTex, -1, hasPlayer ? 2 : 1);
@@ -292,22 +313,34 @@ public class AvatarWizard {
 
         //pivots
         if (WizardEntry.ITEMS_PIVOT.asBool(map)) {
-            model.addGroup("LeftItemPivot", FiguraVec3.of(slim ? -5.5 : -6, 12, -2), leftArm);
-            model.addGroup("RightItemPivot", FiguraVec3.of(slim ? 5.5 : 6, 12, -2), rightArm);
+            model.addGroup(LeftItemPivot, FiguraVec3.of(slim ? -5.5 : -6, 12, -2), leftArm);
+            model.addGroup(RightItemPivot, FiguraVec3.of(slim ? 5.5 : 6, 12, -2), rightArm);
         }
 
         if (WizardEntry.SPYGLASS_PIVOT.asBool(map)) {
-            model.addGroup("LeftSpyglassPivot", FiguraVec3.of(-2, 28, -4), head);
-            model.addGroup("RightSpyglassPivot", FiguraVec3.of(2, 28, -4), head);
+            model.addGroup(LeftSpyglassPivot, FiguraVec3.of(-2, 28, -4), head);
+            model.addGroup(RightSpyglassPivot, FiguraVec3.of(2, 28, -4), head);
         }
 
         if (WizardEntry.HELMET_ITEM_PIVOT.asBool(map)) {
-            model.addGroup("HelmetItemPivot", FiguraVec3.of(0, 24, 0), head);
+            model.addGroup(HelmetItemPivot, FiguraVec3.of(0, 24, 0), head);
         }
 
         if (WizardEntry.PARROTS_PIVOT.asBool(map)) {
-            model.addGroup("LeftParrotPivot", FiguraVec3.of(-6, 24, 0), body);
-            model.addGroup("RightParrotPivot", FiguraVec3.of(6, 24, 0), body);
+            model.addGroup(LeftParrotPivot, FiguraVec3.of(-6, 24, 0), body);
+            model.addGroup(RightParrotPivot, FiguraVec3.of(6, 24, 0), body);
+        }
+
+        if (hasArmor) {
+            model.addGroup(HelmetPivot, FiguraVec3.of(0, 24, 0), head);
+            model.addGroup(ChestplatePivot, FiguraVec3.of(0, 24, 0), body);
+            model.addGroup(LeftShoulderPivot, FiguraVec3.of(-6, 24, 0), leftArm);
+            model.addGroup(RightShoulderPivot, FiguraVec3.of(6, 24, 0), rightArm);
+            model.addGroup(LeggingsPivot, FiguraVec3.of(0, 12, 0), body);
+            model.addGroup(LeftLeggingPivot, FiguraVec3.of(2, 12, 0), leftLeg);
+            model.addGroup(RightLeggingPivot, FiguraVec3.of(-2, 12, 0), rightLeg);
+            model.addGroup(LeftBootPivot, FiguraVec3.of(-2, 0, 0), leftLeg);
+            model.addGroup(RightBootPivot, FiguraVec3.of(2, 0, 0), rightLeg);
         }
 
         //return
@@ -320,68 +353,5 @@ public class AvatarWizard {
         Cube l = model.addCube(layerName, position, size, parent);
         l.inflate = inflation;
         l.generateBoxFaces(x2, y2, texture);
-    }
-
-    public enum WizardEntry {
-        //metadata
-        Meta(Type.CATEGORY),
-        NAME(Type.TEXT),
-        DESCRIPTION(Type.TEXT, NAME),
-        AUTHORS(Type.TEXT, NAME),
-        //model stuff
-        Model(Type.CATEGORY, NAME),
-        DUMMY_MODEL(Model),
-        PLAYER_MODEL(DUMMY_MODEL),
-        SLIM(PLAYER_MODEL),
-        CAPE(DUMMY_MODEL),
-        ELYTRA(DUMMY_MODEL),
-        //pivots
-        Pivots(Type.CATEGORY, DUMMY_MODEL),
-        ITEMS_PIVOT(Pivots),
-        SPYGLASS_PIVOT(Pivots),
-        HELMET_ITEM_PIVOT(Pivots),
-        PARROTS_PIVOT(Pivots),
-        //scripting
-        Scripting(Type.CATEGORY, NAME),
-        DUMMY_SCRIPT(Scripting),
-        HIDE_PLAYER(PLAYER_MODEL, DUMMY_SCRIPT),
-        HIDE_ARMOR(DUMMY_SCRIPT),
-        HIDE_CAPE(DUMMY_SCRIPT),
-        HIDE_ELYTRA(DUMMY_SCRIPT),
-        EMPTY_EVENTS(DUMMY_SCRIPT);
-
-        private final Type type;
-        private final WizardEntry[] dependencies;
-
-        WizardEntry(WizardEntry... dependencies) {
-            this(Type.TOGGLE, dependencies);
-        }
-        WizardEntry(Type type, WizardEntry... dependencies) {
-            this.type = type;
-            this.dependencies = dependencies;
-        }
-
-        public Type getType() {
-            return type;
-        }
-
-        public boolean validade(Object object) {
-            return switch (type) {
-                case TOGGLE -> object instanceof Boolean;
-                case TEXT -> object instanceof String;
-                case CATEGORY -> true;
-            };
-        }
-
-        public boolean asBool(HashMap<WizardEntry, Object> map) {
-            Object object = map.get(this);
-            return type == Type.TOGGLE && object != null && (boolean) object;
-        }
-
-        public enum Type {
-            TOGGLE,
-            TEXT,
-            CATEGORY
-        }
     }
 }
