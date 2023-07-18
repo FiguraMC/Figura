@@ -1,6 +1,7 @@
 package org.figuramc.figura.lua.api;
 
 import com.mojang.blaze3d.platform.Window;
+import com.mojang.math.Vector3f;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.Minecraft;
@@ -17,7 +18,6 @@ import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.world.phys.Vec3;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.utils.*;
-import org.joml.Vector3f;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaValue;
 import org.figuramc.figura.FiguraMod;

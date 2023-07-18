@@ -86,7 +86,7 @@ public class CustomFramebuffer {
         shader.setSampler("DiffuseSampler", colorAttachment);
         //shader.addSampler("DiffuseSampler", MinecraftClient.getInstance().getFramebuffer().getColorAttachment());
         //shader.addSampler("DiffuseSampler", MinecraftClient.getInstance().getTextureManager().getTexture(ClickableWidget.WIDGETS_TEXTURE).getGlId());
-        com.mojang.math.Matrix4f matrix4f = com.mojang.math.Matrix4f.orthographic((float) viewWidth, (float) (-viewHeight), 1000f, 3000f);
+        Matrix4f matrix4f = Matrix4f.orthographic((float) viewWidth, (float) (-viewHeight), 1000f, 3000f);
         RenderSystem.setProjectionMatrix(matrix4f);
         if (shader.MODEL_VIEW_MATRIX != null) {
             shader.MODEL_VIEW_MATRIX.set(Matrix4f.createTranslateMatrix(0f, 0f, -2000f));

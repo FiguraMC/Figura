@@ -23,7 +23,6 @@ import org.figuramc.figura.model.rendering.texture.FiguraTexture;
 import org.figuramc.figura.model.rendering.texture.FiguraTextureSet;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.model.VanillaModelData;
-import org.joml.Matrix4d;
 
 import java.util.ArrayList;
 import java.util.HashMap;

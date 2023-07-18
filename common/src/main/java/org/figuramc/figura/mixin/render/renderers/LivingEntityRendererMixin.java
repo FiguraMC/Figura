@@ -51,7 +51,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
     @Unique
     private Avatar currentAvatar;
     @Unique
-    private com.mojang.math.Matrix4f lastPose;
+    private Matrix4f lastPose;
 
     @Inject(at = @At("HEAD"), method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V")
     private void onRender(T livingEntity, float f, float g, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, CallbackInfo ci) {
@@ -97,7 +97,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
         FiguraMod.pushProfiler(currentAvatar);
 
         FiguraMod.pushProfiler("calculateMatrix");
-        Matrix4f diff = new com.mojang.math.Matrix4f(lastPose);
+        Matrix4f diff = new Matrix4f(lastPose);
         diff.invert();
         diff.multiply(poseStack.last().pose());
         FiguraMat4 poseMatrix = new FiguraMat4().set(diff);

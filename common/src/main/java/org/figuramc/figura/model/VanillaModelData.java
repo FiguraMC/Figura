@@ -49,7 +49,7 @@ public class VanillaModelData {
 
         public final FiguraVec3 pos = FiguraVec3.of();
         public final FiguraVec3 rot = FiguraVec3.of();
-        public final FiguraVec3 scale = FiguraVec3.of();
+        public final FiguraVec3 scale = FiguraVec3.of(1, 1, 1);
         public boolean visible = false;
 
         private void updateFromPart(ModelPart model) {
