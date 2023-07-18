@@ -1,47 +1,45 @@
-# Figura
+<h1 align="center"> Figura </h1>
+<p align="center"> We support Fabric and Quilt! </p>
+<p align="center"> (Forge coming soon!) </p>
 
-## A fully clientside Minecraft Java mod that allows you to customize your player model!
-![image](https://user-images.githubusercontent.com/40085587/232265398-f193b7c2-428f-41df-bc65-7c6b5a02e31b.png)
+```diff
+- Notice: The previous owner has deleted everything. We are currently rebuilding.
+```
 
-## Utilizing the full potential of [Blockbench](https://www.blockbench.net/), including:
+## A Minecraft Java client mod that allows you to extensively customize your player model and have other players see your Avatar without requiring any server mods!
+![blockbench](https://github.com/Covkie/FiguraRME/assets/52550063/2f8bfff9-f5d6-46bd-a98c-7a9eed3faa7b)
 
-![image](https://user-images.githubusercontent.com/40085587/232266646-72ea56aa-fb99-4706-bbac-dd242fbad57f.png)
+## Utilizing the full potential of [Blockbench](https://www.blockbench.net/).
+![animation](https://github.com/Covkie/FiguraRME/assets/52550063/d9e0e7b6-675f-40b3-a6fb-88c057ee50ab)
 
-![image](https://user-images.githubusercontent.com/40085587/232266641-0ef9d180-4190-46f5-a4a6-7e01e06fe6a1.png)
+![mesh](https://github.com/Covkie/FiguraRME/assets/52550063/22742e4b-31fe-42cc-b8f4-0cedfe909a05)
 
-## But not only that, Figura also have a whole optional [Lua](https://www.lua.org/) API to make your own scripts!
+## Not only can you customize your model but Figura also has an optional [Lua](https://www.lua.org/) API to make your own scripts!
 
-![image](https://user-images.githubusercontent.com/40085587/232266708-9d6d9da6-a454-4ca0-83f2-a58c229ab03b.png)
+![lua](https://github.com/Covkie/FiguraRME/assets/52550063/9201d481-1c52-42b5-813f-ca09a2fa5378)
 
-## But hold on, thats too good, what if someone is invisible, or very small?
+## What if someone is invisible, or very small? Take advantage of Figura's robust permission system!
 
-![image](https://user-images.githubusercontent.com/40085587/232266726-9d31c171-b16f-4246-adbe-30a337d7f15b.png)
-
-*\*Figura do not take responsability of cheaty Avatars, all Avatars are responsibility of their creators*
+![perms](https://github.com/Covkie/FiguraRME/assets/52550063/92904d8d-3e38-4faf-b446-5f9480a8321f)
 
 ## We also have some extras, like:
+![Qol](https://github.com/Covkie/FiguraRME/assets/52550063/d9db538e-d1b6-42eb-ad44-fbcc559c3c1f)
 
-![image](https://user-images.githubusercontent.com/40085587/232266831-5266010b-28c8-4fa1-987c-daad23657bac.png)
+![skullemoji](https://github.com/Covkie/FiguraRME/assets/52550063/91c0f373-7048-4b2f-90db-e6891fa29589)
 
-Meet us on Discord for more info and help :)
+Meet us on the [FiguraMC Discord Server](https://discord.gg/nbN8KZyhUq) for more info and help :)
 
 # Links
-[discord]: https://discord.com/api/guilds/125227483518861312/widget.png
-[reddit]: https://img.shields.io/badge/Reddit-ff4500?logo=reddit&logoColor=ffffff&labelColor=ff4500
+[discord]: https://discord.com/api/guilds/1129805506354085959/widget.png
 [modrinth]: https://img.shields.io/badge/Modrinth-1bd96a?logo=modrinth&logoColor=ffffff&labelColor=1bd96a
 [curseforge]: https://img.shields.io/badge/CurseForge-f16436?logo=curseforge&logoColor=ffffff&labelColor=f16436
 [kofi]: https://img.shields.io/badge/Ko--fi-00b9fe?logo=kofi&logoColor=ffffff&labelColor=00b9fe
 
-## Social:
-[ ![discord][] ](https://discord.gg/ekHGHcH8Af)
-[ ![reddit][] ](https://www.reddit.com/r/Figura)
+## Social: [ ![discord][] ](https://discord.gg/nbN8KZyhUq)
 
-## Download:
-[ ![modrinth] ](https://modrinth.com/mod/figura)
-[ ![curseforge][] ](https://curseforge.com/minecraft/mc-mods/figura)
+## Download: [ ![modrinth] ](https://modrinth.com/mod/figura) [ ![curseforge][] ](https://curseforge.com/minecraft/mc-mods/figura)
 
-## Donate:
-[ ![kofi][] ](https://ko-fi.com/francy_chan)
+## Donate: [ ![kofi][] ](https://ko-fi.com/skyrina)
 
 # FAQ
 
@@ -115,16 +113,14 @@ Meet us on Discord for more info and help :)
 > 
 > Check out these [alternatives](https://lambdaurora.dev/optifine_alternatives/) instead
 
-### • Forge port?
-> No
+### • Where can I find Avatars to download?
+> For now you can find Avatars in the showcase channel in the official Discord server (A Web Based and In-Game browser is in the works!)
 
-### • Where can I find avatars to download?
-> For now you can find avatars in the showcase channel in the official Discord server
-
-### • My Minecraft is cracked (non-premium/non-original), why can't I use Figura?
+### • My Minecraft is cracked (non-premium/non-original) or I'm trying to join a cracked offline mode server, why can't I use Figura?
 > Figura uses your account's UUID and your Mojang authentication as a way to prove you own that account, avoiding unwanted / malicious uploads
 > 
-> Non-premium Minecraft accounts don't authenticate with Mojang, and as such can neither upload nor download Figura avatars
+> Non-premium Minecraft accounts don't authenticate with Mojang, and Offline mode servers don't report working UUID's, as such can neither upload nor download Figura avatars
+
 
 ## Community Resources
 

@@ -1,0 +1,217 @@
+package org.figuramc.figura.gui.screens;
+
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.components.Widget;
+import net.minecraft.client.gui.screens.Screen;
+<<<<<<< HEAD:src/main/java/org/moon/figura/gui/screens/GameScreen.java
+import net.minecraft.network.chat.TextComponent;
+import org.lwjgl.glfw.GLFW;
+import org.moon.figura.FiguraMod;
+import org.moon.figura.gui.widgets.Label;
+import org.moon.figura.gui.widgets.Button;
+import org.moon.figura.math.vector.FiguraVec3;
+import org.moon.figura.utils.ColorUtils;
+import org.moon.figura.utils.FiguraIdentifier;
+import org.moon.figura.utils.FiguraText;
+import org.moon.figura.utils.ui.UIHelper;
+=======
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import org.figuramc.figura.utils.ui.UIHelper;
+import org.lwjgl.glfw.GLFW;
+import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.gui.widgets.Button;
+import org.figuramc.figura.gui.widgets.Label;
+import org.figuramc.figura.utils.FiguraIdentifier;
+import org.figuramc.figura.utils.FiguraText;
+>>>>>>> 8b2c2606120aac4f05d8dd5820ea17317422dc93:common/src/main/java/org/figuramc/figura/gui/screens/GameScreen.java
+
+import java.util.ArrayList;
+
+public class GameScreen extends AbstractPanelScreen {
+
+    private static final int[][] RULES = {
+            {0, 0, 0, 1, 0, 0, 0, 0, 0}, // dead
+            {0, 0, 1, 1, 0, 0, 0, 0, 0} // alive
+    };
+
+    private Label keys, stats;
+    private Grid grid;
+    private boolean paused = false;
+    private static int scale = 5;
+
+    protected GameScreen(Screen parentScreen) {
+        super(parentScreen, TextComponent.EMPTY.copy());
+    }
+
+    @Override
+    public Class<? extends Screen> getSelectedPanel() {
+        return parentScreen.getClass();
+    }
+
+    protected void init() {
+        super.init();
+        this.removeWidget(panels);
+
+        addRenderableOnly(grid = new Grid(width, height));
+
+        //back button
+<<<<<<< HEAD:src/main/java/org/moon/figura/gui/screens/GameScreen.java
+        addRenderableWidget(new Button(this.width - 28, 4, 24, 24, 0, 0, 24, new FiguraIdentifier("textures/gui/back.png"), 72, 24, new FiguraText("gui.done"), bx -> onClose()));
+=======
+        addRenderableWidget(new Button(this.width - 20, 4, 16, 16, 0, 0, 16, new FiguraIdentifier("textures/gui/search_clear.png"), 48, 16, new FiguraText("gui.done"), bx -> onClose()));
+>>>>>>> 8b2c2606120aac4f05d8dd5820ea17317422dc93:common/src/main/java/org/figuramc/figura/gui/screens/GameScreen.java
+
+        //text
+        addRenderableWidget(keys = new Label(
+                TextComponent.EMPTY.copy()
+                        .append(new TextComponent("[R]").withStyle(FiguraMod.getAccentColor()))
+                        .append(" restart, ")
+                        .append(new TextComponent("[P]").withStyle(FiguraMod.getAccentColor()))
+                        .append(" pause, ")
+                        .append(new TextComponent("[SPACE]").withStyle(FiguraMod.getAccentColor()))
+                        .append(" step")
+                        .append("\n")
+                        .append(new TextComponent("[F1]").withStyle(FiguraMod.getAccentColor()))
+                        .append(" hide text, ")
+                        .append(new TextComponent("[Scroll]").withStyle(FiguraMod.getAccentColor()))
+                        .append(" scale (restarts)"),
+                4, 4, 0)
+        );
+        addRenderableWidget(stats = new Label("", 4, keys.getRawY() + keys.getHeight(), 0));
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        if (!paused) grid.tick();
+        stats.setText(
+                new TextComponent("Generation")
+                        .append(new TextComponent(" " + grid.gen).withStyle(FiguraMod.getAccentColor()))
+                        .append(", Scale")
+                        .append(new TextComponent(" " + scale).withStyle(FiguraMod.getAccentColor()))
+        );
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        switch (keyCode) {
+            case GLFW.GLFW_KEY_R -> grid.init();
+            case GLFW.GLFW_KEY_P -> paused = !paused;
+            case GLFW.GLFW_KEY_SPACE -> grid.tick();
+            case GLFW.GLFW_KEY_F1 -> {
+                keys.setVisible(!keys.isVisible());
+                stats.setVisible(!stats.isVisible());
+            }
+            default -> {
+                return super.keyPressed(keyCode, scanCode, modifiers);
+            }
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+        scale = (int) Math.max(1, scale + Math.signum(amount));
+        grid.init();
+        return true;
+    }
+
+    private static class Grid implements Widget {
+
+        private Cell[][] grid;
+        private final int width, height;
+        private long gen = 0;
+
+        private Grid(int width, int height) {
+            this.width = width;
+            this.height = height;
+            init();
+        }
+
+        private void init() {
+            gen = 0;
+            int width = this.width / scale;
+            int height = this.height / scale;
+
+            //create grid
+            grid = new Cell[width][height];
+
+            for (int i = 0; i < width; i++) {
+                for (int j = 0; j < height; j++) {
+                    //create cell :D
+                    Cell cell = new Cell(i, j, (int) Math.round(Math.random()));
+
+                    //neighbours
+                    if (i > 0) {
+                        if (j > 0) cell.addNeighbor(grid[i - 1][j - 1]); //top left
+                        cell.addNeighbor(grid[i - 1][j]); //top middle
+                        if (j < height - 1) cell.addNeighbor(grid[i - 1][j + 1]); //top right
+                    }
+                    if (j > 0) cell.addNeighbor(grid[i][j - 1]); //left
+
+                    grid[i][j] = cell;
+                }
+            }
+        }
+
+        private void tick() {
+            gen++;
+            for (Cell[] cells : grid)
+                for (Cell cell : cells)
+                    cell.update();
+        }
+
+        @Override
+        public void render(PoseStack pose, int mouseX, int mouseY, float delta) {
+            pose.pushPose();
+            pose.scale(scale, scale, scale);
+
+            for (Cell[] cells : grid) {
+                for (Cell cell : cells) {
+<<<<<<< HEAD:src/main/java/org/moon/figura/gui/screens/GameScreen.java
+                    if (yes) cell.color = 0xFF000000 + ColorUtils.rgbToInt(ColorUtils.hsvToRGB(FiguraVec3.of((FiguraMod.ticks % 360) / 360f, 1f, 1f)));
+                    cell.render(stack);
+=======
+                    cell.render(pose);
+>>>>>>> 8b2c2606120aac4f05d8dd5820ea17317422dc93:common/src/main/java/org/figuramc/figura/gui/screens/GameScreen.java
+                }
+            }
+
+            pose.popPose();
+        }
+    }
+
+    private static class Cell {
+        private final int x, y;
+        private int alive, future;
+        private final ArrayList<Cell> neighbors = new ArrayList<>();
+        private int color = 0xFFFFFFFF;
+
+        private Cell(int x, int y, int alive) {
+            this.x = x;
+            this.y = y;
+            this.alive = alive;
+            this.future = alive;
+        }
+
+        private void addNeighbor(Cell cell) {
+            this.neighbors.add(cell);
+            cell.neighbors.add(this);
+        }
+
+        private void update() {
+            int neigh = 0;
+            for (Cell cell : neighbors)
+                neigh += cell.alive;
+            this.future = RULES[this.alive][neigh];
+        }
+
+        private void render(PoseStack stack) {
+            this.alive = this.future;
+            if (this.alive == 1)
+                UIHelper.fill(stack, this.x, this.y, this.x + 1, this.y + 1, color);
+        }
+    }
+}

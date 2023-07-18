@@ -1,0 +1,113 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "org.figuramc.figura.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+  ],
+  "client": [
+    "BiomeAccessor",
+    "BlockBehaviourAccessor",
+    "ClientCommandSourceMixin",
+    "ClientLevelInvoker",
+    "EntityAccessor",
+    "EntityMixin",
+    "ItemStackMixin",
+    "LivingEntityAccessor",
+    "LivingEntityMixin",
+    "MinecraftMixin",
+    "ReloadableResourceManagerMixin",
+    "SkullBlockEntityAccessor",
+<<<<<<< HEAD:src/main/resources/figura.mixins.json
+
+=======
+>>>>>>> 8b2c2606120aac4f05d8dd5820ea17317422dc93:common/src/main/resources/figura-common.mixins.json
+    "gui.ChatComponentAccessor",
+    "gui.ChatComponentMixin",
+    "gui.ChatScreenAccessor",
+    "gui.ChatScreenMixin",
+    "gui.ClickEventActionMixin",
+<<<<<<< HEAD:src/main/resources/figura.mixins.json
+    "gui.CommandSuggestionsMixin",
+=======
+>>>>>>> 8b2c2606120aac4f05d8dd5820ea17317422dc93:common/src/main/resources/figura-common.mixins.json
+    "gui.DebugScreenOverlayMixin",
+    "gui.GuiMessageMixin",
+    "gui.GuiMixin",
+    "gui.InventoryScreenMixin",
+    "gui.PauseScreenMixin",
+    "gui.PlayerTabOverlayAccessor",
+    "gui.PlayerTabOverlayMixin",
+    "gui.ScreenAccessor",
+    "gui.ScreenMixin",
+    "gui.SplashManagerMixin",
+    "gui.SuggestionsListMixin",
+    "gui.TitleScreenMixin",
+<<<<<<< HEAD:src/main/resources/figura.mixins.json
+
+=======
+>>>>>>> 8b2c2606120aac4f05d8dd5820ea17317422dc93:common/src/main/resources/figura-common.mixins.json
+    "input.InputConstantsTypeMixin",
+    "input.KeyboardHandlerMixin",
+    "input.KeyMappingAccessor",
+    "input.KeyMappingMixin",
+    "input.MouseHandlerMixin",
+<<<<<<< HEAD:src/main/resources/figura.mixins.json
+
+    "particle.ParticleAccessor",
+    "particle.ParticleEngineMixin",
+    "particle.SingleQuadParticleMixin",
+
+=======
+    "particle.ParticleAccessor",
+    "particle.ParticleEngineMixin",
+    "particle.SingleQuadParticleMixin",
+>>>>>>> 8b2c2606120aac4f05d8dd5820ea17317422dc93:common/src/main/resources/figura-common.mixins.json
+    "render.CameraMixin",
+    "render.EntityRenderDispatcherMixin",
+    "render.GameRendererAccessor",
+    "render.GameRendererMixin",
+    "render.LevelRendererMixin",
+    "render.MissingTextureAtlasSpriteAccessor",
+    "render.PlayerModelMixin",
+    "render.TextureAtlasAccessor",
+    "render.TextureManagerAccessor",
+<<<<<<< HEAD:src/main/resources/figura.mixins.json
+
+=======
+>>>>>>> 8b2c2606120aac4f05d8dd5820ea17317422dc93:common/src/main/resources/figura-common.mixins.json
+    "render.layers.CapeLayerMixin",
+    "render.layers.CustomHeadLayerMixin",
+    "render.layers.HumanoidArmorLayerMixin",
+    "render.layers.ParrotOnShoulderLayerMixin",
+    "render.layers.elytra.ElytraLayerAccessor",
+    "render.layers.elytra.ElytraLayerMixin",
+    "render.layers.elytra.ElytraModelAccessor",
+    "render.layers.items.ItemInHandLayerMixin",
+    "render.layers.items.PlayerItemInHandLayerMixin",
+<<<<<<< HEAD:src/main/resources/figura.mixins.json
+
+=======
+>>>>>>> 8b2c2606120aac4f05d8dd5820ea17317422dc93:common/src/main/resources/figura-common.mixins.json
+    "render.renderers.ArrowRendererMixin",
+    "render.renderers.BlockEntityWithoutLevelRendererMixin",
+    "render.renderers.EntityRendererMixin",
+    "render.renderers.HandRenderSelectionAccessor",
+    "render.renderers.ItemInHandRendererMixin",
+    "render.renderers.ItemRendererMixin",
+    "render.renderers.LivingEntityRendererMixin",
+    "render.renderers.PlayerRendererMixin",
+    "render.renderers.ScreenEffectRendererMixin",
+    "render.renderers.SignRendererMixin",
+    "render.renderers.SkullBlockRendererMixin",
+    "sound.ChannelHandleMixin",
+    "sound.SoundEngineMixin",
+    "sound.SoundManagerAccessor",
+    "sound.SubtitleOverlayMixin"
+  ],
+  "server": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
