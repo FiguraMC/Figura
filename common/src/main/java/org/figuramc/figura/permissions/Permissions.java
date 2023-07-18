@@ -134,8 +134,8 @@ public class Permissions {
             this.index = index;
             this.color = color;
             String name = "permissions.category." + name().toLowerCase();
-            text = FiguraText.of(name).withStyle(style);
-            info = FiguraText.of(name + ".info");
+            text = new FiguraText(name).withStyle(style);
+            info = new FiguraText(name + ".info");
         }
 
         public static Category indexOf(int i) {

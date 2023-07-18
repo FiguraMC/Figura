@@ -1,6 +1,7 @@
 package org.figuramc.figura.mixin.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Matrix4f;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.*;
@@ -11,7 +12,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 import org.figuramc.figura.math.vector.FiguraVec4;
-import org.joml.Matrix4f;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
@@ -68,7 +68,7 @@ public abstract class LevelRendererMixin {
     }
 
     @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;checkPoseStack(Lcom/mojang/blaze3d/vertex/PoseStack;)V", ordinal = 0))
-    private void renderLevelFirstPerson(PoseStack stack, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightTexture lightmapTextureManager, Matrix4f matrix4f, CallbackInfo ci) {
+    private void renderLevelFirstPerson(PoseStack stack, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f matrix4f, CallbackInfo ci) {
         if (camera.isDetached())
             return;
 
@@ -107,12 +107,12 @@ public abstract class LevelRendererMixin {
     }
 
     @Inject(method = "renderLevel", at = @At("HEAD"))
-    private void onRenderLevel(PoseStack matrices, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightTexture lightmapTextureManager, Matrix4f matrix4f, CallbackInfo ci) {
+    private void onRenderLevel(PoseStack matrices, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f matrix4f, CallbackInfo ci) {
         AvatarManager.executeAll("worldRender", avatar -> avatar.render(tickDelta));
     }
 
     @Inject(method = "renderLevel", at = @At("RETURN"))
-    private void afterRenderLevel(PoseStack matrices, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightTexture lightmapTextureManager, Matrix4f matrix4f, CallbackInfo ci) {
+    private void afterRenderLevel(PoseStack matrices, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f matrix4f, CallbackInfo ci) {
         AvatarManager.executeAll("postWorldRender", avatar -> avatar.postWorldRenderEvent(tickDelta));
     }
 

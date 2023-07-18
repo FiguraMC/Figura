@@ -58,10 +58,10 @@ class ExportCommand {
 
             texture.writeTexture(FiguraMod.getFiguraDirectory().resolve(filename + ".png"));
 
-            context.getSource().figura$sendFeedback(FiguraText.of("command.export_texture.success"));
+            context.getSource().figura$sendFeedback(new FiguraText("command.export_texture.success"));
             return 1;
         } catch (Exception e) {
-            context.getSource().figura$sendError(FiguraText.of("command.export_texture.error"));
+            context.getSource().figura$sendError(new FiguraText("command.export_texture.error"));
             return 0;
         }
     }
@@ -88,10 +88,10 @@ class ExportCommand {
 
             NbtIo.writeCompressed(avatar.nbt, FiguraMod.getFiguraDirectory().resolve(filename + ".moon").toFile());
 
-            context.getSource().figura$sendFeedback(FiguraText.of("command.export_avatar.success"));
+            context.getSource().figura$sendFeedback(new FiguraText("command.export_avatar.success"));
             return 1;
         } catch (Exception e) {
-            context.getSource().figura$sendError(FiguraText.of("command.export_avatar.error"));
+            context.getSource().figura$sendError(new FiguraText("command.export_avatar.error"));
             return 0;
         }
     }

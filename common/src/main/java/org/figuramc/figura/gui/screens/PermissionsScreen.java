@@ -2,11 +2,11 @@ package org.figuramc.figura.gui.screens;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import org.figuramc.figura.gui.FiguraToast;
@@ -54,7 +54,7 @@ public class PermissionsScreen extends AbstractPanelScreen {
     private PlayerPermPackElement dragged = null;
 
     public PermissionsScreen(Screen parentScreen) {
-        super(parentScreen, FiguraText.of("gui.panels.title.permissions"));
+        super(parentScreen, new FiguraText("gui.panels.title.permissions"));
     }
 
     @Override
@@ -75,23 +75,21 @@ public class PermissionsScreen extends AbstractPanelScreen {
         //permission slider and list
         slider = new SliderWidget(middle + 2, (int) (entityWidget.getY() + entityWidget.getHeight() + lineHeight * 1.5 + 20), listWidth, 11, 1d, 5, true) {
             @Override
-            public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float delta) {
-                super.renderWidget(gui, mouseX, mouseY, delta);
+            public void renderButton(PoseStack pose, int mouseX, int mouseY, float delta) {
+                super.renderButton(pose, mouseX, mouseY, delta);
 
                 PermissionPack selectedPack = playerList.selectedEntry.getPack();
                 MutableComponent text = selectedPack.getCategoryName();
 
                 int x = (int) (this.getX() + this.getWidth() / 2f - font.width(text) * 0.75f);
                 int y = this.getY() - 4 - font.lineHeight * 2;
-
-                PoseStack pose = gui.pose();
                 pose.pushPose();
                 pose.translate(x, y, 0f);
                 pose.scale(1.5f, 1.5f, 1f);
-                UIHelper.renderOutlineText(gui, font, text, 0, 0, 0xFFFFFF, 0x202020);
+                UIHelper.renderOutlineText(pose, font, text, 0, 0, 0xFFFFFF, 0x202020);
                 pose.popPose();
 
-                MutableComponent info = Component.literal("?").withStyle(Style.EMPTY.withFont(UIHelper.UI_FONT));
+                MutableComponent info = new TextComponent("?").withStyle(Style.EMPTY.withFont(UIHelper.UI_FONT));
                 int color = 0x404040;
 
                 int width = font.width(info);
@@ -103,7 +101,7 @@ public class PermissionsScreen extends AbstractPanelScreen {
                     UIHelper.setTooltip(selectedPack.getCategory().info);
                 }
 
-                gui.drawString(font, info, x, y, color);
+                font.drawShadow(pose, info, x, y, color);
             }
         };
         permissionsList = new PermissionsList(middle + 2, height, listWidth, height - 54);
@@ -125,16 +123,16 @@ public class PermissionsScreen extends AbstractPanelScreen {
 
         //reload all
         int bottomButtonsWidth = (listWidth - 24) / 2 - 2;
-        addRenderableWidget(reloadAll = new Button(middle + 2, height - 24, bottomButtonsWidth, 20, FiguraText.of("gui.permissions.reload_all"), null, bx -> {
+        addRenderableWidget(reloadAll = new Button(middle + 2, height - 24, bottomButtonsWidth, 20, new FiguraText("gui.permissions.reload_all"), null, bx -> {
             AvatarManager.clearAllAvatars();
-            FiguraToast.sendToast(FiguraText.of("toast.reload_all"));
+            FiguraToast.sendToast(new FiguraText("toast.reload_all"));
         }));
 
         //back button
-        addRenderableWidget(back = new Button(middle + 6 + bottomButtonsWidth, height - 24, bottomButtonsWidth, 20, FiguraText.of("gui.done"), null, bx -> onClose()));
+        addRenderableWidget(back = new Button(middle + 6 + bottomButtonsWidth, height - 24, bottomButtonsWidth, 20, new FiguraText("gui.done"), null, bx -> onClose()));
 
         //expand button
-        addRenderableWidget(expandButton = new SwitchButton( middle + listWidth - 18, height - 24, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/expand_v.png"), 60, 40, FiguraText.of("gui.permissions.expand_permissions.tooltip"), btn -> {
+        addRenderableWidget(expandButton = new SwitchButton( middle + listWidth - 18, height - 24, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/expand_v.png"), 60, 40, new FiguraText("gui.permissions.expand_permissions.tooltip"), btn -> {
             expanded = expandButton.isToggled();
 
             //hide widgets
@@ -145,21 +143,21 @@ public class PermissionsScreen extends AbstractPanelScreen {
             back.setVisible(!expanded);
 
             //update expand button
-            expandButton.setTooltip(expanded ? FiguraText.of("gui.permissions.minimize_permissions.tooltip") : FiguraText.of("gui.permissions.expand_permissions.tooltip"));
+            expandButton.setTooltip(expanded ? new FiguraText("gui.permissions.minimize_permissions.tooltip") : new FiguraText("gui.permissions.expand_permissions.tooltip"));
 
             //set reset button activeness
             resetButton.setActive(expanded);
         }));
 
         //reset all button
-        addRenderableWidget(resetButton = new Button(middle + 2, height, 60, 20, FiguraText.of("gui.permissions.reset"), null, btn -> {
+        addRenderableWidget(resetButton = new Button(middle + 2, height, 60, 20, new FiguraText("gui.permissions.reset"), null, btn -> {
             //clear permissions
             PermissionPack pack = playerList.selectedEntry.getPack();
             pack.clear();
             updatePermissions(pack);
         }));
 
-        addRenderableWidget(precisePermissions = new SwitchButton(middle + 66, height, listWidth - 88, 20, FiguraText.of("gui.permissions.precise"), false) {
+        addRenderableWidget(precisePermissions = new SwitchButton(middle + 66, height, listWidth - 88, 20, new FiguraText("gui.permissions.precise"), false) {
             @Override
             public void onPress() {
                 super.onPress();
@@ -178,7 +176,7 @@ public class PermissionsScreen extends AbstractPanelScreen {
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void render(PoseStack gui, int mouseX, int mouseY, float delta) {
         //set entity to render
         AbstractPermPackElement entity = playerList.selectedEntry;
         Level world = Minecraft.getInstance().level;
@@ -205,7 +203,7 @@ public class PermissionsScreen extends AbstractPanelScreen {
     }
 
     @Override
-    public void renderOverlays(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void renderOverlays(PoseStack gui, int mouseX, int mouseY, float delta) {
         if (dragged != null && dragged.dragged)
             dragged.renderDragged(gui, mouseX, mouseY, delta);
 

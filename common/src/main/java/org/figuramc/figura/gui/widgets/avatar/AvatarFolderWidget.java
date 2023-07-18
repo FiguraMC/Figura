@@ -1,6 +1,6 @@
 package org.figuramc.figura.gui.widgets.avatar;
 
-import net.minecraft.client.gui.GuiGraphics;
+import com.mojang.blaze3d.vertex.PoseStack;
 import org.figuramc.figura.gui.widgets.ContainerButton;
 import org.figuramc.figura.avatar.local.LocalAvatarFetcher;
 import org.figuramc.figura.gui.widgets.lists.AvatarList;
@@ -24,7 +24,7 @@ public class AvatarFolderWidget extends AbstractAvatarWidget {
             parent.updateScroll();
         }) {
             @Override
-            protected void renderText(GuiGraphics gui, float delta) {
+            protected void renderText(PoseStack gui, float delta) {
                 //ugly hack
                 int x = getX();
                 int width = getWidth();
@@ -40,7 +40,7 @@ public class AvatarFolderWidget extends AbstractAvatarWidget {
                 setWidth(width);
 
                 //fix tooltip
-                if (tooltip() == getMessage())
+                if (getTooltip() == getMessage())
                     setTooltip(instance.getName());
             }
 
@@ -66,7 +66,7 @@ public class AvatarFolderWidget extends AbstractAvatarWidget {
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void render(PoseStack gui, int mouseX, int mouseY, float delta) {
         if (!isVisible() || !this.button.isVisible())
             return;
 

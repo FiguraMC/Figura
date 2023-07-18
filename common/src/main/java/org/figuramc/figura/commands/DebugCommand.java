@@ -71,15 +71,15 @@ class DebugCommand {
 
             //feedback
             context.getSource().figura$sendFeedback(
-                    FiguraText.of("command.debug.success")
+                    new FiguraText("command.debug.success")
                             .append(" ")
-                            .append(FiguraText.of("command.click_to_open")
+                            .append(new FiguraText("command.click_to_open")
                                     .setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, targetPath.toString())).withUnderlined(true))
                             )
             );
             return 1;
         } catch (Exception e) {
-            context.getSource().figura$sendError(FiguraText.of("command.debug.error"));
+            context.getSource().figura$sendError(new FiguraText("command.debug.error"));
             FiguraMod.LOGGER.error("Failed to save " + FiguraMod.MOD_NAME + " debug data!", e);
             return 0;
         }

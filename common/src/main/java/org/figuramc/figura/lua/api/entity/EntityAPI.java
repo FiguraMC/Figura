@@ -2,16 +2,16 @@ package org.figuramc.figura.lua.api.entity;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
+import net.minecraft.world.Container;
+import net.minecraft.world.ContainerListener;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
-import net.minecraft.world.entity.HasCustomInventoryScreen;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
-import net.minecraft.world.entity.vehicle.ContainerEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -137,7 +137,7 @@ public class EntityAPI<T extends Entity> {
     @LuaMethodDoc("entity.get_type")
     public String getType() {
         checkEntity();
-        return cacheType != null ? cacheType : (cacheType = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).toString());
+        return cacheType != null ? cacheType : (cacheType = Registry.ENTITY_TYPE.getKey(entity.getType()).toString());
     }
 
     @LuaWhitelist
@@ -199,7 +199,7 @@ public class EntityAPI<T extends Entity> {
     @LuaMethodDoc("entity.is_on_ground")
     public boolean isOnGround() {
         checkEntity();
-        return entity.onGround();
+        return entity.isOnGround();
     }
 
     @LuaWhitelist
@@ -391,21 +391,21 @@ public class EntityAPI<T extends Entity> {
     @LuaMethodDoc("entity.get_controlled_vehicle")
     public EntityAPI<?> getControlledVehicle() {
         checkEntity();
-        return wrap(entity.getControlledVehicle());
+        return wrap(entity.getRootVehicle());
     }
 
     @LuaWhitelist
     @LuaMethodDoc("entity.has_container")
     public boolean hasContainer() {
         checkEntity();
-        return entity instanceof ContainerEntity;
+        return entity instanceof Container;
     }
 
     @LuaWhitelist
     @LuaMethodDoc("entity.has_inventory")
     public boolean hasInventory() {
         checkEntity();
-        return entity instanceof HasCustomInventoryScreen;
+        return entity instanceof ContainerListener;
     }
 
     @LuaWhitelist

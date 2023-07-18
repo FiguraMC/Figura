@@ -6,10 +6,12 @@ import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
-import com.mojang.math.Axis;
+import com.mojang.math.Matrix3f;
+import com.mojang.math.Matrix4f;
+import com.mojang.math.Quaternion;
+import com.mojang.math.Vector3f;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.LightTexture;
@@ -27,6 +29,13 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
+import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.Varargs;
+import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.animation.Animation;
+import org.figuramc.figura.animation.AnimationPlayer;
+import org.figuramc.figura.backend2.NetworkStuff;
+import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.lua.FiguraLuaPrinter;
 import org.figuramc.figura.lua.FiguraLuaRuntime;
 import org.figuramc.figura.lua.api.entity.EntityAPI;
@@ -46,22 +55,12 @@ import org.figuramc.figura.model.rendering.AvatarRenderer;
 import org.figuramc.figura.model.rendering.EntityRenderMode;
 import org.figuramc.figura.model.rendering.ImmediateAvatarRenderer;
 import org.figuramc.figura.model.rendering.PartFilterScheme;
-import org.figuramc.figura.utils.ColorUtils;
-import org.figuramc.figura.utils.RefilledNumber;
-import org.figuramc.figura.utils.Version;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
-import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.Varargs;
-import org.figuramc.figura.FiguraMod;
-import org.figuramc.figura.animation.Animation;
-import org.figuramc.figura.animation.AnimationPlayer;
-import org.figuramc.figura.backend2.NetworkStuff;
-import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.permissions.PermissionManager;
 import org.figuramc.figura.permissions.PermissionPack;
 import org.figuramc.figura.permissions.Permissions;
 import org.figuramc.figura.utils.EntityUtils;
+import org.figuramc.figura.utils.RefilledNumber;
+import org.figuramc.figura.utils.Version;
 import org.figuramc.figura.utils.ui.UIHelper;
 
 import java.io.ByteArrayInputStream;
@@ -113,7 +112,6 @@ public class Avatar {
     public Component errorText;
     public Set<Permissions> noPermissions = new HashSet<>();
     public Set<Permissions> permissionsToTick = new HashSet<>();
-    public int lastPlayingSound = 0;
     public int versionStatus = 0;
 
     //limits
@@ -224,8 +222,6 @@ public class Avatar {
                 noPermissions.add(t);
             }
         }
-        if (lastPlayingSound > 0)
-            lastPlayingSound--;
 
         //sound
         particlesRemaining.set(permissions.get(Permissions.PARTICLES));
@@ -403,20 +399,9 @@ public class Avatar {
         return val == null || (!val.isnil(1) && !Configs.CHAT_MESSAGES.value) ? message : val.isnil(1) ? "" : val.arg(1).tojstring();
     }
 
-    public Pair<String, Integer> chatReceivedMessageEvent(String message, String json) { //special case
+    public String chatReceivedMessageEvent(String message, String json) { //special case
         Varargs val = loaded ? run("CHAT_RECEIVE_MESSAGE", tick, message, json) : null;
-        if (val == null)
-            return null;
-
-        if (val.arg(1).isboolean() && !val.arg(1).checkboolean())
-            return Pair.of(null, null);
-
-        String msg = val.isnil(1) ? json : val.arg(1).tojstring();
-        Integer color = null;
-        if (val.arg(2).isuserdata(FiguraVec3.class))
-            color = ColorUtils.rgbToInt((FiguraVec3) val.arg(2).checkuserdata(FiguraVec3.class));
-
-        return Pair.of(msg, color);
+        return val == null || val.isnil(1) ? null : val.arg(1).tojstring();
     }
 
     public boolean mouseScrollEvent(double delta) {
@@ -586,9 +571,9 @@ public class Avatar {
 
         stack.pushPose();
         if (!config) {
-            stack.mulPose(Axis.ZP.rotation(arm.zRot));
-            stack.mulPose(Axis.YP.rotation(arm.yRot));
-            stack.mulPose(Axis.XP.rotation(arm.xRot));
+            stack.mulPose(Vector3f.ZP.rotation(arm.zRot));
+            stack.mulPose(Vector3f.YP.rotation(arm.yRot));
+            stack.mulPose(Vector3f.XP.rotation(arm.xRot));
         }
         render(player, 0f, tickDelta, 1f, stack, bufferSource, light, OverlayTexture.NO_OVERLAY, playerRenderer, filter, false, false);
         stack.popPose();
@@ -607,8 +592,8 @@ public class Avatar {
         FiguraMod.pushProfiler("hudRender");
 
         stack.pushPose();
-        stack.last().pose().scale(16, 16, -16);
-        stack.last().normal().scale(1, 1, -1);
+        stack.last().pose().multiply(Matrix4f.createScaleMatrix(16, 16, -16));
+        stack.last().normal().mul(Matrix3f.createScaleMatrix(1, 1, -1));
 
         Lighting.setupForFlatItems();
         RenderSystem.disableDepthTest();
@@ -643,7 +628,7 @@ public class Avatar {
             stack.translate((0.5d - direction.getStepX() * 0.25d), 0.25d, (0.5d - direction.getStepZ() * 0.25d));
 
         stack.scale(-1f, -1f, 1f);
-        stack.mulPose(Axis.YP.rotationDegrees(yaw));
+        stack.mulPose(Vector3f.YP.rotationDegrees(yaw));
 
         renderer.allowPivotParts = false;
 
@@ -694,31 +679,30 @@ public class Avatar {
         return comp > 0 && luaRuntime != null && !luaRuntime.vanilla_model.HEAD.checkVisible();
     }
 
-    public boolean renderPortrait(GuiGraphics gui, int x, int y, int size, float modelScale, boolean upsideDown) {
+    public boolean renderPortrait(PoseStack stack, int x, int y, int size, float modelScale, boolean upsideDown) {
         if (!Configs.AVATAR_PORTRAIT.value || renderer == null || !loaded)
             return false;
 
         //matrices
-        PoseStack pose = gui.pose();
-        pose.pushPose();
-        pose.translate(x, y, 0d);
-        pose.scale(modelScale, modelScale * (upsideDown ? 1 : -1), modelScale);
-        pose.mulPose(Axis.XP.rotationDegrees(180f));
+        stack.pushPose();
+        stack.translate(x, y, 0d);
+        stack.scale(modelScale, modelScale * (upsideDown ? 1 : -1), modelScale);
+        stack.mulPose(Vector3f.XP.rotationDegrees(180f));
 
         //scissors
-        Vector3f pos = pose.last().pose().transformPosition(new Vector3f());
+        FiguraVec3 pos = FiguraMat4.of().set(stack.last().pose()).apply(0d, 0d, 0d);
 
         int x1 = (int) pos.x;
         int y1 = (int) pos.y;
         int x2 = (int) pos.x + size;
         int y2 = (int) pos.y + size;
 
-        gui.enableScissor(x1, y1, x2, y2);
+        UIHelper.setupScissor(x1, y1, x2 - x1, y2 - y1);
         UIHelper.paperdoll = true;
         UIHelper.dollScale = 16f;
 
         //setup render
-        pose.translate(4d / 16d, upsideDown ? 0 : (8d / 16d), 0d);
+        stack.translate(4d / 16d, 8d / 16d, 0d);
 
         Lighting.setupForFlatItems();
 
@@ -728,20 +712,20 @@ public class Avatar {
         renderer.allowPivotParts = false;
 
         renderer.setupRenderer(
-                PartFilterScheme.PORTRAIT, buffer, pose,
+                PartFilterScheme.PORTRAIT, buffer, stack,
                 1f, light, 1f, OverlayTexture.NO_OVERLAY,
                 false, false
         );
 
         //render
         int comp = renderer.renderSpecialParts();
-        boolean ret = comp > 0 || headRender(pose, buffer, light, false);
+        boolean ret = comp > 0 || headRender(stack, buffer, light, false);
 
         //after render
         buffer.endBatch();
-        pose.popPose();
+        stack.popPose();
 
-        gui.disableScissor();
+        UIHelper.disableScissor();
         UIHelper.paperdoll = false;
 
         renderer.allowPivotParts = true;
@@ -755,8 +739,8 @@ public class Avatar {
             return false;
 
         stack.pushPose();
-        Quaternionf quaternionf = Axis.XP.rotationDegrees(135f);
-        Quaternionf quaternionf2 = Axis.YP.rotationDegrees(-90f);
+        Quaternion quaternionf = Vector3f.XP.rotationDegrees(135f);
+        Quaternion quaternionf2 = Vector3f.YP.rotationDegrees(-90f);
         quaternionf.mul(quaternionf2);
         stack.mulPose(quaternionf);
 
@@ -777,7 +761,7 @@ public class Avatar {
             return false;
 
         stack.pushPose();
-        stack.mulPose(Axis.ZP.rotationDegrees(180f));
+        stack.mulPose(Vector3f.ZP.rotationDegrees(180f));
 
         renderer.setupRenderer(
                 PartFilterScheme.ITEM, bufferSource, stack,

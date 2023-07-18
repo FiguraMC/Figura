@@ -1,18 +1,18 @@
 package org.figuramc.figura.gui.widgets.lists;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import org.figuramc.figura.gui.screens.PermissionsScreen;
-import org.figuramc.figura.gui.widgets.SearchBar;
-import org.figuramc.figura.gui.widgets.SwitchButton;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
+import org.figuramc.figura.gui.screens.PermissionsScreen;
+import org.figuramc.figura.gui.widgets.SearchBar;
+import org.figuramc.figura.gui.widgets.SwitchButton;
 import org.figuramc.figura.gui.widgets.permissions.AbstractPermPackElement;
 import org.figuramc.figura.gui.widgets.permissions.CategoryPermPackElement;
 import org.figuramc.figura.gui.widgets.permissions.PlayerPermPackElement;
@@ -50,7 +50,7 @@ public class PlayerList extends AbstractList {
         this.entryWidth = Math.min(width - scrollBar.getWidth() - 12, 174);
 
         //fix scrollbar y and height
-        scrollBar.setY(y + 28);
+        scrollBar.y = y + 28;
         scrollBar.setHeight(height - 32);
 
         //search bar
@@ -61,11 +61,11 @@ public class PlayerList extends AbstractList {
         }));
 
         //show figura only button
-        children.add(showFigura = new SwitchButton(x + width - 48, y + 4, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/show_figura.png"), 60, 40, FiguraText.of("gui.permissions.figura_only.tooltip"), button -> showFiguraBl = ((SwitchButton) button).isToggled()));
+        children.add(showFigura = new SwitchButton(x + width - 48, y + 4, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/show_figura.png"), 60, 40, new FiguraText("gui.permissions.figura_only.tooltip"), button -> showFiguraBl = ((SwitchButton) button).isToggled()));
         showFigura.setToggled(showFiguraBl);
 
         //show disconnected button
-        children.add(showDisconnected = new SwitchButton(x + width - 24, y + 4, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/show_disconnected.png"), 60, 40, FiguraText.of("gui.permissions.disconnected.tooltip"), button -> showDisconnectedBl = ((SwitchButton) button).isToggled()));
+        children.add(showDisconnected = new SwitchButton(x + width - 24, y + 4, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/show_disconnected.png"), 60, 40, new FiguraText("gui.permissions.disconnected.tooltip"), button -> showDisconnectedBl = ((SwitchButton) button).isToggled()));
         showDisconnected.setToggled(showDisconnectedBl);
 
         //initial load
@@ -84,14 +84,14 @@ public class PlayerList extends AbstractList {
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
         int x = getX();
         int y = getY();
         int width = getWidth();
         int height = getHeight();
 
         //background
-        UIHelper.blitSliced(gui, x, y, width, height, UIHelper.OUTLINE_FILL);
+        UIHelper.renderSliced(stack, x, y, width, height, UIHelper.OUTLINE_FILL);
 
         totalHeight = 0;
         for (AbstractPermPackElement pack : permissionsList) {
@@ -106,7 +106,7 @@ public class PlayerList extends AbstractList {
 
         //scissors
         this.scissorsWidth = hasScrollbar ? -scrollBar.getWidth() - 5 : -2;
-        enableScissors(gui);
+        UIHelper.setupScissor(x + scissorsX, y + scissorsY, width + scissorsWidth, height + scissorsHeight);
 
         //render stuff
         int xOffset = (width - entryWidth - (scrollBar.isVisible() ? 13 : 0)) / 2;
@@ -122,16 +122,16 @@ public class PlayerList extends AbstractList {
             pack.setY(y + playerY);
 
             if (pack.getY() + pack.getHeight() > minY && pack.getY() < maxY)
-                pack.render(gui, mouseX, mouseY, delta);
+                pack.render(stack, mouseX, mouseY, delta);
 
             playerY += pack.getHeight() + 8;
         }
 
         //reset scissor
-        gui.disableScissor();
+        UIHelper.disableScissor();
 
         //render children
-        super.render(gui, mouseX, mouseY, delta);
+        super.render(stack, mouseX, mouseY, delta);
     }
 
     @Override

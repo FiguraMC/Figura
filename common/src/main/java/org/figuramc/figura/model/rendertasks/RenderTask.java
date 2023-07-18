@@ -1,9 +1,9 @@
 package org.figuramc.figura.model.rendertasks;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
@@ -13,8 +13,6 @@ import org.figuramc.figura.math.matrix.FiguraMat3;
 import org.figuramc.figura.math.matrix.FiguraMat4;
 import org.figuramc.figura.math.vector.FiguraVec2;
 import org.figuramc.figura.math.vector.FiguraVec3;
-import org.figuramc.figura.model.FiguraModelPart;
-import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.model.PartCustomization;
 import org.figuramc.figura.utils.LuaUtils;
 
@@ -27,40 +25,30 @@ public abstract class RenderTask {
 
     protected final String name;
     protected final Avatar owner;
-    protected final FiguraModelPart parent;
     protected final PartCustomization customization;
 
-    public RenderTask(String name, Avatar owner, FiguraModelPart parent) {
+    public RenderTask(String name, Avatar owner) {
         this.name = name;
         this.owner = owner;
-        this.parent = parent;
         this.customization = new PartCustomization();
         this.customization.visible = true;
     }
 
-    public void render(PartCustomization.PartCustomizationStack stack, MultiBufferSource buffer, int light, int overlay) {
-        customization.recalculate();
-        stack.push(customization);
-        PoseStack poseStack = stack.peek().copyIntoGlobalPoseStack();
-        render(poseStack, buffer, light, overlay);
-        stack.pop();
-    }
-    public abstract void render(PoseStack stack, MultiBufferSource buffer, int light, int overlay);
+    //Return true if something was rendered, false if the function cancels for some reason
+    public abstract void render(PartCustomization.PartCustomizationStack stack, MultiBufferSource buffer, int light, int overlay);
     public abstract int getComplexity();
     public boolean shouldRender() {
         return customization.visible;
     }
 
+    public void pushOntoStack(PartCustomization.PartCustomizationStack stack) {
+        customization.recalculate();
+        stack.push(customization);
+    }
+
 
     // -- lua stuff -- //
 
-
-    @LuaWhitelist
-    @LuaMethodDoc("render_task.remove")
-    public RenderTask remove() {
-        this.parent.removeTask(this);
-        return this;
-    }
 
     @LuaWhitelist
     @LuaMethodDoc("render_task.get_name")

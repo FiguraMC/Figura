@@ -3,10 +3,10 @@ package org.figuramc.figura.backend2;
 import com.mojang.authlib.exceptions.AuthenticationUnavailableException;
 import com.mojang.authlib.exceptions.InsufficientPrivilegesException;
 import com.mojang.authlib.exceptions.InvalidCredentialsException;
-import com.mojang.authlib.exceptions.UserBannedException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.User;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import org.figuramc.figura.FiguraMod;
 
 import java.net.http.HttpRequest;
@@ -33,13 +33,11 @@ public class AuthHandler {
                 NetworkStuff.authSuccess(getToken(serverID));
             //cringe exceptions
             } catch (AuthenticationUnavailableException e) {
-                NetworkStuff.authFail(Component.translatable("disconnect.loginFailedInfo.serversUnavailable").getString());
+                NetworkStuff.authFail(new TranslatableComponent("disconnect.loginFailedInfo.serversUnavailable").getString());
             } catch (InvalidCredentialsException e) {
-                NetworkStuff.authFail(Component.translatable("disconnect.loginFailedInfo.invalidSession").getString());
+                NetworkStuff.authFail(new TranslatableComponent("disconnect.loginFailedInfo.invalidSession").getString());
             } catch (InsufficientPrivilegesException e) {
-                NetworkStuff.authFail(Component.translatable("disconnect.loginFailedInfo.insufficientPrivileges").getString());
-            } catch (UserBannedException e) {
-                NetworkStuff.authFail(Component.translatable("disconnect.loginFailedInfo.userBanned").getString());
+                NetworkStuff.authFail(new TranslatableComponent("disconnect.loginFailedInfo.insufficientPrivileges").getString());
             } catch (Exception e) {
                 NetworkStuff.authFail(e.getMessage());
             }

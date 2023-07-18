@@ -34,7 +34,7 @@ dependencies {
     // Fabric API
 	//modImplementation "net.fabricmc.fabric-api:fabric-api:$fabric_api"
 	include(modImplementation(fabricApi.module("fabric-api-base", rootProject.fabric_api)))
-	include(modImplementation(fabricApi.module("fabric-command-api-v2", rootProject.fabric_api)))
+	include(modImplementation(fabricApi.module("fabric-command-api-v1", rootProject.fabric_api)))
 	include(modImplementation(fabricApi.module("fabric-key-binding-api-v1", rootProject.fabric_api)))
 	include(modImplementation(fabricApi.module("fabric-resource-loader-v0", rootProject.fabric_api)))
 

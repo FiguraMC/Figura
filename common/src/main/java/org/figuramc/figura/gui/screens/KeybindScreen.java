@@ -17,7 +17,7 @@ public class KeybindScreen extends AbstractPanelScreen {
     private KeybindList list;
 
     public KeybindScreen(AbstractPanelScreen parentScreen) {
-        super(parentScreen.parentScreen, FiguraText.of("gui.panels.title.keybind"));
+        super(parentScreen.parentScreen, new FiguraText("gui.panels.title.keybind"));
         sourcePanel = parentScreen;
     }
 
@@ -36,7 +36,7 @@ public class KeybindScreen extends AbstractPanelScreen {
 
         //reset
         Button reset;
-        this.addRenderableWidget(reset = new Button(width / 2 - 122, height - 24, 120, 20, FiguraText.of("gui.reset_all"), null, button -> {
+        this.addRenderableWidget(reset = new Button(width / 2 - 122, height - 24, 120, 20, new FiguraText("gui.reset_all"), null, button -> {
             if (owner == null || owner.luaRuntime == null)
                 return;
 
@@ -47,7 +47,7 @@ public class KeybindScreen extends AbstractPanelScreen {
         reset.setActive(false);
 
         //back
-        addRenderableWidget(new Button(width / 2 + 4, height - 24, 120, 20, FiguraText.of("gui.done"), null, bx -> onClose()));
+        addRenderableWidget(new Button(width / 2 + 4, height - 24, 120, 20, new FiguraText("gui.done"), null, bx -> onClose()));
 
         // -- list -- //
 

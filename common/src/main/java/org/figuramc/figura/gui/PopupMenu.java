@@ -7,10 +7,10 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.Entity;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
@@ -35,34 +35,34 @@ public class PopupMenu {
     private static final FiguraIdentifier BACKGROUND = new FiguraIdentifier("textures/gui/popup.png");
     private static final FiguraIdentifier ICONS = new FiguraIdentifier("textures/gui/popup_icons.png");
 
-    private static final MutableComponent VERSION_WARN = Component.empty()
+    private static final MutableComponent VERSION_WARN = TextComponent.EMPTY.copy()
             .append(Badges.System.WARNING.badge.copy().withStyle(Style.EMPTY.withFont(Badges.FONT)))
             .append(" ")
             .append(Badges.System.WARNING.desc.copy().withStyle(ChatFormatting.YELLOW));
-    private static final MutableComponent ERROR_WARN = Component.empty()
+    private static final MutableComponent ERROR_WARN = TextComponent.EMPTY.copy()
             .append(Badges.System.ERROR.badge.copy().withStyle(Style.EMPTY.withFont(Badges.FONT)))
             .append(" ")
             .append(Badges.System.ERROR.desc.copy().withStyle(ChatFormatting.RED));
-    private static final MutableComponent PERMISSION_WARN = Component.empty()
+    private static final MutableComponent PERMISSION_WARN = TextComponent.EMPTY.copy()
             .append(Badges.System.PERMISSIONS.badge.copy().withStyle(Style.EMPTY.withFont(Badges.FONT)))
             .append(" ")
             .append(Badges.System.PERMISSIONS.desc.copy().withStyle(ChatFormatting.BLUE));
 
     private static final List<Pair<Component, Consumer<UUID>>> BUTTONS = List.of(
-            Pair.of(FiguraText.of("popup_menu.cancel"), id -> {}),
-            Pair.of(FiguraText.of("popup_menu.reload"), id -> {
+            Pair.of(new FiguraText("popup_menu.cancel"), id -> {}),
+            Pair.of(new FiguraText("popup_menu.reload"), id -> {
                 AvatarManager.reloadAvatar(id);
-                FiguraToast.sendToast(FiguraText.of("toast.reload"));
+                FiguraToast.sendToast(new FiguraText("toast.reload"));
             }),
-            Pair.of(FiguraText.of("popup_menu.increase_permissions"), id -> {
+            Pair.of(new FiguraText("popup_menu.increase_permissions"), id -> {
                 PermissionPack pack = PermissionManager.get(id);
                 if (PermissionManager.increaseCategory(pack))
-                    FiguraToast.sendToast(FiguraText.of("toast.permission_change"), pack.getCategoryName());
+                    FiguraToast.sendToast(new FiguraText("toast.permission_change"), pack.getCategoryName());
             }),
-            Pair.of(FiguraText.of("popup_menu.decrease_permissions"), id -> {
+            Pair.of(new FiguraText("popup_menu.decrease_permissions"), id -> {
                 PermissionPack pack = PermissionManager.get(id);
                 if (PermissionManager.decreaseCategory(pack))
-                    FiguraToast.sendToast(FiguraText.of("toast.permission_change"), pack.getCategoryName());
+                    FiguraToast.sendToast(new FiguraText("toast.permission_change"), pack.getCategoryName());
             })
     );
     private static final int LENGTH = BUTTONS.size();
@@ -73,7 +73,7 @@ public class PopupMenu {
     private static Entity entity;
     private static UUID id;
 
-    public static void render(GuiGraphics gui) {
+    public static void render(PoseStack stack) {
         if (!isEnabled()) return;
 
         if (entity == null) {
@@ -90,8 +90,7 @@ public class PopupMenu {
         }
 
         RenderSystem.disableDepthTest();
-        PoseStack pose = gui.pose();
-        pose.pushPose();
+        stack.pushPose();
 
         //world to screen space
         FiguraVec3 worldPos = FiguraVec3.fromVec3(entity.getPosition(minecraft.getFrameTime()));
@@ -105,21 +104,21 @@ public class PopupMenu {
         double h = window.getGuiScaledHeight();
         double s = Configs.POPUP_SCALE.value * Math.max(Math.min(window.getHeight() * 0.035 / vec.w * (1 / window.getGuiScale()), Configs.POPUP_MAX_SIZE.value), Configs.POPUP_MIN_SIZE.value);
 
-        pose.translate((vec.x + 1) / 2 * w, (vec.y + 1) / 2 * h, -100);
-        pose.scale((float) (s * 0.5), (float) (s * 0.5), 1);
+        stack.translate((vec.x + 1) / 2 * w, (vec.y + 1) / 2 * h, -100);
+        stack.scale((float) (s * 0.5), (float) (s * 0.5), 1);
 
         //background
         int width = LENGTH * 18;
 
-        UIHelper.enableBlend();
+        UIHelper.setupTexture(BACKGROUND);
         int frame = Configs.REDUCED_MOTION.value ? 0 : (int) ((FiguraMod.ticks / 5f) % 4);
-        gui.blit(BACKGROUND, width / -2, -24, width, 26, 0, frame * 26, width, 26, width, 104);
+        UIHelper.blit(stack, width / -2, -24, width, 26, 0, frame * 26, width, 26, width, 104);
 
         //icons
-        pose.translate(0f, 0f, -2f);
-        UIHelper.enableBlend();
+        stack.translate(0f, 0f, -2f);
+        UIHelper.setupTexture(ICONS);
         for (int i = 0; i < LENGTH; i++)
-            gui.blit(ICONS, width / -2 + (18 * i), -24, 18, 18, 18 * i, i == index ? 18 : 0, 18, 18, width, 36);
+            UIHelper.blit(stack, width / -2 + (18 * i), -24, 18, 18, 18 * i, i == index ? 18 : 0, 18, 18, width, 36);
 
         //texts
         Font font = minecraft.font;
@@ -147,24 +146,25 @@ public class PopupMenu {
         }
 
         //render texts
-        UIHelper.renderOutlineText(gui, font, name, -font.width(name) / 2, -36, 0xFFFFFF, 0x202020);
+        UIHelper.renderOutlineText(stack, font, name, -font.width(name) / 2, -36, 0xFFFFFF, 0x202020);
 
-        pose.scale(0.5f, 0.5f, 0.5f);
-        pose.translate(0f, 0f, -1f);
+        stack.scale(0.5f, 0.5f, 0.5f);
+        stack.translate(0f, 0f, -1f);
 
-        UIHelper.renderOutlineText(gui, font, permissionName, -font.width(permissionName) / 2, -54, 0xFFFFFF, 0x202020);
-        gui.drawString(font, title, -width + 4, -12, 0xFFFFFF);
+        UIHelper.renderOutlineText(stack, font, permissionName, -font.width(permissionName) / 2, -54, 0xFFFFFF, 0x202020);
+        font.draw(stack, title, -width + 4, -12, 0xFFFFFF);
 
         if (error)
-            UIHelper.renderOutlineText(gui, font, ERROR_WARN, -font.width(ERROR_WARN) / 2, 0, 0xFFFFFF, 0x202020);
+            UIHelper.renderOutlineText(stack, font, ERROR_WARN, -font.width(ERROR_WARN) / 2, 0, 0xFFFFFF, 0x202020);
         if (version)
-            UIHelper.renderOutlineText(gui, font, VERSION_WARN, -font.width(VERSION_WARN) / 2, error ? font.lineHeight : 0, 0xFFFFFF, 0x202020);
+            UIHelper.renderOutlineText(stack, font, VERSION_WARN, -font.width(VERSION_WARN) / 2, error ? font.lineHeight : 0, 0xFFFFFF, 0x202020);
         if (noPermissions)
-            UIHelper.renderOutlineText(gui, font, PERMISSION_WARN, -font.width(PERMISSION_WARN) / 2, (error ? font.lineHeight : 0) + (version ? font.lineHeight : 0), 0xFFFFFF, 0x202020);
+            UIHelper.renderOutlineText(stack, font, PERMISSION_WARN, -font.width(PERMISSION_WARN) / 2, (error ? font.lineHeight : 0) + (version ? font.lineHeight : 0), 0xFFFFFF, 0x202020);
 
         //finish rendering
-        pose.popPose();
+        stack.popPose();
     }
+
 
     public static void scroll(double d) {
         index = (int) (index - d + LENGTH) % LENGTH;

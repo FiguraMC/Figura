@@ -1,12 +1,14 @@
 package org.figuramc.figura.gui;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.toasts.Toast;
 import net.minecraft.client.gui.components.toasts.ToastComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import org.figuramc.figura.FiguraMod;
@@ -33,13 +35,13 @@ public class FiguraToast implements Toast {
     }
 
     public void update(Component title, Component message, boolean update) {
-        this.title = Component.empty().setStyle(type.style).append(title);
+        this.title = TextComponent.EMPTY.copy().setStyle(type.style).append(title);
         this.message = message;
         this.update = update;
     }
 
     @Override
-    public Visibility render(GuiGraphics gui, ToastComponent component, long startTime) {
+    public Visibility render(PoseStack stack, ToastComponent component, long startTime) {
         int time = Math.round(Configs.TOAST_TIME.value * 1000);
         int titleTime = Math.round(Configs.TOAST_TITLE_TIME.value * 1000);
 
@@ -52,41 +54,41 @@ public class FiguraToast implements Toast {
 
         long timeDiff = startTime - this.startTime;
 
-        UIHelper.enableBlend();
+        UIHelper.setupTexture(type.texture);
         int frame = Configs.REDUCED_MOTION.value ? 0 : (int) ((FiguraMod.ticks / 5f) % type.frames);
-        gui.blit(type.texture, 0, 0, 0f, frame * height(), width(), height(), width(), height() * type.frames);
+        UIHelper.blit(stack, 0, 0, 0f, frame * height(), width(), height(), width(), height() * type.frames);
 
         Font font = component.getMinecraft().font;
         if (this.message.getString().isBlank()) {
-            renderText(this.title, font, gui, 0xFF);
+            renderText(this.title, font, stack, 0xFF);
         } else if (this.title.getString().isBlank()) {
-            renderText(this.message, font, gui, 0xFF);
+            renderText(this.message, font, stack, 0xFF);
         } else {
             List<FormattedCharSequence> a = font.split(this.title, width() - type.spacing - 1);
             List<FormattedCharSequence> b = font.split(this.message, width() - type.spacing - 1);
 
             if (a.size() == 1 && b.size() == 1) {
                 int y = Math.round(height() / 2f - font.lineHeight - 1);
-                gui.drawString(font, this.title, type.spacing, y, 0xFFFFFF);
-                gui.drawString(font, this.message, type.spacing, y * 2 + 4, 0xFFFFFF);
+                font.draw(stack, this.title, type.spacing, y, 0xFFFFFF);
+                font.draw(stack, this.message, type.spacing, y * 2 + 4, 0xFFFFFF);
             } else if (timeDiff < titleTime) {
-                renderText(this.title, font, gui, Math.round(Math.min(Math.max((titleTime - timeDiff) / 300f, 0), 1) * 255));
+                renderText(this.title, font, stack, Math.round(Math.min(Math.max((titleTime - timeDiff) / 300f, 0), 1) * 255));
             } else {
-                renderText(this.message, font, gui, Math.round(Math.min(Math.max((timeDiff - titleTime) / 300f, 0), 1) * 255));
+                renderText(this.message, font, stack, Math.round(Math.min(Math.max((timeDiff - titleTime) / 300f, 0), 1) * 255));
             }
         }
 
         return timeDiff < time ? Visibility.SHOW : Visibility.HIDE;
     }
 
-    public void renderText(Component text, Font font, GuiGraphics gui, int alpha) {
+    public void renderText(Component text, Font font, PoseStack stack, int alpha) {
         List<FormattedCharSequence> list = font.split(text, width() - type.spacing - 1);
         if (list.size() == 1)
-            gui.drawString(font, text, type.spacing, Math.round(height() / 2f - font.lineHeight / 2f), 0xFFFFFF + (alpha << 24));
+            font.draw(stack, text, type.spacing, Math.round(height() / 2f - font.lineHeight / 2f), 0xFFFFFF + (alpha << 24));
         else {
             int y = Math.round(height() / 2f - font.lineHeight - 1);
             for (int i = 0; i < list.size(); i++)
-                gui.drawString(font, list.get(i), type.spacing, y * (i + 1) + 4 * i, 0xFFFFFF + (alpha << 24));
+                font.draw(stack, list.get(i), type.spacing, y * (i + 1) + 4 * i, 0xFFFFFF + (alpha << 24));
         }
     }
 
@@ -107,11 +109,11 @@ public class FiguraToast implements Toast {
 
     //new toast
     public static void sendToast(Object title) {
-        sendToast(title, Component.empty());
+        sendToast(title, TextComponent.EMPTY.copy());
     }
 
     public static void sendToast(Object title, ToastType type) {
-        sendToast(title, Component.empty(), type);
+        sendToast(title, TextComponent.EMPTY.copy(), type);
     }
 
     public static void sendToast(Object title, Object message) {
@@ -119,8 +121,8 @@ public class FiguraToast implements Toast {
     }
 
     public static void sendToast(Object title, Object message, ToastType type) {
-        Component text = title instanceof Component t ? t : Component.translatable(title.toString());
-        Component text2 = message instanceof Component m ? m : Component.translatable(message.toString());
+        Component text = title instanceof Component t ? t : new TranslatableComponent(title.toString());
+        Component text2 = message instanceof Component m ? m : new TranslatableComponent(message.toString());
 
         if (type == ToastType.DEFAULT && Configs.EASTER_EGGS.value) {
             Calendar calendar = FiguraMod.CALENDAR;

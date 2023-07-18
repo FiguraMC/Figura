@@ -38,7 +38,8 @@ public class EntityRenderDispatcherMixin {
         }
     }
 
-    @ModifyArg(method = "renderFlame", at = @At(value = "INVOKE", target = "Lcom/mojang/math/Axis;rotationDegrees(F)Lorg/joml/Quaternionf;"))
+
+    @ModifyArg(method = "renderFlame", at = @At(value = "INVOKE", target = "Lcom/mojang/math/Vector3f;rotationDegrees(F)Lcom/mojang/math/Quaternion;"))
     private float renderFlameRot(float f) {
         return UIHelper.paperdoll ? UIHelper.fireRot : f;
     }

@@ -13,7 +13,7 @@ public class AvatarScreen extends AbstractPanelScreen {
     private final LivingEntity entity;
 
     public AvatarScreen(float scale, float pitch, float yaw, LivingEntity entity, Screen parentScreen) {
-        super(parentScreen, FiguraText.of("gui.panels.title.avatar"));
+        super(parentScreen, new FiguraText("gui.panels.title.avatar"));
         this.scale = scale;
         this.pitch = pitch;
         this.yaw = yaw;

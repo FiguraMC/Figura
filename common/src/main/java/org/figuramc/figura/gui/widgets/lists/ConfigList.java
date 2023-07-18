@@ -1,15 +1,15 @@
 package org.figuramc.figura.gui.widgets.lists;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.util.Mth;
-import org.figuramc.figura.gui.screens.ConfigScreen;
-import org.figuramc.figura.gui.widgets.TextField;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.config.ConfigManager;
 import org.figuramc.figura.config.ConfigType;
+import org.figuramc.figura.gui.screens.ConfigScreen;
+import org.figuramc.figura.gui.widgets.TextField;
 import org.figuramc.figura.gui.widgets.config.CategoryWidget;
 import org.figuramc.figura.gui.widgets.config.InputElement;
 import org.figuramc.figura.utils.ui.UIHelper;
@@ -32,15 +32,15 @@ public class ConfigList extends AbstractList {
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
         int x = getX();
         int y = getY();
         int width = getWidth();
         int height = getHeight();
 
         //background and scissors
-        UIHelper.blitSliced(gui, x, y, width, height, UIHelper.OUTLINE_FILL);
-        enableScissors(gui);
+        UIHelper.renderSliced(stack, x, y, width, height, UIHelper.OUTLINE_FILL);
+        UIHelper.setupScissor(x + scissorsX, y + scissorsY, width + scissorsWidth, height + scissorsHeight);
 
         //scrollbar
         totalHeight = -4;
@@ -69,10 +69,10 @@ public class ConfigList extends AbstractList {
         }
 
         //children
-        super.render(gui, mouseX, mouseY, delta);
+        super.render(stack, mouseX, mouseY, delta);
 
         //reset scissor
-        gui.disableScissor();
+        UIHelper.disableScissor();
     }
 
     @Override
@@ -82,7 +82,7 @@ public class ConfigList extends AbstractList {
             for (GuiEventListener children : categoryWidget.children()) {
                 if (children instanceof InputElement inputElement) {
                     TextField field = inputElement.getTextField();
-                    field.getField().setFocused(field.isEnabled() && field.isMouseOver(mouseX, mouseY));
+                    field.getField().setFocus(field.isEnabled() && field.isMouseOver(mouseX, mouseY));
                 }
             }
         }

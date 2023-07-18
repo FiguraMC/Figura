@@ -2,9 +2,9 @@ package org.figuramc.figura.forge;
 
 import net.minecraft.client.KeyMapping;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.ClientRegistry;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
-import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
-import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
+import net.minecraftforge.client.gui.OverlayRegistry;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -34,16 +34,16 @@ public class FiguraModClientForge extends FiguraMod {
     }
 
     @SubscribeEvent
-    public static void registerOverlays(RegisterGuiOverlaysEvent event) {
-        event.registerAboveAll("figura_overlay", new GuiOverlay());
-        event.registerBelowAll("figura_underlay", new GuiUnderlay());
+    public static void registerOverlays(FMLClientSetupEvent event) {
+        OverlayRegistry.registerOverlayTop("figura_overlay", new GuiOverlay());
+        OverlayRegistry.registerOverlayBottom("figura_underlay", new GuiUnderlay());
     }
 
     @SubscribeEvent
-    public static void registerKeyBinding(RegisterKeyMappingsEvent event) {
+    public static void registerKeyBinding(FMLClientSetupEvent event) {
         for (KeyMapping value : KEYBINDS) {
             if(value != null)
-                event.register(value);
+                ClientRegistry.registerKeyBinding(value);
         }
     }
 }

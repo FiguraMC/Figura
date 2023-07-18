@@ -1,7 +1,8 @@
 package org.figuramc.figura.mixin.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
+import com.mojang.math.Matrix4f;
+import com.mojang.math.Vector3f;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
@@ -13,7 +14,6 @@ import org.figuramc.figura.lua.api.ClientAPI;
 import org.figuramc.figura.math.matrix.FiguraMat3;
 import org.figuramc.figura.math.matrix.FiguraMat4;
 import org.figuramc.figura.math.vector.FiguraVec3;
-import org.joml.Matrix4f;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
@@ -44,7 +44,7 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
     private boolean hasShaders;
 
     @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setup(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/world/entity/Entity;ZZF)V", shift = At.Shift.BEFORE))
-    private void onCameraRotation(float tickDelta, long limitTime, PoseStack stack, CallbackInfo ci) {
+    private void onCameraRotation(float tickDelta, long limitTime, PoseStack matrix, CallbackInfo ci) {
         Avatar avatar = AvatarManager.getAvatar(this.minecraft.getCameraEntity() == null ? this.minecraft.player : this.minecraft.getCameraEntity());
         if (!RenderUtils.vanillaModelAndScript(avatar))
             return;
@@ -59,15 +59,7 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
         if (offset != null)
             z += (float) offset.z;
 
-        stack.mulPose(Axis.ZP.rotationDegrees(z));
-
-        FiguraMat4 mat = avatar.luaRuntime.renderer.cameraMat;
-        if (mat != null)
-            stack.last().pose().set(mat.toMatrix4f());
-
-        FiguraMat3 normal = avatar.luaRuntime.renderer.cameraNormal;
-        if (normal != null)
-            stack.last().normal().set(normal.toMatrix3f());
+        matrix.mulPose(Vector3f.ZP.rotationDegrees(z));
     }
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;doEntityOutline()V", shift = At.Shift.AFTER))
@@ -129,34 +121,6 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
     @Inject(method = "renderLevel", at = @At("HEAD"))
     private void onRenderLevel(float tickDelta, long limitTime, PoseStack stack, CallbackInfo ci) {
         hasShaders = ClientAPI.hasIrisShader();
-    }
-
-    @ModifyArg(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GameRenderer;bobHurt(Lcom/mojang/blaze3d/vertex/PoseStack;F)V"), index = 0)
-    private PoseStack renderLevelBobHurt(PoseStack stack) {
-        if (hasShaders) return stack;
-
-        stack.pushPose();
-        stack.last().pose().identity();
-
-        return stack;
-    }
-
-    @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;last()Lcom/mojang/blaze3d/vertex/PoseStack$Pose;", shift = At.Shift.BEFORE),
-            slice = @Slice(
-                    from = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GameRenderer;bobHurt(Lcom/mojang/blaze3d/vertex/PoseStack;F)V"),
-                    to = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GameRenderer;resetProjectionMatrix(Lorg/joml/Matrix4f;)V")
-            ), locals = LocalCapture.CAPTURE_FAILSOFT)
-    private void renderLevelSaveBobbing(float tickDelta, long limitTime, PoseStack matrix, CallbackInfo ci, boolean bl, Camera camera, PoseStack poseStack, double d) {
-        if (hasShaders) return;
-        bobbingMatrix = new Matrix4f(poseStack.last().pose());
-        poseStack.popPose();
-    }
-
-    @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GameRenderer;resetProjectionMatrix(Lorg/joml/Matrix4f;)V"))
-    private void renderLevelResetProjectionMatrix(float tickDelta, long limitTime, PoseStack matrix, CallbackInfo ci) {
-        if (hasShaders) return;
-        matrix.last().pose().mul(bobbingMatrix);
-        bobbingMatrix = null;
     }
 
     @Override @Intrinsic

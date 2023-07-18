@@ -1,6 +1,7 @@
 package org.figuramc.figura.mixin.render.renderers;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Matrix4f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.model.PlayerModel;
@@ -11,13 +12,13 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.Score;
 import net.minecraft.world.scores.Scoreboard;
 import org.figuramc.figura.lua.api.nameplate.EntityNameplateCustomization;
 import org.figuramc.figura.lua.api.vanilla_model.VanillaPart;
 import org.figuramc.figura.math.vector.FiguraVec3;
-import org.joml.Matrix4f;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
@@ -100,7 +101,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
         stack.scale((float) scaleVec.x, (float) scaleVec.y, (float) scaleVec.z);
 
         //text
-        Component name = Component.literal(player.getName().getString());
+        Component name = new TextComponent(player.getName().getString());
         FiguraMod.popPushProfiler("text");
         Component replacement = hasCustom && custom.getJson() != null ? custom.getJson().copy() : name;
 
@@ -151,16 +152,16 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
                 //render scoreboard
                 Score score = scoreboard.getOrCreatePlayerScore(player.getScoreboardName(), scoreboardObjective);
 
-                Component text1 = Component.literal(Integer.toString(score.getScore())).append(" ").append(scoreboardObjective.getDisplayName());
+                Component text1 = new TextComponent(Integer.toString(score.getScore())).append(" ").append(scoreboardObjective.getDisplayName());
                 float x = -font.width(text1) / 2f;
                 float y = deadmau ? -10f : 0f;
 
-                font.drawInBatch(text1, x, y, 0x20FFFFFF, false, matrix4f, multiBufferSource, notSneaking ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.NORMAL, bgColor, light);
+                font.drawInBatch(text1, x, y, 0x20FFFFFF, false, matrix4f, multiBufferSource, notSneaking, bgColor, light);
                 if (notSneaking) {
                     if (outline)
                         font.drawInBatch8xOutline(text1.getVisualOrderText(), x, y, -1, outlineColor, matrix4f, multiBufferSource, light);
                     else
-                        font.drawInBatch(text1, x, y, -1, shadow, textMatrix, multiBufferSource, Font.DisplayMode.NORMAL, 0, light);
+                        font.drawInBatch(text1, x, y, -1, shadow, textMatrix, multiBufferSource, false, 0, light);
                 }
             }
         }
@@ -180,12 +181,12 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
             float x = -font.width(text1) / 2f;
             float y = (deadmau ? -10f : 0f) + (font.lineHeight + 1) * line;
 
-            font.drawInBatch(text1, x, y, 0x20FFFFFF, false, matrix4f, multiBufferSource, notSneaking ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.NORMAL, bgColor, light);
+            font.drawInBatch(text1, x, y, 0x20FFFFFF, false, matrix4f, multiBufferSource, notSneaking, bgColor, light);
             if (notSneaking) {
                 if (outline)
                     font.drawInBatch8xOutline(text1.getVisualOrderText(), x, y, -1, outlineColor, matrix4f, multiBufferSource, light);
                 else
-                    font.drawInBatch(text1, x, y, -1, shadow, textMatrix, multiBufferSource, Font.DisplayMode.NORMAL, 0, light);
+                    font.drawInBatch(text1, x, y, -1, shadow, textMatrix, multiBufferSource, false, 0, light);
             }
         }
 

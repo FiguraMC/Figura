@@ -1,6 +1,6 @@
 package org.figuramc.figura.gui.widgets.config;
 
-import net.minecraft.client.gui.GuiGraphics;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.network.chat.Component;
 import org.figuramc.figura.gui.widgets.ParentedButton;
 import org.figuramc.figura.gui.widgets.SwitchButton;
@@ -21,7 +21,7 @@ public class BooleanElement extends AbstractConfigElement {
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void render(PoseStack gui, int mouseX, int mouseY, float delta) {
         if (!this.isVisible()) return;
 
         //reset enabled

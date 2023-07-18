@@ -3,17 +3,14 @@ package org.figuramc.figura.gui.widgets.lists;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextColor;
+import net.minecraft.network.chat.*;
 import net.minecraft.util.Mth;
+import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.gui.widgets.FiguraWidget;
 import org.figuramc.figura.gui.widgets.SliderWidget;
 import org.figuramc.figura.gui.widgets.SwitchButton;
 import org.figuramc.figura.gui.widgets.TextField;
-import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.permissions.PermissionManager;
 import org.figuramc.figura.permissions.PermissionPack;
 import org.figuramc.figura.permissions.Permissions;
@@ -35,15 +32,15 @@ public class PermissionsList extends AbstractList {
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
         int x = getX();
         int y = getY();
         int width = getWidth();
         int height = getHeight();
 
         //background and scissors
-        UIHelper.blitSliced(gui, x, y, width, height, UIHelper.OUTLINE_FILL);
-        enableScissors(gui);
+        UIHelper.renderSliced(stack, x, y, width, height, UIHelper.OUTLINE_FILL);
+        UIHelper.setupScissor(x + scissorsX, y + scissorsY, width + scissorsWidth, height + scissorsHeight);
 
         //scrollbar
         Font font = Minecraft.getInstance().font;
@@ -70,7 +67,7 @@ public class PermissionsList extends AbstractList {
         for (Map.Entry<Component, List<GuiEventListener>> entry : permissions.entrySet()) {
             //titles
             if (titles) {
-                gui.drawCenteredString(font, entry.getKey(), x + (width - xOffset) / 2, y + yOffset, 0xFFFFFF);
+                UIHelper.drawCenteredString(stack, font, entry.getKey(), x + (width - xOffset) / 2, y + yOffset, 0xFFFFFF);
                 yOffset += titleHeight;
             }
 
@@ -83,10 +80,10 @@ public class PermissionsList extends AbstractList {
         }
 
         //render children
-        super.render(gui, mouseX, mouseY, delta);
+        super.render(stack, mouseX, mouseY, delta);
 
         //reset scissor
-        gui.disableScissor();
+        UIHelper.disableScissor();
     }
 
     public void updateList(PermissionPack container) {
@@ -98,11 +95,11 @@ public class PermissionsList extends AbstractList {
         //add new permissions
 
         //defaults
-        permissions.put(FiguraText.of(), generateWidgets(container, Permissions.DEFAULT, FiguraMod.MOD_ID));
+        permissions.put(new FiguraText(), generateWidgets(container, Permissions.DEFAULT, FiguraMod.MOD_ID));
 
         //custom
         for (Map.Entry<String, Collection<Permissions>> entry : PermissionManager.CUSTOM_PERMISSIONS.entrySet())
-            permissions.put(Component.translatable(entry.getKey()), generateWidgets(container, entry.getValue(), entry.getKey()));
+            permissions.put(new TranslatableComponent(entry.getKey()), generateWidgets(container, entry.getValue(), entry.getKey()));
     }
 
     private List<GuiEventListener> generateWidgets(PermissionPack container, Collection<Permissions> coll, String id) {
@@ -135,7 +132,7 @@ public class PermissionsList extends AbstractList {
 
     private static class PermissionSlider extends SliderWidget {
 
-        private static final Component INFINITY = FiguraText.of("permissions.infinity");
+        private static final Component INFINITY = new FiguraText("permissions.infinity");
 
         private final PermissionPack container;
         private final Permissions permissions;
@@ -150,7 +147,7 @@ public class PermissionsList extends AbstractList {
             this.permissions = permissions;
             this.parent = parent;
             this.text = text;
-            this.value = container.get(permissions) == Integer.MAX_VALUE ? INFINITY : Component.literal(String.valueOf(container.get(permissions)));
+            this.value = container.get(permissions) == Integer.MAX_VALUE ? INFINITY : new TextComponent(String.valueOf(container.get(permissions)));
             this.changed = container.isChanged(permissions);
 
             setAction(slider -> {
@@ -162,35 +159,34 @@ public class PermissionsList extends AbstractList {
                 changed = container.isChanged(permissions);
 
                 //update text
-                this.value = infinity ? INFINITY : Component.literal(String.valueOf(value));
+                this.value = infinity ? INFINITY : new TextComponent(String.valueOf(value));
             });
         }
 
         @Override
-        public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float delta) {
-            PoseStack pose = gui.pose();
+        public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
             Font font = Minecraft.getInstance().font;
 
             //button
-            pose.pushPose();
-            pose.translate(0f, font.lineHeight, 0f);
-            super.renderWidget(gui, mouseX, mouseY, delta);
-            pose.popPose();
+            stack.pushPose();
+            stack.translate(0f, font.lineHeight, 0f);
+            super.renderButton(stack, mouseX, mouseY, delta);
+            stack.popPose();
 
             //texts
-            MutableComponent name = Component.translatable(this.text);
-            if (changed) name = Component.literal("*").setStyle(FiguraMod.getAccentColor()).append(name).append("*");
+            MutableComponent name = new TranslatableComponent(this.text);
+            if (changed) name = new TextComponent("*").setStyle(FiguraMod.getAccentColor()).append(name).append("*");
             int valueX = getX() + getWidth() - font.width(value) - 1;
 
             int x = getX() + 1;
             int y = getY() + 1;
             int width = valueX - getX() - 2;
 
-            UIHelper.renderScrollingText(gui, name, x, y, width, 0xFFFFFF);
-            gui.drawString(font, value.copy().setStyle(FiguraMod.getAccentColor()), valueX, getY() + 1, 0xFFFFFF);
+            UIHelper.renderScrollingText(stack, name, x, y, width, 0xFFFFFF);
+            font.draw(stack, value.copy().setStyle(FiguraMod.getAccentColor()), valueX, getY() + 1, 0xFFFFFF);
 
             if (parent.isInsideScissors(mouseX, mouseY) && UIHelper.isMouseOver(x, y, width, font.lineHeight, mouseX, mouseY))
-                UIHelper.setTooltip(Component.translatable(this.text + ".tooltip"));
+                UIHelper.setTooltip(new TranslatableComponent(this.text + ".tooltip"));
         }
 
         @Override
@@ -225,14 +221,14 @@ public class PermissionsList extends AbstractList {
         private boolean changed;
 
         public PermissionSwitch(int x, int y, int width, int height, PermissionPack container, Permissions permissions, PermissionsList parent, String id, String text) {
-            super(x, y, width, height, Component.translatable(text), permissions.asBoolean(container.get(permissions)));
+            super(x, y, width, height, new TranslatableComponent(text), permissions.asBoolean(container.get(permissions)));
             this.container = container;
             this.permissions = permissions;
             this.parent = parent;
             this.id = id;
             this.text = text;
             this.changed = container.isChanged(permissions);
-            this.value = FiguraText.of("permissions." + (toggled ? "enabled" : "disabled"));
+            this.value = new FiguraText("permissions." + (toggled ? "enabled" : "disabled"));
         }
 
         @Override
@@ -244,42 +240,41 @@ public class PermissionsList extends AbstractList {
             this.changed = container.isChanged(permissions);
 
             //update text
-            this.value = FiguraText.of("permissions." + (value ? "enabled" : "disabled"));
+            this.value = new FiguraText("permissions." + (value ? "enabled" : "disabled"));
 
             super.onPress();
         }
 
         @Override
-        public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float delta) {
-            super.renderWidget(gui, mouseX, mouseY, delta);
+        public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
+            super.renderButton(stack, mouseX, mouseY, delta);
             if (parent.isInsideScissors(mouseX, mouseY) && UIHelper.isMouseOver(getX() + 1, getY() + 1, getWidth() - 2, Minecraft.getInstance().font.lineHeight, mouseX, mouseY))
-                UIHelper.setTooltip(Component.translatable(this.text + ".tooltip"));
+                UIHelper.setTooltip(new TranslatableComponent(this.text + ".tooltip"));
         }
 
         @Override
-        protected void renderDefaultTexture(GuiGraphics gui, float delta) {
-            PoseStack pose = gui.pose();
+        protected void renderDefaultTexture(PoseStack stack, float delta) {
             Font font = Minecraft.getInstance().font;
 
             //button
-            pose.pushPose();
-            pose.translate(0f, font.lineHeight, 0f);
-            super.renderDefaultTexture(gui, delta);
-            pose.popPose();
+            stack.pushPose();
+            stack.translate(0f, font.lineHeight, 0f);
+            super.renderDefaultTexture(stack, delta);
+            stack.popPose();
         }
 
         @Override
-        protected void renderText(GuiGraphics gui, float delta) {
+        protected void renderText(PoseStack stack, float delta) {
             Font font = Minecraft.getInstance().font;
 
             //texts
             MutableComponent name = getMessage().copy();
-            if (changed) name = Component.literal("*").setStyle(FiguraMod.getAccentColor()).append(name).append("*");
+            if (changed) name = new TextComponent("*").setStyle(FiguraMod.getAccentColor()).append(name).append("*");
             int valueX = getX() + getWidth() - font.width(value) - 1;
             int valueY = getY() + font.lineHeight + 11 - font.lineHeight / 2;
 
-            UIHelper.renderScrollingText(gui, name, getX() + 1, getY() + 1, getWidth() - 2, 0xFFFFFF);
-            gui.drawString(font, value.copy().setStyle(FiguraMod.getAccentColor()), valueX, valueY, 0xFFFFFF);
+            UIHelper.renderScrollingText(stack, name, getX() + 1, getY() + 1, getWidth() - 2, 0xFFFFFF);
+            font.draw(stack, value.copy().setStyle(FiguraMod.getAccentColor()), valueX, valueY, 0xFFFFFF);
         }
 
         @Override
@@ -329,7 +324,7 @@ public class PermissionsList extends AbstractList {
             this.parent = parent;
             this.text = text;
             String val = String.valueOf(container.get(permissions));
-            this.value = Component.literal(val);
+            this.value = new TextComponent(val);
             this.changed = container.isChanged(permissions);
 
             this.getField().setValue(val);
@@ -343,12 +338,12 @@ public class PermissionsList extends AbstractList {
                 changed = container.isChanged(permissions);
 
                 //update text
-                this.value = Component.literal(String.valueOf(value));
+                this.value = new TextComponent(String.valueOf(value));
             });
         }
 
         @Override
-        public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+        public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
             Font font = Minecraft.getInstance().font;
 
             //text colour
@@ -362,7 +357,7 @@ public class PermissionsList extends AbstractList {
             //changed value
             else if (changed) {
                 TextColor textColor = FiguraMod.getAccentColor().getColor();
-                color = textColor == null ? ColorUtils.Colors.PINK.hex : textColor.getValue();
+                color = textColor == null ? ColorUtils.Colors.CHEESE.hex : textColor.getValue();
             }
 
             //set text colour
@@ -370,22 +365,25 @@ public class PermissionsList extends AbstractList {
             setBorderColour(0xFF000000 + color);
 
             //field
-            super.render(gui, mouseX, mouseY, delta);
+            stack.pushPose();
+            //stack.translate(0f, font.lineHeight, 0f);
+            super.render(stack, mouseX, mouseY, delta);
+            stack.popPose();
 
             //texts
-            MutableComponent name = Component.translatable(this.text);
-            if (changed) name = Component.literal("*").setStyle(FiguraMod.getAccentColor()).append(name).append("*");
+            MutableComponent name = new TranslatableComponent(this.text);
+            if (changed) name = new TextComponent("*").setStyle(FiguraMod.getAccentColor()).append(name).append("*");
             int valueX = getX() + getWidth() - font.width(value) - 1;
 
             int x = getX() + 1;
             int y = getY() + 1 - font.lineHeight;
             int width = valueX - getX() - 2;
 
-            UIHelper.renderScrollingText(gui, name, x, y, width, 0xFFFFFF);
-            gui.drawString(font, value.copy().setStyle(FiguraMod.getAccentColor()), valueX, getY() + 1 - font.lineHeight, 0xFFFFFF);
+            UIHelper.renderScrollingText(stack, name, x, y, width, 0xFFFFFF);
+            font.draw(stack, value.copy().setStyle(FiguraMod.getAccentColor()), valueX, getY() + 1 - font.lineHeight, 0xFFFFFF);
 
             if (parent.isInsideScissors(mouseX, mouseY) && UIHelper.isMouseOver(x, y, width, font.lineHeight, mouseX, mouseY))
-                UIHelper.setTooltip(Component.translatable(this.text + ".tooltip"));
+                UIHelper.setTooltip(new TranslatableComponent(this.text + ".tooltip"));
         }
 
         @Override

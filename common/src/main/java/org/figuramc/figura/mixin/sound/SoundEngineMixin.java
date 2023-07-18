@@ -6,6 +6,7 @@ import net.minecraft.client.Options;
 import net.minecraft.client.gui.components.SubtitleOverlay;
 import net.minecraft.client.sounds.*;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceProvider;
 import net.minecraft.sounds.SoundSource;
 import org.figuramc.figura.ducks.ChannelHandleAccessor;
@@ -39,7 +40,7 @@ public abstract class SoundEngineMixin implements SoundEngineAccessor {
     private final List<LuaSound> figuraHandlers = Collections.synchronizedList(new ArrayList<>());
 
     @Inject(at = @At("RETURN"), method = "<init>")
-    private void soundEngineInit(SoundManager soundManager, Options options, ResourceProvider resourceProvider, CallbackInfo ci) {
+    private void soundEngineInit(SoundManager loader, Options settings, ResourceManager resourceManager, CallbackInfo ci) {
         figuraChannel = new ChannelAccess(this.library, this.executor);
         addEventListener(new FiguraSoundListener());
     }

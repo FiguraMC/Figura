@@ -1,8 +1,6 @@
 package org.figuramc.figura.lua.api.world;
 
 import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
@@ -50,7 +48,7 @@ public class ItemStackAPI {
 
     public ItemStackAPI(ItemStack itemStack) {
         this.itemStack = itemStack;
-        this.id = BuiltInRegistries.ITEM.getKey(itemStack.getItem()).toString();
+        this.id = Registry.ITEM.getKey(itemStack.getItem()).toString();
         this.tag = new ReadOnlyLuaTable(itemStack.getTag() != null ? NbtToLua.convert(itemStack.getTag()) : new LuaTable());
     }
 
@@ -95,7 +93,7 @@ public class ItemStackAPI {
     public List<String> getTags() {
         List<String> list = new ArrayList<>();
 
-        Registry<Item> registry = WorldAPI.getCurrentWorld().registryAccess().registryOrThrow(Registries.ITEM);
+        Registry<Item> registry = WorldAPI.getCurrentWorld().registryAccess().registryOrThrow(Registry.ITEM_REGISTRY);
         Optional<ResourceKey<Item>> key = registry.getResourceKey(itemStack.getItem());
 
         if (key.isEmpty())
@@ -183,7 +181,7 @@ public class ItemStackAPI {
     @LuaMethodDoc("itemstack.to_stack_string")
     public String toStackString() {
         ItemStack stack = itemStack;
-        String ret = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
+        String ret = Registry.ITEM.getKey(stack.getItem()).toString();
 
         CompoundTag nbt = stack.getTag();
         if (nbt != null)

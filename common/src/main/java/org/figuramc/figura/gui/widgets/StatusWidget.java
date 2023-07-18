@@ -1,13 +1,14 @@
 package org.figuramc.figura.gui.widgets;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
@@ -73,11 +74,11 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
         status += backend << 6;
 
         String dc = NetworkStuff.disconnectedReason;
-        disconnectedReason = backend == 1 && dc != null && !dc.isBlank() ? Component.literal(dc) : null;
+        disconnectedReason = backend == 1 && dc != null && !dc.isBlank() ? new TextComponent(dc) : null;
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void render(PoseStack gui, int mouseX, int mouseY, float delta) {
         if (!isVisible()) return;
 
         int x = getX();
@@ -88,7 +89,7 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
 
         //background
         if (background)
-            UIHelper.blitSliced(gui, x, y, width, height, UIHelper.OUTLINE_FILL);
+            UIHelper.renderSliced(gui, x, y, width, height, UIHelper.OUTLINE_FILL);
 
         //hover
         boolean hovered = this.isMouseOver(mouseX, mouseY);
@@ -100,7 +101,7 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
             int xx = (int) (x + spacing * i + hSpacing);
 
             Component text = getStatusIcon(i);
-            gui.drawString(font, text, xx - font.width(text) / 2, y + (background ? 3 : 0), 0xFFFFFF);
+            font.drawShadow(gui, text, xx - font.width(text) / 2, y + (background ? 3 : 0), 0xFFFFFF);
 
             if (hovered && mouseX >= xx - hSpacing && mouseX < xx + hSpacing && mouseY >= y && mouseY < y + font.lineHeight + (background ? 3 : 0))
                 UIHelper.setTooltip(getTooltipFor(i));
@@ -108,7 +109,7 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
     }
 
     public MutableComponent getStatusIcon(int type) {
-        return Component.literal(String.valueOf(STATUS_INDICATORS.charAt(status >> (type * 2) & 3))).setStyle(Style.EMPTY.withFont(UIHelper.UI_FONT));
+        return new TextComponent(String.valueOf(STATUS_INDICATORS.charAt(status >> (type * 2) & 3))).setStyle(Style.EMPTY.withFont(UIHelper.UI_FONT));
     }
 
     public Component getTooltipFor(int i) {
@@ -119,20 +120,20 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
         MutableComponent info;
         if (i == 0) {
             double size = NetworkStuff.getSizeLimit();
-            info = FiguraText.of(part + "." + color, MathUtils.asFileSize(size));
+            info = new FiguraText(part + "." + color, MathUtils.asFileSize(size));
         } else {
-            info = FiguraText.of(part + "." + color);
+            info = new FiguraText(part + "." + color);
         }
 
-        MutableComponent text = FiguraText.of(part).append("\n• ").append(info).setStyle(TEXT_COLORS.get(color));
+        MutableComponent text = new FiguraText(part).append("\n• ").append(info).setStyle(TEXT_COLORS.get(color));
 
         //script error
         if (i == 2 && color == 1 && scriptError != null)
-            text.append("\n\n").append(FiguraText.of("gui.status.reason")).append("\n• ").append(scriptError);
+            text.append("\n\n").append(new FiguraText("gui.status.reason")).append("\n• ").append(scriptError);
 
         //get backend disconnect reason
         if (i == 3 && disconnectedReason != null)
-            text.append("\n\n").append(FiguraText.of("gui.status.reason")).append("\n• ").append(disconnectedReason);
+            text.append("\n\n").append(new FiguraText("gui.status.reason")).append("\n• ").append(disconnectedReason);
 
         return text;
     }
@@ -148,14 +149,6 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
         return UIHelper.isMouseOver(getX(), getY(), getWidth(), getHeight(), mouseX, mouseY);
-    }
-
-    @Override
-    public void setFocused(boolean bl) {}
-
-    @Override
-    public boolean isFocused() {
-        return false;
     }
 
     @Override

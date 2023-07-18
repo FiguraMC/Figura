@@ -1,8 +1,9 @@
 package org.figuramc.figura.gui.widgets.config;
 
-import net.minecraft.client.gui.GuiGraphics;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
+import net.minecraft.network.chat.TranslatableComponent;
 import org.figuramc.figura.gui.widgets.ParentedButton;
 import org.figuramc.figura.gui.widgets.TextField;
 import org.figuramc.figura.gui.widgets.lists.ConfigList;
@@ -39,14 +40,14 @@ public class InputElement extends AbstractConfigElement {
 
         //overwrite reset button to update the text field
         children.remove(resetButton);
-        children.add(resetButton = new ParentedButton(getX() + width - 60, getY(), 60, 20, Component.translatable("controls.reset"), this, button -> {
+        children.add(resetButton = new ParentedButton(getX() + width - 60, getY(), 60, 20, new TranslatableComponent("controls.reset"), this, button -> {
             config.resetTemp();
             updateTextFieldText(formatText(config.tempValue));
         }));
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void render(PoseStack gui, int mouseX, int mouseY, float delta) {
         if (!this.isVisible()) return;
 
         //reset enabled
@@ -82,7 +83,7 @@ public class InputElement extends AbstractConfigElement {
             if (getTextField().isFocused())
                 UIHelper.fillRounded(gui, x, y, 20, 20, getTextField().getBorderColour());
             else
-                UIHelper.blitSliced(gui, x, y, 20, 20, UIHelper.OUTLINE);
+                UIHelper.renderSliced(gui, x, y, 20, 20, UIHelper.OUTLINE);
 
             //inside
             UIHelper.fillRounded(gui, x + 1, y + 1, 18, 18, (int) config.tempValue + (0xFF << 24));

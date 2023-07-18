@@ -51,7 +51,7 @@ public abstract class MinecraftMixin {
         //reload avatar button
         if (Configs.RELOAD_BUTTON.keyBind.consumeClick()) {
             AvatarManager.reloadAvatar(FiguraMod.getLocalPlayerUUID());
-            FiguraToast.sendToast(FiguraText.of("toast.reload"));
+            FiguraToast.sendToast(new FiguraText("toast.reload"));
         }
 
         //reload avatar button

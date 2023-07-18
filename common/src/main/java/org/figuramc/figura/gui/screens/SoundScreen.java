@@ -15,7 +15,7 @@ public class SoundScreen extends AbstractPanelScreen {
     private PianoWidget piano;
 
     public SoundScreen(AbstractPanelScreen parentScreen) {
-        super(parentScreen.parentScreen, FiguraText.of("gui.panels.title.sound"));
+        super(parentScreen.parentScreen, new FiguraText("gui.panels.title.sound"));
         sourcePanel = parentScreen;
     }
 
@@ -40,7 +40,7 @@ public class SoundScreen extends AbstractPanelScreen {
         addRenderableWidget(piano = new PianoWidget(listX, height - 88, listWidth, 60, list::getSound));
 
         //back
-        addRenderableWidget(new Button(width / 2 - 60, height - 24, 120, 20, FiguraText.of("gui.done"), null, bx -> onClose()));
+        addRenderableWidget(new Button(width / 2 - 60, height - 24, 120, 20, new FiguraText("gui.done"), null, bx -> onClose()));
     }
 
     @Override

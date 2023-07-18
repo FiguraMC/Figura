@@ -86,7 +86,11 @@ public class EntityUtils {
     }
 
     public static List<PlayerInfo> getTabList() {
-        return ((PlayerTabOverlayAccessor) Minecraft.getInstance().gui.getTabList()).getThePlayerInfos();
+        ClientPacketListener clientPacketListener = Minecraft.getInstance().getConnection();
+        if (clientPacketListener == null)
+            return List.of();
+
+        return PlayerTabOverlayAccessor.getPlayerOrdering().sortedCopy(clientPacketListener.getOnlinePlayers());
     }
 
     public static boolean checkInvalidPlayer(UUID id) {

@@ -15,12 +15,4 @@ public interface TextureAtlasAccessor {
     @Intrinsic
     @Accessor("texturesByName")
     Map<ResourceLocation, TextureAtlasSprite> getTexturesByName();
-
-    @Intrinsic
-    @Invoker("getWidth")
-    int getWidth();
-
-    @Intrinsic
-    @Invoker("getHeight")
-    int getHeight();
 }

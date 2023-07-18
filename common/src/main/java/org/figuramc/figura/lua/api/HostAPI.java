@@ -3,7 +3,6 @@ package org.figuramc.figura.lua.api;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.GuiMessage;
-import net.minecraft.client.GuiMessageTag;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.client.gui.screens.ChatScreen;
@@ -12,6 +11,7 @@ import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.NonNullList;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
@@ -200,8 +200,8 @@ public class HostAPI {
     )
     public HostAPI sendChatMessage(@LuaNotNil String message) {
         if (!isHost() || !Configs.CHAT_MESSAGES.value) return this;
-        ClientPacketListener connection = this.minecraft.getConnection();
-        if (connection != null) connection.sendChat(message);
+        LocalPlayer player = this.minecraft.player;
+        if (player != null) player.chat(message.startsWith("/") ? message.substring(1) : message);
         return this;
     }
 
@@ -215,8 +215,8 @@ public class HostAPI {
     )
     public HostAPI sendChatCommand(@LuaNotNil String command) {
         if (!isHost() || !Configs.CHAT_MESSAGES.value) return this;
-        ClientPacketListener connection = this.minecraft.getConnection();
-        if (connection != null) connection.sendCommand(command.startsWith("/") ? command.substring(1) : command);
+        LocalPlayer player = this.minecraft.player;
+        if (player != null) player.chat(command.startsWith("/") ? command : "/" + command);
         return this;
     }
 
@@ -247,17 +247,16 @@ public class HostAPI {
             return null;
 
         index--;
-        List<GuiMessage> messages = ((ChatComponentAccessor) this.minecraft.gui.getChat()).getAllMessages();
+        List<GuiMessage<Component>> messages = ((ChatComponentAccessor) this.minecraft.gui.getChat()).getAllMessages();
         if (index < 0 || index >= messages.size())
             return null;
 
-        GuiMessage message = messages.get(index);
+        GuiMessage<Component> message = messages.get(index);
         Map<String, Object> map = new HashMap<>();
 
-        map.put("addedTime", message.addedTime());
-        map.put("message", message.content().getString());
-        map.put("json", message.content());
-        map.put("backgroundColor", ((GuiMessageAccessor) (Object) message).figura$getColor());
+        map.put("addedTime", message.getAddedTime());
+        map.put("message", message.getMessage().getString());
+        map.put("json", message.getMessage());
 
         return map;
     }
@@ -272,28 +271,22 @@ public class HostAPI {
                     @LuaMethodOverload(
                             argumentTypes = {Integer.class, String.class},
                             argumentNames = {"index", "newMessage"}
-                    ),
-                    @LuaMethodOverload(
-                            argumentTypes = {Integer.class, String.class, FiguraVec3.class},
-                            argumentNames = {"index", "newMessage", "backgroundColor"}
                     )
             },
             value = "host.set_chat_message")
-    public HostAPI setChatMessage(int index, String newMessage, FiguraVec3 backgroundColor) {
+    public HostAPI setChatMessage(int index, String newMessage) {
         if (!isHost()) return this;
 
         index--;
-        List<GuiMessage> messages = ((ChatComponentAccessor) this.minecraft.gui.getChat()).getAllMessages();
+        List<GuiMessage<Component>> messages = ((ChatComponentAccessor) this.minecraft.gui.getChat()).getAllMessages();
         if (index < 0 || index >= messages.size())
             return this;
 
         if (newMessage == null)
             messages.remove(index);
         else {
-            GuiMessage old = messages.get(index);
-            GuiMessage neww = new GuiMessage(this.minecraft.gui.getGuiTicks(), TextUtils.tryParseJson(newMessage), null, GuiMessageTag.chatModified(old.content().getString()));
-            messages.set(index, neww);
-            ((GuiMessageAccessor) (Object) neww).figura$setColor(backgroundColor != null ? ColorUtils.rgbToInt(backgroundColor) : ((GuiMessageAccessor) (Object) old).figura$getColor());
+            GuiMessage<Component> old = messages.get(index);
+            messages.set(index, new GuiMessage<>(this.minecraft.gui.getGuiTicks(), TextUtils.tryParseJson(newMessage), old.getId()));
         }
 
         this.minecraft.gui.getChat().rescaleChat();
@@ -605,15 +598,6 @@ public class HostAPI {
     @LuaMethodDoc("host.get_pick_entity")
     public EntityAPI<?> getPickEntity() {
         return isHost() && minecraft.crosshairPickEntity != null ? EntityAPI.wrap(minecraft.crosshairPickEntity) : null;
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc("host.is_chat_verified")
-    public boolean isChatVerified() {
-        if (!isHost()) return false;
-        ClientPacketListener connection = this.minecraft.getConnection();
-        PlayerInfo playerInfo = connection != null ? connection.getPlayerInfo(owner.owner) : null;
-        return playerInfo != null && playerInfo.hasVerifiableChat();
     }
 
     public Object __index(String arg) {

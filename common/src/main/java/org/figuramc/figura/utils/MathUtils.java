@@ -1,5 +1,6 @@
 package org.figuramc.figura.utils;
 
+import com.mojang.math.*;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.Vec3;
@@ -12,7 +13,6 @@ import org.figuramc.figura.math.vector.FiguraVec2;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.math.vector.FiguraVec4;
 import org.figuramc.figura.math.vector.FiguraVector;
-import org.joml.*;
 import org.figuramc.figura.config.Configs;
 
 import java.lang.Math;
@@ -59,28 +59,28 @@ public class MathUtils {
     //maya pls check those //ty <3 <3
     public static FiguraVec3 rotateAroundAxis(FiguraVec3 vec, FiguraVec3 axis, double degrees) {
         FiguraVec3 normalizedAxis = axis.normalized();
-        Quaternionf vectorQuat = new Quaternionf((float) vec.x, (float) vec.y, (float) vec.z, 0);
-        Quaternionf rotatorQuat = new Quaternionf().fromAxisAngleDeg((float) normalizedAxis.x, (float) normalizedAxis.y, (float) normalizedAxis.z, (float) degrees);
-        Quaternionf rotatorQuatConj = new Quaternionf(rotatorQuat);
-        rotatorQuatConj.conjugate();
+        Quaternion vectorQuat = new Quaternion((float) vec.x, (float) vec.y, (float) vec.z, 0);
+        Quaternion rotatorQuat = new Quaternion(new Vector3f((float) normalizedAxis.x, (float) normalizedAxis.y, (float) normalizedAxis.z), (float) degrees, true);
+        Quaternion rotatorQuatConj = new Quaternion(rotatorQuat);
+        rotatorQuatConj.conj();
 
         rotatorQuat.mul(vectorQuat);
         rotatorQuat.mul(rotatorQuatConj);
 
-        return FiguraVec3.of(rotatorQuat.x(), rotatorQuat.y(), rotatorQuat.z());
+        return FiguraVec3.of(rotatorQuat.i(), rotatorQuat.j(), rotatorQuat.k());
     }
 
     public static FiguraVec3 toCameraSpace(FiguraVec3 vec) {
         Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
 
-        FiguraMat3 transformMatrix = FiguraMat3.of().set(new Matrix3f().rotation(camera.rotation()));
+        FiguraMat3 transformMatrix = FiguraMat3.of().set(new Matrix3f(camera.rotation()));
         Vec3 pos = camera.getPosition();
         transformMatrix.invert();
 
         FiguraVec3 ret = vec.copy();
         ret.subtract(pos.x, pos.y, pos.z);
         ret.transform(transformMatrix);
-        //ret.multiply(-1, 1, 1);
+        ret.multiply(-1, 1, 1);
 
         return ret;
     }
@@ -88,17 +88,17 @@ public class MathUtils {
     public static FiguraVec4 worldToScreenSpace(FiguraVec3 worldSpace) {
         Minecraft minecraft = Minecraft.getInstance();
         Camera camera = minecraft.gameRenderer.getMainCamera();
-        Matrix3f transformMatrix = new Matrix3f().rotation(camera.rotation());
+        Matrix3f transformMatrix = new Matrix3f(camera.rotation());
         transformMatrix.invert();
 
         Vec3 camPos = camera.getPosition();
         FiguraVec3 posDiff = worldSpace.copy().subtract(camPos.x, camPos.y, camPos.z);
         Vector3f camSpace = posDiff.asVec3f();
-        transformMatrix.transform(camSpace);
+        camSpace.transform(transformMatrix);
 
-        Vector4f projectiveCamSpace = new Vector4f(camSpace, 1f);
+        Vector4f projectiveCamSpace = new Vector4f(camSpace);
         Matrix4f projMat = minecraft.gameRenderer.getProjectionMatrix(((GameRendererAccessor) minecraft.gameRenderer).figura$getFov(camera, minecraft.getFrameTime(), true));
-        projMat.transform(projectiveCamSpace);
+        projectiveCamSpace.transform(projMat);
         float w = projectiveCamSpace.w();
 
         return FiguraVec4.of(projectiveCamSpace.x() / w, projectiveCamSpace.y() / w, projectiveCamSpace.z() / w, Math.sqrt(posDiff.dot(posDiff)));
