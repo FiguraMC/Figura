@@ -1,0 +1,71 @@
+package org.figuramc.figura.mixin.render.layers.items;
+
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.ArmedModel;
+import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.entity.RenderLayerParent;
+import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
+import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+<<<<<<< HEAD:src/main/java/org/moon/figura/mixin/render/layers/items/ItemInHandLayerMixin.java
+import org.moon.figura.avatar.Avatar;
+import org.moon.figura.avatar.AvatarManager;
+import org.moon.figura.model.ParentType;
+import org.moon.figura.utils.RenderUtils;
+=======
+import org.figuramc.figura.avatar.Avatar;
+import org.figuramc.figura.avatar.AvatarManager;
+import org.figuramc.figura.model.ParentType;
+import org.figuramc.figura.utils.RenderUtils;
+import org.spongepowered.asm.mixin.Final;
+>>>>>>> 8b2c2606120aac4f05d8dd5820ea17317422dc93:common/src/main/java/org/figuramc/figura/mixin/render/layers/items/ItemInHandLayerMixin.java
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+@Mixin(ItemInHandLayer.class)
+public abstract class ItemInHandLayerMixin<T extends LivingEntity, M extends EntityModel<T> & ArmedModel> extends RenderLayer<T, M> {
+
+    public ItemInHandLayerMixin(RenderLayerParent<T, M> renderLayerParent) {
+        super(renderLayerParent);
+    }
+
+    @Inject(method = "renderArmWithItem", at = @At("HEAD"), cancellable = true)
+    protected void renderArmWithItem(LivingEntity entity, ItemStack itemStack, ItemTransforms.TransformType transformationMode, HumanoidArm arm, PoseStack matrices, MultiBufferSource vertexConsumers, int light, CallbackInfo ci) {
+        if (itemStack.isEmpty())
+            return;
+
+<<<<<<< HEAD:src/main/java/org/moon/figura/mixin/render/layers/items/ItemInHandLayerMixin.java
+        boolean left = humanoidArm == HumanoidArm.LEFT;
+
+        Avatar avatar = AvatarManager.getAvatar(livingEntity);
+=======
+        boolean left = arm == HumanoidArm.LEFT;
+
+        Avatar avatar = AvatarManager.getAvatar(entity);
+>>>>>>> 8b2c2606120aac4f05d8dd5820ea17317422dc93:common/src/main/java/org/figuramc/figura/mixin/render/layers/items/ItemInHandLayerMixin.java
+        if (!RenderUtils.renderArmItem(avatar, left, ci))
+            return;
+
+        //pivot part
+        if (avatar.pivotPartRender(left ? ParentType.LeftItemPivot : ParentType.RightItemPivot, stack -> {
+            float s = 16f;
+            stack.scale(s, s, s);
+            stack.mulPose(Vector3f.XP.rotationDegrees(-90f));
+<<<<<<< HEAD:src/main/java/org/moon/figura/mixin/render/layers/items/ItemInHandLayerMixin.java
+            Minecraft.getInstance().getItemInHandRenderer().renderItem(livingEntity, itemStack, transformType, left, stack, multiBufferSource, i);
+=======
+            Minecraft.getInstance().getItemInHandRenderer().renderItem(entity, itemStack, transformationMode, left, stack, vertexConsumers, light);
+>>>>>>> 8b2c2606120aac4f05d8dd5820ea17317422dc93:common/src/main/java/org/figuramc/figura/mixin/render/layers/items/ItemInHandLayerMixin.java
+        })) {
+            ci.cancel();
+        }
+    }
+}

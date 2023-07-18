@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "id": "figura",
+  "version": "${version}",
+
+  "name": "Figura",
+  "description": "Extensive customization of the Player model",
+  "authors": [
+    "skyrina"
+  ],
+  "contact": {
+    "homepage": "https://github.com/FiguraMC/Figura",
+    "issues": "https://github.com/FiguraMC/Figura/issues"
+  },
+
+  "license": "LGPL-2.1",
+  "icon": "assets/figura/icon.png",
+
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "org.figuramc.figura.fabric.FiguraModFabric"
+    ],
+    "modmenu": [
+      "org.figuramc.figura.config.fabric.ModMenuConfig"
+    ]
+  },
+  "mixins": [
+    "figura.mixins.json",
+    "figura-common.mixins.json"
+  ],
+  "depends": {
+    "java": ">=${java_version}",
+    "minecraft": "${minecraft_version}",
+    "fabricloader": "*"
+  },
+  "conflicts": {
+    "immersive_portals": "*",
+    "canvas": "*",
+    "immediatelyfast":  "*"
+  },
+  "breaks": {
+    "optifine": "*",
+    "optifabric": "*"
+  },
+  "custom": {
+    "assets_version": "${assets_version}",
+    "modmenu": {
+      "links": {
+        "Discord": "https://discord.gg/nbN8KZyhUq",
+        "Ko-fi": "https://ko-fi.com/skyrina",
+        "Modrinth":  "https://modrinth.com/mod/figura/",
+        "GitHub":  "https://github.com/FiguraMC/Figura"
+      }
+    }
+  }
+}
