@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 public class FiguraGui {
 
-    public static void onRender(PoseStack guiGraphics, float tickDelta, CallbackInfo ci) {
+    public static void onRender(PoseStack poseStack, float tickDelta, CallbackInfo ci) {
         if (AvatarManager.panic)
             return;
 
@@ -18,7 +18,7 @@ public class FiguraGui {
 
         //render popup menu below everything, as if it were in the world
         FiguraMod.pushProfiler("popupMenu");
-        PopupMenu.render(guiGraphics);
+        PopupMenu.render(poseStack);
         FiguraMod.popProfiler();
 
         //get avatar
@@ -27,12 +27,12 @@ public class FiguraGui {
 
         if (avatar != null) {
             //hud parent type
-            avatar.hudRender(guiGraphics, Minecraft.getInstance().renderBuffers().bufferSource(), entity, tickDelta);
+            avatar.hudRender(poseStack, Minecraft.getInstance().renderBuffers().bufferSource(), entity, tickDelta);
 
             //hud hidden by script
             if (avatar.luaRuntime != null && !avatar.luaRuntime.renderer.renderHUD) {
                 //render figura overlays
-                renderOverlays(guiGraphics);
+                renderOverlays(poseStack);
                 //cancel this method
                 ci.cancel();
             }
@@ -41,16 +41,16 @@ public class FiguraGui {
         FiguraMod.popProfiler();
     }
 
-    public static void renderOverlays(PoseStack guiGraphics) {
+    public static void renderOverlays(PoseStack poseStack) {
         FiguraMod.pushProfiler(FiguraMod.MOD_ID);
 
         //render aperdoll
         FiguraMod.pushProfiler("paperdoll");
-        PaperDoll.render(guiGraphics, false);
+        PaperDoll.render(poseStack, false);
 
         //render wheel
         FiguraMod.popPushProfiler("actionWheel");
-        ActionWheel.render(guiGraphics);
+        ActionWheel.render(poseStack);
 
         FiguraMod.popProfiler(2);
     }
