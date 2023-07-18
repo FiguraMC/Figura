@@ -22,18 +22,18 @@ public class GuiMixin {
     @Unique private FiguraVec2 crosshairOffset;
 
     @Inject(at = @At("HEAD"), method = "render", cancellable = true)
-    private void onRender(PoseStack guiGraphics, float tickDelta, CallbackInfo ci) {
-        FiguraGui.onRender(guiGraphics, tickDelta, ci);
+    private void onRender(PoseStack poseStack, float tickDelta, CallbackInfo ci) {
+        FiguraGui.onRender(poseStack, tickDelta, ci);
     }
 
     @Inject(at = @At("RETURN"), method = "render")
-    private void afterRender(PoseStack guiGraphics, float tickDelta, CallbackInfo ci) {
+    private void afterRender(PoseStack poseStack, float tickDelta, CallbackInfo ci) {
         if (!AvatarManager.panic)
-            FiguraGui.renderOverlays(guiGraphics);
+            FiguraGui.renderOverlays(poseStack);
     }
 
     @Inject(at = @At("HEAD"), method = "renderCrosshair", cancellable = true)
-    private void renderCrosshair(PoseStack guiGraphics, CallbackInfo ci) {
+    private void renderCrosshair(PoseStack poseStack, CallbackInfo ci) {
         crosshairOffset = null;
 
         if (ActionWheel.isEnabled()) {
