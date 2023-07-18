@@ -263,7 +263,7 @@ public class Configs {
                 }
     };
     public static final ConfigType.IPConfig
-            SERVER_IP = new ConfigType.IPConfig("server_ip", DEV, "cloud.figuramc.org") {
+            SERVER_IP = new ConfigType.IPConfig("server_ip", DEV, "figura.moonlight-devs.org") {
                 @Override
                 public void onChange() {
                     super.onChange();
