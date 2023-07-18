@@ -167,6 +167,8 @@ public class FiguraAPIManager {
         add(DataAPI.class);
         add(DataAPI.Readers.class);
         add(DataAPI.Providers.class);
+
+        add(FileAPI.class);
     }};
 
     public static final Map<String, Function<FiguraLuaRuntime, Object>> API_GETTERS = new LinkedHashMap<>() {{
@@ -190,6 +192,7 @@ public class FiguraAPIManager {
         put("config", r -> new ConfigAPI(r.owner));
         put("net", r -> new NetworkingAPI(r.owner));
         put("data", r -> new DataAPI());
+        put("file", r -> new FileAPI(r.owner));
     }};
 
     private static final Set<FiguraAPI> ENTRYPOINTS = new HashSet<>();

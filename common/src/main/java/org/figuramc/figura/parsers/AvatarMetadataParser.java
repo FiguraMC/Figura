@@ -7,6 +7,7 @@ import com.google.gson.JsonParser;
 import net.minecraft.nbt.*;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.config.Configs;
+import org.figuramc.figura.lua.api.FileAPI;
 import org.figuramc.figura.model.ParentType;
 import org.figuramc.figura.model.rendering.texture.RenderTypes;
 import org.figuramc.figura.utils.Version;
@@ -49,6 +50,8 @@ public class AvatarMetadataParser {
 
         nbt.putString("name", metadata.name == null || metadata.name.isBlank() ? filename : metadata.name);
         nbt.putString("ver", version.toString());
+        if (metadata.dataFolder != null && FileAPI.isFolderNameValid(metadata.dataFolder))
+            nbt.putString("dataFolder", metadata.dataFolder);
         if (metadata.color != null) nbt.putString("color", metadata.color);
         if (metadata.background != null) nbt.putString("bg", metadata.background);
         if (metadata.id != null) nbt.putString("id", metadata.id);
@@ -206,7 +209,7 @@ public class AvatarMetadataParser {
 
     // json object class
     public static class Metadata {
-        public String name, description, author, version, color, background, id;
+        public String name, description, author, version, color, background, id, dataFolder;
         public String[] authors, autoScripts, autoAnims, ignoredTextures;
         public HashMap<String, Customization> customizations;
     }

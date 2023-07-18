@@ -84,6 +84,8 @@ public abstract class FiguraGlobalsDocs {
     public NetworkingAPI net;
     @LuaFieldDoc("globals.data")
     public DataAPI data;
+    @LuaFieldDoc("globals.file")
+    public FileAPI file;
 
     @LuaFieldDoc("globals.type")
     public LuaFunction type;

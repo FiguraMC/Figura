@@ -256,6 +256,10 @@ public class FiguraDocsManager {
                 FiguraOutputStream.class,
                 FiguraFuture.class
         ));
+
+        put("file", List.of(
+                FileAPI.class
+        ));
     }};
     private static final Map<String, List<FiguraDoc>> GENERATED_CHILDREN = new HashMap<>();
 
