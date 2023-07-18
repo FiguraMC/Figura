@@ -1,6 +1,7 @@
 package org.figuramc.figura.lua.api;
 
 import com.mojang.blaze3d.platform.Window;
+import com.mojang.math.Vector3f;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.Minecraft;
