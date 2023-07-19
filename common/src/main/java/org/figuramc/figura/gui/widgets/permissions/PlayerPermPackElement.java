@@ -165,7 +165,7 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
         if (!head) {
             if (this.skin != null) {
                 //head
-                RenderSystem.enableBlend();
+                UIHelper.setupTexture(this.skin);
                 blit(pose, x + 4, y + 4, 32, 32, 8f, 8f, 8, 8, 64, 64);
 
                 //hat
