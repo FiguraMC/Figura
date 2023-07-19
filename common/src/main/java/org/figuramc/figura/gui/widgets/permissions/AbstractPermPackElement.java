@@ -1,6 +1,7 @@
 package org.figuramc.figura.gui.widgets.permissions;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.Mth;
 import org.figuramc.figura.gui.widgets.Button;
 import org.figuramc.figura.gui.widgets.FiguraWidget;
@@ -20,7 +21,7 @@ public class AbstractPermPackElement extends Button implements Comparable<Abstra
     protected float scale = 1f;
 
     protected AbstractPermPackElement(int width, int height, PermissionPack pack, PlayerList parent) {
-        super(0, 0, width, height, Component.empty(), null, bx -> {});
+        super(0, 0, width, height, TextComponent.EMPTY.copy(), null, bx -> {});
         this.parent = parent;
         this.pack = pack;
     }

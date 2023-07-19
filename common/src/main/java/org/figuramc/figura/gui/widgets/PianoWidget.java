@@ -6,6 +6,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.phys.Vec3;
 import org.figuramc.figura.FiguraMod;
@@ -83,7 +84,7 @@ public class PianoWidget extends AbstractContainerElement {
         private final boolean isSharp;
 
         public Key(int x, int y, int width, int height, String key, float pitch, boolean isSharp, PianoWidget parent) {
-            super(x, y, width, height, Component.literal(key), parent, button -> {});
+            super(x, y, width, height, new TextComponent(key), parent, button -> {});
             this.parent = parent;
             this.pitch = pitch;
             this.isSharp = isSharp;
@@ -110,12 +111,12 @@ public class PianoWidget extends AbstractContainerElement {
         }
 
         @Override
-        public void renderButton(PoseStack poseStack, int mouseX, int mouseY, float delta) {
-            UIHelper.fillRounded(poseStack, getX(), getY(), getWidth(), getHeight(), (isSharp ? 0 : 0xFFFFFF) + (0xFF << 24));
-            UIHelper.renderSliced(poseStack, getX(), getY(), getWidth(), getHeight(), UIHelper.OUTLINE);
+        public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
+            UIHelper.fillRounded(stack, getX(), getY(), getWidth(), getHeight(), (isSharp ? 0 : 0xFFFFFF) + (0xFF << 24));
+            UIHelper.renderSliced(stack, getX(), getY(), getWidth(), getHeight(), UIHelper.OUTLINE);
 
             if (isHoveredOrFocused())
-                UIHelper.fillRounded(poseStack, getX(), getY(), getWidth(), getHeight(), (FiguraMod.getAccentColor().getColor().getValue()) + (0xA0 << 24));
+                UIHelper.fillRounded(stack, getX(), getY(), getWidth(), getHeight(), (FiguraMod.getAccentColor().getColor().getValue()) + (0xA0 << 24));
 
             Font font = Minecraft.getInstance().font;
             Component message = getMessage();
@@ -123,7 +124,7 @@ public class PianoWidget extends AbstractContainerElement {
             int y = getY() + getHeight() / 2 - font.lineHeight / 2;
             if (!isSharp)
                 y += getHeight() / 4;
-            font.draw(poseStack, getMessage(), x, y, (isSharp ? 0xFFFFFF : 0));
+            font.draw(stack, getMessage(), x, y, (isSharp ? 0xFFFFFF : 0));
         }
 
         @Override

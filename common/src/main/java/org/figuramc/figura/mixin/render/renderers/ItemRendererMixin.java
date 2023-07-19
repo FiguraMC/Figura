@@ -1,6 +1,7 @@
 package org.figuramc.figura.mixin.render.renderers;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransform;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
@@ -26,18 +27,18 @@ public abstract class ItemRendererMixin {
     @Shadow public abstract BakedModel getModel(ItemStack stack, @Nullable Level world, @Nullable LivingEntity entity, int seed);
 
     @Inject(at = @At("HEAD"), method = "renderStatic(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/client/renderer/block/model/ItemTransforms$TransformType;ZLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/world/level/Level;III)V", cancellable = true)
-    private void renderStatic(LivingEntity livingEntity, ItemStack itemStack, ItemTransforms.TransformType itemDisplayContext, boolean leftHanded, PoseStack stack, MultiBufferSource buffer, Level world, int light, int overlay, int seed, CallbackInfo ci) {
-        if (livingEntity == null || itemStack.isEmpty())
+    private void renderStatic(LivingEntity entity, ItemStack item, ItemTransforms.TransformType itemDisplayContext, boolean leftHanded, PoseStack stack, MultiBufferSource buffer, Level world, int light, int overlay, int seed, CallbackInfo ci) {
+        if (entity == null || item.isEmpty())
             return;
 
-        Avatar avatar = AvatarManager.getAvatar(livingEntity);
+        Avatar avatar = AvatarManager.getAvatar(entity);
         if (avatar == null)
             return;
 
-        BakedModel bakedModel = this.getModel(itemStack, world, livingEntity, seed);
+        BakedModel bakedModel = this.getModel(item, world, entity, seed);
         ItemTransform transform = bakedModel.getTransforms().getTransform(itemDisplayContext);
 
-        if (avatar.itemRenderEvent(ItemStackAPI.verify(itemStack), itemDisplayContext.name(), FiguraVec3.fromVec3f(transform.translation), FiguraVec3.of(transform.rotation.z(), transform.rotation.y(), transform.rotation.x()), FiguraVec3.fromVec3f(transform.scale), leftHanded, stack, buffer, light, overlay))
+        if (avatar.itemRenderEvent(ItemStackAPI.verify(item), itemDisplayContext.name(), FiguraVec3.fromVec3f(transform.translation), FiguraVec3.of(transform.rotation.z(), transform.rotation.y(), transform.rotation.x()), FiguraVec3.fromVec3f(transform.scale), leftHanded, stack, buffer, light, overlay))
             ci.cancel();
     }
 }

@@ -10,6 +10,7 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.Mth;
 import org.figuramc.figura.utils.MathUtils;
 import org.figuramc.figura.utils.TextUtils;
@@ -42,7 +43,7 @@ public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
 
     public Label(Object text, int x, int y, float scale, int maxWidth, boolean wrap, TextUtils.Alignment alignment, Integer outlineColor) {
         this.font = Minecraft.getInstance().font;
-        this.rawText = text instanceof Component c ? c : Component.literal(String.valueOf(text));
+        this.rawText = text instanceof Component c ? c : new TextComponent(String.valueOf(text));
         this.x = x;
         this.y = y;
         this.scale = scale;

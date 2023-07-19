@@ -154,6 +154,7 @@ public class TextureAPI {
         return new ArrayList<>(owner.renderer.textures.values());
     }
 
+
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaMethodOverload(
@@ -164,11 +165,15 @@ public class TextureAPI {
     )
     public FiguraTexture fromVanilla(@LuaNotNil String name, @LuaNotNil String path) {
         check();
-        ResourceLocation resourceLocation = LuaUtils.parsePath(path);
+        ResourceLocation resourcePath = LuaUtils.parsePath(path);
         try {
-            Optional<Resource> resource = Minecraft.getInstance().getResourceManager().getResource(resourceLocation);
-            //if the string is a valid resourceLocation but does not point to a valid resource, missingno
-            NativeImage image = resource.isPresent() ? NativeImage.read(resource.get().open()) : MissingTextureAtlasSpriteAccessor.getImageData().get();
+            NativeImage image;
+            try {
+                image = NativeImage.read(Minecraft.getInstance().getResourceManager().getResource(resourcePath).getInputStream());
+            } catch (Exception ignored) {
+                //if the string is a valid resourceLocation but does not point to a valid resource, missingno
+                image = MissingTextureAtlasSpriteAccessor.getImageData().get();
+            }
             return register(name, image, false);
         } catch (Exception e) {
             //spit an error if the player inputs a resource location that does point to a thing, but not to an image

@@ -4,15 +4,15 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.*;
 import net.minecraft.resources.ResourceLocation;
-import org.figuramc.figura.lua.api.sound.SoundAPI;
-import org.figuramc.figura.utils.ColorUtils;
-import org.figuramc.figura.utils.FiguraText;
-import org.figuramc.figura.utils.TextUtils;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.config.Configs;
+import org.figuramc.figura.lua.api.sound.SoundAPI;
 import org.figuramc.figura.permissions.PermissionManager;
 import org.figuramc.figura.permissions.Permissions;
+import org.figuramc.figura.utils.ColorUtils;
 import org.figuramc.figura.utils.FiguraIdentifier;
+import org.figuramc.figura.utils.FiguraText;
+import org.figuramc.figura.utils.TextUtils;
 import org.figuramc.figura.utils.ui.UIHelper;
 
 import java.util.BitSet;
@@ -27,14 +27,14 @@ public class Badges {
 
     public static Component fetchBadges(UUID id) {
         if (PermissionManager.get(id).getCategory() == Permissions.Category.BLOCKED)
-            return Component.empty();
+            return TextComponent.EMPTY.copy();
 
         //get user data
         Pair<BitSet, BitSet> pair = AvatarManager.getBadges(id);
         if (pair == null)
-            return Component.empty();
+            return TextComponent.EMPTY.copy();
 
-        MutableComponent badges = Component.empty().withStyle(Style.EMPTY.withFont(FONT).withColor(ChatFormatting.WHITE).withObfuscated(false));
+        MutableComponent badges = TextComponent.EMPTY.copy().withStyle(Style.EMPTY.withFont(FONT).withColor(ChatFormatting.WHITE).withObfuscated(false));
 
         //avatar badges
         Avatar avatar = AvatarManager.getAvatarForPlayer(id);
@@ -43,9 +43,9 @@ public class Badges {
             // -- loading -- //
 
             if (!avatar.loaded)
-                badges.append(Component.literal(Integer.toHexString(Math.abs(FiguraMod.ticks) % 16)));
+                badges.append(new TextComponent(Integer.toHexString(Math.abs(FiguraMod.ticks) % 16)));
 
-            // -- mark -- //
+                // -- mark -- //
 
             else if (avatar.nbt != null) {
                 //mark
@@ -81,7 +81,7 @@ public class Badges {
                     MutableComponent badge = System.PERMISSIONS.badge.copy();
                     MutableComponent desc = System.PERMISSIONS.desc.copy().append("\n");
                     for (Permissions t : avatar.noPermissions)
-                        desc.append("\n• ").append(FiguraText.of("badges.no_permissions." + t.name.toLowerCase()));
+                        desc.append("\n• ").append(new FiguraText("badges.no_permissions." + t.name.toLowerCase()));
 
                     badges.append(badge.withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, desc))));
                 }
@@ -103,14 +103,8 @@ public class Badges {
 
 
         //sound
-        if (avatar != null && Configs.SOUND_BADGE.value) {
-            if (avatar.lastPlayingSound > 0) {
-                badges.append(System.SOUND.badge);
-            } else if (SoundAPI.getSoundEngine().figura$isPlaying(id)) {
-                avatar.lastPlayingSound = 20;
-                badges.append(System.SOUND.badge);
-            }
-        }
+        if (Configs.SOUND_BADGE.value && SoundAPI.getSoundEngine().figura$isPlaying(id))
+            badges.append(System.SOUND.badge);
 
 
         // -- return -- //
@@ -130,7 +124,7 @@ public class Badges {
     }
 
     public static Component appendBadges(Component text, UUID id, boolean allow) {
-        Component badges = allow ? fetchBadges(id) : Component.empty();
+        Component badges = allow ? fetchBadges(id) : TextComponent.EMPTY.copy();
         boolean custom = hasCustomBadges(text);
 
         //no custom badges text
@@ -154,8 +148,8 @@ public class Badges {
         public final Component desc;
 
         System(String unicode) {
-            this.desc = FiguraText.of("badges.system." + this.name().toLowerCase());
-            this.badge = Component.literal(unicode).withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, desc)));
+            this.desc = new FiguraText("badges.system." + this.name().toLowerCase());
+            this.badge = new TextComponent(unicode).withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, desc)));
         }
     }
 
@@ -190,16 +184,16 @@ public class Badges {
         public final Component desc;
 
         Pride(String unicode) {
-            this.desc = FiguraText.of("badges.pride." + this.name().toLowerCase());
-            this.badge = Component.literal(unicode).withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, desc)));
+            this.desc = new FiguraText("badges.pride." + this.name().toLowerCase());
+            this.badge = new TextComponent(unicode).withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, desc)));
         }
     }
 
     public enum Special {
         DEV("★"),
         DISCORD_STAFF("☆", ColorUtils.Colors.DISCORD.hex),
-        CONTEST("☆", ColorUtils.Colors.PINK.hex),
-        DONATOR("❤", ColorUtils.Colors.PINK.hex),
+        CONTEST("☆", ColorUtils.Colors.CHEESE.hex),
+        DONATOR("❤", ColorUtils.Colors.CHEESE.hex),
         TRANSLATOR("文"),
         TEXTURE_ARTIST("✒"),
         IMMORTALIZED("\uD83D\uDDFF");
@@ -212,10 +206,10 @@ public class Badges {
         }
 
         Special(String unicode, Integer color) {
-            this.desc = FiguraText.of("badges.special." + this.name().toLowerCase());
+            this.desc = new FiguraText("badges.special." + this.name().toLowerCase());
             Style style = Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, desc));
             if (color != null) style = style.withColor(color);
-            this.badge = Component.literal(unicode).withStyle(style);
+            this.badge = new TextComponent(unicode).withStyle(style);
         }
     }
 }

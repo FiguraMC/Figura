@@ -7,6 +7,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.figuramc.figura.utils.FiguraIdentifier;
@@ -31,7 +32,7 @@ public class TextField extends AbstractContainerElement {
         super(x, y, width, height);
         this.hint = hint;
 
-        field = new EditBox(Minecraft.getInstance().font, x + 4, y + (height - 8) / 2, width - 12, height - (height - 8) / 2, Component.empty());
+        field = new EditBox(Minecraft.getInstance().font, x + 4, y + (height - 8) / 2, width - 12, height - (height - 8) / 2, TextComponent.EMPTY.copy());
         field.setMaxLength(32767);
         field.setBordered(false);
         field.setResponder(changedListener);
@@ -169,7 +170,7 @@ public class TextField extends AbstractContainerElement {
         private final Component hint;
 
         HintType() {
-            this.hint = FiguraText.of("gui.text_hint." + this.name().toLowerCase());
+            this.hint = new FiguraText("gui.text_hint." + this.name().toLowerCase());
         }
     }
 }

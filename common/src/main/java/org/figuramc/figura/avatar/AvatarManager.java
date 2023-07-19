@@ -7,21 +7,21 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.local.LocalAvatarLoader;
+import org.figuramc.figura.backend2.NetworkStuff;
 import org.figuramc.figura.gui.FiguraToast;
 import org.figuramc.figura.gui.widgets.lists.AvatarList;
 import org.figuramc.figura.lua.api.particle.ParticleAPI;
 import org.figuramc.figura.lua.api.sound.SoundAPI;
+import org.figuramc.figura.utils.EntityUtils;
 import org.figuramc.figura.utils.FiguraClientCommandSource;
 import org.figuramc.figura.utils.FiguraResourceListener;
 import org.figuramc.figura.utils.FiguraText;
-import org.figuramc.figura.FiguraMod;
-import org.figuramc.figura.backend2.NetworkStuff;
-import org.figuramc.figura.utils.EntityUtils;
 
 import java.nio.file.Path;
 import java.util.*;
@@ -49,7 +49,7 @@ public class AvatarManager {
 
     public static void togglePanic() {
         AvatarManager.panic = !AvatarManager.panic;
-        FiguraToast.sendToast(FiguraText.of(AvatarManager.panic ? "toast.panic_enabled" : "toast.panic_disabled"), FiguraToast.ToastType.WARNING);
+        FiguraToast.sendToast(new FiguraText(AvatarManager.panic ? "toast.panic_enabled" : "toast.panic_disabled"), FiguraToast.ToastType.WARNING);
         SoundAPI.getSoundEngine().figura$stopAllSounds();
         ParticleAPI.getParticleEngine().figura$clearParticles(null);
     }
@@ -250,7 +250,7 @@ public class AvatarManager {
     public static void setAvatar(UUID id, CompoundTag nbt) {
         try {
             UserData user = LOADED_USERS.computeIfAbsent(id, UserData::new);
-            clearAvatars(id);
+            user.clear();
             user.loadAvatar(nbt);
         } catch (Exception e) {
             FiguraMod.LOGGER.error("Failed to set avatar for " + id, e);
@@ -311,28 +311,26 @@ public class AvatarManager {
                 sourceUUID = UUID.fromString(s);
                 targetUUID = UUID.fromString(t);
             } catch (Exception e) {
-                context.getSource().figura$sendError(Component.literal("Failed to parse uuids"));
+                context.getSource().figura$sendError(new TextComponent("Failed to parse uuids"));
                 return 0;
             }
 
             UserData user = LOADED_USERS.get(sourceUUID);
             Avatar avatar = user == null ? null : user.getMainAvatar();
             if (avatar == null || avatar.nbt == null) {
-                context.getSource().figura$sendError(Component.literal("No source Avatar found"));
+                context.getSource().figura$sendError(new TextComponent("No source Avatar found"));
                 return 0;
             }
 
             if (LOADED_USERS.get(targetUUID) != null) {
                 setAvatar(targetUUID, avatar.nbt);
-                if (FiguraMod.isLocal(targetUUID))
-                    localUploaded = true;
-                context.getSource().figura$sendFeedback(Component.literal("Set avatar for " + t));
+                context.getSource().figura$sendError(new TextComponent("Set avatar for " + t));
                 return 1;
             }
 
             Entity targetEntity = EntityUtils.getEntityByUUID(targetUUID);
             if (targetEntity == null) {
-                context.getSource().figura$sendError(Component.literal("Target entity not found"));
+                context.getSource().figura$sendError(new TextComponent("Target entity not found"));
                 return 0;
             }
 

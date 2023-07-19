@@ -26,7 +26,7 @@ public class CategoryPermPackElement extends AbstractPermPackElement {
         int height = getHeight();
 
         pose.pushPose();
-        pose.translate(getX() + width / 2f, getY() + height / 2f, 100);
+        pose.translate(x + width / 2f, y + height / 2f, 100);
         pose.scale(scale, scale, 1f);
 
         animate(delta, this.isMouseOver(mouseX, mouseY) || this.isFocused());

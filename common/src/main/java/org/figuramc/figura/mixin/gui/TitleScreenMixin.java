@@ -22,12 +22,12 @@ public class TitleScreenMixin extends Screen {
         return FiguraMod.splashText == null ? text : FiguraMod.splashText.getString();
     }
 
-    @ModifyArg(method = "render",  at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/TitleScreen;drawCenteredString(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/Font;Ljava/lang/String;III)V"))
-    private String drawSplashText(PoseStack matrices, Font font, String text, int centerX, int y, int color) {
+    @ModifyArg(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/TitleScreen;drawCenteredString(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/Font;Ljava/lang/String;III)V"))
+    private String drawSplashText(PoseStack matrices, Font textRenderer, String text, int centerX, int y, int color) {
         if (FiguraMod.splashText == null)
             return text;
 
-        drawCenteredString(matrices, font, FiguraMod.splashText, centerX, y, color);
+        drawCenteredString(matrices, textRenderer, FiguraMod.splashText, centerX, y, color);
         return "";
     }
 }

@@ -4,7 +4,8 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.SplashManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.util.RandomSource;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.level.levelgen.RandomSource;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Badges;
 import org.figuramc.figura.config.Configs;
@@ -21,17 +22,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 @Mixin(SplashManager.class)
 public class SplashManagerMixin {
 
-    @Shadow @Final private static RandomSource RANDOM;
+    @Shadow @Final private static Random RANDOM;
     @Shadow @Final private List<String> splashes;
 
     @Unique
     private static final List<Component> FIGURA_SPLASHES = List.of(
-            Component.literal("Also try ears ")
-                    .append(Component.literal("\uD83D\uDC3E").withStyle(Style.EMPTY.withFont(UIHelper.SPECIAL_FONT).withColor(ChatFormatting.WHITE)))
+            new TextComponent("Also try ears ")
+                    .append(new TextComponent("\uD83D\uDC3E").withStyle(Style.EMPTY.withFont(UIHelper.SPECIAL_FONT).withColor(ChatFormatting.WHITE)))
                     .append("!")
     );
 
@@ -57,7 +59,7 @@ public class SplashManagerMixin {
         }
 
         if (who != null) {
-            FiguraMod.splashText = Component.literal("Happy birthday " + who + " ")
+            FiguraMod.splashText = new TextComponent("Happy birthday " + who + " ")
                     .append(Badges.System.DEFAULT.badge.copy().withStyle(Style.EMPTY.withFont(Badges.FONT).withColor(ColorUtils.Colors.DEFAULT.hex)))
                     .append("!");
         } else {

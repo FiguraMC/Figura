@@ -9,6 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.figuramc.figura.FiguraMod;
@@ -82,6 +83,9 @@ public class ActionWheel {
         FiguraMod.popPushProfiler("wheel");
         renderTextures(stack, currentPage);
 
+        //reset colours
+        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+
         //render items
         FiguraMod.popPushProfiler("items");
         renderItemsAndIcons(stack, currentPage);
@@ -116,7 +120,7 @@ public class ActionWheel {
         stack.popPose(); //previous stack
 
         //warning text
-        Component component = FiguraText.of("gui.error." + (avatar ? "no_avatar" : "no_wheel_page")).withStyle(ChatFormatting.YELLOW);
+        Component component = new FiguraText("gui.error." + (avatar ? "no_avatar" : "no_wheel_page")).withStyle(ChatFormatting.YELLOW);
         Font font = minecraft.font;
 
         UIHelper.renderOutlineText(stack, font, component, x - font.width(component) / 2, y - font.lineHeight / 2, 0xFFFFFF, 0);
@@ -242,7 +246,7 @@ public class ActionWheel {
             int index = page.getSlotsShift();
             int greatest = page.getGreatestSlot() + 1;
 
-            MutableComponent indicator = Component.empty();
+            MutableComponent indicator = TextComponent.EMPTY.copy();
             int extraWidth = 0;
 
             //down arrow
@@ -252,14 +256,14 @@ public class ActionWheel {
                 extraWidth -= font.width(arrow);
             }
             //text
-            indicator.append(FiguraText.of("gui.action_wheel.slots_indicator",
-                    Component.literal(String.valueOf((index - 1) * 8 + 1)).withStyle(FiguraMod.getAccentColor()),
-                    Component.literal(String.valueOf(Math.min(index * 8, greatest))).withStyle(FiguraMod.getAccentColor()),
-                    Component.literal(String.valueOf(greatest)).withStyle(FiguraMod.getAccentColor())
+            indicator.append(new FiguraText("gui.action_wheel.slots_indicator",
+                    new TextComponent(String.valueOf((index - 1) * 8 + 1)).withStyle(FiguraMod.getAccentColor()),
+                    new TextComponent(String.valueOf(Math.min(index * 8, greatest))).withStyle(FiguraMod.getAccentColor()),
+                    new TextComponent(String.valueOf(greatest)).withStyle(FiguraMod.getAccentColor())
             ));
             //up arrow
             if (index < groupCount) {
-                Component arrow = Component.literal(" ").append(UIHelper.DOWN_ARROW);
+                Component arrow = new TextComponent(" ").append(UIHelper.DOWN_ARROW);
                 indicator.append(arrow);
                 extraWidth += font.width(arrow);
             }

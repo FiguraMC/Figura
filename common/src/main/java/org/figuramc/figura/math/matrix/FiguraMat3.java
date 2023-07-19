@@ -20,7 +20,9 @@ import java.nio.FloatBuffer;
         value = "matrix3"
 )
 public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
+
     private static final FloatBuffer copyingBuffer = BufferUtils.createFloatBuffer(3 * 3);
+
     public FiguraMat3 set(Matrix3f mat) {
         copyingBuffer.clear();
         mat.store(copyingBuffer);

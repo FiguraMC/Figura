@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import org.figuramc.figura.gui.widgets.ContextMenu;
 import org.figuramc.figura.gui.widgets.ParentedButton;
 import org.figuramc.figura.FiguraMod;
@@ -135,7 +136,7 @@ public class EnumElement extends AbstractConfigElement {
 
             //selected entry
             if (i == (int) this.config.tempValue % this.names.size())
-                text = Component.empty().setStyle(FiguraMod.getAccentColor()).withStyle(ChatFormatting.UNDERLINE).append(text);
+                text = TextComponent.EMPTY.copy().setStyle(FiguraMod.getAccentColor()).withStyle(ChatFormatting.UNDERLINE).append(text);
 
             //apply text
             entries.get(i).setMessage(text);

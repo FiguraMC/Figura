@@ -6,10 +6,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import org.figuramc.figura.gui.widgets.AbstractContainerElement;
-import org.figuramc.figura.gui.widgets.Button;
-import org.figuramc.figura.gui.widgets.ParentedButton;
+import net.minecraft.network.chat.TranslatableComponent;
 import org.figuramc.figura.config.ConfigType;
+import org.figuramc.figura.gui.widgets.AbstractContainerElement;
+import org.figuramc.figura.gui.widgets.ParentedButton;
+import org.figuramc.figura.gui.widgets.Button;
 import org.figuramc.figura.gui.widgets.lists.ConfigList;
 import org.figuramc.figura.utils.ui.UIHelper;
 
@@ -35,7 +36,7 @@ public abstract class AbstractConfigElement extends AbstractContainerElement {
         this.initValue = config.value;
 
         //reset button
-        children.add(resetButton = new ParentedButton(0, 0, 60, 20, Component.translatable("controls.reset"), this, button -> config.resetTemp()));
+        children.add(resetButton = new ParentedButton(0, 0, 60, 20, new TranslatableComponent("controls.reset"), this, button -> config.resetTemp()));
     }
 
     @Override

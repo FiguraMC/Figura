@@ -18,22 +18,22 @@ import java.util.function.Function;
 public class PlayerStatusWidget extends StatusWidget {
 
     private static final List<Function<Avatar, MutableComponent>> HOVER_TEXT = List.of(
-            avatar -> FiguraText.of("gui.permissions.size")
+            avatar -> new FiguraText("gui.permissions.size")
                     .append("\n• ").append(MathUtils.asFileSize(avatar.fileSize)),
-            avatar -> FiguraText.of("gui.permissions.complexity")
+            avatar -> new FiguraText("gui.permissions.complexity")
                     .append("\n• ").append(String.valueOf(avatar.complexity.pre)),
-            avatar -> FiguraText.of("gui.permissions.init")
-                    .append("\n• ").append(FiguraText.of("gui.permissions.init.root", avatar.init.pre))
-                    .append("\n• ").append(FiguraText.of("gui.permissions.init.entity", avatar.init.post)),
-            avatar -> FiguraText.of("gui.permissions.tick")
-                    .append("\n• ").append(FiguraText.of("gui.permissions.tick.world", avatar.worldTick.pre))
-                    .append("\n• ").append(FiguraText.of("gui.permissions.tick.entity", avatar.tick.pre)),
-            avatar -> FiguraText.of("gui.permissions.render")
-                    .append("\n• ").append(FiguraText.of("gui.permissions.render.world", avatar.worldRender.pre))
-                    .append("\n• ").append(FiguraText.of("gui.permissions.render.entity", avatar.render.pre))
-                    .append("\n• ").append(FiguraText.of("gui.permissions.render.post_entity", avatar.render.post))
-                    .append("\n• ").append(FiguraText.of("gui.permissions.render.post_world", avatar.worldRender.post))
-                    .append("\n• ").append(FiguraText.of("gui.permissions.render.animations", avatar.animation.pre))
+            avatar -> new FiguraText("gui.permissions.init")
+                    .append("\n• ").append(new FiguraText("gui.permissions.init.root", avatar.init.pre))
+                    .append("\n• ").append(new FiguraText("gui.permissions.init.entity", avatar.init.post)),
+            avatar -> new FiguraText("gui.permissions.tick")
+                    .append("\n• ").append(new FiguraText("gui.permissions.tick.world", avatar.worldTick.pre))
+                    .append("\n• ").append(new FiguraText("gui.permissions.tick.entity", avatar.tick.pre)),
+            avatar -> new FiguraText("gui.permissions.render")
+                    .append("\n• ").append(new FiguraText("gui.permissions.render.world", avatar.worldRender.pre))
+                    .append("\n• ").append(new FiguraText("gui.permissions.render.entity", avatar.render.pre))
+                    .append("\n• ").append(new FiguraText("gui.permissions.render.post_entity", avatar.render.post))
+                    .append("\n• ").append(new FiguraText("gui.permissions.render.post_world", avatar.worldRender.post))
+                    .append("\n• ").append(new FiguraText("gui.permissions.render.animations", avatar.animation.pre))
     );
 
     private final UUID owner;

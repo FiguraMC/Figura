@@ -3,6 +3,7 @@ package org.figuramc.figura.gui.widgets.config;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import org.figuramc.figura.gui.widgets.KeybindWidgetHelper;
 import org.figuramc.figura.gui.widgets.ParentedButton;
 import org.figuramc.figura.FiguraMod;
@@ -29,7 +30,7 @@ public class KeybindElement extends AbstractConfigElement {
 
         //overwrite reset button to update the keybind
         children.remove(resetButton);
-        children.add(resetButton = new ParentedButton(getX() + width - 60, getY(), 60, 20, Component.translatable("controls.reset"), this, button -> {
+        children.add(resetButton = new ParentedButton(getX() + width - 60, getY(), 60, 20, new TranslatableComponent("controls.reset"), this, button -> {
             binding.setKey(binding.getDefaultKey());
             parentList.updateKeybinds();
         }));

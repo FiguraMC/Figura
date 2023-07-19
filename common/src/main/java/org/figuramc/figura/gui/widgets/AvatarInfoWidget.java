@@ -8,6 +8,7 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
@@ -23,13 +24,13 @@ import java.util.List;
 
 public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventListener {
 
-    private static final MutableComponent UNKNOWN = Component.literal("?").setStyle(ColorUtils.Colors.PINK.style);
-    private static final MutableComponent ELLIPSIS = TextUtils.ELLIPSIS.copy().setStyle(ColorUtils.Colors.PINK.style);
+    private static final MutableComponent UNKNOWN = new TextComponent("?").setStyle(ColorUtils.Colors.CHEESE.style);
+    private static final MutableComponent ELLIPSIS = TextUtils.ELLIPSIS.copy().setStyle(ColorUtils.Colors.CHEESE.style);
     private static final List<Component> TITLES = List.of(
-            FiguraText.of("gui.name").withStyle(ChatFormatting.UNDERLINE),
-            FiguraText.of("gui.authors").withStyle(ChatFormatting.UNDERLINE),
-            FiguraText.of("gui.size").withStyle(ChatFormatting.UNDERLINE),
-            FiguraText.of("gui.complexity").withStyle(ChatFormatting.UNDERLINE)
+            new FiguraText("gui.name").withStyle(ChatFormatting.UNDERLINE),
+            new FiguraText("gui.authors").withStyle(ChatFormatting.UNDERLINE),
+            new FiguraText("gui.size").withStyle(ChatFormatting.UNDERLINE),
+            new FiguraText("gui.complexity").withStyle(ChatFormatting.UNDERLINE)
     );
 
     private int x, y;
@@ -64,10 +65,10 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
         //update values
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
         if (avatar != null && avatar.nbt != null) {
-            values.set(0, avatar.name == null || avatar.name.isBlank() ? UNKNOWN : Component.literal(avatar.name).setStyle(accent)); //name
-            values.set(1, avatar.authors == null || avatar.authors.isBlank() ? UNKNOWN : Component.literal(avatar.authors).setStyle(accent)); //authors
-            values.set(2, Component.literal(MathUtils.asFileSize(avatar.fileSize)).setStyle(accent)); //size
-            values.set(3, Component.literal(String.valueOf(avatar.complexity.pre)).setStyle(accent)); //complexity
+            values.set(0, avatar.name == null || avatar.name.isBlank() ? UNKNOWN : new TextComponent(avatar.name).setStyle(accent)); //name
+            values.set(1, avatar.authors == null || avatar.authors.isBlank() ? UNKNOWN : new TextComponent(avatar.authors).setStyle(accent)); //authors
+            values.set(2, new TextComponent(MathUtils.asFileSize(avatar.fileSize)).setStyle(accent)); //size
+            values.set(3, new TextComponent(String.valueOf(avatar.complexity.pre)).setStyle(accent)); //complexity
         } else {
             for (int i = 0; i < TITLES.size(); i++) {
                 values.set(i, UNKNOWN);

@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.figuramc.figura.utils.FiguraIdentifier;
@@ -32,7 +32,7 @@ public class ScrollBarWidget extends AbstractWidget implements FiguraWidget {
     // -- constructors -- //
 
     public ScrollBarWidget(int x, int y, int width, int height, double initialValue) {
-        super(x, y, width, height, Component.empty());
+        super(x, y, width, height, TextComponent.EMPTY.copy());
         scrollPrecise = initialValue;
         scrollPos = initialValue;
     }
@@ -48,10 +48,10 @@ public class ScrollBarWidget extends AbstractWidget implements FiguraWidget {
             //jump to pos when not clicking on head
             double scrollPos = Mth.lerp(scrollPrecise, 0d, (vertical ? getHeight() - headHeight : getWidth() - headWidth) + 2d);
 
-            if (vertical && mouseY < getY() + scrollPos || mouseY > getY() + scrollPos + headHeight)
-                scroll(-(getY() + scrollPos + headHeight / 2d - mouseY));
-            else if (!vertical && mouseX < getX() + scrollPos || mouseX > getX() + scrollPos + headWidth)
-                scroll(-(getX() + scrollPos + headWidth / 2d - mouseX));
+            if (vertical && mouseY < y + scrollPos || mouseY > y + scrollPos + headHeight)
+                scroll(-(y + scrollPos + headHeight / 2d - mouseY));
+            else if (!vertical && mouseX < x + scrollPos || mouseX > x + scrollPos + headWidth)
+                scroll(-(x + scrollPos + headWidth / 2d - mouseX));
 
             isScrolling = true;
             playDownSound(Minecraft.getInstance().getSoundManager());
@@ -82,7 +82,7 @@ public class ScrollBarWidget extends AbstractWidget implements FiguraWidget {
                         return true;
                     }
 
-                } else if (mouseY >= this.getY()) {
+                } else if (mouseY >= this.y) {
                     scroll(deltaY);
                     return true;
                 }
@@ -93,7 +93,7 @@ public class ScrollBarWidget extends AbstractWidget implements FiguraWidget {
                     scroll(deltaX);
                     return true;
                 }
-            } else if (mouseX >= this.getX()) {
+            } else if (mouseX >= this.x) {
                 scroll(deltaX);
                 return true;
             }

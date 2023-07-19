@@ -48,10 +48,9 @@ public class LocalAvatarLoader {
         CEM_AVATARS.clear();
         AvatarManager.clearCEMAvatars();
 
-        for (Map.Entry<ResourceLocation, Resource> cem : manager.listResources("cem", location -> location.getNamespace().equals(FiguraMod.MOD_ID) && location.getPath().endsWith(".moon")).entrySet()) {
+        for (ResourceLocation resource : manager.listResources("cem", location -> location.endsWith(".moon"))) {
             //id
-            ResourceLocation key = cem.getKey();
-            String[] split = key.getPath().split("/");
+            String[] split = resource.getPath().split("/");
             if (split.length <= 1)
                 continue;
 
@@ -62,7 +61,7 @@ public class LocalAvatarLoader {
             //nbt
             CompoundTag nbt;
             try {
-                nbt = NbtIo.readCompressed(cem.getValue().open());
+                nbt = NbtIo.readCompressed(manager.getResource(resource).getInputStream());
             } catch (Exception e) {
                 FiguraMod.LOGGER.error("Failed to load " + id + " avatar", e);
                 continue;
@@ -148,7 +147,7 @@ public class LocalAvatarLoader {
             } catch (Throwable e) {
                 loadError = e.getMessage();
                 FiguraMod.LOGGER.error("Failed to load avatar from " + path, e);
-                FiguraToast.sendToast(FiguraText.of("toast.load_error"), FiguraText.of("gui.load_error." + LocalAvatarLoader.getLoadState()), FiguraToast.ToastType.ERROR);
+                FiguraToast.sendToast(new FiguraText("toast.load_error"), new FiguraText("gui.load_error." + LocalAvatarLoader.getLoadState()), FiguraToast.ToastType.ERROR);
             }
         });
     }

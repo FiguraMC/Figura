@@ -1,11 +1,13 @@
 package org.figuramc.figura.mixin;
 
+import com.mojang.text2speech.Narrator;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import org.figuramc.figura.utils.FiguraClientCommandSource;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -20,12 +22,12 @@ abstract class ClientCommandSourceMixin implements FiguraClientCommandSource {
     @Override
     public void figura$sendFeedback(Component message) {
         this.minecraft.gui.getChat().addMessage(message);
-        this.minecraft.getNarrator().sayNow(message);
+        Narrator.getNarrator().say(message.getString(), true);
     }
 
     @Override
     public void figura$sendError(Component message) {
-        figura$sendFeedback(Component.literal("").append(message).withStyle(ChatFormatting.RED));
+        figura$sendFeedback(new TextComponent("").append(message).withStyle(ChatFormatting.RED));
     }
 
     @Override

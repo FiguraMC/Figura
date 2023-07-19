@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.PlayerModelPart;
@@ -132,7 +133,7 @@ public class FiguraListDocs {
 
             //list properties
             object.addProperty("name", name);
-            object.addProperty("description", translate ? Language.getInstance().getOrDefault(FiguraText.of("docs.enum." + id).getString()) : FiguraMod.MOD_ID + "." + "docs.enum." + id);
+            object.addProperty("description", translate ? Language.getInstance().getOrDefault(new FiguraText("docs.enum." + id).getString()) : FiguraMod.MOD_ID + "." + "docs.enum." + id);
 
             //list entries
             Collection<?> coll = get();
@@ -162,23 +163,23 @@ public class FiguraListDocs {
             command.executes(context -> {
                 Collection<?> coll = get();
                 if (coll.size() == 0) {
-                    FiguraMod.sendChatMessage(FiguraText.of("docs.enum.empty"));
+                    FiguraMod.sendChatMessage(new FiguraText("docs.enum.empty"));
                     return 0;
                 }
 
                 MutableComponent text = FiguraDoc.HEADER.copy()
                         .append("\n\n")
-                        .append(Component.literal("• ")
-                                .append(FiguraText.of("docs.text.description"))
+                        .append(new TextComponent("• ")
+                                .append(new FiguraText("docs.text.description"))
                                 .append(":")
                                 .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
                         .append("\n\t")
-                        .append(Component.literal("• ")
-                                .append(FiguraText.of("docs.enum." + id))
+                        .append(new TextComponent("• ")
+                                .append(new FiguraText("docs.enum." + id))
                                 .withStyle(ColorUtils.Colors.MAYA_BLUE.style))
                         .append("\n\n")
-                        .append(Component.literal("• ")
-                                .append(FiguraText.of("docs.text.entries"))
+                        .append(new TextComponent("• ")
+                                .append(new FiguraText("docs.text.entries"))
                                 .append(":")
                                 .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style));
 
@@ -187,17 +188,17 @@ public class FiguraListDocs {
                     MutableComponent component;
 
                     if (o instanceof Map.Entry e) {
-                        component = Component.literal(e.getKey().toString()).withStyle(ChatFormatting.WHITE);
+                        component = new TextComponent(e.getKey().toString()).withStyle(ChatFormatting.WHITE);
                         for (String s : (List<String>) e.getValue()) {
-                            component.append(Component.literal(" | ").withStyle(ChatFormatting.YELLOW))
-                                    .append(Component.literal(s).withStyle(ChatFormatting.GRAY));
+                            component.append(new TextComponent(" | ").withStyle(ChatFormatting.YELLOW))
+                                    .append(new TextComponent(s).withStyle(ChatFormatting.GRAY));
                         }
                     } else {
-                        component = Component.literal(o.toString()).withStyle(ChatFormatting.WHITE);
+                        component = new TextComponent(o.toString()).withStyle(ChatFormatting.WHITE);
                     }
 
                     text.append(i % split == 0 ? "\n\t" : "\t");
-                    text.append(Component.literal("• ").withStyle(ChatFormatting.YELLOW)).append(component);
+                    text.append(new TextComponent("• ").withStyle(ChatFormatting.YELLOW)).append(component);
                     i++;
                 }
 
@@ -211,7 +212,7 @@ public class FiguraListDocs {
                 String text = o instanceof Map.Entry e ? e.getKey().toString() : o.toString();
                 LiteralArgumentBuilder<FiguraClientCommandSource> entry = LiteralArgumentBuilder.literal(text);
                 entry.executes(context -> {
-                    FiguraMod.sendChatMessage(Component.literal(text).withStyle(ColorUtils.Colors.PINK.style));
+                    FiguraMod.sendChatMessage(new TextComponent(text).withStyle(ColorUtils.Colors.PINK.style));
                     return 1;
                 });
 
@@ -219,7 +220,7 @@ public class FiguraListDocs {
                     for (String s : (List<String>) e.getValue()) {
                         LiteralArgumentBuilder<FiguraClientCommandSource> child = LiteralArgumentBuilder.literal(s);
                         child.executes(context -> {
-                            FiguraMod.sendChatMessage(Component.literal(s).withStyle(ColorUtils.Colors.PINK.style));
+                            FiguraMod.sendChatMessage(new TextComponent(s).withStyle(ColorUtils.Colors.PINK.style));
                             return 1;
                         });
                         entry.then(child);
@@ -242,23 +243,23 @@ public class FiguraListDocs {
         root.executes(context -> {
             FiguraMod.sendChatMessage(FiguraDoc.HEADER.copy()
                     .append("\n\n")
-                    .append(Component.literal("• ")
-                            .append(FiguraText.of("docs.text.type"))
+                    .append(new TextComponent("• ")
+                            .append(new FiguraText("docs.text.type"))
                             .append(":")
                             .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
                     .append("\n\t")
-                    .append(Component.literal("• ")
-                            .append(Component.literal("enumerators"))
+                    .append(new TextComponent("• ")
+                            .append(new TextComponent("enumerators"))
                             .withStyle(ColorUtils.Colors.MAYA_BLUE.style))
 
                     .append("\n\n")
-                    .append(Component.literal("• ")
-                            .append(FiguraText.of("docs.text.description"))
+                    .append(new TextComponent("• ")
+                            .append(new FiguraText("docs.text.description"))
                             .append(":")
                             .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
                     .append("\n\t")
-                    .append(Component.literal("• ")
-                            .append(FiguraText.of("docs.enum"))
+                    .append(new TextComponent("• ")
+                            .append(new FiguraText("docs.enum"))
                             .withStyle(ColorUtils.Colors.MAYA_BLUE.style))
             );
             return 1;

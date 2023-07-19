@@ -68,14 +68,14 @@ public class Configs {
             SOUND_BADGE = new ConfigType.BoolConfig("sound_badge", NAMEPLATE, true);
     private static final String NAMEPLATE_PATH = "config.nameplate_level.";
     private static final List<Component> NAMEPLATE_ENUM = List.of(
-            FiguraText.of(NAMEPLATE_PATH + "1"),
-            FiguraText.of(NAMEPLATE_PATH + "2"),
-            FiguraText.of(NAMEPLATE_PATH + "3")
+            new FiguraText(NAMEPLATE_PATH + "1"),
+            new FiguraText(NAMEPLATE_PATH + "2"),
+            new FiguraText(NAMEPLATE_PATH + "3")
     );
     private static final List<Component> NAMEPLATE_TOOLTIP = List.of(
-            FiguraText.of(NAMEPLATE_PATH + "1.tooltip"),
-            FiguraText.of(NAMEPLATE_PATH + "2.tooltip"),
-            FiguraText.of(NAMEPLATE_PATH + "3.tooltip")
+            new FiguraText(NAMEPLATE_PATH + "1.tooltip"),
+            new FiguraText(NAMEPLATE_PATH + "2.tooltip"),
+            new FiguraText(NAMEPLATE_PATH + "3.tooltip")
     );
     public static final ConfigType.EnumConfig
             NAMEPLATE_RENDER = new ConfigType.EnumConfig("nameplate_render", NAMEPLATE, 0, 3),
@@ -101,9 +101,9 @@ public class Configs {
             FORMAT_SCRIPT = new ConfigType.EnumConfig("format_script", SCRIPT, 1, 4) {
                 {
                     String tooltip = "config.format_script.tooltip.";
-                    this.tooltip = FiguraText.of(tooltip + "1")
+                    this.tooltip = new FiguraText(tooltip + "1")
                             .append("\n")
-                            .append(FiguraText.of(tooltip + "2").withStyle(ChatFormatting.RED));
+                            .append(new FiguraText(tooltip + "2").withStyle(ChatFormatting.RED));
                 }
 
                 @Override
@@ -129,9 +129,9 @@ public class Configs {
             IRIS_COMPATIBILITY_FIX = new ConfigType.EnumConfig("iris_compatibility_fix", RENDERING, 1, 3),
             RENDER_DEBUG_PARTS_PIVOT = new ConfigType.EnumConfig("render_debug_parts_pivot", RENDERING, 1, 3) {{
                     String tooltip = "config.render_debug_parts_pivot.tooltip";
-                    this.tooltip = FiguraText.of(tooltip,
-                            FiguraText.of(tooltip + ".cubes").setStyle(ColorUtils.Colors.PINK.style),
-                            FiguraText.of(tooltip + ".groups").setStyle(ColorUtils.Colors.MAYA_BLUE.style));
+                    this.tooltip = new FiguraText(tooltip,
+                            new FiguraText(tooltip + ".cubes").setStyle(ColorUtils.Colors.PINK.style),
+                            new FiguraText(tooltip + ".groups").setStyle(ColorUtils.Colors.MAYA_BLUE.style));
             }};
     public static final ConfigType.BoolConfig
             ALLOW_FP_HANDS = new ConfigType.BoolConfig("allow_fp_hands", RENDERING, false),
@@ -240,18 +240,18 @@ public class Configs {
     public static final ConfigType.BoolConfig
             SYNC_PINGS = new ConfigType.BoolConfig("sync_pings", DEV, false) {{
                 String tooltip = "config.sync_pings.tooltip.";
-                this.tooltip = FiguraText.of(tooltip + "1")
+                this.tooltip = new FiguraText(tooltip + "1")
                         .append("\n")
-                        .append(FiguraText.of(tooltip + "2").withStyle(ChatFormatting.RED));
+                        .append(new FiguraText(tooltip + "2").withStyle(ChatFormatting.RED));
             }},
             CHAT_MESSAGES = new ConfigType.BoolConfig("chat_messages", DEV, false) {{
                 this.name = this.name.copy().withStyle(ChatFormatting.RED);
                 String tooltip = "config.chat_messages.tooltip.";
-                this.tooltip = FiguraText.of(tooltip + "1")
+                this.tooltip = new FiguraText(tooltip + "1")
                         .append("\n\n")
-                        .append(FiguraText.of(tooltip + "2").withStyle(ChatFormatting.RED))
+                        .append(new FiguraText(tooltip + "2").withStyle(ChatFormatting.RED))
                         .append("\n\n")
-                        .append(FiguraText.of(tooltip + "3").withStyle(ChatFormatting.RED, ChatFormatting.BOLD));
+                        .append(new FiguraText(tooltip + "3").withStyle(ChatFormatting.RED, ChatFormatting.BOLD));
             }};
     public static final ConfigType.FolderConfig
             MAIN_DIR = new ConfigType.FolderConfig("main_dir", DEV, "") {
@@ -277,7 +277,7 @@ public class Configs {
                 LocalAvatarFetcher.clearCache();
                 ConfigScreen.clearCache();
                 FiguraRuntimeResources.clearCache();
-                FiguraToast.sendToast(FiguraText.of("toast.cache_clear"));
+                FiguraToast.sendToast(new FiguraText("toast.cache_clear"));
             }),
             REDOWNLOAD_ASSETS = new ConfigType.ButtonConfig("redownload_assets", DEV, () -> {
                 FiguraRuntimeResources.init();
@@ -285,7 +285,7 @@ public class Configs {
             }),
             CLEAR_AVATAR_DATA = new ConfigType.ButtonConfig("clear_avatar_data", DEV, () -> {
                 ConfigAPI.clearAllData();
-                FiguraToast.sendToast(FiguraText.of("toast.avatar_data_clear"));
+                FiguraToast.sendToast(new FiguraText("toast.avatar_data_clear"));
             });
     public static final ConfigType.BoolConfig
             FORCE_SMOOTH_AVATAR = new ConfigType.BoolConfig("force_smooth_avatar", DEV, false),

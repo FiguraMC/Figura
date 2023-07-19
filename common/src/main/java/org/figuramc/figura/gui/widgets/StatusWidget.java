@@ -8,6 +8,7 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
@@ -73,7 +74,7 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
         status += backend << 6;
 
         String dc = NetworkStuff.disconnectedReason;
-        disconnectedReason = backend == 1 && dc != null && !dc.isBlank() ? Component.literal(dc) : null;
+        disconnectedReason = backend == 1 && dc != null && !dc.isBlank() ? new TextComponent(dc) : null;
     }
 
     @Override
@@ -108,7 +109,7 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
     }
 
     public MutableComponent getStatusIcon(int type) {
-        return Component.literal(String.valueOf(STATUS_INDICATORS.charAt(status >> (type * 2) & 3))).setStyle(Style.EMPTY.withFont(UIHelper.UI_FONT));
+        return new TextComponent(String.valueOf(STATUS_INDICATORS.charAt(status >> (type * 2) & 3))).setStyle(Style.EMPTY.withFont(UIHelper.UI_FONT));
     }
 
     public Component getTooltipFor(int i) {
@@ -119,20 +120,20 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
         MutableComponent info;
         if (i == 0) {
             double size = NetworkStuff.getSizeLimit();
-            info = FiguraText.of(part + "." + color, MathUtils.asFileSize(size));
+            info = new FiguraText(part + "." + color, MathUtils.asFileSize(size));
         } else {
-            info = FiguraText.of(part + "." + color);
+            info = new FiguraText(part + "." + color);
         }
 
-        MutableComponent text = FiguraText.of(part).append("\n• ").append(info).setStyle(TEXT_COLORS.get(color));
+        MutableComponent text = new FiguraText(part).append("\n• ").append(info).setStyle(TEXT_COLORS.get(color));
 
         //script error
         if (i == 2 && color == 1 && scriptError != null)
-            text.append("\n\n").append(FiguraText.of("gui.status.reason")).append("\n• ").append(scriptError);
+            text.append("\n\n").append(new FiguraText("gui.status.reason")).append("\n• ").append(scriptError);
 
         //get backend disconnect reason
         if (i == 3 && disconnectedReason != null)
-            text.append("\n\n").append(FiguraText.of("gui.status.reason")).append("\n• ").append(disconnectedReason);
+            text.append("\n\n").append(new FiguraText("gui.status.reason")).append("\n• ").append(disconnectedReason);
 
         return text;
     }

@@ -8,6 +8,7 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.figuramc.figura.utils.FiguraIdentifier;
 import org.figuramc.figura.utils.ui.UIHelper;
@@ -184,7 +185,7 @@ public class ContextMenu extends AbstractContainerElement {
         }
 
         protected ContextButton(int x, int y, int height) {
-            super(x, y, 0, height, Component.empty(), null, button -> {});
+            super(x, y, 0, height, TextComponent.EMPTY.copy(), null, button -> {});
             this.shouldHaveBackground(false);
             this.parent = null;
         }
@@ -236,7 +237,7 @@ public class ContextMenu extends AbstractContainerElement {
 
     private static class TabButton extends ContextButton {
 
-        private static final Component ARROW = Component.literal(">").setStyle(Style.EMPTY.withFont(UIHelper.UI_FONT));
+        private static final Component ARROW = new TextComponent(">").setStyle(Style.EMPTY.withFont(UIHelper.UI_FONT));
         private final ContextMenu context;
 
         public TabButton(int x, int y, Component text, Component tooltip, ContextMenu parent, ContextMenu context) {
@@ -274,7 +275,7 @@ public class ContextMenu extends AbstractContainerElement {
 
         @Override
         public int getTrueWidth() {
-            return super.getTrueWidth() + Minecraft.getInstance().font.width(Component.literal(" ").append(ARROW));
+            return super.getTrueWidth() + Minecraft.getInstance().font.width(new TextComponent(" ").append(ARROW));
         }
     }
 }
