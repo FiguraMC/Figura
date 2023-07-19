@@ -293,7 +293,7 @@ public class ActionWheel {
                 int textX = x + (int) (Math.round(xOff));
                 int textY = y + (int) (Math.round(yOff + (internal ? 9 * scale : -font.lineHeight / 2f)));
 
-                Component text = Emojis.applyEmojis(TextUtils.tryParseJson(title));
+                Component text = TextUtils.replaceInText(Emojis.applyEmojis(TextUtils.tryParseJson(title)), "\n|\\\\n", " ");
                 int textWidth = font.width(text);
 
                 if (internal) {
