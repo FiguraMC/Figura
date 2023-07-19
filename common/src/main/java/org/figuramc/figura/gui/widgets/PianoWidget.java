@@ -106,15 +106,15 @@ public class PianoWidget extends AbstractContainerElement {
                 return;
 
             //render button
-            this.renderWidget(poseStack, mouseX, mouseY, delta);
+            this.renderButton(poseStack, mouseX, mouseY, delta);
         }
 
         @Override
-        public void renderWidget(PoseStack poseStack, int mouseX, int mouseY, float delta) {
+        public void renderButton(PoseStack poseStack, int mouseX, int mouseY, float delta) {
             UIHelper.fillRounded(poseStack, getX(), getY(), getWidth(), getHeight(), (isSharp ? 0 : 0xFFFFFF) + (0xFF << 24));
             UIHelper.renderSliced(poseStack, getX(), getY(), getWidth(), getHeight(), UIHelper.OUTLINE);
 
-            if (isHovered())
+            if (isHoveredOrFocused())
                 UIHelper.fillRounded(poseStack, getX(), getY(), getWidth(), getHeight(), (FiguraMod.getAccentColor().getColor().getValue()) + (0xA0 << 24));
 
             Font font = Minecraft.getInstance().font;

@@ -166,13 +166,13 @@ public class PermissionsList extends AbstractList {
         }
 
         @Override
-        public void renderWidget(PoseStack stack, int mouseX, int mouseY, float delta) {
+        public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
             Font font = Minecraft.getInstance().font;
 
             //button
             stack.pushPose();
             stack.translate(0f, font.lineHeight, 0f);
-            super.renderWidget(stack, mouseX, mouseY, delta);
+            super.renderButton(stack, mouseX, mouseY, delta);
             stack.popPose();
 
             //texts
@@ -248,8 +248,8 @@ public class PermissionsList extends AbstractList {
         }
 
         @Override
-        public void renderWidget(PoseStack stack, int mouseX, int mouseY, float delta) {
-            super.renderWidget(stack, mouseX, mouseY, delta);
+        public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
+            super.renderButton(stack, mouseX, mouseY, delta);
             if (parent.isInsideScissors(mouseX, mouseY) && UIHelper.isMouseOver(getX() + 1, getY() + 1, getWidth() - 2, Minecraft.getInstance().font.lineHeight, mouseX, mouseY))
                 UIHelper.setTooltip(Component.translatable(this.text + ".tooltip"));
         }

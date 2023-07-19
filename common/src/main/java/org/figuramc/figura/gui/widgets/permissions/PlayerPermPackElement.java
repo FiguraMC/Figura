@@ -114,7 +114,7 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
     }
 
     @Override
-    public void renderWidget(PoseStack pose, int mouseX, int mouseY, float delta) {
+    public void renderButton(PoseStack pose, int mouseX, int mouseY, float delta) {
         int width = getWidth();
         int height = getHeight();
 

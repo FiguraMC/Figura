@@ -29,8 +29,8 @@ public class AvatarWidget extends AbstractAvatarWidget {
             AvatarList.selectedEntry = instance;
         }) {
             @Override
-            public void renderWidget(PoseStack gui, int mouseX, int mouseY, float delta) {
-                super.renderWidget(gui, mouseX, mouseY, delta);
+            public void renderButton(PoseStack gui, int mouseX, int mouseY, float delta) {
+                super.renderButton(gui, mouseX, mouseY, delta);
 
                 //selected border
                 if (instance.equals(AvatarList.selectedEntry))

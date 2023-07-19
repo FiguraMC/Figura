@@ -82,9 +82,6 @@ public class ActionWheel {
         FiguraMod.popPushProfiler("wheel");
         renderTextures(stack, currentPage);
 
-        //reset colours
-        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
-
         //render items
         FiguraMod.popPushProfiler("items");
         renderItemsAndIcons(stack, currentPage);
@@ -215,9 +212,17 @@ public class ActionWheel {
                 continue;
 
             //render
-            minecraft.getItemRenderer().renderGuiItem(stack, item, (int) Math.round(xOff - 8), (int) Math.round(yOff - 8));
+            PoseStack modelStack = RenderSystem.getModelViewStack();
+            modelStack.pushPose();
+            modelStack.translate(x, y, 0);
+            modelStack.scale(scale, scale, scale);
+
+            minecraft.getItemRenderer().renderGuiItem(item, (int) Math.round(xOff - 8), (int) Math.round(yOff - 8));
             if (Configs.ACTION_WHEEL_DECORATIONS.value)
-                minecraft.getItemRenderer().renderGuiItemDecorations(stack, minecraft.font, item, (int) Math.round(xOff - 8), (int) Math.round(yOff - 8));
+                minecraft.getItemRenderer().renderGuiItemDecorations(minecraft.font, item, (int) Math.round(xOff - 8), (int) Math.round(yOff - 8));
+
+            modelStack.popPose();
+            RenderSystem.applyModelViewMatrix();
         }
     }
 

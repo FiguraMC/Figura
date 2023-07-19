@@ -223,7 +223,7 @@ public class ContextMenu extends AbstractContainerElement {
         }
 
         @Override
-        public void renderWidget(PoseStack pose, int mouseX, int mouseY, float delta) {
+        public void renderButton(PoseStack pose, int mouseX, int mouseY, float delta) {
             //draw line
             UIHelper.fill(pose,this.getX() + 4, getY() + 4, this.getX() + this.getWidth() - 4, getY() + 5, 0xFF000000 + ChatFormatting.DARK_GRAY.getColor());
         }
@@ -246,9 +246,9 @@ public class ContextMenu extends AbstractContainerElement {
         }
 
         @Override
-        public void renderWidget(PoseStack poseStack, int mouseX, int mouseY, float delta) {
+        public void renderButton(PoseStack poseStack, int mouseX, int mouseY, float delta) {
             //super
-            super.renderWidget(poseStack, mouseX, mouseY, delta);
+            super.renderButton(poseStack, mouseX, mouseY, delta);
 
             //draw arrow
             Font font = Minecraft.getInstance().font;

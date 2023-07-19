@@ -58,11 +58,11 @@ public class Button extends net.minecraft.client.gui.components.Button implement
         this.setHovered(this.isMouseOver(mouseX, mouseY));
 
         //render button
-        this.renderWidget(stack, mouseX, mouseY, delta);
+        this.renderButton(stack, mouseX, mouseY, delta);
     }
 
     @Override
-    public void renderWidget(PoseStack stack, int mouseX, int mouseY, float delta) {
+    public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
         //render texture
         if (this.texture != null) {
             renderTexture(stack, delta);
@@ -110,7 +110,7 @@ public class Button extends net.minecraft.client.gui.components.Button implement
     protected void renderVanillaBackground(PoseStack stack, int mouseX, int mouseY, float delta) {
         Component message = getMessage();
         setMessage(Component.empty());
-        super.renderWidget(stack, mouseX, mouseY, delta);
+        super.renderButton(stack, mouseX, mouseY, delta);
         setMessage(message);
     }
 

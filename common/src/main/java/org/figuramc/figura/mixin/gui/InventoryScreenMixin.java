@@ -15,12 +15,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(value = InventoryScreen.class, priority = 999)
 public class InventoryScreenMixin {
 
-    @Inject(method = "renderEntityInInventoryFollowsMouse", at = @At("HEAD"), cancellable = true)
-    private static void renderEntityInInventoryFollowsMouse(PoseStack stack, int x, int y, int size, float mouseX, float mouseY, LivingEntity entity, CallbackInfo ci) {
+    @Inject(method = "renderEntityInInventory", at = @At("HEAD"), cancellable = true)
+    private static void renderEntityInInventory(int x, int y, int size, float mouseX, float mouseY, LivingEntity entity, CallbackInfo ci) {
         if (!Configs.FIGURA_INVENTORY.value || AvatarManager.panic)
             return;
 
-        UIHelper.drawEntity(x, y, size, mouseX, mouseY, entity, stack, EntityRenderMode.MINECRAFT_GUI);
+        UIHelper.drawEntity(x, y, size, mouseX, mouseY, entity, new PoseStack(), EntityRenderMode.MINECRAFT_GUI);
         ci.cancel();
     }
 }
