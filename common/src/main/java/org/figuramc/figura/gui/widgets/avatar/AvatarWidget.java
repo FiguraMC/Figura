@@ -30,12 +30,12 @@ public class AvatarWidget extends AbstractAvatarWidget {
             AvatarList.selectedEntry = avatar.getTheActualPathForThis();
         }) {
             @Override
-            public void renderWidget(PoseStack gui, int mouseX, int mouseY, float delta) {
-                super.renderWidget(gui, mouseX, mouseY, delta);
+            public void renderWidget(PoseStack poseStack, int mouseX, int mouseY, float delta) {
+                super.renderWidget(poseStack, mouseX, mouseY, delta);
 
                 // selected border
                 if (instance.isOf(AvatarList.selectedEntry))
-                    UIHelper.fillOutline(gui, getX(), getY(), getWidth(), getHeight(), 0xFFFFFFFF);
+                    UIHelper.fillOutline(poseStack, getX(), getY(), getWidth(), getHeight(), 0xFFFFFFFF);
             }
 
             @Override
