@@ -7,6 +7,7 @@ import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.arguments.blocks.BlockStateArgument;
 import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Marker;
 import net.minecraft.world.entity.player.Player;
@@ -442,7 +443,7 @@ public class WorldAPI {
         BlockPos pos = LuaUtils.parseVec3("newBlock", x, y, z).asBlockPos();
         try {
             Level level = getCurrentWorld();
-            BlockState block = BlockStateArgument.block(CommandBuildContext.simple(level.registryAccess(), level.enabledFeatures())).parse(new StringReader(string)).getState();
+            BlockState block = BlockStateArgument.block(new CommandBuildContext(RegistryAccess.BUILTIN.get())).parse(new StringReader(string)).getState();
             return new BlockStateAPI(block, pos);
         } catch (Exception e) {
             throw new LuaError("Could not parse block state from string: " + string);
@@ -470,7 +471,7 @@ public class WorldAPI {
     public static ItemStackAPI newItem(@LuaNotNil String string, Integer count, Integer damage) {
         try {
             Level level = getCurrentWorld();
-            ItemStack item = ItemArgument.item(CommandBuildContext.simple(level.registryAccess(), level.enabledFeatures())).parse(new StringReader(string)).createItemStack(1, false);
+            ItemStack item = ItemArgument.item(new CommandBuildContext(RegistryAccess.BUILTIN.get())).parse(new StringReader(string)).createItemStack(1, false);
             if (count != null)
                 item.setCount(count);
             if (damage != null)

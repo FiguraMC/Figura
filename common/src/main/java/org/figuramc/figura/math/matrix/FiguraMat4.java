@@ -1,5 +1,6 @@
 package org.figuramc.figura.math.matrix;
 
+import com.mojang.math.Matrix4f;
 import net.minecraft.world.phys.Vec3;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
@@ -7,11 +8,12 @@ import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
 import org.figuramc.figura.math.vector.FiguraVec4;
-import org.joml.Matrix4d;
-import org.joml.Matrix4f;
 import org.luaj.vm2.LuaError;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.utils.LuaUtils;
+import org.lwjgl.BufferUtils;
+
+import java.nio.FloatBuffer;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -20,40 +22,36 @@ import org.figuramc.figura.utils.LuaUtils;
 )
 public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
 
-    public FiguraMat4 set(Matrix4f mat) {
-        return set(
-                mat.m00(), mat.m01(), mat.m02(), mat.m03(),
-                mat.m10(), mat.m11(), mat.m12(), mat.m13(),
-                mat.m20(), mat.m21(), mat.m22(), mat.m23(),
-                mat.m30(), mat.m31(), mat.m32(), mat.m33()
-        );
-    }
+    private static final FloatBuffer copyingBuffer = BufferUtils.createFloatBuffer(4 * 4);
 
-    public FiguraMat4 set(Matrix4d mat) {
-        return set(
-                mat.m00(), mat.m01(), mat.m02(), mat.m03(),
-                mat.m10(), mat.m11(), mat.m12(), mat.m13(),
-                mat.m20(), mat.m21(), mat.m22(), mat.m23(),
-                mat.m30(), mat.m31(), mat.m32(), mat.m33()
-        );
+    public FiguraMat4 set(Matrix4f mat) {
+        copyingBuffer.clear();
+        mat.store(copyingBuffer);
+        return set(copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get(),
+                copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get(),
+                copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get(),
+                copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get());
     }
 
     public Matrix4f toMatrix4f() {
-        return new Matrix4f(
-                (float) v11, (float) v21, (float) v31, (float) v41,
-                (float) v12, (float) v22, (float) v32, (float) v42,
-                (float) v13, (float) v23, (float) v33, (float) v43,
-                (float) v14, (float) v24, (float) v34, (float) v44
-        );
+        writeToBuffer();
+        Matrix4f result = new Matrix4f();
+        result.load(copyingBuffer);
+        return result;
     }
 
     public void copyDataTo(Matrix4f vanillaMatrix) {
-        vanillaMatrix.set(
-                (float) v11, (float) v21, (float) v31, (float) v41,
-                (float) v12, (float) v22, (float) v32, (float) v42,
-                (float) v13, (float) v23, (float) v33, (float) v43,
-                (float) v14, (float) v24, (float) v34, (float) v44
-        );
+        writeToBuffer();
+        vanillaMatrix.load(copyingBuffer);
+    }
+
+    private void writeToBuffer() {
+        copyingBuffer.clear();
+        copyingBuffer
+                .put((float) v11).put((float) v21).put((float) v31).put((float) v41)
+                .put((float) v12).put((float) v22).put((float) v32).put((float) v42)
+                .put((float) v13).put((float) v23).put((float) v33).put((float) v43)
+                .put((float) v14).put((float) v24).put((float) v34).put((float) v44);
     }
 
     //----------------------------IMPLEMENTATION BELOW-----------------------//

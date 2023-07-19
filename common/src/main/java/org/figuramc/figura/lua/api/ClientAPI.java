@@ -16,7 +16,6 @@ import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.world.phys.Vec3;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.utils.*;
-import org.joml.Vector3f;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaValue;
 import org.figuramc.figura.FiguraMod;
@@ -29,8 +28,6 @@ import org.figuramc.figura.lua.docs.LuaTypeDoc;
 import org.figuramc.figura.math.vector.FiguraVec2;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.mixin.gui.PlayerTabOverlayAccessor;
-import org.figuramc.figura.mixin.render.ModelManagerAccessor;
-import org.figuramc.figura.utils.*;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -233,12 +230,10 @@ public class ClientAPI {
     @LuaWhitelist
     @LuaMethodDoc("client.get_camera_rot")
     public static FiguraVec3 getCameraRot() {
-        var quaternion = Minecraft.getInstance().gameRenderer.getMainCamera().rotation();
-        Vector3f vec = new Vector3f();
-        quaternion.getEulerAnglesYXZ(vec);
         double f = 180d / Math.PI;
-        return FiguraVec3.fromVec3f(vec).multiply(f, -f, f); //degrees, and negate y
+        return MathUtils.quaternionToYXZ(Minecraft.getInstance().gameRenderer.getMainCamera().rotation()).multiply(f, -f, f); //degrees, and negate y
     }
+
 
     @LuaWhitelist
     @LuaMethodDoc("client.get_camera_dir")
@@ -487,10 +482,7 @@ public class ClientAPI {
     @LuaWhitelist
     @LuaMethodDoc("client.list_atlases")
     public static List<String> listAtlases() {
-        List<String> list = new ArrayList<>();
-        for (ResourceLocation res : ModelManagerAccessor.getVanillaAtlases().keySet())
-            list.add(res.toString());
-        return list;
+        return List.of();
     }
 
     @LuaWhitelist

@@ -1,7 +1,8 @@
 package org.figuramc.figura.mixin.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
+import com.mojang.math.Matrix4f;
+import com.mojang.math.Vector3f;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
@@ -10,10 +11,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import org.figuramc.figura.ducks.GameRendererAccessor;
 import org.figuramc.figura.lua.api.ClientAPI;
-import org.figuramc.figura.math.matrix.FiguraMat3;
-import org.figuramc.figura.math.matrix.FiguraMat4;
 import org.figuramc.figura.math.vector.FiguraVec3;
-import org.joml.Matrix4f;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
@@ -59,15 +57,7 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
         if (offset != null)
             z += (float) offset.z;
 
-        stack.mulPose(Axis.ZP.rotationDegrees(z));
-
-        FiguraMat4 mat = avatar.luaRuntime.renderer.cameraMat;
-        if (mat != null)
-            stack.last().pose().set(mat.toMatrix4f());
-
-        FiguraMat3 normal = avatar.luaRuntime.renderer.cameraNormal;
-        if (normal != null)
-            stack.last().normal().set(normal.toMatrix3f());
+        stack.mulPose(Vector3f.ZP.rotationDegrees(z));
     }
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;doEntityOutline()V", shift = At.Shift.AFTER))
@@ -136,7 +126,7 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
         if (hasShaders) return stack;
 
         stack.pushPose();
-        stack.last().pose().identity();
+        stack.last().pose().setIdentity();
 
         return stack;
     }
@@ -144,18 +134,18 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
     @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;last()Lcom/mojang/blaze3d/vertex/PoseStack$Pose;", shift = At.Shift.BEFORE),
             slice = @Slice(
                     from = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GameRenderer;bobHurt(Lcom/mojang/blaze3d/vertex/PoseStack;F)V"),
-                    to = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GameRenderer;resetProjectionMatrix(Lorg/joml/Matrix4f;)V")
+                    to = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GameRenderer;resetProjectionMatrix(Lcom/mojang/math/Matrix4f;)V")
             ), locals = LocalCapture.CAPTURE_FAILSOFT)
     private void renderLevelSaveBobbing(float tickDelta, long limitTime, PoseStack matrix, CallbackInfo ci, boolean bl, Camera camera, PoseStack poseStack, double d) {
         if (hasShaders) return;
-        bobbingMatrix = new Matrix4f(poseStack.last().pose());
+        bobbingMatrix = poseStack.last().pose().copy();
         poseStack.popPose();
     }
 
-    @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GameRenderer;resetProjectionMatrix(Lorg/joml/Matrix4f;)V"))
+    @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GameRenderer;resetProjectionMatrix(Lcom/mojang/math/Matrix4f;)V"))
     private void renderLevelResetProjectionMatrix(float tickDelta, long limitTime, PoseStack matrix, CallbackInfo ci) {
         if (hasShaders) return;
-        matrix.last().pose().mul(bobbingMatrix);
+        matrix.last().pose().multiply(bobbingMatrix);
         bobbingMatrix = null;
     }
 

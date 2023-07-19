@@ -2,6 +2,7 @@ package org.figuramc.figura.model.rendering;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.math.Matrix3f;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -18,8 +19,6 @@ import org.figuramc.figura.model.FiguraModelPart;
 import org.figuramc.figura.model.ParentType;
 import org.figuramc.figura.model.rendering.texture.FiguraTexture;
 import org.figuramc.figura.model.rendering.texture.FiguraTextureSet;
-import org.joml.Matrix3f;
-import org.joml.Matrix4d;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.model.VanillaModelData;
 
@@ -193,7 +192,7 @@ public abstract class AvatarRenderer {
     public static FiguraMat4 worldToViewMatrix() {
         Minecraft client = Minecraft.getInstance();
         Camera camera = client.gameRenderer.getMainCamera();
-        Matrix3f cameraMat3f = new Matrix3f().rotation(camera.rotation());
+        Matrix3f cameraMat3f = new Matrix3f(camera.rotation());
         cameraMat3f.invert();
         FiguraMat4 result = FiguraMat4.of();
         Vec3 cameraPos = camera.getPosition().scale(-1);
@@ -232,17 +231,14 @@ public abstract class AvatarRenderer {
     }
 
     public void setMatrices(double camX, double camY, double camZ, PoseStack matrices) {
+        matrices.pushPose();
+        matrices.translate(-camX, -camY, -camZ);
+        matrices.scale(-1, -1, 1);
+
         PoseStack.Pose pose = matrices.last();
+        this.posMat.set(pose.pose());
+        this.normalMat.set(pose.normal());
 
-        //pos
-        Matrix4d posMat = new Matrix4d(pose.pose());
-        posMat.translate(-camX, -camY, -camZ);
-        posMat.scale(-1, -1, 1);
-        this.posMat.set(posMat);
-
-        //normal
-        Matrix3f normalMat = new Matrix3f(pose.normal());
-        normalMat.scale(-1, -1, 1);
-        this.normalMat.set(normalMat);
+        matrices.popPose();
     }
 }

@@ -1,15 +1,18 @@
 package org.figuramc.figura.math.matrix;
 
+import com.mojang.math.Matrix3f;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
 import org.figuramc.figura.math.vector.FiguraVec2;
-import org.joml.Matrix3f;
 import org.luaj.vm2.LuaError;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.utils.LuaUtils;
+import org.lwjgl.BufferUtils;
+
+import java.nio.FloatBuffer;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -17,29 +20,33 @@ import org.figuramc.figura.utils.LuaUtils;
         value = "matrix3"
 )
 public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
-
+    private static final FloatBuffer copyingBuffer = BufferUtils.createFloatBuffer(3 * 3);
     public FiguraMat3 set(Matrix3f mat) {
-        return set(
-                mat.m00(), mat.m01(), mat.m02(),
-                mat.m10(), mat.m11(), mat.m12(),
-                mat.m20(), mat.m21(), mat.m22()
-        );
+        copyingBuffer.clear();
+        mat.store(copyingBuffer);
+        return set(copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get(),
+                copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get(),
+                copyingBuffer.get(), copyingBuffer.get(), copyingBuffer.get());
     }
 
     public Matrix3f toMatrix3f() {
-        return new Matrix3f(
-                (float) v11, (float) v21, (float) v31,
-                (float) v12, (float) v22, (float) v32,
-                (float) v13, (float) v23, (float) v33
-        );
+        writeToBuffer();
+        Matrix3f result = new Matrix3f();
+        result.load(copyingBuffer);
+        return result;
     }
 
     public void copyDataTo(Matrix3f vanillaMatrix) {
-        vanillaMatrix.set(
-                (float) v11, (float) v21, (float) v31,
-                (float) v12, (float) v22, (float) v32,
-                (float) v13, (float) v23, (float) v33
-        );
+        writeToBuffer();
+        vanillaMatrix.load(copyingBuffer);
+    }
+
+    private void writeToBuffer() {
+        copyingBuffer.clear();
+        copyingBuffer
+                .put((float) v11).put((float) v21).put((float) v31)
+                .put((float) v12).put((float) v22).put((float) v32)
+                .put((float) v13).put((float) v23).put((float) v33);
     }
 
     //----------------------------IMPLEMENTATION BELOW-----------------------//

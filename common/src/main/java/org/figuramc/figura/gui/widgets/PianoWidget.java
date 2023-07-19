@@ -96,7 +96,7 @@ public class PianoWidget extends AbstractContainerElement {
                 Vec3 vec =  Minecraft.getInstance().player == null ? new Vec3(0, 0, 0) : Minecraft.getInstance().player.position();
                 sound.pos(vec.x, vec.y, vec.z).pitch(pitch).play();
             } else {
-                soundManager.play(SimpleSoundInstance.forUI(SoundEvents.NOTE_BLOCK_HARP.value(), pitch, 1f));
+                soundManager.play(SimpleSoundInstance.forUI(SoundEvents.NOTE_BLOCK_HARP, pitch, 1f));
             }
         }
 

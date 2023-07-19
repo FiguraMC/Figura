@@ -2,7 +2,7 @@ package org.figuramc.figura.lua.api.entity;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -137,7 +137,7 @@ public class EntityAPI<T extends Entity> {
     @LuaMethodDoc("entity.get_type")
     public String getType() {
         checkEntity();
-        return cacheType != null ? cacheType : (cacheType = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).toString());
+        return cacheType != null ? cacheType : (cacheType = Registry.ENTITY_TYPE.getKey(entity.getType()).toString());
     }
 
     @LuaWhitelist

@@ -9,8 +9,6 @@ import net.minecraft.commands.arguments.blocks.BlockStateParser;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.resources.ResourceKey;
@@ -60,7 +58,7 @@ public class BlockStateAPI {
     public BlockStateAPI(BlockState blockstate, BlockPos pos) {
         this.blockState = blockstate;
         this.pos = pos;
-        this.id = BuiltInRegistries.BLOCK.getKey(blockstate.getBlock()).toString();
+        this.id = Registry.BLOCK.getKey(blockstate.getBlock()).toString();
 
         CompoundTag tag = NbtUtils.writeBlockState(blockstate);
         this.properties = new ReadOnlyLuaTable(tag.contains("Properties") ? NbtToLua.convert(tag.get("Properties")) : new LuaTable());
@@ -228,7 +226,7 @@ public class BlockStateAPI {
     public List<String> getTags() {
         List<String> list = new ArrayList<>();
 
-        Registry<Block> registry = WorldAPI.getCurrentWorld().registryAccess().registryOrThrow(Registries.BLOCK);
+        Registry<Block> registry = WorldAPI.getCurrentWorld().registryAccess().registryOrThrow(Registry.BLOCK_REGISTRY);
         Optional<ResourceKey<Block>> key = registry.getResourceKey(blockState.getBlock());
 
         if (key.isEmpty())
@@ -342,7 +340,7 @@ public class BlockStateAPI {
     }
 
     private static String getTextureName(TextureAtlasSprite sprite) {
-        ResourceLocation location = sprite.contents().name(); // do not close it
+        ResourceLocation location = sprite.getName(); // do not close it
         return location.getNamespace() + ":textures/" + location.getPath();
     }
 
