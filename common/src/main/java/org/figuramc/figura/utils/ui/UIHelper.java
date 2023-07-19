@@ -4,7 +4,9 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import com.mojang.math.Axis;
+import com.mojang.math.Matrix4f;
+import com.mojang.math.Quaternion;
+import com.mojang.math.Vector3f;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -21,9 +23,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
-import org.joml.Matrix4f;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import org.figuramc.figura.FiguraMod;
@@ -191,16 +190,16 @@ public class UIHelper extends GuiComponent {
         stack.pushPose();
         stack.translate(x, y, renderMode == EntityRenderMode.MINECRAFT_GUI ? 250d : -250d);
         stack.scale(scale, scale, scale);
-        stack.last().pose().scale(1f, 1f, -1f); //Scale ONLY THE POSITIONS! Inverted normals don't work for whatever reason
+        stack.last().pose().multiply(Matrix4f.createScaleMatrix(1f, 1f, -1f)); //Scale ONLY THE POSITIONS! Inverted normals don't work for whatever reason
 
         //apply rotations
-        Quaternionf quaternion = Axis.ZP.rotationDegrees(180f);
-        Quaternionf quaternion2 = Axis.YP.rotationDegrees(yRot);
-        Quaternionf quaternion3 = Axis.XP.rotationDegrees(xRot);
+        Quaternion quaternion = Vector3f.ZP.rotationDegrees(180f);
+        Quaternion quaternion2 = Vector3f.YP.rotationDegrees(yRot);
+        Quaternion quaternion3 = Vector3f.XP.rotationDegrees(xRot);
         quaternion3.mul(quaternion2);
         quaternion.mul(quaternion3);
         stack.mulPose(quaternion);
-        quaternion3.conjugate();
+        quaternion3.conj();
 
         //setup entity renderer
         Minecraft minecraft = Minecraft.getInstance();
@@ -355,7 +354,7 @@ public class UIHelper extends GuiComponent {
     }
 
     public static void renderSprite(PoseStack stack, int x, int y, int z, int width, int height, TextureAtlasSprite sprite) {
-        setupTexture(sprite.atlasLocation());
+        setupTexture(sprite.atlas().location());
         BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
         bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
         quad(bufferBuilder, stack.last().pose(), x, y, width, height, z, sprite.getU0(), sprite.getU1(), sprite.getV0(), sprite.getV1());

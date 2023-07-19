@@ -3,7 +3,7 @@ package org.figuramc.figura.gui;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
+import com.mojang.math.Vector3f;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -462,7 +462,7 @@ public class ActionWheel {
 
         public void render(PoseStack stack, FiguraVec3 color, boolean left) {
             stack.pushPose();
-            stack.mulPose(Axis.ZP.rotationDegrees(rotation + (left ? 180 : 0)));
+            stack.mulPose(Vector3f.ZP.rotationDegrees(rotation + (left ? 180 : 0)));
 
             UIHelper.setupTexture(TEXTURE);
             if (color != null)

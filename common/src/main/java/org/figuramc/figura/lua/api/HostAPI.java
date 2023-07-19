@@ -200,8 +200,8 @@ public class HostAPI {
     )
     public HostAPI sendChatMessage(@LuaNotNil String message) {
         if (!isHost() || !Configs.CHAT_MESSAGES.value) return this;
-        ClientPacketListener connection = this.minecraft.getConnection();
-        if (connection != null) connection.sendChat(message);
+        LocalPlayer player = this.minecraft.player;
+        if (player != null) player.chatSigned(message, null);
         return this;
     }
 
@@ -215,8 +215,8 @@ public class HostAPI {
     )
     public HostAPI sendChatCommand(@LuaNotNil String command) {
         if (!isHost() || !Configs.CHAT_MESSAGES.value) return this;
-        ClientPacketListener connection = this.minecraft.getConnection();
-        if (connection != null) connection.sendCommand(command.startsWith("/") ? command.substring(1) : command);
+        LocalPlayer player = this.minecraft.player;
+        if (player != null) player.commandSigned(command.startsWith("/") ? command.substring(1) : command, null);
         return this;
     }
 
@@ -613,7 +613,7 @@ public class HostAPI {
         if (!isHost()) return false;
         ClientPacketListener connection = this.minecraft.getConnection();
         PlayerInfo playerInfo = connection != null ? connection.getPlayerInfo(owner.owner) : null;
-        return playerInfo != null && playerInfo.hasVerifiableChat();
+        return playerInfo != null && playerInfo.getMessageValidator() != null;
     }
 
     public Object __index(String arg) {

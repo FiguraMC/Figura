@@ -28,7 +28,7 @@ public class Button extends net.minecraft.client.gui.components.Button implement
 
     //texture and text constructor
     public Button(int x, int y, int width, int height, Integer u, Integer v, Integer regionSize, ResourceLocation texture, Integer textureWidth, Integer textureHeight, Component text, Component tooltip, OnPress pressAction) {
-        super(x, y, width, height, text, pressAction, DEFAULT_NARRATION);
+        super(x, y, width, height, text, pressAction);
 
         this.u = u;
         this.v = v;
@@ -164,22 +164,22 @@ public class Button extends net.minecraft.client.gui.components.Button implement
 
     @Override
     public int getX() {
-        return super.getX();
+        return this.x;
     }
 
     @Override
     public void setX(int x) {
-        super.setX(x);
+        this.x = x;
     }
 
     @Override
     public int getY() {
-        return super.getY();
+        return this.y;
     }
 
     @Override
     public void setY(int y) {
-        super.setY(y);
+        this.y = y;
     }
 
     @Override

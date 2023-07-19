@@ -3,8 +3,8 @@ package org.figuramc.figura.gui.widgets;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.SpriteSet;
+import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleType;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.util.Mth;
 import org.figuramc.figura.ducks.ParticleEngineAccessor;
 import org.figuramc.figura.utils.ui.UIHelper;
@@ -52,7 +52,7 @@ public class ParticleWidget implements FiguraWidget, FiguraTickable, FiguraRemov
     }
 
     private static SpriteSet getParticle(ParticleType<?> particleType) {
-        return ((ParticleEngineAccessor) Minecraft.getInstance().particleEngine).figura$getParticleSprite(BuiltInRegistries.PARTICLE_TYPE.getKey(particleType));
+        return ((ParticleEngineAccessor) Minecraft.getInstance().particleEngine).figura$getParticleSprite(Registry.PARTICLE_TYPE.getKey(particleType));
     }
 
     @Override

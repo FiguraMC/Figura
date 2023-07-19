@@ -1,7 +1,7 @@
 package org.figuramc.figura.gui.screens;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import org.figuramc.figura.utils.ui.UIHelper;
@@ -100,7 +100,7 @@ public class GameScreen extends AbstractPanelScreen {
         return true;
     }
 
-    private static class Grid implements Renderable {
+    private static class Grid implements Widget {
 
         private Cell[][] grid;
         private final int width, height;

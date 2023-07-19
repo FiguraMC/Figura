@@ -2,6 +2,7 @@ package org.figuramc.figura.model.rendertasks;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Matrix4f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -20,7 +21,6 @@ import org.figuramc.figura.model.PartCustomization;
 import org.figuramc.figura.utils.ColorUtils;
 import org.figuramc.figura.utils.LuaUtils;
 import org.figuramc.figura.utils.TextUtils;
-import org.joml.Matrix4f;
 import org.luaj.vm2.LuaError;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;

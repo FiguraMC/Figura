@@ -90,7 +90,8 @@ public class EntityUtils {
         if (clientPacketListener == null)
             return List.of();
 
-        return clientPacketListener.getListedOnlinePlayers().stream().sorted(PlayerTabOverlayAccessor.getPlayerComparator()).limit(80L).toList();    }
+        return PlayerTabOverlayAccessor.getPlayerOrdering().sortedCopy(clientPacketListener.getOnlinePlayers());
+    }
 
     public static boolean checkInvalidPlayer(UUID id) {
         if (id.version() != 4)
