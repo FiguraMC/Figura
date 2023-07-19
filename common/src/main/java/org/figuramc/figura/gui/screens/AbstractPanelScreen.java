@@ -9,6 +9,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.gui.widgets.*;
+import org.figuramc.figura.lua.api.ClientAPI;
 import org.figuramc.figura.mixin.gui.ScreenAccessor;
 import org.figuramc.figura.utils.FiguraIdentifier;
 import org.figuramc.figura.utils.ui.UIHelper;
@@ -100,6 +101,11 @@ public abstract class AbstractPanelScreen extends Screen {
     }
 
     public void renderOverlays(PoseStack stack, int mouseX, int mouseY, float delta) {
+        //fps
+        if (Configs.GUI_FPS.value)
+            font.draw(stack, ClientAPI.getFPS() + " fps", 1, 1, 0xFFFFFF);
+
+
         //render context
         if (contextMenu != null && contextMenu.isVisible()) {
             //translate the stack here because of nested contexts
