@@ -80,12 +80,12 @@ public class SliderWidget extends ScrollBarWidget {
             this.isHovered = this.isMouseOver(mouseX, mouseY);
 
             //render button
-            this.renderWidget(poseStack, mouseX, mouseY, delta);
+            this.renderButton(poseStack, mouseX, mouseY, delta);
         }
     }
 
     @Override
-    public void renderWidget(PoseStack poseStack, int mouseX, int mouseY, float delta) {
+    public void renderButton(PoseStack poseStack, int mouseX, int mouseY, float delta) {
         UIHelper.setupTexture(SLIDER_TEXTURE);
         int x = getX();
         int y = getY();

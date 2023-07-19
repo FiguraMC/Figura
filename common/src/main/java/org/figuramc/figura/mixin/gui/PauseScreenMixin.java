@@ -2,8 +2,6 @@ package org.figuramc.figura.mixin.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.layouts.GridLayout;
-import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.client.gui.screens.PauseScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -32,21 +30,6 @@ public class PauseScreenMixin extends Screen {
     @Unique
     private static final ResourceLocation FIGURA_ICON = new FiguraIdentifier("textures/gui/icon.png");
 
-    @Unique
-    private LayoutElement lanButton;
-
-    @Inject(method = "createPauseMenu",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;isLocalServer()Z"),
-            slice = @Slice(
-                    from = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;hasSingleplayerServer()Z"),
-                    to = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;isLocalServer()Z")
-            ),
-            locals = LocalCapture.CAPTURE_FAILSOFT
-    )
-    private void saveLanButton(CallbackInfo ci, GridLayout gridLayout, GridLayout.RowHelper rowHelper) {
-        gridLayout.visitChildren(element -> lanButton = element);
-    }
-
     @Inject(method = "createPauseMenu", at = @At("RETURN"))
     private void createPauseMenuButton(CallbackInfo ci) {
         int x, y;
@@ -70,15 +53,15 @@ public class PauseScreenMixin extends Screen {
                 y = this.height - 24;
             }
             default -> { //icon
-                x = lanButton == null ? this.width / 2 + 106 : lanButton.getX() + lanButton.getWidth() + 4;
-                y = lanButton == null ? this.height / 4 + 80 : lanButton.getY();
+                x = this.width / 2 + 106;
+                y = this.height / 4 + 80;
             }
         }
 
         if (config > 0) { //button
             addRenderableWidget(new Button(x, y, 64, 20, FiguraText.of(), null, btn -> this.minecraft.setScreen(new WardrobeScreen(this))) {
                 @Override
-                public void renderWidget(PoseStack stack, int mouseX, int mouseY, float delta) {
+                public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
                     ChatFormatting color;
                     if (this.isHoveredOrFocused()) {
                         color = ChatFormatting.AQUA;
@@ -90,18 +73,18 @@ public class PauseScreenMixin extends Screen {
                     setMessage(getMessage().copy().withStyle(color));
 
                     renderVanillaBackground(stack, mouseX, mouseY, delta);
-                    super.renderWidget(stack, mouseX, mouseY, delta);
+                    super.renderButton(stack, mouseX, mouseY, delta);
                 }
 
                 @Override
-                protected void renderDefaultTexture(PoseStack gui, float delta) {}
+                protected void renderDefaultTexture(PoseStack stack, float delta) {}
             });
         } else { //icon
             addRenderableWidget(new Button(x, y, 20, 20, 0, 0, 20, FIGURA_ICON, 60, 20, null, btn -> this.minecraft.setScreen(new WardrobeScreen(this))) {
                 @Override
-                public void renderWidget(PoseStack gui, int mouseX, int mouseY, float delta) {
-                    renderVanillaBackground(gui, mouseX, mouseY, delta);
-                    super.renderWidget(gui, mouseX, mouseY, delta);
+                public void renderButton(PoseStack stack, int mouseX, int mouseY, float delta) {
+                    renderVanillaBackground(stack, mouseX, mouseY, delta);
+                    super.renderButton(stack, mouseX, mouseY, delta);
                 }
 
                 @Override

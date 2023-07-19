@@ -155,12 +155,12 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
                 float x = -font.width(text1) / 2f;
                 float y = deadmau ? -10f : 0f;
 
-                font.drawInBatch(text1, x, y, 0x20FFFFFF, false, matrix4f, multiBufferSource, notSneaking ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.NORMAL, bgColor, light);
+                font.drawInBatch(text1, x, y, 0x20FFFFFF, false, matrix4f, multiBufferSource, notSneaking, bgColor, light);
                 if (notSneaking) {
                     if (outline)
                         font.drawInBatch8xOutline(text1.getVisualOrderText(), x, y, -1, outlineColor, matrix4f, multiBufferSource, light);
                     else
-                        font.drawInBatch(text1, x, y, -1, shadow, textMatrix, multiBufferSource, Font.DisplayMode.NORMAL, 0, light);
+                        font.drawInBatch(text1, x, y, -1, shadow, textMatrix, multiBufferSource, false, 0, light);
                 }
             }
         }
@@ -180,12 +180,12 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
             float x = -font.width(text1) / 2f;
             float y = (deadmau ? -10f : 0f) + (font.lineHeight + 1) * line;
 
-            font.drawInBatch(text1, x, y, 0x20FFFFFF, false, matrix4f, multiBufferSource, notSneaking ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.NORMAL, bgColor, light);
+            font.drawInBatch(text1, x, y, 0x20FFFFFF, false, matrix4f, multiBufferSource, notSneaking, bgColor, light);
             if (notSneaking) {
                 if (outline)
                     font.drawInBatch8xOutline(text1.getVisualOrderText(), x, y, -1, outlineColor, matrix4f, multiBufferSource, light);
                 else
-                    font.drawInBatch(text1, x, y, -1, shadow, textMatrix, multiBufferSource, Font.DisplayMode.NORMAL, 0, light);
+                    font.drawInBatch(text1, x, y, -1, shadow, textMatrix, multiBufferSource, false, 0, light);
             }
         }
 

@@ -391,7 +391,7 @@ public class EntityAPI<T extends Entity> {
     @LuaMethodDoc("entity.get_controlled_vehicle")
     public EntityAPI<?> getControlledVehicle() {
         checkEntity();
-        return wrap(entity.getControlledVehicle());
+        return wrap(entity.getRootVehicle());
     }
 
     @LuaWhitelist

@@ -151,14 +151,6 @@ public class StatusWidget implements FiguraWidget, FiguraTickable, GuiEventListe
     }
 
     @Override
-    public void setFocused(boolean bl) {}
-
-    @Override
-    public boolean isFocused() {
-        return false;
-    }
-
-    @Override
     public boolean isVisible() {
         return this.visible;
     }

@@ -163,14 +163,6 @@ public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
     }
 
     @Override
-    public void setFocused(boolean focused) {}
-
-    @Override
-    public boolean isFocused() {
-        return false;
-    }
-
-    @Override
     public boolean isVisible() {
         return visible;
     }

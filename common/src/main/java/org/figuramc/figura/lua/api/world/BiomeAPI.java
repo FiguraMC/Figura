@@ -102,7 +102,7 @@ public class BiomeAPI {
     @LuaWhitelist
     @LuaMethodDoc("biome.get_precipitation")
     public String getPrecipitation() {
-        return biome.getPrecipitationAt(getBlockPos()).name();
+        return biome.getPrecipitation().name();
     }
 
     @LuaWhitelist

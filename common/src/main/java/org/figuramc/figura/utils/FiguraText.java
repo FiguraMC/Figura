@@ -7,15 +7,15 @@ import org.figuramc.figura.FiguraMod;
 public class FiguraText extends TranslatableContents {
 
     public FiguraText() {
-        super(FiguraMod.MOD_ID, FiguraMod.MOD_NAME, NO_ARGS);
+        super(FiguraMod.MOD_ID, FiguraMod.MOD_NAME);
     }
 
     public FiguraText(String string) {
-        super(FiguraMod.MOD_ID + "." + string, null, NO_ARGS);
+        super(FiguraMod.MOD_ID + "." + string);
     }
 
     public FiguraText(String string, Object... args) {
-        super(FiguraMod.MOD_ID + "." + string, null, args);
+        super(FiguraMod.MOD_ID + "." + string, args);
     }
 
     public static MutableComponent of() {

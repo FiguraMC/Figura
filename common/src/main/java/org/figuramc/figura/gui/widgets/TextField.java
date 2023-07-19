@@ -129,7 +129,7 @@ public class TextField extends AbstractContainerElement {
             return;
 
         super.setVisible(visible);
-        this.field.setFocused(false);
+        this.field.setFocus(false);
     }
 
     public void setColor(int color) {
@@ -142,8 +142,8 @@ public class TextField extends AbstractContainerElement {
     }
 
     @Override
-    public void setFocused(boolean bl) {
-        this.field.setFocused(bl);
+    public boolean changeFocus(boolean bl) {
+        return this.field.changeFocus(bl);
     }
 
     public boolean isEnabled() {

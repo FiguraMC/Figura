@@ -74,8 +74,8 @@ public class PermissionsScreen extends AbstractPanelScreen {
         //permission slider and list
         slider = new SliderWidget(middle + 2, (int) (entityWidget.getY() + entityWidget.getHeight() + lineHeight * 1.5 + 20), listWidth, 11, 1d, 5, true) {
             @Override
-            public void renderWidget(PoseStack pose, int mouseX, int mouseY, float delta) {
-                super.renderWidget(pose, mouseX, mouseY, delta);
+            public void renderButton(PoseStack pose, int mouseX, int mouseY, float delta) {
+                super.renderButton(pose, mouseX, mouseY, delta);
 
                 PermissionPack selectedPack = playerList.selectedEntry.getPack();
                 MutableComponent text = selectedPack.getCategoryName();
