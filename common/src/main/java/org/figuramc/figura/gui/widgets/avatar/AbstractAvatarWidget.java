@@ -1,10 +1,10 @@
 package org.figuramc.figura.gui.widgets.avatar;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import org.figuramc.figura.FiguraMod;
@@ -65,11 +65,11 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void render(PoseStack poseStack, int mouseX, int mouseY, float delta) {
         if (!isVisible() || !this.button.isVisible())
             return;
 
-        super.render(gui, mouseX, mouseY, delta);
+        super.render(poseStack, mouseX, mouseY, delta);
 
         if (favourite) {
             Font font = Minecraft.getInstance().font;
@@ -77,10 +77,10 @@ public abstract class AbstractAvatarWidget extends AbstractContainerElement impl
             int x = this.getX() + this.getWidth() - width;
             int y = this.getY() + 2;
 
-            gui.drawString(font, FAVOURITE, x, y, 0xFFFFFF, false);
+            font.draw(poseStack, FAVOURITE, x, y, 0xFFFFFF);
 
             if (mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + font.lineHeight)
-                UIHelper.setTooltip(FiguraText.of("gui.favorited").append(" ").append(FAVOURITE));
+                UIHelper.setTooltip(FiguraText.of("poseStack.favorited").append(" ").append(FAVOURITE));
         }
     }
 

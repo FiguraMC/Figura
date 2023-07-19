@@ -1,6 +1,6 @@
 package org.figuramc.figura.gui.widgets;
 
-import net.minecraft.client.gui.GuiGraphics;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.AbstractContainerEventHandler;
@@ -40,10 +40,10 @@ public abstract class AbstractContainerElement extends AbstractContainerEventHan
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
         for (GuiEventListener listener : this.children) {
             if (listener instanceof Renderable widget)
-                widget.render(gui, mouseX, mouseY, delta);
+                widget.render(stack, mouseX, mouseY, delta);
         }
     }
 

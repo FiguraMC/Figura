@@ -1,9 +1,9 @@
 package org.figuramc.figura.gui.widgets;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -77,7 +77,7 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void render(PoseStack pose, int mouseX, int mouseY, float delta) {
         if (!visible) return;
 
         // prepare vars
@@ -97,19 +97,19 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
         this.height = Math.min(newHeight + height, maxSize);
         y += (this.height - newHeight) / 2;
 
-        // render background
-        UIHelper.blitSliced(gui, this.x, this.y, this.width, this.height, UIHelper.OUTLINE_FILL);
+        //render background
+        UIHelper.renderSliced(pose, this.x, this.y, this.width, this.height, UIHelper.OUTLINE_FILL);
 
         // render texts
         for (int i = 0; i < TITLES.size(); i++) {
-            // -- title -- // 
+            // -- title -- //
 
             Component title = TITLES.get(i);
             if (title != null)
-                gui.drawCenteredString(font, title, x, y, 0xFFFFFF);
+                UIHelper.drawCenteredString(pose, font, title, x, y, 0xFFFFFF);
             y += height;
 
-            // -- value -- // 
+            // -- value -- //
 
             Component value = values.get(i);
             if (value == null) {
@@ -120,7 +120,7 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
             // default rendering
             if (i != 1) {
                 Component toRender = TextUtils.trimToWidthEllipsis(font, value, width - 10, ELLIPSIS);
-                gui.drawCenteredString(font, toRender, x, y, 0xFFFFFF);
+                UIHelper.drawCenteredString(pose, font, toRender, x, y, 0xFFFFFF);
 
                 // tooltip
                 if (value != toRender && UIHelper.isMouseOver(this.x, y - height, width, height * 2 - 4, mouseX, mouseY))
@@ -143,7 +143,7 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
                 if (text != newText && UIHelper.isMouseOver(this.x, y, width, height, mouseX, mouseY))
                     UIHelper.setTooltip(text);
 
-                gui.drawCenteredString(font, newText, x, y, 0xFFFFFF);
+                UIHelper.drawCenteredString(pose, font, newText, x, y, 0xFFFFFF);
                 y += height;
             }
         }

@@ -9,7 +9,6 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.math.Axis;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.LightTexture;
@@ -319,7 +318,7 @@ public class Avatar {
             luaRuntime.takeInstructions(amount);
     }
 
-    // -- script events -- // 
+    // -- script events -- //
 
     private boolean isCancelled(Varargs args) {
         if (args == null)
@@ -396,7 +395,7 @@ public class Avatar {
         if (loaded) run("RESOURCE_RELOAD", tick);
     }
 
-    // -- host only events -- // 
+    // -- host only events -- //
 
     public String chatSendMessageEvent(String message) { // piped event
         Varargs val = loaded ? run("CHAT_SEND_MESSAGE", tick, message) : null;
@@ -443,7 +442,7 @@ public class Avatar {
         if (loaded) run("CHAR_TYPED", tick, chars, modifiers, codePoint);
     }
 
-    // -- rendering events -- // 
+    // -- rendering events -- //
 
     private void render() {
         if (renderMode == EntityRenderMode.RENDER || renderMode == EntityRenderMode.FIRST_PERSON) {
@@ -694,12 +693,11 @@ public class Avatar {
         return comp > 0 && luaRuntime != null && !luaRuntime.vanilla_model.HEAD.checkVisible();
     }
 
-    public boolean renderPortrait(GuiGraphics gui, int x, int y, int size, float modelScale, boolean upsideDown) {
+    public boolean renderPortrait(PoseStack pose, int x, int y, int size, float modelScale, boolean upsideDown) {
         if (!Configs.AVATAR_PORTRAIT.value || renderer == null || !loaded)
             return false;
 
         // matrices
-        PoseStack pose = gui.pose();
         pose.pushPose();
         pose.translate(x, y, 0d);
         pose.scale(modelScale, modelScale * (upsideDown ? 1 : -1), modelScale);
@@ -713,7 +711,7 @@ public class Avatar {
         int x2 = (int) pos.x + size;
         int y2 = (int) pos.y + size;
 
-        gui.enableScissor(x1, y1, x2, y2);
+        UIHelper.setupScissor(x1, y1, x2 - x1, y2 - y1);
         UIHelper.paperdoll = true;
         UIHelper.dollScale = 16f;
 
@@ -741,7 +739,7 @@ public class Avatar {
         buffer.endBatch();
         pose.popPose();
 
-        gui.disableScissor();
+        UIHelper.disableScissor();
         UIHelper.paperdoll = false;
 
         renderer.allowPivotParts = true;
@@ -834,7 +832,7 @@ public class Avatar {
     }
 
 
-    // -- animations -- // 
+    // -- animations -- //
 
 
     public void applyAnimations() {
@@ -864,7 +862,7 @@ public class Avatar {
             AnimationPlayer.clear(animation);
     }
 
-    // -- functions -- // 
+    // -- functions -- //
 
     /**
      * We should call this whenever an avatar is no longer reachable!
@@ -910,7 +908,7 @@ public class Avatar {
         return version.compareTo(FiguraMod.VERSION);
     }
 
-    // -- loading -- // 
+    // -- loading -- //
 
     private void createLuaRuntime() {
         if (!nbt.contains("scripts"))

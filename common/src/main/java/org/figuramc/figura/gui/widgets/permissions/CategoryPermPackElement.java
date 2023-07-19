@@ -3,7 +3,6 @@ package org.figuramc.figura.gui.widgets.permissions;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.figuramc.figura.gui.widgets.lists.PlayerList;
@@ -22,8 +21,7 @@ public class CategoryPermPackElement extends AbstractPermPackElement {
     }
 
     @Override
-    public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float delta) {
-        PoseStack pose = gui.pose();
+    public void renderWidget(PoseStack pose, int mouseX, int mouseY, float delta) {
         int width = getWidth();
         int height = getHeight();
 
@@ -39,16 +37,16 @@ public class CategoryPermPackElement extends AbstractPermPackElement {
 
         // selected overlay
         if (this.parent.selectedEntry == this) {
-            UIHelper.fillRounded(gui, x - 1, y - 1, width + 2, height + 2, 0xFFFFFFFF);
+            UIHelper.fillRounded(pose, x - 1, y - 1, width + 2, height + 2, 0xFFFFFFFF);
         }
 
         // background
-        UIHelper.renderHalfTexture(gui, x, y, width, height, 0f, enabled ? 20f : 0f, 174, 20, 174, 40, BACKGROUND);
+        UIHelper.renderHalfTexture(pose, x, y, width, height, 0f, enabled ? 20f : 0f, 174, 20, 174, 40, BACKGROUND);
 
         // name
         Component text = pack.getCategoryName().append(pack.hasChanges() ? "*" : "");
         Font font = Minecraft.getInstance().font;
-        UIHelper.renderOutlineText(gui, font, text, x + width / 2 - font.width(text) / 2, y + height / 2 - font.lineHeight / 2, 0xFFFFFF, 0);
+        UIHelper.renderOutlineText(pose, font, text, x + width / 2 - font.width(text) / 2, y + height / 2 - font.lineHeight / 2, 0xFFFFFF, 0);
 
         pose.popPose();
     }

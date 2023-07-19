@@ -1,10 +1,10 @@
 package org.figuramc.figura.gui.widgets.lists;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import org.figuramc.figura.FiguraMod;
@@ -42,19 +42,19 @@ public class KeybindList extends AbstractList {
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
         // background and scissors
-        UIHelper.blitSliced(gui, getX(), getY(), getWidth(), getHeight(), UIHelper.OUTLINE_FILL);
-        enableScissors(gui);
+        UIHelper.renderSliced(stack, getX(), getY(), getWidth(), getHeight(), UIHelper.OUTLINE_FILL);
+        UIHelper.setupScissor(getX() + scissorsX, getY() + scissorsY, getWidth() + scissorsWidth, getHeight() + scissorsHeight);
 
         if (!keybinds.isEmpty())
             updateEntries();
 
         // children
-        super.render(gui, mouseX, mouseY, delta);
+        super.render(stack, mouseX, mouseY, delta);
 
         // reset scissor
-        gui.disableScissor();
+        UIHelper.disableScissor();
     }
 
     private void updateEntries() {
@@ -146,10 +146,10 @@ public class KeybindList extends AbstractList {
         }
 
         @Override
-        public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+        public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
             if (!this.isVisible()) return;
 
-            helper.renderConflictBars(gui, keybindButton.getX() - 8, keybindButton.getY() + 2, 4, 16);
+            helper.renderConflictBars(stack, keybindButton.getX() - 8, keybindButton.getY() + 2, 4, 16);
 
             // vars
             Font font = Minecraft.getInstance().font;
@@ -158,16 +158,16 @@ public class KeybindList extends AbstractList {
             // hovered arrow
             setHovered(isMouseOver(mouseX, mouseY));
             if (isHovered()) {
-                gui.drawString(font, HOVERED_ARROW, getX() + 4, textY, 0xFFFFFF);
+                font.draw(stack, HOVERED_ARROW, getX() + 4, textY, 0xFFFFFF);
                 if (keybindButton.isHoveredOrFocused())
                     helper.renderTooltip();
             }
 
             // render name
-            gui.drawString(font, this.keybind.getName(), getX() + 16, textY, 0xFFFFFF);
+            font.draw(stack, this.keybind.getName(), getX() + 16, textY, 0xFFFFFF);
 
             // render children
-            super.render(gui, mouseX, mouseY, delta);
+            super.render(stack, mouseX, mouseY, delta);
         }
 
         @Override

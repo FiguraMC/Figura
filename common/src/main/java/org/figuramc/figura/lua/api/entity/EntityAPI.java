@@ -193,7 +193,7 @@ public class EntityAPI<T extends Entity> {
     @LuaMethodDoc("entity.is_on_ground")
     public boolean isOnGround() {
         checkEntity();
-        return entity.onGround();
+        return entity.isOnGround();
     }
 
     @LuaWhitelist

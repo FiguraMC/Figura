@@ -1,6 +1,6 @@
 package org.figuramc.figura.gui.widgets;
 
-import net.minecraft.client.gui.GuiGraphics;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.figuramc.figura.utils.FiguraIdentifier;
@@ -8,7 +8,7 @@ import org.figuramc.figura.utils.ui.UIHelper;
 
 public class SliderWidget extends ScrollBarWidget {
 
-    // -- fields -- // 
+    // -- fields -- //
 
     public static final ResourceLocation SLIDER_TEXTURE = new FiguraIdentifier("textures/gui/slider.png");
 
@@ -20,7 +20,7 @@ public class SliderWidget extends ScrollBarWidget {
     private double stepSize;
     private double steppedPos;
 
-    // -- constructors -- // 
+    // -- constructors -- //
 
     public SliderWidget(int x, int y, int width, int height, double initialValue, int maxValue, boolean showSteps) {
         super(x, y, width, height, initialValue);
@@ -30,7 +30,7 @@ public class SliderWidget extends ScrollBarWidget {
         setMax(maxValue);
     }
 
-    // -- methods -- // 
+    // -- methods -- //
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
@@ -74,39 +74,39 @@ public class SliderWidget extends ScrollBarWidget {
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void render(PoseStack poseStack, int mouseX, int mouseY, float delta) {
         if (this.isVisible()) {
             // set hovered
             this.isHovered = this.isMouseOver(mouseX, mouseY);
 
             // render button
-            this.renderWidget(gui, mouseX, mouseY, delta);
+            this.renderWidget(poseStack, mouseX, mouseY, delta);
         }
     }
 
     @Override
-    public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float delta) {
-        UIHelper.enableBlend();
+    public void renderWidget(PoseStack poseStack, int mouseX, int mouseY, float delta) {
+        UIHelper.setupTexture(SLIDER_TEXTURE);
         int x = getX();
         int y = getY();
         int width = getWidth();
 
         // draw bar
-        gui.blit(SLIDER_TEXTURE, x, y + 3, width, 5, isScrolling ? 10f : 0f, 0f, 5, 5, 33, 16);
+        blit(poseStack, x, y + 3, width, 5, isScrolling ? 10f : 0f, 0f, 5, 5, 33, 16);
 
         // draw steps
         if (showSteps) {
             for (int i = 0; i < max; i++) {
-                gui.blit(SLIDER_TEXTURE, (int) Math.floor(x + 3 + stepSize * i * (width - 11)), y + 3, 5, 5, isScrolling ? 15f : 5f, 0f, 5, 5, 33, 16);
+                blit(poseStack, (int) Math.floor(x + 3 + stepSize * i * (width - 11)), y + 3, 5, 5, isScrolling ? 15f : 5f, 0f, 5, 5, 33, 16);
             }
         }
 
         // draw header
         lerpPos(delta);
-        gui.blit(SLIDER_TEXTURE, (int) (x + Math.round(Mth.lerp(scrollPos, 0, width - headWidth))), y, isActive() ? (isHoveredOrFocused() || isScrolling ? headWidth * 2 : headWidth) : 0f, 5f, headWidth, headHeight, 33, 16);
+        blit(poseStack, (int) (x + Math.round(Mth.lerp(scrollPos, 0, width - headWidth))), y, isActive() ? (isHoveredOrFocused() || isScrolling ? headWidth * 2 : headWidth) : 0f, 5f, headWidth, headHeight, 33, 16);
     }
 
-    // -- getters and setters -- // 
+    // -- getters and setters -- //
 
     @Override
     public double getScrollProgress() {

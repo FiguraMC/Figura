@@ -138,33 +138,4 @@ public class ChatComponentMixin {
 
         return message;
     }
-
-    @Inject(at = @At("HEAD"), method = "addMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/MessageSignature;ILnet/minecraft/client/GuiMessageTag;Z)V", cancellable = true)
-    private void addMessage(Component message, MessageSignature signature, int ticks, GuiMessageTag tag, boolean refresh, CallbackInfo ci) {
-        if (message == null)
-            ci.cancel();
-    }
-
-    @ModifyArg(at = @At(value = "INVOKE", target = "Ljava/util/List;add(ILjava/lang/Object;)V"), method = "addMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/MessageSignature;ILnet/minecraft/client/GuiMessageTag;Z)V")
-    private Object addMessages(int index, Object message) {
-        if (color != null) ((GuiMessageAccessor) message).figura$setColor(color);
-        return message;
-    }
-
-    @ModifyVariable(at = @At("STORE"), method = "render")
-    private GuiMessage.Line grabColor(GuiMessage.Line line) {
-        currColor = ((GuiMessageAccessor) (Object) line).figura$getColor();
-        return line;
-    }
-
-    @ModifyArg(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;fill(IIIII)V", ordinal = 0), method = "render", index = 4)
-    private int textBackgroundOnRender(int color) {
-        return color + currColor;
-    }
-
-    @ModifyVariable(at = @At("STORE"), method = "refreshTrimmedMessage")
-    private GuiMessage refreshMessages(GuiMessage message) {
-        color = ((GuiMessageAccessor) (Object) message).figura$getColor();
-        return message;
-    }
 }

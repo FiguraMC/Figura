@@ -1,7 +1,7 @@
 package org.figuramc.figura.gui.screens;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import net.minecraft.client.gui.GuiGraphics;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -87,10 +87,10 @@ public class ConfigScreen extends AbstractPanelScreen {
     }
 
     @Override
-    public void renderBackground(GuiGraphics gui, float delta) {
-        super.renderBackground(gui, delta);
+    public void renderBackground(PoseStack stack, float delta) {
+        super.renderBackground(stack, delta);
         if (renderPaperdoll)
-            UIHelper.renderWithoutScissors(gui, g -> PaperDoll.render(g, true));
+            UIHelper.renderWithoutScissors(() -> PaperDoll.render(stack, true));
     }
 
     @Override
