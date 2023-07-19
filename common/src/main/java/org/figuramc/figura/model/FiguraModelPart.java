@@ -1151,7 +1151,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
             ),
             value = "model_part.new_text")
     public TextTask newText(@LuaNotNil String name) {
-        TextTask task = new TextTask(name, owner);
+        TextTask task = new TextTask(name, owner, this);
         this.renderTasks.put(name, task);
         return task;
     }
@@ -1164,7 +1164,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
             ),
             value = "model_part.new_item")
     public ItemTask newItem(@LuaNotNil String name) {
-        ItemTask task = new ItemTask(name, owner);
+        ItemTask task = new ItemTask(name, owner, this);
         this.renderTasks.put(name, task);
         return task;
     }
@@ -1177,7 +1177,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
             ),
             value = "model_part.new_block")
     public BlockTask newBlock(@LuaNotNil String name) {
-        BlockTask task = new BlockTask(name, owner);
+        BlockTask task = new BlockTask(name, owner, this);
         this.renderTasks.put(name, task);
         return task;
     }
@@ -1190,7 +1190,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
             ),
             value = "model_part.new_sprite")
     public SpriteTask newSprite(@LuaNotNil String name) {
-        SpriteTask task = new SpriteTask(name, owner);
+        SpriteTask task = new SpriteTask(name, owner, this);
         this.renderTasks.put(name, task);
         return task;
     }

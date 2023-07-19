@@ -19,6 +19,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.LevelData;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
@@ -500,7 +501,8 @@ public class WorldAPI {
     @LuaMethodDoc("world.get_spawn_point")
     public static FiguraVec3 getSpawnPoint() {
         Level world = getCurrentWorld();
-        return FiguraVec3.fromBlockPos(world.getSharedSpawnPos());
+        LevelData levelData = world.getLevelData();
+        return FiguraVec3.fromBlockPos(new BlockPos(levelData.getXSpawn(), levelData.getYSpawn(), levelData.getZSpawn()));
     }
 
     @Override

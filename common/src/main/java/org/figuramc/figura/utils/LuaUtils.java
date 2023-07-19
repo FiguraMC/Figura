@@ -2,7 +2,6 @@ package org.figuramc.figura.utils;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.arguments.SlotArgument;
 import net.minecraft.commands.arguments.blocks.BlockStateArgument;
 import net.minecraft.commands.arguments.item.ItemArgument;

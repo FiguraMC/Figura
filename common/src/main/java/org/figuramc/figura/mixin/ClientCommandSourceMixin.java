@@ -1,5 +1,6 @@
 package org.figuramc.figura.mixin;
 
+import com.mojang.text2speech.Narrator;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -21,6 +22,7 @@ abstract class ClientCommandSourceMixin implements FiguraClientCommandSource {
     @Override
     public void figura$sendFeedback(Component message) {
         this.minecraft.gui.getChat().addMessage(message);
+        Narrator.getNarrator().say(message.getString(), true);
     }
 
     @Override
