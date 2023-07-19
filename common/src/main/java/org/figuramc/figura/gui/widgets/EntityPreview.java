@@ -2,7 +2,6 @@ package org.figuramc.figura.gui.widgets;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -72,7 +71,7 @@ public class EntityPreview extends AbstractContainerElement {
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
         if (!this.isVisible())
             return;
 
@@ -83,31 +82,30 @@ public class EntityPreview extends AbstractContainerElement {
 
         if (!button.isToggled()) {
             //border
-            UIHelper.blitSliced(gui, x, y, width, height, UIHelper.OUTLINE_FILL);
+            UIHelper.renderSliced(stack, x, y, width, height, UIHelper.OUTLINE_FILL);
             //overlay
-            UIHelper.blit(gui, x + 1, y + 1, width - 2, height, OVERLAY);
+            UIHelper.renderTexture(stack, x + 1, y + 1, width - 2, height - 2, OVERLAY);
         }
 
         //scissors
-        gui.enableScissor(x + 1, y + 1, x + width - 1, y + height - 1);
+        UIHelper.setupScissor(x + 1, y + 1, width - 2, height - 2);
 
         //render entity
-        PoseStack pose = gui.pose();
         if (entity != null) {
-            pose.pushPose();
+            stack.pushPose();
             scaledValue = Mth.lerp((float) (1f - Math.pow(0.5f, delta)), scaledValue, scaledPrecise);
-            UIHelper.drawEntity(x + modelX, y + modelY, scale + scaledValue, angleX, angleY, entity, gui, EntityRenderMode.FIGURA_GUI);
-            pose.popPose();
+            UIHelper.drawEntity(x + modelX, y + modelY, scale + scaledValue, angleX, angleY, entity, stack, EntityRenderMode.FIGURA_GUI);
+            stack.popPose();
         } else {
             //draw
             int s = Math.min(width, height) * 2 / 3;
-            UIHelper.enableBlend();
-            gui.blit(UNKNOWN, x + (width - s) / 2, y + (height - s) / 2, s, s, 0f, 64 * ((int) (FiguraMod.ticks / 3f) % 8), 64, 64, 64, 512);
+            UIHelper.setupTexture(UNKNOWN);
+            UIHelper.blit(stack, x + (width - s) / 2, y + (height - s) / 2, s, s, 0f, 64 * ((int) (FiguraMod.ticks / 3f) % 8), 64, 64, 64, 512);
         }
 
-        gui.disableScissor();
+        UIHelper.disableScissor();
 
-        super.render(gui, mouseX, mouseY, delta);
+        super.render(stack, mouseX, mouseY, delta);
     }
 
     @Override

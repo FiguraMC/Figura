@@ -1,9 +1,9 @@
 package org.figuramc.figura.gui.widgets.config;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.network.chat.Component;
 import org.figuramc.figura.gui.widgets.ContextMenu;
@@ -37,7 +37,7 @@ public class EnumElement extends AbstractConfigElement {
             }
         }) {
             @Override
-            protected void renderText(GuiGraphics gui, float delta) {
+            protected void renderText(PoseStack pose, float delta) {
                 Font font = Minecraft.getInstance().font;
                 Component arrow = context.isVisible() ? UIHelper.DOWN_ARROW : UIHelper.UP_ARROW;
                 int arrowWidth = font.width(arrow);
@@ -47,10 +47,10 @@ public class EnumElement extends AbstractConfigElement {
 
                 //draw text
                 int color = getTextColor();
-                UIHelper.renderCenteredScrollingText(gui, message, getX() + 1, getY(), getWidth() - (textWidth <= getWidth() - arrowWidth - 9 ? 0 : arrowWidth + 1) - 2, getHeight(), color);
+                UIHelper.renderCenteredScrollingText(pose, message, getX() + 1, getY(), getWidth() - (textWidth <= getWidth() - arrowWidth - 9 ? 0 : arrowWidth + 1) - 2, getHeight(), color);
 
                 //draw arrow
-                gui.drawString(font, arrow, getX() + getWidth() - arrowWidth - 3, (int) (getY() + getHeight() / 2f - font.lineHeight / 2f), color);
+                font.drawShadow(pose, arrow, getX() + getWidth() - arrowWidth - 3, (int) (getY() + getHeight() / 2f - font.lineHeight / 2f), color);
             }
 
             @Override
@@ -75,7 +75,7 @@ public class EnumElement extends AbstractConfigElement {
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void render(PoseStack poseStack, int mouseX, int mouseY, float delta) {
         if (!this.isVisible()) return;
 
         //reset enabled
@@ -98,7 +98,7 @@ public class EnumElement extends AbstractConfigElement {
             button.setTooltip(tooltip.get(selectedIndex));
 
         //super render
-        super.render(gui, mouseX, mouseY, delta);
+        super.render(poseStack, mouseX, mouseY, delta);
     }
 
     @Override

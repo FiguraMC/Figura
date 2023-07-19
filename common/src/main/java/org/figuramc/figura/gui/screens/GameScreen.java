@@ -1,10 +1,10 @@
 package org.figuramc.figura.gui.screens;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import org.figuramc.figura.utils.ui.UIHelper;
 import org.lwjgl.glfw.GLFW;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.gui.widgets.Button;
@@ -146,14 +146,13 @@ public class GameScreen extends AbstractPanelScreen {
         }
 
         @Override
-        public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
-            PoseStack pose = gui.pose();
+        public void render(PoseStack pose, int mouseX, int mouseY, float delta) {
             pose.pushPose();
             pose.scale(scale, scale, scale);
 
             for (Cell[] cells : grid) {
                 for (Cell cell : cells) {
-                    cell.render(gui);
+                    cell.render(pose);
                 }
             }
 
@@ -186,10 +185,10 @@ public class GameScreen extends AbstractPanelScreen {
             this.future = RULES[this.alive][neigh];
         }
 
-        private void render(GuiGraphics gui) {
+        private void render(PoseStack pose) {
             this.alive = this.future;
             if (this.alive == 1)
-                gui.fill(this.x, this.y, this.x + 1, this.y + 1, color);
+                UIHelper.fill(pose, this.x, this.y, this.x + 1, this.y + 1, color);
         }
     }
 }

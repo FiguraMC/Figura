@@ -1,8 +1,8 @@
 package org.figuramc.figura.gui;
 
 import com.mojang.blaze3d.platform.Window;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import org.figuramc.figura.avatar.Avatar;
@@ -15,7 +15,7 @@ public class PaperDoll {
 
     private static Long lastActivityTime = 0L;
 
-    public static void render(GuiGraphics gui, boolean force) {
+    public static void render(PoseStack stack, boolean force) {
         Minecraft minecraft = Minecraft.getInstance();
         LivingEntity entity = minecraft.getCameraEntity() instanceof LivingEntity e ? e : null;
         Avatar avatar;
@@ -41,7 +41,7 @@ public class PaperDoll {
                     (entity instanceof Player p && p.getAbilities().flying))
                 lastActivityTime = System.currentTimeMillis();
 
-            //if activity time is greater than duration - return
+                //if activity time is greater than duration - return
             else if (System.currentTimeMillis() - lastActivityTime > 1000L)
                 return;
         }
@@ -62,7 +62,7 @@ public class PaperDoll {
                 x, y,
                 scale * 30f,
                 Configs.PAPERDOLL_PITCH.tempValue, Configs.PAPERDOLL_YAW.tempValue,
-                entity, gui, EntityRenderMode.PAPERDOLL
+                entity, stack, EntityRenderMode.PAPERDOLL
         );
     }
 }

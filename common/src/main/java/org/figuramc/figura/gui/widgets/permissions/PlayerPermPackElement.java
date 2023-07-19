@@ -5,7 +5,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
@@ -97,26 +96,25 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void render(PoseStack pose, int mouseX, int mouseY, float delta) {
         if (dragged)
-            UIHelper.fillRounded(gui, getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0x40FFFFFF);
+            UIHelper.fillRounded(pose, getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 0x40FFFFFF);
         else
-            super.render(gui, mouseX, mouseY, delta);
+            super.render(pose, mouseX, mouseY, delta);
     }
 
-    public void renderDragged(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void renderDragged(PoseStack pose, int mouseX, int mouseY, float delta) {
         int oX = getX();
         int oY = getY();
         setX(mouseX - (anchorX - oX));
         setY(mouseY - (anchorY - oY) + (initialY - oY));
-        super.render(gui, mouseX, mouseY, delta);
+        super.render(pose, mouseX, mouseY, delta);
         setX(oX);
         setY(oY);
     }
 
     @Override
-    public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float delta) {
-        PoseStack pose = gui.pose();
+    public void renderWidget(PoseStack pose, int mouseX, int mouseY, float delta) {
         int width = getWidth();
         int height = getHeight();
 
@@ -140,11 +138,11 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
         if (this.parent.selectedEntry == this) {
             ArrayList<PermissionPack> list = new ArrayList<>(PermissionManager.CATEGORIES.values());
             int color = (dragged ? list.get(Math.min(index, list.size() - 1)) : pack).getColor();
-            UIHelper.fillRounded(gui, x - 1, y - 1, width + 2, height + 2, color + (0xFF << 24));
+            UIHelper.fillRounded(pose, x - 1, y - 1, width + 2, height + 2, color + (0xFF << 24));
         }
 
         //background
-        UIHelper.renderHalfTexture(gui, x, y, width, height, 174, BACKGROUND);
+        UIHelper.renderHalfTexture(pose, x, y, width, height, 174, BACKGROUND);
 
         //head
         Component name = null;
@@ -158,21 +156,21 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
 
             Entity e = EntityUtils.getEntityByUUID(owner);
             boolean upsideDown = e instanceof LivingEntity entity && LivingEntityRenderer.isEntityUpsideDown(entity);
-            head = avatar.renderPortrait(gui, x + 4, y + 4, Math.round(32f * scale), 64, upsideDown);
+            head = avatar.renderPortrait(pose, x + 4, y + 4, Math.round(32f * scale), 64, upsideDown);
         }
 
         if (!head) {
             if (this.skin != null) {
                 //head
-                UIHelper.enableBlend();
-                gui.blit(this.skin, x + 4, y + 4, 32, 32, 8f, 8f, 8, 8, 64, 64);
+                RenderSystem.enableBlend();
+                blit(pose, x + 4, y + 4, 32, 32, 8f, 8f, 8, 8, 64, 64);
 
                 //hat
                 RenderSystem.enableBlend();
-                gui.blit(this.skin, x + 4, y + 4, 32, 32, 40f, 8f, 8, 8, 64, 64);
+                blit(pose, x + 4, y + 4, 32, 32, 40f, 8f, 8, 8, 64, 64);
                 RenderSystem.disableBlend();
             } else {
-                UIHelper.blit(gui, x + 4, y + 4, 32, 32, UNKNOWN);
+                UIHelper.renderTexture(pose, x + 4, y + 4, 32, 32, UNKNOWN);
             }
         }
 
@@ -197,23 +195,23 @@ public class PlayerPermPackElement extends AbstractPermPackElement {
         nameLabel.setX(x + 40);
         nameLabel.setY(y + 4);
         //nameLabel.setOutlineColor(ColorUtils.rgbToInt(ColorUtils.rainbow(2, 1, 0.5)) + ((int) (0.5f * 0xFF) << 24));
-        nameLabel.render(gui, mouseX, mouseY, delta);
+        nameLabel.render(pose, mouseX, mouseY, delta);
 
         //status
         if (avatar != null && avatar.nbt != null) {
             status.tick(); //yes I know
             status.setX(x + 40);
             status.setY(y + 6 + font.lineHeight);
-            status.render(gui, mouseX, mouseY, delta);
+            status.render(pose, mouseX, mouseY, delta);
         }
 
         //category
         int textY = y + height - font.lineHeight - 4;
-        gui.drawString(font, pack.getCategoryName().append(pack.hasChanges() ? "*" : ""), x + 40, textY, 0xFFFFFF);
+        drawString(pose, font, pack.getCategoryName().append(pack.hasChanges() ? "*" : ""), x + 40, textY, 0xFFFFFF);
 
         //disconnected
         if (disconnected)
-            gui.drawString(font, DC_TEXT, x + width - font.width(DC_TEXT) - 4, textY, 0xFFFFFF);
+            drawString(pose, font, DC_TEXT, x + width - font.width(DC_TEXT) - 4, textY, 0xFFFFFF);
 
         pose.popPose();
     }

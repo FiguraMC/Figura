@@ -1,7 +1,7 @@
 package org.figuramc.figura.mixin.gui;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.layouts.GridLayout;
 import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.client.gui.screens.PauseScreen;
@@ -78,7 +78,7 @@ public class PauseScreenMixin extends Screen {
         if (config > 0) { //button
             addRenderableWidget(new Button(x, y, 64, 20, FiguraText.of(), null, btn -> this.minecraft.setScreen(new WardrobeScreen(this))) {
                 @Override
-                public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+                public void renderWidget(PoseStack stack, int mouseX, int mouseY, float delta) {
                     ChatFormatting color;
                     if (this.isHoveredOrFocused()) {
                         color = ChatFormatting.AQUA;
@@ -89,17 +89,17 @@ public class PauseScreenMixin extends Screen {
                     }
                     setMessage(getMessage().copy().withStyle(color));
 
-                    renderVanillaBackground(gui, mouseX, mouseY, delta);
-                    super.renderWidget(gui, mouseX, mouseY, delta);
+                    renderVanillaBackground(stack, mouseX, mouseY, delta);
+                    super.renderWidget(stack, mouseX, mouseY, delta);
                 }
 
                 @Override
-                protected void renderDefaultTexture(GuiGraphics gui, float delta) {}
+                protected void renderDefaultTexture(PoseStack gui, float delta) {}
             });
         } else { //icon
             addRenderableWidget(new Button(x, y, 20, 20, 0, 0, 20, FIGURA_ICON, 60, 20, null, btn -> this.minecraft.setScreen(new WardrobeScreen(this))) {
                 @Override
-                public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+                public void renderWidget(PoseStack gui, int mouseX, int mouseY, float delta) {
                     renderVanillaBackground(gui, mouseX, mouseY, delta);
                     super.renderWidget(gui, mouseX, mouseY, delta);
                 }

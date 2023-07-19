@@ -1,6 +1,6 @@
 package org.figuramc.figura.gui.widgets.lists;
 
-import net.minecraft.client.gui.GuiGraphics;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import org.figuramc.figura.gui.widgets.AbstractContainerElement;
@@ -37,17 +37,11 @@ public abstract class AbstractList extends AbstractContainerElement {
         return UIHelper.isMouseOver(getX() + scissorsX, getY() + scissorsY, getWidth() + scissorsWidth, getHeight() + scissorsHeight, mouseX, mouseY);
     }
 
-    public void enableScissors(GuiGraphics gui) {
-        int x = getX() + scissorsX;
-        int y = getY() + scissorsY;
-        gui.enableScissor(x, y, x + getWidth() + scissorsWidth, y + getHeight() + scissorsHeight);
-    }
-
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
         for (GuiEventListener child : children) {
             if (child instanceof Renderable widget && !contents().contains(child))
-                widget.render(gui, mouseX, mouseY, delta);
+                widget.render(stack, mouseX, mouseY, delta);
         }
     }
 

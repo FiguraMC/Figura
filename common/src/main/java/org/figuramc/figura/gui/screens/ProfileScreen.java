@@ -1,6 +1,6 @@
 package org.figuramc.figura.gui.screens;
 
-import net.minecraft.client.gui.GuiGraphics;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -31,7 +31,7 @@ public class ProfileScreen extends AbstractPanelScreen {
     }
 
     @Override
-    public void renderOverlays(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void renderOverlays(PoseStack gui, int mouseX, int mouseY, float delta) {
         //UIHelper.highlight(stack, button, TextUtils.tryParseJson("{\"text\":\"🦐🦐🦐🦐\",\"font\":\"figura:emojis\"}"));
         super.renderOverlays(gui, mouseX, mouseY, delta);
     }

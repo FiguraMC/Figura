@@ -35,7 +35,7 @@
     "gui.ScreenAccessor",
     "gui.ScreenMixin",
     "gui.SplashManagerMixin",
-    "gui.SplashRendererMixin",
+    "gui.TitleScreenMixin",
     "gui.SuggestionsListMixin",
     "input.InputConstantsTypeMixin",
     "input.KeyboardHandlerMixin",

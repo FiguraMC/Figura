@@ -2,7 +2,6 @@ package org.figuramc.figura.gui.screens;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -75,8 +74,8 @@ public class PermissionsScreen extends AbstractPanelScreen {
         //permission slider and list
         slider = new SliderWidget(middle + 2, (int) (entityWidget.getY() + entityWidget.getHeight() + lineHeight * 1.5 + 20), listWidth, 11, 1d, 5, true) {
             @Override
-            public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float delta) {
-                super.renderWidget(gui, mouseX, mouseY, delta);
+            public void renderWidget(PoseStack pose, int mouseX, int mouseY, float delta) {
+                super.renderWidget(pose, mouseX, mouseY, delta);
 
                 PermissionPack selectedPack = playerList.selectedEntry.getPack();
                 MutableComponent text = selectedPack.getCategoryName();
@@ -84,11 +83,10 @@ public class PermissionsScreen extends AbstractPanelScreen {
                 int x = (int) (this.getX() + this.getWidth() / 2f - font.width(text) * 0.75f);
                 int y = this.getY() - 4 - font.lineHeight * 2;
 
-                PoseStack pose = gui.pose();
                 pose.pushPose();
                 pose.translate(x, y, 0f);
                 pose.scale(1.5f, 1.5f, 1f);
-                UIHelper.renderOutlineText(gui, font, text, 0, 0, 0xFFFFFF, 0x202020);
+                UIHelper.renderOutlineText(pose, font, text, 0, 0, 0xFFFFFF, 0x202020);
                 pose.popPose();
 
                 MutableComponent info = Component.literal("?").withStyle(Style.EMPTY.withFont(UIHelper.UI_FONT));
@@ -103,7 +101,7 @@ public class PermissionsScreen extends AbstractPanelScreen {
                     UIHelper.setTooltip(selectedPack.getCategory().info);
                 }
 
-                gui.drawString(font, info, x, y, color);
+                font.drawShadow(pose, info, x, y, color);
             }
         };
         permissionsList = new PermissionsList(middle + 2, height, listWidth, height - 54);
@@ -178,7 +176,7 @@ public class PermissionsScreen extends AbstractPanelScreen {
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void render(PoseStack pose, int mouseX, int mouseY, float delta) {
         //set entity to render
         AbstractPermPackElement entity = playerList.selectedEntry;
         Level world = Minecraft.getInstance().level;
@@ -201,15 +199,15 @@ public class PermissionsScreen extends AbstractPanelScreen {
         this.precisePermissions.setY((int) resetYPrecise);
 
         //render
-        super.render(gui, mouseX, mouseY, delta);
+        super.render(pose, mouseX, mouseY, delta);
     }
 
     @Override
-    public void renderOverlays(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void renderOverlays(PoseStack pose, int mouseX, int mouseY, float delta) {
         if (dragged != null && dragged.dragged)
-            dragged.renderDragged(gui, mouseX, mouseY, delta);
+            dragged.renderDragged(pose, mouseX, mouseY, delta);
 
-        super.renderOverlays(gui, mouseX, mouseY, delta);
+        super.renderOverlays(pose, mouseX, mouseY, delta);
     }
 
     @Override

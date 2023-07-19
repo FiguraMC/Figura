@@ -1,8 +1,8 @@
 package org.figuramc.figura.gui.widgets.lists;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.util.Mth;
 import org.figuramc.figura.gui.screens.AbstractPanelScreen;
@@ -33,7 +33,7 @@ public class AvatarList extends AbstractList {
     private int totalHeight = 0;
     private String filter = "";
 
-    public static Path selectedEntry;
+    public static AvatarWidget selectedEntry;
 
     // -- Constructors -- //
 
@@ -88,7 +88,9 @@ public class AvatarList extends AbstractList {
         this.updateScissors(1, 49, -2, -50);
 
         //initial load
+        LocalAvatarFetcher.loadAvatars();
         loadContents();
+
         scrollToSelected();
     }
 
@@ -101,15 +103,15 @@ public class AvatarList extends AbstractList {
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
         int x = getX();
         int y = getY();
         int width = getWidth();
         int height = getHeight();
 
         //background and scissors
-        UIHelper.blitSliced(gui, x, y, width, height, UIHelper.OUTLINE_FILL);
-        enableScissors(gui);
+        UIHelper.renderSliced(stack, x, y, width, height, UIHelper.OUTLINE_FILL);
+        UIHelper.setupScissor(x + scissorsX, y + scissorsY, width + scissorsWidth, height + scissorsHeight);
 
         //scrollbar
         totalHeight = 2;
@@ -132,7 +134,7 @@ public class AvatarList extends AbstractList {
             avatar.setY(y + yOffset);
 
             if (avatar.getY() + avatar.getHeight() > y + scissorsY)
-                avatar.render(gui, mouseX, mouseY, delta);
+                avatar.render(stack, mouseX, mouseY, delta);
 
             yOffset += avatar.getHeight() + 2;
             if (yOffset > height)
@@ -140,23 +142,17 @@ public class AvatarList extends AbstractList {
         }
 
         //reset scissor
-        gui.disableScissor();
+        UIHelper.disableScissor();
 
         //render children
-        super.render(gui, mouseX, mouseY, delta);
-
-        //loading badge
-        if (!LocalAvatarFetcher.isLoaded())
-            UIHelper.renderLoading(gui, x + width / 2, y + height / 2);
+        super.render(stack, mouseX, mouseY, delta);
     }
 
     private void loadContents() {
-        LocalAvatarFetcher.reloadAvatars();
-
         // Load avatars //
         HashSet<Path> missingPaths = new HashSet<>(avatars.keySet());
-        for (LocalAvatarFetcher.AvatarPath avatar : List.copyOf(LocalAvatarFetcher.ALL_AVATARS)) {
-            Path path = avatar.getTheActualPathForThis();
+        for (LocalAvatarFetcher.AvatarPath avatar : LocalAvatarFetcher.ALL_AVATARS) {
+            Path path = avatar.getPath();
 
             //filter
             if (!avatar.search(filter))
@@ -217,7 +213,7 @@ public class AvatarList extends AbstractList {
         //get height
         totalHeight = 0;
         for (AbstractAvatarWidget avatar : avatarList) {
-            if (avatar.isOf(selectedEntry))
+            if (avatar.equals(selectedEntry))
                 y = totalHeight;
             else
                 totalHeight += avatar.getHeight() + 2;

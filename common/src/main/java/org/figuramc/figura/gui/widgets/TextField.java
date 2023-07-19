@@ -1,9 +1,9 @@
 package org.figuramc.figura.gui.widgets;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
@@ -45,28 +45,28 @@ public class TextField extends AbstractContainerElement {
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
         if (!isVisible()) return;
 
         //render background
-        UIHelper.blitSliced(gui, getX(), getY(), getWidth(), getHeight(), !isEnabled() ? 0f : this.isMouseOver(mouseX, mouseY) ? 32f : 16f, 0f, 16, 16, 48, 16, BACKGROUND);
+        UIHelper.renderSliced(stack, getX(), getY(), getWidth(), getHeight(), !isEnabled() ? 0f : this.isMouseOver(mouseX, mouseY) ? 32f : 16f, 0f, 16, 16, 48, 16, BACKGROUND);
 
         //render outline
         if (isFocused())
-            UIHelper.fillOutline(gui, getX(), getY(), getWidth(), getHeight(), borderColour);
+            UIHelper.fillOutline(stack, getX(), getY(), getWidth(), getHeight(), borderColour);
 
         //hint text
         if (hint != null && field.getValue().isEmpty() && !field.isFocused())
-            renderHint(gui);
+            renderHint(stack);
 
         //children
-        super.render(gui, mouseX, mouseY, delta);
+        super.render(stack, mouseX, mouseY, delta);
     }
 
-    protected void renderHint(GuiGraphics gui) {
+    protected void renderHint(PoseStack stack) {
         Font font = Minecraft.getInstance().font;
-        gui.drawString(
-                font, hint.hint.copy().append(TextUtils.ELLIPSIS).withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC),
+        font.drawShadow(
+                stack, hint.hint.copy().append(TextUtils.ELLIPSIS).withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC),
                 getX() + 4, getY() + (int) ((getHeight() - font.lineHeight + 1) / 2f), 0xFFFFFF
         );
     }

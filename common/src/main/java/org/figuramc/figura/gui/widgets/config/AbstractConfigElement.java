@@ -1,9 +1,9 @@
 package org.figuramc.figura.gui.widgets.config;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import org.figuramc.figura.gui.widgets.AbstractContainerElement;
@@ -39,7 +39,7 @@ public abstract class AbstractConfigElement extends AbstractContainerElement {
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void render(PoseStack poseStack, int mouseX, int mouseY, float delta) {
         if (!this.isVisible()) return;
 
         //vars
@@ -48,17 +48,17 @@ public abstract class AbstractConfigElement extends AbstractContainerElement {
 
         //hovered arrow
         setHovered(isMouseOver(mouseX, mouseY));
-        if (isHovered()) gui.drawString(font, HOVERED_ARROW, (int) (getX() + 8 - font.width(HOVERED_ARROW) / 2f), textY, 0xFFFFFF);
+        if (isHovered()) font.draw(poseStack, HOVERED_ARROW, (int) (getX() + 8 - font.width(HOVERED_ARROW) / 2f), textY, 0xFFFFFF);
 
         //render name
-        renderTitle(gui, font, textY);
+        renderTitle(poseStack, font, textY);
 
         //render children
-        super.render(gui, mouseX, mouseY, delta);
+        super.render(poseStack, mouseX, mouseY, delta);
     }
 
-    public void renderTitle(GuiGraphics gui, Font font, int y) {
-        gui.drawString(font, config.name, getX() + 16, y, (config.disabled ? ChatFormatting.DARK_GRAY : ChatFormatting.WHITE).getColor());
+    public void renderTitle(PoseStack poseStack, Font font, int y) {
+        font.draw(poseStack, config.name, getX() + 16, y, (config.disabled ? ChatFormatting.DARK_GRAY : ChatFormatting.WHITE).getColor());
     }
 
     @Override

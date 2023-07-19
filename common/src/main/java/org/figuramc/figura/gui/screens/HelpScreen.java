@@ -1,6 +1,6 @@
 package org.figuramc.figura.gui.screens;
 
-import net.minecraft.client.gui.GuiGraphics;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.particles.ParticleTypes;
@@ -103,7 +103,7 @@ public class HelpScreen extends AbstractPanelScreen {
         }
 
         @Override
-        public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+        public void render(PoseStack pose, int mouseX, int mouseY, float delta) {
             int x = getRawX();
             int y = getRawY();
 
@@ -113,14 +113,14 @@ public class HelpScreen extends AbstractPanelScreen {
 
             int x0 = x - width / 2;
             int x1 = x - getWidth() / 2 - 4;
-            gui.fill(x0, y0, x1, y1, 0xFFFFFFFF);
+            UIHelper.fill(pose, x0, y0, x1, y1, 0xFFFFFFFF);
 
             x0 = x + getWidth() / 2 + 4;
             x1 = x + width / 2;
-            gui.fill(x0, y0, x1, y1, 0xFFFFFFFF);
+            UIHelper.fill(pose, x0, y0, x1, y1, 0xFFFFFFFF);
 
             //text
-            super.render(gui, mouseX, mouseY, delta);
+            super.render(pose, mouseX, mouseY, delta);
         }
     }
 }

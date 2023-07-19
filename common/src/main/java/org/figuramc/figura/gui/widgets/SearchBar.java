@@ -1,9 +1,9 @@
 package org.figuramc.figura.gui.widgets;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
@@ -31,16 +31,16 @@ public class SearchBar extends TextField {
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void render(PoseStack poseStack, int mouseX, int mouseY, float delta) {
         clearButton.setVisible(!getField().getValue().isEmpty());
-        super.render(gui, mouseX, mouseY, delta);
+        super.render(poseStack, mouseX, mouseY, delta);
     }
 
     @Override
-    protected void renderHint(GuiGraphics gui) {
-        super.renderHint(gui);
+    protected void renderHint(PoseStack poseStack) {
+        super.renderHint(poseStack);
         Font font = Minecraft.getInstance().font;
-        gui.drawString(font, SEARCH_ICON, getX() + getWidth() - font.width(SEARCH_ICON) - 4, getY() + (int) ((getHeight() - font.lineHeight + 1) / 2f), 0xFFFFFF);
+        font.drawShadow(poseStack, SEARCH_ICON, getX() + getWidth() - font.width(SEARCH_ICON) - 4, getY() + (int) ((getHeight() - font.lineHeight + 1) / 2f), 0xFFFFFF);
     }
 
     @Override

@@ -3,7 +3,6 @@ package org.figuramc.figura.gui.widgets;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.narration.NarratedElementType;
@@ -71,28 +70,27 @@ public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void render(PoseStack poseStack, int mouseX, int mouseY, float delta) {
         hovered = null;
 
         if (!isVisible())
             return;
 
-        renderBackground(gui);
-        renderText(gui, mouseX, mouseY, delta);
+        renderBackground(poseStack);
+        renderText(poseStack, mouseX, mouseY, delta);
     }
 
-    private void renderBackground(GuiGraphics gui) {
+    private void renderBackground(PoseStack poseStack) {
         if (backgroundColor == null)
             return;
 
         int x = getX();
         int y = getY();
 
-        gui.fill(x, y, x + width, y + height, backgroundColor);
+        UIHelper.fill(poseStack, x, y, x + width, y + height, backgroundColor);
     }
 
-    private void renderText(GuiGraphics gui, int mouseX, int mouseY, float delta) {
-        PoseStack pose = gui.pose();
+    private void renderText(PoseStack pose, int mouseX, int mouseY, float delta) {
         pose.pushPose();
         pose.translate(this.x, getY(), 0);
         pose.scale(scale, scale, scale);
@@ -130,9 +128,9 @@ public class Label implements FiguraWidget, GuiEventListener, NarratableEntry {
 
             //render text
             if (outlineColor != null) {
-                UIHelper.renderOutlineText(gui, font, text, x, y, 0xFFFFFF, outlineColor);
+                UIHelper.renderOutlineText(pose, font, text, x, y, 0xFFFFFF, outlineColor);
             } else {
-                gui.drawString(font, text, x, y, 0xFFFFFF + (alphaPrecise << 24));
+                font.drawShadow(pose, text, x, y, 0xFFFFFF + (alphaPrecise << 24));
             }
 
             y += height;

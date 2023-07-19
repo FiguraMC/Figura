@@ -2,17 +2,13 @@ package org.figuramc.figura.gui.screens;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import org.figuramc.figura.gui.widgets.FiguraTickable;
-import org.figuramc.figura.gui.widgets.PanelSelectorWidget;
+import org.figuramc.figura.gui.widgets.*;
 import org.figuramc.figura.config.Configs;
-import org.figuramc.figura.gui.widgets.ContextMenu;
-import org.figuramc.figura.gui.widgets.FiguraRemovable;
 import org.figuramc.figura.lua.api.ClientAPI;
 import org.figuramc.figura.mixin.gui.ScreenAccessor;
 import org.figuramc.figura.utils.FiguraIdentifier;
@@ -78,50 +74,45 @@ public abstract class AbstractPanelScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+    public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
         //setup figura framebuffer
         //UIHelper.useFiguraGuiFramebuffer();
 
         //render background
-        this.renderBackground(gui, delta);
+        this.renderBackground(stack, delta);
 
         //render contents
-        super.render(gui, mouseX, mouseY, delta);
+        super.render(stack, mouseX, mouseY, delta);
 
         //render overlays
-        this.renderOverlays(gui, mouseX, mouseY, delta);
+        this.renderOverlays(stack, mouseX, mouseY, delta);
 
         //restore vanilla framebuffer
         //UIHelper.useVanillaFramebuffer();
     }
 
-    public void renderBackground(GuiGraphics gui, float delta) {
+    public void renderBackground(PoseStack stack, float delta) {
         //render
         float speed = Configs.BACKGROUND_SCROLL_SPEED.tempValue * 0.125f;
         for (ResourceLocation background : BACKGROUNDS) {
-            UIHelper.renderAnimatedBackground(gui, background, 0, 0, this.width, this.height, 64, 64, speed, delta);
+            UIHelper.renderAnimatedBackground(stack, background, 0, 0, this.width, this.height, 64, 64, speed, delta);
             speed /= 0.5;
         }
     }
 
-    public void renderOverlays(GuiGraphics gui, int mouseX, int mouseY, float delta) {
-        //fps
-        if (Configs.GUI_FPS.value)
-            gui.drawString(Minecraft.getInstance().font, ClientAPI.getFPS() + " fps", 1, 1, 0xFFFFFF);
-
+    public void renderOverlays(PoseStack stack, int mouseX, int mouseY, float delta) {
         //render context
         if (contextMenu != null && contextMenu.isVisible()) {
             //translate the stack here because of nested contexts
-            PoseStack pose = gui.pose();
-            pose.pushPose();
-            pose.translate(0f, 0f, 500f);
-            contextMenu.render(gui, mouseX, mouseY, delta);
-            pose.popPose();
+            stack.pushPose();
+            stack.translate(0f, 0f, 500f);
+            contextMenu.render(stack, mouseX, mouseY, delta);
+            stack.popPose();
         }
 
         //render tooltip
         if (tooltip != null)
-            UIHelper.renderTooltip(gui, tooltip, mouseX, mouseY, true);
+            UIHelper.renderTooltip(stack, tooltip, mouseX, mouseY, true);
 
         tooltip = null;
     }
