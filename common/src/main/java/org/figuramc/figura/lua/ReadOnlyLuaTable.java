@@ -32,7 +32,7 @@ public class ReadOnlyLuaTable extends LuaTable {
             );
         }
         LuaValue mt = table.getmetatable();
-        if (!(!(mt instanceof LuaTable metaTable) || metaTable instanceof ReadOnlyLuaTable || manager == null || manager.getMetatables().containsValue(metaTable)))
+        if (mt instanceof LuaTable metaTable)
             setMetaTable(metaTable);
     }
 
@@ -46,7 +46,7 @@ public class ReadOnlyLuaTable extends LuaTable {
             seen.put(value, new ReadOnlyLuaTable(value, seen, manager));
         } else if (value.isuserdata()) {
             Object userdata = value.checkuserdata();
-            seen.put(value, LuaValue.userdataOf(userdata instanceof LuaUserdata u ? u.m_instance : userdata));
+            seen.put(value, LuaValue.userdataOf(userdata instanceof LuaUserdata u ? u.m_instance : userdata).setmetatable(value.getmetatable()));
         } else {
             seen.put(value, value);
         }
