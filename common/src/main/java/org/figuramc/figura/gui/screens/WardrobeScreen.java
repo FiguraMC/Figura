@@ -176,9 +176,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
         if (NetworkStuff.motd != null && motdHeight > 32) {
             addRenderableWidget(new BackendMessageWidget(this.width - panels, infoWidget.getY() + infoWidget.getHeight() + 21, panels - 8, motdHeight, NetworkStuff.motd, Minecraft.getInstance().font));
         }
-
-        ChatScreen
-
+        
         // panic warning - always added last, on top
         addRenderableWidget(panic = new Label(
                 FiguraText.of("gui.panic", Configs.PANIC_BUTTON.keyBind.getTranslatedKeyMessage()).withStyle(ChatFormatting.YELLOW),
