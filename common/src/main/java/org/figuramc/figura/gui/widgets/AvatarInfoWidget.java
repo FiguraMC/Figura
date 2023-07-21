@@ -49,7 +49,7 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
         this.font = Minecraft.getInstance().font;
 
         this.width = width;
-        this.height = (font.lineHeight + 4) * TITLES.size() * 2 + 4; //font + spacing + border
+        this.height = (font.lineHeight + 4) * TITLES.size() * 2 + 4; // font + spacing + border
         this.maxSize = maxSize;
     }
 
@@ -61,13 +61,13 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
         ELLIPSIS.setStyle(accent);
         UNKNOWN.setStyle(accent);
 
-        //update values
+        // update values
         Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
         if (avatar != null && avatar.nbt != null) {
-            values.set(0, avatar.name == null || avatar.name.isBlank() ? UNKNOWN : Component.literal(avatar.name).setStyle(accent)); //name
-            values.set(1, avatar.authors == null || avatar.authors.isBlank() ? UNKNOWN : Component.literal(avatar.authors).setStyle(accent)); //authors
-            values.set(2, Component.literal(MathUtils.asFileSize(avatar.fileSize)).setStyle(accent)); //size
-            values.set(3, Component.literal(String.valueOf(avatar.complexity.pre)).setStyle(accent)); //complexity
+            values.set(0, avatar.name == null || avatar.name.isBlank() ? UNKNOWN : Component.literal(avatar.name).setStyle(accent)); // name
+            values.set(1, avatar.authors == null || avatar.authors.isBlank() ? UNKNOWN : Component.literal(avatar.authors).setStyle(accent)); // authors
+            values.set(2, Component.literal(MathUtils.asFileSize(avatar.fileSize)).setStyle(accent)); // size
+            values.set(3, Component.literal(String.valueOf(avatar.complexity.pre)).setStyle(accent)); // complexity
         } else {
             for (int i = 0; i < TITLES.size(); i++) {
                 values.set(i, UNKNOWN);
@@ -79,36 +79,36 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
     public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
         if (!visible) return;
 
-        //prepare vars
+        // prepare vars
         int x = this.x + width / 2;
         int y = this.y + 4;
         int height = font.lineHeight + 4;
         int maxLines = (maxSize - 8) / height;
 
-        //special author stuff
+        // special author stuff
         int authorFreeLines = maxLines - 7;
         Component authors = values.get(1);
         List<Component> authorLines = authors == null ? Collections.emptyList() : TextUtils.splitText(authors, "\n");
         int authorUsedLines = Math.min(authorLines.size(), authorFreeLines);
 
-        //set new widget height
+        // set new widget height
         int newHeight = height * TITLES.size() * 2 + 4 + height * (authorUsedLines - 1);
         this.height = Math.min(newHeight + height, maxSize);
         y += (this.height - newHeight) / 2;
 
-        //render background
+        // render background
         UIHelper.blitSliced(gui, this.x, this.y, this.width, this.height, UIHelper.OUTLINE_FILL);
 
-        //render texts
+        // render texts
         for (int i = 0; i < TITLES.size(); i++) {
-            // -- title -- //
+            // -- title -- // 
 
             Component title = TITLES.get(i);
             if (title != null)
                 gui.drawCenteredString(font, title, x, y, 0xFFFFFF);
             y += height;
 
-            // -- value -- //
+            // -- value -- // 
 
             Component value = values.get(i);
             if (value == null) {
@@ -116,12 +116,12 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
                 continue;
             }
 
-            //default rendering
+            // default rendering
             if (i != 1) {
                 Component toRender = TextUtils.trimToWidthEllipsis(font, value, width - 10, ELLIPSIS);
                 gui.drawCenteredString(font, toRender, x, y, 0xFFFFFF);
 
-                //tooltip
+                // tooltip
                 if (value != toRender && UIHelper.isMouseOver(this.x, y - height, width, height * 2 - 4, mouseX, mouseY))
                     UIHelper.setTooltip(value);
 
@@ -129,7 +129,7 @@ public class AvatarInfoWidget implements FiguraWidget, FiguraTickable, GuiEventL
                 continue;
             }
 
-            //author special rendering
+            // author special rendering
             for (int j = 0; j < authorUsedLines; j++) {
                 Component text = authorLines.get(j);
                 Component newText = TextUtils.trimToWidthEllipsis(font, text, width - 10, ELLIPSIS);

@@ -32,7 +32,7 @@ public class PanelSelectorWidget extends AbstractContainerElement {
                 add(s -> Pair.of(new HelpScreen(s), PanelIcon.HELP));
     }};
 
-    //TODO - remove this when we actually implement those panels
+    // TODO - remove this when we actually implement those panels
     private static final List<Integer> PANELS_BLACKLIST = List.of(0, 1);
 
     private final List<PanelButton> buttons = new ArrayList<>();
@@ -42,29 +42,29 @@ public class PanelSelectorWidget extends AbstractContainerElement {
     public PanelSelectorWidget(Screen parentScreen, int x, int y, int width, Class<? extends Screen> selected) {
         super(x, y, width, 28);
 
-        //buttons
+        // buttons
 
-        //size variables
+        // size variables
         int buttonCount = PANELS.size() - (FiguraMod.DEBUG_MODE ? 0 : PANELS_BLACKLIST.size());
         int buttonWidth = Math.min(Math.max((width - 4) / buttonCount - 4, 24), 96) + 4;
         int spacing = (width - (4 + buttonWidth * buttonCount)) / 2;
 
         for (int i = 0; i < PANELS.size(); i++) {
-            //skip blacklist
+            // skip blacklist
             if (!FiguraMod.DEBUG_MODE && PANELS_BLACKLIST.contains(i))
                 continue;
 
-            //get button data
+            // get button data
             Pair<Screen, PanelIcon> panel = PANELS.get(i).apply(parentScreen);
             Screen s = panel.getFirst();
             PanelIcon icon = panel.getSecond();
             int buttonX = 4 + buttonWidth * buttons.size() + spacing;
 
-            //create button
+            // create button
             createPanelButton(s, icon, s.getClass() == selected, buttonX, buttonWidth - 4);
         }
 
-        //locked buttons
+        // locked buttons
         if (FiguraMod.DEBUG_MODE) {
             for (int i : PANELS_BLACKLIST) {
                 PanelButton button = buttons.get(i);
@@ -81,12 +81,12 @@ public class PanelSelectorWidget extends AbstractContainerElement {
     }
 
     private void createPanelButton(Screen panel, PanelIcon icon, boolean toggled, int x, int width) {
-        //create button
+        // create button
         PanelButton button = new PanelButton(x, getY(), width, getHeight() - 4, panel.getTitle(), icon, this, bx -> Minecraft.getInstance().setScreen(panel));
         button.shouldHaveBackground(false);
         if (toggled) this.selected = button;
 
-        //add button
+        // add button
         buttons.add(button);
         children.add(button);
     }
@@ -112,13 +112,13 @@ public class PanelSelectorWidget extends AbstractContainerElement {
     }
 
     private int getNextPanel(int keyCode) {
-        //numbers
+        // numbers
         if (keyCode >= 49 && keyCode <= 57)
             return keyCode - 49;
 
-        //tab
+        // tab
         if (keyCode == 258) {
-            //get current button
+            // get current button
             int index = buttons.indexOf(selected);
 
             int i = Screen.hasShiftDown() ? index - 1 : index + 1;

@@ -91,7 +91,7 @@ public class MatricesAPI {
         );
     }
 
-    //-- ROTATION MATRICES --//
+    // -- ROTATION MATRICES --// 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaMethodOverload(
@@ -232,7 +232,7 @@ public class MatricesAPI {
         return result;
     }
 
-    //-- SCALE MATRICES --//
+    // -- SCALE MATRICES --// 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {
@@ -296,7 +296,7 @@ public class MatricesAPI {
         return result;
     }
 
-    //-- TRANSLATION MATRICES --//
+    // -- TRANSLATION MATRICES --// 
     @LuaWhitelist
     @LuaMethodDoc(
             overloads = {

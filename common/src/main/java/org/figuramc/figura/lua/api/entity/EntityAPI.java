@@ -49,7 +49,7 @@ import java.util.UUID;
 public class EntityAPI<T extends Entity> {
 
     protected final UUID entityUUID;
-    protected T entity; //We just do not care about memory anymore so, just have something not wrapped in a WeakReference
+    protected T entity; // We just do not care about memory anymore so, just have something not wrapped in a WeakReference
 
     private boolean thingy = true;
     private String cacheType;
@@ -138,12 +138,6 @@ public class EntityAPI<T extends Entity> {
     public String getType() {
         checkEntity();
         return cacheType != null ? cacheType : (cacheType = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).toString());
-    }
-
-    @LuaWhitelist
-    @LuaMethodDoc("entity.is_cute")
-    public boolean isCute() {
-        return true;
     }
 
     @LuaWhitelist

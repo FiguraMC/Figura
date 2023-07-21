@@ -32,7 +32,7 @@ import java.util.UUID;
 
 public class PermissionsScreen extends AbstractPanelScreen {
 
-    // -- widgets -- //
+    // -- widgets -- // 
     private PlayerList playerList;
     private EntityPreview entityWidget;
 
@@ -45,7 +45,7 @@ public class PermissionsScreen extends AbstractPanelScreen {
     private Button resetButton;
     private SwitchButton precisePermissions;
 
-    // -- widget logic -- //
+    // -- widget logic -- // 
     private float listYPrecise;
     private float expandYPrecise;
     private float resetYPrecise;
@@ -69,10 +69,10 @@ public class PermissionsScreen extends AbstractPanelScreen {
         int modelSize = 11 * entitySize / 29;
         int entityX = Math.max(middle + (listWidth - entitySize) / 2 + 1, middle + 2);
 
-        //entity widget
+        // entity widget
         entityWidget = new EntityPreview(entityX, 28, entitySize, entitySize, modelSize, -15f, 30f, Minecraft.getInstance().player, this);
 
-        //permission slider and list
+        // permission slider and list
         slider = new SliderWidget(middle + 2, (int) (entityWidget.getY() + entityWidget.getHeight() + lineHeight * 1.5 + 20), listWidth, 11, 1d, 5, true) {
             @Override
             public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float delta) {
@@ -108,52 +108,52 @@ public class PermissionsScreen extends AbstractPanelScreen {
         };
         permissionsList = new PermissionsList(middle + 2, height, listWidth, height - 54);
 
-        // -- left -- //
+        // -- left -- // 
 
-        //player list
+        // player list
         addRenderableWidget(playerList = new PlayerList(middle - listWidth - 2, 28, listWidth, height - 32, this));
 
-        // -- right -- //
+        // -- right -- // 
 
-        //add entity widget
+        // add entity widget
         addRenderableWidget(entityWidget);
 
-        // -- bottom -- //
+        // -- bottom -- // 
 
-        //add slider
+        // add slider
         addRenderableWidget(slider);
 
-        //reload all
+        // reload all
         int bottomButtonsWidth = (listWidth - 24) / 2 - 2;
         addRenderableWidget(reloadAll = new Button(middle + 2, height - 24, bottomButtonsWidth, 20, FiguraText.of("gui.permissions.reload_all"), null, bx -> {
             AvatarManager.clearAllAvatars();
             FiguraToast.sendToast(FiguraText.of("toast.reload_all"));
         }));
 
-        //back button
+        // back button
         addRenderableWidget(back = new Button(middle + 6 + bottomButtonsWidth, height - 24, bottomButtonsWidth, 20, FiguraText.of("gui.done"), null, bx -> onClose()));
 
-        //expand button
+        // expand button
         addRenderableWidget(expandButton = new SwitchButton( middle + listWidth - 18, height - 24, 20, 20, 0, 0, 20, new FiguraIdentifier("textures/gui/expand_v.png"), 60, 40, FiguraText.of("gui.permissions.expand_permissions.tooltip"), btn -> {
             expanded = expandButton.isToggled();
 
-            //hide widgets
+            // hide widgets
             entityWidget.setVisible(!expanded);
             slider.setVisible(!expanded);
             slider.setActive(!expanded);
             reloadAll.setVisible(!expanded);
             back.setVisible(!expanded);
 
-            //update expand button
+            // update expand button
             expandButton.setTooltip(expanded ? FiguraText.of("gui.permissions.minimize_permissions.tooltip") : FiguraText.of("gui.permissions.expand_permissions.tooltip"));
 
-            //set reset button activeness
+            // set reset button activeness
             resetButton.setActive(expanded);
         }));
 
-        //reset all button
+        // reset all button
         addRenderableWidget(resetButton = new Button(middle + 2, height, 60, 20, FiguraText.of("gui.permissions.reset"), null, btn -> {
-            //clear permissions
+            // clear permissions
             PermissionPack pack = playerList.selectedEntry.getPack();
             pack.clear();
             updatePermissions(pack);
@@ -169,7 +169,7 @@ public class PermissionsScreen extends AbstractPanelScreen {
         });
         precisePermissions.setUnderline(false);
 
-        //add permissions list
+        // add permissions list
         addRenderableWidget(permissionsList);
 
         listYPrecise = permissionsList.getY();
@@ -179,7 +179,7 @@ public class PermissionsScreen extends AbstractPanelScreen {
 
     @Override
     public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
-        //set entity to render
+        // set entity to render
         AbstractPermPackElement entity = playerList.selectedEntry;
         Level world = Minecraft.getInstance().level;
         if (world != null && entity instanceof PlayerPermPackElement player)
@@ -187,7 +187,7 @@ public class PermissionsScreen extends AbstractPanelScreen {
         else
             entityWidget.setEntity(null);
 
-        //expand animation
+        // expand animation
         float lerpDelta = MathUtils.magicDelta(0.6f, delta);
 
         listYPrecise = Mth.lerp(lerpDelta, listYPrecise, expandButton.isToggled() ? 50f : height + 1);
@@ -200,7 +200,7 @@ public class PermissionsScreen extends AbstractPanelScreen {
         this.resetButton.setY((int) resetYPrecise);
         this.precisePermissions.setY((int) resetYPrecise);
 
-        //render
+        // render
         super.render(gui, mouseX, mouseY, delta);
     }
 
@@ -220,7 +220,7 @@ public class PermissionsScreen extends AbstractPanelScreen {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        //yeet ESC key press for collapsing the card list
+        // yeet ESC key press for collapsing the card list
         if (keyCode == 256 && expandButton.isToggled()) {
             expandButton.onPress();
             return true;
@@ -274,29 +274,29 @@ public class PermissionsScreen extends AbstractPanelScreen {
     }
 
     public void updatePermissions(PermissionPack pack) {
-        //reset run action
+        // reset run action
         slider.setAction(null);
 
-        //set slider active only for players
+        // set slider active only for players
         slider.setActive(pack instanceof PermissionPack.PlayerPermissionPack && !expanded);
 
-        //set step sizes
+        // set step sizes
         slider.setMax(Permissions.Category.values().length);
 
-        //set slider progress
+        // set slider progress
         slider.setScrollProgress(pack.getCategory().index / (slider.getMax() - 1d));
 
-        //set new slider action
+        // set new slider action
         slider.setAction(scroll -> {
-            //set new permissions category
+            // set new permissions category
             Permissions.Category category = Permissions.Category.indexOf(((SliderWidget) scroll).getIntValue());
             pack.setCategory(PermissionManager.CATEGORIES.get(category));
 
-            //and update the advanced permissions
+            // and update the advanced permissions
             permissionsList.updateList(pack);
         });
 
-        //update advanced permissions list
+        // update advanced permissions list
         permissionsList.updateList(pack);
     }
 }

@@ -61,7 +61,7 @@ public class ItemTask extends RenderTask {
         return super.shouldRender() && item != null && !item.isEmpty();
     }
 
-    // -- lua -- //
+    // -- lua -- // 
 
 
     @LuaWhitelist

@@ -368,7 +368,7 @@ public class WorldAPI {
         }
     }
 
-    //@LuaWhitelist
+    // @LuaWhitelist
     public HashMap<String, Object> raycastBlock(boolean fluid, Object x, Object y, Double z, Object w, Double t, Double h) {
         FiguraVec3 start, end;
 
@@ -389,7 +389,7 @@ public class WorldAPI {
         return map;
     }
 
-    //@LuaWhitelist
+    // @LuaWhitelist
     public HashMap<String, Object> raycastEntity(Object x, Object y, Double z, Object w, Double t, Double h) {
         FiguraVec3 start, end;
 

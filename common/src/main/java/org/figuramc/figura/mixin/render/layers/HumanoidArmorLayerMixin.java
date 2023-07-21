@@ -33,7 +33,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(HumanoidArmorLayer.class)
 public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends HumanoidModel<T>, A extends HumanoidModel<T>> extends RenderLayer<T, M> implements HumanoidArmorLayerAccessor<T, M, A> {
@@ -49,7 +48,7 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
     protected abstract void renderArmorPiece(PoseStack matrices, MultiBufferSource vertexConsumers, T entity, EquipmentSlot armorSlot, int light, A model);
 
     @Unique
-    private Avatar avatar;
+    private Avatar figura$avatar;
 
     public HumanoidArmorLayerMixin(RenderLayerParent<T, M> context) {
         super(context);
@@ -57,8 +56,8 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
 
     @Inject(at = @At("HEAD"), method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V", cancellable = true)
     public void onRender(PoseStack vanillaPoseStack, MultiBufferSource multiBufferSource, int light, T livingEntity, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
-        avatar = AvatarManager.getAvatar(livingEntity);
-        if (avatar == null) return;
+        figura$avatar = AvatarManager.getAvatar(livingEntity);
+        if (figura$avatar == null) return;
 
         figura$tryRenderArmorPart(EquipmentSlot.HEAD, this::figura$helmetRenderer, vanillaPoseStack, livingEntity, multiBufferSource, light, ParentType.HelmetPivot);
         figura$tryRenderArmorPart(EquipmentSlot.CHEST, this::figura$chestplateRenderer, vanillaPoseStack, livingEntity, multiBufferSource, light, ParentType.LeftShoulderPivot, ParentType.ChestplatePivot, ParentType.RightShoulderPivot);
@@ -66,6 +65,23 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
         figura$tryRenderArmorPart(EquipmentSlot.FEET, this::figura$bootsRenderer, vanillaPoseStack, livingEntity, multiBufferSource, light, ParentType.LeftBootPivot, ParentType.RightBootPivot);
 
         ci.cancel();
+    }
+
+    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/layers/HumanoidArmorLayer;usesInnerModel(Lnet/minecraft/world/entity/EquipmentSlot;)Z"), method = "renderArmorPiece")
+    public void onRenderArmorPiece(PoseStack poseStack, MultiBufferSource multiBufferSource, T livingEntity, EquipmentSlot equipmentSlot, int i, A humanoidModel, CallbackInfo ci) {
+        VanillaPart part = RenderUtils.partFromSlot(figura$avatar, equipmentSlot);
+        if (part != null) {
+            part.save(humanoidModel);
+            part.preTransform(humanoidModel);
+            part.posTransform(humanoidModel);
+        }
+    }
+
+    @Inject(at = @At("RETURN"), method = "renderArmorPiece")
+    public void postRenderArmorPiece(PoseStack poseStack, MultiBufferSource multiBufferSource, T livingEntity, EquipmentSlot equipmentSlot, int i, A humanoidModel, CallbackInfo ci) {
+        VanillaPart part = RenderUtils.partFromSlot(figura$avatar, equipmentSlot);
+        if (part != null)
+            part.restore(humanoidModel);
     }
 
     @Unique
@@ -81,7 +97,7 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
             for (ParentType parentType : parentTypes) {
 
                 // Try to render the pivot part
-                boolean renderedPivot = avatar.pivotPartRender(parentType, stack -> {
+                boolean renderedPivot = figura$avatar.pivotPartRender(parentType, stack -> {
                     stack.pushPose();
                     figura$prepareArmorRender(stack);
                     renderer.renderArmorPart(stack, vertexConsumers, light, armorModel, entity, itemStack, slot, armorItem, parentType);
@@ -148,14 +164,14 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
 
         if (parentType == ParentType.LeftLeggingPivot) {
             poseStack.pushPose();
-            poseStack.translate(2 / 16f, -12 / 16f, 0);
+            poseStack.translate(-2 / 16f, -12 / 16f, 0);
             figura$renderArmorPart(model.leftLeg, poseStack, vertexConsumers, light, entity, itemStack, armorSlot, armorItem);
             poseStack.popPose();
         }
 
         if (parentType == ParentType.RightLeggingPivot) {
             poseStack.pushPose();
-            poseStack.translate(-2 / 16f, -12 / 16f, 0);
+            poseStack.translate(2 / 16f, -12 / 16f, 0);
             figura$renderArmorPart(model.rightLeg, poseStack, vertexConsumers, light, entity, itemStack, armorSlot, armorItem);
             poseStack.popPose();
         }
@@ -226,6 +242,6 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
 
     @Inject(at = @At("RETURN"), method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V")
     public void postRender(PoseStack poseStack, MultiBufferSource multiBufferSource, int i, T livingEntity, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
-        avatar = null;
+        figura$avatar = null;
     }
 }

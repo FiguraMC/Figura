@@ -29,12 +29,12 @@ public class PlayerTabOverlayMixin {
 
     @Inject(at = @At("RETURN"), method = "getNameForDisplay", cancellable = true)
     private void getPlayerName(PlayerInfo playerInfo, CallbackInfoReturnable<Component> cir) {
-        //get config
+        // get config
         int config = Configs.LIST_NAMEPLATE.value;
         if (config == 0 || AvatarManager.panic)
             return;
 
-        //apply customization
+        // apply customization
         Component text = cir.getReturnValue();
         Component name = Component.literal(playerInfo.getProfile().getName());
 
@@ -45,13 +45,13 @@ public class PlayerTabOverlayMixin {
         Component replacement = custom != null && custom.getJson() != null && avatar.permissions.get(Permissions.NAMEPLATE_EDIT) == 1 ?
                 TextUtils.replaceInText(custom.getJson().copy(), "\n|\\\\n", " ") : name;
 
-        //name
+        // name
         replacement = TextUtils.replaceInText(replacement, "\\$\\{name\\}", name);
 
-        //badges
+        // badges
         replacement = Badges.appendBadges(replacement, uuid, config > 1);
 
-        //trim
+        // trim
         replacement = TextUtils.trim(replacement);
 
         text = TextUtils.replaceInText(text, "\\b" + Pattern.quote(playerInfo.getProfile().getName()) + "\\b", replacement);

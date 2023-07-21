@@ -42,11 +42,11 @@ public class AvatarWizardList extends AbstractList {
         int width = getWidth();
         int height = getHeight();
 
-        //background and scissors
+        // background and scissors
         UIHelper.blitSliced(gui, x, y, width, height, UIHelper.OUTLINE_FILL);
         enableScissors(gui);
 
-        //scrollbar
+        // scrollbar
         Font font = Minecraft.getInstance().font;
         int lineHeight = font.lineHeight + 8;
         int entryHeight = 24;
@@ -68,7 +68,7 @@ public class AvatarWizardList extends AbstractList {
         scrollBar.setVisible(totalHeight > height);
         scrollBar.setScrollRatio(entryHeight, totalHeight - height);
 
-        //render list
+        // render list
         int yOffset = scrollBar.isVisible() ? (int) -(Mth.lerp(scrollBar.getScrollProgress(), -4, totalHeight - height)) : 4;
         for (Map.Entry<Component, List<GuiEventListener>> entry : map.entrySet()) {
             List<GuiEventListener> value = entry.getValue();
@@ -76,7 +76,7 @@ public class AvatarWizardList extends AbstractList {
                 continue;
 
             int newY = yOffset + lineHeight;
-            //elements
+            // elements
             for (GuiEventListener w : entry.getValue()) {
                 FiguraWidget widget = (FiguraWidget) w;
                 if (widget.isVisible()) {
@@ -88,21 +88,21 @@ public class AvatarWizardList extends AbstractList {
             if (newY == yOffset + lineHeight)
                 continue;
 
-            //category
+            // category
             gui.drawCenteredString(font, entry.getKey(), x + width / 2, y + yOffset + 4, 0xFFFFFF);
             yOffset = newY;
         }
 
-        //children
+        // children
         super.render(gui, mouseX, mouseY, delta);
 
-        //reset scissor
+        // reset scissor
         gui.disableScissor();
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        //fix mojang focusing for text fields
+        // fix mojang focusing for text fields
         for (GuiEventListener widget : children()) {
             if (widget instanceof TextField field)
                 field.getField().setFocused(field.isEnabled() && field.isMouseOver(mouseX, mouseY));
@@ -194,7 +194,7 @@ public class AvatarWizardList extends AbstractList {
 
         @Override
         protected void renderDefaultTexture(GuiGraphics gui, float delta) {
-            //button
+            // button
             PoseStack pose = gui.pose();
             pose.pushPose();
             pose.translate(getWidth() - 30, 0, 0);
@@ -204,7 +204,7 @@ public class AvatarWizardList extends AbstractList {
 
         @Override
         protected void renderText(GuiGraphics gui, float delta) {
-            //name
+            // name
             Font font = Minecraft.getInstance().font;
             MutableComponent name = getMessage().copy();
             if (this.isToggled())

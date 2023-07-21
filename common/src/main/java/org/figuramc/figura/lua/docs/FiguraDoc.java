@@ -32,7 +32,7 @@ public abstract class FiguraDoc {
         this.description = description;
     }
 
-    // -- Methods -- //
+    // -- Methods -- // 
 
     public abstract int print();
 
@@ -50,7 +50,7 @@ public abstract class FiguraDoc {
         return json;
     }
 
-    // -- Special prints :p -- //
+    // -- Special prints :p -- // 
 
     public static int printRoot() {
         FiguraMod.sendChatMessage(HEADER.copy()
@@ -60,7 +60,7 @@ public abstract class FiguraDoc {
         return 1;
     }
 
-    // -- Subtypes -- //
+    // -- Subtypes -- // 
 
     public static class ClassDoc extends FiguraDoc {
 
@@ -82,7 +82,7 @@ public abstract class FiguraDoc {
             else
                 superclass = null;
 
-            //Find methods
+            // Find methods
             documentedMethods = new ArrayList<>();
             Set<String> foundIndices = new HashSet<>();
             for (Method method : clazz.getDeclaredMethods())
@@ -90,7 +90,7 @@ public abstract class FiguraDoc {
             for (Method method : clazz.getMethods())
                 parseMethodIfNeeded(foundIndices, children, typeDoc, method);
 
-            //Find fields
+            // Find fields
             documentedFields = new ArrayList<>();
             for (Field field : clazz.getDeclaredFields())
                 parseFieldIfNeeded(children, foundIndices, field);
@@ -98,7 +98,7 @@ public abstract class FiguraDoc {
                 parseFieldIfNeeded(children, foundIndices, field);
         }
 
-        //Parse docs for this method if none were already found and stored in "foundIndices".
+        // Parse docs for this method if none were already found and stored in "foundIndices".
         private void parseMethodIfNeeded(Set<String> foundIndices, Map<String, List<FiguraDoc>> children, LuaTypeDoc typeDoc, Method method) {
             String name = method.getName();
             if (foundIndices.contains(name) || !method.isAnnotationPresent(LuaMethodDoc.class))
@@ -110,7 +110,7 @@ public abstract class FiguraDoc {
             documentedMethods.add(new MethodDoc(method, doc, childList, typeDoc.name()));
         }
 
-        //Parse docs for this field if none were already found and stored in "foundIndices".
+        // Parse docs for this field if none were already found and stored in "foundIndices".
         private void parseFieldIfNeeded(Map<String, List<FiguraDoc>> children, Set<String> foundIndices, Field field) {
             String name = field.getName();
             if (foundIndices.contains(name) || !field.isAnnotationPresent(LuaFieldDoc.class))
@@ -124,7 +124,7 @@ public abstract class FiguraDoc {
 
         @Override
         public int print() {
-            //header
+            // header
             MutableComponent message = HEADER.copy()
                     .append("\n\n")
                     .append(Component.literal("• ")
@@ -132,7 +132,7 @@ public abstract class FiguraDoc {
                             .append(":")
                             .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style));
 
-            //type
+            // type
             message.append("\n\t")
                     .append(Component.literal("• " + name).withStyle(ColorUtils.Colors.MAYA_BLUE.style));
 
@@ -144,7 +144,7 @@ public abstract class FiguraDoc {
                         .append(")");
             }
 
-            //description
+            // description
             message.append("\n\n")
                     .append(Component.literal("• ")
                             .append(FiguraText.of("docs.text.description"))
@@ -162,14 +162,14 @@ public abstract class FiguraDoc {
 
         @Override
         public LiteralArgumentBuilder<FiguraClientCommandSource> getCommand() {
-            //this
+            // this
             LiteralArgumentBuilder<FiguraClientCommandSource> command = super.getCommand();
 
-            //methods
+            // methods
             for (FiguraDoc.MethodDoc methodDoc : documentedMethods)
                 command.then(methodDoc.getCommand());
 
-            //fields
+            // fields
             for (FiguraDoc.FieldDoc fieldDoc : documentedFields)
                 command.then(fieldDoc.getCommand());
 
@@ -232,10 +232,10 @@ public abstract class FiguraDoc {
 
         @Override
         public int print() {
-            //header
+            // header
             MutableComponent message = HEADER.copy();
 
-            //type
+            // type
             message.append("\n\n")
                     .append(Component.literal("• ")
                             .append(FiguraText.of("docs.text.function"))
@@ -244,7 +244,7 @@ public abstract class FiguraDoc {
                     .append("\n\t")
                     .append(Component.literal("• " + name).withStyle(ColorUtils.Colors.MAYA_BLUE.style));
 
-            //aliases
+            // aliases
             if (aliases.length > 0) {
                 message.append("\n\n")
                         .append(Component.literal("• ")
@@ -260,7 +260,7 @@ public abstract class FiguraDoc {
                 }
             }
 
-            //syntax
+            // syntax
             message.append("\n\n")
                     .append(Component.literal("• ")
                             .append(FiguraText.of("docs.text.syntax"))
@@ -269,7 +269,7 @@ public abstract class FiguraDoc {
 
             for (int i = 0; i < parameterTypes.length; i++) {
 
-                //name
+                // name
                 message.append("\n\t")
                         .append(Component.literal("• ").withStyle(ColorUtils.Colors.MAYA_BLUE.style))
                         .append(Component.literal("<" + typeName + ">").withStyle(ChatFormatting.YELLOW))
@@ -278,7 +278,7 @@ public abstract class FiguraDoc {
                         .append("(");
 
                 for (int j = 0; j < parameterTypes[i].length; j++) {
-                    //type and arg
+                    // type and arg
                     message.append(FiguraDocsManager.getClassText(parameterTypes[i][j]).withStyle(ChatFormatting.YELLOW))
                             .append(" ")
                             .append(Component.literal(parameterNames[i][j]).withStyle(ChatFormatting.WHITE));
@@ -287,13 +287,13 @@ public abstract class FiguraDoc {
                         message.append(", ");
                 }
 
-                //return
+                // return
                 message.append(") → ")
                         .append(FiguraText.of("docs.text.returns").append(" ").withStyle(ColorUtils.Colors.MAYA_BLUE.style))
                         .append(FiguraDocsManager.getClassText(returnTypes[i]).withStyle(ChatFormatting.YELLOW));
             }
 
-            //description
+            // description
             message.append("\n\n")
                     .append(Component.literal("• ")
                             .append(FiguraText.of("docs.text.description"))
@@ -376,10 +376,10 @@ public abstract class FiguraDoc {
 
         @Override
         public int print() {
-            //header
+            // header
             MutableComponent message = HEADER.copy()
 
-                    //type
+                    // type
                     .append("\n\n")
                     .append(Component.literal("• ")
                             .append(FiguraText.of("docs.text.field"))
@@ -394,7 +394,7 @@ public abstract class FiguraDoc {
                             .append(")")
                             .withStyle(editable ? ChatFormatting.GREEN : ChatFormatting.DARK_RED));
 
-            //description
+            // description
             message.append("\n\n")
                     .append(Component.literal("• ")
                             .append(FiguraText.of("docs.text.description"))

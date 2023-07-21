@@ -51,7 +51,7 @@ public class FiguraMod {
     public static boolean processingKeybind;
 
     public static void onClientInit() {
-        //init managers
+        // init managers
         EntryPointManager.init();
         ConfigManager.init();
         PermissionManager.init();
@@ -85,27 +85,27 @@ public class FiguraMod {
         ticks++;
     }
 
-    // -- Helper Functions -- //
+    // -- Helper Functions -- // 
 
-    //debug print
+    // debug print
     public static void debug(String str, Object... args) {
         if (DEBUG_MODE) LOGGER.info("[DEBUG] " + str, args);
         else LOGGER.debug(str, args);
     }
 
-    //mod root directory
+    // mod root directory
     public static Path getFiguraDirectory() {
         String config = Configs.MAIN_DIR.value;
         Path p = config.isBlank() ? GAME_DIR.resolve(MOD_ID) : Path.of(config);
         return IOUtils.createDirIfNeeded(p);
     }
 
-    //mod cache directory
+    // mod cache directory
     public static Path getCacheDirectory() {
         return IOUtils.getOrCreateDir(getFiguraDirectory(), "cache");
     }
 
-    //get local player uuid
+    // get local player uuid
     public static UUID getLocalPlayerUUID() {
         Entity player = Minecraft.getInstance().player;
         return player != null ? player.getUUID() : Minecraft.getInstance().getUser().getGameProfile().getId();
@@ -150,7 +150,7 @@ public class FiguraMod {
         return Style.EMPTY.withColor(color);
     }
 
-    // -- profiler -- //
+    // -- profiler -- // 
 
     public static void pushProfiler(String name) {
         Minecraft.getInstance().getProfiler().push(name);
@@ -180,13 +180,13 @@ public class FiguraMod {
     }
 
     public enum Links {
-        Wiki("https://github.com/KitCat962/FiguraRewriteRewrite/wiki", ColorUtils.Colors.PINK.style),
-        Kofi("https://ko-fi.com/skyrina", ColorUtils.Colors.KOFI.style),
-        Discord("https://discord.gg/nbN8KZyhUq", ColorUtils.Colors.DISCORD.style),
-        Github("https://github.com/Kingdom-of-The-Moon/FiguraRewriteRewrite", ColorUtils.Colors.GITHUB.style),
-        Modrinth("https://modrinth.com/mod/figura", ColorUtils.Colors.MODRINTH.style),
-        Curseforge("https://www.curseforge.com/minecraft/mc-mods/figura", ColorUtils.Colors.CURSEFORGE.style),
-        LuaManual( "https://www.lua.org/manual/5.2/manual.html", ColorUtils.Colors.LUA_LOG.style);
+        Wiki("https:// github.com/KitCat962/FiguraRewriteRewrite/wiki", ColorUtils.Colors.PINK.style),
+        Kofi("https:// ko-fi.com/skyrina", ColorUtils.Colors.KOFI.style),
+        Discord("https:// discord.gg/nbN8KZyhUq", ColorUtils.Colors.DISCORD.style),
+        Github("https:// github.com/Kingdom-of-The-Moon/FiguraRewriteRewrite", ColorUtils.Colors.GITHUB.style),
+        Modrinth("https:// modrinth.com/mod/figura", ColorUtils.Colors.MODRINTH.style),
+        Curseforge("https:// www.curseforge.com/minecraft/mc-mods/figura", ColorUtils.Colors.CURSEFORGE.style),
+        LuaManual( "https:// www.lua.org/manual/5.2/manual.html", ColorUtils.Colors.LUA_LOG.style);
 
         public final String url;
         public final Style style;

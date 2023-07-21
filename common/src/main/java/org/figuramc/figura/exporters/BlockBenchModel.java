@@ -21,7 +21,7 @@ public class BlockBenchModel {
     private final JsonArray textures = new JsonArray();
 
     public BlockBenchModel(String format) {
-        //append metadata
+        // append metadata
         JsonObject meta = new JsonObject();
         meta.addProperty("format_version", VERSION);
         meta.addProperty("model_format", format);
@@ -35,7 +35,7 @@ public class BlockBenchModel {
         root.add("resolution", resolution);
     }
 
-    //returns the image id
+    // returns the image id
     public int addImage(String name, String source) {
         int id = textures.size();
 

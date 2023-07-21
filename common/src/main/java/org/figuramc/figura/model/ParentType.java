@@ -55,13 +55,13 @@ public enum ParentType {
     public final FiguraVec3 offset;
     public final String[] aliases;
 
-    //If this parent part renders separately from the rest of the model
+    // If this parent part renders separately from the rest of the model
     public final boolean isSeparate;
 
-    //If this parent part serves as a modification for a vanilla rendering feature, and *not* to actually render blockbench cubes
+    // If this parent part serves as a modification for a vanilla rendering feature, and *not* to actually render blockbench cubes
     public final boolean isPivot;
 
-    //If this parent part is a render layer, were parenting matrices should be kept
+    // If this parent part is a render layer, were parenting matrices should be kept
     public final boolean isRenderLayer;
 
     ParentType(String... aliases) {

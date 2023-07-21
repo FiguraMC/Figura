@@ -46,19 +46,19 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
 
     @Inject(method = "renderNameTag(Lnet/minecraft/client/player/AbstractClientPlayer;Lnet/minecraft/network/chat/Component;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", at = @At("HEAD"), cancellable = true)
     private void renderNameTag(AbstractClientPlayer player, Component text, PoseStack stack, MultiBufferSource multiBufferSource, int light, CallbackInfo ci) {
-        //return on config or high entity distance
+        // return on config or high entity distance
         int config = Configs.ENTITY_NAMEPLATE.value;
         if (config == 0 || AvatarManager.panic || this.entityRenderDispatcher.distanceToSqr(player) > 4096)
             return;
 
-        //get customizations
+        // get customizations
         Avatar avatar = AvatarManager.getAvatarForPlayer(player.getUUID());
         EntityNameplateCustomization custom = avatar == null || avatar.luaRuntime == null ? null : avatar.luaRuntime.nameplate.ENTITY;
 
-        //customization boolean, which also is the permission check
+        // customization boolean, which also is the permission check
         boolean hasCustom = custom != null && avatar.permissions.get(Permissions.NAMEPLATE_EDIT) == 1;
 
-        //enabled
+        // enabled
         if (hasCustom && !custom.visible) {
             ci.cancel();
             return;
@@ -70,7 +70,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
 
         stack.pushPose();
 
-        //pivot
+        // pivot
         FiguraMod.pushProfiler("pivot");
         FiguraVec3 pivot;
         if (hasCustom && custom.getPivot() != null)
@@ -80,17 +80,17 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
 
         stack.translate(pivot.x, pivot.y, pivot.z);
 
-        //rotation
+        // rotation
         stack.mulPose(this.entityRenderDispatcher.cameraOrientation());
 
-        //pos
+        // pos
         FiguraMod.popPushProfiler("position");
         if (hasCustom && custom.getPos() != null) {
             FiguraVec3 pos = custom.getPos();
             stack.translate(pos.x, pos.y, pos.z);
         }
 
-        //scale
+        // scale
         FiguraMod.popPushProfiler("scale");
         float scale = 0.025f;
         FiguraVec3 scaleVec = FiguraVec3.of(-scale, -scale, scale);
@@ -99,22 +99,22 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
 
         stack.scale((float) scaleVec.x, (float) scaleVec.y, (float) scaleVec.z);
 
-        //text
+        // text
         Component name = Component.literal(player.getName().getString());
         FiguraMod.popPushProfiler("text");
         Component replacement = hasCustom && custom.getJson() != null ? custom.getJson().copy() : name;
 
-        //name
+        // name
         replacement = TextUtils.replaceInText(replacement, "\\$\\{name\\}", name);
 
-        //badges
+        // badges
         FiguraMod.popPushProfiler("badges");
         replacement = Badges.appendBadges(replacement, player.getUUID(), config > 1);
 
         FiguraMod.popPushProfiler("applyName");
         text = TextUtils.replaceInText(text, "\\b" + Pattern.quote(player.getName().getString()) + "\\b", replacement);
 
-        // * variables * //
+        // * variables * // 
         FiguraMod.popPushProfiler("colors");
         boolean notSneaking = !player.isDiscrete();
         boolean deadmau = text.getString().equals("deadmau5");
@@ -137,18 +137,18 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
             stack.popPose();
         }
 
-        //render scoreboard
+        // render scoreboard
         FiguraMod.popPushProfiler("render");
         FiguraMod.pushProfiler("scoreboard");
         boolean hasScore = false;
         if (this.entityRenderDispatcher.distanceToSqr(player) < 100) {
-            //get scoreboard
+            // get scoreboard
             Scoreboard scoreboard = player.getScoreboard();
             Objective scoreboardObjective = scoreboard.getDisplayObjective(2);
             if (scoreboardObjective != null) {
                 hasScore = true;
 
-                //render scoreboard
+                // render scoreboard
                 Score score = scoreboard.getOrCreatePlayerScore(player.getScoreboardName(), scoreboardObjective);
 
                 Component text1 = Component.literal(Integer.toString(score.getScore())).append(" ").append(scoreboardObjective.getDisplayName());
@@ -165,7 +165,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
             }
         }
 
-        //render name
+        // render name
         FiguraMod.popPushProfiler("name");
         List<Component> textList = TextUtils.splitText(text, "\n");
 

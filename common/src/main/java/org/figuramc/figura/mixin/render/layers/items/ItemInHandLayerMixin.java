@@ -44,7 +44,7 @@ public abstract class ItemInHandLayerMixin<T extends LivingEntity, M extends Ent
         if (!RenderUtils.renderArmItem(avatar, left, ci))
             return;
 
-        //pivot part
+        // pivot part
         if (avatar.pivotPartRender(left ? ParentType.LeftItemPivot : ParentType.RightItemPivot, stack -> {
             final float s = 16f;
             stack.scale(s, s, s);

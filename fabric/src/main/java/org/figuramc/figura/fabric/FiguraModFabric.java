@@ -12,8 +12,8 @@ public class FiguraModFabric extends FiguraMod implements ClientModInitializer {
     public void onInitializeClient() {
         onClientInit();
         FiguraCommandsFabric.init();
-        //we cast here to the impl that implements synchronus as the manager wants
-        //register reload listener
+        // we cast here to the impl that implements synchronus as the manager wants
+        // register reload listener
         ResourceManagerHelper managerHelper = ResourceManagerHelper.get(PackType.CLIENT_RESOURCES);
         getResourceListeners().forEach(figuraResourceListener -> managerHelper.registerReloadListener((FiguraResourceListenerImpl)figuraResourceListener));
     }

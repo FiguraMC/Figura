@@ -32,9 +32,9 @@ public class KeybindScreen extends AbstractPanelScreen {
 
         Avatar owner = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
 
-        // -- bottom buttons -- //
+        // -- bottom buttons -- // 
 
-        //reset
+        // reset
         Button reset;
         this.addRenderableWidget(reset = new Button(width / 2 - 122, height - 24, 120, 20, FiguraText.of("gui.reset_all"), null, button -> {
             if (owner == null || owner.luaRuntime == null)
@@ -46,10 +46,10 @@ public class KeybindScreen extends AbstractPanelScreen {
         }));
         reset.setActive(false);
 
-        //back
+        // back
         addRenderableWidget(new Button(width / 2 + 4, height - 24, 120, 20, FiguraText.of("gui.done"), null, bx -> onClose()));
 
-        // -- list -- //
+        // -- list -- // 
 
         int listWidth = Math.min(this.width - 8, 420);
         this.addRenderableWidget(list = new KeybindList((this.width - listWidth) / 2, 28, listWidth, height - 56, owner, reset));

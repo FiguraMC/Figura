@@ -18,7 +18,7 @@ import java.util.Map;
 @Mixin(ClickEvent.Action.class)
 public class ClickEventActionMixin {
 
-    //courtesy of https://github.com/SpongePowered/Mixin/issues/387
+    // courtesy of https:// github.com/SpongePowered/Mixin/issues/387
     @Shadow @Final @Mutable
     private static ClickEvent.Action[] $VALUES;
     @Shadow @Final

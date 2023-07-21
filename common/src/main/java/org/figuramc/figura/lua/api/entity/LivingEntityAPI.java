@@ -186,7 +186,7 @@ public class LivingEntityAPI<T extends LivingEntity> extends EntityAPI<T> {
     public String getEntityCategory() {
         checkEntity();
 
-        MobType mobType = entity.getMobType(); //why it is not an enum
+        MobType mobType = entity.getMobType(); // why it is not an enum
         if (mobType == MobType.ARTHROPOD)
             return "ARTHROPOD";
         if (mobType == MobType.UNDEAD)

@@ -54,7 +54,7 @@ public class ConfigAPI {
     }
 
 
-    // -- IO -- //
+    // -- IO -- // 
 
 
     public static Path getConfigDataDir() {
@@ -79,17 +79,17 @@ public class ConfigAPI {
         }
     }
 
-    //write
+    // write
     private void write() {
-        //parse file target
+        // parse file target
         Path path = getPath();
 
-        //parse the table
+        // parse the table
         JsonObject root = new JsonObject();
         for (LuaValue key : luaTable.keys())
             root.add(key.toString(), writeArg(luaTable.get(key), new JsonObject()));
 
-        //write file
+        // write file
         try (OutputStream fs = Files.newOutputStream(path)) {
             fs.write(GSON.toJson(root).getBytes());
         } catch (Exception e) {
@@ -171,12 +171,12 @@ public class ConfigAPI {
         obj.add("data", mat);
     }
 
-    //read
+    // read
     private void init() {
         if (loaded) return;
         luaTable = new LuaTable();
 
-        //read file
+        // read file
         Path path = getPath();
         JsonObject root;
 
@@ -244,7 +244,7 @@ public class ConfigAPI {
     }
 
 
-    // -- lua -- //
+    // -- lua -- // 
 
 
     @LuaWhitelist

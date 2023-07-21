@@ -125,7 +125,7 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
         FiguraMod.popProfiler(2);
     }
 
-    //bobbing fix courtesy of Iris; https://github.com/IrisShaders/Iris/blob/1.20/src/main/java/net/coderbot/iris/mixin/MixinModelViewBobbing.java
+    // bobbing fix courtesy of Iris; https:// github.com/IrisShaders/Iris/blob/1.20/src/main/java/net/coderbot/iris/mixin/MixinModelViewBobbing.java
     @Inject(method = "renderLevel", at = @At("HEAD"))
     private void onRenderLevel(float tickDelta, long limitTime, PoseStack stack, CallbackInfo ci) {
         hasShaders = ClientAPI.hasIrisShader();

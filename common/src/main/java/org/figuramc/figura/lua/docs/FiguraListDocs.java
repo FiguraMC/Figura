@@ -33,7 +33,7 @@ import java.util.function.Supplier;
  */
 public class FiguraListDocs {
 
-    //-- types --//
+    // -- types --// 
 
     public static final LinkedHashSet<String> KEYBINDS = new LinkedHashSet<>();
     private static final LinkedHashMap<String, List<String>> PARENT_TYPES = new LinkedHashMap<>() {{
@@ -130,11 +130,11 @@ public class FiguraListDocs {
         private JsonElement generateJson(boolean translate) {
             JsonObject object = new JsonObject();
 
-            //list properties
+            // list properties
             object.addProperty("name", name);
             object.addProperty("description", translate ? Language.getInstance().getOrDefault(FiguraText.of("docs.enum." + id).getString()) : FiguraMod.MOD_ID + "." + "docs.enum." + id);
 
-            //list entries
+            // list entries
             Collection<?> coll = get();
             if (coll.size() == 0)
                 return object;
@@ -155,10 +155,10 @@ public class FiguraListDocs {
         }
 
         private LiteralArgumentBuilder<FiguraClientCommandSource> generateCommand() {
-            //command
+            // command
             LiteralArgumentBuilder<FiguraClientCommandSource> command = LiteralArgumentBuilder.literal(id);
 
-            //display everything
+            // display everything
             command.executes(context -> {
                 Collection<?> coll = get();
                 if (coll.size() == 0) {
@@ -205,7 +205,7 @@ public class FiguraListDocs {
                 return 1;
             });
 
-            //add collection as child for easy navigation
+            // add collection as child for easy navigation
             Collection<?> coll = get();
             for (Object o : coll) {
                 String text = o instanceof Map.Entry e ? e.getKey().toString() : o.toString();
@@ -229,15 +229,15 @@ public class FiguraListDocs {
                 command.then(entry);
             }
 
-            //return
+            // return
             return command;
         }
     }
 
-    // -- doc methods -- //
+    // -- doc methods -- // 
 
     public static LiteralArgumentBuilder<FiguraClientCommandSource> getCommand() {
-        //self
+        // self
         LiteralArgumentBuilder<FiguraClientCommandSource> root = LiteralArgumentBuilder.literal("enums");
         root.executes(context -> {
             FiguraMod.sendChatMessage(FiguraDoc.HEADER.copy()

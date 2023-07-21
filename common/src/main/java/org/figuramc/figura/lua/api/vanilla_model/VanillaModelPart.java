@@ -21,14 +21,14 @@ public class VanillaModelPart extends VanillaPart {
     private final ParentType parentType;
     private final Function<EntityModel<?>, ModelPart> provider;
 
-    //backup
+    // backup
     private float backupPosX, backupPosY, backupPosZ;
     private float backupRotX, backupRotY, backupRotZ;
     private float backupScaleX, backupScaleY, backupScaleZ;
     private boolean originVisible;
     private boolean saved;
 
-    //part getters
+    // part getters
     private final FiguraVec3 originRot = FiguraVec3.of();
     private final FiguraVec3 originPos = FiguraVec3.of();
     private final FiguraVec3 originScale = FiguraVec3.of();
@@ -49,7 +49,7 @@ public class VanillaModelPart extends VanillaPart {
         ModelPart part = getPart(model);
         if (part == null) return;
 
-        //set getters
+        // set getters
         originRot.set(-part.xRot, -part.yRot, part.zRot);
         originRot.scale(180 / Math.PI);
 
@@ -60,20 +60,20 @@ public class VanillaModelPart extends VanillaPart {
 
         originScale.set(part.xScale, part.yScale, part.zScale);
 
-        //save visible
+        // save visible
         originVisible = part.visible;
 
-        //save pos
+        // save pos
         backupPosX = part.x;
         backupPosY = part.y;
         backupPosZ = part.z;
 
-        //save rot
+        // save rot
         backupRotX = part.xRot;
         backupRotY = part.yRot;
         backupRotZ = part.zRot;
 
-        //save scale
+        // save scale
         backupScaleX = part.xScale;
         backupScaleY = part.yScale;
         backupScaleZ = part.zScale;
@@ -88,14 +88,14 @@ public class VanillaModelPart extends VanillaPart {
         ModelPart part = getPart(model);
         if (part == null) return;
 
-        //pos
+        // pos
         if (pos != null) {
             part.x += (float) -pos.x;
             part.y += (float) -pos.y;
             part.z += (float) pos.z;
         }
 
-        //rot
+        // rot
         if (rot != null) {
             FiguraVec3 rot = this.rot.toRad();
             part.setRotation((float) -rot.x, (float) -rot.y, (float) rot.z);
@@ -103,7 +103,7 @@ public class VanillaModelPart extends VanillaPart {
         if (offsetRot != null)
             part.offsetRotation(offsetRot.toRad().mul(-1, -1, 1).asVec3f());
 
-        //scale
+        // scale
         if (scale != null) {
             part.xScale = (float) scale.x;
             part.yScale = (float) scale.y;
@@ -128,22 +128,22 @@ public class VanillaModelPart extends VanillaPart {
         ModelPart part = getPart(model);
         if (part == null) return;
 
-        //restore visible
+        // restore visible
         part.visible = originVisible;
 
         if (!saved) return;
 
-        //restore pos
+        // restore pos
         part.x = backupPosX;
         part.y = backupPosY;
         part.z = backupPosZ;
 
-        //restore rot
+        // restore rot
         part.xRot = backupRotX;
         part.yRot = backupRotY;
         part.zRot = backupRotZ;
 
-        //restore scale
+        // restore scale
         part.xScale = backupScaleX;
         part.yScale = backupScaleY;
         part.zScale = backupScaleZ;

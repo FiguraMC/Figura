@@ -19,7 +19,7 @@ public abstract class VanillaPart {
     protected final String name;
     protected final Avatar owner;
 
-    //transforms
+    // transforms
     protected Boolean visible;
     protected FiguraVec3 pos, rot, scale;
     protected FiguraVec3 offsetRot, offsetScale;

@@ -29,12 +29,12 @@ public class AvatarWizardScreen extends AbstractPanelScreen {
     protected void init() {
         super.init();
 
-        // -- bottom buttons -- //
+        // -- bottom buttons -- // 
 
-        //cancel
+        // cancel
         this.addRenderableWidget(new Button(width / 2 - 122, height - 24, 120, 20, FiguraText.of("gui.cancel"), null, button -> onClose()));
 
-        //done
+        // done
         addRenderableWidget(build = new Button(width / 2 + 4, height - 24, 120, 20, FiguraText.of("gui.create"), null, button -> {
             try {
                 wizard.build();
@@ -47,7 +47,7 @@ public class AvatarWizardScreen extends AbstractPanelScreen {
             onClose();
         }));
 
-        // -- wizard -- //
+        // -- wizard -- // 
 
         int width = Math.min(this.width - 8, 420) / 2;
         this.addRenderableWidget(new AvatarWizardList((this.width - width) / 2, 28, width, height - 56, wizard));

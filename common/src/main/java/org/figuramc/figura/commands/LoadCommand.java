@@ -25,10 +25,10 @@ class LoadCommand {
     private static int loadAvatar(CommandContext<FiguraClientCommandSource> context) {
         String str = StringArgumentType.getString(context, "path");
         try {
-            //parse path
+            // parse path
             Path p = LocalAvatarFetcher.getLocalAvatarDirectory().resolve(Path.of(str));
 
-            //try to load avatar
+            // try to load avatar
             AvatarManager.loadLocalAvatar(p);
             context.getSource().figura$sendFeedback(FiguraText.of("command.load.loading"));
             return 1;

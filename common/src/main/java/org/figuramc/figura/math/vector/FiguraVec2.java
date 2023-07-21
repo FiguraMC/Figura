@@ -25,7 +25,7 @@ public class FiguraVec2 extends FiguraVector<FiguraVec2, FiguraMat2> {
     @LuaFieldDoc("vector_n.y")
     public double y;
 
-    // -- cache -- //
+    // -- cache -- // 
 
     @LuaWhitelist
     @LuaMethodDoc(
@@ -47,7 +47,7 @@ public class FiguraVec2 extends FiguraVector<FiguraVec2, FiguraMat2> {
         return of().set(x, y);
     }
 
-    // -- basic math -- //
+    // -- basic math -- // 
 
     @Override
     public FiguraVec2 set(FiguraVec2 other) {
@@ -262,7 +262,7 @@ public class FiguraVec2 extends FiguraVector<FiguraVec2, FiguraMat2> {
         return new double[]{x, y};
     }
 
-    // -- utility methods -- //
+    // -- utility methods -- // 
 
     @Override
     @LuaWhitelist
@@ -469,7 +469,7 @@ public class FiguraVec2 extends FiguraVector<FiguraVec2, FiguraMat2> {
         return getString(x, y);
     }
 
-    // -- metamethods -- //
+    // -- metamethods -- // 
 
     @LuaWhitelist
     @LuaMetamethodDoc(

@@ -145,12 +145,12 @@ public class ColorUtils {
         if (string == null || string.isBlank())
             return fallback;
 
-        //parse hex color
+        // parse hex color
         StringBuilder hex = new StringBuilder(string);
 
         if (hex.toString().startsWith("#")) hex = new StringBuilder(hex.substring(1));
 
-        //short hex
+        // short hex
         if (hex.length() == 3) {
             char[] bgChar = hex.toString().toCharArray();
             hex = new StringBuilder("" + bgChar[0] + bgChar[0] + bgChar[1] + bgChar[1] + bgChar[2] + bgChar[2]);
@@ -158,7 +158,7 @@ public class ColorUtils {
             hex.append("0".repeat(Math.max(6 - hex.length(), 0)));
         }
 
-        //return
+        // return
         try {
             return intToRGB(Integer.parseInt(hex.substring(0, 6), 16));
         } catch (Exception ignored) {

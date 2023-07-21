@@ -59,7 +59,7 @@ public class S2CMessageHandler {
             return;
 
         int id = bytes.getInt();
-        bytes.get(); //sync value is ignored
+        bytes.get(); // sync value is ignored
 
         byte[] data = new byte[bytes.remaining()];
         bytes.get(data);

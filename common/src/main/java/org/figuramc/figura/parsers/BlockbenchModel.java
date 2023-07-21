@@ -5,8 +5,8 @@ import com.google.gson.JsonObject;
 
 import java.util.List;
 
-//dummy class for gson reflection
-//allows reading the model json way easier
+// dummy class for gson reflection
+// allows reading the model json way easier
 public class BlockbenchModel {
     Meta meta;
     Resolution resolution;
@@ -14,8 +14,8 @@ public class BlockbenchModel {
     Element[] elements;
     Animation[] animations;
 
-    //do not reflection-parse the outliner
-    //as it can be either an object or a string
+    // do not reflection-parse the outliner
+    // as it can be either an object or a string
     JsonArray outliner;
 
     public static class Meta {
@@ -32,7 +32,7 @@ public class BlockbenchModel {
         String source;
     }
 
-    // -- elements -- //
+    // -- elements -- // 
 
     public static class Element {
         String name;
@@ -47,13 +47,13 @@ public class BlockbenchModel {
         Boolean visibility;
         Boolean export;
 
-        //do not reflection-parse faces nor vertices
-        //since those are based on type
+        // do not reflection-parse faces nor vertices
+        // since those are based on type
         JsonObject faces;
         JsonObject vertices;
     }
 
-    //aka outliner object
+    // aka outliner object
     public static class GroupElement {
         String name;
         String uuid;
@@ -62,8 +62,8 @@ public class BlockbenchModel {
         float[] origin;
         float[] rotation;
 
-        //cannot parse children
-        //same reason as outliner
+        // cannot parse children
+        // same reason as outliner
         JsonArray children;
     }
 
@@ -76,14 +76,14 @@ public class BlockbenchModel {
     }
 
     public static class MeshFace {
-        //cannot parse mesh uv
-        //as keys are custom string
+        // cannot parse mesh uv
+        // as keys are custom string
         JsonObject uv;
         String[] vertices;
         Integer texture;
     }
 
-    // -- animations -- //
+    // -- animations -- // 
 
     public static class Animation {
         String name;
@@ -97,8 +97,8 @@ public class BlockbenchModel {
         String start_delay;
         String loop_delay;
 
-        //cannot parse animators
-        //as it keys are groups uuids or effects
+        // cannot parse animators
+        // as it keys are groups uuids or effects
         JsonObject animators;
     }
 
@@ -107,10 +107,10 @@ public class BlockbenchModel {
         String interpolation;
         float time;
 
-        //keyframe data can contain any type of object
+        // keyframe data can contain any type of object
         JsonArray data_points;
 
-        //bezier stuff
+        // bezier stuff
         float[] bezier_left_value;
         float[] bezier_right_value;
         float[] bezier_left_time;

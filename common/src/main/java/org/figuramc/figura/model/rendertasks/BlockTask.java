@@ -50,7 +50,7 @@ public class BlockTask extends RenderTask {
         return super.shouldRender() && block != null && !block.isAir();
     }
 
-    // -- lua -- //
+    // -- lua -- // 
 
 
     @LuaWhitelist

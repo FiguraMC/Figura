@@ -89,7 +89,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
         boolean glowing = !showBody && Minecraft.getInstance().shouldEntityAppearGlowing(entity);
         boolean invisible = !translucent && !showBody && !glowing;
 
-        //When viewed 3rd person, render all non-world parts.
+        // When viewed 3rd person, render all non-world parts.
         PartFilterScheme filter = invisible ? PartFilterScheme.PIVOTS : PartFilterScheme.MODEL;
         int overlay = getOverlayCoords(entity, getWhiteOverlayProgress(entity, delta));
 
@@ -120,7 +120,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
         if (currentAvatar == null)
             return;
 
-        //Render avatar with params
+        // Render avatar with params
         if (currentAvatar.luaRuntime != null && currentAvatar.permissions.get(Permissions.VANILLA_MODEL_EDIT) == 1)
             currentAvatar.luaRuntime.vanilla_model.PLAYER.restore(getModel());
 

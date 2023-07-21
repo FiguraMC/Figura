@@ -20,7 +20,7 @@ import java.util.Map;
 )
 public class EventsAPI {
 
-    //docs only :woozy:
+    // docs only :woozy:
     @LuaWhitelist
     @LuaFieldDoc("events.entity_init")
     public final LuaEvent ENTITY_INIT = new LuaEvent();

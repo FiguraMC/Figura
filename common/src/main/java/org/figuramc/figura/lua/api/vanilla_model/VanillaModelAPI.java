@@ -21,7 +21,7 @@ import java.util.function.Function;
 )
 public class VanillaModelAPI {
 
-    // -- body -- //
+    // -- body -- // 
 
     @LuaWhitelist
     @LuaFieldDoc("vanilla_model.head")
@@ -61,7 +61,7 @@ public class VanillaModelAPI {
     @LuaFieldDoc("vanilla_model.right_pants")
     public final VanillaModelPart RIGHT_PANTS;
 
-    // -- cape -- //
+    // -- cape -- // 
 
     @LuaWhitelist
     @LuaFieldDoc("vanilla_model.cape_model")
@@ -70,7 +70,7 @@ public class VanillaModelAPI {
     @LuaFieldDoc("vanilla_model.fake_cape")
     public final VanillaModelPart FAKE_CAPE;
 
-    // -- armor -- //
+    // -- armor -- // 
 
     @LuaWhitelist
     @LuaFieldDoc("vanilla_model.helmet_item")
@@ -110,7 +110,7 @@ public class VanillaModelAPI {
     @LuaFieldDoc("vanilla_model.boots_right_leg")
     public final VanillaModelPart BOOTS_RIGHT_LEG;
 
-    // -- elytra -- //
+    // -- elytra -- // 
 
     @LuaWhitelist
     @LuaFieldDoc("vanilla_model.left_elytra")
@@ -119,7 +119,7 @@ public class VanillaModelAPI {
     @LuaFieldDoc("vanilla_model.right_elytra")
     public final VanillaModelPart RIGHT_ELYTRA;
 
-    // -- held items -- //
+    // -- held items -- // 
 
     @LuaWhitelist
     @LuaFieldDoc("vanilla_model.left_item")
@@ -128,7 +128,7 @@ public class VanillaModelAPI {
     @LuaFieldDoc("vanilla_model.right_item")
     public final VanillaModelPart RIGHT_ITEM;
 
-    // -- parrots -- //
+    // -- parrots -- // 
 
     @LuaWhitelist
     @LuaFieldDoc("vanilla_model.left_parrot")
@@ -138,7 +138,7 @@ public class VanillaModelAPI {
     public final VanillaModelPart RIGHT_PARROT;
 
 
-    // -- groups -- //
+    // -- groups -- // 
 
 
     @LuaWhitelist
@@ -194,7 +194,7 @@ public class VanillaModelAPI {
     }
 
     public VanillaModelAPI(Avatar owner) {
-        // -- body -- //
+        // -- body -- // 
 
         HEAD = addPart(new VanillaModelPart(owner, "HEAD", ParentType.Head, VanillaModelProvider.HEAD.func));
         BODY = addPart(new VanillaModelPart(owner, "BODY", ParentType.Body, VanillaModelProvider.BODY.func));
@@ -210,12 +210,12 @@ public class VanillaModelAPI {
         LEFT_PANTS = addPart(new VanillaModelPart(owner, "LEFT_PANTS", ParentType.LeftLeg, VanillaModelProvider.LEFT_PANTS.func));
         RIGHT_PANTS = addPart(new VanillaModelPart(owner, "RIGHT_PANTS", ParentType.RightLeg, VanillaModelProvider.RIGHT_PANTS.func));
 
-        // -- cape -- //
+        // -- cape -- // 
 
         CAPE_MODEL = addPart(new VanillaModelPart(owner, "CAPE_MODEL", ParentType.Cape, VanillaModelProvider.CAPE.func));
         FAKE_CAPE = addPart(new VanillaModelPart(owner, "FAKE_CAPE", ParentType.Cape, VanillaModelProvider.FAKE_CAPE.func));
 
-        // -- armor -- //
+        // -- armor -- // 
 
         HELMET_ITEM = addPart(new VanillaModelPart(owner, "HELMET_ITEM", ParentType.Head, null));
 
@@ -233,23 +233,23 @@ public class VanillaModelAPI {
         BOOTS_LEFT_LEG = addPart(new VanillaModelPart(owner, "BOOTS_LEFT_LEG", ParentType.LeftLeg, VanillaModelProvider.LEFT_LEG.func));
         BOOTS_RIGHT_LEG = addPart(new VanillaModelPart(owner, "BOOTS_RIGHT_LEG", ParentType.RightLeg, VanillaModelProvider.RIGHT_LEG.func));
 
-        // -- elytra -- //
+        // -- elytra -- // 
 
         LEFT_ELYTRA = addPart(new VanillaModelPart(owner, "LEFT_ELYTRA", ParentType.LeftElytra, VanillaModelProvider.LEFT_ELYTRON.func));
         RIGHT_ELYTRA = addPart(new VanillaModelPart(owner, "RIGHT_ELYTRA", ParentType.RightElytra, VanillaModelProvider.RIGHT_ELYTRON.func));
 
-        // -- held items -- //
+        // -- held items -- // 
 
         LEFT_ITEM = addPart(new VanillaModelPart(owner, "LEFT_ITEM", ParentType.LeftArm, null));
         RIGHT_ITEM = addPart(new VanillaModelPart(owner, "RIGHT_ITEM", ParentType.RightArm, null));
 
-        // -- parrots -- //
+        // -- parrots -- // 
 
         LEFT_PARROT = addPart(new VanillaModelPart(owner, "LEFT_PARROT", ParentType.Body, null));
         RIGHT_PARROT = addPart(new VanillaModelPart(owner, "RIGHT_PARROT", ParentType.Body, null));
 
 
-        // -- groups -- //
+        // -- groups -- // 
 
 
         INNER_LAYER = addPart(new VanillaGroupPart(owner, "INNER_LAYER", HEAD, BODY, LEFT_ARM, RIGHT_ARM, LEFT_LEG, RIGHT_LEG));
@@ -280,9 +280,9 @@ public class VanillaModelAPI {
         }};
 
 
-        // -- modded parts -- //
+        // -- modded parts -- // 
         for (FiguraVanillaPart entrypoint : ENTRYPOINTS) {
-            //prepare group
+            // prepare group
             List<VanillaModelPart> parts = new ArrayList<>();
             String ID = entrypoint.getID().toUpperCase();
 
@@ -294,14 +294,14 @@ public class VanillaModelAPI {
                 parts.add(model);
             }
 
-            //add to group list
+            // add to group list
             VanillaGroupPart group = new VanillaGroupPart(owner, ID, parts.toArray(new VanillaModelPart[0]));
             allParts.put(ID, group);
             groups.add(group);
         }
 
 
-        // -- all -- //
+        // -- all -- // 
         ALL = addPart(new VanillaGroupPart(owner, "ALL", groups.toArray(new VanillaGroupPart[0])));
     }
 

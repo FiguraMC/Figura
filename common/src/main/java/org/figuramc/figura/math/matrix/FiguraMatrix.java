@@ -20,7 +20,7 @@ public abstract class FiguraMatrix<T extends FiguraMatrix<T, V>, V extends Figur
 
     public abstract T set(T o);
     public abstract T multiply(T o);
-    //"other" is on the right side.
+    // "other" is on the right side.
     public abstract T rightMultiply(T o);
     public abstract T transpose();
     public abstract T invert();
@@ -33,7 +33,7 @@ public abstract class FiguraMatrix<T extends FiguraMatrix<T, V>, V extends Figur
     public T inverted() {
         return copy().invert();
     }
-    //Returns the product of the matrices, with "o" on the left.
+    // Returns the product of the matrices, with "o" on the left.
     public T times(T o) {
         return copy().multiply(o);
     }

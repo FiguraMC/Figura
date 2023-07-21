@@ -41,10 +41,10 @@ public class GameScreen extends AbstractPanelScreen {
 
         addRenderableOnly(grid = new Grid(width, height));
 
-        //back button
+        // back button
         addRenderableWidget(new Button(this.width - 20, 4, 16, 16, 0, 0, 16, new FiguraIdentifier("textures/gui/search_clear.png"), 48, 16, FiguraText.of("gui.done"), bx -> onClose()));
 
-        //text
+        // text
         addRenderableWidget(keys = new Label(
                 Component.empty()
                         .append(Component.literal("[R]").withStyle(FiguraMod.getAccentColor()))
@@ -117,21 +117,21 @@ public class GameScreen extends AbstractPanelScreen {
             int width = this.width / scale;
             int height = this.height / scale;
 
-            //create grid
+            // create grid
             grid = new Cell[width][height];
 
             for (int i = 0; i < width; i++) {
                 for (int j = 0; j < height; j++) {
-                    //create cell :D
+                    // create cell :D
                     Cell cell = new Cell(i, j, (int) Math.round(Math.random()));
 
-                    //neighbours
+                    // neighbours
                     if (i > 0) {
-                        if (j > 0) cell.addNeighbor(grid[i - 1][j - 1]); //top left
-                        cell.addNeighbor(grid[i - 1][j]); //top middle
-                        if (j < height - 1) cell.addNeighbor(grid[i - 1][j + 1]); //top right
+                        if (j > 0) cell.addNeighbor(grid[i - 1][j - 1]); // top left
+                        cell.addNeighbor(grid[i - 1][j]); // top middle
+                        if (j < height - 1) cell.addNeighbor(grid[i - 1][j + 1]); // top right
                     }
-                    if (j > 0) cell.addNeighbor(grid[i][j - 1]); //left
+                    if (j > 0) cell.addNeighbor(grid[i][j - 1]); // left
 
                     grid[i][j] = cell;
                 }

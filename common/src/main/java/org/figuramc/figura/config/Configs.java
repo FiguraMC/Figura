@@ -24,16 +24,16 @@ import java.util.List;
 
 public class Configs {
 
-    //mod config version
-    //only change this if you rename old configs
+    // mod config version
+    // only change this if you rename old configs
     public static final int CONFIG_VERSION = 1;
 
-    //config update hashmap; <version number, <actual config, old config name>>
+    // config update hashmap; <version number, <actual config, old config name>>
     public static final HashMap<Integer, HashMap<ConfigType<?>, String>> CONFIG_UPDATES = new HashMap<>();
 
-    //code to run when the config is initialized
+    // code to run when the config is initialized
     public static void init() {
-        //test for unused configs
+        // test for unused configs
         if (FiguraMod.DEBUG_MODE) {
             ConfigType.Category debug = new ConfigType.Category("debug");
             new ConfigType.ColorConfig("color_test", debug, 0xFF72AD);
@@ -43,7 +43,7 @@ public class Configs {
     }
 
 
-    // -- categories -- //
+    // -- categories -- // 
 
 
     public static final ConfigType.Category
@@ -59,7 +59,7 @@ public class Configs {
             }};
 
 
-    // -- nameplate -- //
+    // -- nameplate -- // 
 
 
     public static final ConfigType.BoolConfig
@@ -93,7 +93,7 @@ public class Configs {
             }};
 
 
-    // -- script -- //
+    // -- script -- // 
 
 
     public static final ConfigType.EnumConfig
@@ -122,7 +122,7 @@ public class Configs {
             };
 
 
-    // -- RENDERING -- //
+    // -- RENDERING -- // 
 
 
     public static final ConfigType.EnumConfig
@@ -138,7 +138,7 @@ public class Configs {
             FIRST_PERSON_MATRICES = new ConfigType.BoolConfig("first_person_matrices", RENDERING, true);
 
 
-    // -- ACTION WHEEL -- //
+    // -- ACTION WHEEL -- // 
 
 
     public static final ConfigType.KeybindConfig
@@ -154,7 +154,7 @@ public class Configs {
             ACTION_WHEEL_DECORATIONS = new ConfigType.BoolConfig("action_wheel_decorations", ACTION_WHEEL, true);
 
 
-    // -- UI -- //
+    // -- UI -- // 
 
 
     public static final ConfigType.BoolConfig
@@ -177,7 +177,7 @@ public class Configs {
             REDUCED_MOTION = new ConfigType.BoolConfig("reduced_motion", UI, false);
 
 
-    // -- PAPERDOLL -- //
+    // -- PAPERDOLL -- // 
 
 
     public static final ConfigType.BoolConfig
@@ -193,7 +193,7 @@ public class Configs {
             PAPERDOLL_YAW = new ConfigType.FloatConfig("paperdoll_yaw", PAPERDOLL, 20);
 
 
-    // -- MISC -- //
+    // -- MISC -- // 
 
 
     public static final ConfigType.KeybindConfig
@@ -229,7 +229,7 @@ public class Configs {
             EASTER_EGGS = new ConfigType.BoolConfig("easter_eggs", MISC, true);
 
 
-    // -- DEV -- //
+    // -- DEV -- // 
 
 
     public static final ConfigType.BoolConfig

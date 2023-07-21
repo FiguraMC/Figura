@@ -54,22 +54,22 @@ public class PlayerStatusWidget extends StatusWidget {
             return;
         }
 
-        //size
+        // size
         status = !FiguraMod.isLocal(owner) ? 3 : avatar.fileSize > NetworkStuff.getSizeLimit() ? 1 : avatar.fileSize > NetworkStuff.getSizeLimit() * 0.75 ? 2 : 3;
 
-        //complexity
+        // complexity
         int complexity = avatar.renderer == null ? 0 : avatar.complexity.pre >= avatar.permissions.get(Permissions.COMPLEXITY) ? 1 : 3;
         status += complexity << 2;
 
-        //script init
+        // script init
         int init = avatar.scriptError ? 1 : avatar.luaRuntime == null ? 0 : avatar.init.getTotal() >= avatar.permissions.get(Permissions.INIT_INST) * 0.75 ? 2 : 3;
         status += init << 4;
 
-        //script tick
+        // script tick
         int tick = avatar.scriptError ? 1 : avatar.luaRuntime == null ? 0 : avatar.tick.getTotal() >= avatar.permissions.get(Permissions.TICK_INST) * 0.75 || avatar.worldTick.getTotal() >= avatar.permissions.get(Permissions.WORLD_TICK_INST) * 0.75 ? 2 : 3;
         status += tick << 6;
 
-        //script render
+        // script render
         int render = avatar.scriptError ? 1 : avatar.luaRuntime == null ? 0 : avatar.render.getTotal() >= avatar.permissions.get(Permissions.RENDER_INST) * 0.75 || avatar.worldRender.getTotal() >= avatar.permissions.get(Permissions.WORLD_RENDER_INST) * 0.75 ? 2 : 3;
         status += render << 8;
     }
