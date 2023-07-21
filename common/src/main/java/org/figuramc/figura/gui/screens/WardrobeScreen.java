@@ -2,11 +2,10 @@ package org.figuramc.figura.gui.screens;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.FittingMultiLineTextWidget;
+import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.*;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
@@ -140,7 +139,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
         Button back = new Button(width - rightSide - 4, height - 24, rightSide, 20, FiguraText.of("gui.done"), null, bx -> onClose());
         addRenderableWidget(back);
 
-        // -- right side -- // 
+        // -- right side -- //
 
         rightSide = panels / 2 + 52;
 
@@ -168,8 +167,17 @@ public class WardrobeScreen extends AbstractPanelScreen {
         );
         addRenderableWidget(keybinds);
 
+        AvatarInfoWidget infoWidget;
         // avatar metadata
-        addRenderableOnly(new AvatarInfoWidget(this.width - panels - 4, 56, panels, back.getY() - 60));
+        addRenderableOnly(infoWidget = new AvatarInfoWidget(this.width - panels - 4, 56, panels, back.getY() - 60));
+
+        // backend MOTD
+        int motdHeight = back.getY() - (infoWidget.getY() + infoWidget.getHeight()) - 28;
+        if (NetworkStuff.motd != null && motdHeight > 32) {
+            addRenderableWidget(new BackendMessageWidget(this.width - panels, infoWidget.getY() + infoWidget.getHeight() + 21, panels - 8, motdHeight, NetworkStuff.motd, Minecraft.getInstance().font));
+        }
+
+        ChatScreen
 
         // panic warning - always added last, on top
         addRenderableWidget(panic = new Label(
@@ -178,8 +186,6 @@ public class WardrobeScreen extends AbstractPanelScreen {
         );
         panic.setY(panic.getRawY() - panic.getHeight());
         panic.setVisible(false);
-
-        addRenderableWidget(new BackendMessageWidget(0, 0, 64, 64, FiguraText.of("what")));
     }
 
     @Override

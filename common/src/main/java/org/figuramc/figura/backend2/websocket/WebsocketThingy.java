@@ -96,7 +96,7 @@ public class WebsocketThingy extends WebSocketClient {
 
     private static String getBackendAddress() {
         ServerAddress backendIP = ServerAddress.parseString(Configs.SERVER_IP.value);
-        return "wss:// " + backendIP.getHost() + "/ws";
+        return "wss://" + backendIP.getHost() + "/ws";
     }
 
     private void handleClose(int code, String reason) {

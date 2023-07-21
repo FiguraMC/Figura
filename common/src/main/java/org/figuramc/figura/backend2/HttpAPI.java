@@ -30,7 +30,7 @@ public class HttpAPI {
 
     protected static String getBackendAddress() {
         ServerAddress backendIP = ServerAddress.parseString(Configs.SERVER_IP.value);
-        return "https:// " + backendIP.getHost() + "/api";
+        return "https://" + backendIP.getHost() + "/api";
     }
 
     protected HttpRequest.Builder header(String url) {

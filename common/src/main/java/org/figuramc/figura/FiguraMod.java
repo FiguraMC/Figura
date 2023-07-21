@@ -38,7 +38,7 @@ public class FiguraMod {
     public static final String MOD_NAME = "Figura";
     public static final FiguraModMetadata METADATA = FiguraModMetadata.getMetadataForMod(MOD_ID);
     public static final Version VERSION = new Version(PlatformUtils.getModVersionString());
-    public static final boolean DEBUG_MODE = Math.random() + 1 < 0;
+    public static final boolean DEBUG_MODE = false;
     public static final Calendar CALENDAR = Calendar.getInstance();
     public static final Path GAME_DIR = PlatformUtils.getGameDir().normalize();
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_NAME);
@@ -180,13 +180,13 @@ public class FiguraMod {
     }
 
     public enum Links {
-        Wiki("https:// github.com/KitCat962/FiguraRewriteRewrite/wiki", ColorUtils.Colors.PINK.style),
-        Kofi("https:// ko-fi.com/skyrina", ColorUtils.Colors.KOFI.style),
-        Discord("https:// discord.gg/nbN8KZyhUq", ColorUtils.Colors.DISCORD.style),
-        Github("https:// github.com/Kingdom-of-The-Moon/FiguraRewriteRewrite", ColorUtils.Colors.GITHUB.style),
-        Modrinth("https:// modrinth.com/mod/figura", ColorUtils.Colors.MODRINTH.style),
-        Curseforge("https:// www.curseforge.com/minecraft/mc-mods/figura", ColorUtils.Colors.CURSEFORGE.style),
-        LuaManual( "https:// www.lua.org/manual/5.2/manual.html", ColorUtils.Colors.LUA_LOG.style);
+        Wiki("https://github.com/KitCat962/FiguraRewriteRewrite/wiki", ColorUtils.Colors.PINK.style),
+        Kofi("https://ko-fi.com/skyrina", ColorUtils.Colors.KOFI.style),
+        Discord("https://discord.gg/nbN8KZyhUq", ColorUtils.Colors.DISCORD.style),
+        Github("https://github.com/Kingdom-of-The-Moon/FiguraRewriteRewrite", ColorUtils.Colors.GITHUB.style),
+        Modrinth("https://modrinth.com/mod/figura", ColorUtils.Colors.MODRINTH.style),
+        Curseforge("https://www.curseforge.com/minecraft/mc-mods/figura", ColorUtils.Colors.CURSEFORGE.style),
+        LuaManual( "https://www.lua.org/manual/5.2/manual.html", ColorUtils.Colors.LUA_LOG.style);
 
         public final String url;
         public final Style style;

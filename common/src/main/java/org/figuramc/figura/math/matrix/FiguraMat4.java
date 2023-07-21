@@ -79,7 +79,7 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
 
     @Override
     protected double calculateDeterminant() {
-        // https:// stackoverflow.com/a/44446912
+        // https://stackoverflow.com/a/44446912
         var A2323 = v33 * v44 - v34 * v43 ;
         var A1323 = v32 * v44 - v34 * v42 ;
         var A1223 = v32 * v43 - v33 * v42 ;
@@ -356,7 +356,7 @@ public class FiguraMat4 extends FiguraMatrix<FiguraMat4, FiguraVec4> {
             set(cachedInverse);
             cachedDeterminant = 1 / cachedDeterminant;
         } else {
-            // https:// stackoverflow.com/a/44446912
+            // https://stackoverflow.com/a/44446912
 
             var A2323 = v33 * v44 - v34 * v43 ;
             var A1323 = v32 * v44 - v34 * v42 ;
