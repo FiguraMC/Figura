@@ -171,16 +171,16 @@ public class FiguraListDocs {
                         .append(Component.literal("• ")
                                 .append(FiguraText.of("docs.text.description"))
                                 .append(":")
-                                .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
+                                .withStyle(ColorUtils.Colors.PURPLE.style))
                         .append("\n\t")
                         .append(Component.literal("• ")
                                 .append(FiguraText.of("docs.enum." + id))
-                                .withStyle(ColorUtils.Colors.MAYA_BLUE.style))
+                                .withStyle(ColorUtils.Colors.BLUE.style))
                         .append("\n\n")
                         .append(Component.literal("• ")
                                 .append(FiguraText.of("docs.text.entries"))
                                 .append(":")
-                                .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style));
+                                .withStyle(ColorUtils.Colors.PURPLE.style));
 
                 int i = 0;
                 for (Object o : coll) {
@@ -211,7 +211,7 @@ public class FiguraListDocs {
                 String text = o instanceof Map.Entry e ? e.getKey().toString() : o.toString();
                 LiteralArgumentBuilder<FiguraClientCommandSource> entry = LiteralArgumentBuilder.literal(text);
                 entry.executes(context -> {
-                    FiguraMod.sendChatMessage(Component.literal(text).withStyle(ColorUtils.Colors.PINK.style));
+                    FiguraMod.sendChatMessage(Component.literal(text).withStyle(ColorUtils.Colors.AWESOME_BLUE.style));
                     return 1;
                 });
 
@@ -219,7 +219,7 @@ public class FiguraListDocs {
                     for (String s : (List<String>) e.getValue()) {
                         LiteralArgumentBuilder<FiguraClientCommandSource> child = LiteralArgumentBuilder.literal(s);
                         child.executes(context -> {
-                            FiguraMod.sendChatMessage(Component.literal(s).withStyle(ColorUtils.Colors.PINK.style));
+                            FiguraMod.sendChatMessage(Component.literal(s).withStyle(ColorUtils.Colors.AWESOME_BLUE.style));
                             return 1;
                         });
                         entry.then(child);
@@ -245,21 +245,21 @@ public class FiguraListDocs {
                     .append(Component.literal("• ")
                             .append(FiguraText.of("docs.text.type"))
                             .append(":")
-                            .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
+                            .withStyle(ColorUtils.Colors.PURPLE.style))
                     .append("\n\t")
                     .append(Component.literal("• ")
                             .append(Component.literal("enumerators"))
-                            .withStyle(ColorUtils.Colors.MAYA_BLUE.style))
+                            .withStyle(ColorUtils.Colors.BLUE.style))
 
                     .append("\n\n")
                     .append(Component.literal("• ")
                             .append(FiguraText.of("docs.text.description"))
                             .append(":")
-                            .withStyle(ColorUtils.Colors.CHLOE_PURPLE.style))
+                            .withStyle(ColorUtils.Colors.PURPLE.style))
                     .append("\n\t")
                     .append(Component.literal("• ")
                             .append(FiguraText.of("docs.enum"))
-                            .withStyle(ColorUtils.Colors.MAYA_BLUE.style))
+                            .withStyle(ColorUtils.Colors.BLUE.style))
             );
             return 1;
         });

@@ -351,9 +351,9 @@ public class FiguraLuaPrinter {
 
     private static Style getTypeColor(LuaValue value) {
         if (value.istable())
-            return ColorUtils.Colors.PINK.style;
+            return ColorUtils.Colors.AWESOME_BLUE.style;
         else if (!(value instanceof LuaString) && value.isnumber())
-            return ColorUtils.Colors.MAYA_BLUE.style;
+            return ColorUtils.Colors.BLUE.style;
         else if (value.isnil())
             return ColorUtils.Colors.LUA_ERROR.style;
         else if (value.isboolean())

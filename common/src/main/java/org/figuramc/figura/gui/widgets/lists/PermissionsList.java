@@ -362,7 +362,7 @@ public class PermissionsList extends AbstractList {
             // changed value
             else if (changed) {
                 TextColor textColor = FiguraMod.getAccentColor().getColor();
-                color = textColor == null ? ColorUtils.Colors.PINK.hex : textColor.getValue();
+                color = textColor == null ? ColorUtils.Colors.AWESOME_BLUE.hex : textColor.getValue();
             }
 
             // set text colour

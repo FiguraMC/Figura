@@ -198,8 +198,8 @@ public class Badges {
     public enum Special {
         DEV("★"),
         DISCORD_STAFF("☆", ColorUtils.Colors.DISCORD.hex),
-        CONTEST("☆", ColorUtils.Colors.PINK.hex),
-        DONATOR("❤", ColorUtils.Colors.PINK.hex),
+        CONTEST("☆", ColorUtils.Colors.AWESOME_BLUE.hex),
+        DONATOR("❤", ColorUtils.Colors.AWESOME_BLUE.hex),
         TRANSLATOR("文"),
         TEXTURE_ARTIST("✒"),
         IMMORTALIZED("\uD83D\uDDFF");
