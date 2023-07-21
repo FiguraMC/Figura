@@ -24,6 +24,7 @@ import org.luaj.vm2.compiler.LuaC;
 import org.luaj.vm2.lib.*;
 import org.luaj.vm2.lib.jse.JseBaseLib;
 import org.luaj.vm2.lib.jse.JseMathLib;
+import org.luaj.vm2.lib.jse.JseStringLib;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -71,7 +72,7 @@ public class FiguraLuaRuntime {
         userGlobals.load(new JseBaseLib());
         userGlobals.load(new Bit32Lib());
         userGlobals.load(new TableLib());
-        userGlobals.load(new StringLib());
+        userGlobals.load(new JseStringLib());
         userGlobals.load(new JseMathLib());
 
         LuaC.install(userGlobals);
