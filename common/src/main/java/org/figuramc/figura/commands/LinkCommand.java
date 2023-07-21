@@ -16,6 +16,7 @@ class LinkCommand {
     private static final List<FiguraMod.Links> LINKS = new ArrayList<>() {{
             add(FiguraMod.Links.Wiki);
             add(FiguraMod.Links.Kofi);
+            add(FiguraMod.Links.OpenCollective);
             add(null);
             add(FiguraMod.Links.Discord);
             add(FiguraMod.Links.Github);

@@ -10,7 +10,7 @@ import java.awt.*;
 public class ColorUtils {
 
     public enum Colors {
-        PINK(0xFF60A0),
+        PINK(0x5EA5FF),
         CHLOE_PURPLE(0xA672EF, "chloe", "space"),
         MAYA_BLUE(0x00F0FF, "maya", "devnull", "limits"),
         SKYE_BLUE(0x99BBEE, "sky", "skye", "skylar"),
