@@ -8,10 +8,10 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
+import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.gui.widgets.FiguraWidget;
 import org.figuramc.figura.gui.widgets.SwitchButton;
 import org.figuramc.figura.gui.widgets.TextField;
-import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.utils.FiguraText;
 import org.figuramc.figura.utils.ui.UIHelper;
 import org.figuramc.figura.wizards.AvatarWizard;
@@ -21,8 +21,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import static org.figuramc.figura.wizards.WizardEntry.Type.CATEGORY;
 
 public class AvatarWizardList extends AbstractList {
 

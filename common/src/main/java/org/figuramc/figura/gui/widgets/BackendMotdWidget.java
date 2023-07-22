@@ -11,17 +11,17 @@ import org.figuramc.figura.utils.ui.UIHelper;
 
 import java.util.Objects;
 
-public class BackendMessageWidget extends AbstractScrollWidget {
+public class BackendMotdWidget extends AbstractScrollWidget {
     private final Font font;
     private final MultiLineTextWidget multilineWidget;
 
-    public BackendMessageWidget(int i, int j, int k, int l, Component component, Font textRenderer) {
+    public BackendMotdWidget(int i, int j, int k, int l, Component component, Font textRenderer) {
         super(i, j, k, l, component);
         this.font = textRenderer;
         this.multilineWidget = (new MultiLineTextWidget(0, 0, component, textRenderer)).setMaxWidth(this.getWidth() - this.totalInnerPadding());
     }
 
-    public BackendMessageWidget setColor(int i) {
+    public BackendMotdWidget setColor(int i) {
         this.multilineWidget.setColor(i);
         return this;
     }

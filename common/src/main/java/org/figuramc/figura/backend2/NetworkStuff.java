@@ -8,8 +8,7 @@ import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.FormattedText;
-import net.minecraft.server.commands.TellRawCommand;
+import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.avatar.Badges;
@@ -19,13 +18,12 @@ import org.figuramc.figura.backend2.websocket.C2SMessageHandler;
 import org.figuramc.figura.backend2.websocket.WebsocketThingy;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.gui.FiguraToast;
+import org.figuramc.figura.permissions.PermissionManager;
+import org.figuramc.figura.permissions.Permissions;
 import org.figuramc.figura.utils.FiguraText;
 import org.figuramc.figura.utils.RefilledNumber;
 import org.figuramc.figura.utils.TextUtils;
 import org.figuramc.figura.utils.Version;
-import org.figuramc.figura.FiguraMod;
-import org.figuramc.figura.permissions.PermissionManager;
-import org.figuramc.figura.permissions.Permissions;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.ByteArrayOutputStream;
@@ -206,7 +204,7 @@ public class NetworkStuff {
     private static void fetchMOTD() {
         queueString(Util.NIL_UUID, HttpAPI::getMotd, (code, data) -> {
             responseDebug("motd", code, data);
-            motd = Component.Serializer.fromJson(data);
+            motd = TextUtils.tryParseJson(data);
         });
     }
 

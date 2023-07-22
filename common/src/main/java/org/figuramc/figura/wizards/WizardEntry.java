@@ -50,6 +50,7 @@ public class WizardEntry {
     WizardEntry(String name, WizardEntry... dependencies) {
         this(name, WizardEntry.Type.TOGGLE, dependencies);
     }
+
     WizardEntry(String name, WizardEntry.Type type, WizardEntry... dependencies) {
         this.name = name;
         this.type = type;

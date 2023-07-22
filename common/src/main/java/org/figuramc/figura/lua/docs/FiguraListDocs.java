@@ -73,7 +73,7 @@ public class FiguraListDocs {
     }};
     private static final LinkedHashMap<String, List<String>> COLORS = new LinkedHashMap<>() {{
         for (ColorUtils.Colors value : ColorUtils.Colors.values())
-            put(value.name(), Arrays.asList(value.alias));
+            put(value.name(), List.of(value.name()));
     }};
     private static final LinkedHashSet<String> PLAYER_MODEL_PARTS = new LinkedHashSet<>() {{
         for (PlayerModelPart value : PlayerModelPart.values()) {

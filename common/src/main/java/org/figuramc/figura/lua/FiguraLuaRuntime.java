@@ -40,7 +40,7 @@ import java.util.function.Function;
 public class FiguraLuaRuntime {
 
     // Global API instances
-    // ---------------------------------
+    //---------------------------------
     public EntityAPI<?> entityAPI;
     public EventsAPI events;
     public VanillaModelAPI vanilla_model;
@@ -53,7 +53,7 @@ public class FiguraLuaRuntime {
     public PingAPI ping;
     public TextureAPI texture;
 
-    // ---------------------------------
+    //---------------------------------
 
     public final Avatar owner;
     private final Globals userGlobals = new Globals();
@@ -116,7 +116,7 @@ public class FiguraLuaRuntime {
         return entityAPI != null && entityAPI.isLoaded() ? entityAPI.getEntity() : null;
     }
 
-    // init runtime // 
+    // init runtime //
 
     private void setupFiguraSandbox() {
         // actual sandbox file
@@ -326,7 +326,7 @@ public class FiguraLuaRuntime {
         }
     };
 
-    // init event // 
+    // init event //
 
     private final Function<String, Varargs> INIT_SCRIPT = str -> {
         // format name
@@ -379,7 +379,7 @@ public class FiguraLuaRuntime {
         return true;
     }
 
-    // error ^-^ // 
+    // error ^-^ //
 
     public void error(Throwable e) {
         FiguraLuaPrinter.sendLuaError(parseError(e), owner);
@@ -393,7 +393,7 @@ public class FiguraLuaRuntime {
         return e instanceof LuaError lua ? lua : e instanceof StackOverflowError ? new LuaError("Stack Overflow") : new LuaError(e);
     }
 
-    // avatar limiting // 
+    // avatar limiting //
 
     private final ZeroArgFunction onReachedLimit = new ZeroArgFunction() {
         @Override
@@ -418,7 +418,7 @@ public class FiguraLuaRuntime {
         userGlobals.running.state.bytecodes += amount;
     }
 
-    // script execution // 
+    // script execution //
 
     public LuaValue load(String name, String src) {
         return userGlobals.load(src, name, userGlobals);

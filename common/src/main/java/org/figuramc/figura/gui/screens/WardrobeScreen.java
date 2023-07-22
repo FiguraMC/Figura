@@ -2,10 +2,11 @@ package org.figuramc.figura.gui.screens;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.FittingMultiLineTextWidget;
-import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.*;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
@@ -14,7 +15,6 @@ import org.figuramc.figura.avatar.local.LocalAvatarLoader;
 import org.figuramc.figura.backend2.NetworkStuff;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.gui.FiguraToast;
-import org.figuramc.figura.gui.widgets.*;
 import org.figuramc.figura.gui.widgets.*;
 import org.figuramc.figura.gui.widgets.lists.AvatarList;
 import org.figuramc.figura.utils.FiguraIdentifier;
@@ -174,9 +174,9 @@ public class WardrobeScreen extends AbstractPanelScreen {
         // backend MOTD
         int motdHeight = back.getY() - (infoWidget.getY() + infoWidget.getHeight()) - 28;
         if (NetworkStuff.motd != null && motdHeight > 32) {
-            addRenderableWidget(new BackendMessageWidget(this.width - panels, infoWidget.getY() + infoWidget.getHeight() + 21, panels - 8, motdHeight, NetworkStuff.motd, Minecraft.getInstance().font));
+            addRenderableWidget(new BackendMotdWidget(this.width - panels, infoWidget.getY() + infoWidget.getHeight() + 21, panels - 8, motdHeight, NetworkStuff.motd, Minecraft.getInstance().font));
         }
-        
+
         // panic warning - always added last, on top
         addRenderableWidget(panic = new Label(
                 FiguraText.of("gui.panic", Configs.PANIC_BUTTON.keyBind.getTranslatedKeyMessage()).withStyle(ChatFormatting.YELLOW),

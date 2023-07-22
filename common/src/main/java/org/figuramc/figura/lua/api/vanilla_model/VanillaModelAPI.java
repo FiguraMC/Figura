@@ -188,13 +188,13 @@ public class VanillaModelAPI {
     public final VanillaGroupPart PARROTS;
 
     // Adds a VanillaPart to the list of all parts. Used for indexing
-    private <TPart extends VanillaPart>TPart addPart(TPart part) {
+    private <T extends VanillaPart>T addPart(T part) {
         allParts.put(part.name, part);
         return part;
     }
 
     public VanillaModelAPI(Avatar owner) {
-        // -- body -- // 
+        // -- body -- //
 
         HEAD = addPart(new VanillaModelPart(owner, "HEAD", ParentType.Head, VanillaModelProvider.HEAD.func));
         BODY = addPart(new VanillaModelPart(owner, "BODY", ParentType.Body, VanillaModelProvider.BODY.func));
@@ -210,12 +210,12 @@ public class VanillaModelAPI {
         LEFT_PANTS = addPart(new VanillaModelPart(owner, "LEFT_PANTS", ParentType.LeftLeg, VanillaModelProvider.LEFT_PANTS.func));
         RIGHT_PANTS = addPart(new VanillaModelPart(owner, "RIGHT_PANTS", ParentType.RightLeg, VanillaModelProvider.RIGHT_PANTS.func));
 
-        // -- cape -- // 
+        // -- cape -- //
 
         CAPE_MODEL = addPart(new VanillaModelPart(owner, "CAPE_MODEL", ParentType.Cape, VanillaModelProvider.CAPE.func));
         FAKE_CAPE = addPart(new VanillaModelPart(owner, "FAKE_CAPE", ParentType.Cape, VanillaModelProvider.FAKE_CAPE.func));
 
-        // -- armor -- // 
+        // -- armor -- //
 
         HELMET_ITEM = addPart(new VanillaModelPart(owner, "HELMET_ITEM", ParentType.Head, null));
 
@@ -233,23 +233,23 @@ public class VanillaModelAPI {
         BOOTS_LEFT_LEG = addPart(new VanillaModelPart(owner, "BOOTS_LEFT_LEG", ParentType.LeftLeg, VanillaModelProvider.LEFT_LEG.func));
         BOOTS_RIGHT_LEG = addPart(new VanillaModelPart(owner, "BOOTS_RIGHT_LEG", ParentType.RightLeg, VanillaModelProvider.RIGHT_LEG.func));
 
-        // -- elytra -- // 
+        // -- elytra -- //
 
         LEFT_ELYTRA = addPart(new VanillaModelPart(owner, "LEFT_ELYTRA", ParentType.LeftElytra, VanillaModelProvider.LEFT_ELYTRON.func));
         RIGHT_ELYTRA = addPart(new VanillaModelPart(owner, "RIGHT_ELYTRA", ParentType.RightElytra, VanillaModelProvider.RIGHT_ELYTRON.func));
 
-        // -- held items -- // 
+        // -- held items -- //
 
         LEFT_ITEM = addPart(new VanillaModelPart(owner, "LEFT_ITEM", ParentType.LeftArm, null));
         RIGHT_ITEM = addPart(new VanillaModelPart(owner, "RIGHT_ITEM", ParentType.RightArm, null));
 
-        // -- parrots -- // 
+        // -- parrots -- //
 
         LEFT_PARROT = addPart(new VanillaModelPart(owner, "LEFT_PARROT", ParentType.Body, null));
         RIGHT_PARROT = addPart(new VanillaModelPart(owner, "RIGHT_PARROT", ParentType.Body, null));
 
 
-        // -- groups -- // 
+        // -- groups -- //
 
 
         INNER_LAYER = addPart(new VanillaGroupPart(owner, "INNER_LAYER", HEAD, BODY, LEFT_ARM, RIGHT_ARM, LEFT_LEG, RIGHT_LEG));
@@ -280,7 +280,7 @@ public class VanillaModelAPI {
         }};
 
 
-        // -- modded parts -- // 
+        // -- modded parts -- //
         for (FiguraVanillaPart entrypoint : ENTRYPOINTS) {
             // prepare group
             List<VanillaModelPart> parts = new ArrayList<>();
@@ -301,7 +301,7 @@ public class VanillaModelAPI {
         }
 
 
-        // -- all -- // 
+        // -- all -- //
         ALL = addPart(new VanillaGroupPart(owner, "ALL", groups.toArray(new VanillaGroupPart[0])));
     }
 
