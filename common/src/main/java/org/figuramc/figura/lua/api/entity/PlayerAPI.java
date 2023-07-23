@@ -187,13 +187,6 @@ public class PlayerAPI extends LivingEntityAPI<Player> {
         return map;
     }
 
-    private static final String[] IP_MESSAGES = {":trol:", "lol", "cope", "ratio'd", "192.168.0.1", "doxxed", "IP grabbed!"};
-    @LuaWhitelist
-    @LuaMethodDoc("player.get_ip_address")
-    public String getIPAddress() {
-        return IP_MESSAGES[(int) (Math.random() * IP_MESSAGES.length)];
-    }
-
     @Override
     public String toString() {
         checkEntity();

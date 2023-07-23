@@ -15,35 +15,35 @@ import org.figuramc.figura.backend2.BackendCommands;
 public class FiguraCommands {
 
     public static LiteralArgumentBuilder<FiguraClientCommandSource> getCommandRoot() {
-        //root
+        // root
         LiteralArgumentBuilder<FiguraClientCommandSource> root = LiteralArgumentBuilder.literal(FiguraMod.MOD_ID);
 
-        //docs
+        // docs
         root.then(FiguraDocsManager.getCommand());
 
-        //links
+        // links
         root.then(LinkCommand.getCommand());
 
-        //run
+        // run
         root.then(RunCommand.getCommand());
 
-        //load
+        // load
         root.then(LoadCommand.getCommand());
 
-        //reload
+        // reload
         root.then(ReloadCommand.getCommand());
 
-        //debug
+        // debug
         root.then(DebugCommand.getCommand());
 
-        //export
+        // export
         root.then(ExportCommand.getCommand());
 
         if (FiguraMod.DEBUG_MODE) {
-            //backend debug
+            // backend debug
             root.then(BackendCommands.getCommand());
 
-            //set avatar command
+            // set avatar command
             root.then(AvatarManager.getCommand());
         }
 

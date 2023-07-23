@@ -8,13 +8,14 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
+import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.gui.widgets.FiguraWidget;
 import org.figuramc.figura.gui.widgets.SwitchButton;
 import org.figuramc.figura.gui.widgets.TextField;
-import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.utils.FiguraText;
 import org.figuramc.figura.utils.ui.UIHelper;
 import org.figuramc.figura.wizards.AvatarWizard;
+import org.figuramc.figura.wizards.WizardEntry;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -39,11 +40,11 @@ public class AvatarWizardList extends AbstractList {
         int width = getWidth();
         int height = getHeight();
 
-        //background and scissors
+        // background and scissors
         UIHelper.blitSliced(gui, x, y, width, height, UIHelper.OUTLINE_FILL);
         enableScissors(gui);
 
-        //scrollbar
+        // scrollbar
         Font font = Minecraft.getInstance().font;
         int lineHeight = font.lineHeight + 8;
         int entryHeight = 24;
@@ -65,7 +66,7 @@ public class AvatarWizardList extends AbstractList {
         scrollBar.setVisible(totalHeight > height);
         scrollBar.setScrollRatio(entryHeight, totalHeight - height);
 
-        //render list
+        // render list
         int yOffset = scrollBar.isVisible() ? (int) -(Mth.lerp(scrollBar.getScrollProgress(), -4, totalHeight - height)) : 4;
         for (Map.Entry<Component, List<GuiEventListener>> entry : map.entrySet()) {
             List<GuiEventListener> value = entry.getValue();
@@ -73,7 +74,7 @@ public class AvatarWizardList extends AbstractList {
                 continue;
 
             int newY = yOffset + lineHeight;
-            //elements
+            // elements
             for (GuiEventListener w : entry.getValue()) {
                 FiguraWidget widget = (FiguraWidget) w;
                 if (widget.isVisible()) {
@@ -85,21 +86,21 @@ public class AvatarWizardList extends AbstractList {
             if (newY == yOffset + lineHeight)
                 continue;
 
-            //category
+            // category
             gui.drawCenteredString(font, entry.getKey(), x + width / 2, y + yOffset + 4, 0xFFFFFF);
             yOffset = newY;
         }
 
-        //children
+        // children
         super.render(gui, mouseX, mouseY, delta);
 
-        //reset scissor
+        // reset scissor
         gui.disableScissor();
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        //fix mojang focusing for text fields
+        // fix mojang focusing for text fields
         for (GuiEventListener widget : children()) {
             if (widget instanceof TextField field)
                 field.getField().setFocused(field.isEnabled() && field.isMouseOver(mouseX, mouseY));
@@ -119,15 +120,15 @@ public class AvatarWizardList extends AbstractList {
         Component lastName = Component.empty();
         List<GuiEventListener> lastList = new ArrayList<>();
 
-        for (AvatarWizard.WizardEntry value : AvatarWizard.WizardEntry.values()) {
-            switch (value.getType()) {
+        for (WizardEntry value : WizardEntry.all()) {
+            switch (value.type) {
                 case CATEGORY -> {
                     if (!lastList.isEmpty()) {
                         map.put(lastName, lastList);
                         children.addAll(lastList);
                     }
 
-                    lastName = FiguraText.of("gui.avatar_wizard." + value.name().toLowerCase());
+                    lastName = FiguraText.of("gui.avatar_wizard." + value.name.toLowerCase());
                     lastList = new ArrayList<>();
                 }
                 case TEXT -> lastList.add(new WizardInputBox(x, width, this, value));
@@ -142,14 +143,14 @@ public class AvatarWizardList extends AbstractList {
     private static class WizardInputBox extends TextField {
 
         private final AvatarWizardList parent;
-        private final AvatarWizard.WizardEntry entry;
+        private final WizardEntry entry;
         private final Component name;
 
-        public WizardInputBox(int x, int width, AvatarWizardList parent, AvatarWizard.WizardEntry entry) {
+        public WizardInputBox(int x, int width, AvatarWizardList parent, WizardEntry entry) {
             super(x, 0, width, 20, HintType.ANY, s -> parent.wizard.changeEntry(entry, s));
             this.parent = parent;
             this.entry = entry;
-            this.name = FiguraText.of("gui.avatar_wizard." + entry.name().toLowerCase());
+            this.name = FiguraText.of("gui.avatar_wizard." + entry.name.toLowerCase());
             this.getField().setValue(String.valueOf(parent.wizard.getEntry(entry, "")));
         }
 
@@ -174,10 +175,10 @@ public class AvatarWizardList extends AbstractList {
     private static class WizardToggleButton extends SwitchButton {
 
         private final AvatarWizardList parent;
-        private final AvatarWizard.WizardEntry entry;
+        private final WizardEntry entry;
 
-        public WizardToggleButton(int x, int width, AvatarWizardList parent, AvatarWizard.WizardEntry entry) {
-            super(x, 0, width, 20, FiguraText.of("gui.avatar_wizard." + entry.name().toLowerCase()), false);
+        public WizardToggleButton(int x, int width, AvatarWizardList parent, WizardEntry entry) {
+            super(x, 0, width, 20, FiguraText.of("gui.avatar_wizard." + entry.name.toLowerCase()), false);
             this.parent = parent;
             this.entry = entry;
             this.setToggled((boolean) parent.wizard.getEntry(entry, false));
@@ -191,7 +192,7 @@ public class AvatarWizardList extends AbstractList {
 
         @Override
         protected void renderDefaultTexture(GuiGraphics gui, float delta) {
-            //button
+            // button
             PoseStack pose = gui.pose();
             pose.pushPose();
             pose.translate(getWidth() - 30, 0, 0);
@@ -201,7 +202,7 @@ public class AvatarWizardList extends AbstractList {
 
         @Override
         protected void renderText(GuiGraphics gui, float delta) {
-            //name
+            // name
             Font font = Minecraft.getInstance().font;
             MutableComponent name = getMessage().copy();
             if (this.isToggled())

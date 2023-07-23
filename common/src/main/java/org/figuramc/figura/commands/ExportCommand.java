@@ -18,16 +18,16 @@ class ExportCommand {
     public static LiteralArgumentBuilder<FiguraClientCommandSource> getCommand() {
         LiteralArgumentBuilder<FiguraClientCommandSource> root = LiteralArgumentBuilder.literal("export");
 
-        //texture
+        // texture
         root.then(exportTexture());
 
-        //docs
+        // docs
         root.then(FiguraDocsManager.getExportCommand());
 
-        //avatar
+        // avatar
         root.then(exportAvatar());
 
-        //return
+        // return
         return root;
     }
 

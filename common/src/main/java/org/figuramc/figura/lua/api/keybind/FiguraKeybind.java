@@ -52,7 +52,7 @@ public class FiguraKeybind {
     }
 
     public boolean setDown(boolean pressed, int modifiers) {
-        //events
+        // events
         if (isDown != pressed) {
             Varargs result = null;
 
@@ -78,7 +78,7 @@ public class FiguraKeybind {
         return this.key.getDisplayName();
     }
 
-    // -- static -- //
+    // -- static -- // 
 
     public static InputConstants.Key parseStringKey(String key) {
         try {
@@ -118,7 +118,7 @@ public class FiguraKeybind {
     }
 
 
-    // -- lua -- //
+    // -- lua -- // 
 
 
     @LuaWhitelist

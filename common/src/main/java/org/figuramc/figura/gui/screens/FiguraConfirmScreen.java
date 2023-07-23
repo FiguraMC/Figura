@@ -27,7 +27,7 @@ public class FiguraConfirmScreen extends AbstractPanelScreen {
         super.init();
         removeWidget(panels);
 
-        //labels
+        // labels
         int center = this.width / 2;
         Label title = new Label(this.getTitle(), center, 0, width - 8, true, TextUtils.Alignment.CENTER);
         Label message = new Label(this.message, center, 0, width - 8, true, TextUtils.Alignment.CENTER);
@@ -42,7 +42,7 @@ public class FiguraConfirmScreen extends AbstractPanelScreen {
         addRenderableWidget(title);
         addRenderableWidget(message);
 
-        //buttons
+        // buttons
         addButtons(center, Math.min(Math.max(messageY + message.getHeight() + 20, this.height / 6 + 96), this.height - 24));
     }
 

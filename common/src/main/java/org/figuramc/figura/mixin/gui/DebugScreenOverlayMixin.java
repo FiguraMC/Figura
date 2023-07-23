@@ -36,7 +36,7 @@ public class DebugScreenOverlayMixin {
             lines.add(++i, String.format("Model Complexity: %d", avatar.complexity.pre));
             lines.add(++i, String.format("Animations Complexity: %d", avatar.animationComplexity));
 
-            //has script
+            // has script
             if (avatar.luaRuntime != null || avatar.scriptError) {
                 String color = (avatar.scriptError ? ChatFormatting.RED : "").toString();
                 lines.add(++i, color + String.format("Animations instructions: %d", avatar.animation.pre));

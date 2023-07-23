@@ -173,7 +173,7 @@ public class ActionWheelAPI {
     public boolean execute(Avatar avatar, boolean left) {
         LuaFunction function = left ? leftClick : rightClick;
 
-        //execute
+        // execute
         if (function != null) {
             Varargs result = avatar.run(function, avatar.tick);
             return result != null && result.arg(1).isboolean() && result.arg(1).checkboolean();

@@ -90,7 +90,7 @@ public class VectorsAPI {
         return FiguraVec4.of(x, y, z, w);
     }
 
-    // -- colors -- //
+    // -- colors -- // 
 
     @LuaWhitelist
     @LuaMethodDoc(
@@ -192,7 +192,7 @@ public class VectorsAPI {
         return ColorUtils.rgbToHex(rgb);
     }
 
-    // -- math utils -- //
+    // -- math utils -- // 
 
     @LuaWhitelist
     @LuaMethodDoc(

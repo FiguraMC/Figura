@@ -45,14 +45,14 @@ public abstract class CapeLayerMixin extends RenderLayer<AbstractClientPlayer, P
         if (avatar == null)
             return;
 
-        //Acquire reference to fake cloak
+        // Acquire reference to fake cloak
         ModelPart fakeCloak = ((PlayerModelAccessor) getParentModel()).figura$getFakeCloak();
         ModelPart realCloak = ((PlayerModelAccessor) getParentModel()).figura$getCloak();
 
-        //Do math for fake cloak
+        // Do math for fake cloak
         fakeCloak.copyFrom(realCloak);
 
-        //REFERENCED FROM CODE IN CapeLayer (CapeFeatureRenderer for Yarn)
+        // REFERENCED FROM CODE IN CapeLayer (CapeFeatureRenderer for Yarn)
         double d = Mth.lerp(tickDelta, entity.xCloakO, entity.xCloak) - Mth.lerp(tickDelta, entity.xo, entity.getX());
         double e = Mth.lerp(tickDelta, entity.yCloakO, entity.yCloak) - Mth.lerp(tickDelta, entity.yo, entity.getY());
         double m = Mth.lerp(tickDelta, entity.zCloakO, entity.zCloak) - Mth.lerp(tickDelta, entity.zo, entity.getZ());
@@ -70,17 +70,17 @@ public abstract class CapeLayerMixin extends RenderLayer<AbstractClientPlayer, P
         float t = Mth.lerp(tickDelta, entity.oBob, entity.bob);
         q += Mth.sin(Mth.lerp(tickDelta, entity.walkDistO, entity.walkDist) * 6f) * 32f * t;
 
-        //Just going to ignore the fact that vanilla uses XZY rotation order for capes...
-        //As a result, the cape rotation is slightly off.
-        //Another inaccuracy results from the fact that the cape also moves its position without moving its pivot point,
-        //I'm pretty sure. This is due to it using the matrix stack instead of setting x,y,z,xRot,yRot,zRot on the parts.
-        //The cape functions completely differently than all other model parts of the player. Quite frankly,
-        //I don't want to deal with it any more than I already have, and I'm just going to leave this alone now and call it
-        //close enough.
+        // Just going to ignore the fact that vanilla uses XZY rotation order for capes...
+        // As a result, the cape rotation is slightly off.
+        // Another inaccuracy results from the fact that the cape also moves its position without moving its pivot point,
+        // I'm pretty sure. This is due to it using the matrix stack instead of setting x,y,z,xRot,yRot,zRot on the parts.
+        // The cape functions completely differently than all other model parts of the player. Quite frankly,
+        // I don't want to deal with it any more than I already have, and I'm just going to leave this alone now and call it
+        // close enough.
 
-        //If someone wants to spend the time to correct these inaccuracies for us, feel free to make a pull request.
+        // If someone wants to spend the time to correct these inaccuracies for us, feel free to make a pull request.
 
-        //pos
+        // pos
         if (itemStack.isEmpty() || (avatar.luaRuntime != null && !avatar.luaRuntime.vanilla_model.CHESTPLATE_BODY.checkVisible())) {
             if (entity.isCrouching()) {
                 q += 25f;
@@ -99,14 +99,14 @@ public abstract class CapeLayerMixin extends RenderLayer<AbstractClientPlayer, P
             fakeCloak.z = 1f;
         }
 
-        //rot
+        // rot
         fakeCloak.setRotation(
                 (float) Math.toRadians(6f + r / 2f + q),
                 (float) -Math.toRadians(s / 2f),
                 (float) Math.toRadians(s / 2f)
         );
 
-        //Copy rotations from fake cloak
+        // Copy rotations from fake cloak
         if (avatar.luaRuntime != null) {
             VanillaPart part = avatar.luaRuntime.vanilla_model.CAPE;
             EntityModel<?> model = getParentModel();
@@ -117,7 +117,7 @@ public abstract class CapeLayerMixin extends RenderLayer<AbstractClientPlayer, P
 
         avatar.capeRender(entity, multiBufferSource, poseStack, light, tickDelta, fakeCloak);
 
-        //Setup visibility for real cloak
+        // Setup visibility for real cloak
         if (RenderUtils.vanillaModelAndScript(avatar))
             avatar.luaRuntime.vanilla_model.CAPE.posTransform(getParentModel());
     }

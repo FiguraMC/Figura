@@ -42,7 +42,7 @@ public class LuaEvent {
         this.piped = piped;
     }
 
-    //Add all waiting functions from the queues
+    // Add all waiting functions from the queues
     protected void flushQueue() {
         for (LuaFunction function : removalQueue)
             functions.removeFirstOccurrence(function);
@@ -53,8 +53,8 @@ public class LuaEvent {
         queue.clear();
     }
 
-    //Calls all the functions in the order they were registered, using the given args for all calls.
-    //If piped, the result of one function is passed through to the next, repeatedly, eventually returning the result.
+    // Calls all the functions in the order they were registered, using the given args for all calls.
+    // If piped, the result of one function is passed through to the next, repeatedly, eventually returning the result.
     public Varargs call(Varargs args) {
         flushQueue();
 

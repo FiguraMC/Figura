@@ -57,19 +57,19 @@ class DebugCommand {
 
     private static int commandAction(CommandContext<FiguraClientCommandSource> context) {
         try {
-            //get path
+            // get path
             Path targetPath = FiguraMod.getFiguraDirectory().resolve("debug_data.json");
 
-            //create file
+            // create file
             if (!Files.exists(targetPath))
                 Files.createFile(targetPath);
 
-            //write file
+            // write file
             OutputStream fs = Files.newOutputStream(targetPath);
             fs.write(fetchStatus(AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID())).getBytes());
             fs.close();
 
-            //feedback
+            // feedback
             context.getSource().figura$sendFeedback(
                     FiguraText.of("command.debug.success")
                             .append(" ")
@@ -86,10 +86,10 @@ class DebugCommand {
     }
 
     public static String fetchStatus(Avatar avatar) {
-        //root
+        // root
         JsonObject root = new JsonObject();
 
-        //mod meta
+        // mod meta
         JsonObject meta = new JsonObject();
 
         meta.addProperty("version", FiguraMod.VERSION.toString());
@@ -111,7 +111,7 @@ class DebugCommand {
 
         root.add("meta", meta);
 
-        //config
+        // config
         JsonObject config = new JsonObject();
 
         for (ConfigType<?> value : ConfigManager.REGISTRY)
@@ -120,7 +120,7 @@ class DebugCommand {
 
         root.add("config", config);
 
-        //all permissions
+        // all permissions
         JsonObject permissions = new JsonObject();
 
         for (PermissionPack.CategoryPermissionPack group : PermissionManager.CATEGORIES.values()) {
@@ -148,12 +148,12 @@ class DebugCommand {
 
         root.add("permissions", permissions);
 
-        //avatars
+        // avatars
         LocalAvatarFetcher.reloadAvatars().join();
         root.add("avatars", getAvatarsPaths(LocalAvatarFetcher.ALL_AVATARS));
 
 
-        // -- avatar -- //
+        // -- avatar -- // 
 
 
         if (avatar == null)
@@ -161,7 +161,7 @@ class DebugCommand {
 
         JsonObject a = new JsonObject();
 
-        //permissions
+        // permissions
         JsonObject aPermissions = new JsonObject();
 
         aPermissions.addProperty("category", avatar.permissions.category.name);
@@ -185,7 +185,7 @@ class DebugCommand {
 
         a.add("permissions", aPermissions);
 
-        //avatar metadata
+        // avatar metadata
         JsonObject aMeta = new JsonObject();
 
         aMeta.addProperty("version", avatar.version.toString());
@@ -206,7 +206,7 @@ class DebugCommand {
 
         a.add("meta", aMeta);
 
-        //avatar complexity
+        // avatar complexity
         JsonObject inst = new JsonObject();
 
         inst.addProperty("animationComplexity", avatar.animationComplexity);
@@ -225,7 +225,7 @@ class DebugCommand {
 
         a.add("instructions", inst);
 
-        //sounds
+        // sounds
         JsonArray sounds = new JsonArray();
 
         for (String s : avatar.customSounds.keySet())
@@ -233,7 +233,7 @@ class DebugCommand {
 
         a.add("sounds", sounds);
 
-        //animations
+        // animations
         JsonArray animations = new JsonArray();
 
         for (Animation animation : avatar.animations.values())
@@ -241,11 +241,11 @@ class DebugCommand {
 
         a.add("animations", animations);
 
-        //sizes
+        // sizes
         if (avatar.nbt != null)
             a.add("sizes", parseNbtSizes(avatar.nbt));
 
-        //return as string
+        // return as string
         root.add("avatar", a);
         return GSON.toJson(root);
     }
@@ -268,42 +268,42 @@ class DebugCommand {
     private static JsonObject parseNbtSizes(CompoundTag nbt) {
         JsonObject sizes = new JsonObject();
 
-        //metadata
+        // metadata
         sizes.addProperty("metadata", parseSize(getBytesFromNbt(nbt.getCompound("metadata"))));
 
-        //models
+        // models
         CompoundTag modelsNbt = nbt.getCompound("models");
         ListTag childrenNbt = modelsNbt.getList("chld", Tag.TAG_COMPOUND);
         JsonObject models = parseListSize(childrenNbt, tag -> tag.getString("name"));
         sizes.add("models", models);
         sizes.addProperty("models_total", parseSize(getBytesFromNbt(modelsNbt)));
 
-        //animations
+        // animations
         ListTag animationsNbt = nbt.getList("animations", Tag.TAG_COMPOUND);
         JsonObject animations = parseListSize(animationsNbt, tag -> tag.getString("mdl") + "." + tag.getString("name"));
         sizes.add("animations", animations);
         sizes.addProperty("animations_total", parseSize(getBytesFromNbt(animationsNbt)));
 
-        //textures
+        // textures
         CompoundTag texturesNbt = nbt.getCompound("textures");
         CompoundTag textureSrc = texturesNbt.getCompound("src");
         JsonObject textures = parseCompoundSize(textureSrc);
         sizes.add("textures", textures);
         sizes.addProperty("textures_total", parseSize(getBytesFromNbt(texturesNbt)));
 
-        //scripts
+        // scripts
         CompoundTag scriptsNbt = nbt.getCompound("scripts");
         JsonObject scripts = parseCompoundSize(scriptsNbt);
         sizes.add("scripts", scripts);
         sizes.addProperty("scripts_total", parseSize(getBytesFromNbt(scriptsNbt)));
 
-        //sounds
+        // sounds
         CompoundTag soundsNbt = nbt.getCompound("sounds");
         JsonObject sounds = parseCompoundSize(soundsNbt);
         sizes.add("sounds", sounds);
         sizes.addProperty("sounds_total", parseSize(getBytesFromNbt(soundsNbt)));
 
-        //total
+        // total
         sizes.addProperty("total", parseSize(getBytesFromNbt(nbt)));
         return sizes;
     }

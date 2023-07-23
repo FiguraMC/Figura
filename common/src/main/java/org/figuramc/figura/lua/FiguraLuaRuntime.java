@@ -39,7 +39,7 @@ import java.util.function.Function;
  */
 public class FiguraLuaRuntime {
 
-    //Global API instances
+    // Global API instances
     //---------------------------------
     public EntityAPI<?> entityAPI;
     public EventsAPI events;
@@ -67,7 +67,7 @@ public class FiguraLuaRuntime {
         this.owner = avatar;
         this.scripts.putAll(scripts);
 
-        //Each user gets their own set of globals as well.
+        // Each user gets their own set of globals as well.
         userGlobals.load(new JseBaseLib());
         userGlobals.load(new Bit32Lib());
         userGlobals.load(new TableLib());
@@ -119,7 +119,7 @@ public class FiguraLuaRuntime {
     // init runtime //
 
     private void setupFiguraSandbox() {
-        //actual sandbox file
+        // actual sandbox file
         try (InputStream inputStream = FiguraMod.class.getResourceAsStream("/assets/" + FiguraMod.MOD_ID + "/scripts/sandbox.lua")) {
             if (inputStream == null) throw new IOException("Unable to get resource");
             userGlobals.load(new String(inputStream.readAllBytes()), "sandbox").call();
@@ -127,7 +127,7 @@ public class FiguraLuaRuntime {
             error(new LuaError("Failed to load builtin sandbox script:\n" + e.getMessage()));
         }
 
-        //read only string metatable
+        // read only string metatable
         LuaString.s_metatable = new ReadOnlyLuaTable(LuaString.s_metatable);
     }
 
@@ -214,21 +214,21 @@ public class FiguraLuaRuntime {
         }
     };
     private void loadExtraLibraries() {
-        //require
+        // require
         userGlobals.set("require", requireFunction);
 
-        //load print functions
+        // load print functions
         FiguraLuaPrinter.loadPrintFunctions(this);
 
-        //custom loadstring
+        // custom loadstring
         LuaValue loadstring = LOADSTRING_FUNC.apply(this);
         this.setGlobal("load", loadstring);
         this.setGlobal("loadstring", loadstring);
 
-        //listFiles
+        // listFiles
         this.setGlobal("listFiles", listFiles);
 
-        //load math library
+        // load math library
         try (InputStream inputStream = FiguraMod.class.getResourceAsStream("/assets/" + FiguraMod.MOD_ID + "/scripts/math.lua")) {
             if (inputStream == null) throw new IOException("Unable to get resource");
             userGlobals.load(new String(inputStream.readAllBytes()), "math").call();
@@ -236,7 +236,7 @@ public class FiguraLuaRuntime {
             error(new LuaError("Failed to load builtin math script:\n" + e.getMessage()));
         }
 
-        //Change the type() function
+        // Change the type() function
         setGlobal("type", new OneArgFunction() {
             @Override
             public LuaValue call(LuaValue arg) {
@@ -256,7 +256,7 @@ public class FiguraLuaRuntime {
             }
         });
 
-        //Change the pairs() function
+        // Change the pairs() function
         LuaFunction globalPairs = userGlobals.get("pairs").checkfunction();
         setGlobal("pairs", new VarArgFunction() {
             @Override
@@ -276,7 +276,7 @@ public class FiguraLuaRuntime {
             }
         });
 
-        //Change the ipairs() function
+        // Change the ipairs() function
         LuaFunction globalIPairs = userGlobals.get("ipairs").checkfunction();
         setGlobal("ipairs", new VarArgFunction() {
             @Override
@@ -300,17 +300,17 @@ public class FiguraLuaRuntime {
     private final TwoArgFunction listFiles = new TwoArgFunction() {
         @Override
         public LuaValue call(LuaValue arg1, LuaValue arg2) {
-            //format path
+            // format path
             String path = arg1.isnil() ? "" : arg1.checkjstring();
             path = path.replaceAll("[/\\\\]", ".");
 
-            //max depth
+            // max depth
             int depth = path.isBlank() ? 1 : path.split("\\.").length + 1;
 
-            //subfolder
+            // subfolder
             boolean subFolders = !arg2.isnil() && arg2.checkboolean();
 
-            //iterate over all script names and add them if their name starts with the path query
+            // iterate over all script names and add them if their name starts with the path query
             int i = 1;
             LuaTable table = new LuaTable();
             for (String s : scripts.keySet()) {
@@ -329,22 +329,22 @@ public class FiguraLuaRuntime {
     // init event //
 
     private final Function<String, Varargs> INIT_SCRIPT = str -> {
-        //format name
+        // format name
         String name = str.replaceAll("[/\\\\]", ".");
 
-        //already loaded
+        // already loaded
         Varargs val = loadedScripts.get(name);
         if (val != null)
             return val;
 
-        //not found
+        // not found
         String src = scripts.get(name);
         if (src == null)
             throw new LuaError("Tried to require nonexistent script \"" + str + "\"!");
 
         this.loadingScripts.push(name);
 
-        //load
+        // load
         int split = name.lastIndexOf('.');
         String path = split == -1 ? "" : name.substring(0, split);
         String fileName = split == -1 ? name : name.substring(split + 1);
@@ -352,7 +352,7 @@ public class FiguraLuaRuntime {
         if (value == LuaValue.NIL)
             value = LuaValue.TRUE;
 
-        //cache and return
+        // cache and return
         loadedScripts.put(name, value);
         loadingScripts.pop();
         return value;
@@ -425,17 +425,17 @@ public class FiguraLuaRuntime {
     }
 
     public Varargs run(Object toRun, Avatar.Instructions limit, Object... args) {
-        //parse args
+        // parse args
         LuaValue[] values = new LuaValue[args.length];
         for (int i = 0; i < values.length; i++)
             values[i] = typeManager.javaToLua(args[i]).arg1();
 
         Varargs val = LuaValue.varargsOf(values);
 
-        //set instructions limit
+        // set instructions limit
         setInstructionLimit(limit.remaining);
 
-        //get and call event
+        // get and call event
         try {
             Varargs ret;
             if (toRun instanceof LuaEvent event)
@@ -447,15 +447,15 @@ public class FiguraLuaRuntime {
             else
                 throw new IllegalArgumentException("Internal event error - Invalid type to run! (" + toRun.getClass().getSimpleName() + ")");
 
-            //use instructions
+            // use instructions
             limit.use(getInstructions());
-            //and return the value
+            // and return the value
             return ret;
         } catch (Exception | StackOverflowError e) {
             error(e);
         }
 
-        //failsafe return
+        // failsafe return
         return null;
     }
 }

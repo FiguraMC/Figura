@@ -34,7 +34,7 @@ public class WebsocketThingy extends WebSocketClient {
         put(1015, "TLS Handshake");
         put(3000, "Unauthorized");
         put(4000, "Re-Auth");
-        put(4001, "Bananed ^.^");
+        put(4001, "Banned");
         put(4002, "Too Many Connections");
     }};
 
@@ -57,9 +57,9 @@ public class WebsocketThingy extends WebSocketClient {
 
     @Override
     public void onMessage(String message) {
-        //nope
-        //backend v2 do not have string messages
-        //this method is just an illusion
+        // nope
+        // backend v2 do not have string messages
+        // this method is just an illusion
     }
 
     @Override

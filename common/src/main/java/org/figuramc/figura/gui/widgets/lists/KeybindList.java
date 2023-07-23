@@ -44,22 +44,22 @@ public class KeybindList extends AbstractList {
 
     @Override
     public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
-        //background and scissors
+        // background and scissors
         UIHelper.blitSliced(gui, getX(), getY(), getWidth(), getHeight(), UIHelper.OUTLINE_FILL);
         enableScissors(gui);
 
         if (!keybinds.isEmpty())
             updateEntries();
 
-        //children
+        // children
         super.render(gui, mouseX, mouseY, delta);
 
-        //reset scissor
+        // reset scissor
         gui.disableScissor();
     }
 
     private void updateEntries() {
-        //scrollbar
+        // scrollbar
         int totalHeight = -4;
         for (KeybindElement keybind : keybinds)
             totalHeight += keybind.getHeight() + 8;
@@ -68,7 +68,7 @@ public class KeybindList extends AbstractList {
         scrollBar.setVisible(totalHeight > getHeight());
         scrollBar.setScrollRatio(entryHeight, totalHeight - getHeight());
 
-        //render list
+        // render list
         int xOffset = scrollBar.isVisible() ? 4 : 11;
         int yOffset = scrollBar.isVisible() ? (int) -(Mth.lerp(scrollBar.getScrollProgress(), -4, totalHeight - getHeight())) : 4;
         for (KeybindElement keybind : keybinds) {
@@ -79,10 +79,10 @@ public class KeybindList extends AbstractList {
     }
 
     private void updateList() {
-        //clear old widgets
+        // clear old widgets
         keybinds.forEach(children::remove);
 
-        //add new keybinds
+        // add new keybinds
         if (owner == null || owner.luaRuntime == null)
             return;
 
@@ -132,14 +132,14 @@ public class KeybindList extends AbstractList {
             this.keybind = keybind;
             this.parent = parent;
 
-            //toggle button
+            // toggle button
             children.add(0, keybindButton = new ParentedButton(0, 0, 90, 20, keybind.getTranslatedKeyMessage(), this, button -> {
                 parent.focusedKeybind = keybind;
                 FiguraMod.processingKeybind = true;
                 updateText();
             }));
 
-            //reset button
+            // reset button
             children.add(resetButton = new ParentedButton(0, 0, 60, 20, Component.translatable("controls.reset"), this, button -> {
                 keybind.resetDefaultKey();
                 parent.updateBindings();
@@ -152,11 +152,11 @@ public class KeybindList extends AbstractList {
 
             helper.renderConflictBars(gui, keybindButton.getX() - 8, keybindButton.getY() + 2, 4, 16);
 
-            //vars
+            // vars
             Font font = Minecraft.getInstance().font;
             int textY = getY() + getHeight() / 2 - font.lineHeight / 2;
 
-            //hovered arrow
+            // hovered arrow
             setHovered(isMouseOver(mouseX, mouseY));
             if (isHovered()) {
                 gui.drawString(font, HOVERED_ARROW, getX() + 4, textY, 0xFFFFFF);
@@ -164,10 +164,10 @@ public class KeybindList extends AbstractList {
                     helper.renderTooltip();
             }
 
-            //render name
+            // render name
             gui.drawString(font, this.keybind.getName(), getX() + 16, textY, 0xFFFFFF);
 
-            //render children
+            // render children
             super.render(gui, mouseX, mouseY, delta);
         }
 
@@ -191,17 +191,17 @@ public class KeybindList extends AbstractList {
         }
 
         public void updateText() {
-            //tooltip
+            // tooltip
             List<FiguraKeybind> temp = new ArrayList<>();
             for (KeybindElement keybind : parent.keybinds)
                 temp.add(keybind.keybind);
             helper.setTooltip(this.keybind, temp);
 
-            //reset enabled
+            // reset enabled
             boolean isDefault = this.keybind.isDefault();
             this.resetButton.setActive(!isDefault);
 
-            //text
+            // text
             boolean selected = parent.focusedKeybind == this.keybind;
             Component text = helper.getText(isDefault, selected, this.keybind.getTranslatedKeyMessage());
             keybindButton.setMessage(text);

@@ -29,12 +29,12 @@ public class AnimationAPI {
     private static Map<String, Map<String, Animation>> generateAnimTable(Avatar avatar) {
         HashMap<String, Map<String, Animation>> root = new HashMap<>();
         for (Animation animation : avatar.animations.values()) {
-            //get or create animation table
+            // get or create animation table
             Map<String, Animation> animations = root.get(animation.modelName);
             if (animations == null)
                 animations = new HashMap<>();
 
-            //put animation on the model table
+            // put animation on the model table
             animations.put(animation.name, animation);
             root.put(animation.modelName, animations);
         }

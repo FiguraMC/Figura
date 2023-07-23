@@ -134,7 +134,7 @@ public class AvatarAPI {
     @LuaWhitelist
     @LuaMethodDoc("avatar.has_script_error")
     public boolean hasScriptError() {
-        //useless I know
+        // useless I know
         return avatar.scriptError;
     }
 

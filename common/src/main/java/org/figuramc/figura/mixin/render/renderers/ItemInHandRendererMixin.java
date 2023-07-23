@@ -75,19 +75,19 @@ public abstract class ItemInHandRendererMixin {
         boolean willRenderItem = !item.isEmpty();
         boolean willRenderArm = (!willRenderItem && main) || item.is(Items.FILLED_MAP) || (!willRenderItem && this.mainHandItem.is(Items.FILLED_MAP));
 
-        //hide arm
+        // hide arm
         if (willRenderArm && !willRenderItem && armVisible != null && !armVisible) {
             ci.cancel();
             return;
         }
-        //render arm
+        // render arm
         if (!willRenderArm && !player.isInvisible() && armVisible != null && armVisible) {
             matrices.pushPose();
             this.renderPlayerArm(matrices, vertexConsumers, light, equipProgress, swingProgress, arm);
             matrices.popPose();
         }
 
-        //hide item
+        // hide item
         VanillaModelPart part = arm == HumanoidArm.LEFT ? avatar.luaRuntime.vanilla_model.LEFT_ITEM : avatar.luaRuntime.vanilla_model.RIGHT_ITEM;
         if (willRenderItem && !part.checkVisible()) {
             ci.cancel();
@@ -103,7 +103,7 @@ public abstract class ItemInHandRendererMixin {
                 case FIRST_PERSON_RIGHT_HAND -> SkullBlockRendererAccessor.SkullRenderMode.FIRST_PERSON_RIGHT_HAND;
                 case THIRD_PERSON_LEFT_HAND -> SkullBlockRendererAccessor.SkullRenderMode.THIRD_PERSON_LEFT_HAND;
                 case THIRD_PERSON_RIGHT_HAND -> SkullBlockRendererAccessor.SkullRenderMode.THIRD_PERSON_RIGHT_HAND;
-                default -> leftHanded ? SkullBlockRendererAccessor.SkullRenderMode.THIRD_PERSON_LEFT_HAND //should never happen
+                default -> leftHanded ? SkullBlockRendererAccessor.SkullRenderMode.THIRD_PERSON_LEFT_HAND // should never happen
                         : SkullBlockRendererAccessor.SkullRenderMode.THIRD_PERSON_RIGHT_HAND; 
             });
         }

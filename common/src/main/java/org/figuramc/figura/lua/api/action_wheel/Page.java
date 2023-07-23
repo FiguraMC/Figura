@@ -66,7 +66,7 @@ public class Page {
     }
 
     private int checkIndex(Integer index) {
-        //check and fix index
+        // check and fix index
         if (index != null) {
             if (index < 1)
                 throw new LuaError("Index must be greater than 0!");
@@ -74,7 +74,7 @@ public class Page {
             return index - 1;
         }
 
-        //if no index is given, get the first null slot
+        // if no index is given, get the first null slot
         int i = 0;
         while (actionsMap.get(i) != null)
             i++;
@@ -83,7 +83,7 @@ public class Page {
     }
 
 
-    // -- lua stuff -- //
+    // -- lua stuff -- // 
 
 
     @LuaWhitelist
@@ -122,11 +122,11 @@ public class Page {
             value = "wheel_page.new_action"
     )
     public Action newAction(Integer index) {
-        //set the action
+        // set the action
         Action action = new Action();
         this.actionsMap.put(checkIndex(index), action);
 
-        //return the action
+        // return the action
         return action;
     }
 
@@ -155,9 +155,9 @@ public class Page {
     )
     public Page setAction(Integer index, Action action) {
         if (index == null || index == -1)
-            //"why -1 is accepted" you might say
-            //because -1 is more elegant for this, as it will return the latest available index
-            //same as how lua substring works, but not exactly
+            // "why -1 is accepted" you might say
+            // because -1 is more elegant for this, as it will return the latest available index
+            // same as how lua substring works, but not exactly
             index = this.checkIndex(null) + 1;
         if (index < 1)
             throw new LuaError("Index must be greater than 0!");

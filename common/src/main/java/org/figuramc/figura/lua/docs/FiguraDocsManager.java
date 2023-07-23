@@ -68,9 +68,9 @@ import java.util.*;
 
 public class FiguraDocsManager {
 
-    //class name map
+    // class name map
     private static final Map<Class<?>, String> NAME_MAP = new HashMap<>() {{
-        //Built in type names, even for things that don't have docs
+        // Built in type names, even for things that don't have docs
         put(Double.class, "Number");
         put(double.class, "Number");
         put(Float.class, "Number");
@@ -92,25 +92,25 @@ public class FiguraDocsManager {
         put(Boolean.class, "Boolean");
         put(boolean.class, "Boolean");
 
-        //Lua things
+        // Lua things
         put(LuaFunction.class, "Function");
         put(LuaTable.class, "Table");
         put(LuaValue.class, "AnyType");
         put(Varargs.class, "Varargs");
 
-        //converted things
+        // converted things
         put(Map.class, "Table");
         put(HashMap.class, "Table");
         put(List.class, "Table");
         put(ArrayList.class, "Table");
 
-        //Figura types
+        // Figura types
         put(FiguraVector.class, "Vector");
         put(FiguraMatrix.class, "Matrix");
     }};
     private static final Map<Class<?>, String> CLASS_COMMAND_MAP = new HashMap<>();
 
-    // -- docs generator data -- //
+    // -- docs generator data -- // 
 
     private static final Map<String, Collection<Class<?>>> GLOBAL_CHILDREN = new HashMap<>() {{
         put("action_wheel", List.of(
@@ -237,7 +237,7 @@ public class FiguraDocsManager {
     private static final List<FiguraDoc> GENERATED_LIB_OVERRIDES = new ArrayList<>();
 
     public static void init() {
-        //generate children override
+        // generate children override
         for (Map.Entry<String, Collection<Class<?>>> packageEntry : GLOBAL_CHILDREN.entrySet()) {
             for (Class<?> documentedClass : packageEntry.getValue()) {
                 FiguraDoc.ClassDoc doc = generateDocFor(documentedClass, "globals " + packageEntry.getKey());
@@ -246,14 +246,14 @@ public class FiguraDocsManager {
             }
         }
 
-        //generate standard libraries overrides
+        // generate standard libraries overrides
         for (Class<?> lib : LUA_LIB_OVERRIDES) {
             FiguraDoc.ClassDoc libDoc = generateDocFor(lib, null);
             if (libDoc != null)
                 GENERATED_LIB_OVERRIDES.add(libDoc);
         }
 
-        //generate globals
+        // generate globals
         Class<?> globalClass = FiguraGlobalsDocs.class;
         global = new FiguraDoc.ClassDoc(globalClass, globalClass.getAnnotation(LuaTypeDoc.class), GENERATED_CHILDREN);
     }
@@ -299,22 +299,22 @@ public class FiguraDocsManager {
         return text;
     }
 
-    // -- commands -- //
+    // -- commands -- // 
 
     public static LiteralArgumentBuilder<FiguraClientCommandSource> getCommand() {
-        //root
+        // root
         LiteralArgumentBuilder<FiguraClientCommandSource> root = LiteralArgumentBuilder.literal("docs");
         root.executes(context -> FiguraDoc.printRoot());
 
-        //globals
+        // globals
         LiteralArgumentBuilder<FiguraClientCommandSource> globals = global == null ? LiteralArgumentBuilder.literal("globals") : global.getCommand();
         root.then(globals);
 
-        //library overrides
+        // library overrides
         for (FiguraDoc figuraDoc : GENERATED_LIB_OVERRIDES)
             root.then(figuraDoc.getCommand());
 
-        //list docs
+        // list docs
         root.then(FiguraListDocs.getCommand());
 
         return root;
@@ -331,23 +331,23 @@ public class FiguraDocsManager {
         return root;
     }
 
-    // -- export -- //
+    // -- export -- // 
 
     private static int exportDocsFunction(CommandContext<FiguraClientCommandSource> context, boolean translate) {
         try {
-            //get path
+            // get path
             Path targetPath = FiguraMod.getFiguraDirectory().resolve("exported_docs.json");
 
-            //create file
+            // create file
             if (!Files.exists(targetPath))
                 Files.createFile(targetPath);
 
-            //write file
+            // write file
             OutputStream fs = Files.newOutputStream(targetPath);
             fs.write(exportAsJsonString(translate).getBytes());
             fs.close();
 
-            //feedback
+            // feedback
             context.getSource().figura$sendFeedback(
                     FiguraText.of("command.docs_export.success")
                             .append(" ")
@@ -364,21 +364,21 @@ public class FiguraDocsManager {
     }
 
     public static String exportAsJsonString(boolean translate) {
-        //root
+        // root
         JsonObject root = new JsonObject();
 
-        //globals
+        // globals
         JsonObject globals = global == null ? new JsonObject() : global.toJson(translate);
         root.add("globals", globals);
 
-        //library overrides
+        // library overrides
         for (FiguraDoc figuraDoc : GENERATED_LIB_OVERRIDES)
             root.add(figuraDoc.name, figuraDoc.toJson(translate));
 
-        //lists
+        // lists
         root.add("lists", FiguraListDocs.toJson(translate));
 
-        //return as string
+        // return as string
         return new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create().toJson(root);
     }
 }

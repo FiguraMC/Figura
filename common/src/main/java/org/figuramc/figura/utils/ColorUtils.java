@@ -10,18 +10,18 @@ import java.awt.*;
 public class ColorUtils {
 
     public enum Colors {
-        PINK(0x5EA5FF),
-        CHLOE_PURPLE(0xA672EF, "chloe", "space"),
-        MAYA_BLUE(0x00F0FF, "maya", "devnull", "limits"),
-        SKYE_BLUE(0x99BBEE, "sky", "skye", "skylar"),
-        LILY_RED(0xFF2400, "lily", "foxes", "fox"),
-        KIRI_ORANGE(0xFFC400, "kiri"),
+        AWESOME_BLUE(0x5EA5FF),
+        PURPLE(0xA672EF),
+        BLUE(0x00F0FF),
+        SOFT_BLUE(0x99BBEE),
+        RED(0xFF2400),
+        ORANGE(0xFFC400),
 
-        CHEESE(0xF8C53A, "largecheese", "large cheese"),
+        CHEESE(0xF8C53A),
 
         LUA_LOG(0x5555FF),
         LUA_ERROR(0xFF5555),
-        LUA_PING(0xA155DA, "luna", "moff", "moth"),
+        LUA_PING(0xA155DA),
 
         DEFAULT(0x5AAAFF),
         DISCORD(0x5865F2),
@@ -33,13 +33,11 @@ public class ColorUtils {
         public final int hex;
         public final FiguraVec3 vec;
         public final Style style;
-        public final String[] alias;
 
-        Colors(int hex, String... alias) {
+        Colors(int hex) {
             this.hex = hex;
             this.vec = intToRGB(hex);
             this.style = Style.EMPTY.withColor(hex);
-            this.alias = alias;
         }
 
         public static Colors getColor(String s) {
@@ -49,10 +47,6 @@ public class ColorUtils {
             for (Colors value : Colors.values()) {
                 if (s.equalsIgnoreCase(value.name()))
                     return value;
-                for (String alias : value.alias) {
-                    if (s.equalsIgnoreCase(alias))
-                        return value;
-                }
             }
             return null;
         }
@@ -145,12 +139,12 @@ public class ColorUtils {
         if (string == null || string.isBlank())
             return fallback;
 
-        //parse hex color
+        // parse hex color
         StringBuilder hex = new StringBuilder(string);
 
         if (hex.toString().startsWith("#")) hex = new StringBuilder(hex.substring(1));
 
-        //short hex
+        // short hex
         if (hex.length() == 3) {
             char[] bgChar = hex.toString().toCharArray();
             hex = new StringBuilder("" + bgChar[0] + bgChar[0] + bgChar[1] + bgChar[1] + bgChar[2] + bgChar[2]);
@@ -158,7 +152,7 @@ public class ColorUtils {
             hex.append("0".repeat(Math.max(6 - hex.length(), 0)));
         }
 
-        //return
+        // return
         try {
             return intToRGB(Integer.parseInt(hex.substring(0, 6), 16));
         } catch (Exception ignored) {

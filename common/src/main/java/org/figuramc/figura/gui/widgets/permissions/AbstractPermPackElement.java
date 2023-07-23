@@ -53,10 +53,10 @@ public class AbstractPermPackElement extends Button implements Comparable<Abstra
 
     @Override
     public void onPress() {
-        //set selected entry
+        // set selected entry
         parent.selectedEntry = this;
 
-        //update permissions widgets
+        // update permissions widgets
         parent.parent.updatePermissions(this.pack);
     }
 
@@ -66,7 +66,7 @@ public class AbstractPermPackElement extends Button implements Comparable<Abstra
 
     @Override
     public int compareTo(AbstractPermPackElement other) {
-        //compare permission categories first
+        // compare permission categories first
         int len = Permissions.Category.values().length;
 
         int i;
@@ -85,7 +85,7 @@ public class AbstractPermPackElement extends Button implements Comparable<Abstra
 
         int comp = Integer.compare(i, j);
         if (comp == 0) {
-            //then compare types
+            // then compare types
             if (this instanceof CategoryPermPackElement && other instanceof PlayerPermPackElement)
                 return -1;
             if (this instanceof PlayerPermPackElement && other instanceof CategoryPermPackElement)
@@ -95,18 +95,18 @@ public class AbstractPermPackElement extends Button implements Comparable<Abstra
                 Avatar avatar1 = AvatarManager.getAvatarForPlayer(player1.getOwner());
                 Avatar avatar2 = AvatarManager.getAvatarForPlayer(player2.getOwner());
 
-                //compare avatar
+                // compare avatar
                 if (avatar1 != null && avatar2 == null)
                     return -1;
                 if (avatar1 == null && avatar2 != null)
                     return  1;
 
-                //and then compare names
+                // and then compare names
                 return player1.getName().toLowerCase().compareTo(player2.getName().toLowerCase());
             }
         }
 
-        //return
+        // return
         return comp;
     }
 

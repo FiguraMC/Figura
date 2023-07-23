@@ -103,7 +103,7 @@ public class CacheAvatarLoader {
         });
     }
 
-    //cache directory
+    // cache directory
     public static Path getAvatarCacheDirectory() {
         return IOUtils.getOrCreateDir(FiguraMod.getCacheDirectory(), "avatars");
     }

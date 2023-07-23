@@ -32,7 +32,7 @@ public class Action {
     protected boolean toggled = false;
 
 
-    // -- function fields -- //
+    // -- function fields -- // 
 
 
     @LuaWhitelist
@@ -54,11 +54,11 @@ public class Action {
     public LuaFunction scroll;
 
 
-    // -- java functions -- //
+    // -- java functions -- // 
 
 
     public void execute(Avatar avatar, boolean left) {
-        //click action
+        // click action
         LuaFunction function = left ? leftClick : rightClick;
         if (function != null)
             avatar.run(function, avatar.tick, this);
@@ -66,7 +66,7 @@ public class Action {
         if (!left)
             return;
 
-        //toggle action
+        // toggle action
         function = toggled ? untoggle == null ? toggle : untoggle : toggle;
         if (function != null) {
             toggled = !toggled;
@@ -75,7 +75,7 @@ public class Action {
     }
 
     public void mouseScroll(Avatar avatar, double delta) {
-        //scroll action
+        // scroll action
         if (scroll != null)
             avatar.run(scroll, avatar.tick, delta, this);
     }
@@ -112,7 +112,7 @@ public class Action {
     }
 
 
-    // -- general functions -- //
+    // -- general functions -- // 
 
 
     @LuaWhitelist
@@ -322,7 +322,7 @@ public class Action {
     }
 
 
-    // -- set functions -- //
+    // -- set functions -- // 
 
 
     @LuaWhitelist
@@ -421,7 +421,7 @@ public class Action {
     }
 
 
-    // -- toggle specific stuff -- //
+    // -- toggle specific stuff -- // 
 
 
     @LuaWhitelist
@@ -564,7 +564,7 @@ public class Action {
     }
 
 
-    // -- metamethods -- //
+    // -- metamethods -- // 
 
 
     @LuaWhitelist

@@ -43,9 +43,9 @@ public abstract class AvatarRenderer {
 
     protected boolean isRendering, dirty;
 
-    // -- rendering data -- //
+    // -- rendering data -- // 
 
-    //entity
+    // entity
     public Entity entity;
     public float yaw, tickDelta;
     public int light;
@@ -55,12 +55,12 @@ public abstract class AvatarRenderer {
     public FiguraMat4 posMat = FiguraMat4.of();
     public FiguraMat3 normalMat = FiguraMat3.of();
 
-    //matrices
+    // matrices
     public MultiBufferSource bufferSource;
     public VanillaModelData vanillaModelData = new VanillaModelData();
 
     public PartFilterScheme currentFilterScheme;
-    public final HashMap<ParentType, ConcurrentLinkedQueue<Pair<FiguraMat4, FiguraMat3>>> pivotCustomizations = new HashMap<>();
+    public final HashMap<ParentType, ConcurrentLinkedQueue<Pair<FiguraMat4, FiguraMat3>>> pivotCustomizations = new HashMap<>(ParentType.values().length);
     protected final List<FiguraTextureSet> textureSets = new ArrayList<>();
     public final HashMap<String, FiguraTexture> textures = new HashMap<>();
     public final HashMap<String, FiguraTexture> customTextures = new HashMap<>();
@@ -78,12 +78,12 @@ public abstract class AvatarRenderer {
     public AvatarRenderer(Avatar avatar) {
         this.avatar = avatar;
 
-        //textures
+        // textures
 
         CompoundTag nbt = avatar.nbt.getCompound("textures");
         CompoundTag src = nbt.getCompound("src");
 
-        //src files
+        // src files
         for (String key : src.getAllKeys()) {
             byte[] bytes = src.getByteArray(key);
             if (bytes.length > 0) {
@@ -94,7 +94,7 @@ public abstract class AvatarRenderer {
             }
         }
 
-        //data files
+        // data files
         ListTag texturesList = nbt.getList("data", Tag.TAG_COMPOUND);
         for (Tag t : texturesList) {
             CompoundTag tag = (CompoundTag) t;
@@ -234,13 +234,13 @@ public abstract class AvatarRenderer {
     public void setMatrices(double camX, double camY, double camZ, PoseStack matrices) {
         PoseStack.Pose pose = matrices.last();
 
-        //pos
+        // pos
         Matrix4d posMat = new Matrix4d(pose.pose());
         posMat.translate(-camX, -camY, -camZ);
         posMat.scale(-1, -1, 1);
         this.posMat.set(posMat);
 
-        //normal
+        // normal
         Matrix3f normalMat = new Matrix3f(pose.normal());
         normalMat.scale(-1, -1, 1);
         this.normalMat.set(normalMat);

@@ -29,7 +29,7 @@ public class PingArg {
         this.args = args;
     }
 
-    // -- writing -- //
+    // -- writing -- // 
 
     public byte[] toByteArray() {
         try {
@@ -67,7 +67,7 @@ public class PingArg {
             writeMat((FiguraMatrix<?, ?>) val.checkuserdata(), dos);
         } else {
             dos.writeByte(NIL);
-            //dos.writeNull();
+            // dos.writeNull();
         }
     }
 
@@ -135,7 +135,7 @@ public class PingArg {
         }
     }
 
-    // -- reading -- //
+    // -- reading -- // 
 
     public static LuaValue[] fromByteArray(byte[] bytes, Avatar owner) {
         try {

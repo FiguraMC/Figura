@@ -43,14 +43,14 @@ public class CategoryWidget extends AbstractContainerElement {
         if (!isVisible())
             return;
 
-        //children background
+        // children background
         if (parentConfig.isToggled() && entries.size() > 0)
             gui.fill(getX(), getY() + 21, getX() + getWidth(), getY() + getHeight(), 0x11FFFFFF);
 
         if (config == Configs.PAPERDOLL)
             parent.parentScreen.renderPaperdoll = parentConfig.isToggled() && parent.isMouseOver(mouseX, mouseY) && isMouseOver(mouseX, mouseY);
 
-        //children
+        // children
         super.render(gui, mouseX, mouseY, delta);
     }
 

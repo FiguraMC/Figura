@@ -57,6 +57,7 @@
     "render.TextureManagerAccessor",
     "render.layers.CapeLayerMixin",
     "render.layers.CustomHeadLayerMixin",
+    "render.layers.HumanoidArmorLayerAccessor",
     "render.layers.HumanoidArmorLayerMixin",
     "render.layers.ParrotOnShoulderLayerMixin",
     "render.layers.elytra.ElytraLayerAccessor",

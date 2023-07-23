@@ -54,7 +54,7 @@ public abstract class LevelRendererMixin {
                     i >> 16 & 0xFF,
                     i >> 8 & 0xFF,
                     i & 0xFF,
-                    0xFF //does nothing :(
+                    0xFF // does nothing :(
             );
         }
 
@@ -78,11 +78,11 @@ public abstract class LevelRendererMixin {
         if (avatar == null)
             return;
 
-        //first person world parts
+        // first person world parts
         MultiBufferSource.BufferSource bufferSource = this.renderBuffers.bufferSource();
         avatar.firstPersonWorldRender(e, bufferSource, stack, camera, tickDelta);
 
-        //first person matrices
+        // first person matrices
         if (!(e instanceof LivingEntity livingEntity) || !Configs.FIRST_PERSON_MATRICES.value)
             return;
 

@@ -61,7 +61,7 @@ public class Keyframe implements Comparable<Keyframe> {
                 if (args.isnumber(1))
                     return FiguraMod.popReturnProfiler(args.tofloat(1));
                 else
-                    throw new Exception(); //dummy exception
+                    throw new Exception(); // dummy exception
             } catch (Exception ignored2) {
                 try {
                     LuaValue val = owner.loadScript(chunkName, data);

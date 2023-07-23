@@ -30,7 +30,7 @@ public class FiguraVec4 extends FiguraVector<FiguraVec4, FiguraMat4> {
     @LuaFieldDoc("vector_n.w")
     public double w;
 
-    // -- cache -- //
+    // -- cache -- // 
 
     @LuaWhitelist
     @LuaMethodDoc(
@@ -52,7 +52,7 @@ public class FiguraVec4 extends FiguraVector<FiguraVec4, FiguraMat4> {
         return of().set(x, y, z, w);
     }
 
-    // -- basic math -- //
+    // -- basic math -- // 
 
     @Override
     public FiguraVec4 set(FiguraVec4 other) {
@@ -307,7 +307,7 @@ public class FiguraVec4 extends FiguraVector<FiguraVec4, FiguraMat4> {
         return new double[]{x, y, z, w};
     }
 
-    // -- utility methods -- //
+    // -- utility methods -- // 
 
     @Override
     @LuaWhitelist
@@ -511,7 +511,7 @@ public class FiguraVec4 extends FiguraVector<FiguraVec4, FiguraMat4> {
         return getString(x, y, z, w);
     }
 
-    // -- metamethods -- //
+    // -- metamethods -- // 
 
     @LuaWhitelist
     @LuaMetamethodDoc(

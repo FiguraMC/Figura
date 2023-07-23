@@ -14,25 +14,25 @@ public abstract class ConfigType<T> {
 
     public final String id;
 
-    //display
+    // display
     public Component name;
     public Component tooltip;
 
-    //values
+    // values
     public T value;
-    public T tempValue; //settings screen "undo"
+    public T tempValue; // settings screen "undo"
     public final T defaultValue;
     public boolean disabled;
 
     public ConfigType(String name, T value) {
         this.id = name;
 
-        //generate names
+        // generate names
         name = "config." + name;
         this.name = FiguraText.of(name);
         this.tooltip = FiguraText.of(name + ".tooltip");
 
-        //values
+        // values
         this.value = this.defaultValue = this.tempValue = value;
     }
 
@@ -82,7 +82,7 @@ public abstract class ConfigType<T> {
     public void onChange() {}
 
 
-    // -- category -- //
+    // -- category -- // 
 
 
     public static class Category extends ConfigType<Void> {
@@ -115,7 +115,7 @@ public abstract class ConfigType<T> {
     }
 
 
-    // -- boolean -- //
+    // -- boolean -- // 
 
 
     public static class BoolConfig extends ParentedConfig<Boolean> {
@@ -130,7 +130,7 @@ public abstract class ConfigType<T> {
     }
 
 
-    // -- enum -- //
+    // -- enum -- // 
 
 
     public static class EnumConfig extends ParentedConfig<Integer> {
@@ -141,7 +141,7 @@ public abstract class ConfigType<T> {
 
             name = "config." + name;
 
-            //generate enum list
+            // generate enum list
             ArrayList<Component> enumList = new ArrayList<>();
             ArrayList<Component> enumTooltip = new ArrayList<>();
 
@@ -161,7 +161,7 @@ public abstract class ConfigType<T> {
     }
 
 
-    // -- input -- //
+    // -- input -- // 
 
 
     public abstract static class InputConfig<T> extends ParentedConfig<T> {
@@ -267,7 +267,7 @@ public abstract class ConfigType<T> {
     }
 
 
-    // -- keybind -- //
+    // -- keybind -- // 
 
 
     public static class KeybindConfig extends ParentedConfig<String> {
@@ -285,7 +285,7 @@ public abstract class ConfigType<T> {
     }
 
 
-    // -- button -- //
+    // -- button -- // 
 
 
     public static class ButtonConfig extends ParentedConfig<Void> {

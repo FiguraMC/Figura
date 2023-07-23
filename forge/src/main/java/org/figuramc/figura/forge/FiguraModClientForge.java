@@ -19,7 +19,7 @@ import java.util.List;
 
 @Mod.EventBusSubscriber(modid = FiguraMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class FiguraModClientForge extends FiguraMod {
-    //keybinds stored here
+    // keybinds stored here
     public static List<KeyMapping> KEYBINDS = new ArrayList<>();
 
     @SubscribeEvent

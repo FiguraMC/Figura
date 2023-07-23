@@ -24,7 +24,7 @@ public class LuaTypeManager {
         if (!clazz.isAnnotationPresent(LuaWhitelist.class))
             throw new IllegalArgumentException("Tried to generate metatable for un-whitelisted class " + clazz.getName() + "!");
 
-        //Ensure that all whitelisted superclasses are loaded before this one
+        // Ensure that all whitelisted superclasses are loaded before this one
         try {
             generateMetatableFor(clazz.getSuperclass());
         } catch (IllegalArgumentException ignored) {}
@@ -39,10 +39,10 @@ public class LuaTypeManager {
                     continue;
                 }
                 String name = method.getName();
-                if (name.startsWith("__")) { //metamethods
-                    if (metatable.rawget(name) == LuaValue.NIL) { //Only add the most recently declared metamethod, in the most specific subclass.
+                if (name.startsWith("__")) { // metamethods
+                    if (metatable.rawget(name) == LuaValue.NIL) { // Only add the most recently declared metamethod, in the most specific subclass.
                         if (name.equals("__index")) {
-                            //Custom __index implementation. First checks the regular __index table, and if it gets NIL, then calls the custom-defined __index function.
+                            // Custom __index implementation. First checks the regular __index table, and if it gets NIL, then calls the custom-defined __index function.
                             metatable.set("__index", new TwoArgFunction() {
                                 final LuaFunction wrappedIndexer = getWrapper(method);
                                 @Override
@@ -57,7 +57,7 @@ public class LuaTypeManager {
                             metatable.set(name, getWrapper(method));
                         }
                     }
-                } else { //regular methods
+                } else { // regular methods
                     indexTable.set(name, getWrapper(method));
                 }
             }
@@ -67,7 +67,7 @@ public class LuaTypeManager {
         if (metatable.rawget("__index") == LuaValue.NIL)
             metatable.set("__index", indexTable);
 
-        //if we don't have a special toString, then have our toString give the type name from the annotation
+        // if we don't have a special toString, then have our toString give the type name from the annotation
         if (metatable.rawget("__tostring") == LuaValue.NIL) {
             metatable.set("__tostring", new OneArgFunction() {
                 private final LuaString val = LuaString.valueOf(clazz.getName());
@@ -78,7 +78,7 @@ public class LuaTypeManager {
             });
         }
 
-        //if we don't have a special __index, then have our indexer look in the next metatable up in the java inheritance.
+        // if we don't have a special __index, then have our indexer look in the next metatable up in the java inheritance.
         if (indexTable.rawget("__index") == LuaValue.NIL) {
             LuaTable superclassMetatable = metatables.get(clazz.getSuperclass());
             if (superclassMetatable != null) {
@@ -138,10 +138,10 @@ public class LuaTypeManager {
                 if (!isStatic)
                     caller = args.checkuserdata(1, clazz);
 
-                //dirty hack for QOL of ignoring the first argument if the method is static and the arg matches the class type
+                // dirty hack for QOL of ignoring the first argument if the method is static and the arg matches the class type
                 int offset = isStatic && argumentTypes.length > 0 && !argumentTypes[0].isAssignableFrom(clazz) && args.isuserdata(1) && clazz.isAssignableFrom(args.checkuserdata(1).getClass()) ? 1 : 0;
 
-                //Fill in actualArgs from args
+                // Fill in actualArgs from args
                 for (int i = 0; i < argumentTypes.length; i++) {
                     int argIndex = i + (isStatic ? 1 : 2) + offset;
                     boolean nil = args.isnil(argIndex);
@@ -183,7 +183,7 @@ public class LuaTypeManager {
                     }
                 }
 
-                //Invoke the wrapped method
+                // Invoke the wrapped method
                 Object result;
                 try {
                     result = method.invoke(caller, actualArgs);
@@ -191,7 +191,7 @@ public class LuaTypeManager {
                     throw e.getCause() instanceof LuaError l ? l : new LuaError(e.getCause());
                 }
 
-                //Convert the return value
+                // Convert the return value
                 return result instanceof Varargs v ? v : javaToLua(result);
             }
 
@@ -274,15 +274,15 @@ public class LuaTypeManager {
         }
     }
 
-    //we need to allow string being numbers here
-    //however in places like pings and print we should keep strings as strings
+    // we need to allow string being numbers here
+    // however in places like pings and print we should keep strings as strings
     public Object luaToJava(LuaValue val) {
         if (val.istable())
             return val.checktable();
         else if (val.isnumber())
-            if (val instanceof LuaInteger i) //dumb
+            if (val instanceof LuaInteger i) // dumb
                 return i.checkint();
-            else if (val.isint() && val instanceof LuaString s) //very dumb
+            else if (val.isint() && val instanceof LuaString s) // very dumb
                 return s.checkint();
             else
                 return val.checkdouble();

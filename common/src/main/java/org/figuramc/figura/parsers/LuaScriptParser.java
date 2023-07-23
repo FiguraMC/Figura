@@ -33,7 +33,7 @@ public class LuaScriptParser {
     private static final Pattern whitespacePlus = Pattern.compile("[ \n]+");
     private static final Pattern nameOops = Pattern.compile("\\w{2}");
 
-    //parsing data
+    // parsing data
     private static boolean error;
 
     public static ByteArrayTag parseScript(String name, String script) {

@@ -26,17 +26,17 @@ class LinkCommand {
     }};
 
     public static LiteralArgumentBuilder<FiguraClientCommandSource> getCommand() {
-        //get links
+        // get links
         LiteralArgumentBuilder<FiguraClientCommandSource> links = LiteralArgumentBuilder.literal("links");
         links.executes(context -> {
-            //header
-            MutableComponent message = Component.empty().withStyle(ColorUtils.Colors.PINK.style)
+            // header
+            MutableComponent message = Component.empty().withStyle(ColorUtils.Colors.AWESOME_BLUE.style)
                     .append(Component.literal("•*+•* ")
                             .append(FiguraText.of())
                             .append(" Links *•+*•").withStyle(ChatFormatting.UNDERLINE))
                     .append("\n");
 
-            //add links
+            // add links
             for (FiguraMod.Links link : LINKS) {
                 message.append("\n");
 

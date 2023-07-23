@@ -31,7 +31,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
     @LuaFieldDoc("vector_n.z")
     public double z;
 
-    // -- cache -- //
+    // -- cache -- // 
 
     @LuaWhitelist
     @LuaMethodDoc(
@@ -53,7 +53,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
         return of().set(x, y, z);
     }
 
-    // -- basic math -- //
+    // -- basic math -- // 
 
     @Override
     public FiguraVec3 set(FiguraVec3 other) {
@@ -276,7 +276,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
         return new double[]{x, y, z};
     }
 
-    // -- utility methods -- //
+    // -- utility methods -- // 
 
     @Override
     @LuaWhitelist
@@ -489,7 +489,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
         return getString(x, y, z);
     }
 
-    // -- vec3 specific -- //
+    // -- vec3 specific -- // 
 
     @LuaWhitelist
     @LuaMethodDoc(
@@ -544,7 +544,7 @@ public class FiguraVec3 extends FiguraVector<FiguraVec3, FiguraMat3> {
         return !Double.isNaN(x) && !Double.isNaN(y) && !Double.isNaN(z);
     }
 
-    // -- metamethods -- //
+    // -- metamethods -- // 
 
     @LuaWhitelist
     @LuaMetamethodDoc(

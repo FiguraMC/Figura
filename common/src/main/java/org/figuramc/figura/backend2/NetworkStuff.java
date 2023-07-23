@@ -7,6 +7,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
+import net.minecraft.network.chat.Component;
+import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.avatar.Badges;
@@ -16,12 +18,13 @@ import org.figuramc.figura.backend2.websocket.C2SMessageHandler;
 import org.figuramc.figura.backend2.websocket.WebsocketThingy;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.gui.FiguraToast;
-import org.figuramc.figura.utils.FiguraText;
-import org.figuramc.figura.utils.RefilledNumber;
-import org.figuramc.figura.utils.Version;
-import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.permissions.PermissionManager;
 import org.figuramc.figura.permissions.Permissions;
+import org.figuramc.figura.utils.FiguraText;
+import org.figuramc.figura.utils.RefilledNumber;
+import org.figuramc.figura.utils.TextUtils;
+import org.figuramc.figura.utils.Version;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -50,7 +53,7 @@ public class NetworkStuff {
     private static final List<UUID> SUBSCRIPTIONS = new ArrayList<>();
     private static CompletableFuture<Void> tasks;
 
-    private static final int RECONNECT = 6000; //5 min
+    private static final int RECONNECT = 6000; // 5 min
     private static int authCheck = RECONNECT;
 
     protected static HttpAPI api;
@@ -60,23 +63,25 @@ public class NetworkStuff {
     public static String disconnectedReason;
 
     public static boolean debug = false;
+    @Nullable
+    public static Component motd;
 
     public static int lastPing, pingsSent, pingsReceived;
 
     public static Version latestVersion;
 
-    //limits
+    // limits
     private static final RefilledNumber
             uploadRate = new RefilledNumber(),
             downloadRate = new RefilledNumber();
     private static int maxAvatarSize = Integer.MAX_VALUE;
 
     public static void tick() {
-        //limits
+        // limits
         uploadRate.tick();
         downloadRate.tick();
 
-        //auth check
+        // auth check
         authCheck--;
         if (authCheck <= 0) {
             authCheck = RECONNECT;
@@ -91,11 +96,11 @@ public class NetworkStuff {
 
         tickSubscriptions();
 
-        //process requests
+        // process requests
         if (isConnected())
             processRequests();
 
-        //pings counter
+        // pings counter
         if (lastPing > 0 && FiguraMod.ticks - lastPing >= 20)
             lastPing = pingsSent = pingsReceived = 0;
     }
@@ -157,17 +162,19 @@ public class NetworkStuff {
     }
 
 
-    // -- token -- //
+    // -- token -- // 
 
 
     public static void auth() {
         authCheck = RECONNECT;
         AuthHandler.auth(false);
+        fetchMOTD();
     }
 
     public static void reAuth() {
         authCheck = RECONNECT;
         AuthHandler.auth(true);
+        fetchMOTD();
     }
 
     protected static void authSuccess(String token) {
@@ -182,7 +189,7 @@ public class NetworkStuff {
     }
 
 
-    // -- connection -- //
+    // -- connection -- // 
 
 
     public static void connect(String token) {
@@ -194,6 +201,13 @@ public class NetworkStuff {
         connectWS(token);
     }
 
+    private static void fetchMOTD() {
+        queueString(Util.NIL_UUID, HttpAPI::getMotd, (code, data) -> {
+            responseDebug("motd", code, data);
+            motd = TextUtils.tryParseJson(data);
+        });
+    }
+
     public static void disconnect(String reason) {
         backendStatus = 1;
         disconnectedReason = reason;
@@ -202,7 +216,7 @@ public class NetworkStuff {
     }
 
 
-    // -- api stuff -- //
+    // -- api stuff -- // 
 
 
     private static void queueString(UUID owner, Function<HttpAPI, HttpRequest> request, BiConsumer<Integer, String> consumer) {
@@ -280,21 +294,21 @@ public class NetworkStuff {
             return;
 
         queueString(user.id, api -> api.getUser(user.id), (code, data) -> {
-            //debug
+            // debug
             responseDebug("getUser", code, data);
 
-            //error
+            // error
             if (code != 200) {
                 if (code == 404 && Configs.CONNECTION_TOASTS.value)
                     FiguraToast.sendToast(FiguraText.of("backend.user_not_found"), FiguraToast.ToastType.ERROR);
                 return;
             }
 
-            //success
+            // success
 
             JsonObject json = JsonParser.parseString(data).getAsJsonObject();
 
-            //avatars
+            // avatars
             ArrayList<Pair<String, Pair<String, UUID>>> avatars = new ArrayList<>();
 
             JsonArray equippedAvatars = json.getAsJsonArray("equipped");
@@ -304,7 +318,7 @@ public class NetworkStuff {
                 avatars.add(Pair.of(entry.get("hash").getAsString(), Pair.of(entry.get("id").getAsString(), owner)));
             }
 
-            //badges
+            // badges
             JsonObject badges = json.getAsJsonObject("equippedBadges");
             Pair<BitSet, BitSet> badgesPair = Badges.emptyBadges();
 
@@ -318,7 +332,7 @@ public class NetworkStuff {
             for (int i = 0; i < special.size(); i++)
                 specialSet.set(i, special.get(i).getAsInt() >= 1);
 
-            //default permission
+            // default permission
             JsonElement trust = json.get("trust");
             if (trust != null) {
                 Permissions.Category cat = Permissions.Category.indexOf(trust.getAsInt());
@@ -333,7 +347,7 @@ public class NetworkStuff {
         if (avatar == null || avatar.nbt == null)
             return;
 
-        String id = avatar.id == null || true ? "avatar" : avatar.id; //TODO - profile screen
+        String id = avatar.id == null || true ? "avatar" : avatar.id; // TODO - profile screen
 
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -342,12 +356,12 @@ public class NetworkStuff {
                 responseDebug("uploadAvatar", code, data);
 
                 if (code == 200) {
-                    //TODO - profile screen
+                    // TODO - profile screen
                     equipAvatar(List.of(Pair.of(avatar.owner, id)));
                     AvatarManager.localUploaded = true;
                 }
 
-                //feedback
+                // feedback
                 switch (code) {
                     case 200 -> FiguraToast.sendToast(FiguraText.of("backend.upload_success"));
                     case 413 -> FiguraToast.sendToast(FiguraText.of("backend.upload_too_big"), FiguraToast.ToastType.ERROR);
@@ -363,7 +377,7 @@ public class NetworkStuff {
     }
 
     public static void deleteAvatar(String avatar) {
-        String id = avatar == null || true ? "avatar" : avatar; //TODO - profile screen
+        String id = avatar == null || true ? "avatar" : avatar; // TODO - profile screen
         queueString(Util.NIL_UUID, api -> api.deleteAvatar(id), (code, data) -> {
             responseDebug("deleteAvatar", code, data);
 
@@ -405,11 +419,11 @@ public class NetworkStuff {
             }
             responseDebug("getAvatar", code, s);
 
-            //on error
+            // on error
             if (code != 200)
                 return;
 
-            //success
+            // success
             try {
                 CompoundTag nbt = NbtIo.readCompressed(stream);
                 CacheAvatarLoader.save(hash, nbt);
@@ -422,7 +436,7 @@ public class NetworkStuff {
     }
 
 
-    // -- ws stuff -- //
+    // -- ws stuff -- // 
 
 
     private static void connectWS(String token) {
@@ -497,7 +511,7 @@ public class NetworkStuff {
     }
 
 
-    // -- resources stuff -- //
+    // -- resources stuff -- // 
 
 
     private static InputStream request(HttpRequest request) throws Exception {
@@ -514,7 +528,7 @@ public class NetworkStuff {
     }
 
 
-    // -- global functions -- //
+    // -- global functions -- // 
 
 
     public static boolean isConnected() {
@@ -530,7 +544,7 @@ public class NetworkStuff {
     }
 
 
-    // -- request subclass -- //
+    // -- request subclass -- // 
 
 
     private record Request<T>(UUID owner, Consumer<T> consumer) {

@@ -34,10 +34,10 @@ import java.util.Map;
 public class FiguraModelPartReader {
 
     public static FiguraModelPart read(Avatar owner, CompoundTag partCompound, List<FiguraTextureSet> textureSets, boolean smoothNormals) {
-        //Read name
+        // Read name
         String name = partCompound.getString("name");
 
-        //Read transformation
+        // Read transformation
         PartCustomization customization = new PartCustomization();
         customization.needsMatrixRecalculation = true;
 
@@ -63,12 +63,12 @@ public class FiguraModelPartReader {
         if (partCompound.contains("vsb"))
             customization.visible = partCompound.getBoolean("vsb");
 
-        //textures
+        // textures
         List<Integer> facesByTexture = new ArrayList<>(0);
         while (textureSets.size() > facesByTexture.size())
             facesByTexture.add(0);
 
-        //Read vertex data
+        // Read vertex data
         Map<Integer, List<Vertex>> vertices = new HashMap<>();
         if (hasCubeData(partCompound)) {
             readCuboid(facesByTexture, partCompound, vertices);
@@ -78,14 +78,14 @@ public class FiguraModelPartReader {
             customization.partType = PartCustomization.PartType.MESH;
         }
 
-        //smooth normals
+        // smooth normals
         if (partCompound.contains("smo"))
             smoothNormals = partCompound.getBoolean("smo");
 
         if (Configs.FORCE_SMOOTH_AVATAR.value || (smoothNormals && !vertices.isEmpty()))
             smoothfy(vertices);
 
-        //Read children
+        // Read children
         ArrayList<FiguraModelPart> children = new ArrayList<>(0);
         if (partCompound.contains("chld")) {
             ListTag listTag = partCompound.getList("chld", Tag.TAG_COMPOUND);
@@ -106,7 +106,7 @@ public class FiguraModelPartReader {
             } catch (Exception ignored) {}
         }
 
-        //Read animations :D
+        // Read animations :D
         if (partCompound.contains("anim")) {
             ListTag nbt = partCompound.getList("anim", Tag.TAG_COMPOUND);
             for (Tag tag : nbt) {
@@ -193,22 +193,22 @@ public class FiguraModelPartReader {
      * Obviously I *think* it should work, and it has so far, but I still might be missing something.
      */
     private static void storeTextures(FiguraModelPart modelPart, List<FiguraTextureSet> textureSets) {
-        //textures
+        // textures
         List<FiguraTextureSet> list = new ArrayList<>(0);
         for (int j = 0; j < modelPart.facesByTexture.size(); j++)
             list.add(textureSets.get(j));
         modelPart.textures = list;
 
-        //size
+        // size
         int w = -1, h = -1;
         for (FiguraModelPart child : modelPart.children) {
-            //If any child has multiple textures, then we know this parent must as well.
+            // If any child has multiple textures, then we know this parent must as well.
             if (child.textureWidth == -1) {
                 modelPart.textureWidth = -1;
                 modelPart.textureHeight = -1;
                 return;
             }
-            //If any child has a texture different than one we've already seen, this parent must have multiple textures.
+            // If any child has a texture different than one we've already seen, this parent must have multiple textures.
             if (child.textureWidth != w || child.textureHeight != h) {
                 if (w != -1) {
                     modelPart.textureWidth = -1;
@@ -294,7 +294,7 @@ public class FiguraModelPartReader {
         return false;
     }
 
-    private static final Map<String, FiguraVec3[]> faceData = ImmutableMap.of( //booze 🥴
+    private static final Map<String, FiguraVec3[]> faceData = ImmutableMap.of( // booze 🥴
             "n", new FiguraVec3[] {
                     FiguraVec3.of(1, 0, 0),
                     FiguraVec3.of(0, 0, 0),
@@ -348,24 +348,24 @@ public class FiguraModelPartReader {
 
 
     private static void readCuboid(List<Integer> facesByTexture, CompoundTag data, Map<Integer, List<Vertex>> vertices) {
-        //Read from and to
+        // Read from and to
         FiguraVec3 from = FiguraVec3.of();
         readVec3(from, data, "f");
         FiguraVec3 to = FiguraVec3.of();
         readVec3(to, data, "t");
 
-        //Read inflate
+        // Read inflate
         double inflate = 0;
         if (data.contains("inf"))
             inflate = data.getFloat("inf");
         from.add(-inflate, -inflate, -inflate);
         to.add(inflate, inflate, inflate);
 
-        //Cache difference between from and to
+        // Cache difference between from and to
         FiguraVec3 ftDiff = to.copy();
         ftDiff.subtract(from);
 
-        //Iterate over faces, add them
+        // Iterate over faces, add them
         for (String direction : faceData.keySet())
             readFace(data.getCompound("cube_data"), facesByTexture, direction, vertices, from, ftDiff);
     }
@@ -401,11 +401,11 @@ public class FiguraModelPartReader {
 
     private static void readMesh(List<Integer> facesByTexture, CompoundTag data, Map<Integer, List<Vertex>> vertices) {
         CompoundTag meshData = data.getCompound("mesh_data");
-        //mesh_data:
-        //"vtx": List<Float>, xyz
-        //"tex": List<Short>, (texID << 4) + numVerticesInFace
-        //"fac": List<Byte, Short, or Int>, just the indices of various vertices
-        //"uvs": List<Float>, uv for each vertex
+        // mesh_data:
+        // "vtx": List<Float>, xyz
+        // "tex": List<Short>, (texID << 4) + numVerticesInFace
+        // "fac": List<Byte, Short, or Int>, just the indices of various vertices
+        // "uvs": List<Float>, uv for each vertex
 
         // Get the vertex, UV, and texture lists from the mesh data
         ListTag verts = meshData.getList("vtx", Tag.TAG_FLOAT);
@@ -413,9 +413,9 @@ public class FiguraModelPartReader {
         ListTag tex = meshData.getList("tex", Tag.TAG_SHORT);
 
         // Determine the best data type to use for the face list based on the size of the vertex list
-        int bestType = 0; //byte
-        if (verts.size() > 255 * 3) bestType = 1; //short
-        if (verts.size() > 32767 * 3) bestType = 2; //int
+        int bestType = 0; // byte
+        if (verts.size() > 255 * 3) bestType = 1; // short
+        if (verts.size() > 32767 * 3) bestType = 2; // int
 
         // Get the face list using the determined data type
         ListTag fac = switch (bestType) {
@@ -466,7 +466,7 @@ public class FiguraModelPartReader {
             p1.subtract(p2);
             p3.cross(p1);
             p3.normalize();
-            //p3 now contains the normal vector
+            // p3 now contains the normal vector
 
             // Add the vertex data to the appropriate builder
             for (int j = 0; j < numVerts; j++) {
@@ -495,9 +495,9 @@ public class FiguraModelPartReader {
         }
     }
 
-    //thanks to Scarlet Light#7611
+    // thanks to Scarlet Light#7611
     private static void smoothfy(Map<Integer, List<Vertex>> verticesByTextuers) {
-        //separate vertices
+        // separate vertices
         Map<String, List<Vertex>> verticesByPos = new HashMap<>();
         for (List<Vertex> vertices : verticesByTextuers.values()) {
             for (Vertex vertex : vertices) {
@@ -507,15 +507,15 @@ public class FiguraModelPartReader {
             }
         }
 
-        //for all separated vertices
+        // for all separated vertices
         for (List<Vertex> vertices : verticesByPos.values()) {
-            //sum their normals
+            // sum their normals
             FiguraVec3 result = FiguraVec3.of();
             for (Vertex vertex : vertices)
                 result.add(vertex.getNormal());
-            //normalize the normal
+            // normalize the normal
             result.normalize();
-            //apply new normal
+            // apply new normal
             for (Vertex vertex : vertices)
                 vertex.setNormal(result);
         }
