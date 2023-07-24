@@ -20,6 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.function.BiFunction;
+import static org.figuramc.figura.model.ParentType.*;
 
 public class AvatarWizard {
 
