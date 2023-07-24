@@ -3,10 +3,10 @@ package org.figuramc.figura.commands;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.*;
+import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.utils.ColorUtils;
 import org.figuramc.figura.utils.FiguraClientCommandSource;
 import org.figuramc.figura.utils.FiguraText;
-import org.figuramc.figura.FiguraMod;
 
 import java.util.ArrayList;
 import java.util.List;

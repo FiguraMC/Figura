@@ -28,7 +28,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.NbtToLua;
 import org.figuramc.figura.lua.ReadOnlyLuaTable;
-import org.luaj.vm2.LuaTable;
 import org.figuramc.figura.lua.docs.LuaFieldDoc;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
@@ -37,6 +36,7 @@ import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.mixin.BlockBehaviourAccessor;
 import org.figuramc.figura.utils.ColorUtils;
 import org.figuramc.figura.utils.LuaUtils;
+import org.luaj.vm2.LuaTable;
 
 import java.util.*;
 

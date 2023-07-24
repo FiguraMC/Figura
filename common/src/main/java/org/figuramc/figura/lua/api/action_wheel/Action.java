@@ -1,11 +1,9 @@
 package org.figuramc.figura.lua.api.action_wheel;
 
 import net.minecraft.world.item.ItemStack;
+import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
-import org.luaj.vm2.LuaError;
-import org.luaj.vm2.LuaFunction;
-import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.lua.api.world.ItemStackAPI;
 import org.figuramc.figura.lua.docs.LuaFieldDoc;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
@@ -14,6 +12,8 @@ import org.figuramc.figura.lua.docs.LuaTypeDoc;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.model.rendering.texture.FiguraTexture;
 import org.figuramc.figura.utils.LuaUtils;
+import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaFunction;
 
 @LuaWhitelist
 @LuaTypeDoc(

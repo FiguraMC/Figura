@@ -6,14 +6,14 @@ import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.world.entity.EntityType;
-import org.luaj.vm2.*;
-import org.luaj.vm2.lib.VarArgFunction;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.permissions.Permissions;
 import org.figuramc.figura.utils.ColorUtils;
 import org.figuramc.figura.utils.TextUtils;
+import org.luaj.vm2.*;
+import org.luaj.vm2.lib.VarArgFunction;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

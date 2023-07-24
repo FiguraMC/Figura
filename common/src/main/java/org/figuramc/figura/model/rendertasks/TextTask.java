@@ -7,6 +7,9 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
+import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.avatar.Avatar;
+import org.figuramc.figura.avatar.Badges;
 import org.figuramc.figura.gui.Emojis;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
@@ -21,9 +24,6 @@ import org.figuramc.figura.utils.LuaUtils;
 import org.figuramc.figura.utils.TextUtils;
 import org.joml.Matrix4f;
 import org.luaj.vm2.LuaError;
-import org.figuramc.figura.FiguraMod;
-import org.figuramc.figura.avatar.Avatar;
-import org.figuramc.figura.avatar.Badges;
 
 import java.util.List;
 

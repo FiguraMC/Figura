@@ -12,16 +12,16 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
+import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.math.matrix.FiguraMat3;
 import org.figuramc.figura.math.matrix.FiguraMat4;
 import org.figuramc.figura.model.FiguraModelPart;
 import org.figuramc.figura.model.ParentType;
+import org.figuramc.figura.model.VanillaModelData;
 import org.figuramc.figura.model.rendering.texture.FiguraTexture;
 import org.figuramc.figura.model.rendering.texture.FiguraTextureSet;
 import org.joml.Matrix3f;
 import org.joml.Matrix4d;
-import org.figuramc.figura.avatar.Avatar;
-import org.figuramc.figura.model.VanillaModelData;
 
 import java.util.ArrayList;
 import java.util.HashMap;

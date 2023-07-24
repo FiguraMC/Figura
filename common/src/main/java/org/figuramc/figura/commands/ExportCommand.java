@@ -5,13 +5,13 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.nbt.NbtIo;
+import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.lua.docs.FiguraDocsManager;
 import org.figuramc.figura.model.rendering.AvatarRenderer;
 import org.figuramc.figura.model.rendering.texture.FiguraTexture;
 import org.figuramc.figura.utils.FiguraClientCommandSource;
 import org.figuramc.figura.utils.FiguraText;
-import org.figuramc.figura.FiguraMod;
 
 class ExportCommand {
 

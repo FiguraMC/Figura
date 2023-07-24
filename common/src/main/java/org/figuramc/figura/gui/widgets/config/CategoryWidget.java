@@ -2,12 +2,12 @@ package org.figuramc.figura.gui.widgets.config;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+import org.figuramc.figura.config.ConfigType;
+import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.gui.screens.ConfigScreen;
 import org.figuramc.figura.gui.widgets.AbstractContainerElement;
 import org.figuramc.figura.gui.widgets.ContainerButton;
 import org.figuramc.figura.gui.widgets.lists.ConfigList;
-import org.figuramc.figura.config.ConfigType;
-import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.utils.ui.UIHelper;
 
 import java.util.ArrayList;

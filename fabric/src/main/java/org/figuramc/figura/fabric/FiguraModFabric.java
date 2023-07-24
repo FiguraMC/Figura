@@ -3,9 +3,9 @@ package org.figuramc.figura.fabric;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.server.packs.PackType;
+import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.commands.fabric.FiguraCommandsFabric;
 import org.figuramc.figura.utils.fabric.FiguraResourceListenerImpl;
-import org.figuramc.figura.FiguraMod;
 
 public class FiguraModFabric extends FiguraMod implements ClientModInitializer {
     @Override

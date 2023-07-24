@@ -2,6 +2,7 @@ package org.figuramc.figura.parsers;
 
 import com.google.gson.*;
 import net.minecraft.nbt.*;
+import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.model.ParentType;
 import org.figuramc.figura.utils.IOUtils;
@@ -14,68 +15,68 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.regex.Pattern;
 
-// main class to convert a blockbench model (json) into nbt
-// default fields are omitted from the nbt to save up space
-// note: use the same instance for parsing multiple models for the same avatar
+//main class to convert a blockbench model (json) into nbt
+//default fields are omitted from the nbt to save up space
+//note: use the same instance for parsing multiple models for the same avatar
 public class BlockbenchModelParser {
 
     private final static Gson GSON = new GsonBuilder().create();
 
-    // offsets for usage of diverse models
+    //offsets for usage of diverse models
     private int textureOffset = 0;
     private int animationOffset = 0;
 
-    // used during the parser
+    //used during the parser
     private final HashMap<String, CompoundTag> elementMap = new HashMap<>();
     private final HashMap<String, ListTag> animationMap = new HashMap<>();
     private final HashMap<String, TextureData> textureMap = new HashMap<>();
     private final HashMap<Integer, String> textureIdMap = new HashMap<>();
 
-    // parser
-    public ModelData parseModel(String avatarFolder, Path sourceFile, String json, String modelName, String folders) throws Exception {
+    //parser
+    public ModelData parseModel(Path avatarFolder, Path sourceFile, String json, String modelName, String folders) throws Exception {
         // parse json -> object
         BlockbenchModel model = GSON.fromJson(json, BlockbenchModel.class);
 
-        // meta check
+        //meta check
         if (!model.meta.model_format.equals("free") && !model.meta.model_format.contains(FiguraMod.MOD_ID))
             throw new Exception("Model \"" + modelName + "\" have an incompatible model format. Compatibility is limited to \"Generic Model\" format and third-party " + FiguraMod.MOD_NAME + " specific formats");
         if (Integer.parseInt(model.meta.format_version.split("\\.")[0]) < 4)
             throw new Exception("Model \"" + modelName + "\" was created using a version too old (" + model.meta.format_version + ") of Blockbench. Minimum compatible version is 4.0");
 
-        // return lists
+        //return lists
         CompoundTag textures = new CompoundTag();
         List<CompoundTag> animationList = new ArrayList<>();
 
-        // object -> nbt
+        //object -> nbt
         CompoundTag nbt = new CompoundTag();
         nbt.putString("name", modelName);
         parseParent(modelName, nbt);
 
-        // parse textures first
-        // we want to save the textures in a separated list
-        // we also want to fix the UV mismatch from the resolution and the texture
-        // emissive textures are not put into the texture map, so we need to fix parts texture ids
+        //parse textures first
+        //we want to save the textures in a separated list
+        //we also want to fix the UV mismatch from the resolution and the texture
+        //emissive textures are not put into the texture map, so we need to fix parts texture ids
         parseTextures(avatarFolder, sourceFile, folders, modelName, textures, model.textures, model.resolution);
 
-        // parse elements into a map of UUID (String) -> NbtCompound (the element)
-        // later when parsing the outliner, we fetch the elements from this map
+        //parse elements into a map of UUID (String) -> NbtCompound (the element)
+        //later when parsing the outliner, we fetch the elements from this map
         parseElements(model.elements);
 
-        // parse animations
-        // add the animation metadata to the animation list
-        // but return a map with the group animation, as we will store it on the groups themselves
+        //parse animations
+        //add the animation metadata to the animation list
+        //but return a map with the group animation, as we will store it on the groups themselves
         parseAnimations(animationList, model.animations, modelName, folders);
 
-        // add and parse the outliner
+        //add and parse the outliner
         nbt.put("chld", parseOutliner(model.outliner, true));
 
-        // clear variables used by the parser
+        //clear variables used by the parser
         elementMap.clear();
         animationMap.clear();
         textureMap.clear();
         textureIdMap.clear();
 
-        // return the parsed data
+        //return the parsed data
         return new ModelData(textures, animationList, nbt);
     }
 
@@ -85,36 +86,34 @@ public class BlockbenchModelParser {
             nbt.putString("pt", parentType.name());
     }
 
-    // -- internal functions -- // 
+    // -- internal functions -- //
 
-    private void parseTextures(String avatar, Path sourceFile, String folders, String modelName, CompoundTag texturesNbt, BlockbenchModel.Texture[] textures, BlockbenchModel.Resolution resolution) throws Exception {
+    private void parseTextures(Path avatar, Path sourceFile, String folders, String modelName, CompoundTag texturesNbt, BlockbenchModel.Texture[] textures, BlockbenchModel.Resolution resolution) throws Exception {
         if (textures == null)
             return;
 
-        String pathRegex = Pattern.quote(avatar.isEmpty() ? avatar : avatar + sourceFile.getFileSystem().getSeparator());
+        //temp lists
 
-        // temp lists
-
-        // used for retrieving texture data by name, so we can expand the same data
+        //used for retrieving texture data by name, so we can expand the same data
         LinkedHashMap<String, CompoundTag> texturesTemp = new LinkedHashMap<>();
 
-        // used for storing the index of the specific texture name
+        //used for storing the index of the specific texture name
         List<String> textureIndex = new ArrayList<>();
 
-        // nbt stuff
+        //nbt stuff
         CompoundTag src = new CompoundTag();
         ListTag data = new ListTag();
 
-        // read textures
+        //read textures
         for (int i = 0; i < textures.length; i++) {
             BlockbenchModel.Texture texture = textures[i];
 
-            // name
+            //name
             String name = texture.name;
             if (name.endsWith(".png"))
                 name = name.substring(0, name.length() - 4);
 
-            // texture type
+            //texture type
             String textureType;
 
             if (name.endsWith("_e")) {
@@ -127,11 +126,11 @@ public class BlockbenchModelParser {
                 textureType = "d";
             }
 
-            // parse the texture data
+            //parse the texture data
             String path;
             byte[] source;
             try {
-                // check the file to load
+                //check the file to load
                 Path p = sourceFile.resolve(texture.relative_path);
                 if (p.getFileSystem() == FileSystems.getDefault()) {
                     File f = p.toFile().getCanonicalFile();
@@ -139,67 +138,69 @@ public class BlockbenchModelParser {
                     if (!f.exists()) throw new IllegalStateException("File do not exists!");
                 } else {
                     p = p.normalize();
+                    if (p.getFileSystem() != avatar.getFileSystem())
+                        throw new IllegalStateException("File from outside the avatar folder!");
                 }
-                if (!p.startsWith(avatar)) throw new IllegalStateException("File from outside the avatar folder!");
-
-                // load texture
+                if (avatar.getNameCount() > 1) if (!p.startsWith(avatar)) throw new IllegalStateException("File from outside the avatar folder!");
+                FiguraMod.debug("path is {}", p.toString());
+                //load texture
                 source = IOUtils.readFileBytes(p);
-                path = p.toString()
-                        .replaceFirst(pathRegex, "")
-                        .replaceAll("[/\\\\]", ".");
+                path = avatar.relativize(p)
+                        .toString()
+                        .replaceAll(p.getFileSystem().getSeparator(), ".");
                 path = path.substring(0, path.length() - 4);
 
-                // fix name
+                //fix name
                 name = folders + name;
 
-                // feedback
+                //feedback
                 FiguraMod.debug("Loaded {} Texture \"{}\" from {}", textureType.toUpperCase(), name, p);
             } catch (Exception e) {
                 if (e instanceof IOException)
                     FiguraMod.LOGGER.error("", e);
 
-                // otherwise, load from the source stored in the model
+                //otherwise, load from the source stored in the model
                 source = Base64.getDecoder().decode(texture.source.substring("data:image/png;base64,".length()));
                 path = folders + modelName + "." + name;
                 FiguraMod.debug("Loaded {} Texture \"{}\" from {}", textureType.toUpperCase(), name, path);
             }
 
-            // add source nbt
+            //add source nbt
             src.putByteArray(path, source);
 
-            // fix texture name
+            //fix texture name
             if (!textureType.equals("d"))
                 name = name.substring(0, name.length() - 2);
 
-            // add textures nbt
+            //add textures nbt
             if (texturesTemp.containsKey(name)) {
                 CompoundTag textureContainer = texturesTemp.get(name);
                 if (textureContainer.contains(textureType))
                     throw new Exception("Model \"" + modelName + "\" contains texture with duplicate name \"" + name + "\"");
                 textureContainer.putString(textureType, path);
             } else {
-                // create nbt
+                //create nbt
                 CompoundTag compound = new CompoundTag();
                 compound.putString(textureType, path);
 
-                // add to temp lists
+                //add to temp lists
                 texturesTemp.put(name, compound);
                 textureIndex.add(name);
             }
 
-            // used on the model conversion, so save the id as is
+            //used on the model conversion, so save the id as is
             textureIdMap.put(i, name);
 
-            // generate the texture data
+            //generate the texture data
             if (!textureMap.containsKey(name)) {
-                // id is generated by the position of the name in the list
+                //id is generated by the position of the name in the list
                 int id = textureIndex.indexOf(name) + textureOffset;
 
-                // fix texture size for more speed
+                //fix texture size for more speed
                 int[] imageSize = getTextureSize(source);
                 float[] fixedSize = new float[]{(float) imageSize[0] / resolution.width, (float) imageSize[1] / resolution.height};
 
-                // add the texture on the map
+                //add the texture on the map
                 textureMap.put(name, new TextureData(id, fixedSize));
             }
         }
@@ -221,14 +222,14 @@ public class BlockbenchModelParser {
             if (element.export != null && !element.export)
                 continue;
 
-            // temp variables
+            //temp variables
             String id = element.uuid;
             CompoundTag nbt = new CompoundTag();
 
-            // parse fields
+            //parse fields
             nbt.putString("name", element.name);
 
-            // parse transform data
+            //parse transform data
             if (notZero(element.from))
                 nbt.put("f", toNbtList(element.from));
             if (notZero(element.to))
@@ -242,7 +243,7 @@ public class BlockbenchModelParser {
 
             nbt.putBoolean("vsb", element.visibility == null || element.visibility);
 
-            // parse faces
+            //parse faces
             CompoundTag data;
             if (element.type.equalsIgnoreCase("cube")) {
                 data = parseCubeFaces(element.faces);
@@ -264,14 +265,14 @@ public class BlockbenchModelParser {
             if (!faces.has(cubeFace))
                 continue;
 
-            // convert face json to java object
+            //convert face json to java object
             BlockbenchModel.CubeFace face = GSON.fromJson(faces.getAsJsonObject(cubeFace), BlockbenchModel.CubeFace.class);
 
-            // dont add null faces
+            //dont add null faces
             if (face.texture == null)
                 continue;
 
-            // parse texture
+            //parse texture
             TextureData texture = textureMap.get(textureIdMap.get(face.texture));
             if (texture == null)
                 continue;
@@ -279,11 +280,11 @@ public class BlockbenchModelParser {
             CompoundTag faceNbt = new CompoundTag();
             faceNbt.putInt("tex", texture.id);
 
-            // parse face
+            //parse face
             if (face.rotation != 0f)
                 faceNbt.putFloat("rot", face.rotation);
 
-            // parse uv
+            //parse uv
             if (notZero(face.uv)) {
                 float[] uv = {face.uv[0] * texture.fixedSize[0], face.uv[1] * texture.fixedSize[1], face.uv[2] * texture.fixedSize[0], face.uv[3] * texture.fixedSize[1]};
                 faceNbt.put("uv", toNbtList(uv));
@@ -298,10 +299,10 @@ public class BlockbenchModelParser {
     private CompoundTag parseMesh(JsonObject faces, JsonObject vertices, float[] offset) {
         CompoundTag nbt = new CompoundTag();
 
-        // parse vertices first, as the faces will reference it later
-        // we are going to save them in a String -> Integer map
-        // the map will be preserved since it is very common to meshes share the same vertices,
-        // so we can reduce even more file size
+        //parse vertices first, as the faces will reference it later
+        //we are going to save them in a String -> Integer map
+        //the map will be preserved since it is very common to meshes share the same vertices,
+        //so we can reduce even more file size
         HashMap<String, Integer> verticesMap = new HashMap<>();
         ListTag verticesList = new ListTag();
 
@@ -315,30 +316,30 @@ public class BlockbenchModelParser {
             index++;
         }
 
-        // parse faces
+        //parse faces
         ListTag texesList = new ListTag();
         ListTag uvsList = new ListTag();
         ListTag facesList = new ListTag();
 
-        int bestType = 0; // byte
-        if (index > 255) bestType = 1; // short
-        if (index > 32767) bestType = 2; // int
+        int bestType = 0; //byte
+        if (index > 255) bestType = 1; //short
+        if (index > 32767) bestType = 2; //int
         for (Map.Entry<String, JsonElement> entry : faces.entrySet()) {
-            // convert json to java object
+            //convert json to java object
             BlockbenchModel.MeshFace face = GSON.fromJson(entry.getValue(), BlockbenchModel.MeshFace.class);
 
-            // dont parse empty faces
-            // Also skip faces that have less than 3 or more than 4 vertices, since blockbench is jank as hell
+            //dont parse empty faces
+            //Also skip faces that have less than 3 or more than 4 vertices, since blockbench is jank as hell
             if (face.texture == null || face.vertices == null || face.uv == null || face.vertices.length < 3 || face.vertices.length > 4)
                 continue;
 
-            // parse texture
+            //parse texture
             TextureData texture = textureMap.get(textureIdMap.get(face.texture));
             if (texture == null)
                 continue;
 
-            // To get the texture id, shift right 4, to get the vertex count, bitmask with 0xf
-            // This just stores both pieces of info in one number, to hopefully save some file size
+            //To get the texture id, shift right 4, to get the vertex count, bitmask with 0xf
+            //This just stores both pieces of info in one number, to hopefully save some file size
             short k = (short) ((texture.id << 4) + face.vertices.length);
             texesList.add(ShortTag.valueOf(k));
 
@@ -346,7 +347,7 @@ public class BlockbenchModelParser {
                 reorderVertices(face.vertices, verticesMap, verticesList);
 
             for (String vertex : face.vertices) {
-                // Face indices
+                //Face indices
                 Tag bestVal = switch (bestType) {
                     case 0 -> ByteTag.valueOf(verticesMap.get(vertex).byteValue());
                     case 1 -> ShortTag.valueOf(verticesMap.get(vertex).shortValue());
@@ -355,7 +356,7 @@ public class BlockbenchModelParser {
                 };
                 facesList.add(bestVal);
 
-                // UVs
+                //UVs
                 float[] uv = jsonToFloat(face.uv.getAsJsonArray(vertex));
                 float u = uv[0] * texture.fixedSize[0];
                 float v = uv[1] * texture.fixedSize[1];
@@ -378,7 +379,7 @@ public class BlockbenchModelParser {
             v4 = FiguraVec3.of();
 
     private static void reorderVertices(String[] vertexNames, Map<String, Integer> nameToIndex, ListTag vertices) {
-        // Fill in v1, v2, v3, v4 from the given vertices
+        //Fill in v1, v2, v3, v4 from the given vertices
         readVectors(vertexNames, nameToIndex, vertices);
 
         if (testOppositeSides(v2, v3, v1, v4)) {
@@ -438,7 +439,7 @@ public class BlockbenchModelParser {
         for (BlockbenchModel.Animation animation : animations) {
             CompoundTag animNbt = new CompoundTag();
 
-            // animation metadata
+            //animation metadata
             animNbt.putString("mdl", folders.isBlank() ? modelName : folders + modelName);
             animNbt.putString("name", animation.name);
             if (!animation.loop.equals("once"))
@@ -464,9 +465,9 @@ public class BlockbenchModelParser {
             if (loopDelay != 0f)
                 animNbt.putFloat("ldel", loopDelay);
 
-            // animation group data
+            //animation group data
 
-            // hacky solution to skip the for loop
+            //hacky solution to skip the for loop
             if (animation.animators == null)
                 animation.animators = new JsonObject();
 
@@ -479,7 +480,7 @@ public class BlockbenchModelParser {
                 ListTag posData = new ListTag();
                 ListTag scaleData = new ListTag();
 
-                // parse keyframes
+                //parse keyframes
                 JsonObject animationData = entry.getValue().getAsJsonObject();
                 for (JsonElement keyframeJson : animationData.get("keyframes").getAsJsonArray()) {
                     BlockbenchModel.KeyFrame keyFrame = GSON.fromJson(keyframeJson, BlockbenchModel.KeyFrame.class);
@@ -496,17 +497,17 @@ public class BlockbenchModelParser {
                     } else {
                         keyframeNbt.putString("int", keyFrame.interpolation);
 
-                        // pre
+                        //pre
                         JsonObject dataPoints = keyFrame.data_points.get(0).getAsJsonObject();
                         keyframeNbt.put("pre", parseKeyFrameData(dataPoints, keyFrame.channel));
 
-                        // end
+                        //end
                         if (keyFrame.data_points.size() > 1) {
                             JsonObject endDataPoints = keyFrame.data_points.get(1).getAsJsonObject();
                             keyframeNbt.put("end", parseKeyFrameData(endDataPoints, keyFrame.channel));
                         }
 
-                        // bezier stuff
+                        //bezier stuff
                         if (notZero(keyFrame.bezier_left_value))
                             keyframeNbt.put("bl", toNbtList(keyFrame.bezier_left_value));
                         if (notZero(keyFrame.bezier_right_value))
@@ -524,7 +525,7 @@ public class BlockbenchModelParser {
                     }
                 }
 
-                // add to nbt
+                //add to nbt
                 if (effect) {
                     animNbt.put("code", effectData);
                 } else {
@@ -592,12 +593,12 @@ public class BlockbenchModelParser {
             return children;
 
         for (JsonElement element : outliner) {
-            // check if it is an ID first
+            //check if it is an ID first
             if (element instanceof JsonPrimitive) {
                 String key = element.getAsString();
                 if (elementMap.containsKey(key)) {
                     CompoundTag elementNbt = elementMap.get(key);
-                    // fix children visibility (very jank)
+                    //fix children visibility (very jank)
                     if (elementNbt.contains("vsb") && elementNbt.getBoolean("vsb") == parentVsb)
                         elementNbt.remove("vsb");
                     children.add(elementNbt);
@@ -606,36 +607,36 @@ public class BlockbenchModelParser {
                 continue;
             }
 
-            // then parse as GroupElement (outliner)
+            //then parse as GroupElement (outliner)
             CompoundTag groupNbt = new CompoundTag();
             BlockbenchModel.GroupElement group = GSON.fromJson(element, BlockbenchModel.GroupElement.class);
 
-            // skip not exported groups
+            //skip not exported groups
             if (group.export != null && !group.export)
                 continue;
 
-            // parse fields
+            //parse fields
             groupNbt.putString("name", group.name);
 
-            // visibility
+            //visibility
             boolean thisVisibility = group.visibility == null || group.visibility;
             if (thisVisibility != parentVsb)
                 groupNbt.putBoolean("vsb", thisVisibility);
 
-            // parse transforms
+            //parse transforms
             if (notZero(group.origin))
                 groupNbt.put("piv", toNbtList(group.origin));
             if (notZero(group.rotation))
                 groupNbt.put("rot", toNbtList(group.rotation));
 
-            // parent type
+            //parent type
             parseParent(group.name, groupNbt);
 
-            // parse children
+            //parse children
             if (!(group.children == null || group.children.isEmpty()))
                 groupNbt.put("chld", parseOutliner(group.children, thisVisibility));
 
-            // add animations
+            //add animations
             if (animationMap.containsKey(group.uuid))
                 groupNbt.put("anim", animationMap.get(group.uuid));
 
@@ -645,23 +646,23 @@ public class BlockbenchModelParser {
         return children;
     }
 
-    // -- helper functions -- // 
+    // -- helper functions -- //
 
-    // converts a float array into a nbt list
+    //converts a float array into a nbt list
     public static ListTag toNbtList(float[] floats) {
         ListTag list = new ListTag();
 
-        int bestType = 0; // byte
+        int bestType = 0; //byte
         for (float f : floats) {
             if (Math.rint(f) - f == 0) {
                 if (f < -127 || f >= 128)
-                    bestType = 1; // short
+                    bestType = 1; //short
                 if (f < -16383 || f >= 16384) {
                     bestType = 2;
                     break;
                 }
             } else {
-                bestType = 2; // float
+                bestType = 2; //float
                 break;
             }
         }
@@ -677,7 +678,7 @@ public class BlockbenchModelParser {
         return list;
     }
 
-    // check if a float array is not composed of only zeros
+    //check if a float array is not composed of only zeros
     public static boolean notZero(float[] floats) {
         return isDifferent(floats, 0f);
     }
@@ -695,7 +696,7 @@ public class BlockbenchModelParser {
         return false;
     }
 
-    // try converting a String to float, with a fallback
+    //try converting a String to float, with a fallback
     public static float toFloat(String input, float fallback) {
         try {
             return Float.parseFloat(input);
@@ -712,7 +713,7 @@ public class BlockbenchModelParser {
         }
     }
 
-    // get texture size
+    //get texture size
     public static int[] getTextureSize(byte[] texture) {
         int w = (int) texture[16] & 0xFF;
         w = (w << 8) + ((int) texture[17] & 0xFF);
@@ -739,9 +740,9 @@ public class BlockbenchModelParser {
         return f;
     }
 
-    // dummy texture data
+    //dummy texture data
     private record TextureData(int id, float[] fixedSize) {}
 
-    // dummy class containing the return object of the parser
+    //dummy class containing the return object of the parser
     public record ModelData(CompoundTag textures, List<CompoundTag> animationList, CompoundTag modelNbt) {}
 }

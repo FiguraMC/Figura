@@ -1,8 +1,8 @@
 package org.figuramc.figura.backend2;
 
 import net.minecraft.client.multiplayer.resolver.ServerAddress;
-import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.config.Configs;
 
 import java.io.InputStream;
 import java.net.URI;

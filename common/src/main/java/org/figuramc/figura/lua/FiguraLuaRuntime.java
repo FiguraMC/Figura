@@ -3,11 +3,6 @@ package org.figuramc.figura.lua;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.Entity;
-import org.luaj.vm2.*;
-import org.luaj.vm2.compiler.LuaC;
-import org.luaj.vm2.lib.*;
-import org.luaj.vm2.lib.jse.JseBaseLib;
-import org.luaj.vm2.lib.jse.JseMathLib;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.lua.api.AvatarAPI;
@@ -24,6 +19,11 @@ import org.figuramc.figura.lua.api.nameplate.NameplateAPI;
 import org.figuramc.figura.lua.api.ping.PingAPI;
 import org.figuramc.figura.lua.api.vanilla_model.VanillaModelAPI;
 import org.figuramc.figura.permissions.Permissions;
+import org.luaj.vm2.*;
+import org.luaj.vm2.compiler.LuaC;
+import org.luaj.vm2.lib.*;
+import org.luaj.vm2.lib.jse.JseBaseLib;
+import org.luaj.vm2.lib.jse.JseMathLib;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -358,7 +358,7 @@ public class FiguraLuaRuntime {
         return value;
     };
     public boolean init(ListTag autoScripts) {
-        if (scripts.size() == 0)
+        if (scripts.isEmpty())
             return false;
 
         owner.luaRuntime = this;

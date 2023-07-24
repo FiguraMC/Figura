@@ -1,6 +1,7 @@
 package org.figuramc.figura.lua.docs;
 
 import org.figuramc.figura.lua.api.*;
+import org.figuramc.figura.lua.api.action_wheel.ActionWheelAPI;
 import org.figuramc.figura.lua.api.entity.EntityAPI;
 import org.figuramc.figura.lua.api.entity.PlayerAPI;
 import org.figuramc.figura.lua.api.event.EventsAPI;
@@ -11,14 +12,12 @@ import org.figuramc.figura.lua.api.nameplate.NameplateAPI;
 import org.figuramc.figura.lua.api.particle.ParticleAPI;
 import org.figuramc.figura.lua.api.ping.PingAPI;
 import org.figuramc.figura.lua.api.sound.SoundAPI;
+import org.figuramc.figura.lua.api.vanilla_model.VanillaModelAPI;
 import org.figuramc.figura.lua.api.world.WorldAPI;
+import org.figuramc.figura.model.FiguraModelPart;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaUserdata;
-import org.figuramc.figura.lua.api.*;
-import org.figuramc.figura.lua.api.action_wheel.ActionWheelAPI;
-import org.figuramc.figura.lua.api.vanilla_model.VanillaModelAPI;
-import org.figuramc.figura.model.FiguraModelPart;
 
 /**
  * Class only exists to have docs for the global figura

@@ -2,11 +2,11 @@ package org.figuramc.figura.gui.widgets.permissions;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
+import org.figuramc.figura.avatar.Avatar;
+import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.gui.widgets.Button;
 import org.figuramc.figura.gui.widgets.FiguraWidget;
 import org.figuramc.figura.gui.widgets.lists.PlayerList;
-import org.figuramc.figura.avatar.Avatar;
-import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.permissions.PermissionPack;
 import org.figuramc.figura.permissions.Permissions;
 import org.figuramc.figura.utils.MathUtils;

@@ -3,13 +3,12 @@ package org.figuramc.figura.math.vector;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.docs.*;
-import org.luaj.vm2.LuaError;
-import org.luaj.vm2.LuaFunction;
-import org.luaj.vm2.LuaValue;
-import org.figuramc.figura.lua.docs.*;
 import org.figuramc.figura.math.matrix.FiguraMat2;
 import org.figuramc.figura.utils.LuaUtils;
 import org.figuramc.figura.utils.MathUtils;
+import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaFunction;
+import org.luaj.vm2.LuaValue;
 
 @LuaWhitelist
 @LuaTypeDoc(

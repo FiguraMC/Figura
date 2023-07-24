@@ -9,11 +9,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.apache.commons.codec.binary.Base64;
 import org.figuramc.figura.avatar.local.LocalAvatarFetcher;
-import org.figuramc.figura.math.vector.FiguraVec3;
-import org.figuramc.figura.utils.*;
 import org.figuramc.figura.exporters.BlockBenchModel;
 import org.figuramc.figura.exporters.BlockBenchModel.Cube;
 import org.figuramc.figura.exporters.BlockBenchModel.Group;
+import org.figuramc.figura.math.vector.FiguraVec3;
+import org.figuramc.figura.utils.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -21,27 +21,6 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.function.BiFunction;
 
-import static org.figuramc.figura.model.ParentType.*;
-
-/*
-                  .
-
-                   .
-         /^\     .
-    /\   "V"
-   /__\   I      O  o
-  // ..\\  I     .
-  \].`[/  I
-  /l\/j\  (]    .  O
- /. ~~ ,\/I          .
- \\L__j^\/I       o
-  \/--v}  I     o   .
-  |    |  I   _________
-  |    |  I c(`       ')o
-  |    l  I   \.     ,/
-_/j  L l\_!  _// ^---^\\_
-
- */
 public class AvatarWizard {
 
     private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
@@ -105,7 +84,7 @@ public class AvatarWizard {
     }
 
     public void build() throws IOException {
-        // file io
+        //file io
         Path root = LocalAvatarFetcher.getLocalAvatarDirectory();
         String name = (String) map.get(WizardEntry.NAME);
         String filename = name.replaceAll(IOUtils.INVALID_FILENAME_REGEX, "_");
@@ -117,20 +96,20 @@ public class AvatarWizard {
             i++;
         }
 
-        // metadata
+        //metadata
         byte[] metadata = buildMetadata(name);
 
-        // script
+        //script
         byte[] script = null;
         if (WizardEntry.DUMMY_SCRIPT.asBool(map))
             script = buildScript();
 
-        // model
+        //model
         byte[] model = null;
         if (WizardEntry.DUMMY_MODEL.asBool(map))
             model = buildModel();
 
-        // write files
+        //write files
         new IOUtils.DirWrapper(folder)
                 .create()
                 .write("avatar.json", metadata)
@@ -138,21 +117,21 @@ public class AvatarWizard {
                 .write("model.bbmodel", model)
                 .write("avatar.png", iconTexture);
 
-        // open file manager
+        //open file manager
         Util.getPlatform().openUri(folder.toUri());
     }
 
     private byte[] buildMetadata(String name) {
         JsonObject root = new JsonObject();
 
-        // name
+        //name
         root.addProperty("name", name);
 
-        // description
+        //description
         String description = (String) map.get(WizardEntry.DESCRIPTION);
         root.addProperty("description", description == null ? "" : description);
 
-        // authors
+        //authors
         String authorStr = (String) map.get(WizardEntry.AUTHORS);
         String playerName = Minecraft.getInstance().player.getName().getString();
         String[] authors = authorStr == null ? new String[]{playerName} : authorStr.split(",");
@@ -164,10 +143,10 @@ public class AvatarWizard {
 
         root.add("authors", authorsJson);
 
-        // color
+        //color
         root.addProperty("color", "#" + ColorUtils.rgbToHex(ColorUtils.Colors.random().vec));
 
-        // return
+        //return
         return GSON.toJson(root).getBytes();
     }
 
@@ -176,7 +155,7 @@ public class AvatarWizard {
 
         boolean hasPlayerModel = WizardEntry.PLAYER_MODEL.asBool(map);
 
-        // hide player
+        //hide player
         if (hasPlayerModel && WizardEntry.HIDE_PLAYER.asBool(map))
             script += """
 
@@ -184,7 +163,7 @@ public class AvatarWizard {
                     vanilla_model.PLAYER:setVisible(false)
                     """;
 
-        // hide armor
+        //hide armor
         boolean hideArmor = WizardEntry.HIDE_ARMOR.asBool(map);
         if (hideArmor)
             script += """
@@ -193,14 +172,14 @@ public class AvatarWizard {
                     vanilla_model.ARMOR:setVisible(false)
                     """;
 
-        // helmet item fix :3
+        //helmet item fix :3
         if (hasPlayerModel && hideArmor && WizardEntry.HELMET_ITEM_PIVOT.asBool(map))
             script += """
                     --re-enable the helmet item
                     vanilla_model.HELMET_ITEM:setVisible(true)
                     """;
 
-        // hide cape
+        //hide cape
         if (WizardEntry.HIDE_CAPE.asBool(map))
             script += """
 
@@ -208,7 +187,7 @@ public class AvatarWizard {
                     vanilla_model.CAPE:setVisible(false)
                     """;
 
-        // hide cape
+        //hide cape
         if (WizardEntry.HIDE_ELYTRA.asBool(map))
             script += """
 
@@ -216,7 +195,7 @@ public class AvatarWizard {
                     vanilla_model.ELYTRA:setVisible(false)
                     """;
 
-        // empty events
+        //empty events
         if (WizardEntry.EMPTY_EVENTS.asBool(map))
             script += """
 
@@ -239,7 +218,7 @@ public class AvatarWizard {
                     end
                     """;
 
-        // return
+        //return
         return script.getBytes();
     }
 
@@ -251,20 +230,20 @@ public class AvatarWizard {
         boolean slim = WizardEntry.SLIM.asBool(map);
         boolean hasArmor = WizardEntry.ARMOR_PIVOTS.asBool(map);
 
-        // model
+        //model
         BlockBenchModel model = new BlockBenchModel("free");
 
-        // textures
+        //textures
         int playerTex = hasPlayer ? model.addImage("Skin", slim ? playerTextureSlim : playerTexture) : -1;
         int capeTex = hasCapeOrElytra ? model.addImage("Cape", capeTexture) : -1;
 
-        // resolution
+        //resolution
         if (hasPlayer)
             model.setResolution(64, 64);
         else if (hasCapeOrElytra)
             model.setResolution(64, 32);
 
-        // base bones
+        //base bones
         Group root = model.addGroup("root", FiguraVec3.of());
 
         Group head = model.addGroup(Head, FiguraVec3.of(0, 24, 0), root);
@@ -274,7 +253,7 @@ public class AvatarWizard {
         Group leftLeg = model.addGroup(LeftLeg, FiguraVec3.of(-1.9, 12, 0), root);
         Group rightLeg = model.addGroup(RightLeg, FiguraVec3.of(1.9, 12, 0), root);
 
-        // player
+        //player
         if (hasPlayer) {
             generateCubeAndLayer(model, "Hat", FiguraVec3.of(-4, 24, -4), FiguraVec3.of(8, 8, 8), 0.5, head, 0, 0, 32, 0, playerTex);
             generateCubeAndLayer(model, "Jacket", FiguraVec3.of(-4, 12, -2), FiguraVec3.of(8, 12, 4), 0.25, body, 16, 16, 16, 32, playerTex);
@@ -287,31 +266,31 @@ public class AvatarWizard {
             generateCubeAndLayer(model, "Right Pants", FiguraVec3.of(-0.1, 0, -2), FiguraVec3.of(4, 12, 4), 0.25, rightLeg, 0, 16, 0, 32, playerTex);
         }
 
-        // cape
+        //cape
         if (hasCape) {
             Group cape = model.addGroup(Cape, FiguraVec3.of(0, 24, 2), root);
             Cube cube = model.addCube("Cape", FiguraVec3.of(-5, 8, 2), FiguraVec3.of(10, 16, 1), cape);
             cube.generateBoxFaces(0, 0, capeTex, 1, hasPlayer ? 2 : 1);
         }
 
-        // elytra
+        //elytra
         if (hasElytra) {
             Group elytra = model.addGroup("Elytra", FiguraVec3.of(0, 24, 2), root);
 
-            // left wing
+            //left wing
             Group leftElytra = model.addGroup(LeftElytra, FiguraVec3.of(-5, 24, 2), elytra);
             Cube cube = model.addCube(FiguraVec3.of(-5, 4, 2), FiguraVec3.of(10, 20, 2), leftElytra);
             cube.inflate = 1;
             cube.generateBoxFaces(22, 0, capeTex, 1, hasPlayer ? 2 : 1);
 
-            // right wing
+            //right wing
             Group rightElytra = model.addGroup(RightElytra, FiguraVec3.of(5, 24, 2), elytra);
             cube = model.addCube(FiguraVec3.of(-5, 4, 2), FiguraVec3.of(10, 20, 2), rightElytra);
             cube.inflate = 1;
             cube.generateBoxFaces(22, 0, capeTex, -1, hasPlayer ? 2 : 1);
         }
 
-        // pivots
+        //pivots
         if (WizardEntry.ITEMS_PIVOT.asBool(map)) {
             model.addGroup(LeftItemPivot, FiguraVec3.of(slim ? -5.5 : -6, 12, -2), leftArm);
             model.addGroup(RightItemPivot, FiguraVec3.of(slim ? 5.5 : 6, 12, -2), rightArm);
@@ -343,7 +322,7 @@ public class AvatarWizard {
             model.addGroup(RightBootPivot, FiguraVec3.of(2, 0, 0), rightLeg);
         }
 
-        // return
+        //return
         return GSON.toJson(model.build()).getBytes();
     }
 

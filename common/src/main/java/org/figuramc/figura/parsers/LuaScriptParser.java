@@ -1,12 +1,12 @@
 package org.figuramc.figura.parsers;
 
 import net.minecraft.nbt.ByteArrayTag;
+import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.config.Configs;
 import org.luaj.vm2.ast.Chunk;
 import org.luaj.vm2.ast.NameResolver;
 import org.luaj.vm2.parser.LuaParser;
 import org.luaj.vm2.parser.ParseException;
-import org.figuramc.figura.FiguraMod;
-import org.figuramc.figura.config.Configs;
 
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;

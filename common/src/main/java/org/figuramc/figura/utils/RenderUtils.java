@@ -5,8 +5,8 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.inventory.InventoryMenu;
-import org.figuramc.figura.lua.api.vanilla_model.VanillaPart;
 import org.figuramc.figura.avatar.Avatar;
+import org.figuramc.figura.lua.api.vanilla_model.VanillaPart;
 import org.figuramc.figura.permissions.Permissions;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 

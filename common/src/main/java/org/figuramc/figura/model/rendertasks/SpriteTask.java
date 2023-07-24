@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
+import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
@@ -22,7 +23,6 @@ import org.figuramc.figura.utils.LuaUtils;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.luaj.vm2.LuaError;
-import org.figuramc.figura.avatar.Avatar;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,15 +1,18 @@
 package org.figuramc.figura.lua;
 
 import net.minecraft.network.chat.Component;
+import org.figuramc.figura.lua.docs.FiguraDocsManager;
+import org.figuramc.figura.lua.docs.LuaTypeDoc;
 import org.luaj.vm2.*;
 import org.luaj.vm2.lib.OneArgFunction;
 import org.luaj.vm2.lib.TwoArgFunction;
 import org.luaj.vm2.lib.VarArgFunction;
-import org.figuramc.figura.lua.docs.FiguraDocsManager;
-import org.figuramc.figura.lua.docs.LuaTypeDoc;
 
 import java.lang.reflect.*;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * One LuaTypeManager per LuaRuntime, so that people can be allowed to edit the metatables within.

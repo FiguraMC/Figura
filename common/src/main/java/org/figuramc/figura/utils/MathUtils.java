@@ -3,6 +3,7 @@ package org.figuramc.figura.utils;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.Vec3;
+import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.ducks.GameRendererAccessor;
 import org.figuramc.figura.math.matrix.FiguraMat2;
 import org.figuramc.figura.math.matrix.FiguraMat3;
@@ -13,7 +14,6 @@ import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.math.vector.FiguraVec4;
 import org.figuramc.figura.math.vector.FiguraVector;
 import org.joml.*;
-import org.figuramc.figura.config.Configs;
 
 import java.lang.Math;
 import java.math.RoundingMode;

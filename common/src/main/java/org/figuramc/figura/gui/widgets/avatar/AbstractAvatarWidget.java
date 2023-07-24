@@ -7,16 +7,16 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.avatar.local.LocalAvatarFetcher;
 import org.figuramc.figura.gui.FiguraToast;
 import org.figuramc.figura.gui.widgets.AbstractContainerElement;
 import org.figuramc.figura.gui.widgets.Button;
 import org.figuramc.figura.gui.widgets.ContextMenu;
-import org.jetbrains.annotations.NotNull;
-import org.figuramc.figura.FiguraMod;
-import org.figuramc.figura.avatar.local.LocalAvatarFetcher;
 import org.figuramc.figura.gui.widgets.lists.AvatarList;
 import org.figuramc.figura.utils.FiguraText;
 import org.figuramc.figura.utils.ui.UIHelper;
+import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
 

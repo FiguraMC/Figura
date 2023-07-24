@@ -1,7 +1,7 @@
 package org.figuramc.figura.gui.widgets.config;
 
-import org.figuramc.figura.gui.widgets.ParentedButton;
 import org.figuramc.figura.config.ConfigType;
+import org.figuramc.figura.gui.widgets.ParentedButton;
 import org.figuramc.figura.gui.widgets.lists.ConfigList;
 
 public class ButtonElement extends AbstractConfigElement {

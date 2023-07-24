@@ -6,9 +6,9 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import org.figuramc.figura.utils.FiguraClientCommandSource;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.resources.FiguraRuntimeResources;
+import org.figuramc.figura.utils.FiguraClientCommandSource;
 
 public class BackendCommands {
 

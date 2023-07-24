@@ -1,8 +1,8 @@
 package org.figuramc.figura.gui.widgets.avatar;
 
 import net.minecraft.client.gui.GuiGraphics;
-import org.figuramc.figura.gui.widgets.ContainerButton;
 import org.figuramc.figura.avatar.local.LocalAvatarFetcher;
+import org.figuramc.figura.gui.widgets.ContainerButton;
 import org.figuramc.figura.gui.widgets.lists.AvatarList;
 import org.figuramc.figura.utils.ui.UIHelper;
 
