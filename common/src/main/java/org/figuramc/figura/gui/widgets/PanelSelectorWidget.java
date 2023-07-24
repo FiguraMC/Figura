@@ -7,7 +7,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import org.figuramc.figura.gui.screens.*;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.entries.FiguraScreen;
 import org.figuramc.figura.gui.screens.*;

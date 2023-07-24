@@ -1,5 +1,6 @@
 package org.figuramc.figura.lua.api.action_wheel;
 
+import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.gui.ActionWheel;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
@@ -11,7 +12,6 @@ import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.Varargs;
-import org.figuramc.figura.avatar.Avatar;
 
 import java.util.HashMap;
 

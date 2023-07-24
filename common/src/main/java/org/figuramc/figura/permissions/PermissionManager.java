@@ -3,10 +3,10 @@ package org.figuramc.figura.permissions;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.entries.FiguraPermissions;
 import org.figuramc.figura.utils.IOUtils;
-import org.figuramc.figura.FiguraMod;
 
 import java.util.*;
 

@@ -3,12 +3,12 @@ package org.figuramc.figura.gui.widgets.config;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
-import org.figuramc.figura.gui.widgets.ParentedButton;
-import org.figuramc.figura.gui.widgets.TextField;
-import org.figuramc.figura.gui.widgets.lists.ConfigList;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.config.ConfigType;
 import org.figuramc.figura.config.InputType;
+import org.figuramc.figura.gui.widgets.ParentedButton;
+import org.figuramc.figura.gui.widgets.TextField;
+import org.figuramc.figura.gui.widgets.lists.ConfigList;
 import org.figuramc.figura.utils.ColorUtils;
 import org.figuramc.figura.utils.ui.UIHelper;
 

@@ -2,15 +2,15 @@ package org.figuramc.figura.commands;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
+import org.figuramc.figura.backend2.BackendCommands;
 import org.figuramc.figura.lua.FiguraLuaRuntime;
 import org.figuramc.figura.lua.docs.FiguraDocsManager;
 import org.figuramc.figura.model.rendering.AvatarRenderer;
 import org.figuramc.figura.utils.FiguraClientCommandSource;
 import org.figuramc.figura.utils.FiguraText;
-import org.figuramc.figura.FiguraMod;
-import org.figuramc.figura.backend2.BackendCommands;
 
 public class FiguraCommands {
 

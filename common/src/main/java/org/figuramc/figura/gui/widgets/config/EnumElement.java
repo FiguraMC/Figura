@@ -6,10 +6,10 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.network.chat.Component;
-import org.figuramc.figura.gui.widgets.ContextMenu;
-import org.figuramc.figura.gui.widgets.ParentedButton;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.config.ConfigType;
+import org.figuramc.figura.gui.widgets.ContextMenu;
+import org.figuramc.figura.gui.widgets.ParentedButton;
 import org.figuramc.figura.gui.widgets.lists.ConfigList;
 import org.figuramc.figura.utils.ui.UIHelper;
 

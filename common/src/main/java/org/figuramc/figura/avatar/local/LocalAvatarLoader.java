@@ -7,16 +7,16 @@ import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
-import org.figuramc.figura.gui.FiguraToast;
-import org.figuramc.figura.utils.FiguraResourceListener;
-import org.figuramc.figura.utils.FiguraText;
-import org.figuramc.figura.utils.IOUtils;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.avatar.UserData;
+import org.figuramc.figura.gui.FiguraToast;
 import org.figuramc.figura.parsers.AvatarMetadataParser;
 import org.figuramc.figura.parsers.BlockbenchModelParser;
 import org.figuramc.figura.parsers.LuaScriptParser;
+import org.figuramc.figura.utils.FiguraResourceListener;
+import org.figuramc.figura.utils.FiguraText;
+import org.figuramc.figura.utils.IOUtils;
 
 import java.io.IOException;
 import java.nio.file.*;
@@ -99,6 +99,10 @@ public class LocalAvatarLoader {
         loadError = null;
         loadState = LoadState.UNKNOWN;
         resetWatchKeys();
+        try {
+            path = path == null ? null : path.getFileSystem() == FileSystems.getDefault() ? Path.of(path.toFile().getCanonicalPath()) : path.normalize();
+        } catch (IOException e) {
+        }
         lastLoadedPath = path;
 
         if (path == null || target == null)
@@ -106,6 +110,7 @@ public class LocalAvatarLoader {
 
         addWatchKey(path, KEYS::put);
 
+        Path finalPath = path;
         async(() -> {
             try {
                 // load as folder
@@ -113,11 +118,11 @@ public class LocalAvatarLoader {
 
                 // scripts
                 loadState = LoadState.SCRIPTS;
-                loadScripts(path, nbt);
+                loadScripts(finalPath, nbt);
 
                 // custom sounds
                 loadState = LoadState.SOUNDS;
-                loadSounds(path, nbt);
+                loadSounds(finalPath, nbt);
 
                 // models
                 CompoundTag textures = new CompoundTag();
@@ -125,13 +130,13 @@ public class LocalAvatarLoader {
                 BlockbenchModelParser modelParser = new BlockbenchModelParser();
 
                 loadState = LoadState.MODELS;
-                CompoundTag models = loadModels(path.getFileSystem() == FileSystems.getDefault() ? path.toFile().getCanonicalPath() : path.toString(), path, modelParser, textures, animations, "");
+                CompoundTag models = loadModels(finalPath, finalPath, modelParser, textures, animations, "");
                 models.putString("name", "models");
 
                 // metadata
                 loadState = LoadState.METADATA;
-                String metadata = IOUtils.readFile(path.resolve("avatar.json"));
-                nbt.put("metadata", AvatarMetadataParser.parse(metadata, IOUtils.getFileNameOrEmpty(path)));
+                String metadata = IOUtils.readFile(finalPath.resolve("avatar.json"));
+                nbt.put("metadata", AvatarMetadataParser.parse(metadata, IOUtils.getFileNameOrEmpty(finalPath)));
                 AvatarMetadataParser.injectToModels(metadata, models);
                 AvatarMetadataParser.injectToTextures(metadata, textures);
 
@@ -147,7 +152,7 @@ public class LocalAvatarLoader {
                 target.loadAvatar(nbt);
             } catch (Throwable e) {
                 loadError = e.getMessage();
-                FiguraMod.LOGGER.error("Failed to load avatar from " + path, e);
+                FiguraMod.LOGGER.error("Failed to load avatar from " + finalPath, e);
                 FiguraToast.sendToast(FiguraText.of("toast.load_error"), FiguraText.of("gui.load_error." + LocalAvatarLoader.getLoadState()), FiguraToast.ToastType.ERROR);
             }
         });
@@ -185,7 +190,7 @@ public class LocalAvatarLoader {
         }
     }
 
-    private static CompoundTag loadModels(String avatarFolder, Path currentFile, BlockbenchModelParser parser, CompoundTag textures, ListTag animations, String folders) throws Exception {
+    private static CompoundTag loadModels(Path avatarFolder, Path currentFile, BlockbenchModelParser parser, CompoundTag textures, ListTag animations, String folders) throws Exception {
         CompoundTag result = new CompoundTag();
         List<Path> subFiles = IOUtils.listPaths(currentFile);
         ListTag children = new ListTag();

@@ -2,10 +2,10 @@ package org.figuramc.figura.config;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.network.chat.Component;
+import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.utils.ColorUtils;
 import org.figuramc.figura.utils.FiguraText;
-import org.figuramc.figura.FiguraMod;
 
 import java.util.ArrayList;
 import java.util.List;

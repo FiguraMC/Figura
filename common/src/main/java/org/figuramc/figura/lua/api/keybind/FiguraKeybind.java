@@ -3,16 +3,16 @@ package org.figuramc.figura.lua.api.keybind;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
-import org.luaj.vm2.LuaError;
-import org.luaj.vm2.LuaFunction;
-import org.luaj.vm2.Varargs;
-import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.lua.docs.LuaFieldDoc;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
+import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaFunction;
+import org.luaj.vm2.Varargs;
 
 import java.util.List;
 

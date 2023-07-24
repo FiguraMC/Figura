@@ -1,10 +1,10 @@
 package org.figuramc.figura.gui.screens;
 
 import net.minecraft.client.gui.screens.Screen;
-import org.figuramc.figura.gui.widgets.Button;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
+import org.figuramc.figura.gui.widgets.Button;
 import org.figuramc.figura.gui.widgets.PianoWidget;
 import org.figuramc.figura.gui.widgets.lists.SoundsList;
 import org.figuramc.figura.utils.FiguraText;

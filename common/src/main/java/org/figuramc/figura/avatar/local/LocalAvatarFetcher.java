@@ -4,12 +4,12 @@ import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import org.figuramc.figura.gui.cards.CardBackground;
-import org.figuramc.figura.utils.FileTexture;
-import org.figuramc.figura.utils.IOUtils;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.config.Configs;
+import org.figuramc.figura.gui.cards.CardBackground;
 import org.figuramc.figura.parsers.AvatarMetadataParser;
+import org.figuramc.figura.utils.FileTexture;
+import org.figuramc.figura.utils.IOUtils;
 
 import java.io.IOException;
 import java.nio.file.*;

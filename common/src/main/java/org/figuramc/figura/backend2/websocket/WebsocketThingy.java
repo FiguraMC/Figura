@@ -1,13 +1,13 @@
 package org.figuramc.figura.backend2.websocket;
 
 import net.minecraft.client.multiplayer.resolver.ServerAddress;
+import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.backend2.NetworkStuff;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.gui.FiguraToast;
 import org.figuramc.figura.utils.FiguraText;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
-import org.figuramc.figura.FiguraMod;
-import org.figuramc.figura.backend2.NetworkStuff;
 
 import java.net.URI;
 import java.nio.ByteBuffer;

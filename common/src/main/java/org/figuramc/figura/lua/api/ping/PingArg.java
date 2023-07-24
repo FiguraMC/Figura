@@ -1,11 +1,11 @@
 package org.figuramc.figura.lua.api.ping;
 
-import org.luaj.vm2.*;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.math.matrix.FiguraMatrix;
 import org.figuramc.figura.math.vector.FiguraVector;
 import org.figuramc.figura.utils.MathUtils;
+import org.luaj.vm2.*;
 
 import java.io.*;
 import java.util.ArrayList;

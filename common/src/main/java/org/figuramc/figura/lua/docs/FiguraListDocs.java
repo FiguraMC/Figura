@@ -13,7 +13,6 @@ import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.PlayerModelPart;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.UseAnim;
-import org.figuramc.figura.utils.FiguraClientCommandSource;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.animation.Animation;
 import org.figuramc.figura.mixin.input.KeyMappingAccessor;
@@ -23,6 +22,7 @@ import org.figuramc.figura.model.rendering.EntityRenderMode;
 import org.figuramc.figura.model.rendering.texture.FiguraTextureSet;
 import org.figuramc.figura.model.rendering.texture.RenderTypes;
 import org.figuramc.figura.utils.ColorUtils;
+import org.figuramc.figura.utils.FiguraClientCommandSource;
 import org.figuramc.figura.utils.FiguraText;
 
 import java.util.*;

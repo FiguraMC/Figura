@@ -6,8 +6,8 @@ import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
 import org.figuramc.figura.math.vector.FiguraVec2;
-import org.luaj.vm2.LuaError;
 import org.figuramc.figura.utils.LuaUtils;
+import org.luaj.vm2.LuaError;
 
 @LuaWhitelist
 @LuaTypeDoc(

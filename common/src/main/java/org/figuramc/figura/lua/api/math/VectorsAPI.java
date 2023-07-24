@@ -3,7 +3,6 @@ package org.figuramc.figura.lua.api.math;
 import com.mojang.datafixers.util.Pair;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
-import org.luaj.vm2.LuaError;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
@@ -13,6 +12,7 @@ import org.figuramc.figura.math.vector.FiguraVec4;
 import org.figuramc.figura.utils.ColorUtils;
 import org.figuramc.figura.utils.LuaUtils;
 import org.figuramc.figura.utils.MathUtils;
+import org.luaj.vm2.LuaError;
 
 @LuaWhitelist
 @LuaTypeDoc(

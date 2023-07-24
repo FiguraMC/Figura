@@ -1,8 +1,8 @@
 package org.figuramc.figura.lua.api;
 
-import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.animation.Animation;
 import org.figuramc.figura.avatar.Avatar;
+import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
 

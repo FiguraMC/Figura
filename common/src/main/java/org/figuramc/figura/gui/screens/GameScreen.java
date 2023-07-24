@@ -5,12 +5,12 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import org.lwjgl.glfw.GLFW;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.gui.widgets.Button;
 import org.figuramc.figura.gui.widgets.Label;
 import org.figuramc.figura.utils.FiguraIdentifier;
 import org.figuramc.figura.utils.FiguraText;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 

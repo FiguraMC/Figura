@@ -3,11 +3,11 @@ package org.figuramc.figura.parsers;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.minecraft.nbt.*;
+import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.model.ParentType;
 import org.figuramc.figura.model.rendering.texture.RenderTypes;
 import org.figuramc.figura.utils.Version;
-import org.figuramc.figura.FiguraMod;
-import org.figuramc.figura.config.Configs;
 
 import java.io.IOException;
 import java.util.HashMap;

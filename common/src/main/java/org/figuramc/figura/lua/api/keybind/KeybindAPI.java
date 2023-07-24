@@ -1,14 +1,14 @@
 package org.figuramc.figura.lua.api.keybind;
 
 import net.minecraft.client.KeyMapping;
+import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
-import org.luaj.vm2.LuaError;
-import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
 import org.figuramc.figura.mixin.input.KeyMappingAccessor;
+import org.luaj.vm2.LuaError;
 
 import java.util.ArrayList;
 import java.util.Collections;

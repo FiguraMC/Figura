@@ -11,10 +11,10 @@ import net.minecraft.world.item.*;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.NbtToLua;
 import org.figuramc.figura.lua.ReadOnlyLuaTable;
-import org.luaj.vm2.LuaTable;
 import org.figuramc.figura.lua.docs.LuaFieldDoc;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
+import org.luaj.vm2.LuaTable;
 
 import java.util.ArrayList;
 import java.util.List;
