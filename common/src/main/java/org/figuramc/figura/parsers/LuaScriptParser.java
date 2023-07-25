@@ -1,12 +1,12 @@
 package org.figuramc.figura.parsers;
 
 import net.minecraft.nbt.ByteArrayTag;
+import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.config.Configs;
 import org.luaj.vm2.ast.Chunk;
 import org.luaj.vm2.ast.NameResolver;
 import org.luaj.vm2.parser.LuaParser;
 import org.luaj.vm2.parser.ParseException;
-import org.figuramc.figura.FiguraMod;
-import org.figuramc.figura.config.Configs;
 
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
@@ -33,7 +33,7 @@ public class LuaScriptParser {
     private static final Pattern whitespacePlus = Pattern.compile("[ \n]+");
     private static final Pattern nameOops = Pattern.compile("\\w{2}");
 
-    //parsing data
+    // parsing data
     private static boolean error;
 
     public static ByteArrayTag parseScript(String name, String script) {

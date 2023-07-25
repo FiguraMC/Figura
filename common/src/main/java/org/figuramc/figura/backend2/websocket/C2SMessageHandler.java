@@ -9,11 +9,11 @@ import java.util.UUID;
 
 public class C2SMessageHandler {
 
-    //ids
+    // ids
     public static final byte
             TOKEN = 0,
             PING = 1,
-            SUB = 2, //owo
+            SUB = 2, // owo
             UNSUB = 3;
 
     public static ByteBuffer auth(String token) throws IOException {

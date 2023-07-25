@@ -13,13 +13,13 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.SkullBlock;
 import net.minecraft.world.level.block.entity.SkullBlockEntity;
+import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.avatar.Avatar;
+import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.ducks.SkullBlockRendererAccessor;
 import org.figuramc.figura.lua.api.entity.EntityAPI;
 import org.figuramc.figura.lua.api.world.BlockStateAPI;
 import org.figuramc.figura.lua.api.world.ItemStackAPI;
-import org.figuramc.figura.FiguraMod;
-import org.figuramc.figura.avatar.Avatar;
-import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.permissions.Permissions;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -38,7 +38,7 @@ public abstract class SkullBlockRendererMixin implements BlockEntityRenderer<Sku
 
     @Inject(at = @At("HEAD"), method = "renderSkull", cancellable = true)
     private static void renderSkull(Direction direction, float yaw, float animationProgress, PoseStack stack, MultiBufferSource bufferSource, int light, SkullModelBase model, RenderType renderLayer, CallbackInfo ci) {
-        //parse block and items first, so we can yeet them in case of a missed event
+        // parse block and items first, so we can yeet them in case of a missed event
         SkullBlockEntity localBlock = block;
         block = null;
 
@@ -51,7 +51,7 @@ public abstract class SkullBlockRendererMixin implements BlockEntityRenderer<Sku
         SkullBlockRendererAccessor.SkullRenderMode localMode = SkullBlockRendererAccessor.getRenderMode();
         SkullBlockRendererAccessor.setRenderMode(SkullBlockRendererAccessor.SkullRenderMode.OTHER);
 
-        //avatar
+        // avatar
         Avatar localAvatar = avatar;
         avatar = null;
 
@@ -62,7 +62,7 @@ public abstract class SkullBlockRendererMixin implements BlockEntityRenderer<Sku
         FiguraMod.pushProfiler(localAvatar);
         FiguraMod.pushProfiler("skullRender");
 
-        //event
+        // event
         BlockStateAPI b = localBlock == null ? null : new BlockStateAPI(localBlock.getBlockState(), localBlock.getBlockPos());
         ItemStackAPI i = localItem != null ? ItemStackAPI.verify(localItem) : null;
         EntityAPI<?> e = localEntity != null ? EntityAPI.wrap(localEntity) : null;
@@ -73,7 +73,7 @@ public abstract class SkullBlockRendererMixin implements BlockEntityRenderer<Sku
         FiguraMod.pushProfiler("event");
         boolean bool = localAvatar.skullRenderEvent(Minecraft.getInstance().getFrameTime(), b, i, e, m);
 
-        //render skull :3
+        // render skull :3
         FiguraMod.popPushProfiler("render");
         if (bool || localAvatar.skullRender(stack, bufferSource, light, direction, yaw))
             ci.cancel();

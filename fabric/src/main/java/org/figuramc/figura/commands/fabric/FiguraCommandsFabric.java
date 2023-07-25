@@ -9,7 +9,7 @@ public class FiguraCommandsFabric {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static void init() {
-        //register
+        // register
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
             CommandDispatcher<FiguraClientCommandSource> casted = (CommandDispatcher) dispatcher;
             casted.register(FiguraCommands.getCommandRoot());

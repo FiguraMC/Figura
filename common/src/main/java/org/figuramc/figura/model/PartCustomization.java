@@ -12,7 +12,7 @@ import java.util.Stack;
 
 public class PartCustomization {
 
-    //-- Matrix thingies --//
+    // -- Matrix thingies --// 
     /**
      * Boolean exists because blockbench sucks and uses a different rotation
      * formula for meshes than other types of items. Meshes rotate in XYZ order,
@@ -33,13 +33,13 @@ public class PartCustomization {
     private final FiguraVec3 scale = FiguraVec3.of(1, 1, 1);
     private final FiguraVec3 pivot = FiguraVec3.of();
 
-    //The "offset" values are for vanilla part scaling. The offset pivot and rot can be get and set from script.
+    // The "offset" values are for vanilla part scaling. The offset pivot and rot can be get and set from script.
     private final FiguraVec3 offsetPivot = FiguraVec3.of();
     private final FiguraVec3 offsetPos = FiguraVec3.of();
     private final FiguraVec3 offsetRot = FiguraVec3.of();
     private final FiguraVec3 offsetScale = FiguraVec3.of(1, 1, 1);
 
-    //These values are set by animation players. They can be queried, though not set, by script.
+    // These values are set by animation players. They can be queried, though not set, by script.
     private final FiguraVec3 animPos = FiguraVec3.of();
     private final FiguraVec3 animRot = FiguraVec3.of();
     private final FiguraVec3 animScale = FiguraVec3.of(1, 1, 1);
@@ -68,14 +68,14 @@ public class PartCustomization {
 
         positionMatrix.reset();
 
-        //Position the pivot point at 0, 0, 0, and translate the part
+        // Position the pivot point at 0, 0, 0, and translate the part
         positionMatrix.translate(
                 offsetPos.x - pivot.x - offsetPivot.x,
                 offsetPos.y - pivot.y - offsetPivot.y,
                 offsetPos.z - pivot.z - offsetPivot.z
         );
 
-        //Scale the model part around the pivot
+        // Scale the model part around the pivot
         stackScale.set(
                 offsetScale.x * scale.x * animScale.x,
                 offsetScale.y * scale.y * animScale.y,
@@ -83,7 +83,7 @@ public class PartCustomization {
         );
         positionMatrix.scale(stackScale);
 
-        //Rotate the model part around the pivot
+        // Rotate the model part around the pivot
         if (partType == PartType.MESH) {
             positionMatrix.rotateZ(rotation.z + offsetRot.z + animRot.z);
             positionMatrix.rotateY(rotation.y + offsetRot.y + animRot.y);
@@ -96,14 +96,14 @@ public class PartCustomization {
             );
         }
 
-        //Undo the effects of the pivot translation
+        // Undo the effects of the pivot translation
         positionMatrix.translate(
                 position.x + animPos.x + pivot.x + offsetPivot.x,
                 position.y + animPos.y + pivot.y + offsetPivot.y,
                 position.z + animPos.z + pivot.z + offsetPivot.z
         );
 
-        //Set up the normal matrix as well
+        // Set up the normal matrix as well
         normalMatrix.reset();
         double x = scale.x * animScale.x;
         double y = scale.y * animScale.y;
@@ -115,7 +115,7 @@ public class PartCustomization {
                 c == 0 && z == 0 ? 1 : c / z
         );
 
-        //Perform rotation of normals
+        // Perform rotation of normals
         if (partType == PartType.MESH) {
             normalMatrix.rotateZ(rotation.z + offsetRot.z + animRot.z);
             normalMatrix.rotateY(rotation.y + offsetRot.y + animRot.y);
@@ -269,7 +269,7 @@ public class PartCustomization {
         return result;
     }
 
-    //-- Render type thingies --//
+    // -- Render type thingies --// 
 
     public void setPrimaryRenderType(RenderTypes type) {
         primaryRenderType = type;
@@ -312,7 +312,7 @@ public class PartCustomization {
         target.secondaryTexture = secondaryTexture;
     }
 
-    //Modify this object using the information contained in the other object
+    // Modify this object using the information contained in the other object
     public void modify(PartCustomization other) {
         positionMatrix.rightMultiply(other.positionMatrix);
         uvMatrix.rightMultiply(other.uvMatrix);
@@ -376,14 +376,14 @@ public class PartCustomization {
         }};
 
         public void push(PartCustomization customization) {
-            //copy stack
+            // copy stack
             PartCustomization newCustomization = new PartCustomization();
             stack.peek().copyTo(newCustomization);
 
-            //modify
+            // modify
             newCustomization.modify(customization);
 
-            //add
+            // add
             stack.push(newCustomization);
         }
 

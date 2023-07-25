@@ -105,7 +105,7 @@ public class FiguraToast implements Toast {
         return 32;
     }
 
-    //new toast
+    // new toast
     public static void sendToast(Object title) {
         sendToast(title, Component.empty());
     }

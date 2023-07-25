@@ -1,12 +1,11 @@
 package org.figuramc.figura.lua.api;
 
 import com.google.gson.*;
-import org.figuramc.figura.lua.LuaWhitelist;
-import org.figuramc.figura.lua.ReadOnlyLuaTable;
-import org.luaj.vm2.*;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.lua.LuaNotNil;
+import org.figuramc.figura.lua.LuaWhitelist;
+import org.figuramc.figura.lua.ReadOnlyLuaTable;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
@@ -14,6 +13,7 @@ import org.figuramc.figura.math.matrix.FiguraMatrix;
 import org.figuramc.figura.math.vector.FiguraVector;
 import org.figuramc.figura.utils.IOUtils;
 import org.figuramc.figura.utils.MathUtils;
+import org.luaj.vm2.*;
 
 import java.io.BufferedReader;
 import java.io.OutputStream;
@@ -54,7 +54,7 @@ public class ConfigAPI {
     }
 
 
-    // -- IO -- //
+    // -- IO -- // 
 
 
     public static Path getConfigDataDir() {
@@ -79,17 +79,17 @@ public class ConfigAPI {
         }
     }
 
-    //write
+    // write
     private void write() {
-        //parse file target
+        // parse file target
         Path path = getPath();
 
-        //parse the table
+        // parse the table
         JsonObject root = new JsonObject();
         for (LuaValue key : luaTable.keys())
             root.add(key.toString(), writeArg(luaTable.get(key), new JsonObject()));
 
-        //write file
+        // write file
         try (OutputStream fs = Files.newOutputStream(path)) {
             fs.write(GSON.toJson(root).getBytes());
         } catch (Exception e) {
@@ -171,12 +171,12 @@ public class ConfigAPI {
         obj.add("data", mat);
     }
 
-    //read
+    // read
     private void init() {
         if (loaded) return;
         luaTable = new LuaTable();
 
-        //read file
+        // read file
         Path path = getPath();
         JsonObject root;
 
@@ -244,7 +244,7 @@ public class ConfigAPI {
     }
 
 
-    // -- lua -- //
+    // -- lua -- // 
 
 
     @LuaWhitelist

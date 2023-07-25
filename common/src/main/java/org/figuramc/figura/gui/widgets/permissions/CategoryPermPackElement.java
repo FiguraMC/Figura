@@ -33,19 +33,19 @@ public class CategoryPermPackElement extends AbstractPermPackElement {
 
         animate(delta, this.isMouseOver(mouseX, mouseY) || this.isFocused());
 
-        //fix x, y
+        // fix x, y
         int x = -width / 2;
         int y = -height / 2;
 
-        //selected overlay
+        // selected overlay
         if (this.parent.selectedEntry == this) {
             UIHelper.fillRounded(gui, x - 1, y - 1, width + 2, height + 2, 0xFFFFFFFF);
         }
 
-        //background
+        // background
         UIHelper.renderHalfTexture(gui, x, y, width, height, 0f, enabled ? 20f : 0f, 174, 20, 174, 40, BACKGROUND);
 
-        //name
+        // name
         Component text = pack.getCategoryName().append(pack.hasChanges() ? "*" : "");
         Font font = Minecraft.getInstance().font;
         UIHelper.renderOutlineText(gui, font, text, x + width / 2 - font.width(text) / 2, y + height / 2 - font.lineHeight / 2, 0xFFFFFF, 0);

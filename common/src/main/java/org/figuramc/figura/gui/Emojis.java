@@ -27,7 +27,7 @@ public class Emojis {
     public static final char DELIMITER = ':';
     public static final char ESCAPE = '\\';
 
-    //listener to load emojis from the resource pack
+    // listener to load emojis from the resource pack
     public static final FiguraResourceListener RESOURCE_LISTENER = FiguraResourceListener.createResourceListener("emojis", manager -> {
         EMOJIS.clear();
 
@@ -40,13 +40,13 @@ public class Emojis {
 
             String name = split[1].substring(0, split[1].length() - 5);
 
-            //open the resource as json
+            // open the resource as json
             try (InputStream stream = emojis.getValue().open()) {
-                //add emoji
+                // add emoji
                 JsonObject json = JsonParser.parseReader(new InputStreamReader(stream, StandardCharsets.UTF_8)).getAsJsonObject();
                 EMOJIS.add(new EmojiContainer(name, json));
 
-                //check for duplicates
+                // check for duplicates
                 Set<String> set = new HashSet<>();
                 for (EmojiContainer emoji : EMOJIS) {
                     for (String s : emoji.map.keySet()) {
@@ -72,61 +72,61 @@ public class Emojis {
     }
 
     private static MutableComponent convertEmoji(String string, Style style) {
-        //if the string does not contain the delimiter, then return
+        // if the string does not contain the delimiter, then return
         if (string.indexOf(DELIMITER) == -1)
             return Component.literal(string).withStyle(style);
 
-        //string lists, every odd index is an emoji
+        // string lists, every odd index is an emoji
         List<String> strings = new ArrayList<>();
 
-        //temp variables
+        // temp variables
         StringBuilder current = new StringBuilder();
         boolean escaped = false;
         boolean inside = false;
 
-        //iterate over every char
+        // iterate over every char
         for (int i = 0; i < string.length(); i++) {
             char c = string.charAt(i);
 
-            //escape sequence
+            // escape sequence
             if (c == ESCAPE) {
                 escaped = !escaped;
-                //append only if the next char is not the delimiter
+                // append only if the next char is not the delimiter
                 if (i + 1 == string.length() || string.charAt(i + 1) != DELIMITER)
                     current.append(c);
-            //delimiter, only if not escaped
+            // delimiter, only if not escaped
             } else if (c == DELIMITER && !escaped) {
-                //toggle inside status
+                // toggle inside status
                 inside = !inside;
-                //and also append to the list
+                // and also append to the list
                 strings.add(current.toString());
                 current = new StringBuilder();
-            //otherwise just add to the queue
+            // otherwise just add to the queue
             } else {
                 escaped = false;
                 current.append(c);
 
-                //space character breaks current emoji parsing
+                // space character breaks current emoji parsing
                 if (c == ' ' && inside) {
                     inside = false;
-                    //removed last appended emoji, as were undoing the parsing of the emoji
+                    // removed last appended emoji, as were undoing the parsing of the emoji
                     String removed = strings.remove(strings.size() - 1);
-                    //replace current with the removed string, adding back the delimiter and appending the current parsed text
+                    // replace current with the removed string, adding back the delimiter and appending the current parsed text
                     current = new StringBuilder(removed).append(DELIMITER).append(current);
                 }
             }
         }
 
-        //if the queue is not flushed
+        // if the queue is not flushed
         if (current.length() > 0 || inside) {
             String toAdd = current.toString();
-            //if we left inside, we want to keep the text within the last index
-            //also keep the delimiter since its end was not found
+            // if we left inside, we want to keep the text within the last index
+            // also keep the delimiter since its end was not found
             if (inside) {
                 int index = strings.size() - 1;
                 String s = strings.get(index) + DELIMITER + toAdd;
                 strings.set(index, s);
-            //otherwise just add what is remaining
+            // otherwise just add what is remaining
             } else {
                 strings.add(toAdd);
             }
@@ -134,24 +134,24 @@ public class Emojis {
 
         MutableComponent result = Component.empty().withStyle(style);
 
-        //now we parse the list
+        // now we parse the list
         for (int i = 0; i < strings.size(); i++) {
             String s = strings.get(i);
-            //even: append
+            // even: append
             if (i % 2 == 0) {
                 result.append(s);
-            //odd: emoji
+            // odd: emoji
             } else {
                 apply: {
                     for (EmojiContainer container : EMOJIS) {
                         Component emoji = container.getEmoji(s);
                         if (emoji != null) {
-                            //emoji found, add it and break
+                            // emoji found, add it and break
                             result.append(emoji);
                             break apply;
                         }
                     }
-                    //emoji not found, so we add the unformatted text
+                    // emoji not found, so we add the unformatted text
                     result.append(DELIMITER + s + DELIMITER);
                 }
             }
@@ -188,7 +188,7 @@ public class Emojis {
 
         private final String name;
         private final ResourceLocation font;
-        private final Map<String, String> map = new HashMap<>(); //<EmojiName, Unicode>
+        private final Map<String, String> map = new HashMap<>(); // <EmojiName, Unicode>
         private final String blacklist;
 
         public EmojiContainer(String name, JsonObject data) {
@@ -196,7 +196,7 @@ public class Emojis {
             this.font = new FiguraIdentifier("emoji_" + name);
             this.blacklist = data.get("blacklist").getAsString();
 
-            //key = emoji unicode, value = array of names
+            // key = emoji unicode, value = array of names
             for (Map.Entry<String, JsonElement> emoji : data.get("emojis").getAsJsonObject().entrySet()) {
                 String unicode = emoji.getKey();
                 for (JsonElement element : emoji.getValue().getAsJsonArray()) {

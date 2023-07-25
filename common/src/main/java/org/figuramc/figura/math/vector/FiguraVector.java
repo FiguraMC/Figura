@@ -95,7 +95,7 @@ public abstract class FiguraVector<T extends FiguraVector<T, M>, M extends Figur
     public abstract double index(int i);
     public abstract boolean equals(Object other);
 
-    //Return 0 by default.
+    // Return 0 by default.
     public double x() {
         return 0;
     }

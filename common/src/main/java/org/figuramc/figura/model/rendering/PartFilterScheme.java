@@ -4,8 +4,8 @@ import org.figuramc.figura.model.ParentType;
 
 public enum PartFilterScheme {
 
-    //Assume that, when rendering model, everything is good to go in the beginning, and prune off things that aren't connected to main model.
-    //Cancel when we find a part that's separate (special)
+    // Assume that, when rendering model, everything is good to go in the beginning, and prune off things that aren't connected to main model.
+    // Cancel when we find a part that's separate (special)
     MODEL(true, SchemeFunction.cancelOnSeparate(), ParentType.None),
 
 
@@ -57,20 +57,20 @@ public enum PartFilterScheme {
 
         static SchemeFunction onlyThisSeparate(ParentType typeToAllow) {
             return (parent, prev) -> {
-                if (parent == typeToAllow) //If it's our allowed type, we're good to go
+                if (parent == typeToAllow) // If it's our allowed type, we're good to go
                     return !prev;
-                if (parent.isSeparate) //If it is separate, but not this type, then we want to not render but continue
+                if (parent.isSeparate) // If it is separate, but not this type, then we want to not render but continue
                     return false;
-                return prev; //Pass it along
+                return prev; // Pass it along
             };
         }
 
         static SchemeFunction cancelOnSeparate() {
             return (parent, prev) -> {
-                //Cancel everything if we find something that's not attached to the model itself
+                // Cancel everything if we find something that's not attached to the model itself
                 if (parent.isSeparate)
                     return null;
-                //If the part is attached to the model, then allow it to render.
+                // If the part is attached to the model, then allow it to render.
                 return true;
             };
         }
@@ -90,10 +90,10 @@ public enum PartFilterScheme {
             return (parent, prev) -> {
                 if (parent.isPivot)
                     return true;
-                //Cancel everything if we find something that's not attached to the model itself
+                // Cancel everything if we find something that's not attached to the model itself
                 if (parent.isSeparate)
                     return null;
-                //If the part is attached to the model, skip it.
+                // If the part is attached to the model, skip it.
                 return false;
             };
         }

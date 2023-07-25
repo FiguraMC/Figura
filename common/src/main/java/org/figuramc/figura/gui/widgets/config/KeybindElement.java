@@ -3,10 +3,10 @@ package org.figuramc.figura.gui.widgets.config;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import org.figuramc.figura.gui.widgets.KeybindWidgetHelper;
-import org.figuramc.figura.gui.widgets.ParentedButton;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.config.ConfigType;
+import org.figuramc.figura.gui.widgets.KeybindWidgetHelper;
+import org.figuramc.figura.gui.widgets.ParentedButton;
 import org.figuramc.figura.gui.widgets.lists.ConfigList;
 
 public class KeybindElement extends AbstractConfigElement {
@@ -19,7 +19,7 @@ public class KeybindElement extends AbstractConfigElement {
         super(width, config, parentList, parentCategory);
         this.binding = config.keyBind;
 
-        //toggle button
+        // toggle button
         children.add(0, button = new ParentedButton(0, 0, 90, 20, this.binding.getTranslatedKeyMessage(), this, button -> {
             parentList.focusedBinding = binding;
             FiguraMod.processingKeybind = true;
@@ -27,7 +27,7 @@ public class KeybindElement extends AbstractConfigElement {
         }));
         button.setActive(FiguraMod.DEBUG_MODE || !config.disabled);
 
-        //overwrite reset button to update the keybind
+        // overwrite reset button to update the keybind
         children.remove(resetButton);
         children.add(resetButton = new ParentedButton(getX() + width - 60, getY(), 60, 20, Component.translatable("controls.reset"), this, button -> {
             binding.setKey(binding.getDefaultKey());
@@ -41,10 +41,10 @@ public class KeybindElement extends AbstractConfigElement {
     public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
         if (!this.isVisible()) return;
 
-        //reset enabled
+        // reset enabled
         helper.renderConflictBars(gui, button.getX() - 8, button.getY() + 2, 4, 16);
 
-        //super render
+        // super render
         super.render(gui, mouseX, mouseY, delta);
     }
 
@@ -79,14 +79,14 @@ public class KeybindElement extends AbstractConfigElement {
     }
 
     public void updateText() {
-        //tooltip
+        // tooltip
         helper.setTooltip(binding);
 
-        //reset button
+        // reset button
         boolean isDefault = isDefault();
         this.resetButton.setActive(!isDefault);
 
-        //text
+        // text
         boolean selected = parentList.focusedBinding == binding;
         Component text = helper.getText(isDefault, selected, binding.getTranslatedKeyMessage());
         button.setMessage(text);

@@ -7,6 +7,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
+import net.minecraft.network.chat.Component;
+import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.avatar.Badges;
@@ -16,12 +18,13 @@ import org.figuramc.figura.backend2.websocket.C2SMessageHandler;
 import org.figuramc.figura.backend2.websocket.WebsocketThingy;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.gui.FiguraToast;
-import org.figuramc.figura.utils.FiguraText;
-import org.figuramc.figura.utils.RefilledNumber;
-import org.figuramc.figura.utils.Version;
-import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.permissions.PermissionManager;
 import org.figuramc.figura.permissions.Permissions;
+import org.figuramc.figura.utils.FiguraText;
+import org.figuramc.figura.utils.RefilledNumber;
+import org.figuramc.figura.utils.TextUtils;
+import org.figuramc.figura.utils.Version;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -60,6 +63,8 @@ public class NetworkStuff {
     public static String disconnectedReason;
 
     public static boolean debug = false;
+    @Nullable
+    public static Component motd;
 
     public static int lastPing, pingsSent, pingsReceived;
 
@@ -163,11 +168,13 @@ public class NetworkStuff {
     public static void auth() {
         authCheck = RECONNECT;
         AuthHandler.auth(false);
+        fetchMOTD();
     }
 
     public static void reAuth() {
         authCheck = RECONNECT;
         AuthHandler.auth(true);
+        fetchMOTD();
     }
 
     protected static void authSuccess(String token) {
@@ -192,6 +199,13 @@ public class NetworkStuff {
         backendStatus = 2;
         connectAPI(token);
         connectWS(token);
+    }
+
+    private static void fetchMOTD() {
+        queueString(Util.NIL_UUID, HttpAPI::getMotd, (code, data) -> {
+            responseDebug("motd", code, data);
+            motd = TextUtils.tryParseJson(data);
+        });
     }
 
     public static void disconnect(String reason) {

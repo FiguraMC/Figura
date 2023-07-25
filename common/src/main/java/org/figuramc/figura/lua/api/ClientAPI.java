@@ -14,13 +14,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.world.phys.Vec3;
-import org.figuramc.figura.lua.LuaWhitelist;
-import org.figuramc.figura.utils.*;
-import org.joml.Vector3f;
-import org.luaj.vm2.LuaError;
-import org.luaj.vm2.LuaValue;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.lua.LuaNotNil;
+import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.api.entity.EntityAPI;
 import org.figuramc.figura.lua.api.entity.ViewerAPI;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
@@ -31,6 +27,9 @@ import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.mixin.gui.PlayerTabOverlayAccessor;
 import org.figuramc.figura.mixin.render.ModelManagerAccessor;
 import org.figuramc.figura.utils.*;
+import org.joml.Vector3f;
+import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaValue;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -44,7 +43,7 @@ public class ClientAPI {
 
     public static final ClientAPI INSTANCE = new ClientAPI();
     private static final HashMap<String, Boolean> LOADED_MODS = new HashMap<>();
-    private static final boolean HAS_IRIS = PlatformUtils.isModLoaded("iris"); //separated to avoid indexing the list every frame
+    private static final boolean HAS_IRIS = PlatformUtils.isModLoaded("iris"); // separated to avoid indexing the list every frame
 
     @LuaWhitelist
     @LuaMethodDoc("client.get_fps")
@@ -237,7 +236,7 @@ public class ClientAPI {
         Vector3f vec = new Vector3f();
         quaternion.getEulerAnglesYXZ(vec);
         double f = 180d / Math.PI;
-        return FiguraVec3.fromVec3f(vec).multiply(f, -f, f); //degrees, and negate y
+        return FiguraVec3.fromVec3f(vec).multiply(f, -f, f); // degrees, and negate y
     }
 
     @LuaWhitelist
@@ -516,20 +515,20 @@ public class ClientAPI {
         Map<String, Object> map = new HashMap<>();
         PlayerTabOverlayAccessor accessor = (PlayerTabOverlayAccessor) Minecraft.getInstance().gui.getTabList();
 
-        //header
+        // header
         Component header = accessor.getHeader();
         if (header != null) {
             map.put("header", header.getString());
             map.put("headerJson", header);
         }
 
-        //players
+        // players
         List<String> list = new ArrayList<>();
         for (PlayerInfo entry : EntityUtils.getTabList())
             list.add(entry.getTabListDisplayName() != null ? entry.getTabListDisplayName().getString() : entry.getProfile().getName());
         map.put("players", list);
 
-        //footer
+        // footer
         Component footer = accessor.getFooter();
         if (footer != null) {
             map.put("footer", footer.getString());

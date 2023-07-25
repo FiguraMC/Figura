@@ -9,11 +9,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.util.Mth;
+import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.gui.widgets.FiguraWidget;
 import org.figuramc.figura.gui.widgets.SliderWidget;
 import org.figuramc.figura.gui.widgets.SwitchButton;
 import org.figuramc.figura.gui.widgets.TextField;
-import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.permissions.PermissionManager;
 import org.figuramc.figura.permissions.PermissionPack;
 import org.figuramc.figura.permissions.Permissions;
@@ -41,14 +41,14 @@ public class PermissionsList extends AbstractList {
         int width = getWidth();
         int height = getHeight();
 
-        //background and scissors
+        // background and scissors
         UIHelper.blitSliced(gui, x, y, width, height, UIHelper.OUTLINE_FILL);
         enableScissors(gui);
 
-        //scrollbar
+        // scrollbar
         Font font = Minecraft.getInstance().font;
         int lineHeight = font.lineHeight;
-        int entryHeight = 27 + lineHeight; //11 (slider) + font height + 16 (padding)
+        int entryHeight = 27 + lineHeight; // 11 (slider) + font height + 16 (padding)
         int titleHeight = 16 + lineHeight;
 
         int size = 0;
@@ -63,18 +63,18 @@ public class PermissionsList extends AbstractList {
         scrollBar.setVisible(totalHeight > height);
         scrollBar.setScrollRatio(entryHeight, totalHeight - height);
 
-        //render
+        // render
         int xOffset = scrollBar.isVisible() ? 8 : 15;
         int yOffset = scrollBar.isVisible() ? (int) -(Mth.lerp(scrollBar.getScrollProgress(), -16, totalHeight - height)) : 16;
 
         for (Map.Entry<Component, List<GuiEventListener>> entry : permissions.entrySet()) {
-            //titles
+            // titles
             if (titles) {
                 gui.drawCenteredString(font, entry.getKey(), x + (width - xOffset) / 2, y + yOffset, 0xFFFFFF);
                 yOffset += titleHeight;
             }
 
-            //elements
+            // elements
             for (GuiEventListener widget : entry.getValue()) {
                 ((FiguraWidget) widget).setX(x + xOffset);
                 ((FiguraWidget) widget).setY(y + yOffset);
@@ -82,25 +82,25 @@ public class PermissionsList extends AbstractList {
             }
         }
 
-        //render children
+        // render children
         super.render(gui, mouseX, mouseY, delta);
 
-        //reset scissor
+        // reset scissor
         gui.disableScissor();
     }
 
     public void updateList(PermissionPack container) {
-        //clear old widgets
+        // clear old widgets
         for (List<GuiEventListener> list : permissions.values())
             list.forEach(children::remove);
         permissions.clear();
 
-        //add new permissions
+        // add new permissions
 
-        //defaults
+        // defaults
         permissions.put(FiguraText.of(), generateWidgets(container, Permissions.DEFAULT, FiguraMod.MOD_ID));
 
-        //custom
+        // custom
         for (Map.Entry<String, Collection<Permissions>> entry : PermissionManager.CUSTOM_PERMISSIONS.entrySet())
             permissions.put(Component.translatable(entry.getKey()), generateWidgets(container, entry.getValue(), entry.getKey()));
     }
@@ -154,14 +154,14 @@ public class PermissionsList extends AbstractList {
             this.changed = container.isChanged(permissions);
 
             setAction(slider -> {
-                //update permission
+                // update permission
                 int value = this.showSteps ? ((SliderWidget) slider).getIntValue() * permissions.stepSize : (int) ((permissions.max + 1d) * slider.getScrollProgress());
                 boolean infinity = permissions.checkInfinity(value);
 
                 container.insert(permissions, infinity ? Integer.MAX_VALUE : value, id);
                 changed = container.isChanged(permissions);
 
-                //update text
+                // update text
                 this.value = infinity ? INFINITY : Component.literal(String.valueOf(value));
             });
         }
@@ -171,13 +171,13 @@ public class PermissionsList extends AbstractList {
             PoseStack pose = gui.pose();
             Font font = Minecraft.getInstance().font;
 
-            //button
+            // button
             pose.pushPose();
             pose.translate(0f, font.lineHeight, 0f);
             super.renderWidget(gui, mouseX, mouseY, delta);
             pose.popPose();
 
-            //texts
+            // texts
             MutableComponent name = Component.translatable(this.text);
             if (changed) name = Component.literal("*").setStyle(FiguraMod.getAccentColor()).append(name).append("*");
             int valueX = getX() + getWidth() - font.width(value) - 1;
@@ -237,13 +237,13 @@ public class PermissionsList extends AbstractList {
 
         @Override
         public void onPress() {
-            //update permission
+            // update permission
             boolean value = !this.isToggled();
 
             container.insert(permissions, value ? 1 : 0, id);
             this.changed = container.isChanged(permissions);
 
-            //update text
+            // update text
             this.value = FiguraText.of("permissions." + (value ? "enabled" : "disabled"));
 
             super.onPress();
@@ -261,7 +261,7 @@ public class PermissionsList extends AbstractList {
             PoseStack pose = gui.pose();
             Font font = Minecraft.getInstance().font;
 
-            //button
+            // button
             pose.pushPose();
             pose.translate(0f, font.lineHeight, 0f);
             super.renderDefaultTexture(gui, delta);
@@ -272,7 +272,7 @@ public class PermissionsList extends AbstractList {
         protected void renderText(GuiGraphics gui, float delta) {
             Font font = Minecraft.getInstance().font;
 
-            //texts
+            // texts
             MutableComponent name = getMessage().copy();
             if (changed) name = Component.literal("*").setStyle(FiguraMod.getAccentColor()).append(name).append("*");
             int valueX = getX() + getWidth() - font.width(value) - 1;
@@ -342,7 +342,7 @@ public class PermissionsList extends AbstractList {
                 container.insert(permissions, value, id);
                 changed = container.isChanged(permissions);
 
-                //update text
+                // update text
                 this.value = Component.literal(String.valueOf(value));
             });
         }
@@ -351,28 +351,28 @@ public class PermissionsList extends AbstractList {
         public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
             Font font = Minecraft.getInstance().font;
 
-            //text colour
+            // text colour
             int color = 0xFFFFFF;
 
-            //invalid value
+            // invalid value
             String text = getField().getValue();
             if (!validator.test(text)) {
                 color = 0xFF5555;
             }
-            //changed value
+            // changed value
             else if (changed) {
                 TextColor textColor = FiguraMod.getAccentColor().getColor();
-                color = textColor == null ? ColorUtils.Colors.PINK.hex : textColor.getValue();
+                color = textColor == null ? ColorUtils.Colors.AWESOME_BLUE.hex : textColor.getValue();
             }
 
-            //set text colour
+            // set text colour
             setColor(color);
             setBorderColour(0xFF000000 + color);
 
-            //field
+            // field
             super.render(gui, mouseX, mouseY, delta);
 
-            //texts
+            // texts
             MutableComponent name = Component.translatable(this.text);
             if (changed) name = Component.literal("*").setStyle(FiguraMod.getAccentColor()).append(name).append("*");
             int valueX = getX() + getWidth() - font.width(value) - 1;

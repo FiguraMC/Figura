@@ -27,6 +27,11 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
+import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.animation.Animation;
+import org.figuramc.figura.animation.AnimationPlayer;
+import org.figuramc.figura.backend2.NetworkStuff;
+import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.lua.FiguraLuaPrinter;
 import org.figuramc.figura.lua.FiguraLuaRuntime;
 import org.figuramc.figura.lua.api.entity.EntityAPI;
@@ -46,23 +51,18 @@ import org.figuramc.figura.model.rendering.AvatarRenderer;
 import org.figuramc.figura.model.rendering.EntityRenderMode;
 import org.figuramc.figura.model.rendering.ImmediateAvatarRenderer;
 import org.figuramc.figura.model.rendering.PartFilterScheme;
+import org.figuramc.figura.permissions.PermissionManager;
+import org.figuramc.figura.permissions.PermissionPack;
+import org.figuramc.figura.permissions.Permissions;
 import org.figuramc.figura.utils.ColorUtils;
+import org.figuramc.figura.utils.EntityUtils;
 import org.figuramc.figura.utils.RefilledNumber;
 import org.figuramc.figura.utils.Version;
+import org.figuramc.figura.utils.ui.UIHelper;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
-import org.figuramc.figura.FiguraMod;
-import org.figuramc.figura.animation.Animation;
-import org.figuramc.figura.animation.AnimationPlayer;
-import org.figuramc.figura.backend2.NetworkStuff;
-import org.figuramc.figura.config.Configs;
-import org.figuramc.figura.permissions.PermissionManager;
-import org.figuramc.figura.permissions.PermissionPack;
-import org.figuramc.figura.permissions.Permissions;
-import org.figuramc.figura.utils.EntityUtils;
-import org.figuramc.figura.utils.ui.UIHelper;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -72,22 +72,22 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
 
-//the avatar class
-//contains all things related to the avatar
-//and also related to the owner, like its permissions
+// the avatar class
+// contains all things related to the avatar
+// and also related to the owner, like its permissions
 public class Avatar {
 
     private static CompletableFuture<Void> tasks;
     public static boolean firstPerson;
 
-    //properties
+    // properties
     public final UUID owner;
     public final EntityType<?> entityType;
     public CompoundTag nbt;
     public boolean loaded = true;
     public final boolean isHost;
 
-    //metadata
+    // metadata
     public String name, entityName;
     public String authors;
     public Version version;
@@ -96,7 +96,7 @@ public class Avatar {
     public String color;
     public boolean minify;
 
-    //Runtime data
+    // Runtime data
     private final Queue<Runnable> events = new ConcurrentLinkedQueue<>();
 
     public AvatarRenderer renderer;
@@ -108,7 +108,7 @@ public class Avatar {
     public final Map<String, SoundBuffer> customSounds = new HashMap<>();
     public final Map<Integer, Animation> animations = new HashMap<>();
 
-    //runtime status
+    // runtime status
     public boolean hasTexture, scriptError;
     public Component errorText;
     public Set<Permissions> noPermissions = new HashSet<>();
@@ -116,7 +116,7 @@ public class Avatar {
     public int lastPlayingSound = 0;
     public int versionStatus = 0;
 
-    //limits
+    // limits
     public int animationComplexity;
     public final Instructions complexity;
     public final Instructions init, render, worldRender, tick, worldTick, animation;
@@ -168,7 +168,7 @@ public class Avatar {
 
         tasks.thenRun(() -> {
             try {
-                //metadata
+                // metadata
                 CompoundTag metadata = nbt.getCompound("metadata");
                 name = metadata.getString("name");
                 authors = metadata.getString("authors");
@@ -184,11 +184,11 @@ public class Avatar {
                 if (entityName.isBlank())
                     entityName = name;
 
-                //animations and models
+                // animations and models
                 loadAnimations();
                 renderer = new ImmediateAvatarRenderer(this);
 
-                //sounds and script
+                // sounds and script
                 loadCustomSounds();
                 createLuaRuntime();
             } catch (Exception e) {
@@ -207,7 +207,7 @@ public class Avatar {
         if (scriptError || luaRuntime == null || !loaded)
             return;
 
-        //fetch this avatar entity
+        // fetch this avatar entity
         if (luaRuntime.getUser() == null) {
             Entity entity = EntityUtils.getEntityByUUID(owner);
             if (entity != null) {
@@ -216,7 +216,7 @@ public class Avatar {
             }
         }
 
-        //tick permissions
+        // tick permissions
         for (Permissions t : permissionsToTick) {
             if (permissions.get(t) > 0) {
                 noPermissions.remove(t);
@@ -227,15 +227,15 @@ public class Avatar {
         if (lastPlayingSound > 0)
             lastPlayingSound--;
 
-        //sound
+        // sound
         particlesRemaining.set(permissions.get(Permissions.PARTICLES));
         particlesRemaining.tick();
 
-        //particles
+        // particles
         soundsRemaining.set(permissions.get(Permissions.SOUNDS));
         soundsRemaining.tick();
 
-        //call events
+        // call events
         FiguraMod.pushProfiler("worldTick");
         worldTick.reset(permissions.get(Permissions.WORLD_TICK_INST));
         run("WORLD_TICK", worldTick);
@@ -285,7 +285,7 @@ public class Avatar {
     }
 
     private void flushQueuedEvents() {
-        //run all queued events
+        // run all queued events
         Runnable e;
         while ((e = events.poll()) != null) {
             try {
@@ -298,19 +298,19 @@ public class Avatar {
     }
 
     public Varargs run(Object toRun, Instructions limit, Object... args) {
-        //stuff that was not run yet
+        // stuff that was not run yet
         flushQueuedEvents();
 
         if (scriptError || luaRuntime == null || !loaded)
             return null;
 
-        //run event
+        // run event
         Varargs ret = luaRuntime.run(toRun, limit, args);
 
-        //stuff that this run produced
+        // stuff that this run produced
         flushQueuedEvents();
 
-        //return
+        // return
         return ret;
     }
 
@@ -319,7 +319,7 @@ public class Avatar {
             luaRuntime.takeInstructions(amount);
     }
 
-    // -- script events -- //
+    // -- script events -- // 
 
     private boolean isCancelled(Varargs args) {
         if (args == null)
@@ -396,14 +396,14 @@ public class Avatar {
         if (loaded) run("RESOURCE_RELOAD", tick);
     }
 
-    // -- host only events -- //
+    // -- host only events -- // 
 
-    public String chatSendMessageEvent(String message) { //piped event
+    public String chatSendMessageEvent(String message) { // piped event
         Varargs val = loaded ? run("CHAT_SEND_MESSAGE", tick, message) : null;
         return val == null || (!val.isnil(1) && !Configs.CHAT_MESSAGES.value) ? message : val.isnil(1) ? "" : val.arg(1).tojstring();
     }
 
-    public Pair<String, Integer> chatReceivedMessageEvent(String message, String json) { //special case
+    public Pair<String, Integer> chatReceivedMessageEvent(String message, String json) { // special case
         Varargs val = loaded ? run("CHAT_RECEIVE_MESSAGE", tick, message, json) : null;
         if (val == null)
             return null;
@@ -443,7 +443,7 @@ public class Avatar {
         if (loaded) run("CHAR_TYPED", tick, chars, modifiers, codePoint);
     }
 
-    // -- rendering events -- //
+    // -- rendering events -- // 
 
     private void render() {
         if (renderMode == EntityRenderMode.RENDER || renderMode == EntityRenderMode.FIRST_PERSON) {
@@ -537,12 +537,12 @@ public class Avatar {
                 renderer.translucent, renderer.glowing
         );
 
-        //left
+        // left
         FiguraMod.pushProfiler("leftWing");
         renderer.vanillaModelData.update(ParentType.LeftElytra, model);
         renderer.renderSpecialParts();
 
-        //right
+        // right
         FiguraMod.popPushProfiler("rightWing");
         renderer.vanillaModelData.update(ParentType.RightElytra, model);
         renderer.currentFilterScheme = PartFilterScheme.RIGHT_ELYTRA;
@@ -656,7 +656,7 @@ public class Avatar {
         int comp = renderer.renderSpecialParts();
         complexity.use(comp);
 
-        //head
+        // head
         boolean bool = comp > 0 || headRender(stack, bufferSource, light, true);
 
         renderer.allowPivotParts = true;
@@ -670,7 +670,7 @@ public class Avatar {
 
         boolean oldMat = renderer.allowMatrixUpdate;
 
-        //pre render
+        // pre render
         renderer.setupRenderer(
                 PartFilterScheme.HEAD, bufferSource, stack,
                 1f, light, 1f, OverlayTexture.NO_OVERLAY,
@@ -681,12 +681,12 @@ public class Avatar {
         renderer.allowMatrixUpdate = false;
         renderer.ignoreVanillaVisibility = true;
 
-        //render
+        // render
         int comp = renderer.render();
         if (useComplexity)
             complexity.use(comp);
 
-        //pos render
+        // pos render
         renderer.allowMatrixUpdate = oldMat;
         renderer.allowHiddenTransforms = true;
         renderer.ignoreVanillaVisibility = false;
@@ -698,14 +698,14 @@ public class Avatar {
         if (!Configs.AVATAR_PORTRAIT.value || renderer == null || !loaded)
             return false;
 
-        //matrices
+        // matrices
         PoseStack pose = gui.pose();
         pose.pushPose();
         pose.translate(x, y, 0d);
         pose.scale(modelScale, modelScale * (upsideDown ? 1 : -1), modelScale);
         pose.mulPose(Axis.XP.rotationDegrees(180f));
 
-        //scissors
+        // scissors
         Vector3f pos = pose.last().pose().transformPosition(new Vector3f());
 
         int x1 = (int) pos.x;
@@ -717,7 +717,7 @@ public class Avatar {
         UIHelper.paperdoll = true;
         UIHelper.dollScale = 16f;
 
-        //setup render
+        // setup render
         pose.translate(4d / 16d, upsideDown ? 0 : (8d / 16d), 0d);
 
         Lighting.setupForFlatItems();
@@ -733,11 +733,11 @@ public class Avatar {
                 false, false
         );
 
-        //render
+        // render
         int comp = renderer.renderSpecialParts();
         boolean ret = comp > 0 || headRender(pose, buffer, light, false);
 
-        //after render
+        // after render
         buffer.endBatch();
         pose.popPose();
 
@@ -746,7 +746,7 @@ public class Avatar {
 
         renderer.allowPivotParts = true;
 
-        //return
+        // return
         return ret;
     }
 
@@ -834,7 +834,7 @@ public class Avatar {
     }
 
 
-    // -- animations -- //
+    // -- animations -- // 
 
 
     public void applyAnimations() {
@@ -864,7 +864,7 @@ public class Avatar {
             AnimationPlayer.clear(animation);
     }
 
-    // -- functions -- //
+    // -- functions -- // 
 
     /**
      * We should call this whenever an avatar is no longer reachable!
@@ -894,7 +894,7 @@ public class Avatar {
 
     private int getFileSize() {
         try {
-            //get size
+            // get size
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             NbtIo.writeCompressed(nbt, baos);
             return baos.size();
@@ -910,7 +910,7 @@ public class Avatar {
         return version.compareTo(FiguraMod.VERSION);
     }
 
-    // -- loading -- //
+    // -- loading -- // 
 
     private void createLuaRuntime() {
         if (!nbt.contains("scripts"))

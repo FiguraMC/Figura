@@ -6,14 +6,14 @@ import net.minecraft.client.GuiMessageTag;
 import net.minecraft.client.gui.components.ChatComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MessageSignature;
-import org.figuramc.figura.ducks.GuiMessageAccessor;
-import org.figuramc.figura.gui.Emojis;
-import org.figuramc.figura.lua.api.nameplate.NameplateCustomization;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.avatar.Badges;
 import org.figuramc.figura.config.Configs;
+import org.figuramc.figura.ducks.GuiMessageAccessor;
+import org.figuramc.figura.gui.Emojis;
+import org.figuramc.figura.lua.api.nameplate.NameplateCustomization;
 import org.figuramc.figura.permissions.Permissions;
 import org.figuramc.figura.utils.EntityUtils;
 import org.figuramc.figura.utils.TextUtils;
@@ -37,14 +37,14 @@ public class ChatComponentMixin {
 
     @ModifyVariable(at = @At("HEAD"), method = "addMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/MessageSignature;ILnet/minecraft/client/GuiMessageTag;Z)V", ordinal = 0, argsOnly = true)
     private Component addMessage(Component message, Component msg, MessageSignature signature, int k, GuiMessageTag tag, boolean refresh) {
-        //do not change the message on refresh
+        // do not change the message on refresh
         if (refresh) return message;
 
         color = null;
         if (AvatarManager.panic)
             return message;
 
-        //receive event
+        // receive event
         Avatar localPlayer = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
         if (localPlayer != null) {
             String json = Component.Serializer.toJson(message);
@@ -63,15 +63,15 @@ public class ChatComponentMixin {
             }
         }
 
-        //stop here if we should not parse messages
+        // stop here if we should not parse messages
         if (!FiguraMod.parseMessages)
             return message;
 
-        //emojis
+        // emojis
         if (Configs.EMOJIS.value > 0)
             message = Emojis.applyEmojis(message);
 
-        //nameplates
+        // nameplates
         int config = Configs.CHAT_NAMEPLATE.value;
         if (config == 0)
             return message;
@@ -90,11 +90,11 @@ public class ChatComponentMixin {
             }
         }
 
-        //iterate over ALL online players
+        // iterate over ALL online players
         for (Map.Entry<String, UUID> entry : players.entrySet()) {
             String name = entry.getKey();
 
-            if (!msgString.toLowerCase().contains(name.toLowerCase())) //player is not here
+            if (!msgString.toLowerCase().contains(name.toLowerCase())) // player is not here
                 continue;
 
             UUID uuid = entry.getValue();
@@ -102,36 +102,36 @@ public class ChatComponentMixin {
 
             Component playerName = Component.literal(name);
 
-            //apply customization
+            // apply customization
             Avatar avatar = AvatarManager.getAvatarForPlayer(uuid);
             NameplateCustomization custom = avatar == null || avatar.luaRuntime == null ? null : avatar.luaRuntime.nameplate.CHAT;
 
-            if (custom == null && config < 2) //no customization and no possible badges to append
+            if (custom == null && config < 2) // no customization and no possible badges to append
                 continue;
 
             Component replacement = custom != null && custom.getJson() != null && avatar.permissions.get(Permissions.NAMEPLATE_EDIT) == 1 ?
                     TextUtils.replaceInText(custom.getJson().copy(), "\n|\\\\n", " ") : playerName;
 
-            //name
+            // name
             replacement = TextUtils.replaceInText(replacement, "\\$\\{name\\}", playerName);
 
-            //badges
+            // badges
             Component emptyReplacement = Badges.appendBadges(replacement, uuid, config > 1 && owner == null);
 
-            //trim
+            // trim
             emptyReplacement = TextUtils.trim(emptyReplacement);
 
-            //modify message
+            // modify message
             String quotedName = "(?i)\\b" + Pattern.quote(name) + "\\b";
             message = TextUtils.replaceInText(message, quotedName, emptyReplacement, (s, style) -> true, isOwner ? 1 : 0, Integer.MAX_VALUE);
 
-            //sender badges
+            // sender badges
             if (config > 1 && isOwner) {
-                //badges
+                // badges
                 Component temp = Badges.appendBadges(replacement, uuid, true);
-                //trim
+                // trim
                 temp = TextUtils.trim(temp);
-                //modify message, only first
+                // modify message, only first
                 message = TextUtils.replaceInText(message, quotedName, temp, (s, style) -> true, 1);
             }
         }

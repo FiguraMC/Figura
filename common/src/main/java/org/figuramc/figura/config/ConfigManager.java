@@ -2,8 +2,8 @@ package org.figuramc.figura.config;
 
 import com.google.gson.*;
 import com.mojang.blaze3d.platform.InputConstants;
-import org.figuramc.figura.utils.PlatformUtils;
 import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.utils.PlatformUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
