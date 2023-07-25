@@ -1,5 +1,5 @@
 plugins {
-    id "com.github.johnrengelman.shadow" version "7.1.2"
+    id "com.github.johnrengelman.shadow" version "8.1.1"
 }
 
 architectury {
@@ -25,8 +25,8 @@ repositories {
 
 dependencies {
     // Libraries
-    include(implementation("com.github.Kingdom-of-The-Moon.LuaJ:luaj-core:$luaj-figura"))
-    include(implementation("com.github.Kingdom-of-The-Moon.LuaJ:luaj-jse:$luaj-figura"))
+    include(implementation("com.github.FiguraMC.LuaJ:luaj-core:$luaj-figura"))
+    include(implementation("com.github.FiguraMC.LuaJ:luaj-jse:$luaj-figura"))
     include(implementation("org.java-websocket:Java-WebSocket:$websocket"))
 
     if(rootProject.run_on_quilt == "false") {
