@@ -54,7 +54,15 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
         super(context);
     }
 
-    @Inject(at = @At("HEAD"), method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V", cancellable = true)
+    @Inject(at =
+            @At(
+                    value = "INVOKE",
+                    shift = At.Shift.BEFORE,
+                    target = "Lnet/minecraft/client/renderer/entity/layers/HumanoidArmorLayer;renderArmorPiece(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/entity/EquipmentSlot;ILnet/minecraft/client/model/HumanoidModel;)V"
+            ),
+            method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V",
+            cancellable = true
+    )
     public void onRender(PoseStack vanillaPoseStack, MultiBufferSource multiBufferSource, int light, T livingEntity, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
         figura$avatar = AvatarManager.getAvatar(livingEntity);
         if (figura$avatar == null) return;
