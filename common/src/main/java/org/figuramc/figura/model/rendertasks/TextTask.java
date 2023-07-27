@@ -52,6 +52,8 @@ public class TextTask extends RenderTask {
 
     @Override
     public void render(PoseStack poseStack, MultiBufferSource buffer, int light, int overlay) {
+        if (opacity == 0) return; // lol
+
         // prepare matrices
         Matrix4f matrix = poseStack.last().pose();
         matrix.scale(-1, -1, -1);
