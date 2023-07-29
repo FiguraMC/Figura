@@ -261,7 +261,7 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
             modelPart.render(poseStack, overlaidArmorConsumer, light, OverlayTexture.NO_OVERLAY, 1f, 1f, 1f, 1f);
         }
 
-        ArmorTrim.getTrim(entity.level().registryAccess(), itemStack).ifPresent((permutation) -> {
+        ArmorTrim.getTrim(entity.level.registryAccess(), itemStack).ifPresent((permutation) -> {
             var armorMaterial = armorItem.getMaterial();
             TextureAtlasSprite trimAtlas = this.armorTrimAtlas.getSprite(bl ? permutation.innerTexture(armorMaterial) : permutation.outerTexture(armorMaterial));
             VertexConsumer trimConsumer = trimAtlas.wrap(vertexConsumers.getBuffer(Sheets.armorTrimsSheet()));

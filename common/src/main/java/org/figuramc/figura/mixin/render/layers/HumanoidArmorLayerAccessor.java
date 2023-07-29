@@ -19,15 +19,11 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 public interface HumanoidArmorLayerAccessor<T extends LivingEntity, M extends HumanoidModel<T>, A extends HumanoidModel<T>> {
     @Intrinsic
     @Invoker("renderModel")
-    void renderModel(PoseStack matrices, MultiBufferSource vertexConsumers, int light, ArmorItem item, A model, boolean usesSecondLayer, float red, float green, float blue, @Nullable String overlay);
+    void renderModel(PoseStack matrices, MultiBufferSource vertexConsumers, int light, ArmorItem item, boolean usesSecondLayer, A model, boolean legs, float red, float green, float blue, @Nullable String overlay);
 
     @Intrinsic
     @Invoker("renderTrim")
-    void renderTrim(ArmorMaterial material, PoseStack matrices, MultiBufferSource vertexConsumers, int light, ArmorTrim permutation, A model, boolean bl);
-
-    @Intrinsic
-    @Invoker("renderGlint")
-    void renderGlint(PoseStack matrices, MultiBufferSource vertexConsumers, int light, A model);
+    void renderTrim(ArmorMaterial material, PoseStack matrices, MultiBufferSource vertexConsumers, int light, ArmorTrim permutation, boolean hasGlint, A model, boolean usesSecondLayer, float red, float green, float blue);
 
     @Intrinsic
     @Invoker("usesInnerModel")

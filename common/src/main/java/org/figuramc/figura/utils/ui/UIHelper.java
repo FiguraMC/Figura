@@ -610,7 +610,7 @@ public class UIHelper extends GuiComponent {
     public static void renderLoading(PoseStack stack, int x, int y) {
         Component text = Component.literal(Integer.toHexString(Math.abs(FiguraMod.ticks) % 16)).withStyle(Style.EMPTY.withFont(Badges.FONT));
         Font font = Minecraft.getInstance().font;
-        font.drawShadow(stack, text, x - font.width(text) / 2, y - font.lineHeight / 2, -1, false);
+        font.drawShadow(stack, text, x - font.width(text) / 2, y - font.lineHeight / 2, -1);
     }
 
     public static void setContext(ContextMenu context) {

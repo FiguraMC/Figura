@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[47,)"
+loaderVersion = "[45,)"
 issueTrackerURL = "https://github.com/FiguraMC/Figura/issues"
 license = "LGPL-2.1"
 displayURL = "https://github.com/FiguraMC/Figura"
@@ -20,7 +20,7 @@ assets_version="${assets_version}"
 [[dependencies.figura]]
 modId = "forge"
 mandatory = true
-versionRange = "[47,)"
+versionRange = "[45,)"
 ordering = "NONE"
 side = "BOTH"
 

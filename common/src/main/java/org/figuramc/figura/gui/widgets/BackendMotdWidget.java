@@ -1,7 +1,7 @@
 package org.figuramc.figura.gui.widgets;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractScrollWidget;
 import net.minecraft.client.gui.components.MultiLineTextWidget;
 import net.minecraft.client.gui.narration.NarratedElementType;
@@ -35,41 +35,44 @@ public class BackendMotdWidget extends AbstractScrollWidget {
         return this.multilineWidget.getHeight();
     }
 
+    @Override
+    protected boolean scrollbarVisible() {
+        return this.getInnerHeight() > this.getHeight();
+    }
+
     protected double scrollRate() {
         Objects.requireNonNull(this.font);
         return 9.0;
     }
 
-    @Override
-    protected void renderBorder(GuiGraphics graphics, int x, int y, int width, int height) {
-        UIHelper.blitSliced(graphics, this.getX() - this.innerPadding(), this.getY() - this.innerPadding(), this.getWidth() + this.totalInnerPadding(), this.getHeight() + this.totalInnerPadding(), UIHelper.OUTLINE_FILL);
+    protected void renderBorder(PoseStack stack, int x, int y, int width, int height) {
+        UIHelper.renderSliced(stack, this.getX() - this.innerPadding(), this.getY() - this.innerPadding(), this.getWidth() + this.totalInnerPadding(), this.getHeight() + this.totalInnerPadding(), UIHelper.OUTLINE_FILL);
     }
 
-    @Override
-    protected void renderBackground(GuiGraphics graphics) {
-        UIHelper.blitSliced(graphics, this.getX() - this.innerPadding(), this.getY() - this.innerPadding(), this.getWidth() + this.totalInnerPadding(), this.getHeight() + this.totalInnerPadding(), UIHelper.OUTLINE_FILL);
+    protected void renderBackground(PoseStack pose) {
+        UIHelper.renderSliced(pose, this.getX() - this.innerPadding(), this.getY() - this.innerPadding(), this.getWidth() + this.totalInnerPadding(), this.getHeight() + this.totalInnerPadding(), UIHelper.OUTLINE_FILL);
     }
 
-    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+    public void renderWidget(PoseStack pose, int mouseX, int mouseY, float delta) {
         if (this.visible) {
             if (!this.scrollbarVisible()) {
-                this.renderBackground(graphics);
-                graphics.pose().pushPose();
-                graphics.pose().translate((float)this.getX(), (float)this.getY(), 0.0F);
-                this.multilineWidget.render(graphics, mouseX, mouseY, delta);
-                graphics.pose().popPose();
+                this.renderBackground(pose);
+                pose.pushPose();
+                pose.translate((float)this.getX(), (float)this.getY(), 0.0F);
+                this.multilineWidget.render(pose, mouseX, mouseY, delta);
+                pose.popPose();
             } else {
-                super.renderWidget(graphics, mouseX, mouseY, delta);
+                super.renderWidget(pose, mouseX, mouseY, delta);
             }
 
         }
     }
 
-    protected void renderContents(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        graphics.pose().pushPose();
-        graphics.pose().translate((float)(this.getX() + this.innerPadding()), (float)(this.getY() + this.innerPadding()), 0.0F);
-        this.multilineWidget.render(graphics, mouseX, mouseY, delta);
-        graphics.pose().popPose();
+    protected void renderContents(PoseStack pose, int mouseX, int mouseY, float delta) {
+        pose.pushPose();
+        pose.translate((float)(this.getX() + this.innerPadding()), (float)(this.getY() + this.innerPadding()), 0.0F);
+        this.multilineWidget.render(pose, mouseX, mouseY, delta);
+        pose.popPose();
     }
 
     protected void updateWidgetNarration(NarrationElementOutput builder) {

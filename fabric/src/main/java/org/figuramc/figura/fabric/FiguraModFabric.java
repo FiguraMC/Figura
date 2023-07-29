@@ -2,7 +2,6 @@ package org.figuramc.figura.fabric;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
-import net.minecraft.client.gui.font.providers.GlyphProviderType;
 import net.minecraft.server.packs.PackType;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.commands.fabric.FiguraCommandsFabric;
