@@ -54,29 +54,16 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
         super(context);
     }
 
-    @Inject(at =
-            @At(
-                    value = "INVOKE",
-                    shift = At.Shift.BEFORE,
-                    target = "Lnet/minecraft/client/renderer/entity/layers/HumanoidArmorLayer;renderArmorPiece(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/entity/EquipmentSlot;ILnet/minecraft/client/model/HumanoidModel;)V"
-            ),
-            method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V",
-            cancellable = true
-    )
-    public void onRender(PoseStack vanillaPoseStack, MultiBufferSource multiBufferSource, int light, T livingEntity, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
-        figura$avatar = AvatarManager.getAvatar(livingEntity);
-        if (figura$avatar == null) return;
-
-        figura$tryRenderArmorPart(EquipmentSlot.HEAD, this::figura$helmetRenderer, vanillaPoseStack, livingEntity, multiBufferSource, light, ParentType.HelmetPivot);
-        figura$tryRenderArmorPart(EquipmentSlot.CHEST, this::figura$chestplateRenderer, vanillaPoseStack, livingEntity, multiBufferSource, light, ParentType.LeftShoulderPivot, ParentType.ChestplatePivot, ParentType.RightShoulderPivot);
-        figura$tryRenderArmorPart(EquipmentSlot.LEGS, this::figura$leggingsRenderer, vanillaPoseStack, livingEntity, multiBufferSource, light, ParentType.LeftLeggingPivot, ParentType.RightLeggingPivot, ParentType.LeggingsPivot);
-        figura$tryRenderArmorPart(EquipmentSlot.FEET, this::figura$bootsRenderer, vanillaPoseStack, livingEntity, multiBufferSource, light, ParentType.LeftBootPivot, ParentType.RightBootPivot);
-
-        ci.cancel();
-    }
-
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/layers/HumanoidArmorLayer;usesInnerModel(Lnet/minecraft/world/entity/EquipmentSlot;)Z"), method = "renderArmorPiece")
     public void onRenderArmorPiece(PoseStack poseStack, MultiBufferSource multiBufferSource, T livingEntity, EquipmentSlot equipmentSlot, int i, A humanoidModel, CallbackInfo ci) {
+
+        switch (equipmentSlot) {
+            case HEAD -> figura$tryRenderArmorPart(EquipmentSlot.HEAD, this::figura$helmetRenderer, poseStack, livingEntity, multiBufferSource, i, ParentType.HelmetPivot);
+            case CHEST -> figura$tryRenderArmorPart(EquipmentSlot.CHEST, this::figura$chestplateRenderer, poseStack, livingEntity, multiBufferSource, i, ParentType.LeftShoulderPivot, ParentType.ChestplatePivot, ParentType.RightShoulderPivot);
+            case LEGS -> figura$tryRenderArmorPart(EquipmentSlot.LEGS, this::figura$leggingsRenderer, poseStack, livingEntity, multiBufferSource, i, ParentType.LeftLeggingPivot, ParentType.RightLeggingPivot, ParentType.LeggingsPivot);
+            case FEET -> figura$tryRenderArmorPart(EquipmentSlot.FEET, this::figura$bootsRenderer, poseStack, livingEntity, multiBufferSource, i, ParentType.LeftBootPivot, ParentType.RightBootPivot);
+        }
+
         VanillaPart part = RenderUtils.partFromSlot(figura$avatar, equipmentSlot);
         if (part != null) {
             part.save(humanoidModel);
