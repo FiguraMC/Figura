@@ -148,8 +148,20 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
             slice = @Slice(
                     from = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GameRenderer;bobHurt(Lcom/mojang/blaze3d/vertex/PoseStack;F)V"),
                     to = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GameRenderer;resetProjectionMatrix(Lorg/joml/Matrix4f;)V")
-            ), locals = LocalCapture.CAPTURE_FAILSOFT)
+            ), locals = LocalCapture.CAPTURE_FAILSOFT, require = 0)
     private void renderLevelSaveBobbing(float tickDelta, long limitTime, PoseStack matrix, CallbackInfo ci, boolean bl, Camera camera, PoseStack poseStack, double d) {
+        if (hasShaders) return;
+        bobbingMatrix = new Matrix4f(poseStack.last().pose());
+        poseStack.popPose();
+    }
+
+    // Optifine slightly changes the locals here, adds an extra boolean
+    @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;last()Lcom/mojang/blaze3d/vertex/PoseStack$Pose;", shift = At.Shift.BEFORE),
+            slice = @Slice(
+                    from = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GameRenderer;bobHurt(Lcom/mojang/blaze3d/vertex/PoseStack;F)V"),
+                    to = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GameRenderer;resetProjectionMatrix(Lorg/joml/Matrix4f;)V")
+            ), locals = LocalCapture.CAPTURE_FAILSOFT, require = 0)
+    private void renderLevelSaveBobbingOF(float tickDelta, long limitTime, PoseStack matrix, CallbackInfo ci, boolean bl, boolean bl2, Camera camera, PoseStack poseStack, double d) {
         if (hasShaders) return;
         bobbingMatrix = new Matrix4f(poseStack.last().pose());
         poseStack.popPose();

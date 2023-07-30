@@ -1,5 +1,6 @@
 package org.figuramc.figura.lua.api;
 
+import com.google.common.base.Suppliers;
 import com.mojang.blaze3d.platform.Window;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.ClientBrandRetriever;
@@ -31,8 +32,10 @@ import org.joml.Vector3f;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaValue;
 
+import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.function.Supplier;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -43,7 +46,30 @@ public class ClientAPI {
 
     public static final ClientAPI INSTANCE = new ClientAPI();
     private static final HashMap<String, Boolean> LOADED_MODS = new HashMap<>();
-    private static final boolean HAS_IRIS = PlatformUtils.isModLoaded("iris"); // separated to avoid indexing the list every frame
+    private static final boolean HAS_IRIS = PlatformUtils.isModLoaded("iris") || PlatformUtils.isModLoaded("oculus"); // separated to avoid indexing the list every frame
+    public static final Supplier<Boolean> OPTIFINE_LOADED = Suppliers.memoize(() ->
+    {
+        try
+        {
+            Class.forName("net.optifine.Config");
+            return true;
+        }
+        catch (ClassNotFoundException ignored)
+        {
+            return false;
+        }
+    });
+    public static boolean hasOptifineShader() {
+        try
+        {
+            Field shaderPackLoadedField = Class.forName("net.optifine.shaders.Shaders").getField("shaderPackLoaded");
+            Class<?> shaderClass = shaderPackLoadedField.getType();
+            if (shaderClass == boolean.class)
+                return shaderPackLoadedField.getBoolean(null);
+        }
+        catch (ClassNotFoundException | NoSuchFieldException | IllegalAccessException ignored) {}
+        return false;
+    }
 
     @LuaWhitelist
     @LuaMethodDoc("client.get_fps")
@@ -315,13 +341,13 @@ public class ClientAPI {
     @LuaWhitelist
     @LuaMethodDoc("client.has_iris")
     public static boolean hasIris() {
-        return HAS_IRIS;
+        return HAS_IRIS || OPTIFINE_LOADED.get();
     }
 
     @LuaWhitelist
     @LuaMethodDoc("client.has_iris_shader")
     public static boolean hasIrisShader() {
-        return HAS_IRIS && net.irisshaders.iris.api.v0.IrisApi.getInstance().isShaderPackInUse();
+        return HAS_IRIS && net.irisshaders.iris.api.v0.IrisApi.getInstance().isShaderPackInUse() || OPTIFINE_LOADED.get() && hasOptifineShader();
     }
 
     @LuaWhitelist

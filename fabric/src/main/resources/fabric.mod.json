@@ -40,8 +40,6 @@
     "immediatelyfast":  "*"
   },
   "breaks": {
-    "optifine": "*",
-    "optifabric": "*"
   },
   "custom": {
     "assets_version": "${assets_version}",
