@@ -39,8 +39,6 @@
     "canvas": "*",
     "immediatelyfast":  "*"
   },
-  "breaks": {
-  },
   "custom": {
     "assets_version": "${assets_version}",
     "modmenu": {
