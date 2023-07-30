@@ -48,7 +48,7 @@ public class MouseHandlerMixin {
             ci.cancel();
 
         if (avatar.luaRuntime != null && pressed && ActionWheel.isEnabled()) {
-            if (button <= 1) ActionWheel.execute(ActionWheel.getSelected(), button == 0);
+            ActionWheel.mouseClicked(ActionWheel.getSelected(), button);
             ci.cancel();
         }
     }

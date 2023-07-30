@@ -1,5 +1,6 @@
 package org.figuramc.figura.lua.api.action_wheel;
 
+import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.docs.LuaFieldDoc;
@@ -9,6 +10,7 @@ import org.figuramc.figura.lua.docs.LuaTypeDoc;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.Varargs;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -28,13 +30,19 @@ public class Page {
     private int slotsShift = 0;
 
     @LuaWhitelist
-    @LuaFieldDoc("action_wheel.left_click")
+    @LuaFieldDoc("wheel_page.left_click")
     public LuaFunction leftClick;
     @LuaWhitelist
-    @LuaFieldDoc("action_wheel.right_click")
+    @LuaFieldDoc("wheel_page.right_click")
     public LuaFunction rightClick;
     @LuaWhitelist
-    @LuaFieldDoc("action_wheel.scroll")
+    @LuaFieldDoc("wheel_page.middle_click")
+    public LuaFunction middleClick;
+    @LuaWhitelist
+    @LuaFieldDoc("wheel_page.click")
+    public LuaFunction click;
+    @LuaWhitelist
+    @LuaFieldDoc("wheel_page.scroll")
     public LuaFunction scroll;
 
     @LuaWhitelist
@@ -230,6 +238,36 @@ public class Page {
         }
     }
 
+    public boolean mouseClicked(Avatar avatar, int button) {
+        LuaFunction function = switch (button) {
+            case 0 -> leftClick;
+            case 1 -> rightClick;
+            case 2 -> middleClick;
+            default -> null;
+        };
+
+        boolean click = true;
+        if (function != null) {
+            Varargs result = avatar.run(function, avatar.tick, this);
+            click = !(result != null && result.arg(1).isboolean() && result.arg(1).checkboolean());
+        }
+
+        if (click && this.click != null) {
+            Varargs result = avatar.run(this.click, avatar.tick, button, this);
+            return !(result != null && result.arg(1).isboolean() && result.arg(1).checkboolean());
+        }
+
+        return !click;
+    }
+
+    public boolean mouseScroll(Avatar avatar, double delta) {
+        if (scroll != null) {
+            Varargs result = avatar.run(scroll, avatar.tick, delta, this);
+            return result != null && result.arg(1).isboolean() && result.arg(1).checkboolean();
+        }
+        return false;
+    }
+
     @LuaWhitelist
     public Object __index(String arg) {
         if (arg == null) return null;
@@ -237,6 +275,8 @@ public class Page {
             case "keepSlots" -> keepSlots;
             case "leftClick" -> leftClick;
             case "rightClick" -> rightClick;
+            case "middleClick" -> middleClick;
+            case "click" -> click;
             case "scroll" -> scroll;
             default -> null;
         };
@@ -244,12 +284,14 @@ public class Page {
 
     @LuaWhitelist
     public void __newindex(@LuaNotNil String key, Object value) {
-        LuaFunction val = value instanceof LuaFunction f ? f : null;
+        LuaFunction fun = value instanceof LuaFunction f ? f : null;
         switch (key) {
             case "keepSlots" -> keepSlots = value instanceof LuaValue v && v.checkboolean();
-            case "leftClick" -> leftClick = val;
-            case "rightClick" -> rightClick = val;
-            case "scroll" -> scroll = val;
+            case "leftClick" -> leftClick = fun;
+            case "rightClick" -> rightClick = fun;
+            case "middleClick" -> middleClick = fun;
+            case "click" -> click = fun;
+            case "scroll" -> scroll = fun;
             default -> throw new LuaError("Cannot assign value on key \"" + key + "\"");
         }
     }

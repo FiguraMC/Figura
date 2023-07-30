@@ -33,6 +33,12 @@ public class ActionWheelAPI {
     @LuaFieldDoc("action_wheel.right_click")
     public LuaFunction rightClick;
     @LuaWhitelist
+    @LuaFieldDoc("action_wheel.middle_click")
+    public LuaFunction middleClick;
+    @LuaWhitelist
+    @LuaFieldDoc("action_wheel.click")
+    public LuaFunction click;
+    @LuaWhitelist
     @LuaFieldDoc("action_wheel.scroll")
     public LuaFunction scroll;
 
@@ -51,14 +57,19 @@ public class ActionWheelAPI {
                     @LuaMethodOverload(
                             argumentTypes = {Integer.class, Boolean.class},
                             argumentNames = {"index", "rightClick"}
+                    ),
+                    @LuaMethodOverload(
+                            argumentTypes = {Integer.class, Integer.class},
+                            argumentNames = {"index", "button"}
                     )
             },
             value = "action_wheel.execute"
     )
-    public ActionWheelAPI execute(Integer index, boolean right) {
+    public ActionWheelAPI mouseClicked(Integer index, Object b) {
+        int button = b instanceof Boolean bool && bool ? 1 : b instanceof Integer i? i : 0;
         if (index != null && (index < 1 || index > 8))
             throw new LuaError("index must be between 1 and 8");
-        if (this.isHost) ActionWheel.execute(index == null ? ActionWheel.getSelected() : index - 1, !right);
+        if (this.isHost) ActionWheel.mouseClicked(index == null ? ActionWheel.getSelected() : index - 1, button);
         return this;
     }
 
@@ -170,36 +181,34 @@ public class ActionWheelAPI {
         return this.currentPage;
     }
 
-    public boolean execute(Avatar avatar, boolean left) {
-        LuaFunction function = left ? leftClick : rightClick;
-        LuaFunction pageFunc = currentPage == null ? null : left ? currentPage.leftClick : currentPage.rightClick;
+    public boolean mouseClicked(Avatar avatar, int button) {
+        LuaFunction function  = switch (button) {
+            case 0 -> leftClick;
+            case 1 -> rightClick;
+            case 2 -> middleClick;
+            default -> null;
+        };
 
         // execute
-        boolean runWheel = true;
-        if (pageFunc != null) {
-            Varargs result = avatar.run(pageFunc, avatar.tick);
-            runWheel = !(result != null && result.arg(1).isboolean() && result.arg(1).checkboolean());
-        }
-        if (runWheel && function != null) {
+        boolean next = true;
+        if (function != null) {
             Varargs result = avatar.run(function, avatar.tick);
+            next = !(result != null && result.arg(1).isboolean() && result.arg(1).checkboolean());
+        }
+        if (next && click != null) {
+            Varargs result = avatar.run(click, avatar.tick);
             return result != null && result.arg(1).isboolean() && result.arg(1).checkboolean();
         }
 
-        return !runWheel;
+        return !next;
     }
 
     public boolean mouseScroll(Avatar avatar, double delta) {
-        boolean runWheel = true;
-        if (currentPage != null && currentPage.scroll != null) {
-            Varargs result = avatar.run(currentPage.scroll, avatar.tick, delta);
-            runWheel = !(result != null && result.arg(1).isboolean() && result.arg(1).checkboolean());
-        }
-        if (runWheel && scroll != null) {
+        if (scroll != null) {
             Varargs result = avatar.run(scroll, avatar.tick, delta);
             return result != null && result.arg(1).isboolean() && result.arg(1).checkboolean();
         }
-
-        return !runWheel;
+        return false;
     }
 
     @LuaWhitelist
@@ -208,6 +217,8 @@ public class ActionWheelAPI {
         return switch (arg) {
             case "leftClick" -> leftClick;
             case "rightClick" -> rightClick;
+            case "middleClick" -> middleClick;
+            case "click" -> click;
             case "scroll" -> scroll;
             default -> null;
         };
@@ -215,11 +226,13 @@ public class ActionWheelAPI {
 
     @LuaWhitelist
     public void __newindex(@LuaNotNil String key, Object value) {
-        LuaFunction val = value instanceof LuaFunction f ? f : null;
+        LuaFunction fun = value instanceof LuaFunction f ? f : null;
         switch (key) {
-            case "leftClick" -> leftClick = val;
-            case "rightClick" -> rightClick = val;
-            case "scroll" -> scroll = val;
+            case "leftClick" -> leftClick = fun;
+            case "rightClick" -> rightClick = fun;
+            case "middleClick" -> middleClick = fun;
+            case "click" -> click = fun;
+            case "scroll" -> scroll = fun;
             default -> throw new LuaError("Cannot assign value on key \"" + key + "\"");
         }
     }

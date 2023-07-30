@@ -74,7 +74,7 @@ public abstract class MinecraftMixin {
                 this.mouseHandler.releaseMouse();
             } else {
                 if (Configs.ACTION_WHEEL_MODE.value >= 2)
-                    ActionWheel.execute(ActionWheel.getSelected(), true);
+                    ActionWheel.mouseClicked(ActionWheel.getSelected(), 0);
                 ActionWheel.setEnabled(false);
                 this.mouseHandler.grabMouse();
             }

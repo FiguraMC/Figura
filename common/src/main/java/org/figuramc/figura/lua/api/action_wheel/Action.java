@@ -14,6 +14,7 @@ import org.figuramc.figura.model.rendering.texture.FiguraTexture;
 import org.figuramc.figura.utils.LuaUtils;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
+import org.luaj.vm2.Varargs;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -41,6 +42,12 @@ public class Action {
     @LuaWhitelist
     @LuaFieldDoc("wheel_action.right_click")
     public LuaFunction rightClick;
+    @LuaWhitelist
+    @LuaFieldDoc("wheel_action.middle_click")
+    public LuaFunction middleClick;
+    @LuaWhitelist
+    @LuaFieldDoc("wheel_action.click")
+    public LuaFunction click;
 
     @LuaWhitelist
     @LuaFieldDoc("wheel_action.toggle")
@@ -57,27 +64,45 @@ public class Action {
     // -- java functions -- // 
 
 
-    public void execute(Avatar avatar, boolean left) {
+    public boolean mouseClicked(Avatar avatar, int button) {
         // click action
-        LuaFunction function = left ? leftClick : rightClick;
-        if (function != null)
-            avatar.run(function, avatar.tick, this);
+        LuaFunction function = switch (button) {
+            case 0 -> leftClick;
+            case 1 -> rightClick;
+            case 2 -> middleClick;
+            default -> null;
+        };
+        boolean next = true;
+        if (function != null) {
+            Varargs result = avatar.run(function, avatar.tick, this);
+            next = !(result != null && result.arg(1).isboolean() && result.arg(1).checkboolean());
+        }
 
-        if (!left)
-            return;
+        if (next && click != null) {
+            Varargs result = avatar.run(click, avatar.tick, button, this);
+            next = !(result != null && result.arg(1).isboolean() && result.arg(1).checkboolean());
+        }
+
+        if (button != 0)
+            return !next;
 
         // toggle action
         function = toggled ? untoggle == null ? toggle : untoggle : toggle;
         if (function != null) {
             toggled = !toggled;
             avatar.run(function, avatar.tick, toggled, this);
+            return true;
         }
+        return false;
     }
 
-    public void mouseScroll(Avatar avatar, double delta) {
+    public boolean mouseScroll(Avatar avatar, double delta) {
         // scroll action
-        if (scroll != null)
-            avatar.run(scroll, avatar.tick, delta, this);
+        if (scroll != null) {
+            Varargs result = avatar.run(scroll, avatar.tick, delta, this);
+            return result != null && result.arg(1).isboolean() && result.arg(1).checkboolean();
+        }
+        return false;
     }
 
     public ItemStack getItem(boolean selected) {
@@ -278,13 +303,13 @@ public class Action {
             aliases = "texture",
             value = "wheel_action.set_texture"
     )
-    public Action setTexture(@LuaNotNil FiguraTexture texture, double u, double v, Integer width, Integer height, Double scale) {
-        this.texture = new TextureData(texture, u, v, width, height, scale);
+    public Action setTexture(FiguraTexture texture, double u, double v, Integer width, Integer height, Double scale) {
+        this.texture = texture == null ? null : new TextureData(texture, u, v, width, height, scale);
         return this;
     }
 
     @LuaWhitelist
-    public Action texture(@LuaNotNil FiguraTexture texture, double u, double v, Integer width, Integer height, Double scale) {
+    public Action texture(FiguraTexture texture, double u, double v, Integer width, Integer height, Double scale) {
         return setTexture(texture, u, v, width, height, scale);
     }
 
@@ -311,13 +336,13 @@ public class Action {
             aliases = "hoverTexture",
             value = "wheel_action.set_hover_texture"
     )
-    public Action setHoverTexture(@LuaNotNil FiguraTexture texture, double u, double v, Integer width, Integer height, Double scale) {
-        this.hoverTexture = new TextureData(texture, u, v, width, height, scale);
+    public Action setHoverTexture(FiguraTexture texture, double u, double v, Integer width, Integer height, Double scale) {
+        this.hoverTexture = texture == null ? null : new TextureData(texture, u, v, width, height, scale);
         return this;
     }
 
     @LuaWhitelist
-    public Action hoverTexture(@LuaNotNil FiguraTexture texture, double u, double v, Integer width, Integer height, Double scale) {
+    public Action hoverTexture(FiguraTexture texture, double u, double v, Integer width, Integer height, Double scale) {
         return setHoverTexture(texture, u, v, width, height, scale);
     }
 
@@ -361,6 +386,44 @@ public class Action {
     @LuaWhitelist
     public Action onRightClick(LuaFunction function) {
         return setOnRightClick(function);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = LuaFunction.class,
+                    argumentNames = "rightFunction"
+            ),
+            aliases = "onMiddleClick",
+            value = "wheel_action.set_on_middle_click"
+    )
+    public Action setOnMiddleClick(LuaFunction function) {
+        this.rightClick = function;
+        return this;
+    }
+
+    @LuaWhitelist
+    public Action onMiddleClick(LuaFunction function) {
+        return setOnMiddleClick(function);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = LuaFunction.class,
+                    argumentNames = "rightFunction"
+            ),
+            aliases = "onClick",
+            value = "wheel_action.set_on_click"
+    )
+    public Action setOnClick(LuaFunction function) {
+        this.rightClick = function;
+        return this;
+    }
+
+    @LuaWhitelist
+    public Action onClick(LuaFunction function) {
+        return setOnClick(function);
     }
 
     @LuaWhitelist
@@ -528,13 +591,13 @@ public class Action {
             aliases = "toggleTexture",
             value = "wheel_action.set_toggle_texture"
     )
-    public Action setToggleTexture(@LuaNotNil FiguraTexture texture, double u, double v, Integer width, Integer height, Double scale) {
-        this.toggleTexture = new TextureData(texture, u, v, width, height, scale);
+    public Action setToggleTexture(FiguraTexture texture, double u, double v, Integer width, Integer height, Double scale) {
+        this.toggleTexture = texture == null ? null : new TextureData(texture, u, v, width, height, scale);
         return this;
     }
 
     @LuaWhitelist
-    public Action toggleTexture(@LuaNotNil FiguraTexture texture, double u, double v, Integer width, Integer height, Double scale) {
+    public Action toggleTexture(FiguraTexture texture, double u, double v, Integer width, Integer height, Double scale) {
         return setToggleTexture(texture, u, v, width, height, scale);
     }
 
@@ -573,6 +636,8 @@ public class Action {
         return switch (arg) {
             case "leftClick" -> leftClick;
             case "rightClick" -> rightClick;
+            case "middleClick" -> middleClick;
+            case "click" -> click;
             case "toggle" -> toggle;
             case "untoggle" -> untoggle;
             case "scroll" -> scroll;
@@ -582,13 +647,15 @@ public class Action {
 
     @LuaWhitelist
     public void __newindex(@LuaNotNil String key, Object value) {
-        LuaFunction func = value instanceof LuaFunction f ? f : null;
+        LuaFunction fun = value instanceof LuaFunction f ? f : null;
         switch (key) {
-            case "leftClick" -> leftClick = func;
-            case "rightClick" -> rightClick = func;
-            case "toggle" -> toggle = func;
-            case "untoggle" -> untoggle = func;
-            case "scroll" -> scroll = func;
+            case "leftClick" -> leftClick = fun;
+            case "rightClick" -> rightClick = fun;
+            case "middleClick" -> middleClick = fun;
+            case "click" -> click = fun;
+            case "toggle" -> toggle = fun;
+            case "untoggle" -> untoggle = fun;
+            case "scroll" -> scroll = fun;
             default -> throw new LuaError("Cannot assign value on key \"" + key + "\"");
         }
     }
