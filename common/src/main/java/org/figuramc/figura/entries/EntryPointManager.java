@@ -12,12 +12,12 @@ import java.util.Set;
 public class EntryPointManager {
 
     public static void init() {
-        //APIs
+        // APIs
         Set<FiguraAPI> apis = load("figura_api", FiguraAPI.class);
         FiguraAPIManager.initEntryPoints(apis);
         FiguraDocsManager.initEntryPoints(apis);
 
-        //other
+        // other
         PermissionManager.initEntryPoints(load("figura_permissions", FiguraPermissions.class));
         PanelSelectorWidget.initEntryPoints(load("figura_screen", FiguraScreen.class));
         VanillaModelAPI.initEntryPoints(load("figura_vanilla_part", FiguraVanillaPart.class));

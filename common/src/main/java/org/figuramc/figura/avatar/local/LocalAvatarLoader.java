@@ -7,16 +7,16 @@ import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
-import org.figuramc.figura.gui.FiguraToast;
-import org.figuramc.figura.utils.FiguraResourceListener;
-import org.figuramc.figura.utils.FiguraText;
-import org.figuramc.figura.utils.IOUtils;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.avatar.UserData;
+import org.figuramc.figura.gui.FiguraToast;
 import org.figuramc.figura.parsers.AvatarMetadataParser;
 import org.figuramc.figura.parsers.BlockbenchModelParser;
 import org.figuramc.figura.parsers.LuaScriptParser;
+import org.figuramc.figura.utils.FiguraResourceListener;
+import org.figuramc.figura.utils.FiguraText;
+import org.figuramc.figura.utils.IOUtils;
 
 import java.io.IOException;
 import java.nio.file.*;
@@ -49,7 +49,7 @@ public class LocalAvatarLoader {
         AvatarManager.clearCEMAvatars();
 
         for (Map.Entry<ResourceLocation, Resource> cem : manager.listResources("cem", location -> location.getNamespace().equals(FiguraMod.MOD_ID) && location.getPath().endsWith(".moon")).entrySet()) {
-            //id
+            // id
             ResourceLocation key = cem.getKey();
             String[] split = key.getPath().split("/");
             if (split.length <= 1)
@@ -59,7 +59,7 @@ public class LocalAvatarLoader {
             String path = split[split.length - 1];
             ResourceLocation id = new ResourceLocation(namespace, path.substring(0, path.length() - 5));
 
-            //nbt
+            // nbt
             CompoundTag nbt;
             try {
                 nbt = NbtIo.readCompressed(cem.getValue().open());
@@ -68,7 +68,7 @@ public class LocalAvatarLoader {
                 continue;
             }
 
-            //insert
+            // insert
             FiguraMod.LOGGER.info("Loaded CEM model for " + id);
             CEM_AVATARS.put(id, nbt);
         }
@@ -99,6 +99,10 @@ public class LocalAvatarLoader {
         loadError = null;
         loadState = LoadState.UNKNOWN;
         resetWatchKeys();
+        try {
+            path = path == null ? null : path.getFileSystem() == FileSystems.getDefault() ? Path.of(path.toFile().getCanonicalPath()) : path.normalize();
+        } catch (IOException e) {
+        }
         lastLoadedPath = path;
 
         if (path == null || target == null)
@@ -106,36 +110,37 @@ public class LocalAvatarLoader {
 
         addWatchKey(path, KEYS::put);
 
+        Path finalPath = path;
         async(() -> {
             try {
-                //load as folder
+                // load as folder
                 CompoundTag nbt = new CompoundTag();
 
-                //scripts
+                // scripts
                 loadState = LoadState.SCRIPTS;
-                loadScripts(path, nbt);
+                loadScripts(finalPath, nbt);
 
-                //custom sounds
+                // custom sounds
                 loadState = LoadState.SOUNDS;
-                loadSounds(path, nbt);
+                loadSounds(finalPath, nbt);
 
-                //models
+                // models
                 CompoundTag textures = new CompoundTag();
                 ListTag animations = new ListTag();
                 BlockbenchModelParser modelParser = new BlockbenchModelParser();
 
                 loadState = LoadState.MODELS;
-                CompoundTag models = loadModels(path.getFileSystem() == FileSystems.getDefault() ? path.toFile().getCanonicalPath() : path.toString(), path, modelParser, textures, animations, "");
+                CompoundTag models = loadModels(finalPath, finalPath, modelParser, textures, animations, "");
                 models.putString("name", "models");
 
-                //metadata
+                // metadata
                 loadState = LoadState.METADATA;
-                String metadata = IOUtils.readFile(path.resolve("avatar.json"));
-                nbt.put("metadata", AvatarMetadataParser.parse(metadata, IOUtils.getFileNameOrEmpty(path)));
+                String metadata = IOUtils.readFile(finalPath.resolve("avatar.json"));
+                nbt.put("metadata", AvatarMetadataParser.parse(metadata, IOUtils.getFileNameOrEmpty(finalPath)));
                 AvatarMetadataParser.injectToModels(metadata, models);
                 AvatarMetadataParser.injectToTextures(metadata, textures);
 
-                //return :3
+                // return :3
                 if (!models.isEmpty())
                     nbt.put("models", models);
                 if (!textures.isEmpty())
@@ -143,11 +148,11 @@ public class LocalAvatarLoader {
                 if (!animations.isEmpty())
                     nbt.put("animations", animations);
 
-                //load
+                // load
                 target.loadAvatar(nbt);
             } catch (Throwable e) {
                 loadError = e.getMessage();
-                FiguraMod.LOGGER.error("Failed to load avatar from " + path, e);
+                FiguraMod.LOGGER.error("Failed to load avatar from " + finalPath, e);
                 FiguraToast.sendToast(FiguraText.of("toast.load_error"), FiguraText.of("gui.load_error." + LocalAvatarLoader.getLoadState()), FiguraToast.ToastType.ERROR);
             }
         });
@@ -185,7 +190,7 @@ public class LocalAvatarLoader {
         }
     }
 
-    private static CompoundTag loadModels(String avatarFolder, Path currentFile, BlockbenchModelParser parser, CompoundTag textures, ListTag animations, String folders) throws Exception {
+    private static CompoundTag loadModels(Path avatarFolder, Path currentFile, BlockbenchModelParser parser, CompoundTag textures, ListTag animations, String folders) throws Exception {
         CompoundTag result = new CompoundTag();
         List<Path> subFiles = IOUtils.listPaths(currentFile);
         ListTag children = new ListTag();
@@ -261,7 +266,7 @@ public class LocalAvatarLoader {
                 break;
         }
 
-        //reload avatar
+        // reload avatar
         if (reload) {
             FiguraMod.debug("Detected file changes in the Avatar directory (" + event.context().toString() + "), reloading!");
             AvatarManager.loadLocalAvatar(lastLoadedPath);

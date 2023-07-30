@@ -18,14 +18,13 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import org.figuramc.figura.lua.LuaWhitelist;
-import org.luaj.vm2.LuaError;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.ducks.GuiMessageAccessor;
 import org.figuramc.figura.lua.LuaNotNil;
+import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.api.entity.EntityAPI;
 import org.figuramc.figura.lua.api.world.ItemStackAPI;
 import org.figuramc.figura.lua.docs.LuaFieldDoc;
@@ -40,6 +39,7 @@ import org.figuramc.figura.model.rendering.texture.FiguraTexture;
 import org.figuramc.figura.utils.ColorUtils;
 import org.figuramc.figura.utils.LuaUtils;
 import org.figuramc.figura.utils.TextUtils;
+import org.luaj.vm2.LuaError;
 
 import java.util.*;
 

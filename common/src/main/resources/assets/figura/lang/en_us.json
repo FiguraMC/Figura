@@ -295,6 +295,7 @@
   "figura.gui.avatar_wizard.spyglass_pivot": "Spyglass Pivot",
   "figura.gui.avatar_wizard.helmet_item_pivot": "Head Item Pivot",
   "figura.gui.avatar_wizard.parrots_pivot": "Parrots Pivot",
+  "figura.gui.avatar_wizard.armor_pivots": "Armor Pivots",
 
   "figura.gui.avatar_wizard.scripting": "Script",
   "figura.gui.avatar_wizard.dummy_script": "Include a Script",

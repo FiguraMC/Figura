@@ -4,15 +4,15 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.*;
 import net.minecraft.resources.ResourceLocation;
-import org.figuramc.figura.lua.api.sound.SoundAPI;
-import org.figuramc.figura.utils.ColorUtils;
-import org.figuramc.figura.utils.FiguraText;
-import org.figuramc.figura.utils.TextUtils;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.config.Configs;
+import org.figuramc.figura.lua.api.sound.SoundAPI;
 import org.figuramc.figura.permissions.PermissionManager;
 import org.figuramc.figura.permissions.Permissions;
+import org.figuramc.figura.utils.ColorUtils;
 import org.figuramc.figura.utils.FiguraIdentifier;
+import org.figuramc.figura.utils.FiguraText;
+import org.figuramc.figura.utils.TextUtils;
 import org.figuramc.figura.utils.ui.UIHelper;
 
 import java.util.BitSet;
@@ -29,28 +29,28 @@ public class Badges {
         if (PermissionManager.get(id).getCategory() == Permissions.Category.BLOCKED)
             return Component.empty();
 
-        //get user data
+        // get user data
         Pair<BitSet, BitSet> pair = AvatarManager.getBadges(id);
         if (pair == null)
             return Component.empty();
 
         MutableComponent badges = Component.empty().withStyle(Style.EMPTY.withFont(FONT).withColor(ChatFormatting.WHITE).withObfuscated(false));
 
-        //avatar badges
+        // avatar badges
         Avatar avatar = AvatarManager.getAvatarForPlayer(id);
         if (avatar != null) {
 
-            // -- loading -- //
+            // -- loading -- // 
 
             if (!avatar.loaded)
                 badges.append(Component.literal(Integer.toHexString(Math.abs(FiguraMod.ticks) % 16)));
 
-            // -- mark -- //
+            // -- mark -- // 
 
             else if (avatar.nbt != null) {
-                //mark
+                // mark
                 mark: {
-                    //pride (mark skins)
+                    // pride (mark skins)
                     BitSet prideSet = pair.getFirst();
                     Pride[] pride = Pride.values();
                     for (int i = pride.length - 1; i >= 0; i--) {
@@ -60,11 +60,11 @@ public class Badges {
                         }
                     }
 
-                    //mark fallback
+                    // mark fallback
                     badges.append(System.DEFAULT.badge.copy().withStyle(Style.EMPTY.withColor(ColorUtils.rgbToInt(ColorUtils.userInputHex(avatar.color)))));
                 }
 
-                //error
+                // error
                 if (avatar.scriptError) {
                     if (avatar.errorText == null)
                         badges.append(System.ERROR.badge);
@@ -72,11 +72,11 @@ public class Badges {
                         badges.append(System.ERROR.badge.copy().withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, System.ERROR.desc.copy().append("\n\n").append(avatar.errorText)))));
                 }
 
-                //version
+                // version
                 if (avatar.versionStatus > 0)
                     badges.append(System.WARNING.badge);
 
-                //permissions
+                // permissions
                 if (!avatar.noPermissions.isEmpty()) {
                     MutableComponent badge = System.PERMISSIONS.badge.copy();
                     MutableComponent desc = System.PERMISSIONS.desc.copy().append("\n");
@@ -88,9 +88,9 @@ public class Badges {
             }
         }
 
-        // -- special -- //
+        // -- special -- // 
 
-        //special badges
+        // special badges
         BitSet specialSet = pair.getSecond();
         Special[] special = Special.values();
         for (int i = special.length - 1; i >= 0; i--) {
@@ -99,10 +99,10 @@ public class Badges {
         }
 
 
-        // -- extra -- //
+        // -- extra -- // 
 
 
-        //sound
+        // sound
         if (avatar != null && Configs.SOUND_BADGE.value) {
             if (avatar.lastPlayingSound > 0) {
                 badges.append(System.SOUND.badge);
@@ -113,7 +113,7 @@ public class Badges {
         }
 
 
-        // -- return -- //
+        // -- return -- // 
         return badges;
     }
 
@@ -133,7 +133,7 @@ public class Badges {
         Component badges = allow ? fetchBadges(id) : Component.empty();
         boolean custom = hasCustomBadges(text);
 
-        //no custom badges text
+        // no custom badges text
         if (!custom)
             return badges.getString().isBlank() ? text : text.copy().append(" ").append(badges);
 
@@ -198,8 +198,8 @@ public class Badges {
     public enum Special {
         DEV("★"),
         DISCORD_STAFF("☆", ColorUtils.Colors.DISCORD.hex),
-        CONTEST("☆", ColorUtils.Colors.PINK.hex),
-        DONATOR("❤", ColorUtils.Colors.PINK.hex),
+        CONTEST("☆", ColorUtils.Colors.AWESOME_BLUE.hex),
+        DONATOR("❤", ColorUtils.Colors.AWESOME_BLUE.hex),
         TRANSLATOR("文"),
         TEXTURE_ARTIST("✒"),
         IMMORTALIZED("\uD83D\uDDFF");

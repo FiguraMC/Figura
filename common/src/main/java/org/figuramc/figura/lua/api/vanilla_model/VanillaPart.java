@@ -1,11 +1,11 @@
 package org.figuramc.figura.lua.api.vanilla_model;
 
 import net.minecraft.client.model.EntityModel;
+import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
-import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.utils.LuaUtils;
 
@@ -19,7 +19,7 @@ public abstract class VanillaPart {
     protected final String name;
     protected final Avatar owner;
 
-    //transforms
+    // transforms
     protected Boolean visible;
     protected FiguraVec3 pos, rot, scale;
     protected FiguraVec3 offsetRot, offsetScale;

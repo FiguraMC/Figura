@@ -1,10 +1,10 @@
 package org.figuramc.figura.gui.screens;
 
 import net.minecraft.client.gui.screens.Screen;
-import org.figuramc.figura.gui.widgets.Button;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
+import org.figuramc.figura.gui.widgets.Button;
 import org.figuramc.figura.gui.widgets.PianoWidget;
 import org.figuramc.figura.gui.widgets.lists.SoundsList;
 import org.figuramc.figura.utils.FiguraText;
@@ -30,16 +30,16 @@ public class SoundScreen extends AbstractPanelScreen {
 
         Avatar owner = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
 
-        //list
+        // list
         int listWidth = Math.min(this.width - 8, 420);
         int listX = (this.width - listWidth) / 2;
         SoundsList list;
         addRenderableWidget(list = new SoundsList(listX, 28, listWidth, height - 120, owner));
 
-        //keys
+        // keys
         addRenderableWidget(piano = new PianoWidget(listX, height - 88, listWidth, 60, list::getSound));
 
-        //back
+        // back
         addRenderableWidget(new Button(width / 2 - 60, height - 24, 120, 20, FiguraText.of("gui.done"), null, bx -> onClose()));
     }
 

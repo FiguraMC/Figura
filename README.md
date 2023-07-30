@@ -1,6 +1,9 @@
 <h1 align="center"> Figura </h1>
-<p align="center"> We support Fabric and Quilt! </p>
-<p align="center"> (Forge coming soon!) </p>
+<p align="center">
+  <img alt="fabric" height="56" src="https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/supported/fabric_vector.svg">
+  <img alt="forge" height="56" src="https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/supported/forge_vector.svg">
+  <img alt="quilt" height="56" src="https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/supported/quilt_vector.svg">
+</p>
 
 ```diff
 - Notice: The previous owner has deleted everything. We are currently rebuilding.
@@ -34,12 +37,13 @@ Meet us on the [FiguraMC Discord Server](https://discord.gg/figuramc) for more i
 [modrinth]: https://img.shields.io/badge/Modrinth-1bd96a?logo=modrinth&logoColor=ffffff&labelColor=1bd96a
 [curseforge]: https://img.shields.io/badge/CurseForge-f16436?logo=curseforge&logoColor=ffffff&labelColor=f16436
 [kofi]: https://img.shields.io/badge/Ko--fi-00b9fe?logo=kofi&logoColor=ffffff&labelColor=00b9fe
+[collective]: https://img.shields.io/badge/Open%20Collective-83b3fb?logo=opencollective&logoColor=ffffff&labelColor=83b3fb
 
 ## Social: [ ![discord][] ](https://discord.gg/figuramc)
 
 ## Download: [ ![modrinth] ](https://modrinth.com/mod/figura) [ ![curseforge][] ](https://curseforge.com/minecraft/mc-mods/figura)
 
-## Donate: [ ![kofi][] ](https://ko-fi.com/skyrina)
+## Donate: [ ![collective][] ](https://opencollective.com/figura) [ ![kofi][] ](https://ko-fi.com/skyrina)
 
 # FAQ
 

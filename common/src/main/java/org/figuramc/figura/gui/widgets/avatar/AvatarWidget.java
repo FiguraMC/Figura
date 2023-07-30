@@ -6,9 +6,9 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import org.figuramc.figura.gui.widgets.Button;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.avatar.local.LocalAvatarFetcher;
+import org.figuramc.figura.gui.widgets.Button;
 import org.figuramc.figura.gui.widgets.lists.AvatarList;
 import org.figuramc.figura.utils.FiguraIdentifier;
 import org.figuramc.figura.utils.FileTexture;
@@ -32,14 +32,14 @@ public class AvatarWidget extends AbstractAvatarWidget {
             public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float delta) {
                 super.renderWidget(gui, mouseX, mouseY, delta);
 
-                //selected border
+                // selected border
                 if (instance.isOf(AvatarList.selectedEntry))
                     UIHelper.fillOutline(gui, getX(), getY(), getWidth(), getHeight(), 0xFFFFFFFF);
             }
 
             @Override
             protected void renderText(GuiGraphics gui, float delta) {
-                //variables
+                // variables
                 Font font = Minecraft.getInstance().font;
 
                 int space = SPACING * depth;
@@ -47,20 +47,20 @@ public class AvatarWidget extends AbstractAvatarWidget {
                 int x = getX() + 2 + space;
                 int y = getY() + 2;
 
-                //icon
+                // icon
                 FileTexture texture = avatar.getIcon();
                 ResourceLocation icon = texture == null ? MISSING_ICON : texture.getLocation();
                 UIHelper.blit(gui, x, y, 20, 20, icon);
 
-                //name
+                // name
                 Component parsedName = TextUtils.trimToWidthEllipsis(font, getMessage(), width, TextUtils.ELLIPSIS.copy().withStyle(getMessage().getStyle()));
                 gui.drawString(font, parsedName, x + 22, y, -1);
 
-                //description
+                // description
                 Component parsedDescription = TextUtils.trimToWidthEllipsis(font, description, width, TextUtils.ELLIPSIS.copy().withStyle(description.getStyle()));
                 gui.drawString(font, parsedDescription, x + 22, y + font.lineHeight + 1, ChatFormatting.GRAY.getColor());
 
-                //tooltip
+                // tooltip
                 if (parsedName != getMessage() || parsedDescription != description) {
                     Component tooltip = instance.getName();
                     if (!description.getString().isBlank())

@@ -10,12 +10,12 @@ import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.NbtToLua;
 import org.figuramc.figura.lua.ReadOnlyLuaTable;
-import org.luaj.vm2.LuaError;
-import org.luaj.vm2.LuaTable;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
 import org.figuramc.figura.utils.EntityUtils;
+import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaTable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -185,13 +185,6 @@ public class PlayerAPI extends LivingEntityAPI<Player> {
         map.put("collision_rule", team.getCollisionRule().name);
 
         return map;
-    }
-
-    private static final String[] IP_MESSAGES = {":trol:", "lol", "cope", "ratio'd", "192.168.0.1", "doxxed", "IP grabbed!"};
-    @LuaWhitelist
-    @LuaMethodDoc("player.get_ip_address")
-    public String getIPAddress() {
-        return IP_MESSAGES[(int) (Math.random() * IP_MESSAGES.length)];
     }
 
     @Override

@@ -1,8 +1,8 @@
 package org.figuramc.figura.backend2;
 
 import net.minecraft.client.multiplayer.resolver.ServerAddress;
-import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.config.Configs;
 
 import java.io.InputStream;
 import java.net.URI;
@@ -21,7 +21,7 @@ public class HttpAPI {
     }
 
 
-    // -- builders -- //
+    // -- builders -- // 
 
 
     protected static URI getUri(String url) {
@@ -41,7 +41,7 @@ public class HttpAPI {
     }
 
 
-    // -- runners -- //
+    // -- runners -- // 
 
 
     protected static void runString(HttpRequest request, BiConsumer<Integer, String> consumer) {
@@ -71,7 +71,7 @@ public class HttpAPI {
     }
 
 
-    // -- feedback -- //
+    // -- feedback -- // 
 
 
     private static void requestDebug(HttpRequest msg) {
@@ -80,7 +80,7 @@ public class HttpAPI {
     }
 
 
-    // -- accessors -- //
+    // -- accessors -- // 
 
 
     // will return 200 OK if token is valid

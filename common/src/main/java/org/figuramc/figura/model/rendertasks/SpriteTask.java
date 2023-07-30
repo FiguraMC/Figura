@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
+import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
@@ -22,7 +23,6 @@ import org.figuramc.figura.utils.LuaUtils;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.luaj.vm2.LuaError;
-import org.figuramc.figura.avatar.Avatar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,17 +51,17 @@ public class SpriteTask extends RenderTask {
     public void render(PoseStack poseStack, MultiBufferSource buffer, int light, int overlay) {
         poseStack.scale(-1, -1, 1);
 
-        //prepare variables
+        // prepare variables
         Matrix4f pose = poseStack.last().pose();
         Matrix3f normal = poseStack.last().normal();
 
         int newLight = this.customization.light != null ? this.customization.light : light;
         int newOverlay = this.customization.overlay != null ? this.customization.overlay : overlay;
 
-        //setup texture render
+        // setup texture render
         VertexConsumer consumer = buffer.getBuffer(renderType.get(texture));
 
-        //create vertices
+        // create vertices
         for (Vertex v : vertices) {
             consumer.vertex(pose, v.x, v.y, v.z)
                     .color(r, g, b, a)
@@ -75,7 +75,7 @@ public class SpriteTask extends RenderTask {
 
     @Override
     public int getComplexity() {
-        return 1; //1 face, 1 complexity
+        return 1; // 1 face, 1 complexity
     }
 
     @Override
@@ -95,7 +95,7 @@ public class SpriteTask extends RenderTask {
     }
 
 
-    // -- lua -- //
+    // -- lua -- // 
 
 
     @LuaWhitelist

@@ -9,37 +9,37 @@ import java.util.Map;
 
 public abstract class PermissionPack {
 
-    //fields :p
-    public String name; //uuid
-    private boolean visible = true; //used on UI
+    // fields :p
+    public String name; // uuid
+    private boolean visible = true; // used on UI
 
-    //permission -> value map
+    // permission -> value map
     private final Map<Permissions, Integer> permissions = new HashMap<>();
     private final Map<String, Map<Permissions, Integer>> customPermissions = new HashMap<>();
 
-    // constructors //
+    // constructors // 
 
     public PermissionPack(String name) {
         this.name = name;
     }
 
-    // functions //
+    // functions // 
 
     public abstract MutableComponent getCategoryName();
     public abstract int getColor();
     public abstract Permissions.Category getCategory();
     public abstract void setCategory(CategoryPermissionPack newParent);
 
-    //read nbt
+    // read nbt
     public void loadNbt(CompoundTag nbt) {
-        //default permissions
+        // default permissions
         CompoundTag perms = nbt.getCompound("permissions");
         for (Permissions setting : Permissions.DEFAULT) {
             if (perms.contains(setting.name))
                 permissions.put(setting, perms.getInt(setting.name));
         }
 
-        //custom permissions
+        // custom permissions
         CompoundTag custom = nbt.getCompound("custom");
         for (Map.Entry<String, Collection<Permissions>> entry : PermissionManager.CUSTOM_PERMISSIONS.entrySet()) {
             String key = entry.getKey();
@@ -56,19 +56,19 @@ public abstract class PermissionPack {
         }
     }
 
-    //write nbt
+    // write nbt
     public void writeNbt(CompoundTag nbt) {
-        //name
+        // name
         nbt.putString("name", this.name);
 
-        //default permissions
+        // default permissions
         CompoundTag perms = new CompoundTag();
         for (Map.Entry<Permissions, Integer> entry : this.permissions.entrySet())
             perms.putInt(entry.getKey().name, entry.getValue());
 
         nbt.put("permissions", perms);
 
-        //custom permissions
+        // custom permissions
         CompoundTag custom = new CompoundTag();
         for (Map.Entry<String, Map<Permissions, Integer>> entry : this.customPermissions.entrySet()) {
             CompoundTag customNbt = new CompoundTag();
@@ -82,9 +82,9 @@ public abstract class PermissionPack {
         nbt.put("custom", custom);
     }
 
-    //get value from permission
+    // get value from permission
     public int get(Permissions permissions) {
-        //get setting
+        // get setting
         Integer setting = this.permissions.get(permissions);
         if (setting != null)
             return setting;
@@ -95,7 +95,7 @@ public abstract class PermissionPack {
                 return setting;
         }
 
-        //if no permission is found, return -1
+        // if no permission is found, return -1
         return -1;
     }
 
@@ -141,7 +141,7 @@ public abstract class PermissionPack {
             map.remove(permissions);
     }
 
-    //clear permissions
+    // clear permissions
     public void clear() {
         permissions.clear();
         customPermissions.clear();
@@ -163,7 +163,7 @@ public abstract class PermissionPack {
         return customPermissions;
     }
 
-    // -- types -- //
+    // -- types -- // 
 
     public static class CategoryPermissionPack extends PermissionPack {
 
@@ -191,7 +191,7 @@ public abstract class PermissionPack {
 
         @Override
         public void setCategory(CategoryPermissionPack newParent) {
-            //do nothing
+            // do nothing
         }
 
         @Override
@@ -238,7 +238,7 @@ public abstract class PermissionPack {
                 nbt.putString("name", this.name);
             }
 
-            //category
+            // category
             nbt.putString("category", category.name);
         }
 

@@ -48,18 +48,18 @@ public class TextField extends AbstractContainerElement {
     public void render(GuiGraphics gui, int mouseX, int mouseY, float delta) {
         if (!isVisible()) return;
 
-        //render background
+        // render background
         UIHelper.blitSliced(gui, getX(), getY(), getWidth(), getHeight(), !isEnabled() ? 0f : this.isMouseOver(mouseX, mouseY) ? 32f : 16f, 0f, 16, 16, 48, 16, BACKGROUND);
 
-        //render outline
+        // render outline
         if (isFocused())
             UIHelper.fillOutline(gui, getX(), getY(), getWidth(), getHeight(), borderColour);
 
-        //hint text
+        // hint text
         if (hint != null && field.getValue().isEmpty() && !field.isFocused())
             renderHint(gui);
 
-        //children
+        // children
         super.render(gui, mouseX, mouseY, delta);
     }
 
@@ -73,11 +73,11 @@ public class TextField extends AbstractContainerElement {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        //mouse over check
+        // mouse over check
         if (!isEnabled() || !this.isMouseOver(mouseX, mouseY))
             return false;
 
-        //hacky
+        // hacky
         mouseX = Mth.clamp(mouseX, field.getX(), field.getX() + field.getWidth() - 1);
         mouseY = Mth.clamp(mouseY, field.getY(), field.getY() + field.getHeight() - 1);
 

@@ -1,14 +1,14 @@
 package org.figuramc.figura.lua.api.nameplate;
 
 import net.minecraft.network.chat.Component;
+import org.figuramc.figura.avatar.Badges;
 import org.figuramc.figura.gui.Emojis;
 import org.figuramc.figura.lua.LuaWhitelist;
-import org.luaj.vm2.LuaError;
-import org.figuramc.figura.avatar.Badges;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
 import org.figuramc.figura.utils.TextUtils;
+import org.luaj.vm2.LuaError;
 
 @LuaWhitelist
 @LuaTypeDoc(

@@ -40,7 +40,7 @@ public class HelpScreen extends AbstractPanelScreen {
         int y = 28;
         Style color = FiguraMod.getAccentColor();
 
-        //in-game docs
+        // in-game docs
         this.addRenderableWidget(new Title(FiguraText.of("gui.help.docs").withStyle(color), middle, y, labelWidth));
 
         IconButton docs;
@@ -49,7 +49,7 @@ public class HelpScreen extends AbstractPanelScreen {
         this.addRenderableWidget(new IconButton(middle - 60, y += 28, 120, 24, 0, 0, 20, ICONS, 60, 40, FiguraText.of("gui.help.lua_manual"), null, bx -> UIHelper.openURL(FiguraMod.Links.LuaManual.url).run()));
         this.addRenderableWidget(new IconButton(middle - 60, y += 28, 120, 24, 40, 0, 20, ICONS, 60, 40, FiguraText.of("gui.help.external_wiki"), null, bx -> UIHelper.openURL(FiguraMod.Links.Wiki.url).run()));
 
-        //links
+        // links
         this.addRenderableWidget(new Title(FiguraText.of("gui.help.links").withStyle(color), middle, y += 28, labelWidth));
 
         this.addRenderableWidget(new IconButton(middle - 124, y += lineHeight + 4, 80, 24, 0, 20, 20, ICONS, 60, 40, Component.literal("Discord"), null, bx -> UIHelper.openURL(FiguraMod.Links.Discord.url).run()));
@@ -72,13 +72,13 @@ public class HelpScreen extends AbstractPanelScreen {
         });
         this.addRenderableWidget(kofi = new IconButton(middle + 44, y, 80, 24, 40, 20, 20, ICONS, 60, 40, Component.literal("Ko-fi"), null, b -> UIHelper.openURL(FiguraMod.Links.Kofi.url).run()));
 
-        //texts
+        // texts
         this.addRenderableWidget(new Title(FiguraText.of("gui.help.about").withStyle(color), middle, y += 28, labelWidth));
 
         this.addRenderableWidget(new Label(FiguraText.of("gui.help.lua_version", Component.literal(LUA_VERSION).withStyle(color)), middle, y += lineHeight + 4, TextUtils.Alignment.CENTER));
         this.addRenderableWidget(new Label(FiguraText.of("gui.help.figura_version", Component.literal(FiguraMod.VERSION.toString()).withStyle(color)), middle, y += lineHeight + 4, TextUtils.Alignment.CENTER));
 
-        //back
+        // back
         addRenderableWidget(new Button(middle - 60, height - 24, 120, 20, FiguraText.of("gui.done"), null, bx -> onClose()));
     }
 
@@ -107,7 +107,7 @@ public class HelpScreen extends AbstractPanelScreen {
             int x = getRawX();
             int y = getRawY();
 
-            //lines
+            // lines
             int y0 = y + getHeight() / 2;
             int y1 = y0 + 1;
 
@@ -119,7 +119,7 @@ public class HelpScreen extends AbstractPanelScreen {
             x1 = x + width / 2;
             gui.fill(x0, y0, x1, y1, 0xFFFFFFFF);
 
-            //text
+            // text
             super.render(gui, mouseX, mouseY, delta);
         }
     }

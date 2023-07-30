@@ -3,20 +3,20 @@ package org.figuramc.figura.config;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.avatar.local.CacheAvatarLoader;
 import org.figuramc.figura.avatar.local.LocalAvatarFetcher;
+import org.figuramc.figura.backend2.NetworkStuff;
 import org.figuramc.figura.gui.FiguraToast;
 import org.figuramc.figura.gui.screens.ConfigScreen;
 import org.figuramc.figura.lua.FiguraLuaPrinter;
 import org.figuramc.figura.lua.api.ConfigAPI;
-import org.figuramc.figura.utils.ColorUtils;
-import org.figuramc.figura.utils.FiguraText;
-import org.figuramc.figura.FiguraMod;
-import org.figuramc.figura.backend2.NetworkStuff;
 import org.figuramc.figura.permissions.PermissionManager;
 import org.figuramc.figura.permissions.Permissions;
 import org.figuramc.figura.resources.FiguraRuntimeResources;
+import org.figuramc.figura.utils.ColorUtils;
+import org.figuramc.figura.utils.FiguraText;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,16 +24,16 @@ import java.util.List;
 
 public class Configs {
 
-    //mod config version
-    //only change this if you rename old configs
+    // mod config version
+    // only change this if you rename old configs
     public static final int CONFIG_VERSION = 1;
 
-    //config update hashmap; <version number, <actual config, old config name>>
+    // config update hashmap; <version number, <actual config, old config name>>
     public static final HashMap<Integer, HashMap<ConfigType<?>, String>> CONFIG_UPDATES = new HashMap<>();
 
-    //code to run when the config is initialized
+    // code to run when the config is initialized
     public static void init() {
-        //test for unused configs
+        // test for unused configs
         if (FiguraMod.DEBUG_MODE) {
             ConfigType.Category debug = new ConfigType.Category("debug");
             new ConfigType.ColorConfig("color_test", debug, 0xFF72AD);
@@ -43,7 +43,7 @@ public class Configs {
     }
 
 
-    // -- categories -- //
+    // -- categories -- // 
 
 
     public static final ConfigType.Category
@@ -59,7 +59,7 @@ public class Configs {
             }};
 
 
-    // -- nameplate -- //
+    // -- nameplate -- // 
 
 
     public static final ConfigType.BoolConfig
@@ -93,7 +93,7 @@ public class Configs {
             }};
 
 
-    // -- script -- //
+    // -- script -- // 
 
 
     public static final ConfigType.EnumConfig
@@ -122,7 +122,7 @@ public class Configs {
             };
 
 
-    // -- RENDERING -- //
+    // -- RENDERING -- // 
 
 
     public static final ConfigType.EnumConfig
@@ -130,15 +130,15 @@ public class Configs {
             RENDER_DEBUG_PARTS_PIVOT = new ConfigType.EnumConfig("render_debug_parts_pivot", RENDERING, 1, 3) {{
                     String tooltip = "config.render_debug_parts_pivot.tooltip";
                     this.tooltip = FiguraText.of(tooltip,
-                            FiguraText.of(tooltip + ".cubes").setStyle(ColorUtils.Colors.PINK.style),
-                            FiguraText.of(tooltip + ".groups").setStyle(ColorUtils.Colors.MAYA_BLUE.style));
+                            FiguraText.of(tooltip + ".cubes").setStyle(ColorUtils.Colors.AWESOME_BLUE.style),
+                            FiguraText.of(tooltip + ".groups").setStyle(ColorUtils.Colors.BLUE.style));
             }};
     public static final ConfigType.BoolConfig
             ALLOW_FP_HANDS = new ConfigType.BoolConfig("allow_fp_hands", RENDERING, false),
             FIRST_PERSON_MATRICES = new ConfigType.BoolConfig("first_person_matrices", RENDERING, true);
 
 
-    // -- ACTION WHEEL -- //
+    // -- ACTION WHEEL -- // 
 
 
     public static final ConfigType.KeybindConfig
@@ -154,7 +154,7 @@ public class Configs {
             ACTION_WHEEL_DECORATIONS = new ConfigType.BoolConfig("action_wheel_decorations", ACTION_WHEEL, true);
 
 
-    // -- UI -- //
+    // -- UI -- // 
 
 
     public static final ConfigType.BoolConfig
@@ -177,7 +177,7 @@ public class Configs {
             REDUCED_MOTION = new ConfigType.BoolConfig("reduced_motion", UI, false);
 
 
-    // -- PAPERDOLL -- //
+    // -- PAPERDOLL -- // 
 
 
     public static final ConfigType.BoolConfig
@@ -193,7 +193,7 @@ public class Configs {
             PAPERDOLL_YAW = new ConfigType.FloatConfig("paperdoll_yaw", PAPERDOLL, 20);
 
 
-    // -- MISC -- //
+    // -- MISC -- // 
 
 
     public static final ConfigType.KeybindConfig
@@ -229,7 +229,7 @@ public class Configs {
             EASTER_EGGS = new ConfigType.BoolConfig("easter_eggs", MISC, true);
 
 
-    // -- DEV -- //
+    // -- DEV -- // 
 
 
     public static final ConfigType.BoolConfig
@@ -263,7 +263,7 @@ public class Configs {
                 }
     };
     public static final ConfigType.IPConfig
-            SERVER_IP = new ConfigType.IPConfig("server_ip", DEV, "cloud.figuramc.org") {
+            SERVER_IP = new ConfigType.IPConfig("server_ip", DEV, "figura.moonlight-devs.org") {
                 @Override
                 public void onChange() {
                     super.onChange();

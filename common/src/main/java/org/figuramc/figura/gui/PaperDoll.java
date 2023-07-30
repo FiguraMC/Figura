@@ -28,9 +28,9 @@ public class PaperDoll {
                 entity.isSleeping())
             return;
 
-        //check if it should stay always on
+        // check if it should stay always on
         if (!Configs.PAPERDOLL_ALWAYS_ON.value && !force && (avatar = AvatarManager.getAvatar(entity)) != null && avatar.luaRuntime != null && !avatar.luaRuntime.renderer.forcePaperdoll) {
-            //if action - reset activity time and enable can draw
+            // if action - reset activity time and enable can draw
             if (entity.isSprinting() ||
                     entity.isCrouching() ||
                     entity.isAutoSpinAttack() ||
@@ -41,12 +41,12 @@ public class PaperDoll {
                     (entity instanceof Player p && p.getAbilities().flying))
                 lastActivityTime = System.currentTimeMillis();
 
-            //if activity time is greater than duration - return
+            // if activity time is greater than duration - return
             else if (System.currentTimeMillis() - lastActivityTime > 1000L)
                 return;
         }
 
-        //draw
+        // draw
         Window window = minecraft.getWindow();
         float screenWidth = window.getWidth();
         float screenHeight = window.getHeight();

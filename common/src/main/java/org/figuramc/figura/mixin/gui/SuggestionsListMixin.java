@@ -32,17 +32,17 @@ public class SuggestionsListMixin implements SuggestionsListAccessor {
         if (!figuraList || gui == null)
             return x;
 
-        //get emoji
+        // get emoji
         Component emoji = Emojis.applyEmojis(Component.literal(text));
 
-        //dont render if no emoji was applied
+        // dont render if no emoji was applied
         if (emoji.getString().equals(text))
             return x;
 
-        //render emoji
+        // render emoji
         gui.drawString(font, emoji, x + 4 - font.width(emoji) / 2, y, color);
 
-        //change text x
+        // change text x
         return (x + 8 + font.width(" "));
     }
 
