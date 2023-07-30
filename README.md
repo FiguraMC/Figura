@@ -113,9 +113,9 @@ Meet us on the [FiguraMC Discord Server](https://discord.gg/figuramc) for more i
 > You can force your avatar to use the correct emissive render type by using the render type `EYES` on your model
 
 ### • How can I use Figura with OptiFine?
-> Figura works with Optifine however we still reccomend you try using Sodium/Iris or Rubidium/Oculus instead.
+> Figura works with Optifine however we still reccomend you try using Sodium/Iris or Rubidium/Oculus instead
 > 
-> Check out the full list of [alternatives](https://lambdaurora.dev/optifine_alternatives/) instead
+> Check out the full list of [alternatives](https://lambdaurora.dev/optifine_alternatives/)
 
 ### • Where can I find Avatars to download?
 > For now you can find Avatars in the showcase channel in the official Discord server (A Web Based and In-Game browser is in the works!)
