@@ -334,6 +334,9 @@ public class ClientAPI {
             value = "client.is_mod_loaded"
     )
     public static boolean isModLoaded(String id) {
+        if (Objects.equals(id, "optifine") || Objects.equals(id, "optifabric"))
+            return OPTIFINE_LOADED.get();
+
         LOADED_MODS.putIfAbsent(id, PlatformUtils.isModLoaded(id));
         return LOADED_MODS.get(id);
     }
