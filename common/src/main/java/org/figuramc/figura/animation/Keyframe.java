@@ -2,12 +2,20 @@ package org.figuramc.figura.animation;
 
 import com.mojang.datafixers.util.Pair;
 import org.figuramc.figura.avatar.Avatar;
+import org.figuramc.figura.lua.LuaWhitelist;
+import org.figuramc.figura.lua.docs.LuaMethodDoc;
+import org.figuramc.figura.lua.docs.LuaTypeDoc;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.figuramc.figura.FiguraMod;
 
+@LuaWhitelist
+@LuaTypeDoc(
+        name = "Keyframe",
+        value = "keyframe"
+)
 public class Keyframe implements Comparable<Keyframe> {
 
     private final Avatar owner;
@@ -36,13 +44,18 @@ public class Keyframe implements Comparable<Keyframe> {
         this.bezierRightTime = bezierRightTime;
     }
 
+    @LuaWhitelist
+    @LuaMethodDoc("keyframe.get_target_a")
     public FiguraVec3 getTargetA(float delta) {
         return targetA != null ? targetA.copy() : FiguraVec3.of(parseStringData(aCode[0], delta), parseStringData(aCode[1], delta), parseStringData(aCode[2], delta));
     }
 
+    @LuaWhitelist
+    @LuaMethodDoc("keyframe.get_target_b")
     public FiguraVec3 getTargetB(float delta) {
         return targetB != null ? targetB.copy() : FiguraVec3.of(parseStringData(bCode[0], delta), parseStringData(bCode[1], delta), parseStringData(bCode[2], delta));
     }
+
 
     private float parseStringData(String data, float delta) {
         FiguraMod.pushProfiler(data);
@@ -83,26 +96,43 @@ public class Keyframe implements Comparable<Keyframe> {
         return FiguraMod.popReturnProfiler(0f);
     }
 
+    @LuaWhitelist
+    @LuaMethodDoc("keyframe.ph")
     public float getTime() {
         return time;
     }
+
 
     public Interpolation getInterpolation() {
         return interpolation;
     }
 
+    @LuaWhitelist
+    @LuaMethodDoc("keyframe.ph")
+    public String getInterpolate() {
+        return interpolation.toString();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("keyframe.ph")
     public FiguraVec3 getBezierLeft() {
         return bezierLeft.copy();
     }
 
+    @LuaWhitelist
+    @LuaMethodDoc("keyframe.ph")
     public FiguraVec3 getBezierRight() {
         return bezierRight.copy();
     }
 
+    @LuaWhitelist
+    @LuaMethodDoc("keyframe.ph")
     public FiguraVec3 getBezierLeftTime() {
         return bezierLeftTime.copy();
     }
 
+    @LuaWhitelist
+    @LuaMethodDoc("keyframe.ph")
     public FiguraVec3 getBezierRightTime() {
         return bezierRightTime.copy();
     }

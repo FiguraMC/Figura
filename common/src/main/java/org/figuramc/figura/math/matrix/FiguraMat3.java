@@ -578,17 +578,17 @@ public class FiguraMat3 extends FiguraMatrix<FiguraMat3, FiguraVec3> {
         double p3 = (a * e + b * d * f);
         double p4 = (a * d * f - b * e);
 
-        double nv11 = ce * v11 + p1 * v21 + p2 * v31;
-        double nv21 = cf * v11 + p3 * v21 + p4 * v31;
-        double nv31 = -d * v11 + bc * v21 + ac * v31;
+        double nv11 = ce * v11;
+        double nv21 = cf * v11;
+        double nv31 = -d * v11;
 
-        double nv12 = ce * v12 + p1 * v22 + p2 * v32;
-        double nv22 = cf * v12 + p3 * v22 + p4 * v32;
-        double nv32 = -d * v12 + bc * v22 + ac * v32;
+        double nv12 = p1 * v22;
+        double nv22 = p3 * v22;
+        double nv32 = bc * v22;
 
-        double nv13 = ce * v13 + p1 * v23 + p2 * v33;
-        double nv23 = cf * v13 + p3 * v23 + p4 * v33;
-        double nv33 = -d * v13 + bc * v23 + ac * v33;
+        double nv13 = p2 * v33;
+        double nv23 = p4 * v33;
+        double nv33 = ac * v33;
 
         v11 = nv11;
         v21 = nv21;

@@ -827,7 +827,13 @@
   "figura.docs.animation.get_speed": "Gets the animation's speed",
   "figura.docs.animation.set_speed": "Sets the animation's playback speed\nNegative numbers can be used for an inverted animation",
   "figura.docs.animation.get_name": "Returns this animation's name",
+  "figura.docs.animation.get_channels": "Returns a table containing all the animation channels for this animation\nThis table is structured {ModelPart = {AnimationChannel, AnimationChannel}}",
 
+  "figura.docs.animation_channel.get_keyframes": "Returns a list of keyframes that are in this channel",
+
+  "figura.docs.keyframe.get_target_a": "Gets target 'A' of this keyframe\n I have no idea what 'A' means",
+  "figura.docs.keyframe.get_target_b": "Gets target 'B' of this keyframe\n I have no idea what 'B' means",
+  "figura.docs.keyframe.ph": "",
 
   "figura.docs.avatar": "A global API containing functions to interact with your avatar's metadata, and also to get information about the current script environment",
   "figura.docs.avatar.store": "Store the given key-value pair inside your current avatar's metadata\nSomeone else can get this information from a different script with the avatarVars() function in World\nThe key must be a string",

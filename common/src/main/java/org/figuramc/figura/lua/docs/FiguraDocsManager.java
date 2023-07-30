@@ -8,6 +8,7 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.*;
+import org.figuramc.figura.animation.Keyframe;
 import org.figuramc.figura.lua.api.*;
 import org.figuramc.figura.lua.api.action_wheel.Action;
 import org.figuramc.figura.lua.api.entity.EntityAPI;
@@ -121,7 +122,9 @@ public class FiguraDocsManager {
 
         put("animations", List.of(
                 AnimationAPI.class,
-                Animation.class
+                Animation.class,
+                Animation.AnimationChannel.class,
+                Keyframe.class
         ));
 
         put("nameplate", List.of(
