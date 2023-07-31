@@ -107,15 +107,15 @@ Meet us on the [FiguraMC Discord Server](https://discord.gg/figuramc) for more i
 > 
 > And don't forget to set the places you don't want to glow to **transparent black** (#00000000), to also ensure compatibility with shader mods
 
-### • My emissives doesn't glow, nor have bloom with Iris shaders?
+### • My emissives doesn't glow, nor have bloom with Iris/Optifine shaders?
 > Since some shaders doesnt support emissives, a compatibility setting (default on) will change the render type of emissive textures to render them at it were fullbright, however that can lead to some unintended results
 >
 > You can force your avatar to use the correct emissive render type by using the render type `EYES` on your model
 
 ### • How can I use Figura with OptiFine?
-> You can't, OptiFine's closed-source nature and invasive code makes mod compatibility very difficult
+> Figura will work with Optifine but due it's closed source nature issues might arise, therefore we still recommend you try using Sodium+Iris (Fabric) or Rubidium+Oculus (Forge) instead
 > 
-> Check out these [alternatives](https://lambdaurora.dev/optifine_alternatives/) instead
+> Check out the full list of [alternatives](https://lambdaurora.dev/optifine_alternatives/)
 
 ### • Where can I find Avatars to download?
 > For now you can find Avatars in the showcase channel in the official Discord server (A Web Based and In-Game browser is in the works!)
