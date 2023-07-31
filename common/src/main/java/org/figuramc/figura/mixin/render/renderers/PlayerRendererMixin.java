@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.Score;
 import net.minecraft.world.scores.Scoreboard;
@@ -18,7 +19,9 @@ import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.avatar.Badges;
+import org.figuramc.figura.compat.SimpleVCCompat;
 import org.figuramc.figura.config.Configs;
+import org.figuramc.figura.lua.api.ClientAPI;
 import org.figuramc.figura.lua.api.nameplate.EntityNameplateCustomization;
 import org.figuramc.figura.lua.api.vanilla_model.VanillaPart;
 import org.figuramc.figura.math.vector.FiguraVec3;
@@ -31,6 +34,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -187,6 +193,10 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
                 else
                     font.drawInBatch(text1, x, y, -1, shadow, textMatrix, multiBufferSource, Font.DisplayMode.NORMAL, 0, light);
             }
+
+            // Renders Simple VC icons at the end of the nameplate
+            if (ClientAPI.isModLoaded("voicechat") && textList.get(i) == textList.get(textList.size()-1))
+                SimpleVCCompat.renderSimpleVCIcon(player, text1, stack, multiBufferSource, light);
         }
 
         FiguraMod.popProfiler(5);
