@@ -338,32 +338,33 @@ public class ActionWheel {
 
     // -- functions -- // 
 
-    public static void execute(int index, boolean left) {
+    public static void mouseClicked(int index, int button) {
         Avatar avatar;
         if (!isEnabled() || (avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID())) == null || avatar.luaRuntime == null) {
             selected = -1;
             return;
         }
 
-        // wheel click action
-        if (avatar.luaRuntime.action_wheel.execute(avatar, left))
-            return;
-
-        // execute action
         Page currentPage;
-        if (index < 0 || index > 7 || avatar.luaRuntime == null || (currentPage = avatar.luaRuntime.action_wheel.currentPage) == null) {
-            selected = -1;
-            return;
+        if ((currentPage = avatar.luaRuntime.action_wheel.currentPage) != null) {
+            if (index >= 0 && index <= 7 && ((Object)currentPage.slots()[index]) instanceof Action a && a.mouseClicked(avatar, button)) {
+                selected = -1;
+                return;
+            }
+            if(currentPage.mouseClicked(avatar, button)) {
+                selected = -1;
+                return;
+            }
         }
-
-        Action action = currentPage.slots()[index];
-        if (action != null) action.execute(avatar, left);
+        // wheel click action
+        if (avatar.luaRuntime.action_wheel.mouseClicked(avatar, button))
+            return;
 
         selected = -1;
     }
 
     public static void hotbarKeyPressed(int i) {
-        execute(i, true);
+        mouseClicked(i, 0);
     }
 
     public static void scroll(double delta) {
@@ -371,25 +372,21 @@ public class ActionWheel {
         if (!isEnabled() || (avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID())) == null || avatar.luaRuntime == null)
             return;
 
+        Page currentPage;
+        if ((currentPage = avatar.luaRuntime.action_wheel.currentPage) != null) {
+            if (selected >= 0 && selected <= 7 && ((Object)currentPage.slots()[selected]) instanceof Action a && a.mouseScroll(avatar, delta))
+                return;
+            if (currentPage.mouseScroll(avatar, delta))
+                return;
+        }
+
         // wheel scroll action
         if (avatar.luaRuntime.action_wheel.mouseScroll(avatar, delta))
             return;
 
-        // scroll action
-        Page currentPage;
-        if (avatar.luaRuntime == null || (currentPage = avatar.luaRuntime.action_wheel.currentPage) == null)
-            return;
-
-        if (selected >= 0 && selected <= 7) {
-            Action action = currentPage.slots()[selected];
-            if (action != null && action.scroll != null) {
-                action.mouseScroll(avatar, delta);
-                return;
-            }
-        }
-
         // page scroll
-        currentPage.setSlotsShift(currentPage.getSlotsShift() - (int) Math.signum(delta));
+        if (currentPage != null)
+            currentPage.setSlotsShift(currentPage.getSlotsShift() - (int) Math.signum(delta));
     }
 
     public static void setEnabled(boolean enabled) {

@@ -31,18 +31,20 @@ public enum ParentType {
     Skull(true, false, "SKULL", "☠"),
     Portrait(true, false, "PORTRAIT"),
     Arrow(true, false, "ARROW"),
+    ThrownItem(true, false, "THROWN_ITEM"),
+    Trident(true, false, "TRIDENT"),
     Item(true, false, "ITEM"),
 
     // Held items, birds, n stuff
-    LeftItemPivot(false, true,"LEFT_ITEM_PIVOT"),
-    RightItemPivot(false, true,"RIGHT_ITEM_PIVOT"),
-    LeftSpyglassPivot(false, true,"LEFT_SPYGLASS_PIVOT"),
-    RightSpyglassPivot(false, true,"RIGHT_SPYGLASS_PIVOT"),
+    LeftItemPivot(false, true, "LEFT_ITEM_PIVOT"),
+    RightItemPivot(false, true, "RIGHT_ITEM_PIVOT"),
+    LeftSpyglassPivot(false, true, "LEFT_SPYGLASS_PIVOT"),
+    RightSpyglassPivot(false, true, "RIGHT_SPYGLASS_PIVOT"),
     LeftParrotPivot(false, true,"LEFT_PARROT_PIVOT"),
     RightParrotPivot(false, true,"RIGHT_PARROT_PIVOT"),
 
     // Armor
-    HelmetItemPivot(false, true,"HELMET_ITEM_PIVOT"),
+    HelmetItemPivot(false, true, "HELMET_ITEM_PIVOT"),
     HelmetPivot(false, true, "HELMET_PIVOT", "HelmetPivot"),
     ChestplatePivot(false, true, "CHESTPLATE_PIVOT", "ChestplatePivot"),
     LeftShoulderPivot(false, true, "LEFT_SHOULDER_PIVOT", "LeftShoulderPivot"),

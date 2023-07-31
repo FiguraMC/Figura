@@ -32,6 +32,7 @@ import org.joml.Vector3f;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaValue;
 
+import java.text.DateFormat;
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -46,6 +47,7 @@ public class ClientAPI {
 
     public static final ClientAPI INSTANCE = new ClientAPI();
     private static final HashMap<String, Boolean> LOADED_MODS = new HashMap<>();
+    private static final HashMap<String, ModMetadataContainer> MOD_METADATA = new HashMap<>();
     private static final boolean HAS_IRIS = PlatformUtils.isModLoaded("iris") || PlatformUtils.isModLoaded("oculus"); // separated to avoid indexing the list every frame
     public static final Supplier<Boolean> OPTIFINE_LOADED = Suppliers.memoize(() ->
     {
@@ -75,7 +77,7 @@ public class ClientAPI {
     @LuaMethodDoc("client.get_fps")
     public static int getFPS() {
         String s = getFPSString();
-        if (s.length() == 0)
+        if (s.isEmpty())
             return 0;
         return Integer.parseInt(s.split(" ")[0]);
     }
@@ -335,10 +337,20 @@ public class ClientAPI {
     )
     public static boolean isModLoaded(String id) {
         if (Objects.equals(id, "optifine") || Objects.equals(id, "optifabric"))
-            return OPTIFINE_LOADED.get();
+                  return OPTIFINE_LOADED.get();
+        return LOADED_MODS.computeIfAbsent(id, PlatformUtils::isModLoaded);
+    }
 
-        LOADED_MODS.putIfAbsent(id, PlatformUtils.isModLoaded(id));
-        return LOADED_MODS.get(id);
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = String.class,
+                    argumentNames = "modID"
+            ),
+            value = "client.get_mod_metadata"
+    )
+    public static Map<String, Object> getModMetadata(String id) {
+        return MOD_METADATA.computeIfAbsent(id, ModMetadataContainer::getMetadataForMod).getKeyToObjectMap();
     }
 
     @LuaWhitelist
@@ -493,8 +505,12 @@ public class ClientAPI {
         map.put("year_day", calendar.get(Calendar.DAY_OF_YEAR));
         map.put("week_day", calendar.get(Calendar.DAY_OF_WEEK));
         map.put("daylight_saving", calendar.getTimeZone().inDaylightTime(date));
+        map.put("timestamp", calendar.getTimeInMillis());
 
-        SimpleDateFormat format = new SimpleDateFormat("Z|zzzz|G|MMMM|EEEE", Locale.US);
+        DateFormat format = SimpleDateFormat.getDateTimeInstance(SimpleDateFormat.LONG, SimpleDateFormat.LONG);
+        map.put("time", format.format(date));
+
+        format = new SimpleDateFormat("Z|zzzz|G|MMMM|EEEE", Locale.US);
         String[] f = format.format(date).split("\\|");
 
         map.put("timezone", f[0]);

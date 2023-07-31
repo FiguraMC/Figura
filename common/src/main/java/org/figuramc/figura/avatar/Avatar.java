@@ -371,7 +371,31 @@ public class Avatar {
 
     public boolean arrowRenderEvent(float delta, EntityAPI<?> arrow) {
         Varargs result = null;
-        if (loaded) result = run("ARROW_RENDER", render, delta, arrow);
+        if (loaded) {
+            result = run("ARROW_RENDER", render, delta, arrow);
+            if (result == null)
+                result = run("PROJECTILE_RENDER", render, delta, arrow);
+        }
+        return isCancelled(result);
+    }
+
+    public boolean thrownItemRenderEvent(float delta, EntityAPI<?> thrown_item) {
+        Varargs result = null;
+        if (loaded) {
+            result = run("THROWN_ITEM_RENDER", render, delta, thrown_item);
+            if (result == null)
+                result = run("PROJECTILE_RENDER", render, delta, thrown_item);
+        }
+        return isCancelled(result);
+    }
+
+    public boolean tridentRenderEvent(float delta, EntityAPI<?> trident) {
+        Varargs result = null;
+        if (loaded) {
+            result = run("TRIDENT_RENDER", render, delta, trident);
+            if (result == null)
+                result = run("PROJECTILE_RENDER", render, delta, trident);
+        }
         return isCancelled(result);
     }
 
@@ -750,18 +774,24 @@ public class Avatar {
         return ret;
     }
 
-    public boolean renderArrow(PoseStack stack, MultiBufferSource bufferSource, float delta, int light) {
+    public boolean renderProjectile(PoseStack stack, MultiBufferSource bufferSource, float delta, int light, PartFilterScheme partType) {
         if (renderer == null || !loaded)
             return false;
 
         stack.pushPose();
-        Quaternionf quaternionf = Axis.XP.rotationDegrees(135f);
-        Quaternionf quaternionf2 = Axis.YP.rotationDegrees(-90f);
-        quaternionf.mul(quaternionf2);
-        stack.mulPose(quaternionf);
+        if (partType == PartFilterScheme.ARROW) {
+            Quaternionf quaternionX = Axis.XP.rotationDegrees(135f);
+            Quaternionf quaternionY = Axis.YP.rotationDegrees(-90f);
+            quaternionX.mul(quaternionY);
+            stack.mulPose(quaternionX);
+        }
+        if (partType == PartFilterScheme.TRIDENT) {
+            stack.mulPose(Axis.XP.rotationDegrees(-90f));
+            stack.mulPose(Axis.ZP.rotationDegrees(90f));
+        }
 
         renderer.setupRenderer(
-                PartFilterScheme.ARROW, bufferSource, stack,
+                partType, bufferSource, stack,
                 delta, light, 1f, OverlayTexture.NO_OVERLAY,
                 false, false
         );

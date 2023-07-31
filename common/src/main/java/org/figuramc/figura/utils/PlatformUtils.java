@@ -3,6 +3,7 @@ package org.figuramc.figura.utils;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 
 import java.nio.file.Path;
+import java.util.Map;
 
 public class PlatformUtils {
 
