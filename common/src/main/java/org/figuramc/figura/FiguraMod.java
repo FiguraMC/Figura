@@ -181,7 +181,7 @@ public class FiguraMod {
     }
 
     public enum Links {
-        Wiki("https://github.com/KitCat962/FiguraRewriteRewrite/wiki", ColorUtils.Colors.AWESOME_BLUE.style),
+        Wiki("https://github.com/FiguraMC/Figura/wiki", ColorUtils.Colors.AWESOME_BLUE.style),
         Kofi("https://ko-fi.com/skyrina", ColorUtils.Colors.KOFI.style),
         OpenCollective("https://opencollective.com/figura", ColorUtils.Colors.KOFI.style),
         Discord("https://discord.gg/figuramc", ColorUtils.Colors.DISCORD.style),
