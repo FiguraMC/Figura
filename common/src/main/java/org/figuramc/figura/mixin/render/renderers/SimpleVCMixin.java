@@ -26,7 +26,7 @@ public class SimpleVCMixin {
 
     @Inject(method = "shouldShowIcons", at = @At(value = "HEAD"), remap = false, cancellable = true)
     private void renderSelfNameplate(CallbackInfoReturnable<Boolean> callbackInfoReturnable){
-        callbackInfoReturnable.setReturnValue(Configs.SELF_NAMEPLATE.value);
+        callbackInfoReturnable.setReturnValue(true);
     }
 
     @Final
