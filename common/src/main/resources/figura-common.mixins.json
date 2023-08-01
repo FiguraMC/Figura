@@ -76,6 +76,7 @@
     "render.renderers.ScreenEffectRendererMixin",
     "render.renderers.SignRendererMixin",
     "render.renderers.SkullBlockRendererMixin",
+    "render.renderers.SimpleVCMixin",
     "sound.ChannelHandleMixin",
     "sound.SoundEngineMixin",
     "sound.SoundManagerAccessor",
