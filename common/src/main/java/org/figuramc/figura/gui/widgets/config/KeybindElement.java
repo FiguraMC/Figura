@@ -5,6 +5,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.config.ConfigType;
+import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.gui.widgets.KeybindWidgetHelper;
 import org.figuramc.figura.gui.widgets.ParentedButton;
 import org.figuramc.figura.gui.widgets.lists.ConfigList;
@@ -25,7 +26,7 @@ public class KeybindElement extends AbstractConfigElement {
             FiguraMod.processingKeybind = true;
             updateText();
         }));
-        button.setActive(FiguraMod.DEBUG_MODE || !config.disabled);
+        button.setActive(FiguraMod.debugModeEnabled() || !config.disabled);
 
         // overwrite reset button to update the keybind
         children.remove(resetButton);

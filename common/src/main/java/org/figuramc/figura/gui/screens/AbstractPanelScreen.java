@@ -216,7 +216,8 @@ public abstract class AbstractPanelScreen extends Screen {
         egg += (char) keyCode;
         egg = egg.substring(1);
         if (EGG.equals(egg)) {
-            Minecraft.getInstance().setScreen(new GameScreen(this));
+            Configs.DEBUG_MODE.setValue("true");
+            //Minecraft.getInstance().setScreen(new GameScreen(this));
             return true;
         }
 

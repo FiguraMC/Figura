@@ -587,6 +587,9 @@
   "figura.config.dev": "Dev",
   "figura.config.dev.tooltip": "Developer/Experimental settings",
 
+  "figura.config.debug_mode": "Debug Mode",
+  "figura.config.local_assets": "Local Assets",
+
   "figura.config.connection_toasts": "Cloud Connection Toasts",
   "figura.config.connection_toasts.tooltip": "Toggles if the game should show up toasts related with the cloud connection status",
 

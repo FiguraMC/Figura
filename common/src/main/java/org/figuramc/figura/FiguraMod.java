@@ -37,7 +37,6 @@ public class FiguraMod {
     public static final String MOD_NAME = "Figura";
     public static final FiguraModMetadata METADATA = FiguraModMetadata.getMetadataForMod(MOD_ID);
     public static final Version VERSION = new Version(PlatformUtils.getModVersionString());
-    public static final boolean DEBUG_MODE = false;
     public static final Calendar CALENDAR = Calendar.getInstance();
     public static final Path GAME_DIR = PlatformUtils.getGameDir().normalize();
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_NAME);
@@ -48,6 +47,13 @@ public class FiguraMod {
     public static Component splashText;
     public static boolean parseMessages = true;
     public static boolean processingKeybind;
+
+    public static boolean debugModeEnabled() {
+        if (Configs.DEBUG_MODE == null) return false;
+        Boolean b = Configs.DEBUG_MODE.value;
+        if (b == null) return false;
+        return b;
+    }
 
     public static void onClientInit() {
         // init managers
@@ -80,6 +86,8 @@ public class FiguraMod {
         AvatarManager.tickLoadedAvatars();
         popPushProfiler("chatPrint");
         FiguraLuaPrinter.printChatFromQueue();
+        popPushProfiler("emojiAnim");
+        Emojis.tickAnimations();
         popProfiler();
         ticks++;
     }
@@ -88,7 +96,7 @@ public class FiguraMod {
 
     // debug print
     public static void debug(String str, Object... args) {
-        if (DEBUG_MODE) LOGGER.info("[DEBUG] " + str, args);
+        if (FiguraMod.debugModeEnabled()) LOGGER.info("[DEBUG] " + str, args);
         else LOGGER.debug(str, args);
     }
 
@@ -101,7 +109,7 @@ public class FiguraMod {
 
     // mod cache directory
     public static Path getCacheDirectory() {
-        return IOUtils.getOrCreateDir(getFiguraDirectory(), "cache");
+        return IOUtils.getOrCreateDir(getFiguraDirectory(), debugModeEnabled() && Configs.LOCAL_ASSETS.value ? "local_cache" : "cache");
     }
 
     // get local player uuid

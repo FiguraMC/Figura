@@ -8,6 +8,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.entries.FiguraScreen;
 import org.figuramc.figura.gui.screens.*;
 import org.figuramc.figura.utils.FiguraIdentifier;
@@ -44,13 +45,13 @@ public class PanelSelectorWidget extends AbstractContainerElement {
         // buttons
 
         // size variables
-        int buttonCount = PANELS.size() - (FiguraMod.DEBUG_MODE ? 0 : PANELS_BLACKLIST.size());
+        int buttonCount = PANELS.size() - (FiguraMod.debugModeEnabled() ? 0 : PANELS_BLACKLIST.size());
         int buttonWidth = Math.min(Math.max((width - 4) / buttonCount - 4, 24), 96) + 4;
         int spacing = (width - (4 + buttonWidth * buttonCount)) / 2;
 
         for (int i = 0; i < PANELS.size(); i++) {
             // skip blacklist
-            if (!FiguraMod.DEBUG_MODE && PANELS_BLACKLIST.contains(i))
+            if (!FiguraMod.debugModeEnabled() && PANELS_BLACKLIST.contains(i))
                 continue;
 
             // get button data
@@ -64,7 +65,7 @@ public class PanelSelectorWidget extends AbstractContainerElement {
         }
 
         // locked buttons
-        if (FiguraMod.DEBUG_MODE) {
+        if (FiguraMod.debugModeEnabled()) {
             for (int i : PANELS_BLACKLIST) {
                 PanelButton button = buttons.get(i);
                 button.setMessage(button.getMessage().copy().withStyle(ChatFormatting.RED));

@@ -5,6 +5,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.config.ConfigType;
+import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.config.InputType;
 import org.figuramc.figura.gui.widgets.ParentedButton;
 import org.figuramc.figura.gui.widgets.TextField;
@@ -33,7 +34,7 @@ public class InputElement extends AbstractConfigElement {
         });
         updateTextFieldText(formatText(config.tempValue));
         textField.getField().moveCursorToStart();
-        textField.setEnabled(FiguraMod.DEBUG_MODE || !config.disabled);
+        textField.setEnabled(FiguraMod.debugModeEnabled() || !config.disabled);
 
         children.add(0, textField);
 

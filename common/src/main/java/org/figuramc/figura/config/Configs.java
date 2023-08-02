@@ -34,7 +34,7 @@ public class Configs {
     // code to run when the config is initialized
     public static void init() {
         // test for unused configs
-        if (FiguraMod.DEBUG_MODE) {
+        if (FiguraMod.debugModeEnabled()) {
             ConfigType.Category debug = new ConfigType.Category("debug");
             new ConfigType.ColorConfig("color_test", debug, 0xFF72AD);
             new ConfigType.StringConfig("string_test", debug, "text");
@@ -229,8 +229,13 @@ public class Configs {
             EASTER_EGGS = new ConfigType.BoolConfig("easter_eggs", MISC, true);
 
 
-    // -- DEV -- // 
 
+
+    // -- DEV -- //
+    public static final ConfigType.BoolConfig
+            DEBUG_MODE = new ConfigType.BoolConfig("debug_mode", DEV, false, true);
+    public static final ConfigType.BoolConfig
+            LOCAL_ASSETS = new ConfigType.BoolConfig("local_assets", DEV, false, true);
 
     public static final ConfigType.BoolConfig
             CONNECTION_TOASTS = new ConfigType.BoolConfig("connection_toasts", DEV, false),
