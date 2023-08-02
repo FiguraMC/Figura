@@ -4,7 +4,7 @@ import net.minecraft.client.renderer.blockentity.SignRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import org.figuramc.figura.config.Configs;
-import org.figuramc.figura.gui.Emojis;
+import org.figuramc.figura.font.Emojis;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;

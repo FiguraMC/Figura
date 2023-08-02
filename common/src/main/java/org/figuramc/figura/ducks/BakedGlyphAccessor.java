@@ -1,7 +1,7 @@
 package org.figuramc.figura.ducks;
 
-import net.minecraft.resources.ResourceLocation;
+import org.figuramc.figura.font.Emojis;
 
 public interface BakedGlyphAccessor {
-    void figura$setupEmoji(ResourceLocation figura$resourceLocation);
+    void figura$setupEmoji(Emojis.EmojiContainer container, int codepoint);
 }

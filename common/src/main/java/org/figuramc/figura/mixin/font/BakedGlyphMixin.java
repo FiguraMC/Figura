@@ -2,9 +2,9 @@ package org.figuramc.figura.mixin.font;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.gui.font.glyphs.BakedGlyph;
-import net.minecraft.resources.ResourceLocation;
 import org.figuramc.figura.ducks.BakedGlyphAccessor;
-import org.figuramc.figura.gui.Emojis;
+import org.figuramc.figura.font.Emojis;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -16,13 +16,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(BakedGlyph.class)
 public abstract class BakedGlyphMixin implements BakedGlyphAccessor {
-
-    @Shadow
-    @Final
-    private float left;
-    @Shadow
-    @Final
-    private float right;
     @Shadow
     @Final
     private float up;
@@ -32,9 +25,6 @@ public abstract class BakedGlyphMixin implements BakedGlyphAccessor {
     @Shadow
     @Final
     private float u0;
-    @Shadow
-    @Final
-    private float u1;
     @Shadow
     @Final
     private float v0;
@@ -47,10 +37,9 @@ public abstract class BakedGlyphMixin implements BakedGlyphAccessor {
     int figura$sheetWidth = 1;
 
     @Override
-    public void figura$setupEmoji(ResourceLocation figura$resourceLocation) {
-        Emojis.EmojiContainer container = Emojis.getContainer(figura$resourceLocation);
+    public void figura$setupEmoji(@Nullable Emojis.EmojiContainer container, int codepoint) {
         if (container != null) {
-            figura$metadata = container.getEmojiMetadata((int) (v0 * container.textureHeight));
+            figura$metadata = container.getEmojiMetadata(codepoint);
             figura$sheetWidth = container.textureWidth;
         }
     }
@@ -70,11 +59,10 @@ public abstract class BakedGlyphMixin implements BakedGlyphAccessor {
         float shift = singleWidth * figura$metadata.getCurrentFrame();
 
         float u = u0 + shift;
-        vertexConsumer.vertex(matrix, x
- + m, k, 0.0f).color(red, green, blue, alpha).uv(u, this.v0).uv2(light).endVertex();
+        vertexConsumer.vertex(matrix, x + m, k, 0.0f).color(red, green, blue, alpha).uv(u, this.v0).uv2(light).endVertex();
         vertexConsumer.vertex(matrix, x + n, l, 0.0f).color(red, green, blue, alpha).uv(u, this.v1).uv2(light).endVertex();
-        vertexConsumer.vertex(matrix, x + 8 + n, l, 0.0f).color(red, green, blue, alpha).uv(u + singleWidth, this.v1).uv2(light).endVertex();
-        vertexConsumer.vertex(matrix, x + 8 + m, k, 0.0f).color(red, green, blue, alpha).uv(u + singleWidth, this.v0).uv2(light).endVertex();
+        vertexConsumer.vertex(matrix, x + figura$metadata.width + n, l, 0.0f).color(red, green, blue, alpha).uv(u + singleWidth, this.v1).uv2(light).endVertex();
+        vertexConsumer.vertex(matrix, x + figura$metadata.width + m, k, 0.0f).color(red, green, blue, alpha).uv(u + singleWidth, this.v0).uv2(light).endVertex();
         ci.cancel();
     }
 }

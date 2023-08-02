@@ -1,4 +1,4 @@
-package org.figuramc.figura.gui;
+package org.figuramc.figura.font;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -29,8 +29,14 @@ public class Emojis {
     private static final List<EmojiContainer> EMOJIS = new ArrayList<>();
     public static final char DELIMITER = ':';
     public static final char ESCAPE = '\\';
+    private static final String JSON_KEY_FRAMES = "frames";
+    private static final String JSON_KEY_FRAME_TIME = "frames";
+    private static final String JSON_KEY_WIDTH = "width";
+    private static final String JSON_KEY_NAMES = "names";
+    private static final String JSON_KEY_SHEET_WIDTH = "width";
+    private static final String JSON_KEY_SHEET_HEIGHT = "height";
 
-    private static final String ERROR_MSG = "Invalid emoji metadata \"{}\" @ \"{}\", Reason {}";
+    private static final String ERROR_MSG = "Invalid emoji metadata \"{}\" @ \"{}\", Reason: Field '{}' {}";
 
     // listener to load emojis from the resource pack
     public static final FiguraResourceListener RESOURCE_LISTENER = FiguraResourceListener.createResourceListener("emojis", manager -> {
@@ -213,7 +219,7 @@ public class Emojis {
         private final String name;
         private final ResourceLocation font;
         private final Map<String, String> unicodeLookup = new HashMap<>(); // <EmojiName, Unicode>
-        private final List<Metadata> metadataLookup = new ArrayList<>();
+        private final Map<Integer, Metadata> metadataLookup = new HashMap<>();
         private final String blacklist;
 
         public final int textureWidth;
@@ -234,11 +240,11 @@ public class Emojis {
                     namesArray = curValue.getAsJsonArray();
                 } else {
                     JsonObject obj = curValue.getAsJsonObject();
-                    if (JsonUtils.validate(obj, "names", JsonElement::isJsonArray, ERROR_MSG, curUnicode, containerName, "'names' field must be an array") &&
-                            JsonUtils.validate(obj, "frames", JsonElement::isJsonPrimitive, ERROR_MSG, curUnicode, containerName, "'frames' field must be an int") &&
-                            JsonUtils.validate(obj, "frameTime", JsonElement::isJsonPrimitive, ERROR_MSG, curUnicode, containerName, "'frameTime' fiend must be an int")) {
-                        namesArray = obj.getAsJsonArray("names");
-                        metadataLookup.add(new Metadata(obj));
+                    if (JsonUtils.validate(obj, JSON_KEY_NAMES, JsonElement::isJsonArray, ERROR_MSG, curUnicode.codePointAt(0), containerName, JSON_KEY_NAMES, "must be an array") &&
+                            JsonUtils.validate(obj, JSON_KEY_FRAMES, JsonElement::isJsonPrimitive, ERROR_MSG, curUnicode.codePointAt(0), containerName, JSON_KEY_FRAMES, "field must be an int") &&
+                            JsonUtils.validate(obj, JSON_KEY_FRAME_TIME, JsonElement::isJsonPrimitive, ERROR_MSG, curUnicode.codePointAt(0), containerName, JSON_KEY_FRAME_TIME, "fiend must be an int")) {
+                        namesArray = obj.getAsJsonArray(JSON_KEY_NAMES);
+                        metadataLookup.put(curUnicode.codePointAt(0) ,new Metadata(obj));
                     }
                 }
 
@@ -247,8 +253,8 @@ public class Emojis {
                 }
             }
 
-            this.textureWidth = JsonUtils.getIntOrDefault(data, "width", 64);
-            this.textureHeight = JsonUtils.getIntOrDefault(data, "height", 64);
+            this.textureWidth = JsonUtils.getIntOrDefault(data, JSON_KEY_SHEET_WIDTH, 64);
+            this.textureHeight = JsonUtils.getIntOrDefault(data, JSON_KEY_SHEET_HEIGHT, 64);
         }
 
 
@@ -263,13 +269,12 @@ public class Emojis {
             }
         }
 
-        public @Nullable Metadata getEmojiMetadata(int index) {
-            if (metadataLookup.size() <= index) return null;
-            return metadataLookup.get(index);
+        public @Nullable Metadata getEmojiMetadata(int codepoint) {
+            return metadataLookup.get(codepoint);
         }
 
         public void tickAnimations() {
-            for (Metadata metadata : metadataLookup) {
+            for (Metadata metadata : metadataLookup.values()) {
                 metadata.tickAnimation();
             }
         }
@@ -292,18 +297,20 @@ public class Emojis {
         }
 
         public static final class Metadata {
-            private final int frames;
-            private final int frameTime;
+            public final int frames;
+            public final int frameTime;
+            public final int width;
             private int frameTimer;
             private int curFrame;
 
-            public Metadata(int frames, int frameTime) {
+            public Metadata(int frames, int frameTime, int width) {
                 this.frames = frames;
                 this.frameTime = frameTime;
+                this.width = width;
             }
 
             public Metadata(JsonObject entry) {
-                this(entry.get("frames").getAsInt(), entry.get("frameTime").getAsInt());
+                this(entry.get(JSON_KEY_FRAMES).getAsInt(), entry.get(JSON_KEY_FRAME_TIME).getAsInt(), JsonUtils.getIntOrDefault(entry, JSON_KEY_WIDTH, 8));
             }
 
             public void tickAnimation() {
