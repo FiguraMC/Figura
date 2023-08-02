@@ -30,7 +30,7 @@ public class Emojis {
     public static final char DELIMITER = ':';
     public static final char ESCAPE = '\\';
     private static final String JSON_KEY_FRAMES = "frames";
-    private static final String JSON_KEY_FRAME_TIME = "frames";
+    private static final String JSON_KEY_FRAME_TIME = "frametime";
     private static final String JSON_KEY_WIDTH = "width";
     private static final String JSON_KEY_NAMES = "names";
     private static final String JSON_KEY_SHEET_WIDTH = "width";
