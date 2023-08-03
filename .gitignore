@@ -45,5 +45,5 @@ remappedSrc/
 
 forge*changelog.txt
 
-#Used for testing against other mods
+# Used for testing against other mods
 libs/*
