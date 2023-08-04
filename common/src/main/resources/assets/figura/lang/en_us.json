@@ -1081,6 +1081,7 @@
   "figura.docs.player.get_shoulder_entity": "Returns a table of the nbt of this entity left or right shoulder entity",
   "figura.docs.player.get_team_info": "Returns a table with information about the team of this player\nReturns nil if the player doesnt have a team",
   "figura.docs.player.get_ip_address": "Returns this player's IP address",
+  "figura.docs.player.get_cooldown_percent": "Returns the whether a given ItemStack has an active cool down as a percent from 0.0 to 1.0\nIf it has none, it returns 0.0\nTakes two parameters stack, and delta, delta offsets the cooldown's tick count by it, used for smoother animation.",
 
   "figura.docs.viewer": "An extension of the Player, used for the viewer only, meant as proxy to allow access to some host only functions",
 
@@ -1165,7 +1166,7 @@
   "figura.docs.itemstack.get_tag": "Gets a table of the NBT tags of this stack",
   "figura.docs.itemstack.get_count": "Gets the number of items in this stack",
   "figura.docs.itemstack.get_damage": "Gets the damage value of the item in this stack\nWorks on things like tools, or other things with a durability bar",
-  "figura.docs.itemstack.get_cooldown": "Gets the remaining cooldown on this item, in ticks",
+  "figura.docs.itemstack.get_pop_time": "Gets the item's animation bobbing time, in ticks. This value is used to move an item to the player when it is picked up",
   "figura.docs.itemstack.has_glint": "Returns true if this item glows with enchantment glint",
   "figura.docs.itemstack.get_tags": "Gets all the tags of this item as strings in a table",
   "figura.docs.itemstack.is_block_item": "Returns true if this item represents a block",
