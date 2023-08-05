@@ -8,6 +8,7 @@ import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.avatar.local.CacheAvatarLoader;
 import org.figuramc.figura.avatar.local.LocalAvatarFetcher;
 import org.figuramc.figura.backend2.NetworkStuff;
+import org.figuramc.figura.config.ConfigType.*;
 import org.figuramc.figura.gui.FiguraToast;
 import org.figuramc.figura.gui.screens.ConfigScreen;
 import org.figuramc.figura.lua.FiguraLuaPrinter;
@@ -35,38 +36,38 @@ public class Configs {
     public static void init() {
         // test for unused configs
         if (FiguraMod.DEBUG_MODE) {
-            ConfigType.Category debug = new ConfigType.Category("debug");
-            new ConfigType.ColorConfig("color_test", debug, 0xFF72AD);
-            new ConfigType.StringConfig("string_test", debug, "text");
-            new ConfigType.IntConfig("int_test", debug, 2147483647);
+            Category debug = new Category("debug");
+            new ColorConfig("color_test", debug, 0xFF72AD);
+            new StringConfig("string_test", debug, "text");
+            new IntConfig("int_test", debug, 2147483647);
         }
     }
 
 
-    // -- categories -- // 
+    // -- categories -- //
 
 
-    public static final ConfigType.Category
-            NAMEPLATE = new ConfigType.Category("nameplate"),
-            SCRIPT = new ConfigType.Category("script"),
-            RENDERING = new ConfigType.Category("rendering"),
-            ACTION_WHEEL = new ConfigType.Category("action_wheel"),
-            UI = new ConfigType.Category("ui"),
-            PAPERDOLL = new ConfigType.Category("paperdoll"),
-            MISC = new ConfigType.Category("misc"),
-            DEV = new ConfigType.Category("dev") {{
+    public static final Category
+            NAMEPLATE = new Category("nameplate"),
+            SCRIPT = new Category("script"),
+            RENDERING = new Category("rendering"),
+            ACTION_WHEEL = new Category("action_wheel"),
+            UI = new Category("ui"),
+            PAPERDOLL = new Category("paperdoll"),
+            MISC = new Category("misc"),
+            DEV = new Category("dev") {{
                 this.name = this.name.copy().withStyle(ChatFormatting.RED);
             }};
 
 
-    // -- nameplate -- // 
+    // -- nameplate -- //
 
 
-    public static final ConfigType.BoolConfig
-            SELF_NAMEPLATE = new ConfigType.BoolConfig("self_nameplate", NAMEPLATE, false),
-            PREVIEW_NAMEPLATE = new ConfigType.BoolConfig("preview_nameplate", NAMEPLATE, false),
-            SOUND_BADGE = new ConfigType.BoolConfig("sound_badge", NAMEPLATE, true);
-    private static final String NAMEPLATE_PATH = "config.nameplate_level.";
+    public static final BoolConfig
+            SELF_NAMEPLATE = new BoolConfig("self", NAMEPLATE, false),
+            PREVIEW_NAMEPLATE = new BoolConfig("preview", NAMEPLATE, false),
+            SOUND_BADGE = new BoolConfig("sound_badge", NAMEPLATE, true);
+    private static final String NAMEPLATE_PATH = "config.nameplate.level.";
     private static final List<Component> NAMEPLATE_ENUM = List.of(
             FiguraText.of(NAMEPLATE_PATH + "1"),
             FiguraText.of(NAMEPLATE_PATH + "2"),
@@ -77,30 +78,30 @@ public class Configs {
             FiguraText.of(NAMEPLATE_PATH + "2.tooltip"),
             FiguraText.of(NAMEPLATE_PATH + "3.tooltip")
     );
-    public static final ConfigType.EnumConfig
-            NAMEPLATE_RENDER = new ConfigType.EnumConfig("nameplate_render", NAMEPLATE, 0, 3),
-            CHAT_NAMEPLATE = new ConfigType.EnumConfig("chat_nameplate", NAMEPLATE, 2, 3) {{
+    public static final EnumConfig
+            NAMEPLATE_RENDER = new EnumConfig("render", NAMEPLATE, 0, 3),
+            CHAT_NAMEPLATE = new EnumConfig("chat", NAMEPLATE, 2, 3) {{
                 this.enumList = NAMEPLATE_ENUM;
                 this.enumTooltip = NAMEPLATE_TOOLTIP;
             }},
-            ENTITY_NAMEPLATE = new ConfigType.EnumConfig("entity_nameplate", NAMEPLATE, 2, 3) {{
+            ENTITY_NAMEPLATE = new EnumConfig("entity", NAMEPLATE, 2, 3) {{
                 this.enumList = NAMEPLATE_ENUM;
                 this.enumTooltip = NAMEPLATE_TOOLTIP;
             }},
-            LIST_NAMEPLATE = new ConfigType.EnumConfig("list_nameplate", NAMEPLATE, 2, 3) {{
+            LIST_NAMEPLATE = new EnumConfig("list", NAMEPLATE, 2, 3) {{
                 this.enumList = NAMEPLATE_ENUM;
                 this.enumTooltip = NAMEPLATE_TOOLTIP;
             }};
 
 
-    // -- script -- // 
+    // -- script -- //
 
 
-    public static final ConfigType.EnumConfig
-            LOG_LOCATION = new ConfigType.EnumConfig("log_location", SCRIPT, 0, 2),
-            FORMAT_SCRIPT = new ConfigType.EnumConfig("format_script", SCRIPT, 1, 4) {
+    public static final EnumConfig
+            LOG_LOCATION = new EnumConfig("log_location", SCRIPT, 0, 2),
+            FORMAT_SCRIPT = new EnumConfig("format", SCRIPT, 1, 4) {
                 {
-                    String tooltip = "config.format_script.tooltip.";
+                    String tooltip = "config.script.format.tooltip.";
                     this.tooltip = FiguraText.of(tooltip + "1")
                             .append("\n")
                             .append(FiguraText.of(tooltip + "2").withStyle(ChatFormatting.RED));
@@ -112,8 +113,8 @@ public class Configs {
                         AvatarManager.reloadAvatar(FiguraMod.getLocalPlayerUUID());
                 }
             };
-    public static final ConfigType.PositiveIntConfig
-            LOG_NUMBER_LENGTH = new ConfigType.PositiveIntConfig("log_number_length", SCRIPT, 5) {
+    public static final PositiveIntConfig
+            LOG_NUMBER_LENGTH = new PositiveIntConfig("log_number_length", SCRIPT, 5) {
                 @Override
                 public void onChange() {
                     super.onChange();
@@ -122,95 +123,95 @@ public class Configs {
             };
 
 
-    // -- RENDERING -- // 
+    // -- RENDERING -- //
 
 
-    public static final ConfigType.EnumConfig
-            IRIS_COMPATIBILITY_FIX = new ConfigType.EnumConfig("iris_compatibility_fix", RENDERING, 1, 3),
-            RENDER_DEBUG_PARTS_PIVOT = new ConfigType.EnumConfig("render_debug_parts_pivot", RENDERING, 1, 3) {{
-                    String tooltip = "config.render_debug_parts_pivot.tooltip";
+    public static final EnumConfig
+            IRIS_COMPATIBILITY_FIX = new EnumConfig("iris_compatibility_fix", RENDERING, 1, 3),
+            RENDER_DEBUG_PARTS_PIVOT = new EnumConfig("debug_parts_pivot", RENDERING, 1, 3) {{
+                    String tooltip = "config.rendering.debug_parts_pivot.tooltip";
                     this.tooltip = FiguraText.of(tooltip,
                             FiguraText.of(tooltip + ".cubes").setStyle(ColorUtils.Colors.AWESOME_BLUE.style),
                             FiguraText.of(tooltip + ".groups").setStyle(ColorUtils.Colors.BLUE.style));
             }};
-    public static final ConfigType.BoolConfig
-            ALLOW_FP_HANDS = new ConfigType.BoolConfig("allow_fp_hands", RENDERING, false),
-            FIRST_PERSON_MATRICES = new ConfigType.BoolConfig("first_person_matrices", RENDERING, true);
+    public static final BoolConfig
+            ALLOW_FP_HANDS = new BoolConfig("allow_fp_hands", RENDERING, false),
+            FIRST_PERSON_MATRICES = new BoolConfig("first_person_matrices", RENDERING, true);
 
 
-    // -- ACTION WHEEL -- // 
+    // -- ACTION WHEEL -- //
 
 
-    public static final ConfigType.KeybindConfig
-            ACTION_WHEEL_BUTTON = new ConfigType.KeybindConfig("action_wheel_button", ACTION_WHEEL, "key.keyboard.b");
-    public static final ConfigType.EnumConfig
-            ACTION_WHEEL_MODE = new ConfigType.EnumConfig("action_wheel_mode", ACTION_WHEEL, 0, 4);
-    public static final ConfigType.PositiveFloatConfig
-            ACTION_WHEEL_SCALE = new ConfigType.PositiveFloatConfig("action_wheel_scale", ACTION_WHEEL, 1f);
-    public static final ConfigType.EnumConfig
-            ACTION_WHEEL_TITLE = new ConfigType.EnumConfig("action_wheel_title", ACTION_WHEEL, 0, 7),
-            ACTION_WHEEL_SLOTS_INDICATOR = new ConfigType.EnumConfig("action_wheel_slots_indicator", ACTION_WHEEL, 0, 3);
-    public static final ConfigType.BoolConfig
-            ACTION_WHEEL_DECORATIONS = new ConfigType.BoolConfig("action_wheel_decorations", ACTION_WHEEL, true);
+    public static final KeybindConfig
+            ACTION_WHEEL_BUTTON = new KeybindConfig("button", ACTION_WHEEL, "key.keyboard.b");
+    public static final EnumConfig
+            ACTION_WHEEL_MODE = new EnumConfig("mode", ACTION_WHEEL, 0, 4);
+    public static final PositiveFloatConfig
+            ACTION_WHEEL_SCALE = new PositiveFloatConfig("scale", ACTION_WHEEL, 1f);
+    public static final EnumConfig
+            ACTION_WHEEL_TITLE = new EnumConfig("title", ACTION_WHEEL, 0, 7),
+            ACTION_WHEEL_SLOTS_INDICATOR = new EnumConfig("slots_indicator", ACTION_WHEEL, 0, 3);
+    public static final BoolConfig
+            ACTION_WHEEL_DECORATIONS = new BoolConfig("decorations", ACTION_WHEEL, true);
 
 
-    // -- UI -- // 
+    // -- UI -- //
 
 
-    public static final ConfigType.BoolConfig
-            FIGURA_INVENTORY = new ConfigType.BoolConfig("figura_inventory", UI, true),
-            PREVIEW_HEAD_ROTATION = new ConfigType.BoolConfig("preview_head_rotation", UI, false),
-            AVATAR_PORTRAIT = new ConfigType.BoolConfig("avatar_portrait", UI, true),
-            WARDROBE_FILE_NAMES = new ConfigType.BoolConfig("wardrobe_file_names", UI, false);
-    public static final ConfigType.FloatConfig
-            BACKGROUND_SCROLL_SPEED = new ConfigType.FloatConfig("background_scroll_speed", UI, 1f);
-    public static final ConfigType.PositiveFloatConfig
-            POPUP_SCALE = new ConfigType.PositiveFloatConfig("popup_scale", UI, 1f),
-            POPUP_MIN_SIZE = new ConfigType.PositiveFloatConfig("popup_min_size", UI, 1f),
-            POPUP_MAX_SIZE = new ConfigType.PositiveFloatConfig("popup_max_size", UI, 6f),
-            TOAST_TIME = new ConfigType.PositiveFloatConfig("toast_time", UI, 5f),
-            TOAST_TITLE_TIME = new ConfigType.PositiveFloatConfig("toast_title_time", UI, 2f),
-            TEXT_SCROLL_SPEED = new ConfigType.PositiveFloatConfig("text_scroll_speed", UI, 1f);
-    public static final ConfigType.PositiveIntConfig
-            TEXT_SCROLL_DELAY = new ConfigType.PositiveIntConfig("text_scroll_delay", UI, 20);
-    public static final ConfigType.BoolConfig
-            REDUCED_MOTION = new ConfigType.BoolConfig("reduced_motion", UI, false);
+    public static final BoolConfig
+            FIGURA_INVENTORY = new BoolConfig("figura_inventory", UI, true),
+            PREVIEW_HEAD_ROTATION = new BoolConfig("preview_head_rotation", UI, false),
+            AVATAR_PORTRAIT = new BoolConfig("avatar_portrait", UI, true),
+            WARDROBE_FILE_NAMES = new BoolConfig("wardrobe_file_names", UI, false);
+    public static final FloatConfig
+            BACKGROUND_SCROLL_SPEED = new FloatConfig("background_scroll_speed", UI, 1f);
+    public static final PositiveFloatConfig
+            POPUP_SCALE = new PositiveFloatConfig("popup_scale", UI, 1f),
+            POPUP_MIN_SIZE = new PositiveFloatConfig("popup_min_size", UI, 1f),
+            POPUP_MAX_SIZE = new PositiveFloatConfig("popup_max_size", UI, 6f),
+            TOAST_TIME = new PositiveFloatConfig("toast_time", UI, 5f),
+            TOAST_TITLE_TIME = new PositiveFloatConfig("toast_title_time", UI, 2f),
+            TEXT_SCROLL_SPEED = new PositiveFloatConfig("text_scroll_speed", UI, 1f);
+    public static final PositiveIntConfig
+            TEXT_SCROLL_DELAY = new PositiveIntConfig("text_scroll_delay", UI, 20);
+    public static final BoolConfig
+            REDUCED_MOTION = new BoolConfig("reduced_motion", UI, false);
 
 
-    // -- PAPERDOLL -- // 
+    // -- PAPERDOLL -- //
 
 
-    public static final ConfigType.BoolConfig
-            HAS_PAPERDOLL = new ConfigType.BoolConfig("has_paperdoll", PAPERDOLL, false),
-            PAPERDOLL_ALWAYS_ON = new ConfigType.BoolConfig("paperdoll_always_on", PAPERDOLL, false),
-            FIRST_PERSON_PAPERDOLL = new ConfigType.BoolConfig("first_person_paperdoll", PAPERDOLL, true),
-            PAPERDOLL_INVISIBLE = new ConfigType.BoolConfig("paperdoll_invisible", PAPERDOLL, false);
-    public static final ConfigType.FloatConfig
-            PAPERDOLL_SCALE = new ConfigType.FloatConfig("paperdoll_scale", PAPERDOLL, 1f),
-            PAPERDOLL_X = new ConfigType.FloatConfig("paperdoll_x", PAPERDOLL, 0f),
-            PAPERDOLL_Y = new ConfigType.FloatConfig("paperdoll_y", PAPERDOLL, 0f),
-            PAPERDOLL_PITCH = new ConfigType.FloatConfig("paperdoll_pitch", PAPERDOLL, 0f),
-            PAPERDOLL_YAW = new ConfigType.FloatConfig("paperdoll_yaw", PAPERDOLL, 20);
+    public static final BoolConfig
+            HAS_PAPERDOLL = new BoolConfig("enabled", PAPERDOLL, false),
+            PAPERDOLL_ALWAYS_ON = new BoolConfig("always_on", PAPERDOLL, false),
+            FIRST_PERSON_PAPERDOLL = new BoolConfig("first_person", PAPERDOLL, true),
+            PAPERDOLL_INVISIBLE = new BoolConfig("invisible", PAPERDOLL, false);
+    public static final FloatConfig
+            PAPERDOLL_SCALE = new FloatConfig("scale", PAPERDOLL, 1f),
+            PAPERDOLL_X = new FloatConfig("x", PAPERDOLL, 0f),
+            PAPERDOLL_Y = new FloatConfig("y", PAPERDOLL, 0f),
+            PAPERDOLL_PITCH = new FloatConfig("pitch", PAPERDOLL, 0f),
+            PAPERDOLL_YAW = new FloatConfig("yaw", PAPERDOLL, 20);
 
 
-    // -- MISC -- // 
+    // -- MISC -- //
 
 
-    public static final ConfigType.KeybindConfig
-            POPUP_BUTTON = new ConfigType.KeybindConfig("popup_button", MISC, "key.keyboard.r"),
-            RELOAD_BUTTON = new ConfigType.KeybindConfig("reload_button", MISC, "key.keyboard.unknown"),
-            PANIC_BUTTON = new ConfigType.KeybindConfig("panic_button", MISC, "key.keyboard.unknown"),
-            WARDROBE_BUTTON = new ConfigType.KeybindConfig("wardrobe_button", MISC, "key.keyboard.unknown");
-    public static final ConfigType.EnumConfig
-            BUTTON_LOCATION = new ConfigType.EnumConfig("button_location", MISC, 0, 5),
-            UPDATE_CHANNEL = new ConfigType.EnumConfig("update_channel", MISC, 1, 3) {
+    public static final KeybindConfig
+            POPUP_BUTTON = new KeybindConfig("popup_button", MISC, "key.keyboard.r"),
+            RELOAD_BUTTON = new KeybindConfig("reload_button", MISC, "key.keyboard.unknown"),
+            PANIC_BUTTON = new KeybindConfig("panic_button", MISC, "key.keyboard.unknown"),
+            WARDROBE_BUTTON = new KeybindConfig("wardrobe_button", MISC, "key.keyboard.unknown");
+    public static final EnumConfig
+            BUTTON_LOCATION = new EnumConfig("button_location", MISC, 0, 5),
+            UPDATE_CHANNEL = new EnumConfig("update_channel", MISC, 1, 3) {
                 @Override
                 public void onChange() {
                     super.onChange();
                     NetworkStuff.checkVersion();
                 }
             },
-            DEFAULT_PERMISSION_LEVEL = new ConfigType.EnumConfig("default_permission_level", MISC, 2, Permissions.Category.values().length) {{
+            DEFAULT_PERMISSION_LEVEL = new EnumConfig("default_permission_level", MISC, 2, Permissions.Category.values().length) {{
                 List<Component> list = new ArrayList<>();
                 Permissions.Category[] categories = Permissions.Category.values();
                 for (Permissions.Category category : categories)
@@ -224,27 +225,27 @@ public class Configs {
                     PermissionManager.saveToDisk();
                 }
             },
-            EMOJIS = new ConfigType.EnumConfig("emojis", MISC, 1, 3);
-    public static final ConfigType.BoolConfig
-            EASTER_EGGS = new ConfigType.BoolConfig("easter_eggs", MISC, true);
+            EMOJIS = new EnumConfig("emojis", MISC, 1, 3);
+    public static final BoolConfig
+            EASTER_EGGS = new BoolConfig("easter_eggs", MISC, true);
 
 
-    // -- DEV -- // 
+    // -- DEV -- //
 
 
-    public static final ConfigType.BoolConfig
-            CONNECTION_TOASTS = new ConfigType.BoolConfig("connection_toasts", DEV, false),
-            LOG_OTHERS = new ConfigType.BoolConfig("log_others", DEV, false);
-    public static final ConfigType.EnumConfig
-            LOG_PINGS = new ConfigType.EnumConfig("log_pings", DEV, 0, 3);
-    public static final ConfigType.BoolConfig
-            SYNC_PINGS = new ConfigType.BoolConfig("sync_pings", DEV, false) {{
+    public static final BoolConfig
+            CONNECTION_TOASTS = new BoolConfig("connection_toasts", DEV, false),
+            LOG_OTHERS = new BoolConfig("log_others", DEV, false);
+    public static final EnumConfig
+            LOG_PINGS = new EnumConfig("log_pings", DEV, 0, 3);
+    public static final BoolConfig
+            SYNC_PINGS = new BoolConfig("sync_pings", DEV, false) {{
                 String tooltip = "config.sync_pings.tooltip.";
                 this.tooltip = FiguraText.of(tooltip + "1")
                         .append("\n")
                         .append(FiguraText.of(tooltip + "2").withStyle(ChatFormatting.RED));
             }},
-            CHAT_MESSAGES = new ConfigType.BoolConfig("chat_messages", DEV, false) {{
+            CHAT_MESSAGES = new BoolConfig("chat_messages", DEV, false) {{
                 this.name = this.name.copy().withStyle(ChatFormatting.RED);
                 String tooltip = "config.chat_messages.tooltip.";
                 this.tooltip = FiguraText.of(tooltip + "1")
@@ -253,8 +254,8 @@ public class Configs {
                         .append("\n\n")
                         .append(FiguraText.of(tooltip + "3").withStyle(ChatFormatting.RED, ChatFormatting.BOLD));
             }};
-    public static final ConfigType.FolderConfig
-            MAIN_DIR = new ConfigType.FolderConfig("main_dir", DEV, "") {
+    public static final FolderConfig
+            MAIN_DIR = new FolderConfig("main_dir", DEV, "") {
                 @Override
                 public void onChange() {
                     super.onChange();
@@ -262,8 +263,8 @@ public class Configs {
                     LocalAvatarFetcher.reinit();
                 }
     };
-    public static final ConfigType.IPConfig
-            SERVER_IP = new ConfigType.IPConfig("server_ip", DEV, "figura.moonlight-devs.org") {
+    public static final IPConfig
+            SERVER_IP = new IPConfig("server_ip", DEV, "figura.moonlight-devs.org") {
                 @Override
                 public void onChange() {
                     super.onChange();
@@ -271,23 +272,23 @@ public class Configs {
                 }
             };
     @SuppressWarnings("unused")
-    public static final ConfigType.ButtonConfig
-            CLEAR_CACHE = new ConfigType.ButtonConfig("clear_cache", DEV, () -> {
+    public static final ButtonConfig
+            CLEAR_CACHE = new ButtonConfig("clear_cache", DEV, () -> {
                 CacheAvatarLoader.clearCache();
                 LocalAvatarFetcher.clearCache();
                 ConfigScreen.clearCache();
                 FiguraRuntimeResources.clearCache();
                 FiguraToast.sendToast(FiguraText.of("toast.cache_clear"));
             }),
-            REDOWNLOAD_ASSETS = new ConfigType.ButtonConfig("redownload_assets", DEV, () -> {
+            REDOWNLOAD_ASSETS = new ButtonConfig("redownload_assets", DEV, () -> {
                 FiguraRuntimeResources.init();
                 Minecraft.getInstance().reloadResourcePacks();
             }),
-            CLEAR_AVATAR_DATA = new ConfigType.ButtonConfig("clear_avatar_data", DEV, () -> {
+            CLEAR_AVATAR_DATA = new ButtonConfig("clear_avatar_data", DEV, () -> {
                 ConfigAPI.clearAllData();
                 FiguraToast.sendToast(FiguraText.of("toast.avatar_data_clear"));
             });
-    public static final ConfigType.BoolConfig
-            FORCE_SMOOTH_AVATAR = new ConfigType.BoolConfig("force_smooth_avatar", DEV, false),
-            GUI_FPS = new ConfigType.BoolConfig("gui_fps", DEV, false);
+    public static final BoolConfig
+            FORCE_SMOOTH_AVATAR = new BoolConfig("force_smooth_avatar", DEV, false),
+            GUI_FPS = new BoolConfig("gui_fps", DEV, false);
 }
