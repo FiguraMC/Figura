@@ -588,7 +588,9 @@
   "figura.config.dev.tooltip": "Developer/Experimental settings",
 
   "figura.config.debug_mode": "Debug Mode",
+  "figura.config.debug_mode.tooltip": "Toggles Figura's debug mode. Only has a few features, mostly tools for the mod's development",
   "figura.config.local_assets": "Local Assets",
+  "figura.config.local_assets.tooltip": "Toggle whether Figura will load assets from the backend, or a local folder.\nThis local folder is called \"local_cache\"",
 
   "figura.config.connection_toasts": "Cloud Connection Toasts",
   "figura.config.connection_toasts.tooltip": "Toggles if the game should show up toasts related with the cloud connection status",

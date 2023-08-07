@@ -48,6 +48,9 @@ public class FiguraCommands {
             root.then(AvatarManager.getCommand());
         }
 
+        // emoji list
+        root.then(EmojiListCommand.getCommand());
+
         return root;
     }
 

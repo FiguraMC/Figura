@@ -83,7 +83,7 @@ public class FiguraRuntimeResources {
     }
 
     private static void getAndSaveResource(String path) throws Exception {
-        if (FiguraMod.debugModeEnabled() && Configs.LOCAL_ASSETS.value) return;
+        if (Configs.LOCAL_ASSETS.value) return;
         Path target = getAssetsDirectory().resolve(path);
         IOUtils.createDirIfNeeded(target.getParent());
         try (InputStream resource = NetworkStuff.getResource(ASSETS_VERSION, path); OutputStream fs = Files.newOutputStream(target)) {

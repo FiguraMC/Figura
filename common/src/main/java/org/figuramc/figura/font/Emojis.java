@@ -4,10 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.mojang.authlib.minecraft.client.MinecraftClient;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
@@ -17,6 +14,7 @@ import net.minecraft.server.packs.resources.Resource;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.utils.*;
 import org.jetbrains.annotations.Nullable;
+import org.luaj.vm2.ast.Str;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -26,7 +24,7 @@ import java.util.function.Consumer;
 
 public class Emojis {
 
-    private static final List<EmojiContainer> EMOJIS = new ArrayList<>();
+    private static final Map<String, EmojiContainer> EMOJIS = new HashMap<>();
     public static final char DELIMITER = ':';
     public static final char ESCAPE = '\\';
     private static final String JSON_KEY_FRAMES = "frames";
@@ -55,11 +53,11 @@ public class Emojis {
             try (InputStream stream = emojis.getValue().open()) {
                 // add emoji
                 JsonObject json = JsonParser.parseReader(new InputStreamReader(stream, StandardCharsets.UTF_8)).getAsJsonObject();
-                EMOJIS.add(new EmojiContainer(name, json));
+                EMOJIS.put(name, new EmojiContainer(name, json));
 
                 // check for duplicates
                 Set<String> set = new HashSet<>();
-                for (EmojiContainer emoji : EMOJIS) {
+                for (EmojiContainer emoji : EMOJIS.values()) {
                     for (String s : emoji.unicodeLookup.keySet()) {
                         if (!set.add(s)) {
                             FiguraMod.LOGGER.warn("Duplicate emoji id registered {}", s);
@@ -71,6 +69,18 @@ public class Emojis {
             }
         }
     });
+
+    public static Collection<String> getCategoryNames() {
+        return EMOJIS.keySet();
+    }
+
+    public static EmojiContainer getCategory(String key) {
+        return EMOJIS.get(key);
+    }
+
+    public static boolean hasCategory(String key) {
+        return EMOJIS.containsKey(key);
+    }
 
     public static MutableComponent applyEmojis(Component text) {
         Component newText = TextUtils.parseLegacyFormatting(text);
@@ -166,7 +176,7 @@ public class Emojis {
     }
 
     public static Component getEmoji(String unicode) {
-        for (EmojiContainer container : EMOJIS) {
+        for (EmojiContainer container : EMOJIS.values()) {
             Component emoji = container.getEmoji(unicode);
             if (emoji != null) {
                 return emoji;
@@ -175,8 +185,8 @@ public class Emojis {
         return null;
     }
 
-    public static EmojiContainer getContainer(ResourceLocation location) {
-        for (EmojiContainer container : EMOJIS) {
+    public static EmojiContainer getCategoryByFont(ResourceLocation location) {
+        for (EmojiContainer container : EMOJIS.values()) {
             if (location.equals(container.font)) {
                 return container;
             }
@@ -185,7 +195,7 @@ public class Emojis {
     }
 
     public static Component removeBlacklistedEmojis(Component text) {
-        for (EmojiContainer container : EMOJIS)
+        for (EmojiContainer container : EMOJIS.values())
             text = container.blacklist(text);
         return text;
     }
@@ -197,7 +207,7 @@ public class Emojis {
         String name = query.substring(1);
         List<String> emojis = new ArrayList<>();
 
-        for (EmojiContainer container : EMOJIS) {
+        for (EmojiContainer container : EMOJIS.values()) {
             for (String s : container.unicodeLookup.keySet()) {
                 if (s.startsWith(name))
                     emojis.add(DELIMITER + s + DELIMITER);
@@ -208,7 +218,7 @@ public class Emojis {
     }
 
     public static void tickAnimations() {
-        for (EmojiContainer container : EMOJIS) {
+        for (EmojiContainer container : EMOJIS.values()) {
             container.tickAnimations();
         }
     }
@@ -216,9 +226,10 @@ public class Emojis {
     public static class EmojiContainer {
         private static final Style STYLE = Style.EMPTY.withColor(ChatFormatting.WHITE);
 
-        private final String name;
+        public final String name;
         private final ResourceLocation font;
         private final Map<String, String> unicodeLookup = new HashMap<>(); // <EmojiName, Unicode>
+        private final HashMap<String, List<String>> reverseUnicodeLookup = new HashMap<>(); // <Unicode, EmojiNames[]>
         private final Map<Integer, Metadata> metadataLookup = new HashMap<>();
         private final String blacklist;
 
@@ -231,6 +242,7 @@ public class Emojis {
             this.blacklist = data.get("blacklist").getAsString();
 
             // key = emoji unicode, value = array of names
+            List<String> aliases = new ArrayList<>();
             for (Map.Entry<String, JsonElement> emoji : data.get("emojis").getAsJsonObject().entrySet()) {
                 String curUnicode = emoji.getKey();
                 JsonElement curValue = emoji.getValue();
@@ -244,12 +256,21 @@ public class Emojis {
                             JsonUtils.validate(obj, JSON_KEY_FRAMES, JsonElement::isJsonPrimitive, ERROR_MSG, curUnicode.codePointAt(0), containerName, JSON_KEY_FRAMES, "field must be an int") &&
                             JsonUtils.validate(obj, JSON_KEY_FRAME_TIME, JsonElement::isJsonPrimitive, ERROR_MSG, curUnicode.codePointAt(0), containerName, JSON_KEY_FRAME_TIME, "fiend must be an int")) {
                         namesArray = obj.getAsJsonArray(JSON_KEY_NAMES);
-                        metadataLookup.put(curUnicode.codePointAt(0) ,new Metadata(obj));
+                        metadataLookup.put(curUnicode.codePointAt(0), new Metadata(obj));
                     }
                 }
 
+                List<String> validAliases = new ArrayList<>();
+
                 if (namesArray != null) {
-                    validateAliases(containerName, namesArray, (curAlias) -> unicodeLookup.put(curAlias, curUnicode));
+                    validateAliases(containerName, namesArray, validAliases::add);
+                }
+
+                if (validAliases.size() > 0) {
+                    for (String alias : validAliases) {
+                        unicodeLookup.put(alias, curUnicode);
+                    }
+                    reverseUnicodeLookup.put(curUnicode, validAliases);
                 }
             }
 
@@ -257,6 +278,9 @@ public class Emojis {
             this.textureHeight = JsonUtils.getIntOrDefault(data, JSON_KEY_SHEET_HEIGHT, 64);
         }
 
+        public Map<String, List<String>> getAliasLookup() {
+            return reverseUnicodeLookup;
+        }
 
         private static void validateAliases(String containerName, JsonArray aliasArray, Consumer<String> consumer) {
             for (JsonElement element : aliasArray) {
@@ -288,6 +312,10 @@ public class Emojis {
                             .append("\n")
                             .append(FiguraText.of("emoji." + name).withStyle(ChatFormatting.DARK_GRAY)))
             ));
+        }
+
+        public Collection<String> getAllEmojis() {
+            return unicodeLookup.keySet();
         }
 
         public Component blacklist(Component text) {

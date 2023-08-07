@@ -70,10 +70,13 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
         figura$tryRenderArmorPart(EquipmentSlot.CHEST, this::figura$chestplateRenderer, poseStack, livingEntity, multiBufferSource, i, ParentType.LeftShoulderPivot, ParentType.ChestplatePivot, ParentType.RightShoulderPivot);
         figura$tryRenderArmorPart(EquipmentSlot.LEGS, this::figura$leggingsRenderer, poseStack, livingEntity, multiBufferSource, i, ParentType.LeftLeggingPivot, ParentType.RightLeggingPivot, ParentType.LeggingsPivot);
         figura$tryRenderArmorPart(EquipmentSlot.FEET, this::figura$bootsRenderer, poseStack, livingEntity, multiBufferSource, i, ParentType.LeftBootPivot, ParentType.RightBootPivot);
+
+        figura$avatar = null;
     }
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/layers/HumanoidArmorLayer;usesInnerModel(Lnet/minecraft/world/entity/EquipmentSlot;)Z"), method = "renderArmorPiece")
     public void onRenderArmorPiece(PoseStack poseStack, MultiBufferSource multiBufferSource, T livingEntity, EquipmentSlot equipmentSlot, int i, A humanoidModel, CallbackInfo ci) {
+        if (figura$avatar == null) return;
         VanillaPart part = RenderUtils.partFromSlot(figura$avatar, equipmentSlot);
         if (part != null) {
             part.save(humanoidModel);
@@ -96,6 +99,7 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
 
     @Inject(at = @At("RETURN"), method = "renderArmorPiece")
     public void postRenderArmorPiece(PoseStack poseStack, MultiBufferSource multiBufferSource, T livingEntity, EquipmentSlot equipmentSlot, int i, A humanoidModel, CallbackInfo ci) {
+        if (figura$avatar == null) return;
         VanillaPart part = RenderUtils.partFromSlot(figura$avatar, equipmentSlot);
         if (part != null)
             part.restore(humanoidModel);

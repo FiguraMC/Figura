@@ -52,7 +52,7 @@ public abstract class FontSetMixin {
         BakedGlyph glyph = instance.add(glyphInfo);
 
         if (figura$isEmojiFont() && glyph != null) {
-            ((BakedGlyphAccessor) glyph).figura$setupEmoji(Emojis.getContainer(name), figura$codePoint);
+            ((BakedGlyphAccessor) glyph).figura$setupEmoji(Emojis.getCategoryByFont(name), figura$codePoint);
         }
 
         return glyph;

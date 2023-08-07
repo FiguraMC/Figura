@@ -48,11 +48,11 @@ public class FiguraMod {
     public static boolean parseMessages = true;
     public static boolean processingKeybind;
 
+    /* For some reason, the mod menu entrypoint (or something) is able to call this before the Config
+    class can initialize, meaning Configs.DEBUG_MODE can be null when this is called.... Weird */
+    @SuppressWarnings("all")
     public static boolean debugModeEnabled() {
-        if (Configs.DEBUG_MODE == null) return false;
-        Boolean b = Configs.DEBUG_MODE.value;
-        if (b == null) return false;
-        return b;
+        return Configs.DEBUG_MODE != null && Configs.DEBUG_MODE.value;
     }
 
     public static void onClientInit() {
@@ -109,7 +109,7 @@ public class FiguraMod {
 
     // mod cache directory
     public static Path getCacheDirectory() {
-        return IOUtils.getOrCreateDir(getFiguraDirectory(), debugModeEnabled() && Configs.LOCAL_ASSETS.value ? "local_cache" : "cache");
+        return IOUtils.getOrCreateDir(getFiguraDirectory(), Configs.LOCAL_ASSETS.value ? "local_cache" : "cache");
     }
 
     // get local player uuid
@@ -146,8 +146,7 @@ public class FiguraMod {
      */
     public static UUID playerNameToUUID(String playerName) {
         GameProfileCache cache = SkullBlockEntityAccessor.getProfileCache();
-        if (cache == null)
-            return null;
+        if (cache == null) return null;
 
         var profile = cache.get(playerName);
         return profile.isEmpty() ? null : profile.get().getId();
@@ -189,14 +188,7 @@ public class FiguraMod {
     }
 
     public enum Links {
-        Wiki("https://github.com/KitCat962/FiguraRewriteRewrite/wiki", ColorUtils.Colors.AWESOME_BLUE.style),
-        Kofi("https://ko-fi.com/skyrina", ColorUtils.Colors.KOFI.style),
-        OpenCollective("https://opencollective.com/figura", ColorUtils.Colors.KOFI.style),
-        Discord("https://discord.gg/figuramc", ColorUtils.Colors.DISCORD.style),
-        Github("https://github.com/FiguraMC/Figura", ColorUtils.Colors.GITHUB.style),
-        Modrinth("https://modrinth.com/mod/figura", ColorUtils.Colors.MODRINTH.style),
-        Curseforge("https://www.curseforge.com/minecraft/mc-mods/figura", ColorUtils.Colors.CURSEFORGE.style),
-        LuaManual("https://www.lua.org/manual/5.2/manual.html", ColorUtils.Colors.LUA_LOG.style);
+        Wiki("https://github.com/KitCat962/FiguraRewriteRewrite/wiki", ColorUtils.Colors.AWESOME_BLUE.style), Kofi("https://ko-fi.com/skyrina", ColorUtils.Colors.KOFI.style), OpenCollective("https://opencollective.com/figura", ColorUtils.Colors.KOFI.style), Discord("https://discord.gg/figuramc", ColorUtils.Colors.DISCORD.style), Github("https://github.com/FiguraMC/Figura", ColorUtils.Colors.GITHUB.style), Modrinth("https://modrinth.com/mod/figura", ColorUtils.Colors.MODRINTH.style), Curseforge("https://www.curseforge.com/minecraft/mc-mods/figura", ColorUtils.Colors.CURSEFORGE.style), LuaManual("https://www.lua.org/manual/5.2/manual.html", ColorUtils.Colors.LUA_LOG.style);
 
         public final String url;
         public final Style style;

@@ -9,6 +9,6 @@ import org.figuramc.figura.gui.screens.ConfigScreen;
 public class ModMenuConfig implements ModMenuApi {
     @Override
     public ConfigScreenFactory<?> getModConfigScreenFactory() {
-        return parentScreen -> new ConfigScreen(parentScreen, Configs.DEBUG_MODE.value);
+        return parentScreen -> new ConfigScreen(parentScreen, FiguraMod.debugModeEnabled());
     }
 }
