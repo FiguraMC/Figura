@@ -1,6 +1,7 @@
 package org.figuramc.figura.parsers;
 
 import org.figuramc.figura.FiguraMod;
+import org.figuramc.figura.config.Configs;
 import org.luaj.vm2.Lua;
 import org.luaj.vm2.LuaString;
 import org.luaj.vm2.LuaValue;
@@ -436,7 +437,7 @@ public class LuaScriptBuilderVisitor extends Visitor {
     }
 
     private StringBuilder newlineIfName(String next) {
-        return charIfName(next, FiguraMod.DEBUG_MODE ? '\n' : ' ');
+        return charIfName(next, FiguraMod.debugModeEnabled() ? '\n' : ' ');
     }
 
     private void spaceIfName() {

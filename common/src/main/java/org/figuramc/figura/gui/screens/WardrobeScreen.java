@@ -30,11 +30,14 @@ public class WardrobeScreen extends AbstractPanelScreen {
 
     private Label panic;
 
-    private Button upload, delete;
+    private Button upload, delete, back;
 
     public WardrobeScreen(Screen parentScreen) {
         super(parentScreen, FiguraText.of("gui.panels.title.wardrobe"));
     }
+
+    private AvatarInfoWidget infoWidget;
+    private BackendMotdWidget motdWidget;
 
     @Override
     protected void init() {
@@ -136,7 +139,7 @@ public class WardrobeScreen extends AbstractPanelScreen {
         int rightSide = Math.min(panels, 134);
 
         // back
-        Button back = new Button(width - rightSide - 4, height - 24, rightSide, 20, FiguraText.of("gui.done"), null, bx -> onClose());
+        back = new Button(width - rightSide - 4, height - 24, rightSide, 20, FiguraText.of("gui.done"), null, bx -> onClose());
         addRenderableWidget(back);
 
         // -- right side -- //
@@ -167,14 +170,13 @@ public class WardrobeScreen extends AbstractPanelScreen {
         );
         addRenderableWidget(keybinds);
 
-        AvatarInfoWidget infoWidget;
         // avatar metadata
         addRenderableOnly(infoWidget = new AvatarInfoWidget(this.width - panels - 4, 56, panels, back.getY() - 60));
 
         // backend MOTD
         int motdHeight = back.getY() - (infoWidget.getY() + infoWidget.getHeight()) - 28;
         if (NetworkStuff.motd != null && motdHeight > 32) {
-            addRenderableWidget(new BackendMotdWidget(this.width - panels, infoWidget.getY() + infoWidget.getHeight() + 21, panels - 8, motdHeight, NetworkStuff.motd, Minecraft.getInstance().font));
+            addRenderableWidget(motdWidget = new BackendMotdWidget(this.width - panels, infoWidget.getY() + infoWidget.getHeight() + 2, panels - 8, motdHeight, NetworkStuff.motd, Minecraft.getInstance().font));
         }
 
         // panic warning - always added last, on top
@@ -198,6 +200,11 @@ public class WardrobeScreen extends AbstractPanelScreen {
         Avatar avatar;
         upload.setActive(NetworkStuff.canUpload() && !AvatarManager.localUploaded && (avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID())) != null && avatar.nbt != null && avatar.loaded);
         delete.setActive(NetworkStuff.isConnected() && AvatarManager.localUploaded);
+
+        if (motdWidget != null) {
+            motdWidget.setY(infoWidget.getY() + infoWidget.getHeight() + 2);
+            motdWidget.setHeight(back.getY() - (infoWidget.getY() + infoWidget.getHeight()) - 28);
+        }
     }
 
     @Override

@@ -3,7 +3,7 @@ package org.figuramc.figura.mixin;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import org.figuramc.figura.config.Configs;
-import org.figuramc.figura.gui.Emojis;
+import org.figuramc.figura.font.Emojis;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

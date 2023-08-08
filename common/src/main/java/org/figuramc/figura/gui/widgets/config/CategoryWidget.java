@@ -2,6 +2,7 @@ package org.figuramc.figura.gui.widgets.config;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.config.ConfigType;
 import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.gui.screens.ConfigScreen;
@@ -60,7 +61,9 @@ public class CategoryWidget extends AbstractContainerElement {
     }
 
     public void addConfig(ConfigType<?> config) {
+        if (config.hidden && !FiguraMod.debugModeEnabled()) return;
         int width = getWidth();
+
         AbstractConfigElement element;
         if (config instanceof ConfigType.BoolConfig boolConfig) {
             element = new BooleanElement(width, boolConfig, parent, this);

@@ -6,6 +6,7 @@ import com.google.gson.JsonParser;
 import net.minecraft.server.packs.PathPackResources;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.backend2.NetworkStuff;
+import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.utils.IOUtils;
 
 import java.io.BufferedReader;
@@ -82,6 +83,7 @@ public class FiguraRuntimeResources {
     }
 
     private static void getAndSaveResource(String path) throws Exception {
+        if (Configs.LOCAL_ASSETS.value) return;
         Path target = getAssetsDirectory().resolve(path);
         IOUtils.createDirIfNeeded(target.getParent());
         try (InputStream resource = NetworkStuff.getResource(ASSETS_VERSION, path); OutputStream fs = Files.newOutputStream(target)) {

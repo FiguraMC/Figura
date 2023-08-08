@@ -2,7 +2,7 @@ package org.figuramc.figura.lua.api.nameplate;
 
 import net.minecraft.network.chat.Component;
 import org.figuramc.figura.avatar.Badges;
-import org.figuramc.figura.gui.Emojis;
+import org.figuramc.figura.font.Emojis;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;

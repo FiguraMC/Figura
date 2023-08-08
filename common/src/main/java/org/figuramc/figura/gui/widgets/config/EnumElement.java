@@ -8,6 +8,7 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.network.chat.Component;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.config.ConfigType;
+import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.gui.widgets.ContextMenu;
 import org.figuramc.figura.gui.widgets.ParentedButton;
 import org.figuramc.figura.gui.widgets.lists.ConfigList;
@@ -61,7 +62,7 @@ public class EnumElement extends AbstractConfigElement {
                 super.setHovered(hovered);
             }
         });
-        button.setActive(FiguraMod.DEBUG_MODE || !config.disabled);
+        button.setActive(FiguraMod.debugModeEnabled() || !config.disabled);
         if (config.enumTooltip != null)
             button.setTooltip(config.enumTooltip.get(selectedIndex));
 

@@ -34,7 +34,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(HumanoidArmorLayer.class)
+@Mixin(value = HumanoidArmorLayer.class, priority = 900)
 public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends HumanoidModel<T>, A extends HumanoidModel<T>> extends RenderLayer<T, M> implements HumanoidArmorLayerAccessor<T, M, A> {
 
     @Shadow
@@ -48,35 +48,35 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
     protected abstract void renderArmorPiece(PoseStack matrices, MultiBufferSource vertexConsumers, T entity, EquipmentSlot armorSlot, int light, A model);
 
     @Unique
+    private boolean figura$renderingVanillaArmor;
+
+    @Unique
     private Avatar figura$avatar;
 
     public HumanoidArmorLayerMixin(RenderLayerParent<T, M> context) {
         super(context);
     }
 
-    @Inject(at =
-            @At(
-                    value = "INVOKE",
-                    shift = At.Shift.BEFORE,
-                    target = "Lnet/minecraft/client/renderer/entity/layers/HumanoidArmorLayer;renderArmorPiece(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/entity/EquipmentSlot;ILnet/minecraft/client/model/HumanoidModel;)V"
-            ),
-            method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V",
-            cancellable = true
-    )
-    public void onRender(PoseStack vanillaPoseStack, MultiBufferSource multiBufferSource, int light, T livingEntity, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
+    @Inject(at = @At(value = "HEAD"), method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V")
+    public void setAvatar(PoseStack poseStack, MultiBufferSource multiBufferSource, int i, T livingEntity, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
         figura$avatar = AvatarManager.getAvatar(livingEntity);
+    }
+
+    @Inject(at = @At(value = "TAIL"), method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V")
+    public void onRenderEnd(PoseStack poseStack, MultiBufferSource multiBufferSource, int i, T livingEntity, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
         if (figura$avatar == null) return;
 
-        figura$tryRenderArmorPart(EquipmentSlot.HEAD, this::figura$helmetRenderer, vanillaPoseStack, livingEntity, multiBufferSource, light, ParentType.HelmetPivot);
-        figura$tryRenderArmorPart(EquipmentSlot.CHEST, this::figura$chestplateRenderer, vanillaPoseStack, livingEntity, multiBufferSource, light, ParentType.LeftShoulderPivot, ParentType.ChestplatePivot, ParentType.RightShoulderPivot);
-        figura$tryRenderArmorPart(EquipmentSlot.LEGS, this::figura$leggingsRenderer, vanillaPoseStack, livingEntity, multiBufferSource, light, ParentType.LeftLeggingPivot, ParentType.RightLeggingPivot, ParentType.LeggingsPivot);
-        figura$tryRenderArmorPart(EquipmentSlot.FEET, this::figura$bootsRenderer, vanillaPoseStack, livingEntity, multiBufferSource, light, ParentType.LeftBootPivot, ParentType.RightBootPivot);
 
-        ci.cancel();
+        figura$tryRenderArmorPart(EquipmentSlot.HEAD,  this::figura$helmetRenderer, poseStack, livingEntity, multiBufferSource, i, ParentType.HelmetPivot);
+        figura$tryRenderArmorPart(EquipmentSlot.CHEST, this::figura$chestplateRenderer, poseStack, livingEntity, multiBufferSource, i, ParentType.LeftShoulderPivot, ParentType.ChestplatePivot, ParentType.RightShoulderPivot);
+        figura$tryRenderArmorPart(EquipmentSlot.LEGS,  this::figura$leggingsRenderer, poseStack, livingEntity, multiBufferSource, i, ParentType.LeftLeggingPivot, ParentType.RightLeggingPivot, ParentType.LeggingsPivot);
+        figura$tryRenderArmorPart(EquipmentSlot.FEET,  this::figura$bootsRenderer, poseStack, livingEntity, multiBufferSource, i, ParentType.LeftBootPivot, ParentType.RightBootPivot);
     }
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/layers/HumanoidArmorLayer;usesInnerModel(Lnet/minecraft/world/entity/EquipmentSlot;)Z"), method = "renderArmorPiece")
     public void onRenderArmorPiece(PoseStack poseStack, MultiBufferSource multiBufferSource, T livingEntity, EquipmentSlot equipmentSlot, int i, A humanoidModel, CallbackInfo ci) {
+        if (figura$avatar == null) return;
+
         VanillaPart part = RenderUtils.partFromSlot(figura$avatar, equipmentSlot);
         if (part != null) {
             part.save(humanoidModel);
@@ -85,8 +85,21 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
         }
     }
 
+
+    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/layers/HumanoidArmorLayer;setPartVisibility(Lnet/minecraft/client/model/HumanoidModel;Lnet/minecraft/world/entity/EquipmentSlot;)V", shift = At.Shift.AFTER), method = "renderArmorPiece", cancellable = true)
+    public void renderArmorPieceHijack(PoseStack poseStack, MultiBufferSource multiBufferSource, T livingEntity, EquipmentSlot equipmentSlot, int i, A humanoidModel, CallbackInfo ci) {
+        if (figura$avatar == null) return;
+
+        if (!figura$renderingVanillaArmor) {
+            ci.cancel();
+        }
+    }
+
+
     @Inject(at = @At("RETURN"), method = "renderArmorPiece")
     public void postRenderArmorPiece(PoseStack poseStack, MultiBufferSource multiBufferSource, T livingEntity, EquipmentSlot equipmentSlot, int i, A humanoidModel, CallbackInfo ci) {
+        if (figura$avatar == null) return;
+
         VanillaPart part = RenderUtils.partFromSlot(figura$avatar, equipmentSlot);
         if (part != null)
             part.restore(humanoidModel);
@@ -94,11 +107,21 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
 
     @Unique
     private void figura$tryRenderArmorPart(EquipmentSlot slot, FiguraArmorPartRenderer<T, M, A> renderer, PoseStack vanillaPoseStack, T entity, MultiBufferSource vertexConsumers, int light, ParentType... parentTypes) {
+        if (slot == null) return; // ?
         ItemStack itemStack = entity.getItemBySlot(slot);
 
         // Make sure the item in the equipment slot is actually a piece of armor
         if ((itemStack.getItem() instanceof ArmorItem armorItem && armorItem.getEquipmentSlot() == slot)) {
             A armorModel = getArmorModel(slot);
+            armorModel.body.xRot = 0.0f;
+            armorModel.rightLeg.z = 0.0f;
+            armorModel.leftLeg.z = 0.0f;
+            armorModel.rightLeg.y = 12.0f;
+            armorModel.leftLeg.y = 12.0f;
+            armorModel.head.y = 0.0f;
+            armorModel.body.y = 0.0f;
+            armorModel.leftArm.y = 2.0f;
+            armorModel.rightArm.y = 2.0f;
             boolean allFailed = true;
 
             // Go through each parent type needed to render the current piece of armor
@@ -119,7 +142,9 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
 
             // As a fallback, render armor the vanilla way
             if (allFailed) {
+                figura$renderingVanillaArmor = true;
                 renderArmorPiece(vanillaPoseStack, vertexConsumers, entity, slot, light, armorModel);
+                figura$renderingVanillaArmor = false;
             }
         }
 
@@ -246,10 +271,5 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
         if (hasGlint) {
             modelPart.render(poseStack, vertexConsumers.getBuffer(RenderType.armorEntityGlint()), light, OverlayTexture.NO_OVERLAY, 1.0f, 1.0f, 1.0f, 1.0f);
         }
-    }
-
-    @Inject(at = @At("RETURN"), method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V")
-    public void postRender(PoseStack poseStack, MultiBufferSource multiBufferSource, int i, T livingEntity, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
-        figura$avatar = null;
     }
 }

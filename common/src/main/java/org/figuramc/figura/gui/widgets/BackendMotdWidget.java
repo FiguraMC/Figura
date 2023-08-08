@@ -75,4 +75,8 @@ public class BackendMotdWidget extends AbstractScrollWidget {
     protected void updateWidgetNarration(NarrationElementOutput builder) {
         builder.add(NarratedElementType.TITLE, this.getMessage());
     }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
 }

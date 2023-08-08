@@ -10,7 +10,7 @@ import net.minecraft.network.chat.Component;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.Badges;
-import org.figuramc.figura.gui.Emojis;
+import org.figuramc.figura.font.Emojis;
 import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
@@ -52,6 +52,8 @@ public class TextTask extends RenderTask {
 
     @Override
     public void render(PoseStack poseStack, MultiBufferSource buffer, int light, int overlay) {
+        if (opacity == 0) return; // lol
+
         // prepare matrices
         Matrix4f matrix = poseStack.last().pose();
         matrix.scale(-1, -1, -1);

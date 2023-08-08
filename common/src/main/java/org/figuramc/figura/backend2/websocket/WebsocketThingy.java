@@ -78,7 +78,7 @@ public class WebsocketThingy extends WebSocketClient {
         reason = reason.isBlank() ? ERROR_CODES.getOrDefault(code, "Unknown") : reason;
         FiguraMod.LOGGER.info("Closed connection: " + reason + ", Code: " + code + ", Remote: " + remote);
 
-        handleClose(code, reason + (FiguraMod.DEBUG_MODE ? "\n\nCode: " + code + "\nRemote: " + remote : ""));
+        handleClose(code, reason + (FiguraMod.debugModeEnabled() ? "\n\nCode: " + code + "\nRemote: " + remote : ""));
     }
 
     @Override

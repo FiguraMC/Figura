@@ -4,6 +4,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.config.ConfigType;
+import org.figuramc.figura.config.Configs;
 import org.figuramc.figura.gui.widgets.ParentedButton;
 import org.figuramc.figura.gui.widgets.SwitchButton;
 import org.figuramc.figura.gui.widgets.lists.ConfigList;
@@ -17,7 +18,7 @@ public class BooleanElement extends AbstractConfigElement {
 
         // button
         children.add(0, button = new ParentedButton(0, 0, 90, 20, config.tempValue ? SwitchButton.ON : SwitchButton.OFF, this, button -> config.tempValue = !(boolean) config.tempValue));
-        button.setActive(FiguraMod.DEBUG_MODE || !config.disabled);
+        button.setActive(FiguraMod.debugModeEnabled() || !config.disabled);
     }
 
     @Override
