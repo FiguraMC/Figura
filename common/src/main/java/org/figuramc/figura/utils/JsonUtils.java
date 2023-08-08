@@ -1,8 +1,12 @@
 package org.figuramc.figura.utils;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import org.figuramc.figura.FiguraMod;
+import org.luaj.vm2.LuaTable;
+import org.luaj.vm2.LuaValue;
 
 import java.util.function.Function;
 
@@ -24,5 +28,33 @@ public class JsonUtils {
             return object.get(fieldName).getAsInt();
         }
         return fallback;
+    }
+
+    public static LuaValue asLuaValue(JsonElement value) {
+        if (value.isJsonPrimitive()) {
+            JsonPrimitive p = value.getAsJsonPrimitive();
+            if (p.isBoolean()) return LuaValue.valueOf(p.getAsBoolean());
+            if (p.isNumber()) return LuaValue.valueOf(p.getAsNumber().doubleValue());
+            if (p.isString()) return LuaValue.valueOf(p.getAsString());
+            return LuaValue.valueOf(value.getAsString()); // Fallback
+        } else if (value.isJsonArray()) {
+            JsonArray arr = value.getAsJsonArray();
+            LuaTable table = new LuaTable();
+            for (JsonElement element : arr) {
+                table.insert(table.length()+1, asLuaValue(element));
+            }
+            return table;
+        } else if (value.isJsonNull()) {
+            return LuaValue.NIL;
+        } else if (value.isJsonObject()) {
+            JsonObject obj = value.getAsJsonObject();
+            LuaTable table = new LuaTable();
+            for (String key : obj.keySet()) {
+                table.set(key, asLuaValue(obj.get(key)));
+            }
+            return table;
+        }
+
+        return LuaValue.NIL;
     }
 }

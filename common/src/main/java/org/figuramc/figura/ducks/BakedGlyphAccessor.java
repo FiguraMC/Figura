@@ -1,7 +1,7 @@
 package org.figuramc.figura.ducks;
 
-import org.figuramc.figura.font.Emojis;
+import org.figuramc.figura.font.EmojiContainer;
 
 public interface BakedGlyphAccessor {
-    void figura$setupEmoji(Emojis.EmojiContainer container, int codepoint);
+    void figura$setupEmoji(EmojiContainer container, int codepoint);
 }

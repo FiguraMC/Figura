@@ -3,6 +3,8 @@ package org.figuramc.figura.mixin.font;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.gui.font.glyphs.BakedGlyph;
 import org.figuramc.figura.ducks.BakedGlyphAccessor;
+import org.figuramc.figura.font.EmojiContainer;
+import org.figuramc.figura.font.EmojiMetadata;
 import org.figuramc.figura.font.Emojis;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
@@ -32,15 +34,12 @@ public abstract class BakedGlyphMixin implements BakedGlyphAccessor {
     @Final
     private float v1;
     @Unique
-    Emojis.EmojiContainer.Metadata figura$metadata;
-    @Unique
-    int figura$sheetWidth = 1;
+    EmojiMetadata figura$metadata;
 
     @Override
-    public void figura$setupEmoji(@Nullable Emojis.EmojiContainer container, int codepoint) {
+    public void figura$setupEmoji(@Nullable EmojiContainer container, int codepoint) {
         if (container != null) {
-            figura$metadata = container.getEmojiMetadata(codepoint);
-            figura$sheetWidth = container.textureWidth;
+            figura$metadata = container.getLookup().getMetadata(codepoint);
         }
     }
 
