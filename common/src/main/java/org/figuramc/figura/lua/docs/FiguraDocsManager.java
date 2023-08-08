@@ -37,8 +37,6 @@ import org.figuramc.figura.lua.api.nameplate.EntityNameplateCustomization;
 import org.figuramc.figura.lua.api.nameplate.NameplateAPI;
 import org.figuramc.figura.lua.api.nameplate.NameplateCustomization;
 import org.figuramc.figura.lua.api.nameplate.NameplateCustomizationGroup;
-import org.figuramc.figura.lua.api.networking.HttpRequestsAPI;
-import org.figuramc.figura.lua.api.networking.NetworkingAPI;
 import org.figuramc.figura.lua.api.particle.LuaParticle;
 import org.figuramc.figura.lua.api.particle.ParticleAPI;
 import org.figuramc.figura.lua.api.ping.PingAPI;
@@ -233,13 +231,6 @@ public class FiguraDocsManager {
 
         put("config", List.of(
                 ConfigAPI.class
-        ));
-
-        put("net", List.of(
-                NetworkingAPI.class,
-                HttpRequestsAPI.class,
-                HttpRequestsAPI.HttpRequestBuilder.class,
-                HttpRequestsAPI.HttpResponse.class
         ));
 
         put("data", List.of(

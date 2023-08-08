@@ -56,9 +56,6 @@ public class Configs {
             MISC = new ConfigType.Category("misc"),
             DEV = new ConfigType.Category("dev") {{
                 this.name = this.name.copy().withStyle(ChatFormatting.RED);
-            }},
-            NETWORKING = new ConfigType.Category("networking") {{
-                this.name = this.name.copy().withStyle(ChatFormatting.RED);
             }};
 
 
@@ -298,10 +295,4 @@ public class Configs {
     public static final ConfigType.BoolConfig
             FORCE_SMOOTH_AVATAR = new ConfigType.BoolConfig("force_smooth_avatar", DEV, false),
             GUI_FPS = new ConfigType.BoolConfig("gui_fps", DEV, false);
-
-    public static final ConfigType.BoolConfig
-            ALLOW_NETWORKING = new ConfigType.BoolConfig("allow_networking", NETWORKING, false);
-    public static final ConfigType.EnumConfig
-            NETWORKING_RESTRICTION = new ConfigType.EnumConfig("networking_restriction", NETWORKING, 0, 3);
-    public static final ConfigType.NetworkFilterConfig NETWORK_FILTER = new ConfigType.NetworkFilterConfig("networking_filter", NETWORKING);
 }

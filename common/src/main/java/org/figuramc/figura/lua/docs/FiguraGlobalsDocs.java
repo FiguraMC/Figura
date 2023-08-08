@@ -10,8 +10,6 @@ import org.figuramc.figura.lua.api.keybind.KeybindAPI;
 import org.figuramc.figura.lua.api.math.MatricesAPI;
 import org.figuramc.figura.lua.api.math.VectorsAPI;
 import org.figuramc.figura.lua.api.nameplate.NameplateAPI;
-import org.figuramc.figura.lua.api.networking.HttpRequestsAPI;
-import org.figuramc.figura.lua.api.networking.NetworkingAPI;
 import org.figuramc.figura.lua.api.particle.ParticleAPI;
 import org.figuramc.figura.lua.api.ping.PingAPI;
 import org.figuramc.figura.lua.api.sound.SoundAPI;
@@ -80,8 +78,6 @@ public abstract class FiguraGlobalsDocs {
     public TextureAPI textures;
     @LuaFieldDoc("globals.config")
     public ConfigAPI config;
-    @LuaFieldDoc("globals.net")
-    public NetworkingAPI net;
     @LuaFieldDoc("globals.data")
     public DataAPI data;
     @LuaFieldDoc("globals.file")

@@ -12,8 +12,6 @@ import org.figuramc.figura.lua.api.data.providers.StringProvider;
 import org.figuramc.figura.lua.api.data.readers.FiguraReader;
 import org.figuramc.figura.lua.api.data.readers.StringReader;
 import org.figuramc.figura.lua.api.entity.*;
-import org.figuramc.figura.lua.api.networking.HttpRequestsAPI;
-import org.figuramc.figura.lua.api.networking.NetworkingAPI;
 import org.figuramc.figura.model.rendertasks.*;
 import org.figuramc.figura.lua.api.action_wheel.Action;
 import org.figuramc.figura.lua.api.action_wheel.ActionWheelAPI;
@@ -159,11 +157,6 @@ public class FiguraAPIManager {
         add(StringReader.class);
         add(StringReader.Readers.class);
 
-        add(NetworkingAPI.class);
-        add(HttpRequestsAPI.class);
-        add(HttpRequestsAPI.HttpRequestBuilder.class);
-        add(HttpRequestsAPI.HttpResponse.class);
-
         add(DataAPI.class);
         add(DataAPI.Readers.class);
         add(DataAPI.Providers.class);
@@ -190,7 +183,6 @@ public class FiguraAPIManager {
         put("pings", r -> r.ping = new PingAPI(r.owner));
         put("textures", r -> r.texture = new TextureAPI(r.owner));
         put("config", r -> new ConfigAPI(r.owner));
-        put("net", r -> new NetworkingAPI(r.owner));
         put("data", r -> new DataAPI());
         put("file", r -> new FileAPI(r.owner));
     }};
