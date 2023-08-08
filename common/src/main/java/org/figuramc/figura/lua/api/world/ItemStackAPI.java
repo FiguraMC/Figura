@@ -79,8 +79,8 @@ public class ItemStackAPI {
     }
 
     @LuaWhitelist
-    @LuaMethodDoc("itemstack.get_cooldown")
-    public int getCooldown() {
+    @LuaMethodDoc("itemstack.get_pop_time")
+    public int getPopTime() {
         return itemStack.getPopTime();
     }
 
