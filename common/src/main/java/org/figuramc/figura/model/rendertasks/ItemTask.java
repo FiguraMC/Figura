@@ -37,9 +37,7 @@ public class ItemTask extends RenderTask {
     }
 
     @Override
-    public void render(PartCustomization.PartCustomizationStack stack, MultiBufferSource buffer, int light, int overlay) {
-        this.pushOntoStack(stack);
-        PoseStack poseStack = stack.peek().copyIntoGlobalPoseStack();
+    public void render(PoseStack poseStack, MultiBufferSource buffer, int light, int overlay) {
         poseStack.scale(-16, 16, -16);
 
         LivingEntity entity = owner.renderer.entity instanceof LivingEntity living ? living : null;
@@ -52,8 +50,6 @@ public class ItemTask extends RenderTask {
                 poseStack, buffer, WorldAPI.getCurrentWorld(),
                 newLight, newOverlay, seed
         );
-
-        stack.pop();
     }
 
     @Override

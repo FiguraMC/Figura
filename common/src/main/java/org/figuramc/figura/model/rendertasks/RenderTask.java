@@ -38,18 +38,21 @@ public abstract class RenderTask {
         this.customization.visible = true;
     }
 
-    public abstract void render(PartCustomization.PartCustomizationStack stack, MultiBufferSource buffer, int light, int overlay);
+    public void render(PartCustomization.PartCustomizationStack stack, MultiBufferSource buffer, int light, int overlay) {
+        customization.recalculate();
+        stack.push(customization);
+        PoseStack poseStack = stack.peek().copyIntoGlobalPoseStack();
+        render(poseStack, buffer, light, overlay);
+        stack.pop();
+    }
+    public abstract void render(PoseStack stack, MultiBufferSource buffer, int light, int overlay);
     public abstract int getComplexity();
     public boolean shouldRender() {
         return customization.visible;
     }
 
-    public void pushOntoStack(PartCustomization.PartCustomizationStack stack) {
-        customization.recalculate();
-        stack.push(customization);
-    }
 
-    // -- lua stuff -- // 
+    // -- lua stuff -- //
 
 
     @LuaWhitelist

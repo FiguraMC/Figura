@@ -15,7 +15,6 @@ import org.figuramc.figura.math.vector.FiguraVec2;
 import org.figuramc.figura.math.vector.FiguraVec3;
 import org.figuramc.figura.math.vector.FiguraVec4;
 import org.figuramc.figura.model.FiguraModelPart;
-import org.figuramc.figura.model.PartCustomization;
 import org.figuramc.figura.model.rendering.Vertex;
 import org.figuramc.figura.model.rendering.texture.FiguraTexture;
 import org.figuramc.figura.model.rendering.texture.RenderTypes;
@@ -49,10 +48,8 @@ public class SpriteTask extends RenderTask {
     }
 
     @Override
-    public void render(PartCustomization.PartCustomizationStack stack, MultiBufferSource buffer, int light, int overlay) {
+    public void render(PoseStack poseStack, MultiBufferSource buffer, int light, int overlay) {
         if (a == 0) return;
-        this.pushOntoStack(stack); //push
-        PoseStack poseStack = stack.peek().copyIntoGlobalPoseStack();
         poseStack.scale(-1, -1, 1);
 
         // prepare variables
@@ -75,8 +72,6 @@ public class SpriteTask extends RenderTask {
                     .normal(normal, v.nx, v.ny, v.nz)
                     .endVertex();
         }
-
-        stack.pop(); //pop
     }
 
     @Override

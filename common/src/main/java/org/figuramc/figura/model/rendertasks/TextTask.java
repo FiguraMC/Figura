@@ -60,36 +60,31 @@ public class TextTask extends RenderTask {
 
         // prepare variables
         Font font = Minecraft.getInstance().font;
-        int l = this.customization.light != null ? this.customization.light : light;
-        int bg = backgroundColor != null ? backgroundColor : background ? (int) (Minecraft.getInstance().options.getBackgroundOpacity(0.25f) * 0xFF) << 24 : 0;
-        int out = outlineColor != null ? outlineColor : 0x202020;
-        int op = opacity << 24 | 0xFFFFFF;
-        Font.DisplayMode displayMode = seeThrough ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.POLYGON_OFFSET;
-        float vertexOffset = outline ? FiguraMod.VERTEX_OFFSET : 0f;
-
-        // background
-        if (bg != 0) {
-            int offset = alignment.apply(cacheWidth);
-            float x1 = -1 - offset;
-            float x2 = cacheWidth - offset;
-            VertexConsumer vertexConsumer = buffer.getBuffer(seeThrough ? RenderType.textBackgroundSeeThrough() : RenderType.textBackground());
-            vertexConsumer.vertex(matrix, x1, -1f, vertexOffset).color(bg).uv2(l).endVertex();
-            vertexConsumer.vertex(matrix, x1, cacheHeight, vertexOffset).color(bg).uv2(l).endVertex();
-            vertexConsumer.vertex(matrix, x2, cacheHeight, vertexOffset).color(bg).uv2(l).endVertex();
-            vertexConsumer.vertex(matrix, x2, -1f, vertexOffset).color(bg).uv2(l).endVertex();
+        Matrix4f textMatrix = matrix;
+        if (shadow) {
+            poseStack.pushPose();
+            poseStack.scale(1, 1, -1);
+            textMatrix = poseStack.last().pose();
+            poseStack.popPose();
         }
 
-        // text
-        for (int i = 0, j = 0; i < text.size(); i++, j += (font.lineHeight + 1)) {
+        int l = this.customization.light != null ? this.customization.light : light;
+        int bgColor = backgroundColor != null ? backgroundColor : background ? (int) (Minecraft.getInstance().options.getBackgroundOpacity(0.25f) * 0xFF) << 24 : 0;
+        int outlineColor = this.outlineColor != null ? this.outlineColor : 0x202020;
+
+        for (int i = 0; i < text.size(); i++) {
             Component text = this.text.get(i);
             int x = -alignment.apply(font, text);
+            int y = (font.lineHeight + 1) * i;
+
+            if (background || seeThrough) {
+                font.drawInBatch(text, x, y, 0x20FFFFFF, false, matrix, buffer, seeThrough, bgColor, l);
+            }
 
             if (outline) {
-                font.drawInBatch8xOutline(text.getVisualOrderText(), x, j, -1, out, matrix, buffer, l);
-                if (seeThrough)
-                    font.drawInBatch(text, x, j, op, shadow, matrix, buffer, displayMode, 0, l);
+                font.drawInBatch8xOutline(text.getVisualOrderText(), x, y, -1, outlineColor, matrix, buffer, light);
             } else {
-                font.drawInBatch(text, x, j, op, shadow, matrix, buffer, displayMode, 0, l);
+                font.drawInBatch(text, x, y, 0xFFFFFF, shadow, textMatrix, buffer, false, 0, l);
             }
         }
     }
